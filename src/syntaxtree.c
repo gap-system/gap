@@ -2,6 +2,9 @@
 **
 *W  syntaxtree.c
 **
+**
+** TODO:
+**  - Expressions vs Statements
 */
 #include        <stdarg.h>              /* variable argument list macros   */
 #include        "system.h"              /* Ints, UInts                     */
@@ -50,7 +53,7 @@ typedef UInt4 LVar;
 typedef UInt4 HVar;
 typedef UInt GVar;
 
-typedef Obj (*CompileFuncT)(Expr expr);
+typedef Obj (*CompileFuncT)(Obj node, Expr expr);
 
 typedef struct {
   UInt tnum;
@@ -63,10 +66,11 @@ typedef struct {
 static const CompilerT StatCompilers[];
 static const CompilerT ExprCompilers[];
 
-
 #define COMPILER_ARITY(...) (sizeof((char *[]){ __VA_ARGS__ })/sizeof(char *))
 #define COMPILER(tnum, compiler, ...)                                   \
     { tnum, compiler, #tnum, COMPILER_ARITY(__VA_ARGS__), { __VA_ARGS__ } }
+
+static inline Obj SyntaxTreeFunc(Obj result, Obj func);
 
 static inline Obj NewSyntaxTreeNode(const char *type)
 {
@@ -82,27 +86,6 @@ static inline Obj NewSyntaxTreeNode(const char *type)
 
 static Obj SyntaxTreeCompiler(Expr expr)
 {
-    UInt tnum;
-    CompilerT comp;
-
-    tnum = TNUM_EXPR(expr);
-
-    if((0 <= tnum) && (tnum < 128)) {
-        comp = StatCompilers[tnum];
-    } else if((128 <= tnum) && (tnum < 256)) {
-        comp = ExprCompilers[tnum-128];
-    } else {
-        // error
-    }
-
-    return comp.compile(expr);
-}
-
-/* TODO: Make just one compiler table? */
-/*       Can we get rid of the duplication between
-         SyntaxTreeCompiler and SyntaxTreeDefaultCompiler? */
-static Obj SyntaxTreeDefaultCompiler(Expr expr)
-{
     Obj result;
     UInt tnum;
     CompilerT comp;
@@ -117,20 +100,42 @@ static Obj SyntaxTreeDefaultCompiler(Expr expr)
         // error
     }
     result = NewSyntaxTreeNode(comp.name);
+
+    comp.compile(result, expr);
+
+    return result;
+}
+
+/* TODO: Make just one compiler table? */
+/*       Can we get rid of the duplication between
+         SyntaxTreeCompiler and SyntaxTreeDefaultCompiler? */
+static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
+{
+    UInt tnum;
+    CompilerT comp;
+
+    tnum = TNUM_EXPR(expr);
+
+    if((0 <= tnum) && (tnum < 128)) {
+        comp = StatCompilers[tnum];
+    } else if((128 <= tnum) && (tnum < 256)) {
+        comp = ExprCompilers[tnum-128];
+    } else {
+        // error
+    }
+
     for(int i=0; i<comp.arity; i++) {
         AssPRec(result, RNamName(comp.argnames[i]), SyntaxTreeCompiler(ADDR_EXPR(expr)[i]));
     }
     return result;
 }
 
-Obj SyntaxTreeFunccall(Expr expr)
+Obj SyntaxTreeFunccall(Obj result, Expr expr)
 {
-    Obj result;
     Obj func;
     Obj args, argi;
     UInt narg, i;
 
-    result = NewSyntaxTreeNode("Funccall");;
     /* TODO: If this is a gvar ref, put name? */
     func = SyntaxTreeCompiler( FUNC_CALL(expr) );
 
@@ -154,48 +159,40 @@ Obj SyntaxTreeFunccall(Expr expr)
 }
 
 /* TODO: FuncCall options */
-Obj SyntaxTreeFunccallOpts(Expr expr)
+Obj SyntaxTreeFunccallOpts(Obj result, Expr expr)
 {
-    Obj result;
     Obj opts;
 
-    result = NewSyntaxTreeNode("FunccallOpts");;
     opts = SyntaxTreeCompiler(ADDR_STAT(expr)[0]);
     AssPRec(result, RNamName("opts"), opts);
 
     return result;
 }
 
-static Obj SyntaxTreeFunc(Obj func);
-
 /* TODO: again? */
-Obj SyntaxTreeFuncExpr(Expr expr)
+Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 {
-    Obj result;
     Obj fexs;
     Obj fexp;
     Obj func;
 
-    result = NewSyntaxTreeNode("FuncExpr");;
-
     fexs = FEXS_FUNC(CURR_FUNC);
     fexp = ELM_PLIST(fexs, ((Int *)ADDR_EXPR(expr))[0]);
-    func = SyntaxTreeFunc(fexp);
 
-    AssPRec(result, RNamName("func"), func);
+    SyntaxTreeFunc(result, fexp);
+
+//    AssPRec(result, RNamName("func"), func);
 
     return result;
 }
 
-Obj SyntaxTreeIntExpr(Expr expr)
+/* TODO: Fix this */
+Obj SyntaxTreeIntExpr(Obj result, Expr expr)
 {
-    Obj result;
     Obj value;
     Int siz;
     UInt typ;
     Int i;
-
-    result = NewSyntaxTreeNode("IntExpr");;
 
     if(IS_INTEXPR(expr)) {
         value = OBJ_INTEXPR(expr);
@@ -224,9 +221,8 @@ Obj SyntaxTreeIntExpr(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeCharExpr(Expr expr)
+Obj SyntaxTreeCharExpr(Obj result, Expr expr)
 {
-    Obj result;
     Obj value;
 
     /* TODO: How do I make a character literal? */
@@ -237,17 +233,14 @@ Obj SyntaxTreeCharExpr(Expr expr)
     return result;
 }
 
-Obj SyntaxTreePermExpr(Expr expr)
+Obj SyntaxTreePermExpr(Obj result, Expr expr)
 {
-    Obj result;
     Obj cycles;
     Obj cycle;
     Obj val;
     Expr cycleexpr;
     Int csize, n;
     Int i, j;
-
-    result = NewSyntaxTreeNode("PermExpr");;
 
     /* determine number of cycles */
     n = SIZE_EXPR(expr)/sizeof(Expr);
@@ -276,14 +269,12 @@ Obj SyntaxTreePermExpr(Expr expr)
 
 /* TODO: Find out why record and list subexpressions are handled
    special */
-Obj SyntaxTreeListExpr (Expr expr)
+Obj SyntaxTreeListExpr (Obj result, Expr expr)
 {
-    Obj result;
     Obj list;
     Int len;
     Int i;
 
-    result = NewSyntaxTreeNode("ListExpr");;
     len = SIZE_EXPR( expr ) / sizeof(Expr);
 
     list = NEW_PLIST(T_PLIST, len);
@@ -304,20 +295,16 @@ Obj SyntaxTreeListExpr (Expr expr)
 }
 
 /* TODO: Deal With tilde */
-Obj SyntaxTreeListTildeExpr(Expr expr)
+Obj SyntaxTreeListTildeExpr(Obj result, Expr expr)
 {
-    Obj result;
-
-    result = SyntaxTreeListExpr(expr);
-
-    return result;
+    return SyntaxTreeListExpr(result, expr);
 }
 
-Obj SyntaxTreeRangeExpr(Expr expr)
+Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
 {
-    Obj result, first, second, last;
-
-    result = NewSyntaxTreeNode("RangeExpr");;
+    Obj first;
+    Obj second;
+    Obj last;
 
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         first  = SyntaxTreeCompiler( ADDR_EXPR(expr)[0] );
@@ -338,32 +325,26 @@ Obj SyntaxTreeRangeExpr(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeStringExpr(Expr expr)
+Obj SyntaxTreeStringExpr(Obj result, Expr expr)
 {
-    Obj result, string;
-
-    result = NewSyntaxTreeNode("StringExpr");;
+    Obj string;
 
     C_NEW_STRING( string, SIZE_EXPR(expr)-1-sizeof(UInt),
                   sizeof(UInt) + (Char*)ADDR_EXPR(expr) );
 
-
-    AssPRec( result, RNamName("string"), string );
+    AssPRec(result, RNamName("string"), string);
 
     return result;
 }
 
-Obj SyntaxTreeRecExpr(Expr expr)
+Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 {
-    Obj result;
     Obj key;
     Obj val;
     Obj list;
     Obj subrec;
     Expr tmp;
     Int i, len;
-
-    result = NewSyntaxTreeNode("RecExpr");;
 
     len = SIZE_EXPR(expr) / (2*sizeof(Expr));
     list = NEW_PLIST(T_PLIST, len);
@@ -398,21 +379,14 @@ Obj SyntaxTreeRecExpr(Expr expr)
 
 /* A tilde just refers to the structure it is used in */
 /* But this seems to be an expression that *contains* a tilde? */
-Obj SyntaxTreeRecTildeExpr(Expr expr)
+Obj SyntaxTreeRecTildeExpr(Obj result, Expr expr)
 {
-    Obj result;
-
-    result = SyntaxTreeRecExpr(expr);
-
-    return result;
+    return SyntaxTreeRecExpr(result, expr);
 }
 
-Obj SyntaxTreeRefLVar(Expr expr)
+Obj SyntaxTreeRefLVar(Obj result, Expr expr)
 {
-    Obj result;
     LVar lvar;
-
-    result = NewSyntaxTreeNode("RefLVar");;
 
     if ( IS_REFLVAR(expr) ) {
         lvar = LVAR_REFLVAR(expr);
@@ -427,12 +401,9 @@ Obj SyntaxTreeRefLVar(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeIsbLVar(Expr expr)
+Obj SyntaxTreeIsbLVar(Obj result, Expr expr)
 {
-    Obj result;
     LVar lvar;
-
-    result = NewSyntaxTreeNode("IsBLvar");;
 
     lvar = (LVar)(ADDR_EXPR(expr)[0]);
 
@@ -441,64 +412,53 @@ Obj SyntaxTreeIsbLVar(Expr expr)
     return result;
 }
 
-Obj SyntaxTreeRefHVar(Expr expr)
+Obj SyntaxTreeRefHVar(Obj result, Expr expr)
 {
-    Obj result;
     HVar hvar;
 
     /*
-     * TODO: Deal with higher variables? This is not necessary for a
-     * syntax tree!
+     * TODO: Deal with higher variables
      */
-    result = NewSyntaxTreeNode("RefHVar");;
     hvar = (HVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
 
     return result;
 }
 
-Obj SyntaxTreeIsbHVar(Expr expr)
+Obj SyntaxTreeIsbHVar(Obj result, Expr expr)
 {
-    Obj result;
     HVar hvar;
 
-    result = NewSyntaxTreeNode("IsBHVar");;
     hvar = (HVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
 
     return result;
 }
 
-Obj SyntaxTreeRefGVar(Expr expr)
+Obj SyntaxTreeRefGVar(Obj result, Expr expr)
 {
-    Obj result;
     GVar gvar;
 
-    result = NewSyntaxTreeNode("RefGVar");;
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
     return result;
 }
 
-Obj SyntaxTreeRefGVarFopy(Expr expr)
+Obj SyntaxTreeRefGVarFopy(Obj result, Expr expr)
 {
-    Obj result;
     GVar gvar;
 
-    result = NewSyntaxTreeNode("RefGVarFopy");;
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
     return result;
 }
 
-Obj SyntaxTreeIsbGVar(Expr expr)
+Obj SyntaxTreeIsbGVar(Obj result, Expr expr)
 {
-    Obj result;
     GVar gvar;
 
-    result = NewSyntaxTreeNode("IsBGVar");;
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("name"), NameGVarObj(gvar));
 
@@ -506,25 +466,22 @@ Obj SyntaxTreeIsbGVar(Expr expr)
 }
 
 /* TODO: Options? */
-Obj SyntaxTreeProccall(Stat stat)
+Obj SyntaxTreeProccall(Obj result, Stat stat)
 {
-    Obj result;
     Obj args;
     Obj func;
     UInt narg;
     UInt i;
 
-    result = NewSyntaxTreeNode("Proccall");;
-
     /* TODO: What to do about this? */
     /* compile the reference to the function                               */
     if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
         /* mhm */
-        func = SyntaxTreeRefGVarFopy( FUNC_CALL(stat) );
+        func = SyntaxTreeRefGVarFopy( result, FUNC_CALL(stat) );
     } else {
         func = SyntaxTreeCompiler( FUNC_CALL(stat) );
     }
-    AssPRec(result, RNamName("function"), func);
+//    AssPRec(result, RNamName("function"), func);
 
     /* compile the argument expressions                                    */
     narg = NARG_SIZE_CALL(SIZE_STAT(stat));
@@ -537,12 +494,10 @@ Obj SyntaxTreeProccall(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeProccallOpts(Stat stat)
+Obj SyntaxTreeProccallOpts(Obj result, Stat stat)
 {
-    Obj result;
     Obj opts;
 
-    result = NewSyntaxTreeNode("ProccallOpts");;
     opts = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
 
     AssPRec(result, RNamName("opts"), opts);
@@ -550,14 +505,11 @@ Obj SyntaxTreeProccallOpts(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeSeqStat(Stat stat)
+Obj SyntaxTreeSeqStat(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     UInt nr;
     UInt i;
-
-    result = NewSyntaxTreeNode("SeqStat");;
 
     /* get the number of statements                                        */
     nr = SIZE_STAT( stat ) / sizeof(Stat);
@@ -574,18 +526,14 @@ Obj SyntaxTreeSeqStat(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeIf(Stat stat)
+Obj SyntaxTreeIf(Obj result, Stat stat)
 {
-    Obj result;
-
     Obj cond;
     Obj then;
     Obj pair;
     Obj branches;
 
     Int i, nr;
-
-    result = NewSyntaxTreeNode("If");;
 
     nr = SIZE_STAT(stat) / (2*sizeof(Stat));
     branches = NEW_PLIST(T_PLIST, nr);
@@ -610,13 +558,10 @@ Obj SyntaxTreeIf(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeFor(Stat stat)
+Obj SyntaxTreeFor(Obj result, Stat stat)
 {
-    Obj result;
     Obj body;
     UInt i, nr;
-
-    result = NewSyntaxTreeNode("For");;
 
     AssPRec(result, RNamName("variable"), SyntaxTreeCompiler(ADDR_STAT(stat)[0]));
     AssPRec(result, RNamName("collection"), SyntaxTreeCompiler(ADDR_STAT(stat)[1]));
@@ -633,14 +578,11 @@ Obj SyntaxTreeFor(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeWhile(Stat stat )
+Obj SyntaxTreeWhile(Obj result, Stat stat)
 {
-    Obj result;
     Obj condition;
     Obj body;
     UInt nr, i;
-
-    result = NewSyntaxTreeNode("While");;
 
     condition = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), condition);
@@ -658,14 +600,11 @@ Obj SyntaxTreeWhile(Stat stat )
     return result;
 }
 
-Obj SyntaxTreeRepeat(Stat stat)
+Obj SyntaxTreeRepeat(Obj result, Stat stat)
 {
-    Obj result;
     Obj cond;
     Obj body;
     UInt i, nr;
-
-    result = NewSyntaxTreeNode("Repeat");;
 
     cond = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     AssPRec(result, RNamName("condition"), cond);
@@ -684,13 +623,10 @@ Obj SyntaxTreeRepeat(Stat stat)
 }
 
 /* TODO: make sure this works correctly */
-Obj SyntaxTreeAssLVar(Stat stat)
+Obj SyntaxTreeAssLVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj lvar;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssLVar");;
 
     lvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     rhs = SyntaxTreeCompiler(ADDR_STAT(stat)[1]);
@@ -701,12 +637,9 @@ Obj SyntaxTreeAssLVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbLVar(Stat stat)
+Obj SyntaxTreeUnbLVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj lvar;
-
-    result = NewSyntaxTreeNode("UnbindLVar");;
 
     lvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("lvar"), lvar);
@@ -714,13 +647,10 @@ Obj SyntaxTreeUnbLVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssHVar(Stat stat)
+Obj SyntaxTreeAssHVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj hvar;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssHVar");;
 
     hvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     rhs = SyntaxTreeCompiler(ADDR_STAT(stat)[1]);
@@ -731,12 +661,9 @@ Obj SyntaxTreeAssHVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbHVar(Stat stat)
+Obj SyntaxTreeUnbHVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj hvar;
-
-    result = NewSyntaxTreeNode("UnbindHVar");;
 
     hvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("hvar"), hvar);
@@ -744,13 +671,10 @@ Obj SyntaxTreeUnbHVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssGVar(Stat stat)
+Obj SyntaxTreeAssGVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj gvar;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssGVar");;
 
     gvar = NameGVarObj(ADDR_STAT(stat)[0]);
     rhs = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -761,12 +685,9 @@ Obj SyntaxTreeAssGVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbGVar(Stat stat)
+Obj SyntaxTreeUnbGVar(Obj result, Stat stat)
 {
-    Obj result;
     Obj gvar;
-
-    result = NewSyntaxTreeNode("UnbGVar");;
 
     gvar = NameGVarObj(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("gvar"), gvar);
@@ -774,14 +695,11 @@ Obj SyntaxTreeUnbGVar(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssList(Stat stat)
+Obj SyntaxTreeAssList(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj pos;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssList");;
 
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -794,14 +712,11 @@ Obj SyntaxTreeAssList(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAsssList (Stat stat)
+Obj SyntaxTreeAsssList(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj poss;
     Obj rhss;
-
-    result = NewSyntaxTreeNode("AsssList");;
 
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -814,15 +729,12 @@ Obj SyntaxTreeAsssList (Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssListLev(Stat stat)
+Obj SyntaxTreeAssListLev(Obj result, Stat stat)
 {
-    Obj result;
     Obj lists;
     Obj pos;
     Obj rhss;
     Int level;
-
-    result = NewSyntaxTreeNode("AssListLev");;
 
     lists = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -837,15 +749,12 @@ Obj SyntaxTreeAssListLev(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAsssListLev(Stat stat)
+Obj SyntaxTreeAsssListLev(Obj result, Stat stat)
 {
-    Obj result;
     Obj lists;
     Obj poss;
     Obj rhss;
     Int level;
-
-    result = NewSyntaxTreeNode("AsssListLev");;
 
     lists = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -860,13 +769,10 @@ Obj SyntaxTreeAsssListLev(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbList(Stat stat)
+Obj SyntaxTreeUnbList(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj pos;
-
-    result = NewSyntaxTreeNode("UnbList");;
 
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -877,14 +783,11 @@ Obj SyntaxTreeUnbList(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssRecName(Stat stat)
+Obj SyntaxTreeAssRecName(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssRecName");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     /* TODO: Record Access */
@@ -898,14 +801,11 @@ Obj SyntaxTreeAssRecName(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssRecExpr(Stat stat)
+Obj SyntaxTreeAssRecExpr(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssRecExpr");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -918,13 +818,10 @@ Obj SyntaxTreeAssRecExpr(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbRecName(Stat stat)
+Obj SyntaxTreeUnbRecName(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
-
-    result = NewSyntaxTreeNode("UnbRecName");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = INTOBJ_INT(ADDR_STAT(stat)[1]);
@@ -935,13 +832,10 @@ Obj SyntaxTreeUnbRecName(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbRecExpr(Stat stat)
+Obj SyntaxTreeUnbRecExpr(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
-
-    result = NewSyntaxTreeNode("UnbRecExpr");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -952,14 +846,11 @@ Obj SyntaxTreeUnbRecExpr(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssPosObj(Stat stat)
+Obj SyntaxTreeAssPosObj(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj pos;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssPosObj");;
 
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -972,14 +863,11 @@ Obj SyntaxTreeAssPosObj(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAsssPosObj(Stat stat)
+Obj SyntaxTreeAsssPosObj(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj poss;
     Obj rhss;
-
-    result = NewSyntaxTreeNode("AsssPosObj");;
 
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -992,15 +880,12 @@ Obj SyntaxTreeAsssPosObj(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssPosObjLev(Stat stat)
+Obj SyntaxTreeAssPosObjLev(Obj result, Stat stat)
 {
-    Obj result;
     Obj lists;
     Obj pos;
     Obj rhss;
     Int level;
-
-    result = NewSyntaxTreeNode("AssPosObjLev");;
 
     lists = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1015,15 +900,12 @@ Obj SyntaxTreeAssPosObjLev(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAsssPosObjLev(Stat stat)
+Obj SyntaxTreeAsssPosObjLev(Obj result, Stat stat)
 {
-    Obj result;
     Obj lists;
     Obj poss;
     Obj rhss;
     Int level;
-
-    result = NewSyntaxTreeNode("AsssPosObjLev");;
 
     lists = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1038,13 +920,11 @@ Obj SyntaxTreeAsssPosObjLev(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbPosObj(Stat stat)
+Obj SyntaxTreeUnbPosObj(Obj result, Stat stat)
 {
-    Obj result;
     Obj list;
     Obj pos;
 
-    result = NewSyntaxTreeNode("UnbPosObj");;
     list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
 
@@ -1054,14 +934,11 @@ Obj SyntaxTreeUnbPosObj(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssComObjName(Stat stat)
+Obj SyntaxTreeAssComObjName(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     UInt rnam;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssComObjName");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = (UInt)(ADDR_STAT(stat)[1]);
@@ -1074,14 +951,11 @@ Obj SyntaxTreeAssComObjName(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssComObjExpr(Stat stat)
+Obj SyntaxTreeAssComObjExpr(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
     Obj rhs;
-
-    result = NewSyntaxTreeNode("AssComObjExpr");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1094,13 +968,10 @@ Obj SyntaxTreeAssComObjExpr(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbComObjName(Stat stat)
+Obj SyntaxTreeUnbComObjName(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     UInt rnam;
-
-    result = NewSyntaxTreeNode("UnbComObjName");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = (UInt)(ADDR_STAT(stat)[1]);
@@ -1111,13 +982,10 @@ Obj SyntaxTreeUnbComObjName(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbComObjExpr(Stat stat)
+Obj SyntaxTreeUnbComObjExpr(Obj result, Stat stat)
 {
-    Obj result;
     Obj record;
     Obj rnam;
-
-    result = NewSyntaxTreeNode("UnbComObjExpr");;
 
     record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1128,25 +996,13 @@ Obj SyntaxTreeUnbComObjExpr(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeEmpty(Stat stat)
+Obj SyntaxTreeInfo(Obj result, Stat stat)
 {
-    Obj result;
-
-    result = NewSyntaxTreeNode("Empty");;
-
-    return result;
-}
-
-Obj SyntaxTreeInfo(Stat stat)
-{
-    Obj result;
     Obj sel;
     Obj lev;
     Obj lst;
     Obj tmp;
     UInt narg, i;
-
-    result = NewSyntaxTreeNode("Info");;
 
     sel = SyntaxTreeCompiler( ARGI_INFO( stat, 1 ) );
     lev = SyntaxTreeCompiler( ARGI_INFO( stat, 2 ) );
@@ -1168,13 +1024,10 @@ Obj SyntaxTreeInfo(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssert2(Stat stat)
+Obj SyntaxTreeAssert2(Obj result, Stat stat)
 {
-    Obj result;
     Obj lev;
     Obj cond;
-
-    result = NewSyntaxTreeNode("Assert");;
 
     lev = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     cond = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1185,14 +1038,11 @@ Obj SyntaxTreeAssert2(Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssert3(Stat stat)
+Obj SyntaxTreeAssert3(Obj result, Stat stat)
 {
-    Obj result;
     Obj lev;
     Obj cond;
     Obj msg;
-
-    result = NewSyntaxTreeNode("Assert");;
 
     lev = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
     cond = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
@@ -1205,9 +1055,8 @@ Obj SyntaxTreeAssert3(Stat stat)
     return result;
 }
 
-static Obj SyntaxTreeFunc( Obj func )
+static Obj SyntaxTreeFunc(Obj result, Obj func)
 {
-    Obj result;
     Obj str;
     Obj stats;
     Obj argnams;
@@ -1217,8 +1066,6 @@ static Obj SyntaxTreeFunc( Obj func )
     Int narg;
     Int nloc;
     Int i;
-
-    result = NewSyntaxTreeNode("Function");;
 
     if (NAME_FUNC(func)) {
         AssPRec(result, RNamName("name"), NAME_FUNC(func));
@@ -1279,22 +1126,22 @@ static Obj SyntaxTreeFunc( Obj func )
 static CompilerT AllCompilers[256];
 
 static const CompilerT StatCompilers[] = {
-    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PROCCALL_XARGS, SyntaxTreeDefaultCompiler),
+    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_XARGS, SyntaxTreeProccall),
 
-    COMPILER(T_SEQ_STAT, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT2, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT3, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT4, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT5, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT6, SyntaxTreeDefaultCompiler),
-    COMPILER(T_SEQ_STAT7, SyntaxTreeDefaultCompiler),
+    COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT3, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT4, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT5, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT6, SyntaxTreeSeqStat),
+    COMPILER(T_SEQ_STAT7, SyntaxTreeSeqStat),
     COMPILER(T_IF, SyntaxTreeDefaultCompiler),
     COMPILER(T_IF_ELSE, SyntaxTreeDefaultCompiler),
     COMPILER(T_IF_ELIF, SyntaxTreeDefaultCompiler),
@@ -1342,9 +1189,9 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_ASSS_LIST, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASS_LIST_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASSS_LIST_LEV, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_LIST, SyntaxTreeDefaultCompiler),
+    COMPILER(T_UNB_LIST, SyntaxTreeDefaultCompiler, "list", "pos"),
     COMPILER(T_ASS_REC_NAME, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_REC_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_ASS_REC_EXPR, SyntaxTreeDefaultCompiler, "record", "expression", "rhs"),
     COMPILER(T_UNB_REC_NAME, SyntaxTreeDefaultCompiler),
     COMPILER(T_UNB_REC_EXPR, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASS_POSOBJ, SyntaxTreeDefaultCompiler),
@@ -1469,7 +1316,14 @@ static const CompilerT ExprCompilers[] = {
 
 Obj FuncSYNTAX_TREE ( Obj self, Obj func )
 {
-    return SyntaxTreeFunc(func);
+    Obj result;
+    Obj string;
+
+    C_NEW_STRING_DYN(string, "DummyFunction");
+
+    result = NEW_PREC(1);
+    AssPRec(result, RNamName("type"), string);
+    return SyntaxTreeFunc(result, func);
 }
 
 static StructGVarFunc GVarFuncs [] = {
