@@ -1005,6 +1005,16 @@ static Int InitKernel (
     return 0;
 }
 
+static Int PostRestore ( StructInitInfo * module )
+{
+    /* When we restore a workspace, we start a new profile.
+     * 'OutputtedFilenameList' is the only part of the profile which is
+     * stored in the GAP memory space, so we need to clear it in case
+     * it still has a value from a previous profile.
+     */
+    OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1022,7 +1032,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    PostRestore                         /* postRestore                    */
 };
 
 StructInitInfo * InitInfoProfile ( void )
