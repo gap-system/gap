@@ -458,11 +458,11 @@ permutat.o: ../../Makefile @srcdir@/permutat.c @srcdir@/system.h config.h \
 
 plist.o: ../../Makefile @srcdir@/plist.c @srcdir@/system.h config.h @srcdir@/globalstate.h \
  @srcdir@/code.h @srcdir@/scanner.h @srcdir@/gasman.h @srcdir@/hpc/atomic.h \
- @srcdir@/objects.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
- @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/finfield.h @srcdir@/ffdata.h \
- @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
- @srcdir@/plist.h @srcdir@/range.h @srcdir@/stringobj.h @srcdir@/blister.h \
- @srcdir@/saveload.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h
+ @srcdir@/objects.h @srcdir@/gap.h @srcdir@/funcs.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/finfield.h \
+ @srcdir@/ffdata.h @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/stringobj.h \
+ @srcdir@/blister.h @srcdir@/saveload.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o plist.o -c @srcdir@/plist.c
 
 pperm.o: ../../Makefile @srcdir@/pperm.c @srcdir@/pperm.h @srcdir@/system.h config.h \
@@ -477,11 +477,11 @@ pperm.o: ../../Makefile @srcdir@/pperm.c @srcdir@/pperm.h @srcdir@/system.h conf
 
 precord.o: ../../Makefile @srcdir@/precord.c @srcdir@/system.h config.h @srcdir@/globalstate.h \
  @srcdir@/code.h @srcdir@/scanner.h @srcdir@/gasman.h @srcdir@/hpc/atomic.h \
- @srcdir@/objects.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
- @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h @srcdir@/lists.h \
- @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h @srcdir@/stringobj.h \
- @srcdir@/saveload.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h \
- @srcdir@/hpc/aobjects.h
+ @srcdir@/objects.h @srcdir@/gap.h @srcdir@/funcs.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h \
+ @srcdir@/lists.h @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h \
+ @srcdir@/stringobj.h @srcdir@/saveload.h @srcdir@/hpc/thread.h \
+ @srcdir@/hpc/tls.h @srcdir@/hpc/aobjects.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o precord.o -c @srcdir@/precord.c
 
 profile.o: ../../Makefile @srcdir@/profile.c @srcdir@/system.h config.h @srcdir@/globalstate.h \
