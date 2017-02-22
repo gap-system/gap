@@ -385,9 +385,6 @@
    function */
 #undef HAVE___BUILTIN_SMUL_OVERFLOW
 
-/* define as 1 on Itanium architecture to flush and mark register stack */
-#undef ITANIUM
-
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 

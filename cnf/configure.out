@@ -628,7 +628,6 @@ ABI_CFLAGS
 ABI
 gapbin
 gp_configure_options
-ITANIUMOBJ
 C_DYNLIBS
 NM
 ac_ct_CXX
@@ -4173,13 +4172,7 @@ else
         gp_cv_prog_cc_cdynlinking='-g -bundle -bundle_loader ${gap_bin}/gap'" ${ABI_CFLAGS}";;
     *cygwin* )
         gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
-    *-gcc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-clang )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-icc )
-        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
-    *-egcs )
+    *-gcc | *-clang | *-icc | *-egcs )
         gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
     *hpux* )
         gp_cv_prog_cc_cdynlinking="-b +e Init__Dynamic";;
@@ -6852,14 +6845,7 @@ case "$host" in
 $as_echo "#define SPARC 1" >>confdefs.h
 
     ;;
-  ia64-* )
-
-$as_echo "#define ITANIUM 1" >>confdefs.h
-
-    ITANIUMOBJ=itanium.o
-    ;;
 esac
-
 
 case "$host_os" in
   *cygwin*)

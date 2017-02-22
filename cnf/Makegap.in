@@ -15,8 +15,6 @@ CPPFLAGS=-I. -DCONFIG_H @CPPFLAGS@
 LDFLAGS=@LDFLAGS@ $(LOPTS)
 CC=@CC@
 
-ITANIUMOBJ=@ITANIUMOBJ@
-
 # FIXME: What is LIBSOVERRIDE used for? We should either document this here
 # or elsewhere, or find ways to get rid of it. 
 ifeq "$(LIBSOVERRIDE)" ""
@@ -36,14 +34,14 @@ OBJECTS=ariths.o backtrace.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_r
 
 # compile and link GAP
 ifeq ($(uname_O),Cygwin)
-gap: $(OBJECTS) $(ITANIUMOBJ)
+gap: $(OBJECTS)
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c
-	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) $(ITANIUMOBJ) -lm -lrt $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) -lm -lrt $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
 	$(CC) $(LDFLAGS) -o gap ../../src/gapw95.c $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL gap.dll
 
 else
-gap: $(OBJECTS) $(ITANIUMOBJ)
-	$(CC) $(LDFLAGS) -o gap $(OBJECTS) $(ITANIUMOBJ) -lm $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+gap: $(OBJECTS)
+	$(CC) $(LDFLAGS) -o gap $(OBJECTS) -lm $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
 endif
 
 # dependencies are automatically generated
@@ -676,9 +674,6 @@ weakptr.o: ../../Makefile @srcdir@/weakptr.c @srcdir@/system.h config.h @srcdir@
  @srcdir@/weakptr.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/calls.h \
  @srcdir@/saveload.h @srcdir@/opers.h @srcdir@/hpc/thread.h @srcdir@/hpc/tls.h
 	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -o weakptr.o -c @srcdir@/weakptr.c
-
-itanium.o: @srcdir@/itanium.s 
-	$(CC) $(CFLAGS) -o itanium.o -c @srcdir@/itanium.s
 
 gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
           @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/read.h \
