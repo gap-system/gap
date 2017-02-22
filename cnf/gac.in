@@ -162,8 +162,7 @@ OBJECTS="\
     vecffe.o \
     vecgf2.o \
     vector.o \
-    weakptr.o \
-    @ITANIUMOBJ@
+    weakptr.o
 "
 
 

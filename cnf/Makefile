@@ -113,14 +113,14 @@ Makegap.in: Makegap.top Makefile Makegap.bottom
 	@echo >> Makegap.in
 	@echo '# compile and link GAP' >> Makegap.in
 	@echo 'ifeq ($$(uname_O),Cygwin)' >> Makegap.in
-	@echo 'gap: $$(OBJECTS) $$(ITANIUMOBJ)' >> Makegap.in
+	@echo 'gap: $$(OBJECTS)' >> Makegap.in
 	@echo '	$$(CC) $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c' >> Makegap.in
-	@echo '	$$(CC) $$(LDFLAGS) -o gap.dll -shared $$(OBJECTS) $$(ITANIUMOBJ) -lm -lrt $$(MPILIBS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
+	@echo '	$$(CC) $$(LDFLAGS) -o gap.dll -shared $$(OBJECTS) -lm -lrt $$(MPILIBS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
 	@echo '	$$(CC) $$(LDFLAGS) -o gap ../../src/gapw95.c $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS) -DCOMPILECYGWINDLL gap.dll' >> Makegap.in
 	@echo >> Makegap.in
 	@echo 'else' >> Makegap.in
-	@echo 'gap: $$(OBJECTS) $$(ITANIUMOBJ)' >> Makegap.in
-	@echo '	$$(CC) $$(LDFLAGS) -o gap $$(OBJECTS) $$(ITANIUMOBJ) -lm $$(MPILIBS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
+	@echo 'gap: $$(OBJECTS)' >> Makegap.in
+	@echo '	$$(CC) $$(LDFLAGS) -o gap $$(OBJECTS) -lm $$(MPILIBS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
 	@echo 'endif' >> Makegap.in
 	@echo >> Makegap.in
 	@echo '# dependencies are automatically generated' >> Makegap.in

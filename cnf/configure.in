@@ -384,12 +384,7 @@ case "$host" in
   sparc-* )
     AC_DEFINE(SPARC, 1, [define as 1 on SPARC architecture to flush register windows])
     ;;
-  ia64-* ) 
-    AC_DEFINE(ITANIUM, 1, [define as 1 on Itanium architecture to flush and mark register stack])
-    ITANIUMOBJ=itanium.o
-    ;;
 esac
-AC_SUBST(ITANIUMOBJ)
 
 case "$host_os" in
   *cygwin*)

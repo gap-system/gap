@@ -14,8 +14,6 @@ CPPFLAGS=-I. -DCONFIG_H @CPPFLAGS@
 LDFLAGS=@LDFLAGS@ $(LOPTS)
 CC=@CC@
 
-ITANIUMOBJ=@ITANIUMOBJ@
-
 # FIXME: What is LIBSOVERRIDE used for? We should either document this here
 # or elsewhere, or find ways to get rid of it. 
 ifeq "$(LIBSOVERRIDE)" ""

@@ -535,17 +535,6 @@ void InitSweepFuncBags (
 #endif
 
 
-#if ITANIUM
-extern void * ItaniumRegisterStackTop();
-
-static Bag* ItaniumRegisterStackBottom = (Bag *)0;
-
-static void ItaniumSpecialMarkingInit() {
-    ItaniumRegisterStackBottom = (Bag *)ItaniumRegisterStackTop();
-}
-
-#endif
-
 /****************************************************************************
 **
 *F  InitMarkFuncBags(<type>,<mark-func>)  . . . . .  install marking function
@@ -1069,9 +1058,6 @@ void            InitBags (
     StackFuncBags   = stack_func;
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
-#if ITANIUM
-    ItaniumSpecialMarkingInit();
-#endif
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
@@ -1721,14 +1707,6 @@ void GenStackFuncBags ( void )
                 MARK_BAG( *p );
         }
     }
-#if ITANIUM
-    /* Itanium has two stacks */
-    top = ItaniumRegisterStackTop();
-    for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
-        for ( p = (Bag*)((char*)ItaniumRegisterStackBottom + i); p < top; p++ )
-            MARK_BAG( *p );
-    }
-#endif
 
     /* mark from registers, dirty dirty hack                               */
     for ( p = (Bag*)((void*)RegsBags);

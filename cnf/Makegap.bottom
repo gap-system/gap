@@ -1,6 +1,3 @@
-itanium.o: @srcdir@/itanium.s 
-	$(CC) $(CFLAGS) -o itanium.o -c @srcdir@/itanium.s
-
 gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
           @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/read.h \
           @srcdir@/calls.h @srcdir@/gvars.h @srcdir@/bool.h \
