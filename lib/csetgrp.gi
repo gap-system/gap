@@ -268,10 +268,12 @@ function(d)
                    ViewString(RightActingGroup(d)),")"));
 end);
 
-InstallMethod(Random,"double coset",true,[IsDoubleCoset],0,
-function(d)
-  return Random(LeftActingGroup(d))*Representative(d)
-         *Random(RightActingGroup(d));
+InstallMethodWithRandomSource(Random,
+  "for a random source and a double coset",
+  [IsRandomSource, IsDoubleCoset],0,
+function(rs, d)
+  return Random(rs,LeftActingGroup(d))*Representative(d)
+         *Random(rs,RightActingGroup(d));
 end);
 
 InstallMethod(PseudoRandom,"double coset",true,[IsDoubleCoset],0,
