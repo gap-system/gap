@@ -431,9 +431,11 @@ function(d)
   Print(ViewString(d));
 end);
 
-InstallMethod(Random,"RightCoset",true,[IsRightCoset],0,
-function(d)
-  return Random(ActingDomain(d))*Representative(d);
+InstallMethodWithRandomSource(Random,
+  "for a random source and a RightCoset",
+  [IsRandomSource, IsRightCoset],0,
+function(rs, d)
+  return Random(rs, ActingDomain(d))*Representative(d);
 end);
 
 InstallMethod(PseudoRandom,"RightCoset",true,[IsRightCoset],0,
