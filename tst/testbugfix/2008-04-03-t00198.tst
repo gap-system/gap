@@ -13,9 +13,3 @@ gap> c:=ConjugacyClassesMaximalSubgroups( g );;
 gap> Collected(List(c,x->[Size(Representative(x)),Size(x)]));
 [ [ [ 120, 336 ], 1 ], [ [ 144, 280 ], 1 ], [ [ 336, 120 ], 3 ], 
   [ [ 384, 105 ], 1 ], [ [ 720, 56 ], 3 ], [ [ 20160, 1 ], 1 ] ]
-
-# 2008/04/23 (TB)
-gap> GeneratorsOfAlgebra( QuaternionAlgebra( GF(17) ) );
-[ e, i, j, k ]
-gap> GeneratorsOfAlgebra( QuaternionAlgebra( GF(17) ) );
-[ e, i, j, k ]
