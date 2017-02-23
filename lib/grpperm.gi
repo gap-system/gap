@@ -606,10 +606,10 @@ end);
 ##
 #M  Random( <G> ) . . . . . . . . . . . . . . . . . . . . . .  random element
 ##
-InstallMethod( Random,
-    "for a permutation group",
-    [ IsPermGroup ], 10,
-    function( G )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a permutation group",
+    [ IsRandomSource, IsPermGroup ], 10,
+    function( rs, G )
     local   S,  rnd;
 
     # go down the stabchain and multiply random representatives
@@ -617,7 +617,7 @@ InstallMethod( Random,
     rnd := S.identity;
     while Length( S.genlabels ) <> 0  do
         rnd := LeftQuotient( InverseRepresentative( S,
-                       Random( S.orbit ) ), rnd );
+                       Random( rs, S.orbit ) ), rnd );
         S := S.stabilizer;
     od;
 
