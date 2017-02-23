@@ -1088,7 +1088,10 @@ local r,i,p,A,f,a;
   # is the group in the mappings families cache?
   f:=FamiliesOfGeneralMappingsAndRanges(FamilyObj(OneOfPcgs(pcgs)));
   i:=1;
-  atomic readonly GENERAL_MAPPING_REGION do
+  # This needs to be atomic readwrite because the method
+  # for Length prunes entries off the end of weak pointer
+  # list.
+  atomic readwrite GENERAL_MAPPING_REGION do
     while i<=Length(f) do
       a:=ElmWPObj(f,i);
       if a<>fail and IsBound(a!.DefiningPcgs) 
