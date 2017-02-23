@@ -62,13 +62,13 @@ InstallMethod( \in,
 ##
 #M  Random( Rationals ) . . . . . . . . . . . . . . . . . . . random rational
 ##
-InstallMethod( Random,
-    "for Rationals",
-    [ IsRationals ],
-    function( Rationals )
+InstallMethodWithRandomSource( Random,
+    "for a random source and Rationals",
+    [ IsRandomSource, IsRationals ],
+    function( rs, Rationals )
     local den;
-    repeat den := Random( Integers ); until den <> 0;
-    return Random( Integers ) / den;
+    repeat den := Random( rs, Integers ); until den <> 0;
+    return Random( rs, Integers ) / den;
     end );
 
 
