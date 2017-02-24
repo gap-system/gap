@@ -387,12 +387,6 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
-*V  SyLastMacErrorNo . . . . . . . . . . . . . .last error number, Macintosh
-*/
-
-
-/****************************************************************************
-**
 *V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
 */
 extern Int SyLastErrorNo;

@@ -65,9 +65,8 @@ The return value is the number of streams that are ready, this may be
 that are not yet ready are replaced by <K>fail</K> in this function. So 
 the lists are changed!
 <P/>
-This function is not available on the Macintosh architecture and is
-only available if your operating system has <C>select</C>, which is detected
-during compilation of &GAP;.
+This function is only available if your operating system has <C>select</C>,
+which is detected during compilation of &GAP;.
 </Description>
 </ManSection>
 
@@ -251,9 +250,8 @@ characters and never deliver one.
 <Heading>Handling of Streams in the Background</Heading>
 
 This section describes a feature of the &GAP; kernel that can be used
-to handle pending streams somehow <Q>in the background</Q>. This is currently
-not available on the Macintosh architecture and only on operating
-systems that have <C>select</C>.
+to handle pending streams somehow <Q>in the background</Q>. This is
+only available on operating systems that have <C>select</C>.
 <P/>
 Right before &GAP; reads a keypress from the keyboard it calls a little
 subroutine that can handle streams that are ready to be read or ready to
