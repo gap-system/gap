@@ -16,6 +16,12 @@ addons:
 matrix:
   include:
     # 64bit linux builds with GCC
+    # We need to ensure that we run at least one test with no coverage,
+    # as coverage enables the ReproducibleBehaviour user option.
+    - os: linux
+      env: TEST_SUITE=testinstall NO_COVERAGE=defined
+      compiler: gcc
+
     - os: linux
       env: TEST_SUITE=testinstall
       compiler: gcc

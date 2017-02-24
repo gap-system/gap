@@ -8,6 +8,13 @@
 
 set -ex
 
+# If we don't care about code coverage, just run the test directly
+if [[ -n ${NO_COVERAGE} ]]
+then
+    bin/gap.sh tst/${TEST_SUITE}.g
+    exit 0
+fi
+
 if [[ "${TEST_SUITE}" == makemanuals ]]
 then
     make manuals
@@ -56,6 +63,7 @@ testmanuals)
     bin/gap.sh -q tst/extractmanuals.g
 
     bin/gap.sh -q <<GAPInput
+        SetUserPreference("ReproducibleBehaviour", true);
         Read("tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
         QUIT_GAP(0);
@@ -71,6 +79,7 @@ GAPInput
 
     # while we are at it, also test the workspace code
     bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
+        SetUserPreference("ReproducibleBehaviour", true);
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
 GAPInput
@@ -90,7 +99,9 @@ GAPInput
         exit 1
     fi
 
-    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage tst/${TEST_SUITE}.g
+    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage \
+               <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
+               tst/${TEST_SUITE}.g
 esac;
 
 # generate library coverage reports
