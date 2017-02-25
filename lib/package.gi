@@ -1744,7 +1744,7 @@ DeclareUserPreference( rec(
   description:= [
     "A list of names of packages which should be loaded during startup."
     ],
-  default:= [ "autpgrp", "ctbllib", "factint", "fga", "irredsol", "tomlib" ],
+  default:= [ "atlasrep", "autpgrp", "factint", "fga", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
