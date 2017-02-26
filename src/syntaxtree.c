@@ -136,12 +136,7 @@ Obj SyntaxTreeFunccall(Obj result, Expr expr)
     Obj args, argi;
     UInt narg, i;
 
-    /* TODO: If this is a gvar ref, put name? */
     func = SyntaxTreeCompiler( FUNC_CALL(expr) );
-
-    /*
-    if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
-    } */
     AssPRec(result, RNamName("function"), func);
 
     /* compile the argument expressions                                    */
@@ -158,30 +153,15 @@ Obj SyntaxTreeFunccall(Obj result, Expr expr)
     return result;
 }
 
-/* TODO: FuncCall options */
-Obj SyntaxTreeFunccallOpts(Obj result, Expr expr)
-{
-    Obj opts;
-
-    opts = SyntaxTreeCompiler(ADDR_STAT(expr)[0]);
-    AssPRec(result, RNamName("opts"), opts);
-
-    return result;
-}
-
-/* TODO: again? */
 Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 {
     Obj fexs;
     Obj fexp;
-    Obj func;
 
     fexs = FEXS_FUNC(CURR_FUNC);
     fexp = ELM_PLIST(fexs, ((Int *)ADDR_EXPR(expr))[0]);
 
     SyntaxTreeFunc(result, fexp);
-
-//    AssPRec(result, RNamName("func"), func);
 
     return result;
 }
@@ -190,30 +170,16 @@ Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 Obj SyntaxTreeIntExpr(Obj result, Expr expr)
 {
     Obj value;
-    Int siz;
+    UInt size;
     UInt typ;
-    Int i;
 
     if(IS_INTEXPR(expr)) {
         value = OBJ_INTEXPR(expr);
     } else {
-        siz = SIZE_EXPR(expr) - sizeof(UInt);
+        size = SIZE_EXPR(expr) - sizeof(UInt);
         typ = *(UInt *)ADDR_EXPR(expr);
-        value = C_MAKE_INTEGER_BAG(siz, typ);
-        for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
-#if INTEGER_UNIT_SIZE == 2
-            C_SET_LIMB2(value, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#elif INTEGER_UNIT_SIZE == 4
-            C_SET_LIMB4(value, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#elif INTEGER_UNIT_SIZE == 8
-            C_SET_LIMB8(value, i, ((UInt8 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#else
-            #error unsupported INTEGER_UNIT_SIZE
-#endif
-        }
-        if (siz <= 8) {
-            value = C_NORMALIZE_64BIT(value);
-        }
+        value = C_MAKE_INTEGER_BAG(size, typ);
+        memcpy(ADDR_OBJ(value), (void *)(&ADDR_EXPR(expr)[1]), size); 
     }
 
     AssPRec(result, RNamName("value"), value);
@@ -226,7 +192,6 @@ Obj SyntaxTreeCharExpr(Obj result, Expr expr)
     Obj value;
 
     /* TODO: How do I make a character literal? */
-    result = NewSyntaxTreeNode("CharExpr");;
     value = INTOBJ_INT(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("result"), value);
 
@@ -267,8 +232,6 @@ Obj SyntaxTreePermExpr(Obj result, Expr expr)
     return result;
 }
 
-/* TODO: Find out why record and list subexpressions are handled
-   special */
 Obj SyntaxTreeListExpr (Obj result, Expr expr)
 {
     Obj list;
@@ -292,12 +255,6 @@ Obj SyntaxTreeListExpr (Obj result, Expr expr)
     AssPRec(result, RNamName("list"), list);
 
     return result;
-}
-
-/* TODO: Deal With tilde */
-Obj SyntaxTreeListTildeExpr(Obj result, Expr expr)
-{
-    return SyntaxTreeListExpr(result, expr);
 }
 
 Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
@@ -337,6 +294,7 @@ Obj SyntaxTreeStringExpr(Obj result, Expr expr)
     return result;
 }
 
+/* TODO: Maybe return a record or a list with key/value pairs? */
 Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 {
     Obj key;
@@ -377,11 +335,16 @@ Obj SyntaxTreeRecExpr(Obj result, Expr expr)
     return result;
 }
 
-/* A tilde just refers to the structure it is used in */
-/* But this seems to be an expression that *contains* a tilde? */
-Obj SyntaxTreeRecTildeExpr(Obj result, Expr expr)
+/* TODO: Make this work */
+Obj SyntaxTreeFloatEager(Obj result, Expr expr)
 {
-    return SyntaxTreeRecExpr(result, expr);
+    return result;
+}
+
+/* TODO: Make this work */
+Obj SyntaxTreeFloatLazy(Obj result, Expr expr)
+{
+    return result;
 }
 
 Obj SyntaxTreeRefLVar(Obj result, Expr expr)
@@ -391,12 +354,10 @@ Obj SyntaxTreeRefLVar(Obj result, Expr expr)
     if ( IS_REFLVAR(expr) ) {
         lvar = LVAR_REFLVAR(expr);
     } else {
-        lvar = -1;
-//        lvar = (LVar)(ADDR_EXPR(expr)[0]);
+        lvar = (LVar)(ADDR_EXPR(expr)[0]);
     }
 
-    /* TODO: Local variable references */
-    AssPRec(result, RNamName("variable"), INTOBJ_INT(lvar));
+    AssPRec(result, RNamName("lvar"), INTOBJ_INT(lvar));
 
     return result;
 }
@@ -416,19 +377,6 @@ Obj SyntaxTreeRefHVar(Obj result, Expr expr)
 {
     HVar hvar;
 
-    /*
-     * TODO: Deal with higher variables
-     */
-    hvar = (HVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
-
-    return result;
-}
-
-Obj SyntaxTreeIsbHVar(Obj result, Expr expr)
-{
-    HVar hvar;
-
     hvar = (HVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("variable"), INTOBJ_INT(hvar));
 
@@ -441,66 +389,6 @@ Obj SyntaxTreeRefGVar(Obj result, Expr expr)
 
     gvar = (GVar)(ADDR_EXPR(expr)[0]);
     AssPRec(result, RNamName("name"), NameGVarObj(gvar));
-
-    return result;
-}
-
-Obj SyntaxTreeRefGVarFopy(Obj result, Expr expr)
-{
-    GVar gvar;
-
-    gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("name"), NameGVarObj(gvar));
-
-    return result;
-}
-
-Obj SyntaxTreeIsbGVar(Obj result, Expr expr)
-{
-    GVar gvar;
-
-    gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    AssPRec(result, RNamName("name"), NameGVarObj(gvar));
-
-    return result;
-}
-
-/* TODO: Options? */
-Obj SyntaxTreeProccall(Obj result, Stat stat)
-{
-    Obj args;
-    Obj func;
-    UInt narg;
-    UInt i;
-
-    /* TODO: What to do about this? */
-    /* compile the reference to the function                               */
-    if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
-        /* mhm */
-        func = SyntaxTreeRefGVarFopy( result, FUNC_CALL(stat) );
-    } else {
-        func = SyntaxTreeCompiler( FUNC_CALL(stat) );
-    }
-//    AssPRec(result, RNamName("function"), func);
-
-    /* compile the argument expressions                                    */
-    narg = NARG_SIZE_CALL(SIZE_STAT(stat));
-    args = NEW_PLIST(T_PLIST, narg);
-    SET_LEN_PLIST(args, narg);
-    for ( i = 1; i <= narg; i++ ) {
-        SET_ELM_PLIST(args, i, SyntaxTreeCompiler( ARGI_CALL(stat,i) ) );
-    }
-    AssPRec(result, RNamName("args"), args);
-    return result;
-}
-
-Obj SyntaxTreeProccallOpts(Obj result, Stat stat)
-{
-    Obj opts;
-
-    opts = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-
-    AssPRec(result, RNamName("opts"), opts);
 
     return result;
 }
@@ -622,7 +510,6 @@ Obj SyntaxTreeRepeat(Obj result, Stat stat)
     return result;
 }
 
-/* TODO: make sure this works correctly */
 Obj SyntaxTreeAssLVar(Obj result, Stat stat)
 {
     Obj lvar;
@@ -637,16 +524,6 @@ Obj SyntaxTreeAssLVar(Obj result, Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbLVar(Obj result, Stat stat)
-{
-    Obj lvar;
-
-    lvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
-    AssPRec(result, RNamName("lvar"), lvar);
-
-    return result;
-}
-
 Obj SyntaxTreeAssHVar(Obj result, Stat stat)
 {
     Obj hvar;
@@ -657,16 +534,6 @@ Obj SyntaxTreeAssHVar(Obj result, Stat stat)
 
     AssPRec(result, RNamName("hvar"), hvar);
     AssPRec(result, RNamName("rhs"), rhs);
-
-    return result;
-}
-
-Obj SyntaxTreeUnbHVar(Obj result, Stat stat)
-{
-    Obj hvar;
-
-    hvar = INTOBJ_INT(ADDR_STAT(stat)[0]);
-    AssPRec(result, RNamName("hvar"), hvar);
 
     return result;
 }
@@ -691,40 +558,6 @@ Obj SyntaxTreeUnbGVar(Obj result, Stat stat)
 
     gvar = NameGVarObj(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("gvar"), gvar);
-
-    return result;
-}
-
-Obj SyntaxTreeAssList(Obj result, Stat stat)
-{
-    Obj list;
-    Obj pos;
-    Obj rhs;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    rhs = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-    AssPRec(result, RNamName("rhs"), rhs);
-
-    return result;
-}
-
-Obj SyntaxTreeAsssList(Obj result, Stat stat)
-{
-    Obj list;
-    Obj poss;
-    Obj rhss;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    rhss = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("poss"), poss);
-    AssPRec(result, RNamName("rhss"), rhss);
 
     return result;
 }
@@ -765,20 +598,6 @@ Obj SyntaxTreeAsssListLev(Obj result, Stat stat)
     AssPRec(result, RNamName("poss"), poss);
     AssPRec(result, RNamName("rhss"), rhss);
     AssPRec(result, RNamName("level"), INTOBJ_INT(level));
-
-    return result;
-}
-
-Obj SyntaxTreeUnbList(Obj result, Stat stat)
-{
-    Obj list;
-    Obj pos;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
 
     return result;
 }
@@ -846,40 +665,6 @@ Obj SyntaxTreeUnbRecExpr(Obj result, Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssPosObj(Obj result, Stat stat)
-{
-    Obj list;
-    Obj pos;
-    Obj rhs;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    rhs = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-    AssPRec(result, RNamName("rhs"), rhs);
-
-    return result;
-}
-
-Obj SyntaxTreeAsssPosObj(Obj result, Stat stat)
-{
-    Obj list;
-    Obj poss;
-    Obj rhss;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    poss = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    rhss = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("poss"), poss);
-    AssPRec(result, RNamName("rhss"), rhss);
-
-    return result;
-}
-
 Obj SyntaxTreeAssPosObjLev(Obj result, Stat stat)
 {
     Obj lists;
@@ -920,20 +705,6 @@ Obj SyntaxTreeAsssPosObjLev(Obj result, Stat stat)
     return result;
 }
 
-Obj SyntaxTreeUnbPosObj(Obj result, Stat stat)
-{
-    Obj list;
-    Obj pos;
-
-    list = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    pos = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-
-    AssPRec(result, RNamName("list"), list);
-    AssPRec(result, RNamName("pos"), pos);
-
-    return result;
-}
-
 Obj SyntaxTreeAssComObjName(Obj result, Stat stat)
 {
     Obj record;
@@ -951,23 +722,6 @@ Obj SyntaxTreeAssComObjName(Obj result, Stat stat)
     return result;
 }
 
-Obj SyntaxTreeAssComObjExpr(Obj result, Stat stat)
-{
-    Obj record;
-    Obj rnam;
-    Obj rhs;
-
-    record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    rhs = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
-    AssPRec(result, RNamName("rhs"), rhs);
-
-    return result;
-}
-
 Obj SyntaxTreeUnbComObjName(Obj result, Stat stat)
 {
     Obj record;
@@ -978,20 +732,6 @@ Obj SyntaxTreeUnbComObjName(Obj result, Stat stat)
 
     AssPRec(result, RNamName("record"), record);
     AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
-
-    return result;
-}
-
-Obj SyntaxTreeUnbComObjExpr(Obj result, Stat stat)
-{
-    Obj record;
-    Obj rnam;
-
-    record = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    rnam = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), rnam);
 
     return result;
 }
@@ -1020,37 +760,6 @@ Obj SyntaxTreeInfo(Obj result, Stat stat)
         CHANGED_BAG(lst);
     }
     AssPRec(result, RNamName("args"), lst);
-
-    return result;
-}
-
-Obj SyntaxTreeAssert2(Obj result, Stat stat)
-{
-    Obj lev;
-    Obj cond;
-
-    lev = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    cond = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-
-    AssPRec(result, RNamName("level"), lev);
-    AssPRec(result, RNamName("condition"), cond);
-
-    return result;
-}
-
-Obj SyntaxTreeAssert3(Obj result, Stat stat)
-{
-    Obj lev;
-    Obj cond;
-    Obj msg;
-
-    lev = SyntaxTreeCompiler( ADDR_STAT(stat)[0] );
-    cond = SyntaxTreeCompiler( ADDR_STAT(stat)[1] );
-    msg = SyntaxTreeCompiler( ADDR_STAT(stat)[2] );
-
-    AssPRec(result, RNamName("level"), lev);
-    AssPRec(result, RNamName("condition"), cond);
-    AssPRec(result, RNamName("message"), msg);
 
     return result;
 }
@@ -1122,18 +831,18 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     return result;
 }
 
-/* TODO: Make this the table for all compilers? */
-static CompilerT AllCompilers[256];
+/* TODO: Make this the table for all compilers?
+   static CompilerT AllCompilers[256]; */
 
 static const CompilerT StatCompilers[] = {
-    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeProccall),
-    COMPILER(T_PROCCALL_XARGS, SyntaxTreeProccall),
+    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
+    COMPILER(T_PROCCALL_XARGS, SyntaxTreeFunccall),
 
     COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
@@ -1142,75 +851,75 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_SEQ_STAT5, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT6, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT7, SyntaxTreeSeqStat),
-    COMPILER(T_IF, SyntaxTreeDefaultCompiler),
-    COMPILER(T_IF_ELSE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_IF_ELIF, SyntaxTreeDefaultCompiler),
-    COMPILER(T_IF_ELIF_ELSE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR2, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR3, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR_RANGE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR_RANGE2, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FOR_RANGE3, SyntaxTreeDefaultCompiler),
-    COMPILER(T_WHILE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_WHILE2, SyntaxTreeDefaultCompiler),
-    COMPILER(T_WHILE3, SyntaxTreeDefaultCompiler),
-    COMPILER(T_REPEAT, SyntaxTreeDefaultCompiler),
-    COMPILER(T_REPEAT2, SyntaxTreeDefaultCompiler),
-    COMPILER(T_REPEAT3, SyntaxTreeDefaultCompiler),
+    COMPILER(T_IF, SyntaxTreeIf),
+    COMPILER(T_IF_ELSE, SyntaxTreeIf),
+    COMPILER(T_IF_ELIF, SyntaxTreeIf),
+    COMPILER(T_IF_ELIF_ELSE, SyntaxTreeIf),
+    COMPILER(T_FOR, SyntaxTreeFor),
+    COMPILER(T_FOR2, SyntaxTreeFor),
+    COMPILER(T_FOR3, SyntaxTreeFor),
+    COMPILER(T_FOR_RANGE, SyntaxTreeFor),
+    COMPILER(T_FOR_RANGE2, SyntaxTreeFor),
+    COMPILER(T_FOR_RANGE3, SyntaxTreeFor),
+    COMPILER(T_WHILE, SyntaxTreeWhile),
+    COMPILER(T_WHILE2, SyntaxTreeWhile),
+    COMPILER(T_WHILE3, SyntaxTreeWhile),
+    COMPILER(T_REPEAT, SyntaxTreeRepeat),
+    COMPILER(T_REPEAT2, SyntaxTreeRepeat),
+    COMPILER(T_REPEAT3, SyntaxTreeRepeat),
     COMPILER(T_BREAK, SyntaxTreeDefaultCompiler),
     COMPILER(T_CONTINUE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_RETURN_OBJ, SyntaxTreeDefaultCompiler),
+    COMPILER(T_RETURN_OBJ, SyntaxTreeDefaultCompiler, "obj"),
     COMPILER(T_RETURN_VOID, SyntaxTreeDefaultCompiler),
 
-    COMPILER(T_ASS_LVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_01, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_02, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_03, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_04, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_05, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_06, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_07, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_08, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_09, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_10, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_11, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_12, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_13, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_14, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_15, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LVAR_16, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_LVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_HVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_HVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_GVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_GVAR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_LIST, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASSS_LIST, SyntaxTreeDefaultCompiler),
+    COMPILER(T_ASS_LVAR, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_01, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_02, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_03, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_04, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_05, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_06, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_07, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_08, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_09, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_10, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_11, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_12, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_13, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_14, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_15, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_ASS_LVAR_16, SyntaxTreeAssLVar, "lvar", "rhs"),
+    COMPILER(T_UNB_LVAR, SyntaxTreeRefLVar),
+    COMPILER(T_ASS_HVAR, SyntaxTreeAssHVar),
+    COMPILER(T_UNB_HVAR, SyntaxTreeRefHVar),
+    COMPILER(T_ASS_GVAR, SyntaxTreeAssGVar),
+    COMPILER(T_UNB_GVAR, SyntaxTreeRefGVar),
+    COMPILER(T_ASS_LIST, SyntaxTreeDefaultCompiler, "list", "pos", "rhs"),
+    COMPILER(T_ASSS_LIST, SyntaxTreeDefaultCompiler, "list", "poss", "rhss"),
     COMPILER(T_ASS_LIST_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASSS_LIST_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_UNB_LIST, SyntaxTreeDefaultCompiler, "list", "pos"),
     COMPILER(T_ASS_REC_NAME, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASS_REC_EXPR, SyntaxTreeDefaultCompiler, "record", "expression", "rhs"),
     COMPILER(T_UNB_REC_NAME, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_REC_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_POSOBJ, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASSS_POSOBJ, SyntaxTreeDefaultCompiler),
+    COMPILER(T_UNB_REC_EXPR, SyntaxTreeDefaultCompiler, "record", "expression"),
+    COMPILER(T_ASS_POSOBJ, SyntaxTreeDefaultCompiler, "posobj", "pos", "rhs"),
+    COMPILER(T_ASSS_POSOBJ, SyntaxTreeDefaultCompiler, "posobj", "poss", "rhss"),
     COMPILER(T_ASS_POSOBJ_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASSS_POSOBJ_LEV, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_POSOBJ, SyntaxTreeDefaultCompiler),
+    COMPILER(T_UNB_POSOBJ, SyntaxTreeDefaultCompiler, "posobj", "pos"),
     COMPILER(T_ASS_COMOBJ_NAME, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASS_COMOBJ_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_ASS_COMOBJ_EXPR, SyntaxTreeDefaultCompiler, "comobj", "expression", "rhs"),
     COMPILER(T_UNB_COMOBJ_NAME, SyntaxTreeDefaultCompiler),
-    COMPILER(T_UNB_COMOBJ_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_UNB_COMOBJ_EXPR, SyntaxTreeDefaultCompiler, "comobj", "expression"),
 
-    COMPILER(T_INFO, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASSERT_2ARGS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_ASSERT_3ARGS, SyntaxTreeDefaultCompiler),
+    COMPILER(T_INFO, SyntaxTreeInfo),
+    COMPILER(T_ASSERT_2ARGS, SyntaxTreeDefaultCompiler, "level", "condition"),
+    COMPILER(T_ASSERT_3ARGS, SyntaxTreeDefaultCompiler, "level", "condition", "message"),
 
     COMPILER(T_EMPTY, SyntaxTreeDefaultCompiler),
 
-    COMPILER(T_PROCCALL_OPTS, SyntaxTreeDefaultCompiler),
+    COMPILER(T_PROCCALL_OPTS, SyntaxTreeDefaultCompiler, "opts", "call"),
 
     COMPILER(T_ATOMIC, SyntaxTreeDefaultCompiler),
 };
@@ -1225,7 +934,7 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_FUNCCALL_6ARGS, SyntaxTreeFunccall),
     COMPILER(T_FUNCCALL_XARGS, SyntaxTreeFunccall),
 
-    COMPILER(T_FUNC_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_FUNC_EXPR, SyntaxTreeFuncExpr),
 
     COMPILER(T_OR, SyntaxTreeDefaultCompiler, "left", "right"),
     COMPILER(T_AND, SyntaxTreeDefaultCompiler, "left", "right"),
@@ -1246,22 +955,23 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_MOD, SyntaxTreeDefaultCompiler, "left", "right"),
     COMPILER(T_POW, SyntaxTreeDefaultCompiler, "left", "right"),
 
-    COMPILER(T_INTEXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_INT_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_INTEXPR, SyntaxTreeIntExpr),
+    COMPILER(T_INT_EXPR, SyntaxTreeIntExpr),
     COMPILER(T_TRUE_EXPR, SyntaxTreeDefaultCompiler),
     COMPILER(T_FALSE_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_CHAR_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_PERM_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_CHAR_EXPR, SyntaxTreeCharExpr),
+    COMPILER(T_PERM_EXPR, SyntaxTreePermExpr),
     COMPILER(T_PERM_CYCLE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_LIST_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_LIST_TILD_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_RANGE_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_STRING_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_REC_EXPR, SyntaxTreeDefaultCompiler),
-    COMPILER(T_REC_TILD_EXPR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_LIST_EXPR, SyntaxTreeListExpr),
+    COMPILER(T_LIST_TILD_EXPR, SyntaxTreeListExpr),
+    COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr),
+    COMPILER(T_STRING_EXPR, SyntaxTreeStringExpr),
+    COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
+    COMPILER(T_REC_TILD_EXPR, SyntaxTreeRecExpr),
 
-    COMPILER(T_REFLVAR, SyntaxTreeDefaultCompiler),
+    COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
 
+    /* TODO: Are these, or were these, REFLVAR0-15? */
     COMPILER(128 + 41, SyntaxTreeDefaultCompiler),
     COMPILER(128 + 42, SyntaxTreeDefaultCompiler),
     COMPILER(128 + 43, SyntaxTreeDefaultCompiler),
@@ -1280,11 +990,11 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(128 + 56, SyntaxTreeDefaultCompiler),
     COMPILER(128 + 57, SyntaxTreeDefaultCompiler),
 
-    COMPILER(T_ISB_LVAR, SyntaxTreeDefaultCompiler, "var"),
-    COMPILER(T_REF_HVAR, SyntaxTreeDefaultCompiler, "var"),
-    COMPILER(T_ISB_HVAR, SyntaxTreeDefaultCompiler, "var"),
-    COMPILER(T_REF_GVAR, SyntaxTreeDefaultCompiler, "var"),
-    COMPILER(T_ISB_GVAR, SyntaxTreeDefaultCompiler, "var"),
+    COMPILER(T_ISB_LVAR, SyntaxTreeRefLVar, "var"),
+    COMPILER(T_REF_HVAR, SyntaxTreeRefHVar, "var"),
+    COMPILER(T_ISB_HVAR, SyntaxTreeRefHVar, "var"),
+    COMPILER(T_REF_GVAR, SyntaxTreeRefGVar, "var"),
+    COMPILER(T_ISB_GVAR, SyntaxTreeRefGVar, "var"),
     COMPILER(T_ELM_LIST, SyntaxTreeDefaultCompiler, "list", "pos"),
     COMPILER(T_ELMS_LIST, SyntaxTreeDefaultCompiler, "list", "poss"),
     COMPILER(T_ELM_LIST_LEV, SyntaxTreeDefaultCompiler, "lists", "pos", "level"),
@@ -1304,10 +1014,12 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_ISB_COMOBJ_NAME, SyntaxTreeDefaultCompiler, "comobj", "name"),
     COMPILER(T_ISB_COMOBJ_EXPR, SyntaxTreeDefaultCompiler, "comobj", "expression"),
 
-    COMPILER(T_FUNCCALL_OPTS, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeDefaultCompiler),
-    COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeDefaultCompiler),
+    COMPILER(T_FUNCCALL_OPTS, SyntaxTreeDefaultCompiler, "opts", "call"),
 
+    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeFloatEager),
+    COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
+
+    /* TODO: What do these do? */
     COMPILER(T_ELM2_LIST, SyntaxTreeDefaultCompiler),
     COMPILER(T_ELMX_LIST, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASS2_LIST, SyntaxTreeDefaultCompiler),
@@ -1317,12 +1029,14 @@ static const CompilerT ExprCompilers[] = {
 Obj FuncSYNTAX_TREE ( Obj self, Obj func )
 {
     Obj result;
-    Obj string;
 
-    C_NEW_STRING_DYN(string, "DummyFunction");
+    if(!IS_FUNC(func)) {
+        ErrorQuit(
+            "SYNTAX_TREE: <func> must be a function (not a %s)",
+            (Int)TNAM_OBJ(func), 0L);
+    }
 
-    result = NEW_PREC(1);
-    AssPRec(result, RNamName("type"), string);
+    result = NewSyntaxTreeNode("T_FUNC_EXPR");
     return SyntaxTreeFunc(result, func);
 }
 
