@@ -117,7 +117,7 @@ Obj SyntaxTreeFunccall(Obj result, Expr expr)
     func = SyntaxTreeCompiler(FUNC_CALL(expr));
     AssPRec(result, RNamName("function"), func);
 
-    /* compile the argument expressions                                    */
+    /* compile the argument expressions */
     narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
     args = NEW_PLIST(T_PLIST, narg);
     SET_LEN_PLIST(args, narg);
@@ -811,7 +811,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
         CHANGED_BAG(locnams);
     }
 
-    /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work)  */
+    /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work) */
     SWITCH_TO_NEW_LVARS(func, narg, nloc, oldFrame);
     stats = SyntaxTreeCompiler(FIRST_STAT_CURR_FUNC);
     SWITCH_TO_OLD_LVARS(oldFrame);
@@ -1087,26 +1087,26 @@ static Int PostRestore(StructInitInfo * module)
 
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    /* init filters and functions */
     InitGVarFuncsFromTable(GVarFuncs);
 
-    /* return success                                                      */
+    /* return success */
     return PostRestore(module);
 }
 
 static StructInitInfo module = {
-    MODULE_BUILTIN, /* type                           */
-    "syntaxtree",   /* name                           */
-    0,              /* revision entry of c file       */
-    0,              /* revision entry of h file       */
-    0,              /* version                        */
-    0,              /* crc                            */
-    InitKernel,     /* initKernel                     */
-    InitLibrary,    /* initLibrary                    */
-    0,              /* checkInit                      */
-    0,              /* preSave                        */
-    0,              /* postSave                       */
-    PostRestore     /* postRestore                    */
+    MODULE_BUILTIN, /* type */
+    "syntaxtree",   /* name */
+    0,              /* revision entry of c file */
+    0,              /* revision entry of h file */
+    0,              /* version */
+    0,              /* crc */
+    InitKernel,     /* initKernel */
+    InitLibrary,    /* initLibrary */
+    0,              /* checkInit */
+    0,              /* preSave */
+    0,              /* postSave */
+    PostRestore     /* postRestore */
 };
 
 StructInitInfo * InitInfoSyntaxTree(void)
