@@ -378,6 +378,20 @@ Obj SyntaxTreeRefGVar(Obj result, Expr expr)
     return result;
 }
 
+Obj SyntaxTreeElmRecName(Obj result, Expr expr)
+{
+    Obj record;
+    Obj rnam;
+
+    record = SyntaxTreeCompiler(ADDR_EXPR(expr)[0]);
+    rnam = NAME_OBJ_RNAM(ADDR_EXPR(expr)[1]);
+
+    AssPRec(result, RNamName("record"), record);
+    AssPRec(result, RNamName("rnam"), rnam);
+
+    return result;
+}
+
 Obj SyntaxTreeSeqStat(Obj result, Stat stat)
 {
     Obj  list;
@@ -596,12 +610,11 @@ Obj SyntaxTreeAssRecName(Obj result, Stat stat)
     Obj rhs;
 
     record = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-    /* TODO: Record Access */
-    rnam = INTOBJ_INT(ADDR_STAT(stat)[1]);
+    rnam = NAME_OBJ_RNAM(ADDR_STAT(stat)[1]);
     rhs = SyntaxTreeCompiler(ADDR_STAT(stat)[2]);
 
     AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+    AssPRec(result, RNamName("rnam"), rnam);
     AssPRec(result, RNamName("rhs"), rhs);
 
     return result;
@@ -630,24 +643,10 @@ Obj SyntaxTreeUnbRecName(Obj result, Stat stat)
     Obj rnam;
 
     record = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-    rnam = INTOBJ_INT(ADDR_STAT(stat)[1]);
+    rnam = NAME_OBJ_RNAM(ADDR_STAT(stat)[1]);
 
     AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
-
-    return result;
-}
-
-Obj SyntaxTreeUnbRecExpr(Obj result, Stat stat)
-{
-    Obj record;
-    Obj rnam;
-
-    record = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-    rnam = SyntaxTreeCompiler(ADDR_STAT(stat)[1]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
+    AssPRec(result, RNamName("rnam"), rnam);
 
     return result;
 }
@@ -688,37 +687,6 @@ Obj SyntaxTreeAsssPosObjLev(Obj result, Stat stat)
     AssPRec(result, RNamName("poss"), poss);
     AssPRec(result, RNamName("rhss"), rhss);
     AssPRec(result, RNamName("level"), INTOBJ_INT(level));
-
-    return result;
-}
-
-Obj SyntaxTreeAssComObjName(Obj result, Stat stat)
-{
-    Obj  record;
-    UInt rnam;
-    Obj  rhs;
-
-    record = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
-    rhs = SyntaxTreeCompiler(ADDR_STAT(stat)[2]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
-    AssPRec(result, RNamName("rhs"), rhs);
-
-    return result;
-}
-
-Obj SyntaxTreeUnbComObjName(Obj result, Stat stat)
-{
-    Obj  record;
-    UInt rnam;
-
-    record = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
-
-    AssPRec(result, RNamName("record"), record);
-    AssPRec(result, RNamName("rnam"), INTOBJ_INT(rnam));
 
     return result;
 }
@@ -883,7 +851,7 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_ASS_LIST_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_ASSS_LIST_LEV, SyntaxTreeDefaultCompiler),
     COMPILER(T_UNB_LIST, SyntaxTreeDefaultCompiler, "list", "pos"),
-    COMPILER(T_ASS_REC_NAME, SyntaxTreeDefaultCompiler),
+    COMPILER(T_ASS_REC_NAME, SyntaxTreeAssRecName),
     COMPILER(T_ASS_REC_EXPR,
              SyntaxTreeDefaultCompiler,
              "record",
@@ -1001,10 +969,10 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(
         T_ELMS_LIST_LEV, SyntaxTreeDefaultCompiler, "lists", "poss", "level"),
     COMPILER(T_ISB_LIST, SyntaxTreeDefaultCompiler, "list", "pos"),
-    COMPILER(T_ELM_REC_NAME, SyntaxTreeDefaultCompiler, "record", "name"),
+    COMPILER(T_ELM_REC_NAME, SyntaxTreeElmRecName, "record", "name"),
     COMPILER(
         T_ELM_REC_EXPR, SyntaxTreeDefaultCompiler, "record", "expression"),
-    COMPILER(T_ISB_REC_NAME, SyntaxTreeDefaultCompiler, "record", "name"),
+    COMPILER(T_ISB_REC_NAME, SyntaxTreeElmRecName, "record", "name"),
     COMPILER(
         T_ISB_REC_EXPR, SyntaxTreeDefaultCompiler, "record", "expression"),
     COMPILER(T_ELM_POSOBJ, SyntaxTreeDefaultCompiler, "posobj", "pos"),
@@ -1020,10 +988,10 @@ static const CompilerT ExprCompilers[] = {
              "poss",
              "level"),
     COMPILER(T_ISB_POSOBJ, SyntaxTreeDefaultCompiler, "posobj", "pos"),
-    COMPILER(T_ELM_COMOBJ_NAME, SyntaxTreeDefaultCompiler, "comobj", "name"),
+    COMPILER(T_ELM_COMOBJ_NAME, SyntaxTreeElmRecName, "comobj", "name"),
     COMPILER(
         T_ELM_COMOBJ_EXPR, SyntaxTreeDefaultCompiler, "comobj", "expression"),
-    COMPILER(T_ISB_COMOBJ_NAME, SyntaxTreeDefaultCompiler, "comobj", "name"),
+    COMPILER(T_ISB_COMOBJ_NAME, SyntaxTreeElmRecName, "comobj", "name"),
     COMPILER(
         T_ISB_COMOBJ_EXPR, SyntaxTreeDefaultCompiler, "comobj", "expression"),
 
