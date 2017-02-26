@@ -1062,17 +1062,18 @@ static Int InitKernel(StructInitInfo * module)
     /* init filters and functions */
     InitHdlrFuncsFromTable(GVarFuncs);
 
+    /* TODO: Needed? Cleaner? Remove? */
     /* check TNUMS table */
-    for (int i = 0; i < LAST_STAT_TNUM; i++) {
+    for (UInt i = 0; i < LAST_STAT_TNUM; i++) {
         if (!(StatCompilers[i].tnum == i)) {
-            fprintf(stderr, "Warning, statement tnum desync %d %d %s\n",
+            fprintf(stderr, "Warning, statement tnum desync %jd %jd %s\n",
                     StatCompilers[i].tnum, i, StatCompilers[i].name);
         }
     }
 
-    for (int i = FIRST_EXPR_TNUM; i < LAST_EXPR_TNUM; i++) {
+    for (UInt i = FIRST_EXPR_TNUM; i < LAST_EXPR_TNUM; i++) {
         if (!(ExprCompilers[i - FIRST_EXPR_TNUM].tnum == i)) {
-            fprintf(stderr, "Warning, expression tnum desync %d %d %s\n",
+            fprintf(stderr, "Warning, expression tnum desync %jd %jd %s\n",
                     ExprCompilers[i - FIRST_EXPR_TNUM].tnum, i,
                     ExprCompilers[i - FIRST_EXPR_TNUM].name);
         }
