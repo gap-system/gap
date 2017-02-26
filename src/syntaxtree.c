@@ -5,6 +5,8 @@
 **
 ** TODO:
 **  - Expressions vs Statements
+**  - Documentation
+**  - Compiler functions per argument (will make more separate functions go away)
 */
 #include "system.h"
 #include <stdarg.h>
@@ -86,6 +88,7 @@ static Obj SyntaxTreeCompiler(Expr expr)
 
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 {
+    int       i;
     UInt      tnum;
     CompilerT comp;
 
@@ -101,7 +104,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
         // error
     }
 
-    for (int i = 0; i < comp.arity; i++) {
+    for (i = 0; i < comp.arity; i++) {
         AssPRec(result, RNamName(comp.argnames[i]),
                 SyntaxTreeCompiler(ADDR_EXPR(expr)[i]));
     }
@@ -1027,19 +1030,21 @@ static StructGVarFunc GVarFuncs[] = { { "SYNTAX_TREE", 1, "func",
 
 static Int InitKernel(StructInitInfo * module)
 {
+    UInt i;
+
     /* init filters and functions */
     InitHdlrFuncsFromTable(GVarFuncs);
 
     /* TODO: Needed? Cleaner? Remove? */
     /* check TNUMS table */
-    for (UInt i = 0; i < LAST_STAT_TNUM; i++) {
+    for (i = 0; i < LAST_STAT_TNUM; i++) {
         if (!(StatCompilers[i].tnum == i)) {
             fprintf(stderr, "Warning, statement tnum desync %jd %jd %s\n",
                     StatCompilers[i].tnum, i, StatCompilers[i].name);
         }
     }
 
-    for (UInt i = FIRST_EXPR_TNUM; i < LAST_EXPR_TNUM; i++) {
+    for (i = FIRST_EXPR_TNUM; i < LAST_EXPR_TNUM; i++) {
         if (!(ExprCompilers[i - FIRST_EXPR_TNUM].tnum == i)) {
             fprintf(stderr, "Warning, expression tnum desync %jd %jd %s\n",
                     ExprCompilers[i - FIRST_EXPR_TNUM].tnum, i,
