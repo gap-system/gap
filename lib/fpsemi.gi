@@ -151,6 +151,10 @@ function( F, rels )
 			fi;
 		od;
 
+    if not (HasIsFreeSemigroup(F) and IsFreeSemigroup(F)) then
+      Error("first argument <F> should be a free semigroup");
+    fi;
+
     # Create a new family.
     fam := NewFamily( "FamilyElementsFpSemigroup", IsElementOfFpSemigroup );
 

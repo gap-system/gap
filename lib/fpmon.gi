@@ -180,6 +180,10 @@ function( F, rels )
       fi;
     od;
 
+    if not (HasIsFreeMonoid(F) and IsFreeMonoid(F)) then
+      Error("first argument <F> should be a free monoid");
+    fi;
+
     # Create a new family.
     fam := NewFamily( "FamilyElementsFpMonoid", IsElementOfFpMonoid);
 
