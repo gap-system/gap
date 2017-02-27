@@ -51,8 +51,12 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
       i:=List(p,x->[(x-A)*(18-x),x]);
       Sort(i);
       p:=i[Length(i)][2]; # best split
-      depths:=Concatenation(Filtered(depths,x->x<=A),[p],
-	        Filtered(depths,x->x>A));
+      if not p in depths then
+	depths:=Concatenation(Filtered(depths,x->x<=A),[p],
+		  Filtered(depths,x->x>A));
+      else
+	good:=false;
+      fi;
     else
       good:=false;
     fi;

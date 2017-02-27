@@ -175,12 +175,16 @@ local clT,	# classes T
       skip,	# skip (if u=ug)
       ug,	# u\cap u^{gen^-1}
       scj,	# size(centralizers[j])
-      dsz;	# Divisors(scj);
+      dsz,	# Divisors(scj);
+      pper,
+      faillim,
+      failcnt;
 
 
   Info(InfoHomClass,1,
        "ConjugacyClassesSubwreath called for almost simple group of size ",
         Size(T));
+  faillim:=Maximum(100,Size(F)/Size(M));
   isdirprod:=Size(M)=Size(autT)^n;
 
   # classes of T
@@ -512,6 +516,7 @@ local clT,	# classes T
     centralizers:=[M];
     centralizers_r:=[cr];
     for i in [1..n] do;
+      failcnt:=0;
       newreps:=[];
       newcent:=[];
       newcent_r:=[];
@@ -666,7 +671,9 @@ local clT,	# classes T
 		  if ppos=fail then
 		    p:=First(select,
 			   i->Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
-		    if p=fail then return fail; fi;
+		    if p=fail then 
+		      return fail;
+		    fi;
                   else
 		    p:=ppos;
 		  fi;
@@ -891,6 +898,7 @@ local clT,	# classes T
 	      " orbit consists of ",Length(orb)," suborbits, iterating");
 
 	      if stabtrue then
+		pper:=false;
 		# we know stabilizer, just need to find orbit. As these are
 		# likely small additions, search in reverse.
 		for p in select do
@@ -919,16 +927,29 @@ local clT,	# classes T
 		      Add(trans,false);
 
 		      RemoveSet(select,p);
+		    elif ppos=fail then
+		      pper:=true;
 		    fi;
 		  od;
 		od;
 
+		if pper then
+		  # trap some weird setup where it does not terminate
+		  failcnt:=failcnt+1;
+		  if failcnt>=1000*faillim then
+		    #Error("fail4");
+		    return fail;
+		  fi;
+		fi;
 
 	      fi;
 	     
 
 	      orpo:=1;
 	      again:=again+1;
+	      if again>1000*faillim then
+	        return fail;
+	      fi;
 	    fi;
 	  od;
 	  Info(InfoHomClass,2,"Stabsize = ",Size(stab),
@@ -1300,6 +1321,7 @@ local cs,	# chief series of G
 	    clF:=ConjugacyClassesSubwreath(F,FM,n,S1,
 		  Action(FM,components[1]),T1,components,emb,proj);
             if clF=fail then
+	      #Error("failer");
 	      # weird error happened -- redo
 	      j:=Random(SymmetricGroup(MovedPoints(G)));
 	      FM:=List(GeneratorsOfGroup(G),x->x^j);
@@ -2221,6 +2243,7 @@ BindGlobal("LiftClassesEATrivRep",
 	p:=LookupDictionary(orpo,img.min);
 	#p:=PositionProperty(norb,x->x.rep=img.min);
 	if p=fail then
+	  return fail;
 	  Error("unknown minimum");
 	elif IsBound(norpo[p]) then
 	  # old point
