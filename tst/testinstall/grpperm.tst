@@ -59,4 +59,8 @@ gap> G := SylowSubgroup(SymmetricGroup(2^7),2);;
 gap> N := Center(G);;
 gap> HasSolvableFactorGroup(G,N);
 true
+gap> g:=PSL(4,5);;
+gap> l:=LowLayerSubgroups(g,3,x->Index(g,x)<=10000);;
+gap> Sum(List(l,x->Index(g,x)));
+89655
 gap> STOP_TEST( "grpperm.tst", 1);
