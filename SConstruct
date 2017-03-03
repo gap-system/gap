@@ -474,7 +474,10 @@ if GAP["mpi"]:
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
-  preprocess = GAP["ward"] + "/bin/addguards2" + \
+  addguards2 = "/bin/addguards2"
+  if os.path.exists(GAP["ward"] + "/bin/addguards2c"):
+    addguards2 = "/bin/addguards2c"
+  preprocess = GAP["ward"] + addguards2 + \
     make_cc_options("-I", include_path) + make_cc_options("-D", defines)
 
 if not GetOption("clean") and not GetOption("help"):
