@@ -98,7 +98,7 @@ DeclareGlobalFunction( "PcgsDirectProduct" );
 ##
 ##  <#GAPDoc Label="SubdirectProduct">
 ##  <ManSection>
-##  <Oper Name="SubdirectProduct" Arg='G, H, Ghom, Hhom'/>
+##  <Func Name="SubdirectProduct" Arg='G, H, Ghom, Hhom'/>
 ##
 ##  <Description>
 ##  constructs the subdirect product of <A>G</A> and <A>H</A> with respect to

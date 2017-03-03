@@ -208,7 +208,7 @@ DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 ##
 ##  <#GAPDoc Label="DoubleCosets">
 ##  <ManSection>
-##  <Oper Name="DoubleCosets" Arg='G, U, V'/>
+##  <Func Name="DoubleCosets" Arg='G, U, V'/>
 ##  <Oper Name="DoubleCosetsNC" Arg='G, U, V'/>
 ##
 ##  <Description>

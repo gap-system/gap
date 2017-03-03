@@ -3465,7 +3465,7 @@ DeclareOperation( "Factorization",
 ##
 ##  <#GAPDoc Label="GrowthFunctionOfGroup">
 ##  <ManSection>
-##  <Oper Name="GrowthFunctionOfGroup" Arg='G'/>
+##  <Attr Name="GrowthFunctionOfGroup" Arg='G'/>
 ##  <Oper Name="GrowthFunctionOfGroup" Arg='G, radius' Label="with word length limit"/>
 ##
 ##  <Description>

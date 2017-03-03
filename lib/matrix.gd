@@ -266,7 +266,7 @@ DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
 ##  <#GAPDoc Label="DeterminantMat">
 ##  <ManSection>
 ##  <Attr Name="DeterminantMat" Arg='mat'/>
-##  <Attr Name="Determinant" Arg='mat'/>
+##  <Oper Name="Determinant" Arg='mat'/>
 ##
 ##  <Description>
 ##  returns the determinant of the square matrix <A>mat</A>.
