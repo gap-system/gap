@@ -525,7 +525,7 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  <#GAPDoc Label="IsDuplicateFree">
 ##  <ManSection>
 ##  <Prop Name="IsDuplicateFree" Arg='obj'/>
-##  <Prop Name="IsDuplicateFreeList" Arg='obj'/>
+##  <Filt Name="IsDuplicateFreeList" Arg='obj'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsDuplicateFree"/> returns <K>true</K> if <A>obj</A> is both a

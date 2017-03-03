@@ -3234,7 +3234,7 @@ DeclareOperation( "CanComputeIsSubset", [IsObject,IsObject] );
 ##
 ##  <#GAPDoc Label="CanComputeSize">
 ##  <ManSection>
-##  <Func Name="CanComputeSize" Arg='dom'/>
+##  <Filt Name="CanComputeSize" Arg='dom'/>
 ##
 ##  <Description>
 ##  This filter indicates that we know that the size of the domain <A>dom</A>

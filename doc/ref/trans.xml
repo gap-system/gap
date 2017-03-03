@@ -675,7 +675,7 @@ gap> PermutationOfImage( f );
 
   <ManSection>
     <Oper Name="PermLeftQuoTransformation" Arg="f, g"/>
-    <Oper Name="PermLeftQuoTransformationNC" Arg="f, g"/>
+    <Func Name="PermLeftQuoTransformationNC" Arg="f, g"/>
     <Returns>A permutation.</Returns>
     <Description>
       Returns the permutation on the image set of <A>f</A> induced by
@@ -1148,7 +1148,7 @@ gap> KernelOfTransformation( f, false );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="InverseOfTransformation" Arg="f"/>
+  <Func Name="InverseOfTransformation" Arg="f"/>
   <Returns>A transformation.</Returns>
   <Description>
     <C>InverseOfTransformation</C> returns a semigroup inverse of the
