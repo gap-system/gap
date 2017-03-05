@@ -2709,16 +2709,18 @@ Obj FuncCOMPONENT_TRANS_INT (Obj self, Obj f, Obj pt) {
 
   //install the points
   if (TNUM_OBJ(f) == T_TRANS2) {
-    ptf2 = ADDR_TRANS2(f);
     do {
       AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
+      ptseen = ADDR_TRANS4(TmpTrans);
+      ptf2 = ADDR_TRANS2(f);
       ptseen[cpt] = 1;
       cpt = ptf2[cpt];
     } while (ptseen[cpt] == 0);
   } else {
-    ptf4 = ADDR_TRANS4(f);
     do {
       AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
+      ptseen = ADDR_TRANS4(TmpTrans);
+      ptf4 = ADDR_TRANS4(f);
       ptseen[cpt] = 1;
       cpt = ptf4[cpt];
     } while (ptseen[cpt] == 0);
