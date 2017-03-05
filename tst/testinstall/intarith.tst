@@ -1260,6 +1260,24 @@ gap> PVALUATION_INT(0,0);
 Error, PValuationInt: <p> must be nonzero
 
 #
+# test IS_PROBAB_PRIME_INT
+#
+gap> ForAll([-100..10000], n -> IS_PROBAB_PRIME_INT(n, 5) = IsProbablyPrimeInt(n));
+true
+gap> Filtered([-100..100], n -> false <> IS_PROBAB_PRIME_INT(2^255+n, 5));
+[ -31, -19, 95 ]
+gap> Filtered([-100..100], n -> false <> IsProbablyPrimeInt(2^255+n));
+[ -31, -19, 95 ]
+gap> IS_PROBAB_PRIME_INT(fail, 1);
+Error, IsProbablyPrimeInt: <n> must be an integer (not a boolean or fail)
+gap> IS_PROBAB_PRIME_INT(1, fail);
+Error, IsProbablyPrimeInt: <reps> must be an integer (not a boolean or fail)
+gap> IS_PROBAB_PRIME_INT(1, 2^100);
+Error, IsProbablyPrimeInt: <reps> is too large
+gap> IS_PROBAB_PRIME_INT(1, 0);
+Error, IsProbablyPrimeInt: <reps> must be positive
+
+#
 gap> STOP_TEST( "intarith.tst", 290000);
 
 #############################################################################

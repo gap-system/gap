@@ -2176,6 +2176,42 @@ Obj FuncPOWERMODINT ( Obj self, Obj base, Obj exp, Obj mod )
 
 /****************************************************************************
 **
+*/
+Obj IsProbablyPrimeInt ( Obj n, Int reps )
+{
+  fake_mpz_t n_mpz;
+  Int res;
+
+  if ( reps < 1 )
+    ErrorMayQuit( "IsProbablyPrimeInt: <reps> must be positive", 0L, 0L );
+
+  CHECK_INT(n);
+
+  FAKEMPZ_GMPorINTOBJ( n_mpz, n );
+
+  res = mpz_probab_prime_p( MPZ_FAKEMPZ(n_mpz), reps );
+
+  if (res == 2) return True; /* definitely prime */
+  if (res == 0) return False; /* definitely not prime */
+  return Fail; /* probably prime */
+}
+
+/****************************************************************************
+**
+*/
+Obj FuncIS_PROBAB_PRIME_INT ( Obj self, Obj n, Obj reps )
+{
+  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "n", n );
+  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "reps", reps );
+  if ( ! IS_INTOBJ(reps) )
+    ErrorMayQuit( "IsProbablyPrimeInt: <reps> is too large", 0L, 0L );
+
+  return IsProbablyPrimeInt( n, INT_INTOBJ(reps) );
+}
+
+
+/****************************************************************************
+**
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
 **  Part of this code for fast generation of 32 bit pseudo random numbers with 
@@ -2325,6 +2361,9 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "POWERMODINT", 3, "base, exp, mod",
     FuncPOWERMODINT, "src/gmpints.c:POWERMODINT" },
+
+  { "IS_PROBAB_PRIME_INT", 2, "n, reps",
+    FuncIS_PROBAB_PRIME_INT, "src/gmpints.c:IS_PROBAB_PRIME_INT" },
 
   { "INVMODINT", 2, "base, mod",
     FuncINVMODINT, "src/gmpints.c:INVMODINT" },
