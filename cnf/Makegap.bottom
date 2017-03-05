@@ -6,3 +6,15 @@ gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
           @srcdir@/vars.h @srcdir@/stats.h @srcdir@/gapmpi.h 
 	$(CC) -I. $(MPI_CFLAGS) -DCONFIG_H $(CFLAGS) -o gapmpi.o -c @srcdir@/gapmpi.c
 
+
+# compile and link GAP
+ifeq ($(uname_O),Cygwin)
+gap: $(OBJECTS)
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c
+	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) -lm -lrt $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+	$(CC) $(LDFLAGS) -o gap ../../src/gapw95.c $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL gap.dll
+
+else
+gap: $(OBJECTS)
+	$(CC) $(LDFLAGS) -o gap $(OBJECTS) -lm $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+endif

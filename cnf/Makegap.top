@@ -23,3 +23,10 @@ else
 endif
 
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+
+ifeq "$(MAKE_GMP)" "gmp"
+gap:  $(GMP_LIBS)
+endif
+
+# default target
+gap:
