@@ -1,6 +1,6 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
-#include "compiled.h"
+#include "src/compiled.h"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
