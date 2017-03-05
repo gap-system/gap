@@ -116,13 +116,14 @@ OBJECTS="\
     dt.o \
     dteval.o \
     exprs.o \
+    ffdata.o \
     finfield.o \
     funcs.o \
     gap.o \
     gasman.o \
+    globalstate.o \
     gmpints.o \
     gvars.o \
-    integer.o \
     intfuncs.o \
     intrprtr.o \
     iostream.o \
@@ -152,9 +153,10 @@ OBJECTS="\
     set.o \
     stats.o \
     streams.o \
-    string.o \
+    stringobj.o \
     sysfiles.o \
     system.o \
+    systimers.o \
     tietze.o \
     trans.o \
     vars.o \
