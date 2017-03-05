@@ -24,25 +24,16 @@ else
 endif
 
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+
 ifeq "$(MAKE_GMP)" "gmp"
 gap:  $(GMP_LIBS)
 endif
 
+# default target
+gap:
+
 # OBJECTS are generated from SOURCE
 OBJECTS=ariths.o backtrace.o blister.o bool.o c_filt1.o c_meths1.o c_oper1.o c_random.o c_type1.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o ffdata.o finfield.o funcs.o gap.o gasman.o globalstate.o gmpints.o gvars.o intfuncs.o intrprtr.o iostream.o listfunc.o listoper.o lists.o macfloat.o objccoll.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objset.o opers.o permutat.o plist.o pperm.o precord.o profile.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o stringobj.o sysfiles.o system.o systimers.o tietze.o trans.o vars.o vec8bit.o vecffe.o vecgf2.o vector.o weakptr.o $(GAPMPI_OBJ)
-
-
-# compile and link GAP
-ifeq ($(uname_O),Cygwin)
-gap: $(OBJECTS)
-	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c
-	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) -lm -lrt $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
-	$(CC) $(LDFLAGS) -o gap ../../src/gapw95.c $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL gap.dll
-
-else
-gap: $(OBJECTS)
-	$(CC) $(LDFLAGS) -o gap $(OBJECTS) -lm $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
-endif
 
 # dependencies are automatically generated
 ariths.o: ../../Makefile @srcdir@/ariths.c @srcdir@/system.h config.h @srcdir@/globalstate.h \
@@ -683,3 +674,15 @@ gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
           @srcdir@/vars.h @srcdir@/stats.h @srcdir@/gapmpi.h 
 	$(CC) -I. $(MPI_CFLAGS) -DCONFIG_H $(CFLAGS) -o gapmpi.o -c @srcdir@/gapmpi.c
 
+
+# compile and link GAP
+ifeq ($(uname_O),Cygwin)
+gap: $(OBJECTS)
+	$(CC) $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c
+	$(CC) $(LDFLAGS) -o gap.dll -shared $(OBJECTS) -lm -lrt $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+	$(CC) $(LDFLAGS) -o gap ../../src/gapw95.c $(CPPFLAGS) $(GMP_CFLAGS) $(CFLAGS) -DCOMPILECYGWINDLL gap.dll
+
+else
+gap: $(OBJECTS)
+	$(CC) $(LDFLAGS) -o gap $(OBJECTS) -lm $(MPILIBS) $(GMP_LIBS) $(CONFLIBS)
+endif
