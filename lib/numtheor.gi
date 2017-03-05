@@ -398,6 +398,14 @@ BindGlobal( "RootModPrime", function ( n, k, p )
     Info( InfoNumtheor, 1, "RootModPrime(", n, ",", k, ",", p, ")" );
     n := n mod p;
 
+    # If n is non-zero, then the code below requires that p is a Fermat
+    # pseudoprime with respect to n, i.e. that $n^(p-1) mod p = 1$ holds.
+    # This is of course automatically true if $p$ is a prime, but for efficiency
+    # reasons we actually use this with pseudo primes.
+    if n <> 0 and PowerModInt( n, p-1, p ) <> 1 then
+        Error( "<p> is not a Fermat pseudoprime with respect to <n>. Please report this error to the GAP team" );
+    fi;
+
     # handle $p = 2$
     if p = 2  then
         r := n;
@@ -554,8 +562,7 @@ InstallGlobalFunction( RootMod, function ( arg )
             r,                  # <k>th root of <n> mod <qq>
             s,                  # <k>th root of <n> mod <q>
 	    f, # factors
-	    i, # loop
-            t;                  # temporary variable
+	    i; # loop
 
     # get the arguments
     if   Length(arg) = 2  then n := arg[1];  k := 2;       m := arg[2];
@@ -593,7 +600,7 @@ InstallGlobalFunction( RootMod, function ( arg )
 
     # combine the root modulo every prime power $p^l$
     r := 0;  qq := 1;
-    for p  in Set( FactorsInt( m ) )  do
+    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) ) do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -608,8 +615,7 @@ InstallGlobalFunction( RootMod, function ( arg )
 
         # combine $r$ (the root mod $qq$) with $s$ (the root mod $p^l$)
         ii := 1/qq mod q;
-        t := r + qq * ((s - r)*ii mod q);
-        r := t;
+        r := r + qq * ((s - r)*ii mod q);
         qq := qq * q;
 
     od;
@@ -637,6 +643,14 @@ BindGlobal( "RootsModPrime", function ( n, k, p )
     # reduce $n$ into the range $0..p-1$
     Info( InfoNumtheor, 1, "RootsModPrime(", n, ",", k, ",", p, ")" );
     n := n mod p;
+
+    # If n is non-zero, then the code below requires that p is a Fermat
+    # pseudoprime with respect to n, i.e. that $n^(p-1) mod p = 1$ holds.
+    # This is of course automatically true if $p$ is a prime, but for efficiency
+    # reasons we actually use this with pseudo primes.
+    if n <> 0 and PowerModInt( n, p-1, p ) <> 1 then
+        Error( "<p> is not a Fermat pseudoprime with respect to <n>. Please report this error to the GAP team" );
+    fi;
 
     # handle $p = 2$
     if p = 2  then
@@ -743,6 +757,8 @@ RootsModPrimePower := function ( n, k, p, l )
     # handle the case that the roots split
     elif k = p  then
 
+	Info( InfoNumtheor, 3, "k=p case" );
+
         # compute the root mod $p^{l/2}$, or $p^{l/2+1}$ if 32 divides $p^l$
         if 2 < p  or l < 5  then
             ss := RootsModPrimePower( n, k, p, QuoInt(l+1,2) );
@@ -829,7 +845,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
 
     # combine the roots modulo every prime power $p^l$
     rr := [0];  qq := 1;
-    for p  in Set( FactorsInt( m ) )  do
+    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) )  do
 
         # find prime power $q = p^l$
         q := p;  l := 1;

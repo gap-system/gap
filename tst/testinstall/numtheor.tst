@@ -1,5 +1,22 @@
 gap> START_TEST("numtheor.tst");
 
+# RootMod, RootsMod
+#
+# Check issue #758: do not force full factorization for RootMod.
+# It suffices to factor into strong Fermat primes.
+gap> oldLevel := InfoLevel(InfoPrimeInt);;
+gap> SetInfoLevel(InfoPrimeInt, 0); # turn off warnings
+gap> c := 87665785060273447596735547586847436354365986897267;;
+gap> d := 5676193656034756392656593936564928264920283748503726385950382638505826243749593626948538293405737101;;
+gap> RootMod(c,d); time < 20;
+fail
+true
+gap> n:=2^2203-1;; RootMod(39,n); time < 300;
+fail
+true
+
+#
+# PValuation
 #
 gap> PValuation(0,2);
 infinity
