@@ -253,8 +253,6 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 ##  m1
 ##  gap> Inverse( elm );
 ##  m2
-##  gap> AsGroup( m );
-##  <group of size 4 with 2 generators>
 ##  gap> a:= [ [ 1, 2 ], [ 2, 2 ] ];
 ##  [ [ 1, 2 ], [ 2, 2 ] ]
 ##  gap> m:= MagmaByMultiplicationTable( a );
