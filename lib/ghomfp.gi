@@ -804,11 +804,12 @@ local aug,w,p,pres,f,fam,opt;
   else
     opt.lengthLimit:=Int(3/2*pres!.tietze[TZ_TOTAL]); # not too big.
   fi;
+  if ValueOption("generatorsLimit")<>fail then
+    opt.lengthLimit:=ValueOption("generatorsLimit");
+  fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
-  for w in [1..50] do
-    TzEliminateRareOcurrences(pres,w);
-  od;
+  TzEliminateRareOcurrences(pres,50);
   TzGoGo(pres); # cleanup
 
   # new free group
@@ -848,7 +849,10 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
   [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection,
    IsString],0,
 function(u,gens,nam)
-local aug,w,p,pres,f,fam,G;
+local aug,w,p,pres,f,fam,G,trace;
+
+  trace:=[];
+
   if HasIsWholeFamily(u) and IsWholeFamily(u) and
     IsIdenticalObj(gens,GeneratorsOfGroup(u)) then
       return IdentityMapping(u);
@@ -861,14 +865,14 @@ local aug,w,p,pres,f,fam,G;
   aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
         RelatorsOfFpGroup(w),
         List(gens,UnderlyingElement),
-        true);
+        true,trace);
 
   pres:=NEWTC_PresentationMTC(aug,1,nam);
   if Length(GeneratorsOfPresentation(pres))>Length(gens) then
     aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
-          RelatorsOfFpGroup(w),
-          List(gens,UnderlyingElement),
-          true,false);
+	  RelatorsOfFpGroup(w),
+	  List(gens,UnderlyingElement),
+	  true,trace);
 
     pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;

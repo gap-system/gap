@@ -3356,7 +3356,9 @@ end );
 
 # DATA, [parameter,string]
 # parameter is: 
+# 0: Full reduction
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
+# -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
 local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   subnum,bad,warn,parameter,str;
@@ -3386,61 +3388,68 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   od;
 
   stack:=[];
-  for i in [1..DATA.n] do
-    CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
-    for w in DATA.rels do
-      r:=NEWTC_Rewrite(DATA,i,w);
-      MakeCanonical(r);
 
-      # reduce with others
-      for j in rels do
-        r:=NEWTC_ReplacedStringCyclic(r,j);
-        r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
-      od;
-      if Length(r)>0 then
-        Add(stack,r);
-        while Length(stack)>0 do
-          r:=stack[Length(stack)];
-          Unbind(stack[Length(stack)]);
-          ri:=-Reversed(r);
-          rset:=Set([r,ri]);
-          # reduce others
-          j:=1;
-          while j<=Length(rels) do
-            s:=rels[j];
-            for re in rset do;
-              s:=NEWTC_ReplacedStringCyclic(s,re);
-            od;
-            if not IsIdenticalObj(s,rels[j]) then
-              if Length(s)>0 then
-                Add(stack,s);
-              fi;
-              rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
-            else
-              j:=j+1;
-            fi;
-          od;
+  if parameter<>-1 then
 
-          Add(rels,r);
-          SortBy(rels,Length);
+    for i in [1..DATA.n] do
+      CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
+      for w in DATA.rels do
+        r:=NEWTC_Rewrite(DATA,i,w);
+        MakeCanonical(r);
 
-          # does it occur in the augmented table?
-          for a in DATA.A do
-            for j in [1..DATA.n] do
-              s:=DATA.aug[a+offset][j];
-              if Length(s)>=Length(r) then
-                for re in rset do
-                  s:=NEWTC_ReplacedStringCyclic(s,re);
-                od;
-                DATA.aug[a+offset][j]:=s;
-              fi;
-            od;
-          od;
+        ri:=Length(r);
+        # reduce with others
+        for j in rels do
+          r:=NEWTC_ReplacedStringCyclic(r,j);
+          r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
         od;
-      fi;
+        Info(InfoFpGroup,3,"Relatorlen ",ri,"->",Length(r));
+
+        if Length(r)>0 then
+          Add(stack,r);
+          while Length(stack)>0 do
+            r:=stack[Length(stack)];
+            Unbind(stack[Length(stack)]);
+            ri:=-Reversed(r);
+            rset:=Set([r,ri]);
+            # reduce others
+            j:=1;
+            while j<=Length(rels) do
+              s:=rels[j];
+              for re in rset do;
+                s:=NEWTC_ReplacedStringCyclic(s,re);
+              od;
+              if not IsIdenticalObj(s,rels[j]) then
+                if Length(s)>0 then
+                  Add(stack,s);
+                fi;
+                rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
+              else
+                j:=j+1;
+              fi;
+            od;
+
+            Add(rels,r);
+            SortBy(rels,Length);
+
+            # does it occur in the augmented table?
+            for a in DATA.A do
+              for j in [1..DATA.n] do
+                s:=DATA.aug[a+offset][j];
+                if Length(s)>=Length(r) then
+                  for re in rset do
+                    s:=NEWTC_ReplacedStringCyclic(s,re);
+                  od;
+                  DATA.aug[a+offset][j]:=s;
+                fi;
+              od;
+            od;
+          od;
+        fi;
+      od;
     od;
-  od;
-  CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+    CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+  fi;
 
   # add definitions of secondary generators
   for i in [subnum+1..DATA.secount] do
