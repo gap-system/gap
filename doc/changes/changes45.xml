@@ -627,7 +627,7 @@ In addition, there is now
 a better error management if package loading fails for packages that use
 the new functionality to log package loading messages 
 (see <Ref Func="DisplayPackageLoadingLog" BookName="ref"/> 
-and the rest of the Chapter <Ref Chap="Using GAP Packages" BookName="ref"/> 
+and the rest of the Chapter <Ref Chap="Using and Developing GAP Packages" BookName="ref"/> 
 which documents how to <E>use</E> &GAP; packages), and package authors 
 are very much encouraged to use these logging facilities.
 <P/>

@@ -702,11 +702,11 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  true
 ##  ]]></Log>
 ##  <P/>
-##  The package name may be appropriately abbreviated. For example,
-##  <C>LoadPackage("semi");</C> will load the <Package>Semigroups</Package>
-##  package, and <C>LoadPackage("d");</C> will load the
-##  <Package>DESIGN</Package> package. If the abbreviation can not be uniquely
-##  completed, further suggestions will be offered.
+##  The package name may be appropriately abbreviated. For example, at the time
+##  of writing, <C>LoadPackage("semi");</C> will load the 
+##  <Package>Semigroups</Package> package, and <C>LoadPackage("j");</C> will
+##  load the <Package>json</Package> package. If the abbreviation can not be
+##  uniquely completed, further suggestions will be offered.
 ##  <P/>
 ##  If the optional version string <A>version</A> is given,
 ##  the package will only be loaded in a version number at least as large as
