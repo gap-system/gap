@@ -24,8 +24,8 @@ the &GAP; language, and use them in just the same way  as  the  programs
 which form part of the system  (the  <Q>library</Q>).  Indeed,  we  actively
 support the contribution, refereeing and distribution  of  extensions  to
 the system, in the form of <Q>&GAP; packages</Q>.  Further details of  this
-can be found in chapter <Ref Chap="Using GAP Packages" BookName="ref"/>, and
-on our website.
+can be found in chapter <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>,
+and on our website.
 <P/>
 Development of &GAP; began at Lehrstuhl D für Mathematik,
 RWTH-Aachen, under the leadership of Joachim Neubüser
@@ -143,8 +143,8 @@ data sources such as the electronic version of the Atlas of Finite Group
 Representations; therefore, installation and usage of packages is recommended.
 <P/>
 Further details about &GAP; packages can be found in chapter 
-<Ref Chap="Using GAP Packages" BookName="ref"/>, and on the &GAP;
-website here: <URL>https://www.gap-system.org/Packages/packages.html</URL>. 
+<Ref BookName="ref" Chap="Using and Developing GAP Packages"/>, and on the
+&GAP; website here: <URL>https://www.gap-system.org/Packages/packages.html</URL>. 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->

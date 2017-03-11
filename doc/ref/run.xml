@@ -73,7 +73,7 @@ whose component names are the command line options
 <C>-A</C></Mark>
 <Item>
 By default, some needed and suggested &GAP; packages
-(see <Ref Chap="GAP Packages"/>) are loaded,
+(see <Ref Chap="Using and Developing GAP Packages"/>) are loaded,
 if present, into the &GAP; session when it  starts.
 This option disables (actually toggles) the loading of suggested packages,
 which can be useful for debugging or testing.
