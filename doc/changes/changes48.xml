@@ -561,6 +561,60 @@ with compressed files. [Reported by Bill Allombert]
 </Section>
 
 
+<Section Label="gap487">
+<Heading>&GAP; 4.8.7 (March 2017)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.7">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.7</Heading>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #1016, #1018 -->
+Fixed a regression from &GAP; 4.7.6 when reading compressed
+files after a workspace is loaded. Before the fix, if &GAP;
+is started with the <C>-L</C> option (load workspace), using
+<Ref Oper="ReadLine" BookName="ref"/> on the input stream for
+a compressed file returned by <Ref Oper="InputTextFile" BookName="ref"/>
+only returned the first character. [Reported by Bill Allombert]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #924, 942 -->
+Fixed compiler warning occurring when &GAP; is compiled with gcc 6.2.0.
+[Reported by Bill Allombert]
+</Item>
+</List>
+
+
+</Subsection>
+
+
+<Subsection Label="New and updated packages since GAP 4.8.6"> 
+<Heading>New and updated packages since &GAP; 4.8.6</Heading>
+
+This release contains updated versions of 19 packages from &GAP; 4.8.6
+distribution. Additionally, the following package has been added for the
+redistribution with &GAP;:
+
+<List>
+<Item>
+<Package>lpres</Package> package (author: René Hartung, maintainer: Laurent
+Bartholdi) to work with L-presented groups, namely groups given by a finite
+generating set and a possibly infinite set of relations given as iterates of
+finitely many seed relations by a finite set of endomorphisms. The package
+implements nilpotent quotient, Todd-Coxeter and Reidemeister-Schreier
+algorithms for such groups.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
 </Chapter>
 
 
