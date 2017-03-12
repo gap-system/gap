@@ -38,6 +38,10 @@ matrix:
       env: TEST_SUITE=testbugfix
       compiler: gcc
 
+    - os: linux
+      env: TEST_SUITE=testerror
+      compiler: gcc
+
     # OS X builds: since those are slow and limited on Travis,
     # we only run testinstall for now
     - os: osx
