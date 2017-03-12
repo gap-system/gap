@@ -27,6 +27,13 @@ then
     exit 0
 fi
 
+if [[ "${TEST_SUITE}" == testerror ]]
+then
+    cd tst/test-error
+    ./run_error_tests.sh
+    exit 0
+fi
+
 if [[ x"$ABI" == "x32" ]]
 then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
