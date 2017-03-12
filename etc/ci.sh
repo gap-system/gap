@@ -64,7 +64,6 @@ popd
 COVDIR=coverage
 mkdir -p $COVDIR
 
-
 case ${TEST_SUITE} in
 testmanuals)
     bin/gap.sh -q tst/extractmanuals.g
@@ -76,13 +75,19 @@ testmanuals)
         QUIT_GAP(0);
 GAPInput
 
+    TESTMANUALSPASS=yes
     for ch in tst/testmanuals/*.tst
     do
-        bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput
+        bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QUIT_GAP(0);
 GAPInput
     done
+    
+    if [[ $TESTMANUALSPASS = no ]]
+    then
+        exit 1
+    fi
 
     # while we are at it, also test the workspace code
     bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
