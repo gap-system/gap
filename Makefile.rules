@@ -12,7 +12,9 @@
 # Default rule: build gap
 ########################################################################
 all: gap$(EXEEXT) gac
-.PHONY: all
+
+libgap: libgap.la
+.PHONY: libgap
 
 libgap: libgap.la
 .PHONY: libgap
@@ -118,6 +120,9 @@ ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/traverse.c
 endif
 
+ifeq ($(LIBGAP),yes)
+  SOURCES += src/libgap.c
+endif
 
 ########################################################################
 # Preprocessor flags
@@ -394,6 +399,10 @@ gap$(EXEEXT): $(OBJS)
 
 endif
 
+ifeq ($(LIBGAP),yes)
+libgap.so: $(OBJS)
+	$(QUIET_LINK)$(LINK) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
+endif
 
 ########################################################################
 # The "docomp" target regenerates the various src/c_*.c files, and
