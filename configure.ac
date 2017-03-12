@@ -194,6 +194,23 @@ AS_IF([test "x$enable_hpcgap" = xyes],
     ])
 
 dnl
+dnl User setting: LibGAP mode (off by default)
+dnl
+dnl If on, build an LibGAP instead of standard GAP executable.
+dnl
+dnl TODO: Will there ever be an HPC-GAP libgap?
+dnl
+AC_ARG_ENABLE([libgap],
+[AS_HELP_STRING([--enable-libgap], [enable LibGAP])],
+[AC_DEFINE([LIBGAP], [1], [define if building LibGAP])],
+[enable_libgap=no]
+)
+AC_MSG_CHECKING([whether to enable LibGAP])
+AC_MSG_RESULT([$enable_libgap])
+
+AC_SUBST([LIBGAP], [$enable_libgap])
+
+dnl
 dnl User setting: Debug mode (off by default)
 dnl
 AC_ARG_ENABLE([debug],
