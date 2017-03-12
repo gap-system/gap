@@ -159,17 +159,20 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
 }
 
 /*
- Returns a list with one or two entries. The first
+ Returns a list with one or more entries. The first
  entry is set to "false" if there was any error
  executing the command, and "true" otherwise.
- The second entry, if present, is the return value of
- the command. If it not present, the command returned nothing.
+ Subsequent entries, if present, are the results of statements executed
+ from the input stream.
+ If it not present, the statements returned nothing.
 */
 Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
 {
+    Int count;
     Int status;
     Obj result;
 
+    count = 0;
     result = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST(result, 1);
     SET_ELM_PLIST(result, 1, False);
@@ -184,26 +187,30 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     else
       TLS(Input)->echo = 0;
 
-    status = READ_COMMAND();
-    
+    while(1) {
+        status = READ_COMMAND();
+
+        if( status == 0 ) break;
+
+        if (TLS(UserHasQUIT)) {
+            TLS(UserHasQUIT) = 0;
+            break;
+        }
+
+        if (TLS(UserHasQuit)) {
+            TLS(UserHasQuit) = 0;
+        }
+
+        SET_ELM_PLIST(result, 1, True);
+
+        if (TLS(ReadEvalResult)) {
+            SET_LEN_PLIST(result, count+2);
+            SET_ELM_PLIST(result, count+2, TLS(ReadEvalResult));
+            count++;
+        }
+    }
+
     CloseInput();
-
-    if( status == 0 ) return result;
-
-    if (TLS(UserHasQUIT)) {
-      TLS(UserHasQUIT) = 0;
-      return result;
-    }
-
-    if (TLS(UserHasQuit)) {
-      TLS(UserHasQuit) = 0;
-    }
-    
-    SET_ELM_PLIST(result, 1, True);
-    if (TLS(ReadEvalResult)) {
-        SET_LEN_PLIST(result, 2);
-        SET_ELM_PLIST(result, 2, TLS(ReadEvalResult));
-    }
     return result;
 }
 
