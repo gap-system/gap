@@ -202,7 +202,6 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-char *original_argv0;
 static char **sysargv;
 static char **sysenviron;
 
@@ -501,20 +500,8 @@ int main (
 
   InitMainGlobalState();
 
-
-  original_argv0 = argv[0];
-  sysargv = argv;
-  sysenviron = environ;
-  
-  /* Initialize assorted variables in this file */
-  NrImportedGVars = 0;
-  NrImportedFuncs = 0;
-  TLS(UserHasQUIT) = 0;
-  TLS(UserHasQuit) = 0;
-  SystemErrorCode = 0;
-    
   /* initialize everything and read init.g which runs the GAP session */
-  InitializeGap( &argc, argv );
+  InitializeGap( &argc, argv, environ );
   if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
@@ -3249,7 +3236,8 @@ static Obj POST_RESTORE;
 
 void InitializeGap (
     int *               pargc,
-    char *              argv [] )
+    char *              argv [],
+    char *              environ [] )
 {
   /*    UInt                type; */
     UInt                i;
@@ -3278,6 +3266,14 @@ void InitializeGap (
     TLS(IntrIgnoring) = 0;
     TLS(NrError)      = 0;
     TLS(ThrownObject) = 0;
+    TLS(UserHasQUIT) = 0;
+    TLS(UserHasQuit) = 0;
+
+    NrImportedGVars = 0;
+    NrImportedFuncs = 0;
+
+    sysargv = argv;
+    sysenviron = environ;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;
