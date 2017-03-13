@@ -523,7 +523,8 @@ extern void RecordLoadedModule (
 */
 extern void InitializeGap (
             int *               pargc,
-            char *              argv [] );
+            char *              argv [],
+            char *              environ [] );
 
 
 #endif // GAP_GAP_H
