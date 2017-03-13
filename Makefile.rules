@@ -23,9 +23,6 @@ libgap: libgap.la
 default: all
 .PHONY: default
 
-libgap: libgap.la
-.PHONY: libgap
-
 ########################################################################
 # Source files
 #
@@ -402,7 +399,7 @@ gap$(EXEEXT): $(OBJS)
 endif
 
 libgap.la: $(OBJS)
-	$(QUIET_LINK)$(LINK) -rpath $(libdir) $(LDFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(QUIET_LINK)$(LINK) -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(LIBS) -o $@
 
 ########################################################################
 # The "docomp" target regenerates the various src/c_*.c files, and
