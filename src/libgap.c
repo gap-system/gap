@@ -52,33 +52,16 @@ int libgap_in_enter_exit_block = 0; /* false */
 /*** Initialize / Finalize ***********************************************/
 /*************************************************************************/
 
-/* from gap.c */
-extern char **sysenviron;
-extern Int NrImportedGVars;
-extern Int NrImportedFuncs;
-
-
-
 /*************************************************************************/
 /*** Global Initialization ***********************************************/
 /*************************************************************************/
 
 void libgap_initialize(int argc, char** argv)
 {
-    sysenviron = environ;
-
     /* Init interpreter state */
     InitMainGlobalState();
-
-    /* TODO: These are part of the global state */
-    NrImportedGVars = 0;
-    NrImportedFuncs = 0;
-
-    /* This won't work if we do an HPC-GAP version of libgap */
-    TLS(UserHasQUIT) = 0;
-    TLS(UserHasQuit) = 0;
     libgap_mark_stack_bottom();
-    InitializeGap(&argc, argv);
+    InitializeGap(&argc, argv, environ);
 }
 
 
