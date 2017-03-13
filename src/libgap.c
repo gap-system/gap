@@ -17,14 +17,15 @@
  */
 
 
+#include <src/libgap.h>
+#include <src/system.h>
+#include <src/gap.h>
+#include <src/gasman.h>
+#include <src/libgap_internal.h>
+#include <src/scanner.h>
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
-#include "system.h"
-#include "scanner.h"
-#include "gap.h"
-#include "libgap.h"
-#include "libgap_internal.h"
+#include <string.h>
 
 /* Pointers to input/output buffers. libGAP users must not access these buffers directly!
  */
