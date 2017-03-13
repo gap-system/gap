@@ -119,7 +119,7 @@ ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/traverse.c
 endif
 
-ifeq ($(LIBGAP),yes)
+ifeq ($(BUILD_LIBGAP),yes)
   SOURCES += src/libgap.c
 endif
 
