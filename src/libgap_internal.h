@@ -42,7 +42,4 @@ void libgap_append_stdout(char ch);
 void libgap_append_stderr(char ch);
 void libgap_set_error(char* msg);
 
-/* do not install any signal handles in the GAP kernel code */
-#undef LIBGAP_SIGNALS
-
 #endif /* LIBGAP_INTERNAL__H */

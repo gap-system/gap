@@ -2735,9 +2735,18 @@ Char * SyFgets (
     UInt                length,
     Int                 fid)
 {
-  return syFgets( line, length, fid, 1);
-}
-
+#if !defined(LIBGAP)
+    return syFgets( line, length, fid, 1);
+#else
+    if(fid!=0 && fid!=2) {
+        /* TODO: Do this properly */
+        // not stdin/stderr; probably file IO. Do the standard thing.
+        // printf("SyFgets fid=%i\n", fid);
+        return syFgets( line, length, fid, 1);
+    }
+    return libgap_get_input(line, length);
+    // return syFgets( line, length, fid, 1);
+#endif
 
 Char *SyFgetsSemiBlock (
     Char *              line,

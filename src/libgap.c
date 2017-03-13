@@ -64,13 +64,20 @@ extern Int NrImportedFuncs;
 
 void libgap_initialize(int argc, char** argv)
 {
-  sysenviron = environ;
-  NrImportedGVars = 0;
-  NrImportedFuncs = 0;
-  UserHasQUIT = 0;
-  UserHasQuit = 0;
-  libgap_mark_stack_bottom();
-  InitializeGap( &argc, argv );
+    sysenviron = environ;
+
+    /* Init interpreter state */
+    InitMainGlobalState();
+
+    /* TODO: These are part of the global state */
+    NrImportedGVars = 0;
+    NrImportedFuncs = 0;
+
+    /* This won't work if we do an HPC-GAP version of libgap */
+    TLS(UserHasQUIT) = 0;
+    TLS(UserHasQuit) = 0;
+    libgap_mark_stack_bottom();
+    InitializeGap(&argc, argv);
 }
 
 
