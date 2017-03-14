@@ -1028,3 +1028,7 @@ doc/make_doc: $(srcdir)/doc/make_doc.in config.status
 
 gac: $(srcdir)/cnf/gac.in config.status
 	$(SHELL) ./config.status $@
+
+LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
+install-libgap: libgap.la
+	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(libdir)
