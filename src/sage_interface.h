@@ -129,7 +129,7 @@ void libgap_set_gasman_callback(libgap_gasman_callback_ptr callback);
 /*** Input/Output interaction ********************************************/
 /*************************************************************************/
 
-/* Set a function that will be called if an error occurs If set, this
+/* Set a function that will be called if an error occurs. If set, this
  * will be called instead of a longjmp() back to the GAP main loop.
  */
 
