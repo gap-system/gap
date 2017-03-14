@@ -1008,7 +1008,7 @@ end );
 
 BindGlobal( "ShowPackageInformation", function()
   local linelen, indent, btop, vert, bbot, print_info,
-        libs, cmpdist, ld, f;
+        libs, cmpdist, ld, ms, f;
 
     linelen:= SizeScreen()[1] - 2;
     print_info:= function( prefix, values, suffix )
@@ -1057,7 +1057,13 @@ BindGlobal( "ShowPackageInformation", function()
                    small11:="0.1",small2:="2.0",small3:="2.0",small4:="1.0",
                    small5:="1.0",small6:="1.0",small7:="1.0",small8:="1.0",
                    small9:="1.0");
+        ms := ShallowCopy(cmpdist); ms.prim:="2.1"; ms.trans:="1.0";
         ld := ShallowCopy(GAPInfo.LoadedComponents);
+        for f in RecNames(ld) do
+          if ld.(f) = ms.(f) then
+            Unbind(ms.(f));
+          fi;
+        od;
         if ForAll(RecNames(cmpdist), f-> IsBound(ld.(f))
                                           and ld.(f) = cmpdist.(f)) then
           for f in RecNames(cmpdist) do
@@ -1070,6 +1076,19 @@ BindGlobal( "ShowPackageInformation", function()
                     List( RecNames( ld ), name -> Concatenation( name, " ",
                                       ld.( name ) ) ),
                     "\n");
+        if ms <> rec() then
+        print_info(
+          " WARNING: Some functionality is not available because of missing components:",
+                    List( RecNames( ms ), name -> Concatenation( name, " ",
+                                      ms.( name ) ) ),
+          "\n");
+        fi;
+      else # if no components are present at all
+        print_info(
+          " WARNING: Some functionality is not available because of missing ",
+          ["Small Groups", "Transitive Permutation Groups",
+           "and Primitive Permutation Groups"],
+           "libraries \n");
       fi;
 
       # For each loaded package, print name and version number.
