@@ -1032,3 +1032,12 @@ gac: $(srcdir)/cnf/gac.in config.status
 LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
 install-libgap: libgap.la
 	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(libdir)
+
+# TODO: This needs to be done more elegantly
+obj/libgap-test-0001.lo: $(top_srcdir)/tst/testlibgap/0001.c
+	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(CC_EXTRA_FLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+
+test-libgap: libgap.la obj/libgap-test-0001.lo 
+	$(QUIET_LINK)$(LINK) obj/libgap-test-0001.lo libgap.la -o test-libgap
+	./test-libgap > 0001.out
+	diff $(top_srcdir)/tst/testlibgap/0001.expect 0001.out
