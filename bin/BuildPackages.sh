@@ -56,8 +56,10 @@ then
   # Put package directory names into a bash array to avoid issues with
   # spaces in filenames. This code will still break if there are newlines
   # in the name.
+  old_IFS=$IFS
   IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
-  PACKAGES=("${PACKAGES[@]%/PackageInfo.g}")
+  IFS=$old_IFS
+  PACKAGES=( "${PACKAGES[@]%/PackageInfo.g}" )
 fi
 
 # Some helper functions for printing user messages
