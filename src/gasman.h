@@ -1153,6 +1153,7 @@ typedef Bag *           (* TNumAllocFuncBags) (
                                 UInt            need );
 
 typedef void            (* TNumStackFuncBags) ( void );
+typedef void            (* TExtraMarkFuncBags) (void);
 
 typedef void            (* TNumAbortFuncBags) (
                                 const Char *    msg );
@@ -1189,5 +1190,8 @@ extern void CallbackForAllBags(
 #ifdef BOEHM_GC
 void *AllocateMemoryBlock(UInt size);
 #endif
+
+/* If not 0 this function will be called */
+extern TExtraMarkFuncBags ExtraMarkFuncBags;
 
 #endif // GAP_GASMAN_H
