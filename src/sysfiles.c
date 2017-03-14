@@ -1156,7 +1156,9 @@ void getwindowsize( void )
             if (CO <= 0)
                 CO = win.ws_col;
         }
+#if !defined(LIBGAP)
         (void) signal(SIGWINCH, syWindowChangeIntr);
+#endif
     }
 #endif /* TIOCGWINSZ */
 
