@@ -120,7 +120,7 @@ ifeq ($(HPCGAP),yes)
 endif
 
 ifeq ($(BUILD_LIBGAP),yes)
-  SOURCES += src/libgap.c
+  SOURCES += src/sage_interface.c
 endif
 
 ########################################################################
