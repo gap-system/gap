@@ -135,10 +135,7 @@ Int SyFindOrLinkGapRootFile (
     UInt4               crc_sta = 0;
     Int                 found_gap = 0;
     Int                 found_sta = 0;
-    Char                tmpbuffer[256];
-    Char *              tmp;
-    Char                module[256];
-    Char                name[256];
+    Char                module[GAP_PATH_MAX];
 
     StructInitInfo *    info_sta = 0;
     Int                 k;
@@ -146,18 +143,8 @@ Int SyFindOrLinkGapRootFile (
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
-    tmp = SyFindGapRootFile(filename, tmpbuffer);
-    if ( tmp ) {
-        strxcpy( result->pathname, tmp, sizeof(result->pathname) );
-        strxcpy( name, tmp, sizeof(name) );
-    }
-    if ( result->pathname[0] ) {
-        if ( SyIsReadableFile(result->pathname) == 0 ) {
-            found_gap = 1;
-        }
-        else {
-            result->pathname[0] = '\0';
-        }
+    if ( SyFindGapRootFile(filename, result->pathname, sizeof(result->pathname)) ) {
+        found_gap = 1;
     }
     if ( ! SyUseModule ) {
         return ( found_gap ? 3 : 0 );
@@ -179,19 +166,16 @@ Int SyFindOrLinkGapRootFile (
         }
     }
 
-
-
     /* check if we have to compute the crc                                 */
     if ( found_gap && ( found_sta ) ) {
         if ( crc_gap == 0 ) {
-            crc_gap = SyGAPCRC(name);
+            crc_gap = SyGAPCRC(result->pathname);
         } else if ( SyCheckCRCCompiledModule ) {
-            if ( crc_gap != SyGAPCRC(name) ) {
+            if ( crc_gap != SyGAPCRC(result->pathname) ) {
                 return 4;
             }
         }
     }
-
 
     /* now decide what to do                                               */
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
@@ -3493,22 +3477,22 @@ Obj SyIsDir ( const Char * name )
 **
 *F  SyFindGapRootFile( <filename>,<buffer> ) . .  find file in system area
 */
-Char * SyFindGapRootFile ( const Char * filename, Char * result )
+Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSize )
 {
-    Int             k;
+    Int k;
 
-    for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
+    for ( k = 0; k < sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]); k++ ) {
         if ( SyGapRootPaths[k][0] ) {
-            result[0] = '\0';
-            if (strlcpy( result, SyGapRootPaths[k], 256 ) >= 256)
+            if (strlcpy( buffer, SyGapRootPaths[k], bufferSize ) >= bufferSize)
                 continue;
-            if (strlcat( result, filename, 256 ) >= 256)
+            if (strlcat( buffer, filename, bufferSize ) >= bufferSize)
             	continue;
-            if ( SyIsReadableFile(result) == 0 ) {
-                return result;
+            if ( SyIsReadableFile(buffer) == 0 ) {
+                return buffer;
             }
         }
     }
+    buffer[0] = '\0';
     return 0;
 }
 
