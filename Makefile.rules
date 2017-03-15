@@ -1039,5 +1039,6 @@ obj/libgap-test-0001.lo: $(top_srcdir)/tst/testlibgap/0001.c
 
 test-libgap: libgap.la obj/libgap-test-0001.lo 
 	$(QUIET_LINK)$(LINK) obj/libgap-test-0001.lo libgap.la -o test-libgap
-	./test-libgap > 0001.out
+	./test-libgap -l $(top_srcdir) -m 32m -q -T > 0001.out
 	diff $(top_srcdir)/tst/testlibgap/0001.expect 0001.out
+

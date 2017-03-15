@@ -5,8 +5,8 @@
 #include <unistd.h>
 
 #include <src/compiled.h>
-#include <src/libgap.h>
-#include <src/libgap_internal.h>
+#include <src/sage_interface.h>
+#include <src/sage_interface_internal.h>
 
 extern char ** environ;
 
@@ -30,19 +30,8 @@ void eval(char * cmd)
     libgap_finish_interaction();
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    char * argv[8];
-    argv[0] = "gap";
-    argv[1] = "-l";
-    argv[2] = "/home/makx/ac/gap";
-    argv[3] = "-m";
-    argv[4] = "32M";
-    argv[5] = "-q";
-    argv[6] = "-T";
-    argv[7] = NULL;
-    int argc = 7;
-    // gap_main_loop(argc, argv, environ);
     libgap_set_error_handler(&error_handler);
     libgap_initialize(argc, argv);
     printf("Initialized\n");
