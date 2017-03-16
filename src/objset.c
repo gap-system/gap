@@ -27,6 +27,10 @@
 
 #include        "objset.h"
 
+#include <src/scanner.h>
+
+#include <src/hpc/tls.h>
+
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;
 
@@ -974,18 +978,6 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
@@ -1014,7 +1006,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    PostRestore                         /* postRestore                    */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoObjSets ( void )
