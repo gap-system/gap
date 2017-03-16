@@ -1300,8 +1300,7 @@ void PrintFunction (
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
     UInt                isvarg;         /* does function have varargs?     */
-    
-    UInt                outputtedfunc;  /* Have we outputted function?     */
+
     isvarg = 0;
 
     if ( IS_OPERATION(func) ) {
@@ -1349,7 +1348,7 @@ void PrintFunction (
 
         /* print the body                                                  */
         if (FuncIsKernelFunction(0L, func) == True) {
-            outputtedfunc = 0;
+            UInt outputtedfunc = 0;
             if ( BODY_FUNC(func) ) {
                 Obj body = BODY_FUNC(func);
                 if ( GET_FILENAME_BODY(body) ) {

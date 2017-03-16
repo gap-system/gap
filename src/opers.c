@@ -6314,6 +6314,12 @@ static Int InitKernel (
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
+
+#ifdef HPCGAP
+    /* initialize cache mutex */
+    pthread_mutex_init(&CacheLock, NULL);
+#endif
+
     /* return success                                                      */
     return 0;
 }

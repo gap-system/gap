@@ -58,7 +58,7 @@ typedef struct SerializationState {
   Obj SerializationStack;
 } SerializationState;
 
-void SaveSerializationState(SerializationState *state) {
+void SaveSerializationState(volatile SerializationState *state) {
   state->SerializationObj = TLS(SerializationObj);
   state->SerializationIndex = TLS(SerializationIndex);
   state->SerializationDispatcher = TLS(SerializationDispatcher);
@@ -66,7 +66,7 @@ void SaveSerializationState(SerializationState *state) {
   state->SerializationStack = TLS(SerializationStack);
 }
 
-void RestoreSerializationState(SerializationState *state) {
+void RestoreSerializationState(volatile SerializationState *state) {
   TLS(SerializationObj) = state->SerializationObj;
   TLS(SerializationIndex) = state->SerializationIndex;
   TLS(SerializationDispatcher) = state->SerializationDispatcher;
@@ -1014,8 +1014,8 @@ Obj DeserializeError(UInt tnum) {
 
 Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
   Obj result;
-  SerializationState state;
-  syJmp_buf readJmpError;
+  volatile SerializationState state;
+  volatile syJmp_buf readJmpError;
   SaveSerializationState(&state);
   InitNativeStringSerializer(NEW_STRING(0));
   memcpy(readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf));
