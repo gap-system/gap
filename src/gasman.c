@@ -1678,7 +1678,7 @@ void            RetypeBag (
 
 syJmp_buf RegsBags;
 
-#if defined(SPARC) && SPARC
+#if defined(SPARC)
 void SparcStackFuncBags( void )
 {
   asm (" ta 0x3 ");
@@ -1811,10 +1811,8 @@ again:
     }
     else {
       sySetjmp( RegsBags );
-#ifdef  SPARC
-#if SPARC
+#if defined(SPARC)
         SparcStackFuncBags();
-#endif
 #endif
         GenStackFuncBags();
     }
