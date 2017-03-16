@@ -1958,14 +1958,10 @@ void InitSystem (
     strxcpy( SySystemInitFile, "lib/init.g", sizeof(SySystemInitFile) );
 #if SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
-#else
-
-#ifdef SYS_DEFAULT_PATHS
+#elif defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
 #else
     SySetGapRootPath( "./" );
-#endif
-
 #endif
 
     /* save the original command line for export to GAP */
