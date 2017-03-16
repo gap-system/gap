@@ -94,34 +94,6 @@ Obj             EndLineHook = 0;
 
 /* TL: TypOutputFile * OutputLog; */
 
-
-/****************************************************************************
-**
-*V  TestInput . . . . . . . . . . . . .  file identifier of test input, local
-*V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
-*V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
-**
-**  'TestInput' is the file identifier  of the file for  test input.  If this
-**  is  not -1  and  'GetLine' reads  a line  from  'TestInput' that does not
-**  begins with  'gap>'  'GetLine' assumes  that this was  expected as output
-**  that did not appear and echoes this input line to 'TestOutput'.
-**
-**  'TestOutput' is the current output file  for test output.  If 'TestInput'
-**  is not -1 then 'PutLine' compares every line that is  about to be printed
-**  to 'TestOutput' with the next  line from 'TestInput'.   If this line does
-**  not starts with 'gap>'  and the rest of  it  matches the output line  the
-**  output  line  is not printed  and the  input   comment line is discarded.
-**  Otherwise 'PutLine' prints the output line and does not discard the input
-**  line.
-**
-**  'TestLine' holds the one line that is read from 'TestInput' to compare it
-**  with a line that is about to be printed to 'TestOutput'.
-*/
-/* TL: TypInputFile *  TestInput  = 0; */
-/* TL: TypOutputFile * TestOutput = 0; */
-/* TL: Char            TestLine [256]; */
-
-
 /****************************************************************************
 **
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
@@ -2196,16 +2168,9 @@ void PutLine2(
  **  line   'stream->line' to <stream>
  **  It  is  called from 'PutChrTo'.
  **
- **  'PutLineTo' also compares the output line with the  next line from the test
- **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
- **  not starts with 'gap>' and the rest  of the line  matches the output line
- **  then the output line is not printed and the input line is discarded.
- **
  **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
  **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
  **
- **  Finally 'PutLineTo' checks whether the user has hit '<ctr>-C' to  interrupt
- **  the printing.
  */
 void PutLineTo ( KOutputStream stream, UInt len )
 {
