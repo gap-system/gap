@@ -94,6 +94,7 @@ Obj             EndLineHook = 0;
 
 /* TL: TypOutputFile * OutputLog; */
 
+
 /****************************************************************************
 **
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
@@ -1061,8 +1062,8 @@ Char GetLine ( void )
 
 
     /* convert '?' at the beginning into 'HELP'
-        (if not inside reading long string which may have line
-        or chunk from GetLine starting with '?')                        */
+       (if not inside reading long string which may have line
+       or chunk from GetLine starting with '?')                        */
 
     if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
         strlcpy( buf, TLS(In)+1, sizeof(buf) );
