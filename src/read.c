@@ -2772,7 +2772,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     /* get the first symbol from the input                                 */
     Match( TLS(Symbol), "", 0UL );
 
-    /* using READ_ERROR sets the jump buffer and mucks up the interpreter */
+    /* using TRY_READ sets the jump buffer and mucks up the interpreter    */
     if (TLS(NrError)) {
         return STATUS_ERROR;
     }
