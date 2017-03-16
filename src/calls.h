@@ -399,10 +399,6 @@ extern Obj FuncIsKernelFunction(
 
 /****************************************************************************
 **
-*F  FuncCALL_FUNC_LIST( <self>, <func>, <list> )  . . . . . . call a function
-**
-**  'FuncCALL_FUNC_LIST' implements the internal function 'CallFuncList'.
-**
 **  'CallFuncList( <func>, <list> )'
 **
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
