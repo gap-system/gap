@@ -101,7 +101,7 @@ BindGlobal( "TRANSATL",
               [ "abeling", "abelling" ],
               [ "olvable", "oluble" ],
               [ "yse", "yze" ],
-	      [ "roebner", "robner"]] );
+              [ "roebner", "robner"]] );
 
 
 #############################################################################
@@ -596,7 +596,7 @@ InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
 ##  This information is  stored in a record with at  least the following
 ##  components, which are used by this generic interface to the help system:
 ##
-##  bookname:	    
+##  bookname:
 ##  
 ##    The short name of the book, e.g. "ref", "matrix", "EDIM".
 ##  
@@ -964,10 +964,10 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
       if b<>fail then
         em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
         for x in em[1] do
-	      Add(exact, [b, x]);
+          Add(exact, [b, x]);
         od;
         for x in em[2] do
-	      Add(match, [b, x]);
+          Add(match, [b, x]);
         od;
       fi;
     od;

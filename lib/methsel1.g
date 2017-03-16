@@ -398,7 +398,7 @@ local type,fam,methods,i,flag,erg;
       attr:=methods[5*(i-1)+3];
       erg:=attr(obj);
       if not IS_IDENTICAL_OBJ(erg,TRY_NEXT_METHOD) then
-	return erg;
+        return erg;
       fi;
     fi;
   od;

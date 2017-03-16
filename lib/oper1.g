@@ -194,13 +194,13 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
             tmp := NARG_FUNC(rel);
             if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)   then
                 Error(NAME_FUNC(opr),": <famrel> must accept ",
-		      narg, " arguments");
+                      narg, " arguments");
             fi;
         fi;
         methods[i+1] := rel;
     else
         Error(NAME_FUNC(opr),
-	      ": <famrel> must be a function, `true', or `false'" );
+              ": <famrel> must be a function, `true', or `false'" );
     fi;
 
     # install the filters
@@ -218,13 +218,13 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
             tmp := NARG_FUNC(method);
             if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)  then
                Error(NAME_FUNC(opr),": <method> must accept ",
-	             narg, " arguments");
+                     narg, " arguments");
             fi;
         fi;
         methods[i+(narg+2)] := method;
     else
         Error(NAME_FUNC(opr),
-	      ": <method> must be a function, `true', or `false'" );
+              ": <method> must be a function, `true', or `false'" );
     fi;
     methods[i+(narg+3)] := rank;
 
@@ -332,7 +332,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           i,
           rank,
           method,
-	  oreqs,
+          oreqs,
           req, reqs, match, j, k, imp, notmatch;
 
     # Check the arguments.
@@ -465,7 +465,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
       # (at least) one declaration.
       j:= 0;
       match:= false;
-	  notmatch:=0;
+      notmatch:=0;
       while j < LEN_LIST( req ) and not match do
         j:= j+1;
         reqs:= req[j];
@@ -474,7 +474,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           for i  in [ 1 .. LEN_LIST(reqs) ]  do
             if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
               match:= false;
-		      notmatch:=i;
+              notmatch:=i;
               break;
             fi;
           od;
@@ -488,18 +488,18 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
         # If the requirements do not match any of the declarations
         # then something is wrong or `InstallOtherMethod' should be used.
-	    if notmatch=0 then
-	      Error("the number of arguments does not match a declaration of ",
-	            NAME_FUNC(opr) );
+        if notmatch=0 then
+          Error("the number of arguments does not match a declaration of ",
+                NAME_FUNC(opr) );
         else
-	      Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
-	            Ordinal(notmatch)," argument do not match a declaration of ",
-		        NAME_FUNC(opr) );
+          Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
+                Ordinal(notmatch)," argument do not match a declaration of ",
+                NAME_FUNC(opr) );
         fi;
 
       else
 
-	oreqs:=reqs;
+        oreqs:=reqs;
 
         # If the requirements match *more than one* declaration
         # then a warning is raised by `INFO_DEBUG'.
@@ -515,7 +515,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
             od;
             if match and reqs<>oreqs then
               INFO_DEBUG( 1,
-              		"method installed for ", NAME_FUNC(opr), 
+                    "method installed for ", NAME_FUNC(opr), 
                     " matches more than one declaration" );
             fi;
           fi;

@@ -434,6 +434,7 @@ InstallFactorMaintenance( IsPGroup,
 
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
+
 #############################################################################
 ##
 #P  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
@@ -465,6 +466,7 @@ InstallFactorMaintenance( IsPowerfulPGroup,
     IsPowerfulPGroup, IsGroup, IsGroup );
 #abelian p-groups are powerful
 InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
+
 #############################################################################
 ##
 #A  PrimePGroup( <G> )
