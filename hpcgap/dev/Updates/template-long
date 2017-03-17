@@ -1,0 +1,66 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% [Required] When the change was checked in, format 'yyyy/mm/dd':
+!! Date
+
+% [Required] Initials should suffice here:
+!! Changed by
+
+% [Optional] Only if applicable:
+! Reported by
+
+% [Required] Choose one or more entries and/or add new ones;
+% but always use either the 'Fix:' or the 'New:' prefix
+!! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% [Required] For the description use plain text
+!! Description
+
+% [Optional, but highly desirable] If possible, provide some code
+% in test file format which allows to check if a change was applied
+% to an installation. Provide input and output, including prompts,
+% exactly as in a GAP session.
+! Test Code
+
+% [Optional] If possible, provide some information about a temporary fix,
+% workaround etc., maybe with a link to some longer description or a file
+% with some code. Use plain text here.
+! Prefetch
+
+% [Required] Describe here how to find out where the changes were made.
+%
+% - for immediate changes in the stable branch, it is sufficient to just 
+%   specify changed file(s) instead of the hexadecimal changeset id. Note
+%   thet adding the entry describing the change should be a part of the 
+%   same commit as the change itself, so that adding/merging/backing out 
+%   these changes will keep dev/Update in sync. If you will revisit this 
+%   change before the next GAP release, you may consider updating its entry
+%   in dev/Update file, specifying the full hexadecimal changeset id
+%   (160-bit identifier) of the previous change(s).
+%
+% - for changes made in feature branches, the change to dev/Update should
+%   be made in the same feature branch, so it will be merged into default
+%   or stable branch together with actual changes and reverting the merge
+%   will also revert the dev/Update file. It is sufficient to specify here 
+%   just the name of the feature branch. Instead of that, you may also put 
+%   there the full hexadecimal changeset id (160-bit identifier) of the 
+%   latest revision of the code in this branch before the merge (this is
+%   especially relevant to feature branches that were merged into release
+%   branches multiple times during their lifetime, so without changeset id
+%   it would be quite difficult to find corresponding changesets).
+%
+% Since by default, Mercurial displays only the first 12 characters of
+% the full hexadecimal changeset id, to see the full version, use --debug
+% option, e.g. 'hg --debug log'. Do not use the short revision number
+% since it makes sense only within your clone.
+!! Changeset
+
+% [Required] Finish your entry with this:
+!! End

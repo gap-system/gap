@@ -1,0 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+13/11/12
+! Changed by
+SL
+! Reported by
+Volker Braun
+! Type of Change
+Fix: wrong result
+
+! Description
+Numbers in memory options on the command line exceeding 2^32 could not be
+parsed correctly, even on 64 bit systems.
+
+There is no test code, but starting gap with -o 10000000000 and then
+looking at GasmanLimits() will give a check.
+
+! Test Code
+
+! Prefetch
+
+! Changeset
+
+! End

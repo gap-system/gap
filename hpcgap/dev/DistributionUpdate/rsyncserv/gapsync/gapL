@@ -1,0 +1,4 @@
+
+##  (C) Frank Lübeck
+${BINPATH}/gap -L ${GAP_DIR}/bin/wsgap4 "$@" 
+

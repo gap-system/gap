@@ -1,0 +1,488 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  files.msk                 GAP documentation              Frank Celler -->
+<!-- %W                                                     & Martin Schönert -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: files.msk,v 1.4 2003/03/26 17:46:07 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %% -->
+<!-- %%  This file    contains the  description of   the   file, filename  and -->
+<!-- %%  directory functions. -->
+<!-- %% -->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Files and Filenames">
+<Heading>Files and Filenames</Heading>
+
+Files are identified by filenames, which are represented in &GAP; as
+strings.  Filenames can be created directly by the user or a program, but
+of course this is operating system dependent.
+<P/>
+Filenames for some files can  be constructed in  a system independent way
+using the following functions.  This is done by first getting a directory
+object for the directory the file shall  reside in, and then constructing
+the filename.  However, it is  sometimes necessary to construct filenames
+of files in subdirectories relative to a given directory object.  In this
+case the directory separator is <E>always</E> <C>/</C> even under DOS or
+MacOS.
+<P/>
+Section <Ref Sect="Directories"/> describes how to construct directory objects
+for the common &GAP; and system directories.
+Using the command <Ref Func="Filename" Label="for a directory and a string"/>
+it is possible to construct a filename pointing to a file in these
+directories.
+There are also functions to test for accessibility of files,
+see&nbsp;<Ref Sect="File Access"/>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Portability">
+<Heading>Portability</Heading>
+
+For portability filenames and directory  names should be restricted to at
+most   8 alphanumerical characters  optionally followed  by a dot <C>.</C>
+and between 1 and 3 alphanumerical characters.  Upper case letters should
+be  avoided because some  operating systems  do  not make any distinction
+between case,  so that <C>NaMe</C>, <C>Name</C>  and  <C>name</C> all  refer to the same
+file  whereas  some   operating  systems are case   sensitive.   To avoid
+problems only lower case characters should be used.
+<P/>
+Another function which is system-dependent is <Ref Func="LastSystemError"/>.
+
+<ManSection>
+<Func Name="LastSystemError" Arg=''/>
+
+<Description>
+<Ref Func="LastSystemError"/> returns a record describing the last system
+error that has occurred.
+This record  contains at least the component <C>message</C> which is a
+string. This message is, however, highly operating system dependent and
+should only be used as an informational message for the user.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="GAP Root Directories">
+<Heading>GAP Root Directories</Heading>
+<Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
+<Index Key="GAPInfo.UserGapRoot"><C>GAPInfo.UserGapRoot</C></Index>
+
+When &GAP; is started it determines a list of directories which we
+call the <E>&GAP; root directories</E>. In a running &GAP; session  
+this list can be found in <C>GAPInfo.RootPaths</C>.
+<P/>
+The core part of &GAP; knows which files to read relative to its root 
+directories. For example when &GAP; wants to read its library file 
+<F>lib/group.gd</F>, it appends this path to each path in 
+<C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
+The first file found this way is read.
+<P/>
+Furthermore, &GAP; looks for available packages by examining the
+subdirectories <F>pkg/</F> in each of the directories in 
+<C>GAPInfo.RootPaths</C>.
+<P/>
+The root directories are specified via one or several of the 
+<C>-l paths</C> command line options, see <Ref Sect="Command Line Options"/>.
+Furthermore, by default &GAP; automatically prepends a user specific &GAP; root
+directory to the list; this can be avoided by calling &GAP; with 
+the <C>-r</C>  option. The name of this user specific directory depends
+on your operating system, it can be found in <C>GAPInfo.UserGapRoot</C>.
+This directory can be used to tell &GAP; about personal preferences,
+to always load some additional code, to install additional packages,
+or to overwrite some &GAP; files. See <Ref Sect="sect:gap.ini"/>
+for more information how to do this.
+<P/>
+
+<!--
+  FL: An example how to overwrite the library file lib/files.gd doesn't
+      look useful for me. We should not encourage users to make use
+      of this possibility. That it can be done in principle as described below
+      is also clear from the shorter description above.
+
+<Index Key=".gap directory"><F>.gap</F> directory</Index>
+
+
+When starting &GAP; it is possible to specify various directories as
+root directories.  In &GAP;'s view of the world these directories are
+merged into one meta-directory.  This directory is called <E>&GAP; root
+directory</E> in the following.
+<P/>
+For example, suppose that <C>root1;root2;...</C> is passed as argument
+to <C>-l</C> when &GAP; is started and &GAP; wants to locate a file
+<F>lib/group.gd</F> in the &GAP; root directory.
+If the command line option <C>-r</C> is not given then &GAP; will first
+check if the file exists in the <F>.gap</F> subdirectory of the user's
+home directory. On Mac OS X, the directory <F>Library/Preferences/GAP</F>
+in the user's home directory will be searched next.
+If the command line option <C>-r</C> is given or if the file does not
+exist inside <F>.gap</F> (or <F>Library/Preferences/GAP</F>) 
+then the directory <C>root1</C> is checked next,
+and if the file is not found there, <C>root2</C> is checked, and so on.
+<P/>
+This layout makes it possible to have one system-wide installation of &GAP;
+which is read-only but still allows users to modify individual files.
+Therefore instead of constructing an absolute path name to a file
+you should always use <Ref Func="DirectoriesLibrary"/> or
+<Ref Func="DirectoriesPackageLibrary"/> together with
+<Ref Func="Filename" Label="for a directory and a string"/>
+to construct a filename for a file in the &GAP; root directory.
+<P/>
+<E>For example</E>,
+suppose that the system-wide installation lives in <F>/usr/local/lib/gap4</F>
+and you want to modify the file <F>lib/files.gd</F> without disturbing the
+system installation.
+<P/>
+The simplest way to achieve this is to create a directory <F>.gap</F>
+in your home directory, and a subdirectory <F>lib</F> which contains
+the modified <F>lib/files.gd</F>.
+Afterwards, when you start &GAP; then the modified file is read
+instead of <F>/usr/local/lib/gap4/lib/files.gd</F>,
+except if the <C>-r</C> command line option
+(see <Ref Sect="Command Line Options"/>) is given.
+<P/>
+As an alternative to the <F>.gap</F> directory,
+you can also use another directory which then must be mentioned in the
+directories that are passed as argument to <C>-l</C>.
+This variant can be useful if the changed files shall be used by several
+users.
+For example, you may create a new directory <F>/home/myhome/gap</F>
+containing a subdirectory <F>lib</F> which contains the modified
+<F>lib/files.gd</F>.
+<P/>
+The directory/file structure now looks like
+<P/>
+<Log><![CDATA[
+/usr/local/lib/gap4/
+/usr/local/lib/gap4/lib/
+/usr/local/lib/gap4/lib/files.gd
+/home/myhome/gap/
+/home/myhome/gap/lib
+/home/myhome/gap/lib/files.gd
+]]></Log>
+<P/>
+
+If you start &GAP; using (under UNIX)
+<P/>
+<Log><![CDATA[
+you@unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
+]]></Log>
+<P/>
+then the file <F>/home/myhome/gap/lib/files.gd</F> will be used whenever
+&GAP; references the file with filename <F>lib/files.gd</F> relative to
+the &GAP; root directory.
+<P/>
+This setup also allows one to easily install new &GAP; packages or bugfixes
+even if no write access to the system &GAP; installation is possible.
+Simply unpack the files into your <F>.gap</F> directory
+or into <F>/home/myhome/gap</F>, respectively.
+-->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Directories">
+<Heading>Directories</Heading>
+
+<#Include Label="IsDirectory">
+<#Include Label="Directory">
+<#Include Label="DirectoryTemporary">
+<#Include Label="DirectoryCurrent">
+<#Include Label="DirectoriesLibrary">
+<#Include Label="DirectoriesSystemPrograms">
+<#Include Label="DirectoryContents">
+<#Include Label="DirectoryDesktop">
+<#Include Label="DirectoryHome">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="File Names">
+<Heading>File Names</Heading>
+
+<#Include Label="Filename">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Special Filenames">
+<Heading>Special Filenames</Heading>
+
+The special filename <C>"*stdin*"</C> denotes the standard input, i.e.,
+the stream through which the user enters commands to &GAP;.
+The exact behaviour of reading from <C>"*stdin*"</C> is operating system
+dependent, but usually the following happens.
+If &GAP; was started with no input redirection,
+statements are read from the terminal stream until the user enters the
+end of file character, which is usually <B>Ctrl-D</B>.
+Note that terminal streams are special, in that they may yield ordinary input
+<E>after</E> an end of file.
+Thus when control returns to the main read-eval-print loop the user can
+continue with &GAP;.
+If &GAP; was started with an input redirection, statements are read from the
+current position in the input file up to the end of the file.
+When control returns to the main read eval view loop the input stream will
+still return end of file, and &GAP; will terminate.
+<P/>
+The  special filename <C>"*errin*"</C> denotes the stream connected to the
+UNIX <C>stderr</C> output.
+This stream is usually connected to the terminal, even if the standard input
+was redirected, unless the standard error stream was also redirected,
+in which case opening of <C>"*errin*"</C> fails.
+<P/>
+The special filename <C>"*stdout*"</C> can be used to print to the standard
+output.
+<P/>
+The special filename <C>"*errout*"</C> can be used to print to the standard
+error output file, which is usually connected to the terminal,
+even if the standard output was redirected.
+    
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="File Access">
+<Heading>File Access</Heading>
+
+When the following functions return <K>false</K> one can use
+<Ref Func="LastSystemError"/> to find out the reason (as provided by the
+operating system), see the examples.
+
+<ManSection>
+<Func Name="IsExistingFile" Arg='filename'/>
+
+<Description>
+<Ref Func="IsExistingFile"/>
+returns <K>true</K> if a file with the filename <A>filename</A> exists
+and can be seen by the &GAP; process. Otherwise <K>false</K> is returned.
+<P/>
+<Example><![CDATA[
+gap> IsExistingFile( "/bin/date" );     # file `/bin/date' exists
+true
+gap> IsExistingFile( "/bin/date.new" ); # non existing `/bin/date.new'
+false
+gap> IsExistingFile( "/bin/date/new" ); # `/bin/date' is not a directory
+false
+gap> LastSystemError().message;
+"Not a directory"
+]]></Example>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="IsReadableFile" Arg='filename'/>
+
+<Description>
+<Ref Func="IsReadableFile"/>
+returns <K>true</K> if a file with the filename <A>filename</A> exists
+<E>and</E> the &GAP; process has read permissions for the file,
+or <K>false</K> if this is not the case.
+<P/>
+<Example><![CDATA[
+gap> IsReadableFile( "/bin/date" );     # file `/bin/date' is readable
+true
+gap> IsReadableFile( "/bin/date.new" ); # non-existing `/bin/date.new'
+false
+gap> LastSystemError().message;        
+"No such file or directory"
+]]></Example>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="IsWritableFile" Arg='filename'/>
+
+<Description>
+<Ref Func="IsWritableFile"/>
+returns <K>true</K> if a file with the filename <A>filename</A> exists
+<E>and</E> the &GAP; process has write permissions for the file,
+or <K>false</K> if this is not the case.
+<P/>
+<Example><![CDATA[
+gap> IsWritableFile( "/bin/date" );  # file `/bin/date' is not writable
+false
+]]></Example>
+<P/>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="IsExecutableFile" Arg='filename'/>
+
+<Description>
+<Ref Func="IsExecutableFile"/>
+returns <K>true</K> if a file with the filename <A>filename</A> exists
+<E>and</E> the &GAP; process has execute permissions for the file,
+or <K>false</K> if this is not the case.
+Note that execute permissions do not imply that it is possible
+to execute the file, e.g., it may only be executable on a different machine.
+<P/>
+<Example><![CDATA[
+gap> IsExecutableFile( "/bin/date" );   # ... but executable
+true
+]]></Example>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="IsDirectoryPath" Arg='filename'/>
+
+<Description>
+<Ref Func="IsDirectoryPath"/>
+returns <K>true</K> if the file with the filename <A>filename</A> exists
+<E>and</E> is a directory,
+and <K>false</K> otherwise.
+Note that this function does not check if the &GAP; process actually has
+write or execute permissions for the directory.
+You can use <Ref Func="IsWritableFile"/>,
+resp. <Ref Func="IsExecutableFile"/> to check such permissions.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="File Operations">
+<Heading>File Operations</Heading>
+
+<#Include Label="Read">
+<#Include Label="ReadAsFunction">
+
+<ManSection>
+<Heading>PrintTo and AppendTo</Heading>
+<Func Name="PrintTo" Arg='filename[, obj1, ...]'/>
+<Func Name="AppendTo" Arg='filename[, obj1, ...]'/>
+
+<Description>
+<Ref Func="PrintTo"/> works like <Ref Func="Print"/>,
+except that the arguments <A>obj1</A>, <M>\ldots</M> (if present) are printed
+to the file with the name <A>filename</A> instead of the standard output.
+This file must of course be writable by &GAP;.
+Otherwise an error is signalled.
+Note that <Ref Func="PrintTo"/> will <E>overwrite</E> the previous contents
+of this file if it already existed;
+in particular, <Ref Func="PrintTo"/> with just the <A>filename</A> argument
+empties that file.
+<P/>
+<Ref Func="AppendTo"/> works like <Ref Func="PrintTo"/>,
+except that the output does not overwrite the previous contents of the file,
+but is appended to the file.
+<P/>
+There is an upper limit of 15 on the number of output files 
+that may be open simultaneously.
+<P/>
+<E>Note</E> that one should be careful not to write to a logfile
+(see <Ref Func="LogTo" Label="for a filename"/>) with
+<Ref Func="PrintTo"/> or <Ref Func="AppendTo"/>.
+<!-- % The same holds of course for the redirection of output to a file. -->
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Heading>LogTo</Heading>
+<Oper Name="LogTo" Arg='filename' Label="for a filename"/>
+<Oper Name="LogTo" Arg='' Label="stop logging"/>
+
+<Description>
+Calling <Ref Func="LogTo" Label="for a filename"/> with a string
+<A>filename</A> causes the subsequent interaction to be logged to the file
+with the name <A>filename</A>,
+i.e., everything you see on your terminal will also appear in this file.
+(<Ref Func="LogTo" Label="for streams"/> may also be used to log to a stream.)
+This file must of course be writable by &GAP;, otherwise an error is
+signalled.
+Note that <Ref Func="LogTo" Label="for a filename"/> will overwrite the
+previous contents of this file if it already existed.
+<P/>
+Called without arguments,
+<Ref Func="LogTo" Label="stop logging"/> stops logging to a file or stream.
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Heading>InputLogTo</Heading>
+<Oper Name="InputLogTo" Arg='filename' Label="for a filename"/>
+<Oper Name="InputLogTo" Arg='' Label="stop logging input"/>
+
+<Description>
+Calling <Ref Func="InputLogTo" Label="for a filename"/> with a string
+<A>filename</A> causes the subsequent input to be logged to the file
+with the name <A>filename</A>,
+i.e., everything you type on your terminal will also appear in this file.
+Note that <Ref Func="InputLogTo" Label="for a filename"/> and
+<Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
+while <Ref Func="InputLogTo" Label="for a filename"/> and
+<Ref Func="OutputLogTo" Label="for a filename"/> can.
+Note that <Ref Func="InputLogTo" Label="for a filename"/> will overwrite the
+previous contents of this file if it already existed.
+<P/>
+Called without arguments,
+<Ref Func="InputLogTo" Label="stop logging input"/> stops logging to a file
+or stream.
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Heading>OutputLogTo</Heading>
+<Oper Name="OutputLogTo" Arg='filename' Label="for a filename"/>
+<Oper Name="OutputLogTo" Arg='' Label="stop logging output"/>
+
+<Description>
+Calling <Ref Func="OutputLogTo" Label="for a filename"/> with a string
+<A>filename</A> causes the subsequent output to be logged to the file
+with the name <A>filename</A>,
+i.e., everything &GAP; prints on your terminal will also appear in this file.
+Note that <Ref Func="OutputLogTo" Label="for a filename"/> and
+<Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
+while <Ref Func="InputLogTo" Label="for a filename"/> and
+<Ref Func="OutputLogTo" Label="for a filename"/> can.
+Note that <Ref Func="OutputLogTo" Label="for a filename"/> will overwrite the
+previous contents of this file if it already existed.
+<P/>
+Called without arguments,
+<Ref Func="OutputLogTo" Label="stop logging output"/> stops logging to a file
+or stream.
+</Description>
+</ManSection>
+
+<#Include Label="CrcFile">
+
+
+<ManSection>
+<Func Name="RemoveFile" Arg='filename'/>
+
+<Description>
+will remove the file with filename <A>filename</A> and returns <K>true</K> in case
+of  success.  The function returns <K>fail</K> if a system error occurred, for
+example, if your permissions do not allow the removal of <A>filename</A>.
+In this case the function <Ref Func="LastSystemError"/>
+can be used to get information about the error.
+</Description>
+</ManSection>
+
+
+<#Include Label="Reread">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

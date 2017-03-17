@@ -1,0 +1,225 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  rws.msk                GAP documentation                Andrew Solomon -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: rws.msk,v 1.11 2003/07/31 20:04:19 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Rewriting Systems">
+<Heading>Rewriting Systems</Heading>
+
+Rewriting systems in &GAP; are a framework for dealing with 
+the very general task of rewriting elements of a free (or <E>term</E>) algebra
+in some normal form.  Although most rewriting systems currently in use
+are <E>string rewriting systems</E> (where the algebra has only one 
+binary operation which is associative) the framework in &GAP;
+is general enough to encompass the task of rewriting algebras of
+any signature from groups to semirings.
+<P/>
+Rewriting systems are already implemented in  &GAP; 
+for finitely presented semigroups and for pc groups. The use of these 
+particular rewriting systems is described in the corresponding chapters.
+We describe here only the general framework of rewriting systems with 
+a particular emphasis on material which would be 
+helpful for a  developer implementing a rewriting system. 
+<P/>
+We fix some definitions and terminology for the rest of this chapter.
+Let <M>T</M> be a term algebra in some signature. 
+A <E>term rewriting system</E> for <M>T</M> is a set of ordered pairs of 
+elements of <M>T</M> of the form <M>(l, r)</M>.
+Viewed as a set of relations, the 
+rewriting system determines a presentation for a quotient algebra <M>A</M>
+of <M>T</M>. 
+<P/>
+When we take into account the fact that
+the relations are expressed as <E>ordered</E> pairs, we have a way of 
+<E>reducing</E> the elements of <M>T</M>.
+Suppose an element <M>u</M> of <M>T</M> has a 
+subword <M>l</M> and <M>(l, r)</M> is a rule of the rewriting system, then
+we can replace the subterm <M>l</M> of <M>u</M> by the term <M>r</M>
+and obtain a new word <M>v</M>.
+We say that we have <E>rewritten</E> <M>u</M> as <M>v</M>. 
+Note that <M>u</M> and <M>v</M> represent the same element of <M>A</M>.
+If <M>u</M> can not be rewritten using any rule of the rewriting system
+we sat that <M>u</M> is <E>reduced</E>. 
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations on rewriting systems">
+<Heading>Operations on rewriting systems</Heading>
+
+<#Include Label="IsRewritingSystem">
+<#Include Label="Rules">
+<#Include Label="OrderOfRewritingSystem">
+<#Include Label="ReducedForm">
+<#Include Label="IsConfluent">
+<#Include Label="ConfluentRws">
+<#Include Label="IsReduced">
+<#Include Label="ReduceRules">
+<#Include Label="AddRule">
+<#Include Label="AddRuleReduced">
+<#Include Label="MakeConfluent">
+<#Include Label="GeneratorsOfRws">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations on elements of the algebra">
+<Heading>Operations on elements of the algebra</Heading>
+
+In this section let <M>u</M> denote an element of the term algebra
+<M>T</M> representing <M>[u]</M> in the quotient algebra <M>A</M>.
+
+<ManSection>
+<Oper Name="ReducedProduct" Arg='rws, u, v'/>
+<Oper Name="ReducedSum" Arg='rws, left, right'/>
+<Oper Name="ReducedOne" Arg='rws'/>
+<Oper Name="ReducedAdditiveInverse" Arg='rws, obj'/>
+<Oper Name="ReducedComm" Arg='rws, left, right'/>
+<Oper Name="ReducedConjugate" Arg='rws, left, right'/>
+<Oper Name="ReducedDifference" Arg='rws, left, right'/>
+<Oper Name="ReducedInverse" Arg='rws, obj'/>
+<Oper Name="ReducedLeftQuotient" Arg='rws, left, right'/>
+<Oper Name="ReducedPower" Arg='rws, obj, pow'/>
+<Oper Name="ReducedQuotient" Arg='rws, left, right'/>
+<Oper Name="ReducedScalarProduct" Arg='rws, left, right'/>
+<Oper Name="ReducedZero" Arg='rws'/>
+
+<Description>
+The result of <Ref Prop="ReducedProduct"/> is <M>w</M> where 
+<M>[w]</M> equals [<A>u</A>][<A>v</A>] in <M>A</M> and <M>w</M> 
+is in reduced form.
+<P/>
+The remaining operations are defined similarly when they
+are defined (as determined by the signature of the term algebra).
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties of rewriting systems">
+<Heading>Properties of rewriting systems</Heading>
+
+<ManSection>
+<Prop Name="IsBuiltFromAdditiveMagmaWithInverses" Arg='obj'/>
+<Prop Name="IsBuiltFromMagma" Arg='obj'/>
+<Prop Name="IsBuiltFromMagmaWithOne" Arg='obj'/>
+<Prop Name="IsBuiltFromMagmaWithInverses" Arg='obj'/>
+<Prop Name="IsBuiltFromSemigroup" Arg='obj'/>
+<Prop Name="IsBuiltFromGroup" Arg='obj'/>
+
+<Description>
+These properties may be used to identify the type of term algebra 
+over which the rewriting system is defined.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Rewriting in Groups and Monoids">
+<Heading>Rewriting in Groups and Monoids</Heading>
+
+One application of rewriting is to reduce words in finitely presented groups
+and monoids. The rewriting system still has to be built for a finitely
+presented monoid (using <C>IsomorphismFpMonoid</C> for conversion). Rewriting
+then can take place for words in the underlying free monoid. (These can be
+obtained from monoid elements with the command <C>UnderlyingElement</C>.)
+<P/>
+<Example><![CDATA[
+gap> f:=FreeGroup(3);;
+gap> rels:=[f.1*f.2^2/f.3,f.2*f.3^2/f.1,f.3*f.1^2/f.2];;
+gap> g:=f/rels;
+<fp group on the generators [ f1, f2, f3 ]>
+gap> mhom:=IsomorphismFpMonoid(g);
+MappingByFunction( <fp group on the generators 
+[ f1, f2, f3 ]>, <fp monoid on the generators 
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 
+ ]>, function( x ) ... end, function( x ) ... end )
+gap> mon:=Image(mhom);
+<fp monoid on the generators [ f1, f1^-1, f2, f2^-1, f3, f3^-1 ]>
+gap> k:=KnuthBendixRewritingSystem(mon);
+Knuth Bendix Rewriting System for Monoid( 
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ] ) with rules 
+[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
+  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ], 
+  [ f3*f3^-1, <identity ...> ], [ f3^-1*f3, <identity ...> ], 
+  [ f1*f2^2*f3^-1, <identity ...> ], [ f2*f3^2*f1^-1, <identity ...> ]
+    , [ f3*f1^2*f2^-1, <identity ...> ] ]
+gap> MakeConfluent(k);
+gap> a:=Product(GeneratorsOfMonoid(mon));
+f1*f1^-1*f2*f2^-1*f3*f3^-1
+gap> ReducedForm(k,UnderlyingElement(a));
+<identity ...>
+]]></Example>
+<P/>
+To rewrite a word in the finitely presented group, one has to convert it to
+a word in the monoid first, rewrite in the underlying free monoid and
+convert back (by forming first again an element of the fp monoid) to the
+finitely presented group.
+<P/>
+<!-- % this example uses random and would be a hassle to modify every time -->
+<!-- % something changes -->
+<Log><![CDATA[
+gap> r:=PseudoRandom(g);;
+gap> Length(r);
+3704
+gap> melm:=Image(mhom,r);;
+gap> red:=ReducedForm(k,UnderlyingElement(melm));
+f1^-1^3*f2^-1*f1^2
+gap> melm:=ElementOfFpMonoid(FamilyObj(One(mon)),red);
+f1^-1^3*f2^-1*f1^2
+gap> gpelm:=PreImagesRepresentative(mhom,melm);
+f1^-3*f2^-1*f1^2
+gap> r=gpelm;
+true
+gap> CategoriesOfObject(red);
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+  "IsMultiplicativeElementWithOne", "IsAssociativeElement", "IsWord" ]
+gap> CategoriesOfObject(melm);
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+  "IsMultiplicativeElementWithOne", "IsAssociativeElement", 
+  "IsElementOfFpMonoid" ]
+gap> CategoriesOfObject(gpelm);
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+  "IsMultiplicativeElementWithOne", "IsMultiplicativeElementWithInverse", 
+  "IsAssociativeElement", "IsElementOfFpGroup" ]
+]]></Log>
+<P/>
+Note, that the elements <C>red</C> (free monoid) <C>melm</C> (fp monoid) and <C>gpelm</C>
+(group) differ, though they are displayed identically.
+<P/>
+Under Unix, it is possible to use the <Package>kbmag</Package> package
+to replace the built-in rewriting by this packages efficient C implementation.
+You can do this (after loading the <Package>kbmag</Package> package)
+by assigning the variable <Ref Func="KB_REW"/> to <C>KBMAG_REW</C>.
+Assignment to <C>GAPKB_REW</C> reverts to the built-in implementation.
+<Log><![CDATA[
+gap> LoadPackage("kbmag");
+true
+gap> KB_REW:=KBMAG_REW;;
+]]></Log>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Developing rewriting systems">
+<Heading>Developing rewriting systems</Heading>
+
+<#Include Label="[2]{rws}">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

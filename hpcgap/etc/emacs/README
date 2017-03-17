@@ -1,0 +1,22 @@
+This directory formerly contained files for GAP editing mode for emacs:
+
+* comint.el and gap-mode.el (versions from 2001, based on the
+  original 1993 files by Michael J. Smith, also available from
+  http://www.gap-system.org/Packages/Contrib/contrib.html )
+
+* gap-process.el: version provided in 2005 by Gary Zablackis
+
+They are no longer redistributed with GAP, but still available at 
+ftp://ftp.gap-system.org/pub/gap/gap44/deposit/external/emacs/
+
+There are also newer versions of GAP emacs modes available elsewhere:
+
+* Patch to add syntax highlighting to the emacs gap-mode 
+  by Volker Braun: http://www.stp.dias.ie/~vbraun/gap/
+
+* An Emacs major-mode for editing GAP files 
+  by Ivan Andrus: https://bitbucket.org/gvol/gap-mode
+
+which you may wish to try. We did not test any of the mentioned
+emacs modes as a part of the release process, but received reports
+that they were working for some users.

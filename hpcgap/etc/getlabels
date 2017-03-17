@@ -1,0 +1,20 @@
+#!/bin/sh
+
+## This script takes an xml file of the GAP manual
+## and prints information about all GAP library files
+## containing pieces of documentation referred from it.
+## It should be started from the GAP root directory.
+## For example,
+## $ etc/getlabels doc/ref/integers.xml 
+## lib/integer.gd:59:##  <#GAPDoc Label="Integers">
+## lib/integer.gd:27:##  <#GAPDoc Label="IsIntegers">
+## lib/cyclotom.g:103:##  <#GAPDoc Label="IsInt">
+## [...]
+##
+## lib/random.gd:176:##  <#GAPDoc Label="RandomSource">
+
+grep '<#Include' $1 > incl
+sed -e "s/<#Include/grep -n '<#GAPDoc/;s/>/>' lib\/*/" < incl > incl2
+chmod 700 incl2
+./incl2
+rm incl incl2

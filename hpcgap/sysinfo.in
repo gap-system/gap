@@ -1,0 +1,3 @@
+GAParch=@GAPARCH@
+GAParch_system=@GAPARCH@
+GAParch_abi=@ABI@-bit

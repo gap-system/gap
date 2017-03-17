@@ -1,0 +1,247 @@
+#############################################################################
+##
+#W  perf0.grp              GAP Groups Library                 Volkmar Felsch
+##                                                           Alexander Hulpke
+##
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
+##
+
+##  The  1097  nontrivial
+##  perfect groups of the library  have been ordered by increasing
+##  size,  and each library group  G  is charcterized by the pair  [size, n],
+##  where size is the group size of G  and n is its number within the list of
+##  library groups of that size.  We denote this pair as the 'size number' of
+##  G.  Another number  associated with  G  is the Holt-Plesken number  which
+##  consists of a triple [k,i,j]  which means that, in the Holt-Plesken book,
+##  G occurs under the number  (i,j) in class k.  As G may occur in more than
+##  one of these classes it may have more than one such Holt-Plesken numbers.
+##
+##  489 of the library groups  are given by  explixit presentations  on file.
+##  The essential information about each ot these group  is available in form
+##  of a function which allows to construct the group as a finitely presented
+##  group.  The list  of all  these functions  has been broken  into 12 parts
+##  which are provided  in 12 separate  secondary files.  Whenever a group is
+##  needed  and the associated function  is not available,  the corresponding
+##  part of the list will be loaded into the list PERFFun.
+##
+##  The record  PERFRec  provides certain reference lists and some additional
+##  information. It contains the following components:
+##
+##  The  following  components of  PERFRec  are  general  lists  of different
+##  lengths.
+##
+##     PERFRec.covered
+##        is a list  which in its n-th entry  provides the  number of perfect
+##        group sizes covered by the first n function files.  It is needed by
+##        subroutine PERFLoad.
+##
+##     PERFRec.notKnown
+##        is a list of all sizes less than 10^6  for which the perfect groups
+##        have  not  yet   been  determined.   It  is  needed  by  subroutine
+##        NumberPerfectGroups.
+##
+##     PERFRec.notAvailable
+##        is a list of all sizes less than 10^6  for which the perfect groups
+##        are known, but not yet in the library.  It is needed by subroutines
+##        DisplayInformationPerfectGroups and NumberPerfectLibraryGroups.
+##
+##     PERFRec.sizeNumberSimpleGroup
+##        is an ordered list of the  'size numbers'  of all nonabelian simple
+##        groups which occur as composition factor of any library group.
+##
+##     PERFRec.nameSimpleGroup
+##        is a list  which contains  one or two names  (as text strings)  for
+##        each simple group in the preceding list.
+##
+##     PERFRec.numberSimpleGroup
+##        is a list which,  for each simple group name in the preceding list,
+##        contains  the number  of the  respective group  with respect to the
+##        list PERFRec.sizeNumberSimpleGroup.
+##
+##     PERFRec.sizes
+##        is an ordered list of all occurring group sizes.
+##
+##  The remaining lists are all parallel to the preceding
+##  list  of all  occurring  group sizes.  We assume  in the  following  that
+##  PERFRec.sizes[i] = s(i).
+##
+##     PERFRec.number[i]
+##        is the number of perfect groups of size s(i).
+##
+##  PERFGRP is the actual storage of groups. It is a list whose i-th entry
+##  is a list of all perfect groups of size s(i). (The list might be longer
+##  than number[i], then this group is just used as intermediate storage.)
+##  Each group is represented either by 'fail' if no information is
+##  available or by a list l giving information about this group.
+##  We list the entries of 'l':
+##  
+##   l[1] (source) information on how to construct the group. It is of one of
+##   the following forms:
+##      [1,namesgens,wordfunc,subgrpindices] where namesgens is a list of
+##      characters giving names for the generators,
+##      wordfunc is a function that gets |namesgens| free generators as
+##      arguments and returns a list [relators,subgrpgens], where relators
+##      are defining relators and subgrpgens is a list whose entries are
+##      lists of subgroup generators. (It is a function to allow storage
+##      of *terms* in unexpanded form.)
+##      subgrpindices is a list that gives the indices of the subgroups
+##      defined in wordfunc.
+##      A further component 'auxiliaryGens' might be added.
+##  
+##      [2,<size1>,<n1>,<size2>,<n2>], if G is given as a direct product,
+##  
+##      [3,<size1>,<n1>,<size2>,<n2>,<string1>,<string2>...], if G is given
+##         as a central product,
+##  
+##      [4,<size1>,<n1>,<size2>,<n2>,<size0>]  or
+##  
+##      [4,<size1>,<n1>,<size2>,<n2>,<size0>,<n1'>,<n2'>], if G is given as
+##         a subdirect product.
+##  
+##   The entries 2.. might be missing if the group is not actually a library
+##   group but only used as part of some construction.
+##  
+##   l[2] (description)
+##      is a descriptive name as given in the Holt-Plesken book.
+##  
+##   l[3] (hpNumber)
+##      is either a class
+##      number k or a list [k,i,j] or [k,i,j,k2,...,kn]. The tripel [k,i,j]
+##      means that the respective group  is listed in the k-th class of the
+##      Holt-Plesken book under the number (i,j).  If the group also occurs
+##      in some  additional  classes,  then  their  numbers  are  given  as
+##      k2, ..., kn.
+##  
+##   l[4] (centre)
+##      gives the size of the groups centre, a negative index indicating the
+##      group is simple or quasisimple
+##  
+##   l[5] (simpleFactors)
+##      is the 'size number'
+##      (if there is only one) or a list of the 'size numbers' (if there is
+##      more than one) of its nonabelian composition factors.
+##  
+##   l[6] (orbitSize)
+##      is a list of
+##      the orbit sizes  of the  faithful  permutation representation  of G
+##      which  is offered  by the  library  or,  if that  representation is
+##      transitive,  i. e.,  if there is  only one orbit,  just the size of
+##      that orbit.
+##  
+
+PERFRec := rec(length:=331);
+
+ PERFRec.covered := [38,59,70,71,80,113,151,158,201,249,295,331];
+
+ IsSSortedList( PERFRec.covered );
+
+ PERFRec.notKnown := [
+ 61440,122880,172032,245760,344064,491520,688128,983040];
+
+ IsSSortedList( PERFRec.notKnown );
+
+ PERFRec.notAvailable := [86016,368640,737280];
+
+ IsSSortedList( PERFRec.notAvailable );
+
+ PERFRec.nameSimpleGroup := [
+ "A(5)","A(6)","A(7)","A(8)","A(9)","A5","A6","A7","A8","A9","J(1)",
+ "J(2)","J1","J2","L(2,101)","L(2,103)","L(2,107)","L(2,109)",
+ "L(2,11)","L(2,113)","L(2,121)","L(2,125)","L(2,13)","L(2,16)",
+ "L(2,17)","L(2,19)","L(2,23)","L(2,25)","L(2,27)","L(2,29)",
+ "L(2,31)","L(2,32)","L(2,37)","L(2,4)","L(2,41)","L(2,43)",
+ "L(2,47)","L(2,49)","L(2,5)","L(2,53)","L(2,59)","L(2,61)",
+ "L(2,64)","L(2,67)","L(2,7)","L(2,71)","L(2,73)","L(2,79)",
+ "L(2,8)","L(2,81)","L(2,83)","L(2,89)","L(2,9)","L(2,97)","L(3,2)",
+ "L(3,3)","L(3,4)","L(3,5)","L2(101)","L2(103)","L2(107)","L2(109)",
+ "L2(11)","L2(113)","L2(121)","L2(125)","L2(13)","L2(16)","L2(17)",
+ "L2(19)","L2(23)","L2(25)","L2(27)","L2(29)","L2(31)","L2(32)",
+ "L2(37)","L2(4)","L2(41)","L2(43)","L2(47)","L2(49)","L2(5)",
+ "L2(53)","L2(59)","L2(61)","L2(64)","L2(67)","L2(7)","L2(71)",
+ "L2(73)","L2(79)","L2(8)","L2(81)","L2(83)","L2(89)","L2(9)",
+ "L2(97)","L3(2)","L3(3)","L3(4)","L3(5)","M(11)","M(12)","M(22)",
+ "M11","M12","M22","S(4,4)","Sp4(4)","Sz(8)","U(3,3)","U(3,4)",
+ "U(3,5)","U(4,2)","U3(3)","U3(4)","U3(5)","U4(2)"];
+
+ IsSSortedList( PERFRec.nameSimpleGroup );
+
+ PERFRec.numberSimpleGroup := [
+ 1,3,8,19,38,1,3,8,19,38,36,50,36,50,48,49,51,52,5,53,54,55,6,10,7,9,
+ 13,14,16,17,18,24,21,1,25,26,27,28,1,30,32,33,41,35,2,37,39,40,4,42,
+ 43,44,3,47,2,11,20,45,48,49,51,52,5,53,54,55,6,10,7,9,13,14,16,17,18,
+ 24,21,1,25,26,27,28,1,30,32,33,41,35,2,37,39,40,4,42,43,44,3,47,2,11,
+ 20,45,15,31,46,15,31,46,56,56,23,12,29,34,22,12,29,34,22];
+
+ PERFRec.sizeNumberSimpleGroup := [
+ [60,1],[168,1],[360,1],[504,1],[660,1],[1092,1],[2448,1],[2520,1],
+ [3420,1],[4080,1],[5616,1],[6048,1],[6072,1],[7800,1],[7920,1],
+ [9828,1],[12180,1],[14880,1],[20160,4],[20160,5],[25308,1],[25920,1],
+ [29120,1],[32736,1],[34440,1],[39732,1],[51888,1],[58800,1],[62400,1],
+ [74412,1],[95040,1],[102660,1],[113460,1],[126000,1],[150348,1],
+ [175560,1],[178920,1],[181440,1],[194472,1],[246480,1],[262080,1],
+ [265680,1],[285852,1],[352440,1],[372000,1],[443520,1],[456288,1],
+ [515100,1],[546312,1],[604800,1],[612468,1],[647460,1],[721392,1],
+ [885720,1],[976500,1],[979200,1]];
+
+ IsSSortedList( PERFRec.sizeNumberSimpleGroup );
+
+ PERFRec.sizes := [
+ 1,60,120,168,336,360,504,660,720,960,1080,1092,1320,1344,1920,2160,
+ 2184,2448,2520,2688,3000,3420,3600,3840,4080,4860,4896,5040,5376,
+ 5616,5760,6048,6072,6840,7200,7500,7560,7680,7800,7920,9720,9828,
+ 10080,10752,11520,12144,12180,14400,14520,14580,14880,15000,15120,
+ 15360,15600,16464,17280,19656,20160,21504,21600,23040,24360,25308,
+ 25920,28224,29120,29160,29760,30240,30720,32256,32736,34440,34560,
+ 37500,39600,39732,40320,43008,43200,43320,43740,46080,48000,50616,
+ 51840,51888,56448,57600,57624,58240,58320,58800,60480,61440,62400,
+ 64512,64800,65520,68880,69120,74412,75000,77760,79200,79464,79860,
+ 80640,84672,86016,86400,87480,92160,95040,96000,100920,102660,103776,
+ 110880,112896,113460,115200,115248,115320,116480,117600,120000,120960,
+ 122472,122880,126000,129024,129600,131040,131712,138240,144060,146880,
+ 148824,150348,151200,151632,155520,158400,159720,160380,161280,169344,
+ 172032,174960,175560,178920,180000,181440,183456,184320,187500,190080,
+ 192000,194472,201720,205200,205320,216000,221760,223608,225792,226920,
+ 230400,232320,233280,237600,240000,241920,243000,244800,244944,245760,
+ 246480,254016,258048,259200,262080,262440,263424,265680,276480,285852,
+ 288120,291600,293760,300696,302400,311040,320760,322560,332640,336960,
+ 344064,345600,352440,357840,360000,362880,363000,364320,366912,367416,
+ 368640,369096,372000,375000,378000,384000,387072,388800,388944,393120,
+ 393660,410400,411264,411540,417720,423360,432000,435600,443520,446520,
+ 447216,450000,451584,453600,456288,460800,460992,464640,466560,468000,
+ 475200,480000,483840,489600,491520,492960,504000,515100,516096,518400,
+ 524880,531360,544320,546312,550368,552960,571704,574560,583200,587520,
+ 589680,600000,604800,604920,607500,612468,622080,626688,633600,645120,
+ 647460,665280,673920,675840,677376,685440,688128,691200,693120,699840,
+ 704880,712800,720720,721392,725760,728640,729000,730800,733824,734832,
+ 737280,748920,768000,774144,777600,786240,787320,806736,816480,820800,
+ 822528,823080,846720,864000,871200,874800,878460,881280,885720,887040,
+ 892800,900000,903168,907200,912576,921600,921984,929280,933120,936000,
+ 937500,943488,950400,950520,960000,962280,967680,976500,979200,979776,
+ 983040,987840];
+
+ IsSSortedList( PERFRec.sizes );
+
+ PERFRec.number := [
+ 1,1,1,1,1,1,1,1,1,2,1,1,1,2,7,1,1,1,1,3,1,1,1,7,1,2,1,1,1,1,1,1,1,
+ 1,2,2,1,5,1,1,3,1,1,9,4,1,1,1,1,1,1,3,1,7,1,1,1,1,5,22,1,3,1,1,1,
+ 1,1,4,1,1,37,2,1,1,4,1,1,1,4,25,3,1,1,1,3,1,1,1,2,2,2,1,2,1,3,0,1,
+ 4,1,1,1,4,1,4,4,3,1,1,6,1,52,1,8,2,1,3,1,1,1,1,1,1,15,3,1,1,1,4,5,
+ 2,0,1,6,4,3,2,2,1,1,1,1,1,1,18,1,3,1,12,1,0,8,1,1,1,3,1,19,1,1,2,1,
+ 1,1,1,1,3,1,2,1,26,3,3,1,17,5,1,1,2,0,1,1,4,3,2,7,1,1,2,1,3,2,3,1,
+ 3,18,1,27,1,1,0,3,1,1,1,6,1,1,3,3,46,1,1,11,1,1,2,2,1,1,4,3,1,1,1,1,
+ 3,1,2,1,1,3,8,1,1,25,4,3,18,1,4,17,6,1,0,1,1,1,1,1,9,1,1,1,1,19,1,1,
+ 7,1,1,2,3,1,4,1,12,1,2,41,1,1,1,3,2,1,0,23,3,2,1,1,1,1,2,3,2,1,1,3,
+ 54,1,13,2,5,3,16,2,2,1,3,2,3,3,2,1,2,1,1,3,1,7,6,4,1,23,8,2,21,3,8,1,
+ 2,1,12,1,20,1,1,4,0,1];
+
+# These two lines are now thread local and live in perf.grp
+#PERFGRP := [];
+#PERFSELECT:=BlistList([1..PERFRec.length],[]); # what have we loaded
+
+#############################################################################
+##
+#E  perf0.grp . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

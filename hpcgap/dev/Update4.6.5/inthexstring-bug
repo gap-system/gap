@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+
+!! Changed by
+BH
+
+! Reported by
+ Joe Bohanon
+
+!! Type of Change
+Fix: wrong result
+
+!! Description
+IntHexString wrongly produced a large integer when there were too many leading zeros.
+
+! Test Code
+gap> a := IntHexString("0000000000000000000000");
+0
+gap> a = 0;
+true
+gap> IsSmallIntRep(a);
+true
+gap> a := IntHexString("0000000000000000000001");
+1
+gap> a = 1;
+true
+gap> IsSmallIntRep(a);
+true
+
+! Prefetch
+
+!! Changeset
+d25cc31828ad207965c5a130c34643cf479ce203
+
+!! End

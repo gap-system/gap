@@ -1,0 +1,70 @@
+#!/bin/sh
+
+#A        Frank Lübeck
+##  
+##  Usage:   cd <GAPDIR>/pkg;  ../etc/packpack <pack>
+##  
+##  This is a utility to archive a package. Produces:
+##      <pack>.zoo   (for GAP's unzoo, with obvious text files marked as such)
+##      <pack>-win.zip (Windows line breaks in obvious text files)
+##      <pack>.tar.gz
+##      <pack>.tar.bz2
+##  
+##  All files ending in "~" and CVS directories are automatically not
+##  archived.
+##  
+##  The "obvious text files" are currently: 
+##  *.txt, *.gi, *.gd, *.g, *.c, *.h, *.htm, *.html, *.xml, *.tex, 
+##  *.six, *.bib, *.tst, README.*, INSTALL.*, Makefile
+##  
+##  $Id: packpack,v 1.4 2004/03/12 08:10:05 gap Exp $
+##  
+
+pname=$1
+
+# all files except  CVS directories and files ending in ~
+allfiles=`find $1 -path "*/CVS" -prune -o -regex ".*[^~]" -print`
+
+#############    zoo   ########################
+# start new zoo file
+rm -f $1.zoo
+
+# zoo it
+zoo ah $1.zoo $allfiles
+
+# mark some files as text files
+for a in `find $1 -regex ".*\(\.txt\|\.gi\|\.gd\|\.g\|\.c\|\.h\|\.htm\|\.html\|\.xml\|\.tex\|\.six\|\.bib\|\.tst\|README.*\|INSTALL.*\|Makefile\)"`
+do
+  (echo '!TEXT!'; echo '/END') | zoo c $1.zoo $a
+done
+
+#############    zip   ########################
+# start new zip file
+#rm -f $1.zip
+rm -f $1-win.zip
+
+# zip it
+#zip -9 $1 $allfiles
+
+# for Windows-version first the files considered as binary
+zip -9 $1-win `find $1 -regex ".*\(\.txt\|\.gi\|\.gd\|\.g\|\.c\|\.h\|\.htm\|\.html\|\.xml\|\.tex\|\.six\|\.bib\|\.tst\|README.*\|INSTALL.*\|Makefile\|/CVS\|/CVS/.*\|~\)" -prune -o -print`
+
+# text files with CR-LF line ends
+zip -9 -l $1-win `find $1 -regex ".*\(\.txt\|\.gi\|\.gd\|\.g\|\.c\|\.h\|\.htm\|\.html\|\.xml\|\.tex\|\.six\|\.bib\|\.tst\|README.*\|INSTALL.*\|Makefile\)"`
+
+
+#############    tar.gz   ########################
+# remove old tar.gz file
+rm -f $1.tar.gz
+
+# tar and gzip it
+find $1 -regex ".*\(/CVS\|CVS/.*\|~\)" | tar cv $1 --exclude-from - |gzip -c -9 > $1.tar.gz
+
+#############    tar.bz2   ########################
+# remove old tar.gz file
+rm -f $1.tar.bz2
+
+# tar and bzip2 it
+find $1 -regex ".*\(/CVS\|CVS/.*\|~\)" | tar cv $1 --exclude-from - |bzip2 -c -9 > $1.tar.bz2
+
+

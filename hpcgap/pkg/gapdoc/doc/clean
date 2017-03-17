@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -f *.{aux,log,dvi,ps,pdf,bbl,ilg,ind,idx,out,html,tex,pnr,txt,blg,toc,six,brf,js,css,lab} gapdocbib.xml.bib
+

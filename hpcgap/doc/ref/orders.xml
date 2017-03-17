@@ -1,0 +1,80 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  orders.msk                GAP documentation                Isabel Araújo -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: orders.msk,v 1.6 2002/04/15 10:02:31 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Orderings">
+<Heading>Orderings</Heading>
+
+<#Include Label="[1]{orders}">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsOrdering">
+<Heading>IsOrdering (Filter)</Heading>
+
+<#Include Label="IsOrdering">
+<#Include Label="OrderingsFamily">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Building new orderings">
+<Heading>Building new orderings</Heading>
+
+<#Include Label="OrderingByLessThanFunctionNC">
+<#Include Label="OrderingByLessThanOrEqualFunctionNC">
+			 
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties and basic functionality">
+<Heading>Properties and basic functionality</Heading>
+
+<#Include Label="IsWellFoundedOrdering">
+<#Include Label="IsTotalOrdering">
+<#Include Label="IsIncomparableUnder">
+<#Include Label="FamilyForOrdering">
+<#Include Label="LessThanFunction">
+<#Include Label="LessThanOrEqualFunction">
+<#Include Label="IsLessThanUnder">
+<#Include Label="IsLessThanOrEqualUnder">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Orderings on families of associative words">
+<Heading>Orderings on families of associative words</Heading>
+
+<#Include Label="[2]{orders}">
+<#Include Label="IsOrderingOnFamilyOfAssocWords">
+<#Include Label="IsTranslationInvariantOrdering">
+<#Include Label="IsReductionOrdering">
+<#Include Label="OrderingOnGenerators">
+<#Include Label="LexicographicOrdering">
+<#Include Label="ShortLexOrdering">
+<#Include Label="IsShortLexOrdering">
+<#Include Label="WeightLexOrdering">
+<#Include Label="IsWeightLexOrdering">
+<#Include Label="WeightOfGenerators">
+<#Include Label="BasicWreathProductOrdering">
+<#Include Label="IsBasicWreathProductOrdering">
+<#Include Label="WreathProductOrdering">
+<#Include Label="IsWreathProductOrdering">
+<#Include Label="LevelsOfGenerators">
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

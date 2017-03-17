@@ -1,0 +1,245 @@
+
+
+    CHANGES of "GAP 4.5 on Linux via rsync"         (Frank Lübeck)
+    ==============================================================
+
+---  Mon, 29 Sep 2014 11:31:34 +0200
+Upgraded to archive gap4r7p5_2014_05_24-20_02.tar.gz
+which means GAP is upgraded to version 4.7.5,
+the following new package is added:
+  permut 1.01
+and the following packages are upgraded:
+  AutPGrp 1.5 (-> 1.6)
+  AutoDoc 2013.09.20 (-> 2014.03.27)
+  AutomGrp 1.1.4.1 (-> 1.2.4)
+  Browse 1.8.3 (-> 1.8.5)
+  CRISP 1.3.7 (-> 1.3.8)
+  CoReLG 0.2 (-> 1.02)
+  FR 2.1.0 (-> 2.1.1)
+  GradedModules 2013.10.27 (-> 2014.02.25)
+  GradedRingForHomalg 2013.10.27 (-> 2014.02.04)
+  HAP 1.10.14.3 (-> 1.10.15)
+  IO 4.2 (-> 4.3.1)
+  IRREDSOL 1.2.3 (-> 1.2.4)
+  LieRing 2.1 (-> 2.2)
+  MatricesForHomalg 2013.11.20 (-> 2014.04.08)
+  Polenta 1.3.1 (-> 1.3.2)
+  RadiRoot 2.6 (-> 2.7)
+  RingsForHomalg 2013.11.01 (-> 2014.01.17)
+  Semigroups 1.4 (-> 2.0)
+  Smallsemi 0.6.7 (-> 0.6.8)
+  ToolsForHomalg 2013.04.16 (-> 2014.04.10)
+  cvec 2.4 (-> 2.5.1)
+  genss 1.5 (-> 1.6.1)
+  homalg 2013.10.10 (-> 2014.04.07)
+  nq 2.4 (-> 2.5.1)
+  orb 4.6 (-> 4.7.1)
+  recog 1.2 (-> 1.2.2)
+  recogbase 1.2 (-> 1.2.2)
+  simpcomp 1.6.1 (-> 2.0.0)
+Note that the package "float" was not upgraded, version is still 0.5.12
+
+
+---  Wed, 15 Jan 2014 17:16:30 +0100
+Upgraded to archive gap4r7p2_2013_12_01-10_17.tar.gz
+which means GAP is upgraded to version 4.7.2,
+the following new packages are added:
+  4ti2Interface 2013.09.20
+  CoReLG 0.2
+  IntPic 0.1.0
+  LiePRing 1.5
+  LieRing 2.1
+  ModIsom 2.1
+  SLA 0.14
+  Semigroups 1.4
+and the following packages are upgraded:
+  ANUPQ 3.0 (-> 3.1.1)
+  AutoDoc 2013.01.16 (-> 2013.09.20)
+  Browse 1.8.2 (-> 1.8.3)
+  CRISP 1.3.6 (-> 1.3.7)
+  Cryst 4.1.11 (-> 4.1.12)
+  EDIM 1.3.1 (-> 1.3.2)
+  Example 3.4.3 (-> 3.4.4)
+  ExamplesForHomalg 2012.10.23 (-> 2013.07.05)
+  FR 2.0.3 (-> 2.1.0)
+  Float 0.5.9 (-> 0.5.12)
+  Gauss 2013.03.07 (-> 2013.06.26)
+  GaussForHomalg 2012.10.22 (-> 2013.09.20)
+  gpd 1.19 (-> 1.22)
+  GradedModules 2013.02.07 (-> 2013.10.27)
+  GradedRingForHomalg 2013.02.07 (-> 2013.10.27)
+  HAP 1.10.10.2 (-> 1.10.14.3)
+  HAPcryst 0.1.10 (-> 0.1.11)
+  hecke 1.3 (-> 1.4)
+  homalg 2012.10.28 (-> 2013.10.10)
+  HomalgToCAS 2013.02.22 (-> 2013.08.07)
+  IO_ForHomalg 2012.10.22 (-> 2012.10.24)
+  IRREDSOL 1.2.1 (-> 1.2.3)
+  kan 1.06 (-> 1.07)
+  LAGUNA 3.6.3 (-> 3.6.4)
+  LocalizeRingForHomalg 2012.10.26 (-> 2013.11.11)
+  MatricesForHomalg 2013.04.16 (-> 2013.11.20)
+  Modules 2013.04.19 (-> 2013.11.07)
+  NumericalSgps 0.971 (-> 0.980)
+  ParGAP 1.3.5 (-> 1.4.0)
+  polymaking 0.7.8 (-> 0.8.1)
+  OpenMath 11.1.4 (-> 11.2.0)
+  QuaGroup 1.6 (-> 1.8)
+  RCWA 3.5.1 (-> 3.6.1)
+  ResClasses 3.3.0 (-> 3.3.2)
+  RingsForHomalg 2013.04.19 (-> 2013.11.01)
+  SCSCP 2.1.2 (-> 2.1.4)
+  Smallsemi 0.6.6 (-> 0.6.7)
+  TomLib 1.2.2 (-> 1.2.4)
+  Wedderga 4.5.4 (-> 4.6.1)
+  XMod 2.22 (-> 2.26)
+
+
+---  Tue, 07 May 2013 17:28:02 +0200
+Upgraded to archive gap4r6p4_2013_05_04-16_36.tar.gz
+which means GAP is upgraded to 4.6.4 and the following packages
+are upgraded:
+  PolymakeInterface 2013.01.15 (-> 2013.03.06)
+  AutoDoc 2012.12.20 (-> 2013.01.16)
+  CRISP 1.3.5 (-> 1.3.6)
+  CTblLib 1.2.1 (-> 1.2.2)
+  Example 3.4.2 (-> 3.4.3)
+  Float 0.5.5 (-> 0.5.9)
+  Gauss 2012.10.22 (-> 2013.03.07)
+  GradedModules 2012.11.23 (-> 2013.02.07)
+  GradedRingForHomalg 2012.10.25 (-> 2013.02.07)
+  HAP 1.10.9.2 (-> 1.10.10.2)
+  HomalgToCAS 2013.01.10 (-> 2013.02.22)
+  MatricesForHomalg 2013.01.10 (-> 2013.04.16)
+  Modules 2013.01.05 (-> 2013.04.19)
+  OpenMath 11.1.3 (-> 11.1.4)
+  Polycyclic 2.10.1 (-> 2.11)
+  RingsForHomalg 2013.01.09 (-> 2013.04.19)
+  Smallsemi 0.6.5 (-> 0.6.6)
+  ToolsForHomalg 2012.12.20 (-> 2013.04.16)
+  Wedderga 4.5.3 (-> 4.5.4)
+  gpd 1.18 (-> 1.19)
+  orb 4.5 (-> 4.6)
+
+
+---  Tue, 05 Feb 2013 16:30:16 +0100
+Upgraded to archive gap4r6p2_2013_02_02-01_00.tar.gz
+which means GAP is upgraded to 4.6.2, there are new packages:
+  Congruence 1.0.3
+  Float 0.5.5
+  ToricVarieties 2012.12.22
+and the following packages are upgraded:
+  PolymakeInterface 2012.10.30 (-> 2013.01.15)
+  AutoDoc 2012.10.26 (-> 2012.12.20)
+  Circle 1.4.1 (-> 1.5.2)
+  Citrus 0.999 (-> 0.9999)
+  Convex 2012.10.30 (-> 2012.11.15)
+  Cryst 4.1.10 (-> 4.1.11)
+  Cubefree 1.11 (-> 1.13)
+  FGA 1.1.1 (-> 1.2.0)
+  FR 1.2.6.7 (-> 2.0.3)
+  GradedModules 2012.10.25 (-> 2012.11.23)
+  HAP 1.10.8 (-> 1.10.9.2)
+  HomalgToCAS 2012.10.22 (-> 2013.01.10)
+  LAGUNA 3.6.1 (-> 3.6.3)
+  MatricesForHomalg 2012.10.25 (-> 2013.01.10)
+  Modules 2012.10.27 (-> 2013.01.05)
+  OpenMath 11.1.2 (-> 11.1.3)
+  RCWA 3.4.0 (-> 3.5.1)
+  ResClasses 3.2.0 (-> 3.3.0)
+  RingsForHomalg 2012.10.22 (-> 2013.01.09)
+  SONATA 2.5.1 (-> 2.6)
+  ToolsForHomalg 2012.10.27 (-> 2012.12.20)
+  UnitLib 3.1.1 (-> 3.1.3)
+  Wedderga 4.4.3 (-> 4.5.3)
+  XMod 2.19 (-> 2.22)
+  gpd 1.15 (-> 1.18)
+  idrel 2.12 (-> 2.14)
+  kan 1.05 (-> 1.06)
+  simpcomp 1.5.4 (-> 1.6.1)
+
+
+---  Wed, 07 Nov 2012 14:45:16 +0100
+Upgraded to archive gap4r5p6_2012_11_04-18_46.tar.gz
+which means the following package upgrades:
+  AutoDoc 2012.09.09 (-> 2012.10.26)
+  Convex 2012.09.15 (-> 2012.10.30)
+  ExamplesForHomalg 2012.05.31 (-> 2012.10.23)
+  Gauss 2012.04.23 (-> 2012.10.22)
+  GaussForHomalg 2011.08.10 (-> 2012.10.22)
+  GradedModules 2012.06.24 (-> 2012.10.25)
+  GradedRingForHomalg 2012.06.27 (-> 2012.10.25)
+  homalg 2012.06.07 (-> 2012.10.28)
+  HomalgToCAS 2012.06.27 (-> 2012.10.22)
+  IO_ForHomalg 2012.05.24 (-> 2012.10.22)
+  LocalizeRingForHomalg 2012.05.27 (-> 2012.10.26)
+  MatricesForHomalg 2012.06.30 (-> 2012.10.25)
+  Modules 2012.06.15 (-> 2012.10.27)
+  PolymakeInterface 2012.09.15 (-> 2012.10.30)
+  RCWA 3.3.1 (-> 3.4.0)
+  ResClasses 3.1.1 (-> 3.2.0)
+  RingsForHomalg 2012.06.28 (-> 2012.10.22)
+  SCO 2011.08.10 (-> 2011.08.11)
+  ToolsForHomalg 2012.08.26 (-> 2012.10.27)
+
+---  Fri, 21 Sep 2012 17:57:44 +0200
+The exexutable for pargap was missing. Should work now.
+
+---  Wed, 19 Sep 2012 23:32:53 +0200
+Upgraded to archive gap4r5p6_2012_09_16-01_02.tar.gz
+which means the following upgrades:
+  GAP core 4.5.5 (-> 4.5.6)
+  GradedModules 2012.05.18 (-> 2012.06.24)
+  MatricesForHomalg 2012.06.08 (-> 2012.06.30)
+  cvec 2.3 (-> 2.4)
+and the following new packages:
+  AutoDoc 2012.09.09
+  Convex 2012.09.15
+  ToolsForHomalg 2012.08.26
+  PolymakeInterface 2012.09.15
+For the moment the PolymakeInterface package is only unpacked 
+but not installed (I have currently no setup to test this).
+
+---  Thu, 19 Jul 2012 17:09:57 +0200
+Upgraded to archive gap4r5p5_2012_07_16-17_17.tar.gz
+  Browse 1.8.1 (-> 1.8.2)
+  Citrus 0.99 (-> 0.999)
+  Cubefree 1.10 (-> 1.11)
+  FR 1.2.6.5 (-> 1.2.6.7)
+  GradedRingForHomalg 2012.05.25 (-> 2012.06.27)
+  HAP 1.10.6 (-> 1.10.8)
+  HomalgToCAS 2012.06.08 (-> 2012.06.27)
+  RingsForHomalg 2012.06.08 (-> 2012.06.28)
+  cvec 2.2 (-> 2.3)
+  loops 2.1.3 (-> 2.2.0)
+
+---  Mon, 25 Jun 2012 19:44:04 +0200
+Now the kernel module of package fr is compiled.
+
+---  Fri, 22 Jun 2012 17:59:59 +0200
+Upgraded to archive gap4r5p4_2012_06_16-17_03.tar.gz
+Upgraded package versions:
+  Citrus 0.9 (-> 0.99)
+  ExamplesForHomalg 2011.12.15 (-> 2012.05.31)
+  FR 1.2.6.4 (-> 1.2.6.5)
+     (can be loaded, but functionality that needs compilation 
+      is still not working)
+  HAP 1.10.1 (-> 1.10.6)
+  HomalgToCAS 2012.05.24 (-> 2012.06.08)
+  MatricesForHomalg 2012.05.27 (-> 2012.06.08)
+  Modules 2012.05.29 (-> 2012.06.15)
+  RCWA 3.2.0 (-> 3.3.1)
+  RingsForHomalg 2012.05.27 (-> 2012.06.08)
+  XMod 2.18 (-> 2.19)
+  gpd 1.14 (-> 1.15)
+  homalg 2012.06.02 (-> 2012.06.07)
+
+
+---  Wed, 13 Jun 2012 13:53:23 +0200
+
+Initial installation of GAP 4.5.
+Using archive gap4r5p4_2012_06_04-23_02.tar.gz and the homology package.
+Not installed:
+  fr (to be resolved soon)
+  linboxing (difficult dependencies)
+

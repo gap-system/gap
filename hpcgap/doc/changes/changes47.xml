@@ -1,0 +1,735 @@
+<Chapter Label="ChangesGAP46toGAP47"> 
+<Heading>Changes between &GAP; 4.6 and &GAP; 4.7</Heading>
+
+This chapter contains an overview of most important changes 
+introduced in &GAP; 4.7.2 release (the first public release
+of &GAP; 4.7).
+
+It also contains information about subsequent update releases for &GAP; 4.7.
+
+<Section Label="fix472"> 
+<Heading>&GAP; 4.7.2 (December 2013)</Heading>
+
+<Subsection Label="Changes in the core GAP47 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.7</Heading>
+
+Improved and extended functionality:
+<List>
+<!-- cf. #411, 412, 413 -->
+<Item>
+The methods for computing conjugacy classes of permutation groups have 
+been rewritten from scratch to enable potential use for groups in 
+different representations. As a byproduct the resulting code is 
+(sometimes notably) faster. It also now is possible to calculate 
+canonical conjugacy class representatives in permutation groups, 
+which can be beneficial when calculating character tables.
+</Item>
+<Item>
+The methods for determining (conjugacy classes of) subgroups in 
+non-solvable groups have been substantially improved in speed and 
+scope for groups with multiple nonabelian composition factors. 
+</Item>
+<Item>
+There is a new method for calculating the maximal subgroups of 
+a permutation group (with chief factors of width less or equal 5) 
+without calculating the whole subgroup lattice.
+</Item>
+<Item>
+If available, information from the table of marks library is 
+used to speed up subgroup calculations in almost simple factor groups.
+</Item>
+<Item>
+The broader availability of maximal subgroups is used to improve 
+the calculation of double cosets.
+</Item>
+<Item>
+To illustrate the improvements listed above, one could try, for example
+<Log><![CDATA[
+g:=WreathProduct(MathieuGroup(11),Group((1,2)));
+Length(ConjugacyClassesSubgroups(g));
+]]></Log>
+and
+<Log><![CDATA[
+g:=SemidirectProduct(GL(3,5),GF(5)^3);
+g:=Image(IsomorphismPermGroup(g));
+MaximalSubgroupClassReps(g);
+]]></Log>
+</Item>
+<Item>
+Computing the exponent of a finite group <M>G</M> could be extremely slow.
+This was due to a slow default method being used, which computed
+all conjugacy classes of elements in order to compute the exponent.
+We now instead compute Sylow subgroups <M>P_1</M>, ..., <M>P_k</M> of 
+<M>G</M> and use the easily verified equality 
+<M>exp(G) = exp(P_1) x ... x exp(P_k)</M>. 
+This is usually at least as fast and in many cases orders of magnitude 
+faster. 
+<Log><![CDATA[
+gap> G:=SmallGroup(2^7*9,33);;
+gap> H:=DirectProduct(G, ElementaryAbelianGroup(2^10));;
+gap> Exponent(H); # should take at most a few milliseconds
+72
+gap> K := PerfectGroup(2688,3);;
+gap> Exponent(K); # should take at most a few seconds
+168
+]]></Log>
+</Item>
+<Item>
+<!-- #414 -->
+The functionality in &GAP; for transformations and transformation semigroups has
+been rewritten and extended. Partial permutations and inverse semigroups have
+been newly implemented. The documentation for transformations and
+transformation semigroups has been improved. Transformations and partial
+permutations are implemented in the &GAP; kernel. Methods for calculating
+attributes of transformations and partial permutations, and taking products,
+and so are also implemented in the kernel. The new implementations are largely
+backwards compatible; some exceptions are given below. 
+<P/>
+The degree of a transformation <C>f</C> is usually defined as the
+largest positive integer where <C>f</C> is defined.  In previous versions of
+&GAP;, transformations were only defined on positive integers less than their
+degree, it was only possible to multiply transformations of equal degree, and a
+transformation did not act on any point exceeding its degree.  Starting with
+&GAP; 4.7, transformations behave more like permutations, in that
+they fix unspecified points and it is possible to multiply arbitrary
+transformations.
+<List>
+<Item>
+in the display of a transformation, the trailing fixed points are no longer
+printed. More precisely, in the display of a transformation <C>f</C> if
+<C>n</C> is the largest value such that <C>n^f&lt;>n</C> or
+<C>i^f=n</C> for some <C>i&lt;>n</C>, then the values exceeding <C>n</C>
+are not printed.
+</Item>
+<Item>
+the display for semigroups of transformations now includes more information,
+for example <C>&lt;transformation semigroup on 10 pts with 10 generators></C> and 
+<C>&lt;inverse partial perm semigroup on 10 pts with 10 generators></C>.
+</Item>
+<Item>
+transformations which define a permutation can be inverted, and groups of
+transformations can be created. 
+</Item>
+</List>
+Further information regarding transformations and partial permutations, can be
+found in the relevant chapters of the reference manual. 
+<P/>
+The code for Rees matrix semigroups has been completely rewritten to fix the
+numerous bugs in the previous versions. The display of a Rees matrix semigroup
+has also been improved to include the numbers of rows and columns, and the
+underlying semigroup.  Again the new implementations should be backwards
+compatible with the exception that the display is different.  
+<P/>
+The code for magmas with a zero adjoined has been improved so that it is
+possible to access more information about the original magma. The display has
+also been changed to indicate that the created magma is a magma with zero
+adjoined (incorporating the display of the underlying magma). Elements of a
+magma with zero are also printed so that it is clear that they belong to a
+magma with zero. 
+<P/>
+If a semigroup is created by generators in the category
+IsMultiplicativeElementWithOneCollection and CanEasilyCompareElements, then it
+is now checked if the One of the generators is given as a generator. In this
+case, the semigroup is created as a monoid.  
+</Item>
+<Item>
+Added a new operation <Ref Oper="GrowthFunctionOfGroup" BookName="ref"/>
+that gives sizes of distance spheres in the Cayley graph of a group.
+</Item>
+<Item>
+<!-- #123 -->
+A new group constructor <Ref Oper="FreeAbelianGroup" BookName="ref"/>
+for free abelian groups has been added. By default, it creates suitable
+fp groups. Though free abelian groups groups do not offer much
+functionality right now, in the future other implementations may be
+provided, e.g. by the <Package>Polycyclic</Package> package.
+</Item>
+<Item>
+<!-- #29 -->
+The message about halving the pool size at startup is only shown
+when <C>-D</C> command line option is used 
+(see <Ref Sect="Command line options" BookName="ref"/>).
+[Suggested by Volker Braun]
+</Item>
+<Item>
+<!-- #180 -->
+An info class called <Ref InfoClass="InfoObsolete" BookName="ref"/> 
+with the default level 0 is introduced.
+Setting it to 1 will trigger warnings at runtime if an obsolete variable
+declared with <C>DeclareObsoleteSynonym</C> is used. This is recommended for 
+testing &GAP; distribution and packages.
+</Item>
+<Item>
+The &GAP; help system now recognises some common different spelling patterns
+(for example, -ise/-ize, -isation/-ization, solvable/soluble) and searches
+for all possible spelling options even when the synonyms are not declared.
+</Item>
+<Item>
+<!-- #452 -->
+Added new function <Ref Func="Cite" BookName="ref"/> which produces citation 
+samples for &GAP; and packages.
+</Item>
+<Item>
+<!-- #198 -->
+It is now possible to compile &GAP; with user-supplied <C>CFLAGS</C>
+which now will not be overwritten by &GAP; default settings. 
+[Suggested by Jeroen Demeyer]
+</Item>
+</List>
+
+Fixed bugs:
+
+<List>
+<Item>
+<!-- #444 -->
+<Ref Func="Union" BookName="ref"/> had <M>O(n^3)</M> behaviour when 
+given many ranges (e.g. it could take 10 seconds to find a union of 
+1000 1-element sets). The new implementation reduces that to 
+<M>O(n log n)</M> (and 4ms for the 10 second example), at the cost 
+of not merging ranges as well as before in some rare cases.
+</Item>
+<Item>
+<!-- #423 -->
+<C>IsLatticeOrderBinaryRelation</C> only checked the existence of upper 
+bounds but not the uniqueness of the least upper bound (and dually for 
+lower bounds), so in some cases it could return the wrong answer.
+[Reported by Attila Egri-Nagy]
+</Item>
+<Item>
+<!-- #453 -->
+<Ref Oper="LowIndexSubgroupsFpGroup" BookName="ref"/> triggered a
+break loop if the list of generators of the 2nd argument contained 
+the identity element of the group.
+[Reported by Ignat Soroko]
+</Item>
+<Item>
+<!-- #454 -->
+Fixed regression in heuristics used by 
+<Ref Oper="NaturalHomomorphismByNormalSubgroup" BookName="ref"/> that
+could produce a permutation representation of an unreasonably large degree.
+[Reported by Izumi Miyamoto]
+</Item>
+<Item>
+<!-- #129 -->
+Fixed inconsistent behaviour of <C>QuotientMod( Integers, r, s, m )</C>
+in the case where <A>s</A> and <A>m</A> are not coprime. This fix also 
+corrects the division behaviour of <C>ZmodnZ</C> objects, see 
+<Ref Oper="QuotientMod" BookName="ref" /> and 
+<Ref Func="ZmodnZ" BookName="ref"/>.
+[Reported by Mark Dickinson]
+</Item>
+<Item>
+<!-- #408 -->
+Fixed an oversight in the loading process causing 
+<Ref Func="OnQuit" BookName="ref"/> not resetting the options 
+stack after exiting the break loop.
+</Item>
+<Item>
+<!-- #407 -->
+Empty strings were treated slightly differently than other strings in
+the &GAP; kernel, for historical reasons. This resulted in various
+inconsistencies. For example, <C>IsStringRep("")</C> returned true, 
+but a method installed for arguments of type <C>IsStringRep</C> would 
+NOT be invoked when called with an empty string. 
+<P/>
+We remove this special case in the &GAP; kernel (which dates back the 
+very early days of &GAP;&nbsp;4 in 1996). This uncovered one issue in 
+the kernel function <C>POSITION_SUBSTRING</C> (when calling it with an 
+empty string as second argument), which was also fixed.
+</Item>
+<Item>
+<!-- #219 -->
+The parser for floating point numbers contained a bug that could cause 
+&GAP; to crash or to get into a state where the only action left to the 
+user was to exit &GAP; via Ctrl-D. For example, entering four dots with 
+spaces between them on the &GAP; prompt and then pressing the return key 
+caused &GAP; to exit.
+<P/>
+The reason was (ironically) an error check in the innards of the float
+parser code which invoked the &GAP; <C>Error()</C> function at a point 
+where it should not have.
+</Item>
+<Item>
+Removing the last character in a string was supposed to overwrite the old
+removed character in memory with a zero byte, but failed to do so due to an
+off-by-one error. For most &GAP; operations, this has no visible effect, 
+except for those which directly operate on the underlying memory representation 
+of strings. For example, when trying to use such a string to reference a record
+entry, a (strange) error could be triggered.
+</Item>
+<Item>
+<Ref Oper="ViewString" BookName="ref"/> and <Ref Oper="DisplayString" BookName="ref"/>
+are now handling strings, characters and immediate FFEs in a consistent manner.
+</Item>
+<Item>
+<!-- #417, 436, 437, 446  -->
+Multiple fixes to the build process for less common Debian platforms 
+(arm, ia64, mips, sparc, GNU/Hurd). [Suggested by Bill Allombert]
+</Item>
+<Item>
+<!-- #425, 426, 427, 438 -->
+Fixes for several regressions in the <F>gac</F> script.
+[Suggested by Bill Allombert]
+</Item>
+</List>
+
+Changed functionality:
+<List>  
+<Item>
+<!-- #230 -->
+It is not possible now to call <Ref Oper="WreathProduct" BookName="ref"/> 
+with 2nd argument <A>H</A> not being a permutation group, without using the 3rd 
+argument specifying the permutation representation. This is an incompatible 
+change but it will produce an error instead of a wrong result. The former
+behaviour of <Ref Oper="WreathProduct" BookName="ref"/> may now be achieved
+by using <Ref Oper="StandardWreathProduct" BookName="ref"/> which returns the wreath 
+product for the (right regular) permutation action of <A>H</A> on its elements.
+</Item>
+<Item>
+<!-- #180 -->
+The function <C>ViewLength</C> to specify the maximal number of lines
+that are printed in <Ref Oper="ViewObj" BookName="ref" /> became 
+obsolete, since there was already a user preference <C>ViewLength</C> 
+to specify this. The value of this preference is also accessible in
+<C>GAPInfo.ViewLength</C>.
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.6.5"> 
+<Heading>New and updated packages since &GAP; 4.6.5</Heading>
+
+<Index>Packages, new</Index>
+At the time of the release of &GAP; 4.6.5 there were 107 packages 
+redistributed with &GAP;. The first public release of &GAP;&nbsp;4.7 
+contains 114 packages.
+<P/>
+
+One of essential changes is that
+the <Package>Citrus</Package> package by J.Mitchell has been renamed 
+to <Package>Semigroups</Package>. The package has been completely 
+overhauled, the performance has been improved, and the code has been 
+generalized so that in the future the same code can be used to compute 
+with other types of semigroups.
+<P/>
+
+Furthermore, new packages that have been added to the redistribution 
+since the release of &GAP; 4.6.5 are: 
+
+<List>
+<Item>
+<Package>4ti2interface</Package> package by Sebastian Gutsche, providing
+an interface to <Package>4ti2</Package>, a software package for algebraic, 
+geometric and combinatorial problems on linear spaces (<URL>http://www.4ti2.de</URL>).
+</Item>
+<Item>
+<Package>CoReLG</Package> by Heiko Dietrich, Paolo Faccin and 
+Willem de Graaf for calculations in real semisimple Lie algebras.
+</Item>
+<Item>
+<Package>IntPic</Package> package by Manuel Delgado, aimed at providing
+a simple way of getting a pictorial view of sets of integers. The main 
+goal of the package is producing <Package>Tikz</Package> code for arrays 
+of integers. The code produced is to be included in a &LaTeX; file, which 
+can then be processed. Some of the integers are emphasized by using 
+different colors for the cells containing them.
+</Item>
+<Item>
+<Package>LieRing</Package> by Serena Cicalo and Willem de Graaf for
+constructing finitely-presented Lie rings and calculating the Lazard 
+correspondence. The package also provides a database of small 
+<M>n</M>-Engel Lie rings. 
+</Item>
+<Item>
+<Package>LiePRing</Package> package by Michael Vaughan-Lee and Bettina 
+Eick, introducing a new datastructure for nilpotent Lie rings of prime-power 
+order. This allows to define such Lie rings for specific primes as well 
+as for symbolic primes and other symbolic parameters. The package also 
+includes a database of nilpotent Lie rings of order at most <M>p^7</M> 
+for all primes <M>p > 3</M>.
+</Item>
+<Item>
+<Package>ModIsom</Package> by Bettina Eick, which contains various
+methods for computing with nilpotent associative algebras. In particular,
+it contains a method to determine the automorphism group and to test
+isomorphisms of such algebras over finite fields and of modular group
+algebras of finite <M>p</M>-groups. Further, it contains a nilpotent quotient
+algorithm for finitely presented associative algebras and a method
+to determine Kurosh algebras.
+</Item>
+<Item>
+<Package>SLA</Package> by Willem de Graaf for computations with 
+simple Lie algebras. The main topics of the package are nilpotent 
+orbits, theta-groups and semisimple subalgebras.
+</Item>
+</List>
+
+<Index>Packages, upgraded</Index>
+Furthermore, some packages have been upgraded substantially 
+since the &GAP;&nbsp;4.6.5 release:
+<List>
+<Item>
+<Package>ANUPQ</Package> package by Greg Gamble, Werner Nickel 
+and Eamonn O'Brien has been updated after Max Horn joined it as a 
+maintainer. As a result, it is now much easier to install and use
+it with the current &GAP; release.
+</Item>
+<Item>
+<Package>Wedderga</Package> package by Osnel Broche Cristo, Allen Herman, 
+Alexander Konovalov, Aurora Olivieri, Gabriela Olteanu, Ángel del Río and 
+Inneke Van Gelder has been extended to include functions for calculating
+local and global Schur indices of ordinary irreducible characters of 
+finite groups, cyclotomic algebras over abelian number fields, and rational
+quaternion algebras (contribution by Allen Herman).
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+<Section Label="fix473"> 
+<Heading>&GAP; 4.7.3 (February 2014)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Incorrect result returned by <C>AutomorphismGroup(PSp(4,2^n))</C>.
+[Reported by Anvita]
+</Item>
+<Item>
+The <Ref Oper="Order" BookName="ref"/> method for group homomorphisms 
+newly introduced in &GAP;&nbsp;4.7 had a bug that caused it to 
+sometimes return incorrect results.
+[Reported by Benjamin Sambale]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+Several bugs were fixed and missing methods were introduced in the 
+new code for transformations, partial permutations and semigroups 
+that was first included in &GAP;&nbsp;4.7. Some minor corrections 
+were made in the documentation for transformations.
+</Item>
+<Item>
+Break loop in <C>IsomorphismFpMonoid</C> when prefixes in
+generators names were longer than one letter.
+[Reported by Dmytro Savchuk and Yevgen Muntyan]
+</Item>
+<Item>
+Break loop while displaying the result of 
+<Ref Func="MagmaWithInversesByMultiplicationTable" BookName="ref"/>.
+[Reported by Grahame Erskine]
+</Item>
+</List>
+
+Improved functionality:
+<List>
+<Item>
+Better detection of UTF-8 terminal encoding on some systems.
+[Suggested by Andries Brouwer]
+</Item>
+</List>
+
+</Section>
+
+<Section Label="fix474">
+<Heading>&GAP; 4.7.4 (February 2014)</Heading>
+This release was prepared immediately after &GAP; 4.7.3 to revert
+the fix of the error handling for the single quote at the end of
+an input line, contained in &GAP; 4.7.3. It happened that (only
+on Windows) the fix caused error messages in one of the packages.
+</Section>
+
+<Section Label="fix475"> 
+<Heading>&GAP; 4.7.5 (May 2014)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+<Ref Func="InstallValue" BookName="ref" /> cannot handle immediate 
+values, characters or booleans for technical reasons. A check for 
+such values was introduced to trigger an error message and prevent
+incorrect results caused by this. [Reported by Sebastian Gutsche]
+</Item>
+<Item>
+<Ref Oper="KnowsDictionary" BookName="ref"/> and 
+<Ref Oper="LookupDictionary" BookName="ref" /> 
+methods for <C>IsListLookupDictionary</C> were using 
+<Ref Oper="PositionFirstComponent" BookName="ref" />;
+the latter is only valid on sorted lists, but in 
+<C>IsListLookupDictionary</C> the underlying 
+list is NOT sorted in general, leading to bogus results.
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+A bug in <C>DirectProductElementsFamily</C> which used 
+<Ref Prop="CanEasilyCompareElements" BookName="ref"/> instead of
+<Ref Prop="CanEasilySortElements" BookName="ref"/>.
+</Item>
+<Item>
+Fixed wrong <C>Infolevel</C> message that caused a break loop
+for some automorphism group computations.
+</Item>
+<Item>
+Fixed an error that sometimes caused a break loop in 
+<Ref Func="HallSubgroup" BookName="ref"/>.
+[Reported by Benjamin Sambale]
+</Item>
+<Item>
+Fixed a rare error in computation of conjugacy classes of a
+finite group by homomorphic images, providing fallback to a 
+default algorithm.
+</Item>
+<Item>
+Fixed an error in the calculation of Frattini subgroup in the
+case of the trivial radical.
+</Item>
+<Item>
+Several minor bugs were fixed in the documentation, kernel, and
+library code for transformations.
+</Item>
+<Item>
+Fixed errors in <Ref Func="NumberPerfectGroups" BookName="ref" />
+and <Ref Func="NumberPerfectLibraryGroups" BookName="ref" /> not
+being aware that there are no perfect groups of odd order.
+</Item>
+<Item>
+Restored the ability to build &GAP; on OS X 10.4 and 10.5 
+which was accidentally broken in the previous &GAP; release by
+using the build option not supported by these versions.
+</Item>
+<Item>
+Fixed some problems for ia64 and sparc architectures.
+[Reported by Bill Allombert and Volker Braun]
+</Item>
+</List>
+
+New package added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>permut</Package> package by A.Ballester-Bolinches, 
+E.Cosme-Llópez, and R.Esteban-Romero to deal with permutability 
+in finite groups.
+</Item>
+</List>
+
+</Section>
+
+
+<Section Label="fix476"> 
+<Heading>&GAP; 4.7.6 (November 2014)</Heading>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+A bug that may cause <Ref Func="ShortestVectors" BookName="ref"/> to
+return an incomplete list. [Reported by Florian Beye]
+</Item>
+<Item>
+A bug that may lead to incorrect results and infinite loops when &GAP;
+is compiled without GMP support using gcc 4.9.
+</Item>
+<Item>
+A bug that may cause <Ref Func="OrthogonalEmbeddings" BookName="ref"/> to
+return an incomplete result. [Reported by Benjamin Sambale]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<Ref Oper="ClosureGroup" BookName="ref"/> should be used instead of
+<Ref Func="ClosureSubgroup" BookName="ref"/> in case there is no parent
+group, otherwise some calculations such as e.g. 
+<Ref Oper="NormalSubgroups" BookName="ref"/> may fail.
+[Reported by Dmitrii Pasechnik]
+</Item>
+<Item>
+Fixed a line in the code that used a hard-coded identity permutation,
+not a generic identity element of a group. [Reported by Toshio Sumi]
+</Item>
+<Item>
+Fixed a problem in the new code for calculating maximal subgroups
+that caused a break loop for some groups from the transitive groups
+library. [Reported by Petr Savicky]
+</Item>
+<Item>
+Fixed a problem in <Ref Oper="ClosureSubgroup" BookName="ref"/> not
+accepting some groups without <Ref Oper="Parent" BookName="ref"/>.
+[Reported by Inneke van Gelder]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+Eliminated a number of compiler warnings detected with some newer 
+versions of <Package>C</Package> compilers.
+</Item>
+<Item>
+Some minor bugs in the transformation and partial permutation code 
+and documentation were resolved. 
+</Item>
+</List>
+
+</Section>
+
+
+<Section Label="fix477"> 
+<Heading>&GAP; 4.7.7 (February 2015)</Heading>
+
+New features:
+<List>
+<Item>
+Introduced some arithmetic operations for infinity and negative infinity,
+see <Ref Label="Infinity" BookName="ref"/>.
+</Item>
+<Item>
+Introduced new property <Ref Prop="IsGeneratorsOfSemigroup" BookName="ref"/>
+which reflects wheter the list or collection generates a semigroup.
+</Item>
+</List>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Fixed a bug in <Ref Func="Union" BookName="ref"/> (actually,
+in the internal library function <C>JoinRanges</C>) caused by 
+downward running ranges. [Reported by Matt Fayers]
+</Item>
+<Item>
+Fixed a bug where recursive records might be printed with the wrong 
+component name, coming from component names being ordered differently
+in two different pieces of code. [Reported by Thomas Breuer]
+</Item>
+<Item> 
+The usage of <C>abs</C> in <File>src/gmpints.c</File> was replaced by 
+<C>AbsInt</C>. The former is defined to operate on 32-bit integers
+even if &GAP; is compiled in 64-bit mode. That lead to truncating
+&GAP; integers and caused a crash in <Ref Func="RemInt" BookName="ref"/>, 
+reported by Willem De Graaf and Heiko Dietrich. Using <C>AbsInt</C> fixes 
+the crash, and ensures the correct behaviour on 32-bit and 64-bit builds.
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+A problem with <Ref Func="ProbabilityShapes" BookName="ref"/> not setting
+frequencies list for small degrees. [Reported by Daniel Błażewicz and
+independently by Mathieu Gagne]
+</Item>
+<Item>
+An error when generating a free monoid of rank infinity. 
+[Reported by Nick Loughlin]
+</Item>
+<Item>
+Several bugs with the code for Rees matrix semigroups not handling
+trivial cases properly. 
+</Item>
+<Item>
+A bug in <Ref Attr="IsomorphismTypeInfoFiniteSimpleGroup" BookName="ref"/>
+affecting one particular group due to a misformatting in a routine that 
+translates between the Chevalley type and the name used in the table 
+(in this case, <C>"T"</C> was used instead of <C>["T"]</C>).
+[Reported by Petr Savicky]
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+The <Ref Oper="Basis" BookName="ref"/> method for full homomorphism
+spaces of linear mappings did not set basis vectors which could be
+obtained by <Ref Attr="GeneratorsOfLeftModule" BookName="ref"/>.
+</Item>
+<Item>
+A problem with <Ref Attr="GaloisType" BookName="ref"/> entering an
+infinite loop in the routine for approximating a root. [Reported by Daniel Błażewicz]
+</Item>
+<Item>
+Fixed the crash when &GAP; is called when the environment variables
+<C>HOME</C> or <C>PATH</C> are unset. [Reported by Bill Allombert]
+</Item>
+</List>
+
+Furthermore, new packages that have been added to the redistribution 
+since the release of &GAP; 4.7.6 are: 
+
+<List>
+<Item>
+<Package>json</Package> package by Christopher Jefferson, providing
+a mapping between the <Package>JSON</Package> markup language and &GAP;
+</Item>
+<Item>
+<Package>SglPPow</Package> package by Bettina Eick and Michael Vaughan-Lee, 
+providing the database of <M>p</M>-groups of order <M>p^7</M> for 
+<M>p &gt; 11</M>, and of order <M>3^8</M>.
+</Item>
+</List>
+
+</Section>
+
+
+<Section Label="fix478"> 
+<Heading>&GAP; 4.7.8 (June 2015)</Heading>
+
+</Section>
+
+Fixed bugs which could lead to incorrect results:
+<List>
+<Item>
+Added two groups of degree 1575 which were missing in the 
+library of first primitive groups. [Reported by Gordon Royle]
+</Item>
+<Item>
+Fixed the error in the code for algebra module elements in packed 
+representation caused by the use of <Ref Oper="Objectify" BookName="ref"/>
+with the type of the given object instead of <Ref Func="ObjByExtRep" BookName="ref"/>
+as recommended in <Ref Sect="Further Improvements in Implementing Residue Class Rings"
+BookName="ref"/>. The problem was that after calculating <C>u+v</C> where one of the
+summands was known to be zero, this knowledge was wrongly passed to the sum via the 
+type. [Reported by Istvan Szollosi]
+</Item>
+<Item>
+Fixed a bug in <Ref Oper="PowerMod" BookName="ref"/> causing wrong results 
+for univariate Laurent polynomials when the two polynomial arguments are 
+stored with the same non-zero shift. [Reported by Max Horn]
+</Item>
+</List>
+
+Furthermore, new packages that have been added to the redistribution 
+since the release of &GAP; 4.7.7 are: 
+
+<List>
+<Item>
+<Package>PatternClass</Package> by Michael Albert, Ruth Hoffmann and 
+Steve Linton, allowing to explore the permutation pattern classes 
+build by token passing networks. Amongst other things, it can compute 
+the basis of a permutation pattern class, create automata from token 
+passing networks and check if the deterministic automaton is a possible 
+representative of a token passing network.
+</Item>
+<Item>
+<Package>QPA</Package> by Edward Green and Øyvind Solberg, providing
+data structures and algorithms for computations with finite dimensional 
+quotients of path algebras, and with finitely generated modules over such 
+algebras. It implements data structures for quivers, quotients of path 
+algebras, and modules, homomorphisms and complexes of modules over 
+quotients of path algebras.
+</Item>
+</List>
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->

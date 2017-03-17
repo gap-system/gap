@@ -1,0 +1,56 @@
+      Setting up the (Linux) rsync distribution
+      =========================================
+
+## (C) Frank Lübeck
+
+(0) Following http://freegamedev.net/wiki/Portable_binaries we setup virtual
+    machines with Ubuntu Dapper (6.06 LTS) for i686 and AMD64 for linking
+    against sufficiently old glibc (2.3).
+       (virtual machines are currently started on gemma:
+         VBoxHeadless -s dapper606x8664  # 137.226.152.52
+         VBoxHeadless -s dapper606386    # 137.226.152.51
+         VBoxHeadless -s GAPrsync        # 137.226.152.50
+       )
+
+(1) Choose a directory RSDIR, copy the files motd, rsyncd.conf and
+    startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 
+    (search 'home2').
+
+(2) Fetch newest archive from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
+    gap4r*p*.tar.gz
+
+(3) Copy archives to native i686 machine and call in that directory on that
+    machine  'gapsync/InstForRsync32' (currently GAP is build in ~/build45
+    with the local script './inst').
+
+(4) Similarly, copy archives to x86_64 machine. For 'homology' package also 
+    copy the archive homology.1.4.5.staticbin.tgz to the same place.
+    Then call 'gapsync/InstForRsync64' (also currently in ~/build45 via
+    local script './inst').
+
+(5) Create $RSDIR/gap/linux and in there call 'gapsync/CollectDistribution'
+    (after checking/adjusting paths in CollectDistribution).
+    This first copies the new version into a subdirectory 'gap4r5XXX'.
+    One can start 'startrsyncserverXXX' and test the updated version.
+    If all is fine rename directories with local script 'swapwithXXX' and
+    stop the XXX rsync server.
+
+(6) Adjust index.html, rsyncserv.css, CHANGES and motd (in repository 
+    and $RSDIR). 
+
+(7) Copy index.html, rsyncserv.css, CHANGES to website. 
+ cp index.html rsyncserv.css CHANGES ~/MyWWWHome/web/~Frank.Luebeck/gap/rsync/
+    Start rsync server with 'startrsyncserver' in $RSDIR. 
+    [An entry '@reboot $RSDIR/startrsyncserver' is sensible.]
+
+(8) That's it.
+
+(9) For updates/improvements: 
+        - adjust scripts in 'gapsync/' 
+        - repeat steps (2)-(4)
+        - adjust in (5) CollectDistribution to copy changes only
+          (e.g., use an exclude file to avoid syncing of new executables
+          which actually have not changed)
+        - do (6) (in particular CHANGES), commit, and copy changed files 
+          to website
+

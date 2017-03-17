@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo This is only for zooing packages with NO BINARY FILES
+echo not from CVS
+echo 
+echo zooing $1
+echo
+echo 'zoo c $1 $2 <<EOF' > .textcom
+echo !TEXT! >> .textcom
+echo /END >> .textcom
+echo EOF >> .textcom
+chmod u+x .textcom
+find $1 -type f \! -name .cvsignore -exec zoo ah $1.zoo {} \; -exec .textcom $1.zoo {} \; > /dev/null 2>&1
+echo result should be in $1.zoo
+

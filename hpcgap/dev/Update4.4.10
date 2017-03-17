@@ -1,0 +1,1008 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  Update                      GAP Maintenance
+%%
+%%
+%Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+%%
+%%  This file is intended to list the changes that will be published with
+%%  the next update of GAP.
+%%  The information is used for producing the announcement of the update,
+%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
+%%  known bugs and intended new features.
+%%
+%%  For adding a change, just copy one of the templates below to the end of the
+%%  file, and enter the relevant information.
+%%
+%%  Formal rules for this file, to allow simple parsing by a script:
+%%          - lines starting with `%' are comments and are ignored
+%%          - lines starting with `!' describe the type of information
+%%            in the following lines until the next `!'-line
+%%          - each entry must be finished with an `! End' line, otherwise
+%%            the order of entries is irrelevant
+%%          - the text behind the `!' is case and whitespace insensitive
+%%
+
+%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+! Date
+
+! Changed by
+
+! Reported by
+
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+Fix: internal data corruption
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+! Description
+
+! Test Code
+
+! Prefetch
+
+! Changed Files
+
+! End
+
+
+
+%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% Initials should suffice here:
+! Changed by
+
+% Only if applicable:
+! Reported by
+
+% Choose one or more entries and/or add new ones; but always use either
+% the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% For the description use (X)HTML (preferred) or plain text:
+% For HTML use in particular the following markup:
+%     for package names: <span class="pkgname">...</span>
+%     for GAP names: <span class="code">...</span>
+! Description
+
+% If possible, provide some code in test file format which allows to check
+% if a change was applied to an installation. Provide input and output,
+% including prompts, exactly as in a GAP session.
+! Test Code
+
+% If possible, provide some information about a temporary fix, workaround,
+% ..., maybe with a link to some longer description or a file with some
+% code. Use (X)HTML here.
+! Prefetch
+
+% White space separated list of paths relative to the GAP root directory.
+% (This is implicitly contained in the data of the CVS repository, but in
+% case of problems after changes it may be convenient to have this
+% information here.)
+! Changed Files
+
+% Finish your entry with this:
+! End
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/13
+! Changed by
+AH
+! Type of Change
+Fix: inappropriate error message
+! Description
+`Socle' for the trivial group could produce an error message.
+! Test Code
+gap> Socle (Group ([[1]]));;
+! Changed Files
+lib/grplatt.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/14
+! Changed by
+FL
+! Reported by
+TB
+! Type of Change
+Fix: mutability problem
+! Description
+<mixer manual="Reference: DirectoryContents"><span class="code">
+DirectoryContents</span></mixer> ran into an error for immutable strings
+without trailing slash as argument.
+! Test Code
+gap> DirectoryContents( Filename( DirectoriesLibrary( "" ), "lib" ) );;
+! Changed Files
+lib/files.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/15
+! Changed by
+FL
+! Reported by
+Robert F. Morse
+! Type of Change
+Fix: crash
+! Description
+<span class="pkgname">GAP</span> crashed when the 
+<code>PATH</code> environment variable was not set.
+! Changed Files
+src/sysfiles.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/16
+! Changed by
+FL
+! Reported by
+Robert F. Morse
+! Type of Change
+Fix: crash
+! Description
+<span class="pkgname">GAP</span> could crash when started with option 
+<code>-x 1</code>. Now the number of columns is initialized with at
+least&nbsp;2.
+! Changed Files
+src/system.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/21
+! Changed by
+Max
+! Reported by
+Laurent Bartholdi
+! Type of Change
+Fix: crash
+! Description
+After loading a saved workspace <span class="pkgname">GAP</span> 
+crashed when one tried to slice
+a compressed vector over a field with 2 < q <= 256 elements, which had
+already existed in the saved workspace.
+! Changed Files
+src/vec8bit.c
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2006/11/30
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Files in the 'cnf' directory of the <span class="pkgname">GAP</span>
+distribution are now archived as binary files. Now <span
+class="pkgname">GAP</span> can be installed with UNIX or with WINDOWS style
+line breaks on any system and should work without problems.
+! Changed Files
+cnf/config.sub                  
+cnf/config.guess
+cnf/configure.out
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/01/22
+! Changed by
+SL
+! Reported by
+Alla Detinko
+! Type of Change
+Fix: wrong result
+! Description
+The method in ffeconway.gi that gets coefficients WRT to the 
+canonical basis of the field from the representation is only correct
+if the basis is over the prime field. Added a TryNextMethod if this 
+is not the case.
+! Test Code
+gap> F := GF(7,3);;
+gap> F1 := GF(F,2);;
+gap> a := PrimitiveRoot(F1);;
+gap> B := Basis(F1);;
+gap> Coefficients(B,a^0);
+[ z0, 0z ]
+! Changed Files
+ffeconway.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/01/17
+! Changed by
+AH
+! Reported by
+anvita21
+! Type of Change
+Fix: wrong result
+! Description
+When forming the semidirect product of a matrix group with a vector space
+over a non-prime field
+the embedding of the vector space gave a wrong result.
+! Changed Files
+lib/gprd.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/02/14
+! Changed by
+SL
+! Reported by
+TB
+! Type of Change
+Fix: crash
+! Description
+FFECONWAY.WriteOverSmallestCommonField tripped up when the common field is smaller than the 
+field over which some of the vector elements are written, because it did a test based on 
+the degree of the element, not the field it is written over.
+! Test Code
+gap> m:= [ [ Z(2,18)^0, 0*Z(2,18) ], 
+>     [ Z(2)^0+Z(2,18)+Z(2,18)^2+Z(2,18)^7+Z(2,18)^8+Z(2,18)^10+Z(2,18)^12
+>       +Z(2,18)^14+Z(2,18)^15, Z(2,18)^0 ] ];;
+gap> KroneckerProduct( [[Z(2)]], m );  
+[ <a GF2 vector of length 2>, [ z+z2+z7+z8+z10+z12+z14+z15, z0 ] ]
+! Changed Files
+ffeconway.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/01/17
+! Changed by
+AH
+! Reported by
+Stefan Kohl
+! Type of Change
+Fix: wrong result
+! Description
+DefaultRing failed for constant polynomials over nonprime fields.
+! Changed Files
+lib/ringpoly.gi
+! Test Code
+gap> R := PolynomialRing(GF(4),1);; x := Z(4) * One(R);;
+gap> x in DefaultRing(x);
+true
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/02/21
+! Changed by
+TB
+! Reported by
+Alper Odabas
+! Type of Change
+Fix: inappropriate error message
+! Description
+The functions <mixer manual="Reference: IsInjective"><span class="code">
+IsInjective</span></mixer> and
+<mixer manual="Reference: IsSingleValued"><span class="code">
+IsSingleValued</span></mixer>
+did not work for general linear mappings with trivial (pre)image.
+! Test Code
+gap> v:= GF(2)^2;;  bv:= BasisVectors( Basis( v ) );;
+gap> IsInjective( LeftModuleGeneralMappingByImages( v, v, bv, 0 * bv ) );
+false
+gap> map:= LeftModuleGeneralMappingByImages( v, v, 0 * bv, bv );;
+gap> ImagesRepresentative( map, Zero( v ) );
+[ 0*Z(2), 0*Z(2) ]
+! Prefetch
+Read <a href="http://www.math.rwth-aachen.de/~Thomas.Breuer/gapfix/fix_vspchom_4_4_9">
+this file</a> in order to fix the bug.
+! Changed Files
+lib/vspchom.gi
+tst/vspchom.tst
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/02/23
+! Changed by
+Max
+! Reported by
+Ákos Seress
+! Type of Change
+Fix: recursion depth trap
+! Description
+Creating an enumerator for a prime field with more than 65536 elements ran 
+into an infinite recursion.
+! Test Code
+gap> Enumerator(GF(74761));
+<enumerator of GF(74761)>
+! Changed Files
+lib/ffeconway.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/02/28
+! Changed by
+MN
+! Type of Change
+Fix: efficiency issue
+! Description
+The performance of List, Filtered, Number, ForAll, and ForAny if
+applied to non-internally represented lists was improved. Also 
+the performance of iterators for lists was slightly improved.
+! Changed Files
+lib/coll.gi
+lib/list.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/02/28
+! Changed by
+MN
+! Type of Change
+Fix: efficiency issue
+! Description
+Finite field elements now know that they can be sorted easily which
+improves performance in certain lookups.
+! Changed Files
+lib/ffe.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/12
+! Changed by
+SL
+! Reported by
+Jack Schmidt
+! Type of Change
+Fix: crash
+
+! Description
+
+Fixed the following error:
+When an FFE in the Conway polynomial representation actually lied in a field that
+is handled in the internal representation (eg GF(3)) and you tried to write it over 
+a bigger field that is ALSO handled internally (eg GF(9)) you got an element written over 
+the larger field, but in the Conway polynomial representation, which is forbidden.
+
+! Test Code
+
+gap> z := Z(3,12)-Z(3,12);
+0z
+gap> DegreeFFE(z);
+1
+gap> FFECONWAY.TryToWriteInSmallerField(z,2);
+0*Z(3)
+
+! Prefetch
+
+! Changed Files
+ffeconway.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/19
+! Changed by
+SL
+! Reported by
+Jack Schmidt, from Alla Detinko
+! Type of Change
+Fix: wrong result
+
+! Description
+
+Creating a large (>2^16) field over a non-prime subfield went completely
+wrong.
+
+! Test Code
+gap> GF(GF(7^3),2);
+AsField( GF(7^3), GF(7^6) )
+
+! Prefetch
+
+! Changed Files
+lib/ffe.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/20
+! Changed by
+SL
+! Reported by
+BE
+! Type of Change
+Fix: wrong result
+
+! Description
+A method for Coefficients for Conway polynomial FFEs 
+didn't check that the basis provided was the canonical basis of
+the RIGHT field. 
+
+! Test Code
+
+gap> x := Z(2,18)^((2^18-1)/511);;
+gap> b := Basis(GF(512));;
+gap> Coefficients(b,x);
+[ 0z, z0, 0z, 0z, 0z, 0z, 0z, 0z, 0z ]
+
+! Prefetch
+
+! Changed Files
+lib/ffeconway.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/21
+! Changed by
+TB
+! Type of Change
+New: extended functionality
+! Description
+Since large finite fields are available,
+some restrictions in the code for computing irreducible modules
+over finite fields are no longer necessary.
+(They had been introduced in order to give better error messages.)
+! Test Code
+gap> IrreducibleModules( DihedralGroup(38), GF(2), 0 );;
+! Changed Files
+lib/grppcrep.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/26
+! Changed by
+AH
+! Reported by
+N. Sieben
+! Type of Change
+Fix: wrong result
+! Description
+An elementary abelian series was calculated wrongly.
+! Changed Files
+lib/grpperm.gi
+! Test Code
+gap> s:=ConjugacyClassSubgroups(
+> Group([
+>  (2,3)(6,7)(10,11)(14,15),
+>  (5,9)(6,10)(7,11)(8,12),
+>  (3,5)(4,6)(11,13)(12,14),
+>  (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16),
+>  (17,18)
+> ]),
+> Group([
+>  (1,16)(2,15)(3,14)(4,13)(5,12)(6,11)(7,10)(8,9),
+>  (1,13,16,4)(2,5,15,12)(3,9,14,8)(6,7,11,10)(17,18),
+>  (5,9)(6,10)(7,11)(8,12),
+>  (2,3)(5,9)(6,11)(7,10)(8,12)(14,15)
+> ]))[1];;
+gap> IdGroup(s);;
+gap> ConjugacyClassesSubgroups(s);;
+
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/03/30
+! Changed by
+TB
+! Reported by
+Laurent Bartholdi
+! Type of Change
+Fix: inappropriate error message
+! Description
+A method for <mixer manual="Reference: IsSubset"><span class="code">
+IsSubset</span></mixer> was missing for the case that exactly one argument
+is an inhomogeneous list.
+! Test Code
+gap> IsSubset( [ [], [1] ], [ [] ] );
+true
+! Changed Files
+lib/coll.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/04/02
+! Changed by
+FL
+! Reported by
+TB
+! Type of Change
+Fix: missing kernel code
+! Description
+Long integers in expressions are now printed (was not yet implemented).
+! Test Code
+gap> Print(x -> 100000000000, "\n");
+function ( x )
+    return 100000000000;
+end
+! Changed Files
+src/exprs.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/04/18
+! Changed by
+FL
+! Type of Change
+Fix: infinite loop
+! Description
+Fixed kernel function for printing records.
+! Test Code
+gap> PRINT_PREC(rec(a:=1)); Print("\n");
+rec(
+  a := 1 )
+! Changed Files
+src/precord.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/04/24
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+Orbits on sets of transformations failed.
+! Changed Files
+lib/oprt.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/05/16
+! Changed by
+SL
+! Reported by
+Edmund Robertson
+! Type of Change
+Fix: crash
+! Description
+Attempting to compress a vector containing elements of a small finite field
+represented as elements of a bigger (external) field caused a
+segfault.
+! Changed Files
+lib/vecmat.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/05/25
+! Changed by
+FL
+! Type of Change
+Fix: better default
+! Description
+New C library interfaces (e.g., to ncurses in Browse) need some more memory
+to be allocated with 'malloc'. The default value of GAPs '-a' option is now
+'2m'.
+! Changed Files
+src/system.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/06/14
+! Changed by
+FL
+! Reported by
+Laurent Bartholdi
+! Type of Change
+Fix: crash
+! Description
+GAP crashed when BlistList was called with a range and a list containing
+large integers or non-integers.
+! Test Code
+gap> BlistList([1..10],[4234623462462464234242]);
+[ false, false, false, false, false, false, false, false, false, false ]
+! Changed Files
+src/range.h
+src/range.c
+src/blister.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/06/14
+! Changed by
+FL
+! Type of Change
+Performance improvement
+! Description
+Made PositionSublist faster in case the search string does not contain
+repetitive patterns.
+! Test Code
+gap> PositionSublist([1,2,3,4,5,6,7],[4,5,6]);
+4
+! Changed Files
+lib/list.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/02
+! Changed by
+SK
+! Type of Change
+Fix: wrong result
+! Description
+Wrong methods for <mixer manual="Reference: GeneratorsOfRing">
+<span class="code">GeneratorsOfRing</span></mixer> and
+<mixer manual="Reference: GeneratorsOfRingWithOne">
+<span class="code">GeneratorsOfRingWithOne</span></mixer>
+have been removed. These methods were based on the assumption
+that one can obtain a set of ring generators by taking the
+union of a known set of field generators, the set of the
+inverses of these field generators and&nbsp;{1}.
+! Test Code
+gap> GeneratorsOfRing(Rationals);
+"TRY_NEXT_METHOD"
+gap> GeneratorsOfRingWithOne(Rationals);
+"TRY_NEXT_METHOD"
+! Changed Files
+lib/field.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/06
+! Changed by
+JS
+! Type of Change
+Fix: wrong result
+! Description
+The name of a group of order 117600 and degree 50 was
+incorrect in the <mixer manual="Reference: Primitive Permutation Groups">
+Primitive Permutation Groups library</mixer>.  In particular, a group
+was wrongly labelled as PGL(2, 49).
+! Test Code
+gap> PrimitiveGroup(50,4);
+PGL(2, 49)
+gap> Name(PrimitiveGroup(50,6)) = "PGL(2, 49)";
+false
+! Changed Files
+prim/grps/gps1.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/07
+! Changed by
+FL
+! Reported by
+TB
+! Type of Change
+Fix: crash
+! Description
+<span class="pkgname">GAP</span> no longer crashes when 
+<span class="code">OnTuples</span> is called with a list that contains
+holes.
+! Test Code
+gap> OnTuples([,1],());
+OnTuples for perm: list must not contain holes
+! Changed Files
+src/permutat.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/07
+! Changed by
+FL
+! Type of Change
+Fix: compiler warnings by newer gcc
+! Description
+Avoid warnings about pointer types by newer gcc compilers.
+! Changed Files
+src/gasman.c
+src/string.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/11
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+There was a possible error in `SubgroupsSolvableGroup' when computing 
+subgroups within a subgroup.
+! Changed Files
+lib/grppclat.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/07/27
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+An error in 2-Cohomology computation for pc groups was fixed.
+! Test Code
+gap> H:=GroupByPcgs(Pcgs(AbelianGroup([6,6])));;
+gap> K:=SmallGroup(IdGroup(H));;
+gap> 1H:=TrivialGModule(H,GF(3));;
+gap> 1K:=TrivialGModule(K,GF(3));;
+gap> Assert(1,Rank(TwoCohomologySQ(CollectorSQ(H,1H,true),H,1H))=
+> Rank(TwoCohomologySQ(CollectorSQ(K,1K,true),K,1K)));
+! Changed Files
+lib/twocohom.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/08
+! Changed by
+SL
+! Type of Change
+Fix: inappropriate error message
+! Description
+IsBound(l[pos]) was failing for large integer &lt;pos&gt; only when coded (eg in a loop or function body).
+! Test Code
+gap> l := [1,2,3];;
+gap> for i in [2] do Print(IsBound(l[10^20]),"\n"); od;
+false
+! Changed Files
+src/vars.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/15
+! Changed by
+MN
+! Type of Change
+New: extended functionality
+! Description
+The function <span class="code">MakeImmutable</span> now returns
+its argument.
+! Test Code
+gap> l := [1,2,3];
+[ 1, 2, 3 ]
+gap> MakeImmutable(l);
+[ 1, 2, 3 ]
+! Changed Files
+src/objects.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/15
+! Changed by
+MN
+! Type of Change
+Fix: achieve documented behaviour
+! Description
+<span class="code">ZmodpZObj</span> is now a synonym for
+<span class="code">ZmodnZObj</span> such that from now on such
+objects print in a way that can be read back into GAP.
+! Test Code
+gap> Print(ZmodpZObj(2,65537),"\n");
+ZmodpZObj( 2, 65537 )
+! Changed Files
+lib/zmodnz.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/20
+! Changed by
+MN
+! Type of Change
+New: extended functionality
+! Description
+Dynamically loaded modules now work on Mac OS X. As a consequence,
+this allows to work with the Browse, EDIM and IO packages on Mac OS X.
+! Changed Files
+cnf/aclocal.m4
+cnf/configure.in
+cnf/configure.out
+Makefile.in
+configure
+src/system.h
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/27
+! Changed by
+AH
+! Type of Change
+Fix: wrong result
+! Description
+`IsConjugate' used normality in a wrong supergroup
+! Changed Files
+lib/grp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/28
+! Changed by
+TB
+! Type of Change
+New: improved documentation
+! Description
+The function
+<mixer manual="Reference: CharacterTableRegular"><span class="code">
+CharacterTableRegular</span></mixer>
+is documented now.
+! Test Code
+gap> IsDocumentedVariable( "CharacterTableRegular" );
+true
+! Changed Files
+doc/build/ctbl.msk
+lib/ctbl.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/22
+! Changed by
+AD
+! Type of Change
+New: extended functionality
+! Description
+Introduced <span class="code">ViewObj</span> and
+<span class="code">PrintObj</span> methods for algebraic number fields. Made
+them applicable to <span class="code">AlgebraicExtension</span> by adding the
+property <span class="code">IsNumberField</span> in the infinite field case.
+! Test Code
+gap> f := UnivariatePolynomial( Rationals, [-4,0,0,1] );;
+gap> L := AlgebraicExtension( Rationals, f );
+<algebraic extension over the Rationals of degree 3>
+! Changed Files
+lib/algfld.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/29
+! Changed by
+TB
+! Type of Change
+New: extended functionality
+! Description
+The function
+<mixer manual="Reference: ScalarProduct"><span class="code">
+ScalarProduct</span></mixer>
+now accepts also Brauer characters as arguments.
+! Test Code
+gap> x:= TrivialCharacter( CharacterTable( SymmetricGroup(4) ) mod 2 );;
+gap> ScalarProduct( x, x );;
+! Changed Files
+doc/build/ctblfuns.msk
+lib/ctblfuns.gd
+lib/ctblfuns.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/29
+! Changed by
+TB
+! Type of Change
+New: extended functionality
+! Description
+The function
+<mixer manual="Reference: QuaternionAlgebra"><span class="code">
+QuaternionAlgebra</span></mixer>
+now accepts also a list of field elements instead of a field.
+Also, now the comparison of return values (w.r.t. equality, containment)
+yields <span class="code">true</span> if the parameters coincide and the
+ground fields fit.
+! Test Code
+gap> a:= QuaternionAlgebra( [ EB(5) ] );
+<algebra-with-one of dimension 4 over NF(5,[ 1, 4 ])>
+gap> IsSubset( a, QuaternionAlgebra( Rationals ) );
+true
+gap> ScalarProduct( x, x );;
+! Changed Files
+lib/algebra.gd
+lib/algsc.gi
+! End
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/30
+! Changed by
+FL
+! Type of Change
+New: improved documentation
+! Description
+The function
+<mixer manual="Reference: RemoveCharacters"><span class="code">
+RemoveCharacters</span></mixer> is now documented.
+! Changed Files
+doc/build/string.msk
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/31
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+Lists in <span class="pkgname">GAP</span> sometimes occupy memory for
+possible additional entries. Now plain lists and strings read by <span
+class="pkgname">GAP</span> and the lists returned by  
+<mixer manual="Reference: List"><span class="code">List</span></mixer>
+only occupy the memory they really need. For more details see the
+documentation of the new function 
+<mixer manual="Reference: EmptyPlist"><span class="code">
+EmptyPlist</span></mixer>.
+! Test Code
+gap> # Quotient to yield the same on 32- and 64-bit systems
+gap> SHALLOW_SIZE([1])/GAPInfo.BytesPerVariable;
+2
+gap> SHALLOW_SIZE(List([1..160],i->i^2))/GAPInfo.BytesPerVariable;
+161
+gap> [ShrinkAllocationPlist, ShrinkAllocationString];;
+gap> [EmptyPlist, EmptyString];;                                               
+! Changed Files
+M src/intrprtr.c
+M src/plist.c
+M src/string.c
+M src/string.h
+M lib/coll.gi
+M doc/build/lists.msk
+M doc/build/string.msk
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/08/31
+! Changed by
+FL
+! Type of Change
+New: data
+! Description
+There are some new Conway polynomials in characteristic 2 and 3 provided by 
+Kate Minola.
+! Test Code
+gap> IsCheapConwayPolynomial(2,150);
+true
+gap> IsCheapConwayPolynomial(3,52); 
+true
+! Changed Files
+lib/conwdat1.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/09/05
+! Changed by
+MN
+! Type of Change
+New: new functionality
+! Description
+A new operation <span class="code">MemoryUsage</span> determines the
+memory usage in bytes of an object and all its subobjects. It does
+not consider families and types but handles arbitrary self-referential
+structures of objects.
+! Changed Files
+src/gap.c
+lib/object.gd
+lib/object.gi
+doc/build/objects.msk
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2007/09/06
+! Changed by
+SK
+! Type of Change
+Fix: updated documentation
+! Description
+The outdated note that binary streams are not yet implemented has been
+removed.
+! Changed Files
+lib/streams.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

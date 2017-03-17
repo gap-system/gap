@@ -1,0 +1,31 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/11/19
+!! Changed by
+AK
+! Reported by
+Attila Egri-Nagy
+!! Type of Change
+Fix: wrong result
+!! Description
+IsLatticeOrderBinaryRelation only checked the existence of upper bounds but
+not the uniqueness of the least upper bound (and dually for lower bounds), 
+so in some cases it could return the wrong answer.
+! Test Code
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4,5],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+false
+gap> 
+gap> rel := BinaryRelationOnPoints([[2,3],[4,5],[4],[6],[6],[]]);
+Binary Relation on 6 points
+gap> rel := ReflexiveClosureBinaryRelation(TransitiveClosureBinaryRelation(rel));
+Binary Relation on 6 points
+gap> IsLatticeOrderBinaryRelation(rel);
+true
+!! Changeset
+ak/lattice-order-fix branch
+!! End

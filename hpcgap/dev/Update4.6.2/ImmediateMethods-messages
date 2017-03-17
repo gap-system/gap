@@ -1,0 +1,25 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% [Required] When the change was checked in, format 'yyyy/mm/dd':
+! Date
+2012/11/13
+% [Required] Initials should suffice here:
+! Changed by
+BH
+% [Required] Choose one or more entries and/or add new ones;
+% but always use either the 'Fix:' or the 'New:' prefix
+! Type of Change
+New: extended functionality
+New: improved documentation
+% [Required] For the description use plain text
+! Description
+Made the info string (optional 2nd argument to InstallImmediateMethods) 
+behave similarly to the info string in InstallMethods. In particular,
+TraceImmediateMethods now always prints the name of the operation.
+
+Improved Documentation of InstallImmediateMethods, mentioned info string
+in the documentation.
+% [Required] Describe here how to find out where the changes were made.
+! Changeset
+1b7464343d15ee6418d15a5b1bcbfbd125c979c6
+% [Required] Finish your entry with this:
+! End

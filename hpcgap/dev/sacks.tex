@@ -1,0 +1,424 @@
+\documentclass[12pt]{article}
+\usepackage{a4wide}
+\newcommand{\GAP}{\textsf{GAP}}
+\newcommand{\bd}{\begin{description}}
+\newcommand{\ed}{\end{description}}
+\parindent=0pt
+\parskip=\medskipamount
+\title{Extending GASMAN to non-contiguous workspaces}
+\author{Steve Linton}
+\begin{document}
+\maketitle
+\section{Introduction}
+
+These are some notes on an idea that may or may not get implemented.
+
+Persistent problems arise in \GAP\ because GASMAN needs a contiguous
+block of memory for the workspace, which may need to grow
+unpredictably as a calculation continues. Standard memory allocation
+schemes using \verb|malloc| or \verb|sbrk| cannot readily support
+this.  The typical problem is that an initial workspace is allocated
+with \verb|sbrk|, then some library function calls \verb|malloc|
+causing \verb|malloc| to do an \verb|sbrk| to enlarge its arena, then
+GASMAN tries to enlarge the workspace and is given a block of memory
+beyond the \verb|malloc| arena, which is not a contiguous extension of 
+the existing workspace.
+
+The workspace cannot be moved as a whole (using \verb|realloc| or \verb|mremap|)
+because bag identifiers are pointers to the masterpointers of the 
+bags they identify. This could be changed, but might slow down all bag
+accesses.
+
+There are therefore two possibilities:
+\begin{enumerate}
+\item Remove the requirement for a non-contiguous workspace \label{sacks}
+\item Implement our own versions of \verb|malloc| (etc.) which
+supplies memory from within the workspace. \label{ourmalloc}
+\end{enumerate}
+
+Blocks allocated by the \verb|malloc| replacement under option
+\ref{ourmalloc} cannot be moved, and so become rigid obstacles within
+the workspace. This basically takes us into option \ref{sacks}.
+
+We therefore consider to follow option \ref{sacks}.
+
+\section{Basic Design}
+
+We aim to modify GASMAN without going to the trouble of a complete
+rewrite, so that it can cope with a workspace that consists of a
+number of separate memory extents, which we call \emph{sacks}. There
+is a frequent requirement in GASMAN to recognise whether an arbitrary
+value is a valid bag id. Part of the check involves conparisons with
+the upper and lower bounds of the masterpointer area. To avoid slowing 
+this check down, we insist that the masterpointer area be entirely
+within one sack (the \emph{master sack}).
+
+There will be at most one sack capable of being extended
+contiguously, the last one allocated. We call this the \emph{top sack}. 
+
+Each sack will be divided into up to seven parts (in order):
+\bd
+\item[A Sack header] of fixed size, containing information about the sack
+\item[Masterpointers] Only in the master sack
+\item[Reserved Allocatable Space] space which will not be used for new 
+bags immediately, but may become Freely Allocatable after a partial
+garbage collection
+\item[Freely Allocatable Space] space in which new bags may be created
+\item[New Bags] bags created since the last garbage collection
+\item[Old Bags] bags which have survived a garbage collection
+\item[Unallocatable Space] space which will not be used for new 
+bags immediately, but may become Reserved Allocatable Space after the
+next full garbage collection
+\ed
+
+The change of order from the current workspace is to allow the size of 
+the masterpointer area to vary without necessarily having to move all
+the bags.
+
+All sacks will be linked in a circular doubly-linked list.  Sacks
+which contain (more that 4KB of) allocatable space are called
+\emph{open} (otherwise \emph{closed}). All open sacks are linked in a
+second circular doubly linked list. The sack in which the first
+attempt at the next allocation will be made is called the
+\emph{current allocation sack}.
+
+
+
+
+\section{Algorithms}
+
+\subsection{Initialisation}
+
+The initial workspace should be a single sack, which will be the
+master sack. 
+
+We could explore allocating it very large, but refraining 
+from accessing most of it. Under Linux, at least, this would work
+rather well, and might make this whole scheme unnecessary.
+
+\subsection{Allocating a bag}
+
+To allocate a new bag, we proceed:
+\begin{enumerate}
+\item If there is enough space in the current allocation sack then
+allocate there
+\item Otherwise go around the linked list of open sacks and see if any 
+of them have room
+\item If so, allocate there and make that sack the ``current
+allocation sack''
+\item If not garbage collect
+\end{enumerate}
+
+\subsection{Garbage collection}
+
+The mark phase of garbage collection is unchanged.
+
+The current sweep phase runs destination and source pointers through
+the Young bags area consolidating the live bags into what will become the
+Old bags area. In a full garbage collection, all bags are considered
+young. After that, the workspace and masterpointer area sizes
+are adjusted, which may involve moving the entire bags area. 
+
+We could sweep each sack separately. This is simple, but fragments the 
+free space, and we will need to tackle moving bags between sacks
+anyway, to cater for adjustments in the size of the masterpointer
+area.
+
+I therefore propose that the sweeping process should run through all
+the (non-trivial) Young Bags areas with the aim of consolidating the
+surviving bags into as few sacks as (quickly) possible, and, if
+possible, of filling those sacks full enough that they can be regarded 
+as closed. The master sack should be the first choice to be open, when 
+possible, in case it becomes necessary to expand the masterpointer area.
+
+This becomes tricky when we get close to the end of a sack into which
+we are sweeping, and can only fit in smaller bags. If the source
+pointer points at too large a bag, however, we can look ``ahead'' of
+the source pointer for such bags, copy them, and remark them as dead
+so that we don't sweep them up again. Then, when the destination
+pointer moves into the next sack, we can resume sweeping normally from
+the source pointer.
+
+The next important phase of garbage collection is the adjustment of
+the sizes of things. The following considerations arise:
+
+\begin{itemize}
+\item We must provide a single block of free space of the size
+requested when GC was invoked. If we cannot do this, we must fail.
+\item We must provide a free masterpointer if one is
+needed. Otherwise, we must fail.
+\item We want to provide a ``reasonable'' amount of freely allocatable space, 
+so that we will not have to garbage collect again too soon.
+\item After a full garbage collection, we may want to provide a
+``reasonable'' amount of reserved allocatable space  to avoid having
+to do a full GC again too soon.
+\item We may wish to return unused space to the OS. On most systems
+this is only important if the space is dirty (ie we have written to
+it).
+\item We wish to ensure that the amount of space reserved for
+masterpointers is appropriate. Since this space must be in the master
+sack, we may have to move other bags out of that sack to do this, or
+we may get some free space in a sack where we might not want it.
+\end{itemize}
+
+The calculations for this phase can be done before the sweep phase,
+but until we have swept, there may not be space to move bags around.
+
+\section{Parameters}
+
+I propose that we set all our parameters in multiples of 4KB. This is
+accurate enough for all sensible purposes, keeps everything inside 28
+bits, allowing the parameters to be manipulated in \GAP, and will
+encourage things to lie on page boundaries, which will suit most OSs.
+
+\bd
+\item[InitialSackSize] The total size at which the master sack should
+start. If this memory cannot be allocated, the initialization
+fails. Default 8MB.
+\item[InitialUsedSize] The amount of the master sack which should
+\emph{not} be marked unallocatable to start with. Default is
+InitialSackSize, values greater than InitialSackSize are reduced with
+warning.
+\item[MinAllocationWindow] If this much allocatable space cannot be found
+after a partial garbage collection then d a full garbage
+collection. Default 512KB
+\item[MaxAllocationWindow] If this is non-zero, then garbage collection
+will try to ensure that the freely allocatable space is in a single
+region of this size. If this is zero, then no 
+reserved allocatable space will ever be created. Default zero. If
+non-zero, should not be less than MinAllocationWindow.
+\item[AbsoluteSizeMaximum] A strict top limit on the total size of all
+sacks. Default 128MB. A limit of zero means no limit.
+\item[MinMasterPointerRatio] The space for free masterpointers should
+be kept at least this fraction (expressed in 1000ths) of the total
+allocatable space. Default 166
+\item[MaxMasterPointerRatio] The space for free masterpointers should
+be kept at most this fraction (expressed in 1000ths) of the total
+allocatable space. Default 250. A value less than or equal to
+MinMasterPointerRatio is an error.
+\item[MinAllocatableSpaceRatio] The total allocatable space should be
+kept to at least this fraction of the total currently
+allocated. Default 125.
+\item[MinAllocatableSpace] The total allocatable space should also be
+kept to at least this absolute amount. Default 0
+(MinAllocatableSpaceRatio is used instead)
+\item[MaxAllocatableSpaceRatio] If the total allocatable space is
+larger than this ratio of the total allocated space in all sacks and
+there is no unallocatable space in the top sack, and the top sack has
+allocatable space in it, then some of that space may be returned to
+the OS. Default 250
+\item[MinimumSizeChangeRatio] When the top sack is being expanded or
+shrunk, always change it by at least this proportion of the total size 
+of all sacks. Default 100
+\item[MiniumuSizeChange]  When the top sack is being expanded or
+shrunk, always change it by at least this absolute amount. Default
+512KB
+\item[MinimumSackSize] The minimum size with which any new top sack will be
+allocated, or to which it will be allowed to shrink. Default 1MB.
+\item[MinimumSackRatio] The minimum fraction of the total size of all
+sacks with which any new top sack will be
+allocated, or to which it will be allowed to shrink. Default 250.
+\item[MaximumIgnoredSpace] The maximum allocatable space that may be
+left in a sack without the sack being regarded as open. Default 4KB.
+\ed
+
+
+\section{Size Change Procedures}
+
+\subsection{After a Partial Garbage Collection}
+
+Let $x$ be the amount of space required from this garbage collection
+
+If no sack contains amount $x$ of allocatable space then do a full
+garbage collection.
+
+If AllocationWindow is non-zero then 
+\begin{enumerate}
+\item If any sack contains $x + \mbox{MaxAllocationWindow}$ 
+of allocatable space, then 
+mark that as freely allocatable and the rest as reserved
+allocatable. If there is more than one such bag, avoid choosing the
+master bag.
+\item If not, Let y be the total amount of allocatable space in all sacks,
+except those containing less that MaximumIgnoredSpace
+\item If $y > x + \mbox{MaxAllocationWindow}$, then mark $x +
+\mbox{MaxAllocationWindow}$ of space
+freely allocatable, and the remaining allocatable space reserved
+allocatable. If there is choice, avoid the master bag.
+\item If not, and $y > \mbox{MinAllocationWindow}+x$ then mark all allocatable
+space freely allocatable
+\item If not then do a full collection
+\end{enumerate}
+otherwise:
+\begin{enumerate}
+\item  Let $y$ be the total amount of allocatable space in all sacks,
+except those containing less that MaximumIgnoredSpace
+\item If $y >  \mbox{MinAllocationWindow}+x$ then mark all allocatable space 
+ freely allocatable
+\item If not then do a full collection
+\end{enumerate}
+
+Now check that the number of free masterpointers exceeds
+$y*(\mbox{MinMasterPointerRatio}/(1000* \mbox{word length}))$. 
+If not, do a full garbage collection.
+
+
+Set up the linked list of open sacks and the Current Allocation Sack. 
+
+Return.
+
+\subsection{After a Full Garbage Collection}
+
+Let $x$ be the amount of space required. 
+
+Let $y$ be the total amount of allocatable space remaining after the
+garbage collection, discounting those sacks containing less than
+MaxIgnoredSpace.
+
+Let $z$ be the number of free masterpointers after the garbage
+collection. Let $m$ be the size of a masterpointer.
+
+Let $w$ be the total space in all allocated bags.
+
+Let $n$ be the number of allocated bags, so that $mn$ is the number of 
+bytes of masterpointers in use.
+
+Let $t$ be the total size of all sacks.
+
+
+If no sack has as much as $x$ allocatable space in it then we will 
+need to make special arrangements (the large bag case). We consider
+this at the end.
+
+
+If \begin{eqnarray}
+m(z-1) &\ge& \mbox{MinMasterPointerRatio} * (y-x) / 1000\label{minmp}\\
+m(z-1) &\le& \mbox{MaxMasterPointerRatio} * (y-x) / 1000\label{maxmp}\\
+y -x&\ge& \mbox{MinAllocatableSpace}\label{minspace}\\
+y -x&\ge& \mbox{MinAllocatableSpaceRatio}*w/1000\label{minspacer}\\
+y -x&\le& \mbox{MaxAllocatableSpaceRatio}*w/1000\label{maxspacer}
+\end{eqnarray}
+
+then the current sizes are fine.
+
+We next seek a solution to the inequalities simply by changing the
+size of the masterpointer area. 
+
+We consider increasing the number of masterpointers by $a$ (which may
+be negative). 
+
+We find that
+\begin{eqnarray}
+ma &\ge& {\mbox{MinMasterPointerRation} * (y-x) \over 1000 +
+\mbox{MinMasterPointerRation}} - m(z-1) \\
+ma &\le& {\mbox{MaxMasterPointerRation} * (y-x) \over 1000 +
+\mbox{MaxMasterPointerRation}} - m(z-1) \\
+ma & \le & y - x - \mbox{MinAllocatableSpace}\\
+ma & \le & y - x - \mbox{MinAllocatableSpaceRatio} * w /1000\\
+ma & \ge & y - x - \mbox{MaxAllocatableSpaceRatio} * w /1000
+\end{eqnarray}
+
+Let $y_s$ be the amount of allocatable space in 
+the master sack. 
+There is an additional constraint, whose exact form depends on
+whether any sack except the master sack has $x$ bytes free. If so
+then it is simply:
+
+\begin{equation}
+ma \le y_s
+\end{equation}
+
+otherwise it is:
+
+\begin{equation}
+ma \le y_s -x
+\end{equation}
+
+If these inequalities has a range of solutions then take the center
+point. It then simply remains to change the pointers in the master
+sack, and, perhaps, initialize the new masterpointers and sort out the 
+division between freely allocatable and reserved allocatable. The sweep phase 
+was organised so that the free space should be concentrated in the
+master sack, so we are unlikely to miss a solution which might involve 
+moving bags out of the master sack.
+
+Otherwise, we have to consider changing the size of the whole
+workspace, by making some unallocatable space allocatable, extending
+the top sack, shrinking the top sack, or allocating a new sack.
+
+
+We therefore consider increasing the workspace by $b$ bytes (which
+might be negative) and get a series of simultaneous inequalities in
+$a$ and $b$, which had better always have a solution.
+
+
+If \begin{eqnarray}
+ma &\ge& \mbox{MinMasterPointerRatio} * (y+b-x-ma) / 1000- m(z-1)\\
+ma &\le& \mbox{MaxMasterPointerRatio} * (y+b-x-ma) / 1000 - m(z-1)\\
+b-ma&\ge& \mbox{MinAllocatableSpace} + x-y\\
+b -ma&\ge& \mbox{MinAllocatableSpaceRatio}*w/1000 + x- y\\
+b -ma&\le& \mbox{MaxAllocatableSpaceRatio}*w/1000 + x -y
+\end{eqnarray}
+
+
+We can solve this by taking a middle value for $b-ma$ from the
+solution range of the last three, and then using that to fix a range
+for $a$, using the first two, taking the center value from that range
+and then solving for $b$. There is an additional constraint for $a$
+if the master sack is not the top sack, namely that the master
+pointers all have to fit into the master sack.
+
+Now we adjust $b$ (towards $+\infty$) to avoid the open ranges
+$(\mbox{MinimumSizeChange},0)$, $(0,\mbox{MinimumSizeChange})$
+$(\mbox{MinimumSizeChangeRatio}*t/1000,0)$ and
+$(0,\mbox{MinimumSizeChangeRatio}*t/1000)$.
+
+We could go back and re-solve for $a$, but this is probably not worth
+doing, the next GC will catch it.
+
+If $b$ is negative, and the top sack contains no unallocatable space,
+then we can try to reduce the size of the top sack, subject to leaving 
+at least MinimumSackSize and at least
+$t*\mbox{MinimumSackRation}/1000$. This may require moving some
+bags out of the top sack. If this proves difficult (due to large bags, 
+presumably) then we simply revise $b$ upwards (possibly to 0).
+
+
+Otherwise, we look at the top sack and see if it contains unallocatable
+space. If it does, and contains at least $b$ bytes, then we can make
+$b$ bytes of unallocatable space allocatable, and we are done. If it
+contains less than $b$, but more than 0, then we make it all
+allocatable, and reduce $b$ subject to avoiding the four intervals above.. 
+
+Next we try to extend the top sack by $b$ bytes. If we succeed then we 
+are fine.
+
+If not, we need to allocate a new sack. We may need to increase $b$,
+so that it is not less than MinimumSackSize and not less than
+$t*\mbox{MinimumSackRatio}/1000$. If no existing sack has total size
+as large as $x$ bytes (special rules in the master sack), then we must 
+also ensure that $b > x$.
+
+Having got the extra space, we now may have to move bags between sacks 
+for two reasons:
+\begin{itemize}
+\item To make room for extra masterpointers
+\item To make room for the new bag of size $x$ which started this
+problem
+\end{itemize}
+
+If the workspace is very clogged with large bags in relatively small
+sacks, then we may find ourselves in trouble. In this (hopefully rare)
+situation, we expand the top sack, or allocate a new sack, big enough
+to take all the bags from the master sack and the new sack to be
+allocated (or possibly a bit less than that).  If we can't manage to
+do this then we give up and suggest that the user restart with a
+larger master sack.
+
+
+
+If we fail to allocate the space we want, then we should simply take
+what we can get, and see if we can fit in the new bag, and divide up
+any remaining space betwee free space and free masterpointers.
+
+\end{document}

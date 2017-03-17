@@ -1,0 +1,1 @@
+CustomView := ViewSharedObj;

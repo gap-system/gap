@@ -1,0 +1,366 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  objects.msk              GAP manual                     Thomas Breuer -->
+<!-- %W                                                       Martin Schönert -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: objects.msk,v 1.28 2006/03/23 19:40:39 stefan Exp </M> -->
+<!-- %% -->
+
+<!-- %T modify and use the text in <C>object.gd</C> for the discussion of -->
+<!-- %T mutability and copyability -->
+<!-- %T (in particular for <C>IsMutable</C> and <C>IsCopyable</C>). -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Objects and Elements">
+<Heading>Objects and Elements</Heading>
+
+An <E>object</E> is anything in &GAP; that can be assigned to a variable,
+so nearly everything in &GAP; is an object.
+<P/>
+Different objects can be regarded as equal with respect to the equivalence
+relation <Q><C>=</C></Q>,
+in this case we say that the objects describe the same <E>element</E>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Objects">
+<Heading>Objects</Heading>
+
+Nearly all things one deals with in &GAP; are <E>objects</E>.
+For example, an integer is an object, as is a list of integers, a matrix,
+a permutation, a function, a list of functions, a record, a group,
+a coset or a conjugacy class in a group.
+<P/>
+Examples of things that are not objects are
+comments which are only lexical constructs,
+<K>while</K> loops which are only syntactical constructs,
+and expressions, such as <C>1 + 1</C>;
+but note that the value of an expression, in this case the integer <C>2</C>,
+is an object.
+<P/>
+Objects can be assigned to variables,
+and everything that can be assigned to a variable is an object.
+Analogously, objects can be used as arguments of functions, and can be 
+returned by functions.
+
+<#Include Label="IsObject">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Elements as equivalence classes">
+<Heading>Elements as equivalence classes</Heading>
+
+<Index Subkey="definition">elements</Index>
+The equality operation <Q><C>=</C></Q> defines an equivalence relation on all
+&GAP; objects.
+The equivalence classes are called <E>elements</E>.
+<P/>
+There are basically three reasons to regard different objects as
+equal.  Firstly the same information may be stored in different
+places.  Secondly the same information may be stored in different
+ways; for example, a polynomial can be stored sparsely or densely.
+Thirdly different information may be equal modulo a mathematical
+equivalence relation.  For example, in a finitely presented group with
+the relation <M>a^2 = 1</M> the different objects <M>a</M> and <M>a^3</M> describe
+the same element.
+<P/>
+As an example of all three reasons, consider the possibility of storing
+an integer in several places of the memory,
+of representing it as a fraction with denominator 1,
+or of representing it as a fraction with any denominator, and numerator
+a suitable multiple of the denominator. 
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sets">
+<Heading>Sets</Heading>
+
+In &GAP; there is no category whose definition corresponds to the
+mathematical property of being a set, however 
+in the manual we will often refer to an object as a <E>set</E> 
+in order to convey the fact that mathematically, we are thinking of
+it as a set. In particular, two sets <M>A</M> and <M>B</M> are equal if and only if,
+<M>x \in A \iff x \in B</M>.  
+<P/>
+There are two types of object in &GAP; which exhibit this kind of behaviour
+with respect to equality, namely domains (see Section&nbsp;<Ref Sect="Domains"/>) and lists 
+whose elements are strictly sorted see <Ref Func="IsSSortedList"/>.
+In general, <E>set</E> in this manual
+will mean an object of one of these types.
+<P/>
+More precisely: two domains can be compared with <Q>{<C>=</C>}</Q>,
+the answer being <K>true</K> if and only if the sets of elements
+are equal (regardless of any additional structure) and;
+a domain and a list can be compared with <Q><C>=</C></Q>,
+the answer being <K>true</K> if and only if the list is equal to
+the strictly sorted list of elements of the domain.
+<P/>
+A discussion about sorted lists and sets can be found
+in Section <Ref Sect="Sorted Lists and Sets"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Domains">
+<Heading>Domains</Heading>
+
+An especially important class of objects in &GAP; are those whose
+underlying mathematical abstraction is that of a  structured set, for
+example a group, a conjugacy class, or a vector space.  Such objects
+are called <E>domains</E>.  The equality relation between domains is always 
+equality <E>as sets</E>, so that two domains are equal if and only if they
+contain the same elements.
+<P/>
+Domains play a central role in &GAP;.  In a sense, the only reason
+that &GAP; supports objects such as integers and permutations is the
+wish to form domains of them and compute the properties of those domains.
+<P/>
+Domains are described in Chapter&nbsp;<Ref Chap="Domains and their Elements"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Identical Objects">
+<Heading>Identical Objects</Heading>
+
+Two objects that are equal <E>as objects</E> (that is they actually refer
+to the same area of computer memory) and not only w.r.t. the equality
+relation <Q><C>=</C></Q> are called <E>identical</E>.
+Identical objects do of course describe the same element.
+
+<#Include Label="IsIdenticalObj">
+<#Include Label="IsNotIdenticalObj">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mutability and Copyability">
+<Heading>Mutability and Copyability</Heading>
+
+An object in &GAP; is said to be <E>immutable</E> if its mathematical value
+(as defined by <M>=</M>) does not change under any operation.
+More explicitly,
+suppose <M>a</M> is immutable and <M>O</M> is some operation on <M>a</M>,
+then if <M>a = b</M> evaluates to <K>true</K> before executing <M>O(a)</M>,
+<M>a = b</M> also evaluates to <K>true</K> afterwards. 
+(Examples for operations <M>O</M> that change mutable objects are
+<Ref Func="Add"/> and <Ref Func="Unbind" Label="unbind a list entry"/>
+which are used to change list objects, see Chapter&nbsp;<Ref Chap="Lists"/>.)
+An immutable object <E>may</E> change, for example to store
+new information, or to adopt a more efficient representation,
+but this does not affect its behaviour under <M>=</M>.
+<P/>
+There are two points here to note. Firstly, <Q>operation</Q> above 
+refers to the functions and methods which can legitimately be
+applied to the object, and not the <C>!.</C> operation whereby 
+virtually any aspect of any &GAP; level object may be changed.
+The second point which follows from this, is that when 
+implementing new types of objects, it is the programmer's
+responsibility to ensure that the functions and methods they write
+never change immutable objects mathematically.
+<P/>
+In fact, most objects with which one deals in &GAP; are immutable. 
+For instance, the permutation <C>(1,2)</C> will never become a
+different permutation or a non-permutation (although a variable which
+previously had <C>(1,2)</C> stored in it may subsequently have some other
+value). 
+<P/>
+For many purposes, however, <E>mutable</E> objects are useful.  These
+objects may be changed to represent different mathematical objects during 
+their life. For example, mutable lists can be changed by assigning values to
+positions or by unbinding values at certain positions.  Similarly, one
+can assign values to components of a mutable record, or unbind them.
+
+<#Include Label="IsCopyable">
+<#Include Label="IsMutable">
+<#Include Label="Immutable">
+
+
+<ManSection>
+<Func Name="MakeImmutable" Arg='obj'/>
+
+<Description>
+One can turn the (mutable or immutable) object <A>obj</A> into an immutable
+one with <Ref Func="MakeImmutable"/>;
+note that this also makes all subobjects of <A>obj</A> immutable,
+so one should call <Ref Func="MakeImmutable"/> only if <A>obj</A> and
+its mutable subobjects are newly created.
+If one is not sure about this, <Ref Func="Immutable"/> should be used.
+<P/>
+Note that it is <E>not</E> possible to turn an immutable object into a
+mutable one;
+only mutable copies can be made (see&nbsp;<Ref Sect="Duplication of Objects"/>).
+<P/>
+Using <Ref Func="Immutable"/>, it is possible to store an immutable identity
+matrix or an immutable list of generators, and to pass around
+references to this immutable object safely.  Only when a mutable
+copy is really needed does the actual object have to be duplicated.
+Compared to the situation without immutable objects, much unnecessary
+copying is avoided this way.  Another advantage of immutability is
+that lists of immutable objects may remember whether they are sorted
+(see&nbsp;<Ref Sect="Sorted Lists and Sets"/>), which is not possible for lists of
+mutable objects.
+<P/>
+Since the operation <Ref Func="Immutable"/> must work for any object
+in &GAP;, it 
+follows that an immutable form of every object must be possible, even
+if it is not sensible, and user-defined objects must allow for the
+possibility of becoming immutable without notice. 
+</Description>
+</ManSection>
+
+
+<Subsection Label="subsect:mutability iterators">
+<Heading>Mutability of Iterators</Heading>
+
+An interesting example of mutable (and thus copyable) objects is
+provided by <E>iterators</E>, see&nbsp;<Ref Sect="Iterators"/>.
+(Of course an immutable form of an iterator is not very useful,
+but clearly <Ref Func="Immutable"/> will yield such an object.)
+Every call of <Ref Func="NextIterator"/> changes a mutable iterator until it is
+exhausted, and this is the only way to change an iterator.
+<Ref Func="ShallowCopy"/> for an iterator <A>iter</A> is defined so as to return a
+mutable iterator that has no mutable data in common with <A>iter</A>,
+and that behaves equally to <A>iter</A> w.r.t.&nbsp;<Ref Func="IsDoneIterator"/> and (if <A>iter</A>
+is mutable) <Ref Func="NextIterator"/>.
+Note that this meaning of the <Q>shallow copy</Q> of an iterator
+that is returned by <Ref Func="ShallowCopy"/> is not as obvious as for lists and records,
+and must be explicitly defined.
+
+</Subsection>
+
+
+<Subsection Label="subsect:mutability arithmetic operations">
+<Heading>Mutability of Results of Arithmetic Operations</Heading>
+
+Many operations return immutable results, among those in particular
+attributes (see&nbsp;<Ref Sect="Attributes"/>).  Examples of attributes are <Ref Attr="Size"/>,
+<Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>, and <Ref Func="Inverse"/>.  Arithmetic
+operations, such as the binary infix operations <C>+</C>, <C>-</C>, <C>*</C>, <C>/</C>,
+<C>^</C>, <K>mod</K>, the unary <C>-</C>, and operations such as <Ref Func="Comm"/> and
+<Ref Func="LeftQuotient"/>, return <E>mutable</E> results, <E>except</E> if all arguments
+are immutable.  So the product of two matrices or of a vector and a
+matrix is immutable if and only if the two matrices or both the vector
+and the matrix are immutable (see also&nbsp;<Ref Sect="Arithmetic for Lists"/>). There
+is one exception to this rule, which arises where the result is less
+deeply nested than at least one of the argument, where mutable
+arguments may sometimes lead to an immutable result. For instance, a
+mutable matrix with immutable rows, multiplied by an immutable vector
+gives an immutable vector result. The exact rules are given 
+in&nbsp;<Ref Sect="Arithmetic for Lists"/>.
+<P/>
+
+It should be noted that
+<C>0 * <A>obj</A></C> is equivalent to <C>ZeroSM( <A>obj</A> )</C>,
+<C>-<A>obj</A></C> is equivalent to <C>AdditiveInverseSM( <A>obj</A> )</C>,
+<C><A>obj</A>^0</C> is equivalent to <C>OneSM( <A>obj</A>)</C>,
+and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSM( <A>obj</A> )</C>.
+The <Q>SM</Q> stands for <Q>same mutability</Q>, and indicates that the result is
+mutable if and only if the argument is mutable.
+<P/>
+The operations <Ref Func="ZeroOp"/>, <Ref Func="AdditiveInverseOp"/>, <Ref Func="OneOp"/>, and <Ref Func="InverseOp"/>
+return <E>mutable</E> results whenever a mutable version of the result exists,
+contrary to the attributes <Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>, and <Ref Func="Inverse"/>.
+<P/>
+If one introduces new arithmetic objects then one need not install
+methods for the attributes <Ref Func="One"/>, <Ref Func="Zero"/>, etc.
+The methods for the associated operations <Ref Func="OneOp"/> and <Ref Func="ZeroOp"/>
+will be called, and then the results made immutable. 
+<P/>
+All methods installed for the arithmetic operations must obey the rule
+about the mutability of the result.  This means that one may try to
+avoid the perhaps expensive creation of a new object if both operands
+are immutable, and of course no problems of this kind arise at all in
+the (usual) case that the objects in question do not admit a mutable form,
+i.e., that these objects are not copyable.
+<P/>
+In a few, relatively low-level algorithms, one wishes to treat a
+matrix partly as a data structure, and manipulate and change its
+entries.  For this, the matrix needs to be mutable, and the rule that
+attribute values are immutable is an obstacle.  For these situations,
+a number of additional operations are provided, for example
+<Ref Func="TransposedMatMutable"/> constructs a mutable matrix (contrary to the
+attribute <Ref Func="TransposedMat"/>), while <Ref Func="TriangulizeMat"/> modifies a mutable
+matrix (in place) into upper triangular form.
+<P/>
+Note that being immutable does not forbid an object to store
+knowledge.  For example, if it is found out that an immutable list is
+strictly sorted then the list may store this information.  More
+precisely, an immutable object may change in any way, provided that it
+continues to represent the same mathematical object.
+
+</Subsection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Duplication of Objects">
+<Heading>Duplication of Objects</Heading>
+
+<Index>Copy</Index>
+<Index Subkey="an object">copy</Index>
+<Index Subkey="an object">clone</Index>
+<#Include Label="ShallowCopy">
+<#Include Label="StructuralCopy">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Other Operations Applicable to any Object">
+<Heading>Other Operations Applicable to any Object</Heading>
+
+There are a number of general operations which can be applied, in
+principle, to any object in &GAP;. Some of these are documented
+elsewhere &ndash;see <Ref Func="String"/>, <Ref Func="PrintObj"/> and
+<Ref Func="Display"/>. Others are mainly somewhat technical.
+
+
+<ManSection>
+<Func Name="SetName" Arg='obj, name'/>
+
+<Description>
+for a suitable object <A>obj</A> sets that object to have  name  <A>name</A>  (a
+string).
+</Description>
+</ManSection>
+
+
+<#Include Label="Name">
+<#Include Label="InfoText">
+<#Include Label="IsInternallyConsistent">
+
+<ManSection>
+<Oper Name="MemoryUsage" Arg='obj'/>
+
+<Description>
+returns the amount of memory in bytes used by the object <A>obj</A> and its
+subobjects. Note that in general, objects can reference each other
+in very difficult ways such that determining the memory usage is
+a recursive procedure. In particular, computing the memory usage
+of a complicated structure itself uses some additional memory,
+which is however no longer used after completion of this operation.
+This procedure descends into lists and records, positional and
+component objects, however it does not take into account the type
+and family objects! For functions, it only takes the memory usage
+of the function body, not of the local context the function was
+created in, although the function keeps a reference to that as well!
+</Description>
+</ManSection>
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

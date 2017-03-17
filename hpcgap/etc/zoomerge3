@@ -1,0 +1,80 @@
+#!/bin/sh
+#
+# merge a zoo file into another one. quick-n-dirty solution.
+#
+# even nastier hack -- do a parallel build of zip and tar files
+#
+# (to be used to prepare a joint archive of zoo files for the release)
+# ahulpke, 5-jul-99
+# usage: zoomerge mergetoarchive-prefix otherarchive extra-path
+
+if [ "x$3" != "x" ]; then
+  mkdir -p $3
+fi
+
+# extract 
+zoo lc $2 >infile
+
+# build a wrapping file from the archive
+# assume: header does not start with blank
+# summary line starts with blank
+rm -f awkprog
+cat << 'EOF' > awkprog
+BEGIN{com=0; text = 0;}
+/^[ 0123456789]/{if (substr ($0,2,1) == "|" ) { 
+  print "echo \"" substr($0,3) "\" > comment";
+  print "echo \"/END\" >>comment";
+  com=1;
+  if (substr($0,3) == "!TEXT!") 
+     text = 1;
+  else
+     text = 0;} 
+else {if (com != 0) { print "zoo ahc blubber.zoo \"" name "\" < comment >& /dev/null"; 
+    if (text != 0) 
+        print "zip -l blubber.zip \"" name "\" >& /dev/null"; 
+     else 
+        print "zip blubber.zip \"" name "\" >& /dev/null"; 
+    } 
+else {print "zoo ah blubber.zoo \"" name "\" >& /dev/null";
+      print "zip blubber.zip \"" name "\" >& /dev/null";} 
+print "tar rf blubber.tar \"" name "\""; 
+print "rm -f \"" name "\""; 
+name=substr($0,48);com=0; 
+while ((length(name)>0)&&(substr(name,1,1)==" ") ) { 
+  name=substr(name,2); 
+} 
+  uname=name;
+if (substr(name,1,2) == "./") {
+  name=substr(name,3);
+}
+EOF
+echo if \(name !=\"\"\) {print \"unzoo -x -o $2 \\\"\" uname \"\\\" \>\& /dev/null\"\; >> awkprog
+echo  print \"chmod a+r \" name \; >> awkprog
+echo  print \"chmod go-w \" name \; >> awkprog
+if [ "x$3" != "x" ]; then
+   echo print \"mkdir -p \`dirname $3/\" name \"\`\" \; >> awkprog
+   echo print \"mv \" name \" $3/\" name \; >> awkprog
+   echo name=\"$3/\" name >> awkprog
+fi
+cat << EOF >> awkprog
+} 
+}}
+END { if (com == 0 && name != "") { 
+    print "zoo ah blubber.zoo \"" name "\" >& /dev/null";
+    print "zip blubber.zip \"" name "\">& /dev/null";
+    print "tar rf blubber.tar \"" name "\""; 
+    print "rm -f \"" name "\""; } }
+
+EOF
+awk -f awkprog infile >maches
+chmod 755 maches
+if [ -f $1.zoo ]; then mv $1.zoo blubber.zoo; fi
+if [ -f $1.zip ]; then mv $1.zip blubber.zip; fi
+if [ -f $1.tar ]; then mv $1.tar blubber.tar; fi 
+sh maches
+# rm -f infile maches comment awkprog
+mv blubber.zoo $1.zoo
+mv blubber.zip $1.zip
+mv blubber.tar $1.tar
+
+

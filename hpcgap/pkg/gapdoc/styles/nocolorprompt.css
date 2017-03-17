@@ -1,0 +1,13 @@
+
+/* colors for ColorPrompt like examples */
+span.GAPprompt {
+  color: #000000;
+  font-weight: normal;
+}
+span.GAPbrkprompt {
+  color: #000000;
+  font-weight: normal;
+}
+span.GAPinput {
+  color: #000000;
+}

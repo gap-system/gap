@@ -1,0 +1,39 @@
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/seqorbit.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+n := 8;
+t := DoManySeqOrbit(gens,v,OnRightRO,
+  AtomicRecord(rec( hashlen := NextPrimeInt( 3000000 ))),n);
+AppendTo("results.txt","sequential, ",n," simultaneously: ",t,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/seqorbit.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+n := 16;
+t := DoManySeqOrbit(gens,v,OnRightRO,
+  AtomicRecord(rec( hashlen := NextPrimeInt( 3000000 ))),n);
+AppendTo("results.txt","sequential, ",n," simultaneously: ",t,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/seqorbit.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+n := 32;
+t := DoManySeqOrbit(gens,v,OnRightRO,
+  AtomicRecord(rec( hashlen := NextPrimeInt( 3000000 ))),n);
+AppendTo("results.txt","sequential, ",n," simultaneously: ",t,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/seqorbit.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+n := 4;
+t := DoManySeqOrbit(gens,v,OnRightRO,
+  AtomicRecord(rec( hashlen := NextPrimeInt( 3000000 ))),n);
+AppendTo("results.txt","sequential, ",n," simultaneously: ",t,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/seqorbit.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+n := 1;
+t := DoManySeqOrbit(gens,v,OnRightRO,
+  AtomicRecord(rec( hashlen := NextPrimeInt( 3000000 ))),n);
+AppendTo("results.txt","sequential, ",n," simultaneously: ",t,"\n");

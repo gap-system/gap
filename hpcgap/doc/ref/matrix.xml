@@ -1,0 +1,623 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  matrix.msk                  GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: matrix.msk,v 1.42 2006/03/09 16:47:16 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Matrices">
+<Heading>Matrices</Heading>
+
+Matrices are represented in &GAP; by lists of row vectors
+(see <Ref Chap="Row Vectors"/>) (for future changes to this
+policy see Chapter <Ref Chap="Matrix objects"/>).
+The vectors must all have the same length, and their elements must lie in
+a common ring. However, since checking rectangularness can be expensive
+functions and methods of operations for matrices often will not give an error
+message for non-rectangular lists of lists &ndash;in such cases the result is
+undefined.
+<P/>
+Because matrices are just a special case of lists, all operations and
+functions for lists are applicable to matrices also (see chapter
+<Ref Chap="Lists"/>).
+This especially includes accessing elements of a matrix (see
+<Ref Sect="List Elements"/>),
+changing elements of a matrix (see <Ref Sect="List Assignment"/>),
+and comparing matrices (see <Ref Sect="Comparisons of Lists"/>).
+<P/>
+Note that, since a matrix is a list of lists,
+the behaviour of <Ref Oper="ShallowCopy"/>
+for matrices is just a special case of <Ref Oper="ShallowCopy"/> for lists
+(see&nbsp;<Ref Sect="Duplication of Lists"/>);
+called with an immutable matrix <A>mat</A>,
+<Ref Oper="ShallowCopy"/> returns a mutable matrix
+whose rows are identical to the rows of <A>mat</A>.
+In particular the rows are still immutable.
+To get a matrix whose rows are mutable,
+one can use <C>List( <A>mat</A>, ShallowCopy )</C>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:InfoMatrix">
+<Heading>InfoMatrix (Info Class)</Heading>
+
+<#Include Label="InfoMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Categories of Matrices">
+<Heading>Categories of Matrices</Heading>
+
+<#Include Label="IsMatrix">
+<#Include Label="IsOrdinaryMatrix">
+<#Include Label="IsLieMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operators for Matrices">
+<Heading>Operators for Matrices</Heading>
+
+The rules for arithmetic operations involving matrices are in fact
+special cases of those for the arithmetic of lists,
+given in Section&nbsp;<Ref Sect="Arithmetic for Lists"/> and the following sections,
+here we reiterate that definition, in the language of vectors and matrices.
+<P/>
+Note that the additive behaviour sketched below is defined only for lists in
+the category <Ref Filt="IsGeneralizedRowVector"/>,
+and the multiplicative behaviour is defined only for lists in the category
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
+(see&nbsp;<Ref Sect="Filters Controlling the Arithmetic Behaviour of Lists"/>).
+<P/>
+<Index Subkey="matrices">addition</Index>
+<C><A>mat1</A> + <A>mat2</A></C>
+<P/>
+returns the sum of the two matrices <A>mat1</A> and <A>mat2</A>,
+Probably the most usual situation is that <A>mat1</A> and <A>mat2</A> have the same
+dimensions and are defined over a common field;
+in this case the sum is a new matrix over the same field where each entry
+is the sum of the corresponding entries of the matrices.
+<P/>
+In more general situations, the sum of two matrices need not be a matrix,
+for example adding an integer matrix <A>mat1</A> and a matrix <A>mat2</A> over
+a finite field yields the table of pointwise sums,
+which will be a mixture of finite field elements and integers if <A>mat1</A> has
+bigger dimensions than <A>mat2</A>.
+<P/>
+<Index Subkey="scalar and matrix">addition</Index>
+<C><A>scalar</A> + <A>mat</A></C>
+<P/>
+<Index Subkey="matrix and scalar">addition</Index>
+<C><A>mat</A> + <A>scalar</A></C>
+<P/>
+returns the sum of the scalar <A>scalar</A> and the matrix <A>mat</A>.
+Probably the most usual situation is that the entries of <A>mat</A> lie in a
+common field with <A>scalar</A>;
+in this case the sum is a new matrix over the same field where each entry
+is the sum of the scalar and the corresponding entry of the matrix.
+<P/>
+More general situations are for example the sum of an integer scalar and a
+matrix over a finite field, or the sum of a finite field element and an
+integer matrix.
+<P/>
+<Index Subkey="matrices">subtraction</Index>
+<C><A>mat1</A> - <A>mat2</A></C>
+<P/>
+<Index Subkey="scalar and matrix">subtraction</Index>
+<C><A>scalar</A> - <A>mat</A></C>
+<P/>
+<Index Subkey="matrix and scalar">subtraction</Index>
+<C><A>mat</A> - <A>scalar</A></C>
+<P/>
+Subtracting a matrix or scalar is defined as adding its additive inverse,
+so the statements for the addition hold likewise.
+<P/>
+<Index Subkey="scalar and matrix">multiplication</Index>
+<C><A>scalar</A> * <A>mat</A></C>
+<P/>
+<Index Subkey="matrix and scalar">multiplication</Index>
+<C><A>mat</A> * <A>scalar</A></C>
+<P/>
+returns the product of the scalar <A>scalar</A> and the matrix <A>mat</A>.
+Probably the most usual situation is that the elements of <A>mat</A> lie in a
+common field with <A>scalar</A>;
+in this case the product is a new matrix over the same field where each
+entry is the product of the scalar and the corresponding entry of the matrix.
+<P/>
+More general situations are for example the product of an integer scalar and
+a matrix over a finite field,
+or the product of a finite field element and an integer matrix.
+<P/>
+<Index Subkey="vector and matrix">multiplication</Index>
+<C><A>vec</A> * <A>mat</A></C>
+<P/>
+returns the product of the row vector <A>vec</A> and the matrix <A>mat</A>.
+Probably the most usual situation is that <A>vec</A> and <A>mat</A> have the same
+lengths and are defined over a common field,
+and that all rows of <A>mat</A> have the same length <M>m</M>, say;
+in this case the product is a new row vector of length <M>m</M> over the same
+field which is the sum of the scalar multiples of the rows of <A>mat</A> with the
+corresponding entries of <A>vec</A>.
+<P/>
+More general situations are for example the product of an integer vector and
+a matrix over a finite field,
+or the product of a vector over a finite field and an integer matrix.
+<P/>
+<Index Subkey="matrix and vector">multiplication</Index>
+<C><A>mat</A> * <A>vec</A></C>
+<P/>
+returns the product of the matrix <A>mat</A> and the row vector <A>vec</A>.
+(This is the standard product of a matrix with a <E>column</E> vector.)
+Probably the most usual situation is that the length of <A>vec</A> and of all rows
+of <A>mat</A> are equal, and that the elements of <A>mat</A> and <A>vec</A> lie in a common
+field;
+in this case the product is a new row vector of the same length as <A>mat</A> and
+over the same field which is the sum of the scalar multiples of the columns
+of <A>mat</A> with the corresponding entries of <A>vec</A>.
+<P/>
+More general situations are for example the product of an integer matrix and
+a vector over a finite field,
+or the product of a matrix over a finite field and an integer vector.
+<P/>
+<Index Subkey="matrices">multiplication</Index>
+<C><A>mat1</A> * <A>mat2</A></C>
+<P/>
+This form evaluates to the (Cauchy) product of the two matrices <A>mat1</A> and
+<A>mat2</A>.
+Probably the most usual situation is that the number of columns of <A>mat1</A>
+equals the number of rows of <A>mat2</A>,
+and that the elements of <A>mat</A> and <A>vec</A> lie in a common field;
+if <A>mat1</A> is a matrix with <M>m</M> rows and <M>n</M> columns, say, and <A>mat2</A> is a
+matrix with <M>n</M> rows and <M>o</M> columns, the result is a new matrix with <M>m</M>
+rows and <M>o</M> columns.
+The element in row <M>i</M> at position <M>j</M> of the product is the sum of
+<M><A>mat1</A>[i][l] * <A>mat2</A>[l][j]</M>, with <M>l</M> running from <M>1</M> to <M>n</M>.
+<P/>
+<Index Subkey="matrix">inverse</Index>
+<C>Inverse( <A>mat</A> )</C>
+<P/>
+returns the inverse of the matrix <A>mat</A>,
+which must be an invertible square matrix.
+If <A>mat</A> is not invertible then <K>fail</K> is returned.
+<P/>
+<Index Subkey="matrices">quotient</Index>
+<C><A>mat1</A> / <A>mat2</A></C>
+<P/>
+<Index Subkey="scalar and matrix">quotient</Index>
+<C><A>scalar</A> / <A>mat</A></C>
+<P/>
+<Index Subkey="matrix and scalar">quotient</Index>
+<C><A>mat</A> / <A>scalar</A></C>
+<P/>
+<Index Subkey="vector and matrix">quotient</Index>
+<C><A>vec</A> / <A>mat</A></C>
+<P/>
+In general, <C><A>left</A> / <A>right</A></C> is defined as <C><A>left</A> * <A>right</A>^-1</C>.
+Thus in the above forms the right operand must always be invertible.
+<P/>
+<Index Subkey="matrix">power</Index>
+<C><A>mat</A> ^ <A>int</A></C>
+<P/>
+<Index Subkey="matrix">conjugate</Index>
+<C><A>mat1</A> ^ <A>mat2</A></C>
+<P/>
+<Index Subkey="vector under matrix">image</Index>
+<C><A>vec</A> ^ <A>mat</A></C>
+<P/>
+Powering a square matrix <A>mat</A> by an integer <A>int</A> yields the <A>int</A>-th power
+of <A>mat</A>; if <A>int</A> is negative then <A>mat</A> must be invertible,
+if <A>int</A> is <C>0</C> then the result is the identity matrix <C>One( <A>mat</A> )</C>,
+even if <A>mat</A> is not invertible.
+<P/>
+Powering a square matrix <A>mat1</A> by an invertible square matrix <A>mat2</A> of the
+same dimensions yields the conjugate of <A>mat1</A> by <A>mat2</A>, i.e.,
+the matrix <C><A>mat2</A>^-1 * <A>mat1</A> * <A>mat2</A></C>.
+<P/>
+Powering a row vector <A>vec</A> by a matrix <A>mat</A> is in every respect equivalent
+to <C><A>vec</A> * <A>mat</A></C>.
+This operations reflects the fact that matrices act naturally on row vectors
+by multiplication from the right, and that the powering operator is &GAP;'s
+standard for group actions.
+<P/>
+<Index Subkey="commutator">matrices</Index>
+<C>Comm( <A>mat1</A>, <A>mat2</A> )</C>
+<P/>
+returns the commutator of the square invertible matrices <A>mat1</A> and <A>mat2</A>
+of the same dimensions and over a common field,
+which is the matrix <C><A>mat1</A>^-1 * <A>mat2</A>^-1 * <A>mat1</A> * <A>mat2</A></C>.
+<P/>
+
+The following cases are still special cases of the general list arithmetic
+defined in&nbsp;<Ref Sect="Arithmetic for Lists"/>.
+<P/>
+<Index Subkey="scalar and matrix list">addition</Index>
+<C><A>scalar</A> + <A>matlist</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">addition</Index>
+<C><A>matlist</A> + <A>scalar</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">subtraction</Index>
+<C><A>scalar</A> - <A>matlist</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">subtraction</Index>
+<C><A>matlist</A> - <A>scalar</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">multiplication</Index>
+<C><A>scalar</A> * <A>matlist</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">multiplication</Index>
+<C><A>matlist</A> * <A>scalar</A></C>
+<P/>
+<Index Subkey="scalar and matrix list">quotient</Index>
+<C><A>matlist</A> / <A>scalar</A></C>
+<P/>
+A scalar <A>scalar</A> may also be added, subtracted, multiplied with, or
+divided into a list <A>matlist</A> of matrices. The result is a new list
+of matrices where each matrix is the result of performing the operation
+with the corresponding matrix in <A>matlist</A>.
+<P/>
+<Index Subkey="matrix and matrix list">multiplication</Index>
+<C><A>mat</A> * <A>matlist</A></C>
+<P/>
+<Index Subkey="matrix and matrix list">multiplication</Index>
+<C><A>matlist</A> * <A>mat</A></C>
+<P/>
+A matrix <A>mat</A> may also be multiplied with a list <A>matlist</A> of matrices.
+The result is a new list of matrices, where each entry is the product of
+<A>mat</A> and the corresponding entry in <A>matlist</A>.
+<P/>
+<Index Subkey="matrix and matrix list">quotient</Index>
+<C><A>matlist</A> / <A>mat</A></C>
+<P/>
+Dividing a list <A>matlist</A> of matrices by an invertible matrix <A>mat</A>
+evaluates to <C><A>matlist</A> * <A>mat</A>^-1</C>.
+<P/>
+<Index Subkey="vector and matrix list">multiplication</Index>
+<C><A>vec</A> * <A>matlist</A></C>
+<P/>
+returns the product of the vector <A>vec</A> and the list of matrices <A>mat</A>.
+The lengths <A>l</A> of <A>vec</A> and <A>matlist</A> must be equal.
+All matrices in <A>matlist</A> must have the same dimensions. The elements of
+<A>vec</A> and the elements of the matrices in <A>matlist</A> must lie in a common
+ring. The product is the sum over <C><A>vec</A>[<A>i</A>] * <A>matlist</A>[<A>i</A>]</C> with
+<A>i</A> running from 1 to <A>l</A>.
+<P/>
+
+For the mutability of results of arithmetic operations,
+see&nbsp;<Ref Sect="Mutability and Copyability"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties and Attributes of Matrices">
+<Heading>Properties and Attributes of Matrices</Heading>
+
+<#Include Label="DimensionsMat">
+<#Include Label="DefaultFieldOfMatrix">
+<#Include Label="TraceMat">
+<#Include Label="DeterminantMat">
+<#Include Label="DeterminantMatDestructive">
+<#Include Label="DeterminantMatDivFree">
+<#Include Label="IsMonomialMatrix">
+<#Include Label="IsDiagonalMat">
+<#Include Label="IsUpperTriangularMat">
+<#Include Label="IsLowerTriangularMat">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Matrix Constructions">
+<Heading>Matrix Constructions</Heading>
+
+<#Include Label="IdentityMat">
+<#Include Label="NullMat">
+<#Include Label="EmptyMatrix">
+<#Include Label="DiagonalMat">
+<#Include Label="PermutationMat">
+<#Include Label="TransposedMatImmutable">
+<#Include Label="TransposedMatDestructive">
+<#Include Label="KroneckerProduct">
+<#Include Label="ReflectionMat">
+<#Include Label="PrintArray">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Random Matrices">
+<Heading>Random Matrices</Heading>
+
+<#Include Label="RandomMat">
+<#Include Label="RandomInvertibleMat">
+<#Include Label="RandomUnimodularMat">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Matrices Representing Linear Equations and the Gaussian Algorithm">
+<Heading>Matrices Representing Linear Equations and the Gaussian Algorithm</Heading>
+
+<Index>Gaussian algorithm</Index>
+<#Include Label="RankMat">
+<#Include Label="TriangulizedMat">
+<#Include Label="TriangulizeMat">
+<#Include Label="NullspaceMat">
+<#Include Label="NullspaceMatDestructive">
+<#Include Label="SolutionMat">
+<#Include Label="SolutionMatDestructive">
+<#Include Label="BaseFixedSpace">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Eigenvectors and eigenvalues">
+<Heading>Eigenvectors and eigenvalues</Heading>
+
+<#Include Label="GeneralisedEigenvalues">
+<#Include Label="GeneralisedEigenspaces">
+<#Include Label="Eigenvalues">
+<#Include Label="Eigenspaces">
+<#Include Label="Eigenvectors">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Elementary Divisors">
+<Heading>Elementary Divisors</Heading>
+
+See also chapter <Ref Chap="Integral matrices and lattices"/>.
+
+<#Include Label="ElementaryDivisorsMat">
+<#Include Label="ElementaryDivisorsTransformationsMat">
+<#Include Label="DiagonalizeMat">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Echelonized Matrices">
+<Heading>Echelonized Matrices</Heading>
+
+<#Include Label="SemiEchelonMat">
+<#Include Label="SemiEchelonMatDestructive">
+<#Include Label="SemiEchelonMatTransformation">
+<#Include Label="SemiEchelonMats">
+<#Include Label="SemiEchelonMatsDestructive">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Matrices as Basis of a Row Space">
+<Heading>Matrices as Basis of a Row Space</Heading>
+
+See also chapter <Ref Chap="Integral matrices and lattices"/>
+
+<#Include Label="BaseMat">
+<#Include Label="BaseMatDestructive">
+<#Include Label="BaseOrthogonalSpaceMat">
+<#Include Label="SumIntersectionMat">
+<#Include Label="BaseSteinitzVectors">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Triangular Matrices">
+<Heading>Triangular Matrices</Heading>
+
+<#Include Label="DiagonalOfMat">
+<#Include Label="UpperSubdiagonal">
+<#Include Label="DepthOfUpperTriangularMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Matrices as Linear Mappings">
+<Heading>Matrices as Linear Mappings</Heading>
+
+<#Include Label="CharacteristicPolynomial">
+<#Include Label="JordanDecomposition">
+<#Include Label="BlownUpMat">
+<#Include Label="BlownUpVector">
+<#Include Label="CompanionMat">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Matrices over Finite Fields">
+<Heading>Matrices over Finite Fields</Heading>
+
+Just as for row vectors,
+(see section <Ref Sect="Row Vectors over Finite Fields"/>),
+&GAP; has a special representation for matrices over small finite fields.
+<P/>
+To be eligible to be represented in this way, each row of a matrix
+must be able to be represented as a compact row vector of the same
+length  over <E>the same</E> finite field.
+<P/>
+<Example><![CDATA[
+gap> v := Z(2)*[1,0,0,1,1];
+[ Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ]
+gap> ConvertToVectorRep(v,2);
+2
+gap> v;
+<a GF2 vector of length 5>
+gap> m := [v];; ConvertToMatrixRep(m,GF(2));; m;
+<a 1x5 matrix over GF2>
+gap> m := [v,v];; ConvertToMatrixRep(m,GF(2));; m;
+<a 2x5 matrix over GF2>
+gap> m := [v,v,v];; ConvertToMatrixRep(m,GF(2));; m;
+<a 3x5 matrix over GF2>
+gap> v := Z(3)*[1..8];
+[ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ]
+gap> ConvertToVectorRep(v);
+3
+gap> m := [v];; ConvertToMatrixRep(m,GF(3));; m;
+[ [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ] ]
+gap> RepresentationsOfObject(m);
+[ "IsPositionalObjectRep", "Is8BitMatrixRep" ]
+gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
+< mutable compressed matrix 4x8 over GF(3) >
+]]></Example>
+<P/>
+All compressed matrices over GF(2) are viewed as 
+<C>&lt;a <A>n</A>x<A>m</A> matrix over GF2></C>, 
+while over fields GF(q) for q between 3 and 256, matrices
+with 25 or more entries are viewed in this way, and smaller ones as
+lists of lists.
+<P/>
+Matrices can be converted to this special representation via
+the following functions.
+<P/>
+Note that the main advantage of this special representation of
+matrices is in low dimensions, where various overheads can be
+reduced. In higher dimensions, a list of compressed vectors will be
+almost as fast. Note also that list access and assignment will be
+somewhat slower for compressed matrices than for plain lists.
+<P/>
+In order to form a row of a compressed matrix a vector must accept
+certain restrictions. Specifically, it cannot change its length or
+change the field over which it is compressed. The main consequences of
+this are: that only elements of the appropriate field can be assigned
+to entries of the vector, and only to positions between 1 and the
+original length; that the vector cannot be shared between two matrices
+compressed over different fields.
+<P/>
+This is enforced by the filter <C>IsLockedRepresentationVector</C>.  When a
+vector becomes part of a compressed matrix, this filter is set for it.
+Assignment, <Ref Func="Unbind" Label="unbind a list entry"/>,  
+<Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/> and
+<Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
+are all prevented from altering a vector with this filter.
+<P/>
+<Example><![CDATA[
+gap> v := [Z(2),Z(2)];; ConvertToVectorRep(v,GF(2));; v;
+<a GF2 vector of length 2>
+gap> m := [v,v]; 
+[ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
+gap> ConvertToMatrixRep(m,GF(2)); 
+2
+gap> m2 := [m[1], [Z(4),Z(4)]]; # now try and mix in some GF(4)
+[ <a GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRep(m2); # but m2[1] is locked
+#I  ConvertToVectorRep: locked vector not converted to different field
+fail
+gap> m2 := [ShallowCopy(m[1]), [Z(4),Z(4)]]; # a fresh copy of row 1
+[ <a GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRep(m2); # now it works
+4
+gap> m2;
+[ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] ]
+gap> RepresentationsOfObject(m2);
+[ "IsPositionalObjectRep", "Is8BitMatrixRep" ]
+]]></Example>
+<P/>
+Arithmetic operations (see&nbsp;<Ref Sect="Arithmetic for Lists"/> and the following
+sections) preserve the compression status of matrices in the sense that
+if all arguments are compressed matrices written over the same field and
+the result is a matrix then also the result is a compressed matrix
+written over this field.
+<P/>
+There are also two operations that are only available for matrices
+written over finite fields.
+
+<#Include Label="ImmutableMatrix">
+<#Include Label="ConvertToMatrixRep">
+<#Include Label="ProjectiveOrder">
+<#Include Label="SimultaneousEigenvalues">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Inverse and Nullspace of an Integer Matrix Modulo an Ideal">
+<Heading>Inverse and Nullspace of an Integer Matrix Modulo an Ideal</Heading>
+
+The following two operations deal with matrices over a ring,
+but only care about the residues of their entries modulo some ring element.
+In the case of the integers and a prime number <M>p</M>, say,
+this is effectively computation in a matrix over the prime field
+in characteristic <M>p</M>.
+
+<#Include Label="InverseMatMod">
+<#Include Label="NullspaceModQ">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Special Multiplication Algorithms for Matrices over GF(2)">
+<Heading>Special Multiplication Algorithms for Matrices over GF(2)</Heading>
+
+When multiplying two compressed matrices <M>M</M> and <M>N</M> over GF(2) of dimensions
+<M>a \times b</M> and <M>b \times c</M>, say,
+where <M>a</M>, <M>b</M> and <M>c</M> are all
+greater than or equal to 128, &GAP; by default uses a more
+sophisticated matrix multiplication algorithm, in which linear
+combinations of groups of 8 rows of <M>M</M> are remembered and re-used in
+constructing various rows of the product. This is called level 8
+grease. To optimise memory access patterns, these combinations are
+stored for <M>(b+255)/256</M> sets of 8 rows at once. This number is called
+the blocking level.
+<P/>
+These levels of grease and blocking are found experimentally to give
+good performance across a range of processors and matrix sizes, but
+other levels may do even better in some cases. You can control the
+levels exactly using the functions below.
+<P/>
+We plan to include greased blocked matrix multiplication for other
+finite fields, and greased blocked algorithms for inversion and other
+matrix operations in a future release.
+<P/>
+<ManSection>
+<Func Name="PROD_GF2MAT_GF2MAT_SIMPLE" Arg='m1, m2'/>
+
+<Description>
+This function performs the standard unblocked and ungreased matrix
+multiplication for matrices of any size.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="PROD_GF2MAT_GF2MAT_ADVANCED" Arg='m1, m2, g, b'/>
+
+<Description>
+This function computes the product of <A>m1</A> and <A>m2</A>, which must be
+compressed matrices over GF(2) of compatible dimensions, using level <A>g</A>
+grease and level <A>b</A> blocking.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Block Matrices">
+<Heading>Block Matrices</Heading>
+
+<#Include Label="[1]{matblock}">
+<#Include Label="AsBlockMatrix">
+<#Include Label="BlockMatrix">
+<#Include Label="MatrixByBlockMatrix">
+
+</Section>
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

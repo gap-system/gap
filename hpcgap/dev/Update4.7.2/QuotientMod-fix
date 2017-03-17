@@ -1,0 +1,27 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/02/20
+!! Changed by
+AK
+! Reported by
+Mark Dickinson
+!! Type of Change
+Fix: wrong result
+!! Description
+Fixed inconsistent behaviour of QuotientMod( Integers , <r>, <s>, <m> )
+in the case where s and m are not coprime (this fix also corrects the
+division behaviour of ZmodnZ objects).
+! Test Code
+gap> QuotientMod(4, 2, 6);
+fail
+gap> QuotientMod(2, 4, 6);
+fail
+gap> a := ZmodnZObj(2, 6);; b := ZmodnZObj(4, 6);;
+gap> a/b;
+fail
+gap> b/a;
+fail
+!! Changeset
+57e5bd07791f6204a089dfa84c0c965b6a84fe5f
+!! End

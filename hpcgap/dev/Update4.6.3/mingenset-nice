@@ -1,0 +1,20 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/02/27
+
+!! Changed by
+MH
+
+!! Type of Change
+Fix: efficiency issue
+
+!! Description
+A new MinimalGeneratingSet method for groups handled by a nice monomorphisms
+was added, similar to the existing SmallGeneratingSet method. This is useful
+if the nice monomorphism is already mapping into a pc or pcp group.
+
+!! Changeset
+lib/grpnice.gi
+
+!! End

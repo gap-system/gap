@@ -1,0 +1,91 @@
+
+/* CSS 2.0 style sheet for GAP package information pages,  Frank Lübeck */
+
+BODY {
+  background-color:#FFFFFF;
+  color:black;
+  font-family:Helvetica, Arial, Geneva, Times, sans-serif;
+  margin:2em;
+} 
+
+H1, H2, H3 {
+  font-family:Helvetica, Arial, Geneva, Times, sans-serif;
+  font-weight:bold;
+  background-color:transparent;
+}
+
+H2, H3 {
+  color:#993333;
+}  
+
+H1 {
+  text-align: center;
+  color:#191970;
+  font-size:200%;
+}
+
+H2 {
+  text-align:left;
+  font-size:144%;
+}
+
+H3 {
+  text-align:left;
+  font-size:120%;
+}
+
+TABLE {
+  border:2pt solid #444444;
+  padding:3pt;
+}
+
+P {
+  text-align:justify;
+}
+
+P.maininfo {
+  text-indent:0em;
+  line-height:144%;
+}
+
+P.foot {
+  text-indent:0em;
+  font-size:80%; 
+}
+
+P.changes {
+  text-align:center;
+  font-size:80%;
+  color:#FF0000;
+}
+
+P.subtitle {
+  text-align:center;
+  font-size:130%;
+  color:#0000FF;
+}
+
+PRE {
+  background-color:#DDDDDD;
+  padding:3pt;
+}
+
+A:hover {
+  background-color:#7777AA;
+  color:WindowText;
+}
+
+SPAN.pkg {
+  font-family:sans-serif;
+  background-color:transparent;
+}
+
+HR {
+  width:85%;
+  text-align:center;
+}
+
+CODE {
+  color:#550000;
+}
+

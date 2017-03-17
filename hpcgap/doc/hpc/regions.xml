@@ -1,0 +1,749 @@
+<Chapter Label="How HPC-GAP organizes shared memory: Regions">
+  <Heading>How HPC-GAP organizes shared memory: Regions</Heading>
+
+HPC-GAP allows multiple threads to access data shared between them; to avoid common concurrency errors, such as race
+conditions, it partitions GAP objects into regions. Access to regions is regulated so that no two threads can modify
+objects in the same region at the same time and so that objects that are being read by one thread cannot concurrently be
+modified by another.
+
+  <Section Label="Thread-local regions">
+    <Heading>Thread-local regions</Heading>
+
+Each thread has an associated thread-local region. When a thread implicitly or explicitly creates a new object, that
+object initially belongs to the thread&#39;s thread-local region.
+
+Only the thread can read or modify objects in its thread-local region. For other threads to access an object, that
+object has to be migrated into a different region first.
+
+  </Section>
+  <Section Label="Shared regions">
+    <Heading>Shared regions</Heading>
+
+Shared regions are explicitly created through the <Ref Func="ShareObj"/> and <Ref Func="ShareSingleObj"/> primitives
+(see below). Multiple threads can access them concurrently, but accessing them requires that a thread uses an
+<C>atomic</C> statement to acquire a read or write lock beforehand.
+
+See the section on <C>atomic</C> statements (<Ref Sect="Atomic objects"/>) for details.
+
+  </Section>
+  <Section Label="Ordering of shared regions">
+    <Heading>Ordering of shared regions</Heading>
+
+Shared regions are by default ordered; each shared region has an associated numeric precedence level. Regions can
+generally only be locked in order of descending precedence. The purpose of this mechanism is to avoid accidental
+deadlocks.
+
+The ordering requirement can be overridden in two ways: regions with a negative precedence are excluded from it. This
+exception should be used with care, as it can lead to deadlocks.
+
+Alternatively, two or more regions can be locked simultaneously via the <C>atomic</C> statement. In this case, the
+ordering of these regions relative to each other can be arbitrary.
+
+  </Section>
+  <Section Label="The public region">
+    <Heading>The public region</Heading>
+
+A special public region contains objects that only permit atomic operations. These include, in particular, all immutable
+objects (immutable in the sense that their in-memory representation cannot change).
+
+All threads can access objects in the public region at all times without needing to acquire a read- or write-lock
+beforehand.
+
+  </Section>
+  <Section Label="The read-only region">
+    <Heading>The read-only region</Heading>
+
+The read-only region is another special region that contains objects that are only meant to be read; attempting to
+modify an object in that region will result in a runtime error. To obtain a modifiable copy of such an object, the <Ref
+Func="CopyRegion"/> primitive can be used.
+
+  </Section>
+  <Section Label="Migrating objects between regions">
+    <Heading>Migrating objects between regions</Heading>
+
+Objects can be migrated between regions using a number of functions. In order to migrate an object, the current thread
+must have exclusive access to that object; the object must be in its thread-local region or it must be in a shared
+region for which the current thread holds a write lock.
+
+The <Ref Func="ShareObj"/> and <Ref Func="ShareSingleObj"/> functions create a new shared region and migrate their
+respective argument to that region; <C>ShareObj</C> will also migrate all subobjects that are within the same region,
+while <C>ShareSingleObj</C> will leave the subobjects unaffected.
+
+The <Ref Func="MigrateObj"/> and <Ref Func="MigrateSingleObj"/> functions migrate objects to an existing region. The
+first argument of either function is the object to be migrated; the second is either a region (as returned by the <Ref
+Func="RegionOf"/> function) or an object whose containing region the first argument is to be migrated to.
+
+The current thread needs exclusive access to the target region (denoted by the second argument) for the operation to
+succeed. If successful, the first argument will be in the same region as the second argument afterwards. In the case of
+<C>MigrateObj</C>, all subobjects within the same region as the first argument will also be migrated to the target
+region.
+
+Finally, <Ref Func="AdoptObj"/> and <Ref Func="AdoptSingleObj"/> are special cases of <C>MigrateObj</C> and
+<C>MigrateSingleObj</C>, where the target region is the thread-local region of the current thread.
+
+To migrate objects to the read-only region, one can use <Ref Func="MakeReadOnly"/> and <Ref Func="MakeReadOnlyObj"/>.
+The first migrates its argument and all its subjobjects that are within the same region to the read-only region; the
+second migrates only the argument itself, but not its subobjects.
+
+It is generally not possible to migrate objects explicitly to the public region; only objects with purely atomic
+operations can be made public and that is done automatically when they are created.
+
+The exception are immutable objects. When <C>MakeImmutable</C> is used, its argument is automatically moved to the
+public region.
+
+<Example><![CDATA[
+gap> RegionOf(MakeImmutable([1,2,3]));
+<public region>
+]]></Example>
+
+  </Section>
+  <Section Label="Region names">
+    <Heading>Region names</Heading>
+
+Regions can be given names, either explicitly via <Ref Func="SetRegionName"/> or when they are created via <Ref
+Func="ShareObj"/> and <Ref Func="ShareSingleObj"/>. Thread-local regions, the public, and the readonly region are given
+names by default.
+
+Multiple regions can have the same name.
+
+  </Section>
+  <Section Label="Controlling access to regions">
+    <Heading>Controlling access to regions</Heading>
+
+If either GAP code or a kernel primitive attempts to access an object that it is not allowed to access according to
+these semantics, either a &quot;write guard error&quot; (for a failed write access) or a &quot;read guard error&quot;
+(for a failed read access) will be raised. The global variable <C>LastInaccessible</C> will contain the object that
+caused such an error.
+
+One exception is that threads can modify objects in regions that they have only read access (but not write access) to
+using write-once functions (<Ref Func="write-once"/>).
+
+To inspect objects whose contents lie in other regions (and therefore cannot be displayed by <C>PrintObj</C> or
+<C>ViewObj</C>, the functions <Ref Func="ViewShared"/> and <Ref Func="UNSAFE_VIEW"/> can be used.
+
+  </Section>
+  <Section Label="Functions relating to regions">
+    <Heading>Functions relating to regions</Heading>
+
+    <Subsection Label="NewRegion">
+      <Heading>NewRegion(name|prec|name,prec)</Heading>
+
+The function <C>NewRegion</C> creates a new shared region. If the optional argument <C>name</C> is provided, then the
+name of the new region will be set to <C>name</C>.
+
+<Example><![CDATA[
+gap> NewRegion("example region");
+<region: example region>
+]]></Example>
+
+<C>NewRegion</C> will create a region with a high precedence level. It is intended to be called by user code. The exact
+precedence level can be adjusted with <C>prec</C>, which must be an integer in the range <C>[-1000..1000]</C>;
+<C>prec</C> will be added to the normal precedence level.
+
+  </Subsection>
+  <Subsection Label="NewLibraryRegion)">
+    <Heading>NewLibraryRegion(name|prec|name,prec)</Heading>
+
+<C>NewLibraryRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is below
+that of <C>NewRegion</C>. It is intended to be used by user libraries and GAP packages.
+
+  </Subsection>
+  <Subsection Label="NewSystemRegion">
+    <Heading>NewSystemRegion(name|prec|name,prec)</Heading>
+
+<C>NewSystemRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is below
+that of <C>NewLibraryRegion</C>. It is intended to be used by the standard GAP library.
+
+  </Subsection>
+  <Subsection Label="NewKernelRegion">
+    <Heading>NewKernelRegion(name|prec|name,prec)</Heading>
+
+<C>NewKernelRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is below
+that of <C>NewSystemRegion</C>. It is intended to be used by the GAP kernel, and GAP library code that interacts closely
+with the kernel.
+
+  </Subsection>
+  <Subsection Label="NewInternalRegion">
+    <Heading>NewInternalRegion([name])</Heading>
+
+<C>NewInternalRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is the
+lowest available. It is intended to be used for regions that are self-contained; i.e. no function that uses such a
+region may lock another region while accessing it. The precedence level of an internal region cannot be adjusted.
+
+  </Subsection>
+  <Subsection Label="NewSpecialRegion">
+    <Heading>NewSpecialRegion([name])</Heading>
+
+<C>NewLibraryRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is
+negative. It is thus exempt from normal ordering and deadlock checks.
+
+  </Subsection>
+  <Subsection Label="RegionOf">
+    <Heading>RegionOf(obj)</Heading>
+
+<Example><![CDATA[
+gap> RegionOf(1/2);
+<public region>
+gap> RegionOf([1,2,3]);
+<region: thread region #0>
+gap> RegionOf(ShareObj([1,2,3]));
+<region 0x45deaa0>
+gap> RegionOf(ShareObj([1,2,3]));
+<region 0x45deaa0>
+gap> RegionOf(ShareObj([1,2,3], "test region"));
+<region: test region>
+]]></Example>
+
+Note that the unique number that each region is identified with is system-specific and can change each time the code is
+being run.
+
+Region objects returned by <C>RegionOf</C> can be compared:
+
+<Example><![CDATA[
+gap> RegionOf([1,2,3]) = RegionOf([4,5,6]);
+true
+]]></Example>
+
+The result in this example is true because both lists are in the same thread-local region.
+
+  </Subsection>
+  <Subsection Label="RegionPrecedence">
+    <Heading>RegionPrecedence(obj)</Heading>
+
+<C>RegionPrecedence</C> will return the precedence of the region of <C>obj</C>.
+
+<Example><![CDATA[
+gap> RegionPrecedence(NewRegion("Test"));
+30000
+gap> RegionPrecedence(NewRegion("Test2", 1));
+30001
+gap> RegionPrecedence(NewLibraryRegion("LibTest", -1));
+19999
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="ShareObj">
+    <Heading>ShareObj(obj[, name|, prec|, name, prec])</Heading>
+
+The <C>ShareObj</C> function creates a new shared region and migrates the object and all its subobjects to that region.
+If the optional argument <C>name</C> is provided, then the name of the new region is set to <C>name</C>.
+
+<C>ShareObj</C> will create a region with a high precedence level. It is intended to be called by user code. The actual
+precedence level can be adjusted by the optional <C>prec</C> argument in the same way as for <C>NewRegion</C>.
+
+  </Subsection>
+  <Subsection Label="ShareLibraryObj">
+    <Heading>ShareLibraryObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareLibraryObj</C> functions like <C>ShareObj</C>, except that the precedence of the region it creates is below that
+of <C>ShareObj</C>. It is intended to be used by user libraries and GAP packages.
+
+  </Subsection>
+  <Subsection Label="ShareSystemObj">
+    <Heading>ShareSystemObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareSystemObj</C> functions like <C>ShareObj</C>, except that the precedence of the region it creates is below that
+of <C>ShareLibraryObj</C>. It is intended to be used by the standard GAP library.
+
+  </Subsection>
+  <Subsection Label="ShareKernelObj">
+    <Heading>ShareKernelObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareKernelObj</C> functions like <C>ShareObj</C>, except that the precedence of the region it creates is below that
+of <C>ShareSystemObj</C>. It is intended to be used by the GAP kernel, and GAP library code that interacts closely with
+the kernel.
+
+  </Subsection>
+  <Subsection Label="ShareInternalObj">
+    <Heading>ShareInternalObj(obj[, name])</Heading>
+
+<C>ShareInternalObj</C> functions like <C>ShareObj</C>, except that the precedence of the region it creates is the
+lowest available. It is intended to be used for regions that are self-contained; i.e. no function that uses such a
+region may lock another region while accessing it.
+
+  </Subsection>
+  <Subsection Label="ShareSpecialObj">
+    <Heading>ShareSpecialObj(obj[, name])</Heading>
+
+<C>ShareLibraryObj</C> functions like <C>ShareObj</C>, except that the precedence of the region it creates is negative.
+It is thus exempt from normal ordering and deadlock checks.
+
+  </Subsection>
+  <Subsection Label="ShareSingleObj">
+    <Heading>ShareSingleObj(obj[, name|, prec|, name, prec])</Heading>
+
+The <C>ShareSingleObj</C> function creates a new shared region and migrates the object, but not its subobjects, to that
+region. If the optional argument <C>name</C> is provided, then the name of the new region is set to <C>name</C>.
+
+<Example><![CDATA[
+gap> m := [ [1, 2], [3, 4] ];;
+gap> ShareSingleObj(m);;
+gap> atomic readonly m do
+>      Display([ IsShared(m), IsShared(m[1]), IsShared(m[2]) ]);
+>    od;
+[ true, false, false ]
+]]></Example>
+
+<C>ShareSingleObj</C> will create a region with a high precedence level. It is intended to be called by user code. The
+actual precedence level can be adjusted by the optional <C>prec</C> argument in the same way as for <C>NewRegion</C>.
+
+  </Subsection>
+  <Subsection Label="ShareSingleLibraryObj">
+    <Heading>ShareSingleLibraryObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareSingleLibraryObj</C> functions like <C>ShareSingleObj</C>, except that the precedence of the region it creates
+is below that of <C>ShareSingleObj</C>. It is intended to be used by user libraries and GAP packages.
+
+  </Subsection>
+  <Subsection Label="ShareSingleSystemObj">
+    <Heading>ShareSingleSystemObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareSingleSystemObj</C> functions like <C>ShareSingleObj</C>, except that the precedence of the region it creates is
+below that of <C>ShareSingleLibraryObj</C>. It is intended to be used by the standard GAP library.
+
+  </Subsection>
+  <Subsection Label="ShareSingleKernelObj">
+    <Heading>ShareSingleKernelObj(obj[, name|, prec|, name, prec])</Heading>
+
+<C>ShareSingleKernelObj</C> functions like <C>ShareSingleObj</C>, except that the precedence of the region it creates is
+below that of <C>ShareSingleSystemObj</C>. It is intended to be used by the GAP kernel, and GAP library code that
+interacts closely with the kernel.
+
+  </Subsection>
+  <Subsection Label="ShareSingleInternalObj">
+    <Heading>ShareSingleInternalObj(obj[, name])</Heading>
+
+<C>ShareSingleInternalObj</C> functions like <C>ShareSingleObj</C>, except that the precedence of the region it creates
+is the lowest available. It is intended to be used for regions that are self-contained; i.e. no function that uses such
+a region may lock another region while accessing it.
+
+  </Subsection>
+  <Subsection Label="ShareSingleSpecialObj">
+    <Heading>ShareSingleSpecialObj(obj[, name])</Heading>
+
+<C>ShareSingleLibraryObj</C> functions like <C>ShareSingleObj</C>, except that the precedence of the region it creates
+is negative. It is thus exempt from normal ordering and deadlock checks.
+
+  </Subsection>
+  <Subsection Label="MigrateObj">
+    <Heading>MigrateObj(obj, target)</Heading>
+
+The <C>MigrateObj</C> function migrates <C>obj</C> (and all subobjects contained within the same region) to the region
+denoted by the <C>target</C> argument. Here, <C>target</C> can either be a region object returned by <C>RegionOf</C> or
+a normal gap object. If <C>target</C> is a normal gap object, <C>obj</C> will be migrated to the region containing
+<C>target</C>.
+
+For the operation to succeed, the current thread must have exclusive access to the target region and the object being
+migrated.
+
+  </Subsection>
+  <Subsection Label="MigrateSingleObj">
+    <Heading>MigrateSingleObj(obj, target)</Heading>
+
+The <C>MigrateSingleObj</C> function works like <Ref Func="MigrateObj"/>, except that it does not migrate the subobjects
+of <C>obj</C>.
+
+  </Subsection>
+  <Subsection Label="LockAndMigrateObj">
+    <Heading>LockAndMigrateObj(obj, target)</Heading>
+
+The <C>LockAndMigrateObj</C> function works like <Ref Func="MigrateObj"/>, except that it will automatically try to
+acquire a lock for the region containing <C>target</C> if it does not have one already.
+
+  </Subsection>
+  <Subsection Label="IncorporateObj">
+    <Heading>IncorporateObj(target, index, value)</Heading>
+
+The <C>IncorporateObj</C> function allows convenient migration to a shared list or record. If <C>target</C> is a list,
+then <C>IncorporateObj</C> is equivalent to:
+
+<Example><![CDATA[
+IncorporateObj := function(target, index, value)
+  atomic value do
+    target[index] := MigrateObj(value, target)
+  od;
+end;
+]]></Example>
+
+If <C>target</C> is a record, then it is equivalent to:
+
+<Example><![CDATA[
+IncorporateObj := function(target, index, value)
+  atomic value do
+    target.(index) := MigrateObj(value, target)
+  od;
+end;
+]]></Example>
+
+The intended purpose is the population of a shared list or record with values after its creation.
+
+Example:
+
+<Example><![CDATA[
+gap> list := ShareObj([]);
+gap> atomic list do
+>      IncorporateObj(list, 1, [1,2,3]);
+>      IncorporateObj(list, 2, [4,5,6]);
+>      IncorporateObj(list, 3, [7,8,9]);
+>    od;
+gap> ViewShared(list);
+[ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
+]]></Example>
+
+Using plain assignment would leave the newly created lists in the thread-local region.
+
+  </Subsection>
+  <Subsection Label="AtomicIncorporateObj">
+    <Heading>AtomicIncorporateObj(target, index, value)</Heading>
+
+<C>AtomicIncorporateObj</C> extends <C>IncorporateObj</C> by also locking the target. I.e., for a list, it is equivalent
+to:
+
+<Example><![CDATA[
+AtomicIncorporateObj := function(target, index, value)
+  atomic value do
+    target[index] := MigrateObj(value, target)
+  od;
+end;
+]]></Example>
+
+If <C>target</C> is a record, then it is equivalent to:
+
+<Example><![CDATA[
+AtomicIncorporateObj := function(target, index, value)
+  atomic value do
+    target.(index) := MigrateObj(value, target)
+  od;
+end;
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="AdoptObj">
+    <Heading>AdoptObj(obj)</Heading>
+
+The <C>AdoptObj</C> function migrates <C>obj</C> (and all its subobjects contained within the same region) to the
+thread&#39;s current region. It requires exclusive access to <C>obj</C>.
+
+<Example><![CDATA[
+gap> l := ShareObj([1,2,3]);;
+gap> IsThreadLocal(l);
+false
+gap> atomic l do AdoptObj(l); od;
+gap> IsThreadLocal(l);
+true
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="AdoptSingleObj">
+    <Heading>AdoptSingleObj(obj)</Heading>
+
+The <C>AdoptSingleObj</C> function works like <Ref Func="AdoptObj"/>, except that it does not migrate the subobjects of
+<C>obj</C>.
+
+  </Subsection>
+  <Subsection Label="LockAndAdoptObj">
+    <Heading>LockAndAdoptObj(obj)</Heading>
+
+The <C>LockAndAdoptObj</C> function works like <Ref Func="AdoptObj"/>, except that it will attempt acquire an exclusive
+lock for the region containing <C>obj</C> if it does not have one already.
+
+  </Subsection>
+  <Subsection Label="CopyRegion">
+    <Heading>CopyRegion(obj)</Heading>
+
+The <C>CopyRegion</C> function performs a structural copy of <C>obj</C>. The resulting objects will be located in the
+current thread&#39;s thread-local region. The function returns the copy as its result.
+
+<Example><![CDATA[
+gap> l := MakeReadOnly([1,2,3]);
+[ 1, 2, 3 ]
+gap> l2 := CopyRegion(l);
+[ 1, 2, 3 ]
+gap> RegionOf(l) = RegionOf(l2);
+false
+gap> IsIdenticalObj(l, l2);
+false
+gap> l = l2;
+true
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="IsPublic">
+    <Heading>IsPublic(obj)</Heading>
+
+The <C>IsPublic</C> function returns true if its argument is an object in the public region, false otherwise.
+
+<Example><![CDATA[
+gap> IsPublic(1/2);
+true
+gap> IsPublic([1,2,3]);
+false
+gap> IsPublic(ShareObj([1,2,3]));
+false
+gap> IsPublic(MakeImmutable([1,2,3]));
+true
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="IsThreadLocal">
+      <Heading>IsThreadLocal(obj)</Heading>
+
+The <C>IsThreadLocal</C> function returns true if its argument is an object in the current thread&#39;s thread-local
+region, false otherwise.
+
+<Example><![CDATA[
+gap> IsThreadLocal([1,2,3]);
+true
+gap> IsThreadLocal(ShareObj([1,2,3]));
+false
+gap> IsThreadLocal(1/2);
+false
+gap> RegionOf(1/2);
+<public region>
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="IsShared">
+      <Heading>IsShared(obj)</Heading>
+
+The <C>IsShared</C> function returns true if its argument is an object in a shared region. Note that if the current
+thread does not hold a lock on that shared region, another thread can migrate <C>obj</C> to a different region before
+the result is being evaluated; this can lead to race conditions. The function is intended primarily for debugging, not
+to build actual program logic around.
+
+    </Subsection>
+    <Subsection Label="HaveReadAccess">
+      <Heading>HaveReadAccess(obj)</Heading>
+
+The <C>HaveReadAccess</C> function returns true if the current thread has read access to <C>obj</C>.
+
+<Example><![CDATA[
+gap> HaveReadAccess([1,2,3]);
+true
+gap> l := ShareObj([1,2,3]);;
+gap> HaveReadAccess(l);
+false
+gap> atomic readonly l do t := HaveReadAccess(l); od;; t;
+true
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="HaveWriteAccess">
+      <Heading>HaveWriteAccess(obj)</Heading>
+
+The <C>HaveWriteAccess</C> function returns true if the current thread has write access to <C>obj</C>.
+
+<Example><![CDATA[
+gap> HaveWriteAccess([1,2,3]);
+true
+gap> l := ShareObj([1,2,3]);;
+gap> HaveWriteAccess(l);
+false
+gap> atomic readwrite l do t := HaveWriteAccess(l); od;; t;
+true
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="MakeReadOnly">
+      <Heading>MakeReadOnly(obj)</Heading>
+
+The <C>MakeReadOnly</C> function migrates <C>obj</C> and all its subobjects that are within the same region as
+<C>obj</C> to the read-only region. It returns <C>obj</C>.
+
+    </Subsection>
+    <Subsection Label="MakeReadOnlyObj">
+      <Heading>MakeReadOnlyObj(obj)</Heading>
+
+The <C>MakeReadOnlyObj</C> function migrates <C>obj</C>, but not any of its subobjects, to the read-only region. It
+returns <C>obj</C>.
+
+    </Subsection>
+    <Subsection Label="IsReadOnly">
+      <Heading>IsReadOnly(obj)</Heading>
+
+The <C>IsReadOnly</C> function returns true if <C>obj</C> is in the read-only region, false otherwise.
+
+<Example><![CDATA[
+gap> IsReadOnly([1,2,3]);
+false
+gap> IsReadOnly(MakeImmutable([1,2,3]));
+false
+gap> IsReadOnly(MakeReadOnly([1,2,3]));
+true
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="SetRegionName">
+      <Heading>SetRegionName(obj, name)</Heading>
+
+The <C>SetRegionName</C> function sets the name of the region of <C>obj</C> to <C>name</C>.
+
+    </Subsection>
+    <Subsection Label="ClearRegionName">
+      <Heading>ClearRegionName(obj)</Heading>
+
+The <C>ClearRegionName</C> function clears the name of the region of <C>obj</C> to <C>name</C>.
+
+    </Subsection>
+    <Subsection Label="RegionName">
+      <Heading>RegionName(obj)</Heading>
+
+The <C>RegionName</C> function returns the name of the region of <C>obj</C>. If that region does not have a name,
+<C>fail</C> will be returned.
+
+    </Subsection>
+    <Subsection Label="ViewShared">
+      <Heading>ViewShared(obj)</Heading>
+
+The <C>ViewShared</C> function allows the inspection of objects in shared regions. It will try to lock the region and
+then call <C>ViewObj(obj)</C>. If it cannot acquire a lock for the region, it will simply display the normal description
+of the object.
+
+    </Subsection>
+    <Subsection Label="UNSAFE_VIEW(obj)">
+      <Heading>UNSAFE_VIEW(obj)</Heading>
+
+The <C>UNSAFE_VIEW</C> function allows the inspection of any object in the system, regardless of whether the current
+thread has access to the region containing it. It should be used with care: If the object inspected is being modified by
+another thread concurrently, the resulting behavior is undefined.
+
+Moreover, the function works by temporarily disabling read and write guards for regions, so other threads may corrupt
+memory rather than producing errors.
+
+It is generally safe to use if all threads but the current one are paused.
+
+    </Subsection>
+    <Subsection Label="The atomic statement.">
+      <Heading>The <C>atomic</C> statement.</Heading>
+
+The <C>atomic</C> statement ensures exclusive or read-only access to one or more shared regions for statements within
+its scope. It has the following syntax:
+
+<Example><![CDATA[
+atomic ([readwrite|readonly] expr (, expr)* )* do
+  statements
+od;
+]]></Example>
+
+Each expression is evaluated and the region containing the resulting object is locked with either a read-write or
+read-only lock, depending on the keyword preceding the expression. If neither the <C>readwrite</C> nor the
+<C>readonly</C> keyword was provided, read-write locks are used by default.
+
+Examples:
+
+<Example><![CDATA[
+gap> l := ShareObj([1,2,3]);;
+gap> atomic readwrite l do l[3] := 9; od;
+gap> atomic l do l[2] := 4; od;
+gap> atomic readonly l do Display(l); od;
+[ 1, 4, 9 ]
+]]></Example>
+
+<Example><![CDATA[
+gap> l := ShareObj([1,2,3,4,5]);;
+gap> l2 := ShareObj([6,7,8]);;
+gap> atomic readwrite l, readonly l2 do
+>      for i in [1..3] do l[i] := l2[i]; od;
+>      l3 := AdoptObj(l);
+>    od;
+gap> l3;
+[ 6, 7, 8, 4, 5 ]
+]]></Example>
+
+Atomic statements must observe region ordering. That means that the highest precedence level of a region locked by an
+atomic statement must be less than the lowest precedene level of a region that is locked by the same thread at the time
+the atomic statement is executed.
+    </Subsection>
+  </Section>
+  <Section Label="Atomic functions">
+    <Heading>Atomic functions</Heading>
+
+Instead of atomic regions, entire functions can be declared to be atomic. This has the same effect as though the
+function&#39;s body were enclosed in an atomic statement. Function arguments can be declared either <C>readwrite</C> or
+<C>readonly</C>; they will be locked in the same way as for a lock statement. If a function argument is preceded by
+neither <C>readwrite</C> nor <C>readonly</C>, the corresponding object will not be locked.
+
+Example:
+
+<Example><![CDATA[
+gap> AddAtomic := atomic function(readwrite list, readonly item)
+>      Add(list, item);
+>    end;
+]]></Example>
+
+  </Section>
+  <Section Label="Write-once functionality">
+    <Heading>Write-once functionality</Heading>
+
+There is an exception to the rule that objects can only be modified if a thread has write access to a region. A limited
+sets of objects can be modified using the &quot;bind once&quot; family of functions. These allow the modifications of
+objects to which a thread has read access in a limited fashion.
+
+For reasons of implementation symmetry, these functions can also be used on the atomic versions of these objects.
+
+Implementation note: The functionality is not currently available for component objects.
+
+  </Section>
+  <Section Label="BindOnce">
+    <Heading>BindOnce(obj, index, value)</Heading>
+
+<C>BindOnce</C> modifies <C>obj</C>, which can be a positional object, atomic positional object, component object, or
+atomic component object. It inspects <C>obj![index]</C> for the positional versions or <C>obj!.(index)</C> for the
+component versions. If the respective element is not yet bound, <C>value</C> is assigned to that element. Otherwise, no
+modification happens. The test and modification occur as one atomic step. The function returns the value of the element;
+i.e. the old value if the element was bound and <C>value</C> if it was unbound.
+
+The intent of this function is to allow concurrent initialization of objects, where multiple threads may attempt to set
+a value concurrently. Only one will succeed; all threads can then use the return value of <C>BindOnce</C> as the
+definitive value of the element. It also allows for the lazy initialization of objects in the read-only region.
+
+The current thread needs to have at least read access to <C>obj</C>, but does not require write access.
+
+  </Section>
+  <Section Label="TestBindOnce">
+    <Heading>TestBindOnce(obj, index, value)</Heading>
+
+<C>TestBindOnce</C> works like <C>BindOnce</C>, except that it returns <C>true</C> if the value could be bound and
+<C>false</C> otherwise.
+
+  </Section>
+  <Section Label="BindOnceExpr">
+    <Heading>BindOnceExpr(obj, index, expr)</Heading>
+
+<C>BindOnceExpr</C> works like <C>BindOnce</C>, except that it evaluates the parameterless function <C>expr</C> to
+determine the value. It will only evaluate <C>expr</C> if the element is not bound.
+
+For positional objects, the implementation works as follows:
+
+<Example><![CDATA[
+BindOnceExprPosObj := function(obj, index, expr)
+  if not IsBound(obj![index]) then
+    return BindOnce(obj, index, expr());
+  else
+    return obj![index]);
+  fi;
+end;
+]]></Example>
+
+The implementation for component objects works analogously.
+
+The intent is to avoid unnecessary computations if the value is already bound. Note that this cannot be avoided
+entirely, because <C>obj![index]</C> or <C>obj!.(index)</C> can be bound while <C>expr</C> is evaluated, but it can
+minimize such occurrences.
+
+  </Section>
+  <Section Label="TestBindOnceExpr">
+    <Heading>TestBindOnceExpr(obj, index, expr)</Heading>
+
+<C>TestBindOnceExpr</C> works like <C>BindOnceExpr</C>, except that it returns <C>true</C> if the value could be bound
+and <C>false</C> otherwise.
+
+  </Section>
+  <Section Label="StrictBindOnce">
+    <Heading>StrictBindOnce(obj, index, expr)</Heading>
+
+<C>StrictBindOnce</C> works like <C>BindOnce</C>, except that it raises an error if the element is already bound. This
+is intended for cases where a read-only object is initialized, but where another thread trying to initialize it
+concurrently would be an error.
+  </Section>
+</Chapter>

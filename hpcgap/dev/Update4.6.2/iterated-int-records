@@ -1,0 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/10/26
+! Changed by
+SL
+! Reported by
+TB
+! Type of Change
+Fix: inappropriate error message
+
+! Description
+Scanning of floating point literals collides with iterated use of integers as 
+record field elements in expressions like r.1.2.
+! Test Code
+gap> r := rec(1 := rec(x := true));;
+gap> r.1.x;
+true
+! Prefetch
+
+! Changeset
+
+! End

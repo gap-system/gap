@@ -1,0 +1,19 @@
+#!/bin/sh
+TAG="GAP4B1"
+LIB="lib src grp small trans prim tbl tst etc bin"
+DOC="doc"
+
+# tar the files excluding the documentation
+for i  in $LIB;  do
+  (cd $i ; cvs tag -F $TAG)
+done
+
+tar -c -z -f gap.tar.gz --exclude CVS --exclude .cvsignore $LIB
+
+
+# tar the documentation
+for i  in $DOC;  do
+  (cd $i ; cvs tag -F $TAG)
+done
+
+tar -c -z -f doc.tar.gz --exclude CVS --exclude .cvsignore $DOC

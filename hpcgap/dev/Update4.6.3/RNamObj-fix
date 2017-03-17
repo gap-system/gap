@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/03/07
+
+!! Changed by
+MH
+
+! Reported by
+Lukas Maas
+
+!! Type of Change
+Fix: inappropriate error message
+
+!! Description
+A bug in the GAP kernel caused RNamObj to error out when called with a
+string that had the IsSSortedList property set (regardless of whether it
+was set to true or false). This in turn would lead to strange (and
+inappropriate) errors when using such a string to access entries of a
+record.
+
+! Test Code
+gap> s:="cba";
+"cba"
+gap> IsSSortedList(s);
+false
+gap> IsInt(RNamObj(s));
+true
+gap> r:=rec(cba := 1);;
+gap> IsBound(r.(s));
+true
+
+!! Changeset
+src/records.c
+
+!! End

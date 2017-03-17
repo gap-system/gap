@@ -1,0 +1,654 @@
+<!--
+%W  ctbl.xml                   GAP documentation               Thomas Breuer
+%W                                                          Alexander Hulpke
+%Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
+
+The documentation in this chapter corresponds to the declarations in the
+library files ctbl.gd, ctblauto.gd, ctblgrp.gd, ctblothe.gd, ctblsolv.gd.
+-->
+<Chapter Label="Character Tables">
+<Heading>Character Tables</Heading>
+
+<Index>tables</Index>
+This chapter describes operations for <E>character tables of finite groups</E>.
+<P/>
+Operations for <E>characters</E> (or, more general, <E>class functions</E>) are
+described in Chapter&nbsp;<Ref Chap="Class Functions"/>.
+<P/>
+For a description of the &GAP; Library of Character Tables,
+see the separate manual for the &GAP; package <Package>CTblLib</Package>.
+<P/>
+Several examples in this chapter require the &GAP; Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+<P/>
+<Example><![CDATA[
+gap> LoadPackage( "ctbllib" );
+true
+]]></Example>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Some Remarks about Character Theory in GAP">
+<Heading>Some Remarks about Character Theory in &GAP;</Heading>
+
+<#Include Label="[1]{ctbl}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="History of Character Theory Stuff in GAP">
+<Heading>History of Character Theory Stuff in GAP</Heading>
+
+&GAP; provides functions for dealing with group characters since the version
+&GAP;&nbsp;3.1, which was released in March 1992.
+The reason for adding this branch of mathematics to the topics of &GAP; was
+(apart from the usefulness of character theoretic computations in general)
+the insight that &GAP; provides an ideal environment for developing the
+algorithms needed.
+In particular, it had been decided at Lehrstuhl D für Mathematik
+that the <Package>CAS</Package> system (a standalone Fortran program
+together with a database of character tables, see&nbsp;<Cite Key="NPP84"/>)
+should not be developed further and the functionality
+of <Package>CAS</Package> should be made available in &GAP;.
+The background was that extending <Package>CAS</Package>
+(by new Fortran code) had turned out to be much less flexible
+than writing analogous &GAP; library code.
+<P/>
+For integrating the existing character theory algorithms,
+&GAP;'s memory management and long integer arithmetic were useful
+as well as the list handling
+&ndash;it is an important feature of character theoretic methods
+that questions about groups are translated into manipulations of lists;
+on the other hand, the datatype of cyclotomics
+(see Chapter&nbsp;<Ref Func="Cyclotomics"/>)
+was added to the &GAP; kernel because of the character theory algorithms.
+For developing further code, also other areas of &GAP;'s library became
+interesting, such as permutation groups, finite fields, and polynomials.
+<P/>
+The development of character theory code for &GAP; has been supported
+by several DFG grants,
+in particular the project
+<Q>Representation Theory of Finite Groups and Finite Dimensional Algebras</Q>
+(until 1991),
+and the Schwerpunkt <Q>Algorithmische Zahlentheorie und Algebra</Q>
+(from 1991 until 1997).
+Besides that, several Diploma theses at Lehrstuhl D were concerned with
+the development and/or implementation of algorithms dealing with characters
+in &GAP;.
+<P/>
+The major contributions can be listed as follows.
+<List>
+<Item>
+    The arithmetic for the cyclotomics data type,
+    following&nbsp;<Cite Key="Zum89"/>,
+    was first implemented by Marco van Meegen; an alternative approach was
+    studied in the diploma thesis of Michael Scherner
+    (see&nbsp;<Cite Key="Scherner92"/>)
+    but was not efficient enough;
+    later Martin Schönert replaced the implementation by a better one.
+<!-- and since then, there have been more than 30 local improvements ... -->
+</Item>
+<Item>
+    The basic routines for characters and character tables were written
+    by Thomas Breuer and Götz Pfeiffer.
+</Item>
+<Item>
+    The lattice related functions, such as <Ref Func="LLL"/>,
+    <Ref Func="OrthogonalEmbeddings"/>,
+    and <Ref Func="DnLattice"/>, were implemented by Ansgar Kaup
+    (see&nbsp;<Cite Key="Kaup92"/>).
+</Item>
+<Item>
+    Functions for computing possible class fusions, possible power maps,
+    and table automorphisms were written by Thomas Breuer
+    (see&nbsp;<Cite Key="Bre91"/>).
+</Item>
+<Item>
+    Functions for computing possible permutation characters were written by
+    Thomas Breuer (see&nbsp;<Cite Key="Bre91"/>)
+    and Götz Pfeiffer (see&nbsp;<Cite Key="Pfe91"/>).
+</Item>
+<Item>
+    Functions for computing character tables from groups were written by
+    Alexander Hulpke (Dixon-Schneider algorithm,
+    see&nbsp;<Cite Key="Hulpke93"/>)
+    and Hans Ulrich Besche (Baum algorithm and Conlon algorithm,
+    see&nbsp;<Cite Key="Besche92"/>).
+</Item>
+<Item>
+    Functions for dealing with Clifford matrices were written by
+    Ute Schiffer (see&nbsp;<Cite Key="Schiffer94"/>).
+</Item>
+<Item>
+    Functions for monomiality questions were written by Thomas Breuer and
+    Erzsébet Horváth.
+</Item>
+</List>
+<P/>
+Since then, the code has been maintained and extended further by
+Alexander Hulpke (code related to his implementation of the Dixon-Schneider
+algorithm) and Thomas Breuer.
+<P/>
+<!-- % D. Bauten? -->
+Currently &GAP; does not provide special functionality for computing
+Brauer character tables,
+but there is an interface to the <Package>MOC</Package> system
+(see&nbsp;<Cite Key="HJLP92"/>),
+and the &GAP; Character Table Library contains many
+known Brauer character tables.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Creating Character Tables">
+<Heading>Creating Character Tables</Heading>
+
+<#Include Label="[10]{ctbl}">
+<#Include Label="CharacterTable">
+<#Include Label="BrauerTable">
+<#Include Label="CharacterTableRegular">
+<#Include Label="SupportedCharacterTableInfo">
+<#Include Label="ConvertToCharacterTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Character Table Categories">
+<Heading>Character Table Categories</Heading>
+
+<#Include Label="IsNearlyCharacterTable">
+<#Include Label="InfoCharacterTable">
+<#Include Label="NearlyCharacterTablesFamily">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Conventions for Character Tables">
+<Heading>Conventions for Character Tables</Heading>
+
+The following few conventions should be noted.
+<List>
+<Item>
+  The class of the <E>identity element</E> is expected to be the first one;
+  thus the degree of a character is the character value at position <M>1</M>.
+</Item>
+<Item>
+  The <E>trivial character</E> of a character table need not be the first in
+  the list of irreducibles.
+</Item>
+<Item>
+  Most functions that take a character table as an argument and work with
+  characters expect these characters as an argument, too.
+  For some functions, the list of irreducible characters serves as the
+  default, i.e, the value of the attribute
+  <Ref Attr="Irr" Label="for a character table"/>;
+  in these cases,
+  the <Ref Attr="Irr" Label="for a character table"/> value is
+  automatically computed if it was not yet known.
+</Item>
+<Item>
+  For a stored class fusion, the image table is denoted by its
+  <Ref Attr="Identifier" Label="for character tables"/> value;
+  each library table has a unique identifier by which it can be accessed
+  (see&nbsp;<Ref Sect="Accessing a Character Table from the Library"
+  BookName="ctbllib"/> in the manual for the
+  &GAP; Character Table Library),
+  tables constructed from groups get an identifier that is unique in the
+  current &GAP; session.
+</Item>
+</List>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Interface between Character Tables and Groups">
+<Heading>The Interface between Character Tables and Groups</Heading>
+
+<#Include Label="[2]{ctbl}">
+<#Include Label="UnderlyingGroup:ctbl">
+<#Include Label="ConjugacyClasses:ctbl">
+<#Include Label="IdentificationOfConjugacyClasses">
+<#Include Label="CharacterTableWithStoredGroup">
+<#Include Label="CompatibleConjugacyClasses">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operators for Character Tables">
+<Heading>Operators for Character Tables</Heading>
+
+<#Include Label="[3]{ctbl}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Attributes and Properties of Character Tables">
+<Heading>Attributes and Properties for Groups and Character Tables</Heading>
+
+<#Include Label="[4]{ctbl}">
+<#Include Label="CharacterDegrees">
+<#Include Label="Irr">
+<#Include Label="LinearCharacters">
+<#Include Label="OrdinaryCharacterTable">
+<#Include Label="[5]{ctbl}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Attributes and Properties only for Character Tables">
+<Heading>Attributes and Properties only for Character Tables</Heading>
+
+<#Include Label="[6]{ctbl}">
+<#Include Label="OrdersClassRepresentatives">
+<#Include Label="SizesCentralizers">
+<#Include Label="SizesConjugacyClasses">
+<#Include Label="AutomorphismsOfTable">
+<#Include Label="UnderlyingCharacteristic">
+<#Include Label="ClassNames">
+<#Include Label="ClassParameters">
+<#Include Label="Identifier:ctbl">
+<#Include Label="InfoText_ctbl">
+<#Include Label="InverseClasses">
+<#Include Label="RealClasses">
+<#Include Label="ClassOrbit">
+<#Include Label="ClassRoots">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Normal Subgroups Represented by Lists of Class Positions">
+<Heading>Normal Subgroups Represented by Lists of Class Positions</Heading>
+
+<#Include Label="[8]{ctbl}">
+<#Include Label="ClassPositionsOfNormalSubgroups">
+<#Include Label="ClassPositionsOfAgemo">
+<#Include Label="ClassPositionsOfCentre:ctbl">
+<#Include Label="ClassPositionsOfDirectProductDecompositions">
+<#Include Label="ClassPositionsOfDerivedSubgroup">
+<#Include Label="ClassPositionsOfElementaryAbelianSeries">
+<#Include Label="ClassPositionsOfFittingSubgroup">
+<#Include Label="ClassPositionsOfLowerCentralSeries">
+<#Include Label="ClassPositionsOfUpperCentralSeries">
+<#Include Label="ClassPositionsOfSupersolvableResiduum">
+<#Include Label="ClassPositionsOfPCore">
+<#Include Label="ClassPositionsOfNormalClosure">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations Concerning Blocks">
+<Heading>Operations Concerning Blocks</Heading>
+
+<#Include Label="PrimeBlocks">
+<#Include Label="SameBlock">
+<#Include Label="BlocksInfo">
+<#Include Label="DecompositionMatrix">
+<#Include Label="LaTeXStringDecompositionMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Other Operations for Character Tables">
+<Heading>Other Operations for Character Tables</Heading>
+
+<#Include Label="[9]{ctbl}">
+
+<P/>
+
+<#Include Label="Index!for_character_tables">
+<#Include Label="IsInternallyConsistent!for_character_tables">
+<#Include Label="IsPSolvableCharacterTable">
+<#Include Label="IsClassFusionOfNormalSubgroup">
+<#Include Label="Indicator">
+<#Include Label="NrPolyhedralSubgroups">
+<#Include Label="ClassMultiplicationCoefficient:ctbl">
+<#Include Label="ClassStructureCharTable">
+<#Include Label="MatClassMultCoeffsCharTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Printing Character Tables">
+<Heading>Printing Character Tables</Heading>
+
+<#Include Label="[11]{ctbl}">
+<#Include Label="DisplayOptions">
+<#Include Label="PrintCharacterTable">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Computing the Irreducible Characters of a Group">
+<Heading>Computing the Irreducible Characters of a Group</Heading>
+
+Several algorithms are available for computing the irreducible characters of
+a finite group <M>G</M>.
+The default method for arbitrary finite groups is to use the Dixon-Schneider
+algorithm (see&nbsp;<Ref Func="IrrDixonSchneider"/>).
+For supersolvable groups,
+Conlon's algorithm can be used (see&nbsp;<Ref Func="IrrConlon"/>).
+For abelian-by-supersolvable groups,
+the Baum-Clausen algorithm for computing the irreducible representations
+(see&nbsp;<Ref Func="IrreducibleRepresentations"/>) can be used to compute
+the irreducible characters (see&nbsp;<Ref Func="IrrBaumClausen"/>).
+<P/>
+These functions are installed in methods for
+<Ref Attr="Irr" Label="for a group"/>,
+but explicitly calling one of them will <E>not</E> set the
+<Ref Attr="Irr" Label="for a group"/> value of <M>G</M>.
+
+<#Include Label="IrrDixonSchneider">
+<#Include Label="IrrConlon">
+<#Include Label="IrrBaumClausen">
+<#Include Label="IrreducibleRepresentations">
+<#Include Label="IrreducibleRepresentationsDixon">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Representations given by modules">
+<Heading>Representations Given by Modules</Heading>
+
+This section describes functions that return certain modules of a given
+group.
+(Extensions by modules can be formed by the command <Ref Func="Extensions"/>.)
+
+<#Include Label="IrreducibleModules">
+<#Include Label="AbsoluteIrreducibleModules">
+<#Include Label="RegularModule">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The Dixon-Schneider Algorithm">
+<Heading>The Dixon-Schneider Algorithm</Heading>
+
+<#Include Label="[1]{ctblgrp}">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Advanced Methods for Dixon-Schneider Calculations">
+<Heading>Advanced Methods for Dixon-Schneider Calculations</Heading>
+
+<Index Subkey="computation">irreducible characters</Index>
+
+The computation of irreducible characters of very large groups
+may take quite some time.
+On the other hand, for the expert only a few irreducible characters may be
+needed,
+since the other ones can be computed using character theoretic methods
+such as tensoring, induction, and restriction.
+Thus &GAP; provides also step-by-step routines for doing the calculations.
+These routines allow one to compute some characters and to stop before all
+are calculated.
+Note that there is no <Q>safety net</Q>:
+The routines (being somehow internal) do no error checking,
+and assume the information given is correct.
+<P/>
+When the info level of <Ref Func="InfoCharacterTable"/> if positive,
+information about the progress of splitting is printed.
+(The default value is zero.)
+
+<#Include Label="DixonRecord">
+<#Include Label="DixonInit">
+<#Include Label="DixontinI">
+<#Include Label="DixonSplit">
+<#Include Label="BestSplittingMatrix">
+<#Include Label="DxIncludeIrreducibles">
+<#Include Label="SplitCharacters">
+<#Include Label="IsDxLargeGroup">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Components of a Dixon Record">
+<Heading>Components of a Dixon Record</Heading>
+
+The <Q>Dixon record</Q> <A>D</A> returned by <Ref Func="DixonInit"/>
+stores all the information that is used by the Dixon-Schneider routines
+while computing the irreducible characters of a group.
+Some entries, however, may be useful to know about when using the algorithm
+interactively,
+see <Ref Sect="An Example of Advanced Dixon-Schneider Calculations"/>.
+
+<List>
+<Mark><C>group</C></Mark>
+<Item>
+   the group <M>G</M> of which the character table is to be computed,
+</Item>
+<Mark><C>conjugacyClasses</C></Mark>
+<Item>
+   classes of <M>G</M> (all characters stored in the Dixon record
+   correspond to this arrangement of classes),
+</Item>
+<Mark><C>irreducibles</C></Mark>
+<Item>
+   the already known irreducible characters
+   (given as lists of their values on the conjugacy classes),
+</Item>
+<Mark><C>characterTable</C></Mark>
+<Item>
+   the <Ref Func="CharacterTable" Label="for a group"/> value of <M>G</M>
+   (whose irreducible characters are not yet known),
+</Item>
+<Mark><C>ClassElement( <A>D</A>, <A>el</A> )</C></Mark>
+<Item>
+   a function that returns the number of the class of <M>G</M>
+   that contains the element <A>el</A>.
+</Item>
+</List>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="An Example of Advanced Dixon-Schneider Calculations">
+<Heading>An Example of Advanced Dixon-Schneider Calculations</Heading>
+
+First, we set the appropriate info level higher.
+<P/>
+<Example><![CDATA[
+gap> SetInfoLevel( InfoCharacterTable, 1 );
+]]></Example>
+<P/>
+for printout of some internal results.
+We now define our group, which is isomorphic to PSL<M>_4(3)</M>.
+<P/>
+<Example><![CDATA[
+gap> g:= PrimitiveGroup(40,5);
+PSL(4, 3)
+gap> Size(g);
+6065280
+gap> d:= DixonInit( g );;
+#I  29 classes
+#I  choosing prime 65521
+gap> c:= d.characterTable;;
+]]></Example>
+<P/>
+After the initialisation, one structure matrix is evaluated,
+yielding smaller spaces and several irreducible characters.
+<P/>
+<Example><![CDATA[
+gap> DixonSplit( d );
+#I  Matrix 2,Representative of Order 3,Centralizer: 5832
+#I  Dimensions: [ 1, 2, 1, 4, 12, 1, 1, 2, 1, 2, 1 ]
+#I  Two-dim space split
+#I  Two-dim space split
+#I  Two-dim space split
+2
+]]></Example>
+<P/>
+In this case spaces of the listed dimensions are a result of the
+splitting process.
+The three two dimensional spaces are split successfully by combinatoric
+means.
+<P/>
+We obtain several irreducible characters by tensor products and notify them
+to the Dixon record.
+<P/>
+<Example><![CDATA[
+gap> asp:= AntiSymmetricParts( c, d.irreducibles, 2 );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, asp );;
+gap> Length( ro.irreducibles );
+3
+gap> DxIncludeIrreducibles( d, ro.irreducibles );
+]]></Example>
+<P/>
+The tensor products of the nonlinear characters among each other are reduced
+with the irreducible characters.
+The result is split according to the spaces found, which yields characters
+of smaller norms, but no new irreducibles.
+<P/>
+<Example><![CDATA[
+gap> nlc:= Filtered( d.irreducibles, i -> i[1] > 1 );;
+gap> t:= Tensored( nlc, nlc );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, t );;  ro.irreducibles;
+[  ]
+gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
+[ 2, 2, 4, 4, 4, 4, 13, 13, 18, 18, 19, 21, 21, 36, 36, 29, 34, 34, 
+  42, 34, 48, 54, 62, 68, 68, 78, 84, 84, 88, 90, 159, 169, 169, 172, 
+  172, 266, 271, 271, 268, 274, 274, 280, 328, 373, 373, 456, 532, 
+  576, 679, 683, 683, 754, 768, 768, 890, 912, 962, 1453, 1453, 1601, 
+  1601, 1728, 1739, 1739, 1802, 2058, 2379, 2414, 2543, 2744, 2744, 
+  2920, 3078, 3078, 4275, 4275, 4494, 4760, 5112, 5115, 5115, 5414, 
+  6080, 6318, 7100, 7369, 7369, 7798, 8644, 10392, 12373, 12922, 
+  14122, 14122, 18948, 21886, 24641, 24641, 25056, 38942, 44950, 
+  78778 ]
+gap> t:= SplitCharacters( d, ro.remainders );;
+gap> List( t, i -> ScalarProduct( c, i, i ) );
+[ 2, 2, 4, 2, 2, 4, 4, 3, 6, 5, 5, 9, 9, 4, 12, 13, 18, 18, 20, 18, 
+  20, 24, 26, 32, 32, 16, 42, 59, 69, 69, 72, 72, 36, 72, 78, 78, 84, 
+  122, 117, 127, 117, 127, 64, 132, 100, 144, 196, 256, 456, 532, 
+  576, 679, 683, 683, 754, 768, 768, 890, 912, 962, 1453, 1453, 1601, 
+  1601, 1728, 1739, 1739, 1802, 2058, 2379, 2414, 2543, 2744, 2744, 
+  2920, 3078, 3078, 4275, 4275, 4494, 4760, 5112, 5115, 5115, 5414, 
+  6080, 6318, 7100, 7369, 7369, 7798, 8644, 10392, 12373, 12922, 
+  14122, 14122, 18948, 21886, 24641, 24641, 25056, 38942, 44950, 
+  78778 ]
+]]></Example>
+<P/>
+Finally we calculate the characters induced from all cyclic subgroups and
+obtain the missing irreducibles by applying the LLL-algorithm to them.
+<P/>
+<Example><![CDATA[
+gap> ic:= InducedCyclic( c, "all" );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, ic );;
+gap> Length( ro.irreducibles );
+0
+gap> l:= LLL( c, ro.remainders );;
+gap> Length( l.irreducibles );
+13
+]]></Example>
+<P/>
+The LLL returns class function objects
+(see Chapter&nbsp;<Ref Chap="Class Functions"/>),
+and the Dixon record works with character values lists.
+So we convert them to a list of values
+before feeding them in the machinery of the Dixon-algorithm.
+<P/>
+<Example><![CDATA[
+gap> l.irreducibles[1];
+Character( CharacterTable( PSL(4, 3) ),
+ [ 640, -8, -8, -8, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
+  E(13)^2+E(13)^5+E(13)^6, E(13)+E(13)^3+E(13)^9, 0 ] )
+gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
+gap> DxIncludeIrreducibles( d, l );
+gap> Length( d.irreducibles );
+29
+gap> Length( d.classes );
+29
+]]></Example>
+<P/>
+It turns out we have found all irreducible characters.
+As the last step, we obtain the irreducible characters and tell them to the
+group.
+This makes them available also to the character table.
+<P/>
+<Example><![CDATA[
+gap> irrs:= DixontinI( d );;
+#I  Total:1 matrices,[ 2 ]
+gap> SetIrr(g,irrs);
+gap> Length(Irr(c));
+29
+gap> SetInfoLevel( InfoCharacterTable, 0 );
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Constructing Character Tables from Others">
+<Heading>Constructing Character Tables from Others</Heading>
+
+<#Include Label="[12]{ctbl}">
+<#Include Label="CharacterTableDirectProduct">
+<#Include Label="FactorsOfDirectProduct">
+<#Include Label="CharacterTableFactorGroup">
+<#Include Label="CharacterTableIsoclinic">
+<!-- %Declaration{CharacterTableOfNormalSubgroup} -->
+<#Include Label="CharacterTableWreathSymmetric">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sorted Character Tables">
+<Heading>Sorted Character Tables</Heading>
+
+<#Include Label="CharacterTableWithSortedCharacters">
+<#Include Label="SortedCharacters">
+<#Include Label="CharacterTableWithSortedClasses">
+<#Include Label="SortedCharacterTable">
+<#Include Label="ClassPermutation">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Automorphisms and Equivalence of Character Tables">
+<Heading>Automorphisms and Equivalence of Character Tables</Heading>
+
+<#Include Label="MatrixAutomorphisms">
+<#Include Label="TableAutomorphisms">
+<#Include Label="TransformingPermutations">
+<#Include Label="TransformingPermutationsCharacterTables">
+<#Include Label="FamiliesOfRows">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Storing Normal Subgroup Information">
+<Heading>Storing Normal Subgroup Information</Heading>
+
+<#Include Label="NormalSubgroupClassesInfo">
+<#Include Label="ClassPositionsOfNormalSubgroup">
+<#Include Label="NormalSubgroupClasses">
+<#Include Label="FactorGroupNormalSubgroupClasses">
+
+</Section>
+</Chapter>
+
+<!-- %E -->
+

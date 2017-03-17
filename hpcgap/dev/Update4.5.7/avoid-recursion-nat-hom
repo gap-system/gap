@@ -1,0 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/10/05
+! Changed by
+AH
+! Type of Change
+Fix: Crash
+! Description
+Avoid recursion in NatHom. code.
+! Test Code
+gap> G:=DirectProduct(CyclicGroup(2),PSL(3,4));; 
+gap> NaturalHomomorphismByNormalSubgroup(G,TrivialSubgroup(G));;
+! Changeset
+7178b45347437681614c5bf44ae76cd4038dac4f
+! End

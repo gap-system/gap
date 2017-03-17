@@ -1,0 +1,268 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  boolean.msk                 GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: boolean.msk,v 1.14 2002/04/15 10:02:27 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Booleans">
+<Heading>Booleans</Heading>
+
+<Index Subkey="boolean">type</Index>
+<Index>logical</Index>
+
+The two main <E>boolean</E> values are <K>true</K> and <K>false</K>.
+They stand for the <E>logical</E> values of the same name.
+They appear as values of the conditions in <K>if</K>-statements
+and <K>while</K>-loops.
+Booleans are also important as return values of <E>filters</E>
+(see&nbsp;<Ref Sect="Filters"/>)
+such as <Ref Prop="IsFinite"/> and <Ref Func="IsBool"/>.
+Note that it is a convention that the name of a function that
+returns <K>true</K> or <K>false</K> according to the outcome,
+starts with <C>Is</C>.
+<P/>
+For technical reasons, also the value <K>fail</K>
+(see&nbsp;<Ref Sect="Fail"/>) is regarded as a boolean.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:IsBool">
+<Heading>IsBool (Filter)</Heading>
+
+<#Include Label="IsBool">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Fail">
+<Heading>Fail (Variable)</Heading>
+
+<ManSection>
+<Var Name="fail"/>
+
+<Description>
+The value <K>fail</K> is used to indicate situations when an operation could
+not be performed for the given arguments, either because of shortcomings of
+the arguments or because of restrictions in the implementation or
+computability.
+So for example <Ref Func="Position"/> will return <K>fail</K>
+if the point searched for is not in the list.
+<P/>
+<K>fail</K> is simply an object that is different from every other object
+than itself.
+<P/>
+For technical reasons, <K>fail</K> is a boolean value.
+But note that <K>fail</K> cannot be used to form boolean expressions with
+<K>and</K>, <K>or</K>, and <K>not</K>
+(see&nbsp;<Ref Sect="Operations for Booleans"/> below),
+and <K>fail</K> cannot appear in boolean lists
+(see Chapter&nbsp;<Ref Chap="Boolean Lists"/>).
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Comparisons of Booleans">
+<Heading>Comparisons of Booleans</Heading>
+<Index Subkey="of booleans">comparisons</Index>
+<Subsection Label="Equality and inequality of Booleans">
+<Heading>Equality and inequality of Booleans</Heading>
+<Index Subkey="of booleans">equality</Index>
+<Index Subkey="of booleans">inequality</Index>
+<C><A>bool1</A> = <A>bool2</A></C>
+<P/>
+<Alt Only="LaTeX">\noindent</Alt>
+<C><A>bool1</A> &lt;> <A>bool2</A></C>
+<P/>
+The equality operator <C>=</C> evaluates to <K>true</K>
+if the two boolean values <A>bool1</A> and <A>bool2</A> are equal,
+i.e., both are <K>true</K> or both are <K>false</K> or both <K>fail</K>,
+and <K>false</K> otherwise.
+The inequality operator <C>&lt;></C> evaluates to <K>true</K>
+if the two boolean values <A>bool1</A>, <A>bool2</A> are different,
+and <K>false</K> otherwise.
+This operation is also called the <E>exclusive or</E>,
+because its value is <K>true</K> if exactly one of <A>bool1</A> or
+<A>bool2</A> is <K>true</K>.
+<P/>
+You can compare boolean values with objects of other types.
+Of course they are never equal.
+<P/>
+<Example><![CDATA[
+gap> true = false;
+false
+gap> false = (true = fail);
+true
+gap> true <> 17;
+true
+]]></Example>
+</Subsection>
+
+<Subsection Label="Ordering of Booleans">
+<Heading>Ordering of Booleans</Heading>
+<Index Subkey="booleans">ordering</Index>
+<A>bool1</A> <C>&lt;</C> <A>bool2</A>
+<P/>
+The ordering of boolean values is defined by
+<K>true</K> <C>&lt;</C> <K>false</K> <C>&lt;</C> <K>fail</K>.
+For the comparison of booleans with other &GAP; objects,
+see Section&nbsp;<Ref Sect="Comparisons"/>.
+<P/>
+<Example><![CDATA[
+gap> true < false;  fail >= false;
+true
+true
+]]></Example>
+</Subsection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Booleans">
+<Heading>Operations for Booleans</Heading>
+
+<Index Subkey="for booleans">operations</Index>
+<Index>logical operations</Index>
+
+The following boolean operations are only applicable to <K>true</K> and
+<K>false</K>.
+<P/>
+
+<Subsection Label="Logical disjunction">
+<Heading>Logical disjunction</Heading>
+<Index>Logical disjunction</Index>
+<Index Key="or"><K>or</K></Index>
+<A>bool1</A> <K>or</K> <A>bool2</A>
+<P/>
+The logical operator <K>or</K> evaluates to <K>true</K>
+if at least one of the two boolean operands <A>bool1</A> and <A>bool2</A>
+is <K>true</K>, and to <K>false</K> otherwise.
+<P/>
+<K>or</K> first evaluates <A>bool1</A>.
+If the value is neither <K>true</K> nor <K>false</K> an error is signalled.
+If the value is <K>true</K>, then <K>or</K> returns <K>true</K>
+<E>without</E> evaluating <A>bool2</A>.
+If the value is <K>false</K>, then <K>or</K> evaluates <A>bool2</A>.
+Again, if the value is neither <K>true</K> nor <K>false</K>
+an error is signalled.
+Otherwise <K>or</K> returns the value of <A>bool2</A>.
+This <E>short-circuited</E> evaluation is important if the value of
+<A>bool1</A> is <K>true</K>
+and evaluation of <A>bool2</A> would take much time or cause an error.
+<P/>
+<K>or</K> is associative, i.e., it is allowed to write
+<A>b1</A> <K>or</K> <A>b2</A> <K>or</K> <A>b3</A>,
+which is interpreted as (<A>b1</A> <K>or</K> <A>b2</A>) <K>or</K> <A>b3</A>.
+<K>or</K> has the lowest precedence of the logical operators.
+All logical operators have lower precedence than the comparison operators
+<C>=</C>, <C>&lt;</C>, <K>in</K>, etc.
+<P/>
+<Example><![CDATA[
+gap> true or false;
+true
+gap> false or false;
+false
+gap> i := -1;; l := [1,2,3];;
+gap> if i <= 0 or l[i] = false then     # this does not cause an error,
+>    Print("aha\n"); fi;                # because `l[i]' is not evaluated
+aha
+]]></Example>
+</Subsection>
+
+<Subsection Label="Logical conjunction">
+<Heading>Logical conjunction</Heading>
+<Index>Logical conjunction</Index>
+<Index Key="and"><K>and</K></Index>
+<A>bool1</A> <K>and</K> <A>bool2</A>
+<P/>
+<Index Key="and" Subkey="for filters"><K>and</K></Index>
+<Alt Only="LaTeX">\noindent</Alt>
+<A>fil1</A> <K>and</K> <A>fil2</A>
+<P/>
+The logical operator <K>and</K> evaluates to <K>true</K>
+if both boolean operands <A>bool1</A>, <A>bool2</A> are <K>true</K>,
+and to <K>false</K> otherwise.
+<P/>
+<K>and</K> first evaluates <A>bool1</A>.
+If the value is neither <K>true</K> nor <K>false</K> an error is signalled.
+If the value is <K>false</K>, then <K>and</K> returns <K>false</K>
+<E>without</E> evaluating <A>bool2</A>.
+If the value is <K>true</K>, then <K>and</K> evaluates <A>bool2</A>.
+Again, if the value is neither <K>true</K> nor <K>false</K>
+an error is signalled.
+Otherwise <K>and</K> returns the value of <A>bool2</A>.
+This <E>short-circuited</E> evaluation is important if the value of
+<A>bool1</A> is <K>false</K> and evaluation of <A>bool2</A> would take much
+time or cause an error.
+<P/>
+<K>and</K> is associative, i.e., it is allowed to write
+<A>b1</A> <K>and</K> <A>b2</A> <K>and</K> <A>b3</A>,
+which is interpreted as (<A>b1</A> <K>and</K> <A>b2</A>) <K>and</K> <A>b3</A>.
+<K>and</K> has higher precedence than the logical <K>or</K> operator,
+but lower than the unary logical <K>not</K> operator.
+All logical operators have lower precedence than the comparison operators
+<C>=</C>, <C>&lt;</C>, <K>in</K>, etc.
+<P/>
+<Example><![CDATA[
+gap> true and false;
+false
+gap> true and true;
+true
+gap> false and 17;  # does not cause error, because 17 is never looked at
+false
+]]></Example>
+<P/>
+<K>and</K> can also be applied to filters.
+It returns a filter that when applied to some argument <A>x</A>,
+tests <A>fil1</A><M>(x)</M> <K>and</K> <A>fil2</A><M>(x)</M>.
+<P/>
+<Example><![CDATA[
+gap> andfilt:= IsPosRat and IsInt;;
+gap> andfilt( 17 );  andfilt( 1/2 );
+true
+false
+]]></Example>
+</Subsection>
+
+<Subsection Label="Logical negation">
+<Heading>Logical negation</Heading>
+<Index>Logical negation</Index>
+<Index Key="not"><K>not</K></Index>
+<K>not</K> <A>bool</A>
+<P/>
+The logical operator <K>not</K> returns <K>true</K>
+if the boolean value <A>bool</A> is <K>false</K>, and <K>true</K> otherwise.
+An error is signalled if <A>bool</A> does not evaluate to <K>true</K> or
+<K>false</K>.
+<P/>
+<K>not</K> has higher precedence than the other logical operators,
+<K>or</K> and <K>and</K>.
+All logical operators have lower precedence than the comparison operators
+<C>=</C>, <C>&lt;</C>, <K>in</K>, etc.
+<P/>
+<Example><![CDATA[
+gap> true and false;
+false
+gap> not true;
+false
+gap> not false;
+true
+]]></Example>
+</Subsection>
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

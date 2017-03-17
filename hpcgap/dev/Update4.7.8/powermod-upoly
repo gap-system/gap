@@ -1,0 +1,28 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+2015/4/1
+
+!! Changed by
+SL
+! Reported by
+Max Horn
+
+!! Type of Change
+Fix: wrong result
+
+
+!! Description
+
+PowerMod produced wrong results for univariate Laurent polynomials when
+the two polynomial arguments are stored with the same non-zero shift.
+
+! Test Code
+gap> p := 227;; x := X(GF(p), "x");; f := x^(7^2) - x;;
+gap> PowerMod(x, p, f);
+x^35
+
+! Prefetch
+
+!! Changeset
+
+!! End

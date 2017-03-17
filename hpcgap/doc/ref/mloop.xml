@@ -1,0 +1,1430 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  mloop.msk                  GAP documentation             Martin Schönert -->
+<!-- %% -->
+<!-- %A @(#)<M>Id: mloop.msk,v 1.34 2006/09/12 14:51:14 jjm Exp </M> -->
+<!-- %% -->
+<!-- %Y Copyright 1990-1992, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<Chapter Label="Main Loop and Break Loop">
+<Heading>Main Loop and Break Loop</Heading>
+
+This chapter is a first of a series of chapters that describe the
+interactive environment in which you use &GAP;.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Main Loop">
+<Heading>Main Loop</Heading>
+
+<Index>read eval print loop</Index>
+<Index Subkey="read eval print">loop</Index>
+<Index>prompt</Index>
+<Index Subkey="partial">prompt</Index>
+<Index>syntax errors</Index>
+<Index Subkey="syntax">errors</Index>
+<Index Subkey="suppressing">output</Index>
+<Index Key="last"><C>last</C></Index>
+<Index Key="last2"><C>last2</C></Index>
+<Index Key="last3"><C>last3</C></Index>
+<Index>previous result</Index>
+The normal interaction with &GAP; happens in the so-called
+<E>read-eval-print</E> loop.
+This means that you type an input, &GAP; first reads it,
+evaluates it, and then shows the result.
+Note that the term <E>print</E> may be confusing since there is a &GAP;
+function called <Ref Func="Print"/> (see&nbsp;<Ref Sect="View and Print"/>)
+which is in fact <E>not</E> used in the read-eval-print loop,
+but traditions are hard to break.
+In the following, whenever we want to express that &GAP; places some
+characters on the standard output, we will say that &GAP; <E>shows</E>
+something.
+<P/>
+The exact sequence in the read-eval-print loop is as follows.
+<P/>
+To signal that it is ready to accept your input,
+&GAP; shows the <E>prompt</E> <C>gap></C>.
+When you see this, you know that &GAP; is waiting for your input.
+<P/>
+Note that every statement must be terminated by a semicolon. You must
+also enter <B>Return</B> (i.e., strike the <B>Return</B> key)
+before &GAP; starts to read and evaluate your input.
+(The <B>Return</B> key may actually be marked with the word <B>Enter</B>
+and a returning arrow on your terminal.)
+Because &GAP; does not do anything until you enter <B>Return</B>, you can
+edit your input to fix typos and only when everything is correct enter
+<B>Return</B> and have &GAP; take a look at it
+(see&nbsp;<Ref Sect="Line Editing"/>). It is
+also possible to enter several statements as input on a single line. Of
+course each statement must be terminated by a semicolon.
+<P/>
+It is absolutely acceptable to enter a single statement on several lines.
+When you have entered the beginning of a statement, but the statement is
+not yet complete, and you enter <B>Return</B>,
+&GAP; will show the <E>partial prompt</E> <C>></C>.
+When you see this, you know that &GAP; is waiting for the rest
+of the statement. This happens also when you forget
+the semicolon <C>;</C> that terminates every &GAP; statement.
+Note that when <B>Return</B> has been entered and the current statement is not
+yet complete, &GAP; will already evaluate those parts of the input that 
+are complete, for example function calls that appear as arguments in
+another function call which needs several input lines.
+So it may happen that one has to wait some time for the partial prompt.
+<!-- % And side-effects caused by the first lines are executed although -->
+<!-- % a syntax error in a later input line may invalidate the whole statement. -->
+<P/>
+When you enter <B>Return</B>, &GAP; first checks your input to see if it is
+syntactically correct
+(see Chapter&nbsp;<Ref Chap="The Programming Language"/> for the
+definition of syntactically correct). If it is not, &GAP; prints an
+error message of the following form
+<P/>
+<Log><![CDATA[
+gap> 1 * ;
+Syntax error: expression expected
+1 * ;
+    ^
+]]></Log>
+<P/>
+The first line tells you what is wrong about the input, in this case the
+<C>*</C> operator takes two expressions as operands, so obviously the right
+one is missing.
+If the input came from a file (see&nbsp;<Ref Func="Read"/>), this line
+will also contain the filename and the line number. The second line is a
+copy of the input. And the third line contains a caret pointing to the
+place in the previous line where &GAP; realized that something is wrong.
+This need not be the exact place where the error is, but it is usually
+quite close.
+<P/>
+Sometimes, you will also see a partial prompt after you have entered an
+input that is syntactically incorrect. This is because &GAP; is so
+confused by your input, that it thinks that there is still something to
+follow.
+In this case you should enter <C>;</C><B>Return</B> repeatedly,
+ignoring
+further error messages, until you see the full prompt again. When you
+see the full prompt, you know that &GAP; forgave you and is now ready to
+accept your next &ndash;hopefully correct&ndash; input.
+<P/>
+If your input is syntactically correct, &GAP; evaluates or executes it,
+i.e., performs the required computations
+(see Chapter&nbsp;<Ref Chap="The Programming Language"/>
+for the definition of the evaluation).
+<P/>
+If you do not see a prompt, you know that &GAP; is still working on your
+last input. Of course, you can <E>type ahead</E>, i.e., already start
+entering new input, but it will not be accepted by &GAP; until &GAP;
+has completed the ongoing computation.
+<P/>
+When &GAP; is ready it will usually show the result of the computation,
+i.e., the value computed. Note that not all statements produce a value,
+for example, if you enter a <K>for</K> loop, nothing will be printed,
+because the <K>for</K> loop does not produce a value that could be shown.
+<P/>
+Also sometimes you do not want to see the result. For example if you
+have computed a value and now want to assign the result to a variable,
+you probably do not want to see the value again. You can terminate
+statements by <E>two semicolons</E> to suppress showing the result.
+<P/>
+If you have entered several statements on a single line &GAP; will first
+read, evaluate, and show the first one, then read, evaluate, and show
+the second one, and so on. This means that the second statement will not
+even be checked for syntactical correctness until &GAP; has completed
+the first computation.
+<P/>
+After the result has been shown &GAP; will display another prompt, and
+wait for your next input.
+And the whole process starts all over again.
+Note that if you have entered several statements on a single line,
+a new prompt will only be printed after &GAP; has read, evaluated,
+and shown the last statement.
+<P/>
+In each statement that you enter, the result of the previous statement
+that produced a value is available in the variable <C>last</C>.
+The next to previous result is available in <C>last2</C>
+and the result produced before that is available in <C>last3</C>.
+<P/>
+<Example><![CDATA[
+gap> 1;2;3;
+1
+2
+3
+gap> last3 + last2 * last;
+7
+]]></Example>
+<P/>
+Also in each statement the time spent by the last statement, whether it
+produced a value or not, is available in the variable <Ref Var="time"/>.
+This is an integer that holds the number of milliseconds.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Special Rules for Input Lines">
+<Heading>Special Rules for Input Lines</Heading>
+
+The input for some &GAP; objects may not fit on one line, in particular 
+big integers, long strings or long identifiers. In these cases you can still
+type or paste them in long single lines.
+<!-- if most people use readline this becomes irrelevant:
+but on screen you may only
+see the last part (with a <C>$</C> character in front). -->
+For nicer display you
+can also specify  the input on several lines. This is achieved by ending a
+line  by a backslash or by a backslash and a carriage return character, then
+continue the input on the beginning of the next line. When reading this 
+&GAP; will ignore such continuation backslashes, carriage return characters 
+and newline characters. &GAP; also prints long strings and integers this way.
+<P/>
+<Example><![CDATA[
+gap> n := 1234\
+> 567890;
+1234567890
+gap> "This is a very long string that does not fit on a line \
+> and is therefore continued on the next line.";
+"This is a very long string that does not fit on a line and is therefo\
+re continued on the next line."
+gap> bla\
+> bla := 5;; blabla;
+5
+]]></Example>
+<P/>
+There is a special rule about &GAP; prompts in input lines: In line editing 
+mode (usual user input and &GAP; started without <C>-n</C>)  in lines starting 
+with whitespace following <C>gap> </C>, <C>> </C> or <C>brk> </C> this 
+beginning part is removed.
+This rule is very convenient because it allows to cut and paste input
+from other &GAP; sessions or manual examples easily into your current session.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="View and Print">
+<Heading>View and Print</Heading>
+
+&GAP; has three different operations to display or print objects: 
+<Ref Oper="Display"/>, <Ref Oper="ViewObj"/> and <Ref Oper="PrintObj"/>, 
+and these three have different purposes as follows. The first, <Ref
+    Oper="Display"/>, should print the object to the standard output
+in a human-readable
+relatively complete and verbose form. The second, <Ref
+    Oper="ViewObj"/>, should print the object to the standard output
+in a short and concise
+form, it is used in the main read-eval-print loop to display the
+resulting object of a computation. The third, <Ref Oper="PrintObj"/>,
+should print the object to the standard output 
+in a complete form which is &GAP;-readable if at all
+possible, such that reading the output into &GAP; produces an object
+which is equal to the original one.
+
+<P/>
+All three operations have corresponding operations which do not print
+anything to standard output but return the output as a string. These
+are <Ref Oper="DisplayString"/>, <Ref Oper="ViewString"/> and
+<Ref Oper="PrintString"/> (corresponding to <Ref Oper="PrintObj"/>).
+Additionally, there is <Ref Oper="String"/> which is very similar
+to <Ref Oper="PrintString"/> but does not insert control characters
+for line breaks.
+
+<P/>
+For implementation convenience it is allowed that some of these
+operations have methods which delegate to some other of these
+operations. However, the rules for this are that a method may only
+delegate to another operation which appears further down in the
+following table:
+
+<P/>
+<Table Align="|c|">
+    <HorLine/>
+    <Row> <Item><Ref Oper="Display"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="ViewObj"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="PrintObj"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="DisplayString"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="ViewString"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="PrintString"/></Item> </Row>
+    <HorLine/>
+    <Row> <Item><Ref Oper="String"/></Item> </Row>
+    <HorLine/>
+</Table>
+
+<P/>
+This is to avoid circular delegations.
+
+<P/>
+Note in particular that none of the methods of the string producing operations 
+may delegate to the corresponding printing operations. Note also that
+the above mentioned purposes of the different operations suggest that
+delegations between different operations will be sub-optimal in most
+scenarios.
+
+<Subsection>
+    <Heading>Default delegations in the library</Heading>
+
+The library contains the following low ranked default methods:
+
+<List>
+<Item>
+    A method for 
+<Ref Oper="DisplayString"/> which returns the constant value
+of the global variable <Ref Var="DEFAULTDISPLAYSTRING"/>.
+</Item>
+
+<Item>
+A method for 
+<Ref Oper="ViewString"/> which returns the constant value
+of the global variable <Ref Var="DEFAULTVIEWSTRING"/>.
+</Item>
+
+<Item>
+A method for <Ref
+    Oper="Display"/> which first calls <Ref Oper="DisplayString"/>
+and prints the result, if it is a different object than <Ref
+    Var="DEFAULTDISPLAYSTRING"/>. Otherwise the method delegates
+to <Ref Oper="PrintObj"/>.
+</Item>
+
+<Item>
+A method for <Ref
+    Oper="ViewObj"/> which first calls <Ref Oper="ViewString"/>
+and prints the result, if it is a different object than <Ref
+    Var="DEFAULTVIEWSTRING"/>. Otherwise the method delegates
+to <Ref Oper="PrintObj"/>.
+</Item>
+
+<Item>
+A method for <Ref Oper="PrintObj"/> which prints the result of <Ref
+    Oper="PrintString"/>.
+</Item>
+
+<Item>
+    A method for <Ref Oper="PrintString"/> which returns the result
+    of <Ref Oper="String"/>
+</Item>
+
+</List>
+
+</Subsection>
+
+<Subsection>
+    <Heading>Recommendations for the implementation</Heading>
+
+This subsection describes what methods for printing and viewing one
+should implement for new &GAP; objects.
+
+<P/>
+One should at the very least install a <Ref Oper="String"/> method to
+allow printing. Using the standard delegations this enables a limited
+form of viewing, displaying and printing.
+
+<P/>
+If, for larger objects, nicer line breaks are needed, one should install
+a separate <Ref Oper="PrintString"/> method which puts in positions for
+good line breaks using the control characters <C>\&lt;</C> (ASCII 1) and
+<C>\&gt;</C> (ASCII 2).
+
+<P/>
+If, for even larger objects, output performance and memory usage
+matters, one should install a separate <Ref Oper="PrintObj"/> method.
+
+<P/>
+One should usually install a <Ref Oper="ViewString"/> method,
+unless the above <Ref Oper="String"/> method is good enough for
+<Ref Oper="ViewObj"/> purposes. Performance and memory should never
+matter here, so it is usually unnecessary to install a separate <Ref
+Oper="ViewObj"/> method.
+
+<P/>
+If the type of object calls for it one should install a 
+<Ref Oper="DisplayString"/> method. This is the case if a human
+readable verbose form is required.
+
+<P/>
+If the performance and memory usage for <Ref Oper="Display"/> matters, 
+one should install a separate <Ref Oper="Display"/> method.
+
+<P/>
+Note that if only a <Ref Oper="String"/> method is installed, then
+<Ref Oper="ViewObj"/> works and <Ref Oper="ViewString"/> returns <Ref
+Var="DEFAULTVIEWSTRING"/>. Likewise, <Ref Oper="Display"/> works and
+<Ref Oper="DisplayString"/> returns <Ref Var="DEFAULTDISPLAYSTRING"/>. If
+you want to avoid this then install methods for these operations
+as well.
+</Subsection>
+
+<#Include Label="View">
+
+<ManSection>
+<Func Name="Print" Arg='obj1, obj2, ...'/>
+
+<Description>
+Also <Ref Func="Print"/> shows the objects <A>obj1</A>, <A>obj2</A>... etc.
+on the standard output.
+The difference compared to <Ref Func="View"/> is in general that the shown
+form is not required to be short,
+and that in many cases the form shown by <Ref Func="Print"/> is &GAP;
+readable.
+<P/>
+<!-- % For example for large matrices <Ref Func="Print"/> may print -->
+<!-- % the full matrix, while <Ref Func="View"/> may only display the dimensions and the -->
+<!-- % characteristic. -->
+<Example><![CDATA[
+gap> z:= Z(2);
+Z(2)^0
+gap> v:= [ z, z, z, z, z, z, z ];
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]
+gap> ConvertToVectorRep(v);; v;
+<a GF2 vector of length 7>
+gap> Print( v, "\n" );
+[ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ]
+]]></Example>
+<P/>
+Another difference is that <Ref Func="Print"/> shows strings without the
+enclosing quotes, so <Ref Func="Print"/> can be used to produce formatted
+text on the standard output
+(see also chapter&nbsp;<Ref Chap="Strings and Characters"/>).
+Some characters preceded by a backslash, such as <C>\n</C>, are processed
+specially (see chapter&nbsp;<Ref Sect="Special Characters"/>).
+<Ref Func="PrintTo"/> can be used to print to a file.
+<P/>
+<Example><![CDATA[
+gap> for i in [1..5] do
+>      Print( i, " ", i^2, " ", i^3, "\n" );
+>    od;
+1 1 1
+2 4 8
+3 9 27
+4 16 64
+5 25 125
+gap> g:= SmallGroup(12,5);
+<pc group of size 12 with 3 generators>
+gap> Print( g, "\n" );
+Group( [ f1, f2, f3 ] )
+gap> View( g );  Print( "\n" );
+<pc group of size 12 with 3 generators>
+]]></Example>
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Oper Name="ViewObj" Arg='obj'/>
+<Oper Name="PrintObj" Arg='obj'/>
+
+<Description>
+The functions <Ref Func="View"/> and <Ref Func="Print"/> actually call
+the operations <Ref Oper="ViewObj"/> and&nbsp;<Ref Oper="PrintObj"/>,
+respectively, for each argument.
+By installing special methods for these operations,
+it is possible to achieve special printing behavior for certain objects
+(see chapter&nbsp;<Ref Chap="Method Selection"/>).
+The only exceptions are strings
+(see Chapter&nbsp;<Ref Chap="Strings and Characters"/>),
+for which the default <Ref Oper="PrintObj"/> and <Ref Oper="ViewObj"/>
+methods as well as the function <Ref Func="View"/> print also the enclosing
+doublequotes, whereas <Ref Func="Print"/> strips the doublequotes.
+<P/>
+The default method for <Ref Oper="ViewObj"/> is to call
+<Ref Oper="PrintObj"/>.
+So it is sufficient to have a <Ref Oper="PrintObj"/> method for an object
+in order to <Ref Func="View"/> it.
+If one wants to supply a <Q>short form</Q> for <Ref Func="View"/>,
+one can install additionally a method for <Ref Oper="ViewObj"/>.
+</Description>
+</ManSection>
+
+<#Include Label="Display">
+
+When setting up examples, in particular if for beginning users, it sometimes
+can be convenient to hide the structure behind a printing name. For many
+objects, such as groups, this can be done using <Ref Func="SetName"/>. If the
+objects however is represented internally, for example permutations
+representing group elements, this function is not applicable. Instead the
+function <Ref Func="SetNameObject"/> can be used to interface with the
+display routines on a lower level.
+
+<#Include Label="SetNameObject">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Break Loops">
+<Heading>Break Loops</Heading>
+
+When an error has occurred or when you interrupt &GAP; (usually by
+hitting <B>Ctrl-C</B>) &GAP; enters a break loop,
+that is in most respects like the main read eval print loop
+(see&nbsp;<Ref Sect="Main Loop"/>). That is, you can
+enter statements, &GAP; reads them, evaluates them, and shows the
+result if any. However those evaluations happen within the context in
+which the error occurred. So you can look at the arguments and local
+variables of the functions that were active when the error happened and
+even change them. The prompt is changed from <C>gap></C> to <C>brk></C> to
+indicate that you are in a break loop.
+<P/>
+<Log><![CDATA[
+gap> 1/0;
+Rational operations: <divisor> must not be zero
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <divisor> via 'return <divisor>;' to continue
+]]></Log>
+<P/>
+If errors occur within a break loop &GAP; enters another break loop at a
+<E>deeper level</E>. This is indicated by a number appended to <C>brk</C>:
+<P/>
+<Log><![CDATA[
+brk> 1/0;
+Rational operations: <divisor> must not be zero
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <divisor> via 'return <divisor>;' to continue
+brk_02>
+]]></Log>
+<P/>
+There are two ways to leave a break loop,
+see <Ref Subsect="quit"/> and <Ref Subsect="subsect:return"/>.
+
+<Subsection Label="quit">
+<Heading>quit from a break loop</Heading>
+
+The first way to leave a break loop is to <E>quit</E> the break loop.
+To do this you enter <C>quit;</C> or type the <E>eof</E>
+(<E>e</E>nd <E>o</E>f <E>f</E>ile) character,
+which is usually <B>Ctrl-D</B> except when using the <C>-e</C> option (see 
+Section&nbsp;<Ref Sect="Command Line Options"/>).
+Note that &GAP; code between <C>quit;</C> and the end of the input line
+is ignored.
+<P/>
+<Log><![CDATA[
+brk_02> quit;
+brk>
+]]></Log>
+<P/>
+In this case control returns to the break loop one level above or
+to the main loop, respectively.
+So iterated break loops must be left iteratively.
+Note also that if you type <C>quit;</C> from a <C>gap></C> prompt,
+&GAP; will exit (see&nbsp;<Ref Sect="Leaving GAP"/>).
+<P/>
+<E>Note:</E>
+If you leave a break loop with <K>quit</K> without completing a command
+it is possible (though not very likely) that data structures
+will be corrupted or incomplete data have been stored in objects.
+Therefore no guarantee can be given that calculations afterwards
+will return correct results! If you have been using options <K>quit</K>ting
+a break loop generally leaves the options stack with options you no 
+longer want. The function <Ref Func="ResetOptionsStack"/>
+removes all options on the options stack, and this is the sole intended
+purpose of this function.
+
+</Subsection>
+
+
+<Subsection Label="subsect:return">
+<Heading>return from a break loop</Heading>
+
+<Index Key="return"><K>return</K></Index>
+<Index>return from break loop</Index>
+The other way to leave a break loop is to <E>return</E> from a break loop.
+To do this you type <C>return;</C> or <C>return <A>obj</A>;</C>.
+If the break loop was entered because you interrupted &GAP;,
+then you can continue by typing <C>return;</C>.
+If the break loop was entered due to an error,
+you may have to modify the value of a variable before typing <C>return;</C>
+(see the example for&nbsp;<Ref Func="IsDenseList"/>) or you may have to
+return an object <A>obj</A>
+(by typing: <C>return <A>obj</A>;</C>) to continue the computation;
+in any case, the message printed on entering the break loop will 
+tell you which of these alternatives is possible.
+For example, if the break loop was entered because a variable had no
+assigned value, the value to be returned is often a value that this 
+variable should have to continue the computation.
+<P/>
+<Log><![CDATA[
+brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
+1/9
+gap> 
+]]></Log>
+
+</Subsection>
+
+
+<ManSection>
+<Var Name="OnBreak"/>
+
+<Description>
+By default, when a break loop is entered, &GAP; prints a trace of the 
+innermost 5 commands currently being executed. This behaviour can be
+configured by changing the value of the global variable
+<Ref Func="OnBreak"/>. When a break loop is entered,
+the value of <Ref Func="OnBreak"/> is
+checked. If it is a function, then it is called with no arguments. By
+default, the value of <Ref Func="OnBreak"/> is <Ref Func="Where"/>.
+<P/>
+<Example><![CDATA[
+gap> OnBreak := function() Print("Hello\n"); end;
+function(  ) ... end
+]]></Example>
+<P/>
+<Log><![CDATA[
+gap> Error("!\n");
+Error, !
+Hello
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+]]></Log>
+<P/>
+In cases where a break loop is entered during a function that was  called
+with options (see Chapter&nbsp;<Ref Chap="Options Stack"/>),
+a <C>quit;</C> will also cause the
+options stack to be reset  and  an  <C>Info</C>-ed  warning  stating  this  is
+emitted at <Ref Var="InfoWarning"/> level 1
+(see Chapter&nbsp;<Ref Sect="Info Functions"/>).
+<!-- %This is actually controlled by -->
+<!-- % -->
+<!-- %\>OnQuit() F -->
+<!-- % -->
+<!-- %which, like <Ref Func="OnBreak"/>, is a no-argument function. It is executed -->
+<!-- %when a user elects to <C>quit;</C> a non-kernel-induced break loop. -->
+<!-- %<C>OnQuit</C> is set read-only to a variant of <C>ResetOptionsStack</C> -->
+<!-- %that warns when it does something rather than the other way round. -->
+<!-- %It can be redefined after executing <C>MakeReadWriteGlobal( "OnQuit" );</C>. -->
+<!-- %Currently, <C>OnQuit</C> is not  advertised, since exception handling  -->
+<!-- %may make it obsolete. -->
+<P/>
+Note that for break loops entered by a call to <Ref Func="Error"/>,
+the lines after <Q><C>Entering break read-eval-print loop ...</C></Q>
+and before the <C>brk></C> prompt can also be customised,
+namely by redefining <Ref Func="OnBreakMessage"/>.
+<P/>
+<Index Key="ErrorNoTraceBack"><C>ErrorNoTraceBack</C></Index>
+Also, note that one can achieve the effect of changing <Ref Func="OnBreak"/>
+<E>locally</E>.
+As mentioned above, the default value of <Ref Func="OnBreak"/> is
+<Ref Func="Where"/>. Thus,
+a call to <Ref Func="Error"/> generally gives a trace back up to
+five levels of calling functions. Conceivably, we might like to have
+a function like <Ref Func="Error"/> that does not trace back without globally
+changing <Ref Func="OnBreak"/>.
+Such a function we might call <C>ErrorNoTraceBack</C>
+and here is how we might define it.
+(Note <C>ErrorNoTraceBack</C> is <E>not</E> a &GAP; function.)
+<P/>
+<Example><![CDATA[
+gap> ErrorNoTraceBack := function(arg) # arg is special variable that GAP
+>                                      # knows to treat as list of arg's
+>      local SavedOnBreak, ENTBOnBreak;
+>      SavedOnBreak := OnBreak;        # save current value of OnBreak
+> 
+>      ENTBOnBreak := function()       # our `local' OnBreak
+>      local s;
+>        for s in arg do
+>          Print(s);
+>        od;
+>        OnBreak := SavedOnBreak;      # restore OnBreak afterwards
+>      end;
+> 
+>      OnBreak := ENTBOnBreak;
+>      Error();
+>    end;
+function( arg... ) ... end
+]]></Example>
+<P/>
+Here is a somewhat trivial demonstration of the use of
+<C>ErrorNoTraceBack</C>.
+<P/>
+<Log><![CDATA[
+gap> ErrorNoTraceBack("Gidday!", " How's", " it", " going?\n");
+Error, Gidday! How's it going?
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+]]></Log>
+<P/>
+Now we call <Ref Func="Error"/> with the same arguments to show the difference.
+<P/>
+<Log><![CDATA[
+gap> Error("Gidday!", " How's", " it", " going?\n");
+Error, Gidday! How's it going?
+Hello
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+]]></Log>
+<P/>
+Observe that the value of <Ref Func="OnBreak"/> before the
+<C>ErrorNoTraceBack</C> call was restored.
+However, we had changed <Ref Func="OnBreak"/> from its default value;
+to restore <Ref Func="OnBreak"/> to its default value,
+we should do the following.
+<P/>
+<Example><![CDATA[
+gap> OnBreak := Where;;
+]]></Example>
+</Description>
+</ManSection>
+
+<ManSection>
+<Var Name="OnBreakMessage"/>
+
+<Description>
+<Index>Break loop message</Index>
+When a break loop is entered by a call to <Ref Func="Error"/>
+the message after the
+<Q><C>Entering break read-eval-print loop ...</C></Q> line is produced
+by the function <C>OnBreakMessage</C>,
+which just like <Ref Func="OnBreak"/>
+is a user-configurable global variable
+that is a <E>function</E> with <E>no arguments</E>.
+<P/>
+<Example><![CDATA[
+gap> OnBreakMessage(); # By default, OnBreakMessage prints the following
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+]]></Example>
+<P/>
+Perhaps you are familiar with what's possible in a break loop, and so
+don't need to be reminded. In this case, you might wish to do the
+following (the first line just makes it easy to restore the default 
+value later).
+<P/>
+<Example><![CDATA[
+gap> NormalOnBreakMessage := OnBreakMessage;; # save the default value 
+gap> OnBreakMessage := function() end;        # do-nothing function
+function(  ) ... end
+gap> OnBreakMessage();
+gap> OnBreakMessage := NormalOnBreakMessage;; # reset
+]]></Example>
+<P/>
+With <Ref Func="OnBreak"/> still set away from its default value,
+calling <Ref Func="Error"/> as we did above, now produces:
+<P/>
+<Log><![CDATA[
+gap> Error("!\n");
+Error, !
+Hello
+Entering break read-eval-print loop ...
+brk> quit; # to get back to outer loop
+]]></Log>
+<P/>
+However, suppose you are writing a function which detects an error
+condition and <C>OnBreakMessage</C> needs to be changed only <E>locally</E>,
+i.e., the instructions on how to recover from the break loop need
+to be specific to that function. The same idea used to define 
+<C>ErrorNoTraceBack</C> (see <Ref Func="OnBreak"/>) can be adapted to achieve 
+this. The function <Ref Func="CosetTableFromGensAndRels"/>
+is an example in the &GAP; code where the idea is actually used.
+</Description>
+</ManSection>
+<P/>
+<ManSection>
+<Func Name="Where" Arg='nr'/>
+
+<Description>
+<Index Subkey="GAP3 name for Where">Backtrace</Index>
+<Index>Stack trace</Index>
+shows the last <A>nr</A> commands on the execution stack during whose execution
+the error occurred. If not given, <A>nr</A> defaults to 5. (Assume, for the
+following example, that after the last example <Ref Func="OnBreak"/>
+has been set back to its default value.)
+<P/>
+<Log><![CDATA[
+gap> StabChain(SymmetricGroup(100)); # After this we typed ^C  
+user interrupt at
+bpt := S.orbit[1];
+ called from
+SiftedPermutation( S, (g * rep) ^ -1 ) called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+StabChainStrong( S, GeneratorsOfGroup( G ), options ); called from
+StabChainOp( G, rec(
+     ) ) called from
+...
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> Where(2);
+ called from
+SiftedPermutation( S, (g * rep) ^ -1 ) called from
+StabChainStrong( S.stabilizer, [ sch ], options ); called from
+...
+]]></Log>
+<P/>
+Note that the variables displayed even in the first line of the
+<Ref Func="Where"/> list
+(after the <C>called from</C> line) may be already one environment level higher 
+and <Ref Func="DownEnv"/> may be necessary to access them.
+<P/>
+At the moment this backtrace does not work from within compiled code (this
+includes the method selection which by default is compiled into the kernel).
+If this creates problems for debugging, call &GAP; with the <C>-M</C> option
+(see&nbsp;<Ref Sect="Command Line Options"/>)
+to avoid loading compiled code.
+<P/>
+(Function calls to <Ref Func="Info"/> and methods installed for
+binary operations are handled in a special way.
+In rare circumstances it is possible therefore that they do not show up
+in a <Ref Func="Where"/> log but the log refers to the <E>last</E>
+proper function call that happened before.)
+<P/>
+The command line option <C>-T</C> to &GAP; disables the break loop. This
+is mainly intended for testing purposes and for special
+applications. If this option is given then errors simply cause &GAP;
+to return to the main loop.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Variable Access in a Break Loop">
+<Heading>Variable Access in a Break Loop</Heading>
+
+In a break loop access to variables of the current break level and higher
+levels is possible, but if the same variable name is used for different
+objects or if a function calls itself recursively, of course only the
+variable at the lowest level can be accessed.
+
+<ManSection>
+<Heading>DownEnv and UpEnv</Heading>	
+<Func Name="DownEnv" Arg='nr'/>
+<Func Name="UpEnv" Arg='nr'/>
+
+<Description>
+<Ref Func="DownEnv"/> moves down <A>nr</A> steps in the environment and
+allows one to inspect variables on this level;
+if <A>nr</A> is negative it steps up in the environment again;
+<A>nr</A> defaults to 1 if not given.
+<Ref Func="UpEnv"/> acts similarly to <Ref Func="DownEnv"/>
+but in the reverse direction
+(the mnemonic rule to remember the difference between 
+<Ref Func="DownEnv"/> and <Ref Func="UpEnv"/> is the order in which commands
+on the execution stack are displayed by <Ref Func="Where"/>).
+<P/>
+<Log><![CDATA[
+gap> OnBreak := function() Where(0); end;; # eliminate back-tracing on
+gap>                                       # entry to break loop
+gap> test:= function( n )
+>    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
+gap> test( 1 );
+Error, !
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> Where();
+ called from
+test( n + 1 ); called from
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> n;
+4
+brk> DownEnv();
+brk> n;
+3
+brk> Where();
+ called from
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( 2 );
+brk> n;
+1
+brk> Where();
+ called from
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( -2 );
+brk> n;
+3
+brk> quit;
+gap> OnBreak := Where;; # restore OnBreak to its default value
+]]></Log>
+<P/>
+Note that the change of the environment caused by <Ref Func="DownEnv"/>
+only affects variable access in the break loop.
+If you use <K>return</K> to continue a
+calculation &GAP; automatically jumps to the right environment level
+again.
+<P/>
+Note also that search for variables looks first in the chain of outer
+functions which enclosed the definition of a currently executing
+function, before it looks at the chain of calling functions which led
+to the current invocation of the function. 
+<P/>
+<Log><![CDATA[
+gap> foo := function()
+> local x; x := 1;
+> return function() local y; y := x*x; Error("!!\n"); end;
+> end;
+function(  ) ... end
+gap> bar := foo();
+function(  ) ... end
+gap> fun := function() local x; x := 3; bar(); end;
+function(  ) ... end
+gap> fun();
+Error, !!
+ called from
+bar(  ); called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> x;
+1
+brk> DownEnv(1);
+brk> x;
+3
+]]></Log>
+<P/>
+Here the <C>x</C> of <C>foo</C> which contained the definition of <C>bar</C>
+is found before that of <C>fun</C> which caused its execution.
+Using <Ref Func="DownEnv"/> we can access the <C>x</C> from <C>fun</C>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:Error">
+<Heading>Error and ErrorCount</Heading>
+
+<ManSection>
+<Func Name="Error" Arg='messages ...'/>
+
+<Description>
+<Ref Func="Error"/> signals an error from within a function.
+First the messages <A>messages</A> are printed,
+this is done exactly as if <Ref Func="Print"/>
+(see&nbsp;<Ref Sect="View and Print"/>)
+were called with these arguments.
+Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
+entered, unless the standard error output is not connected to a terminal.
+You can leave this break loop with <C>return;</C> to continue execution with
+the statement following the call to <Ref Func="Error"/>. <Ref Func="ErrorNoReturn"/>
+operates identically to <Ref Func="Error"/>, except it does not allow using
+<C>return;</C> to continue execution.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="ErrorNoReturn" Arg='messages ...'/>
+
+<Description>
+<Ref Func="ErrorNoReturn"/> signals an error from within a function.
+First the messages <A>messages</A> are printed,
+this is done exactly as if <Ref Func="Print"/>
+(see&nbsp;<Ref Sect="View and Print"/>)
+were called with these arguments.
+Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
+entered, unless the standard error output is not connected to a terminal.
+This break loop can only be exited with <C>quit;</C>. The function differs from
+<Ref Func="Error"/> by not allowing execution to continue.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="ErrorCount" Arg=''/>
+
+<Description>
+<Ref Func="ErrorCount"/> returns a count of the number of errors
+(including user interruptions) which have occurred in the &GAP; session
+so far.
+This count is reduced modulo <M>2^{28}</M> on <M>32</M> bit systems,
+<M>2^{60}</M> on <M>64</M> bit systems.
+The count is incremented by each error, even if &GAP; was
+started with the <C>-T</C> option to disable the break loop.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Leaving GAP">
+<Heading>Leaving GAP</Heading>
+
+<Index Subkey="in emergency">quit</Index>
+<Index>exit</Index>
+<Index>at exit functions</Index>
+<Index>saving on exit</Index>
+The normal way to terminate a &GAP; session is to enter either
+<C>quit;</C> (note the semicolon) or an end-of-file character (usually
+<B>Ctrl-D</B>) at the <C>gap> </C> prompt in the main read eval print loop. 
+
+<ManSection>
+<Var Name="QUIT"/>
+
+<Description>
+An emergency way to leave &GAP; is to enter 
+<Index Key="QUIT" Subkey="emergency quit"><K>QUIT</K></Index>
+<K>QUIT</K>
+at any <C>gap></C>
+or <C>brk></C> or <C>brk_<A>nn</A>></C> prompt. 
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="GAP_EXIT_CODE" Arg='ret'/>
+
+<Description>
+A <C>GAP_EXIT_CODE</C> sets the return value which will be used when
+&GAP; exits. This may be an integer, or a boolean (where
+<K>true</K> is interpreted as 0, and
+<K>false</K> is interpreted as 1.
+<P/>
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="QUIT_GAP" Arg='[ret]'/>
+
+<Description>
+A <C>QUIT_GAP</C> acts similarly to the keyword <C>quit</C>. It exits
+&GAP; cleanly, calling any function installed using <C>InstallAtExit</C>.
+The optional argument will be passed to <C>GAP_EXIT_CODE</C>.
+<P/>
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="FORCE_QUIT_GAP" Arg='[ret]'/>
+
+<Description>
+A <C>FORCE_QUIT_GAP</C> is similar to <C>QUIT_GAP</C>, except it ignores any
+functions installed with <C>InstallAtExit</C>, or any other functions
+normally run at GAP exit, and exits GAP immediately.
+The optional argument will be passed to <C>GAP_EXIT_CODE</C>.
+<P/>
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="InstallAtExit" Arg='func'/>
+<Var Name="QUITTING"/>
+
+<Description>
+Before actually terminating, &GAP; will call (with no arguments) all
+of the functions that have been installed using <C>InstallAtExit</C>. These
+typically perform tasks such as cleaning up temporary files created
+during the session, and closing open files. If an error occurs during
+the execution of one of these functions, that function is simply
+abandoned, no break loop is entered. 
+<P/>
+<!-- Cannot test this as manual example -->
+<Log><![CDATA[
+gap> InstallAtExit(function() Print("bye\n"); end);
+gap> quit;
+bye
+]]></Log>
+<P/>
+During execution of these functions, the global variable <C>QUITTING</C>
+will be set to <K>true</K> if &GAP; is exiting because the user typed
+<K>QUIT</K> and <K>false</K> otherwise.
+Since <K>QUIT</K> is considered as an emergency measure,
+different action may be appropriate.
+</Description>
+</ManSection>
+
+<ManSection>
+<Var Name="SaveOnExitFile"/>
+
+<Description>
+If, when &GAP; is exiting due to a <K>quit</K> or end-of-file (i.e. not due
+to a <K>QUIT</K>) the variable <Ref Var="SaveOnExitFile"/> is bound
+to a string value,
+then the system will try to save the workspace to that file.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Line Editing">
+<Heading>Line Editing</Heading>
+
+In most installations &GAP; will be compiled to use the
+Gnu readline library (see the line <C>Libs used:</C> on &GAP; startup).
+In that case skip to the next section <Ref Sect="sec:readline"/>.
+(The line editing commands described in the rest of this section were
+available in previous versions of &GAP;, they will work almost the same 
+in the standard configuration of the Gnu readline library.)
+<P/>
+&GAP; allows one you to edit the current input line with a number of editing
+commands. Those commands are accessible either as <E>control keys</E> or as
+<E>escape keys</E>.
+You enter a control key by pressing the <B>Ctrl</B> key, and,
+while still holding the <B>Ctrl</B> key down,
+hitting another key <C>key</C>.
+You enter an escape key by hitting <B>Esc</B> and then hitting another
+key <C>key</C>.
+Below we denote control keys by <B>Ctrl-</B><C>key</C> and escape keys by
+<B>Esc-</B><C>key</C>.
+The case of <C>key</C> does not matter, i.e., <B>Ctrl-A</B> and
+<B>Ctrl-a</B> are equivalent.
+<P/>
+Normally, line editing will be enabled if the input is connected to a
+terminal. Line editing can be enabled or disabled using the command line
+options <C>-f</C> and <C>-n</C> respectively
+(see&nbsp;<Ref Sect="Command Line Options"/>), however
+this is a machine dependent feature of &GAP;.
+<P/>
+Typing <B>Ctrl-key</B> or <B>Esc-key</B> for characters not mentioned below
+always inserts <B>Ctrl-</B><C>key</C> resp.&nbsp;<B>Esc-</B><C>key</C>
+at the current cursor position.
+<P/>
+The first few commands allow you to move the cursor on the current line.
+<P/>
+<List>
+<Mark><B>Ctrl-A</B></Mark>
+<Item>
+  move the cursor to the beginning of the line.
+</Item>
+<Mark><B>Esc-B</B></Mark>
+<Item>
+  move the cursor to the beginning of the previous word.
+</Item>
+<Mark><B>Ctrl-B</B></Mark>
+<Item>
+  move the cursor backward one character.
+</Item>
+<Mark><B>Ctrl-F</B></Mark>
+<Item>
+  move the cursor forward one character. 
+</Item>
+<Mark><B>Esc-F</B></Mark>
+<Item>
+  move the cursor to the end of the next word. 
+</Item>
+<Mark><B>Ctrl-E</B></Mark>
+<Item>
+  move the cursor to the end of the line.
+</Item>
+</List>
+<P/>
+The next commands delete or kill text.
+The last killed text can be reinserted, possibly at a different position,
+with the <Q>yank</Q> command <B>Ctrl-Y</B>.
+<List>
+<Mark><B>Ctrl-H</B> or <A>del</A></Mark>
+<Item>
+  delete the character left of the cursor. 
+</Item>
+<Mark><B>Ctrl-D</B></Mark>
+<Item>
+  delete the character under the cursor. 
+</Item>
+<Mark><B>Ctrl-K</B></Mark>
+<Item>
+  kill up to the end of the line. 
+</Item>
+<Mark><B>Esc-D</B></Mark>
+<Item>
+  kill forward to the end of the next word. 
+</Item>
+<Mark><B>Esc-del</B></Mark>
+<Item>
+  kill backward to the beginning of the last word. 
+</Item>
+<Mark><B>Ctrl-X</B></Mark>
+<Item>
+  kill entire input line, and discard all pending input. 
+</Item>
+<Mark><B>Ctrl-Y</B></Mark>
+<Item>
+  insert (yank) a just killed text.
+</Item>
+</List>
+<P/>
+The next commands allow you to change the input.
+<P/>
+<List>
+<Mark><B>Ctrl-T</B></Mark>
+<Item>
+  exchange (twiddle) current and previous character. 
+</Item>
+<Mark><B>Esc-U</B></Mark>
+<Item>
+  uppercase next word. 
+</Item>
+<Mark><B>Esc-L</B></Mark>
+<Item>
+  lowercase next word. 
+</Item>
+<Mark><B>Esc-C</B></Mark>
+<Item>
+  capitalize next word.
+</Item>
+</List>
+<P/>
+The <B>Tab</B> character,
+which is in fact the control key <B>Ctrl-I</B>, looks at
+the characters before the cursor, interprets them as the beginning of an
+identifier and tries to complete this identifier. If there is more than
+one possible completion, it completes to the longest common prefix of all
+those completions. If the characters to the left of the cursor are
+already the longest common prefix of all completions hitting <B>Tab</B> a
+second time will display all possible completions.
+<P/>
+<List>
+<Mark><B>tab</B></Mark>
+<Item>
+  complete the identifier before the cursor.
+</Item>
+</List>
+<P/>
+The next commands allow you to fetch previous lines, e.g., to correct
+typos, etc. 
+<P/>
+<List>
+<Mark><B>Ctrl-L</B></Mark>
+<Item>
+  insert last input line before current character.
+</Item>
+<Mark><B>Ctrl-P</B></Mark>
+<Item>
+  redisplay the last input line,
+  another <B>Ctrl-P</B> will redisplay the line before that, etc.
+  If the cursor is not in the first column only the lines starting with the
+  string to the left of the cursor are taken.
+</Item>
+<Mark><B>Ctrl-N</B></Mark>
+<Item>
+  Like <B>Ctrl-P</B> but goes the other way round through the history.
+</Item>
+<Mark><B>Esc-&lt;</B></Mark>
+<Item>
+  goes to the beginning of the history.
+</Item>
+<Mark><B>Esc-></B></Mark>
+<Item>
+  goes to the end of the history.
+</Item>
+<Mark><B>Ctrl-O</B></Mark>
+<Item>
+  accepts this line and perform a <B>Ctrl-N</B>.
+</Item>
+</List>
+<P/>
+Finally there are a few miscellaneous commands.
+<P/>
+<List>
+<Mark><B>Ctrl-V</B></Mark>
+<Item>
+  enter next character literally, i.e., enter it even if it
+  is one of the control keys.
+</Item>
+<Mark><B>Ctrl-U</B></Mark>
+<Item>
+  execute the next line editing command 4 times.
+</Item>
+<Mark><B>Esc-</B><C>num</C></Mark>
+<Item>
+  execute the next line editing command <C>num</C> times.
+</Item>
+<Mark><B>Esc-Ctrl-L</B></Mark>
+<Item>
+  redisplay input line.
+</Item>
+</List>
+<P/>
+The four arrow keys (cursor keys) can be used instead of
+<B>Ctrl-B</B>, <B>Ctrl-F</B>, <B>Ctrl-P</B>, and <B>Ctrl-N</B>,
+respectively.
+
+</Section>
+
+<#Include Label="readline">
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Editing Files">
+<Heading>Editing Files</Heading>
+
+In most cases, it is preferable to create longer input (in particular &GAP;
+programs) separately in an editor,
+and to read in the result via <Ref Func="Read"/>.
+Note that <Ref Func="Read"/> by default reads from the directory
+in which &GAP; was started (respectively under Windows the directory
+containing the &GAP; binary),
+so you might have to give an absolute path to the file.
+<P/>
+If you cannot create several windows,
+the <Ref Func="Edit"/> command may be used to leave &GAP;, start an editor,
+and read in the edited file automatically.
+
+<#Include Label="Edit">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Editor Support">
+<Heading>Editor Support</Heading>
+
+<Index>utilities for editing GAP files</Index>
+<Index Key="vi"><C>vi</C></Index>
+<Index Key="vim"><C>vim</C></Index>
+<Index Key="emacs"><C>emacs</C></Index>
+In the <F>etc</F> subdirectory of the &GAP; installation
+we provide some setup files for the editors <C>vim</C> and
+<C>emacs</C>/<C>xemacs</C>.
+<P/>
+<C>vim</C> is a powerful editor that understands the basic <C>vi</C> commands
+but provides much more functionality. You can find more information about it
+(and download it) from <URL>http://www.vim.org</URL>.
+<P/>
+To get support for &GAP; syntax in vim, create in your home directory a
+directory <F>.vim</F> with  subdirectories  <F>.vim/syntax</F> and
+<F>.vim/indent</F>
+(If you are not using Unix, refer to the <C>vim</C> documentation
+on where to place syntax files).
+Then copy the file <F>etc/gap.vim</F> to <F>.vim/syntax/gap.vim</F> 
+and  the file <F>etc/gap_indent.vim</F> to <F>.vim/indent/gap.vim</F>.
+<P/>
+Then edit the <F>.vimrc</F> file in your home directory.
+Add lines as in the following example:
+<P/>
+<Log><![CDATA[
+if has("syntax")
+  syntax on             " Default to no syntax highlightning 
+endif
+
+" For GAP files
+augroup gap
+  " Remove all gap autocommands
+  au!
+autocmd BufRead,BufNewFile *.g,*.gi,*.gd set filetype=gap comments=s:##\ \ ,m:##\ \ ,e:##\ \ b:#
+
+" I'm using the external program `par' for formating comment lines starting
+" with `##  '. Include these lines only when you have par installed.
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd set formatprg="par w76p4s0j"
+  autocmd BufWritePost,FileWritePost *.g,*.gi,*.gd set formatprg="par w76p0s0j"
+augroup END
+]]></Log>
+<P/>
+See the headers  of the two mentioned files for  additional comments and
+adjust details according to  your personal taste.
+Send comments  and suggestions to <Email>support@gap-system.org</Email>.
+Setup files for <C>emacs</C>/<C>xemacs</C> are contained in the
+<F>etc/emacs</F> subdirectory.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sect:SizeScreen">
+<Heading>Changing the Screen Size</Heading>
+
+<ManSection>
+<Func Name="SizeScreen" Arg='[sz]'/>
+
+<Description>
+Called with no arguments, <Ref Func="SizeScreen"/> returns the size of the
+screen as a list with two entries.
+The first is the length of each line, the second is the number of lines.
+<P/>
+Called with one argument that is a list <A>sz</A>,
+<Ref Func="SizeScreen"/> sets the size of the screen;
+The first entry of <A>sz</A>, if bound, is the length of each line,
+and the second entry of <A>sz</A>, if bound, is the number of lines.
+The values for unbound entries of <A>sz</A> are left unaffected.
+The function returns the new values.
+<P/>
+Note that those parameters can also be set with the command line options
+<C>-x</C> for the line length and <C>-y</C> for the number of lines
+(see Section&nbsp;<Ref Sect="Command Line Options"/>).
+<P/>
+To check/change whether line breaking occurs for files and streams 
+see&nbsp;<Ref Func="PrintFormattingStatus"/>
+and&nbsp;<Ref Func="SetPrintFormattingStatus"/>.
+<P/>
+The line length must be between <M>20</M> and <M>4096</M> characters
+(inclusive) and the number of lines must be at least <M>10</M>.
+Values outside this range will be adjusted to the nearest endpoint of the
+range.
+</Description>
+</ManSection>
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Teaching Mode">
+<Heading>Teaching Mode</Heading>
+
+When using &GAP; in the context of (undergraduate) teaching it is often
+desirable to simplify some of the system output and functionality defaults
+(potentially at the cost of making the printing of objects more expensive).
+This can be achieved by turning on a teaching mode:
+
+<ManSection>
+<Func Name="TeachingMode" Arg='[switch]'/>
+<Description>
+When called with a boolean argument <A>switch</A>, this function will turn
+teaching mode respectively on or off.
+<Example><![CDATA[
+gap> a:=Z(11)^3;
+Z(11)^3
+gap> TeachingMode(true);
+#I  Teaching mode is turned ON
+gap> a;
+ZmodnZObj(8,11)
+gap> TeachingMode(false);
+#I  Teaching mode is turned OFF
+gap> a;
+Z(11)^3
+]]></Example>
+
+At the moment, teaching mode changes the following things
+<P/>
+<List>
+<Mark>Prime Field Elements</Mark>
+<Item>
+Elements of fields of prime order are printed as
+<Ref Func="ZmodnZObj" Label="for two integers"/>
+instead as power of a primitive root.
+</Item>
+<Mark>Quadratic Irrationalities</Mark>
+<Item>
+Elements of a quadratic extension of the rationals are printed using the
+square root <Ref Func="ER"/> instead of using roots of unity.
+</Item>
+<Mark>Creation of some small groups</Mark>
+<Item>
+The group creator functions
+<Ref Func="CyclicGroup"/>,
+<Ref Func="AbelianGroup"/>,
+<Ref Func="ElementaryAbelianGroup"/>, and
+<Ref Func="DihedralGroup"/>
+create by default (if no other representation is specified) not a pc group,
+but a finitely presented group, which makes the generators easier to
+interpret.
+</Item>
+</List>
+
+</Description>
+</ManSection>
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

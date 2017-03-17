@@ -1,0 +1,11 @@
+rm -f gapdoc.txt example.txt example-nc.txt gapdoc-nc.txt
+cat doc/chap{0,1,2,3,4,5,A,B,Bib,Ind}.txt > gapdoc.txt
+cat example/chap{0,1,2,A,B,Bib,Ind}.txt > example.txt
+gap >/dev/null <<EOF
+s:=StringFile("gapdoc.txt");
+FileString("gapdoc-nc.txt", StripEscapeSequences(s));
+s:=StringFile("example.txt");
+FileString("example-nc.txt", StripEscapeSequences(s));
+quit;
+EOF
+

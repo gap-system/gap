@@ -1,0 +1,16 @@
+preamble ""
+postamble "\n"
+group_skip "\n"
+headings_flag 1
+heading_prefix "\\letter "
+numhead_positive "{}"
+symhead_positive "{}"
+item_0  "\n  "
+item_1  "\n    \\sub "
+item_01 "\n    \\sub "
+item_x1 ", "
+item_2  "\n      \\subsub "
+item_12 "\n      \\subsub "
+item_x2 ", "
+page_compositor "--"
+line_max 1000

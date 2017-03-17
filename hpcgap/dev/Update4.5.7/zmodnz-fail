@@ -1,0 +1,31 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/11/15
+! Changed by
+SL
+! Reported by
+Mark Dickinson
+! Type of Change
+Fix: wrong result
+
+! Description
+Division by zero in ZmodnZ (n not prime) produced invalid objects
+
+! Test Code
+gap> x := ZmodnZObj(2,10);
+ZmodnZObj( 2, 10 )
+gap> y := ZmodnZObj(0,10);
+ZmodnZObj( 0, 10 )
+gap> x/y;
+fail
+gap> y/x;
+ZmodnZObj( 0, 10 )
+gap> x/0;
+fail
+gap> 3/y;
+fail
+! Prefetch
+
+! Changeset
+
+! End

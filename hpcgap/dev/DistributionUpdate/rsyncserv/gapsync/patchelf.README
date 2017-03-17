@@ -1,0 +1,6 @@
+'patchelf' is a utility to adjust library paths in executables.
+For details and source code (we use patchelf-0.6) see
+   http://nixos.org/patchelf.html
+The program is distributed under the conditions of the GPL:
+   http://www.gnu.org/licenses/
+

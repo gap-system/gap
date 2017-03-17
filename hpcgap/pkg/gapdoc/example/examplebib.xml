@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+<entry id="CR1"><book>
+  <author>
+    <name><first>Charles W.</first><last>Curtis</last></name>
+    <name><first>Irving</first><last>Reiner</last></name>
+  </author>  
+  <title>Methods of Representation Theory</title>
+  <publisher>John Wiley &amp; Sons</publisher>
+  <year>1981</year>
+  <volume>I</volume>
+  <address>New York, Chichester, Brisbane, Toronto, Singapore</address>
+</book></entry>
+</file>

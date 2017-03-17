@@ -1,0 +1,613 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  algvspc.tex            GAP documentation                Thomas Breuer -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: algvspc.tex,v 4.22 2002/10/04 09:19:52 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright (C) 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<Chapter Label="Vector Spaces and Algebras">
+<Heading>Vector Spaces and Algebras</Heading>
+
+This chapter contains an introduction into vector spaces and
+algebras in &GAP;.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Vector Spaces">
+<Heading>Vector Spaces</Heading>
+<P/>
+A <E>vector space</E> over the field <M>F</M> is an additive group
+that is closed under scalar multiplication with elements in <M>F</M>.
+In &GAP;, only those domains that are
+constructed as vector spaces are regarded as vector spaces.
+In particular, an additive group that does not know about an
+acting domain of scalars is not regarded as a vector space in &GAP;.
+<P/>
+Probably the most common <M>F</M>-vector spaces in &GAP; are so-called
+<E>row spaces</E>.
+They consist of row vectors, that is, lists whose elements lie in <M>F</M>.
+In the following example we compute the vector space spanned by the
+row vectors <C>[ 1, 1, 1 ]</C> and <C>[ 1, 0, 2 ]</C> over the rationals.
+<P/>
+<Example><![CDATA[
+gap> F:= Rationals;;
+gap> V:= VectorSpace( F, [ [ 1, 1, 1 ], [ 1, 0, 2 ] ] );
+<vector space over Rationals, with 2 generators>
+gap> [ 2, 1, 3 ] in V;
+true
+]]></Example>
+<P/>
+The full row space <M>F^n</M> is created by commands like:
+<P/>
+<Example><![CDATA[
+gap> F:= GF( 7 );;
+gap> V:= F^3;   # The full row space over F of dimension 3. 
+( GF(7)^3 )
+gap> [ 1, 2, 3 ] * One( F ) in V;  
+true
+]]></Example>
+<P/>
+In the same way we can also create matrix spaces. Here the short notation
+<C><A>field</A>^[<A>dim1</A>,<A>dim2</A>]</C> can be used:
+<P/>
+<Example><![CDATA[
+gap> m1:= [ [ 1, 2 ], [ 3, 4 ] ];; m2:= [ [ 0, 1 ], [ 1, 0 ] ];;
+gap> V:= VectorSpace( Rationals, [ m1, m2 ] );
+<vector space over Rationals, with 2 generators>
+gap> m1+m2 in V;
+true
+gap> W:= Rationals^[3,2];
+( Rationals^[ 3, 2 ] )
+gap> [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ] ] in W;
+true
+]]></Example>
+<P/>
+A field is naturally a vector space over itself. 
+<P/>
+<Example><![CDATA[
+gap> IsVectorSpace( Rationals );
+true
+]]></Example>
+<P/>
+If <M>\Phi</M> is an algebraic extension of <M>F</M>, then <M>\Phi</M> is
+also a vector space over <M>F</M>
+(and indeed over any subfield of <M>\Phi</M> that contains <M>F</M>).
+This field <M>F</M> is stored in the attribute
+<Ref Func="LeftActingDomain" BookName="ref"/>.
+In &GAP;, the default is to view fields as vector spaces
+over their <E>prime</E> fields.
+By the function <Ref Func="AsVectorSpace" BookName="ref"/>,
+we can view fields as vector spaces over fields other than the prime field.
+<P/>
+<Example><![CDATA[
+gap> F:= GF( 16 );;
+gap> LeftActingDomain( F );
+GF(2)
+gap> G:= AsVectorSpace( GF( 4 ), F );
+AsField( GF(2^2), GF(2^4) )
+gap> F = G;
+true
+gap> LeftActingDomain( G );
+GF(2^2)
+]]></Example>
+<P/>
+A vector space has three important attributes:
+its <E>field</E> of definition,
+its <E>dimension</E> and a <E>basis</E>.
+We already encountered the function 
+<Ref Func="LeftActingDomain" BookName="ref"/> in the example above.
+It extracts the field of definition of a vector space.
+The function <Ref Func="Dimension" BookName="ref"/> provides the dimension
+of the vector space.
+<P/>
+<Example><![CDATA[
+gap> F:= GF( 9 );;
+gap> m:= [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ] ];;
+gap> V:= VectorSpace( F, m );
+<vector space over GF(3^2), with 2 generators>
+gap> Dimension( V );
+2
+gap> W:= AsVectorSpace( GF( 3 ), V );
+<vector space over GF(3), with 4 generators>
+gap> V = W;
+true
+gap> Dimension( W );
+4
+gap> LeftActingDomain( W );
+GF(3)
+]]></Example>
+<P/>
+One of the most important attributes is a <E>basis</E>.
+For a given basis <M>B</M> of <M>V</M>,
+every vector <M>v</M> in <M>V</M> can be expressed uniquely as 
+<M>v = \sum_{b \in B} c_b b</M>, with coefficients <M>c_b \in F</M>.
+<P/>
+In &GAP;, bases are special lists of vectors.
+They are used mainly for the computation of coefficients and linear
+combinations. 
+<P/>
+Given a vector space <M>V</M>, a basis of <M>V</M> is obtained by
+simply applying the function <Ref Func="Basis" BookName="ref"/> to <M>V</M>.
+The vectors that form the basis are extracted from the basis by
+<Ref Func="BasisVectors" BookName="ref"/>. 
+<P/>
+<Example><![CDATA[
+gap> m1:= [ [ 1, 2 ], [ 3, 4 ] ];; m2:= [ [ 1, 1 ], [ 1, 0 ] ];;
+gap> V:= VectorSpace( Rationals, [ m1, m2 ] );
+<vector space over Rationals, with 2 generators>
+gap> B:= Basis( V );
+SemiEchelonBasis( <vector space over Rationals, with 
+2 generators>, ... )
+gap> BasisVectors( Basis( V ) );
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 1 ], [ 2, 4 ] ] ]
+]]></Example>
+<P/>
+The coefficients of 
+a vector relative to a given basis are found by the function
+<Ref Func="Coefficients" BookName="ref"/>.
+Furthermore, linear combinations of the basis vectors
+are constructed using <Ref Func="LinearCombination" BookName="ref"/>.
+<P/>
+<Example><![CDATA[
+gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );
+<vector space over Rationals, with 2 generators>
+gap> B:= Basis( V );
+SemiEchelonBasis( <vector space over Rationals, with 
+2 generators>, ... )
+gap> BasisVectors( Basis( V ) );
+[ [ 1, 2 ], [ 0, 1 ] ]
+gap> Coefficients( B, [ 1, 0 ] );
+[ 1, -2 ]
+gap> LinearCombination( B, [ 1, -2 ] );
+[ 1, 0 ]
+]]></Example>
+<P/>
+In the above examples we have seen that &GAP; often chooses the basis
+it wants to work with. It is also possible to construct bases with
+prescribed basis vectors by giving a list of these vectors as second argument 
+to <Ref Func="Basis" BookName="ref"/>.
+<P/>
+<Example><![CDATA[
+gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );; 
+gap> B:= Basis( V, [ [ 1, 0 ], [ 0, 1 ] ] );
+SemiEchelonBasis( <vector space over Rationals, with 2 generators>, 
+[ [ 1, 0 ], [ 0, 1 ] ] )
+gap> Coefficients( B, [ 1, 2 ] );
+[ 1, 2 ]
+]]></Example>
+<P/>
+We can construct subspaces and quotient spaces of vector spaces. The
+natural projection map (constructed by
+<Ref Func="NaturalHomomorphismBySubspace" BookName="ref"/>),
+connects a vector space with its quotient space.
+<P/>
+<Example><![CDATA[
+gap> V:= Rationals^4;
+( Rationals^4 )
+gap> W:= Subspace( V, [ [ 1, 2, 3, 4 ], [ 0, 9, 8, 7 ] ] );
+<vector space over Rationals, with 2 generators>
+gap> VmodW:= V/W;
+( Rationals^2 )
+gap> h:= NaturalHomomorphismBySubspace( V, W );
+<linear mapping by matrix, ( Rationals^4 ) -> ( Rationals^2 )>
+gap> Image( h, [ 1, 2, 3, 4 ] );
+[ 0, 0 ]
+gap> PreImagesRepresentative( h, [ 1, 0 ] );
+[ 1, 0, 0, 0 ]
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Algebras">
+<Heading>Algebras</Heading>
+
+If a multiplication is defined for the elements of a vector space,
+and if the vector space is closed under this multiplication then it is
+called an <E>algebra</E>. For example, every field is an algebra:
+<P/>
+<Example><![CDATA[
+gap> f:= GF(8); IsAlgebra( f );
+GF(2^3)
+true
+]]></Example>
+<P/>
+One of the most important classes of algebras are sub-algebras of matrix
+algebras. On the set of all <M>n \times n</M> matrices over a field <M>F</M> 
+it is possible to define a multiplication in many ways.
+The most frequent are the ordinary matrix multiplication and the Lie
+multiplication.
+<P/>
+Each matrix constructed as <M>[ <A>row1</A>, <A>row2</A>, \ldots ]</M>
+is regarded by &GAP; as an <E>ordinary</E> matrix,
+its multiplication is the ordinary associative matrix multiplication.
+The sum and product of two ordinary matrices are again ordinary matrices.
+<P/>
+The <E>full</E> matrix associative algebra can be created as follows:
+<P/>
+<Example><![CDATA[
+gap> F:= GF( 9 );;
+gap> A:= F^[3,3];
+( GF(3^2)^[ 3, 3 ] )
+]]></Example>
+<P/>
+An algebra can be constructed from generators using the function
+<Ref Func="Algebra" BookName="ref"/>.
+It takes as arguments the field of coefficients and a list of generators.
+Of course the coefficient field and the generators must fit together;
+if we want to construct an algebra of ordinary matrices,
+we may take the field generated by the entries of the generating matrices,
+or a subfield or extension field.
+<P/>
+<Example><![CDATA[
+gap> m1:= [ [ 1, 1 ], [ 0, 0 ] ];; m2:= [ [ 0, 0 ], [ 0, 1 ] ];;
+gap> A:= Algebra( Rationals, [ m1, m2 ] );
+<algebra over Rationals, with 2 generators>
+]]></Example>
+<P/>
+An interesting class of algebras for which many special algorithms
+are implemented is the class of <E>Lie algebras</E>.
+They arise for example as algebras of matrices whose product is defined
+by the Lie bracket <M>[ A, B ] = A * B - B * A</M>,
+where <M>*</M> denotes the ordinary matrix product.
+<P/>
+Since the multiplication of objects in &GAP; is always assumed to be
+the operation <C>*</C> (resp. the infix operator <C>*</C>), 
+and since there is already the <Q>ordinary</Q> matrix product defined for
+ordinary matrices, as mentioned above,
+we must use a different construction for matrices that occur as elements
+of Lie algebras.
+Such Lie matrices can be constructed by
+<Ref Func="LieObject" BookName="ref"/> from ordinary matrices,
+the sum and product of Lie matrices are again Lie matrices.
+<P/>
+<Example><![CDATA[
+gap> m:= LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ); 
+LieObject( [ [ 1, 1 ], [ 1, 1 ] ] )
+gap> m*m;
+LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+gap> IsOrdinaryMatrix( m1 ); IsOrdinaryMatrix( m );
+true
+false
+gap> IsLieMatrix( m1 ); IsLieMatrix( m );
+false
+true
+]]></Example>
+<P/>
+Given a field <C>F</C> and a list <C>mats</C> of Lie objects over <C>F</C>,
+we can construct the Lie algebra generated by <C>mats</C> using the function
+<Ref Func="Algebra" BookName="ref"/>. 
+Alternatively, if we do not want to be bothered with the function
+<Ref Func="LieObject" BookName="ref"/>,
+we can use the function <Ref Func="LieAlgebra" BookName="ref"/>
+that takes a field
+and a list of ordinary matrices, and constructs the Lie algebra generated
+by the corresponding Lie matrices.
+Note that this means that the ordinary matrices used in the call of 
+<Ref Func="LieAlgebra" BookName="ref"/> are not contained in the returned
+Lie algebra.
+<P/>
+<Example><![CDATA[
+gap> m1:= [ [ 0, 1 ], [ 0, 0 ] ];;
+gap> m2:= [ [ 0, 0 ], [ 1, 0 ] ];; 
+gap> L:= LieAlgebra( Rationals, [ m1, m2 ] );
+<Lie algebra over Rationals, with 2 generators>
+gap> m1 in L;
+false
+]]></Example>
+<P/>
+A second way of creating an algebra is by specifying a multiplication table.
+Let <M>A</M> be a finite dimensional algebra with basis 
+<M>(x_1, x_2, \ldots, x_n)</M>,
+then for <M>1 \leq i, j \leq n</M> the product <M>x_i x_j</M> is
+a linear combination of basis elements, i.e., there are <M>c_{ij}^k</M> in the
+ground field such that
+<M>x_i x_j = \sum_{k=1}^n c_{ij}^k x_k.</M>
+It is not difficult to show that the constants <M>c_{ij}^k</M>
+determine the multiplication completely. Therefore, the <M>c_{ij}^k</M> are
+called <E>structure constants</E>. In &GAP; we can create a finite dimensional
+algebra by specifying an array of structure constants.
+<P/>
+In &GAP; such a table of structure constants is represented using 
+lists. The obvious way to do this
+would be to construct a <Q>three-dimensional</Q> list <C>T</C> such that  
+<C>T[i][j][k]</C> equals <M>c_{ij}^k</M>.
+But it often happens that many of these constants vanish.
+Therefore a more complicated structure is used in order to be able to 
+omit the zeros.
+A multiplication table of an <M>n</M>-dimensional algebra is an 
+<M>n \times n</M> array <C>T</C> such that <C>T[i][j]</C> describes the product
+of the <C>i</C>-th and the <C>j</C>-th basis element. This product is encoded
+in the following way. The entry <C>T[i][j]</C> is a list of two elements. 
+The first of these is a list of
+indices <M>k</M> such that <M>c_{ij}^k</M> is nonzero.
+The second list contains the corresponding constants <M>c_{ij}^k</M>.
+Suppose, for example,  that <C>S</C> is the table 
+of an algebra with basis <M>(x_1, x_2, \ldots, x_8)</M> and that <C>S[3][7]</C> 
+equals <C>[ [ 2, 4, 6 ], [ 1/2, 2, 2/3 ] ]</C>.
+Then in the algebra we have the relation 
+<M>x_3 x_7 = (1/2) x_2 + 2 x_4 + (2/3) x_6.</M>
+Furthermore, if <C>S[6][1] = [ [  ], [  ] ]</C> then the product of the
+sixth and first basis elements is zero.
+<P/>
+Finally two numbers are added to the table. The first number can be
+1, -1, or 0. If it is 1, then the table is known to be symmetric,
+i.e., <M>c_{ij}^k = c_{ji}^k</M>. If this number is -1, then the table is
+known to be antisymmetric (this happens for instance when the algebra
+is a Lie algebra).
+The remaining case, 0, occurs in all other cases. 
+The second number that is added is the zero element of the field over 
+which the algebra is defined.  
+<P/>
+Empty structure constants tables are created by the function
+<Ref Func="EmptySCTable" BookName="ref"/>, which takes a dimension <M>d</M>,
+a zero element <M>z</M>,
+and optionally one of the strings <C>"symmetric"</C>, <C>"antisymmetric"</C>,
+and returns an empty structure constants table <M>T</M> corresponding to
+a <M>d</M>-dimensional algebra over a field with zero element <M>z</M>.
+Structure constants can be entered into the table <M>T</M> using the function
+<Ref Func="SetEntrySCTable" BookName="ref"/>.
+It takes four arguments, namely <M>T</M>, two indices <M>i</M> and <M>j</M>,
+and a list of the form
+<M>[ c_{ij}^{{k_1}}, k_1, c_{ij}^{{k_2}}, k_2, \ldots ]</M>.
+In this call to <C>SetEntrySCTable</C>,
+the product of the <M>i</M>-th and the <M>j</M>-th basis vector
+in any algebra described by <M>T</M> is set to
+<M>\sum_l c_{ij}^{{k_l}} x_{{k_l}}</M>.
+(Note that in the empty table, this product was zero.)
+If <M>T</M> knows that it is (anti)symmetric, then at the same time also
+the product of the <M>j</M>-th and the <M>i</M>-th basis vector is set
+appropriately.
+<P/>
+In the following example we temporarily increase the line length limit from
+its default value 80 to 82 in order to make the long output expression fit
+into one line.
+<P/>
+<Example><![CDATA[
+gap> T:= EmptySCTable( 2, 0, "symmetric" );
+[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
+  [ [ [  ], [  ] ], [ [  ], [  ] ] ], 1, 0 ]
+gap> SetEntrySCTable( T, 1, 2, [1/2,1,1/3,2] );  T;
+[ [ [ [  ], [  ] ], [ [ 1, 2 ], [ 1/2, 1/3 ] ] ], 
+  [ [ [ 1, 2 ], [ 1/2, 1/3 ] ], [ [  ], [  ] ] ], 1, 0 ]
+]]></Example>
+<P/>
+If we have defined a structure constants table, then we can construct
+the corresponding algebra by
+<Ref Func="AlgebraByStructureConstants" BookName="ref"/>.
+<P/>
+<Example><![CDATA[
+gap> A:= AlgebraByStructureConstants( Rationals, T );
+<algebra of dimension 2 over Rationals>
+]]></Example>
+<P/>
+If we know that a structure constants table defines a Lie algebra,
+then we can construct the corresponding Lie algebra by
+<Ref Func="LieAlgebraByStructureConstants" BookName="ref"/>;
+the algebra returned by this function knows that it is a Lie algebra,
+so &GAP; need not check the Jacobi identity.
+<P/>
+<Example><![CDATA[
+gap> T:= EmptySCTable( 2, 0, "antisymmetric" );;
+gap> SetEntrySCTable( T, 1, 2, [2/3,1] );
+gap> L:= LieAlgebraByStructureConstants( Rationals, T );
+<Lie algebra of dimension 2 over Rationals>
+]]></Example>
+<P/>
+In &GAP; an algebra is naturally a vector space. Hence all the functionality
+for vector spaces is also available for algebras.
+<P/>
+<Example><![CDATA[
+gap> F:= GF(2);;
+gap> z:= Zero( F );;  o:= One( F );;
+gap> T:= EmptySCTable( 3, z, "antisymmetric" );;
+gap> SetEntrySCTable( T, 1, 2, [ o, 1, o, 3 ] );
+gap> SetEntrySCTable( T, 1, 3, [ o, 1 ] );
+gap> SetEntrySCTable( T, 2, 3, [ o, 3 ] );
+gap> A:= AlgebraByStructureConstants( F, T );
+<algebra of dimension 3 over GF(2)>
+gap> Dimension( A );
+3
+gap> LeftActingDomain( A );
+GF(2)
+gap> Basis( A );
+CanonicalBasis( <algebra of dimension 3 over GF(2)> )
+]]></Example>
+<P/>
+Subalgebras and ideals of an algebra can be constructed by specifying
+a set of generators for the subalgebra or ideal. The quotient space
+of an algebra by an ideal is naturally an algebra itself.
+<P/>
+In the following example we temporarily increase the line length limit from
+its default value 80 to 81 in order to make the long output expression fit
+into one line.
+<P/>
+<Example><![CDATA[
+gap> m:= [ [ 1, 2, 3 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ];;
+gap> A:= Algebra( Rationals, [ m ] );;
+gap> subA:= Subalgebra( A, [ m-m^2 ] );
+<algebra over Rationals, with 1 generators>
+gap> Dimension( subA );
+2
+gap> idA:= Ideal( A, [ m-m^3 ] );
+<two-sided ideal in <algebra of dimension 3 over Rationals>, 
+  (1 generators)>
+gap> Dimension( idA ); 
+2
+gap> B:= A/idA;
+<algebra of dimension 1 over Rationals>
+]]></Example>
+<P/>
+The call <C>B:= A/idA</C> creates a new algebra that does not <Q>know</Q> about
+its connection with <C>A</C>. If we want to connect an algebra with its factor
+via a homomorphism, then we first have to create the homomorphism
+(<Ref Func="NaturalHomomorphismByIdeal" BookName="ref"/>).
+After this we create the factor algebra from the homomorphism by
+the function <Ref Func="ImagesSource" BookName="ref"/>. In the next example
+we divide an algebra <C>A</C> by its radical and lift the central idempotents
+of the factor to the original algebra <C>A</C>.
+<P/>
+<Example><![CDATA[
+gap> m1:=[[1,0,0],[0,2,0],[0,0,3]];;
+gap> m2:=[[0,1,0],[0,0,2],[0,0,0]];;
+gap> A:= Algebra( Rationals, [ m1, m2 ] );;
+gap> Dimension( A );
+6
+gap> R:= RadicalOfAlgebra( A );
+<algebra of dimension 3 over Rationals>
+gap> h:= NaturalHomomorphismByIdeal( A, R );
+<linear mapping by matrix, <algebra of dimension 
+6 over Rationals> -> <algebra of dimension 3 over Rationals>>
+gap> AmodR:= ImagesSource( h );
+<algebra of dimension 3 over Rationals>
+gap> id:= CentralIdempotentsOfAlgebra( AmodR );
+[ v.3, v.2+(-3)*v.3, v.1+(-2)*v.2+(3)*v.3 ]
+gap> PreImagesRepresentative( h, id[1] );
+[ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ]
+gap> PreImagesRepresentative( h, id[2] );
+[ [ 0, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 0 ] ]
+gap> PreImagesRepresentative( h, id[3] );
+[ [ 1, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+]]></Example>
+<P/>
+Structure constants tables for the simple Lie algebras are present in &GAP;.
+They can be constructed using the function
+<Ref Func="SimpleLieAlgebra" BookName="ref"/>. The Lie 
+algebras constructed by this function come with a root system attached.
+<P/>
+<Example><![CDATA[
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
+<Lie algebra of dimension 14 over Rationals>
+gap> R:= RootSystem( L );
+<root system of rank 2>
+gap> PositiveRoots( R );
+[ [ 2, -1 ], [ -3, 2 ], [ -1, 1 ], [ 1, 0 ], [ 3, -1 ], [ 0, 1 ] ]
+gap> CartanMatrix( R );
+[ [ 2, -1 ], [ -3, 2 ] ]
+]]></Example>
+<P/>
+Another example of algebras is provided by <E>quaternion algebras</E>.
+We define a quaternion algebra over an extension field of the
+rationals, namely the field generated by <M>\sqrt{{5}}</M>.
+(The number <C>EB(5)</C> is equal to <M>1/2 (-1+\sqrt{{5}})</M>.
+The field is printed as <C>NF(5,[ 1, 4 ])</C>.)
+<P/>
+<Example><![CDATA[
+gap> b5:= EB(5);
+E(5)+E(5)^4
+gap> q:= QuaternionAlgebra( FieldByGenerators( [ b5 ] ) );
+<algebra-with-one of dimension 4 over NF(5,[ 1, 4 ])>
+gap> gens:= GeneratorsOfAlgebra( q );
+[ e, i, j, k ]
+gap> e:= gens[1];; i:= gens[2];; j:= gens[3];; k:= gens[4];;
+gap> IsAssociative( q );
+true
+gap> IsCommutative( q );
+false
+gap> i*j; j*i;
+k
+(-1)*k
+gap> One( q );
+e
+]]></Example>
+<P/>
+If the coefficient field is a real subfield of the complex numbers
+then the quaternion algebra is in fact a division ring.
+<P/>
+<Example><![CDATA[
+gap> IsDivisionRing( q );
+true
+gap> Inverse( e+i+j );
+(1/3)*e+(-1/3)*i+(-1/3)*j
+]]></Example>
+<P/>
+So &GAP; knows about this fact.
+As in any ring, we can look at groups of units.
+(The function <Ref Func="StarCyc" BookName="ref"/> used below computes
+the unique algebraic
+conjugate of an element in a quadratic subfield of a cyclotomic field.)
+<P/>
+<Example><![CDATA[
+gap> c5:= StarCyc( b5 );
+E(5)^2+E(5)^3
+gap> g1:= 1/2*( b5*e + i - c5*j );
+(1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j
+gap> Order( g1 );
+5
+gap> g2:= 1/2*( -c5*e + i + b5*k );
+(-1/2*E(5)^2-1/2*E(5)^3)*e+(1/2)*i+(1/2*E(5)+1/2*E(5)^4)*k
+gap> Order( g2 );
+10
+gap> g:=Group( g1, g2 );;
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+  [ (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j, 
+  (-1/2*E(5)^2-1/2*E(5)^3)*e+(1/2)*i+(1/2*E(5)+1/2*E(5)^4)*k ]
+gap> Size( g );
+120
+gap> IsPerfect( g );
+true
+]]></Example>
+<P/>
+Since there is only one perfect group of order 120, up to isomorphism,
+we see that the group <C>g</C> is isomorphic to <M>SL_2(5)</M>.
+As usual, a permutation representation of the group can be constructed
+using a suitable action of the group.
+<P/>
+<Example><![CDATA[
+gap> cos:= RightCosets( g, Subgroup( g, [ g1 ] ) );;
+gap> Length( cos );
+24
+gap> hom:= ActionHomomorphism( g, cos, OnRight );;
+gap> im:= Image( hom );
+Group([ (2,3,5,9,15)(4,7,12,8,14)(10,17,23,20,24)(11,19,22,16,13), 
+  (1,2,4,8,3,6,11,20,17,19)(5,10,18,7,13,22,12,21,24,15)(9,16)(14,23) ])
+gap> Size( im );
+120
+]]></Example>
+<P/>
+To get a matrix representation of <C>g</C> or of the whole algebra <C>q</C>,
+we must specify a basis of the vector space on which the algebra acts,
+and compute the linear action of elements w.r.t. this basis.
+<P/>
+<Example><![CDATA[
+gap> bas:= CanonicalBasis( q );;
+gap> BasisVectors( bas );
+[ e, i, j, k ]
+gap> op:= OperationAlgebraHomomorphism( q, bas, OnRight );
+<op. hom. AlgebraWithOne( NF(5,[ 1, 4 ]), 
+[ e, i, j, k ] ) -> matrices of dim. 4>
+gap> ImagesRepresentative( op, e );
+[ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]
+gap> ImagesRepresentative( op, i );
+[ [ 0, 1, 0, 0 ], [ -1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ]
+gap> ImagesRepresentative( op, g1 );
+[ [ 1/2*E(5)+1/2*E(5)^4, 1/2, -1/2*E(5)^2-1/2*E(5)^3, 0 ], 
+  [ -1/2, 1/2*E(5)+1/2*E(5)^4, 0, -1/2*E(5)^2-1/2*E(5)^3 ], 
+  [ 1/2*E(5)^2+1/2*E(5)^3, 0, 1/2*E(5)+1/2*E(5)^4, -1/2 ], 
+  [ 0, 1/2*E(5)^2+1/2*E(5)^3, 1/2, 1/2*E(5)+1/2*E(5)^4 ] ]
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Further Information about Vector Spaces and Algebras">
+<Heading>Further Information about Vector Spaces and Algebras</Heading>
+
+More information about vector spaces can be found in
+Chapter&nbsp;<Ref Chap="Vector Spaces" BookName="ref"/>.
+Chapter&nbsp;<Ref Chap="Algebras" BookName="ref"/> deals with the
+functionality for general algebras.
+Furthermore, concerning special functions for Lie algebras,
+there is Chapter&nbsp;<Ref Chap="Lie Algebras" BookName="ref"/>.
+
+</Section>
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

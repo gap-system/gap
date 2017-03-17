@@ -1,0 +1,98 @@
+<Chapter Label="Serialization support">
+  <Heading>Serialization support</Heading>
+
+
+HPC-GAP has support to serialize most GAP data. While functions in particular cannot be serialized, it is possible to
+serialize all primitive types (booleans, integers, cyclotomics, permutations, floats, etc.) as well as all lists and
+records.
+
+Custom serialization support can be written for data objects, positional objects, and component objects; serialization
+of compressed vectors is already supported by the standard library.
+
+  <Section Label="SerializeToNativeString">
+    <Heading>SerializeToNativeString(obj)</Heading>
+
+<C>SerializeToNativeString</C> takes the object passed as an argument and turns it into a string, from which a copy of
+the original can be extracted using <C>DeserializeNativeString</C>.
+
+  </Section>
+  <Section Label="DeserializeNativeString">
+    <Heading>DeserializeNativeString(str)</Heading>
+
+<C>DeserializeNativeString</C> reverts the serialization process.
+
+Example:
+
+<Example><![CDATA[
+gap> DeserializeNativeString(SerializeToNativeString([1,2,3]));
+[ 1, 2, 3 ]
+]]></Example>
+
+  </Section>
+  <Section Label="InstallTypeSerializationTag">
+    <Heading>InstallTypeSerializationTag(type, tag)</Heading>
+
+<C>InstallTypeSerializationTag</C> allows the serialization of data objects, positional objects, and component objects.
+The value of <C>tag</C> must be unique for each type; it can be a string or integer. Non-negative integers are reserved
+for use by the standard library; users should use negative integers or strings instead.
+
+Objects of such a type are serialized in a straightforward way: During serialization, data objects are converted into
+byte streams, positional objects into lists, and component objects into records. These objects are then serialized along
+with their tags; deserialization uses the type corresponding to the tag in conjunction with <C>Objectify</C> to
+reconstruct a copy of the original object.
+
+Note that this functionality may be inadequate for objects that have complex data structures attached that are not meant
+to be replicated. The following alternative is meant for such objects.
+
+  </Section>
+  <Section Label="InstallSerializer">
+    <Heading>InstallSerializer(description, filters, method)</Heading>
+
+The more general <C>InstallSerializer</C> allows for arbitarily complex serialization code. It installs <C>method</C> as
+the method to serialize objects matching <C>filters</C>; <C>description</C> has the same role as for
+<C>InstallMethod</C>.
+
+The method must return a plain list matching a specific format. The first element must be a non-negative integer, the
+second must be a string descriptor that is unique to the serializer; these can then be followed by an arbitrary number
+of arguments.
+
+As many of the arguments (starting with the third element of the list) as specified by the first element of the list
+will be converted from their object representation into a serializable representation. Data objects will be converted
+into untyped data objects, positional objects will be converted into plain lists, and component objects into records.
+Conversion will not modify the objects in place, but work on copies. The remaining arguments will remain untouched.
+
+Upon deserialization, these arguments will be passed to a function specified by the second element of the list.
+
+Example:
+
+<Example><![CDATA[
+InstallSerializer("8-bit vectors", [ Is8BitVectorRep ], function(obj)
+  return [1, "Vec8Bit", obj, Q_VEC8BIT(obj), IS_MUTABLE_OBJ(obj)];
+end);
+]]></Example>
+
+Here, <C>obj</C> will be converted into its underlying representation, while the remaining arguments are left alone.
+<C>"Vec8Bit"</C> is the name that is used to look up the deserializer function.
+
+  </Section>
+  <Section Label="InstallDeserializer">
+    <Heading>InstallDeserializer(descriptor, func)</Heading>
+
+The <C>descriptor</C> value must be the same as the second element of the list returned by the serializer; <C>func</C>
+must be a function that takes as many arguments as there were arguments after the second element of that list. For
+deserialization, this function is invoked and needs to return the deserialized object constructed from the arguments.
+
+Example:
+
+<Example><![CDATA[
+InstallDeserializer("Vec8Bit", function(obj, q, mut)
+  SET_TYPE_OBJ(obj, TYPE_VEC8BIT(q, mut));
+  return obj;
+end);
+]]></Example>
+
+Here, the untyped <C>obj</C> that was passed to the deserializer needs to be given the correct type, which is calculated
+from <C>q</C> and <C>mut</C>.
+
+  </Section>
+</Chapter>

@@ -1,0 +1,436 @@
+This is a list of all accepted modules.
+If no maintainer is named, authors are maintainers as well.
+This files is a ``for the record'' repository and should only be appended
+to. Modules also are listed in the manual.
+
+Name: Permutation Group Pcgs
+Proposer: Alexander, 19-Feb-01
+Seconder: Steve, 20-Feb-01
+Files: pcgsperm
+Author: Heiko Theißen
+Maintainer: Alexander Hulpke
+Description: This code provides the solvable permgroup stabilizer chain and
+(modulo) pcgs data structures for permutation groups.
+
+Name: Dixon-Schneider Algorithm
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: ctblgrp, ctblperm,ctblpc
+Author: Alexander Hulpke
+Description: Dixon/Schneider algorithm for ordinary character tables of finite groups.
+
+Name: Classes in nonsolvable groups
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: classhom
+Author: Alexander Hulpke
+Description: Conjugacy classes for nonsolvable groups (homomorphism
+principle/subgroups of wreath products)
+
+Name: Homomorphism search
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: morpheus
+Author: Alexander Hulpke
+Description: Search for Homomorphisms between two groups.
+
+Name: Subgroup lattice for solvable groups
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: grppclatt
+Author: Alexander Hulpke
+Description: (Invariant) subgroups of a solvable group by homomorphism
+principle
+
+Name: Transitive groups library
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: trans/*
+Author: Alexander Hulpke
+Description: Access to the library of transitive permutation groups of small
+degree.
+
+Name: Cosets and Double Cosets
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: csetgrp,csetpc,csetperm
+Author: Alexander Hulpke
+Description: Basic functions for cosets and to compute double cosets
+
+Name: Factor groups
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: factgrp
+Author: Alexander Hulpke
+Description: (Heuristic) routines to compute faithful permutation
+representations of factor groups, in particular for nonsolvable permutation
+groups.
+
+Name: Homomorphisms for finitely presented groups
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: ghomfp
+Author: Alexander Hulpke
+Description: Homomorphism functions for finitely presented groups, using
+rewriting
+
+Name: Primitive groups library
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: prim/*
+Author: Heiko Theißen, Colva Roney-Dougal
+Maintainer: Colva Roney-Dougal
+Description: Access to the library of primitive permutation groups of small
+degree.
+
+Name: Partition Backtrack algorithm
+Proposer: Alexander, 9-Apr-01
+Seconder: Frank, 24-Apr-01
+Files: stbcbckt
+Author: Heiko Theißen
+Maintainer: Alexander Hulpke
+Description: Backtrack algorithm for finding subgroups or elements of
+permutation groups.
+
+Name: 1-Cohomology and Complements 
+Proposer: Alexander, 9-Apr-01
+Seconder: Steve, 23-May-01
+Files: onecohom,grppccom,grpcomple
+Author: Frank Celler and Alexander Hulpke
+Maintainer: Alexander Hulpke
+Description: Routines for 1-cohomology and complements for solvable normal
+subgroups.
+
+Name: Rational Functions
+Proposer: Alexander, 9-Apr-01
+Seconder: Steve, 23-May-01
+Files: ratfun, ratfunul, ratfun1, polyfinf, polyrat, ringpoly, upoly,
+Author: Frank Celler and Alexander Hulpke
+Maintainer: Alexander Hulpke
+Description: Rational Functions and Polynomials, Arithmetic and
+Factorization
+
+Name: Subgroup lattice
+Proposer: Alexander, 9-Apr-01
+Seconder: Steve, 23-May-01
+Files: grplatt
+Author: Martin Schönert and Alexander Hulpke
+Maintainer: Alexander Hulpke
+Description: Cyclic extension algorithm and search for perfect subgroups.
+Calculation of normal subgroups
+
+Name: Group actions
+Proposer: Alexander, 9-Apr-01
+Seconder: Steve, 23-May-01
+Files: oprt,oprtperm,oprtpcgs,dict
+Author: Heiko Theißen and Alexander Hulpke
+Maintainer: Alexander Hulpke
+Description: Methods for orbits, stabilizers, action representatives
+
+Name: Finitely presented groups
+Proposer: Alexander, 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: grpfp
+Author: Volkmar Felsch, Alexander Hulpke, Martin Schönert
+Maintainer: Alexander Hulpke
+Description: Methods for subgroups and elements of finitely presented
+groups (excludes subgroup presentations and Tietze transformations).
+
+Name: Subgroup presentations
+Proposer: Alexander (after discussion with author), 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: sgpres
+Author: Volkmar Felsch
+Maintainer: Werner Nickel
+Description: Subgroup presentations by rewriting.
+
+Name: Tietze transformations
+Proposer: Alexander (after discussion with author), 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: tietze
+Author: Volkmar Felsch
+Maintainer: Werner Nickel
+Description: Tietze transformations
+
+Name: Stabilizer Chains
+Proposer: Alexander, 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: stbc
+Author: Ákos Seress, Heiko Theißen
+Maintainer: Ákos Seress, Alexander Hulpke
+Description: Routines for stabilizer chains
+
+Name: Permutation group homomorphisms
+Proposer: Alexander, 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: ghomperm without the function `RelatorsPermGroupHom'
+Author: Ákos Seress, Heiko Theißen
+Maintainer: Ákos Seress, Alexander Hulpke
+Description: Routines for stabilizer chains
+
+Name: Random Schreier-Sims
+Proposer: Alexander, 20-Apr-01 (after discussion with author)
+Seconder: Steve, 23-May-01
+Files: stbcrand
+Author: Ákos Seress
+Description: Random Schreier-Sims and verification routine.
+
+Name: Permutation group composition series
+Proposer: Alexander, 20-Apr-01 (after discussion with author)
+Seconder: Steve, 23-May-01
+Files: stbcrand
+Author: Ákos Seress
+Description: Composition series for permutation groups, PCore, Radical
+
+Name: Multiplier and Schur cover
+Proposer: Alexander, 20-Apr-01
+Seconder: Steve, 23-May-01
+Files: schur
+Author: Werner Nickel and Alexander Hulpke
+Description: Calculation of multiplier, Schur Cover epimorphism.
+
+Name: The Help System
+Proposer: Frank L., 19-June-01
+Seconder: Alexander, 19-June-01
+Files: helpbase, helpview, helpdef, pager
+Author: Frank Lübeck (replacing the file help.g by Frank Celler)
+Maintainer: Frank Lübeck
+Description: Interface between the GAP help system, manual books and viewer.
+
+Name: Strings and Characters
+Proposer: Frank L., 19-June-01
+Seconder: Alexander, 19-June-01
+Files: lib/string.* src/string.* + corresp. code in other kernel packages
+Authors: Martin Schönert, Frank Celler, Thomas Breuer, Frank Lübeck
+Maintainer: Frank Lübeck
+Description: Strings, characters and utilities.
+
+Name: Classical Groups
+Proposer: Frank L., 22-June-01
+Seconder: Alexander, 22-June-01
+Files: lib/upolyirr lib/grpffmat grp/classical
+Author: Thomas Breuer, Frank Celler, Stefan Kohl, Frank Lübeck, Heiko Theißen
+Maintainer: Thomas Breuer, Stefan Kohl, Frank Lübeck
+Description: Classical groups as matrix groups and specialized functions for
+             them.
+
+Name: Kernel
+Proposer: Frank L., 22-June-01
+Seconder: Alexander, 22-June-01
+Files: all in src/* which are not clearly part of another module
+Authors: Frank Celler, Steve Linton, Frank Lübeck, Werner Nickel, Martin
+Schönert
+Maintainers: Steve Linton, Frank Lübeck, Werner Nickel
+Description: Interpreter of GAP-language, user interface, memory management,
+             basic data structures and basic operations for them
+
+Name:        Special Pcgs for finite pc groups
+Proposer:    Bettina Eick
+Files:       pcgsspec
+Authors:     Bettina Eick
+Maintainers: Bettina Eick
+Description: This module contains an algorithm to determine a special
+             pcgs for a finite pc group.
+
+Name:        Automorphism groups of finite pc groups
+Proposer:    Bettina Eick
+Files:       grppcaut
+Authors:     Bettina Eick
+Maintainers: Werner Nickel
+Description: This module contains an algorithm to determine the automorphism
+             group of a finite pc group. The implementation follows the ideas
+             of Micheal Smith.
+
+Name:        Twocohomology and extensions of finite pc groups
+Proposer:    Bettina Eick
+Files:       grppcext, twocohom
+Authors:     Bettina Eick
+Maintainers: Bettina Eick
+Description: This module contains methods to compute the second cohomology
+             group and extensions of finite pc groups.
+
+Name:        Irreducible Modules over finite fields for finite pc groups
+Proposer:    Bettina Eick
+Files:       grppcrep
+Authors:     Bettina Eick
+Maintainers: Bettina Eick
+Description: This module contains Plesken's algorithm to compute the
+             irreducible representations of a finite pc group over a
+             finite field.
+
+Name:        Isomorphism testing with random methods
+Proposer:    Bettina Eick
+Files:       randiso, randiso2
+Authors:     Hans Ulrich Besche, Bettina Eick
+Maintainers: Hans Ulrich Besche, Bettina Eick
+Description: This module contains an algorithm to test isomorphism of
+             pc groups using a random method.
+
+Name:        Properties and attributes of finite pc groups
+Proposer:    Bettina Eick
+Files:       grppcprp, grppcatr
+Authors:     Frank Celler, Bettina Eick
+Maintainers: Werner Nickel
+Description: This module contains algorithm to test certain properties
+             and compute certain attributes of finite pc groups.
+
+Name:        Intersection of subgroups of finite pc groups
+Proposer:    Bettina Eick
+Files:       grppcint
+Authors:     Frank Celler, Bettina Eick
+Maintainers: Werner Nickel
+Description: This module contains an algorithm to compute the intersection
+             of subgroups of finite pc groups.
+
+Name:        Finitely presented monoids and semigroups
+Proposer:    Isabel Araújo, 15-Jun-01
+Seconder:    Robert Morse, 22-Jun-01
+Files:       kbsemi, orders,  fpmon, fpsemi, rwssmg, tcsemi
+Authors:     Isabel Araújo, Derek Holt, Alexander Hulpke, 
+             Götz Pfeiffer, Andrew Solomon 
+Maintainers: James Mitchell
+Description: Code for dealing with finitely presented semigroups and
+             monoids, including the implementation of Knuth-Bendix 
+             and Todd-Coxeter.
+
+Name:        Documentation Utilities
+Proposer:    Greg G., 20-June-01
+Seconder:    Frank L., 17-August-01
+Files:       lib/helpt2t, doc/{README,make_doc,gapmacro.tex,ext/document.tex},
+             HOWTOS/manual.HOWTO, etc/{buildman.pe,convert.pl}, pkg/example/
+Authors:     Frank Celler, Heiko Theißen, Alexander Hulpke, Willem de Graaf,   
+             Steve Linton, Werner Nickel, Greg Gamble
+Maintainer:  Greg Gamble
+Description: Elements that produce the on-line text help in GAP, the TeX-
+             produced manuals (.dvi, .ps, .pdf) and HTML manuals, and the
+             documentation of how these work.
+
+Name:        Binary Relations
+Proposer:    Robert F. Morse 21-May-01
+Seconder:    Andrew Solomon, 21-May-01; Edmund Robertson 22-May-01
+Files:       relation
+Authors:     Andrew Solomon, Robert F. Morse
+Maintainer:  Robert F. Morse
+Description: This library code provides support for binary relations and 
+             equivalence relations.
+
+Name:        Congruences of magmas, semigroups and monoids
+Proposer:    Robert F. Morse 21-May 21-01
+Seconder:    Andrew Solomon, 21-May-01; Edmund Robertson 22-May-01
+Files:       mgmcong, semicong
+Authors:     Andrew Solomon, Robert F. Morse
+Maintainer:  Robert F. Morse
+Description: This library code computes congruences for a set with one 
+             binary operator. Faster methods are used when 
+	     associativity is known.
+
+Name:        Semigroup relations
+Proposer:    Robert F. Morse 21-May-01
+Seconder:    Andrew Solomon, 21-May-01; Edmund Robertson 22-May-01
+Files:       semirel
+Authors:     Andrew Solomon, Isabel Araújo, Robert F. Morse
+Maintainer:  Robert F. Morse
+Description: This library code computes Green's relations of semigroups.
+
+Name:        Transformation semigroups
+Proposer:    Robert F. Morse May 21, 2001
+Seconder:    Andrew Solomon, 21-May-01; Edmund Robertson 22-May-01
+Files:       semitran, trans
+Authors:     Andrew Solomon, Isabel Araújo and Robert Arthur
+Maintainer:  Robert F. Morse
+Description: This library code implements transformations, and methods 
+             on semigroups represented by them.
+
+Name:        Cyclotomics
+Proposer:    Thomas Breuer, 19-June-01
+Seconder:    Alexander Hulpke, 19-June-01
+Files:       lib/cyclotom.g* lib/fldabnum.g?
+Authors:     Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Cyclotomics and subfields of cyclotomic fields
+
+Name:        Lie algebras
+Proposer:    Willem de Graaf, 25-Jan-02
+Seconder:    Steve, 25-Jan-02, Frank, 25-Jan-02, Joachim, 28-Jan-02
+Files:       alglie.gd, alglie.gi, algliess.gi, lierep.gd, lierep.gi
+Authors:     Thomas Breuer, Willem de Graaf, Craig Struble, Juergen Wisliceny
+Maintainer:  Willem de Graaf
+Description: functionality for dealing with Lie algebras and their
+             representations
+
+Name:        GAP for MacOS
+Proposer:    Burkhard Hfling
+Seconder:    Steve Linton, 24 Jan 2002; Alexander Hulpke, 24 Jan 2002
+Files:       macsrc/maccon.c, macsrc/maccon.h, /macdefs.h, macsrc/macdocs.c,
+             macsrc/macdocs.h, macsrc/macedit.c, macsrc/macedit.h,
+             macsrc/macedit.r, macsrc/macheaders4.h, macsrc/macintr.c,
+             macsrc/macintr.h, macsrc/macpaths.c, macsrc/macpaths.h,
+             macsrc/macres4.rsrc, macsrc/macte.c, macsrc/macte.h
+             src/system.c (partly)
+             src/system.h (partly)
+             src/sysfiles.c (partly)
+             src/sysfiles.c (partly)
+             src/streams.c (partly)
+             src/streams.h (partly)
+Authors:     Burkhard Hfling
+Description: This set of files provides the implementation of system dependent
+             GAP functions and a user interface to run GAP under MacOS
+
+Name: 	Identification of Galois groups
+Proposer: 	Alexander Hulpke
+Seconder: 	Frank Lübeck (May 4, 2003), Joachim Neub"user (May 5, 2003)
+Files: 	galois.g*
+Author&Maintainer: 	Alexander Hulpke
+Description:	 functionality for determining the permutation isomorphism type of a Galois group.
+
+Name:        Characters and Character Degrees of certain solvable groups
+Proposer:    Thomas Breuer
+Seconder:    Frank Lübeck (July 15, 2003), Joachim Neub"user (July 15, 2003)
+Files:       lib/ctblsolv.gd, lib/ctblsolv.gi
+Authors:     Hans Ulrich Besche, Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Computation of irreducible character degrees of solvable groups,
+             using the algorithm of Conlon (see [Con90b]),
+             and of irreducible characters of (abelian by) supersolvable
+             groups, using the algorithms of Baum-Clausen (see [BC94]) and
+             Conlon (see [Con90a])
+
+Name:        Possible Permutation Characters
+Proposer:    Thomas Breuer
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblpope.gd, lib/ctblpope.gi,
+             sections ``Possible Permutation Characters'' and
+             ``Computing Possible Permutation Characters'' in
+             doc/build/ctblfuns.msk
+Authors:     Thomas Breuer, Götz Pfeiffer
+Maintainer:  Thomas Breuer
+Description: Computation of characters that have certain properties of
+             permutation characters, as is described in [Bre91], [Pfe91],
+             [BP98]
+
+Name:        Monomiality Questions
+Proposer:    Thomas Breuer
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblmono.gd, lib/ctblmono.gi, doc/build/ctblmono.msk,
+             tst/ctblmono.tst
+Authors:     Thomas Breuer, Erzsébet Horváth
+Maintainer:  Thomas Breuer
+Description: Monomiality of finite (solvable) groups and their characters
+
+Name:        Possible Class Fusions, Possible Power Maps
+Proposer:    Thomas Breuer
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblmaps.gd, lib/ctblmaps.gi, doc/build/ctblmaps.msk
+Authors:     Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Computation of possible class fusions and possible power maps,
+             based on [Bre91], [Bre99]
+
+Name:        Structure Descriptions for Finite Groups
+Proposer:    Stefan Kohl
+Seconder:    Robert F. Morse (April 12, 2005), Alexander Hulpke (April 13, 2005)
+Files:       lib/grpnames.*
+Author:      Stefan Kohl, Markus Püschel, Sebastian Egner
+Maintainer:  Stefan Kohl
+Description: Routines for determining structure descriptions for finite groups
+

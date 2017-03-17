@@ -1,0 +1,11 @@
+The main file to use is parallelorbit2.g, which requires a working version of 'orb' package.
+The main function from parallelorbit2.g for computing orbits in parallel is ParallelOrbit.
+It is called via ParallelOrbit (gens, pt, op, opt), where 
+   - 'gens' is a list of generators, 
+   - 'pt' is the initial point of the orbit, 
+   - 'op' is a function that is applied to a point and each of the generators from 'gens' to 
+     obtain new orbit elements and 
+   - 'opt' is a record that controls extra-functional properties of the orbit calculation.
+Some important fields of 'opt' record are 'nrhash', denoting a number of hash server threads;
+'nrwork', denoting a number of worker threads; and 'disthf', a function that maps points in the
+orbit to the integer numbers from 1 to nrhash. 

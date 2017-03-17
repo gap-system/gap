@@ -1,0 +1,12 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/04/01
+!! Changed by
+AH
+!! Type of Change
+New: extended functionality
+!! Description
+Improved methods for conjugacy classes/centralizers/conjugacy in groups
+using the TF method.  Includes methods for canonical class representatives.
+!! End

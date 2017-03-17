@@ -1,0 +1,413 @@
+<Chapter Label="MPIGAP">
+  <Heading>MPIGAP</Heading>
+
+  <Section Label="MPIGAP Overview">
+    <Heading>MPIGAP Overview</Heading>
+
+MPIGAP is the library for GAP which supports distributed-memory systems. It is based on MPI communication library, and
+in its base is the ParGAP package. MPIGAP and supports distributed-memory programming on different levels, from
+low-level MPI bindings, to the high-level operations with implicit task management and load-balancing.
+
+Prerequisites for installing MPIGAP are:
+
+<Enum>
+<Item>Working MPI library, with <C>mpicc</C> compiler, and <C>MPIHOME</C> environment variable set to the root directory of
+the library (<C>mpicc</C> needs to be in <C>$(MPIHOME)/bin</C>. MPIGAP was tested using MPICH 3 MPI library
+(www.mpich.org), but should work also with OpenMPI.
+</Item>
+
+<Item>GAP IO package, if IO Pickling is used for object marshalling. See below</Item>
+</Enum>
+
+Once the prerequisites are satisfied, you can install MPIGAP by checking out the latest hpcgap repository and then, from
+the GAP root directory, doing
+
+<Example><![CDATA[
+./make.hpc mpi
+]]></Example>
+
+Once MPIGAP is build, you can run it with
+
+<Example><![CDATA[
+mpiexec -n <noProcesses> bin/<arch>/gap
+]]></Example>
+
+Probably the best way to run MPIGAP programs is in batch mode. To run your inputFile.g in this way, do
+
+<Example><![CDATA[
+mpiexec -n <noProcesses> bin/<arch>/gap inputFile.g
+]]></Example>
+
+  </Section>
+
+  <Section Label="Object Marshalling">
+    <Heading>Object Marshalling</Heading>
+
+In MPIGAP, it is necessary to have a mechanism for transferring objects between different MPI nodes. This requires
+functions to convert a GAP object into its binary or string representation, and to convert this representation into a
+GAP object. This is called object marshalling. Currently, MPIGAP supports two mechanisms for object marshalling:
+
+<Enum>
+<Item> Object serialisation via <C>SerializeToNativeString</C> and <C>DeserializeNativeString</C>. This method of
+marshalling is much faster of the two, but also has some drawbacks. It is not portable, and therefore cannot be used
+when MPI nodes have different architecture. Also, the range of object that can be marshalled in this way is smaller than
+with IO Pickling. For example, functions cannot be marshalled in this way.</Item>
+
+<Item>IO pickling via <C>IO_Pickle</C> and <C>IO_Unpickle</C>. This marshalling method requires <C>IO</C> package to be
+installed. Compared to object serialization, marshalling object using this method is much slower, up to the point where
+its performance becomes unacceptable for larger objects (e.g. large matrices). However, it is portable and many more
+objects (including functions) have pickling methods implemented.
+</Item>
+</Enum>
+
+The default marshalling method is object serialization. User can change the method used by setting the
+<C>MPIGAP_MARSHALLING</C> variable to <C>"Serialize"</C> or <C>"Pickle"</C> in her init file.
+
+Most of the time, object marshalling is hidden from the user. The user needs to worry about it only if in her
+application, some &quot;unusual&quot; objects need to be transferred between nodes, and no serialization method for
+these objects is written, or if executing GAP in a distributed systems where different nodes have different
+architecture. Also, user needs to use explicit marshalling when programming using low-level MPI bindings (see below).
+For vast majority of cases, the default marshalling option works and gives very good performance.
+
+  </Section>
+  <Section Label="Distributed Task Management">
+    <Heading>Distributed Task Management</Heading>
+
+MPIGAP has distributed implementation of most of the primitves related to the task management in shared memory. API for
+distributed versions of these primitives is almost identical to their shared-memory version, with the exception of
+denoting functions if object serialisation is used as a method of object marshalling.
+
+    <Subsection Label="CreateTask">
+      <Heading>CreateTask(listOfArguments)</Heading>
+
+<C>CreateTask</C> creates a task, using <C>listOfArguments</C> for task function and arguments. The operation returns
+the created task.  The first element of <C>listOfArguments</C> is a function or a function name, and the remaining
+elements are arguments. <C>CreateTask</C> just creates a task, and does not put it in the task queue nor does it execute
+it. To do this, user needs to call <C>ExecuteTask</C>.
+
+If the serialisation method is used for object marshalling, then the first element of <C>listOfArguments</C> needs to be
+a string denoting function name, and the function needs to be declared and installed using <C>DeclareGlobalFunction</C>
+and <C>InstallGlobalFunction</C>. In the case when pickling is used for object marshalling, first element of
+<C>listOfArguments</C> can also be a function.
+
+    </Subsection>
+    <Subsection Label="ExecuteTask">
+      <Heading>ExecuteTask(task)</Heading>
+
+<C>ExecuteTask</C> puts <C>task</C> into the task queue of the node where it was created.
+
+If work-stealing is enabled (see <C>StartStealing</C> and <C>StopStealing</C> below), the task can be stolen by a remote
+node. All of the arguments are copied to the remote node. One or more arguments can be global object handles. In this
+case, only the handles (and not the underlying objects) are copied to the remote node.
+
+    </Subsection>
+    <Subsection Label="RunTask">
+      <Heading>RunTask(f,arg1,arg2,...,argN)</Heading>
+
+<C>RunTask</C> creates a task, with the function (or function name, depending on the method for marshalling, see
+<C>CreateTask</C>) <C>f</C> and the arguments <C>arg1</C>, <C>arg2</C>, ..., <C>argN</C> and puts it in the task queue
+of the node where it is created.
+
+If work-stealing is enabled (see <C>StartStealing</C> and <C>StopStealing</C> below), the task can be stolen by a remote
+node. All of the arguments are copied to the remote node. One or more arguments can be global object handles. In this
+case, only the handles (and not the underlying objects) are copied to the remote node.
+
+    </Subsection>
+    <Subsection Label="SendTask">
+      <Heading>SendTask(t,node)</Heading>
+
+<C>SendTask(t,node)</C> sends the task for the execution on MPI node <C>node</C>. Task arguments are copied to the
+destination node. If argument to the task is handle, only the handle (and not the object it points to) is copied. On the
+destination node, the object needs to be fetched (via <C>RemotePullObj</C> or <C>RemoteCloneObj</C>), or, alternatively,
+it needs to be explicitly pushed from the node calling <C>SendTask</C> via <C>RemoteCopyObj</C> or <C>RemotePushObj</C>.
+
+    </Subsection>
+    <Subsection Label="StartStealing">
+      <Heading>StartStealing()</Heading>
+
+<C>StartStealing</C> enables work-stealing (disabled by default). Once the work-stealing is enabled, the nodes can steal
+tasks from each others&#39; task queues. If work-stealing is disabled, the only way of transfering tasks between
+different nodes is using <C>SendTask</C> operation.
+
+    </Subsection>
+    <Subsection Label="StopStealing">
+      <Heading>StopStealing()</Heading>
+
+<C>StopStealing</C> disabless work-stealing (this is the default option). Once the work-stealing is disabled, the only
+way of transfering tasks between different nodes is using <C>SendTask</C> operation.
+    </Subsection>
+  </Section>
+    <Section Label="Global Objects and Handles">
+    <Heading>Global Objects and Handles</Heading>
+
+Global objects are objects that can be accessed from multiple distributed nodes. They are accessed via object handles
+that represent global pointers to these objects. The same object handle can exist on multiple nodes, pointing to the
+same global object. Handles can be used to migrate, copy and change objects they point to.
+
+Global object handles represent pointers to global objects. The same handle can live on different nodes. Furthermore, it
+is possible for handles to keep cached copy of the global object on a local node.
+
+The type of a handle determines the operations that are allowed with the object they point to. There are three types of
+handles:
+
+<List>
+<Item> A read-only handle is a handle to an object that can be read only. Since the object that a read-only handle points to
+cannot be changed, this object can freely be moved and copied between nodes (via <C>RemoteCopyObj</C>,
+<C>RemoteCloneObj</C>, <C>RemotePushObj</C> and  <C>RemotePullObj</C>, see below). However, changing the object that
+such handle points to (via <C>SetByHandle</C>, see below) is not allowed.</Item>
+
+<Item> A read-write Handle is a handle to an object that can be read and   modified. To ensure consistency in accessing this
+object, MPIGAP ensures that only one copy of the object exists, which means that  copying of such object between nodes
+(via <C>RemoteCopyObj</C> and  <C>RemoteCloneObj</C>) is not allowed, and will result in an error. Moving the object
+between nodes (via <C>RemotePushObj</C> and <C>RemotePullObj</C>) is allowed, and so is changing the object (via
+<C>SetByHandle</C>).</Item>
+
+<Item> A volatile handle is a handle to an object that can be freely moved, copied and changed. This means that the
+consistency of such object on multiple nodes in not guaranteed, and the same global handle on multiple nodes can point
+to different objects.</Item>
+</List>
+
+  <Subsection Label="CreateHandleFromObj">
+    <Heading>CreateHandleFromObj(obj [, access_type])</Heading>
+
+<C>CreateHandleFromObj</C> takes an object <C>obj</C> and creates a handle for accessing that object. <C>access_type</C>
+can be one of the constants <C>ACCESS_TYPES.READ_ONLY</C>, <C>ACCESS_TYPES.READ_WRITE</C> or
+<C>ACCESS_TYPES.VOLATILE</C>. If <C>access_type</C> is not provided, the default access type is
+<C>ACCESS_TYPES.READ_ONLY</C>. Note that setting a handle to read-only also makes the underlying object immutable.
+
+When a handle for a boxed object (anything other than small integer or finite field element) is created, the object is
+automatically put in shared region, so for all future accesses to that object a lock needs to be obtained.
+
+Examples:
+
+<Example><![CDATA[
+gap> x := [1,2,3,4,5];;
+gap> handle := CreateHandleFromObj(x);;
+]]></Example>
+
+creates a read-only handle for the list <C>x</C>, making the list immutable in turn.
+
+<Example><![CDATA[
+gap> x := 42;;
+gap> handle := CreateHandleFromObj(x,ACCESS_TYPES.READ_WRITE);;
+]]></Example>
+
+creates a read-write handle for the integer object. The integer is copied into the handle, and can be changed via
+<C>SetByHandle</C> and <C>GetByHandle</C> (see below), not via changes to the variable <C>x</C>:
+
+<Example><![CDATA[
+gap> Open(handle);
+gap> GetHandleObj(handle);
+42
+gap> x := 51;;
+gap> GetHandleObj(handle);
+42
+gap> SetByHandle(handle, 20);
+gap> GetHandleObj(handle);
+20
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="GetHandleAccessType">
+    <Heading>GetHandleAccessType(handle)</Heading>
+
+<C>GetHandleAccessType</C> returns the access type of a handle.
+
+  </Subsection>
+  <Subsection Label="Open">
+    <Heading>Open(handle)</Heading>
+
+Each thread that wants to use a handle in any way needs to explicitly open it. This is for the purpose of explicit
+reference counting, so that the handles that are not used by any thread can be garbage collected. <C>Open</C> opens a
+handle in the thread that calls it.
+
+  </Subsection>
+  <Subsection Label="Close">
+    <Heading>Close(handle)</Heading>
+
+<C>Close</C> closes a handle in the thread that calls it, decreasing reference count for that handle in turn. All
+subsequent operations on that handle in the thread that called <C>Close</C> result in an error, unless the handle is
+open again.
+
+  </Subsection>
+  <Subsection Label="Destory">
+    <Heading>Destory(handle)</Heading>
+
+<C>Destroy</C> destroyes a handle on the node that calls it, meaning that all subsequent operations on that handle on
+that node result in an error, and that the handle cannot be reopened. This also makes the object to which the handle
+points to available for garbage collection on that node. Note that the same handle (with the accompanying object) can
+still exist on other nodes.
+
+The handle is destroyed only if it is safe, i.e. if all of the threads on the node that calls <C>Destroy</C> have closed
+the handle and, in the case the handle is read-write and it holds the actual object, all nodes that the handle was sent
+to also destroyed their copies of it.
+
+  </Subsection>
+  <Subsection Label="GetHandeObj">
+    <Heading>GetHandeObj(handle)</Heading>
+
+<C>GetHandleObj</C> returns the object that a handle points to. If the object that a handle points to is on some remote
+node, the call will block until the object is fetched.
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ( [1,2,3,4,5] );;
+gap> Open(handle);
+gap> GetHandleFromObj(handle);
+[1,2,3,4,5]
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="SendHandle">
+    <Heading>SendHandle(handle, node)</Heading>
+
+<C>SendHandle</C> sends handle <C>handle</C> to a destination MPI node <C>node</C>. Note that only the handle itself
+(and not the object it points to) is sent.
+
+  </Subsection>
+  <Subsection Label="RemoteCopyObj">
+    <Heading>RemoteCopyObj(handle, node)</Heading>
+
+<C>RemoteCopyObj</C> copies the object that <C>handle</C> points to to the <C>node</C> MPI node. <C>handle</C> must have
+read-write or volatile access type. Note that the handle may or may not exists on the destination node. If it does
+exist, the object it points to on the receiving node (if any) is overwritten by the object that is sent. If the handle
+does not exist, it is first sent to the receiving node. Therefore, the following two pieces of code produce the same
+result:
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> RemoteCopyObj (handle, 1);
+]]></Example>
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> SendHandle (handle, 1);
+gap> RemoteCopyObj (handle, 1);
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="RemotePushObj">
+    <Heading>RemotePushObj(handle, node)</Heading>
+
+<C>RemotePushObj</C> migrates the object that <C>handle</C> points to to the <C>node</C> MPI node. It can be called for
+all types of handles (read-only, read-write and volatile). Note that the handle may or may not exists on the destination
+node. If it does exist, the object it points to on the receiving node (if any) is overwritten by the object that is
+sent. If the handle does not exist, it is first sent to the receiving node. Therefore, the following two pieces of code
+produce the same result:
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> RemotePushObj (handle, 1);
+]]></Example>
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> SendHandle (handle, 1);
+gap> RemotePushObj (handle, 1);
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="RemotePullObj">
+    <Heading>RemotePullObj(handle)</Heading>
+
+<C>RemotePullObj</C> fetches the object that <C>handle</C> points to and stores it on the node that called the function.
+The object is deleted from the node that owns it. This operation can be called for all types of handles.
+
+The following piece of code creates a handle for a list, pushes the list to the node 1 and then fetches it back,
+deleting it from node 1.
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> RemotePushObj (handle, 1);
+gap> RemotePullObj (handle);
+]]></Example>
+
+  </Subsection>
+  <Subsection Label="RemoteCloneObj">
+    <Heading>RemoteCloneObj(handle)</Heading>
+
+<C>RemotePullObj</C> fetches the object that <C>handle</C> points to and stores it on the node that called the function.
+The object also remains on the node which originally owned it.  This operation can be called for read-only and volatile
+handles.
+
+The following piece of code creates a handle for a list, pushes the list to the node 1 and then fetches it back, while
+still retaining its copy on node 1.
+
+<Example><![CDATA[
+gap> handle := CreateHandleFromObj ([1,2,3,4,5]);
+gap> RemotePushObj (handle, 1);
+gap> RemoteCloneObj (handle);
+]]></Example>
+
+  </Subsection>
+  </Section>
+
+  <Section Label="Low-level MPI Bindings">
+    <Heading>Low-level MPI Bindings</Heading>
+
+These primitives provide the functionality similar to the C MPI bindings. They have the same name as their C
+counterparts, with somewhat simpler interface. All of these functions deal with &#39;raw&#39; data (i.e. they assume
+that GAP objects that are transferred between MPI nodes are already marshalled to strings), and should only be used if
+higher-level models (tasks, global objects, distributed data structures and skeletons) are not sufficient or do not give
+acceptable performance.
+
+    <Subsection Label="MPI_Comm_size">
+      <Heading>MPI_Comm_size() </Heading>
+
+Returns the number of MPI nodes in the application.
+
+    </Subsection>
+    <Subsection Label="MPI_Comm_rank">
+      <Heading>MPI_Comm_rank()</Heading>
+
+Returns the rank of the MPI node that is calling it. The rank is between 0 and <C>MPI_Comm_size()</C>-1.
+
+    </Subsection>
+    <Subsection Label="MPI_Get_count">
+      <Heading>MPI_Get_count()</Heading>
+
+Returns the size (in bytes) of the last received message on this node.
+
+    </Subsection>
+    <Subsection Label="MPI_Get_source">
+      <Heading>MPI_Get_source()</Heading>
+
+Returns the rank of the sender node of the last received message.
+
+    </Subsection>
+    <Subsection Label="MPI_Get_tag">
+      <Heading>MPI_Get_tag()</Heading>
+
+Returns the tag of the last received message.
+
+    </Subsection>
+    <Subsection Label="MPI_Send">
+      <Heading>MPI_Send(message, destination[, tag])</Heading>
+
+Sends the message to the destination node. <C>message</C> is a string containing the message to be sent,
+<C>destination</C> is a rank of the receiving process, and <C>tag</C> is an optional integer parameter specifying the
+tag of the message (which can be retreived on the destination process by <C>MPI_Get_tag()</C>.
+
+    </Subsection>
+    <Subsection Label="MPI_Recv">
+      <Heading>MPI_Recv(message[, source, tag])</Heading>
+
+Receives the message and puts it into <C>message</C> string buffer.  If <C>source</C> is specified, only message from
+that MPI node is received. If <C>tag</C> is specified, only the message with that tag is received.
+
+    </Subsection>
+    <Subsection Label="MPI_Probe()">
+      <Heading>MPI_Probe()</Heading>
+
+Blocking probe for a message. The call returns when a new message is available, and the message can be received with
+<C>MPI_Recv</C>.
+
+    </Subsection>
+    <Subsection Label="MPI_Iprobe">
+      <Heading>MPI_Iprobe()</Heading>
+
+Non-blocking probe for a message. The call returns true if a new message is available for receiving (via
+<C>MPI_Recv</C>), and false otherwise.
+
+    </Subsection>
+  </Section>
+</Chapter>

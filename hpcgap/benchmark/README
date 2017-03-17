@@ -1,0 +1,53 @@
+In discussion here at St Andrews, Alexander (twice), Max and Steve noted the
+desirability to have some larger tests to compare performance of the current
+and the next release, trying to catch problems. These tests would not be
+part of the distribution (not even to package authors), nor require any
+documentation or elaborate options, though they would sit under CVS.
+No part of the tests is considered as distributable or to produce usable
+results, parts of tests code should be used in other places only after agreement from the
+author.
+Tests could (but are not guaranteed to be) run automatically from time to
+time.
+
+As a rule of thumb, tests should run in a few hours at most in a 32bit GAP
+with 2GB of GAP workspace, unless indicated otherwise.
+
+As a place for these tests I have created a folder ``benchmark'' in the main
+GAP directory under CVS. Tests can be put in subfolders (which should be
+self-contained, but can contain arbitrary content). The tests in the
+subfolders are run by running GAP (from the subfolder) on a file
+
+test<n>.g
+
+(<n> being the number of the test) in the same folder. This file should
+contain all necessary `Read' statements and loading of packages etc. It can
+produce arbitrary screen output, which will be parsed only for the following
+features:
+
+A line
+*** FAIL
+indicates that a test went wrong (e.g. the result calculated is guaranteed
+to be wrong). The test does not need to certify the result, this feature is
+only there to catch obvious errors.
+A line
+*** RUNTIME n
+where n is the time of the test in ms must be printed at the end -- it can
+be used for performance comparison on the same machine.
+
+For automatic running of (some) tests, the following comment lines are
+encouraged at the start of the test:
+#description
+A short description of what the test does
+#author
+the test's author (if only to check back who can help with finding
+performance sinks)
+#timelimit n
+n is an integer, indicating the number of hours (on a two year old computer
+-- these numbers should not be updated down so that technical progress is
+not an issue) after which the test will terminate. Large numbers can be used
+to indicate huge tests.
+#cmdlineops
+Command line options that should be given to start GAP. In particular useful
+to indicate required memory settings.
+#packages
+A comma -separated list of packages that must be available

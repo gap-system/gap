@@ -1,0 +1,9 @@
+Copy the file ctags_for_gap to ~/.ctags and then run
+  ctags --sort=no lib/*.g lib/*.gi lib/*.gd src/*
+in the GAP installation directory. Start your editor
+in that directory and then do (for vim e.g.):
+  :tag DerivedSubgroup
+(say). You can also use
+  :ts DerivedSubgroup
+to get an overview over all tags found (which is useful since it shows
+for example all method installations).

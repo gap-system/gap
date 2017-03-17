@@ -1,0 +1,31 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  algfp.msk                    GAP documentation              Thomas Breuer -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: algfp.msk,v 1.2 2002/04/15 10:02:26 sal Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Finitely Presented Algebras">
+<Heading>Finitely Presented Algebras</Heading>
+
+Currently the &GAP; library contains only few functions dealing with
+general finitely presented algebras,
+so this chapter is merely a placeholder.
+<P/>
+The special case of finitely presented <E>Lie</E> algebras is described
+in&nbsp;<Ref Sect="Finitely Presented Lie Algebras"/>,
+and there is also a &GAP; package <C>fplsa</C> for computing structure constants
+of <E>f</E>initely <E>p</E>resented <E>L</E>ie (<E>s</E>uper)<E>a</E>lgebras.
+<P/>
+<!-- % Finitely presented <E>associative</E> algebras will eventually be handled by -->
+<!-- % vector enumeration techniques. -->
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

@@ -1,0 +1,351 @@
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 1, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 2, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 3, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 4, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 5, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 6, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 7, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 1, nrwork := 8, disthf := MakeDistributionHF(v,1)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 1, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 2, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 3, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 4, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 5, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 6, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 7, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 2, nrwork := 8, disthf := MakeDistributionHF(v,2)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 1, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 2, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 3, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 4, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 5, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 6, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 7, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 3, nrwork := 8, disthf := MakeDistributionHF(v,3)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 1, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 2, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 3, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 4, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 5, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 6, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 7, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");
+---
+hpcgap -S -m 64g
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/parallelorbit3.g");
+Read("/scratch/neunhoef/hpcgap/demo/parorbit/HNdata2.g");
+r := ParallelOrbit(gens,v,OnRightRO,rec( hashlen := 2000001,
+  nrhash := 4, nrwork := 8, disthf := MakeDistributionHF(v,4)));;
+r.time;
+r.nrhash;
+r.nrwork;
+AppendTo("results.txt","nrhash=",r.nrhash," nrwork=",r.nrwork,
+         " time=",r.time,"\n");

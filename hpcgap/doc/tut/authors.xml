@@ -1,0 +1,242 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  authors.tex               GAP documentation                      LDFM -->
+<!-- %W                                                                 & SMCS -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: authors.tex,v 4.32 2006/02/20 00:49:37 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+The following list gives the authors (indicated by A)
+who designed the code in the first place,
+as well as the current maintainers (indicated by M)
+of the various modules of which &GAP; is composed.
+<P/>
+Since the process of modularization was started only recently, there might
+be omissions both in scope and in contributors.  The compilers of the
+manual apologize for any such errors and promise to rectify them in future
+editions.
+<P/>
+<List>
+<Mark>Kernel</Mark>
+<Item>
+Frank Celler&nbsp;(A), Steve Linton&nbsp;(AM), Frank Lübeck&nbsp;(AM), 
+Werner Nickel&nbsp;(AM), Martin Schönert&nbsp;(A)
+</Item>
+<Mark>Automorphism groups of finite pc groups </Mark>
+<Item>
+Bettina Eick&nbsp;(A), Werner Nickel&nbsp;(M)
+</Item>
+<Mark>Binary Relations </Mark>
+<Item>
+Robert Morse&nbsp;(AM), Andrew Solomon&nbsp;(A) 
+</Item>
+<Mark>Characters and Character Degrees of certain solvable groups </Mark>
+<Item>
+Hans Ulrich Besche&nbsp;(A), Thomas Breuer&nbsp;(AM)
+</Item>
+<Mark>Classes in nonsolvable groups </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Classical Groups </Mark>
+<Item>
+Thomas Breuer&nbsp;(AM), Frank Celler&nbsp;(A), Stefan Kohl&nbsp;(AM), 
+Frank Lübeck&nbsp;(AM), Heiko Theißen&nbsp;(A)
+</Item>
+<Mark>Congruences of magmas, semigroups and monoids </Mark>
+<Item>
+Robert Morse&nbsp;(AM), Andrew Solomon&nbsp;(A)
+</Item>
+<Mark>Cosets and Double Cosets </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Cyclotomics </Mark>
+<Item>
+Thomas Breuer&nbsp;(AM)
+</Item>
+<Mark>Dixon-Schneider Algorithm </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Documentation Utilities </Mark>
+<Item>
+Frank Celler&nbsp;(A), Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(A), 
+Willem de Graaf&nbsp;(A), Steve Linton&nbsp;(A), Werner Nickel&nbsp;(A), Greg Gamble&nbsp;(AM)
+</Item>
+<Mark>Factor groups </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Finitely presented groups </Mark>
+<Item>
+Volkmar Felsch&nbsp;(A), Alexander Hulpke&nbsp;(AM), Martin Schönert&nbsp;(A)
+</Item>
+<Mark>Finitely presented monoids and semigroups </Mark>
+<Item>
+Isabel Araújo&nbsp;(A), Derek Holt&nbsp;(A), Alexander Hulpke&nbsp;(A), James
+Mitchell&nbsp;(M), Götz Pfeiffer&nbsp;(A), Andrew Solomon&nbsp;(A)
+</Item>
+<Mark>&GAP; for MacOS </Mark>
+<Item>
+
+Burkhard Höfling&nbsp;(AM)
+</Item>
+<Mark>Group actions </Mark>
+<Item>
+Heiko Theißen&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Homomorphism search </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Homomorphisms for finitely presented groups </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Identification of Galois groups </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Intersection of subgroups of finite pc groups </Mark>
+<Item>
+Frank Celler&nbsp;(A), Bettina Eick&nbsp;(A), Werner Nickel&nbsp;(M)
+</Item>
+<Mark>Irreducible Modules over finite fields for finite pc groups </Mark>
+<Item>
+Bettina Eick&nbsp;(AM)
+</Item>
+<Mark>Isomorphism testing with random methods </Mark>
+<Item>
+Hans Ulrich Besche&nbsp;(AM), Bettina Eick&nbsp;(AM)
+</Item>
+<Mark>Lie algebras </Mark>
+<Item>
+Thomas Breuer&nbsp;(A), Craig Struble&nbsp;(A), Juergen Wisliceny&nbsp;(A), Willem A. de Graaf&nbsp;(AM)
+</Item>
+<Mark>Monomiality Questions </Mark>
+<Item>
+Thomas Breuer&nbsp;(AM), Erzsébet Horváth&nbsp;(A)
+</Item>
+<Mark>Multiplier and Schur cover </Mark>
+<Item>
+Werner Nickel&nbsp;(AM), Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>One-Cohomology and Complements </Mark>
+<Item>
+Frank Celler&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Partition Backtrack algorithm </Mark>
+<Item>
+Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+</Item>
+<Mark>Permutation group composition series </Mark>
+<Item>
+Ákos Seress&nbsp;(AM)
+</Item>
+<Mark>Permutation group homomorphisms </Mark>
+<Item>
+Ákos Seress&nbsp;(AM), Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+</Item>
+<Mark>Permutation Group Pcgs </Mark>
+<Item>
+Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+</Item>
+<Mark>Possible Permutation Characters </Mark>
+<Item>
+Thomas Breuer&nbsp;(AM), Götz Pfeiffer&nbsp;(A)
+</Item>
+<Mark>Possible Class Fusions, Possible Power Maps </Mark>
+<Item>
+Thomas Breuer&nbsp;(AM)
+</Item>
+<Mark>Primitive groups library </Mark>
+<Item>
+Heiko Theißen&nbsp;(A), Colva Roney-Dougal&nbsp;(AM)
+</Item>
+<Mark>Properties and attributes of finite pc groups </Mark>
+<Item>
+Frank Celler&nbsp;(A), Bettina Eick&nbsp;(A), Werner Nickel&nbsp;(M)
+</Item>
+<Mark>Random Schreier-Sims </Mark>
+<Item>
+Ákos Seress&nbsp;(AM)
+</Item>
+<Mark>Rational Functions </Mark>
+<Item>
+Frank Celler&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Semigroup relations </Mark>
+<Item>
+Isabel Araújo&nbsp;(A), Robert F. Morse&nbsp;(AM), Andrew Solomon&nbsp;(A)
+</Item>
+<Mark>Special Pcgs for finite pc groups </Mark>
+<Item>
+Bettina Eick&nbsp;(AM)
+</Item>
+<Mark>Stabilizer Chains </Mark>
+<Item>
+Ákos Seress&nbsp;(AM), Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+</Item>
+<Mark>Strings and Characters </Mark>
+<Item>
+
+Martin Schönert&nbsp;(A), Frank Celler&nbsp;(A), Thomas Breuer&nbsp;(A), 
+Frank Lübeck&nbsp;(AM)
+</Item>
+<Mark>Structure Descriptions for Finite Groups </Mark>
+<Item>
+Stefan Kohl&nbsp;(AM), Markus Püschel&nbsp;(A), Sebastian Egner&nbsp;(A)
+</Item>
+<Mark>Subgroup lattice </Mark>
+<Item>
+Martin Schönert&nbsp;(A), Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Subgroup lattice for solvable groups </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Subgroup presentations </Mark>
+<Item>
+Volkmar Felsch&nbsp;(A), Werner Nickel&nbsp;(M)
+</Item>
+<Mark>The Help System </Mark>
+<Item>
+Frank Celler&nbsp;(A), Frank Lübeck&nbsp;(AM)
+</Item>
+<Mark>Tietze transformations </Mark>
+<Item>
+Volkmar Felsch&nbsp;(A), Werner Nickel&nbsp;(M)
+</Item>
+<Mark>Transformation semigroups </Mark>
+<Item>
+Isabel Araújo&nbsp;(A), Robert Arthur&nbsp;(A), Robert F. Morse&nbsp;(AM), 
+Andrew Solomon&nbsp;(A)
+</Item>
+<Mark>Transitive groups library </Mark>
+<Item>
+Alexander Hulpke&nbsp;(AM)
+</Item>
+<Mark>Two-cohomology and extensions of finite pc groups </Mark>
+<Item>
+Bettina Eick&nbsp;(AM)
+</Item>
+</List>
+<!-- %The system design of &GAP;&nbsp;4 was initiated by -->
+<!-- %Martin&nbsp;Schönert and has been continued by -->
+<!-- %Thomas&nbsp;Breuer, Frank&nbsp;Celler and Steve&nbsp;Linton. -->
+<!-- %</E></E> -->
+<!-- %Large parts of &GAP;&nbsp;4 have also been designed and written by: -->
+<!-- %<P/> -->
+<!-- %Bettina&nbsp;Eick, Volkmar&nbsp;Felsch, Willem&nbsp;de&nbsp;Graaf, Alexander&nbsp;Hulpke, -->
+<!-- %Werner&nbsp;Nickel, Ferenc&nbsp;Rákóczi, Ákos&nbsp;Seress and Heiko&nbsp;Theißen. -->
+<!-- %</E></E> -->
+<!-- %The Macintosh Version of &GAP; has been written and maintained by Burkhard -->
+<!-- %Höfling. -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->

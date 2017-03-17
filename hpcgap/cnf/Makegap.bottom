@@ -1,0 +1,11 @@
+itanium.o: @srcdir@/itanium.s 
+	$(CC) $(CFLAGS) -o itanium.o -c @srcdir@/itanium.s
+
+gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+          @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/read.h \
+          @srcdir@/calls.h @srcdir@/gvars.h @srcdir@/bool.h \
+          @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+          @srcdir@/plist.h @srcdir@/sysfiles.h @srcdir@/code.h \
+          @srcdir@/vars.h @srcdir@/stats.h @srcdir@/gapmpi.h 
+	$(CC) -I. $(MPI_CFLAGS) -DCONFIG_H $(CFLAGS) -o gapmpi.o -c @srcdir@/gapmpi.c
+

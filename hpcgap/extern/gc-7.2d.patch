@@ -1,0 +1,19 @@
+*** gc-7.2d/typd_mlc.c	2012-08-09 21:25:13.000000000 +0100
+--- gc-7.2d/typd_mlc.c	2012-12-03 17:00:42.000000000 +0000
+***************
+*** 642,648 ****
+     } else {
+         op = (ptr_t)GENERAL_MALLOC_IOP(lb, GC_explicit_kind);
+         if (op != NULL) {
+!          lg = BYTES_TO_WORDS(GC_size(op));
+           ((word *)op)[GRANULES_TO_WORDS(lg) - 1] = d;
+         }
+     }
+--- 642,648 ----
+     } else {
+         op = (ptr_t)GENERAL_MALLOC_IOP(lb, GC_explicit_kind);
+         if (op != NULL) {
+!          lg = BYTES_TO_GRANULES(GC_size(op));
+           ((word *)op)[GRANULES_TO_WORDS(lg) - 1] = d;
+         }
+     }

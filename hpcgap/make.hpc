@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ -r hpc/Makefile ]; then
+  rm -f Makefile
+  ln -sf hpc/Makefile Makefile
+  make "$@"
+else
+  echo "Cannot find hpc/Makefile"
+  exit 1
+fi

@@ -1,0 +1,262 @@
+# Testing how vectors are converted into the compressed representation
+
+local F, V, q, d, v, z, z1, z2, z3, oldlevel, HOWCOPY, WHICHREP;
+
+q := arg[1];
+d := arg[2];
+
+# Optionally perform some setup whenever an instance of this test suite is run.
+AddSetup(function()
+	oldlevel := InfoLevel(InfoWarning);
+	SetInfoLevel(InfoWarning, 1);
+	F := GF(q);
+	V := F^d;
+	return true; # return false to indicate a setup failure
+end);
+
+# Optionally perform some setup after an instance of this test suite has been run.
+AddTearDown(function()
+	SetInfoLevel(InfoWarning, oldlevel);
+end);
+
+# a working test
+AddTestCase("field and vector space sizes", function()
+	AssertEqual( Size(F), q );
+    AssertEqual( Size(V), q^d );
+end);
+
+AddTestCase("COPY_GF2VEC/COPY_VEC8BIT ", function()
+    if Size(F)=2 then
+      HOWCOPY:=COPY_GF2VEC;
+      WHICHREP:=IsGF2VectorRep;
+    else
+      HOWCOPY:= x -> COPY_VEC8BIT(x,q);
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+      z := HOWCOPY(v);
+      AssertEqual( z, v );
+      AssertFalse( IsIdenticalObj(z,v) );
+      AssertTrue( WHICHREP( z ) );
+      AssertTrue( IsMutable( z ) );
+      AssertEqual( IsMutable( z ), IsMutable( v ) );
+      z1 := HOWCOPY(z);
+      AssertEqual( z1, v );
+      AssertFalse( IsIdenticalObj(z1,z) );
+      AssertTrue( WHICHREP( z1 ) );
+      AssertTrue( IsMutable( z1 ) );
+      AssertEqual( IsMutable( z ), IsMutable( z1 ) );
+  	od;
+end);
+
+AddTestCase("COPY_GF2VEC/COPY_VEC8BIT for immutable vector", function()
+    if Size(F)=2 then
+      HOWCOPY:=COPY_GF2VEC;
+      WHICHREP:=IsGF2VectorRep;
+    else
+      HOWCOPY:= x -> COPY_VEC8BIT(x,q);
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+      MakeImmutable(v);
+      z := HOWCOPY(v);
+      AssertEqual( z, v );
+      AssertFalse( IsIdenticalObj(z,v) );
+      AssertTrue( WHICHREP( z ) );
+      AssertFalse( IsMutable( z ) );
+      AssertEqual( IsMutable( z ), IsMutable( v ) );
+      z1 := HOWCOPY(z);
+      AssertEqual( z1, v );
+      AssertFalse( IsIdenticalObj(z1,z) );
+      AssertTrue( WHICHREP( z1 ) );
+      AssertFalse( IsMutable( z1 ) );
+      AssertEqual( IsMutable( z ), IsMutable( z1 ) );
+  	od;
+end);
+
+AddTestCase("CopyToVectorRep : list to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRep(v,q);
+      AssertEqual( z, v );
+      AssertFalse( IsIdenticalObj(z,v) );
+      AssertTrue( WHICHREP( z ) );
+      AssertTrue( IsMutable( z ) );
+      AssertEqual( IsMutable( z ), IsMutable( v ) );
+            
+  	od;
+end);
+
+AddTestCase("CopyToVectorRep : immutable list to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+      
+      MakeImmutable(v);
+      z := CopyToVectorRep(v,q);
+      AssertEqual( z, v );
+      AssertFalse( IsIdenticalObj(z,v) );
+      AssertTrue( WHICHREP( z ) );
+      AssertFalse( IsMutable( z ) );
+      AssertEqual( IsMutable( z ), IsMutable( v ) );
+            
+  	od;
+end);
+
+AddTestCase("CopyToVectorRep : compressed vector to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRep(v,q);
+      z1 := CopyToVectorRep(z,q);
+      AssertEqual( z1, v );
+      AssertFalse( IsIdenticalObj(z1,z) );
+      AssertTrue( WHICHREP( z1 ) );
+      AssertTrue( IsMutable( z1 ) );
+      AssertEqual( IsMutable( z ), IsMutable( z1 ) );
+           
+  	od;
+end);
+
+
+AddTestCase("CopyToVectorRep : immutable compressed vector to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRep(v,q);
+      MakeImmutable(z);
+      z1 := CopyToVectorRep(z,q);
+      AssertEqual( z1, v );
+      AssertTrue( IsIdenticalObj(z1,z) ); # immutable -> identical
+      AssertTrue( WHICHREP( z1 ) );
+      AssertFalse( IsMutable( z1 ) );
+      AssertEqual( IsMutable( z ), IsMutable( z1 ) );
+           
+  	od;
+end);
+
+
+AddTestCase("CopyToVectorRep : list to compressed vector in different field", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z2:= CopyToVectorRep(v,q^2);
+      AssertEqual( z2, v );
+      AssertFalse( IsIdenticalObj(z2,v) );
+      AssertTrue( Is8BitVectorRep( z2 ) );
+      
+  	od;
+end);
+
+
+AddTestCase("CopyToVectorRep : immutable list to compressed vector in different field", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+      MakeImmutable(v);
+      z2:= CopyToVectorRep(v,q^2);
+      AssertEqual( z2, v );
+      AssertFalse( IsIdenticalObj(z2,v) );
+      AssertTrue( Is8BitVectorRep( z2 ) );
+      AssertFalse( IsMutable( z2 ) );
+      AssertEqual( IsMutable( z2 ), IsMutable( v ) );      
+  	od;
+end);
+
+
+AddTestCase("CopyToVectorRep : compressed vector to compressed vector in different field", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRep(v,q);
+      z2:= CopyToVectorRep(z,q^2);
+      AssertEqual( z2, v );
+      AssertFalse( IsIdenticalObj(z2,v) );
+      AssertTrue( Is8BitVectorRep( z2 ) );
+      AssertTrue( IsMutable( z2 ) );
+      AssertEqual( IsMutable( z2 ), IsMutable( v ) ); 
+  	od;
+end);
+
+
+AddTestCase("CopyToVectorRep : immutable compressed vector to compressed vector in different field", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+      MakeImmutable(v);
+      z := CopyToVectorRep(v,q);
+      z2:= CopyToVectorRep(z,q^2);
+      AssertEqual( z2, v );
+      AssertFalse( IsIdenticalObj(z2,v) );
+      AssertTrue( Is8BitVectorRep( z2 ) );
+      AssertFalse( IsMutable( z2 ) );
+      AssertEqual( IsMutable( z2 ), IsMutable( v ) ); 
+  	od;
+end);
+
+
+# Testing NC-versions
+
+AddTestCase("CopyToVectorRep : list to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRepNC(v,q);
+      AssertEqual( z, v );
+      AssertFalse( IsIdenticalObj(z,v) );
+      AssertTrue( WHICHREP( z ) );
+            
+  	od;
+end);
+
+AddTestCase("CopyToVectorRep : compressed vector to compressed vector", function()
+    if Size(F)=2 then
+      WHICHREP:=IsGF2VectorRep;
+    else
+      WHICHREP:=Is8BitVectorRep;
+    fi;
+    for v in V do
+    
+      z := CopyToVectorRepNC(v,q);
+      z1 := CopyToVectorRepNC(z,q);
+      AssertEqual( z1, v );
+      AssertFalse( IsIdenticalObj(z1,z) );
+      AssertTrue( WHICHREP( z1 ) );
+           
+  	od;
+end);
+

@@ -1,0 +1,1054 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  lists.tex                 GAP documentation             Thomas Breuer -->
+<!-- %W                                                         & Frank Celler -->
+<!-- %W                                                     & Martin Schönert -->
+<!-- %W                                                       & Heiko Theißen -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: lists.tex,v 4.34 2002/10/04 12:04:17 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %% -->
+<!-- %%  This file contains a tutorial introduction to lists and records. -->
+<!-- %% -->
+<P/>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Chapter Label="Lists and Records">
+<Heading>Lists and Records</Heading>
+
+<Index>arrays, see lists</Index>
+Modern mathematics, especially algebra, is based on set theory. When sets
+are represented in a computer, they inadvertently turn into lists. That's
+why we start our  survey of the various  objects &GAP; can handle with a
+description of  lists  and their  manipulation. &GAP;  regards sets as a
+special kind of lists, namely as lists without  holes or duplicates whose
+entries are ordered with respect to the precedence relation&nbsp;<C>&lt;</C>.
+<P/>
+After  the introduction of  the basic  manipulations with lists
+in&nbsp;<Ref Sect="Plain Lists"/>,
+some difficulties concerning identity and mutability of lists are
+discussed in&nbsp;<Ref Sect="Identical Lists"/>
+and&nbsp;<Ref Sect="Immutability"/>.
+Sets, ranges, row vectors, and matrices are introduced as special kinds
+of lists in&nbsp;<Ref Sect="Sets"/>, <Ref Sect="Ranges"/>,
+<Ref Sect="Vectors and Matrices"/>.
+Handy list operations are shown in&nbsp;<Ref Sect="List Operations"/>.
+Finally we explain how to use records in&nbsp;<Ref Sect="Plain Records"/>. 
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Plain Lists">
+<Heading>Plain Lists</Heading>
+
+<Index Subkey="plain">lists</Index>
+A <E>list</E> is a collection of objects separated by  commas and enclosed  in
+brackets.  Let us for example construct the list <C>primes</C> of the first
+ten prime numbers.
+<P/>
+<Example><![CDATA[
+gap> primes:= [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+]]></Example>
+<P/>
+The next two primes are  31 and 37.  They may be appended to the existing
+list by the function <C>Append</C> which takes  the existing list as its first
+and another list as a second argument.  The  second argument  is appended
+to the list <C>primes</C> and  no  value is returned.  Note that  by appending
+another list the object <C>primes</C> is changed.
+<P/>
+<Example><![CDATA[
+gap> Append(primes, [31, 37]);
+gap> primes;
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37 ]
+]]></Example>
+<P/>
+You can as well add single new elements to existing lists by the function
+<C>Add</C>  which takes  the existing list  as its  first argument  and  a new
+element as  its second argument.  The  new  element  is added to the list
+<C>primes</C> and again no value is returned but the list <C>primes</C> is changed.
+<P/>
+<Example><![CDATA[
+gap> Add(primes, 41);
+gap> primes;
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ]
+]]></Example>
+<P/>
+Single elements of a list are referred to by their position in the  list.
+To get the value  of the seventh prime, that is the seventh entry in  our
+list <C>primes</C>, you simply type
+<P/>
+<Example><![CDATA[
+gap> primes[7];
+17
+]]></Example>
+<P/>
+This value can be handled like any other value, for example multiplied by 2
+or assigned to a  variable. On the other hand  this mechanism allows one to
+assign a value to  a position in  a  list. So the   next prime 43  may be
+inserted  in the   list directly  after the  last   occupied position  of
+<C>primes</C>. This  last occupied    position  is returned  by  the  function
+<C>Length</C>.
+<P/>
+<Example><![CDATA[
+gap> Length(primes);
+13
+gap> primes[14]:= 43;
+43
+gap> primes;
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 ]
+]]></Example>
+<P/>
+Note that this operation again has changed the object <C>primes</C>.  The
+next position after the end of a list is not the only position capable
+of taking a new value.  If you know that 71 is the 20th prime, you can
+enter it right now in the 20th position of <C>primes</C>.  This will result
+in a list with holes which is however still a list and now has length
+20.
+<P/>
+<Example><![CDATA[
+gap> primes[20]:= 71;
+71
+gap> primes;
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,,,,,, 71 ]
+gap> Length(primes);
+20
+]]></Example>
+<P/>
+The list itself however must  exist before a  value can be  assigned to a
+position of the list.  This list may be the empty list <C>[ ]</C>.
+<P/>
+<Log><![CDATA[
+gap> lll[1]:= 2;
+Error, Variable: 'lll' must have a value
+
+
+gap> lll:= []; lll[1]:= 2;
+[  ]
+2
+]]></Log>
+<P/>
+Of course  existing entries of a list  can be  changed by this mechanism,
+too. We will not do it here because <C>primes</C> then may no longer be a list
+of primes. Try for yourself to change the 17 in the list into a 9.
+<P/>
+To get the position    of 17 in  the   list  <C>primes</C> use   the  function
+<Ref Func="Position" BookName="ref"/> which takes the list as its
+first argument and the element as
+its second argument  and returns the position of  the first occurrence of
+the element 17 in the list <C>primes</C>.
+If the element is not contained in the list then
+<Ref Func="Position" BookName="ref"/> will return the special object
+<K>fail</K>.
+<P/>
+<Example><![CDATA[
+gap> Position(primes, 17);
+7
+gap> Position(primes, 20);
+fail
+]]></Example>
+<P/>
+In  all  of the  above changes to  the  list <C>primes</C>,  the list has been
+automatically resized.  There  is no need  for you to tell &GAP; how big
+you want a list to be.  This is all done dynamically.
+<P/>
+It is not necessary for the objects collected in a list to be of the same
+type.
+<P/>
+<Example><![CDATA[
+gap> lll:= [true, "This is a String",,, 3];
+[ true, "This is a String",,, 3 ]
+]]></Example>
+<P/>
+In the same way a list may be part of another  list. 
+<P/>
+<Example><![CDATA[
+gap> lll[3]:= [4,5,6];; lll;
+[ true, "This is a String", [ 4, 5, 6 ],, 3 ]
+]]></Example>
+<P/>
+A list may even be part of itself.
+<P/>
+<Log><![CDATA[
+gap> lll[4]:= lll;
+[ true, "This is a String", [ 4, 5, 6 ], ~, 3 ]
+]]></Log>
+<P/>
+Now the tilde in the fourth position of <C>lll</C>  denotes the object that is
+currently  printed. Note that  the result  of the  last operation is  the
+actual value  of  the  object  <C>lll</C>   on  the  right  hand side  of  the
+assignment. In  fact it is  identical to the value  of the whole list
+<C>lll</C> on the left hand side of the assignment.
+<P/>
+<Index>strings</Index>
+<Index Subkey="dense">lists</Index>
+A <E>string</E>  is a  special type  of list,
+namely a dense  list of <E>characters</E>, where <E>dense</E> means  that the list has
+no  holes. Here,  <E>characters</E> are  special &GAP;  objects representing  an
+element of the character set of the operating system. The input of printable
+characters is  by enclosing them in  single quotes&nbsp;<C>'</C>. A  string literal
+can either be entered as the list of characters or by writing the characters
+between doublequotes <C>"</C>. Strings are  handled specially by
+<Ref Func="Print" BookName="ref"/>.
+You can learn much more about strings in the reference manual.
+<P/>
+<Example><![CDATA[
+gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
+"Hallo world."
+gap> s1 = "Hallo world.";
+true
+gap> s1[7];
+'w'
+]]></Example>
+<P/>
+Sublists of lists can easily be extracted and assigned using the operator
+<C><A>list</A>{ <A>positions</A> }</C>.
+<P/>
+<Example><![CDATA[
+gap> sl := lll{ [ 1, 2, 3 ] };
+[ true, "This is a String", [ 4, 5, 6 ] ]
+gap> sl{ [ 2, 3 ] } := [ "New String", false ];
+[ "New String", false ]
+gap> sl;
+[ true, "New String", false ]
+]]></Example>
+<P/>
+This way you get a new list whose <M>i</M>-th entry is that element of the
+original list whose position is the <M>i</M>-th entry of the argument in the
+curly braces.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Identical Lists">
+<Heading>Identical Lists</Heading>
+
+<Index Subkey="identical">lists</Index>
+This second  section  about lists is dedicated  to  the subtle difference
+between  <E>equality</E>  and <E>identity</E>  of lists. It is really important to
+understand   this  difference in  order   to  understand how complex data
+structures are  realized in &GAP;.   This section applies  to all &GAP;
+objects  that have  subobjects,  e.g.,  to lists   and to  records. After
+reading the section&nbsp;<Ref Sect="Plain Records"/> about records you should return to
+this section and translate it into the record context.
+<P/>
+Two  lists are <E>equal</E> if all their entries are equal.  This means that the
+equality operator <C>=</C> returns <K>true</K> for the  comparison of  two lists if
+and  only if these two lists are of the same length and for each position
+the values in the respective lists are equal.
+<P/>
+<Example><![CDATA[
+gap> numbers := primes;; numbers = primes;
+true
+]]></Example>
+<P/>
+We assigned  the  list <C>primes</C> to the variable  <C>numbers</C> and, of course
+they are equal as they have  both  the same length  and the same entries.
+Now we  will change the  third number to  4 and  compare the result again
+with <C>primes</C>.
+<P/>
+<Example><![CDATA[
+gap> numbers[3]:= 4;; numbers = primes;
+true
+]]></Example>
+<P/>
+You  see that  <C>numbers</C> and  <C>primes</C>  are still   equal, check this  by
+printing the value of <C>primes</C>. The list <C>primes</C> is  no longer a list of
+primes! What has  happened?  The truth is  that  the  lists  <C>primes</C> and
+<C>numbers</C> are  not only equal but they are also <E>identical</E>. <C>primes</C> and
+<C>numbers</C> are two variables pointing to the  same list. If you change the
+value of  the subobject <C>numbers[3]</C>  of <C>numbers</C> this will  also change
+<C>primes</C>.  Variables do <E>not</E> point to  a certain block of storage memory
+but they do  point  to an object that  occupies  storage memory.   So the
+assignment <C>numbers := primes</C> did <E>not</E> create a new list in a different
+place of memory but only created the new name <C>numbers</C>  for the same old
+list of primes.
+<P/>
+From this we see that <E>the same object can have several names.</E>
+<P/>
+If you want to change a list with the  contents of <C>primes</C> independently
+from <C>primes</C>  you will have to  make a copy of  <C>primes</C> by the function
+<C>ShallowCopy</C> which takes an object as its argument and returns a copy of
+the argument. (We will first restore the old value of <C>primes</C>.)
+<P/>
+<Example><![CDATA[
+gap> primes[3]:= 5;; primes;
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,,,,,, 71 ]
+gap> numbers:= ShallowCopy(primes);; numbers = primes;
+true
+gap> numbers[3]:= 4;; numbers = primes;
+false
+]]></Example>
+<P/>
+Now <C>numbers</C> is no longer equal to <C>primes</C> and <C>primes</C> still is a list
+of primes.  Check this by printing the values of <C>numbers</C> and <C>primes</C>.
+<P/>
+Lists and records can be changed this way because &GAP; objects of these
+types have subobjects.
+To clarify this statement consider the following assignments.
+<P/>
+<Example><![CDATA[
+gap> i:= 1;; j:= i;; i:= i+1;; 
+]]></Example>
+<P/>
+By adding 1 to <C>i</C> the value of <C>i</C> has  changed.   What  happens to <C>j</C>?
+After the second statement <C>j</C> points to the same object  as <C>i</C>,  namely
+to the  integer 1.  The  addition  does <E>not</E> change  the object <C>1</C>  but
+creates a new object according  to the instruction <C>i+1</C>.  It is actually
+the assignment that changes the value of <C>i</C>.  Therefore <C>j</C> still points
+to  the object <C>1</C>.  Integers  (like permutations and  booleans)  have no
+subobjects.  Objects  of these types  cannot  be  changed but can only be
+replaced by other objects.   And a replacement does not change the values
+of other variables.  In the above example an assignment of a new value to
+the variable <C>numbers</C> would also not change the value of <C>primes</C>.
+<P/>
+Finally try the following examples and explain the results.
+<P/>
+<Log><![CDATA[
+gap> l:= [];; l:= [l];
+[ [  ] ]
+gap> l[1]:= l;
+[ ~ ]
+]]></Log>
+<P/>
+Now return to Section&nbsp;<Ref Sect="Plain Lists"/> and find out whether
+the functions <Ref Func="Add" BookName="ref"/> and
+<Ref Func="Append" BookName="ref"/> change their arguments.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Immutability">
+<Heading>Immutability</Heading>
+
+&GAP; has a mechanism that protects lists against  changes like the ones
+that have bothered us in Section&nbsp;<Ref Sect="Identical Lists"/>.
+The function <Ref Func="Immutable" BookName="ref"/> takes as argument a list
+and returns an immutable copy of it,
+i.e., a list  which  looks exactly like the   old one, but has  two extra
+properties:
+(1)&nbsp;The new list is immutable, i.e.,  the list itself and its subobjects 
+    cannot be changed.
+(2)&nbsp;In constructing the copy, every part of  the list that can be changed
+    has been copied, so that changes to the  old list will not affect the
+    new one.  In other words, the new  list has no  mutable subobjects in
+    common with the old list.
+<P/>
+<Log><![CDATA[
+gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
+gap> list[3][5] := 'w';; list; copy;
+[ 1, 2, "threw", [ 4 ] ]
+[ 1, 2, "three", [ 4 ] ]
+gap> copy[3][5] := 'w';
+Lists Assignment: <list> must be a mutable list
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' and ignore the assignment to continue
+brk> quit;
+]]></Log>
+<P/>
+As a consequence of  these rules, in the  immutable copy of a list  which
+contains an already immutable list as subobject, this immutable subobject
+need not be copied,  because it is unchangeable. Immutable lists are
+useful in many complex &GAP; objects,  for example as generator lists of
+groups. By  making them immutable, &GAP;  ensures that no generators can
+be added to the list, removed or exchanged. Such  changes would of course
+lead  to serious inconsistencies with  other  knowledge that may already
+have been calculated for the group.
+<P/>
+A converse function to <Ref Func="Immutable" BookName="ref"/> is
+<Ref Func="ShallowCopy" BookName="ref"/>, which produces a
+new mutable list whose <M>i</M>-th entry is the <M>i</M>-th entry of the old
+list. The single entries are not copied, they are just placed in the
+new list.  If the old list is immutable, and hence the list entries
+are immutable themselves,
+the result of <Ref Func="ShallowCopy" BookName="ref"/> is mutable only
+on the top level.
+<P/>
+It should be noted that also other objects than lists can appear in
+mutable or immutable form.
+Records (see Section&nbsp;<Ref Sect="Plain Records"/>) provide another example.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sets">
+<Heading>Sets</Heading>
+
+<Index Subkey="strictly sorted">lists</Index>
+<Index>family</Index>
+&GAP; knows several special kinds of lists.  A <E>set</E> in &GAP; is a
+list that contains no holes (such a list is called <E>dense</E>) and whose
+elements are strictly sorted w.r.t.&nbsp;<C>&lt;</C>; in particular, a set cannot
+contain duplicates.  (More precisely, the elements of a set in &GAP;
+are required to lie in the same <E>family</E>, but roughly this means that
+they can be compared using the <C>&lt;</C> operator.)
+<P/>
+This provides a natural model for mathematical sets whose elements are
+given by an explicit enumeration.
+<P/>
+&GAP; also calls a set a <E>strictly sorted list</E>,
+and the function <Ref Func="IsSSortedList" BookName="ref"/> tests
+whether a given list is a set.  It returns a
+boolean value.  For almost any list whose elements are contained in
+the same family, there exists a corresponding set.  This set is
+constructed by the function <Ref Func="Set" BookName="ref"/>
+which takes the list as its argument
+and returns a set obtained from this list by ignoring holes and
+duplicates and by sorting the elements.
+<P/>
+The elements of the sets used in the examples of this section are
+strings.
+<P/>
+<Example><![CDATA[
+gap> fruits:= ["apple", "strawberry", "cherry", "plum"];
+[ "apple", "strawberry", "cherry", "plum" ]
+gap> IsSSortedList(fruits);
+false
+gap> fruits:= Set(fruits);
+[ "apple", "cherry", "plum", "strawberry" ]
+]]></Example>
+<P/>
+Note that the original list <C>fruits</C> is not changed by the function
+<Ref Func="Set" BookName="ref"/>.
+We have to make a new assignment to the variable <C>fruits</C> in
+order to make it a set.
+<P/>
+The operator <K>in</K> is  used  to test whether an  object is an element of a
+set.  It returns a boolean value <K>true</K> or <K>false</K>.
+<P/>
+<Example><![CDATA[
+gap> "apple" in fruits;
+true
+gap> "banana" in fruits;
+false
+]]></Example>
+<P/>
+The operator <K>in</K> can also be applied to ordinary lists. It is however
+much  faster  to perform  a  membership test for   sets since sets are
+always  sorted and a  binary search  can be  used  instead of a linear
+search.  New elements may be added to a set by the function
+<Ref Func="AddSet" BookName="ref"/>
+which takes the  set <C>fruits</C> as its first  argument and an element as
+its second argument   and adds the element  to  the set  if  it wasn't
+already there. Note that the object <C>fruits</C> is changed.
+<P/>
+<Example><![CDATA[
+gap> AddSet(fruits, "banana");
+gap> fruits;  #  The banana is inserted in the right place.
+[ "apple", "banana", "cherry", "plum", "strawberry" ]
+gap> AddSet(fruits, "apple");
+gap> fruits;  #  fruits has not changed.
+[ "apple", "banana", "cherry", "plum", "strawberry" ]
+]]></Example>
+<P/>
+Note that inserting new elements into a set with
+<Ref Func="AddSet" BookName="ref"/> is usually more
+expensive than simply adding new elements at the end of a list.
+<P/>
+Sets can be intersected by the function
+<Ref Func="Intersection" BookName="ref"/>  and united by the
+function <Ref Func="Union" BookName="ref"/> which both take two sets
+as their arguments  and return
+the intersection resp. union of the two sets as a new object.
+<P/>
+<Example><![CDATA[
+gap> breakfast:= ["tea", "apple", "egg"];
+[ "tea", "apple", "egg" ]
+gap> Intersection(breakfast, fruits);
+[ "apple" ]
+]]></Example>
+<P/>
+The arguments of the functions <Ref Func="Intersection" BookName="ref"/>
+and <Ref Func="Union" BookName="ref"/> could be
+ordinary lists, while their  result is always  a set. Note that in the
+preceding example at least one argument of
+<Ref Func="Intersection" BookName="ref"/> was not a set.
+The functions <Ref Func="IntersectSet" BookName="ref"/> and
+<Ref Func="UniteSet" BookName="ref"/> also form the
+intersection resp.&nbsp;union of two sets. They will however not return the
+result  but change their  first argument  to be  the result.  Try them
+carefully.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Ranges">
+<Heading>Ranges</Heading>
+
+A <E>range</E> is a finite arithmetic progression of integers. This is another
+special kind of list. A range is described by the first two values and the last
+value of the arithmetic progression which are given in the form
+<C>[<A>first</A>,<A>second</A>..<A>last</A>]</C>.
+In the usual case of an ascending list of
+consecutive integers the second entry may be omitted.
+<P/>
+<Example><![CDATA[
+gap> [1..999999];     #  a range of almost a million numbers
+[ 1 .. 999999 ]
+gap> [1, 2..999999];  #  this is equivalent
+[ 1 .. 999999 ]
+gap> [1, 3..999999];  #  here the step is 2
+[ 1, 3 .. 999999 ]
+gap> Length( last );
+500000
+gap> [ 999999, 999997 .. 1 ];
+[ 999999, 999997 .. 1 ]
+]]></Example>
+<P/>
+This compact printed representation of a fairly long  list corresponds to
+a  compact internal representation.
+The function <Ref Func="IsRange" BookName="ref"/> tests
+whether an object is a range,
+the function <Ref Func="ConvertToRangeRep" BookName="ref"/> changes
+the representation of a list
+that is in fact a range to this compact internal representation.
+<P/>
+<Example><![CDATA[
+gap> a:= [-2,-1,0,1,2,3,4,5];
+[ -2, -1, 0, 1, 2, 3, 4, 5 ]
+gap> IsRange( a );
+true
+gap> ConvertToRangeRep( a );;  a;
+[ -2 .. 5 ]
+gap> a[1]:= 0;; IsRange( a );
+false
+]]></Example>
+<P/>
+Note that this  change of representation does  <E>not</E> change the  value of
+the list <C>a</C>. The list <C>a</C>  still behaves in any context  in the same way
+as it would have in the long representation.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="For and While Loops">
+<Heading>For and While Loops</Heading>
+
+<Index Key="loops" Subkey="for">loop</Index>
+<Index Key="loops" Subkey="while">loop</Index>
+<P/>
+Given a list <C>pp</C> of permutations we can form their product by means of a
+<K>for</K> loop instead of writing down the product explicitly.
+<P/>
+<Example><![CDATA[
+gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8), (1,5,7)(2,3,8,6),
+>           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2)];;
+gap> prod:= ();        
+()
+gap> for p in pp do
+>       prod:= prod*p;    
+>    od;
+gap> prod;        
+(1,8,4,2,3,6,5,9)
+]]></Example>
+<P/>
+First a  new variable <C>prod</C>  is initialized  to the identity permutation
+<C>()</C>. Then the loop variable <C>p</C> takes as its value one permutation after
+the other from the list <C>pp</C> and is multiplied with  the present value of
+<C>prod</C>  resulting in a  new value which  is then assigned  to <C>prod</C>.
+<P/>
+The <K>for</K> loop has the following syntax
+<P/>
+<K>for</K> <A>var</A> <K>in</K> <A>list</A> <K>do</K> <A>statements</A> <K>od</K><C>;</C>
+<P/>
+The  effect of the <K>for</K>  loop  is to execute the <A>statements</A> for  every
+element  of  the <A>list</A>.   A <K>for</K>  loop  is  a  statement  and therefore
+terminated by a semicolon.  The list of <A>statements</A>  is enclosed by  the
+keywords <K>do</K> and <K>od</K>  (reverse  <K>do</K>).  A <K>for</K>  loop returns no value.
+Therefore we had to ask explicitly for the value of <C>prod</C> in the
+preceding example.
+<P/>
+The <K>for</K> loop can loop over any kind of list, even a list with holes.
+In many programming languages the <K>for</K> loop has the form
+<P/>
+<C>for <A>var</A> from <A>first</A> to <A>last</A> do <A>statements</A> od;</C>
+<P/>
+In &GAP; this is merely a special case of the general <K>for</K> loop as defined
+above where the <A>list</A> in the loop body is a range (see&nbsp;<Ref Sect="Ranges"/>):
+<P/>
+<K>for</K> <A>var</A> <K>in</K> <C>[<A>first</A>..<A>last</A>]</C> <K>do</K> <A>statements</A> <K>od</K><C>;</C>
+<P/>
+You can for  instance loop over a range to compute the factorial <M>15!</M>
+of the number <M>15</M> in the following way.
+<P/>
+<Example><![CDATA[
+gap> ff:= 1;
+1
+gap> for i in [1..15] do
+>       ff:= ff * i;
+>    od;
+gap> ff;
+1307674368000
+]]></Example>
+<P/>
+The  <K>while</K> loop has the following syntax
+<P/>
+<K>while</K> <A>condition</A> <K>do</K> <A>statements</A> <K>od</K><C>;</C>
+<P/>
+The <K>while</K>  loop loops over the <A>statements</A>  as long as  the 
+<A>condition</A> evaluates  to  <K>true</K>. Like the <K>for</K> loop the <K>while</K> loop 
+is terminated by the keyword <K>od</K> followed by a semicolon.
+<P/>
+We can use  our list <C>primes</C> to perform a very simple factorization.  We
+begin by  initializing a list <C>factors</C> to the empty list.   In this list
+we want to collect the prime factors of the number 1333.  Remember that a
+list has to exist  before any values  can be assigned to positions of the
+list.  Then we  will loop over the list <C>primes</C> and  test for each prime
+whether it divides the  number.  If it does we will  divide the number by
+that prime, add it to the list <C>factors</C> and continue.
+<P/>
+<Example><![CDATA[
+gap> n:= 1333;;
+gap> factors:= [];;
+gap> for p in primes do
+>       while n mod p = 0 do
+>          n:= n/p;
+>          Add(factors, p);
+>       od;
+>    od;
+gap> factors;
+[ 31, 43 ]
+gap> n;
+1
+]]></Example>
+<P/>
+As <C>n</C> now has the value 1 all prime factors  of 1333 have been found and
+<C>factors</C> contains a complete factorization of  1333.  This can of course
+be verified by multiplying 31 and 43.
+<P/>
+This loop  may  be applied  to arbitrary  numbers in order  to find prime
+factors.  But  as <C>primes</C> is not a complete list of all primes this loop
+may fail  to find all prime factors of  a number greater than 2000,  say.
+You  can try to improve it in such a way that new primes are added to the
+list <C>primes</C> if needed.
+<P/>
+You have already seen that list objects may be  changed.   This of
+course also holds  for the  list in a loop body.  In most  cases  you have to be
+careful not  to change this list, but there are situations  where this is
+quite useful.  The following example  shows a quick way  to determine the
+primes smaller than 1000 by a sieve method.  Here we will make use of the
+function <C>Unbind</C> to delete entries from a list, and the <C>if</C>
+statement covered in <Ref Sect="If Statements"/>.
+<P/>
+<Example><![CDATA[
+gap> primes:= [];;
+gap> numbers:= [2..1000];;
+gap> for p in numbers do
+>       Add(primes, p);
+>       for n in numbers do
+>          if n mod p = 0 then
+>             Unbind(numbers[n-1]);
+>          fi;
+>       od;
+>    od;
+]]></Example>
+<P/>
+The inner loop  removes all entries from <C>numbers</C> that are  divisible by
+the last detected prime <C>p</C>.  This is done by the function <C>Unbind</C> which
+deletes the binding of the list position  <C>numbers[n-1]</C> to the value <C>n</C>
+so that afterwards <C>numbers[n-1]</C> no longer has  an  assigned value.  The
+next  element encountered in <C>numbers</C>  by the outer  loop necessarily is
+the next prime.
+<P/>
+In a similar way it is possible to enlarge the list which is looped over.
+This yields a nice and short orbit  algorithm for the  action of a group,
+for example.
+<P/>
+More about <K>for</K> and <K>while</K> loops can be found in the
+sections&nbsp;<Ref Sect="While" BookName="ref"/> and&nbsp;<Ref Sect="For" BookName="ref"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="List Operations">
+<Heading>List Operations</Heading>
+
+There is a more comfortable way than that given in the previous section to
+compute the product of a list of numbers or permutations.
+<P/>
+<Example><![CDATA[
+gap> Product([1..15]);
+1307674368000
+gap> Product(pp);
+(1,8,4,2,3,6,5,9)
+]]></Example>
+<P/>
+The function <Ref Func="Product" BookName="ref"/> takes a list
+as its argument and computes  the
+product  of  the  elements  of the  list.   This  is possible whenever  a
+multiplication of  the elements of the list is defined.
+So <Ref Func="Product" BookName="ref"/> 
+executes a loop over all elements of the list.
+<P/>
+There are other often used loops available as functions.
+Guess what the function <Ref Func="Sum" BookName="ref"/> does.
+The function <Ref Func="List" BookName="ref"/> may take a list and a function
+as its arguments.  It will then apply the function to each element of the
+list  and return  the corresponding list of results.   A list of cubes is
+produced as follows with the function <C>cubed</C> from
+Section&nbsp;<Ref Chap="Functions"/>.
+<P/>
+<Example><![CDATA[
+gap> cubed:= x -> x^3;;
+gap> List([2..10], cubed);
+[ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ]
+]]></Example>
+<P/>
+To add all these cubes we might apply the function
+<Ref Func="Sum" BookName="ref"/> to the last list.
+But we may as well give the function <C>cubed</C> to
+<Ref Func="Sum" BookName="ref"/> as an additional argument.
+<P/>
+<Example><![CDATA[
+gap> Sum(last) = Sum([2..10], cubed);
+true
+]]></Example>
+<P/>
+The  primes less than 30 can  be retrieved out  of the list <C>primes</C> from
+Section&nbsp;<Ref Sect="Plain Lists"/> by the function
+<Ref Func="Filtered" BookName="ref"/>. This function takes the
+list <C>primes</C> and a property as its arguments and will return the list of
+those elements of <C>primes</C> which have this property. Such a property will
+be represented  by  a function  that  returns  a boolean  value. In  this
+example the property  of  being less than  30 can be represented  by  the
+function <C>x -> x &lt; 30</C> since <C>x &lt; 30</C> will evaluate to <K>true</K>  for
+values <C>x</C> less than 30 and to <K>false</K> otherwise.
+<P/>
+<Example><![CDATA[
+gap> Filtered(primes, x -> x < 30);
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+]]></Example>
+<P/>
+We have already  mentioned the operator <C>{ }</C> that  forms sublists. It
+takes a  list of positions  as its argument  and will return  the list of
+elements from the original list corresponding to these positions.
+<P/>
+<Example><![CDATA[
+gap> primes{ [1 .. 10] };
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+]]></Example>
+<P/>
+Finally we mention the function <Ref Func="ForAll" BookName="ref"/>
+that checks whether a property
+holds for all elements of a list. It takes as its arguments  a list and a 
+function that returns a boolean value.
+<Ref Func="ForAll" BookName="ref"/> checks whether the
+function returns <K>true</K> for all elements of the list.
+<P/>
+<Example><![CDATA[
+gap> list:= [ 1, 2, 3, 4 ];;
+gap> ForAll( list, x -> x > 0 );
+true
+gap> ForAll( list, x -> x in primes );
+false
+]]></Example>
+<P/>
+You will find more predefined <K>for</K> loops in
+chapter&nbsp;<Ref Chap="Lists" BookName="ref"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Vectors and Matrices">
+<Heading>Vectors and Matrices</Heading>
+
+<Index Subkey="row">vectors</Index>
+<Index>matrices</Index>
+This section describes how &GAP; uses lists to represent row vectors and
+matrices. A <E>row vector</E> is a dense list of elements from a common field.
+A <E>matrix</E> is a dense list of row vectors over a common field and of
+equal length.
+<P/>
+<Example><![CDATA[
+gap> v:= [3, 6, 2, 5/2];;  IsRowVector(v);
+true
+]]></Example>
+<P/>
+Row vectors  may be  added and multiplied   by scalars from  their field.
+Multiplication of   row vectors of  equal length  results in their scalar
+product.
+<P/>
+<Example><![CDATA[
+gap> 2 * v;  v * 1/3;
+[ 6, 12, 4, 5 ]
+[ 1, 2, 2/3, 5/6 ]
+gap> v * v;   # the scalar product of `v' with itself
+221/4
+]]></Example>
+<P/>
+Note  that   the expression <C>v * 1/3</C> is   actually evaluated by first
+multiplying <C>v</C> by 1 (which yields again <C>v</C>)  and by then dividing by 3.
+This  is  also an allowed scalar   operation.  The expression <C>v/3</C> would
+result in  the same value.
+<P/>
+Such arithmetical operations (if the results are again vectors)
+result in <E>mutable</E> vectors except if the operation is binary
+and both operands are immutable;
+thus the vectors shown in the examples above are all mutable.
+<P/>
+So if you want to produce a mutable list with 100&nbsp;entries equal to&nbsp;25,
+you can simply say <C>25  + 0 * [ 1 .. 100 ]</C>.
+Note that ranges are also vectors (over the rationals),
+and that <C>[ 1 .. 100 ]</C> is mutable.
+<P/>
+A matrix is a dense list of row vectors of equal length.
+<P/>
+<Example><![CDATA[
+gap> m:= [[1,-1, 1],
+>         [2, 0,-1],
+>         [1, 1, 1]];
+[ [ 1, -1, 1 ], [ 2, 0, -1 ], [ 1, 1, 1 ] ]
+gap> m[2][1];
+2
+]]></Example>
+<P/>
+Syntactically a matrix is a list of lists. So the number  2 in the second
+row  and the first  column of the matrix <C>m</C>  is referred to as the first
+element of the second element of the list <C>m</C> via <C>m[2][1]</C>.
+<P/>
+A matrix may be multiplied by scalars, row vectors and other matrices.
+(If the row vectors and matrices involved in such a multiplication do not
+have suitable dimensions then the <Q>missing</Q> entries are treated as zeros,
+so the results may look unexpectedly in such cases.)
+<P/>
+<Example><![CDATA[
+gap> [1, 0, 0] * m;
+[ 1, -1, 1 ]
+gap> [1, 0, 0, 2] * m;
+[ 1, -1, 1 ]
+gap> m * [1, 0, 0];
+[ 1, 2, 1 ]
+gap> m * [1, 0, 0, 2];
+[ 1, 2, 1 ]
+]]></Example>
+<P/>
+Note that multiplication  of a row vector with  a matrix will result in a
+linear combination of the  rows of the  matrix, while multiplication of a
+matrix with a row  vector results in  a linear combination of the columns
+of the  matrix. In  the latter case  the  row vector is considered   as a
+column vector.
+<P/>
+A vector or matrix of integers can also be multiplied
+with a finite field scalar and vice versa.
+Such products result in a matrix over the finite field with the integers
+mapped into the finite field in the obvious way.
+Finite field matrices are nicer to read when they are <C>Display</C>ed rather
+than <C>Print</C>ed.
+(Here  we write <C>Z(q)</C> to denote a  primitive root of the finite field
+with <C>q</C> elements.)
+<P/>
+<Example><![CDATA[
+gap> Display( m * One( GF(5) ) );
+ 1 4 1
+ 2 . 4
+ 1 1 1
+gap> Display( m^2 * Z(2) + m * Z(4) );
+z = Z(4)
+ z^1 z^1 z^2
+   1   1 z^2
+ z^1 z^1 z^2
+]]></Example>
+<P/>
+Submatrices    can  easily     be    extracted  using    the   expression
+<C><A>mat</A>{<A>rows</A>}{<A>columns</A>}</C>. They   can also be  assigned to, provided
+the big matrix  is mutable (which  it is not if it  is  the result of  an
+arithmetical operation, see above).
+<P/>
+<Example><![CDATA[
+gap> sm := m{ [ 1, 2 ] }{ [ 2, 3 ] };
+[ [ -1, 1 ], [ 0, -1 ] ]
+gap> sm{ [ 1, 2 ] }{ [2] } := [[-2],[0]];;  sm;
+[ [ -1, -2 ], [ 0, 0 ] ]
+]]></Example>
+<P/>
+The first curly brackets contain the selection of rows,
+the second that of columns.
+<P/>
+Matrices appear not only in linear algebra, but also as group elements,
+provided they are invertible.
+Here we have the opportunity to meet a group-theoretical function,
+namely <Ref Func="Order" BookName="ref"/>,
+which computes the order of a group element.
+<P/>
+<Example><![CDATA[
+gap> Order( m * One( GF(5) ) );
+8
+gap> Order( m );
+infinity
+]]></Example>
+<P/>
+For matrices whose entries are more complex objects, for example rational
+functions, &GAP;'s <Ref Func="Order" BookName="ref"/> methods might not be
+able to prove that the
+matrix has infinite order, and one gets the following warning.
+<Log><![CDATA[
+#I  Order: warning, order of <mat> might be infinite
+]]></Log>
+In such a case, if the order of the matrix really is infinite, you will
+have to interrupt &GAP; by  pressing <C><A>ctl</A>-C</C> (followed by <C><A>ctl</A>-D</C> or
+<C>quit;</C>  to leave the   break loop).
+<P/>
+To prove that the order of <C>m</C> is infinite, we also could look at the
+minimal polynomial of <C>m</C> over the rationals.
+<P/>
+<Example><![CDATA[
+gap> f:= MinimalPolynomial( Rationals, m );;  Factors( f );
+[ x_1-2, x_1^2+3 ]
+]]></Example>
+<P/>
+<Ref Func="Factors" BookName="ref"/> returns a list of irreducible factors
+of the polynomial <C>f</C>.
+The first  irreducible factor <M>X-2</M> reveals   that 2 is an  eigenvalue of
+<C>m</C>, hence its order cannot be finite.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Plain Records">
+<Heading>Plain Records</Heading>
+
+A record provides another way to  build new data structures.  Like a list
+a record contains subobjects.
+In a record the elements, the so-called <E>record components</E>,
+are not indexed by numbers but by names.
+<P/>
+In this section you will see how to define and how to use records.
+Records are changed by assignments to record components
+or by unbinding record components.
+<P/>
+Initially a record is defined as a comma separated list of assignments to
+its record components.
+<P/>
+<Example><![CDATA[
+gap> date:= rec(year:= 1997,
+>               month:= "Jul",
+>               day:= 14);
+rec( day := 14, month := "Jul", year := 1997 )
+]]></Example>
+<P/>
+The value of a record component is accessible by  the record name and the
+record  component name separated   by one dot   as  the record  component
+selector.
+<P/>
+<Example><![CDATA[
+gap> date.year;
+1997
+]]></Example>
+<P/>
+Assignments to new record components  are possible in  the same way.  The
+record is automatically resized to hold the new component.
+<P/>
+<Example><![CDATA[
+gap> date.time:= rec(hour:= 19, minute:= 23, second:= 12);
+rec( hour := 19, minute := 23, second := 12 )
+gap> date;
+rec( day := 14, month := "Jul", 
+  time := rec( hour := 19, minute := 23, second := 12 ), year := 1997 )
+]]></Example>
+<P/>
+Records are objects  that  may be  changed.   An assignment to  a  record
+component  changes the original  object.
+The remarks made in Sections&nbsp;<Ref Sect="Identical Lists"/> and <Ref Sect="Immutability"/>
+about identity and mutability of lists are also true for records.
+<P/>
+Sometimes it is interesting to know which  components of a certain record
+are  bound.  This information is available  from the function
+<Ref Func="RecNames" BookName="ref"/>,
+which  takes a record as  its  argument and  returns  a list of names of
+all bound components of this record as a list of strings.
+<P/>
+<Example><![CDATA[
+gap> RecNames(date);
+[ "time", "year", "month", "day" ]
+]]></Example>
+<P/>
+Now return to Sections <Ref Sect="Identical Lists"/>  and <Ref Sect="Immutability"/> and find out
+what these sections mean for records.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Further Information about Lists">
+<Heading>Further Information about Lists</Heading>
+
+(The following cross-references point to the &GAP; Reference Manual.)
+<P/>
+<!-- % In this chapter you have encountered the fundamental concept of a list. -->
+<!-- % You have seen how to construct lists, how to extend them and how to refer -->
+<!-- % to single elements of a list. -->
+<!-- % Moreover you have seen that lists may contain elements of different -->
+<!-- % types, even holes (unbound  entries), -->
+<!-- % and that a list may be an entry of itself or of one of its entries. -->
+<!-- %  -->
+<!-- % You have seen the difference between equal lists and identical lists. -->
+<!-- % Since lists are objects that have subobjects, they can be mutable or -->
+<!-- % immutable, and mutable lists can be changed. -->
+<!-- % Changing an object will change the values of all variables that point to -->
+<!-- % that object. -->
+<!-- % Be careful, since one object can have several names. -->
+<!-- % The function <C>ShallowCopy</C> creates a shallow copy of a list which is then -->
+<!-- % a new object. -->
+<!-- %  -->
+You will find more about lists, sets, and ranges in Chapter&nbsp;<Ref Chap="Lists" BookName="ref"/>,
+in particular more about identical lists in Section&nbsp;<Ref Sect="Identical Lists" BookName="ref"/>.
+<!-- %  -->
+<!-- % You have seen that sets are a special kind of list. -->
+<!-- % There are functions to expand sets, intersect or unite sets, and there is -->
+<!-- % the membership test with the <C>in</C> operator. -->
+<!-- % Sets are described in more detail in Chapter&nbsp;<Ref Sect="Sets" BookName="ref"/>. -->
+<!-- %  -->
+<!-- % You have seen that finite arithmetic progressions of integers can be -->
+<!-- % represented in a compact way as ranges. -->
+<!-- % Chapter&nbsp;<Ref Sect="Ranges" BookName="ref"/> contains a detailed description of ranges. -->
+<!-- %  -->
+A more detailed description of strings is contained in
+Chapter&nbsp;<Ref Chap="Strings and Characters" BookName="ref"/>.
+<!-- %  -->
+<!-- % You have met row vectors and matrices as special lists, -->
+<!-- % and you have seen how to refer to entries of a matrix and how to multiply -->
+<!-- % scalars, row vectors, and matrices. -->
+<!-- %  -->
+Fields are described in Chapter&nbsp;<Ref Chap="Fields and Division Rings" BookName="ref"/>,
+some known fields in &GAP; are described in Chapters&nbsp;<Ref Chap="Rational Numbers" BookName="ref"/>,
+<Ref Chap="Abelian Number Fields" BookName="ref"/>,
+and&nbsp;<Ref Chap="Finite Fields" BookName="ref"/>.
+Row vectors and matrices are described in more detail in Chapters&nbsp;<Ref Chap="Row Vectors" BookName="ref"/>
+and&nbsp;<Ref Chap="Matrices" BookName="ref"/>.
+Vector spaces are described in Chapter&nbsp;<Ref Chap="Vector Spaces" BookName="ref"/>,
+further matrix related structures are described in Chapters&nbsp;<Ref Chap="Matrix Groups" BookName="ref"/>,
+<Ref Chap="Algebras" BookName="ref"/>,
+and&nbsp;<Ref Chap="Lie Algebras" BookName="ref"/>.
+<!-- %  -->
+<!-- % You have learned how to loop over a list by the <K>for</K> loop and how to -->
+<!-- % loop with respect to a logical condition with the <K>while</K> loop. -->
+<!-- % You have seen that even the list in the loop body can be changed. -->
+<P/>
+<!-- %  -->
+<!-- % You have seen some functions which implement often used <K>for</K> loops. -->
+<!-- % There are functions like <C>Product</C> to form the product of the elements of -->
+<!-- % a list. -->
+<!-- % The function <C>List</C> can apply a function to all elements of a list -->
+<!-- % and the function <C>Filtered</C> creates a sublist of a given list. -->
+You will find more list operations in Chapter&nbsp;<Ref Chap="Lists" BookName="ref"/>.
+<P/>
+Records and functions for records are described in detail
+in Chapter&nbsp;<Ref Chap="Records" BookName="ref"/>.
+
+</Section>
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

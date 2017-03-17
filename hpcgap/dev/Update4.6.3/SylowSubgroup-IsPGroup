@@ -1,0 +1,25 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/02/27
+!! Changed by
+AK
+! Reported by
+MH
+!! Type of Change
+Fix: efficiency issue
+!! Description
+Methods for SylowSubgroupOp for symmetric and alternating group did not always
+set IsPGroup and PrimePGroup for the returned Sylow subgroup. 
+! Test Code
+gap> G:=SymmetricGroup(8);
+Sym( [ 1 .. 8 ] )
+gap> H:=SylowSubgroup(G,3);
+Group([ (1,2,3), (4,5,6) ])
+gap> HasIsPGroup(H);
+true
+gap> HasPrimePGroup(H);
+true
+!! Changeset
+939dec14ab15e6cfed2c65e15862d8f6a4a43a11
+!! End

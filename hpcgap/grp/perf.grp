@@ -1,0 +1,780 @@
+#############################################################################
+##
+#W  perf.grp              GAP Groups Library                 Alexander Hulpke
+##                                                             Volkmar Felsch
+##
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the access functions for the Holt/Plesken library
+##
+
+#############################################################################
+##
+#F  PerfGrpLoad(<size>)  force loading of secondary files, return index
+##
+InstallGlobalFunction( PerfGrpLoad, function(sz)
+local p,sel,i,pos;
+  if PERFLoaded = false then
+    atomic PERFRec do
+      if PERFRec=rec() then
+        ReadGrp("perf0.grp");
+        MakeImmutable(PERFRec);
+      fi;
+    od;
+    # Previously in perf0.grp
+    PERFGRP:=[];
+    PERFSELECT:=BlistList([1..PERFRec.length],[]); # what have we loaded
+    PERFLoaded:=true;
+  fi;
+ atomic readonly PERFRec do
+  # get the index
+  pos:=PositionSet(PERFRec.sizes,sz);
+  if pos=fail then
+    return fail;
+  fi;
+  if PERFSELECT[pos] then
+    return pos;
+  fi;
+  # get the file number
+  p:=PositionSorted(PERFRec.covered,pos);
+  if SizeBlist(PERFSELECT)>50 then
+    # throw away old to free memory
+    sel:=Filtered([1..PERFRec.length],i->PERFSELECT[i]);
+    sel:=sel{[1..Length(sel)-25]};
+    for i in sel do
+      Unbind(PERFGRP[i]);
+      PERFSELECT[i]:=false;
+    od;
+  fi;
+  ReadGrp(Concatenation("perf",String(p),".grp"));
+  # store loaded info
+  if p=1 then
+    p:=[0,PERFRec.covered[p]];
+  else
+    p:=PERFRec.covered{[p-1,p]};
+  fi;
+  for i in [p[1]+1..p[2]] do
+    PERFSELECT[i]:=true;
+  od;
+  return pos;
+ od;
+end );
+
+
+#############################################################################
+##
+#F  SizesPerfectGroups( )
+##
+##  `SizesPerfectGroups'  returns an ordered list of all integers  that occur
+##  as group sizes in the library of perfect groups.
+##
+InstallGlobalFunction( SizesPerfectGroups, function ( )
+
+    PerfGrpLoad(0);
+    # return the requested list.
+    atomic readonly PERFRec do
+      return ShallowCopy( PERFRec.sizes );
+    od;
+end );
+
+
+#############################################################################
+##
+#F  NumberPerfectGroups( size )
+##
+##  `NumberPerfectGroups'  returns the number of nonisomorphic perfect groups
+##  of size size for 1 <= size <= 1 000 000.
+##
+##  Exception:  The number of  perfect groups  is not yet known for the eight
+##  sizes  61440, 122880, 172032, 245760, 344064, 491520, 688128, and 983040.
+##
+##  If size is one of these exceptions or if size is out of range,  the value
+##  fail will be returned.
+##
+InstallGlobalFunction( NumberPerfectGroups, function ( size )
+
+    if IsOddInt(size) then return 0;fi;
+    PerfGrpLoad(0);
+
+    # get the number and return it.
+    if not size in [ 1 .. 1000000 ] or size in PERFRec.notKnown then
+      return fail;
+    elif not size in PERFRec.sizes then
+      return 0;
+    else
+      return PERFRec.number[ PositionSorted( PERFRec.sizes, size ) ];
+    fi;
+end );
+
+
+#############################################################################
+##
+#F  NumberPerfectLibraryGroups( size )
+##
+##  `NumberPerfectLibraryGroups'  returns the number of nonisomorphic perfect
+##  groups of size size for 1 <= size <= 1 000 000 which are available in the
+##  perfect groups library.
+##
+InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
+local sizenum;
+
+    if IsOddInt(size) then return 0;fi;
+    # get the number and return it.
+    sizenum := PerfGrpLoad( size );
+    if sizenum = fail or size in PERFRec.notAvailable or size = 1 then
+        return 0;
+    else
+        return PERFRec.number[sizenum];
+    fi;
+
+end );
+
+#############################################################################
+##
+#F  PerfectCentralProduct( <grpdata> ) . . . . . . . . . . . . . . local
+##
+##  `PerfectCentralProduct'  returns, generators, relators and subgroup
+##  information for 
+##  the direct product of two perfect groups  or their central product modulo
+##  some given central element.
+##
+##  It is expected that grpdata[1] is either of the form
+##      [ 2, <size1>, <n1>, <size2>, <n2> ]
+##  or  [ 3, <size1>, <n1>, <size2>, <n2>, <string1>, <string2> ... ]
+##
+##  In the first case,  the resulting group G is just the direct product D of
+##  the n1-th group of size size1, G1, and the n2-th group of size size2, G2,
+##  from the perfect groups library.
+##
+##  In the second case,  the string entries  are expected  to be the names of
+##  suitable generators of D  such that their product  is the central element
+##  to be factored out in D to contain G.
+##
+##  Note:  This function is an internal function, hence the arguments are not
+##  checked to be in range.  In particular,  the first source entry  which is
+##  expected to be 2 or 3 is neither checked nor used.  Moreover, the perfect
+##  groups record PERFRec is expected to be already loaded.
+##
+PerfectCentralProduct := function ( grpdata )
+local source,orbsize,nargs,grp1,grp2,names1,names2,names,F,fgens,
+      gens1,ngens1,gens2,words1,words2,rels,sub,i,j;
+
+  # get the arguments.
+  source:=grpdata[1];
+  orbsize:=grpdata[6];
+  nargs := Length( source );
+  grp1:=PERFGRP[PerfGrpLoad(source[2])][source[3]];
+  grp2:=PERFGRP[PerfGrpLoad(source[4])][source[5]];
+  # construct names for the generators of the group G to be constructed.
+  names1:=List(grp1[1][2],i->Concatenation([i],"1"));
+  names2:=List(grp2[1][2],i->Concatenation([i],"2"));
+  names := Concatenation( names1, names2 );
+
+  # get the associated free group generators.
+  F := FreeGroup( names );
+  fgens:=GeneratorsOfGroup(F);
+  ngens1 := Length( names1 );
+  gens1 := fgens{[1..ngens1]};
+  gens2 := fgens{[ngens1+1..Length(names)]};
+
+  # get relators and subgroup words
+  words1:=CallFuncList(grp1[1][3],gens1);
+  words2:=CallFuncList(grp2[1][3],gens2);
+
+  # common relations
+  rels:=Concatenation(words1[1],words2[1]);
+
+  # commuting relations
+  for i in gens1 do
+    for j in gens2 do
+      Add(rels,Comm(i,j));
+    od;
+  od;
+
+  sub:=[];
+  # in case of a central product compute additional relations and store
+  # suitable subgroups for a faithful permutation representation.
+  if Length(source)>5 then
+    Add(rels,Product(List(source{[6..Length(source)]},
+        i->fgens[Position(names,i)])));
+    for i in words1[2] do
+      for j in words2[2] do
+        Add(sub,Concatenation(i,j));
+      od;
+    od;
+  fi;
+
+  # return the result
+  return [F,fgens,rels,sub];
+end;
+
+
+#############################################################################
+##
+#F  PerfectSubdirectProduct( <source> ) . . . . . . . . . . . . . . . . local
+##
+##  `PerfectSubdirectProduct' returns, in form of a finitely presented group,
+##  the subdirect product of two perfect groups.
+##
+##  It expects the associated source entry to be of the form
+##      [ 4, <size1>, <n1>, <size2>, <n2>, <over> ]
+##  or  [ 4, <size1>, <n1>, <size2>, <n2>, <over>, <n1'>, <n2'> ]
+##
+##  The resulting group G is the subdirect product of the n1-th group of size
+##  size1, G1, and the n2-th group of size size2, G2, from the perfect groups
+##  library over the perfect group G0 of size over.
+##
+##  Note:  This function is an internal function, hence the arguments are not
+##  checked to be in range.  In particular,  the first source entry  which is
+##  expected  to be  4  is neither  checked nor used.  Moreover,  the perfect
+##  groups record PERFRec is expected to be already loaded.
+##
+##  Warning:  The method used here is   n o t   a general method to construct
+##  subdirect products. It is only guaranteed that it works correctly for the
+##  given set of examples.
+##
+PerfectSubdirectProduct := function (grpdata)
+local source,grp1,grp2,grp0,ngens0,ngens1,ngens2,gens0,gens1,gens2,nrels0,
+      names0,names1,names2,names,F,fgens,ngens,rels,rels0,rels1,rels2,i,j;
+
+  # get the arguments.
+  source:=grpdata[1];
+  grp1:=PERFGRP[PerfGrpLoad(source[2])][source[3]];
+  grp2:=PERFGRP[PerfGrpLoad(source[4])][source[5]];
+  grp0:=PERFGRP[PerfGrpLoad(source[6])][1];
+
+  # construct names for the generators of the group G to be constructed.
+  ngens0:=Length(grp0[1][2]);
+  ngens1:=Length(grp1[1][2]);
+  ngens2:=Length(grp2[1][2]);
+  names0:=List(grp0[1][2],i->[i]);
+  names1:=List(grp1[1][2]{[ngens0+1..ngens1]},i->Concatenation([i],"1"));
+  names2:=List(grp2[1][2]{[ngens0+1..ngens2]},i->Concatenation([i],"2"));
+  names := Concatenation(names0,names1,names2);
+
+  # get the associated free group generators.
+  F := FreeGroup( names );
+  fgens:=GeneratorsOfGroup(F);
+  ngens:=Length(fgens);
+  gens0 := fgens{[1..ngens0]};
+  gens1 := fgens{[ngens0+1..ngens1]};
+  gens2 := fgens{[ngens1+1..ngens]};
+
+  # initialize relations
+  rels:=[];
+  for i in gens1 do
+    for j in gens2 do
+      Add(rels,Comm(i,j));
+    od;
+  od;
+
+  gens1:=Concatenation(gens0,gens1);
+  gens2:=Concatenation(gens0,gens2);
+
+  # get relators
+  rels0:=CallFuncList(grp0[1][3],gens0)[1];
+  rels1:=CallFuncList(grp1[1][3],gens1)[1];
+  rels2:=CallFuncList(grp2[1][3],gens2)[1];
+
+  # construct defining relators for G.
+  nrels0:=Length(rels0);
+  rels:=Concatenation(rels,rels1{[nrels0+1..Length(rels1)]});
+  rels:=Concatenation(rels,rels2{[nrels0+1..Length(rels2)]});
+
+  for i in [ 1 .. ngens0 ] do
+    gens1[i] := One(F);
+    gens2[i] := One(F);
+  od;
+  rels1:=CallFuncList(grp1[1][3],gens1)[1];
+  rels2:=CallFuncList(grp2[1][3],gens2)[1];
+
+  for i in [ 1 .. nrels0 ] do
+    Add(rels,rels0[i]*rels1[i]*rels2[i]);
+  od;
+
+  return [F,fgens,rels];
+end;
+
+#############################################################################
+##
+#M  PerfGrpConst(<IsSubgroupFpGroup>,<descript>)
+##
+InstallMethod(PerfGrpConst,"fp grp",true,[IsSubgroupFpGroup,IsList],0,
+function(filter,l)
+local G,n;
+  if Length(l)=0 then 
+    G:=FreeGroup(1);
+    return G/GeneratorsOfGroup(G);
+  fi;
+  n:=l[1][1];
+  if n=1 then
+    G:=FreeGroup(List(l[1][2],i->[i]));
+    G:=Concatenation([G,GeneratorsOfGroup(G)],
+                     CallFuncList(l[1][3],GeneratorsOfGroup(G)));
+  elif n in [2,3] then
+    G:=PerfectCentralProduct(l);
+  elif n=4 then
+    G:=PerfectSubdirectProduct(l);
+  else
+    Error("not supported");
+  fi;
+  G:=G[1]/G[3];
+  if Length(l)>1 then
+    SetName(G,l[2]);
+  fi;
+  return G;
+end);
+
+#############################################################################
+##
+#M  PerfGrpConst(<IsPermGroup>,<descript>)
+##
+InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsList],0,
+function(filter,l)
+local G,i,j,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
+  if Length(l)=0 then
+    # special treatment for the trivial group
+    G:= GroupByGenerators( [], () );
+    return G;
+  fi;
+  if l[1][1]=1 then
+    gl:=List(l[1][2],i->[i]);
+    if Length(l[1])>4 then
+      # we have auxiliary generators
+      extend:=l[1][5];
+      for i in [1..Length(extend)] do
+        if extend[i]<>0 then
+	  Add(gl,Concatenation("aux",String(i)));
+	fi;
+      od;
+    else
+      extend:=false;
+    fi;
+    gens:=GeneratorsOfGroup(FreeGroup(gl));
+    num:=Length(l[1][2]);
+    rels:=CallFuncList(l[1][3],gens{[1..num]});
+    subs:=rels[2];
+    rels:=rels[1];
+    if extend<>false then
+      # add the further generators in the `auxiliary' component.
+      for i in [1..Length(extend)] do
+        if extend[i]<>0 then
+	  num:=num+1;
+	  if IsInt(extend[i]) then
+	    Add(rels,gens[i]^extend[i]/gens[num]);
+	  else
+	    g1:=One(gens[1]);
+	    for j in extend[i] do
+	      if j>0 then g1:=g1*gens[j];
+	      else g1:=g1/gens[-j];fi;
+	    od;
+	    Add(rels,g1/gens[num]);
+	  fi;
+	fi;
+      od;
+
+      # Tietze
+      extend:=PresentationFpGroup(Group(gens)/rels);
+      TzOptions(extend).generatorsLimit:=Length(gens);
+      TzOptions(extend).printLevel:=0;
+      TzGo(extend);
+      G:=FpGroupPresentation(extend);
+      gl:=gens;
+      gens:=FreeGeneratorsOfFpGroup(G);
+      rels:=RelatorsOfFpGroup(G);
+      subs:=List(subs,i->List(i,j->MappedWord(j,gl,gens)));
+
+    fi;
+  elif l[1][1] in [2,4] then
+    g1:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][2])][l[1][3]]);
+    g2:=PerfGrpConst(IsPermGroup,PERFGRP[PerfGrpLoad(l[1][4])][l[1][5]]);
+    G:=DirectProduct(g1,g2);
+    if Length(l[1])>5 then
+      gl:=Length(PERFGRP[PerfGrpLoad(l[1][6])][1][1][2]);
+      e1:=Embedding(G,1);
+      e2:=Embedding(G,2);
+      g1:=GeneratorsOfGroup(g1);
+      g2:=GeneratorsOfGroup(g2);
+      gens:=List([1..gl],i->Image(e1,g1[i])*Image(e2,g2[i]));
+      for i in [gl+1..Length(g1)] do
+        Add(gens,Image(e1,g1[i]));
+      od;
+      for i in [gl+1..Length(g2)] do
+        Add(gens,Image(e2,g2[i]));
+      od;
+      G:=Subgroup(G,gens);
+    fi;
+    if Length(l)>1 then
+      SetName(G,l[2]);
+    fi;
+    return G;
+  elif l[1][1]=3 then
+    gens:=PerfectCentralProduct(l);
+    rels:=gens[3];
+    subs:=gens[4];
+    gens:=gens[2];
+  else
+    Error("not supported");
+  fi;
+
+  pgens:=List(gens,i->());
+  deg:=0;
+  if IsBound(l[6]) then
+    ind:=l[6];
+  else
+    ind:=l[1][4];
+  fi;
+  if not IsList(ind) then
+    ind:=[ind];
+  fi;
+  for i in [1..Length(subs)] do
+    ct:=CosetTableFromGensAndRels(gens,rels,subs[i]);
+    ct:=ct{[1,3..Length(ct)-1]}; # avoid inverses
+    if Length(ct[1])<>ind[i] then
+      Error("index!");
+    fi;
+    ct:=List(ct,i->Concatenation([1..deg],i+deg)); #shift
+    ct:=List(ct,PermList); # make perms
+    pgens:=List([1..Length(gens)],i->pgens[i]*ct[i]);
+    deg:=deg+ind[i];
+  od;
+  G:= GroupByGenerators( pgens, () );
+
+#  # store the presentation
+#  fp:=Group(gens,gens[1]^0)/rels;
+#  SetIsomorphismFpGroup(G,GroupHomomorphismByImages(G,fp,pgens,
+#                        GeneratorsOfGroup(fp)));
+#  SetIsomorphismPermGroup(fp,GroupHomomorphismByImages(fp,G,
+#                          GeneratorsOfGroup(fp),pgens));
+
+  if Length(l)>1 then
+    SetName(G,l[2]);
+  fi;
+
+  return G;
+end);
+
+#############################################################################
+##
+#F  PerfectGroup([<filter>,]<sz>,<nr>) . . . .  Access perfect groups library
+##
+InstallGlobalFunction( PerfectGroup, function(arg)
+local func,sz,p;
+  PerfGrpLoad(0); # force loading
+  if not IsFunction(arg[1]) then 
+    func:=IsSubgroupFpGroup;
+    sz:=arg;
+  else
+    func:=arg[1];
+    sz:=arg{[2..Length(arg)]};
+  fi;
+  # list given
+  if Length(sz)=1 then
+    if not IsList(sz[1]) then
+      sz:=[sz[1],1];
+    else
+      sz:=sz[1];
+    fi;
+  fi;
+  if sz[1] in PERFRec.notKnown then
+    Error("Perfect groups of size ",sz[1]," not known");
+  elif sz[1] in PERFRec.notAvailable then
+    Error("Perfect groups of size ",sz[1]," not available");
+  elif sz[1]=1 then
+    Error("The trivial group is not considered to be part of this library");
+  fi;
+  p:=PerfGrpLoad(sz[1]);
+  if p=fail or sz[2]>PERFRec.number[p] then
+    Error("PerfectGroup(",sz[1],",",sz[2],") does not exist !");
+  fi;
+  p:=PerfGrpConst(func,PERFGRP[p][sz[2]]);
+  SetSize(p,sz[1]);
+  SetPerfectIdentification(p,ShallowCopy(sz));
+  SetIsPerfectGroup(p,true);
+  SetFilterObj(p,IsPerfectLibraryGroup);
+  return p;
+end );
+
+
+#############################################################################
+##
+#F  DisplayInformationPerfectGroups( <size> ) . . . . . . . . . . . . . . . .
+#F  DisplayInformationPerfectGroups( <size>, <n> )  . . . . . . . . . . . . .
+#F  DisplayInformationPerfectGroups( [ <size>, <n> ] )  . . . . . . . . . . .
+##
+##  `DisplayInformationPerfectGroups'  displays  some invariants  of the n-th
+##  group of size size from the perfect groups library.
+##
+##  If no value of n has been specified, the invariants will be displayed for
+##  all groups of size size available in the library.
+##
+InstallGlobalFunction( DisplayInformationPerfectGroups,
+    function ( arg )
+local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
+
+  if IsInt(arg[1]) then
+    size:=arg[1];
+    if Length(arg)=1 then
+      nr:=[1..NumberPerfectLibraryGroups(size)];
+    else
+      nr:=arg[2];
+    fi;
+  else
+    size:=arg[1][1];
+    nr:=arg[1][2];
+  fi;
+
+  if IsInt(nr) then
+    nr:=[nr];
+  fi;
+
+  sizenum:=PerfGrpLoad(size);
+  if size in PERFRec.notAvailable then
+    Print("#I  no information available about size ",size,"\n");
+    return;
+  elif size in PERFRec.notKnown then
+    Print("#I  no information known about size ",size,"\n");
+    return;
+  fi;
+
+  # loop over the given range.
+  for n in nr do
+
+    # get the required data from main list.
+    description := PERFGRP[sizenum][n][2];
+    hpnum := PERFGRP[sizenum][n][3];
+    centre := PERFGRP[sizenum][n][4];
+    orbsize := PERFGRP[sizenum][n][6];
+
+    # print the group number.
+    Print( "#I Perfect group ", size );
+    if Length(nr) > 1 then
+	Print( ".", n );
+    fi;
+    Print( ":  " );
+
+    # print a message if the group is simple or quaqsisimple.
+    if centre = -1 then
+	if size = 1 then
+	    Print( "trivial group  " );
+	else
+	    Print( "simple group  " );
+	fi;
+    elif centre < -1 then
+	Print( "quasisimple group  " );
+	centre := -centre;
+    fi;
+
+    # print the Holt-Plesken description.
+    Print( description, "\n#I " );
+
+    # print the size of the centre.
+    if centre > 1 then
+	Print( "  centre = ", centre );
+    fi;
+
+    # print the group size.
+    Print( "  size = " );
+    PrintFactorsInt( size );
+
+    # print the orbit sizes of the available permutation representations.
+    if IsInt( orbsize ) then
+	Print( "  orbit size = ", orbsize, "\n" );
+    else
+	orbsize := ShallowCopy( orbsize );
+	Sort( orbsize );
+	Print( "  orbit sizes = ", orbsize[1] );
+	for i in [ 2 .. Length( orbsize ) ] do
+	    Print( " + ", orbsize[i] );
+	od;
+	Print( "\n" );
+    fi;
+
+    # print the Holt-Plesken classes and numbers.
+    if IsInt( hpnum ) then
+	Print( "#I   Holt-Plesken class ", hpnum );
+    else
+	Print( "#I   Holt-Plesken class ", hpnum[1] );
+	Print( " (", hpnum[2], ",", hpnum[3], ")" );
+	leng := Length( hpnum );
+	if leng > 3 then
+	    if leng = 4 then
+		Print( " (occurs also in class ", hpnum[4] );
+	    else
+		Print( " (occurs also in classes ", hpnum[4] );
+		for i in [ 5 .. leng ] do
+		    Print( ", ", hpnum[i] );
+		od;
+	    fi;
+	    Print( ")" );
+	fi;
+    fi;
+    Print( "\n" );
+  od;
+
+end );
+
+
+#############################################################################
+##
+#F  SizeNumbersPerfectGroups( <factor>, ..., <factor> ) . . . . . . . . . . .
+##
+##  `SizeNumbersPerfectGroups'  returns  a list  of the  size numbers  of all
+##  perfect library groups whose composition factors cover the given factors.
+##  Each  argument  must be  one of the  valid names  of simple factors  or a
+##  positive integer.
+##
+##  The  size number  of a group from the perfect groups library is a pair of
+##  the form [ size, n ], where size is the group size and n is the number of
+##  the group within the list of all library groups of that size.
+##
+InstallGlobalFunction( SizeNumbersPerfectGroups, function ( arg )
+local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
+      simple, simple2, size, sizenum, sizenums;
+
+    # load the perfect groups record PERFRec if it is not yet available.
+    PerfGrpLoad( 0 );
+
+    # get and check the arguments, and get the minimal group size.
+    simple := [ ];
+    minsize := 1;
+    for factor in arg do
+        if IsInt( factor ) then
+            if factor < 1 then
+                Error( "illegal order of abelian factor" );
+            fi;
+            minsize := minsize * factor;
+        else
+            pos := Position( PERFRec.nameSimpleGroup, factor );
+            if pos = fail then
+                Error( "illegal name of simple factor" );
+            fi;
+            num := PERFRec.numberSimpleGroup[pos];
+            sizenum := PERFRec.sizeNumberSimpleGroup[num];
+            minsize := minsize * sizenum[1];
+            Add( simple, num );
+        fi;
+    od;
+    empty := simple = [ ];
+    if not empty then
+        if Length( simple ) = 1 then
+            simple := simple[1];
+        else
+            Sort( simple );
+        fi;
+    fi;
+
+    # initialize the resulting list of size numbers;
+    sizenums := [ ];
+    a6a6 := [1,1];
+    a6a6a6 := [1,1,1];
+
+    # get the first size to be handled.
+    minsizenum := Maximum(2,PositionSorted( PERFRec.sizes, minsize ));
+
+    # loop over all library groups of size >= minsize.
+    for sizenum in [ minsizenum .. Length( PERFRec.sizes ) ] do
+
+        # check the size for being a multiple of minsize.
+        if PERFRec.sizes[sizenum] mod minsize = 0 then
+
+            # loop over the library groups of size size.
+            size := PERFRec.sizes[sizenum];
+	    PerfGrpLoad(size);
+            nn := PERFRec.number[sizenum];
+            for n in [ 1 .. nn ] do
+	      if PERFGRP[sizenum][n]<>fail then
+                simple2 := PERFGRP[sizenum][n][5];
+                if simple = simple2 or empty or
+                    IsList( simple2 ) and ( simple in simple2 or
+                    ( simple2 = a6a6 and simple = a6a6a6 ) ) then
+                    # add the pair [size,n] to the list of size numbers.
+                    Add( sizenums, [ size, n ] );
+                fi;
+	      fi;
+            od;
+        fi;
+    od;
+
+    # return the list of size numbers.
+    return sizenums;
+end );
+
+
+#############################################################################
+##
+#M  PerfectIdentification(<G>) . . . . . . . . . . . . id. for perfect groups
+##
+InstallMethod(PerfectIdentification,"id. for perfect groups",true,
+  [IsGroup],0,
+function(G)
+local s,l;
+  if not IsPerfectGroup(G) then
+    return fail;
+  fi;
+  s:=Size(G);
+  PerfGrpLoad(0);
+  if s>=10^6 or s in PERFRec.notAvailable or s in PERFRec.notKnown then
+    Print("#W  No information about size ",s," available\n");
+    return fail;
+  fi;
+  l:=NumberPerfectLibraryGroups(s);
+  while l>1 do
+    if IsomorphismGroups(G,PerfectGroup(IsPermGroup,s,l))<>fail then
+      return [s,l];
+    fi;
+    l:=l-1;
+  od;
+  return [s,1];
+end);
+
+
+#############################################################################
+##
+#M  IsomorphismFpGroup   for perfect library groups
+##
+InstallMethod(IsomorphismFpGroup,"perfect library groups",true,
+  [IsPerfectLibraryGroup],100,
+function(G)
+local H,hom,permgens,fpgens;
+  H:=PerfectGroup(IsSubgroupFpGroup,PerfectIdentification(G));
+  permgens:=GeneratorsOfGroup(G);
+  fpgens:=GeneratorsOfGroup(H);
+  if Length(permgens)<>Length(fpgens) then
+    # remove auxiliary gens
+    hom:=GroupHomomorphismByImagesNC(G,H,permgens{[1..Length(fpgens)]},fpgens);
+  else
+    hom:=GroupHomomorphismByImagesNC(G,H,permgens,fpgens);
+  fi;
+  SetIsInjective(hom,true);
+  SetIsSurjective(hom,true);
+  return hom;
+end);
+
+#############################################################################
+##
+#M  IsomorphismPermGroup   for perfect library groups
+##
+InstallMethod(IsomorphismPermGroup,"perfect library groups",true,
+  [IsPerfectLibraryGroup],100,
+function(G)
+local H,hom,permgens,fpgens;
+  H:=PerfectGroup(IsPermGroup,PerfectIdentification(G));
+  fpgens:=GeneratorsOfGroup(G);
+  permgens:=GeneratorsOfGroup(H);
+  if Length(permgens)<>Length(fpgens) then
+    # remove auxiliary gens
+    hom:=GroupHomomorphismByImagesNC(G,H,fpgens,permgens{[1..Length(fpgens)]});
+  else
+    hom:=GroupHomomorphismByImagesNC(G,H,fpgens,permgens);
+  fi;
+  SetIsInjective(hom,true);
+  SetIsSurjective(hom,true);
+  return hom;
+end);
+
+#############################################################################
+##
+#E  perf.grp . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

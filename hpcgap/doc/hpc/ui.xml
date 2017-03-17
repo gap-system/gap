@@ -1,0 +1,254 @@
+<Chapter Label="Console User Interface">
+  <Heading>Console User Interface</Heading>
+
+HPC-GAP has a multi-threaded user interface to assist with the development and debugging of concurrent programs. This
+user interface is enabled by default; to disable it, and use the single-threaded interface, GAP has to be started with
+the <C>-S</C> option.
+
+  <Section Label="Console UI commands">
+    <Heading>Console UI commands</Heading>
+
+The console user interface provides the user with the option to control threads by commands prefixed with an exclamation
+mark (&quot;!&quot;). Those commands are listed below.
+
+For ease of use, users only need to type as many letters of each commands so that it can be unambiguously selected.
+Thus, the shell will recognize <C>!l</C> as an abbreviation for <C>!list</C>.
+
+    <Subsection Label="shell">
+      <Heading>!shell [name]</Heading>
+
+Starts a new shell thread and switches to it. Optionally, a name for the thread can be provided.
+
+<Example><![CDATA[
+gap> !shell
+--- Switching to thread 4
+[4] gap>
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="fork">
+      <Heading>!fork [name]</Heading>
+
+Starts a new background shell thread. Optionally, a name for the thread can be provided.
+
+<Example><![CDATA[
+gap> !fork
+--- Created new thread 5
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="!list">
+      <Heading>!list</Heading>
+
+List all current threads that are interacting with the user. This does not list threads created with
+<C>CreateThread()</C> that have not entered a break loop.
+
+<Example><![CDATA[
+gap> !list
+--- Thread 0 [0]
+--- Thread 4 [4]
+--- Thread 5 [5] (pending output)
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="kill"><Heading>!kill id</Heading>
+
+Terminates the specified thread.
+
+    </Subsection>
+    <Subsection Label="break"><Heading>!break id</Heading>
+
+Makes the specified thread enter a break loop.
+
+    </Subsection>
+    <Subsection Label="name"><Heading>!name [id] name</Heading>
+
+Give the thread with the numerical identifier or name <C>id</C> the name <C>name</C>.
+
+<Example><![CDATA[
+gap> !name 5 test
+gap> !list
+--- Thread 0 [0]
+--- Thread 4 [4]
+--- Thread test [5] (pending output)
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="info">
+      <Heading>!info id</Heading>
+
+Provide information about the thread with the numerical identifier or name <C>id</C>. <E>Not yet implemented</E>.
+
+    </Subsection>
+    <Subsection Label="hide">
+      <Heading>!hide [id|*]</Heading>
+
+Hide output from the thread with the numerical identifier or name <C>id</C> when it is not the foreground thread. If
+no thread is specified, make this the default behavior for future threads.
+
+    </Subsection>
+    <Subsection Label="watch">
+      <Heading>!watch [id|*]</Heading>
+
+Show output from the thread with the numerical identifier or name <C>id</C> even when it is not the foreground thread.
+If no thread is specified, make this the default behavior for future threads.
+
+    </Subsection>
+    <Subsection Label="keep">
+      <Heading>!keep num</Heading>
+
+Keep <C>num</C> lines of output from each thread.
+
+    </Subsection>
+    <Subsection Label="prompt">
+      <Heading>!prompt (id|*) string</Heading>
+
+Set the prompt for the specified thread (or for all newly created threads if <C>*</C> was specified) to be
+<C>string</C>. If the string contains the pattern <C>id</C>, it is replaced with the numerical id of the thread; if
+it contains the pattern <C>name</C>, it is replaced with the name of the thread; if the thread has no name, the
+numerical id is displayed instead.
+
+    </Subsection>
+    <Subsection Label="prefix">
+      <Heading>!prefix (id|*) string</Heading>
+
+Prefix the output from the specified thread (or for all newly created threads if <C>*</C> was specified) wiht
+<C>string</C>. The same substitution rules as for the <C>!prompt</C> command apply.
+
+    </Subsection>
+    <Subsection Label="select">
+      <Heading>!select id</Heading>
+
+Make the specified thread the foreground thread.
+
+<Example><![CDATA[
+gap> !select 4
+gap> !select 4
+--- Switching to thread 4
+[4] gap>
+]]></Example>
+
+    </Subsection>
+    <Subsection Label="next">
+      <Heading>!next</Heading>
+
+Make the next thread in numerical order the foreground thread.
+
+    </Subsection>
+    <Subsection Label="previous">
+      <Heading>!previous</Heading>
+
+Make the previous thread in numerical order the foreground thread.
+
+    </Subsection>
+    <Subsection Label="replay">
+      <Heading>!replay num [id]</Heading>
+
+Display the last <C>num</C> lines of output of the specified thread. If no thread was specified, display the last
+<C>num</C> lines of the current foreground thread.
+
+    </Subsection>
+    <Subsection Label="id">
+      <Heading>!id</Heading>
+
+<C>!id</C> is a shortcut for <C>!select id</C>.
+
+    </Subsection>
+    <Subsection Label="source">
+      <Heading>!source file</Heading>
+
+Read commands from file <C>file</C>.
+
+    </Subsection>
+    <Subsection Label="alias">
+      <Heading>!alias shortcut expansion</Heading>
+
+Create an alias. After defining the alias, <C>!shortcut 'rest of line'</C> will be replaced with <C>!expansion 'rest of line'</C>.
+
+    </Subsection>
+    <Subsection Label="unalias">
+      <Heading>!unalias shortcut</Heading>
+
+Removes the specified alias.
+
+    </Subsection>
+    <Subsection Label="eval"><Heading>!eval expr</Heading>
+
+    Evaluates <C>expr</C> as a command.
+
+    </Subsection>
+    <Subsection Label="run">
+      <Heading>!run function string</Heading>
+
+Calls the function with name <C>function</C>, passing it the single argument <C>string</C> as a GAP string.
+    </Subsection>
+  </Section>
+  <Section Label="GAP functions to access the Shell UI">
+    <Heading>GAP functions to access the Shell UI</Heading>
+
+There are several functions to access the basic functionality of the shell user interface. Other than <Ref
+Func="TextUIRegisterCommand"/>, they can only be called from within a registered command.
+
+Threads can be specified either by their numerical identifier or by their name (as a string). The empty string can be
+used to specify the current foreground thread.
+
+    <Subsection Label="TextUIRegisterCommand">
+      <Heading>TextUIRegisterCommand(name, func)</Heading>
+
+Registers the command <C>!name</C> with the shell UI. It will call &lt;func&gt; with the rest of the command line passed
+as a string argument when typed.
+
+    </Subsection>
+    <Subsection Label="TextUIForegroundThread">
+      <Heading>TextUIForegroundThread()</Heading>
+
+Returns the numerical identifier of the current foreground thread.
+
+    </Subsection>
+    <Subsection Label="TextUIForegroundThreadName">
+      <Heading>TextUIForegroundThreadName()</Heading>
+
+Returns the name of the current foreground thread or <C>fail</C> if the current foreground thread has no name.
+
+    </Subsection>
+    <Subsection Label="TextUISelectThread">
+      <Heading>TextUISelectThread(id)</Heading>
+
+Makes <C>id</C> the current foreground thread. Returns <C>true</C> or <C>false</C> to indicate success.
+
+    </Subsection>
+    <Subsection Label="TextUIOutputHistory">
+      <Heading>TextUIOutputHistory(id, count)</Heading>
+
+Returns the last <C>count</C> lines of the thread specified by <C>id</C> (which can be a numerical identifier or a
+name). Returns <C>fail</C> if there is no such thread.
+
+    </Subsection>
+    <Subsection Label="TextUISetOutputHistoryLength">
+      <Heading>TextUISetOutputHistoryLength(length)</Heading>
+
+By default, retain <C>length</C> lines of output history from each thread.
+
+    </Subsection>
+    <Subsection Label="TextUINewSession">
+      <Heading>TextUINewSession(foreground, name)</Heading>
+
+Creates a new shell thread. Here, <C>foreground</C> is a boolean variable specifying whether it should be made the new
+foreground thread and <C>name</C> is the name of the thread. The empty string can be used to leave the thread without a
+name.
+
+    </Subsection>
+    <Subsection Label="TextUIRunCommand">
+      <Heading>TextUIRunCommand(command)</Heading>
+
+Run the command denoted by <C>command</C> as though a user had typed it. The command must not contain a newline
+character.
+
+    </Subsection>
+    <Subsection Label="TextUIWritePrompt">
+      <Heading>TextUIWritePrompt()</Heading>
+
+Display a prompt for the current thread.
+    </Subsection>
+  </Section>
+</Chapter>

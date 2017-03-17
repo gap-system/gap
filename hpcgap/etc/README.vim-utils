@@ -1,0 +1,40 @@
+
+HOWTO use the files gap.vim, gap_indent.vim with the
+
+     `vim' editor  (http://www.vim.org/)
+
+I have put the following lines in my ~/.vimrc  file:
+
+-------------------    from  ~/.vimrc  -------------------------------------
+if has("syntax")
+  syntax on             " Default to no syntax highlightning 
+endif
+
+" For GAP files
+augroup gap
+  " Remove all gap autocommands
+  au!
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd source ~/.vim/gap.vim
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd set filetype=gap comments=s:##\ \ ,m:##\ \ ,e:##\ \ b:#
+
+" I'm using the external program `par' for formating comment lines starting
+" with `##  '. Include these lines only when you have par installed.
+  autocmd BufRead,BufNewFile *.g,*.gi,*.gd set formatprg="par w76p4s0j"
+  autocmd BufWritePost,FileWritePost *.g,*.gi,*.gd set formatprg="par w76p0s0j"
+augroup END
+
+---------------------------------------------------------------------------
+
+Then I copied the file GAPPATH/etc/gap.vim to: ~/.vim/gap.vim
+
+Since  I  have  now  installed  vim  6.0  I'm  also  using  the  new  indent
+functionality.  For this  I copied  the file  GAPPATH/etc/gap_indent.vim to:
+~/.vim/indent/gap.vim
+
+See the headers  of the two mentioned files for  additional comments. Adjust
+details according to  your personal taste. Send comments  and suggestions to
+Frank.Luebeck@Math.RWTH-Aachen.De
+
+
+Frank Lübeck
+

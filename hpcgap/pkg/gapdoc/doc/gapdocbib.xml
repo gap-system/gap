@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+<entry id="La85"><book>
+  <author>
+    <name><first>Leslie</first><last>Lamport</last></name>
+  </author>  
+  <title><Alt Only="LaTeX,BibTeX,BibTeXhref">\</Alt>LaTeX: 
+         A Document Preparation System</title>
+  <publisher>Addison-Wesley</publisher>
+  <year>1985</year>
+  <isbn>0-201-15790-X</isbn>
+</book></entry>
+<entry id="GAP4"><manual>
+  <title><C>GAP</C> -- <C>G</C>roups, <C>A</C>lgorithms, and 
+                  <C>P</C>rogramming, Version 4.4.9</title>
+  <organization>The GAP Group</organization>
+  <address>Aachen, St Andrews</address>
+  <year>2006</year>
+  <note><URL>http://www.gap-system.org</URL></note>
+  <key>GAP</key>
+  <keywords>groups; *; gap; manual</keywords>
+</manual></entry>
+
+<entry id="IO"><misc>
+  <author>
+    <name><first>Max</first><last>Neunhöffer</last></name>
+  </author>  
+  <title><Wrap Name="Package">IO</Wrap>,
+         Bindings for low level <C>C</C> library <C>IO</C>,
+         <C>V</C>ersion 2.2</title>
+  <howpublished><URL>http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/io.html</URL></howpublished>
+  <year>2007</year>
+  <note><Wrap Name="Package">GAP</Wrap> package</note>
+</misc></entry>
+
+</file>

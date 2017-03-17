@@ -1,0 +1,1852 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %A  lists.msk                   GAP documentation            Martin Schönert -->
+<!-- %A                                                           Alexander Hulpke -->
+<!-- %% -->
+<!-- %A  @(#)<M>Id: lists.msk,v 1.58 2006/06/19 10:13:43 stefan Exp </M> -->
+<!-- %% -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
+<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %% -->
+<Chapter Label="Lists">
+<Heading>Lists</Heading>
+
+Lists are the most important way to treat objects together.
+A <E>list</E> arranges objects in a definite order.
+So each list implies a partial mapping from the integers to the elements
+of the list.
+I.e., there is a first element of a list, a second, a third, and so on.
+Lists can occur in mutable or immutable form,
+see&nbsp;<Ref Sect="Mutability and Copyability"/> for the concept of mutability,
+and&nbsp;<Ref Sect="Duplication of Lists"/> for the case of lists.
+<P/>
+This chapter deals mainly with the aspect of lists in &GAP;
+as <E>data structures</E>.
+Chapter&nbsp;<Ref Chap="Collections"/> tells more about the <E>collection</E>
+aspect of certain lists,
+and more about lists as <E>arithmetic objects</E> can be found in the chapters
+<Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
+<P/>
+Lists are used to implement ranges (see&nbsp;<Ref Sect="Ranges"/>),
+sets (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>),<Index>Sets</Index>
+strings (see&nbsp;<Ref Chap="Strings and Characters"/>),
+row vectors (see&nbsp;<Ref Chap="Row Vectors"/>),
+and matrices (see&nbsp;<Ref Chap="Matrices"/>);
+Boolean lists (see&nbsp;<Ref Chap="Boolean Lists"/>) are a further
+special kind of lists.
+<P/>
+Several operations for lists,
+such as <Ref Func="Intersection" Label="for a list"/> and
+<Ref Func="Random" Label="for a list or collection"/>,
+will be described in Chapter&nbsp;<Ref Chap="Collections"/>,
+in particular see&nbsp;<Ref Sect="Lists and Collections"/>.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="List Categories">
+<Heading>List Categories</Heading>
+
+A list can be written by writing down the elements in order between
+square brackets <C>[</C>, <C>]</C>, and separating them with commas <C>,</C>.
+An <E>empty list</E>, i.e., a list with no elements, is written as <C>[]</C>.
+<P/>
+<Example><![CDATA[
+gap> [ 1, 2, 3 ];              # a list with three elements
+[ 1, 2, 3 ]
+gap> [ [], [ 1 ], [ 1, 2 ] ];  # a list may contain other lists
+[ [  ], [ 1 ], [ 1, 2 ] ]
+]]></Example>
+<P/>
+Each list constructed this way is mutable
+(see&nbsp;<Ref Sect="Mutability and Copyability"/>).
+
+<#Include Label="IsList">
+<#Include Label="IsDenseList">
+<#Include Label="IsHomogeneousList">
+<#Include Label="IsTable">
+<#Include Label="IsRectangularTable">
+<#Include Label="IsConstantTimeAccessList">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Basic Operations for Lists">
+<Heading>Basic Operations for Lists</Heading>
+
+The basic operations for lists are element access
+(see&nbsp;<Ref Sect="List Elements"/>),
+assignment of elements to a list (see&nbsp;<Ref Sect="List Assignment"/>),
+fetching the length of a list (see&nbsp;<Ref Func="Length"/>),
+the test for a hole at a given position, and unbinding an element at a given
+position (see&nbsp;<Ref Sect="IsBound and Unbind for Lists"/>).
+<P/>
+The term basic operation means that each other list operation can be
+formulated in terms of the basic operations.
+(But note that often a more efficient method than this one is implemented.)
+<P/>
+Any &GAP; object <A>list</A> in the category <Ref Func="IsList"/> is regarded
+as a list, and if methods for the basic list operations are installed for
+<A>list</A> then <A>list</A> can be used also for the other list operations.
+<P/>
+For internally represented lists, kernel methods are provided for the basic
+list operations with positive integer indices.
+For other lists or other indices, it is possible to install appropriate methods for these
+operations.
+This permits the implementation of lists that do not need to store all list
+elements (see also&nbsp;<Ref Sect="Enumerators"/>);
+for example, the elements might be described by an algorithm, such as the
+elements list of a group.
+For this reduction of space requirements, however, a price in access time
+may have to be paid (see&nbsp;<Ref Func="ConstantTimeAccessList"/>).
+<P/>
+<Index Subkey="operation">list element</Index>
+<Index Subkey="operation">list boundedness test</Index>
+<Index Subkey="operation">list assignment</Index>
+<Index Subkey="operation">list unbind</Index>
+<ManSection>
+<Oper Name="\[\]" Arg='list, ix'/>
+<Oper Name="IsBound\[\]" Arg='list, ix'/>
+<Oper Name="\[\]\:\=" Arg='list, pos, ix'/>
+<Oper Name="Unbind\[\]" Arg='list, ix'/>
+
+<Description>
+These operations implement element access, test for element boundedness,
+list element assignment, and removal of the element with index  <A>ix</A>.
+<P/>
+Note that the special characters <C>[</C>, <C>]</C>, <C>:</C>,
+and <C>=</C> must be escaped with a backslash <C>\</C>
+(see&nbsp;<Ref Sect="Symbols"/>);
+so <Ref Oper="\[\]"/> denotes the operation for element access in a list,
+whereas <C>[]</C> denotes an empty list.
+(Maybe the variable names involving special characters look strange,
+but nevertheless they are quite suggestive.)
+<P/>
+<C>\[\]( <A>list</A>, <A>ix</A> )</C> is equivalent to
+<C><A>list</A>[ <A>ix</A> ]</C>,
+which clearly will usually be preferred;
+the former is useful mainly if one wants to access the operation itself,
+for example if one wants to install a method for element access in a
+special kind of lists.
+<P/>
+The syntax <C><A>list</A>[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>
+]</C>, with two or more indices is treated as a shorthand for
+<C><A>list</A>[[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>]]</C>
+
+This is intended to provide a nicer syntax for accessing elements of
+matrices and tensors.
+
+<P/>
+Similarly,
+<Ref Oper="IsBound\[\]"/> is used explicitly mainly in method installations.
+In other situations, one can simply call
+<Ref Func="IsBound" Label="for a list index"/>,
+which then delegates to <Ref Oper="IsBound\[\]"/>
+if the first argument is a list,
+and to <Ref Oper="IsBound\."/> if the first argument is a record.
+<P/>
+Analogous statements hold for <Ref Oper="\[\]\:\="/>
+and <Ref Oper="Unbind\[\]"/>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="List Elements">
+<Heading>List Elements</Heading>
+
+<Index Subkey="list elements">accessing</Index>
+<Index Subkey="access">list element</Index>
+<C><A>list</A>[ <A>ix</A> ]</C>
+<P/>
+The above construct evaluates to the element of the list
+<A>list</A> with index <A>ix</A>.
+For built-in list types and collections, indexing is done with origin 1,
+i.e., the first element of the list is the element with index 1.
+<Example><![CDATA[
+gap> l := [ 2, 3, 5, 7, 11, 13 ];;  l[1];  l[2];  l[6];
+2
+3
+13
+]]></Example>
+If <A>list</A> is not a built-in list, or <A>ix</A> does not evaluate to a
+positive integer, method selection is invoked to try and find a way of
+indexing <A>list</A> with index <A>ix</A>. If this fails, or the
+selected method finds that
+<C><A>list</A>[<A>ix</A>]</C> is unbound, an error is signalled.
+<P/>
+<Index>multiple indices</Index>
+<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...]</C> <P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>
+<P/>
+
+<Index>sublist</Index>
+<Index Subkey="access">sublist</Index>
+<C><A>list</A>{ <A>poss</A> }</C>
+<P/>
+The above construct evaluates to a new list <A>new</A> whose first element is
+<C><A>list</A>[<A>poss</A>[1]]</C>,
+whose second element is <C><A>list</A>[<A>poss</A>[2]]</C>, and so on.
+However, it does not need to be sorted and may contain duplicate elements.
+If for any <M>i</M>,
+<C><A>list</A>[ <A>poss</A>[</C><M>i</M><C>] ]</C> is unbound,
+an error is signalled.
+<P/>
+<Example><![CDATA[
+gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+gap> l{[4..6]};  l{[1,7,1,8]};
+[ 7, 11, 13 ]
+[ 2, 17, 2, 19 ]
+]]></Example>
+<P/>
+The result is a <E>new</E> list, that is not identical to any other list. The
+elements of that list, however, are identical to the corresponding elements
+of the left operand (see&nbsp;<Ref Sect="Identical Lists"/>).
+<P/>
+It is possible to nest such <E>sublist extractions</E>, as can be seen in the
+example below.
+<P/>
+<Example><![CDATA[
+gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;  m{[1,2,3]}{[3,2]};
+[ [ 3, 2 ], [ 6, 5 ], [ 9, 8 ] ]
+gap> l := m{[1,2,3]};; l{[3,2]};
+[ [ 7, 8, 9 ], [ 4, 5, 6 ] ]
+]]></Example>
+<P/>
+Note the difference between the two examples.  The latter extracts
+elements 1, 2, and 3 from <A>m</A> and then extracts the elements 3 and 2 from
+<E>this list</E>.
+The former extracts elements 1, 2, and 3 from <A>m</A> and then
+extracts the elements 3 and 2 from <E>each of those element lists</E>.
+<P/>
+To be precise:
+With each selector <C>[<A>pos</A>]</C> or <C>{<A>poss</A>}</C> we associate
+a <E>level</E> that is defined as the number of selectors of the form
+<C>{<A>poss</A>}</C> to its left in the same expression. For example
+<P/>
+<Listing><![CDATA[
+    l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+level   0      0      1     2      2     3
+]]></Listing>
+<P/>
+Then  a selector <C><A>list</A>[<A>pos</A>]</C> of level <A>level</A> is
+computed as <C>ListElement(<A>list</A>,<A>pos</A>,<A>level</A>)</C>,
+where <C>ListElement</C> is defined as follows.
+(Note that <C>ListElement</C> is <E>not</E> a &GAP; function.)
+<P/>
+<Log><![CDATA[
+ListElement := function ( list, pos, level )
+ if level = 0 then
+  return list[pos];
+ else
+  return List( list, elm -> ListElement(elm,pos,level-1) );
+ fi;
+end;
+]]></Log>
+<P/>
+and a selector <C><A>list</A>{<A>poss</A>}</C> of level <A>level</A> is
+computed as <C>ListElements(<A>list</A>,<A>poss</A>,<A>level</A>)</C>,
+where <C>ListElements</C> is defined as follows.
+(Note that <C>ListElements</C> is <E>not</E> a &GAP; function.)
+<P/>
+<Log><![CDATA[
+ListElements := function ( list, poss, level )
+ if level = 0 then
+  return list{poss};
+  else
+   return List( list, elm -> ListElements(elm,poss,level-1) );
+  fi;
+end;
+]]></Log>
+<P/>
+<Index Subkey="operation">sublist</Index>
+<ManSection>
+<Oper Name="\{\}" Arg='list, poss'/>
+
+<Description>
+This operation implements <E>sublist access</E>.
+For any list, the default method is to loop over the entries in the list
+<A>poss</A>, and to delegate to the element access operation.
+(For the somewhat strange variable name,
+cf.&nbsp;<Ref Sect="Basic Operations for Lists"/>.)
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="List Assignment">
+<Heading>List Assignment</Heading>
+
+<Index Subkey="to a list">assignment</Index>
+<Index Subkey="assignment">list element</Index>
+<C><A>list</A>[ <A>ix</A> ] := <A>object</A>;</C>
+<P/>
+The list element assignment assigns the object <A>object</A>,
+which can be of any type, to the list with index <A>ix</A>,
+in the mutable (see&nbsp;<Ref Sect="Mutability and Copyability"/>) list
+<A>list</A>.
+That means that accessing the <A>ix</A>-th element of the list <A>list</A>
+will return <A>object</A> after this assignment.
+<P/>
+<Example><![CDATA[
+gap> l := [ 1, 2, 3 ];;
+gap> l[1] := 3;; l;             # assign a new object
+[ 3, 2, 3 ]
+gap> l[2] := [ 4, 5, 6 ];; l;   # <object> may be of any type
+[ 3, [ 4, 5, 6 ], 3 ]
+gap> l[ l[1] ] := 10;; l;       # <index> may be an expression
+[ 3, [ 4, 5, 6 ], 10 ]
+]]></Example>
+<P/>
+If the index <A>ix</A> is an integer larger than the length of the list <A>list</A>
+(see <Ref Func="Length"/>),
+the list is automatically enlarged to make room for the new element.
+Note that it is possible to generate lists with holes that way.
+<P/>
+<Example><![CDATA[
+gap> l[4] := "another entry";; l;  # <list> is enlarged
+[ 3, [ 4, 5, 6 ], 10, "another entry" ]
+gap> l[ 10 ] := 1;; l;             # now <list> has a hole
+[ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ]
+]]></Example>
+<P/>
+The  function <Ref Func="Add"/> should be used if you want to add an
+element to the end of the list.
+<P/>
+Note that assigning to a list changes the list,
+thus this list must be mutable
+(see&nbsp;<Ref Sect="Mutability and Copyability"/>).
+See&nbsp;<Ref Sect="Identical Lists"/> for subtleties of changing lists.
+<P/>
+If <A>list</A> does not evaluate to a list, <A>pos</A> does not evaluate to a
+positive integer or <A>object</A> is a call to a function which does not
+return a value (for example <C>Print</C>) an error is signalled.
+<P/>
+<Index Subkey="assignment">multiple indices</Index>
+<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...] := <A>obj</A></C>
+<P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]
+:= <A>obj</A></C>.<P/>
+<Index Subkey="assignment">sublist</Index>
+<C><A>list</A>{ <A>poss</A> } := <A>objects</A>;</C>
+<P/>
+The sublist assignment assigns the object <C><A>objects</A>[1]</C>,
+which can be of any type, to the list <A>list</A> at the position
+<C><A>poss</A>[1]</C>, the object <C><A>objects</A>[2]</C> to
+<C><A>list</A>[<A>poss</A>[2]]</C>, and so on. <A>poss</A> must be a dense
+list of positive integers, it need, however, not be sorted and may
+contain duplicate elements. <A>objects</A> must be a dense list and must have
+the same length as <A>poss</A>.
+<P/>
+<Example><![CDATA[
+gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+gap> l{[1..4]} := [10..13];; l;
+[ 10, 11, 12, 13, 11, 13, 17, 19 ]
+gap> l{[1,7,1,10]} := [ 1, 2, 3, 4 ];; l;
+[ 3, 11, 12, 13, 11, 13, 2, 19,, 4 ]
+]]></Example>
+<P/>
+The next example shows that it is possible to nest such sublist assignments.
+<P/>
+<Example><![CDATA[
+gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+gap> m{[1,2,3]}{[3,2]} := [ [11,12], [13,14], [15,16] ];; m;
+[ [ 1, 12, 11 ], [ 4, 14, 13 ], [ 7, 16, 15 ], [ 10, 11, 12 ] ]
+]]></Example>
+<P/>
+The exact behaviour is defined in the same way as for list extractions
+(see <Ref Sect="List Elements"/>).
+Namely, with each selector <C>[<A>pos</A>]</C> or <C>{<A>poss</A>}</C>
+we associate a <E>level</E> that is defined as the number of selectors
+of the form <C>{<A>poss</A>}</C> to its left in the same expression.
+For example
+<P/>
+<Log><![CDATA[
+    l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+level   0      0      1     1      1     2
+]]></Log>
+<P/>
+Then a list assignment <C><A>list</A>[<A>pos</A>] := <A>vals</A>;</C> of
+level <A>level</A> is computed as
+<C>ListAssignment( <A>list</A>, <A>pos</A>, <A>vals</A>, <A>level</A> )</C>,
+where <C>ListAssignment</C> is defined as follows.
+(Note that <C>ListAssignment</C> is <E>not</E> a &GAP; function.)
+<P/>
+<Log><![CDATA[
+ListAssignment := function ( list, pos, vals, level )
+ local i;
+ if level = 0 then
+  list[pos] := vals;
+ else
+  for i in [1..Length(list)] do
+   ListAssignment( list[i], pos, vals[i], level-1 );
+  od;
+ fi;
+end;
+]]></Log>
+<P/>
+and a list assignment <C><A>list</A>{<A>poss</A>} := <A>vals</A></C> of
+level <A>level</A> is computed as
+<C>ListAssignments( <A>list</A>, <A>poss</A>, <A>vals</A>, <A>level</A> )</C>,
+where <C>ListAssignments</C> is defined as follows.
+(Note that <C>ListAssignments</C> is <E>not</E> a &GAP; function.)
+<P/>
+<Log><![CDATA[
+ListAssignments := function ( list, poss, vals, level )
+ local i;
+ if level = 0 then
+  list{poss} := vals;
+ else
+  for i in [1..Length(list)] do
+   ListAssignments( list[i], poss, vals[i], level-1 );
+  od;
+ fi;
+end;
+]]></Log>
+<P/>
+<Index Subkey="operation">sublist assignment</Index>
+<ManSection>
+<Oper Name="\{\}\:\=" Arg='list, poss, val'/>
+
+<Description>
+This operation implements sublist assignment.
+For any list, the default method is to loop over the entries in the list
+<A>poss</A>, and to delegate to the element assignment operation.
+(For the somewhat strange variable name,
+cf.&nbsp;<Ref Sect="Basic Operations for Lists"/>.)
+</Description>
+</ManSection>
+
+<#Include Label="Add">
+<#Include Label="Remove">
+
+<ManSection>
+<Func Name="CopyListEntries"
+ Arg='fromlst, fromind, fromstep, tolst, toind, tostep, n'/>
+
+<Description>
+This function copies <A>n</A> elements from <A>fromlst</A>,
+starting at position <A>fromind</A> and incrementing the position by
+<A>fromstep</A> each time,
+into <A>tolst</A> starting at position <A>toind</A>
+and incrementing the position by <A>tostep</A> each time.
+<A>fromlst</A> and <A>tolst</A> must be plain lists.
+<A>fromstep</A> and/or <A>tostep</A> can be negative.
+Unbound positions of <A>fromlst</A> are simply copied to <A>tolst</A>.
+<P/>
+<Ref Func="CopyListEntries"/> is used in methods for
+the operations <Ref Func="Add"/> and <Ref Func="Remove"/>.
+</Description>
+</ManSection>
+
+<#Include Label="Append">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="IsBound and Unbind for Lists">
+<Heading>IsBound and Unbind for Lists</Heading>
+
+<#Include Label="IsBound_list">
+<#Include Label="Unbind_list">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Identical Lists">
+<Heading>Identical Lists</Heading>
+
+With the list assignment (see&nbsp;<Ref Sect="List Assignment"/>) it is
+possible to change a mutable list.
+This section describes the semantic consequences of this fact.
+(See also&nbsp;<Ref Sect="Identical Objects"/>.)
+<P/>
+First we define what it means when we say that <Q>an object is changed</Q>.
+You may think that in the following example the second assignment changes
+the integer.
+<P/>
+<Log><![CDATA[
+i := 3;
+i := i + 1;
+]]></Log>
+<P/>
+But in this example it is not the <E>integer</E> <C>3</C> which is changed,
+by adding one to it.
+Instead the <E>variable</E> <C>i</C> is changed by assigning the value of
+<C>i+1</C>,
+which happens to be <C>4</C>, to <C>i</C>.
+The same thing happens in the example below.
+<P/>
+<Log><![CDATA[
+l := [ 1, 2 ];
+l := [ 1, 2, 3 ];
+]]></Log>
+<P/>
+The second assignment does not change the first list, instead it assigns
+a new list to the variable <C>l</C>.  On the other hand, in the following
+example the list <E>is</E> changed by the second assignment.
+<P/>
+<Log><![CDATA[
+l := [ 1, 2 ];
+l[3] := 3;
+]]></Log>
+<P/>
+To understand the difference, think of a variable as a name for an
+object. The important point is that a list can have several names at the
+same time.  An assignment <C><A>var</A>:= <A>list</A>;</C> means in this
+interpretation that <A>var</A> is a name for the object <A>list</A>.
+At the end of the following example <C>l2</C> still has the value
+<C>[ 1, 2 ]</C> as this list has not been changed and nothing else has been
+assigned to it.
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+l2 := l1;
+l1 := [ 1, 2, 3 ];
+]]></Log>
+<P/>
+But after the following example the list for which <C>l2</C> is a name has
+been changed and thus the value of <C>l2</C> is now <C>[ 1, 2, 3 ]</C>.
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+l2 := l1;
+l1[3] := 3;
+]]></Log>
+<P/>
+We say that two lists are <E>identical</E> if changing one of them by a
+list assignment also changes the other one.  This is slightly incorrect,
+because if <E>two</E> lists are identical, there are actually only two names
+for <E>one</E> list. However, the correct usage would be very awkward and
+would only add to the confusion.  Note that two identical lists must be
+equal, because there is only one list with two different names. Thus
+identity is an equivalence relation that is a refinement of equality.
+Identity of objects can be detected using <Ref Func="IsIdenticalObj"/>.
+<P/>
+Let us now consider under which circumstances two lists are identical.
+<P/>
+If you enter a list literal then the list denoted by this literal is a
+new list that is not identical to any other list.
+Thus in the following example <C>l1</C> and <C>l2</C> are not identical,
+though they are equal of course.
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+l2 := [ 1, 2 ];
+]]></Log>
+<P/>
+Also in the following example, no lists in the list <C>l</C> are identical.
+<P/>
+<Log><![CDATA[
+l := [];
+for i in [1..10] do l[i] := [ 1, 2 ]; od;
+]]></Log>
+<P/>
+If you assign a list to a variable no new list is created. Thus the list
+value of the variable on the left hand side and the list on the right
+hand side of the assignment are identical. So in the following example
+<C>l1</C> and <C>l2</C> are identical lists.
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+l2 := l1;
+]]></Log>
+<P/>
+If you pass a list as an argument, the old list and the argument of the
+function are identical. Also if you return a list from a function, the
+old list and the value of the function call are identical. So in the
+following example <C>l1</C> and <C>l2</C> are identical lists:
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+f := function ( l ) return l; end;
+l2 := f( l1 );
+]]></Log>
+<P/>
+If you change a list it keeps its identity.  Thus if two lists are
+identical and you change one of them, you also change the other, and they
+are still identical afterwards. On the other hand, two lists that are
+not identical will never become identical if you change one of them. So
+in the following example both <C>l1</C> and <C>l2</C> are changed,
+and are still identical.
+<P/>
+<Log><![CDATA[
+l1 := [ 1, 2 ];
+l2 := l1;
+l1[1] := 2;
+]]></Log>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Duplication of Lists">
+<Heading>Duplication of Lists</Heading>
+
+Here we describe the meaning of <Ref Func="ShallowCopy"/> and
+<Ref Func="StructuralCopy"/> for lists.
+For the general definition of these functions,
+see&nbsp;<Ref Sect="Duplication of Objects"/>.
+<P/>
+<Index Key="ShallowCopy" Subkey="for lists"><C>ShallowCopy</C></Index>
+The subobjects (see&nbsp;<Ref Func="ShallowCopy"/>) of a list are exactly
+its elements.
+<P/>
+This means that for any list <A>list</A>,
+<Ref Func="ShallowCopy"/> returns a mutable <E>new</E> list <A>new</A>
+that is <E>not identical</E> to any other list
+(see&nbsp;<Ref Sect="Identical Lists"/>),
+and whose elements are identical to the elements of <A>list</A>.
+<P/>
+<Index Key="StructuralCopy" Subkey="for lists"><C>StructuralCopy</C></Index>
+Analogously, for a <E>mutable</E> list <A>list</A>,
+<Ref Func="StructuralCopy"/> returns a mutable <E>new</E> list <A>scp</A>
+that is <E>not identical</E> to any other list,
+and whose elements are structural copies (defined recursively)
+of the elements of <A>list</A>;
+an element of <A>scp</A> is mutable (and then a <E>new</E> list)
+if and only if the corresponding element of <A>list</A> is mutable.
+<P/>
+In both cases, modifying the copy <A>new</A> resp.&nbsp;<A>scp</A> by
+assignments (see&nbsp;<Ref Sect="List Assignment"/>) does not modify
+the original object <A>list</A>.
+<P/>
+<Ref Func="ShallowCopy"/> basically executes the following code for lists.
+<Log><![CDATA[
+new := [];
+for i in [ 1 .. Length( list ) ] do
+  if IsBound( list[i] ) then
+    new[i] := list[i];
+  fi;
+od;
+]]></Log>
+<P/>
+<Example><![CDATA[
+gap> list1 := [ [ 1, 2 ], [ 3, 4 ] ];;  list2 := ShallowCopy( list1 );;
+gap> IsIdenticalObj( list1, list2 );
+false
+gap> IsIdenticalObj( list1[1], list2[1] );
+true
+gap> list2[1] := 0;;  list1;  list2;
+[ [ 1, 2 ], [ 3, 4 ] ]
+[ 0, [ 3, 4 ] ]
+]]></Example>
+<P/>
+<Ref Func="StructuralCopy"/> basically executes the following code for lists.
+<Log><![CDATA[
+new := [];
+for i in [ 1 .. Length( list ) ] do
+  if IsBound( list[i] ) then
+    new[i] := StructuralCopy( list[i] );
+  fi;
+od;
+]]></Log>
+<P/>
+<Example><![CDATA[
+gap> list1 := [ [ 1, 2 ], [ 3, 4 ] ];;  list2 := StructuralCopy( list1 );;
+gap> IsIdenticalObj( list1, list2 );
+false
+gap> IsIdenticalObj( list1[1], list2[1] );
+false
+gap> list2[1][1] := 0;;  list1;  list2;
+[ [ 1, 2 ], [ 3, 4 ] ]
+[ [ 0, 2 ], [ 3, 4 ] ]
+]]></Example>
+<P/>
+The above code is not entirely correct. If the object <A>list</A> contains a
+mutable object twice this object is not copied twice,
+as would happen with the above definition, but only once.
+This means that the copy <A>new</A> and the object <A>list</A> have exactly
+the same structure when viewed as a general graph.
+<P/>
+<Example><![CDATA[
+gap> sub := [ 1, 2 ];; list1 := [ sub, sub ];;
+gap> list2 := StructuralCopy( list1 );
+[ [ 1, 2 ], [ 1, 2 ] ]
+gap> list2[1][1] := 0;; list2;
+[ [ 0, 2 ], [ 0, 2 ] ]
+gap> list1;
+[ [ 1, 2 ], [ 1, 2 ] ]
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Membership Test for Lists">
+<Heading>Membership Test for Lists</Heading>
+
+<ManSection>
+<Oper Name="\in" Arg="obj, list" Label="element test for lists"/>
+
+<Description>
+<Index Key="in" Subkey="for lists"><K>in</K></Index>
+<Index Subkey="for lists">element test</Index>
+This function call or the infix variant
+<A>obj</A>&nbsp;<K>in</K>&nbsp;<A>list</A>
+tests whether there is a positive integer <M>i</M> such that
+<A>list</A><M>[i] =</M> <A>obj</A> holds.
+<P/>
+If the list <A>list</A> knows that it is strictly sorted
+(see&nbsp;<Ref Func="IsSSortedList"/>),
+the membership test is much quicker, because a binary search can be used
+instead of the linear search used for arbitrary lists,
+see <Ref Meth="\in" Label="for strictly sorted lists"/>.
+<P/>
+<Example><![CDATA[
+gap> 1 in [ 2, 2, 1, 3 ];  1 in [ 4, -1, 0, 3 ];
+true
+false
+gap> s := SSortedList( [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32] );;
+gap> 17 in s;  # uses binary search and only 4 comparisons
+false
+]]></Example>
+<P/>
+For finding the position of an element in a list,
+see&nbsp;<Ref Sect="Finding Positions in Lists"/>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Enlarging Internally Represented Lists">
+<Heading>Enlarging Internally Represented Lists</Heading>
+
+Section&nbsp;<Ref Sect="List Assignment"/> told you (among other things)
+that it is possible to assign beyond the logical end of a mutable list,
+automatically enlarging the list.
+This section tells you how this is done for internally represented lists.
+<P/>
+It would be extremely wasteful to make all lists large enough so that
+there is room for all assignments, because some lists may have more than
+100000 elements, while most lists have less than 10 elements.
+<P/>
+On the other hand suppose every assignment beyond the end of a list would
+be done by allocating new space for the list and copying all entries to
+the new space. Then creating a list of 1000 elements by assigning them
+in order, would take half a million copy operations and also create a lot
+of garbage that the garbage collector would have to reclaim.
+<P/>
+So the following strategy is used.  If a list is created it is created
+with exactly the correct size. If a  list is enlarged, because of an
+assignment beyond  the end of the list,  it is enlarged  by at least
+<C><A>length</A>/8 + 4</C> entries.
+Therefore the next assignments beyond the end of the list do not need
+to enlarge the list.
+For example creating a list of 1000 elements by assigning them in order,
+would now take only 32 enlargements.
+<P/>
+The result of this is of course that the <E>physical length</E> of a list
+may be larger than the <E>logical length</E>,
+which is usually called simply the length of the list.
+Aside from the implications for the performance you need not be aware
+of the physical length.
+In fact all you can ever observe, for example by calling
+<Ref Func="Length"/>, is the logical length.
+<P/>
+Suppose that <Ref Func="Length"/> would have to take the physical length
+and then test how many entries at the end of a list are unassigned,
+to compute the logical length of the list. That would take too much time.
+In order to make <Ref Func="Length"/>, and other functions that need to know
+the logical length, more efficient,
+the length of a list is stored along with the list.
+<P/>
+For fine tuning code dealing with plain lists we provide the following 
+two functions.
+<P/>
+<ManSection>
+<Func Arg="len" Name="EmptyPlist"/>
+<Returns>a plain list</Returns>
+<Func Arg="l" Name="ShrinkAllocationPlist"/>
+<Returns>nothing</Returns>
+<Description>
+The function <Ref Func="EmptyPlist"/> returns an empty plain list which
+has enough memory allocated for <A>len</A> entries. This can be useful
+for creating and filling a plain list with a known number of entries. 
+<P/>
+The function <Ref Func="ShrinkAllocationPlist"/> gives back to &GAP;'s
+memory manager the physical memory which is allocated for the plain list
+<A>l</A> but not needed by the current number of entries.
+<P/>
+Note that there are similar functions <Ref Func="EmptyString"/> and
+<Ref Func="ShrinkAllocationString"/> for strings instead of plain lists.
+<Example>
+gap> l:=[]; for i in [1..160] do Add(l, i^2); od; 
+[  ]
+gap> m:=EmptyPlist(160); for i in [1..160] do Add(m, i^2); od;
+[  ]
+gap> # now l uses about 25% more memory than the equal list m
+gap> ShrinkAllocationPlist(l);
+gap> # now l and m use the same amount of memory
+</Example>
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Comparisons of Lists">
+<Heading>Comparisons of Lists</Heading>
+
+<Index Subkey="of lists">comparisons</Index>
+<Index Subkey="comparison">list equal</Index>
+<C><A>list1</A> = <A>list2</A></C>
+<P/>
+<C><A>list1</A> &lt;> <A>list2</A></C>
+<P/>
+Two lists <A>list1</A> and <A>list2</A> are equal if and only if for
+every index <M>i</M>,
+either both entries <A>list1</A><M>[i]</M> and <A>list2</A><M>[i]</M>
+are unbound, or both are bound and are equal, i.e.,
+<A>list1</A><M>[i] =</M> <A>list2</A><M>[i]</M> is <K>true</K>.
+<P/>
+<Example><![CDATA[
+gap> [ 1, 2, 3 ] = [ 1, 2, 3 ];
+true
+gap> [ , 2, 3 ] = [ 1, 2, ];
+false
+gap> [ 1, 2, 3 ] = [ 3, 2, 1 ];
+false
+]]></Example>
+<P/>
+This definition will cause problems with lists which are their own entries.
+Comparing two such lists for equality may lead to an infinite recursion in
+the kernel if the list comparison has to compare the list entries which are
+in fact the lists themselves,
+and then &GAP; crashes.
+<P/>
+<Index Subkey="comparison">list smaller</Index>
+<C><A>list1</A> &lt; <A>list2</A></C>
+<P/>
+<C><A>list1</A> &lt;= <A>list2</A></C>
+<P/>
+Lists are ordered <E>lexicographically</E>.
+Unbound entries are smaller than any bound entry.
+That implies the following behaviour.
+Let <M>i</M> be the smallest positive integer <M>i</M> such that <A>list1</A>
+and <A>list2</A> at position <M>i</M> differ,
+i.e., either exactly one of <A>list1</A><M>[i]</M>, <A>list2</A><M>[i]</M>
+is bound or both entries are bound and differ.
+Then <A>list1</A> is less than <A>list2</A> if either
+<A>list1</A><M>[i]</M> is unbound (and <A>list2</A><M>[i]</M> is not)
+or both are bound and
+<A>list1</A><M>[i]</M> &lt; <A>list2</A><M>[i]</M> is <K>true</K>.
+<P/>
+<Example><![CDATA[
+gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ]; # <list1>[3] < <list2>[3]
+true
+gap> [ 1, 2, 3 ] < [ 1, 2, 3, 5 ];  # <list1>[4] is unbound and thus < 5
+true
+gap> [ 1, , 3, 4 ] < [ 1, -1, 3 ];  # <list1>[2] is unbound and thus < -1
+true
+]]></Example>
+<P/>
+Note that for comparing two lists with <C>&lt;</C> or <C>&lt;=</C>,
+the (relevant) list elements must be comparable with <C>&lt;</C>,
+which is usually <E>not</E> the case for objects in different families,
+see&nbsp;<Ref Sect="Families"/>.
+Also for the possibility to compare lists with other objects,
+see&nbsp;<Ref Sect="Families"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Arithmetic for Lists">
+<Heading>Arithmetic for Lists</Heading>
+
+<Index Subkey="for lists">operators</Index>
+
+It is convenient to have arithmetic operations for lists,
+in particular because in &GAP;
+row vectors and matrices are special kinds of lists.
+However, it is the wide variety of list objects because of which we
+prescribe arithmetic operations <E>not for all</E> of them.
+(Keep in mind that <Q>list</Q> means just an object in the category
+<Ref Func="IsList"/>.)
+<P/>
+(Due to the intended generality and flexibility,
+the definitions given in the following sections are quite technical.
+But for not too complicated cases
+such as matrices (see&nbsp;<Ref Sect="Operators for Matrices"/>)
+and row vectors (see&nbsp;<Ref Sect="Operators for Row Vectors"/>)
+whose entries aren't lists,
+the resulting behaviour should be intuitive.)
+<P/>
+For example, we want to deal with matrices which can be added and
+multiplied in the usual way, via the infix operators <C>+</C> and <C>*</C>;
+and we want also Lie matrices, with the same additive behaviour but with
+the multiplication defined by the Lie bracket.
+Both kinds of matrices shall be lists, with the usual access to their rows,
+with <Ref Func="Length"/> returning the number of rows etc.
+<P/>
+For the categories and attributes that control the arithmetic behaviour
+of lists,
+see&nbsp;<Ref Sect="Filters Controlling the Arithmetic Behaviour of Lists"/>.
+<P/>
+For the definition of return values of additive and multiplicative operations
+whose arguments are lists in these filters,
+see&nbsp;<Ref Sect="Additive Arithmetic for Lists"/> and
+<Ref Sect="Multiplicative Arithmetic for Lists"/>, respectively.
+It should be emphasized that these sections describe only what the return
+values are, and not how they are computed.
+<P/>
+For the mutability status of the return values,
+see&nbsp;<Ref Sect="Mutability Status and List Arithmetic"/>.
+(Note that this is not dealt with in the sections about the result values.)
+<P/>
+Further details about the special cases of row vectors and matrices
+can be found in&nbsp;<Ref Sect="Operators for Row Vectors"/> and
+in&nbsp;<Ref Sect="Operators for Matrices"/>,
+the compression status is dealt with
+in&nbsp;<Ref Sect="Row Vectors over Finite Fields"/>
+and&nbsp;<Ref Sect="Matrices over Finite Fields"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Filters Controlling the Arithmetic Behaviour of Lists">
+<Heading>Filters Controlling the Arithmetic Behaviour of Lists</Heading>
+
+<#Include Label="[1]{arith}">
+<#Include Label="IsGeneralizedRowVector">
+<#Include Label="IsMultiplicativeGeneralizedRowVector">
+<#Include Label="IsListDefault">
+<#Include Label="NestingDepthA">
+<#Include Label="NestingDepthM">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Additive Arithmetic for Lists">
+<Heading>Additive Arithmetic for Lists</Heading>
+
+In this general context, we define the results of additive operations
+only in the following situations.
+For unary operations (zero and additive inverse),
+the unique argument must be in <Ref Func="IsGeneralizedRowVector"/>;
+for binary operations (addition and subtraction),
+at least one argument must be in <Ref Func="IsGeneralizedRowVector"/>,
+and the other either is not a list or also in
+<Ref Func="IsGeneralizedRowVector"/>.
+<P/>
+(For non-list &GAP; objects, defining the results of unary operations is not
+an issue here,
+and if at least one argument is a list not in
+<Ref Func="IsGeneralizedRowVector"/>,
+it shall be left to this argument whether the result in question is defined
+and what it is.)
+
+<Subsection Label="Zero for lists">
+<Heading>Zero for lists</Heading>
+
+The zero (see&nbsp;<Ref Func="Zero"/>) of a list <M>x</M> in
+<Ref Func="IsGeneralizedRowVector"/>
+is defined as the list whose entry at position <M>i</M> is the zero of
+<M>x[i]</M> if this entry is bound, and is unbound otherwise.
+<P/>
+<Example><![CDATA[
+gap> Zero( [ 1, 2, 3 ] );  Zero( [ [ 1, 2 ], 3 ] );  Zero( liemat );
+[ 0, 0, 0 ]
+[ [ 0, 0 ], 0 ]
+LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="AdditiveInverse for lists">
+<Heading>AdditiveInverse for lists</Heading>
+
+The additive inverse (see&nbsp;<Ref Func="AdditiveInverse"/>) of a list
+<M>x</M> in <Ref Func="IsGeneralizedRowVector"/> is defined as the list
+whose entry at position <M>i</M> is the additive inverse of <M>x[i]</M>
+if this entry is bound, and is unbound otherwise.
+<P/>
+<Example><![CDATA[
+gap> AdditiveInverse( [ 1, 2, 3 ] );  AdditiveInverse( [ [ 1, 2 ], 3 ] );
+[ -1, -2, -3 ]
+[ [ -1, -2 ], -3 ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Addition of lists">
+<Heading>Addition of lists</Heading>
+
+<Index Subkey="list and non-list">addition</Index>
+If <M>x</M> and <M>y</M> are in <Ref Func="IsGeneralizedRowVector"/>
+and have the same additive nesting depth
+(see&nbsp;<Ref Func="NestingDepthA"/>),
+<!-- % By definition, this depth is nonzero. -->
+the sum <M>x + y</M> is defined <E>pointwise</E>,
+in the sense that the result is a list whose entry at position <M>i</M> is
+<M>x[i] + y[i]</M> if these entries are bound,
+is a shallow copy (see&nbsp;<Ref Func="ShallowCopy"/>) of <M>x[i]</M> or
+<M>y[i]</M> if the other argument is not bound at position <M>i</M>,
+and is unbound if both <M>x</M> and <M>y</M> are unbound at position <M>i</M>.
+<P/>
+If <M>x</M> is in <Ref Func="IsGeneralizedRowVector"/> and <M>y</M> is
+in <Ref Func="IsGeneralizedRowVector"/> and has lower additive nesting depth,
+or is neither a list nor a domain,
+the sum <M>x + y</M> is defined as a list whose entry at position <M>i</M> is
+<M>x[i] + y</M> if <M>x</M> is bound at position <M>i</M>,
+and is unbound if not.
+The equivalent holds in the reversed case,
+where the order of the summands is kept,
+as addition is not always commutative.
+<P/>
+<Example><![CDATA[
+gap> 1 + [ 1, 2, 3 ];  [ 1, 2, 3 ] + [ 0, 2, 4 ];  [ 1, 2 ] + [ Z(2) ];
+[ 2, 3, 4 ]
+[ 1, 4, 7 ]
+[ 0*Z(2), 2 ]
+gap> l1:= [ 1, , 3, 4 ];;             l2:= [ , 2, 3, 4, 5 ];;
+gap> l3:= [ [ 1, 2 ], , [ 5, 6 ] ];;  l4:= [ , [ 3, 4 ], [ 5, 6 ] ];;
+gap> NestingDepthA( l1 );  NestingDepthA( l2 );
+1
+1
+gap> NestingDepthA( l3 );  NestingDepthA( l4 );
+2
+2
+gap> l1 + l2;
+[ 1, 2, 6, 8, 5 ]
+gap> l1 + l3;
+[ [ 2, 2, 3, 4 ],, [ 6, 6, 3, 4 ] ]
+gap> l2 + l4;
+[ , [ 3, 6, 3, 4, 5 ], [ 5, 8, 3, 4, 5 ] ]
+gap> l3 + l4;
+[ [ 1, 2 ], [ 3, 4 ], [ 10, 12 ] ]
+gap> l1 + [];
+[ 1,, 3, 4 ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Subtraction of lists">
+<Heading>Subtraction of lists</Heading>
+
+<Index Subkey="difference">list and non-list</Index>
+For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
+<Ref Func="IsGeneralizedRowVector"/> and the other is also in
+<Ref Func="IsGeneralizedRowVector"/>
+or is neither a list nor a domain, <M>x - y</M> is defined as <M>x + (-y)</M>.
+<P/>
+<Example><![CDATA[
+gap> l1 - l2;
+[ 1, -2, 0, 0, -5 ]
+gap> l1 - l3;
+[ [ 0, -2, 3, 4 ],, [ -4, -6, 3, 4 ] ]
+gap> l2 - l4;
+[ , [ -3, -2, 3, 4, 5 ], [ -5, -4, 3, 4, 5 ] ]
+gap> l3 - l4;
+[ [ 1, 2 ], [ -3, -4 ], [ 0, 0 ] ]
+gap> l1 - [];
+[ 1,, 3, 4 ]
+]]></Example>
+
+</Subsection>
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Multiplicative Arithmetic for Lists">
+<Heading>Multiplicative Arithmetic for Lists</Heading>
+
+In this general context, we define the results of multiplicative operations
+only in the following situations.
+For unary operations (one and inverse), the unique argument must be in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>;
+for binary operations (multiplication and division),
+at least one argument must be in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+and the other either not a list or also in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+<P/>
+(For non-list &GAP; objects, defining the results of unary operations is not
+an issue here, and if at least one argument is a list not in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+it shall be left to this argument whether the result in question is defined
+and what it is.)
+
+
+<Subsection Label="One for lists">
+<Heading>One for lists</Heading>
+
+The one (see&nbsp;<Ref Func="One"/>) of a dense list <A>x</A> in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> such that <A>x</A> has
+even multiplicative nesting depth and has the same length
+as each of its rows is defined as the usual identity matrix
+on the outer two levels,
+that is, an identity matrix of the same dimensions, with diagonal entries
+<C>One( <A>x</A>[1][1] )</C> and off-diagonal entries
+<C>Zero( <A>x</A>[1][1] )</C>.
+<P/>
+<Example><![CDATA[
+gap> One( [ [ 1, 2 ], [ 3, 4 ] ] );
+[ [ 1, 0 ], [ 0, 1 ] ]
+gap> One( [ [ [ [ 1 ] ], [ [ 2 ] ] ], [ [ [ 3 ] ], [ [ 4 ] ] ] ] );
+[ [ [ [ 1 ] ], [ [ 0 ] ] ], [ [ [ 0 ] ], [ [ 1 ] ] ] ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Inverse for lists">
+<Heading>Inverse for lists</Heading>
+
+The inverse (see&nbsp;<Ref Func="Inverse"/>) of an invertible square table
+<A>x</A> in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> whose entries
+lie in a common field is defined as the usual inverse <M>y</M>, i.e.,
+a square matrix over the same field such that <M><A>x</A> y</M> and
+<M>y <A>x</A></M> is equal to <C>One( <A>x</A> )</C>.
+<P/>
+<Example><![CDATA[
+gap> Inverse( [ [ 1, 2 ], [ 3, 4 ] ] );
+[ [ -2, 1 ], [ 3/2, -1/2 ] ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Multiplication of lists">
+<Heading>Multiplication of lists</Heading>
+
+<Index Subkey="product">list and non-list</Index>
+There are three possible computations that might be triggered by a
+multiplication involving a list in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+Namely, <M>x * y</M> might be
+<List>
+<Mark>(I)</Mark>
+<Item>
+    the inner product
+    <M>x[1] * y[1] + x[2] * y[2] + \cdots + x[n] * y[n]</M>,
+    where summands are omitted for which the entry in <M>x</M> or <M>y</M>
+    is unbound
+    (if this leaves no summand then the multiplication is an error),
+    or
+</Item>
+<Mark>(L)</Mark>
+<Item>
+    the left scalar multiple, i.e., a list whose entry at position <M>i</M>
+    is <M>x * y[i]</M> if <M>y</M> is bound at position <M>i</M>,
+    and is unbound if not, or
+</Item>
+<Mark>(R)</Mark>
+<Item>
+    the right scalar multiple, i.e., a list whose entry at position <M>i</M>
+    is <M>x[i] * y</M> if <M>x</M> is bound at position <M>i</M>,
+    and is unbound if not.
+</Item>
+</List>
+<P/>
+Our aim is to generalize the basic arithmetic of simple row vectors and
+matrices, so we first summarize the situations that shall be covered.
+<P/>
+<Table Align="c|ccc">
+<Row>
+  <Item> </Item>
+  <Item>scl</Item>
+  <Item>vec</Item>
+  <Item>mat</Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item>scl</Item>
+  <Item> </Item>
+  <Item>(L)</Item>
+  <Item>(L)</Item>
+</Row>
+<Row>
+  <Item>vec</Item>
+  <Item>(R)</Item>
+  <Item>(I)</Item>
+  <Item>(I)</Item>
+</Row>
+<Row>
+  <Item>mat</Item>
+  <Item>(R)</Item>
+  <Item>(R)</Item>
+  <Item>(R)</Item>
+</Row>
+</Table>
+<P/>
+This means for example that the product of a scalar (scl) with a vector (vec)
+or a matrix (mat) is computed according to (L).
+Note that this is asymmetric.
+<P/>
+Now we can state the general multiplication rules.
+<P/>
+If exactly one argument is in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+then we regard the other argument (which is then neither a list nor a domain)
+as a scalar, and specify result (L) or (R), depending on ordering.
+<P/>
+In the remaining cases, both <M>x</M> and <M>y</M> are in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+and we distinguish the possibilities by their multiplicative nesting depths.
+An argument with <E>odd</E> multiplicative nesting depth is regarded
+as a vector,
+and an argument with <E>even</E> multiplicative nesting depth is regarded
+as a scalar or a matrix.
+<P/>
+So if both arguments have odd multiplicative nesting depth,
+we specify result (I).
+<P/>
+If exactly one argument has odd nesting depth,
+the other is treated as a scalar if it has lower multiplicative nesting
+depth, and as a matrix otherwise.
+In the former case, we specify result (L) or (R), depending on ordering;
+in the latter case, we specify result (L) or (I), depending on ordering.
+<P/>
+We are left with the case that each argument has even multiplicative
+nesting depth.
+<!-- % By definition, this depth is nonzero. -->
+If the two depths are equal, we treat the computation as a matrix product,
+and specify result (R).
+Otherwise, we treat the less deeply nested argument as a scalar and the other
+as a matrix, and specify result (L) or (R), depending on ordering.
+<P/>
+<Example><![CDATA[
+gap> [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ] * (1,4);
+[ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ]
+gap> [ 1, 2, , 4 ] * 2;
+[ 2, 4,, 8 ]
+gap> [ 1, 2, 3 ] * [ 1, 3, 5, 7 ];
+22
+gap> m:= [ [ 1, 2 ], 3 ];;  m * m;
+[ [ 7, 8 ], [ [ 3, 6 ], 9 ] ]
+gap> m * m = [ m[1] * m, m[2] * m ];
+true
+gap> n:= [ 1, [ 2, 3 ] ];;  n * n;
+14
+gap> n * n = n[1] * n[1] + n[2] * n[2];
+true
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Division of lists">
+<Heading>Division of lists</Heading>
+
+<Index Subkey="quotient">list and non-list</Index>
+For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> or is neither a list
+nor a domain, <M>x / y</M> is defined as <M>x * y^{{-1}}</M>.
+<P/>
+<Example><![CDATA[
+gap> [ 1, 2, 3 ] / 2;  [ 1, 2 ] / [ [ 1, 2 ], [ 3, 4 ] ];
+[ 1/2, 1, 3/2 ]
+[ 1, 0 ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="mod for lists">
+<Heading>mod for lists</Heading>
+
+<Index Subkey="mod">list and non-list</Index>
+<Index Subkey="lists">mod</Index>
+If <A>x</A> and <A>y</A> are in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and have the
+same multiplicative nesting depth (see&nbsp;<Ref Func="NestingDepthM"/>),
+<!-- % By definition, this depth is nonzero. -->
+<C><A>x</A> mod <A>y</A></C> is defined <E>pointwise</E>,
+in the sense that the result is a list whose entry at position <M>i</M> is
+<C><A>x</A>[i] mod <A>y</A>[i]</C> if these entries are bound,
+is a shallow copy (see&nbsp;<Ref Func="ShallowCopy"/>) of <M>x[i]</M> or
+<M>y[i]</M> if the other argument is not bound at position <M>i</M>,
+and is unbound if both <M>x</M> and <M>y</M> are unbound at position <M>i</M>.
+<P/>
+If <M>x</M> is in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> and
+<M>y</M> is in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> and has
+lower multiplicative nesting depth or is neither a list nor a domain,
+<C><A>x</A> mod <A>y</A></C> is defined as a list whose entry at position
+<M>i</M> is <C><A>x</A>[i] mod <A>y</A></C> if <A>x</A> is bound at position
+<M>i</M>, and is unbound if not.
+The equivalent holds in the reversed case,
+where the order of the arguments is kept.
+<P/>
+<Example><![CDATA[
+gap> 4711 mod [ 2, 3,, 5, 7 ];
+[ 1, 1,, 1, 0 ]
+gap> [ 2, 3, 4, 5, 6 ] mod 3;
+[ 2, 0, 1, 2, 0 ]
+gap> [ 10, 12, 14, 16 ] mod [ 3, 5, 7 ];
+[ 1, 2, 0, 16 ]
+]]></Example>
+
+</Subsection>
+
+<Subsection Label="Left quotients of lists">
+<Heading>Left quotients of lists</Heading>
+
+<Index Subkey="left quotient">list and non-list</Index>
+For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
+<Ref Func="IsMultiplicativeGeneralizedRowVector"/> or is neither a list nor
+a domain,
+<C>LeftQuotient( <A>x</A>, <A>y</A> )</C> is defined as <M>x^{{-1}} * y</M>.
+<P/>
+<Example><![CDATA[
+gap> LeftQuotient( [ [ 1, 2 ], [ 3, 4 ] ], [ 1, 2 ] );
+[ 0, 1/2 ]
+]]></Example>
+
+</Subsection>
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Mutability Status and List Arithmetic">
+<Heading>Mutability Status and List Arithmetic</Heading>
+
+Many results of arithmetic operations, when applied to lists,
+are again lists, and it is of interest whether their entries are mutable
+or not (if applicable).
+Note that the mutability status of the result itself is already defined
+by the general rule for any result of an arithmetic operation, not
+only for lists (see&nbsp;<Ref Sect="Mutability and Copyability"/>).
+<P/>
+However, we do <E>not</E> define exactly the mutability status for each
+element on each level of a nested list returned by an arithmetic operation.
+(Of course it would be possible to define this recursively,
+but since the methods used are in general not recursive,
+in particular for efficient multiplication of compressed matrices,
+such a general definition would be a burden in these cases.)
+Instead we consider,
+for a list <M>x</M> in <Ref Func="IsGeneralizedRowVector"/>,
+the sequence <M>x = x_1, x_2, \ldots x_n</M> where <M>x_{{i+1}}</M> is
+the first bound entry in <M>x_i</M> if exists
+(that is, if <M>x_i</M> is a nonempty list),
+and <M>n</M> is the largest <M>i</M> such that <M>x_i</M> lies in
+<Ref Func="IsGeneralizedRowVector"/>.
+The <E>immutability level</E> of <M>x</M> is defined as infinity
+if <M>x</M> is immutable,
+and otherwise the number of <M>x_i</M> which are immutable.
+(So the immutability level of a mutable empty list is <M>0</M>.)
+<P/>
+Thus a fully mutable matrix has immutability level <M>0</M>,
+and a mutable matrix with immutable first row has immutability level <M>1</M>
+(independent of the mutability of other rows).
+<P/>
+The immutability level of the result of any of the binary operations
+discussed here is the minimum of the immutability levels of the arguments,
+provided that objects of the required mutability status exist in &GAP;.
+<!-- Note that this means to call <C>ShallowCopy</C> more often than
+     necessary!
+     Would it be possible to promise the mutability status for all entries
+     only if the arguments are homogeneously mutable,
+     as a refinement of the general mutability rule? -->
+<P/>
+Moreover, the results have a <Q>homogeneous</Q> mutability status,
+that is, if the first bound entry at nesting depth <M>i</M> is immutable
+(mutable)
+then all entries at nesting depth <M>i</M> are immutable
+(mutable, provided that a mutable version of this entry exists in &GAP;).
+<P/>
+Thus the sum of two mutable matrices whose first rows are mutable
+is a matrix all of whose rows are mutable,
+and the product of two matrices whose first rows are immutable
+is a matrix all of whose rows are immutable,
+independent of the mutability status of the other rows of the arguments.
+<!-- Note that there are situations where this rule (and in fact already the
+     general rule mentioned above) leads to counter-intuitive results. -->
+<P/>
+For example, the sum of a matrix (mutable or immutable, i.e.,
+of immutability level one of <M>0</M>, <M>1</M>, or <M>2</M>) and a mutable
+row vector (i.e., immutability level <M>0</M>) is a fully mutable matrix.
+The product of two mutable row vectors of integers is an integer,
+and since &GAP; does not support mutable integers, the result is immutable.
+<P/>
+For unary arithmetic operations, there are three operations available,
+an attribute that returns an immutable result
+(<Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>,
+<Ref Func="Inverse"/>),
+an operation that returns a result that is mutable
+<!-- at least on the outer level, or shall more be guaranteed? -->
+(<Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>,
+<Ref Oper="OneOp"/>, <Ref Oper="InverseOp"/>),
+and an operation whose result has the same immutability level as the argument
+(<Ref Func="ZeroSM"/>, <Ref Func="AdditiveInverseSM"/>,
+<Ref Func="OneSM"/>, <Ref Func="InverseSM"/>).
+The last kind of operations is equivalent to the corresponding infix
+operations <C>0 * <A>list</A></C>, <C>- <A>list</A></C>,
+<C><A>list</A>^0</C>, and <C><A>list</A>^-1</C>.
+(This holds not only for lists,
+see&nbsp;<Ref Sect="Mutability and Copyability"/>.)
+<P/>
+<Example><![CDATA[
+gap> IsMutable( l1 );  IsMutable( 2 * Immutable( [ 1, 2, 3 ] ) );
+true
+false
+gap> IsMutable( l2 );  IsMutable( l3 );
+true
+true
+]]></Example>
+<P/>
+An example motivating the mutability rule is the use of syntactic constructs
+such as <C><A>obj</A> * <A>list</A></C> and <C>- <A>list</A></C> as
+an elegant and efficient way to
+create mutable lists needed for further manipulations from mutable lists.
+In particular one can construct a mutable zero vector of length <M>n</M>
+by <C>0 * [ 1 .. </C><M>n</M><C> ]</C>.
+The latter can be done also using <Ref Func="ListWithIdenticalEntries"/>.
+
+<#Include Label="ListWithIdenticalEntries">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Finding Positions in Lists">
+<Heading>Finding Positions in Lists</Heading>
+
+<#Include Label="Position">
+<#Include Label="Positions">
+<#Include Label="PositionCanonical">
+<#Include Label="PositionNthOccurrence">
+<#Include Label="PositionSorted">
+<#Include Label="PositionSet">
+<#Include Label="PositionProperty">
+<#Include Label="PositionsProperty">
+<#Include Label="PositionBound">
+<#Include Label="PositionNot">
+<#Include Label="PositionNonZero">
+<#Include Label="PositionSublist">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Properties and Attributes for Lists">
+<Heading>Properties and Attributes for Lists</Heading>
+
+A list that contains mutable objects (like lists or records)
+<E>cannot</E> store attribute values that depend on the values of its entries,
+such as whether it is homogeneous, sorted, or strictly sorted,
+as changes in any of its entries could change such property values,
+like the following example shows.
+<P/>
+<Example><![CDATA[
+gap> l:=[[1],[2]];
+[ [ 1 ], [ 2 ] ]
+gap> IsSSortedList(l);
+true
+gap> l[1][1]:=3;
+3
+gap> IsSSortedList(l);
+false
+]]></Example>
+<P/>
+For such lists these property values must be computed anew
+each time the property is asked for.
+For example, if <A>list</A> is a list of mutable row vectors then the call of
+<Ref Func="Position"/> with <A>list</A> as first argument
+cannot take advantage of the fact that <A>list</A> is in fact sorted.
+One solution is to call explicitly <Ref Func="PositionSorted"/>
+in such a situation, another solution is to replace <A>list</A> by an immutable
+copy using <Ref Func="Immutable"/>.
+
+<#Include Label="IsMatchingSublist">
+<#Include Label="IsDuplicateFree">
+<#Include Label="IsSortedList">
+<#Include Label="IsSSortedList">
+<#Include Label="Length">
+<#Include Label="ConstantTimeAccessList">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sorting Lists">
+<Heading>Sorting Lists</Heading>
+
+
+<#Include Label="Sort">
+<#Include Label="SortParallel">
+<#Include Label="Sortex">
+<#Include Label="SortingPerm">
+
+The default methods for all of these sorting operations currently
+use Shell sort as it has a comparable performance to Quicksort for lists of
+length at most a few thousands, and has better worst-case behaviour.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Sorted Lists and Sets">
+<Heading>Sorted Lists and Sets</Heading>
+
+<Index>sets</Index>
+<Index>multisets</Index>
+
+Searching objects in a list works much quicker if the list is known to be
+sorted.
+Currently &GAP; exploits the sortedness of a list automatically only if
+the list is <E>strictly sorted</E>, which is indicated by the property
+<Ref Func="IsSSortedList"/>.
+<P/>
+Remember that a list of <E>mutable</E> objects cannot store that it is
+strictly sorted but has to test it anew whenever it is asked
+whether it is sorted,
+see the remark in&nbsp;<Ref Sect="Properties and Attributes for Lists"/>.
+Therefore &GAP; cannot take advantage of the sortedness of a list if this
+list has mutable entries.
+Moreover, if a sorted list <A>list</A> with mutable elements is used
+as an argument of a function that <E>expects</E> this argument to be sorted,
+for example <Ref Func="UniteSet"/> or <Ref Func="RemoveSet"/>,
+then it is checked whether <A>list</A> is in fact sorted;
+this check can have the effect actually to slow down the computations,
+compared to computations with sorted lists of immutable elements
+or computations that do not involve functions that do automatically check
+sortedness.
+<P/>
+Strictly sorted lists are used to represent <E>sets</E> in &GAP;.
+More precisely, a strictly sorted list is called a <E>proper set</E>
+in the following, in order to avoid confusion with domains
+(see&nbsp;<Ref Sect="Domains"/>) which also represent sets.
+<P/>
+In short proper sets are represented by sorted lists without holes and
+duplicates in &GAP;.
+Note that we guarantee this representation, so  you may make use of
+the fact that a set is represented by a sorted list in your functions.
+<P/>
+In some contexts (for example see&nbsp;<Ref Chap="Combinatorics"/>),
+we also want to talk about multisets.
+A <E>multiset</E> is like a set, except that an element may appear
+several times in a multiset.
+Such multisets are represented by sorted lists without holes
+that may have duplicates.
+<P/>
+This section lists only those functions that are defined exclusively for
+proper sets.
+Set theoretic functions for general collections,
+such as <Ref Func="Intersection" Label="for a list"/>
+and <Ref Func="Union" Label="for a list"/>, 
+are described in Chapter&nbsp;<Ref Chap="Collections"/>.
+In particular, for the construction of proper sets,
+see&nbsp;<Ref Func="SSortedList"/> and <Ref Func="AsSSortedList"/>.
+For finding positions in sorted lists, see&nbsp;<Ref Func="PositionSorted"/>.
+<P/>
+There are nondestructive counterparts of the functions
+<Ref Func="UniteSet"/>, <Ref Func="IntersectSet"/>, and
+<Ref Func="SubtractSet"/> available for proper sets.
+These are <C>UnionSet</C>, <C>IntersectionSet</C>, and
+<Ref Oper="Difference"/>.
+The former two are methods for the more general operations
+<Ref Func="Union" Label="for a list"/>
+and <Ref Func="Intersection" Label="for a list"/>,
+the latter is itself an operation (see&nbsp;<Ref Oper="Difference"/>).
+<P/>
+The result of <C>IntersectionSet</C> and <C>UnionSet</C> is always a new list,
+that is not identical to any other list.
+The elements of that list however are identical to the corresponding
+elements of the first argument <A>set</A>.
+If <A>set</A> is not a proper set it is not specified to which of a number
+of equal elements in <A>set</A> the element in the result is identical
+(see&nbsp;<Ref Sect="Identical Lists"/>).
+
+<#Include Label="[1]{set}">
+
+<ManSection>
+<Meth Name="\in" Arg="obj, list" Label="for strictly sorted lists"/>
+
+<Description>
+For a list <A>list</A> that stores that it is strictly sorted,
+the test with <Ref Func="\in" Label="for strictly sorted lists"/>
+whether the object <A>obj</A> is an entry of <A>list</A> uses binary search.
+This test can be entered also with the infix notation
+<A>obj</A> <K>in</K> <A>list</A>.
+</Description>
+</ManSection>
+
+<#Include Label="IsEqualSet">
+<#Include Label="IsSubsetSet">
+<#Include Label="AddSet">
+<#Include Label="RemoveSet">
+<#Include Label="UniteSet">
+<#Include Label="IntersectSet">
+<#Include Label="SubtractSet">
+
+<!-- % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- % % (from the GAP 3.4 manual) -->
+<!-- % </Section>
+<Section Label="More about Sets">
+<Heading>More about Sets</Heading> -->
+<!-- %  -->
+<!-- % In the previous section we defined a proper  set as a sorted list without -->
+<!-- % holes or duplicates.  This representation is not  only nice to use, it is -->
+<!-- % also a good internal representation supporting efficient algorithms.  For -->
+<!-- % example the <K>in</K> operator can use binary instead of a linear search since -->
+<!-- % a set is sorted.  For another example <Ref Func="Union"/> only has to merge the sets. -->
+<!-- %  -->
+<!-- % However, all  those set functions  also allow lists that are  not  proper -->
+<!-- % sets,  silently making  a copy  of it and  converting this copy to a set. -->
+<!-- % Suppose all the functions would have to test  their arguments every time, -->
+<!-- % comparing  each element  with its  successor, to see if  they  are proper -->
+<!-- % sets.  This would chew up most  of  the performance advantage again.  For -->
+<!-- % example suppose <K>in</K> would have to run  over the whole list, to see if it -->
+<!-- % is  a  proper set, so  it could  use the  binary search.   That  would be -->
+<!-- % ridiculous. -->
+<!-- %  -->
+<!-- % To avoid this a  list that is  a proper set  may, but need  not, have  an -->
+<!-- % internal flag set that tells  those functions that  this list is indeed a -->
+<!-- % proper set.  Those functions do not have to check this argument then, and -->
+<!-- % can use the more  efficient algorithms.  This  section tells  you  when a -->
+<!-- % proper set obtains this flag,  so you can write your  functions in such a -->
+<!-- % way that you make best use of the algorithms. -->
+<!-- %  -->
+<!-- % The results of <Ref Func="Set"/>, <Ref Func="Difference"/>, <Ref Func="Intersection"/>  and <Ref Func="Union"/> are known -->
+<!-- % to be sets by construction, and thus have the flag set upon creation. -->
+<!-- %  -->
+<!-- % If an argument to <Ref Func="IsSet"/>, <Ref Func="IsEqualSet"/>, <Ref Func="IsSubset"/>, <Ref Func="Set"/>, <Ref Func="Difference"/>, -->
+<!-- % <Ref Func="Intersection"/> or  <Ref Func="Union"/> is a proper  set, that does  not  yet have the -->
+<!-- % flag set, those functions will notice that and set the flag for this set. -->
+<!-- % Note that <K>in</K> will use linear search if the  right operand does not have -->
+<!-- % the flag set, will therefore not detect  if it is  a proper set and will, -->
+<!-- % unlike the functions above, never set the flag. -->
+<!-- %  -->
+<!-- % If you change a proper set, that does have this  flag set, by assignment, -->
+<!-- % <C>Add</C>   or <C>Append</C> the  set  will generally lose  it  flag,  even if the -->
+<!-- % change is such that the resulting list is still a proper set.  However if -->
+<!-- % the set has more than 100 elements and the value assigned or added is not -->
+<!-- % a list and not a record and the resulting list is still a proper set than -->
+<!-- % it will keep  the flag.  Note that  changing a list  that is not a proper -->
+<!-- % set will never set the flag, even if the resulting list  is a proper set. -->
+<!-- % Such a set will obtain the flag only if it is passed to a set function. -->
+<!-- %  -->
+<!-- % Suppose you have built a proper set  in such a way that  it does not have -->
+<!-- % the flag set, and that you now want  to perform lots of membership tests. -->
+<!-- % Then you  should call <C>IsSet</C>  with that set   as an argument.   If it is -->
+<!-- % indeed  a proper set  <C>IsSet</C> will set the flag,  and the subsequent <K>in</K> -->
+<!-- % operations will use  the more efficient binary  search.  You can think of -->
+<!-- % the call to <C>IsSet</C> as a hint to &GAP; that this list is a proper set. -->
+<!-- %  -->
+<!-- % There is no way you can set the flag for an ordinary  list  without going -->
+<!-- % through the checking in <C>IsSet</C>.  The  internal  functions depend so much -->
+<!-- % on the fact that a list with  this flag set  is indeed sorted and without -->
+<!-- % holes and duplicates that the risk would be too high to allow setting the -->
+<!-- % flag without such a check. -->
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Lists">
+<Heading>Operations for Lists</Heading>
+
+Several of the following functions expect the first argument to be either a
+list or a collection (see&nbsp;<Ref Chap="Collections"/>),
+with possibly slightly different meaning for lists and non-list collections.
+
+<Index Subkey="of lists">concatenation</Index>
+<#Include Label="Concatenation">
+<#Include Label="Compacted">
+<#Include Label="Collected">
+<#Include Label="DuplicateFreeList">
+<#Include Label="AsDuplicateFreeList">
+<#Include Label="Flat">
+<#Include Label="Reversed">
+<#Include Label="Shuffle">
+<#Include Label="IsLexicographicallyLess">
+<#Include Label="Apply">
+<#Include Label="Perform">
+<#Include Label="PermListList">
+<#Include Label="Maximum">
+<#Include Label="Minimum">
+<#Include Label="MaximumList">
+<#Include Label="Cartesian">
+<#Include Label="IteratorOfCartesianProduct">
+<#Include Label="Permuted">
+<#Include Label="List:list">
+<#Include Label="Filtered">
+<#Include Label="Number">
+<#Include Label="First">
+<#Include Label="ForAll">
+<#Include Label="ForAny">
+<#Include Label="Product">
+<#Include Label="Sum">
+<#Include Label="Iterated">
+<#Include Label="ListN">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Advanced List Manipulations">
+<Heading>Advanced List Manipulations</Heading>
+
+The following functions are generalizations of
+<Ref Func="List" Label="for a collection"/>,
+<Ref Func="Set"/>, <Ref Func="Sum"/>, and <Ref Func="Product"/>.
+
+<#Include Label="ListX">
+<#Include Label="SetX">
+<#Include Label="SumX">
+<#Include Label="ProductX">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Ranges">
+<Heading>Ranges</Heading>
+
+<Index>range</Index>
+A <E>range</E> is a dense list of integers in arithmetic progression (or
+degression).
+This is a list of integers such that the difference between
+consecutive elements is a nonzero constant.  Ranges can be abbreviated
+with the syntactic construct
+<P/>
+<C>[ <A>first</A>, <A>second</A> .. <A>last</A> ]</C>
+<P/>
+or, if the difference between consecutive elements is 1, as
+<P/>
+<C>[ <A>first</A> .. <A>last</A> ]</C>.
+<P/>
+If <C><A>first</A> > <A>last</A></C>,
+<C>[ <A>first</A> .. <A>last</A> ]</C> is the empty list,
+which by definition is also a range;
+also, if <C><A>second</A> > <A>first</A> > <A>last</A></C> or
+<C><A>second</A> &lt; <A>first</A> &lt; <A>last</A></C>,
+then <C>[ <A>first</A>, <A>second</A> .. <A>last</A> ]</C> is the empty list.
+If <C><A>first</A> = <A>last</A></C>,
+<C>[ <A>first</A>, <A>second</A> .. <A>last</A> ]</C> is a singleton list,
+which is a range, too.
+Note that <C><A>last</A> - <A>first</A></C> must be divisible by the
+increment <C><A>second</A> - <A>first</A></C>,
+otherwise an error is signalled.
+<P/>
+Currently, the integers <A>first</A>, <A>second</A> and <A>last</A>
+and the length of a range must be small integers,
+that is at least <M>-2^d</M> and at most <M>2^d - 1</M> 
+with <M>d = 28</M> on 32-bit architectures
+and <M>d = 60</M> on 64-bit architectures.
+<P/>
+Note also that a range is just a special case of a list.
+Thus you can access elements in a range (see <Ref Sect="List Elements"/>),
+test for membership etc.
+You can even assign to such a range if it is mutable
+(see&nbsp;<Ref Sect="List Assignment"/>).
+Of course, unless you assign
+<C><A>last</A> + <A>second</A> - <A>first</A></C> to the entry
+<C><A>range</A>[ Length( <A>range</A> ) + 1 ]</C>,
+the resulting list will no longer be a range.
+<P/>
+<Example><![CDATA[
+gap> r := [10..20];
+[ 10 .. 20 ]
+gap> Length( r );
+11
+gap> r[3];
+12
+gap> 17 in r;
+true
+gap> r[12] := 25;; r;  # r is no longer a range
+[ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]
+gap> r := [1,3..17];
+[ 1, 3 .. 17 ]
+gap> Length( r );
+9
+gap> r[4];
+7
+gap> r := [0,-1..-9];
+[ 0, -1 .. -9 ]
+gap> r[5];
+-4
+gap> r := [ 1, 4 .. 32 ];
+Error, Range: <last>-<first> (31) must be divisible by <inc> (3)
+]]></Example>
+<P/>
+Most often ranges are used in connection with the <K>for</K>-loop
+see&nbsp;<Ref Sect="For"/>).
+Here the construct
+<P/>
+<C>for <A>var</A> in [ <A>first</A> .. <A>last</A> ] do <A>statements</A> od</C>
+<P/>
+replaces the
+<P/>
+<C>for <A>var</A> from <A>first</A> to <A>last</A> do <A>statements</A> od</C>
+<P/>
+which is more usual in other programming languages.
+<P/>
+<Example><![CDATA[
+gap> s := [];; for i in [10..20] do Add( s, i^2 ); od; s;
+[ 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400 ]
+]]></Example>
+<P/>
+Note that a range with <C><A>last</A> >= <A>first</A></C>
+is at the same time also a proper set
+(see&nbsp;<Ref Sect="Sorted Lists and Sets"/>),
+because it contains no holes or duplicates and is sorted,
+and also a row vector (see&nbsp;<Ref Chap="Row Vectors"/>),
+because it contains no holes and all elements are integers.
+<P/>
+<#Include Label="IsRange">
+<#Include Label="ConvertToRangeRep">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Enumerators">
+<Heading>Enumerators</Heading>
+
+An <E>enumerator</E> is an immutable list that need not store its elements
+explicitly but knows, from a set of basic data,
+how to determine the <M>i</M>-th element and the position of a given object.
+A typical example of this is a vector space over a finite field with <M>q</M>
+elements, say, for which it is very easy to enumerate all elements
+using <M>q</M>-adic expansions of integers.
+<P/>
+Using this enumeration can be even quicker than a binary search in a sorted
+list of vectors, see <Ref Func="IsQuickPositionList"/>.
+<P/>
+On the one hand, element access to an enumerator may take more time than
+element access to an internally represented list containing the same
+elements.
+On the other hand, an enumerator may save a vast amount of memory.
+Take for example a permutation group of size a few millions.
+Even for moderate degree it is unlikely that a list of all its elements
+will fit into memory whereas it is no problem to construct an enumerator
+from a stabilizer chain (see&nbsp;<Ref Sect="Stabilizer Chains"/>).
+<P/>
+There are situations where one only wants to loop over the elements of a
+domain, without using the special facilities of an enumerator,
+namely the particular order of elements and the possibility to find the
+position of elements.
+For such cases, &GAP; provides iterators (see&nbsp;<Ref Sect="Iterators"/>).
+<P/>
+The functions <Ref Func="Enumerator"/> and
+<Ref Func="EnumeratorSorted"/> return enumerators of domains.
+Most of the special implementations of enumerators in the &GAP; library
+are based on the general interface that is provided by
+<Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>;
+one generic example is <Ref Func="EnumeratorByBasis"/>,
+which can be used to get an enumerator of a finite dimensional free module.
+<P/>
+Also enumerators for non-domains can be implemented via
+<Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>;
+for a discussion,
+see&nbsp;<Ref Sect="Example -- Constructing Enumerators"/>.
+
+<#Include Label="IsQuickPositionList">
+
+</Section>
+</Chapter>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

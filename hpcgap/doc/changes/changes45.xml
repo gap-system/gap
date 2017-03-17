@@ -1,0 +1,1453 @@
+<Chapter Label="ChangesGAP44toGAP45"> 
+<Heading>Changes between &GAP; 4.4 and &GAP; 4.5</Heading>
+
+This chapter lists most important changes between &GAP; 4.4.12 and the
+first public release of &GAP; 4.5. It also contains information about
+subsequent update releases for &GAP; 4.5.
+It is not meant to serve as a complete account on all improvements; 
+instead, it should be viewed as an introduction to &GAP; 4.5,
+accompanying its release announcement.
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Section Label="Changes in the core GAP45 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.5</Heading>
+
+In this section we list most important new features and bugfixes in the core 
+system introduced in &GAP; 4.5. For the list of changes in the interface 
+between the core system and packages as well as for an overview of new and 
+updated packages, see Section <Ref Sect="Packages in GAP45"/>.
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Subsection Label="Improved mathematical functionality"> 
+<Heading>Improved functionality</Heading>
+<!-- TODO: Remove anything non-mathematical to another section -->
+
+Performance improvements:
+
+<List>
+<Item>
+<Index><Package>GMP support</Package></Index>
+The &GAP; kernel now uses <Package>GMP</Package> (GNU multiple precision 
+arithmetic library, <URL>http://gmplib.org/</URL>) for faster large integer 
+arithmetic.
+</Item>
+<Item>
+Improved performance for records with large number of components.
+</Item>
+<Item>
+Speedup of hash tables implementation at the &GAP; library level.
+</Item>
+<Item>
+<Ref Oper="MemoryUsage" BookName="ref"/> is now much 
+more efficient, in particular for large objects. 
+</Item>
+<Item>
+Speedups in the computation of low index subgroups, Tietze transformations,
+calculating high powers of matrices over finite fields, 
+<Ref Func="Factorial" BookName="ref"/>, etc.
+</Item>
+</List>
+
+New and improved kernel functionality:
+
+<List>
+<Item>
+By default, the &GAP; kernel compiles with the <Package>GMP</Package> and 
+<Package>readline</Package> libraries. The <Package>GMP</Package> library 
+is supplied with &GAP; and we recommend that you use the version we
+supply. There are some problems with some other versions.
+It is also possible to compile the &GAP; kernel with the system 
+<Package>GMP</Package> if your system has it. 
+The <Package>readline</Package> library must be 
+installed on your system in advance to be used with &GAP;.
+</Item>
+<Item>
+<Index>Floats</Index>
+Floating point literals are now supported in the &GAP; language, so that,
+floating point numbers can be entered in &GAP; expressions in a natural
+way. Support for floats is now properly 
+documented, see <Ref Chap="Floats" BookName="ref"/>. &GAP; has an interface 
+using which packages may add new floating point implementations and
+integrate them with the parser. In particular, we expect that there will soon
+be a package that implements arbitrary precision floating point arithmetic.
+</Item>
+<Item>
+The Mersenne twister random number generator has been made 
+independent of endianness, so that 
+random seeds can now be transferred between architectures. See 
+<Ref Sect="GlobalMersenneTwister" BookName="ref"/> for details.
+</Item>
+<Item>
+Defaults for <C>-m</C> and <C>-o</C> options have been increased.
+Changes have been made to the way that &GAP; obtains memory from
+the Operating System, to make &GAP; more compatible with C libraries. 
+A new <C>-s</C> option has been introduced to control or turn off the
+new behaviour, see <Ref Sect="Command Line Options" BookName="ref"/>.
+</Item>
+<Item>
+The filename and lines from which a function was read can now be
+recovered using <Ref Func="FilenameFunc" BookName="ref"/>,
+<Ref Func="StartlineFunc" BookName="ref"/> and 
+<Ref Func="EndlineFunc" BookName="ref"/>. 
+This allows you, for example, to implement a
+function such as <Ref Func="PageSource" BookName="ref"/> to show the file 
+containing the source code of a function or a method in a pager,
+see <Ref Func="Pager" BookName="ref"/>.
+</Item>
+<Item>
+<Ref Oper="CallFuncList" BookName="ref"/> was made into an operation 
+so that it can be used to define behaviour of a non-function when 
+called as a function.
+</Item>
+<Item>
+Improvements to the cyclotomic number arithmetic for fields with large conductors.
+</Item>
+<Item>
+Better and more flexible viewing of some large objects.
+</Item>
+<Item>
+Opportunity to interrupt some long kernel computations, 
+e.g. multiplication of compressed matrices, intercepting
+<C>Ctrl-C</C> in designated places in the kernel code
+by means of a special kernel function for that purpose.
+</Item>
+<Item>
+<C>ELM_LIST</C> now allows you to install methods where the second argument is 
+NOT a positive integer.
+</Item>
+<Item>
+Kernel function <Ref Func="DirectoryContents" BookName="ref"/> to get 
+the list of names of files and subdirectories in a directory.
+</Item>
+<Item>
+Kernel functions for Kronecker product of compressed matrices,
+see <Ref Func="KroneckerProduct" BookName="ref"/>.
+</Item>
+</List>
+
+New and improved library functionality:
+
+<Index>Data libraries</Index>
+<List>
+<Item>
+Extensions of data libraries: 
+<List>
+<Item>
+Functions and iterators are now available to create and enumerate 
+simple groups by their order up to isomorphism: 
+<Ref Func="SimpleGroup" BookName="ref"/>,
+<Ref Func="SmallSimpleGroup" BookName="ref"/>,
+<Ref Func="SimpleGroupsIterator" BookName="ref"/> and
+<Ref Func="AllSmallNonabelianSimpleGroups" BookName="ref"/>.
+</Item>
+<Item>
+See also packages <Package>CTblLib</Package>, 
+<Package>IRREDSOL</Package> and <Package>Smallsemi</Package> listed 
+in Section <Ref Sect="New and updated packages since GAP 4.4.12"/>.
+</Item>
+</List>
+</Item>
+<Item>
+Many more methods are now available for the built-in floating point numbers,
+see <Ref Chap="Floats" BookName="ref"/>.
+</Item>
+<Item>
+The bound for the proper primality test in
+<Ref Func="IsPrimeInt" BookName="ref"/> 
+increased up to <M>10^{18}</M>.
+</Item>
+<Item>
+Improved code for determining transversal and double coset representatives in large groups.
+</Item>
+<Item>
+Improvements in <Ref Oper="Normalizer" BookName="ref"/> for <M>S_n</M>.
+</Item>
+<Item>
+Smith normal form of a matrix may be computed over arbitrary euclidean rings,
+see <Ref Oper="NormalFormIntMat" BookName="ref"/>.
+</Item>
+<Item>
+Improved algorithms to determine the subgroup lattice of a group,
+as well as the function <Ref Func="DotFileLatticeSubgroups" BookName="ref"/>
+to save the lattice structure in <F>.dot</F> file to view it e.g. with
+<Package>GraphViz</Package>.
+</Item>
+<Item>
+Special teaching mode which simplifies some output and provides 
+more basic functionality, see <Ref Sect="Teaching Mode" BookName="ref"/>.
+</Item>
+<Item>
+Functionality specific for use in undergraduate abstract algebra
+courses, e.g. checksums (<Ref Sect="Check Digits" BookName="ref"/>);
+string/integer list conversion; rings of small orders; the function
+<Ref Func="SetNameObject" BookName="ref"/> to set display names for
+objects for more informative examples, e.g. constructing groups 
+from <Q>named</Q> objects, such as, for example, <C>R90</C> for a 
+90-degree rotation).
+<!-- See section 3.3 of "Abstract Algebra in GAP" booklet by AH:
+     http://www.math.colostate.edu/~hulpke/CGT/howtogap.pdf -->
+</Item>
+<Item>
+Functions <Ref Func="DirectoryDesktop" BookName="ref"/> and
+<Ref Func="DirectoryHome" BookName="ref"/> which provide uniform 
+access to default directories under Windows, Mac OS X and Unix.
+</Item>
+<Item>
+Improved methods for hashing when computing orbits.
+</Item>
+<Item>
+Functionality to call external binaries under Windows.
+</Item>
+<Item>
+Symplectic groups over residue class rings,
+see <Ref Func="SymplecticGroup" BookName="ref"/>.
+</Item>
+<Item>
+Basic version of the simplex algorithm for matrices.
+</Item>
+<Item>
+New functions, operations and attributes: 
+<Ref Attr="PrimeDivisors" BookName="ref"/>, 
+<Ref Oper="Shuffle" BookName="ref"/> for lists, 
+<Ref Func="IteratorOfPartitions" BookName="ref"/>,
+<Ref Func="IteratorOfCombinations" BookName="ref"/>,
+<Ref Func="EnumeratorOfCombinations" BookName="ref"/>
+and others.
+</Item>
+<Item>
+The behaviour of <Ref Func="Info" BookName="ref"/> statements can now be 
+configured per info class, this applies to the way the arguments are 
+printed and to the output stream, see <Ref Sect="Info Functions" BookName="ref"/>.
+</Item>
+<Item>
+New function <Ref Func="Test" BookName="ref"/>  which is a more flexible and
+informative substitute of <C>ReadTest</C> operation.
+</Item>
+<Item>
+<C>ConnectGroupAndCharacterTable</C> is replaced by more robust 
+function <Ref Func="CharacterTableWithStoredGroup" BookName="ref"/>.
+</Item>
+</List>
+
+Many problems in &GAP; have have been fixed, among them the following:
+
+<List>
+<Item>
+Polynomial factorisation over rationals could miss factors of degree 
+greater than <M>deg(f)/2</M> if they have very small coefficients, while 
+the cofactor has large coefficients.
+</Item>
+<Item>
+<Ref Oper="IntermediateSubgroups" BookName="ref"/> called on a group and
+a normal subgroup did not properly calculate maximal inclusion relationships.
+</Item>
+<Item>
+<Ref Attr="CentreOfCharacter" BookName="ref"/> and 
+<Ref Attr="ClassPositionsOfCentre" BookName="ref" Label="for a character"/>
+called for a group character could return a perhaps too large result.
+</Item>
+<Item>
+<Ref Attr="Trace" BookName="ref"/> called for an element of a finite field 
+that was created with <Ref Oper="AlgebraicExtension" BookName="ref"/>
+ran into an error.
+</Item>
+<Item>
+<Ref Func="IrreducibleRepresentationsDixon" BookName="ref"/> did not accept 
+a list with one character as a second argument.
+</Item>
+<Item>
+Composing a homomorphism from a permutation group to a finitely presented
+group with another homomorphism could give wrong results.
+</Item>
+<Item>
+For certain arguments, the function <Ref Func="EU" BookName="ref"/> 
+returned wrong results.
+</Item>
+<Item>
+In the table of marks of cyclic groups, 
+<Ref Attr="NormalizersTom" BookName="ref"/> value was wrong.
+</Item>
+<Item>
+The function <Ref Func="PermChars" BookName="ref"/> returned a perhaps 
+wrong result when the second argument was a positive integer (not a record)
+and the trivial character of the character table given as the first argument
+was not the first in the list of irreducibles.
+</Item>
+<Item>
+&GAP; crashed when the intersection of ranges became empty.
+</Item>
+<Item>
+<C>IsPSL</C>, and in turn <Ref Func="StructureDescription" BookName="ref"/>,
+erroneously recognised non-PSL groups of the right order as PSL.
+</Item>
+<Item>
+The semidirect product method for pcgs computable groups sometimes tried to use 
+finite presentations which were not polycyclic. This usually happened when the
+groups were not pc groups, and there was a very low risk of getting a wrong result.
+</Item>
+<Item>
+The membership test for a group of finite field elements ran into an error 
+if the zero element of the field was given as the first argument.
+</Item>
+<Item>
+Constant polynomials were not recognised as univariate in any variable.
+</Item>
+<Item>
+The kernel recursion depth counter was not reset properly when
+running into many break loops.
+</Item>
+<Item>
+&GAP; did not behave well when printing of a (large) object was 
+interrupted with <C>Ctrl-C</C>. Now the object is no longer corrupted 
+and the indentation level is reset.
+</Item>
+</List>
+
+Potentially incompatible changes:
+
+<List>
+<Item>
+The zero polynomial now has degree <C>-infinity</C>,
+see <Ref Attr="DegreeOfLaurentPolynomial" BookName="ref"/>.
+</Item>
+<Item>
+Multiple unary <C>+</C> or <C>-</C> signs are no longer allowed 
+(to avoid confusion with increment/decrement operators from other 
+programming languages).
+</Item>
+<Item>
+Due to changes to improve the performance of records with large number of 
+components, the ordering of record components in <C>View</C>'ed records 
+has changed.
+</Item>
+<Item>
+Due to improvements for vectors over finite fields, certain objects have 
+more limitations on changing their base field. For example, one can not
+create a compressed matrix over <M>GF(2)</M> and then assign an element 
+of <M>GF(4)</M> to one of its entries.
+</Item>
+</List>
+
+<Index>Completion files (withdrawn)</Index>
+<Index>&GAP;&nbsp;3 compatibility mode (withdrawn)</Index>
+No longer supported:
+<List>
+<Item>
+Completion files mechanism.
+</Item>
+<Item>
+&GAP; 3 compatibility mode.
+</Item>
+</List>
+
+<Index>&GAP; compiler (no longer recommended)</Index>
+In addition, we no longer recommend using the &GAP; compiler <F>gac</F> to 
+compile &GAP; code to <Package>C</Package>, and may withdraw it in future 
+releases. Compiling &GAP; code only ever gave a substantial speedup for 
+rather specific types of calculation, and much more benefit can usually be 
+achieved quite easily by writing a small number of key functions in 
+<Package>C</Package> and loading them into the kernel as described in
+<Ref Func="LoadDynamicModule" BookName="ref"/>. The <F>gac</F> script will 
+remain available as a convenient way of compiling such kernel modules from 
+<Package>C</Package>.
+<P/>
+
+Also, the following functions and operations were made obsolete:
+<C>AffineOperation</C>,
+<C>AffineOperationLayer</C>,
+<C>FactorCosetOperation</C>,
+<C>DisplayRevision</C>,
+<C>ProductPol</C>,
+<C>TeXObj</C>,
+<C>LaTeXObj</C>.
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Subsection Label="GAP45 Distribution"> 
+<Heading>Changes in distribution formats</Heading>
+
+<Index Key="tools"><F>tools</F> archive</Index>
+The &GAP; 4.5 source distribution has the form of a 
+single archive containing the core system and the most recent <Q>stable</Q> 
+versions of all currently redistributed packages. There are no optional
+archives to download: the <Package>TomLib</Package> package now contains all 
+its tables of marks in one archive; we do not provide separate versions of 
+manuals for Internet Explorer, and the former <F>tools</F> archive is now
+included as an archive in the <F>etc</F> directory.
+To unpack and install the archive, user the script
+<F>etc/install-tools.sh</F>.
+<P/>
+
+<Index>Bugfixes and packages archives (withdrawn)</Index>
+We no longer distribute separate bugfix archives when the core &GAP;
+system changes, or updated packages archives when a redistributed
+package is updated. Instead, the single &GAP; source distribution 
+archive will be labelled by the version of
+the core &GAP; system and also by a timestamp. This archive contains
+the core system and the 
+stable versions of the relevant packages on that date. 
+To upgrade, you simply
+replace the whole directory containing
+ the &GAP; installation, and rebuild binaries 
+for the &GAP; kernel and packages. For new versions of packages, we will also
+continue to redistribute individual package archives so it will be
+possible to update a single package without changing the rest of the 
+&GAP; installation.
+<P/>
+
+Furthermore, by default &GAP; will now automatically read a user-specific 
+&GAP; root directory (unless &GAP; is called with the <C>-r</C> option). 
+All user settings can be made in that directory, so there will be no risk 
+of them being lost during an update (see Section 
+<Ref Sect="GAP45 User interface"/> below for more details). Private
+packages can also be installed in this directory for the same reason.
+<P/> 
+
+There are some changes in archive formats used for the distribution: we
+continue to provide <F>.tar.gz</F>, <F>.tar.bz2</F> and <F>-win.zip</F>
+archives. We have added <F>.zip</F>, and stopped providing <F>.zoo</F> archives.
+We no longer provide GAP binaries for Mac OS 9 (Classic) any more. For
+installations from source on Mac OS X one may follow the instructions for UNIX.
+<P/>
+
+<Index>&GAP; binary distributions</Index>
+With the release of &GAP; 4.5, we also encourage more users to take
+advantage of the increasingly mature binary distributions which are
+now available. These include:
+
+<List>
+
+<Item>
+The binary <F>rsync</F> distribution for &GAP; on Linux PCs with i686 
+or x86_64 compatible processors provided by Frank Lübeck, see
+<URL>http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/rsync</URL>.
+</Item>
+
+<Item>
+<Package>BOB</Package>, a tool for Linux and Mac OS X to download and build 
+&GAP; and its packages from source provided by M. Neunhöffer:
+<URL>http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html</URL>.
+</Item>
+
+<Item>
+The &GAP; installer for Windows provided by Alexander Konovalov:
+<URL>http://www.gap-system.org/ukrgap/wininst/</URL>.
+</Item>
+
+</List>
+In the near future, we also hope to have a binary distribution for Mac OS X.
+<!-- TODO: when ready, add installers for Windows and Mac OS X by AH -->
+<P/> 
+
+Internally, we now have infrastructure to support more robust and frequent 
+releases, and an improved system to fetch and test new versions of
+the increasingly large number of packages. The 
+<Package>Example</Package> package documents technical requirements for
+packages, many of which are checked automatically by our systems.
+This will allow us to check 
+the compatibility of packages with the system and with other 
+packages more thoroughly before publishing them on the &GAP; website.
+
+</Subsection>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Subsection Label="GAP45 User interface"> 
+<Heading>Improvements to the user interface</Heading>
+
+<Index><Package>readline</Package> support</Index>
+<Index>User interface customisation</Index>
+By default, &GAP; now uses the <Package>readline</Package> library for 
+command line editing. It provides such advantages as working with 
+unicode terminals, nicer handling of long input lines, improved 
+TAB-completion and flexible configuration. For further details, see
+<Ref Sect="Editing using the readline library" BookName="ref"/>.
+<P/>
+
+We have extended facilities for user interface customisation. By default 
+&GAP; automatically scans a user specific &GAP; root directory (unless
+&GAP; is called with the <C>-r</C> option). The name of this user 
+specific directory depends on the operating system and is contained
+in <C>GAPInfo.UserGapRoot</C>. This directory can be used to tell &GAP; 
+about personal preferences, to load some additional code, to 
+install additional packages, or to overwrite some &GAP; files, 
+see <Ref Sect="GAP Root Directories" BookName="ref"/>. Instead of
+a single <F>.gaprc</F> file we now use more flexible setup based on
+two files: <F>gap.ini</F> which is read early in the startup process,
+and <F>gaprc</F> which is read after the startup process, but before the 
+first input file given on the command line. These files may be located 
+in the user specific &GAP; root directory <C>GAPInfo.UserGapRoot</C> 
+which by default is the first &GAP; root directory, see 
+<Ref Sect="The gap.ini and gaprc files" BookName="ref"/>.
+For compatibility, the <F>.gaprc</F> file is still read 
+if the directory <C>GAPInfo.UserGapRoot</C> does not exist.
+See <Ref Sect="The former .gaprc file" BookName="ref"/> for the 
+instructions how to migrate your old setup. 
+<P/>
+
+Furthermore, there are functions to deal with user preferences, for example,
+to specify how &GAP;'s online help is shown or whether the coloured prompt
+should be used. Calls to set user preferences may appear in the user's 
+<F>gap.ini</F> file, as explained in 
+<Ref Sect="Configuring User preferences" BookName="ref"/>.
+<P/> 
+
+In the Windows version, we include a new shell which uses the 
+<Package>mintty</Package> terminal in addition to the two 
+previously used shells (Windows command line and <Package>RXVT</Package>). 
+The <Package>mintty</Package> shell is now recommended. It supports Unicode
+encoding and has flexible configurations options. Also, &GAP; under Windows 
+now starts in the <F>%HOMEDRIVE%%HOMEPATH%</F> directory, which is the 
+user's home directory. Besides this, a larger workspace is now permitted 
+without a need to modify the Windows registry.
+<P/>
+
+Other changes in the user interface include:
+<List>
+<Item>
+the command line history is now implemented at the &GAP; level, it can be 
+stored on quitting a &GAP; session and reread when starting a new session, 
+see <Ref Sect="The command line history" BookName="ref"/>.
+</Item>
+<Item>
+<C>SetPrintFormattingStatus("stdout",false);</C> may be used
+to switch off the automatic line breaking in terminal output,
+see <Ref Func="SetPrintFormattingStatus" BookName="ref"/>.
+</Item>
+<Item>
+&GAP; supports terminals with up to 4096 columns (extendable at compile time).
+</Item>
+<Item>
+Directories in <C>-l</C> command-line option 
+can now be specified starting with <C>~/</C>,
+see <Ref Sect="Command Line Options" BookName="ref"/>.
+</Item>
+<Item>
+Large integers are now displayed by a short string showing the first
+and last few digits, and the threshold to trigger this behaviour 
+is user configurable (call <C>UserPreference("MaxBitsIntView")</C> to
+see the default value).
+</Item>
+<Item>
+The &GAP; banner has been made more compact and informative.
+</Item>
+<Item>
+<Ref Func="SetHelpViewer" BookName="ref"/> now supports 
+the Google Chrome browser.
+</Item>
+<Item>
+Multiple matches in the &GAP; online help are displayed via a function
+from the <Package>Browse</Package> package, which is loaded in the 
+default configuration. This feature can be replaced by the known pager 
+using the command
+<Verb>
+SetUserPreference( "browse", "SelectHelpMatches", false );
+</Verb>
+</Item>
+</List>
+
+</Subsection>
+
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Subsection Label="GAP45 Documentation"> 
+<Heading>Better documentation</Heading>
+
+<Index><Package>MathJax support</Package></Index> The main &GAP;
+manuals have been converted to the &GAPDoc; format provided by the
+&GAPDoc; package by Frank Lübeck and Max Neunhöffer
+(<URL>http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc</URL>).
+This documentation format is already used by many packages and is now
+recommended for all &GAP; documentation.
+
+<P/>
+
+Besides improvements to the documentation layout in all formats
+(text, PDF and HTML), the new &GAP; manuals incorporate a large number
+of corrections, clarifications, additions and updated examples.
+<P/>
+
+We now provide two HTML versions of the manual, one of them 
+with <Package>MathJax</Package> (<URL>http://www.mathjax.org</URL>)
+support for better display of mathematical symbols. Also, there are
+two PDF versions of the manual - a coloured and a monochrome one.
+<P/>
+
+Several separate manuals now became parts of the &GAP; Reference
+manual. Thus, now there are three main &GAP; manual books: 
+<List>
+<Item>
+<E>&GAP; Tutorial</E> <Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>
+<P/>
+</Item>
+<Item>
+<E>&GAP; Reference manual</E> <Alt Only="HTML">(see <Ref BookName="ref" Label="Preface"/>)</Alt>
+</Item>
+<Item>
+<E>&GAP; - Changes from Earlier Versions</E> (this manual)
+</Item>
+</List>
+
+Note that there is no index file combining these three manuals. Instead
+of that, please use the &GAP; help system which will search all of
+these and about 100 package manuals.
+
+</Subsection>
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Section Label="Packages in GAP45"> 
+<Heading>Packages in &GAP; 4.5</Heading>
+
+Here we list most important changes affecting packages and present new or
+essentially changed packages. For the changes in the core &GAP; system, 
+see Section <Ref Sect="Changes in the core GAP45 system"/>.
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<Subsection Label="Interface between the core system and packages">
+<Heading>Interface between the core system and packages</Heading>
+<Index>Namespaces</Index>
+
+The package loading mechanism has been improved. 
+The most important new feature is that all dependencies are evaluated in 
+advance and then used to determine the order in which package files are read.
+This allows &GAP; to handle cyclic dependencies as well as situations where
+package A requires package B to be loaded completely before any file of 
+package A is read. To avoid distortions of the order in which packages will
+be loaded, package authors are strongly discouraged from calling 
+<Ref Func="LoadPackage"  BookName="ref"/> and 
+<Ref Func="TestPackageAvailability" BookName="ref"/> in a package code in 
+order to determine whether some other package will be loaded before or 
+together with the current package - instead, one should use 
+<Ref Func="IsPackageMarkedForLoading" BookName="ref"/>.
+In addition, there is now
+a better error management if package loading fails for packages that use
+the new functionality to log package loading messages 
+(see <Ref Func="DisplayPackageLoadingLog" BookName="ref"/> 
+and the rest of the Chapter <Ref Chap="Using GAP Packages" BookName="ref"/> 
+which documents how to <E>use</E> &GAP; packages), and package authors 
+are very much encouraged to use these logging facilities.
+<P/>
+
+In &GAP; 4.4 certain packages were marked as <E>autoloaded</E> and 
+would be loaded, if present, when &GAP; started up. In &GAP; 4.5, this
+notion is divided into three. Certain packages are recorded
+as <E>needed</E> by the &GAP; system and others as <E>suggested</E>,
+in the same way that packages may <E>need</E> or <E>suggest</E> other
+packages. If a needed package is not loadable, &GAP; will not
+start. Currently only &GAPDoc; is needed. If a suggested package is
+loadable, it will be loaded. Typically these are packages which
+install better methods for Operations and Objects already present in
+&GAP;. Finally, the user preferences mechanism can be used to specify
+additional packages that should be loaded if possible. By default this
+includes most packages that were autoloaded in &GAP;&nbsp;4.4.12,
+see <Ref Func="ShowUserPreferences" BookName="ref"/>.
+<P/> 
+
+&GAP; packages may now use local <E>namespaces</E> to avoid name clashes 
+for global variables introduced in other packages or in the &GAP;
+library, see <Ref Sect="Namespaces for GAP packages" BookName="ref"/>.
+<P/>
+
+All guidance on how to <E>develop</E> a &GAP; package has been consolidated 
+in the <Package>Example</Package> package which also contains a checklist 
+for upgrading a &GAP; package to &GAP;&nbsp;4.5, see 
+<Ref Appendix="Guidelines for Writing a GAP Package" BookName="Example"/>.
+<P/> 
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.4.12"> 
+<Heading>New and updated packages since &GAP; 4.4.12</Heading>
+
+At the time of the release of &GAP; 4.4.12 there were 75 packages
+redistributed with &GAP; (including the <Package>TomLib</Package>
+which was distributed in the core &GAP; archive). The first public release
+of &GAP;&nbsp;4.5 contains precisely 99 packages. 
+<P/>
+
+The new packages that have been added to the redistribution 
+since the release of &GAP; 4.4.12 are: 
+<List>
+<Item>
+<Package>Citrus</Package> package by J.D. Mitchell for computations with 
+transformation semigroups and monoids (this package is a replacement of 
+the <Package>Monoid</Package> package).
+</Item>
+<Item>
+<Package>cvec</Package> package by M. Neunhöffer, providing an 
+implementation of compact vectors over finite fields.
+</Item>
+<Item>
+<Package>fwtree</Package> package by B. Eick and T. Rossmann for 
+computing trees related to some pro-<M>p</M>-groups of finite width.
+</Item>
+<Item>
+<Package>GBNP</Package> package by A.M. Cohen and J.W. Knopper, providing 
+algorithms for computing Grobner bases of noncommutative polynomials over 
+fields with respect to the <Q>total degree first then lexicographical</Q> 
+ordering.
+</Item>
+<Item>
+<Package>genss</Package> package by M. Neunhöffer and F. Noeske, 
+implementing the randomised Schreier-Sims algorithm to compute a 
+stabiliser chain and a base and a strong generating set for arbitrary 
+finite groups.
+</Item>
+<Item>
+<Package>HAPprime</Package> package by P. Smith, extending the 
+<Package>HAP</Package> package with an implementation of 
+memory-efficient algorithms for the calculation of resolutions 
+of small prime-power groups.
+</Item>
+<Item>
+<Package>hecke</Package> package by D. Traytel, providing functions 
+for calculating decomposition matrices of Hecke algebras of the 
+symmetric groups and <M>q</M>-Schur algebras (this package is a port 
+of the &GAP;&nbsp;3 package <Package>Specht 2.4</Package> to &GAP;&nbsp;4).
+</Item>
+<Item>
+<Package>Homalg</Package> project by M. Barakat, S. Gutsche,
+M. Lange-Hegermann et al., containing the following packages 
+for the homological algebra: <Package>homalg</Package>,
+<Package>ExamplesForHomalg</Package>, <Package>Gauss</Package>, 
+<Package>GaussForHomalg</Package>, <Package>GradedModules</Package>,
+<Package>GradedRingForHomalg</Package>, <Package>HomalgToCAS</Package>, 
+<Package>IO_ForHomalg</Package>, <Package>LocalizeRingForHomalg</Package>,
+<Package>MatricesForHomalg</Package>, <Package>Modules</Package>, 
+<Package>RingsForHomalg</Package> and <Package>SCO</Package>
+(see <URL>http://homalg.math.rwth-aachen.de/</URL>).
+</Item>
+<Item>
+<Package>MapClass</Package> package by A. James, K. Magaard and
+S. Shpectorov to calculate the mapping class group orbits for a 
+given finite group.
+</Item>
+<Item>
+<Package>recogbase</Package> package by M. Neunhöffer and A. Seress, 
+providing a framework to implement group recognition methods in a 
+generic way (suitable, in particular, for permutation groups, matrix 
+groups, projective groups and black box groups). 
+</Item>
+<Item>
+<Package>recog</Package> package by M. Neunhöffer, A. Seress, 
+N. Ankaralioglu, P. Brooksbank, F. Celler, S. Howe, M. Law,
+S. Linton, G. Malle, A. Niemeyer, E. O'Brien and C.M. Roney-Dougal,
+extending the <Package>recogbase</Package> package and provides a 
+collection of methods for the constructive recognition of groups 
+(mostly intended for permutation groups, matrix groups and projective 
+groups).
+</Item>
+<Item>
+<Package>SCSCP</Package> package by A. Konovalov and S. Linton, 
+implementing the Symbolic Computation Software Composability Protocol 
+(<Package>SCSCP</Package>, see 
+<URL>http://www.symbolic-computation.org/scscp</URL>) for &GAP;,
+which provides interfaces to link a &GAP; instance with another copy
+of &GAP; or other <Package>SCSCP</Package>-compliant system running 
+locally or remotely.
+</Item>
+<Item>
+<Package>simpcomp</Package> package by F. Effenberger and J. Spreer
+for working with simplicial complexes.
+</Item>
+<Item>
+<Package>Smallsemi</Package> package by A. Distler and J.D. Mitchell, 
+containing the data library of all semigroups with at most 8 elements 
+as well as various information about them.
+</Item>
+<Item>
+<Package>SymbCompCC</Package> package by D. Feichtenschlager for 
+computations with parametrised presentations for finite <M>p</M>-groups 
+of fixed coclass.
+</Item>
+</List>
+
+Furthermore, some packages have been upgraded substantially 
+since the &GAP;&nbsp;4.4.12 release:
+
+<List>
+<Item>
+<Package>Alnuth</Package> package by B. Assmann, A. Distler and B. Eick
+uses an interface to PARI/GP system instead of the interface to KANT
+(thanks to B. Allombert for the GP code for the new interface and help 
+with the transition) and now also works under Windows.
+</Item>
+<Item>
+<Package>CTblLib</Package> package (the &GAP; Character Table Library)
+by T. Breuer has been extended by many new character tables, a few bugs 
+have been fixed, and new features have been added, for example concerning 
+the relation to &GAP;'s group libraries, better search facilities, and 
+interactive overviews. For details, see the package manual.
+</Item>
+<Item>
+<Package>DESIGN</Package> package by L.H. Soicher:
+<List>
+<Item>
+The functions <C>PointBlockIncidenceMatrix</C>, <C>ConcurrenceMatrix</C>, 
+and <C>InformationMatrix</C> compute matrices associated with block designs.
+</Item>
+<Item>
+The function <C>BlockDesignEfficiency</C> computes certain statistical
+efficiency measures of a <M>1-(v,k,r)</M> design, using exact algebraic 
+computation.
+</Item>
+</List>
+</Item>
+ 
+<Item>
+<Package>Example</Package> package by W. Nickel, G. Gamble and A. Konovalov
+has a more detailed and up-to-date guidance on developing a &GAP; package,
+see <Ref Appendix="Guidelines for Writing a GAP Package" BookName="Example"/>.
+</Item>
+
+<Item>
+<Package>FR</Package> package by L. Bartholdi now uses floating-point 
+numbers to compute approximations of rational maps given by their 
+group-theoretical description.
+</Item>
+
+<Item>
+The <Package>GAPDoc</Package> package by F. Lübeck and M. Neunhöffer
+provides various improvements, for example:
+<List>
+<Item>
+The layout of the text version of the manuals can be configured quite
+freely, several standard <Q>themes</Q> are provided. The display is now 
+adjusted to the current screen width.
+</Item>
+<Item>
+Some details of the  layout of the HTML version of the manuals can now 
+be configured by the user. All manuals are available with and without
+MathJax support for display of mathematical formulae.
+</Item>
+<Item>
+The text and HTML versions of manuals make more use of unicode 
+characters (but the text version is also still reasonably good
+on terminals with latin1 or ASCII encoding).
+</Item>
+<Item>
+The PDF version of the manuals uses better fonts.
+</Item>
+<Item>
+Of course, there are various improvements for authors of manuals as 
+well, for example new functions 
+<Ref Func="ExtractExamples" BookName="gapdoc"/> and 
+<Ref Func="RunExamples" BookName="gapdoc"/> for
+automatic testing and correcting of manual examples.
+</Item>   
+</List> 
+</Item>
+
+<Item>
+<Package>Gpd</Package> package by E.J. Moore and C.D. Wensley has been
+substantially rewritten. The main extensions provide functions for:
+<List>
+<Item>
+Subgroupoids of a direct product with complete graph groupoid, 
+specified by a root group and choice of rays.
+</Item>
+<Item>
+Automorphisms of finite groupoids - by object permutations; by root group 
+automorphisms; and by ray images.
+</Item>
+<Item>
+The automorphism group of a finite groupoid together with an isomorphism 
+to a quotient of permutation groups.
+</Item>
+<Item>
+Homogeneous groupoids (unions of isomorphic groupoids) and their 
+morphisms, in particular homogeneous discrete groupoids: the latter 
+are used in constructing crossed modules of groupoids in the 
+<Package>XMod</Package> package.
+</Item>
+</List>
+</Item>
+
+
+<Item>
+<Package>GRAPE</Package> package by L.H. Soicher:
+<List>
+<Item>
+With much help from A. Hulpke, the interface between <Package>GRAPE</Package> 
+and <F>dreadnaut</F> is now done entirely in &GAP; code. 
+</Item>
+<Item>
+A 32-bit <F>nauty/dreadnaut</F> binary for Windows (XP and later) is 
+included with <Package>GRAPE</Package>, so now <Package>GRAPE</Package> 
+provides full functionality under Windows, with no installation necessary.
+</Item>
+<Item>
+Graphs with ordered partitions of their vertices into <Q>colour-classes</Q>
+are now handled by the graph automorphism group and isomorphism
+testing functions.  An automorphism of a graph with colour-classes
+is an automorphism of the graph which additionally preserves the list
+of colour-classes (classwise), and an isomorphism from one graph with
+colour-classes to a second is a graph isomorphism from the first graph
+to the second which additionally maps the first list of colour-classes
+to the second (classwise).
+</Item>
+<Item>
+The &GAP; code and old standalone programs for the undocumented functions
+<C>Enum</C> and <C>EnumColadj</C> have been removed as their functionality 
+can now largely be handled by current documented &GAP; and 
+<Package>GRAPE</Package> functions.
+</Item>
+</List>
+</Item>
+
+<Item>
+<Package>IO</Package> package by M. Neunhöffer:
+<List>
+<Item>
+New build system to allow for more flexibility regarding the use of
+compiler options and adjusting to &GAP;&nbsp;4.5.
+</Item>
+<Item>
+New functions to access time like <C>IO_gettimeofday</C>,
+<C>IO_gmtime</C> and <C>IO_localtime</C>.
+</Item>
+<Item> Some parallel skeletons built on <C>fork</C> like: <C>ParListByFork</C>,
+<C>ParMapReduceByFork</C>, <C>ParTakeFirstResultByFork</C> and
+<C>ParWorkerFarmByFork</C>.
+</Item>
+<Item>
+<C>IOHub</C> objects for automatic I/O multiplexing.
+</Item>
+<Item>
+New functions <C>IO_gethostbyname</C> and <C>IO_getsockname</C>.
+</Item>
+</List>
+</Item>
+
+<Item>
+<Package>IRREDSOL</Package> package by B. Höfling now covers all irreducible 
+soluble subgroups of <M>GL(n,q)</M> for <M>q^n &lt; 1000000</M> and primitive 
+soluble permutation groups of degree <M>&lt; 1000000</M> (previously, the 
+bound was <M>65536</M>). It also has faster group recognition and adds a 
+few omissions for <M>GL(3,8)</M> and <M>GL(6,5)</M>.
+</Item>
+
+<Item>
+<Package>ParGAP</Package> package by G. Cooperman is now compiled
+using a system-wide MPI implementation by default to facilitate running
+it on proper clusters. There is also an option to build it with 
+the <Package>MPINU</Package> library which is still supplied with the 
+package (thanks to P. Smith for upgrading <Package>ParGAP</Package>
+build process).
+</Item>
+
+<Item>
+<Package>OpenMath</Package> package by M. Costantini, A. Konovalov, 
+M. Nicosia and A. Solomon now supports much more OpenMath symbols
+to facilitate communication by the remote procedure call protocol 
+implemented in the <Package>SCSCP</Package> package.
+Also, a third-party external library to support binary OpenMath encoding 
+has been replaced by a proper implementation made entirely in &GAP;.
+</Item>
+
+<Item>
+<Package>Orb</Package> package by J. Müller, M. Neunhöffer and F. Noeske:
+<P/>
+There have been numerous improvements to this package:
+<List>
+<Item>
+A new fast implementation of AVL trees (balanced binary trees) in C.
+</Item>
+<Item>
+New interface to hash table functionality and implementation in C for speedup.
+</Item>
+<Item>
+Some new hash functions for various object types like transformations.
+</Item>
+<Item>
+New function <C>ORB_EstimateOrbitSize</C> using the birthday paradox.
+</Item>
+<Item>
+Improved functionality for product replacer objects.
+</Item>
+<Item>
+New <Q>tree hash tables</Q>.
+</Item>
+<Item>
+New functionality to compute weak and strong orbits for semigroups and monoids.
+</Item>
+<Item>
+<C>OrbitGraph</C> for Orb orbits.
+</Item>
+<Item>
+Fast C kernel methods for the following functions:
+<P/>
+<C>PermLeftQuoTransformationNC</C>,
+<C>MappingPermSetSet</C>, <C>MappingPermListList</C>,
+<C>ImageSetOfTransformation</C>,
+and <C>KernelOfTransformation</C>.
+</Item>
+<Item>
+New build system to allow for more flexibility regarding the use of
+compiler options and to adjust to &GAP;&nbsp;4.5.
+</Item>
+</List>
+</Item>
+
+<Item>
+<Package>RCWA</Package> package by S. Kohl among the new features and 
+other improvements has the following:
+<List>
+<Item>
+A database of all 52394 groups generated by 3 class transpositions of
+<M>&ZZ;</M> which interchange residue classes with modulus less than
+or equal to 6. This database contains the orders and the moduli of all
+of these groups. Also it provides information on what is known about
+which of these groups are equal and how their finite and infinite
+orbits on <M>&ZZ;</M> look like.
+</Item>
+<Item>
+More routines for investigating the action of an rcwa group on <M>&ZZ;</M>.
+Examples are a routine which attempts to find out whether a given rcwa
+group acts transitively on the set of nonnegative integers in its
+support and a routine which looks for finite orbits on the set of all
+residue classes of <M>&ZZ;</M>.
+</Item>
+<Item>
+Ability to deal with rcwa permutations of <M>&ZZ;^2</M>.
+</Item>
+<Item>
+Important methods have been made more efficient in terms of runtime
+and memory consumption.
+</Item>
+<Item>
+The output has been improved. For example, rcwa permutations are now
+<C>Display</C>'ed in ASCII text resembling &LaTeX; output.
+</Item>
+</List>
+</Item>
+
+<Item>
+The <Package>XGAP</Package> package by F. Celler and M. Neunhöffer can now 
+be used on 64-bit architectures (thanks to N. Eldredge and M. Horn for 
+sending patches). Furthermore, there is now an export to XFig option 
+(thanks to Russ Woodroofe for this patch). The help system in 
+<Package>XGAP</Package> has been adjusted to &GAP;&nbsp;4.5.
+</Item>
+
+<Item>
+<Index>Packages under Windows</Index>
+Additionally, some packages with kernel modules or external binaries 
+are now available in Windows. The <F>-win.zip</F> archive and the
+&GAP; installer for Windows include working versions of the following 
+packages: <Package>Browse</Package>, <Package>cvec</Package>, 
+<Package>EDIM</Package>, <Package>GRAPE</Package>, <Package>IO</Package>
+and <Package>orb</Package>, which were previously unavailable for
+Windows users.
+</Item>
+</List>
+
+Finally, the following packages are withdrawn:
+<List>
+<Item>
+<Package>IF</Package> package by M. Costantini is unmaintained and no
+longer usable. More advanced functionality for interfaces to other computer 
+algebra systems is now available in the <Package>SCSCP</Package> 
+package by A. Konovalov and S. Linton.
+</Item>
+<Item>
+<Package>Monoid</Package> package by J. Mitchell is superseded by 
+the <Package>Citrus</Package> package by the same author.
+</Item>
+<Item>
+<Package>NQL</Package> package by R. Hartung has been withdrawn by the author. 
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
+
+<Section Label="fix455"> 
+
+<Heading>&GAP; 4.5.5 (July 2012)</Heading>
+
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+For small primes (compact fields) <C>ZmodnZObj(r,p)</C> now 
+returns the corresponding FFE to avoid crashes when compacting 
+matrices. 
+[Reported by Ignat Soroko]
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Fixed a bug in <Ref Attr="CommutatorSubgroup" BookName="ref"/> for fp groups 
+causing infinite recursion, which could, for example, be triggered 
+by computing automorphism groups.
+</Item>
+<Item>
+Previously, the list of factors of a polynomial was mutable, and hence could
+be accidentally corrupted by callers. Now the list of irreducible factors 
+is stored immutable. To deal with implicit reliance on old code, always a
+shallow copy is returned. 
+[reported by Jakob Kroeker]
+</Item>
+<Item>
+Computing high powers of matrices ran into an error for matrices in the
+format of the <Package>cvec</Package> package. Now the library function 
+also works with these matrices.
+[reported by Klaus Lux]
+</Item>
+<Item>
+The pseudo tty code which is responsible for spawning subprocesses has been 
+partially rewritten to allow more than 128 subprocesses on certain systems.
+This mechanism is for example used by <Package>ANUPQ</Package> and 
+<Package>nq</Package> packages to compute group quotients via an external 
+program. Previously, on Mac OS X this could be done precisely 128 times, 
+and then an error would occur. That is, one could e.g. compute 128 nilpotent 
+quotients, and then had to restart &GAP; to compute more. This also affected 
+other systems, such as OpenBSD, where it now also works correctly.
+</Item>
+<Item>
+On Mac OS X, using &GAP; compiled against GNU readline 6.2, pasting text
+into the terminal session would result in this text appearing very slowly,
+with a 0.1 sec delay between each <Q>keystroke</Q>. This is not the case with
+versions 6.1 and older, and has been reported to the GNU readline team. In
+the meantime, we work around this issue in most situations by setting
+<C>rl_event_hook</C> only if <C>OnCharReadHookActive</C> is set.
+</Item>
+<Item>
+<Ref Func="ShowUserPreferences" BookName="ref"/> ran into a break loop in 
+case of several undeclared user preferences. [Reported by James Mitchell]
+</Item>
+<Item>
+&GAP; did not start correctly if the user preference 
+<C>"InfoPackageLoadingLevel"</C> was set to a number <M> >= 3</M>. 
+The reason is that <C>PrintFormattedString</C> was called before 
+it was installed. The current fix is a temporary solution. 
+</Item>
+<Item>
+The <C>"hints"</C> member of <C>TypOutputFile</C> used to contain 3*100 entries, 
+yet <C>addLineBreakHint</C> would write entries with index up to and including 
+3*99+3=300, leading to a buffer overflow. This would end up overwriting 
+the <C>"stream"</C> member with -1. Fixed by incrementing the size of 
+<C>"hints"</C> to 301. 
+[Reported by Jakob Kroeker]
+</Item>
+<Item>
+The function <C>IsDocumentedWord</C> tested the given word against 
+strings obtained by splitting help matches at non-letter characters.
+This way, variable names containing underscores or digits were erroneously
+not regarded as documented, and certain substrings of these names were 
+erroneously regarded as documented.
+</Item>
+<Item>
+On Windows, an error occurred if one tried to use the default Windows 
+browser as a help viewer (see <Ref Func="SetHelpViewer" BookName="ref"/>). 
+Now the browser opens the top of the correspoding manual chapter. The 
+current fix is a temporary solution since the problem remains with the 
+positioning at the required manual section.
+</Item>
+</List>
+
+
+Improved functionality:
+<List>              
+<Item>
+<Ref Func="WriteGapIniFile" BookName="ref"/> on Windows now produces the
+<File>gap.ini</File> file with Windows style line breaks. Also, an info 
+message is now printed if an existing <File>gap.ini</File> file was moved 
+to a backup file <File>gap.ini.bak</File>.
+</Item>
+<Item>
+The <Package>CTblLib</Package> and <Package>TomLib</Package> packages are 
+removed from the list of suggested packages of the core part of &GAP;. 
+Instead they are added to the default list of the user preference 
+<C>"PackagesToLoad"</C>. This way it is possible to configure &GAP; to not 
+load these packages via changing the default value of <C>"PackagesToLoad"</C>.
+</Item>
+<Item>
+The conjugacy test in <M>S_n</M> for intransitive subgroups was improved.
+This deals with inefficiency issue in the case reported by Stefan Kohl.
+</Item>
+<Item>
+Added <C>InstallAndCallPostRestore</C> to <File>lib/system.g</File> and call
+it in <File>lib/init.g</File> instead of <C>CallAndInstallPostRestore</C> for 
+the function that reads the files listed in &GAP; command line. This fixes 
+the problem reported by Yevgen Muntyan when 
+<Ref Func="SaveWorkspace" BookName="ref"/> was used in a file listed in &GAP; 
+command line (before, according to the documentation, 
+<Ref Func="SaveWorkspace" BookName="ref"/> was only 
+allowed at the main &GAP; prompt).
+</Item>
+<Item>
+There is now a new user preference <C>PackagesToIgnore</C>,
+see <Ref Func="SetUserPreference" BookName="ref"/>. It contains
+a list of names of packages that shall be regarded as not available
+at all in the current session, both for autoloading and for later calls
+of <Ref Func="LoadPackage" BookName="ref"/>. This preference is useful 
+for testing purposes if one wants to run some code without loading 
+certain packages.
+</Item>
+</List>
+
+</Section>
+
+
+
+<Section Label="fix456"> 
+
+<Heading>&GAP; 4.5.6 (September 2012)</Heading>
+
+Improved functionality:
+<List>              
+<Item>
+The argument of <Ref Func="SaveWorkspace" BookName="ref"/> can now start 
+with <C>~/</C> which is expanded to the users home directory.
+</Item>
+<Item>
+Added the method for <Ref Oper="Iterator" BookName="ref"/> for 
+<Ref Var="PositiveIntegers" BookName="ref"/>.
+[Suggested by Attila Egri-Nagy].
+</Item>
+<Item>
+Changed kernel tables such that list access functionality for
+<C>T_SINGULAR</C> objects can be installed by methods at the &GAP; level.
+</Item>
+<Item>
+In case of saved history, <Q>UP</Q> arrow after starting &GAP; yields 
+last stored line. The user preference <C>HistoryMaxLines</C> is now used
+when storing and saving history (see 
+<Ref Func="SetUserPreference" BookName="ref"/>).
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+A crash occuring during garbage collection following a call to 
+<C>AClosVec</C> for a <C>GF(2)</C> code.
+[Reported by Volker Braun]
+</Item>
+<Item>
+A crash when parsing certain syntactically invalid code.
+[Reported by multiple users]
+</Item>
+<Item>
+Fixed and improved command line editing without readline support.
+Fixed a segfault which could be triggered by a combination of 
+<Q>UP</Q> and <Q>DOWN</Q> arrows.
+[Reported by James Mitchell]
+</Item>
+<Item>
+Fixed a bug in the kernel code for floats that caused a crash 
+on SPARC Solaris in 32-bit mode.
+[Reported by Volker Braun]
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Very large (more than 1024 digit) integers were not being coded correctly
+in function bodies unless the integer limb size was 16 bits. 
+[Reported by Stefan Kohl]
+</Item>
+<Item>
+An old variable was used in assertion, causing errors in a debugging 
+compilation.
+[Reported by Volker Braun]
+</Item>
+<Item>
+The environment variable <C>PAGER</C> is now correctly interpreted when it
+contains the full path to the pager program. Furthermore, if the external 
+pager <C>less</C> is found from the environment it is made sure that the 
+option <C>-r</C> is used (same for <C>more -f</C>).
+[Reported by Benjamin Lorenz]
+</Item>
+<Item>
+Fixed a bug in <C>PermliftSeries</C>.
+[Reported by Aiichi Yamasaki]
+</Item>
+<Item>
+Fixed discarder function in lattice computation to distinguish 
+general and zuppo discarder.
+[Reported by Leonard Soicher]
+</Item>
+<Item>
+The <Ref Func="GL" Label="for dimension and a ring" BookName="ref"/> and 
+<Ref Func="SL" Label="for dimension and a ring" BookName="ref"/> 
+constructors did not correctly handle <C>GL(filter,dim,ring)</C>.
+</Item>
+<Item>
+The names of two primitive groups of degree 64 were incorrect.
+</Item>
+<Item>
+The <Ref Oper="\in" Label="operation for testing membershi" BookName="ref"/> 
+method for groups handled by a nice monomorphism sometimes could produce 
+an error in situations where it should return false. This only happened 
+when using <C>SeedFaithfulAction</C> to influence how 
+<Ref Oper="NiceMonomorphism" BookName="ref"/>
+builds the nice monomorphims for a matrix groups.
+</Item>
+<Item>
+Wrong <Ref Oper="PrintObj" BookName="ref"/> method was removed to
+fix delegations accordingly to <Ref Sect="View and Print" BookName="ref"/>.
+</Item>
+<Item>
+Fixed a method for <Ref Oper="Coefficients" BookName="ref"/> which,
+after Gaussian elimination, did not check that the coefficients
+actually lie in the left-acting-domain of the vector space. This
+could lead to a wrong answer in a vector space membership test.
+[Reported by Kevin Watkins]
+</Item>
+</List>
+
+Improved documentation:
+
+<List>
+<Item>
+Removed outdated statements from the documentation of 
+<Ref Func="StructureDescription" BookName="ref"/>
+which now non-ambiguosly states that <C>StructureDescription</C> is not an 
+isomorphism invariant: non-isomorphic groups can have the same string 
+value, and two isomorphic groups in different representations can produce 
+different strings.
+</Item>
+<Item>
+&GAP; now allows overloading of a loaded help book by another one. In this
+case, only a warning is printed and no error is raised. This makes sense 
+if a book of a not loaded package is loaded in a workspace and then &GAP; 
+is started with a root path that contains a newer version. 
+[Reported by Sebastian Gutsche]
+</Item>
+<Item>
+Provided a better description of user preferences mechanism
+(<Ref Sect="Configuring User preferences" BookName="ref"/>) and a hint to
+familiarise with them using <Ref Func="WriteGapIniFile" BookName="ref"/>
+function to create a file which contains descriptions of all known user
+preferences and also sets those user preferences which currently do not
+have their default value. One can then edit that file to customize
+(further) the user preferences for future &GAP; sessions.
+</Item>
+</List>
+
+New packages added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>AutoDoc</Package> package by S. Gutsche,
+providing tools for automated generation of <Package>GAPDoc</Package> manuals.
+</Item>
+<Item>
+<Package>Convex</Package> package by S. Gutsche,
+which provides structures and algorithms for convex geometry. 
+</Item>
+<Item>
+<Package>PolymakeInterface</Package> package by T. Baechler and S. Gutsche, 
+providing a link to the callable library of the <Package>polymake</Package> 
+system (<URL>http://www.polymake.org</URL>).
+</Item>
+<Item>
+<Package>ToolsForHomalg</Package> package by M. Barakat, S. Gutsche and
+M. Lange-Hegermann, which provides some auxiliary functionality for the
+<Package>homalg</Package> project (<URL>http://homalg.math.rwth-aachen.de/</URL>).
+</Item>
+</List>
+
+</Section>
+
+
+<Section Label="fix457"> 
+
+<Heading>&GAP; 4.5.7 (December 2012)</Heading>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>Closing with <C>LogInputTo</C> (or <C>LogOutputTo</C>)
+a logfile opened with <Ref Func="LogTo" BookName="ref"/> 
+left the data structures corrupted, resulting in a crash.
+</Item>
+<Item>
+On 32-bit systems we can have long integers <C>n</C> such that 
+<C>Log2Int(n)</C> is not an immediate integer. In such cases 
+<C>Log2Int</C> gave wrong or corrupted
+results which in turn could crash &GAP;, e.g., in <C>ViewObj(n)</C>.
+</Item>
+<Item>
+Some patterns of use of <Ref Func="UpEnv" BookName="ref"/> and 
+<Ref Func="DownEnv" BookName="ref"/> were leading to a segfault.
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Viewing of long negative integers was broken, because it went into a break loop.
+</Item>
+<Item>
+Division by zero in <Ref Func="ZmodnZ" BookName="ref"/> (<M>n</M> not prime) 
+produced invalid objects. [Reported by Mark Dickinson]
+</Item>
+<Item>
+Fixed a bug in determining multiplicative inverse for a zero polynomial.
+</Item>
+<Item>
+Fixed a bug causing infinite recursion in <Ref Oper="NaturalHomomorphismByNormalSubgroup" BookName="ref"/>.
+</Item>
+<Item>
+A workaround was added to deal with a package method creating pcgs for permutation 
+groups for which the entry <C>permpcgsNormalSteps</C> is missing.
+</Item>
+<Item>
+For a semigroup of associative words that is not the full semigroup of
+all associative words, the methods for <Ref Oper="Size" BookName="ref"/> 
+and <Ref Oper="IsTrivial" BookName="ref"/> called one another causing 
+infinite recursion. 
+</Item>
+<Item>
+The 64-bit version of the <F>gac</F> script produced wrong (>= 2^31) CRC 
+values because of an integer conversion problem.
+</Item>
+<Item>
+It was not possible to compile &GAP; on some systems where <C>HAVE_SELECT</C> detects as false.
+</Item>
+<Item>
+Numbers in memory options on the command line exceeding 2^32 could not be
+parsed correctly, even on 64-bit systems. [Reported by Volker Braun]
+</Item>
+</List>
+
+New packages added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>Float</Package> package by L. Bartholdi, which extends &GAP;
+floating-point capabilities by providing new floating-point handlers for 
+high-precision real, interval and complex arithmetic using MPFR, MPFI, 
+MPC or CXSC external libraries. It also contains a very high-performance 
+implementation of the LLL (Lenstra-Lenstra-Lovász) lattice reduction 
+algorithm via the external library FPLLL. 
+</Item>
+<Item>
+<Package>ToricVarieties</Package> package by S. Gutsche,
+which provides data structures to handle toric varieties by their 
+commutative algebra structure and by their combinatorics. 
+</Item>
+</List>
+
+</Section>
+
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->

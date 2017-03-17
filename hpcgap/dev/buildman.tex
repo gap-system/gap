@@ -1,0 +1,252 @@
+\documentclass[a4wide]{article}
+
+\usepackage{amsmath}
+\usepackage{theorem}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{a4wide}
+\usepackage{alltt}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{df}[thm]{Definition}
+\newtheorem{conj}[thm]{Conjecture}
+{\theorembodyfont{\rmfamily} \newtheorem{exa}[thm]{Example}}
+
+\newcommand{\ad}{\mathop{\mathrm{ad}}}
+\newcommand{\Tr}{\mathop{\mathrm{Tr}}}
+\newcommand{\Nr}{\mathop{\mathrm{NR}}}
+\newcommand{\msl}{\begin{verbatim}\\end{verbatim}}
+
+\newenvironment{rem}{\noindent{\bf Remark.}}{\newline}
+\newenvironment{pf}{\noindent{\bf Proof.}}{\hfill $\Box$\newline}
+
+\begin{document}
+
+\title{The manual builder\\
+experimental version 0.0}
+\author{W. A. de Graaf\\
+e-mail: {\tt wdg\@@dcs.st-and.ac.uk}}
+\date{}
+\maketitle
+
+\section{Introduction}
+This is an experimental version of a little document describing an
+experimental version of the manual builder. Comments are heavily appreciated.
+
+\section{The {\tt .gd} files}
+
+The {\tt .gd} files contain most of the information that will go into the
+manual.
+First of all the {\tt .gd} file may contain blocks of text explaining general 
+things (file headers). Every such block is required to start with {\tt \#}$n$,
+where $n$ is some number. A block ends with an empty line.\par
+Secondly, the {\tt .gd} file may contain declarations. It is assumed that
+these have the following structure\par
+\vspace{2mm}
+{\tt
+\noindent \#$\alpha$ Fct1( args ) \quad \quad comment\\
+\#$\beta$ Fct2( args ) \quad \quad comment\\
+.\\
+.\\
+\#$\zeta$ Fctn( args ) \quad \quad comment\\
+\#\#\\
+\#\#   explanatory text.....\\
+\#\#\\
+Fct1:= NewSomething(....);\\
+.\\
+.\\
+Fctn:= NewSomething(....);
+}
+\par
+\vspace{2mm}
+Comments:
+\begin{itemize}
+\item $\alpha,\ldots,\zeta\in \{{\tt A},{\tt C},{\tt F},{\tt M},{\tt O},
+{\tt P}\}$.
+\item The letter of {\tt \#}$\alpha$ is printed in the manual. If this
+letter is {\tt A} or {\tt P}, then also the letters {\tt S} and {\tt T}
+are printed if the setter and the tester are available. If the letter
+is {\tt A}, then the letter {\tt M} is printed if the attribute is mutable.
+\item The comments on the same line as the {\tt Fct}-s will appear in
+the manual, also on the same line; they are optional.
+\item It is assumed that the {\tt \#}$\alpha$-s appear on consecutive lines.
+(Is this too restrictive??)
+\item After the lines starting with {\tt \#}$\alpha$ there is explanatory
+text (possibly empty) on lines starting with {\tt \#\#}. Lines starting with
+{\tt \#} + other character are ignored.
+\item It is assumed that for each name {\tt Fcti} appearing in the set 
+\{ {\tt Fct1,...,Fctn} \} there is a declaration of the form {\tt Fcti:=...}.
+\end{itemize}
+
+\begin{exa}
+The file {\tt algebra.gi} contains the following declaration:\par
+\vspace{2mm}\par
+{\tt \noindent 
+\#O  DirectSumOfAlgebras( <A1>, <A2> )...................for algebras\\
+\#O  DirectSumOfAlgebras( <list> )\\
+\#\#\\
+\#\#  is the direct sum of the two algebras <A1> and <A2> resp. of the \\
+\#\#  algebras in the list <list>.\\
+\#\#\\
+\#\#  If all involved algebras are associative algebras then the result \\
+\#\#  is also known to be associative.\\
+\#\#  If all involved algebras are Lie algebras then the result is \\
+\#\#  also known to be a Lie algebra.\\
+\#\#\\
+\#\#  All involved algebras must have the same left acting domain.\\
+\#\#\\
+\#\#  The default case is that the result is a s.c. algebra.\\
+\#\#\\
+\#\#  If all involved algebras are matrix algebras, and either both are\\
+\#\#  Lie algebras or both are associative then the result is again a\\
+\#\#  matrix algebra of the appropriate type.\\
+\#\#\\
+DirectSumOfAlgebras := NewOperation( "DirectSumOfAlgebras",\\
+    {}[ IsDenseList ] );
+}\par
+\vspace{2mm}\par
+This will lead to the following item in the manual:\par
+\vspace{2mm}
+{\noindent \bf \large 0.1 DirectSumOfAlgebras}
+\vspace{2mm}\par
+\begin{tabular}{llr}
+{\tt DirectSumOfAlgebras( {\it A1}, {\it A} )} & O & for algebras\\
+{\tt DirectSumOfAlgebras( {\it list} )} & O & \\
+\end{tabular}
+\vspace{3mm}
+
+
+\noindent is the direct sum of the two algebras {\it A1} and {\it A2} resp. 
+of the algebras  in the list {\it list}. 
+If all involved algebras are associative algebras then the result is also 
+known to be associative. 
+If all involved algebras are Lie algebras then the result is also known 
+to be a Lie algebra. 
+All involved algebras must have the same left acting domain. 
+The default case is that the result is a s.c. algebra. 
+If all involved algebras are matrix algebras, and either both are Lie 
+algebras or both are associative then the result is again a 
+matrix algebra of the appropriate type. 
+\end{exa}
+
+\section{The {\tt .gi} and {\tt .g} files}
+
+The {\tt .gi} and {\tt .g} files may contain comments starting with {\tt \#+}. 
+All such comments following a line starting with {\tt \#}$\alpha$ are grouped 
+togeter and will appear in the manual in the section with the title 
+corresponding to the declaration on the {\tt \#}$\alpha$ line.\par
+Furthermore the {\tt .gi} files may contain declarations that will go into the
+manual. If a method is installed by {\tt InstallOtherMethod} {\em and}
+this method has comments ({\tt \#+}) in its body {\em and} it has a
+declaration (on a line starting with {\tt \#M}), then this declaration
+will be added to the declaration lines from the {\tt .gd} file. In the
+comments appearing in the body the string {\tt NUMBER} will be replaced 
+by the natural number reflecting the position of the declaration in the
+list of all declarations. It is assumed that the header contains at least
+as many {\tt \#M} declarations as there are {\tt InstallMethod} or
+{\tt InstallOtherMethod} lines. The $k$-th {\tt Install(Other)Method} line
+belongs to the $k$-th {\tt \#M} line.
+
+\section{The {\tt .msk} files}
+
+The {\tt .msk} files contain the commands that decide what goes where in the
+manual. Currently the following commands are supported:
+\begin{itemize}
+\item {\tt \verb!\!FileHeader[nr]\{filename\}} the file header 
+starting with {\tt \#nr} of the file {\tt filename.gd}. 
+If {\tt [nr]} is ommitted then {\tt nr} is assumed to be 1.
+All fileheaders are assumed to end with an empty line (so a line without
+even a {\tt \#}). 
+\item {\tt \verb!\!Declaration\{Gizmo\}} creates a section for {\tt Gizmo}.
+\item {\tt \verb!\!beginexample} begins an example.
+\item {\tt \verb!\!endexample} ends an example. All text appearing on the
+lines following the one containing {\tt \verb!\!beginexample} and prior to
+the one containing {\tt \verb!\!endexample} is printed in {\tt tt}-format.
+\item {\tt \verb!\!Implications[lev] } (for categories). Here {\tt lev} 
+is an integer, if it is omitted, then it is assumed to be 1. {\tt lev} can be 
+one of the following
+\begin{itemize}
+\item[{\tt 1}] all categories implied by {\tt Gizmo} are listed.
+\item[{\tt 2}] all categories that imply {\tt Gizmo} are listed.
+\end{itemize}
+
+\item {\tt \verb!\!Requirements} this lists the requirements to the 
+arguments as contained in the {\tt .gd} file.
+\item {\tt \verb!\!Methods} this lists the argument-requirements for which 
+methods are installed in the {\tt .gi} file. 
+\end{itemize}
+
+\section{Using the program}
+
+The program loops over a two lists of filenames. The first list contains
+the {\tt .gd} files and the second list the {\tt .msk} files. 
+A tex file is created for each entry of the list of {\tt .msk} files.
+If, for example, the files {\tt exa1.gd}, {\tt exa2.gd}, {\tt exa3.gd}, 
+{\tt exa1.msk} and {\tt exa2.msk} have been created, then the third
+line of the manual builder has to be changed into {\tt \@@gdfiles = ("exa1",
+"exa2","exa3");} and the fourth line has to be changed into 
+{\tt \@@msfiles = ("exa1","exa2");}.
+By invoking the program the files {\tt exa1.tex} and {\tt exa2.tex} will be 
+created. The program
+checks whether the files {\tt exa*.gi} and {\tt exa*.g} exist and if so reads
+information from them.\par
+It is also posssible to put the information about the files into a config
+file. Such a file should look like the following:\\
+\vspace{2mm}\\
+{\tt 
+\noindent @msfiles = ("exa","exa1");\\
+@gdfiles = ("exa","exa1");\\
+\$DIR = "/home/wdg/perl/try";\\
+}
+
+The {\tt \$DIR} variable specifies a directory for the program to write in
+(it can be omitted in which case the current directory is used). Supposing
+that the above file is called {\tt config}, the following command will
+work:\\
+\vspace{2mm}\\
+{\tt \noindent wdg.cochran > buildman.pe -f config\\
+Reading files...\\
+Composing the TEX file exa.tex\\
+Composing the TEX file exa1.tex\\
+}
+
+\section{Variable replacement}
+
+The configuration file may also contain lines that assign variables
+\begin{verbatim}
+gapname=4r1
+datum=5. Nov. 1837
+\end{verbatim}
+
+Occurences of these variables in double squiggly brackets will be replaced
+by their value. For example a line
+\begin{verbatim}
+The last release is {{gapname}} of {{datum}}
+\end{verbatim}
+will be replaced by:
+\begin{verbatim}
+The last release is 4r1 of 5. Nov. 1837
+\end{verbatim}
+This feature is very handy for information that changes over time.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

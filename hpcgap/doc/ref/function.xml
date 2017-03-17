@@ -1,0 +1,191 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  function.msk           GAP documentation                Alexander Hulpke -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: function.msk,v 1.8 2005/04/27 13:48:10 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright 1999 -->
+<!-- %% -->
+<!-- %%  This file describes functions for functions. -->
+<!-- %% -->
+<Chapter Label="Functions">
+<Heading>Functions</Heading>
+
+<Index Subkey="as in programming language">functions</Index>
+The section&nbsp;<Ref Sect="Function"/> describes how to define a function.
+In this chapter we describe functions that give information about functions,
+and various utility functions used either when defining functions or calling
+functions.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Information about a function">
+<Heading>Information about a function</Heading>
+
+<#Include Label="NameFunction">
+<#Include Label="NumberArgumentsFunction">
+<#Include Label="NamesLocalVariablesFunction">
+<#Include Label="FilenameFunc">
+<#Include Label="StartlineFunc">
+<#Include Label="PageSource">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Calling a function with a list argument that is interpreted as
+several arguments">
+<Heading>Calling a function with a list argument that is interpreted as
+several arguments</Heading>
+
+<#Include Label="CallFuncList">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Calling a function with a time limit">
+<Heading>Calling a function with a time limit</Heading>
+
+
+<#Include Label="CallWithTimeout">
+<#Include Label="GAPInfo.TimeoutsSupported">
+</Section>
+
+
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Functions that do nothing">
+<Heading>Functions that do nothing</Heading>
+
+The following functions return fixed results (or just their own argument).
+They can be useful in places when the syntax requires a function, but
+actually no functionality is required.
+So <Ref Func="ReturnTrue"/> is often used as family predicate in
+<Ref Func="InstallMethod"/>.
+
+<#Include Label="ReturnTrue">
+<#Include Label="ReturnFalse">
+<#Include Label="ReturnFail">
+<#Include Label="ReturnNothing">
+<#Include Label="ReturnFirst">
+<#Include Label="IdFunc">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Function Types">
+<Heading>Function Types</Heading>
+
+Functions are &GAP; objects and thus have categories and a family.
+
+<#Include Label="IsFunction">
+<#Include Label="IsOperation">
+<#Include Label="FunctionsFamily">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Naming Conventions">
+<Heading>Naming Conventions</Heading>
+
+The way functions are named in &GAP; 
+might help to memorize or even guess names of library functions.
+<P/>
+
+If a variable name consists of several words then the first
+letter of each word is capitalized.
+<P/>
+
+If the first part of the name of a function is a verb then the function
+may modify its argument(s) but does not return anything, for example 
+<Ref Oper="Append"/> appends the list given as second argument to the
+list given as first argument.
+Otherwise the function returns an object without changing the arguments,
+for example <Ref Func="Concatenation" Label="for several lists"/> 
+returns the concatenation of the lists given as arguments.
+<P/>
+
+If the name of a function contains the word <Q><C>Of</C></Q> then the return 
+value is thought of as information deduced from the arguments.
+Usually such functions are attributes (see&nbsp;<Ref Sect="Attributes"/>).
+Examples are <Ref Oper="GeneratorsOfGroup"/>, which returns a list of 
+generators for the group entered as argument, or <Ref Func="DiagonalOfMat"/>.
+<P/>
+
+For the setter and tester functions of an attribute <C>Attr</C>
+the names <C>SetAttr</C> resp.&nbsp;<C>HasAttr</C> are available
+(see&nbsp;<Ref Sect="Attributes"/>).
+<P/>
+
+If the name of a function contains the word <Q><C>By</C></Q> then the 
+return value is thought of as built in a certain way from the parts 
+given as arguments. For example, creating a group as a factor group 
+of a given group by a normal subgroup can be done by taking the image 
+of <Ref Func="NaturalHomomorphismByNormalSubgroup"/>. Other examples of 
+<Q><C>By</C></Q> functions are <Ref Func="GroupHomomorphismByImages"/> and
+<Ref Oper="LaurentPolynomialByCoefficients"/>.
+<P/>
+
+Often such functions construct an algebraic structure given by its generators 
+(for example, <Ref Oper="RingByGenerators"/>). In some cases, <Q><C>By</C></Q> 
+may be replaced by <Q><C>With</C></Q> (like e.g. <Ref Oper="GroupWithGenerators"/>)
+or even both versions of the name may be used. The difference between 
+<C>StructByGenerators</C> and <C>StructWithGenerators</C> is that the latter 
+guarantees that the <C>GeneratorsOfStruct</C> value of the result is equal to 
+the given set of generators (see <Ref Label="Constructing Domains"/>).
+<P/>
+
+If the name of a function has the form <Q><C>AsSomething</C></Q> then the return 
+value is an object (usually a collection which has the same family of elements),
+which may, for example:
+<List>
+<Item>
+know more about its own structure (and so support more operations) than its 
+input (e.g. if the elements of the collection form a group, 
+then this group can be constructed using <Ref Oper="AsGroup"/>);
+</Item>
+<Item>
+discard its additional structure (e.g. <Ref Oper="AsList"/> applied to a 
+group will return a list of its elements); 
+</Item>
+<Item>
+contain all elements of the original object without duplicates
+(like e.g. <Ref Oper="AsSet"/> does if its argument is a list of elements
+from the same family);
+</Item>
+<Item>
+remain unchanged (like e.g. <Ref Oper="AsSemigroup"/> does if 
+its argument is a group). 
+</Item>
+</List>
+If <C>Something</C> and the argument of <C>AsSomething</C> are domains,
+some further rules apply as explained in 
+<Ref Label="Changing the Structure" BookName="tut"/>.
+<P/>
+
+If the name of a function <C>fun1</C> ends with <Q><C>NC</C></Q> then there 
+is another function <C>fun2</C> with the same name except that the <C>NC</C> 
+is missing. <C>NC</C> stands for <Q>no check</Q>. When <C>fun2</C> is called 
+then it checks whether its arguments are valid, and if so then it calls 
+<C>fun1</C>. The functions <Ref Func="SubgroupNC"/> and 
+<Ref Func="Subgroup"/> are a typical example.
+<P/>
+
+The idea is that the possibly time consuming check of the arguments
+can be omitted if one is sure that they are unnecessary.
+For example, if an algorithm produces generators of the derived subgroup
+of a group then it is guaranteed that they lie in the original group;
+<Ref Func="Subgroup"/> would check this, and <Ref Func="SubgroupNC"/> 
+omits the check.
+<P/>
+
+Needless to say, all these rules are not followed slavishly, for example 
+there is one operation <Ref Oper="Zero"/> instead of two operations
+<C>ZeroOfElement</C> and <C>ZeroOfAdditiveGroup</C>.
+
+</Section>
+
+</Chapter>

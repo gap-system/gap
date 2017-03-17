@@ -1,0 +1,816 @@
+<!-- 
+
+  website.xml          GAP documentation    
+
+  Copyright (C) 2005,  The GAP Group
+
+Maintaining www.gap-system.org
+
+-->
+
+<Chapter Label="Chap-GAPWeb">
+<Heading>Maintaining the &GAP; website</Heading>
+
+This chapter describes how the information accessible on 
+<URL Text="www.gap-system.org">http://www.gap-system.org/</URL> is stored 
+and collected, and how it is transformed into web pages.
+
+<Section Label="WPOverview">
+<Heading>Overview</Heading>
+
+The &GAP; website (in the following just called <Q>website</Q>) has 
+a tree structure for easier navigation and overview. Each node and each
+leaf of the tree is a web page. Every single page 
+resides somewhere in this tree. This position is shown in the
+navigation bar on the left hand side, and the user can navigate through
+the tree using this navigation bar. However, pages can still link to other
+pages that reside in some other branch of the tree. 
+
+<P/>
+With very few exceptions, all pages are static HTML pages conforming to
+the XHTML 1.0 standard (see Section <Ref Sect="WPXHTML"/>). However, these
+pages are not edited directly by the maintainer, but they are produced
+by a tool called <Q>the <Package>Mixer</Package></Q> (see <Ref
+Sect="WPMixer"/>), which takes so called <Q><F>.mixer</F>-files</Q>
+as source and produces the final HTML files. During this process,
+the navigation bar and some other parts of the page are created
+automatically, such that the maintainer does not have to worry about
+technicalities. A <F>.mixer</F> file essentially contains the content of
+the page in form of a well-formed XML document (see again Section <Ref
+Sect="WPXHTML"/> for an explanation) and the <Package>Mixer</Package> 
+handles the technical details.
+
+<P/>
+All the sources for the web pages are kept in the Mercurial repository
+<C>ssh://hg@hg.gap-system.org/GapWWW</C> in St Andrews. Everybody having 
+access should be able to clone this repository using
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/GapWWW 
+</Verb>
+
+The web server in St Andrews also uses its clone, updates it to the latest
+revision of the &default; branch, runs the <Package>Mixer</Package> and then 
+serves the pages. Another named branch is called &testing; and it is served
+on the password protected version of the &GAP; website at 
+<URL>http://devel.gap-system.org/testsite</URL> where work in progress may
+be published to be reviewed internally.
+
+<P/>
+The &GAP; website has some pages that are treated specially such as
+the &GAP; manuals, the pages for the &GAP; packages, the pages
+providing search facilities, the pages for the &GAP; bibliography, the
+sitemap, and the (old) &GAP; forum archive. The setup for these special
+pages is described in Sections <Ref Sect="WPManuals"/> to 
+<Ref Sect="WPForum"/> in this chapter.
+
+<P/>
+In the following sections we first cover the <Package>Mixer</Package>, the 
+web standard XHTML 1.0, the usage of Mercurial for the web pages, and the
+installation of the web site on the web server.
+</Section>
+
+
+<Section Label="WPStart">
+<Heading>Getting started</Heading>
+
+There are several possible workflows dependently on how much efforts
+you would like to commit to the website maintenance.
+<P/>
+
+A minimalistic scenario for small improvements (e.g. correcting details 
+and fixing typos) only requires to install 
+<URL Text="Mercurial">http://mercurial.selenic.com/</URL> and then:
+<Enum>
+<Item>
+Clone the Website repository: <C>hg clone ssh://hg@hg.gap-system.org/GapWWW</C>
+</Item>
+<Item>
+Make changes in the &default; branch 
+</Item>
+<Item>
+Commit and push changes to trigger notification to website admininstrator(s) 
+to check and approve this update.
+</Item>
+</Enum>
+
+A more robust scenario, especially for changes that are more likely to 
+break the <Package>Mixer</Package> syntax, is to clone also the 
+<Package>Mixer</Package> repository with
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/Mixer
+</Verb>
+
+an build the <Package>Mixer</Package> as described in the <F>mixer.README</F> 
+file (see Section <Ref Sect="WPMixer"/> for further details). For this step, 
+you will need a C compiler (for compiling parts of the <Package>Mixer</Package>) 
+and a <URL Text="Python">http://www.python.org/</URL> interpreter (for 
+running the <Package>Mixer</Package>). 
+<P/>
+
+With <Package>Mixer</Package>, you may run the <F>mixer.py</F> script 
+(probably with <C>-f</C> option to rebuild everything regardless the 
+timestamps) inside the <F>GapWWW</F> working directory to check how 
+produced html pages look like in your browser before committing and 
+pushing the changes. 
+<P/>
+
+Finally, while changes in the &default; branches will trigger notification 
+to website admininstrator(s) to check and approve them, for changes that 
+you want to be internally reviewed prior to publication, you may use the 
+&testing; branch which is served on the password protected version of the 
+&GAP; website at <URL>http://devel.gap-system.org/testsite</URL>. Changes
+in the &testing; branch will appear at the testing site immediately after
+pushing them to the master repository. This workflow is useful if you want
+to show your suggestions to a wider group of people who may not have an
+opportunity to install <Package>Mixer</Package> and have a local version
+of the &GAP; website to review your changes.
+<P/>
+
+If you are one of website admininstrator(s), then you will also need to
+be able to access the web server in St Andrews via <C>ssh</C> to run 
+certain update scripts and copy necessary data. 
+</Section>
+
+
+<Section Label="WPMixer">
+<Heading>The Mixer</Heading>
+
+The <Package>Mixer</Package> is a Python script that uses a C-library to
+parse XML documents (see Section <Ref Sect="WPXHTML"/>). Therefore this
+library (which comes with the <Package>Mixer</Package>) has to be compiled
+first.
+
+<P/>
+The <Package>Mixer</Package> is kept in the Mercurial repository 
+<C>ssh://hg@hg.gap-system.org/Mixer</C> in St Andrews. To clone this
+repository, use
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/Mixer
+</Verb>
+
+assuming that you already have access.
+
+<P/>
+The above command creates a clone of this repository in the directory 
+<F>Mixer</F> of the current directory.
+In that directory you can create the manual of the <Package>Mixer</Package>
+by calling <C>make mixer.pdf</C> provided you have an installation of
+&LaTeX; on your machine. In that manual the <Package>Mixer</Package> and
+its installation are described in details.
+
+<P/>
+Alternatively you can download a copy of the <Package>Mixer</Package>
+and its documentation
+from 
+<URL Text="this page">
+http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/mixer.html
+</URL>.
+
+<P/>
+A small comment on the rationale behind the <Package>Mixer</Package> might
+be in order. The fact that the input of the <Package>Mixer</Package>,
+that is the <F>.mixer</F>-files have to be well-formed XML documents
+(see Section <Ref Sect="WPXHTML"/>) might at first sight be considered
+inconvenient and a bit awkward. However, this fact greatly improves the
+chances that the resulting HTML files conform to the XHTML 1.0 standard
+and at the same time lead to the fact that the <Package>Mixer</Package>
+is able to give very concise and usable error message during parsing
+in case something is not well-formed. This together with the automatically
+generated navigation bar makes the <Package>Mixer</Package> a valuable tool
+for the creation of web pages.
+
+<P/>
+Note in particular that the tree structure of the whole web site is
+controlled by the <F>tree</F> files in each subdirectory, exactly as
+described in the manual of the <Package>Mixer</Package>.
+
+</Section>
+
+<Section Label="WPXHTML">
+<Heading>XHTML</Heading>
+
+The HTML language has undergone a series of revision and standardizations.
+One major step was to make an HTML standard that conforms to the XML
+standard which happened with the revision <Q>XHTML 1.0</Q> of the
+HTML standard. This step was important because the XML framework
+makes it much easier to parse such documents automatically and check
+for <Q>well-formedness</Q>. Here, the term <Q>well-formed</Q> means
+that the document fulfils a set of syntactic rules. That is, a document
+might be well-formed and at the same time not make any sense.
+See <URL Text="this page">http://www.w3.org/TR/xhtml1/</URL> for details.
+A short introduction to the XML standard can be found in
+Section <Ref Sect="XML" BookName="GAPDoc"/>  in the &GAPDoc; manual.
+<P/>
+
+The &GAP; web pages should conform to the standard XHTML 1.0.
+To cut a long story short, this means a few restrictions on the markup
+to use. Here we quickly cover the most important things, which should
+enable anybody who has ever seen an HTML document of any version
+to get started.
+
+<Enum>
+<Item>
+All tags must be written with lower case letters in the element names.
+</Item>
+<Item>
+All non-empty elements must have a start- and end-tag, in particular
+enclose paragraphs in <C>&lt;p&gt;</C> and <C>&lt;/p&gt;</C> or list 
+entries in <C>&lt;li&gt;</C> and <C>&lt;/li&gt;</C>.
+</Item>
+<Item>
+Elements must be properly nested like brackets, that is things like
+<C>&lt;a&gt;&lt;b&gt;&lt;/a&gt;&lt;/b&gt;</C> are not allowed.
+</Item>
+<Item>
+Attributes always must have an assigned value and the value must be
+enclosed by either double or single quotes; for example
+<C>&lt;a href="http://www.gap-system.org"&gt;GAP site&lt;/a&gt;</C>.
+</Item>
+<Item> Write empty elements like <C>&lt;br /&gt;</C>, the space before the
+<C>/</C> is not necessary according to the specification but it helps
+some old browsers to interpret it correctly.
+</Item>
+<Item> Do not put information on colors or fonts in the XHTML file. Instead
+use the <C>.css</C> style sheet file. (For complicated cases use the
+<C>class</C> attribute to mark elements for which you want to give special
+formating rules in the style sheet.
+</Item>
+<Item> The XML markup characters <Q><C>&lt;</C></Q>, <Q><C>&amp;</C></Q>, and 
+    <Q><C>&gt;</C></Q>
+    must be entered as <Q><C>&amp;lt;</C></Q>, <Q><C>&amp;amp;</C></Q>, 
+    and <Q><C>&amp;gt;</C></Q>
+    respectively. There are quite a few such <Q>entities</Q> which are
+    defined to enter special characters. See
+    <URL Text="this page">http://www.w3.org/TR/xhtml1/Overview.html#h-A2</URL>
+    for details.
+</Item>
+</Enum>
+
+Using the <URL Text="W3C">http://www.w3.org/TR/html401/</URL> 
+specification
+<URL Text="HTML 4.01">http://www.w3.org/TR/html401/</URL> - this includes 
+a nice <E>elements</E> overview - together with the above rules and 
+the general rule to avoid complicated looking constructs when possible,
+we found it not too difficult to produce sets of valid web pages.
+
+
+</Section>
+
+<Section Label="WPHG">
+<Heading>Mercurial usage</Heading>
+
+We assume here that you are familiar with the standard Mercurial commands
+<C>hg clone</C>, <C>hg pull</C>, <C>hg push</C>, <C>hg update</C>,
+<C>hg commit</C> etc.
+<P/>
+
+The source files for the web site are kept in the Mercurial repository
+<C>ssh://hg@hg.gap-system.org/GapWWW</C> in St Andrews. Assuming that 
+you already have access, you may clone it by doing
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/GapWWW 
+</Verb>
+
+This command creates in your current directory a directory <F>GapWWW</F>
+with the complete source tree of the web site.
+<P/>
+
+Source files are treated like any other source file in the Mercurial repository,
+that is you can update, modify, commit, add, remove them as usual.
+<P/>
+
+The only thing one has to understand with respect to Mercurial is which 
+implications the branch in which the change has appeared will have on the
+process of its publication:
+<List>
+<Item>
+Changes in the &default; branch will not be automatically published on
+the web server. They will be reviewed by the website administrator who
+will then have to run the update script on the server in St Andrews as 
+described in Section <Ref Sect="WPyin"/> to make them available online.
+</Item>
+<Item>
+Changes in the &testing; branch will immediately appear on the password 
+protected version of the &GAP; website at 
+<URL>http://devel.gap-system.org/testsite</URL> where they may be reviewed
+by others.
+</Item>
+<Item>
+Changes in feature branches (which you may create to keep some
+work in progress) will not be visible anywhere.
+</Item>
+</List>
+<P/>
+
+A little comment on the rationale behind this setup might be in order.
+It allows that more than one person works independently on the
+website and those people exchange versions via Mercurial, without 
+publishing them immediately. The actual guidelines who does what 
+in this process should be agreed on separately.
+<P/>
+
+</Section>
+
+<Section Label="WPyin">
+    <Heading>The web server in St Andrews</Heading>
+
+Currently, the actually published version of the web site is contained in 
+the directory <F>/gap/GapWWW</F> on the following machine in St Andrews:
+<Verb>
+    yin.mcs.st-andrews.ac.uk
+</Verb>
+This machine is not really a web server, but the real web server mounts
+and serves the directory <F>/gap/GapWWW</F> from <F>yin</F> via NFS.
+<P/>
+
+The <Package>Mixer</Package> is checked out (still old CVS version, it has 
+not been changed since it remained unchanged over several years) and 
+installed in the directory <F>/gap/Mixer</F>. It can be called with the command
+
+<Verb>
+    /gap/Mixer/mixer.py
+</Verb>
+
+<P/>
+The files are checked out with ownership <F>gapchron</F> which is a
+user on <F>yin</F> with the same numerical user ID than the <F>gap</F>
+user. In other words, one has to be the user <F>gap</F> to manipulate
+the data. Note that the home directory of the user <F>gap</F> is in fact
+<F>/gap</F>.
+
+<P/>
+To get access to this data the easiest and most secure way is probably
+to create an RSA key pair, append the public key to
+<F>/gap/.ssh/authorized_keys</F> and to keep the private key in the
+<F>.ssh</F> subdirectory of the user's home directory.
+
+<P/>
+There is one shell script which is run by a website administrator to 
+update the website. This script is in <F>bin/updateGapWWW.sh</F>.
+It basically pulls the latest version from the master repository 
+and runs the <Package>Mixer</Package>. You can trigger the update manually
+by doing
+
+<Verb>
+   ssh gap@yin.mcs.st-andrews.ac.uk bin/updateGapWWW.sh
+</Verb>
+
+once you have <C>ssh</C> access to <F>yin</F>.
+
+<P/>
+Before performing an update on <F>yin</F>, it is wise to check first 
+whether the <Package>Mixer</Package> runs without
+an error message in your own checked out version of the website.
+
+</Section>
+
+<Section Label="WPInstall">
+<Heading>Installation on the web server</Heading>
+
+This section describes the procedure to install the &GAP; web site on
+a machine from scratch. Thus, this section is usually not needed 
+because all this is already done on the machine
+<F>yin.mcs.st-andrews.ac.uk</F>. However, if one wants to have an exact
+copy of the web site or have to install it somewhere anew, this
+section is needed. This section was derived from the ASCII document
+<F>GapWWW/INSTALL</F> long time ago when it was under CVS control 
+(so <F>GapWWW/INSTALL</F> is likely heavily outdated).
+
+<Subsection>
+<Heading>Needed ingredients</Heading>
+
+<List>
+<Item>
+  standard tools: <C>hg</C>, <C>tar</C>, <C>gzip</C>, <C>make</C>, <C>sh</C>
+</Item>
+<Item>
+  a C-compiler, preferably <C>gcc</C>
+</Item>
+<Item>
+  <Package>Python</Package> version 2.2 or later (for running the 
+  <Package>Mixer</Package>)
+</Item>
+<Item>
+  <URL Text="yEd graph editor">http://www.yworks.com/en/products_yed_about.html</URL> 
+  if you want to edit the sitemap
+</Item>
+<Item>
+  a web server if pages shall be published
+</Item>
+<Item>
+  a copy of the full <F>doc</F> directory from a &GAP; installation for 
+    references into the manual (this can reside on some web site)
+</Item>
+<Item>
+  facility to run CGI-scripts for feedback pages (TODO: check if we still use them)
+</Item>
+<Item>
+  setup for automatic creation of the pages for packages
+</Item>
+<Item>
+  the <C>swish</C> utility for the creation of the search indices
+  (TODO: may be better to switch to Google search)
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection>
+<Heading>Installation procedure</Heading>
+
+<Enum>
+<Item>
+Clone the Mercurial repository GapWWW:
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/GapWWW 
+</Verb>
+            
+This creates a subdirectory <F>GapWWW</F> in the current directory.
+</Item>
+
+<Item>
+Clone the Mercurial repository Mixer:
+
+<Verb>
+hg clone ssh://hg@hg.gap-system.org/Mixer
+</Verb>
+
+This creates a subdirectory <F>Mixer</F> in the current directory.
+</Item>
+
+<Item>
+Unpack some (frozen) subtrees, which are in archives:
+
+<Verb>
+    cd GapWWW  
+    gzip -dc ForumArchive.tar.gz | tar xvf -
+    cd Gap3  
+    gzip -dc Manual3.tar.gz | tar xvf -
+    cd ..    
+</Verb>
+
+</Item>      
+
+<Item>
+Edit <F>GapWWW/lib/config</F>, see that file for instructions:
+
+<Verb>
+    vi lib/config
+</Verb>
+             
+    In this file a few variables have to be defined to adapt the web pages
+    to the local conditions.
+</Item>
+
+<Item>
+Copy a whole <F>doc</F> directory of a &GAP; distribution to the place 
+mentioned in <F>GapWWW/lib/config</F> (see step 4.) in the variable
+<C>GAPManualLink</C> (this is <F>GapWWW/Manuals</F> in the current setup).
+</Item>
+
+<Item>
+The files for the &GAP; bibliography have been included into this directory
+tree in the repository.
+             
+<P/>
+Create the html and PDF versions by:
+             
+<Verb>
+    cd Doc/Bib
+    gap4 convbib.g
+    cd ../.. 
+</Verb>
+             
+Some more information about this is in <F>GapWWW/Doc/Bib/INFO</F>
+which is unchanges since 2010 and may be somewhat outdated.
+</Item>
+
+<Item>
+Install search facility:
+             
+<P/>
+    Things are in <F>GapWWW/Search</F>. You need the <C>swish</C> utility 
+    installed to create the index files for searching. Create a link in
+the <F>Search</F> directory to the swish executable.
+    Then create index files by:
+             
+<Verb>
+    cd Search
+    ln -s PATHTOSWISH swish
+    make
+    cd ..
+</Verb>
+
+(<F>PATHTOSWISH</F> has to be replaced by the path to the swish executable.)
+
+<P/>
+The CGI script <F>GapWWW/Search/search.cgi</F> will take care of the rest.
+</Item>
+
+<Item>
+Install package manuals:
+
+<P/>
+    Copy the result of Frank's scripts to the place mentioned in 
+    <F>GapWWW/lib/config</F> (in the variable <F>pkgmixerpath</F>).
+    (currently, this is <F>GapWWW/Manuals</F>, copy the whole <F>pkg</F> 
+    directory)
+
+<P/>
+    To update the package pages, copy all <F>.mixer</F> files and 
+    <F>pkgconf.py</F> to <F>GapWWW/Packages</F> and rerun the 
+    <Package>Mixer</Package>.
+</Item>
+
+<Item>
+Make sure that the file  
+       <F>GapWWW/lib/AllLinksOfAllHelpSections.data</F> is always up-to-date
+     (this has to be adjusted whenever the released manuals change).
+
+<P/>
+     In the development version of &GAP; there is a file 
+     <F>dev/LinksOfAllHelpSections.g</F>.
+     Read this with a current &GAP; version with all currently released
+     packages installed and call <C>WriteAllLinksOfAllHelpSections()</C>, 
+     this writes the file <F>AllLinksOfAllHelpSections.data</F>. It has
+     then to be checked in to its place under the <F>GapWWW</F> tree.
+     Do not forget to publish the latest revision.
+</Item>
+
+<Item>
+Run the mixer:
+
+<Verb>
+    ../Mixer/mixer.py -f
+</Verb>
+    (the <C>-f</C> forces creation regardless of timestamps)
+</Item>
+</Enum>
+
+</Subsection>
+
+<Subsection>
+<Heading> Installing updated versions </Heading>
+
+If things are changed in the repository, all that has to be done to update the
+pages locally is:
+
+<Verb>
+hg pull
+hg up
+</Verb>
+
+in the <F>GapWWW</F> directory, followed by a
+             
+<Verb>
+  ../Mixer/mixer.py
+</Verb>
+
+The mixer has an option <C>-f</C> to force recreation of all pages. This is
+necessary if some general files like the address database
+<F>lib/addresses</F> or templates changes.
+
+<P/>
+To change the sitemap, use <Package>yEd</Package> graph editor to modify 
+<F>sitemap.graphml</F> file, then used <Package>yEd</Package> export
+menu to create <F>sitemap.html</F> file with associated <F>.png</F>
+image.
+</Subsection>
+
+</Section>
+
+<Section Label="WPManuals">
+<Heading>The &GAP; manuals on the web pages</Heading>
+
+All &GAP; manuals are available in HTML format via the web pages. This
+works by simply copying the <F>doc</F> directory of a complete &GAP;
+installation to the place specified by the variable <F>GAPManualLink</F>
+in <F>GapWWW/lib/config</F> (which is <F>GapWWW/Manuals</F> in the current
+setup). Note that those files are <E>not</E>
+under version control there, they are only copied to checked out
+working copies, like for example on the web server in St Andrews.
+
+<P/>
+The single remaining point to explain is how one can specify links
+to manual sections on the web pages. This is done with a special
+<Package>Mixer</Package> tag like the following:
+
+<Verb>
+    &lt;mixer manual="Reference: Lists"&gt;Chapter about lists&lt;/mixer&gt;
+</Verb>
+
+This element creates a link to the manual section which would appear
+in the &GAP; help system when called with <Q><C>?Reference: Lists</C></Q>, which
+happens to be the chapter in the reference manual about lists. The
+text of the link would be <Q>Chapter about lists</Q>.
+
+<P/>
+This works, because the <Package>Mixer</Package> has access to a file
+containing the links to all manual sections. This file resides in
+<F>GapWWW/lib/AllLinksOfAllHelpSections.data</F>, which is created
+using <F>dev/LinksOfAllHelpSections.g</F> in the development version
+of &GAP; as described in Section <Ref Sect="WPInstall"/>.
+
+<P/>
+The value of the attribute <Q>manual</Q> in the <Q>mixer</Q> tag
+must be the complete text of the section heading the link should
+point to.
+</Section>
+
+<Section Label="WPPackages">
+<Heading>The &GAP; packages on the web pages</Heading>
+
+The archives and web pages for the &GAP; packages are generated
+by yet another set of tools described in Chapter <Ref Chap="Chap-PkgDist"/>. 
+These generate for every package a <F>.mixer</F>-file and for all packages
+together a file <F>pkgconf.py</F>. All these files have to be put
+under version control in the directory <F>GapWWW/Packages</F>. These nodes then only
+have to be put into the tree by mentioning them in the <F>tree</F> file
+there.
+
+</Section>
+
+<Section Label="WPSearch">
+<Heading>The search engine on the web pages</Heading>
+
+The search engine on the web pages internally uses the <C>swish</C> tool.
+It is used to create an index of all pages which allows very fast
+searches when a user submits a query. All files for this setup are in
+the directory <F>GapWWW/Search</F>.
+
+<P/>
+The indices are regenerated by doing
+
+<Verb>
+    touch everything.conf
+    make
+</Verb>
+
+in that directory. This is done automatically every night, such that 
+usually nothing has to be done after installation.
+
+<P/>
+To make this work, one needs a <C>swish</C> executable and has to create
+a link <F>GapWWW/Search/swish</F> to that executable.
+
+</Section>
+
+<Section Label="WPBiblio">
+<Heading>The &GAP; bibliography</Heading>
+
+The &GAP; bibliography resides in the directory <F>GapWWW/Doc/Bib</F>.
+
+<P/>
+The source files are:
+
+<List>
+    <Mark> <F>GapCite.MR</F> </Mark>
+    <Item> This file contains just MR numbers of papers that cite or refer 
+    to (one of the versions of) GAP (here and below <Q>MR</Q> stands for 
+    <Q>Mathematical Reviews</Q>.). The format is alternatingly one line 
+    of the form <C>1stAuthorSurname Paper</C> (not starting with a blank) and
+    one line <C>MR-Number</C> (starting with a blank). MR numbers will be used
+    to get full bibliographic info from MathSciNet, and the textual description
+    only helps when adding papers to the file (in particular, to keep entries 
+    sorted by the first author).
+    </Item>
+    <Mark> <F>GapCite.notyet</F> </Mark>
+    <Item> <C>BiBTeX</C> entries for papers that are not yet in MR but
+        likely will be there in a few months </Item>
+    <Mark> <F>GapNonMR.bib</F> </Mark>
+    <Item> <C>BiBTeX</C> entries for papers that will not be in MR (e.g. 
+           theses)
+    </Item>
+    <Mark> <F>NonVerif.MR</F> </Mark>
+    <Item> Things not yet verified, same format as <F>GapCite.MR</F></Item>
+    <Mark> <F>NonVerif.NonMR</F> </Mark>
+    <Item> Things not yet verified, same format as <F>GapCite.notyet</F></Item>
+    <Mark> <F>GapIgnore.MR</F> </Mark>
+    <Item> This file contains a list of &GAP; strings corresponding to MR 
+    numbers of papers that may be falsely reported by MathSciNet as citing
+    &GAP; (for example, if they refer to the History of Mathematics Archive
+    website wrongly stating its address in the &GAP; domain as may be returned
+    by some search systems). If necessary, add new items there in an obvious
+    way.
+    </Item>
+</List>
+
+It is possible to check MathSciNet for new references to &GAP; reading the 
+file <F>updatebib.g</F> into &GAP;. It will produce two files:
+
+<List>
+    <Mark> <F>tobeadded.txt</F> </Mark>
+    <Item> This file has the same format as <F>GapCite.MR</F> and 
+    lists publications citing &GAP; which should be examined and 
+    after that added either to <F>GapCite.MR</F> or to <F>GapIgnore.MR</F>.
+    </Item>
+    <Mark> <F>suggested.txt</F> </Mark>
+    <Item> This file contains suggestions to <Q>move</Q> certain entries
+    from <F>GapCite.notyet</F> and <F>GapNonMR.bib</F> to <F>GapCite.MR</F>.
+    All suggestions, including those which do not match the publication
+    listed in the &GAP; bibliography, should be carefully examined before any
+    changes.
+    </Item>
+</List>
+
+Note that <F>updatebib.g</F> is not a complete solution for updating &GAP; 
+bibliography. It searches for occurrences of the substring <C>www.gap</C>
+in citations (this covers both old and current addresses of the &GAP; website), 
+but it does not cover publications citing &GAP; without its website or referring
+to it only in the text; finally, it covers only MathSciNet and does not look
+into other bibliography databases. Therefore, manual search still should be 
+used to discover more &GAP; citations. The function 
+<C>SearchMathSciNetForUpdates</C> from <F>updatebib.g</F> may be helpful in
+this direction since it performs more broad search in the MathSciNet, dropping
+some more strict limitations.
+<P/>
+
+After the source files of the &GAP; bibliography are updated, the script 
+<F>newmakegapbib</F> uses <F>GapCite.MR</F>, <F>GapCite.notyet</F> and 
+<F>GapNonMR.bib</F> (and also <F>HEADER</F> and <F>MRBIB</F>) to
+produce <F>gap-published.bib</F> (this requires subscription to MathSciNet, 
+which St Andrews has). The advantage of this approach is that MathSciNet gives 
+us good <C>BiBTeX</C> entries (no need to look up journal names or diacritic
+characters) and their updates, and MR numbers we can link to. It also makes 
+it easier to add entries as only the MR number is needed.
+<P/>
+
+At the end of its work <F>newmakegapbib</F> will also display error 
+messages reporting MR numbers whose BibTeX record it failed to fetch from 
+MathSciNet -- these should be investigated since they may point out on
+some inconsistencies in our data.
+<P/>
+
+<P/>
+(There is also a script <C>GETMR</C> that will return MR
+numbers for papers -- convenient to look up a large number of papers one
+found in the citation index.)
+
+<P/>
+Finally &GAP; itself called with <F>convbib.g</F> produces the web page
+and a nice PDF bibliography from <F>gap-published.bib</F> (using further
+helper files <F>gapbib.tex</F> and <F>gap-head.bib</F>). The resulting
+files are <F>gap-published.html</F> and <F>gap-published.pdf</F> which 
+are linked from the main web page <F>bib.html</F>. <E>NOTE</E> that 
+<F>gap-published.html</F> and <F>gap-published.pdf</F> are <E>not</E> under 
+version control because they can be generated automatically by <F>convbib.g</F> rather 
+quickly. In addition, <F>convbib.g</F> creates <F>statistics.generated</F>
+and <F>statistics.mscreport</F> - two pages with tables which are used in 
+<F>statistics.mixer</F> to create <F>statistics.html</F>.
+<P/>
+
+The output of <F>convbib.g</F> should be also checked for errors and warnings
+reporting repeated entries, incomplete BibTeX records (mostly may be ignored), etc.
+<P/>
+
+<E>NOTE</E>: 
+The current setup does not run &GAP; on <F>convbib.g</F>
+every night. This means that everybody who changes the &GAP; bibliography
+has to do this manually on <C>yin</C> after every change.
+<P/>
+
+
+
+
+</Section>
+
+<Section Label="WPSitemap">
+<Heading>The sitemap</Heading>
+
+The sitemap picture is generated and edited in the following way: The
+original source is the file <F>sitemap.graphml</F> which is generated and
+edited with the <Package>yEd</Package> program. <Package>yEd</Package>
+functionality allows to export the sitemap as a clickable HTML image map,
+producing two files <F>sitemap.html</F> and <F>sitemap1_1.png</F>. Because 
+the sitemap usually does not change very much, these two files are also
+kept under the version control.
+</Section>
+
+<Section Label="WPForum">
+<Heading>The &GAP; forum archive</Heading>
+
+Until December 2003 the &GAP; forum archive was handled by a tool written
+especially for this task. At that point it was switched to <C>mailman</C>,
+a generic tool for mailing list, which also does the archiving. 
+Therefore the old forum archives are frozen in form of a huge amount
+of HTML pages. These are not kept under version control as single files but as one big
+binary archive under <F>GapWWW/ForumArchive.tar.gz</F>. 
+
+<P/>
+To install those pages in a checked out working copy one just has to 
+extract this archive by doing
+
+<Verb>
+    gzip -dc ForumArchive.tar.gz | tar xf -
+</Verb>
+
+in the <F>GapWWW</F> directory as explained in Section <Ref Sect="WPInstall"/>.
+</Section>
+
+</Chapter>
+

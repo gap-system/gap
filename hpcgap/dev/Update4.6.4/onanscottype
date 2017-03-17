@@ -1,0 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2012/04/16
+!! Changed by
+AH
+!! Type of Change
+Fix: wrong result
+!! Description
+ONanScottType did not recognize product action properly.
+!! End
