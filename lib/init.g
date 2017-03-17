@@ -1073,6 +1073,10 @@ HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
 if IsHPCGAP then
   HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Reference Manual", "doc/hpc");
 fi;
+if ForAny( GAPInfo.RootPaths,
+           rp -> IsDirectoryPath( Concatenation( rp, "/doc/dev" ) ) ) then
+  HELP_ADD_BOOK("Development", "GAP 4 Development Manual", "doc/dev");
+fi;
 
 
 #############################################################################
