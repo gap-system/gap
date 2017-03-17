@@ -11,48 +11,48 @@
 **  This file contains the functions of the  filters, operations, attributes,
 **  and properties package.
 */
-#include        <assert.h>
+#include <assert.h>
 
-#include        "system.h"              /* Ints, UInts                     */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "opers.h"               /* generic operations              */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "lists.h"               /* generic lists                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "blister.h"             /* boolean lists                   */
-#include        "stringobj.h"              /* strings                         */
-#include        "range.h"               /* ranges                          */
+#include <src/plist.h>                  /* plain lists */
+#include <src/blister.h>                /* boolean lists */
+#include <src/stringobj.h>              /* strings */
+#include <src/range.h>                  /* ranges */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "listfunc.h"   
-#include        "integer.h"   
+#include <src/listfunc.h>   
+#include <src/gmpints.h>   
 
-#include        "hpc/tls.h"             /* thread-local storage            */
-#include        "hpc/thread.h"          /* threads                         */
-#include        "hpc/aobjects.h"        /* atomic objects                  */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include        "hpc/atomic.h"
+#include <src/hpc/atomic.h>
 
 /****************************************************************************
 **

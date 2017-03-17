@@ -14,82 +14,82 @@ extern "C" {
 #define GAP_IN_EXTERN_C
 #endif
 
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "read.h"                /* reader                          */
+#include <src/read.h>                   /* reader */
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "integer.h"             /* integers                        */
-#include        "rational.h"            /* rationals                       */
-#include        "cyclotom.h"            /* cyclotomics                     */
-#include        "finfield.h"            /* finite fields and ff elements   */
-#include        "macfloat.h"            /* machine floats                  */
+#include <src/gmpints.h>                /* integers */
+#include <src/rational.h>               /* rationals */
+#include <src/cyclotom.h>               /* cyclotomics */
+#include <src/finfield.h>               /* finite fields and ff elements */
+#include <src/macfloat.h>               /* machine floats */
 
-#include        "bool.h"                /* booleans                        */
-#include        "permutat.h"            /* permutations                    */
-#include        "trans.h"               /* transformation                  */
-#include        "pperm.h"               /* partial perms                   */
+#include <src/bool.h>                   /* booleans */
+#include <src/permutat.h>               /* permutations */
+#include <src/trans.h>                  /* transformation */
+#include <src/pperm.h>                  /* partial perms */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listoper.h"            /* operations for generic lists    */
-#include        "listfunc.h"            /* functions for generic lists     */
-#include        "plist.h"               /* plain lists                     */
-#include        "set.h"                 /* plain sets                      */
-#include        "vector.h"              /* functions for plain vectors     */
-#include        "blister.h"             /* boolean lists                   */
-#include        "range.h"               /* ranges                          */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listoper.h>               /* operations for generic lists */
+#include <src/listfunc.h>               /* functions for generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/set.h>                    /* plain sets */
+#include <src/vector.h>                 /* functions for plain vectors */
+#include <src/blister.h>                /* boolean lists */
+#include <src/range.h>                  /* ranges */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
-#include        "hpc/tls.h"                 /* thread-local storage            */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
-#include        "objfgelm.h"            /* objects of free groups          */
-#include        "objpcgel.h"            /* objects of polycyclic groups    */
-#include        "objscoll.h"            /* single collector                */
-#include        "objcftl.h"             /* from the left collect           */
+#include <src/objfgelm.h>               /* objects of free groups */
+#include <src/objpcgel.h>               /* objects of polycyclic groups */
+#include <src/objscoll.h>               /* single collector */
+#include <src/objcftl.h>                /* from the left collect */
 
-#include        "dt.h"                  /* deep thought                    */
-#include        "dteval.h"              /* deep thought evaluation          */
+#include <src/dt.h>                     /* deep thought */
+#include <src/dteval.h>                 /* deep thought evaluation */
 
-#include        "sctable.h"             /* structure constant table        */
-#include        "costab.h"              /* coset table                     */
-#include        "tietze.h"              /* tietze helper functions         */
+#include <src/sctable.h>                /* structure constant table */
+#include <src/costab.h>                 /* coset table */
+#include <src/tietze.h>                 /* tietze helper functions */
 
-#include        "exprs.h"               /* expressions                     */
-#include        "stats.h"               /* statements                      */
-#include        "funcs.h"               /* functions                       */
+#include <src/exprs.h>                  /* expressions */
+#include <src/stats.h>                  /* statements */
+#include <src/funcs.h>                  /* functions */
 
 
-#include        "intrprtr.h"            /* interpreter                     */
-#include        "globalstate.h"    /* */
+#include <src/intrprtr.h>               /* interpreter */
+#include <src/globalstate.h>    /* */
 
-#include        "compiler.h"            /* compiler                        */
+#include <src/compiler.h>               /* compiler */
 
-#include        "compstat.h"            /* statically linked modules       */
+#include <src/compstat.h>               /* statically linked modules */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "streams.h"             /* streams package                 */
-#include        "sysfiles.h"            /* file input/output               */
-#include        "weakptr.h"             /* weak pointers                   */
+#include <src/streams.h>                /* streams package */
+#include <src/sysfiles.h>               /* file input/output */
+#include <src/weakptr.h>                /* weak pointers */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
-#include        "hpc/aobjects.h"            /* atomic variables                */
+#include <src/hpc/aobjects.h>           /* atomic variables */
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
 extern Obj CurrentAssertionLevel;

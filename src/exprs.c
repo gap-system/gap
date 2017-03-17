@@ -12,48 +12,48 @@
 **  The expressions  package is the  part  of the interpreter  that evaluates
 **  expressions to their values and prints expressions.
 */
-#include        "system.h"              /* Ints, UInts                     */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "records.h"             /* generic records                 */
-#include        "lists.h"               /* generic lists                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/records.h>                /* generic records */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
-#include        "integer.h"             /* integers                        */
+#include <src/bool.h>                   /* booleans */
+#include <src/gmpints.h>                /* integers */
 
-#include        "permutat.h"            /* permutations                    */
-#include        "trans.h"               /* transformations                 */
-#include        "pperm.h"               /* partial perms                   */
+#include <src/permutat.h>               /* permutations */
+#include <src/trans.h>                  /* transformations */
+#include <src/pperm.h>                  /* partial perms */
 
-#include        "precord.h"             /* plain records                   */
+#include <src/precord.h>                /* plain records */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
-#include        "calls.h"
-#include        "stats.h"
+#include <src/code.h>                   /* coder */
+#include <src/calls.h>
+#include <src/stats.h>
 
 
-#include        "exprs.h"               /* expressions                     */
+#include <src/exprs.h>                  /* expressions */
 
-#include        "hpc/tls.h"                 /* thread-local storage            */
-#include        "profile.h"             /* installing methods              */
-#include        "hpc/aobjects.h"            /* atomic objects                  */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/profile.h>                /* installing methods */
+#include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
-#include	<assert.h>
+#include <assert.h>
 
 
 /****************************************************************************

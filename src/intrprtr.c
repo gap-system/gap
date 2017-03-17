@@ -15,52 +15,52 @@
 **  immediately, it switches into coding mode, and  delegates the work to the
 **  coder.
 */
-#include        <assert.h>              /* assert                          */
-#include        "system.h"              /* Ints, UInts                     */
+#include <assert.h>                     /* assert */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "read.h"                /* reader                          */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/read.h>                   /* reader */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "records.h"             /* generic records                 */
-#include        "lists.h"               /* generic lists                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/records.h>                /* generic records */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
-#include        "integer.h"             /* integers                        */
+#include <src/bool.h>                   /* booleans */
+#include <src/gmpints.h>                /* integers */
 
-#include        "permutat.h"            /* permutations                    */
-#include        "trans.h"               /* transformations                 */
-#include        "pperm.h"               /* partial perms                   */
+#include <src/permutat.h>               /* permutations */
+#include <src/trans.h>                  /* transformations */
+#include <src/pperm.h>                  /* partial perms */
 
-#include        "precord.h"             /* plain records                   */
+#include <src/precord.h>                /* plain records */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
-#include        "funcs.h"               /* functions                       */
-#include        "read.h"
+#include <src/code.h>                   /* coder */
+#include <src/funcs.h>                  /* functions */
+#include <src/read.h>
 
-#include        "intrprtr.h"            /* interpreter                     */
+#include <src/intrprtr.h>               /* interpreter */
 
-#include	"hpc/tls.h"
-#include	"hpc/thread.h"
-#include	"hpc/aobjects.h"		/* atomic objects		   */
+#include <src/hpc/tls.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
 /****************************************************************************
 **

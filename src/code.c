@@ -12,49 +12,49 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
-#include        <stdio.h>               /* on SunOS, assert.h uses stderr
+#include <stdio.h>               /* on SunOS, assert.h uses stderr
                                            but does not include stdio.h    */
-#include        <assert.h>              /* assert                          */
-#include        "system.h"              /* Ints, UInts                     */
+#include <assert.h>                     /* assert */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
-#include        "records.h"             /* generic records                 */
+#include <src/records.h>                /* generic records */
 
-#include        "integer.h"             /* integers                        */
+#include <src/gmpints.h>                /* integers */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "funcs.h"               /* functions                       */
+#include <src/funcs.h>                  /* functions */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "bool.h"                /* For fail                        */
+#include <src/bool.h>                   /* For fail */
 
-#include        "saveload.h"            /* saving and loading              */
-#include        "read.h"                /* to access stack of for loop globals */
-#include        "gvars.h"
-#include        "hpc/thread.h"              /* threads                         */
-#include        "hpc/tls.h"                 /* thread-local storage            */
-#include        "hpc/aobjects.h"		/* atomic objects		   */
+#include <src/saveload.h>               /* saving and loading */
+#include <src/read.h>                   /* to access stack of for loop globals */
+#include <src/gvars.h>
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
 
-#include        "profile.h"             /* access to stat register function*/
+#include <src/profile.h>                /* access to stat register function */
 
 /****************************************************************************
 **

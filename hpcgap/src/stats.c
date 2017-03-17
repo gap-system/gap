@@ -12,49 +12,49 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "sysfiles.h"            /* file input/output               */
+#include <src/sysfiles.h>               /* file input/output */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "code.h"                /* coder                           */
-#include        "exprs.h"               /* expressions                     */
+#include <src/code.h>                   /* coder */
+#include <src/exprs.h>                  /* expressions */
 
-#include        "intrprtr.h"            /* interpreter                     */
+#include <src/intrprtr.h>               /* interpreter */
 
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "stats.h"               /* statements                      */
+#include <src/stats.h>                  /* statements */
 
-#include        "profile.h"             /* installing methods              */
+#include <src/profile.h>                /* installing methods */
 
-#include        <assert.h>
+#include <assert.h>
 
-#include	"hpc/tls.h"
-#include	"hpc/thread.h"
+#include <src/hpc/tls.h>
+#include <src/hpc/thread.h>
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
-#include        "profile.h"             /* visit statements for profiling  */
+#include <src/profile.h>                /* visit statements for profiling */
 
 /****************************************************************************
 **

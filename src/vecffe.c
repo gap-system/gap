@@ -8,43 +8,43 @@
 *Y  Copyright (C) 2002 The GAP Group
 **
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "lists.h"               /* generic lists                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "integer.h"             /* integers                        */
-#include        "finfield.h"            /* finite fields                   */
+#include <src/gmpints.h>                /* integers */
+#include <src/finfield.h>               /* finite fields */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listoper.h"            /* operations for generic lists    */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listoper.h>               /* operations for generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "vecffe.h"              /* functions for fin field vectors */
+#include <src/vecffe.h>                 /* functions for fin field vectors */
 
-#include        "range.h"               /* ranges                          */
+#include <src/range.h>                  /* ranges */
 
-#include        "calls.h"               /* needed for opers.h              */
-#include        "opers.h"               /* for TRY_NEXT_METHOD             */
+#include <src/calls.h>                  /* needed for opers.h */
+#include <src/opers.h>                  /* for TRY_NEXT_METHOD */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <assert.h>
 

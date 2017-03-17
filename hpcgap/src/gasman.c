@@ -110,15 +110,15 @@
 **  Therefore  some bags  may  be  kept by  {\Gasman}, even   though they are
 **  already dead.
 */
-#include        <string.h>
-#include        "system.h"              /* Ints, UInts                     */
+#include <string.h>
+#include <src/system.h>                 /* Ints, UInts */
 
 
 
-#include        "gasman.h"              /* garbage collector               */
+#include <src/gasman.h>                 /* garbage collector */
 
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
 
 
@@ -223,7 +223,7 @@ TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
  * hpc_boehm_gc.h contains replacements of those functions for when
  * gasman is not in use */
 #ifdef BOEHM_GC
-#include       "hpc/boehm_gc.h"         /* boehm-specific code             */
+#include <src/hpc/boehm_gc.h>           /* boehm-specific code */
 #endif
 
 /****************************************************************************

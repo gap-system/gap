@@ -16,9 +16,9 @@
 #error hpc_boehm_gc.h can only be used with the boehm GC collector
 #endif
 
-#include        <stdlib.h>
-#include        <stdio.h>
-#include        <pthread.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <pthread.h>
 
 #define LARGE_GC_SIZE (8192 * sizeof(UInt))
 #define TL_GC_SIZE (256 * sizeof(UInt))
@@ -31,13 +31,13 @@
 #endif
 
 
-#include	"code.h"		/* coder                           */
-#include	"thread.h"		/* threads			   */
-#include	"tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 #ifdef TRACK_CREATOR
 /* Need CURR_FUNC and NAME_FUNC() */
-#include        "calls.h"               /* calls                           */
-#include        "vars.h"                /* variables                       */
+#include <src/calls.h>                  /* calls */
+#include <src/vars.h>                   /* variables */
 #endif
 
 /****************************************************************************

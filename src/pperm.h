@@ -1,41 +1,41 @@
 
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "integer.h"             /* integers                        */
-#include        "intfuncs.h"            /* hashing                         */
+#include <src/gmpints.h>                /* integers */
+#include <src/intfuncs.h>               /* hashing */
 
-#include        "permutat.h"            /* permutations                    */
+#include <src/permutat.h>               /* permutations */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/stringobj.h>              /* strings */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "set.h"                 /* sets                            */
+#include <src/set.h>                    /* sets */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 #ifndef GAP_PPERM_H
 #define GAP_PPERM_H

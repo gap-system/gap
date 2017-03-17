@@ -8,7 +8,7 @@
  **
  */
 
-#include "globalstate.h"
+#include <src/globalstate.h>
 
 #define MAX_FUNC_EXPR_NESTING 1024
 

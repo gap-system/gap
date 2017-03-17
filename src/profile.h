@@ -12,7 +12,7 @@
 #ifndef GAP_PROFILE_H
 #define GAP_PROFILE_H
 
-#include "exprs.h"
+#include <src/exprs.h>
 
 /****************************************************************************
 **

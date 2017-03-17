@@ -14,10 +14,10 @@
 **
 */
 
-#include "system.h"
-#include "gap.h"
-#include "objects.h"
-#include "stats.h"
+#include <src/system.h>
+#include <src/gap.h>
+#include <src/objects.h>
+#include <src/stats.h>
 
 #include <assert.h>
 #include <time.h>

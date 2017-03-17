@@ -1,54 +1,54 @@
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "finfield.h"            /* finite fields and ff elements   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/finfield.h>               /* finite fields and ff elements */
 
-#include        "bool.h"                /* booleans                        */
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/bool.h>                   /* booleans */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listoper.h"            /* lists operations                */
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "blister.h"             /* boolean lists                   */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listoper.h>               /* lists operations */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/blister.h>                /* boolean lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "vector.h"              /* vectors */
-#include        "listoper.h"              /* default list ops */
+#include <src/vector.h>                 /* vectors */
+#include <src/listoper.h>               /* default list ops */
 
-#include        "vec8bit.h"              /* GFQ vectors                     */
+#include <src/vec8bit.h>                /* GFQ vectors */
 
-#include        "saveload.h"            /* saving and loading              */
-#include        "opers.h"
-#include        "integer.h"             /* integer functions needed for NUMBER_ */
+#include <src/saveload.h>               /* saving and loading */
+#include <src/opers.h>
+#include <src/gmpints.h>                /* integer functions needed for NUMBER_ */
 
-#include        "vecgf2.h"              /* needed for the conversion to
+#include <src/vecgf2.h>              /* needed for the conversion to
              GF(2^n) n>1) */
 
-#include        "code.h"               /* for TakeInterrupt */
-#include        "stats.h" 
-#include	"hpc/aobjects.h"		/* atomic objects */
-#include	"hpc/thread.h"
-#include	"hpc/tls.h"
+#include <src/code.h>                   /* for TakeInterrupt */
+#include <src/stats.h> 
+#include <src/hpc/aobjects.h>           /* atomic objects */
+#include <src/hpc/thread.h>
+#include <src/hpc/tls.h>
 
 #ifndef DEBUG
 #ifndef NDEBUG
 #define NDEBUG 1
 #endif
 #endif
-#include        <assert.h>
+#include <assert.h>
 
 #include <stdio.h>
 

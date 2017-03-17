@@ -15,47 +15,47 @@
 **
 **  It uses the function call mechanism defined by the calls package.
 */
-#include        <stdio.h>               /* on SunOS, assert.h uses stderr
+#include <stdio.h>               /* on SunOS, assert.h uses stderr
                                            but does not include stdio.h    */
-#include        <assert.h>              /* assert                          */
-#include        "system.h"              /* Ints, UInts                     */
-#include        "bool.h"
+#include <assert.h>                     /* assert */
+#include <src/system.h>                 /* Ints, UInts */
+#include <src/bool.h>
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "stringobj.h"              /* strings                         */
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/stringobj.h>              /* strings */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "code.h"                /* coder                           */
-#include        "exprs.h"               /* expressions                     */
-#include        "stats.h"               /* statements                      */
+#include <src/code.h>                   /* coder */
+#include <src/exprs.h>                  /* expressions */
+#include <src/stats.h>                  /* statements */
 
-#include        "funcs.h"               /* functions                       */
+#include <src/funcs.h>                  /* functions */
 
-#include        "read.h"                /* read expressions                */
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/read.h>                   /* read expressions */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-
-
-#include        "saveload.h"            /* saving and loading              */
-
-#include        "opers.h"               /* generic operations              */
-#include        "gvars.h"
-#include        "hpc/thread.h"          /* threads                         */
-#include        "hpc/tls.h"             /* thread-local storage            */
-
-#include        "vars.h"                /* variables                       */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
 
 
-#include        "profile.h"             /* installing methods              */
+#include <src/saveload.h>               /* saving and loading */
+
+#include <src/opers.h>                  /* generic operations */
+#include <src/gvars.h>
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
+
+#include <src/vars.h>                   /* variables */
+
+
+#include <src/profile.h>                /* installing methods */
 /****************************************************************************
 **
 *F ExecProccallOpts( <call> ). . execute a procedure call with options

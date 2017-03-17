@@ -19,7 +19,7 @@
 #if !defined(USE_GMP) && !defined(USE_PRECOMPILED)
  #error "GAP integer code has been removed."
 #else
- #include "gmpints.h"
+ #include <src/gmpints.h>
 #endif
 
 #endif

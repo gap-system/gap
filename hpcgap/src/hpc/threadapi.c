@@ -8,60 +8,60 @@
 **
 **  This file contains the GAP interface for thread primitives.
 */
-#include        <stdio.h>
-#include        <assert.h>
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
-#include        <string.h>              /* memcpy */
-#include        <stdlib.h>
-#include        <signal.h>
-#include        <sys/time.h>
+#include <stdio.h>
+#include <assert.h>
+#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
+#include <string.h>                     /* memcpy */
+#include <stdlib.h>
+#include <signal.h>
+#include <sys/time.h>
 
-#include        "systhread.h"           /* system thread primitives        */
+#include <src/systhread.h>              /* system thread primitives */
 
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "read.h"                /* reader                          */
-#include        "gvars.h"               /* global variables                */
+#include <src/read.h>                   /* reader */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "integer.h"             /* integers                        */
-#include        "bool.h"                /* booleans                        */
+#include <src/gmpints.h>                /* integers */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listoper.h"            /* operations for generic lists    */
-#include        "listfunc.h"            /* functions for generic lists     */
-#include        "plist.h"               /* plain lists                     */
-#include        "set.h"                 /* set                             */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listoper.h>               /* operations for generic lists */
+#include <src/listfunc.h>               /* functions for generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/set.h>                    /* set */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "exprs.h"               /* expressions                     */
-#include        "stats.h"               /* statements                      */
-#include        "funcs.h"               /* functions                       */
+#include <src/exprs.h>                  /* expressions */
+#include <src/stats.h>                  /* statements */
+#include <src/funcs.h>                  /* functions */
 
-#include        "hpc/thread.h"
-#include        "traverse.h"
-#include        "hpc/tls.h"
-#include        "threadapi.h"
+#include <src/hpc/thread.h>
+#include <src/hpc/traverse.h>
+#include <src/hpc/tls.h>
+#include <src/hpc/threadapi.h>
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
-#include        "intrprtr.h"            /* interpreter                     */
+#include <src/intrprtr.h>               /* interpreter */
 
-#include        "compiler.h"            /* compiler                        */
+#include <src/compiler.h>               /* compiler */
 
 struct WaitList {
   struct WaitList *prev;

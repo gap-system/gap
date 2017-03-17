@@ -31,47 +31,47 @@
 **  to compile and link GAP.
 */
 
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 #ifndef WARD_ENABLED
-#include        "gap_version.h"         /* SCM information                 */
+#include <src/gap_version.h>            /* SCM information */
 #endif
 
-#include        "gap.h"                 /* get UserHasQUIT                 */
+#include <src/gap.h>                    /* get UserHasQUIT */
 
-#include        "sysfiles.h"            /* file input/output               */
-#include        "gasman.h"            
-#include        <fcntl.h>
+#include <src/sysfiles.h>               /* file input/output */
+#include <src/gasman.h>            
+#include <fcntl.h>
 
 
-#include        <stdio.h>               /* standard input/output functions */
-#include        <stdlib.h>              /* ANSI standard functions         */
-#include        <string.h>              /* string functions                */
+#include <stdio.h>                      /* standard input/output functions */
+#include <stdlib.h>                     /* ANSI standard functions */
+#include <string.h>                     /* string functions */
 
-#include        <assert.h>
-#include        <dirent.h>
+#include <assert.h>
+#include <dirent.h>
 
 #if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-# include        <unistd.h>
+#include <unistd.h>
 #endif
 
 
 #if HAVE_LIBREADLINE
-#include        <readline/readline.h>   /* readline for interactive input  */
+#include <readline/readline.h>          /* readline for interactive input */
 #endif
 
 #if HAVE_SYS_TIMES_H                    /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
+#include <sys/types.h>
+#include <sys/times.h>
 #endif
 
 #if HAVE_MADVISE
-#include        <sys/mman.h>
+#include <sys/mman.h>
 #endif
 
 /****************************************************************************
 **  The following function is from profile.c. We put a prototype here
-**  Rather than #include "profile.h" to avoid pulling in large chunks
+**  Rather than #include <src/profile.h> to avoid pulling in large chunks
 **  of the GAP type system
 */    
 Int enableProfilingAtStartup( Char **argv, void * dummy);
@@ -513,10 +513,10 @@ UInt SyStartTime;
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
 #if HAVE_SYS_TIME_H
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
+#include <sys/time.h>                   /* definition of 'struct timeval' */
 #endif
 #if HAVE_SYS_RESOURCE_H
-# include       <sys/resource.h>        /* definition of 'struct rusage'   */
+#include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
 
 UInt SyTime ( void )
@@ -575,7 +575,7 @@ UInt SyTimeChildrenSys ( void )
 */
 #if HAVE_TIMES && (SYS_IS_CYGWIN32 || !HAVE_GETRUSAGE)
 
-#include <time.h> /* for CLOCKS_PER_SEC */
+#include <time.h>                       /* for CLOCKS_PER_SEC */
 
 UInt SyTime ( void )
 {

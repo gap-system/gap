@@ -23,30 +23,30 @@
 
 #define _GNU_SOURCE  /* is used for getpt(), ptsname_r prototype etc. */
 
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
-#include        "iostream.h"            /* file input/output               */
+#include <src/iostream.h>               /* file input/output */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listfunc.h"            /* functions for generic lists     */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listfunc.h>               /* functions for generic lists */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "records.h"             /* generic records                 */
-#include        "bool.h"                /* True and False                  */
+#include <src/records.h>                /* generic records */
+#include <src/bool.h>                   /* True and False */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <stdio.h>                      /* standard input/output functions */
 #include <stdlib.h>
@@ -62,7 +62,7 @@
 
 
 #if HAVE_ERRNO_H
-# include       <errno.h>
+#include <errno.h>
 #else
 extern int errno;
 #endif
@@ -86,15 +86,15 @@ extern int errno;
 #endif
 
 #if HAVE_UTIL_H
-#include <util.h> /* for openpty() on Mac OS X, OpenBSD and NetBSD */
+#include <util.h>                       /* for openpty() on Mac OS X, OpenBSD and NetBSD */
 #endif
 
 #if HAVE_LIBUTIL_H
-#include <libutil.h> /* for openpty() on FreeBSD */
+#include <libutil.h>                    /* for openpty() on FreeBSD */
 #endif
 
 #if HAVE_PTY_H
-#include <pty.h> /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
+#include <pty.h>                        /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
 #endif
 
 

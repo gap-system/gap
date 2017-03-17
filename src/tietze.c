@@ -10,33 +10,33 @@
 **
 **  This file contains the functions for computing with finite presentations.
 */
-#include        "system.h"              /* system dependent part           */
-#include        "code.h"
-#include        "stats.h"               /* for TakeInterrupt */
+#include <src/system.h>                 /* system dependent part */
+#include <src/code.h>
+#include <src/stats.h>                  /* for TakeInterrupt */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "gvars.h"               /* global variables                */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "tietze.h"              /* tietze helper functions         */
+#include <src/tietze.h>                 /* tietze helper functions */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /****************************************************************************

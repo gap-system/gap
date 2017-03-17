@@ -15,39 +15,39 @@
 */
 
 
-#include        "system.h"              /* Ints, UInts                     */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "intfuncs.h"             /* integers                        */
+#include <src/intfuncs.h>               /* integers */
 
-#include        "integer.h"
+#include <src/gmpints.h>
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "code.h"                /* coder                           */
-#include        "hpc/thread.h"              /* threads                         */
-#include        "hpc/tls.h"                 /* thread-local storage            */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 #include <stdio.h>

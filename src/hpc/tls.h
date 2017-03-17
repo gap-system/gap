@@ -19,10 +19,10 @@ static inline Bag ImpliedWriteGuard(Bag bag)
 
 #include <stdint.h>
 
-#include "code.h"
-#include "tlsconfig.h"
-#include "scanner.h"
-#include "gasman.h"
+#include <src/code.h>
+#include <src/hpc/tlsconfig.h>
+#include <src/scanner.h>
+#include <src/gasman.h>
 
 #define TLS_NUM_EXTRA 256
 

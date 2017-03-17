@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "system.h"
+#include <src/system.h>
 
 void BacktraceHandler(int sig) {
   void *trace[32];

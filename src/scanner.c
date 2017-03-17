@@ -32,37 +32,37 @@
 **  The scanner relies on the functions  provided  by  the  operating  system
 **  dependent module 'system.c' for the low level input/output.
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "sysfiles.h"            /* file input/output               */
+#include <src/sysfiles.h>               /* file input/output */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
 
-#include        "scanner.h"             /* scanner                         */
+#include <src/scanner.h>                /* scanner */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"              /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "opers.h"               /* DoFilter...                     */
-#include        "read.h"                /* Call0ArgsInNewReader            */
+#include <src/opers.h>                  /* DoFilter... */
+#include <src/read.h>                   /* Call0ArgsInNewReader */
 
-#include	"hpc/tls.h"
-#include	"hpc/thread.h"
+#include <src/hpc/tls.h>
+#include <src/hpc/thread.h>
 
 #include <assert.h>
 #include <limits.h>

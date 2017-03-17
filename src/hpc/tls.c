@@ -1,12 +1,12 @@
-#include 	"system.h"
-#include 	"gasman.h"
-#include 	"objects.h"
-#include	"scanner.h"
-#include	"code.h"
-#include 	"hpc/tls.h"
-#include    "hpc/thread.h"
+#include <src/system.h>
+#include <src/gasman.h>
+#include <src/objects.h>
+#include <src/scanner.h>
+#include <src/code.h>
+#include <src/hpc/tls.h>
+#include <src/hpc/thread.h>
 
-#include	<string.h>
+#include <string.h>
 
 #define MAX_TLS_HANDLERS (TLS_NUM_EXTRA * 2)
 

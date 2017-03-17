@@ -42,37 +42,37 @@
 **  would reduce the overhead  introduced by the  calls to the functions like
 **  'SumInt', 'ProdInt' or 'GcdInt'.
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
+#include <src/gasman.h>                 /* garbage collector */
 
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
+#include <src/ariths.h>                 /* basic arithmetic */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "integer.h"             /* integers                        */
+#include <src/gmpints.h>                /* integers */
 
-#include        "rational.h"            /* rationals                       */
+#include <src/rational.h>               /* rationals */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "saveload.h"            /* saving and loading              */
-#include	"code.h"
-#include	"hpc/thread.h"
-#include	"hpc/tls.h"
+#include <src/saveload.h>               /* saving and loading */
+#include <src/code.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/tls.h>
 
 
 #if 0

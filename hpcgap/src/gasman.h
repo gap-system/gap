@@ -45,9 +45,9 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include "config.h"
+#include <src/config.h>
 
-#include "hpc/atomic.h"
+#include <src/hpc/atomic.h>
 
 /* on 64 bit systems use only two words for bag header */
 

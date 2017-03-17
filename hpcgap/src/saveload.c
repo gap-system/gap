@@ -11,31 +11,31 @@
 **  the workspace. There are support functions in gasman.c and elsewhere
 **  throughout the kernel
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        <unistd.h>              /* write, read                     */
+#include <unistd.h>                     /* write, read */
    
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "bool.h"                /* booleans                        */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "gvars.h"               /* global variables                */
-#include        "streams.h"             /* streams                         */
-#include        "stringobj.h"              /* strings                         */
-#include        "scanner.h"             /* scanner                         */
-#include        "sysfiles.h"            /* file input/output               */
-#include        "plist.h"               /* plain lists                     */
-#include        "macfloat.h"            /* floating points */
-#include        "compstat.h"            /* statically compiled modules     */
-#include        "read.h"                /* to call function from library   */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/bool.h>                   /* booleans */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/gvars.h>                  /* global variables */
+#include <src/streams.h>                /* streams */
+#include <src/stringobj.h>              /* strings */
+#include <src/scanner.h>                /* scanner */
+#include <src/sysfiles.h>               /* file input/output */
+#include <src/plist.h>                  /* plain lists */
+#include <src/macfloat.h>               /* floating points */
+#include <src/compstat.h>               /* statically compiled modules */
+#include <src/read.h>                   /* to call function from library */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /***************************************************************************
@@ -917,7 +917,7 @@ void LoadWorkspace( Char * fname )
   CloseAfterLoad();
 }
 
-#include        "finfield.h"            /* finite fields and ff elements   */
+#include <src/finfield.h>               /* finite fields and ff elements */
 
 static void PrSavedObj( UInt x)
 {

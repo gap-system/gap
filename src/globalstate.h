@@ -12,10 +12,10 @@
 
 #include <stdint.h>
 
-#include "system.h"
-#include "code.h"
-#include "scanner.h"
-#include "gasman.h"
+#include <src/system.h>
+#include <src/code.h>
+#include <src/scanner.h>
+#include <src/gasman.h>
 
 #define MAXPRINTDEPTH 1024L
 

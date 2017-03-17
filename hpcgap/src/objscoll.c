@@ -21,37 +21,37 @@
 **  such  a  vector, you *must* clear   it afterwards, because  all functions
 **  assume that the vectors are cleared.
 */
-#include        "system.h"              /* Ints, UInts                     */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gvars.h"               /* global variables                */
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gvars.h>                  /* global variables */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "records.h"             /* generic records                 */
-#include        "lists.h"               /* generic lists                   */
+#include <src/records.h>                /* generic records */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "precord.h"             /* plain records                   */
+#include <src/precord.h>                /* plain records */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "hpc/tls.h"                 /* thread-local storage            */
-#include        "objfgelm.h"            /* objects of free groups          */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/objfgelm.h>               /* objects of free groups */
 
-#include        "objscoll.h"            /* single collector                */
+#include <src/objscoll.h>               /* single collector */
 
-#include        "objccoll.h"            /* combinatorial collector         */
-#include        "hpc/thread.h"
+#include <src/objccoll.h>               /* combinatorial collector */
+#include <src/hpc/thread.h>
 
 /****************************************************************************
 **
@@ -103,7 +103,7 @@ typedef struct {
 #define SingleCollectWord   C8Bits_SingleCollectWord
 #define Solution            C8Bits_Solution
 #define UIntN               UInt1
-#include "src/objscoll-impl.h"
+#include <src/objscoll-impl.h>
 
 /****************************************************************************
 **
@@ -125,7 +125,7 @@ FinPowConjCol C8Bits_SingleCollector = {
 #define SingleCollectWord   C16Bits_SingleCollectWord
 #define Solution            C16Bits_Solution
 #define UIntN               UInt2
-#include "src/objscoll-impl.h"
+#include <src/objscoll-impl.h>
 
 /****************************************************************************
 **
@@ -147,7 +147,7 @@ FinPowConjCol C16Bits_SingleCollector = {
 #define SingleCollectWord   C32Bits_SingleCollectWord
 #define Solution            C32Bits_Solution
 #define UIntN               UInt4
-#include "src/objscoll-impl.h"
+#include <src/objscoll-impl.h>
 
 /****************************************************************************
 **

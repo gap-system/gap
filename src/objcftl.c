@@ -14,33 +14,33 @@
 **  package upon which tons of other packages depend... so for now, we leave this 
 **  code here.                                                                    
 */
-#include "system.h"
+#include <src/system.h>
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "bool.h"                /* booleans                        */
-#include        "integer.h"             /* integers                        */
-#include        "ariths.h"              /* fast integers                   */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/bool.h>                   /* booleans */
+#include <src/gmpints.h>                /* integers */
+#include <src/ariths.h>                 /* fast integers */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "dt.h"                  /* deep thought                    */
+#include <src/dt.h>                     /* deep thought */
 
-#include        "objcftl.h"             /* from the left collect           */
+#include <src/objcftl.h>                /* from the left collect */
 
-#include	"code.h"
-#include	"hpc/thread.h"
-#include	"hpc/tls.h"
+#include <src/code.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/tls.h>
 
 
 #define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 

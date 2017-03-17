@@ -1,7 +1,7 @@
 #ifdef WITH_ZMQ
 
-#include "src/compiled.h"
-#include "zmq.h"
+#include <src/compiled.h>
+#include <src/zmq.h>
 
 static GVarDescriptor TYPE_ZMQ_SOCKETGVar;
 static Obj TYPE_ZMQ_SOCKET;

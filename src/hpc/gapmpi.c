@@ -15,41 +15,41 @@
 
 /***** core GAP includes *****/
 
-#include        <assert.h>              /* assert                          */
-#include        <time.h>                /* time                            */
-#include	<stdlib.h>		/* exit				   */
-#include	<stdio.h>		/* NULL, fprintf		   */
-#include        "system.h"              /* system dependent part           */
+#include <assert.h>                     /* assert */
+#include <time.h>                       /* time */
+#include <stdlib.h>                     /* exit */
+#include <stdio.h>                      /* NULL, fprintf */
+#include <src/system.h>                 /* system dependent part */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-#include        "read.h"                /* reader                          */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "gvars.h"               /* global variables                */
+#include <src/gap.h>                    /* error handling, initialisation */
+#include <src/read.h>                   /* reader */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "sysfiles.h"            /* file input/output               */
+#include <src/sysfiles.h>               /* file input/output */
 
-#include        "code.h"                /* coder                           */
-#include        "hpc/tls.h"                 /* thread local storage (needed for hpcgap) */
-#include        "vars.h"                /* variables                       */
-#include        "stats.h"               /* statements (XXX_BRK_CURR_STAT)  */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/tls.h>                /* thread local storage (needed for hpcgap) */
+#include <src/vars.h>                   /* variables */
+#include <src/stats.h>                  /* statements (XXX_BRK_CURR_STAT) */
 
-# include       "gapmpi.h"               /* MPI functions and UNIX utils   */
-#include        <mpi.h>                  /* provided with MPI distribution */
+#include <src/hpc/gapmpi.h>             /* MPI functions and UNIX utils */
+#include <mpi.h>                        /* provided with MPI distribution */
 
-#include <unistd.h>                     /* definition of 'chdir'          */
+#include <unistd.h>                     /* definition of 'chdir' */
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -190,7 +190,7 @@ Obj UNIX_LimitRss( Obj size ) /* size in units of bytes */
 
 /* This part copied from src/sysfiles.c */
 #ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
+#include <signal.h>
 # ifdef SYS_HAS_SIG_T
 #  define SYS_SIG_T     SYS_HAS_SIG_T
 # else

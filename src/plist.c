@@ -34,42 +34,42 @@
 **  This package also contains the list  functions for plain lists, i.e., the
 **  functions called from the generic lists package.
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "funcs.h"
+#include <src/funcs.h>
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "finfield.h"            /* finite fields                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/finfield.h>               /* finite fields */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "stringobj.h"              /* strings                         */
-#include        "blister.h"             /* boolean lists                   */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/stringobj.h>              /* strings */
+#include <src/blister.h>                /* boolean lists */
 
-#include        "saveload.h"            /* saving and loading              */
-#include	"code.h"
-#include	"hpc/thread.h"
-#include	"hpc/tls.h"
+#include <src/saveload.h>               /* saving and loading */
+#include <src/code.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/tls.h>
 
-#include        <assert.h>
+#include <assert.h>
 /****************************************************************************
 **
 

@@ -26,35 +26,35 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
-#include        "system.h"              /* Ints, UInts                     */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
 
-#include        "scanner.h"             /* scanner                         */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "hpc/tls.h"                 /* thread-local storage            */
-#include        "hpc/thread.h"              /* threads                         */
-#include        "hpc/aobjects.h"            /* atomic objects                  */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/aobjects.h>           /* atomic objects */
 
 /****************************************************************************
 **

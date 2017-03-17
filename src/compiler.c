@@ -11,45 +11,45 @@
 **
 **  This file contains the GAP to C compiler.
 */
-#include        <stdarg.h>              /* variable argument list macros   */
-#include        "system.h"              /* Ints, UInts                     */
+#include <stdarg.h>                     /* variable argument list macros */
+#include <src/system.h>                 /* Ints, UInts */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "integer.h"
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/gmpints.h>
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
-#include        "lists.h"               /* generic lists                   */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "plist.h"               /* plain lists                     */
+#include <src/plist.h>                  /* plain lists */
 
-#include        "stringobj.h"              /* strings                         */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "exprs.h"               /* expressions                     */
-#include        "stats.h"               /* statements                      */
+#include <src/exprs.h>                  /* expressions */
+#include <src/stats.h>                  /* statements */
 
-#include        "compiler.h"            /* compiler                        */
+#include <src/compiler.h>               /* compiler */
 
-#include        "hpc/tls.h"             /* thread-local storage            */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
 
 /****************************************************************************

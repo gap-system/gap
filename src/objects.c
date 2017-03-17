@@ -9,42 +9,42 @@
 **
 **  This file contains the functions of the objects package.
 */
-#include	<stdlib.h>
+#include <stdlib.h>
 
-#include        "system.h"              /* Ints, UInts, SyIsIntr           */
+#include <src/system.h>                 /* Ints, UInts, SyIsIntr */
 
 
-#include        "sysfiles.h"            /* file input/output               */
+#include <src/sysfiles.h>               /* file input/output */
 
-#include        "gasman.h"              /* garbage collector               */
+#include <src/gasman.h>                 /* garbage collector */
 
-#include        "objects.h"             /* objects                         */
+#include <src/objects.h>                /* objects */
 
-#include        "scanner.h"             /* scanner                         */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "hpc/aobjects.h"        /* atomic objects                  */
-#include        "code.h"                /* coder                           */
-#include        "hpc/thread.h"          /* threads                         */
-//#include        "traverse.h"            /* object traversal                */
-#include        "hpc/tls.h"             /* thread-local storage            */
+#include <src/hpc/aobjects.h>           /* atomic objects */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+//#include <src/hpc/traverse.h>            /* object traversal                */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;

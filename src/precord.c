@@ -25,40 +25,40 @@
 **  sorted areas. After that, all rnams are negative indicating sortedness.
 **
 */
-#include        <stdlib.h>              /* for qsort */
-#include        <sys/time.h>            /* for gettimeofday() */
-#include        "system.h"              /* system dependent part           */
+#include <stdlib.h>                     /* for qsort */
+#include <sys/time.h>                   /* for gettimeofday() */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "funcs.h"
+#include <src/funcs.h>
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "records.h"             /* generic records                 */
-#include        "lists.h"               /* generic lists                   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/records.h>                /* generic records */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "precord.h"             /* plain records                   */
+#include <src/precord.h>                /* plain records */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "code.h"                /* coder                           */
-#include        "hpc/thread.h"          /* threads                         */
-#include        "hpc/tls.h"             /* thread-local storage            */
-#include        "hpc/aobjects.h"        /* thread-local storage            */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/aobjects.h>           /* thread-local storage */
 
 
 /****************************************************************************

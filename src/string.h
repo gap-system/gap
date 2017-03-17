@@ -16,7 +16,7 @@
 #if !defined(GAP_STRING_H)
 #define GAP_STRING_H
 
-#include "stringobj.h"
+#include <src/stringobj.h>
 
 // stringobj.h has #include <string.h>
 #include <string.h>

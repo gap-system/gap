@@ -26,7 +26,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include "config.h"
+#include <src/config.h>
 
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
@@ -1039,7 +1039,7 @@ extern Char *getOptionArg(Char key, UInt which);
  **   macros, defining our selected longjump mechanism
  */
 
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 
 #if HAVE_SIGSETJMP
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))
@@ -1078,7 +1078,7 @@ extern void InitSystem (
             Char *              argv [] );
 
 
-#include "globalstate.h"
+#include <src/globalstate.h>
 
 // FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
 // to keep the diffs between it and master branch small(er).

@@ -24,7 +24,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include "config.h"
+#include <src/config.h>
 
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
@@ -1065,7 +1065,7 @@ extern void MergeSort(void *data, UInt count, UInt width,
  **   macros, defining our selected longjump mechanism
  */
 
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 
 #if HAVE_SIGSETJMP
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))

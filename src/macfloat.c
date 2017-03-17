@@ -11,29 +11,29 @@
 **
 ** macfloats are stored as bags containing a 64 bit value
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
 
-#include        "plist.h"               /* lists */
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "integer.h"             /* basic arithmetic                */
+#include <src/plist.h>                  /* lists */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/gmpints.h>                /* basic arithmetic */
 
-#include        "macfloat.h"                /* macfloateans                        */
+#include <src/macfloat.h>               /* macfloateans */
 
-#include        "bool.h"
-#include        "scanner.h"
-#include        "stringobj.h"
-#include        <assert.h>
+#include <src/bool.h>
+#include <src/scanner.h>
+#include <src/stringobj.h>
+#include <assert.h>
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */

@@ -7,23 +7,23 @@
 #include <unistd.h>
 #include <gc/gc.h>
 
-#include        "system.h"
-#include        "gasman.h"
-#include        "objects.h"
-#include        "bool.h"
-#include        "gvars.h"
-#include	"scanner.h"
-#include	"code.h"
-#include	"plist.h"
-#include	"stringobj.h"
-#include	"precord.h"
-#include	"stats.h"
-#include	"gap.h"
-#include        "hpc/tls.h"
-#include        "hpc/thread.h"
-#include        "traverse.h"
-#include	"fibhash.h"
-#include	"objset.h"
+#include <src/system.h>
+#include <src/gasman.h>
+#include <src/objects.h>
+#include <src/bool.h>
+#include <src/gvars.h>
+#include <src/scanner.h>
+#include <src/code.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
+#include <src/precord.h>
+#include <src/stats.h>
+#include <src/gap.h>
+#include <src/hpc/tls.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/traverse.h>
+#include <src/fibhash.h>
+#include <src/objset.h>
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)

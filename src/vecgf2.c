@@ -1,45 +1,45 @@
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
-#include        "opers.h"               /* generic operations              */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "ariths.h"              /* basic arithmetic                */
-#include        "finfield.h"            /* finite fields and ff elements   */
+#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/finfield.h>               /* finite fields and ff elements */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "plist.h"               /* plain lists                     */
-#include        "range.h"               /* ranges                          */
-#include        "blister.h"             /* boolean lists                   */
-#include        "stringobj.h"              /* strings                         */
+#include <src/lists.h>                  /* generic lists */
+#include <src/plist.h>                  /* plain lists */
+#include <src/range.h>                  /* ranges */
+#include <src/blister.h>                /* boolean lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "vecgf2.h"              /* GF2 vectors                     */
+#include <src/vecgf2.h>                 /* GF2 vectors */
 
-#include        "saveload.h"            /* saving and loading              */
+#include <src/saveload.h>               /* saving and loading */
 
-#include        "integer.h"             /* integers                        */
+#include <src/gmpints.h>                /* integers */
 
-#include        "vec8bit.h"             /* vectors over bigger small fields*/
+#include <src/vec8bit.h>                /* vectors over bigger small fields */
 
-#include        "code.h"                /* Needed for TakeInterrupt */
-#include        "stats.h"
+#include <src/code.h>                   /* Needed for TakeInterrupt */
+#include <src/stats.h>
 
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
-#include        <assert.h>
+#include <assert.h>
 
 /****************************************************************************
 **

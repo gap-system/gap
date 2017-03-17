@@ -33,40 +33,40 @@
 **  ...what the handlers are..
 **  ...what the other components are...
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
+#include <src/gvars.h>                  /* global variables */
 
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "opers.h"               /* generic operations              */
+#include <src/opers.h>                  /* generic operations */
 
-#include        "records.h"             /* generic records                 */
-#include        "precord.h"             /* plain records                   */
+#include <src/records.h>                /* generic records */
+#include <src/precord.h>                /* plain records */
 
-#include        "lists.h"               /* generic lists                   */
+#include <src/lists.h>                  /* generic lists */
 
-#include        "bool.h"                /* booleans                        */
+#include <src/bool.h>                   /* booleans */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "code.h"                /* coder                           */
+#include <src/code.h>                   /* coder */
 
-#include        "stats.h"               /* statements                      */
+#include <src/stats.h>                  /* statements */
 
-#include        "saveload.h"            /* saving and loading              */
-#include        "hpc/tls.h"             /* thread-local storage            */
+#include <src/saveload.h>               /* saving and loading */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
-#include        "vars.h"                /* variables                       */
+#include <src/vars.h>                   /* variables */
 
 #include <assert.h>
 

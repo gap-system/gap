@@ -26,7 +26,7 @@
 #ifndef GAP_STRINGOBJ_H
 #define GAP_STRINGOBJ_H
 
-#include <string.h>  /* for memcpy */
+#include <string.h>                     /* for memcpy */
 
 /****************************************************************************
 **

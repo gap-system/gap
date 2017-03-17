@@ -15,78 +15,78 @@
 **  various  labels determine which operating  system is  actually used, they
 **  are described in "system.c".
 */
-#include        "system.h"              /* system dependent part           */
+#include <src/system.h>                 /* system dependent part */
 
 
-#include        "sysfiles.h"            /* file input/output               */
+#include <src/sysfiles.h>               /* file input/output */
 
-#include        "gasman.h"              /* garbage collector               */
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
+#include <src/gasman.h>                 /* garbage collector */
+#include <src/objects.h>                /* objects */
+#include <src/scanner.h>                /* scanner */
 
-#include        "gap.h"                 /* error handling, initialisation  */
+#include <src/gap.h>                    /* error handling, initialisation */
 
-#include        "gvars.h"               /* global variables                */
-#include        "calls.h"               /* generic call mechanism          */
+#include <src/gvars.h>                  /* global variables */
+#include <src/calls.h>                  /* generic call mechanism */
 
-#include        "lists.h"               /* generic lists                   */
-#include        "listfunc.h"            /* functions for generic lists     */
+#include <src/lists.h>                  /* generic lists */
+#include <src/listfunc.h>               /* functions for generic lists */
 
-#include        "plist.h"               /* plain lists                     */
-#include        "stringobj.h"              /* strings                         */
+#include <src/plist.h>                  /* plain lists */
+#include <src/stringobj.h>              /* strings */
 
-#include        "records.h"             /* generic records                 */
-#include        "bool.h"                /* Global True and False           */
+#include <src/records.h>                /* generic records */
+#include <src/bool.h>                   /* Global True and False */
 
-#include	"code.h"		/* coder                           */
-#include	"hpc/thread.h"		/* threads			   */
-#include	"hpc/tls.h"			/* thread-local storage		   */
+#include <src/code.h>                   /* coder */
+#include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
 
-#include        <assert.h>
-#include        <fcntl.h>
+#include <assert.h>
+#include <fcntl.h>
 
 #if HAVE_LIBREADLINE
-#include        <readline/readline.h>   /* readline for interactive input  */
+#include <readline/readline.h>          /* readline for interactive input */
 #endif
 
-#include        "read.h"                /* reader                          */
+#include <src/read.h>                   /* reader */
 
 
 #if HAVE_SELECT
 /* Only for the Hook handler calls: */
 
-#include        <sys/time.h>
-#include        <sys/types.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #endif
 
-#include        <stdio.h>               /* standard input/output functions */
-#include        <stdlib.h>              /* ANSI standard functions         */
-#include        <string.h>              /* string functions                */
-#include        <time.h>                /* time functions                  */
+#include <stdio.h>                      /* standard input/output functions */
+#include <stdlib.h>                     /* ANSI standard functions */
+#include <string.h>                     /* string functions */
+#include <time.h>                       /* time functions */
 
 #if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-# include <unistd.h>
+#include <unistd.h>
 #endif
 
 
 #if HAVE_SIGNAL_H                       /* signal handling functions       */
-# include       <signal.h>
+#include <signal.h>
 typedef void       sig_handler_t ( int );
 #endif
 
 
 #if HAVE_VFORK_H
-# include       <vfork.h>
+#include <vfork.h>
 #endif
 
 #if HAVE_ERRNO_H
-# include       <errno.h>
+#include <errno.h>
 #else
 extern int errno;
 #endif
 
 #if SYS_IS_CYGWIN32
-# include       <process.h>
+#include <process.h>
 #endif
 
 
@@ -126,7 +126,7 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 **  3: a GAP file was found
 **  4: a GAP file was found and the CRC value didn't match
 */
-#include        "compstat.h"            /* statically linked modules       */
+#include <src/compstat.h>               /* statically linked modules */
 
 
 Int SyFindOrLinkGapRootFile (
@@ -1099,7 +1099,7 @@ extern void syStopraw (
 
 #elif HAVE_TERMIO_H
 
-  #include       <termio.h>
+  #include <termio.h>
   struct termio   syOld, syNew;           /* old and new terminal state      */
 
   #ifndef TCSETAW
@@ -1122,7 +1122,7 @@ extern void syStopraw (
   **  to cooked mode before stopping GAP and back to raw mode when continuing.
   */
 
-  #include       <sgtty.h>
+  #include <sgtty.h>
   struct sgttyb   syOld, syNew;           /* old and new terminal state      */
   struct tchars   syOldT, syNewT;         /* old and new special characters  */
 
@@ -1594,7 +1594,7 @@ void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
  */
 
 #if HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>             /* for TIOCGWINSZ */
+#include <sys/ioctl.h>                  /* for TIOCGWINSZ */
 #endif
 
 #define CO SyNrCols
@@ -3394,11 +3394,11 @@ void SySetErrorNo ( void )
 #if HAVE_FORK || HAVE_VFORK
 
 #if HAVE_UNION_WAIT
-# include <sys/wait.h>
+#include <sys/wait.h>
 #else
-# include <sys/types.h>
+#include <sys/types.h>
 # if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
+#include <sys/wait.h>
 # endif
 # ifndef WEXITSTATUS
 #  define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
