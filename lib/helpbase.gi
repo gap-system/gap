@@ -498,7 +498,7 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   # (looks a bit lengthy)
   sortfun := function(a, b)
     local main, pa, pb;
-    main := ["tutorial", "reference", "changes"];
+    main := ["tutorial", "reference", "changes", "hpc-gap", "development" ];
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then
