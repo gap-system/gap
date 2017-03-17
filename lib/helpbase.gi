@@ -498,6 +498,10 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   sortfun := function(a, b)
     local main, pa, pb;
     main := ["tutorial", "reference", "changes"];
+    if ForAny( GAPInfo.RootPaths,
+               rp -> IsExistingFile( Concatenation( rp, "/doc/dev" ) ) ) then
+      Add( main, "development" );
+    fi;
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then

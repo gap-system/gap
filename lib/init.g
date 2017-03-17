@@ -1038,7 +1038,10 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
-
+if ForAny( GAPInfo.RootPaths,
+           rp -> IsExistingFile( Concatenation( rp, "/doc/dev" ) ) ) then
+  HELP_ADD_BOOK("Development", "GAP 4 Development Manual", "doc/dev");
+fi;
 
 #############################################################################
 ##
