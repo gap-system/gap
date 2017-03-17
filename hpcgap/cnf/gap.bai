@@ -1,9 +1,0 @@
-set set TERMINFO=/cygdrive/c/gap4dev/terminfo
-set CYGWIN=nodosfilewarning
-set LANG=en_US.UTF-8
-set HOME=%HOMEDRIVE%%HOMEPATH%
-set PATH=@wincygbin@;%PATH%
-cd %HOME%
-start "GAP" @wincygbin@\mintty.exe -s 120,40 @gapdir@/bin/@GAPARCH@/gap.exe -l @gapdir@ %*
-if NOT ["%errorlevel%"]==["0"] timeout 15
-exit

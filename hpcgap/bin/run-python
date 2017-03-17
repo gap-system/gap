@@ -1,6 +1,0 @@
-#!/bin/sh
-if which python2 >/dev/null; then
-  exec python2 "$@"
-else
-  exec python "$@"
-fi
