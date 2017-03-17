@@ -1087,7 +1087,7 @@ gap> IsFinite(S);
 true
 
 #
-gap> STOP_TEST( "reesmat.tst", 57630000);
+gap> STOP_TEST( "reesmat.tst", 1);
 
 #############################################################################
 ##

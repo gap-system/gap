@@ -1124,7 +1124,7 @@ gap> BruteForceInverseCheck(map);
 true
 
 #
-gap> STOP_TEST( "reesmat.tst", 54100000);
+gap> STOP_TEST( "reesmat.tst", 1);
 
 #############################################################################
 ##

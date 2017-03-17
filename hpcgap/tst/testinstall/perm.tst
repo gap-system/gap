@@ -24,4 +24,4 @@ gap> ForAll(checklens, n -> not(
 >  PermList(Concatenation([1..n-1], [n+1,n,n+2,n+4,n+3])) =
 >  PermList(Concatenation([1..n-1], [n+1,n+2,n,n+4,n+3]))));
 true
-gap> STOP_TEST("perm.tst", 1430000);
+gap> STOP_TEST("perm.tst", 1);

@@ -44,7 +44,7 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 >     Error( "wrong result for ", [ entry, entry ], " and \"equal\"" );
 >   fi;
 > od;
-gap> STOP_TEST( "package.tst", 230000);
+gap> STOP_TEST( "package.tst", 1);
 
 #############################################################################
 ##

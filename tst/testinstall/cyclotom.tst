@@ -227,7 +227,7 @@ gap> Print(RationalizedMat( gm.mat ),"\n");
 gap> a := -E(4)*2^(8*GAPInfo.BytesPerVariable-4);;
 gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) <> [ 0, "integer" ];
 true
-gap> STOP_TEST( "cyclotom.tst", 340000);
+gap> STOP_TEST( "cyclotom.tst", 1);
 
 #############################################################################
 ##

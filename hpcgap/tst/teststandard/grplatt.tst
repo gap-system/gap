@@ -176,7 +176,7 @@ gap> Collected(List(NormalSubgroups(g),Size));
   [ 4096, 227 ], [ 8192, 155 ], [ 16384, 31 ], [ 32768, 1 ] ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 413800000);
+gap> STOP_TEST( "grplatt.tst", 1);
 
 #############################################################################
 ##

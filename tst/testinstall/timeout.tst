@@ -20,4 +20,4 @@ gap> CallWithTimeoutList(5000,spinFor,[50000,1]);
 [ false ]
 gap> CallWithTimeoutList(50000,spinFor,[1]);
 [ true ]
-gap> STOP_TEST( "timeout.tst", 640000);
+gap> STOP_TEST( "timeout.tst", 1);

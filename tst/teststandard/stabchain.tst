@@ -43,7 +43,7 @@ gap> SCRSift(S,(1,2));
 (8,11)(9,21)(12,23)(14,16)(17,22)(18,24)(19,20)
 gap> SCRSift(S,GeneratorsOfGroup(m)[1]);
 ()
-gap> STOP_TEST( "stabchain.tst", 118330000);
+gap> STOP_TEST( "stabchain.tst", 1);
 
 #############################################################################
 ##

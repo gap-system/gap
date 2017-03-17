@@ -25,7 +25,7 @@ gap> Info(InfoTest1, 1, (1,2)(3,4));
 #I  (1,2)(3,4)
 gap> Info(InfoTest1, 1, ['a', 'b', 'c']);
 #I  abc
-gap> STOP_TEST("info.tst", 290000);
+gap> STOP_TEST("info.tst", 1);
 
 #############################################################################
 ##

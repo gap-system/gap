@@ -81,4 +81,4 @@ gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
 gap> G := F/[s^2, r^3, s*r*s*r];;
 gap> Length(SemidirectDecompositions(G));
 3
-gap> STOP_TEST("Semidirectdecompositions.tst", 10000);
+gap> STOP_TEST("Semidirectdecompositions.tst", 1);

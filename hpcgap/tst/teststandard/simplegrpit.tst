@@ -39,5 +39,5 @@ Sz(8)
 PSU(3,4)
 gap> IsDoneIterator(it);
 true
-gap> STOP_TEST("simplegrpit.tst", 960000);
+gap> STOP_TEST("simplegrpit.tst", 1);
 

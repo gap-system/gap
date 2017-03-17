@@ -33,7 +33,7 @@ gap> -infinity < infinity;
 true
 gap> infinity < -infinity;
 false
-gap> STOP_TEST( "infinity.tst", 260000);
+gap> STOP_TEST( "infinity.tst", 1);
 
 #############################################################################
 ##

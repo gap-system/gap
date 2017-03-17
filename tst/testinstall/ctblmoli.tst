@@ -30,7 +30,7 @@ gap> Size( G );
 9720
 gap> MolienSeries( NaturalCharacter( G ) );
 ( 1 ) / ( (1-z^12)*(1-z^9)*(1-z^6)*(1-z^5)*(1-z^3)*(1-z) )
-gap> STOP_TEST( "ctblmoli.tst", 7850000);
+gap> STOP_TEST( "ctblmoli.tst", 1);
 
 #############################################################################
 ##

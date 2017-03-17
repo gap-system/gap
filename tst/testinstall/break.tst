@@ -35,4 +35,4 @@ gap> for i in [1..5] do List([1..5], function(x) break; return 1; end); od;
 Syntax error: 'break' statement not enclosed in a loop in stream:1
 for i in [1..5] do List([1..5], function(x) break; return 1; end); od;
                                                  ^
-gap> STOP_TEST("break.tst", 290000);
+gap> STOP_TEST("break.tst", 1);

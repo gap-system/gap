@@ -18,4 +18,4 @@ gap> cheesefun;
 gap> cheeseval;
 [ 2, 5 ]
 gap> FlushCaches();
-gap> STOP_TEST("flush.tst", 0);
+gap> STOP_TEST("flush.tst", 1);

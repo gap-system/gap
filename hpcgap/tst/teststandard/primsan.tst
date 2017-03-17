@@ -37,7 +37,7 @@ gap> for n in [2..999] do
 >     checkdegree(n);
 > od;
 gap> SetInfoLevel(InfoWarning,iW);
-gap> STOP_TEST( "primsan.tst", 9058150000);
+gap> STOP_TEST( "primsan.tst", 1);
 
 #############################################################################
 ##

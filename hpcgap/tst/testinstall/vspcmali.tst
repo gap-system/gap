@@ -407,7 +407,7 @@ gap> BasisVectors( mb );
 gap> ImmutableBasis( mb );
 SemiEchelonBasis( <vector space of dimension 2 over Rationals>, 
 [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
-gap> STOP_TEST( "vspcmali.tst", 1050000);
+gap> STOP_TEST( "vspcmali.tst", 1);
 
 #############################################################################
 ##

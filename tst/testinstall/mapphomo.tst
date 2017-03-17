@@ -73,7 +73,7 @@ gap> GroupHomomorphismByImages(G, H, [(1,2)], [(1,2,3)]);
 fail
 gap> GroupHomomorphismByImages(G, H, [], []);
 fail
-gap> STOP_TEST( "mapphomo.tst", 660000);
+gap> STOP_TEST( "mapphomo.tst", 1);
 
 #############################################################################
 ##

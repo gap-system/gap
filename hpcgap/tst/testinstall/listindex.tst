@@ -180,7 +180,7 @@ gap> CopyListEntries(s,1,1,l,0,1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 320000);
+gap> STOP_TEST( "listgen.tst", 1);
 
 #############################################################################
 ##

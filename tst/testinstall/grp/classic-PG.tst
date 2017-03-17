@@ -73,4 +73,4 @@ gap> PGU(3,6);
 Error, <subfield> must be a prime or a finite field
 
 #
-gap> STOP_TEST("classic-PG.tst", 10000);
+gap> STOP_TEST("classic-PG.tst", 1);

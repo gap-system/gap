@@ -30,4 +30,4 @@ gap> if ARCH_IS_WINDOWS() then
 >       ExternalFilename(Directory("/cygdrive/Q/"), "filename") = "/cygdrive/Q/filename","\n");
 > fi;
 truetruetruetrue
-gap> STOP_TEST("dir.tst", 270000);
+gap> STOP_TEST("dir.tst", 1);

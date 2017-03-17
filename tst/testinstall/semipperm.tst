@@ -395,4 +395,4 @@ gap> ReverseNaturalPartialOrder(S);
 [ [ 2, 3, 4, 5 ], [  ], [  ], [  ], [  ] ]
 
 #
-gap> STOP_TEST( "semipperm.tst", 42710000);
+gap> STOP_TEST( "semipperm.tst", 1);

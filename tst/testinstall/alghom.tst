@@ -77,7 +77,7 @@ gap> I := Ideal(P, pols);;
 gap> pr := NaturalHomomorphismByIdeal(P, I);;
 gap> IsZero(Image(pr,x));
 false
-gap> STOP_TEST( "alghom.tst", 660000);
+gap> STOP_TEST( "alghom.tst", 1);
 
 #############################################################################
 ##

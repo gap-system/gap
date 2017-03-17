@@ -107,4 +107,4 @@ gap> CheckGeneratorsSpecial(K) and CheckBilinearForm(K);
 true
 
 #
-gap> STOP_TEST("glzmodmz.tst", 10000);
+gap> STOP_TEST("glzmodmz.tst", 1);

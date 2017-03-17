@@ -53,7 +53,7 @@ gap> ViewString(true); ViewString(false); ViewString(fail);
 "fail"
 gap> TNUM_OBJ(fail)[2];
 "boolean or fail"
-gap> STOP_TEST( "boolean.tst", 250000);
+gap> STOP_TEST( "boolean.tst", 1);
 
 #############################################################################
 ##

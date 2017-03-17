@@ -102,7 +102,7 @@ gap> o2:= One( z );
 <block matrix of dimensions (3*2)x(3*2)>
 gap> o1 = o2;
 true
-gap> STOP_TEST( "matblock.tst", 350000);
+gap> STOP_TEST( "matblock.tst", 1);
 
 #############################################################################
 ##

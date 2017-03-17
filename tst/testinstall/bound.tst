@@ -21,4 +21,4 @@ gap> f := ( -> IsBound(r.b) );; f();
 true
 gap> f := ( -> IsBound(r.c) );; f();
 false
-gap> STOP_TEST("bound.tst", 300000);
+gap> STOP_TEST("bound.tst", 1);

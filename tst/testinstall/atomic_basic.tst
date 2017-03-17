@@ -104,4 +104,4 @@ gap> h5 := {readwrite readonly x} -> x;
 Syntax error: 'readwrite' argument of non-atomic function in stream:1
 h5 := {readwrite readonly x} -> x;
                ^
-gap> STOP_TEST("atomic_basic.tst", 260000);
+gap> STOP_TEST("atomic_basic.tst", 1);

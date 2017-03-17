@@ -1278,7 +1278,7 @@ gap> IS_PROBAB_PRIME_INT(1, 0);
 Error, IsProbablyPrimeInt: <reps> must be positive
 
 #
-gap> STOP_TEST( "intarith.tst", 290000);
+gap> STOP_TEST( "intarith.tst", 1);
 
 #############################################################################
 ##

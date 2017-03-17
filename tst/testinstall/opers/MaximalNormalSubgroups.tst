@@ -55,4 +55,4 @@ Error, number of maximal normal subgroups is infinity
 gap> G := F/[r^12, s^2, r*s*r^(-1)*s^(-1)];;
 gap> SortedList(List(MaximalNormalSubgroups(G), AbelianInvariants));
 [ [ 2, 2, 3 ], [ 2, 4 ], [ 3, 4 ], [ 3, 4 ] ]
-gap> STOP_TEST("MaximalNormalSubgroups.tst", 10000);
+gap> STOP_TEST("MaximalNormalSubgroups.tst", 1);

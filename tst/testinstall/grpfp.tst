@@ -101,7 +101,7 @@ gap> Print( Collected( List( l, x -> Index( c2, x ) ) ), "\n" );
 gap> Print( Collected( List( LowIndexSubgroupsFpGroup( g, s, 5 ),
 >                            x -> Index( c2, x ) ) ), "\n" );
 [ [ 12, 1 ], [ 24, 1 ], [ 48, 1 ] ]
-gap> STOP_TEST( "grpfp.tst", 10780000);
+gap> STOP_TEST( "grpfp.tst", 1);
 
 #############################################################################
 ##

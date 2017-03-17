@@ -12,7 +12,7 @@ gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 gap> g:=Image(RegularActionHomomorphism(AbelianGroup([4,5,5])));;
 gap> Size(Normalizer(SymmetricGroup(100),g));       
 96000
-gap> STOP_TEST( "permgrp.tst", 330000);
+gap> STOP_TEST( "permgrp.tst", 1);
 
 #############################################################################
 ##

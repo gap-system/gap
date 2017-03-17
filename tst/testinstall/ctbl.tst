@@ -40,7 +40,7 @@ gap> ClassPositionsOfCentre( TrivialCharacter( t ) );
 [ 1 ]
 gap> ClassPositionsOfKernel( TrivialCharacter( t ) );
 [ 1 ]
-gap> STOP_TEST( "ctbl.tst", 3370000);
+gap> STOP_TEST( "ctbl.tst", 1);
 
 #############################################################################
 ##

@@ -114,4 +114,4 @@ gap> Collected(List(Set(MinimalNormalSubgroups(G)), Size));
 gap> G := ElementaryAbelianGroup(7^4);;
 gap> Collected(List(Set(MinimalNormalSubgroups(G)), Size));
 [ [ 7, 400 ] ]
-gap> STOP_TEST("Socle.tst", 10000);
+gap> STOP_TEST("Socle.tst", 1);

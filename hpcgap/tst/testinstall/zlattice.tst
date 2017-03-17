@@ -15,7 +15,7 @@ rec( B := [  ], basis := [  ], mue := [  ] )
 gap> LLLReducedBasis( [ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
 rec( B := [  ], basis := [  ], mue := [  ], 
   relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
-gap> STOP_TEST( "zlattice.tst", 260000);
+gap> STOP_TEST( "zlattice.tst", 1);
 
 #############################################################################
 ##

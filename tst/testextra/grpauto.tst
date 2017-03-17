@@ -151,4 +151,4 @@ gap> gp2:=Group(
 > 91,95));;
 gap> IsomorphismGroups(gp1,gp2)<>fail;
 true
-gap> STOP_TEST( "grpauto.tst", 1814420000);
+gap> STOP_TEST( "grpauto.tst", 1);

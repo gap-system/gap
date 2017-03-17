@@ -203,4 +203,4 @@ gap> Length(Filtered(newList,g->IsPowerfulPGroup(g)));
 gap> myList:=AllSmallGroups(2^4);;
 gap> Length(Filtered(myList,g->IsPowerfulPGroup(g)));
 6
-gap> STOP_TEST("pgroups.tst", 10000);
+gap> STOP_TEST("pgroups.tst", 1);

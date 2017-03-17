@@ -34,4 +34,4 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `SuzukiGroupCons' on 2 arguments
 
 #
-gap> STOP_TEST("suzuki.tst", 10000);
+gap> STOP_TEST("suzuki.tst", 1);

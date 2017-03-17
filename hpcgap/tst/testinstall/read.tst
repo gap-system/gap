@@ -71,4 +71,4 @@ gap> SeekPositionStream(x, 3);
 true
 gap> ReadAll(x);
 "lo\ngoodbye\ni like pies\n"
-gap> STOP_TEST( "read.tst", 320000);
+gap> STOP_TEST( "read.tst", 1);

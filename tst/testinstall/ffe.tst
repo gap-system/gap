@@ -135,7 +135,7 @@ gap> Rochambeau:=function(F)
 gap> qs:=[2,3,4,5,7,8,9,11,13,16,17,19,25,27,32,64,81,125,128,243,256];;
 gap> ForAll(qs,x->Rochambeau(GF(x))=0);
 true
-gap> STOP_TEST( "ffe.tst", 470000);
+gap> STOP_TEST( "ffe.tst", 1);
 
 #############################################################################
 ##

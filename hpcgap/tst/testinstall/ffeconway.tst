@@ -730,4 +730,4 @@ gap> SetInfoLevel(InfoPrimeInt,iPI);
 gap> SetInfoLevel(InfoFactor,iF);
 gap> if IsBound(InfoFactInt) then SetInfoLevel(InfoFactInt,iFI); fi;
 gap> SetInfoLevel(InfoWarning,iW);
-gap> STOP_TEST( "ffeconway.tst", 3270000);
+gap> STOP_TEST( "ffeconway.tst", 1);

@@ -188,4 +188,4 @@ gap> Display(Concatenation(res));
  . . . . . 1
 
 #
-gap> STOP_TEST("meataxe.tst", 10000);
+gap> STOP_TEST("meataxe.tst", 1);

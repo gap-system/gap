@@ -53,4 +53,4 @@ true
 gap> G := F/[ a^2, b^2, c^2, d^2, (a*b)^3, (b*c)^3, (c*d)^3, (a*c)^2, (a*d)^2, (b*d)^2 ];;
 gap> not IsSolvable(G) and HasIsAbelian(G) and not IsAbelian(G);
 true
-gap> STOP_TEST("IsSolvableGroup.tst", 10000);
+gap> STOP_TEST("IsSolvableGroup.tst", 1);

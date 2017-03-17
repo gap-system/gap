@@ -19,4 +19,4 @@ gap> for n in [1..Length(NAMES_OF_SMALL_GROUPS)] do
 > od;
 gap> bad;
 [  ]
-gap> STOP_TEST( "small_groups2.tst", 3200000);
+gap> STOP_TEST( "small_groups2.tst", 1);

@@ -33,7 +33,7 @@ gap> ConstructAndTestAllGroups( 840 );;
 gap> ConstructAndTestAllGroups( 1560 );;
 gap> ConstructAndTestAllGroups( 1800 );;
 gap> UnloadSmallGroupsData();
-gap> STOP_TEST( "grpconst.tst", 1138970000);
+gap> STOP_TEST( "grpconst.tst", 1);
 
 #############################################################################
 ##

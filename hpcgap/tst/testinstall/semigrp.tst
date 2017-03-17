@@ -432,7 +432,7 @@ gap> IsEmpty(T);
 true
 
 #
-gap> STOP_TEST( "semigrp.tst", 1060000);
+gap> STOP_TEST( "semigrp.tst", 1);
 
 #############################################################################
 ##

@@ -46,5 +46,5 @@ Syntax error: Identifiers in GAP must consist of less than 1023 characters. in\
  stream:2
 aaaxyz := 1; # 1024 chars
      ^
-gap> STOP_TEST( "recordname.tst", 270000);
+gap> STOP_TEST( "recordname.tst", 1);
 

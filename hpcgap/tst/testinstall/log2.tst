@@ -9,4 +9,4 @@ gap> ForAll([2..100], x -> Log2Int(-(2^x)) = x and
 >                         Log2Int(-(2^x)-1) = x and
 >                         Log2Int(-(2^x)+1) = x-1);
 true
-gap> STOP_TEST( "log2.tst", 330000);
+gap> STOP_TEST( "log2.tst", 1);

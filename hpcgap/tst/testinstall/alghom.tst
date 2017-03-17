@@ -72,7 +72,7 @@ gap> f:= AlgebraWithOneHomomorphismByImages( A, B, [ C[2] ], [ m2 ] );
 [ v.2, v.1+v.2 ] -> [ [ [ 0, 0 ], [ 0, 1 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
 gap> IsBijective( f );
 true
-gap> STOP_TEST( "alghom.tst", 780000);
+gap> STOP_TEST( "alghom.tst", 1);
 
 #############################################################################
 ##

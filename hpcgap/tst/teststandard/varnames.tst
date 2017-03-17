@@ -19,7 +19,7 @@ gap> Z;
 function( q ) ... end
 gap> Length;
 <Attribute "Length">
-gap> STOP_TEST( "varnames.tst", 480000);
+gap> STOP_TEST( "varnames.tst", 1);
 
 #############################################################################
 ##

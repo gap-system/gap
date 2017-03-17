@@ -57,7 +57,7 @@ gap> ( t1 mod 2 ) * t2;
 BrauerTable( "C2xC3", 2 )
 gap> t2 * ( t1 mod 2 );
 BrauerTable( "C3xC2", 2 )
-gap> STOP_TEST( "ctbl.tst", 2970000);
+gap> STOP_TEST( "ctbl.tst", 1);
 
 #############################################################################
 ##

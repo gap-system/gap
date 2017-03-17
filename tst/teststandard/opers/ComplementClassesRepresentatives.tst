@@ -30,4 +30,4 @@ true
 gap> G := SymmetricGroup(6);; N := AlternatingGroup(6);;
 gap> Set(ComplementClassesRepresentatives(G, N), H -> H^G)=Set([ Group([ (1,2) ])^G, Group([ (1,2)(3,4)(5,6) ])^G ]);
 true
-gap> STOP_TEST("ComplementClassesRepresentatives.tst", 10000);
+gap> STOP_TEST("ComplementClassesRepresentatives.tst", 1);

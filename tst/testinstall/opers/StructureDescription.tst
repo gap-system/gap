@@ -107,4 +107,4 @@ gap> StructureDescription(G);
 gap> G := F/[s*r*s^(-1)*r^(-1)];;
 gap> StructureDescription(G);
 "C0 x C0"
-gap> STOP_TEST("StructureDescription.tst", 10000);
+gap> STOP_TEST("StructureDescription.tst", 1);

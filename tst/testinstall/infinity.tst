@@ -100,7 +100,7 @@ infinity<E(5) gives correct result? true
 infinity<infinity gives correct result? true
 
 #
-gap> STOP_TEST( "infinity.tst", 240000);
+gap> STOP_TEST( "infinity.tst", 1);
 
 #############################################################################
 ##

@@ -5272,5 +5272,5 @@ gap> ret3000 := """
 > """;;
 gap> ret3000 = List([1..3000], x -> '\n');
 true
-gap> STOP_TEST( "strings.tst", 610000);
+gap> STOP_TEST( "strings.tst", 1);
 

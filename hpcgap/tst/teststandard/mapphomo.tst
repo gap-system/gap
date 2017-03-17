@@ -63,7 +63,7 @@ false
 gap> HasIsSurjective(hom); IsSurjective(hom);
 true
 true
-gap> STOP_TEST( "mapphomo.tst", 2040000);
+gap> STOP_TEST( "mapphomo.tst", 1);
 
 #############################################################################
 ##

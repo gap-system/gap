@@ -284,7 +284,7 @@ gap> Size( g );
 24
 gap> IsAbelian( g );
 true
-gap> STOP_TEST( "fldabnum.tst", 1070000);
+gap> STOP_TEST( "fldabnum.tst", 1);
 
 #############################################################################
 ##

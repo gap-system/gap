@@ -58,7 +58,7 @@ gap> ForAll([0,1,2,3], n -> (n < 2) = IsSolvableGroup(DerivedSubgroup(FreeGroup(
 true
 
 #
-gap> STOP_TEST( "grpfree.tst", 330000);
+gap> STOP_TEST( "grpfree.tst", 1);
 
 #############################################################################
 ##

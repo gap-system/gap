@@ -31,4 +31,4 @@ gap> FactorFreeMonoidByRelations(F, rels);
 Error, first argument <F> should be a free monoid
 
 #
-gap> STOP_TEST( "fpmon.tst", 10000);
+gap> STOP_TEST( "fpmon.tst", 1);

@@ -77,7 +77,7 @@ gap> u ^ 1;
 Unknown(1)
 gap> u ^ 2;
 Unknown(18)
-gap> STOP_TEST( "unknown.tst", 260000);
+gap> STOP_TEST( "unknown.tst", 1);
 
 #############################################################################
 ##

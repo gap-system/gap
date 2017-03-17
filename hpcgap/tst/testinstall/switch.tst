@@ -27,7 +27,7 @@ gap> FORCE_SWITCH_OBJ(x,y);
 Error, small integer objects cannot be switched
 gap> x = 1 and x2 = [1] and y = [2] and y2 = [2];
 true
-gap> STOP_TEST( "switch.tst", 260000);
+gap> STOP_TEST( "switch.tst", 1);
 
 #############################################################################
 ##

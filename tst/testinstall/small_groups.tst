@@ -150,4 +150,4 @@ gap> List([1..2000], NrSmallGroups);
   39, 1, 2, 5, 4, 1, 66, 1, 963 ]
 gap> 
 gap> 
-gap> STOP_TEST( "small_groups.tst", 3200000);
+gap> STOP_TEST( "small_groups.tst", 1);

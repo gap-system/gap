@@ -50,7 +50,7 @@ gap> iso:= IsomorphismPermGroup( g );;
 gap> img:=Image( iso );;
 gap> Size(img);
 67010895544320000
-gap> STOP_TEST( "grpmat.tst", 34190000);
+gap> STOP_TEST( "grpmat.tst", 1);
 
 #############################################################################
 ##

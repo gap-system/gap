@@ -257,4 +257,4 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `SymmetricGroupCons' on 2 arguments
 
 #
-gap> STOP_TEST("basic.tst", 10000);
+gap> STOP_TEST("basic.tst", 1);

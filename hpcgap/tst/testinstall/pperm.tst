@@ -2387,4 +2387,4 @@ gap> SetUserPreference("NotationForPartialPerm", notationpp);;
 gap> SetUserPreference("NotationForTransformations", notationt);;
 
 #
-gap> STOP_TEST( "pperm.tst", 45280000);
+gap> STOP_TEST( "pperm.tst", 1);

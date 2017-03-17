@@ -145,7 +145,7 @@ gap> -MakeFloat(1.0, infinity) = neginf;
 true
 gap> MakeFloat(1.0, -infinity) = neginf;
 true
-gap> STOP_TEST( "float.tst", 280000);
+gap> STOP_TEST( "float.tst", 1);
 
 #############################################################################
 ##

@@ -425,7 +425,7 @@ gap> S;
 <inverse transformation monoid of size 18, degree 9 with 5 generators>
 
 #
-gap> STOP_TEST( "semigrp.tst", 1090000);
+gap> STOP_TEST( "semigrp.tst", 1);
 
 #############################################################################
 ##

@@ -354,7 +354,7 @@ gap> MinimalPolynomial(F, A);
 x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
 gap> MinimalPolynomial(F, A);
 x_1^6+Z(2^2)*x_1^5+x_1^4+Z(2^2)^2*x_1^3+x_1^2+Z(2^2)*x_1+Z(2)^0
-gap> STOP_TEST( "vspcrow.tst", 1560000);
+gap> STOP_TEST( "vspcrow.tst", 1);
 
 #############################################################################
 ##

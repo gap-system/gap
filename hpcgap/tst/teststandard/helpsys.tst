@@ -31,7 +31,7 @@ gap> ForAll(FindMultiSpelledHelpEntries(), i ->
 true
 gap> Length(SuggestedSpellings("AnalyseMetacatalogOfCataloguesOfColourizationLabelingsOfCentreBySolvableNormalisersInNormalizerCentralizersInCentre"));
 4096
-gap> STOP_TEST( "helpsys.tst", 2178880000);
+gap> STOP_TEST( "helpsys.tst", 1);
 
 
 #############################################################################

@@ -43,4 +43,4 @@ Error, LengthWPObj: argument must be a weak pointer object, not a list (plain,\
 empty)
 gap> LengthWPObj(0);
 Error, LengthWPObj: argument must be a weak pointer object, not a integer
-gap> STOP_TEST( "weakptr-badargs.tst", 100);
+gap> STOP_TEST( "weakptr-badargs.tst", 1);

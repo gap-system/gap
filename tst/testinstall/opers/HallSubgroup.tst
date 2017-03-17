@@ -16,4 +16,4 @@ gap> G := Group([ [ [ Z(2)^0, 0*Z(2), 0*Z(2) ],
 > [ Z(2)^0, 0*Z(2), 0*Z(2) ] ] ]);;
 gap> List(HallSubgroup(G, [2,3]), IdGroup);
 [ [ 24, 12 ], [ 24, 12 ] ]
-gap> STOP_TEST("HallSubgroup.tst", 10000);
+gap> STOP_TEST("HallSubgroup.tst", 1);

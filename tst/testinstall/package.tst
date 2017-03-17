@@ -44,7 +44,7 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 > od;
 gap> ReadPackage("packagename");
 Error, packagename is not a filename in the form 'package/filepath'
-gap> STOP_TEST( "package.tst", 300000);
+gap> STOP_TEST( "package.tst", 1);
 
 #############################################################################
 ##

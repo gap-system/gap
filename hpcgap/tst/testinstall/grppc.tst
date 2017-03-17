@@ -83,7 +83,7 @@ gap> RepresentativeAction(G,x,x^2);
 f1*f2
 
 # that's all, folks
-gap> STOP_TEST( "grppc.tst", 3200000);
+gap> STOP_TEST( "grppc.tst", 1);
 
 #############################################################################
 ##

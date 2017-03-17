@@ -41,4 +41,4 @@ gap> EndsWith([1,2], [1,2,3]);
 false
 gap> EndsWith("abc", ['b', 'c']);
 true
-gap> STOP_TEST("startendwith.tst", 290000);
+gap> STOP_TEST("startendwith.tst", 1);

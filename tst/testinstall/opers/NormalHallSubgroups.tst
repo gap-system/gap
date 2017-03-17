@@ -75,4 +75,4 @@ gap> NormalHallSubgroupsFromSylows(Group(()), "any");
 fail
 gap> Length(NormalHallSubgroups(Group(())));
 1
-gap> STOP_TEST("NormalHallSubgroups.tst", 10000);
+gap> STOP_TEST("NormalHallSubgroups.tst", 1);

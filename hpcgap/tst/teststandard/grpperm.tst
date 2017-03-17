@@ -171,7 +171,7 @@ gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
 2
 gap> u56 := Stabilizer( a8, orbs[2][1], OnPairs );; Index( a8, u56 );
 56
-gap> STOP_TEST( "grpperm.tst", 1799980000);
+gap> STOP_TEST( "grpperm.tst", 1);
 
 #############################################################################
 ##

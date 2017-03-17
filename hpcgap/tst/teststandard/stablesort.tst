@@ -155,4 +155,4 @@ gap> for i in [0..26] do
 >        CheckSortParallel(CHARS_LALPHA{[1..i]},Random(SymmetricGroup([1..i])), i);
 >      od;
 >    od;
-gap> STOP_TEST("stablesort.tst", 0);
+gap> STOP_TEST("stablesort.tst", 1);

@@ -99,4 +99,4 @@ gap> f := function(a,arg) return [a,arg]; end;
 function( a, arg ) ... end
 gap> f(1,2);
 [ 1, 2 ]
-gap> STOP_TEST("varargs.tst", 260000);
+gap> STOP_TEST("varargs.tst", 1);

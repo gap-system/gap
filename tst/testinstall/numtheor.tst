@@ -77,4 +77,4 @@ gap> ForAll([-100 .. 100], a-> ForAll([1 .. 100], b -> JACOBI_INT_GAP(a,b)=JACOB
 true
 
 #
-gap> STOP_TEST( "numtheor.tst", 290000);
+gap> STOP_TEST( "numtheor.tst", 1);

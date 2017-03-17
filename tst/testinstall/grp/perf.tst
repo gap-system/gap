@@ -139,4 +139,4 @@ gap> for n in SizesPerfectGroups() do
 > od;
 
 #
-gap> STOP_TEST("perfectgroups.tst", 10000);
+gap> STOP_TEST("perfectgroups.tst", 1);

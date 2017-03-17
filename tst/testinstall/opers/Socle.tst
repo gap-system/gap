@@ -89,4 +89,4 @@ gap> G := F/[x^2, y^2, x^(-1)*y^(-1)*x*y, z];;
 gap> IsFinite(G);;
 gap> Size(Socle(G));
 4
-gap> STOP_TEST("Socle.tst", 10000);
+gap> STOP_TEST("Socle.tst", 1);

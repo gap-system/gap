@@ -104,7 +104,7 @@ gap> Size(ec);
 1
 gap> Size(ec[1]);
 9
-gap> STOP_TEST( "semicong.tst", 890000);
+gap> STOP_TEST( "semicong.tst", 1);
 
 #############################################################################
 ##

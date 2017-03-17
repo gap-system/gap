@@ -34,4 +34,4 @@ gap> StringFile(fname);
 "new content"
 
 #
-gap> STOP_TEST( "streams.tst", 10000);
+gap> STOP_TEST( "streams.tst", 1);

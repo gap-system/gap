@@ -102,7 +102,7 @@ gap> MinimalNonmonomialGroup(  1, 14 );
 2^(1+6):D14
 gap> MinimalNonmonomialGroup(  2, 14 );
 (2^(1+6)Y4):D14
-gap> STOP_TEST( "ctblmono.tst", 2290000);
+gap> STOP_TEST( "ctblmono.tst", 1);
 
 #############################################################################
 ##

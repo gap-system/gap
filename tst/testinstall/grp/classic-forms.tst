@@ -123,4 +123,4 @@ gap> SU(1,5);
 SL(1,5)
 
 #
-gap> STOP_TEST("classic-forms.tst", 10000);
+gap> STOP_TEST("classic-forms.tst", 1);

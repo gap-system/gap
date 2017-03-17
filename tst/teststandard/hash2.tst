@@ -37,7 +37,7 @@ gap> Length(Orbit(h,h.1[1],OnRight));
 2079
 gap> Length(Orbit(h,h.2^5,OnPoints));
 693
-gap> STOP_TEST( "hash2.tst", 198230000);
+gap> STOP_TEST( "hash2.tst", 1);
 
 #############################################################################
 ##

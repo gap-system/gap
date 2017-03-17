@@ -109,4 +109,4 @@ gap> MemoryUsage(a) = MemoryUsage(a);
 true
 
 #
-gap> STOP_TEST("MemoryUsage.tst", 10000);
+gap> STOP_TEST("MemoryUsage.tst", 1);
