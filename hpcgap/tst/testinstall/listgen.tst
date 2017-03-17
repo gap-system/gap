@@ -5,8 +5,6 @@
 ##
 #Y  Copyright 1996,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("listgen.tst");
 gap> List( [ 1 .. 10 ], x -> x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 ]

@@ -5,8 +5,6 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("algsc.tst");
 
 #############################################################################

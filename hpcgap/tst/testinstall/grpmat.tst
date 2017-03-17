@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("grpmat.tst");
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );

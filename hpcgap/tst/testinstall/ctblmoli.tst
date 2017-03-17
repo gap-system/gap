@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("ctblmoli.tst");
 gap> G:= AlternatingGroup( 5 );;
 gap> psi:= First( Irr( G ), x -> Degree( x ) = 3 );;

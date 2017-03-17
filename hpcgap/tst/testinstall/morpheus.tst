@@ -7,8 +7,6 @@
 ##
 ##  This  file  tests the automorphism routines
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("morpheus.tst");
 gap> g:=Group((1,2,3,4),(1,3));;
 gap> LoadPackage("autpgrp", false);;

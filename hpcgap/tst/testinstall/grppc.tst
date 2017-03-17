@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1997
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("grppc.tst");
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;

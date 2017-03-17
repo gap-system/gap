@@ -4,8 +4,6 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("strings.tst");
 
 # FFE

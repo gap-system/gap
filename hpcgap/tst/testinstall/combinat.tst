@@ -7,8 +7,6 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("combinat.tst");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer

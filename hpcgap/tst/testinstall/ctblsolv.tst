@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("ctblsolv.tst");
 gap> CharacterDegrees( SmallGroup( 256, 529 ) );
 [ [ 1, 8 ], [ 2, 30 ], [ 4, 8 ] ]

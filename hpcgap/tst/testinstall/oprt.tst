@@ -5,8 +5,6 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("oprt.tst");
 gap> c5:=CyclicGroup(IsPermGroup,5);;
 gap> d:=Combinations([1..5],2);;

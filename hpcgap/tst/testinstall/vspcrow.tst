@@ -8,8 +8,6 @@
 ##  (The test file `vspcmat.tst' should contain the same tests,
 ##  applied to matrix spaces.)
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("vspcrow.tst");
 
 #############################################################################
