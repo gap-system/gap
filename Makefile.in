@@ -220,12 +220,16 @@ manuals: compile
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( if [[ ! -f doc/dev ]] ; then cd doc/dev; echo 'Read( "makedocrelx.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out; fi )
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
 	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( if [[ ! -f doc/dev ]] ; then cd doc/dev; echo 'Read( "makedocrelx.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out; fi )
 	( rm doc/wsp.g )
 
 check: compile
