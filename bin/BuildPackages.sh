@@ -88,7 +88,8 @@ then
         "first argument with '--with-gaproot=' to this script."
 fi
 
-if [[ "$(grep -c 'ABI_CFLAGS=-m32' $GAPROOT/Makefile)" -ge 1 ]]
+# HACK FIXME: detect whether GAP was built in 32bit mode
+if [[ "$(grep -c 'ABI = 32' $GAPROOT/GNUMakefile)" -ge 1 ]]
 then
   notice "Building with 32-bit ABI"
   ABI32=YES
