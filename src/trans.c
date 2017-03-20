@@ -323,7 +323,7 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
   deg = 0;
   for (i = LEN_LIST(src); 1 <= i; i--) {
     if (!IS_INTOBJ(ELM_LIST(src, i))) {
-      ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a "
+      ErrorQuit("TransformationListListNC: <src>[%d] must be a small integer (not a "
                 "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(src, i)));
     }
     s = INT_INTOBJ(ELM_LIST(src, i));
@@ -333,7 +333,7 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
     }
 
     if (!IS_INTOBJ(ELM_LIST(ran, i))) {
-      ErrorQuit("TransformationListListNC: <ran>[%d] must be a list (not a "
+      ErrorQuit("TransformationListListNC: <ran>[%d] must be a small integer (not a "
                 "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(ran, i)));
     }
     r = INT_INTOBJ(ELM_LIST(ran, i));
