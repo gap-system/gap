@@ -95,7 +95,11 @@ InstallMethod(Reset, [IsGlobalRandomSource, IsObject], function(rs, seed)
 end);
 
 InstallMethod(Random, [IsGlobalRandomSource, IsList], function(rs, l)
-  return RANDOM_LIST(l);
+  if Length(l) < 2^28 then
+    return RANDOM_LIST(l);
+  else
+    return l[Random(rs, 1, Length(l))];
+  fi;
 end);
 
 ############################################################################
@@ -139,12 +143,16 @@ end);
 
 InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
   local rx, rn;
-  # we need to repeat the code of RANDOM_LIST
-  rx := rs!.R_X;
-  rn := rs!.R_N mod 55 + 1;
-  rs!.R_N := rn;
-  rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
-  return list[ QUO_INT( rx[rn] * LEN_LIST(list), R_228 ) + 1 ];
+  if Length(list) < 2^28 then
+    # we need to repeat the code of RANDOM_LIST
+    rx := rs!.R_X;
+    rn := rs!.R_N mod 55 + 1;
+    rs!.R_N := rn;
+    rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
+    return list[ QUO_INT( rx[rn] * LEN_LIST(list), R_228 ) + 1 ];
+  else
+    return list[Random(rs, 1, Length(list))];
+  fi;
 end);
 
 
@@ -192,7 +200,7 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return RandomListMT(rs!.state, list);
+  return list[Random(rs, 1, Length(list))];
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
@@ -220,8 +228,9 @@ BindThreadLocalConstructor("GlobalMersenneTwister",
 # default random method for lists and pairs of integers using the Mersenne
 # twister
 InstallMethod( Random, "for an internal list",
-    [ IsList and IsInternalRep ], 100,
-    function(l) return Random(GlobalMersenneTwister, l); end );
+    [ IsList and IsInternalRep ], 100, function(l) 
+  return l[Random(GlobalMersenneTwister, 1, Length(l))]; 
+end );
 
 InstallMethod( Random,
     "for two integers",
