@@ -308,6 +308,19 @@ atomic TRANSREGION do
 od;
 end);
 
+InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)
+atomic TRANSREGION do
+  if not IsPosInt(deg) then
+    Error("degree must be a positive integer");
+  fi;
+  if deg>TRANSDEGREES then
+    return false;
+  fi;
+  TransGrpLoad(deg,0); # to set up variables
+  return true;
+od;
+end);
+
 BIND_GLOBAL("TRANSGrp",function(deg,nr)
 atomic TRANSREGION do
   if not IsBound(TRANSGRP[deg]) or not IsBound(TRANSGRP[deg][nr]) then
