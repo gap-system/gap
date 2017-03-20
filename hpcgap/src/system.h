@@ -1016,19 +1016,6 @@ extern Int getOptionCount (Char key);
 extern Char *getOptionArg(Char key, UInt which);
 
 /****************************************************************************
-**
-*F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
-**
-**  MergeSort() sorts an array of 'count' elements of individual size 'width'
-**  with ordering determined by the parameter 'lessThan'. The 'lessThan'
-**  function is to return a non-zero value if the first argument is less
-**  than the second argument, zero otherwise.
-*/
-
-extern void MergeSort(void *data, UInt count, UInt width,
-  int (*lessThan)(const void *a, const void *));
-
-/****************************************************************************
  **
  *F    sySetjmp( <jump buffer> )
  *F    syLongjmp( <jump buffer>, <value>)
