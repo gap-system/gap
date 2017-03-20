@@ -295,7 +295,7 @@ function(name)
     Print("#I  Already logging to ",IN_LOGGING_MODE,"\n");
     return;
   fi;
-  expandname := USER_HOME_EXPAND( name );
+  expandname := UserHomeExpand( name );
   LOG_TO( expandname );
   IN_LOGGING_MODE := name;
 end ); # ignore return value
@@ -333,7 +333,7 @@ InstallMethod( InputLogTo,
 InstallOtherMethod( InputLogTo,
     "for output file",
     [ IsString ],
-    function(name) name := USER_HOME_EXPAND(name); INPUT_LOG_TO(name); end );
+    function(name) name := UserHomeExpand(name); INPUT_LOG_TO(name); end );
     # ignore return value
 
 
@@ -364,7 +364,7 @@ InstallMethod( OutputLogTo,
 InstallOtherMethod( OutputLogTo,
     "for output file",
     [ IsString ],
-    function(name) name := USER_HOME_EXPAND(name); OUTPUT_LOG_TO(name); end );
+    function(name) name := UserHomeExpand(name); OUTPUT_LOG_TO(name); end );
     # ignore return value
 
 
@@ -845,7 +845,7 @@ InstallMethod( InputTextFile,
     [ IsString ],
 function( str )
     local   fid;
-    str := USER_HOME_EXPAND(str);
+    str := UserHomeExpand(str);
 
     fid := INPUT_TEXT_FILE(str);
     if fid = fail  then
@@ -1451,7 +1451,7 @@ InstallMethod( OutputTextFile,
       IsBool ],
 function( str, append )
     local   fid;
-    str := USER_HOME_EXPAND(str);
+    str := UserHomeExpand(str);
 
     fid := OUTPUT_TEXT_FILE( str, append );
     if fid = fail  then

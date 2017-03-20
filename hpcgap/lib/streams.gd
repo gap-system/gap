@@ -1102,7 +1102,7 @@ DeclareOperation( "PrintFormattingStatus", [IsOutputStream] );
 BIND_GLOBAL( "AppendTo", function( arg )
     if IsString(arg[1])  then
         arg := ShallowCopy(arg);
-        arg[1] := USER_HOME_EXPAND(arg[1]);
+        arg[1] := UserHomeExpand(arg[1]);
         CallFuncList( APPEND_TO, arg );
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting
@@ -1137,7 +1137,7 @@ end );
 BIND_GLOBAL( "PrintTo", function( arg )    
     if IsString(arg[1])  then
         arg := ShallowCopy(arg);
-        arg[1] := USER_HOME_EXPAND(arg[1]);
+        arg[1] := UserHomeExpand(arg[1]);
         CallFuncList( PRINT_TO, arg );
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting
@@ -1396,7 +1396,7 @@ DeclareGlobalVariable( "OnCharReadHookExcStreams",
 ##  in a situation when &GAP; is reading a character from the keyboard.
 ##  Handler functions should not use much time to complete.
 ##  <P/>
-##  This functionality does not work on the Macintosh architecture and
+##  This functionality
 ##  only works if the operating system has a <C>select</C> function.
 ##  </Description>
 ##  </ManSection>
@@ -1418,7 +1418,7 @@ DeclareGlobalFunction( "InstallCharReadHookFunc" );
 ##  <A>stream</A>. All instances are deinstalled, regardless of the mode
 ##  of operation (read, write, exception).
 ##  <P/>
-##  This functionality does not work on the Macintosh architecture and
+##  This functionality
 ##  only works if the operating system has a <C>select</C> function.
 ##  </Description>
 ##  </ManSection>
@@ -1450,4 +1450,3 @@ DeclareGlobalFunction( "InputFromUser" );
 #############################################################################
 ##
 #E
-
