@@ -393,7 +393,7 @@ Int KTNumPlist (
 	    /* This is a hack */
 	    RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
 	  }
-	else if (TNUM_OBJ(ELM_PLIST(list,1)) == T_FFE)
+	else if (IS_FFE(ELM_PLIST(list,1)))
 	  {
 	    FF fld = FLD_FFE(ELM_PLIST(list,1));
 	    UInt isFFE = 1;
@@ -484,7 +484,7 @@ Int KTNumHomPlist (
 	RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
 	goto finish;
       }
-    if (TNUM_OBJ(elm) == T_FFE)
+    if (IS_FFE(elm))
       {
 	FF fld = FLD_FFE(ELM_PLIST(list,1));
 	UInt isFFE = 1;
@@ -1734,7 +1734,7 @@ void AssPlistFfe   (
 	CLEAR_FILTS_LIST(list);
 	SET_FILT_LIST( list, FN_IS_NDENSE );
     }
-    else if( TNUM_OBJ(val) != T_FFE ) {
+    else if( !IS_FFE(val) ) {
 	CLEAR_FILTS_LIST(list);
 	SET_FILT_LIST( list, FN_IS_DENSE );
     }

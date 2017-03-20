@@ -278,7 +278,7 @@ Int LenListObject (
     Obj                 len;
 
     len = FuncLENGTH( LengthAttr, obj );
-    while ( TNUM_OBJ(len) != T_INT || INT_INTOBJ(len) < 0 ) {
+    while ( !IS_INTOBJ(len) || INT_INTOBJ(len) < 0 ) {
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
             (Int)TNAM_OBJ(len), 0L,

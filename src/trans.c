@@ -322,7 +322,7 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
 
   deg = 0;
   for (i = LEN_LIST(src); 1 <= i; i--) {
-    if (TNUM_OBJ(ELM_LIST(src, i)) != T_INT) {
+    if (!IS_INTOBJ(ELM_LIST(src, i))) {
       ErrorQuit("TransformationListListNC: <src>[%d] must be a list (not a "
                 "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(src, i)));
     }
@@ -332,7 +332,7 @@ Obj FuncTransformationListListNC (Obj self, Obj src, Obj ran) {
                 (Int) i, 0L);
     }
 
-    if (TNUM_OBJ(ELM_LIST(ran, i)) != T_INT) {
+    if (!IS_INTOBJ(ELM_LIST(ran, i))) {
       ErrorQuit("TransformationListListNC: <ran>[%d] must be a list (not a "
                 "%s)", (Int) i, (Int) TNAM_OBJ(ELM_LIST(ran, i)));
     }
@@ -635,7 +635,7 @@ Obj FuncRANK_TRANS_INT (Obj self, Obj f, Obj n) {
   UInt2   *ptf2;
   UInt4   *pttmp, *ptf4;
 
-  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+  if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
     ErrorQuit("RANK_TRANS_INT: <n> must be a non-negative integer",
               0L, 0L);
     return 0L;
@@ -701,7 +701,7 @@ Obj FuncRANK_TRANS_LIST (Obj self, Obj f, Obj list) {
     rank = 0;
     for (i = 1; i <= len; i++) {
       pt = ELM_LIST(list, i);
-      if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+      if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
         ErrorQuit("RANK_TRANS_LIST: the second argument <list> must be a "
                   "list of positive integers (not a %s)",
                   (Int) TNAM_OBJ(pt),
@@ -726,7 +726,7 @@ Obj FuncRANK_TRANS_LIST (Obj self, Obj f, Obj list) {
     rank = 0;
     for (i = 1; i <= len; i++) {
       pt = ELM_LIST(list, i);
-      if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+      if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
         ErrorQuit("RANK_TRANS_LIST: the second argument <list> must be a "
                   "list of positive integers (not a %s)",
                   (Int) TNAM_OBJ(pt),
@@ -783,7 +783,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT (Obj self, Obj f, Obj n) {
   Obj     new, *ptnew, *ptker;
   UInt    deg, m, i;
 
-  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+  if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
     ErrorQuit("FLAT_KERNEL_TRANS_INT: the second argument must be a "
               "non-negative integer", 0L, 0L);
   }
@@ -875,7 +875,7 @@ Obj FuncKERNEL_TRANS (Obj self, Obj f, Obj n) {
   UInt    i, j, deg, nr, m, rank, min;
   UInt4*  pttmp;
 
-  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+  if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
     ErrorQuit("KERNEL_TRANS: the second argument must be a "
               "non-negative integer", 0L, 0L);
   } else if (!IS_TRANS(f)) {
@@ -934,7 +934,7 @@ Obj FuncPREIMAGES_TRANS_INT (Obj self, Obj f, Obj pt) {
   UInt    deg, nr, i, j;
   Obj     out;
 
-  if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+  if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
     ErrorQuit("PREIMAGES_TRANS_INT: the second argument must be a "
               "positive integer", 0L, 0L);
   } else if (!IS_TRANS(f)) {
@@ -1027,7 +1027,7 @@ Obj FuncIMAGE_SET_TRANS_INT (Obj self, Obj f, Obj n) {
   UInt4   *pttmp, *ptf4;
   UInt2   *ptf2;
 
-  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+  if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
     ErrorQuit("IMAGE_SET_TRANS_INT: the second argument must be a "
               "non-negative integer", 0L, 0L);
   } else if (!IS_TRANS(f)) {
@@ -1105,7 +1105,7 @@ Obj FuncIMAGE_LIST_TRANS_INT (Obj self, Obj f, Obj n) {
   UInt      i, deg, m;
   Obj       out;
 
-  if (TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) < 0) {
+  if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
     ErrorQuit("IMAGE_LIST_TRANS_INT: the second argument must be a "
               "non-negative integer", 0L, 0L);
   } else if (!IS_TRANS(f)) {
@@ -1587,7 +1587,7 @@ Obj FuncAS_TRANS_PERM_INT (Obj self, Obj p, Obj deg) {
   Obj     f;
   UInt    def, dep, i, min, n;
 
-  if (TNUM_OBJ(deg) != T_INT || INT_INTOBJ(deg) < 0) {
+  if (!IS_INTOBJ(deg) || INT_INTOBJ(deg) < 0) {
     ErrorQuit("AS_TRANS_PERM_INT: the second argument must be a "
               "non-negative integer", 0L, 0L);
   } else if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
@@ -1946,7 +1946,7 @@ Obj FuncRestrictedTransformation (Obj self, Obj f, Obj list) {
     //g acts like f on list * /
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
-      if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
+      if (!IS_INTOBJ(j) || INT_INTOBJ(j) < 1) {
         ErrorQuit("RestrictedTransformation: <list>[%d] must be a positive "
                   " integer (not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
@@ -1971,7 +1971,7 @@ Obj FuncRestrictedTransformation (Obj self, Obj f, Obj list) {
     // g acts like f on list
     for (i = 0; i < len; i++) {
       j = ELM_LIST(list, i + 1);
-      if (TNUM_OBJ(j) != T_INT || INT_INTOBJ(j) < 1) {
+      if (!IS_INTOBJ(j) || INT_INTOBJ(j) < 1) {
         ErrorQuit("RestrictedTransformation: <list>[%d] must be a positive "
                   " integer (not a %s)", (Int) i + 1, (Int) TNAM_OBJ(j));
       }
@@ -2000,7 +2000,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m){
   UInt    i, n, def;
   Obj     g;
 
-  if (TNUM_OBJ(m) != T_INT || INT_INTOBJ(m) < 0) {
+  if (!IS_INTOBJ(m) || INT_INTOBJ(m) < 0) {
     ErrorQuit("AS_TRANS_TRANS: the second argument must be a non-negative "
               "integer (not a %s)", (Int) TNAM_OBJ(m), 0L);
   }
@@ -2067,7 +2067,7 @@ Obj FuncTRIM_TRANS (Obj self, Obj f, Obj m) {
   UInt    deg, i;
   UInt4   *ptf;
 
-  if (TNUM_OBJ(m) != T_INT || INT_INTOBJ(m) < 0) {
+  if (!IS_INTOBJ(m) || INT_INTOBJ(m) < 0) {
     ErrorQuit("TRIM_TRANS: the second argument must be a non-negative "
               "integer (not a %s)", (Int) TNAM_OBJ(m), 0L);
   }
@@ -2688,7 +2688,7 @@ Obj FuncCOMPONENT_TRANS_INT (Obj self, Obj f, Obj pt) {
   if (!IS_TRANS(f)) {
     ErrorQuit("COMPONENT_TRANS_INT: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-  } else if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+  } else if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
     ErrorQuit("COMPONENT_TRANS_INT: the second argument must be a "
               "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
   }
@@ -2745,7 +2745,7 @@ Obj FuncCYCLE_TRANS_INT (Obj self, Obj f, Obj pt) {
   if (!IS_TRANS(f)) {
     ErrorQuit("CYCLE_TRANS_INT: the first argument must be a "
               "transformation (not a %s)", (Int) TNAM_OBJ(f), 0L);
-  } else if (TNUM_OBJ(pt) != T_INT || INT_INTOBJ(pt) < 1) {
+  } else if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
     ErrorQuit("CYCLE_TRANS_INT: the second argument must be a "
               "positive integer (not a %s)", (Int) TNAM_OBJ(pt), 0L);
   }
@@ -2916,7 +2916,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
     ptf2 = ADDR_TRANS2(f);
     for (i = 1; i <= (UInt) LEN_LIST(list); i++) {
       list_i = ELM_LIST(list, i);
-      if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
+      if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
         ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
                   "list of positive integer (not a %s)",
                   (Int) TNAM_OBJ(list_i), 0L);
@@ -2959,7 +2959,7 @@ Obj FuncCYCLES_TRANS_LIST (Obj self, Obj f, Obj list) {
     ptf4 = ADDR_TRANS4(f);
     for (i = 1; i <= (UInt) LEN_LIST(list); i++) {
       list_i = ELM_LIST(list, i);
-      if (TNUM_OBJ(list_i) != T_INT || INT_INTOBJ(list_i) < 1) {
+      if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
         ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
                   "positive integer (not a %s)", (Int) TNAM_OBJ(list_i), 0L);
       }
@@ -3031,7 +3031,7 @@ Obj FuncINV_LIST_TRANS (Obj self, Obj list, Obj f) {
     }
     for (j = 1; j <= (UInt) LEN_LIST(list); j++) {
       k = ELM_LIST(list, j);
-      if (TNUM_OBJ(k) != T_INT || INT_INTOBJ(k) < 1) {
+      if (!IS_INTOBJ(k) || INT_INTOBJ(k) < 1) {
         ErrorQuit("INV_LIST_TRANS: <list>[%d] must be a positive integer "
                   "(not a %s)", (Int) j, (Int) TNAM_OBJ(k));
       }
@@ -3053,7 +3053,7 @@ Obj FuncINV_LIST_TRANS (Obj self, Obj list, Obj f) {
     }
     for (j = 1; j <= (UInt) LEN_LIST(list); j++) {
       k = ELM_LIST(list, j);
-      if (TNUM_OBJ(k) != T_INT || INT_INTOBJ(k) < 1) {
+      if (!IS_INTOBJ(k) || INT_INTOBJ(k) < 1) {
         ErrorQuit("INV_LIST_TRANS: <list>[%d] must be a positive integer "
                   "(not a %s)", (Int) j, (Int) TNAM_OBJ(k));
       }
@@ -4790,7 +4790,7 @@ Obj OnSetsTrans (Obj set, Obj f){
     // loop over the entries of the tuple
     isint = 1;
     for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
-      if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
+      if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
         k = INT_INTOBJ(*ptset);
         if (k <= deg) {
           k = ptf2[k - 1] + 1;
@@ -4813,7 +4813,7 @@ Obj OnSetsTrans (Obj set, Obj f){
     // loop over the entries of the tuple
     isint = 1;
     for (i = LEN_LIST(set) ; 1 <= i; i--, ptset--, ptres--) {
-      if (TNUM_OBJ(*ptset) == T_INT && 0 < INT_INTOBJ(*ptset)) {
+      if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
         k = INT_INTOBJ(*ptset);
         if (k <= deg) {
           k = ptf4[k - 1] + 1;

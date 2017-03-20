@@ -4680,7 +4680,7 @@ Obj QuoPPerm44(Obj f, Obj g){
 // i^f 
 Obj PowIntPPerm2(Obj i, Obj f){
 
-  if(TNUM_OBJ(i)!=T_INT||INT_INTOBJ(i)<=0){
+  if (!IS_INTOBJ(i) || INT_INTOBJ(i)<=0) {
     ErrorQuit("usage: the first argument should be a positive integer,", 0L, 0L);
     return 0L;
   }
@@ -4689,7 +4689,7 @@ Obj PowIntPPerm2(Obj i, Obj f){
 
 Obj PowIntPPerm4(Obj i, Obj f){
 
-  if(TNUM_OBJ(i)!=T_INT||INT_INTOBJ(i)<=0){
+  if (!IS_INTOBJ(i) || INT_INTOBJ(i)<=0) {
     ErrorQuit("usage: the first argument should be a positive integer,", 0L, 0L);
     return 0L;
   }
@@ -5384,7 +5384,7 @@ Obj OnSetsPPerm (Obj set, Obj f){
     /* loop over the entries of the tuple                              */
     isint = 1;
     for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset-- ) {
-      if ( TNUM_OBJ( *ptset ) == T_INT && 0 < INT_INTOBJ( *ptset ) ) {
+      if ( IS_INTOBJ( *ptset ) && 0 < INT_INTOBJ( *ptset ) ) {
         k = INT_INTOBJ( *ptset );
         if (k<=deg&&ptf2[k-1]!=0){
           tmp = INTOBJ_INT( ptf2[k-1] );
@@ -5402,7 +5402,7 @@ Obj OnSetsPPerm (Obj set, Obj f){
     /* loop over the entries of the tuple                              */
     isint = 1;
     for ( i =LEN_LIST(set) ; 1 <= i; i--, ptset-- ) {
-      if ( TNUM_OBJ( *ptset ) == T_INT && 0 < INT_INTOBJ( *ptset ) ) {
+      if ( IS_INTOBJ( *ptset ) && 0 < INT_INTOBJ( *ptset ) ) {
         k = INT_INTOBJ( *ptset );
         if (k<=deg&&ptf4[k-1]!=0){
           tmp = INTOBJ_INT( ptf4[k-1] );
@@ -5469,7 +5469,7 @@ Obj OnTuplesPPerm (Obj tup, Obj f){
     /* loop over the entries of the tuple                              */
     lentup=LEN_LIST(tup);
     for ( i=1 ; i <= lentup; i++, pttup++ ) {
-      if ( TNUM_OBJ( *pttup ) == T_INT && 0 < INT_INTOBJ( *pttup ) ) {
+      if ( IS_INTOBJ( *pttup ) && 0 < INT_INTOBJ( *pttup ) ) {
         k = INT_INTOBJ( *pttup ) ;
         if (k<=deg&&ptf2[k-1]!=0){
           len++;
@@ -5485,7 +5485,7 @@ Obj OnTuplesPPerm (Obj tup, Obj f){
     /* loop over the entries of the tuple                              */
     lentup=LEN_LIST(tup);
     for ( i=1 ; i <= lentup; i++, pttup++ ) {
-      if ( TNUM_OBJ( *pttup ) == T_INT && 0 < INT_INTOBJ( *pttup ) ) {
+      if ( IS_INTOBJ( *pttup ) && 0 < INT_INTOBJ( *pttup ) ) {
         k = INT_INTOBJ( *pttup ) ;
         if (k<=deg&&ptf4[k-1]!=0){
           len++;

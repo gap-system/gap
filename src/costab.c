@@ -2033,7 +2033,7 @@ Obj FuncAddAbelianRelator (
         return 0;
     }
     ptRels = &(ELM_PLIST(rels,1)) - 1;
-    if ( TNUM_OBJ(number) != T_INT ) {
+    if ( !IS_INTOBJ(number) ) {
         ErrorQuit( "<number> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(number), 0L );
         return 0;

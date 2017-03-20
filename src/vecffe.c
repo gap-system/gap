@@ -681,7 +681,7 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
     UInt xtype;
     UInt i;
 
-    if (TNUM_OBJ(mult) != T_FFE)
+    if (!IS_FFE(mult))
         return TRY_NEXT_METHOD;
 
     if (VAL_FFE(mult) == 0)
@@ -785,7 +785,7 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
     UInt xtype;
     UInt i;
 
-    if (TNUM_OBJ(mult) != T_FFE)
+    if (!IS_FFE(mult))
         return TRY_NEXT_METHOD;
 
     if (VAL_FFE(mult) == 1)

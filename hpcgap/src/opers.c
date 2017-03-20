@@ -5702,7 +5702,7 @@ Obj FuncMETHODS_OPERATION (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
@@ -5731,7 +5731,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
@@ -5765,7 +5765,7 @@ Obj FuncSET_METHODS_OPERATION (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
