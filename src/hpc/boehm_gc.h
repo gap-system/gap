@@ -1,7 +1,7 @@
 
 /****************************************************************************
 **
-*W  gap_boehm_gc.h
+*W  boehm_gc.h
 **
 **  This file stores code only required by the boehm garbage collector
 **
@@ -24,6 +24,7 @@
 #define TL_GC_SIZE (256 * sizeof(UInt))
 
 #ifndef DISABLE_GC
+#define GC_THREADS
 #include <gc/gc.h>
 #include <gc/gc_inline.h>
 #include <gc/gc_typed.h>

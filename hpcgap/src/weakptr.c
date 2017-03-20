@@ -15,10 +15,7 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
-#include <gc/gc.h>
-
 #include <src/system.h>                 /* system dependent part */
-
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
@@ -42,6 +39,13 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
+
+#ifdef BOEHM_GC
+# ifdef HPCGAP
+#  define GC_THREADS
+# endif
+# include <gc/gc.h>
+#endif
 
 
 /****************************************************************************

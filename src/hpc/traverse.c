@@ -1,12 +1,6 @@
 /*
  * Functionality to traverse nested object structures.
  */
-
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <gc/gc.h>
-
 #include <src/system.h>
 #include <src/gasman.h>
 #include <src/objects.h>
@@ -24,6 +18,13 @@
 #include <src/hpc/traverse.h>
 #include <src/fibhash.h>
 #include <src/objset.h>
+
+#ifdef BOEHM_GC
+# ifdef HPCGAP
+#  define GC_THREADS
+# endif
+# include <gc/gc.h>
+#endif
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)

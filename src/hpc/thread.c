@@ -1,16 +1,3 @@
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <pthread.h>
-#include <errno.h>
-#ifndef DISABLE_GC
-#include <gc/gc.h>
-#endif
-
 #include <src/systhread.h>
 #include <src/system.h>
 #include <src/gasman.h>
@@ -28,6 +15,19 @@
 #include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
 #include <src/fibhash.h>
+
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <errno.h>
+
+#ifdef BOEHM_GC
+# ifdef HPCGAP
+#  define GC_THREADS
+# endif
+# include <gc/gc.h>
+#endif
+
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
