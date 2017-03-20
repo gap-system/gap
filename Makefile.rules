@@ -626,6 +626,13 @@ bin/$(GAPARCH)/gac:
 
 endif
 
+########################################################################
+# Specifying GAP calls to use for the test suite and building manuals
+########################################################################
+
+GAPARGS=
+TESTGAP = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -A -q -x 80 -r $(GAPARGS)
+TESTGAPauto = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
 
 ########################################################################
 # Documentation rules
@@ -633,10 +640,6 @@ endif
 
 # Alias for backwards compatibility
 manuals: doc
-
-GAPARGS=
-TESTGAP = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -A -q -x 80 -r $(GAPARGS)
-TESTGAPauto = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
 
 # TODO: when in HPCGAP mode, we should perhaps instead
 # compile the documentation in the hpcgap dir?
@@ -671,8 +674,251 @@ clean-doc:
 # to remove it, as other builds might share the manual.
 #clean: clean-doc
 
+# Manual consistency check
+check-manuals: all
+	mkdir -p dev/log
+	((cd doc/ref ; \
+	  echo 'Read("testconsistency.g");' | $(TESTGAP) ) \
+	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
 
-.PHONY: doc clean-doc manuals
+.PHONY: doc clean-doc manuals check-manuals
+
+########################################################################
+# Rules for test{install/standard/etc.} targets
+########################################################################
+
+# run testinstall.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+testinstall: all
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+
+# test manual examples three times:
+# - without packages
+# - with packages loaded by default
+# - with all packages loaded
+testmanuals: all
+	mkdir -p dev/log
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+
+# check how packages are loaded when loading obsoletes is disabled
+# - when all dependencies are loaded
+# - when packages are loaded with `OnlyNeeded` option
+testobsoletes: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
+            "dev/log/testobsoletes1", \
+            "$(TESTGAP) -O -L wsp.g", false, false );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletes1.in; ./testobsoletes1.in > \
+            `date -u +dev/log/testobsoletes1_%Y-%m-%d-%H-%M`; rm testobsoletes1.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletesN1.in", \
+            "dev/log/testobsoletesN1", \
+            "$(TESTGAP) -O -L wsp.g", false, true );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletesN1.in; ./testobsoletesN1.in > \
+            `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
+	( rm wsp.g )
+
+# For a package with the name given by the PKGNAME variable,
+# run its standard tests (i.e. those specified in PackageInfo.g):
+# - in GAP started without packages
+# - in GAP started with packages loaded by default
+# - in GAP started with all packages loaded
+testpackage: all
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage1", \
+            "$(TESTGAP) -L wsp.g", "false", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackageA", \
+            "$(TESTGAPauto) -L wsp.g", "auto", "$(PKGNAME)" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage2", \
+            "$(TESTGAP) -L wsp.g", "true", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+
+# For each package that specifies its standard tests in PackageInfo.g, run it
+# - in GAP started without packages
+# - in GAP started with packages loaded by default
+# - in GAP started with all packages loaded
+testpackages: all
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages1", \
+            "$(TESTGAP) -L wsp.g", "false" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackagesA", \
+            "$(TESTGAPauto) -L wsp.g", "auto" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages2", \
+            "$(TESTGAP) -L wsp.g", "true" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+
+# check how packages are loaded
+# - when all dependencies are loaded
+# - when packages are loaded with `OnlyNeeded` option
+testpackagesload: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesload1", \
+            "$(TESTGAP) -L wsp.g", false, false );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesloadN1", \
+            "$(TESTGAP) -L wsp.g", false, true );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadN1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadA", \
+            "$(TESTGAPauto) -L wsp.g", true, false );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadNA", \
+            "$(TESTGAPauto) -L wsp.g", true, true );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+
+# Produce an overview of new variables defined by each package
+testpackagesvars: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageVarsTestsInput( "testpackagesvars.in", \
+            "dev/log/testpackagesvars", \
+            "$(TESTGAP) -L wsp.g" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesvars.in; ./testpackagesvars.in > \
+            `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
+	( rm wsp.g )
+
+# run teststandard.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+teststandard: all
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+
+.PHONY: testinstall testmanuals testobsoletes teststandard
+.PHONY: testpackage testpackages testpackagesload testpackagesvars
 
 ########################################################################
 # Bootstrap rules
