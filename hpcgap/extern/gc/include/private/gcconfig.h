@@ -25,6 +25,13 @@
 #ifndef GCCONFIG_H
 #define GCCONFIG_H
 
+/* Override system-specific block size so that thread-local allocations
+ * are more efficient.
+ */
+#ifndef HBLKSIZE
+#define HBLKSIZE 8192
+#endif
+
 # ifndef GC_PRIVATE_H
     /* Fake ptr_t declaration, just to avoid compilation errors.        */
     /* This avoids many instances if "ifndef GC_PRIVATE_H" below.       */

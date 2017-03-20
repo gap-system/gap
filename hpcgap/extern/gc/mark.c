@@ -16,6 +16,10 @@
 
 #include "private/gc_pmark.h"
 
+#ifndef MAX_MARKERS
+# define MAX_MARKERS 16
+#endif
+
 #include <stdio.h>
 
 #if defined(MSWIN32) && defined(__GNUC__)
@@ -1151,13 +1155,15 @@ STATIC void GC_mark_local(mse *local_mark_stack, int id)
     }
 }
 
+GC_INNER mse GC_local_mark_stacks[MAX_MARKERS+1][LOCAL_MARK_STACK_SIZE];
+
 /* Perform Parallel mark.                       */
 /* We hold the GC lock, not the mark lock.      */
 /* Currently runs until the mark stack is       */
 /* empty.                                       */
 STATIC void GC_do_parallel_mark(void)
 {
-    mse local_mark_stack[LOCAL_MARK_STACK_SIZE];
+    mse *local_mark_stack = &(GC_local_mark_stacks[0][0]);
                 /* Note: local_mark_stack is quite big (up to 128 KiB). */
 
     GC_acquire_mark_lock();
@@ -1190,13 +1196,12 @@ STATIC void GC_do_parallel_mark(void)
     GC_notify_all_marker();
 }
 
-
 /* Try to help out the marker, if it's running.         */
 /* We do not hold the GC lock, but the requestor does.  */
 GC_INNER void GC_help_marker(word my_mark_no)
 {
     unsigned my_id;
-    mse local_mark_stack[LOCAL_MARK_STACK_SIZE];
+    mse *local_mark_stack;
                 /* Note: local_mark_stack is quite big (up to 128 KiB). */
 
     if (!GC_parallel) return;
@@ -1207,6 +1212,7 @@ GC_INNER void GC_help_marker(word my_mark_no)
       GC_wait_marker();
     }
     my_id = GC_helper_count;
+    local_mark_stack = &(GC_local_mark_stacks[my_id][0]);
     if (GC_mark_no != my_mark_no || my_id > (unsigned)GC_markers_m1) {
       /* Second test is useful only if original threads can also        */
       /* act as helpers.  Under Linux they can't.                       */
@@ -1277,6 +1283,10 @@ static void alloc_mark_stack(size_t n)
 GC_INNER void GC_mark_init(void)
 {
     alloc_mark_stack(INITIAL_MARK_STACK_SIZE);
+#   ifdef PARALLEL_MARK
+        GC_exclude_static_roots_inner(GC_local_mark_stacks,
+	    (char *)GC_local_mark_stacks + sizeof(GC_local_mark_stacks));
+#   endif
 }
 
 /*

@@ -722,6 +722,8 @@ GC_INNER word GC_page_size = 0;
         }
       }
 #   endif
+    if (HBLKSIZE > GC_page_size)
+      GC_page_size = HBLKSIZE;
   }
 
 # ifndef CYGWIN32
@@ -792,6 +794,8 @@ GC_INNER word GC_page_size = 0;
 #   if defined(MPROTECT_VDB) || defined(PROC_VDB) || defined(USE_MMAP)
       GC_page_size = GETPAGESIZE();
       if (!GC_page_size) ABORT("getpagesize failed");
+      if (HBLKSIZE > GC_page_size)
+        GC_page_size = HBLKSIZE;
 #   else
       /* It's acceptable to fake it.    */
       GC_page_size = HBLKSIZE;
@@ -2042,12 +2046,24 @@ STATIC ptr_t GC_unix_mmap_get_mem(word bytes)
 #   endif
 
     if (bytes & (GC_page_size - 1)) ABORT("Bad GET_MEM arg");
+    bytes += GC_page_size;
     result = mmap(last_addr, bytes, (PROT_READ | PROT_WRITE)
                                     | (GC_pages_executable ? PROT_EXEC : 0),
                   GC_MMAP_FLAGS | OPT_MAP_ANON, zero_fd, 0/* offset */);
 #   undef IGNORE_PAGES_EXECUTABLE
 
     if (result == MAP_FAILED) return(0);
+
+    if ((word) result & (GC_page_size - 1)) {
+        word delta = (word) result & (GC_page_size - 1);
+	if (delta) delta = GC_page_size - delta;
+        munmap(result, delta);
+        result = (char *) result + delta;
+        munmap((char *) result + bytes, GC_page_size - delta);
+    } else {
+        munmap((char *) result + bytes, GC_page_size);
+    }
+
     last_addr = (ptr_t)result + bytes + GC_page_size - 1;
     last_addr = (ptr_t)((word)last_addr & ~(GC_page_size - 1));
 #   if !defined(LINUX)
