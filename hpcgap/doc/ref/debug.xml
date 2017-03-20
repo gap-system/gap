@@ -238,7 +238,7 @@ redirected.
 </ManSection>
 
 <ManSection>
-<Var Name="InfoWarning"/>
+<InfoClass Name="InfoWarning"/>
 
 <Description>
 is an info class to which general warnings are sent at level 1,

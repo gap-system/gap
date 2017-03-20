@@ -32,7 +32,7 @@ function ( filter, q )
 
   if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non-square power of 2\n"); fi;
+  then Error("<q> must be a non-square power of 2"); fi;
 
   f := GF(q);
   G := GroupByGenerators(
@@ -74,7 +74,7 @@ function ( filter, q )
 
   if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non-square power of 2\n"); fi;
+  then Error("<q> must be a non-square power of 2"); fi;
 
   f := GF(q);
   r := RootInt(2 * q);
