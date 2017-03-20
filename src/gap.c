@@ -202,7 +202,6 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-static char **sysargv;
 static char **sysenviron;
 
 /*
@@ -1277,13 +1276,11 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   /* assemble and return the result */
   res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 2);
   SET_ELM_PLIST(res,1,True);
-  if (result)
-    {
-      SET_LEN_PLIST(res,2);
-      SET_ELM_PLIST(res,2,result);
-      CHANGED_BAG(res);
-    }
-  else {
+  if (result) {
+    SET_LEN_PLIST(res,2);
+    SET_ELM_PLIST(res,2,result);
+    CHANGED_BAG(res);
+  } else {
     SET_LEN_PLIST(res,1);
   }
   return res;
@@ -1366,7 +1363,7 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS(CurrStat));
-  Obj res =  CALL_2ARGS(ErrorInner,r,l);
+  Obj res = CALL_2ARGS(ErrorInner,r,l);
   return res;
 }
 
@@ -3272,7 +3269,6 @@ void InitializeGap (
     NrImportedGVars = 0;
     NrImportedFuncs = 0;
 
-    sysargv = argv;
     sysenviron = environ;
 
     /* get info structures for the build in modules                        */
