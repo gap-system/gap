@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C) 2013 The GAP Group
 ##
-##  To be listed in testall.g
-##
 gap> START_TEST("reesmat.tst");
 
 #
