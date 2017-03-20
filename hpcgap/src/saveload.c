@@ -732,6 +732,7 @@ void LoadWorkspace( Char * fname )
   UInt globalcount = 0;
   Char buf[256];
   Obj * glob;
+  Int res;
 
   /* Open saved workspace  */
   OpenForLoad( fname );
@@ -837,12 +838,12 @@ void LoadWorkspace( Char * fname )
 	    /* and dynamic case */
 	    InitInfoFunc init; 
 	
-	    init = SyLoadModule(buf);
+	    res = SyLoadModule(buf, &init);
 	    
-	    if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7)
+	    if (res != 0)
 	      {
 		Pr("Failed to load needed dynamic module %s, error code %d\n",
-		   (Int)buf, (Int) init);
+		   (Int)buf, res);
 		SyExit(1);
 	      }
 	    info = (*init)();
@@ -924,7 +925,7 @@ static void PrSavedObj( UInt x)
   if ((x & 3) == 1)
     Pr("Immediate  integer %d\n", INT_INTOBJ((Obj)x),0L);
   else if ((x & 3) == 2)
-    Pr("Immedate FFE %d %d\n", VAL_FFE(x), SIZE_FF(FLD_FFE(x)));
+    Pr("Immediate FFE %d %d\n", VAL_FFE(x), SIZE_FF(FLD_FFE(x)));
   else
     Pr("Reference to bag number %d\n",x>>2,0L);
 }

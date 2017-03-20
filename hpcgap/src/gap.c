@@ -1854,16 +1854,16 @@ Obj FuncLOAD_DYN (
     }
 
     /* try to read the module                                              */
-    init = SyLoadModule( CSTR_STRING(filename) );
-    if ( (Int)init == 1 )
+    res = SyLoadModule( CSTR_STRING(filename), &init );
+    if ( res == 1 )
         ErrorQuit( "module '%s' not found", (Int)CSTR_STRING(filename), 0L );
-    else if ( (Int) init == 3 )
+    else if ( res == 3 )
         ErrorQuit( "symbol 'Init_Dynamic' not found", 0L, 0L );
-    else if ( (Int) init == 5 )
+    else if ( res == 5 )
         ErrorQuit( "forget symbol failed", 0L, 0L );
 
     /* no dynamic library support                                          */
-    else if ( (Int) init == 7 ) {
+    else if ( res == 7 ) {
         if ( SyDebugLoading ) {
             Pr( "#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L );
         }
