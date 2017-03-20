@@ -2377,7 +2377,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "  with the current version of GAP.\n",
               "  It is strongly recommended to update to the ",
               "most recent version, see URL\n",
-              "      http://www.gap-system.org/Packages/autpgrp.html\n" );
+              "      https://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
         end ) ));
 
@@ -2662,7 +2662,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         " <C>G</C>roups, <C>A</C>lgorithms,\n",
         "         and <C>P</C>rogramming,",
         " <C>V</C>ersion ", GAPInfo.Version, "</title>\n",
-        "  <howpublished><URL>http://www.gap-system.org</URL></howpublished>\n",
+        "  <howpublished><URL>https://www.gap-system.org</URL></howpublished>\n",
         val,
         "  <key>GAP</key>\n",
         "  <keywords>groups; *; gap; manual</keywords>\n",
@@ -2787,7 +2787,7 @@ if name="GAP" then
         "\\bibitem[GAP]{GAP4}\n", 
         "\\emph{GAP -- Groups, Algorithms, and Programming}, ",
         "Version ", GAPInfo.Version, ",\n", 
-        "The GAP~Group (", year, "), \\verb+http://www.gap-system.org+.\n\n");
+        "The GAP~Group (", year, "), \\verb+https://www.gap-system.org+.\n\n");
   Print(
   "If you have (predominantly) used one or more particular GAP packages,\n", 
   "please cite these packages in addition to GAP itself (either check the\n", 

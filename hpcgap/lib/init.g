@@ -671,7 +671,7 @@ BindGlobal( "ShowKernelInformation", function()
       fi;
       Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.Version, " of ",
              sysdate, "\n",
-             " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
+             " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
              " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
 	     "             Maximum concurrent threads: ",
 	     GAPInfo.KernelInfo.NUM_CPUS, "\n");
