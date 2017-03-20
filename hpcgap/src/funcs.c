@@ -766,9 +766,9 @@ Obj             EvalFunccallXargs (
 */
 
 /* TL: Int RecursionDepth; */
-static UInt RecursionTrapInterval;
+UInt RecursionTrapInterval;
 
-static void RecursionDepthTrap( void )
+void RecursionDepthTrap( void )
 {
     Int recursionDepth;
     /* in interactive work the RecursionDepth could become slightly negative
@@ -778,23 +778,15 @@ static void RecursionDepthTrap( void )
     if (TLS(RecursionDepth) > 0) {
         recursionDepth = TLS(RecursionDepth);
         TLS(RecursionDepth) = 0;
-        ErrorReturnVoid( "recursion depth trap (%d)\n",         
-                         (Int)recursionDepth, 0L,               
+        ErrorReturnVoid( "recursion depth trap (%d)",
+                         (Int)recursionDepth, 0L,
                          "you may 'return;'" );
         TLS(RecursionDepth) = recursionDepth;
     }
 }
      
-static inline void CheckRecursionBefore( void )
-{
-    TLS(RecursionDepth)++;                                           
-    if ( RecursionTrapInterval &&                                
-         0 == (TLS(RecursionDepth) % RecursionTrapInterval) )
-      RecursionDepthTrap();
-}
-
-
 Obj STEVES_TRACING;
+
 #define CHECK_RECURSION_BEFORE \
             CheckRecursionBefore(); \
             ProfileLineByLineIntoFunction(func);
@@ -816,11 +808,9 @@ Obj DoExecFunc0args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-
     OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
-    
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
@@ -1885,22 +1875,12 @@ void            ExecEnd (
         /* the state must be primal again                                  */
         assert( TLS(CurrStat)  == 0 );
 
-        /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
-        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
-
     }
 
-    /* otherwise clean up the mess                                         */
-    else {
-
-        /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
-        SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
-        TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
-
-    }
+    /* switch back to the old state                                    */
+    SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(TLS(ExecState))[3]) ));
+    SWITCH_TO_OLD_LVARS( ADDR_OBJ(TLS(ExecState))[2] );
+    TLS(ExecState) = ADDR_OBJ(TLS(ExecState))[1];
 }
 
 /****************************************************************************
