@@ -11,6 +11,13 @@ environment:
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
+    - CYG_ARCH: x86
+      CYG_ROOT: C:\cygwin
+      ABI: 32
+      HPCGAP: yes
+    - CYG_ARCH: x86_64
+      CYG_ROOT: C:\cygwin64
+      HPCGAP: yes
 
 cache:
   - bootstrap-pkg-full.tar.gz
@@ -21,10 +28,8 @@ install:
 # scripts that run after cloning repository
 build_script:
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
-  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --with-gmp=system"
-  - bash -lc "make -C $APPVEYOR_BUILD_FOLDER cygwin"
-  - sed -i -e "s/wget/wget -nv/g" Makefile
-  - bash -lc "make -C $APPVEYOR_BUILD_FOLDER bootstrap-pkg-full"
+  - SET "BUILDDIR=."
+  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-prepare.sh"
 
 test_script:
   - bash -lc "rm $APPVEYOR_BUILD_FOLDER/tst/testinstall/timeout.tst" # HACK
