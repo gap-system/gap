@@ -62,7 +62,7 @@ pushd $GAPROOT/pkg
 
 cd io*
 ./configure $CONFIGFLAGS --with-gaproot=$GAPROOT/$BUILDDIR
-make
+make V=1
 cd ..
 
 # HACK: profiling 1.1.0 (shipped with GAP 4.8.6) is broken on 32 bit
@@ -72,7 +72,7 @@ git clone https://github.com/gap-packages/profiling
 cd profiling
 ./autogen.sh
 ./configure $CONFIGFLAGS --with-gaproot=$GAPROOT/$BUILDDIR
-make
+make V=1
 
 # return to base directory
 popd

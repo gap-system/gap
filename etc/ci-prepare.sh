@@ -17,6 +17,6 @@ fi
 mkdir -p $BUILDDIR
 cd $BUILDDIR
 $GAPROOT/configure $CONFIGFLAGS
-make -j4
+make V=1 -j4
 make bootstrap-pkg-full
 if [[ $BUILDDIR != . ]] ; then mv pkg $GAPROOT/ ; fi
