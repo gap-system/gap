@@ -48,6 +48,14 @@ then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
+if [[ $HPCGAP = yes ]]
+then
+  # Add flags so that Boehm GC and libatomic headers are found, as well as HPC-GAP headers
+  CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
+  CPPFLAGS="-I$GAPROOT/hpcgap -I$GAPROOT $CPPFLAGS"
+  export CPPFLAGS
+fi
+
 # We need to compile the profiling package in order to generate coverage
 # reports; and also the IO package, as the profiling package depends on it.
 pushd $GAPROOT/pkg
