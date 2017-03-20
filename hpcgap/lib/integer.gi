@@ -708,7 +708,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
     if 0 < Length(tmp[2])  then
       if ValueOption("quiet")<>true then
         len := Length(tmp[2]);
-        if LoadPackage("FactInt") = true then
+        if IsPackageMarkedForLoading("FactInt", "")  then
 ##            # in general cases we should proceed with the found factors:
 ##            while len > 0 do
 ##              Append(tmp[1], Factors(tmp[2][len]));
@@ -1189,40 +1189,7 @@ end);
 ##
 #F  PowerModInt(<r>,<e>,<m>)  . . . . . . power of one integer modulo another
 ##
-InstallGlobalFunction(PowerModInt,function ( r, e, m )
-    local   pow, f;
-
-    # handle special cases
-    if m = 1  then
-        return 0;
-    elif e = 0 then
-        return 1;
-    fi;
-
-    # reduce `r' initially
-    r := r mod m;
-
-    # if `e' is negative then invert `r' modulo `m' with Euclids algorithm
-    if e < 0  then
-        r := 1/r mod m;
-        e := -e;
-    fi;
-
-    # now use the repeated squaring method (right-to-left)
-    pow := 1;
-    f := 2 ^ (LogInt( e, 2 ) + 1);
-    while 1 < f  do
-        pow := (pow * pow) mod m;
-        f := QuoInt( f, 2 );
-        if f <= e  then
-            pow := (pow * r) mod m;
-            e := e - f;
-        fi;
-    od;
-
-    # return the power
-    return pow;
-end);
+InstallGlobalFunction(PowerModInt, POWERMODINT);
 
 
 #############################################################################
@@ -1255,19 +1222,13 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     local   p,  pows,  lst;
 
     if n = 1  then
-	return [];
+        return [];
     elif n = 0  then
     	Error( "<n> must be non zero" );
     elif n < 0  then
     	n := -1 * n;
     fi;
-    lst  := Factors( Integers, n );
-    pows := [];
-    for p  in Set( lst )  do
-	Add( pows, p );
-        Add( pows, Number( lst, x -> x = p ) );
-    od;
-    return pows;
+    return Flat(Collected(FactorsInt(n)));
 
 end);
 
@@ -1312,34 +1273,23 @@ end);
 ##
 #F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
-InstallGlobalFunction( AbsInt, function( n )
-    if 0 <= n  then return  n;
-    else            return -n;
-    fi;
-end );
+#InstallGlobalFunction( AbsInt, ABS_INT );
+InstallGlobalFunction( AbsInt, ABS_RAT ); # support rationals for backwards compatibility
+
 
 #############################################################################
 ##
 #F  AbsoluteValue( <n> )
 ##
-# uses the particular form of AbsInt
-InstallMethod(AbsoluteValue,"rationals",true,[IsRat],0,AbsInt);
-
+InstallMethod( AbsoluteValue, "rationals", [IsRat], ABS_RAT );
 
 
 #############################################################################
 ##
 #F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
 ##
-InstallGlobalFunction( SignInt, function( n )
-    if   0 =  n  then
-        return 0;
-    elif 0 <= n  then
-        return 1;
-    else
-        return -1;
-    fi;
-end );
+#InstallGlobalFunction( SignInt, SIGN_INT );
+InstallGlobalFunction( SignInt, SIGN_RAT ); # support rationals for backwards compatibility
 
 
 #############################################################################
@@ -1689,6 +1639,7 @@ InstallMethod( PowerMod,
     return PowerModInt( r, e, m );
     end );
 
+
 #############################################################################
 ##
 #M  Quotient( <Integers>, <n>, <m> )  . . . . . . .  quotient of two integers
@@ -1849,24 +1800,13 @@ InstallMethod( StandardAssociateUnit,
 InstallOtherMethod( Valuation,
     "for two integers",
     IsIdenticalObj,
-    [ IsInt,
-      IsInt ],
+    [ IsInt, IsInt ],
     0,
-
 function( n, m )
-    local val;
-
     if n = 0  then
-        val := infinity;
-    else
-        val := 0;
-        while n mod m = 0  do
-            val := val + 1;
-            n   := n / m;
-        od;
+        return infinity;
     fi;
-    return val;
-
+    return PVALUATION_INT( n, m );
 end );
 
 
@@ -1914,27 +1854,7 @@ InstallMethod( \in,
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
 InstallGlobalFunction(PrintFactorsInt,function ( n )
-    local decomp, i;
-
-    if -4 < n and n < 4 then
-        Print( n );
-    else
-        decomp := Collected( Factors( AbsInt( n ) ) );
-        if n > 0 then
-            Print( decomp[1][1] );
-        else
-            Print( -decomp[1][1] );
-        fi;
-        if decomp[1][2] > 1 then
-            Print( "^", decomp[1][2] );
-        fi;
-        for i in [ 2 .. Length( decomp ) ] do
-            Print( "*", decomp[i][1] );
-            if decomp[i][2] > 1 then
-                Print( "^", decomp[i][2] );
-            fi;
-        od;
-    fi;
+    Print( StringPP( n ) );
 end);
 
 #############################################################################

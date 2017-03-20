@@ -248,8 +248,6 @@ ReadLib( "proto.gi");
 
 ReadLib( "orders.gi");
 
-ReadLib( "other.gi");
-
 ReadLib( "gasman.gi");
 
 ReadLib( "function.gi");

@@ -97,33 +97,6 @@ Obj             EndLineHook = 0;
 
 /****************************************************************************
 **
-*V  TestInput . . . . . . . . . . . . .  file identifier of test input, local
-*V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
-*V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
-**
-**  'TestInput' is the file identifier  of the file for  test input.  If this
-**  is  not -1  and  'GetLine' reads  a line  from  'TestInput' that does not
-**  begins with  'gap>'  'GetLine' assumes  that this was  expected as output
-**  that did not appear and echoes this input line to 'TestOutput'.
-**
-**  'TestOutput' is the current output file  for test output.  If 'TestInput'
-**  is not -1 then 'PutLine' compares every line that is  about to be printed
-**  to 'TestOutput' with the next  line from 'TestInput'.   If this line does
-**  not starts with 'gap>'  and the rest of  it  matches the output line  the
-**  output  line  is not printed  and the  input   comment line is discarded.
-**  Otherwise 'PutLine' prints the output line and does not discard the input
-**  line.
-**
-**  'TestLine' holds the one line that is read from 'TestInput' to compare it
-**  with a line that is about to be printed to 'TestOutput'.
-*/
-/* TL: TypInputFile *  TestInput  = 0; */
-/* TL: TypOutputFile * TestOutput = 0; */
-/* TL: Char            TestLine [256]; */
-
-
-/****************************************************************************
-**
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
 **
 */
@@ -388,10 +361,6 @@ UInt OpenInput (
     if ( TLS(InputFilesSP) == (sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]))-1 )
         return 0;
 
-    /* in test mode keep reading from test input file for break loop input */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errin*" ) )
-        return 1;
-
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (! strcmp(filename, "*defin*") ||
@@ -512,10 +481,6 @@ UInt CloseInput ( void )
     if ( TLS(InputFilesSP) <= 1)
         return 1;
 
-    /* refuse to close the test input file                                 */
-    if ( TLS(Input) == TLS(TestInput) )
-        return 0;
-
     /* close the input file                                                */
     if ( ! TLS(Input)->isstream ) {
         SyFclose( TLS(Input)->file );
@@ -546,95 +511,6 @@ void FlushRestOfInputLine( void )
   /* TLS(Input)->number = 1; */
   TLS(Symbol) = S_ILLEGAL;
 }
-
-
-
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-*/
-UInt OpenTest (
-    const Char *        filename )
-{
-    /* do not allow to nest test files                                     */
-    if ( TLS(TestInput) != 0 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInput( filename ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TLS(TestInput)   = TLS(Input);
-    TLS(TestOutput)  = TLS(Output);
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenTestStream( <stream> )  . . . . .  open an input stream for test mode
-**
-*/
-UInt OpenTestStream (
-    Obj                 stream )
-{
-    /* do not allow to nest test files                                     */
-    if ( TLS(TestInput) != 0 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInputStream( stream ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TLS(TestInput)   = TLS(Input);
-    TLS(TestOutput)  = TLS(Output);
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-*/
-UInt CloseTest ( void )
-{
-    /* refuse to a non test file                                           */
-    if ( TLS(TestInput) != TLS(Input) )
-        return 0;
-
-    /* close the input file                                                */
-    if ( ! TLS(Input)->isstream ) {
-        SyFclose( TLS(Input)->file );
-    }
-
-    /* don't keep GAP objects alive unnecessarily */
-    TLS(Input)->gapname = 0;
-    TLS(Input)->sline = 0;
-
-    /* revert to last file                                                 */
-    TLS(Input) = TLS(InputFiles)[--TLS(InputFilesSP)-1];
-    TLS(In)     = TLS(Input)->ptr;
-    TLS(Symbol) = TLS(Input)->symbol;
-
-    /* we are no longer in test mode                                       */
-    TLS(TestInput)   = 0;
-    TLS(TestOutput)  = 0;
-    TLS(TestLine)[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
 
 /****************************************************************************
 **
@@ -977,10 +853,6 @@ UInt OpenOutput (
     if ( TLS(OutputFilesSP) == sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0]))
         return 0;
 
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
-        return 1;
-
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if ( ! strcmp( filename, "*defout*" ) ||
@@ -1018,7 +890,7 @@ UInt OpenOutput (
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
 **
-**  The same as 'OpenOutput' but for streams.
+**  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
 */
 
 Obj PrintFormattingStatus;
@@ -1074,12 +946,6 @@ UInt OpenOutputStream (
 */
 UInt CloseOutput ( void )
 {
-    /* silently refuse to close the test output file this is probably
-         an attempt to close *errout* which is silently not opened, so
-         lets silently not close it  */
-    if ( TLS(Output) == TLS(TestOutput) )
-        return 1;
-    /* and similarly */
     if ( TLS(IgnoreStdoutErrout) == TLS(Output) )
         return 1;
 
@@ -1126,10 +992,6 @@ UInt OpenAppend (
     if ( TLS(OutputFilesSP) == sizeof(TLS(OutputFiles))/sizeof(TLS(OutputFiles)[0]))
         return 0;
 
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS(TestInput) != 0 && ! strcmp( filename, "*errout*" ) )
-        return 1;
-    
     if ( ! strcmp( filename, "*defout*") )
         return OpenDefaultOutput();
 
@@ -1157,19 +1019,6 @@ UInt OpenAppend (
 
     /* indicate success                                                    */
     return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenAppendStream( <stream> )  . . . . . . open a stream as current output
-**
-**  The same as 'OpenAppend' but for streams.
-*/
-UInt OpenAppendStream (
-    Obj                 stream )
-{
-    return OpenOutputStream(stream);
 }
 
 
@@ -1318,94 +1167,37 @@ Char GetLine ( void )
     TLS(In) = TLS(Input)->line;  TLS(In)[0] = '\0';
     TLS(NrErrLine) = 0;
 
-    /* read a line from an ordinary input file                             */
-    if ( TLS(TestInput) != TLS(Input) ) {
-
-        /* try to read a line                                              */
-        if ( ! GetLine2( TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line) ) ) {
-            TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
-        }
+    /* try to read a line                                              */
+    if ( ! GetLine2( TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line) ) ) {
+        TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
+    }
 
 
-        /* convert '?' at the beginning into 'HELP'
-           (if not inside reading long string which may have line
-           or chunk from GetLine starting with '?')                        */
+    /* convert '?' at the beginning into 'HELP'
+       (if not inside reading long string which may have line
+       or chunk from GetLine starting with '?')                        */
 
-        if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
-            strlcpy( buf, TLS(In)+1, sizeof(buf) );
-            strcpy( TLS(In), "HELP(\"" );
-            for ( p = TLS(In)+6,  q = buf;  *q;  q++ ) {
-                if ( *q != '"' && *q != '\n' ) {
-                    *p++ = *q;
-                }
-                else if ( *q == '"' ) {
-                    *p++ = '\\';
-                    *p++ = *q;
-                }
+    if ( TLS(In)[0] == '?' && TLS(HELPSubsOn) == 1) {
+        strlcpy( buf, TLS(In)+1, sizeof(buf) );
+        strcpy( TLS(In), "HELP(\"" );
+        for ( p = TLS(In)+6,  q = buf;  *q;  q++ ) {
+            if ( *q != '"' && *q != '\n' ) {
+                *p++ = *q;
             }
-            *p = '\0';
-            /* FIXME: We should do bounds checking, but don't know what 'In' points to */
-            strcat( TLS(In), "\");\n" );
+            else if ( *q == '"' ) {
+                *p++ = '\\';
+                *p++ = *q;
+            }
         }
+        *p = '\0';
+        /* FIXME: We should do bounds checking, but don't know what 'In' points to */
+        strcat( TLS(In), "\");\n" );
+    }
 
-        /* if necessary echo the line to the logfile                      */
-        if( TLS(InputLog) != 0 && TLS(Input)->echo == 1)
-            if ( !(TLS(In)[0] == '\377' && TLS(In)[1] == '\0') )
+    /* if necessary echo the line to the logfile                      */
+    if( TLS(InputLog) != 0 && TLS(Input)->echo == 1)
+        if ( !(TLS(In)[0] == '\377' && TLS(In)[1] == '\0') )
             PutLine2( TLS(InputLog), TLS(In), strlen(TLS(In)) );
-
-                /*      if ( ! TLS(Input)->isstream ) {
-          if ( TLS(InputLog) != 0 && ! TLS(Input)->isstream ) {
-            if ( TLS(Input)->file == 0 || TLS(Input)->file == 2 ) {
-              PutLine2( TLS(InputLog), TLS(In) );
-            }
-            }
-            } */
-
-    }
-
-    /* read a line for test input file                                     */
-    else {
-
-        /* continue until we got an input line                             */
-        while ( TLS(In)[0] == '\0' ) {
-
-            /* there may be one line waiting                               */
-            if ( TLS(TestLine)[0] != '\0' ) {
-                strncat( TLS(In), TLS(TestLine), sizeof(TLS(Input)->line) );
-                TLS(TestLine)[0] = '\0';
-            }
-
-            /* otherwise try to read a line                                */
-            else {
-                if ( ! GetLine2(TLS(Input), TLS(Input)->line, sizeof(TLS(Input)->line)) ) {
-                    TLS(In)[0] = '\377';  TLS(In)[1] = '\0';
-                }
-            }
-
-            /* if the line starts with a prompt its an input line          */
-            if      ( TLS(In)[0] == 'g' && TLS(In)[1] == 'a' && TLS(In)[2] == 'p'
-                   && TLS(In)[3] == '>' && TLS(In)[4] == ' ' ) {
-                TLS(In) = TLS(In) + 5;
-            }
-            else if ( TLS(In)[0] == '>' && TLS(In)[1] == ' ' ) {
-                TLS(In) = TLS(In) + 2;
-            }
-
-            /* if the line is not empty or a comment, print it             */
-            else if ( TLS(In)[0] != '\n' && TLS(In)[0] != '#' && TLS(In)[0] != '\377' ) {
-                /* Commented out by AK
-                char obuf[8];
-                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS(TestInput)->number++);
-                PutLine2( TLS(TestOutput), obuf, 7 );
-                */
-                PutLine2( TLS(TestOutput), "- ", 2 );
-                PutLine2( TLS(TestOutput), TLS(In), strlen(TLS(In)) );
-                TLS(In)[0] = '\0';
-            }
-
-        }
-
-    }
 
     /* return the current character                                        */
     return *TLS(In);
@@ -1930,6 +1722,99 @@ void GetNumber ( UInt StartingStatus )
 }
 
 
+/*******************************************************************************
+ **
+ *F  GetEscapedChar()   . . . . . . . . . . . . . . . . get an escaped character
+ **
+ **  'GetEscapedChar' reads an escape sequence from the current input file into
+ **  the variable *dst.
+ **
+ */
+static inline Char GetOctalDigits( void )
+{
+    Char c;
+
+    if ( *TLS(In) < '0' || *TLS(In) > '7' )
+        SyntaxError("Expecting octal digit");
+    c = 8 * (*TLS(In) - '0');
+    GET_CHAR();
+    if ( *TLS(In) < '0' || *TLS(In) > '7' )
+        SyntaxError("Expecting octal digit");
+    c = c + (*TLS(In) - '0');
+
+    return c;
+}
+
+
+/****************************************************************************
+ **
+ *F  CharHexDigit( <ch> ) . . . . . . . . . turn a single hex digit into Char
+ **
+ */
+static inline Char CharHexDigit( const Char ch ) {
+    if (ch >= 'a') {
+        return (ch - 'a' + 10);
+    } else if (ch >= 'A') {
+        return (ch - 'A' + 10);
+    } else {
+        return (ch - '0');
+    }
+};
+
+Char GetEscapedChar( void )
+{
+  Char c;
+
+  c = 0;
+
+  if ( *TLS(In) == 'n'  )       c = '\n';
+  else if ( *TLS(In) == 't'  )  c = '\t';
+  else if ( *TLS(In) == 'r'  )  c = '\r';
+  else if ( *TLS(In) == 'b'  )  c = '\b';
+  else if ( *TLS(In) == '>'  )  c = '\01';
+  else if ( *TLS(In) == '<'  )  c = '\02';
+  else if ( *TLS(In) == 'c'  )  c = '\03';
+  else if ( *TLS(In) == '"'  )  c = '"';
+  else if ( *TLS(In) == '\\' )  c = '\\';
+  else if ( *TLS(In) == '\'' )  c = '\'';
+  else if ( *TLS(In) == '0'  ) {
+    /* from here we can either read a hex-escape or three digit
+       octal numbers */
+    GET_CHAR();
+    if (*TLS(In) == 'x') {
+        GET_CHAR();
+        if (!IsHexDigit(*TLS(In))) {
+            SyntaxError("Expecting hexadecimal digit");
+        }
+        c = 16 * CharHexDigit(*TLS(In));
+        GET_CHAR();
+        if (!IsHexDigit(*TLS(In))) {
+            SyntaxError("Expecting hexadecimal digit");
+        }
+        c += CharHexDigit(*TLS(In));
+    } else if (*TLS(In) >= '0' && *TLS(In) <= '7' ) {
+        c += GetOctalDigits();
+    } else {
+        SyntaxError("Expecting hexadecimal escape, or two more octal digits");
+    }
+  } else if ( *TLS(In) >= '1' && *TLS(In) <= '7' ) {
+    /* escaped three digit octal numbers are allowed in input */
+    c = 64 * (*TLS(In) - '0');
+    GET_CHAR();
+    c += GetOctalDigits();
+  } else {
+      /* Following discussions on pull-request #612, this warning is currently
+         disabled for backwards compatibility; some code relies on this behaviour
+         and tests break with the warning enabled */
+      /*
+      if (IsAlpha(*TLS(In)))
+          SyntaxWarning("Alphabet letter after \\");
+      */
+      c = *TLS(In);
+  }
+  return c;
+}
+
 /****************************************************************************
  **
  *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
@@ -1953,7 +1838,6 @@ void GetNumber ( UInt StartingStatus )
 void GetStr ( void )
 {
   Int                 i = 0, fetch;
-  Char                a, b, c;
 
   /* Avoid substitution of '?' in beginning of GetLine chunks */
   TLS(HELPSubsOn) = 0;
@@ -1981,22 +1865,9 @@ void GetStr ( void )
         GET_CHAR();
         if  ( *TLS(In) == '\n' )  i--;
         else  {TLS(Value)[i] = '\r'; fetch = 0;}
+      } else {
+          TLS(Value)[i] = GetEscapedChar();
       }
-      else if ( *TLS(In) == 'n'  )  TLS(Value)[i] = '\n';
-      else if ( *TLS(In) == 't'  )  TLS(Value)[i] = '\t';
-      else if ( *TLS(In) == 'r'  )  TLS(Value)[i] = '\r';
-      else if ( *TLS(In) == 'b'  )  TLS(Value)[i] = '\b';
-      else if ( *TLS(In) == '>'  )  TLS(Value)[i] = '\01';
-      else if ( *TLS(In) == '<'  )  TLS(Value)[i] = '\02';
-      else if ( *TLS(In) == 'c'  )  TLS(Value)[i] = '\03';
-      else if ( IsDigit( *TLS(In) ) ) {
-        a = *TLS(In); GET_CHAR(); b = *TLS(In); GET_CHAR(); c = *TLS(In);
-        if (!( IsDigit(b) && IsDigit(c) )){
-          SyntaxError("Expecting three octal digits after \\ in string");
-        }
-        TLS(Value)[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
-      }
-      else  TLS(Value)[i] = *TLS(In);
     }
 
     /* put normal chars into 'Value' but only if there is room         */
@@ -2159,58 +2030,35 @@ void GetMaybeTripStr ( void )
  */
 void GetChar ( void )
 {
-  Char c;
-
   /* skip '\''                                                           */
   GET_CHAR();
 
-  /* handle escape equences                                              */
-  if ( *TLS(In) == '\\' ) {
-    GET_CHAR();
-    if ( *TLS(In) == 'n'  )       TLS(Value)[0] = '\n';
-    else if ( *TLS(In) == 't'  )  TLS(Value)[0] = '\t';
-    else if ( *TLS(In) == 'r'  )  TLS(Value)[0] = '\r';
-    else if ( *TLS(In) == 'b'  )  TLS(Value)[0] = '\b';
-    else if ( *TLS(In) == '>'  )  TLS(Value)[0] = '\01';
-    else if ( *TLS(In) == '<'  )  TLS(Value)[0] = '\02';
-    else if ( *TLS(In) == 'c'  )  TLS(Value)[0] = '\03';
-    else if ( *TLS(In) >= '0' && *TLS(In) <= '7' ) {
-      /* escaped three digit octal numbers are allowed in input */
-      c = 64 * (*TLS(In) - '0');
-      GET_CHAR();
-      if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("Expecting octal digit in character constant");
-      c = c + 8 * (*TLS(In) - '0');
-      GET_CHAR();
-      if ( *TLS(In) < '0' || *TLS(In) > '7' )
-        SyntaxError("Expecting 3 octal digits in character constant");
-      c = c + (*TLS(In) - '0');
-      TLS(Value)[0] = c;
-    }
-    else                     TLS(Value)[0] = *TLS(In);
-  }
-  else if ( *TLS(In) == '\n' ) {
-    SyntaxError("Newline not allowed in character literal");
-  }
-  /* put normal chars into 'TLS(Value)'                                       */
-  else {
-    TLS(Value)[0] = *TLS(In);
-  }
-
-  /* read the next character                                             */
-  GET_CHAR();
-
-  
-  /* check for terminating single quote                                  */
-  if ( *TLS(In) != '\'' )
-    SyntaxError("Missing single quote in character constant");
-
-  /* skip the closing quote                                              */
+  /* Make sure symbol is set */
   TLS(Symbol) = S_CHAR;
-  if ( *TLS(In) == '\'' )  GET_CHAR();
 
+  /* handle escape equences                                              */
+  if ( *TLS(In) == '\n' ) {
+    SyntaxError("Character literal must not include <newline>");
+  } else {
+    if ( *TLS(In) == '\\' ) {
+      GET_CHAR();
+      TLS(Value)[0] = GetEscapedChar();
+    } else {
+      /* put normal chars into 'TLS(Value)' */
+      TLS(Value)[0] = *TLS(In);
+    }
+
+    /* read the next character */
+    GET_CHAR();
+
+    /* check for terminating single quote, and skip */
+    if ( *TLS(In) == '\'' ) {
+      GET_CHAR();
+    } else {
+      SyntaxError("Missing single quote in character constant");
+    }
+  }
 }
-
 
 /****************************************************************************
  **
@@ -2344,7 +2192,9 @@ void GetSymbol ( void )
   case '*':   TLS(Symbol) = S_MULT;                        GET_CHAR();  break;
   case '/':   TLS(Symbol) = S_DIV;                         GET_CHAR();  break;
   case '^':   TLS(Symbol) = S_POW;                         GET_CHAR();  break;
+#ifdef HPCGAP
   case '`':   TLS(Symbol) = S_BACKQUOTE;                   GET_CHAR();  break;
+#endif
 
   case '"':                        GET_CHAR(); GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;
@@ -2431,11 +2281,6 @@ void PutLine2(
  **  line   'stream->line' to <stream>
  **  It  is  called from 'PutChrTo'.
  **
- **  'PutLineTo' also compares the output line with the  next line from the test
- **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
- **  not starts with 'gap>' and the rest  of the line  matches the output line
- **  then the output line is not printed and the input line is discarded.
- **
  **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
  **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
  **
@@ -2444,56 +2289,7 @@ void PutLine2(
  */
 void PutLineTo ( KOutputStream stream, UInt len )
 {
-  Char *          p;
-  UInt lt,ls;     /* These are supposed to hold string lengths */
-
-  /* if in test mode and the next input line matches print nothing       */
-  if ( TLS(TestInput) != 0 && TLS(TestOutput) == stream ) {
-    if ( TLS(TestLine)[0] == '\0' ) {
-      if ( ! GetLine2( TLS(TestInput), TLS(TestLine), sizeof(TLS(TestLine)) ) ) {
-        TLS(TestLine)[0] = '\0';
-      }
-      TLS(TestInput)->number++;
-    }
-
-    /* Note that TLS(TestLine) is ended by a \n, but stream->line need not! */
-
-    lt = strlen(TLS(TestLine));   /* this counts including the newline! */
-    p = TLS(TestLine) + (lt-2);
-    /* this now points to the last char before \n in the line! */
-    while ( TLS(TestLine) <= p && ( *p == ' ' || *p == '\t' ) ) {
-      p[1] = '\0';  p[0] = '\n';  p--; lt--;
-    }
-    /* lt is still the correct string length including \n */
-    ls = strlen(stream->line);
-    p = stream->line + (ls-1);
-    /* this now points to the last char of the string, could be a \n */
-    if (*p == '\n') {
-      p--;   /* now we point before that newline character */
-      while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
-        p[1] = '\0';  p[0] = '\n';  p--; ls--;
-      }
-    }
-    /* ls is still the correct string length including a possible \n */
-    if ( ! strncmp( TLS(TestLine), stream->line, ls ) ) {
-      if (ls < lt)
-        memmove(TLS(TestLine),TLS(TestLine) + ls,lt-ls+1);
-      else
-        TLS(TestLine)[0] = '\0';
-    }
-    else {
-      char obuf[80];
-      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS(TestInput)->number); */
-      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS(TestInput)->number);
-      PutLine2( stream, obuf, strlen(obuf) );
-      PutLine2( stream, TLS(Output)->line, strlen(TLS(Output)->line) );
-    }
-  }
-
-  /* otherwise output this line                                          */
-  else {
-    PutLine2( stream, stream->line, len );
-  }
+  PutLine2( stream, stream->line, len );
 
   /* if neccessary echo it to the logfile                                */
   if ( TLS(OutputLog) != 0 && ! stream->isstream ) {
@@ -3211,12 +3007,14 @@ static Int InitKernel (
 {
     Int                 i;
 
+    TLS(Input) = 0;
     (void)OpenInput(  "*stdin*"  );
     TLS(Input)->echo = 1; /* echo stdin */
+
+    TLS(Output) = 0;
     (void)OpenOutput( "*stdout*" );
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
-    TLS(TestInput) = 0;  TLS(TestOutput) = 0;
 
     /* Initialize default stream functions */
 

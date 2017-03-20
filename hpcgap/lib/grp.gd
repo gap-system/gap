@@ -301,7 +301,7 @@ InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
 ##
 ##  <#GAPDoc Label="CanEasilyTestMembership">
 ##  <ManSection>
-##  <Func Name="CanEasilyTestMembership" Arg='G'/>
+##  <Filt Name="CanEasilyTestMembership" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can test membership of elements in
@@ -323,7 +323,7 @@ DeclareFilter( "CanEasilyTestMembership" );
 ##
 ##  <#GAPDoc Label="CanEasilyComputeWithIndependentGensAbelianGroup">
 ##  <ManSection>
-##  <Func Name="CanEasilyComputeWithIndependentGensAbelianGroup" Arg='G'/>
+##  <Filt Name="CanEasilyComputeWithIndependentGensAbelianGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can in reasonable time compute
@@ -347,7 +347,7 @@ DeclareFilter( "CanEasilyComputeWithIndependentGensAbelianGroup" );
 ##
 ##  <#GAPDoc Label="CanComputeSizeAnySubgroup">
 ##  <ManSection>
-##  <Func Name="CanComputeSizeAnySubgroup" Arg='G'/>
+##  <Filt Name="CanComputeSizeAnySubgroup" Arg='G'/>
 ##
 ##  <Description>
 ##  This filter indicates whether &GAP; can easily compute the size of any
@@ -378,7 +378,7 @@ InstallTrueMethod( CanComputeSize, IsTrivial );
 ##
 ##  <#GAPDoc Label="CanComputeIndex">
 ##  <ManSection>
-##  <Func Name="CanComputeIndex" Arg='G, H'/>
+##  <Oper Name="CanComputeIndex" Arg='G, H'/>
 ##
 ##  <Description>
 ##  This function indicates whether the index <M>[<A>G</A>:<A>H</A>]</M>
@@ -2913,7 +2913,7 @@ DeclareOperation( "IsCharacteristicSubgroup", [IsGroup,IsGroup] );
 ##
 ##  <#GAPDoc Label="IsPNilpotent">
 ##  <ManSection>
-##  <Func Name="IsPNilpotent" Arg='G, p'/>
+##  <Oper Name="IsPNilpotent" Arg='G, p'/>
 ##
 ##  <Description>
 ##  A group is <M>p</M>-nilpotent if it possesses a normal <M>p</M>-complement.
@@ -2930,7 +2930,7 @@ KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="IsPSolvable">
 ##  <ManSection>
-##  <Func Name="IsPSolvable" Arg='G, p'/>
+##  <Oper Name="IsPSolvable" Arg='G, p'/>
 ##
 ##  <Description>
 ##  A finite group is <M>p</M>-solvable if every chief factor either has
@@ -3113,7 +3113,7 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##
 ##  <#GAPDoc Label="PCentralSeries">
 ##  <ManSection>
-##  <Func Name="PCentralSeries" Arg='G, p'/>
+##  <Oper Name="PCentralSeries" Arg='G, p'/>
 ##
 ##  <Description>
 ##  The <A>p</A>-central series of <A>G</A> is defined by
@@ -3132,7 +3132,7 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="PRump">
 ##  <ManSection>
-##  <Func Name="PRump" Arg='G, p'/>
+##  <Oper Name="PRump" Arg='G, p'/>
 ##
 ##  <Description>
 ##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is
@@ -3152,10 +3152,10 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="PCore">
 ##  <ManSection>
-##  <Func Name="PCore" Arg='G, p'/>
+##  <Oper Name="PCore" Arg='G, p'/>
 ##
 ##  <Description>
-##  <Index Key="Op(G)" Subkey="see PCore"><C>PCore</C></Index>
+##  <Index Key="Op(G)" Subkey="see PCore"><M>O_p(G)</M></Index>
 ##  The <E><A>p</A>-core</E> of <A>G</A> is the largest normal
 ##  <A>p</A>-subgroup of <A>G</A>.
 ##  It is the core of a Sylow <A>p</A> subgroup of <A>G</A>,
@@ -3201,13 +3201,13 @@ InParentFOA( "SubnormalSeries", IsGroup, IsGroup, DeclareAttribute );
 ##
 ##  <#GAPDoc Label="SylowSubgroup">
 ##  <ManSection>
-##  <Func Name="SylowSubgroup" Arg='G, p'/>
+##  <Oper Name="SylowSubgroup" Arg='G, p'/>
 ##
 ##  <Description>
 ##  returns a Sylow <A>p</A> subgroup of the finite group <A>G</A>.
 ##  This is a <A>p</A>-subgroup of <A>G</A> whose index in <A>G</A> is
 ##  coprime to <A>p</A>.
-##  <Ref Func="SylowSubgroup"/> computes Sylow subgroups via the operation
+##  <Ref Oper="SylowSubgroup"/> computes Sylow subgroups via the operation
 ##  <C>SylowSubgroupOp</C>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;
@@ -3227,7 +3227,7 @@ KeyDependentOperation( "SylowSubgroup", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="SylowComplement">
 ##  <ManSection>
-##  <Func Name="SylowComplement" Arg='G, p'/>
+##  <Oper Name="SylowComplement" Arg='G, p'/>
 ##
 ##  <Description>
 ##  returns a Sylow <A>p</A>-complement of the finite group <A>G</A>.
@@ -3254,7 +3254,7 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##
 ##  <#GAPDoc Label="HallSubgroup">
 ##  <ManSection>
-##  <Func Name="HallSubgroup" Arg='G, P'/>
+##  <Oper Name="HallSubgroup" Arg='G, P'/>
 ##
 ##  <Description>
 ##  computes a <A>P</A>-Hall subgroup for a set <A>P</A> of primes.
@@ -4033,8 +4033,8 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##
 ##  <#GAPDoc Label="IsomorphismFpGroupByGenerators">
 ##  <ManSection>
-##  <Attr Name="IsomorphismFpGroupByGenerators" Arg='G,gens[,string]'/>
-##  <Attr Name="IsomorphismFpGroupByGeneratorsNC" Arg='G,gens,string'/>
+##  <Func Name="IsomorphismFpGroupByGenerators" Arg='G,gens[,string]'/>
+##  <Oper Name="IsomorphismFpGroupByGeneratorsNC" Arg='G,gens,string'/>
 ##
 ##  <Description>
 ##  returns an isomorphism from a finite group <A>G</A>
@@ -4270,11 +4270,18 @@ DeclareGlobalFunction( "PowerMapOfGroupWithInvariants" );
 ##
 ##  <#GAPDoc Label="HasAbelianFactorGroup">
 ##  <ManSection>
-##  <Oper Name="HasAbelianFactorGroup" Arg='G, N'/>
+##  <Func Name="HasAbelianFactorGroup" Arg='G, N'/>
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is abelian
-##  (without explicitly constructing the factor group).
+##  (without explicitly constructing the factor group and without testing
+##  whether <A>N</A> is in fact a normal subgroup).
+##  <Example><![CDATA[
+##  gap> HasAbelianFactorGroup(g,n);
+##  false
+##  gap> HasAbelianFactorGroup(DerivedSubgroup(g),n);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4291,7 +4298,8 @@ DeclareGlobalFunction("HasAbelianFactorGroup");
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is solvable
-##  (without explicitly constructing the factor group).
+##  (without explicitly constructing the factor group and without testing
+##  whether <A>N</A> is in fact a normal subgroup).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4305,17 +4313,12 @@ DeclareGlobalFunction("HasSolvableFactorGroup");
 ##
 ##  <#GAPDoc Label="HasElementaryAbelianFactorGroup">
 ##  <ManSection>
-##  <Oper Name="HasElementaryAbelianFactorGroup" Arg='G, N'/>
+##  <Func Name="HasElementaryAbelianFactorGroup" Arg='G, N'/>
 ##
 ##  <Description>
 ##  tests whether <A>G</A> <M>/</M> <A>N</A> is elementary abelian
-##  (without explicitly constructing the factor group).
-##  <Example><![CDATA[
-##  gap> HasAbelianFactorGroup(g,n);
-##  false
-##  gap> HasAbelianFactorGroup(DerivedSubgroup(g),n);
-##  true
-##  ]]></Example>
+##  (without explicitly constructing the factor group and without testing
+##  whether <A>N</A> is in fact a normal subgroup).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

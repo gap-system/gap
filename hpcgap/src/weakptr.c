@@ -17,6 +17,7 @@
 */
 #include <src/system.h>                 /* system dependent part */
 
+
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
 
@@ -99,6 +100,7 @@
 
 #define ELM_WPOBJ(list,pos)             (ADDR_OBJ(list)[pos])
 
+
 /****************************************************************************
 **
 *F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
@@ -107,7 +109,7 @@
 **  ensure that it has room for at least <plen> elements.
 **
 **  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have sideeffects.  */
+**  have side effects.  */
 
 #define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
                                  0L : GrowWPObj(wp,plen) )
@@ -831,7 +833,6 @@ StructInitInfo * InitInfoWeakPtr ( void )
 {
     return &module;
 }
-
 
 
 /****************************************************************************

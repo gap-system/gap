@@ -301,9 +301,14 @@ InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
 
         filename := Filename( info.directories, info.filenames[chapter] );
         if filename = fail  then
+            Error("help file ", info.filenames[chapter], " for help book '", book.bookname, "' not found");
             return fail;
         fi;
         stream := StringStreamInputTextFile(filename);
+        if stream = fail then
+            Error("help file ", filename, " does not exist or is not readable");
+            return fail;
+        fi;
         poss   := [];
         secnum := 0;
         repeat

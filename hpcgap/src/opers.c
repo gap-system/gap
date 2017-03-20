@@ -451,20 +451,18 @@ Obj FuncIS_EQUAL_FLAGS (
 }
 
 
-
-
-
-Int IsSubsetFlagsCalls;
-Int IsSubsetFlagsCalls1;
-Int IsSubsetFlagsCalls2;
+#ifdef COUNT_OPERS
+static Int IsSubsetFlagsCalls;
+static Int IsSubsetFlagsCalls1;
+static Int IsSubsetFlagsCalls2;
+#endif
 
 /****************************************************************************
 **
-*F  UncheckedIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) subset test with 
+*F  UncheckedIS_SUBSET_FLAGS( <flags1>, <flags2> ) subset test with
 *F                                                         no safety check
 */
-Obj UncheckedIS_SUBSET_FLAGS (
-    Obj                 self,
+static Obj UncheckedIS_SUBSET_FLAGS (
     Obj                 flags1,
     Obj                 flags2 )
 {
@@ -565,7 +563,7 @@ Obj FuncIS_SUBSET_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
     
-    return UncheckedIS_SUBSET_FLAGS(self, flags1, flags2);
+    return UncheckedIS_SUBSET_FLAGS(flags1, flags2);
 }
 
 /****************************************************************************
@@ -636,9 +634,11 @@ Obj FuncSUB_FLAGS (
 */
 #define AND_FLAGS_HASH_SIZE             50
 
-Int AndFlagsCacheHit;
-Int AndFlagsCacheMiss;
-Int AndFlagsCacheLost;
+#ifdef COUNT_OPERS
+static Int AndFlagsCacheHit;
+static Int AndFlagsCacheMiss;
+static Int AndFlagsCacheLost;
+#endif
 
 Obj FuncAND_FLAGS (
     Obj                 self,
@@ -888,8 +888,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for(i = hidden_imps_length; i >= 1; --i)
       {
-        if( UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
-           UncheckedIS_SUBSET_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
+           UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
@@ -995,13 +995,16 @@ Obj SetterAndFilter (
     Obj                 getter )
 {
     Obj                 setter;
-
+    Obj                 obj;
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
         setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
                                 "<<setter-and-filter>>", 2L, "obj, val",
                                 DoSetAndFilter );
-        FLAG1_FILT(setter)  = SetterFilter( FLAG1_FILT(getter) );
-        FLAG2_FILT(setter)  = SetterFilter( FLAG2_FILT(getter) );
+        /* assign via 'obj' to avoid GC issues */
+        obj =  SetterFilter( FLAG1_FILT(getter) );
+        FLAG1_FILT(setter)  = obj;
+        obj = SetterFilter( FLAG2_FILT(getter) );
+        FLAG2_FILT(setter)  = obj;
         SETTR_FILT(getter)  = setter;
         CHANGED_BAG(getter);
     }
@@ -1233,7 +1236,6 @@ Obj DoAndFilter (
     return True;
 }
 
-static Obj StringAndFilter;
 static Obj ArglistObj;
 
 Obj NewAndFilter (
@@ -1243,10 +1245,25 @@ Obj NewAndFilter (
     Obj                 getter;
     Obj                 flags;
 
+    Int                 str_len;
+    Obj                 str;
+    char*               s;
+
     if ( oper1 == ReturnTrueFilter && oper2 == ReturnTrueFilter )
         return ReturnTrueFilter;
 
-    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, StringAndFilter, 1,
+    str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
+    str = NEW_STRING(str_len);
+    s = CSTR_STRING(str);
+    s[0] = '(';
+    s[1] = 0;
+    strlcat(s, CSTR_STRING(NAME_FUNC(oper1)), str_len);
+    strlcat(s, " and ", str_len);
+    strlcat(s, CSTR_STRING(NAME_FUNC(oper2)), str_len);
+    strlcat(s, ")", str_len);
+    SET_LEN_STRING(str, str_len - 1);
+
+    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, str, 1,
                            ArglistObj, DoAndFilter );
     FLAG1_FILT(getter)  = oper1;
     FLAG2_FILT(getter)  = oper2;
@@ -1712,10 +1729,11 @@ Obj NextVMethodXArgs;
 **
 **  DoOperation0Args( <oper> )
 */
-Int OperationHit;
-Int OperationMiss;
-Int OperationNext;
-
+#ifdef COUNT_OPERS
+static Int OperationHit;
+static Int OperationMiss;
+static Int OperationNext;
+#endif
 
 /* This avoids a function call in the case of external objects with a
    stored type */
@@ -1813,13 +1831,15 @@ Obj DoOperation0Args (
     Obj                prec;
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -1898,13 +1918,15 @@ Obj DoOperation1Args (
     id1 = ID_TYPE( type1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -1992,13 +2014,15 @@ Obj DoOperation2Args (
     id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2095,13 +2119,15 @@ Obj DoOperation3Args (
     type3 = TYPE_OBJ_FEO( arg3 );
     id3 = ID_TYPE( type3 );
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2193,7 +2219,6 @@ Obj DoOperation4Args (
     Int                 i;
     Obj                 prec;
 
-
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );
     id1 = ID_TYPE( type1 );
@@ -2205,13 +2230,15 @@ Obj DoOperation4Args (
     id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2312,7 +2339,6 @@ Obj DoOperation5Args (
     Obj                 prec;
     Obj                 margs;
 
-
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );
     id1 = ID_TYPE( type1 );
@@ -2326,13 +2352,15 @@ Obj DoOperation5Args (
     id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -2450,7 +2478,6 @@ Obj DoOperation6Args (
     Int                 i;
     Obj                 prec;
 
-
     /* get the types of the arguments                                      */
     type1 = TYPE_OBJ_FEO( arg1 );
     id1 = ID_TYPE( type1 );
@@ -2466,13 +2493,15 @@ Obj DoOperation6Args (
     id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3156,11 +3185,9 @@ Obj NewOperation (
 
 
 /****************************************************************************
-**
-
-*F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
-*/
-
+ **
+ *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
+ */
 Obj Constructor0Args;
 Obj NextConstructor0Args;
 Obj Constructor1Args;
@@ -3212,13 +3239,15 @@ Obj DoConstructor0Args (
     Obj                prec;
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 0 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3300,13 +3329,15 @@ Obj DoConstructor1Args (
     type1 = FLAGS_FILT( arg1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 1 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3396,13 +3427,15 @@ Obj DoConstructor2Args (
     type2 = TYPE_OBJ_FEO( arg2 );
     id2 = ID_TYPE( type2 );
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 2 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3502,13 +3535,15 @@ Obj DoConstructor3Args (
     id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 3 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3615,13 +3650,15 @@ Obj DoConstructor4Args (
     id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 4 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3738,13 +3775,15 @@ Obj DoConstructor5Args (
     id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 5 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -3879,13 +3918,15 @@ Obj DoConstructor6Args (
     id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
-    cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
     prec = INTOBJ_INT(-1);
 
     do {
       /* The next line depends on the implementation of INTOBJS */
       prec = (Obj)(((Int)prec) +4);
       method = 0;
+
+      /* recalculate cache each pass, in case of GC     */
+      cache = 1+ADDR_OBJ( CacheOper( oper, 6 ) );
 
       /* Up to CACHE_SIZE methods might be in the cache */
       if (prec < INTOBJ_INT(CACHE_SIZE))
@@ -5273,6 +5314,7 @@ Obj NewOperationArgs (
     Obj                 nams )
 {
     Obj                 func;
+    Obj                 namobj;
 
     /* create the function                                                 */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
@@ -5295,7 +5337,9 @@ Obj NewOperationArgs (
     }
 
     /* added the name                                                      */
-    NAME_FUNC(func) = CopyObj( name, 0 );
+    namobj = CopyObj( name, 0 );
+    NAME_FUNC(func) = namobj;
+    CHANGED_BAG(func);
 
     /* and return                                                          */
     return func;
@@ -5561,6 +5605,7 @@ Obj FuncNEW_OPERATION_ARGS (
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
+    CHANGED_BAG( list );
     return NewOperationArgs( name, -1, list );
 }
 
@@ -5678,7 +5723,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Obj                 narg )
 {
     Obj *               cache;
-    Bag			        cacheBag;
+    Bag                 cacheBag;
     Int                 n;
     Int                 i;
 
@@ -5787,11 +5832,14 @@ Obj FuncSETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
     Obj                 tmp;
+    Obj                 args;
+
+    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "SetterFunc");
-    func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
-                         "object, value", DoSetterFunction );
-    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
+                         args, DoSetterFunction );
+    tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
@@ -5828,11 +5876,18 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
+    Obj                 args;
+    Obj                 rnam;
+
+    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "GetterFunc");
-    func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 1,
-                         "object, value", DoGetterFunction );
-    ENVI_FUNC(func) = INTOBJ_INT( RNamObj(name) );
+    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
+                         args, DoGetterFunction );
+    /* Need to seperate this onto two lines, in case RNamObj causes
+     * a garbage collection */
+    rnam = INTOBJ_INT( RNamObj(name) );
+    ENVI_FUNC(func) = rnam;
     return func;
 }
 
@@ -5846,9 +5901,13 @@ Obj FuncOPERS_CACHE_INFO (
     Obj                        self )
 {
     Obj                 list;
+#ifndef COUNT_OPERS
+    Int                 i;
+#endif
 
     list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
     SET_LEN_PLIST( list, 9 );
+#ifdef COUNT_OPERS
     SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
     SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
     SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
@@ -5858,7 +5917,10 @@ Obj FuncOPERS_CACHE_INFO (
     SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
     SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
-
+#else
+    for (i = 1; i <= 9; i++)
+        SET_ELM_PLIST( list, i, INTOBJ_INT(0) );
+#endif
     return list;
 }
 
@@ -5871,6 +5933,7 @@ Obj FuncOPERS_CACHE_INFO (
 Obj FuncCLEAR_CACHE_INFO (
     Obj                        self )
 {
+#ifdef COUNT_OPERS
     AndFlagsCacheHit = 0;
     AndFlagsCacheMiss = 0;
     AndFlagsCacheLost = 0;
@@ -5880,6 +5943,7 @@ Obj FuncCLEAR_CACHE_INFO (
     IsSubsetFlagsCalls1 = 0;
     IsSubsetFlagsCalls2 = 0;
     OperationNext = 0;
+#endif
 
     return 0;
 }
@@ -6230,7 +6294,6 @@ static Int InitKernel (
 
   NextTypeID = 0;
   CountFlags = 0;
-    InitGlobalBag( &StringAndFilter,    "src/opers.c:StringAndFilter"    );
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
@@ -6447,9 +6510,6 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    C_NEW_STRING_CONST( StringAndFilter, "<<and-filter>>" );
-    RESET_FILT_LIST( StringAndFilter, FN_IS_MUTABLE );
-
     C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
     RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
 
@@ -6458,15 +6518,18 @@ static Int InitLibrary (
     C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObj, 1, str );
+    CHANGED_BAG( ArglistObj );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
     C_NEW_STRING_CONST( str, "obj" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 1, str );
+    CHANGED_BAG( ArglistObjVal );
     C_NEW_STRING_CONST( str, "val" );
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
+    CHANGED_BAG( ArglistObjVal );
 
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
