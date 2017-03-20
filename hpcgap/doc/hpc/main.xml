@@ -58,8 +58,6 @@
   <#Include SYSTEM "semaphores.xml">
   <#Include SYSTEM "syncvars.xml">
   <#Include SYSTEM "serialize.xml">
-  <#Include SYSTEM "zmq.xml">
-  <#Include SYSTEM "zgap.xml">
   <#Include SYSTEM "lowlevel.xml">
   <#Include SYSTEM "mpi.xml">
 </Body>

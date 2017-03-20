@@ -105,10 +105,6 @@
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
 
-#ifdef WITH_ZMQ
-#include <src/hpc/zmqgap.h>             /* GAP ZMQ support */
-#endif
-
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 #include <src/hpc/threadapi.h>
@@ -3510,11 +3506,6 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */
     InitInfoGapmpi,
-#endif
-
-#ifdef WITH_ZMQ
-    /* ZeroMQ module */
-    InitInfoZmq,
 #endif
 
     0
