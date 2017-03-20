@@ -24,9 +24,17 @@ The latest stable release of the GAP system together with all currently redistri
 [downloads page](https://www.gap-system.org/Releases/index.html).
 For installation instructions see [here](https://www.gap-system.org/Download/install.html).
 
-You can compile the current development version of GAP from this repository
-by the following two commands
+You can compile the current development version of GAP from this repository.
+For this to work, the following dependencies need to be installed first:
+* GNU automake >= 1.11 (we recommend using version 1.14 or later)
+* GNU autoconf >= 2.69
+* GNU libtool >= 2.4.2
+* GNU Multiple Precision Arithmetic Library (GMP)
+* 
+
+To build GAP, enter the following commands:
 ```
+# ./autogen.sh
 # ./configure
 # make
 ```

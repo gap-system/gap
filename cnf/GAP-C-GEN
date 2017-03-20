@@ -1,0 +1,44 @@
+#!/bin/sh -e
+
+# This script regenerates src/c_$1.c from lib/$1.g, but touching
+# the C file only when it changed
+
+# usage:  GAP-C_GEN srcdir stem gapbin
+
+SRCDIR=$(cd "$1"; pwd)
+STEM="$2"
+GAPBIN="$3"
+
+GAP_FILE="$SRCDIR/lib/$STEM.g"
+C_FILE="$SRCDIR/src/c_$STEM.c"
+
+if ! test -r "$GAP_FILE"
+then
+    if test -r "$SRCDIR/../lib/$STEM.g"
+    then
+        # seem we are building for HPC-GAP, and hpcgap/lib/$STEM.g is missing
+        # so we should use lib/$STEM.g instead
+        GAP_FILE="$SRCDIR/../lib/$STEM.g"
+    else
+        echo "Error, could not find $GAP_FILE"
+        exit 1
+    fi
+fi
+
+# invoke GAP in compiler mode
+echo "#ifndef AVOID_PRECOMPILED" > "$C_FILE.tmp"
+"$GAPBIN" -U FAST_PLAIN_LISTS,FAST_INT_ARITH \
+          -C "*stdout*" \
+          "$GAP_FILE" \
+          "Init_$STEM" \
+          GAPROOT/lib/$STEM.g >> "$C_FILE.tmp"
+echo "#endif" >> "$C_FILE.tmp"
+
+# if the new file differs from the old one, overwrite
+if cmp -s "$C_FILE.tmp" "$C_FILE"
+then
+    rm "$C_FILE.tmp"
+else
+    echo "Updating $C_FILE"
+    mv "$C_FILE.tmp" "$C_FILE"
+fi
