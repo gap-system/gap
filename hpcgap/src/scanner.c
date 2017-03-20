@@ -2432,9 +2432,9 @@ void PutChrTo (
   }
 
   /* normal character, room on the current line                          */
-  /* TODO: This should be -2 instead of -8 and room for the prefix
-   * accounted for elswhere. */
-  else if ( stream->pos < SyNrCols-8-TLS(NoSplitLine) ) {
+  /* TODO: For threads other than the main thread, reserve some extra
+     space for the thread id indicator. See issue #136. */
+  else if ( stream->pos < SyNrCols-2-6*(TLS(threadID) != 0)-TLS(NoSplitLine) ) {
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
