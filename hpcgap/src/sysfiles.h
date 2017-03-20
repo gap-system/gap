@@ -47,7 +47,7 @@
 */
 
 typedef union {
-  Char pathname[256];
+  Char pathname[GAP_PATH_MAX];
   StructInitInfo * module_info;
 } TypGRF_Data;
 
@@ -555,14 +555,12 @@ extern Obj SyIsDir (
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename>, <buffer> ) . . .  find file in system area
+*F  SyFindGapRootFile( <filename>, <buffer>, <bufferSize> ) . . .  find file in system area
 **
-**  <buffer> must point to a buffer of at least 256 characters. The returned
-**  pointer will either be NULL, or into <buffer>
+**  <buffer> must point to a buffer of at least <bufferSize> characters.
+**  The returned pointer will either be NULL, or <buffer>
 */
-extern Char * SyFindGapRootFile (
-            const Char *    filename,
-            Char *          buffer);
+extern Char *SyFindGapRootFile(const Char *filename, Char *buffer, size_t bufferSize);
 
 
 /****************************************************************************
