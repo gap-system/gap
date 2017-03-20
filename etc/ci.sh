@@ -13,10 +13,14 @@ BUILDDIR=${BUILDDIR:-.}
 
 cd $BUILDDIR
 
+# Load gap-init.g when starting GAP to ensure that any Error() immediately exits
+# GAP with exit code 1.
+echo 'OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;' > gap-init.g
+
 # If we don't care about code coverage, just run the test directly
 if [[ -n ${NO_COVERAGE} ]]
 then
-    bin/gap.sh $GAPROOT/tst/${TEST_SUITE}.g
+    bin/gap.sh gap-init.g $GAPROOT/tst/${TEST_SUITE}.g
     exit 0
 fi
 
@@ -71,9 +75,9 @@ mkdir -p $COVDIR
 
 case ${TEST_SUITE} in
 testmanuals)
-    bin/gap.sh -q $GAPROOT/tst/extractmanuals.g
+    bin/gap.sh -q gap-init.g $GAPROOT/tst/extractmanuals.g
 
-    bin/gap.sh -q <<GAPInput
+    bin/gap.sh -q gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         Read("$GAPROOT/tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
@@ -95,7 +99,7 @@ GAPInput
     fi
 
     # while we are at it, also test the workspace code
-    bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
+    bin/gap.sh -q --cover $COVDIR/workspace.coverage gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
@@ -116,13 +120,13 @@ GAPInput
         exit 1
     fi
 
-    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage \
+    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage gap-init.g \
                <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
                $GAPROOT/tst/${TEST_SUITE}.g
 esac;
 
 # generate library coverage reports
-bin/gap.sh -a 500M -q <<GAPInput
+bin/gap.sh -a 500M -q gap-init.g <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
     FORCE_QUIT_GAP(1);
