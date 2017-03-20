@@ -4,15 +4,15 @@
 #
 # SYNOPSIS
 #
-#   AX_CHECK_LIBRARY(VARIABLE-PREFIX, HEADER-FILE, LIBRARY-FILE,
-#                    [ACTION-IF-FOUND], [ACTION-IF-NOT_FOUND])
+#   AX_CHECK_LIBRARY(VARIABLE-PREFIX, HEADER-FILE, LIBRARY-FILE, FUNCTION,
+#                    [ACTION-IF-FOUND], [ACTION-IF-NOT_FOUND], [other-libraries])
 #
 # DESCRIPTION
 #
 #   Provides a generic test for a given library, similar in concept to the
 #   PKG_CHECK_MODULES macro used by pkg-config.
 #
-#   Most simplest libraries can be checked against simply through the
+#   Most simple libraries can be checked against simply through the
 #   presence of a header file and a library to link to. This macro allows to
 #   wrap around the test so that it doesn't have to be recreated each time.
 #
@@ -22,12 +22,12 @@
 #   for LDFLAGS and CPPFLAGS, to tell the linker and compiler where to find
 #   libraries and headers respectively.
 #
-#   If the library is find, HAVE_PREFIX is defined, and in all cases
+#   If the library is found, HAVE_PREFIX is defined, and in all cases
 #   PREFIX_LDFLAGS and PREFIX_CPPFLAGS are substituted.
 #
 #   Example:
 #
-#     AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event], [],
+#     AX_CHECK_LIBRARY([LIBEVENT], [event.h], [event], [main], [],
 #                      [AC_MSG_ERROR([Unable to find libevent])])
 #
 # LICENSE
@@ -78,9 +78,10 @@ AC_DEFUN([AX_CHECK_LIBRARY], [
        [LDFLAGS="$LDFLAGS $]$1[_LDFLAGS"])
 
      AC_CHECK_HEADER($2, [
-       AC_CHECK_LIB($3, [main],
+       AC_CHECK_LIB($3, [$4],
          [AS_TR_SH([ax_cv_have_]$1)=yes],
-         [AS_TR_SH([ax_cv_have_]$1)=no])
+         [AS_TR_SH([ax_cv_have_]$1)=no],
+         [$7])
      ], [AS_TR_SH([ax_cv_have_]$1)=no])
 
      CPPFLAGS="$save_CPPFLAGS"
@@ -90,6 +91,6 @@ AC_DEFUN([AX_CHECK_LIBRARY], [
 
   AS_IF([test "$]AS_TR_SH([ax_cv_have_]$1)[" = "yes"],
     AC_DEFINE([HAVE_]$1, [1], [Define to 1 if ]$1[ is found])
-    [$4],
-    [$5])
+    [$5],
+    [$6])
 ])
