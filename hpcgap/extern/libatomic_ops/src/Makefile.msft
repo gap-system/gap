@@ -1,0 +1,60 @@
+#
+# Copyright (c) 2003-2005 Hewlett-Packard Development Company, L.P.
+#
+# The really trivial win32/VC++ Makefile.  Note that atomic_ops.c defines
+# only AO_pause (used by atomic_ops_stack).
+# And we rely on a pre-built test_atomic_include.h and generalize-small.h,
+# since we can't rely on sed.  But we don't keep test_atomic_include.h in
+# the development repository any longer, so if you want to do "make check"
+# for the sources obtained from the repository then
+# do "autoreconf -vif; ./configure; make check" in Cygwin first.
+# Win32 clients only need to include the header files.
+# To install, copy atomic_ops.h and the atomic_ops/... tree to your favorite
+# include directory.
+
+#MY_CPU=X86
+#CPU=$(MY_CPU)
+#!include <ntwin32.mak>
+
+CFLAGS=-O2 -W3 -DAO_ASSUME_WINDOWS98
+
+LIB_OBJS=atomic_ops.obj atomic_ops_malloc.obj atomic_ops_stack.obj
+
+all: libatomic_ops_gpl.lib
+
+atomic_ops.obj:
+	cl $(CFLAGS) -c atomic_ops.c
+
+atomic_ops_stack.obj:
+	cl $(CFLAGS) -c atomic_ops_stack.c
+
+atomic_ops_malloc.obj:
+	cl $(CFLAGS) -c atomic_ops_malloc.c
+
+libatomic_ops_gpl.lib: $(LIB_OBJS)
+	lib /out:libatomic_ops_gpl.lib $(LIB_OBJS)
+
+test_atomic: ..\tests\test_atomic.c ..\tests\test_atomic_include.h
+	cl $(CFLAGS) -I. ..\tests\test_atomic.c /Fo.\test_atomic
+
+test_atomic_w95: ..\tests\test_atomic.c ..\tests\test_atomic_include.h
+	cl -W3 -O2 -I. ..\tests\test_atomic.c /Fo.\test_atomic_w95
+
+test_malloc: ..\tests\test_malloc.c libatomic_ops_gpl.lib
+	cl $(CFLAGS) -I. ..\tests\test_malloc.c /Fo.\test_malloc \
+	    libatomic_ops_gpl.lib
+
+test_stack: ..\tests\test_stack.c libatomic_ops_gpl.lib
+	cl $(CFLAGS) -I. ..\tests\test_stack.c /Fo.\test_stack \
+	    libatomic_ops_gpl.lib
+
+check: test_atomic test_atomic_w95 test_malloc test_stack
+	@echo "The following will print lots of 'Missing ...' messages"
+	test_atomic_w95
+	@echo "The following will print some 'Missing ...' messages"
+	test_atomic
+	test_malloc
+	test_stack
+
+clean:
+	del *.exe *.obj libatomic_ops_gpl.lib
