@@ -3237,19 +3237,15 @@ void SySetErrorNo ( void )
 */
 #if HAVE_FORK || HAVE_VFORK
 
-#if HAVE_UNION_WAIT
-#include <sys/wait.h>
-#else
 #include <sys/types.h>
-# if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-# endif
-# ifndef WEXITSTATUS
-#  define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
-# endif
-# ifndef WIFEXITED
-#  define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-# endif
+#if HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
+#ifndef WEXITSTATUS
+# define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+#endif
+#ifndef WIFEXITED
+# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
 #endif
 
 extern char ** environ;
@@ -3348,17 +3344,25 @@ UInt SyExecuteProcess (
 {
     pid_t                   pid;                    /* process id          */
     pid_t                   wait_pid;
-#if HAVE_UNION_WAIT
-    union wait              status;                 /* non POSIX           */
-#else
     int                     status;                 /* do not use `Int'    */
-#endif
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
+    sig_handler_t           *func;
+    sig_handler_t           *func2;
 
-#if !HAVE_WAITPID
-    struct rusage           usage;
-#endif
+
+    /* turn off the SIGCHLD handling, so that we can be sure to collect this child
+       `After that, we call the old signal handler, in case any other children have died in the
+       meantime. This resets the handler */
+
+    func2 = signal( SIGCHLD, SIG_DFL );
+
+    /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
+     * was set to the default or 'ignore'. In these cases (or if SIG_ERR is
+     * returned), just use a null signal hander - the default on most systems
+     * is to do nothing */
+    if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
+      func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
     pid = vfork();
@@ -3369,19 +3373,24 @@ UInt SyExecuteProcess (
     /* we are the parent                                                   */
     if ( pid != 0 ) {
 
+        /* ignore a CTRL-C                                                 */
+        func = signal( SIGINT, SIG_IGN );
+
         /* wait for some action                                            */
-#if HAVE_WAITPID
         wait_pid = waitpid( pid, &status, 0 );
-#else
-        wait_pid = wait4( pid, &status, 0, &usage );
-#endif
         if ( wait_pid == -1 ) {
+            signal( SIGINT, func );
+            (*func2)(SIGCHLD);
             return -1;
         }
 
         if ( WIFSIGNALED(status) ) {
+            signal( SIGINT, func );
+            (*func2)(SIGCHLD);
             return -1;
         }
+        signal( SIGINT, func );
+        (*func2)(SIGCHLD);
         return WEXITSTATUS(status);
     }
 
