@@ -16413,7 +16413,7 @@ $as_echo "$as_me: WARNING: \"Only HP-UX 11 POSIX threads are supported.\"" >&2;}
         THREADDLLIBS=-pthread
         AM_CFLAGS="$AM_CFLAGS -pthread"
         ;;
-     *-*-freebsd*)
+     *-*-freebsd*|*-*-dragonfly*)
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&5
 $as_echo "$as_me: WARNING: \"FreeBSD does not yet fully support threads with Boehm GC.\"" >&2;}
         $as_echo "#define GC_FREEBSD_THREADS 1" >>confdefs.h
