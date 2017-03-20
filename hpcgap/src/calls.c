@@ -1165,7 +1165,7 @@ Obj NewFunctionT (
       HDLR_FUNC(func,7) = hdlr;
     }
 
-    /* enter the the arguments and the names                               */
+    /* enter the arguments and the names                               */
     NAME_FUNC(func) = ConvImmString(name);
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
@@ -1832,7 +1832,7 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+        Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
             if (IS_BAG_REF(fn))
@@ -1845,7 +1845,6 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1853,7 +1852,7 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+        Obj sl = GET_STARTLINE_BODY(BODY_FUNC(func));
         if (sl)
             return sl;
     }
@@ -1861,7 +1860,6 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1869,13 +1867,27 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj el = ENDLINE_BODY(BODY_FUNC(func));
+        Obj el = GET_ENDLINE_BODY(BODY_FUNC(func));
         if (el)
             return el;
     }
     return Fail;
 }
 
+Obj FuncLOCATION_FUNC(Obj self, Obj func) {
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
+    }
+
+    if (BODY_FUNC(func)) {
+        Obj sl = GET_LOCATION_BODY(BODY_FUNC(func));
+        if (sl)
+            return sl;
+    }
+    return Fail;
+}
 
 /****************************************************************************
 **
@@ -1917,7 +1929,10 @@ Obj FuncUNPROFILE_FUNC(
 Obj FuncIsKernelFunction(Obj self, Obj func) {
   if (!IS_FUNC(func))
     return Fail;
-  else return (BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0) ? True : False;
+  else 
+    return ((BODY_FUNC(func) == 0) ||
+            (SIZE_OBJ(BODY_FUNC(func))
+             == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj))) ? True : False;
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
@@ -2066,6 +2081,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FILENAME_FUNC", 1, "func", 
       FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
+
+    { "LOCATION_FUNC", 1, "func", 
+      FuncLOCATION_FUNC, "src/calls.c:LOCATION_FUNC" },
 
     { "STARTLINE_FUNC", 1, "func", 
       FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
