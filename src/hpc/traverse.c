@@ -62,8 +62,8 @@ static Obj NewList(UInt size)
 void QueueForTraversal(Obj obj);
 
 #define TRAVERSE_NONE (1)
-#define TRAVERSE_ALL (-1)
-#define TRAVERSE_ALL_BUT(n) (1 | ((-1) << (1+(n))))
+#define TRAVERSE_ALL (~0U)
+#define TRAVERSE_ALL_BUT(n) (1 | ((~0U) << (1+(n))))
 #define TRAVERSE_BY_FUNCTION (0)
 
 typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
