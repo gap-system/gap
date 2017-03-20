@@ -152,11 +152,7 @@ GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 # we should ensure that this value is treated dynamically by the build system,
 # i.e. any change to it triggers a recompile of those files (and only those)
 # using it. That includes running "make install".
-ifeq ($(HPCGAP),yes)
-GAP_CPPFLAGS += "-DSYS_DEFAULT_PATHS=\"$(abs_top_srcdir)/hpcgap;$(abs_top_srcdir)\""
-else
 GAP_CPPFLAGS += "-DSYS_DEFAULT_PATHS=\"$(abs_top_srcdir)\""
-endif
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
