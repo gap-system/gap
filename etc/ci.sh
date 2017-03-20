@@ -143,7 +143,7 @@ GAPInput
 esac;
 
 # generate library coverage reports
-bin/gap.sh -a 500M -q gap-init.g <<GAPInput
+bin/gap.sh -a 500M -m 500M -q gap-init.g <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
     FORCE_QUIT_GAP(1);
