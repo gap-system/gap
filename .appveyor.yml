@@ -5,6 +5,7 @@ environment:
   CFLAGS: "-fprofile-arcs -ftest-coverage"
   LDFLAGS: "-fprofile-arcs"
   TEST_SUITE: testinstall
+  BUILDDIR: .
   matrix:
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
@@ -28,7 +29,6 @@ install:
 # scripts that run after cloning repository
 build_script:
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
-  - SET "BUILDDIR=."
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-prepare.sh"
 
 test_script:
