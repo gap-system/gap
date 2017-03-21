@@ -4,8 +4,16 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 ##  This file contains the function to extract the data of the stored groups
-##  of order p^7 for p in { 3, 5, 7, 11 } created by Eamon O'Brien and 
+##  of order p^7 for p in { 3, 5, 7, 11 } created by Eamonn O'Brien and 
 ##  Mike Vaughan-Lee.
+##  
+##  The data for these groups are stored 'small/small11/sml<n>.z' defining
+##  entries of SMALL_GROUP_LIB[ n ] for n in {41,47,59,73}. Each such entry
+##  is a record with the following components: 'heads', 'arraytails', 
+##  'regtails', 'regsegms', 'pntr' and 'index'. Components 'arraytails', 
+##  'regtails' and 'index' are compressed and may be modified in the future
+##  if they need unpacking. Components 'heads', 'regsegms' and 'pntr' are 
+##  remaining unchanged.
 ##
 
 #############################################################################
@@ -29,7 +37,7 @@ SMALL_AVAILABLE_FUNCS[ 11 ] := function( size )
 
     return rec( func := 26,
                 lib  := 11,
-		p    := p[ 1 ] );
+        p    := p[ 1 ] );
 end;
 
 #############################################################################
@@ -43,20 +51,25 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
           c, e, g, UnpackArraytail;
 
     UnpackArraytail := function( pn )
-
+        # this function unpacks one element of the 'arraytails' component
+        # of SMALL_GROUP_LIB[ n ] record for n in {41,47,59,73} (defined
+        # in small/small11/sml<n>.z files). 
+        # It is called only if sml.arraytails[ pn ] is an integer and 
+        # replaces sml.arraytails[ pn ] by the record (with components 
+        # named d, perm, width, inc, n), which will not be changed any more.
         l := sml.arraytails[ pn ];
         d := l mod 6;
         sml.arraytails[ pn ] := rec( d := d );
         l := Int( l / 6 );
         sml.arraytails[ pn ].perm :=
-		              CoefficientsMultiadic( [ 1 .. d ] * 0 + d, l );
+                      CoefficientsMultiadic( [ 1 .. d ] * 0 + d, l );
         l := Int( l / d^d );
         sml.arraytails[ pn ].width :=
-		          CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l ) + 1;
-	l := Int( l / p^d );
-	sml.arraytails[ pn ].inc :=
-		              CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l );
-	sml.arraytails[ pn ].n := Product( sml.arraytails[ pn ].width );
+                  CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l ) + 1;
+        l := Int( l / p^d );
+        sml.arraytails[ pn ].inc :=
+                  CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l );
+        sml.arraytails[ pn ].n := Product( sml.arraytails[ pn ].width );
     end;
 
     if not IsBound( inforec.number ) then
@@ -71,6 +84,8 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         Error( "sorry, but groups of size p^7 are available for p<=11 only" );
     fi;
 
+    # for p=3,5,7,10 we have Primes[ p + 10 ] equal to 41, 47, 59, 73,
+    # hence the numbers of SMALL_GROUP_LIB entries and filenames in small11
     sml := Primes[ p + 10 ];
     if not IsBound( SMALL_GROUP_LIB[ sml ] ) then
         ReadSmallLib( "sml", 11, sml, [ ] );
@@ -81,10 +96,12 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
     # unpack index if required
     if Length( sml.index ) <> Length( sml.heads ) then
         l := sml.index;
+        # now replace sml.index by unpacked list 
+        # (which may be changed in the future)
         sml.index := [];
-	for j in [ 1 .. Length( l ) ] do
-	    sml.index[ Int( j / Length( l ) * ub ) ] := l[ j ];
-	od;
+        for j in [ 1 .. Length( l ) ] do
+            sml.index[ Int( j / Length( l ) * ub ) ] := l[ j ];
+        od;
     fi;
 
     # search segment by divide et impera
@@ -92,61 +109,66 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
     m := Int( ub / 2 );
     while ub > lb + 1 and IsBound( sml.index[ m ] ) do
         m := Int( ( lb + ub ) / 2 );
-	if IsBound( sml.index[ m ] ) then
-	    if i <= sml.index[ m ] then
-	        ub := m;
-	    else
-	        lb := m;
-	    fi;
-	fi;
+        if IsBound( sml.index[ m ] ) then
+            if i <= sml.index[ m ] then
+                ub := m;
+            else
+                lb := m;
+            fi;
+        fi;
     od;
 
     # search segment through list
     repeat 
         lb := lb + 1;
-	if not IsBound( sml.index[ lb ] ) then
-	    pn := sml.pntr[ lb ];
-	    if pn < 0 then
-	        if IsInt( sml.arraytails[ -pn ] ) then
-		    UnpackArraytail( -pn );
+        if not IsBound( sml.index[ lb ] ) then
+            pn := sml.pntr[ lb ];
+            if pn < 0 then
+                if IsInt( sml.arraytails[ -pn ] ) then
+                    # unpack sml.arraytails if required
+                    UnpackArraytail( -pn );
                 fi;
-		sml.index[ lb ] := sml.index[ lb-1 ] + sml.arraytails[-pn].n;
-	    else
-	        tail := sml.regtails[ pn ];
-		l := Length( tail );
-		if tail[ l ] < 0 then
-		    tail[ l ] := sml.regsegms[ -tail[ l ] ];
-		fi;
-		if p = 3 and tail[ l ] <= 81 then
-		    l := l * 4 - 3;
-		elif p = 3 and tail[ l ] <= 6723 then
-		    l := l * 4 - 2;
-		elif p = 3 and tail[ l ] <= 551367 then
-		    l := l * 4 - 1;
-		elif p = 3 then
-		    l := l * 4;
-		elif p = 5 and tail[ l ] <= 625 then
-		    l := l * 3 - 2;
-		elif p = 5 and tail[ l ] <= 391875 then
-		    l := l * 3 - 1;
-		elif p = 5 then
-		    l := l * 3;
-		elif ( p = 7 and tail[ l ] <= 2401 ) or 
-		     ( p = 11 and tail[ l ] <= 14641 ) then
-		    l := l * 2 - 1;
-		elif p = 7 or p = 11 then
-		    l := l * 2;
-		fi;
+                # adjust sml.index 
+                sml.index[ lb ] := sml.index[ lb-1 ] + sml.arraytails[-pn].n;
+            else
+                tail := sml.regtails[ pn ];
+                l := Length( tail );
+                # adjust sml.regtails[ pn ] if required
+                if tail[ l ] < 0 then
+                    tail[ l ] := sml.regsegms[ -tail[ l ] ];
+                fi;
+                if p = 3 and tail[ l ] <= 81 then
+                    l := l * 4 - 3;
+                elif p = 3 and tail[ l ] <= 6723 then
+                    l := l * 4 - 2;
+                elif p = 3 and tail[ l ] <= 551367 then
+                    l := l * 4 - 1;
+                elif p = 3 then
+                    l := l * 4;
+                elif p = 5 and tail[ l ] <= 625 then
+                    l := l * 3 - 2;
+                elif p = 5 and tail[ l ] <= 391875 then
+                    l := l * 3 - 1;
+                elif p = 5 then
+                    l := l * 3;
+                elif ( p = 7 and tail[ l ] <= 2401 ) or 
+                     ( p = 11 and tail[ l ] <= 14641 ) then
+                    l := l * 2 - 1;
+                elif p = 7 or p = 11 then
+                    l := l * 2;
+                fi;
+                # adjust sml.index again
                 if lb = 1 then
-		    sml.index[ 1 ] := l;
-		else
-		    sml.index[ lb ] := sml.index[ lb - 1 ] + l;
-		fi;
+                    sml.index[ 1 ] := l;
+                else
+                    sml.index[ lb ] := sml.index[ lb - 1 ] + l;
+                fi;
             fi;
-	fi;
+        fi;
     until i <= sml.index[ lb ];
 
-    # unpack head
+    # unpack head (or rather *decode* head, since this does not 
+    # modify sml.heads[lb], which is an integer)
     h := sml.heads[ lb ];
     if h < 0 then
         h := sml.heads[ -h ];
@@ -155,11 +177,11 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
     var_exps := [];
     while h > 0 do
         m := CoefficientsMultiadic( [ p, 57 ], h );
-	if m[ 1 ] = 0 then
-	    Add( var_exps, m[ 2 ] );
-	else
-	    fix_exps[ m[ 2 ] ] := m[ 1 ];
-	fi;
+        if m[ 1 ] = 0 then
+            Add( var_exps, m[ 2 ] );
+        else
+            fix_exps[ m[ 2 ] ] := m[ 1 ];
+        fi;
         h := Int( h / 57 / p );
     od;
 
@@ -168,35 +190,39 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
     fi;
     if sml.pntr[ lb ] > 0 then
         # find missing exponents in regular tail
-	tail :=sml.regtails[ sml.pntr[ lb ] ];
-	l := [ ,,4,,3,,2,,,,2 ];
-	if IsBound( l[ p ] ) then 
-	    l := l[ p ];
-	else 
-	    l := 1;
-	fi;
-	m := Int( ( i - 1 ) / l ) + 1;
-	if tail[ m ]  < 0 then
-	    tail[ m ] := sml.regsegms[ -tail[m] ];
+        tail := sml.regtails[ sml.pntr[ lb ] ];
+        l := [ ,,4,,3,,2,,,,2 ];
+        if IsBound( l[ p ] ) then 
+            l := l[ p ];
+        else 
+            l := 1;
         fi;
-	m := CoefficientsMultiadic( [ p, p, p, p ], Int( tail[ m ] /
-	              ( p^4 + 1 )^( ( i - 1 ) mod l ) ) mod ( p^4 + 1 ) -1 );
-	for i in [ 1 .. Length( var_exps) ] do
-	    fix_exps[ var_exps[ i ] ] := m[ 5 - i ];
-	od;
+        m := Int( ( i - 1 ) / l ) + 1;
+        if tail[ m ]  < 0 then
+            # where tail = sml.regtails[ sml.pntr[ lb ] ]
+            tail[ m ] := sml.regsegms[ -tail[m] ];
+        fi;
+        m := CoefficientsMultiadic( [ p, p, p, p ], Int( tail[ m ] /
+                      ( p^4 + 1 )^( ( i - 1 ) mod l ) ) mod ( p^4 + 1 ) -1 );
+        for i in [ 1 .. Length( var_exps) ] do
+            fix_exps[ var_exps[ i ] ] := m[ 5 - i ];
+        od;
     else
         # find missing exponents in array tail
-	if IsInt( sml.arraytails[ -sml.pntr[ lb ] ] ) then
-	    UnpackArraytail( -sml.pntr[ lb ] );
-	fi;
-	tail :=sml.arraytails[ -sml.pntr[ lb ] ];
+        if IsInt( sml.arraytails[ -sml.pntr[ lb ] ] ) then
+            # unpack sml.arraytails if required
+            UnpackArraytail( -sml.pntr[ lb ] );
+        fi;
+        tail := sml.arraytails[ -sml.pntr[ lb ] ];
         SortParallel( ShallowCopy( tail.perm ), var_exps );
-	m := CoefficientsMultiadic( tail.width, i - 1 ) + tail.inc;
-	for i in [ 1 .. Length( var_exps) ] do
-	    fix_exps[ var_exps[ i ] ] := m[ i ];
-	od;
+        m := CoefficientsMultiadic( tail.width, i - 1 ) + tail.inc;
+        for i in [ 1 .. Length( var_exps) ] do
+            fix_exps[ var_exps[ i ] ] := m[ i ];
+        od;
     fi;
 
+    # now fix_exps is reconstructed and we may create the group
+    
     f := FreeGroup( 7 );
     c := CombinatorialCollector( f, [p,p,p,p,p,p,p] );
     e := fix_exps;
@@ -248,7 +274,7 @@ NUMBER_SMALL_GROUPS_FUNCS[ 26 ] := function( size, inforec )
     elif p = 5 then inforec.number := 34297;
     else
         inforec.number :=
-	    3 * p^5 + 12 * p^4 + 44 * p^3 + 170 * p^2 + 707 *p + 2455
+        3 * p^5 + 12 * p^4 + 44 * p^3 + 170 * p^2 + 707 *p + 2455
           + ( 4 * p^2 + 44 * p + 291 ) * Gcd( p-1, 3 )
           + ( p^2 + 19 * p + 135 ) * Gcd( p-1, 4 )
           + ( 3 * p + 31 ) * Gcd( p-1, 5 )
