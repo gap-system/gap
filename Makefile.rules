@@ -520,7 +520,7 @@ EXTERN_FILES += $(LIBATOMIC_OPS_FILES)
 libatomic_ops: $(LIBATOMIC_OPS_FILES)
 $(LIBATOMIC_OPS_FILES):
 	MAKE=$(MAKE) CFLAGS=$(ABI_CFLAGS) LDFLAGS=$(ABI_CFLAGS) \
-	$(srcdir)/cnf/build-extern.sh libatomic_ops "$(abs_top_srcdir)/hpcgap/extern/libatomic_ops"
+	$(srcdir)/cnf/build-extern.sh libatomic_ops "$(abs_top_srcdir)/hpcgap/extern/libatomic_ops" --disable-static --enable-shared
 
 # TODO: MAKEFLAGS=-j1
 
@@ -562,7 +562,7 @@ $(BOEHM_GC_FILES):
 	LDFLAGS=$(ABI_CFLAGS) \
 	ATOMIC_OPS_CFLAGS=$(LIBATOMIC_OPS_CPPFLAGS) \
 	ATOMIC_OPS_LIBS=$(LIBATOMIC_OPS_LDFLAGS) \
-	$(srcdir)/cnf/build-extern.sh gc "$(abs_top_srcdir)/hpcgap/extern/gc"
+	$(srcdir)/cnf/build-extern.sh gc "$(abs_top_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared
 
 ifeq ($(BUILD_LIBATOMIC_OPS),yes)
 $(BOEHM_GC_FILES): $(LIBATOMIC_OPS_FILES)
