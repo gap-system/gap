@@ -1,17 +1,11 @@
 /GNUmakefile
-/aclocal.m4
 /autom4te.cache/
 /cnf/GAP-VERSION-FILE
-/cnf/ltmain.sh
-/cnf/m4/libtool.m4
-/cnf/m4/ltoptions.m4
-/cnf/m4/ltsugar.m4
-/cnf/m4/ltversion.m4
-/cnf/m4/lt~obsolete.m4
 /config.log
 /config.status
 /configure
 /libtool
+/cnf/ltmain.sh
 /src/config.h.in
 
 /gen/
