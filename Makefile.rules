@@ -617,11 +617,11 @@ compat_src_symlink=$(abs_top_srcdir)/src
 endif
 all: bin/$(GAPARCH)/src
 bin/$(GAPARCH)/src: config.status
-	ln -sf $(compat_src_symlink) $@
+	ln -sf $(compat_src_symlink) $(@D)
 
 all: bin/$(GAPARCH)/gac
 bin/$(GAPARCH)/gac:
-	ln -sf ../../gac $@
+	ln -sf ../../gac $(@D)
 
 endif
 
