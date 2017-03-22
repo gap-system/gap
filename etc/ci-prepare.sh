@@ -19,6 +19,10 @@ cd $BUILDDIR
 $GAPROOT/configure $CONFIGFLAGS
 make V=1 -j4
 
+# HACK
+pwd
+ls -l
+
 # Minimal test to see if the gap binary can at least start
 echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
 
