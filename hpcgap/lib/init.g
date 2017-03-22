@@ -203,16 +203,6 @@ ReadGapRoot( "lib/global.g" );
 ReadGapRoot( "lib/system.g" );
 
 FILTER_REGION	 	 := NEW_REGION("filter region", -1);
-atomic FILTER_REGION do
-  RANK_FILTER_LIST         := MIGRATE([], FILTER_REGION);
-od;
-RANK_FILTER_LIST_CURRENT := fail;
-RANK_FILTER_COUNT        := fail;
-
-RANK_FILTER_COMPLETION   := Error;      # defined in "filter.g"
-RANK_FILTER_STORE        := Error;      # defined in "filter.g"
-RANK_FILTER              := Error;      # defined in "filter.g"
-RankFilter               := Error;      # defined in "filter.g"
 
 
 #############################################################################

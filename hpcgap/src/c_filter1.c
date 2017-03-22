@@ -45,15 +45,10 @@ static GVar G_BIND__GLOBAL;
 static Obj  GF_BIND__GLOBAL;
 static GVar G_MigrateObj;
 static Obj  GF_MigrateObj;
-static GVar G_UNBIND__GLOBAL;
-static Obj  GF_UNBIND__GLOBAL;
 static GVar G_FILTER__REGION;
 static Obj  GC_FILTER__REGION;
 static GVar G_RANK__FILTERS;
 static Obj  GC_RANK__FILTERS;
-static GVar G_RankFilter;
-static GVar G_RANK__FILTER;
-static Obj  GC_RANK__FILTER;
 
 /* record names used in handlers */
 
@@ -574,8 +569,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(39));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(44));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(43));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -625,19 +620,14 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(47));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(90));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(46));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(89));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* UNBIND_GLOBAL( "RANK_FILTER" ); */
- t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" );
- CALL_1ARGS( t_1, t_2 );
- 
- /* BIND_GLOBAL( "RANK_FILTER", function ( filter )
+ /* BIND_GLOBAL( "RankFilter", function ( filter )
       local  rank, flags, i, lock;
       rank := 0;
       if IS_FUNCTION( filter )  then
@@ -657,21 +647,16 @@ static Obj  HdlrFunc1 (
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" );
+ C_NEW_STRING( t_2, 10, "RankFilter" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(104));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(123));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(98));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(117));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* RankFilter := RANK_FILTER; */
- t_1 = GC_RANK__FILTER;
- CHECK_BOUND( t_1, "RANK_FILTER" )
- AssGVar( G_RankFilter, t_1 );
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -708,22 +693,20 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_MISS", &GC_WITH__IMPS__FLAGS__CACHE__MISS );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
  InitFopyGVar( "MigrateObj", &GF_MigrateObj );
- InitFopyGVar( "UNBIND_GLOBAL", &GF_UNBIND__GLOBAL );
  InitCopyGVar( "FILTER_REGION", &GC_FILTER__REGION );
  InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
- InitCopyGVar( "RANK_FILTER", &GC_RANK__FILTER );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-62227560)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(-62227560)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-62227560)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-62227560)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-62227560)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-62227560)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-62227560)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-62227560)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-62227560)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-62227560)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-14756924)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(-14756924)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-14756924)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-14756924)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-14756924)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-14756924)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-14756924)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-14756924)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-14756924)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-14756924)" );
  
  /* return success */
  return 0;
@@ -763,11 +746,8 @@ static Int InitLibrary ( StructInitInfo * module )
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_MigrateObj = GVarName( "MigrateObj" );
- G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
  G_FILTER__REGION = GVarName( "FILTER_REGION" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- G_RankFilter = GVarName( "RankFilter" );
- G_RANK__FILTER = GVarName( "RANK_FILTER" );
  
  /* record names used in handlers */
  
@@ -829,11 +809,8 @@ static Int PostRestore ( StructInitInfo * module )
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_MigrateObj = GVarName( "MigrateObj" );
- G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
  G_FILTER__REGION = GVarName( "FILTER_REGION" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- G_RankFilter = GVarName( "RankFilter" );
- G_RANK__FILTER = GVarName( "RANK_FILTER" );
  
  /* record names used in handlers */
  
@@ -864,7 +841,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -62227560,
+ /* crc         = */ -14756924,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

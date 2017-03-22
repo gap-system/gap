@@ -5,10 +5,6 @@
 /* global variables used in handlers */
 static GVar G_IS__FUNCTION;
 static Obj  GF_IS__FUNCTION;
-static GVar G_ADD__LIST;
-static Obj  GF_ADD__LIST;
-static GVar G_Error;
-static Obj  GF_Error;
 static GVar G_IS__IDENTICAL__OBJ;
 static Obj  GF_IS__IDENTICAL__OBJ;
 static GVar G_AND__FLAGS;
@@ -39,27 +35,15 @@ static Obj  GC_WITH__IMPS__FLAGS__CACHE__MISS;
 static GVar G_CLEAR__IMP__CACHE;
 static GVar G_BIND__GLOBAL;
 static Obj  GF_BIND__GLOBAL;
-static GVar G_UNBIND__GLOBAL;
-static Obj  GF_UNBIND__GLOBAL;
 static GVar G_RANK__FILTERS;
 static Obj  GC_RANK__FILTERS;
-static GVar G_RankFilter;
-static GVar G_RANK__FILTER;
-static Obj  GC_RANK__FILTER;
-static Obj  GF_RANK__FILTER;
-static GVar G_RANK__FILTER__LIST__CURRENT;
-static Obj  GC_RANK__FILTER__LIST__CURRENT;
-static GVar G_RANK__FILTER__LIST;
-static Obj  GC_RANK__FILTER__LIST;
-static GVar G_RANK__FILTER__COUNT;
-static Obj  GC_RANK__FILTER__COUNT;
 
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[7];
-static Obj  NamsFunc[7];
-static Int  NargFunc[7];
+static Obj  NameFunc[5];
+static Obj  NamsFunc[5];
+static Int  NargFunc[5];
 static Obj  DefaultName;
 static Obj FileName;
 
@@ -452,177 +436,6 @@ static Obj  HdlrFunc4 (
  return 0;
 }
 
-/* handler for function 5 */
-static Obj  HdlrFunc5 (
- Obj  self,
- Obj  a_filter )
-{
- Obj l_hash = 0;
- Obj l_rank = 0;
- Obj l_flags = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* if IS_FUNCTION( filter ) then */
- t_3 = GF_IS__FUNCTION;
- t_2 = CALL_1ARGS( t_3, a_filter );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
- if ( t_1 ) {
-  
-  /* flags := FLAGS_FILTER( filter ); */
-  t_2 = GF_FLAGS__FILTER;
-  t_1 = CALL_1ARGS( t_2, a_filter );
-  CHECK_FUNC_RESULT( t_1 )
-  l_flags = t_1;
-  
- }
- 
- /* else */
- else {
-  
-  /* flags := filter; */
-  l_flags = a_filter;
-  
- }
- /* fi */
- 
- /* hash := HASH_FLAGS( flags ); */
- t_2 = GF_HASH__FLAGS;
- t_1 = CALL_1ARGS( t_2, l_flags );
- CHECK_FUNC_RESULT( t_1 )
- l_hash = t_1;
- 
- /* rank := RANK_FILTER( flags ); */
- t_2 = GF_RANK__FILTER;
- t_1 = CALL_1ARGS( t_2, l_flags );
- CHECK_FUNC_RESULT( t_1 )
- l_rank = t_1;
- 
- /* ADD_LIST( RANK_FILTER_LIST_CURRENT, hash ); */
- t_1 = GF_ADD__LIST;
- t_2 = GC_RANK__FILTER__LIST__CURRENT;
- CHECK_BOUND( t_2, "RANK_FILTER_LIST_CURRENT" )
- CALL_2ARGS( t_1, t_2, l_hash );
- 
- /* ADD_LIST( RANK_FILTER_LIST_CURRENT, rank ); */
- t_1 = GF_ADD__LIST;
- t_2 = GC_RANK__FILTER__LIST__CURRENT;
- CHECK_BOUND( t_2, "RANK_FILTER_LIST_CURRENT" )
- CALL_2ARGS( t_1, t_2, l_rank );
- 
- /* return rank; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return l_rank;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 6 */
-static Obj  HdlrFunc6 (
- Obj  self,
- Obj  a_filter )
-{
- Obj l_hash = 0;
- Obj l_flags = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* if IS_FUNCTION( filter ) then */
- t_3 = GF_IS__FUNCTION;
- t_2 = CALL_1ARGS( t_3, a_filter );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
- if ( t_1 ) {
-  
-  /* flags := FLAGS_FILTER( filter ); */
-  t_2 = GF_FLAGS__FILTER;
-  t_1 = CALL_1ARGS( t_2, a_filter );
-  CHECK_FUNC_RESULT( t_1 )
-  l_flags = t_1;
-  
- }
- 
- /* else */
- else {
-  
-  /* flags := filter; */
-  l_flags = a_filter;
-  
- }
- /* fi */
- 
- /* hash := HASH_FLAGS( flags ); */
- t_2 = GF_HASH__FLAGS;
- t_1 = CALL_1ARGS( t_2, l_flags );
- CHECK_FUNC_RESULT( t_1 )
- l_hash = t_1;
- 
- /* if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT] then */
- t_3 = GC_RANK__FILTER__LIST;
- CHECK_BOUND( t_3, "RANK_FILTER_LIST" )
- t_4 = GC_RANK__FILTER__COUNT;
- CHECK_BOUND( t_4, "RANK_FILTER_COUNT" )
- CHECK_INT_POS( t_4 )
- C_ELM_LIST_FPL( t_2, t_3, t_4 )
- t_1 = (Obj)(UInt)( ! EQ( l_hash, t_2 ));
- if ( t_1 ) {
-  
-  /* Error( "corrupted completion file" ); */
-  t_1 = GF_Error;
-  C_NEW_STRING( t_2, 25, "corrupted completion file" );
-  CALL_1ARGS( t_1, t_2 );
-  
- }
- /* fi */
- 
- /* RANK_FILTER_COUNT := RANK_FILTER_COUNT + 2; */
- t_2 = GC_RANK__FILTER__COUNT;
- CHECK_BOUND( t_2, "RANK_FILTER_COUNT" )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(2) )
- AssGVar( G_RANK__FILTER__COUNT, t_1 );
- 
- /* return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1]; */
- t_2 = GC_RANK__FILTER__LIST;
- CHECK_BOUND( t_2, "RANK_FILTER_LIST" )
- t_4 = GC_RANK__FILTER__COUNT;
- CHECK_BOUND( t_4, "RANK_FILTER_COUNT" )
- C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
- CHECK_INT_POS( t_3 )
- C_ELM_LIST_FPL( t_1, t_2, t_3 )
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
 /* handler for function 1 */
 static Obj  HdlrFunc1 (
  Obj  self )
@@ -679,8 +492,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(39));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(41));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(40));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -726,19 +539,14 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(44));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(83));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(43));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(82));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* UNBIND_GLOBAL( "RANK_FILTER" ); */
- t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" );
- CALL_1ARGS( t_1, t_2 );
- 
- /* BIND_GLOBAL( "RANK_FILTER", function ( filter )
+ /* BIND_GLOBAL( "RankFilter", function ( filter )
       local  rank, flags, i;
       rank := 0;
       if IS_FUNCTION( filter )  then
@@ -756,78 +564,12 @@ static Obj  HdlrFunc1 (
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 11, "RANK_FILTER" );
+ C_NEW_STRING( t_2, 10, "RankFilter" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = TLS(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(97));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(114));
- SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* RankFilter := RANK_FILTER; */
- t_1 = GC_RANK__FILTER;
- CHECK_BOUND( t_1, "RANK_FILTER" )
- AssGVar( G_RankFilter, t_1 );
- 
- /* UNBIND_GLOBAL( "RANK_FILTER_STORE" ); */
- t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" );
- CALL_1ARGS( t_1, t_2 );
- 
- /* BIND_GLOBAL( "RANK_FILTER_STORE", function ( filter )
-      local  hash, rank, flags;
-      if IS_FUNCTION( filter )  then
-          flags := FLAGS_FILTER( filter );
-      else
-          flags := filter;
-      fi;
-      hash := HASH_FLAGS( flags );
-      rank := RANK_FILTER( flags );
-      ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
-      ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
-      return rank;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 17, "RANK_FILTER_STORE" );
- t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(119));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(133));
- SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* UNBIND_GLOBAL( "RANK_FILTER_COMPLETION" ); */
- t_1 = GF_UNBIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" );
- CALL_1ARGS( t_1, t_2 );
- 
- /* BIND_GLOBAL( "RANK_FILTER_COMPLETION", function ( filter )
-      local  hash, flags;
-      if IS_FUNCTION( filter )  then
-          flags := FLAGS_FILTER( filter );
-      else
-          flags := filter;
-      fi;
-      hash := HASH_FLAGS( flags );
-      if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
-          Error( "corrupted completion file" );
-      fi;
-      RANK_FILTER_COUNT := RANK_FILTER_COUNT + 2;
-      return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1];
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" );
- t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(136));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(151));
+ SET_STARTLINE_BODY(t_4, INTOBJ_INT(91));
+ SET_ENDLINE_BODY(t_4, INTOBJ_INT(108));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS(CurrLVars) );
@@ -850,8 +592,6 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "IS_FUNCTION", &GF_IS__FUNCTION );
- InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
- InitFopyGVar( "Error", &GF_Error );
  InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
  InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
  InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
@@ -865,29 +605,19 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_HIT", &GC_WITH__IMPS__FLAGS__CACHE__HIT );
  InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_MISS", &GC_WITH__IMPS__FLAGS__CACHE__MISS );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
- InitFopyGVar( "UNBIND_GLOBAL", &GF_UNBIND__GLOBAL );
  InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
- InitCopyGVar( "RANK_FILTER", &GC_RANK__FILTER );
- InitFopyGVar( "RANK_FILTER", &GF_RANK__FILTER );
- InitCopyGVar( "RANK_FILTER_LIST_CURRENT", &GC_RANK__FILTER__LIST__CURRENT );
- InitCopyGVar( "RANK_FILTER_LIST", &GC_RANK__FILTER__LIST );
- InitCopyGVar( "RANK_FILTER_COUNT", &GC_RANK__FILTER__COUNT );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(118753041)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(118753041)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(118753041)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](118753041)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(118753041)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](118753041)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(118753041)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](118753041)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(118753041)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](118753041)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(118753041)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](118753041)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(118753041)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](118753041)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(74044960)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(74044960)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(74044960)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](74044960)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(74044960)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](74044960)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(74044960)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](74044960)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(74044960)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](74044960)" );
  
  /* return success */
  return 0;
@@ -905,8 +635,6 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
- G_ADD__LIST = GVarName( "ADD_LIST" );
- G_Error = GVarName( "Error" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
  G_AND__FLAGS = GVarName( "AND_FLAGS" );
  G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
@@ -924,13 +652,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- G_RankFilter = GVarName( "RankFilter" );
- G_RANK__FILTER = GVarName( "RANK_FILTER" );
- G_RANK__FILTER__LIST__CURRENT = GVarName( "RANK_FILTER_LIST_CURRENT" );
- G_RANK__FILTER__LIST = GVarName( "RANK_FILTER_LIST" );
- G_RANK__FILTER__COUNT = GVarName( "RANK_FILTER_COUNT" );
  
  /* record names used in handlers */
  
@@ -949,12 +671,6 @@ static Int InitLibrary ( StructInitInfo * module )
  NameFunc[4] = DefaultName;
  NamsFunc[4] = 0;
  NargFunc[4] = 1;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 1;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 1;
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
@@ -976,8 +692,6 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
- G_ADD__LIST = GVarName( "ADD_LIST" );
- G_Error = GVarName( "Error" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
  G_AND__FLAGS = GVarName( "AND_FLAGS" );
  G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
@@ -995,13 +709,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- G_RankFilter = GVarName( "RankFilter" );
- G_RANK__FILTER = GVarName( "RANK_FILTER" );
- G_RANK__FILTER__LIST__CURRENT = GVarName( "RANK_FILTER_LIST_CURRENT" );
- G_RANK__FILTER__LIST = GVarName( "RANK_FILTER_LIST" );
- G_RANK__FILTER__COUNT = GVarName( "RANK_FILTER_COUNT" );
  
  /* record names used in handlers */
  
@@ -1018,12 +726,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[4] = DefaultName;
  NamsFunc[4] = 0;
  NargFunc[4] = 1;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 1;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 1;
  
  /* return success */
  return 0;
@@ -1038,7 +740,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 118753041,
+ /* crc         = */ 74044960,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

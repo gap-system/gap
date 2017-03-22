@@ -23,7 +23,6 @@ WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
 
 
 
-
 #############################################################################
 ##
 #F  WITH_IMPS_FLAGS( <flags> )
@@ -88,13 +87,8 @@ end );
 ##
 ##  Compute the rank including the hidden implications.
 ##
-##  (When completion files are used, the precomputed ranks are used.
-##  Therefore, `RankFilter' is set in `init.g' to appropriate values;
-##  the function that really computes the rank is `RANK_FILTER'.)
-##
 
-UNBIND_GLOBAL( "RANK_FILTER" );
-BIND_GLOBAL( "RANK_FILTER", function( filter )
+BIND_GLOBAL( "RankFilter", function( filter )
     local   rank,  flags,  i;
 
     rank  := 0;
@@ -111,43 +105,6 @@ BIND_GLOBAL( "RANK_FILTER", function( filter )
         fi;
     od;
     return rank;
-end );
-
-RankFilter := RANK_FILTER;
-
-UNBIND_GLOBAL( "RANK_FILTER_STORE" );
-BIND_GLOBAL( "RANK_FILTER_STORE", function( filter )
-    local   hash,  rank,  flags;
-
-    if IS_FUNCTION(filter)  then
-        flags := FLAGS_FILTER(filter);
-    else
-        flags := filter;
-    fi;
-    hash := HASH_FLAGS(flags);
-    rank := RANK_FILTER(flags);
-    ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
-    ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
-    return rank;
-
-end );
-
-UNBIND_GLOBAL( "RANK_FILTER_COMPLETION" );
-BIND_GLOBAL( "RANK_FILTER_COMPLETION", function( filter )
-    local   hash,  flags;
-
-    if IS_FUNCTION(filter)  then
-        flags := FLAGS_FILTER(filter);
-    else
-        flags := filter;
-    fi;
-    hash := HASH_FLAGS(flags);
-    if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
-        Error( "corrupted completion file" );
-    fi;
-    RANK_FILTER_COUNT := RANK_FILTER_COUNT+2;
-    return RANK_FILTER_LIST[RANK_FILTER_COUNT-1];
-
 end );
 
 #############################################################################

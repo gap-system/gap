@@ -202,15 +202,6 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
-RANK_FILTER_LIST         := [];
-RANK_FILTER_LIST_CURRENT := fail;
-RANK_FILTER_COUNT        := fail;
-
-RANK_FILTER_COMPLETION   := Error;      # defined in "filter.g"
-RANK_FILTER_STORE        := Error;      # defined in "filter.g"
-RANK_FILTER              := Error;      # defined in "filter.g"
-RankFilter               := Error;      # defined in "filter.g"
-
 
 #############################################################################
 ##
