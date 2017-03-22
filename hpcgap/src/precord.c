@@ -36,6 +36,8 @@
 
 #include <src/gap.h>                    /* error handling, initialisation */
 
+#include <src/funcs.h>
+
 #include <src/gvars.h>                  /* global variables */
 #include <src/calls.h>                  /* generic call mechanism */
 #include <src/opers.h>                  /* generic operations */
@@ -43,7 +45,6 @@
 #include <src/ariths.h>                 /* basic arithmetic */
 #include <src/records.h>                /* generic records */
 #include <src/lists.h>                  /* generic lists */
-#include <src/gmpints.h>                /* arbitrary size integers */
 
 #include <src/bool.h>                   /* booleans */
 
@@ -674,37 +675,6 @@ void SortPRecRNam (
     }
 }
 
-#if 0
-void SortPRec ( Obj rec )
-{
-    UInt                rnam;           /* name of component               */
-    Obj                 val;            /* value of component              */
-    UInt                h;              /* gap width in shellsort          */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* sort the right record with a shellsort                              */
-    h = 1;  while ( 9*h + 4 < LEN_PREC(rec) )  h = 3*h + 1;
-    while ( 0 < h ) {
-        for ( i = h+1; i <= LEN_PREC(rec); i++ ) {
-            rnam = GET_RNAM_PREC( rec, i );
-            val  = GET_ELM_PREC(  rec, i );
-            k = i;
-            while ( h < k
-                 && strcmp( NAME_RNAM(rnam),
-                              NAME_RNAM( GET_RNAM_PREC(rec,k-h) ) ) < 0 ) {
-                SET_RNAM_PREC( rec, k, GET_RNAM_PREC( rec, k-h ) );
-                SET_ELM_PREC(  rec, k, GET_ELM_PREC(  rec, k-h ) );
-                k -= h;
-            }
-            SET_RNAM_PREC( rec, k, rnam );
-            SET_ELM_PREC(  rec, k, val  );
-        }
-        h = h / 3;
-    }
-
-}
-#endif
-
 /****************************************************************************
 **
 
@@ -832,21 +802,26 @@ Obj FuncEQ_PREC (
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
+    CheckRecursionBefore();
+
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
         /* compare the names                                               */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+            TLS(RecursionDepth)--;
             return False;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+            TLS(RecursionDepth)--;
             return False;
         }
     }
 
     /* the records are equal                                               */
+    TLS(RecursionDepth)--;
     return True;
 }
 
@@ -865,6 +840,7 @@ Obj FuncLT_PREC (
     Obj                 right )
 {
     UInt                i;              /* loop variable                   */
+    Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
     if ( ! IS_PREC_REP(left) || ! IS_PREC_REP(right) ) {
@@ -876,35 +852,38 @@ Obj FuncLT_PREC (
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
+    CheckRecursionBefore();
+    res = 0;
+
     /* compare componentwise                                               */
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
         /* if the left is a proper prefix of the right one                 */
-        if ( LEN_PREC(left) < i )  return True;
+        if ( LEN_PREC(left) < i ) {
+            res = 1;
+            break;
+        }
 
         /* compare the names                                               */
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            if ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
-                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 ) {
-                return True;
-            }
-            else {
-                return False;
-            }
+            res = ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
+                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 );
+            break;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-            return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) ) ?
-                   True : False;
+            res = LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) );
+            break;
         }
 
     }
 
     /* the records are equal or the right is a prefix of the left          */
-    return False;
+    TLS(RecursionDepth)--;
+    return res ? True : False;
 }
 
 
@@ -997,9 +976,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* check dependencies                                                  */
-    RequireModule( module, "records", 503600000UL );
-
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );
 
@@ -1113,6 +1089,3 @@ StructInitInfo * InitInfoPRecord ( void )
 
 *E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

@@ -45,16 +45,15 @@
 #include <src/exprs.h>                  /* expressions */
 #include <src/stats.h>                  /* statements */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
-
 #include <src/vars.h>                   /* variables */
-
-
-#include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/saveload.h>               /* saving and loading */
 
+#include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/tls.h>                /* thread-local storage */
+
 #include <src/profile.h>                /* installing methods */
+
 
 
 /****************************************************************************
@@ -3040,15 +3039,13 @@ Obj FuncGetBottomLVars( Obj self )
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
-  if (lvars == TLS(BottomLVars))
-    return Fail;
-  return ADDR_OBJ(lvars)[2];
+  return PARENT_LVARS(lvars);
 }
 
 Obj FuncContentsLVars (Obj self, Obj lvars )
 {
   Obj contents = NEW_PREC(0);
-  Obj func = PTR_BAG(lvars)[0];
+  Obj func = FUNC_LVARS(lvars);
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
   Obj values = NEW_PLIST(T_PLIST+IMMUTABLE, len);
@@ -3102,9 +3099,9 @@ void SaveLVars( Obj lvars )
 {
   UInt len,i;
   Obj *ptr;
-  SaveSubObj(ADDR_OBJ(lvars)[0]);
+  SaveSubObj(FUNC_LVARS(lvars));
   SaveUInt((UInt)ADDR_OBJ(lvars)[1]);
-  SaveSubObj(ADDR_OBJ(lvars)[2]);
+  SaveSubObj(PARENT_LVARS(lvars));
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
@@ -3122,9 +3119,9 @@ void LoadLVars( Obj lvars )
 {
   UInt len,i;
   Obj *ptr;
-  ADDR_OBJ(lvars)[0] = LoadSubObj();
+  FUNC_LVARS(lvars) = LoadSubObj();
   ((UInt *)ADDR_OBJ(lvars))[1] = LoadUInt();
-  ADDR_OBJ(lvars)[2] = LoadSubObj();
+  PARENT_LVARS(lvars) = LoadSubObj();
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
@@ -3405,7 +3402,6 @@ static Int PostRestore (
     TLS(CurrLVars) = TLS(BottomLVars);
     SWITCH_TO_OLD_LVARS( TLS(BottomLVars) );
 
-
     /* return success                                                      */
     return 0;
 }
@@ -3418,13 +3414,14 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj                 tmp;
+    Obj tmpFunc, tmpBody;
 
     TLS(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
-    tmp = NewFunctionC( "bottom", 0, "", 0 );
-    PTR_BAG(TLS(BottomLVars))[0] = tmp;
-    tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    BODY_FUNC( PTR_BAG(TLS(BottomLVars))[0] ) = tmp;
+    tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
+    FUNC_LVARS( TLS(BottomLVars) ) = tmpFunc;
+    PARENT_LVARS(TLS(BottomLVars)) = Fail;
+    tmpBody = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    BODY_FUNC( tmpFunc ) = tmpBody;
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

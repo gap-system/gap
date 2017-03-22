@@ -26,7 +26,7 @@
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-#define Stat            UInt8
+typedef UInt8 Stat;
 
 
 /****************************************************************************
@@ -40,16 +40,38 @@
 
 /****************************************************************************
 **
+** Function headers
+**
+** 'FILENAME_BODY' is a string containing the file of a function
+** 'STARTLINE_BODY' is the line number where a function starts.
+** 'ENDLINE_BODY' is the line number where a function ends.
+** 'LOCATION_BODY' is a string describing the location of a function.
+**  Typically this will be the name of a C function implementing it.
+**
+**  These each have a 'GET' and a 'SET' variant, to read or set the value.
+**  Note that STARTLINE_BODY and LOCATION_BODY are stored in the same place,
+**  so writing one will overwrite the other.
+**
+**  All of these variables may be 0, if the information is not known,
+*/
+
+Obj GET_FILENAME_BODY(Obj body);
+void SET_FILENAME_BODY(Obj body, Obj val);
+Obj GET_STARTLINE_BODY(Obj body);
+void SET_STARTLINE_BODY(Obj body, Obj val);
+Obj GET_LOCATION_BODY(Obj body);
+void SET_LOCATION_BODY(Obj body, Obj val);
+Obj GET_ENDLINE_BODY(Obj body);
+void SET_ENDLINE_BODY(Obj body, Obj val);
+
+#define NUMBER_HEADER_ITEMS_BODY 3
+
+/****************************************************************************
+**
 *V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
 **
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
-
-
-#define FILENAME_BODY(body) (ADDR_OBJ(body)[0])
-#define STARTLINE_BODY(body) (ADDR_OBJ(body)[1])
-#define ENDLINE_BODY(body) (ADDR_OBJ(body)[2])
-#define NUMBER_HEADER_ITEMS_BODY 3
 
 #define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+NUMBER_HEADER_ITEMS_BODY*sizeof(Bag))
 
@@ -233,7 +255,7 @@ Obj FILENAME_STAT(Stat stat);
 **  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
 **  break.
 */
-#define Expr            Stat
+typedef Stat Expr;
 
 
 /****************************************************************************
@@ -280,7 +302,7 @@ Obj FILENAME_STAT(Stat stat);
                         (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
-                        ((Expr)(((Int)(indx) << 2) + 0x01))
+                        ((Expr)(((UInt)(indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
                         (((Int)(expr)-0x01) >> 2)

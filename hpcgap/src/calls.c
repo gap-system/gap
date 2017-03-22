@@ -309,7 +309,7 @@ Obj DoFail0args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 0);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -323,7 +323,7 @@ Obj DoFail1args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 1);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -338,7 +338,7 @@ Obj DoFail2args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 2);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -354,7 +354,7 @@ Obj DoFail3args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 3);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -371,7 +371,7 @@ Obj DoFail4args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 4);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -389,7 +389,7 @@ Obj DoFail5args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 5);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -408,7 +408,7 @@ Obj DoFail6args (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, 6);
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -422,7 +422,7 @@ Obj DoFailXargs (
 {
     Obj                 argx;           /* arguments list (to continue)    */
     argx =NargError(self, LEN_LIST(args));
-    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
+    return CallFuncList( self, argx );
 }
 
 
@@ -1165,7 +1165,7 @@ Obj NewFunctionT (
       HDLR_FUNC(func,7) = hdlr;
     }
 
-    /* enter the the arguments and the names                               */
+    /* enter the arguments and the names                               */
     NAME_FUNC(func) = ConvImmString(name);
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
@@ -1362,8 +1362,28 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
-            Pr("<<kernel or compiled code>>",0L,0L);
+        if (FuncIsKernelFunction(0L, func) == True) {
+            UInt outputtedfunc = 0;
+            if ( BODY_FUNC(func) ) {
+                Obj body = BODY_FUNC(func);
+                if ( GET_FILENAME_BODY(body) ) {
+                    if ( GET_LOCATION_BODY(body) ) {
+                        Pr("<<kernel code from %s:%s>>",
+                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
+                            (Int)CSTR_STRING(GET_LOCATION_BODY(body)));
+                            outputtedfunc = 1;
+                    }
+                    else if ( GET_STARTLINE_BODY(body) ) {
+                        Pr("<<compiled GAP code from %s:%d>>",
+                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
+                            INT_INTOBJ(GET_STARTLINE_BODY(body)));
+                            outputtedfunc = 1;
+                    }
+                }
+            }
+            if(!outputtedfunc) {
+                Pr("<<kernel or compiled code>>",0L,0L);
+            }
         }
         else {
             SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
@@ -1507,24 +1527,15 @@ Obj FuncCALL_FUNC (
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 Obj CallFuncListOper;
+Obj CallFuncListWrapOper;
 
-Obj FuncCALL_FUNC_LIST (
-    Obj                 self,
-    Obj                 func,
-    Obj                 list )
+Obj CallFuncList ( Obj func, Obj list )
 {
     Obj                 result;         /* result                          */
     Obj                 list2;          /* list of arguments               */
     Obj                 arg;            /* one argument                    */
     UInt                i;              /* loop variable                   */
-
-    /* check that the second argument is a list                            */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "CallFuncList: <list> must be a small list",
-            0L, 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+   
 
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
@@ -1566,12 +1577,50 @@ Obj FuncCALL_FUNC_LIST (
         result = CALL_XARGS( func, list2 );
       }
     } else {
-      result = DoOperation2Args(self, func, list);
+      result = DoOperation2Args(CallFuncListOper, func, list);
     }
     /* return the result                                                   */
     return result;
+
 }
 
+Obj FuncCALL_FUNC_LIST (
+    Obj                 self,
+    Obj                 func,
+    Obj                 list )
+{
+    /* check that the second argument is a list                            */
+    if ( ! IS_SMALL_LIST( list ) ) {
+       ErrorMayQuit("CallFuncList: <list> must be a small list", 0L, 0L);
+    }
+    return CallFuncList(func, list);
+}
+
+Obj FuncCALL_FUNC_LIST_WRAP (
+    Obj                 self,
+    Obj                 func,
+    Obj                 list )
+{
+    Obj retval, retlist;
+    /* check that the second argument is a list                            */
+    if ( ! IS_SMALL_LIST( list ) ) {
+       ErrorMayQuit("CallFuncListWrap: <list> must be a small list", 0L, 0L);
+    }
+    retval = CallFuncList(func, list);
+
+    if (retval == 0)
+    {
+        retlist = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+    }
+    else
+    {
+        retlist = NEW_PLIST(T_PLIST, 1);
+        SET_LEN_PLIST(retlist, 1);
+        SET_ELM_PLIST(retlist, 1, retval);
+        CHANGED_BAG(retlist);
+    }
+    return retlist;
+}
 
 /****************************************************************************
 **
@@ -1832,7 +1881,7 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+        Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
             if (IS_BAG_REF(fn))
@@ -1845,7 +1894,6 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1853,7 +1901,7 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+        Obj sl = GET_STARTLINE_BODY(BODY_FUNC(func));
         if (sl)
             return sl;
     }
@@ -1861,7 +1909,6 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
 }
 
 Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-
     /* check the argument                                                  */
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
@@ -1869,13 +1916,27 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj el = ENDLINE_BODY(BODY_FUNC(func));
+        Obj el = GET_ENDLINE_BODY(BODY_FUNC(func));
         if (el)
             return el;
     }
     return Fail;
 }
 
+Obj FuncLOCATION_FUNC(Obj self, Obj func) {
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
+    }
+
+    if (BODY_FUNC(func)) {
+        Obj sl = GET_LOCATION_BODY(BODY_FUNC(func));
+        if (sl)
+            return sl;
+    }
+    return Fail;
+}
 
 /****************************************************************************
 **
@@ -1917,7 +1978,10 @@ Obj FuncUNPROFILE_FUNC(
 Obj FuncIsKernelFunction(Obj self, Obj func) {
   if (!IS_FUNC(func))
     return Fail;
-  else return (BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0) ? True : False;
+  else 
+    return ((BODY_FUNC(func) == 0) ||
+            (SIZE_OBJ(BODY_FUNC(func))
+             == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj))) ? True : False;
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
@@ -2016,6 +2080,9 @@ static StructGVarOper GVarOpers [] = {
     { "CALL_FUNC_LIST", 2, "func, list", &CallFuncListOper,
       FuncCALL_FUNC_LIST, "src/calls.c:CALL_FUNC_LIST" },
 
+    { "CALL_FUNC_LIST_WRAP", 2, "func, list", &CallFuncListWrapOper,
+      FuncCALL_FUNC_LIST_WRAP, "src/calls.c:CALL_FUNC_LIST_WRAP" },
+
     { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
       FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
 
@@ -2067,11 +2134,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "FILENAME_FUNC", 1, "func", 
       FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
 
+    { "LOCATION_FUNC", 1, "func", 
+      FuncLOCATION_FUNC, "src/calls.c:LOCATION_FUNC" },
+
     { "STARTLINE_FUNC", 1, "func", 
       FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
 
     { "ENDLINE_FUNC", 1, "func", 
       FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
+
     { 0 }
 
 };

@@ -16,6 +16,8 @@
 #ifndef GAP_STATS_H
 #define GAP_STATS_H
 
+#include <src/code.h>
+
 /****************************************************************************
 **
 *V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>

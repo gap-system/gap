@@ -1,0 +1,1022 @@
+########################################################################
+#
+# Makefile rules for GAP, to be included from GNUmakefile.
+# Partially based on the git and ScummVM build systems.
+#
+# This requires GNU make!!! You have been warned.
+#
+########################################################################
+
+
+########################################################################
+# Default rule: build gap
+########################################################################
+all: gap$(EXEEXT) gac
+.PHONY: all
+
+libgap: libgap.la
+.PHONY: libgap
+
+# Backwards compatibility: add "default" target as alias for "all"
+default: all
+.PHONY: default
+
+
+########################################################################
+# Source files
+#
+# We avoid line continuations, instead use repeatedly "SOURCES+=". This
+# makes it trivial to comment out lines, or to insert conditionals.
+########################################################################
+SOURCES =
+SOURCES += src/ariths.c
+SOURCES += src/backtrace.c
+SOURCES += src/blister.c
+SOURCES += src/bool.c
+SOURCES += src/c_filter1.c
+SOURCES += src/c_methsel1.c
+SOURCES += src/c_oper1.c
+SOURCES += src/c_random.c
+SOURCES += src/c_type1.c
+SOURCES += src/calls.c
+SOURCES += src/code.c
+SOURCES += src/compiler.c
+SOURCES += src/compstat.c
+SOURCES += src/costab.c
+SOURCES += src/cyclotom.c
+SOURCES += src/dt.c
+SOURCES += src/dteval.c
+SOURCES += src/exprs.c
+SOURCES += src/ffdata.c
+SOURCES += src/finfield.c
+SOURCES += src/funcs.c
+SOURCES += src/gap.c
+SOURCES += gen/gap_version.c	# generated source file
+SOURCES += src/gasman.c
+ifeq ($(HPCGAP),no)
+# FIXME: HPC-GAP and src/globalstate.c are not yet compatible; need to "merge"
+# struct GlobalState with ThreadLocalStorage from hpc/tls.h
+SOURCES += src/globalstate.c
+endif
+SOURCES += src/gmpints.c
+SOURCES += src/gvars.c
+SOURCES += src/intfuncs.c
+SOURCES += src/intrprtr.c
+SOURCES += src/iostream.c
+SOURCES += src/listfunc.c
+SOURCES += src/listoper.c
+SOURCES += src/lists.c
+SOURCES += src/macfloat.c
+SOURCES += src/objccoll.c
+SOURCES += src/objcftl.c
+SOURCES += src/objects.c
+SOURCES += src/objfgelm.c
+SOURCES += src/objpcgel.c
+SOURCES += src/objscoll.c
+SOURCES += src/objset.c
+SOURCES += src/opers.c
+SOURCES += src/permutat.c
+SOURCES += src/plist.c
+SOURCES += src/pperm.c
+SOURCES += src/precord.c
+SOURCES += src/profile.c
+SOURCES += src/range.c
+SOURCES += src/rational.c
+SOURCES += src/read.c
+SOURCES += src/records.c
+SOURCES += src/saveload.c
+SOURCES += src/scanner.c
+SOURCES += src/sctable.c
+SOURCES += src/set.c
+SOURCES += src/stats.c
+SOURCES += src/streams.c
+SOURCES += src/stringobj.c
+SOURCES += src/sysfiles.c
+SOURCES += src/system.c
+SOURCES += src/systimers.c
+SOURCES += src/tietze.c
+SOURCES += src/trans.c
+SOURCES += src/vars.c
+SOURCES += src/vec8bit.c
+SOURCES += src/vecffe.c
+SOURCES += src/vecgf2.c
+SOURCES += src/vector.c
+SOURCES += src/weakptr.c
+
+ifeq ($(HPCGAP),yes)
+  SOURCES += src/hpc/aobjects.c
+  ifeq ($(GAPMPI),yes)
+    SOURCES += src/hpc/gapmpi.c
+  endif
+  SOURCES += src/hpc/serialize.c
+  SOURCES += src/hpc/thread.c
+  SOURCES += src/hpc/threadapi.c
+  SOURCES += src/hpc/tls.c
+  SOURCES += src/hpc/traverse.c
+endif
+
+
+########################################################################
+# Preprocessor flags
+########################################################################
+
+GAP_CPPFLAGS =
+
+# First add include paths
+
+# If this is an out-of-tree build, then first add the builddir to the list of
+# include directories, so that the correct gen/config.h is picked up (even if
+# the user also has an active in-tree build)
+ifneq ($(top_builddir),$(srcdir))
+  GAP_CPPFLAGS += -I$(top_builddir)
+endif
+
+ifeq ($(HPCGAP),yes)
+  # Prefer headers from hpcgap/src/ over those in src/
+  GAP_CPPFLAGS += -I$(srcdir)/hpcgap
+endif
+
+# Finally look into srcdir
+GAP_CPPFLAGS += -I$(srcdir)
+
+# Add DEFS (from autoconf, contains -D flags)
+GAP_CPPFLAGS += $(DEFS)
+
+# Add flags for dependencies
+GAP_CPPFLAGS += $(GMP_CPPFLAGS)
+GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
+GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
+GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
+
+# HACK: teach GAP how to "find itself". For a proper solution,
+# we should ensure that this value is treated dynamically by the build system,
+# i.e. any change to it triggers a recompile of those files (and only those)
+# using it. That includes running "make install".
+GAP_CPPFLAGS += "-DSYS_DEFAULT_PATHS=\"$(abs_top_srcdir)\""
+
+# Finally add user provided flags
+GAP_CPPFLAGS += $(CPPFLAGS)
+
+
+########################################################################
+# Compiler flags
+########################################################################
+GAP_CFLAGS = $(ABI_CFLAGS)
+
+ifeq ($(HPCGAP),yes)
+GAP_CFLAGS += $(PTHREAD_CFLAGS)
+endif
+
+# Finally add user provided CFLAGS
+GAP_CFLAGS += $(CFLAGS)
+
+
+########################################################################
+# Linker flags
+########################################################################
+GAP_LDFLAGS = $(ABI_CFLAGS)
+
+# Add flags for dependencies
+GAP_LDFLAGS += $(GMP_LDFLAGS)
+GAP_LDFLAGS += $(READLINE_LDFLAGS)
+GAP_LDFLAGS += $(BOEHM_GC_LDFLAGS)
+GAP_LDFLAGS += $(LIBATOMIC_OPS_LDFLAGS)
+
+ifeq ($(HPCGAP),yes)
+GAP_LDFLAGS += $(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
+endif
+
+# Finally add user provided flags
+GAP_LDFLAGS += $(LDFLAGS)
+
+
+# libs
+GAP_LIBS =
+
+# Add flags for dependencies
+GAP_LIBS += $(GMP_LIBS)
+GAP_LIBS += $(READLINE_LIBS)
+GAP_LIBS += $(BOEHM_GC_LIBS)
+GAP_LIBS += $(LIBATOMIC_OPS_LIBS)
+
+# Finally add user provided flags
+GAP_LIBS += $(LIBS)
+
+
+########################################################################
+# HPC-GAP: transform code using ward
+#
+# For HPC-GAP, we must use ward as a preprocessor before invoking the C
+# compiler. Moreover, some source files come in two versions: One which is
+# located in src/, and another in hpcgap/src/, which is to be used instead
+# when building in HPC-GAP mode.
+#
+# The following build rules achieve this.
+########################################################################
+ifeq ($(HPCGAP),yes)
+
+# Compute new list of sources from ORIGINAL_SOURCES, by replacing src/ with gen/
+ORIGINAL_SOURCES := $(SOURCES)
+SOURCES := $(patsubst src/%,gen/%,$(ORIGINAL_SOURCES))
+
+# Determine which sources have a version in "hpcgap/src".
+# This uses the fact that "wildcard" only returns paths which refer
+# to existing files.
+HPCGAP_SOURCES := $(wildcard $(addprefix $(srcdir)/hpcgap/,$(ORIGINAL_SOURCES)))
+HPCGAP_SOURCES := $(subst $(srcdir)/hpcgap/src/,,$(HPCGAP_SOURCES))
+HPCGAP_SOURCES := $(addprefix gen/,$(HPCGAP_SOURCES))
+
+# static pattern rule for sources with an HPCGAP-version
+# (note that ward needs to parse the sources, hence gen/config.h must already be made)
+$(HPCGAP_SOURCES): gen/%.c: hpcgap/src/%.c gen/config.h
+	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
+	@echo "$@: $<" > $(DEPFILE)
+	@echo "$<:" >> $(DEPFILE)
+	$(QUIET_WARD) $(ADDGUARDS2) -cpp $(GAP_CPPFLAGS) -- $< > $@
+
+# static pattern rule for sources without an HPCGAP-version
+# (note that ward needs to parse the sources, hence gen/config.h must already be made)
+gen/%.c: src/%.c gen/config.h
+	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
+	@echo "$@: $<" > $(DEPFILE)
+	@echo "$<:" >> $(DEPFILE)
+	$(QUIET_WARD) $(ADDGUARDS2) -cpp $(GAP_CPPFLAGS) -- $< > $@
+
+# Normally, GNU make deletes intermediate build files, such as the gen/*.c
+# files generated by ward. We do not want this for various reasons (performance
+# being one of them), so we tell GNU make accordingly:
+.SECONDARY: $(SOURCES)
+
+endif # end of HPCGAP specific code
+
+
+# instruct GNU make to delete output files of failed build rules,
+# so that if Ward errors out, any incomplete generated files are
+# deleted.
+.DELETE_ON_ERROR:
+
+
+########################################################################
+# Object files
+########################################################################
+
+# OBJS shall contain the names of all object files that constitute GAP.
+# So turn all src/*.c and gen/*.c file names in SOURCES into obj/*.lo
+OBJS = $(patsubst gen/%.c,obj/%.lo,$(patsubst src/%.c,obj/%.lo,$(SOURCES)))
+
+# ensure config.h is built before the compilers gets invoked
+$(OBJS): gen/config.h
+
+
+########################################################################
+# Quiet rules.
+#
+# Replace regular output with quiet messages, unless V is set,
+# e.g. "make V=1"
+########################################################################
+ifneq ($(findstring $(MAKEFLAGS),s),s)
+ifndef V
+QUIET_CC      = @echo "   C       $< => $@";
+QUIET_LINK    = @echo "   LINK    $@";
+QUIET_WARD    = @echo "   WARD    $< => $@";
+QUIET_SED     = @echo "   SED     $< => $@";
+QUIET_INSTALL = @echo "   INSTALL $< => $@";
+QUIET         = @
+LIBTOOL 	 += --silent
+endif
+endif
+
+
+########################################################################
+# Rules for automatic header dependency tracking.
+#
+# This is somewhat similar to what automake does, but relies on compiler
+# support. The result is much simpler.
+#
+# So, here is what happens: In each directory containing source files,
+# a ".deps" subdirectory is created. We then instruct the compiler via
+# some flags to create a ".deps/FOO.d" file when it compiles "FOO.c".
+# This file encodes the header dependencies of "FOO.c" in a way that
+# make can read (i.e. simply as a bunch of make targets with
+# dependencies).
+#
+# Finally, to let make track the header dependencies, we include the *.d files.
+#
+# For a more detailed explanation of a very similar scheme, read this:
+# http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+#
+########################################################################
+
+# Name of subdirectories in which the generated dependencies are stored.
+DEPDIRNAME := .deps
+
+# List of all dependency directories. For now, we hardcode this list.
+# TODO: derive this from the value of the SOURCES variable, so that
+#       adding new src/ subdirectories works
+DEPDIRS = $(addsuffix /$(DEPDIRNAME),obj obj/hpc gen gen/hpc)
+
+# Include the dependency tracking files.
+-include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
+
+# Mark *.d files as PHONY. This stops make from trying to
+# recreate them (which it can't), and in particular from looking for potential
+# source files. This can save quite a bit of disk access time.
+.PHONY: $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
+
+DEPFILE = "$(@D)/$(DEPDIRNAME)/$(*F).d"
+
+# The following flags instruct the compiler to enable advanced
+# dependency tracking. Supported by GCC 3 and newer; clang; Intel C
+# compiler; and more.
+#
+# TODO: use configure to compute DEPFLAGS, so that we can
+# disable it for compilers that don't support it, resp. replace it
+# something that works for that compiler
+DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
+
+
+########################################################################
+# Compiler rules
+########################################################################
+
+COMPILE=$(LIBTOOL) --mode=compile $(CC)
+
+# Build rule for C source files
+# Disabled for HPC-GAP, to ensure we always use the output of ward
+# and not the original source files
+ifeq ($(HPCGAP),no)
+obj/%.lo: src/%.c
+	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
+	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+endif
+
+# Build rule for generated C source files
+obj/%.lo: gen/%.c
+	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
+	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+
+
+########################################################################
+# Linker rules for gap executable
+########################################################################
+
+LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic
+
+libgap.la: $(OBJS)
+	$(QUIET_LINK)$(LINK) -no-undefined -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
+
+ifeq ($(SYS_IS_CYGWIN32),yes)
+
+all: bin/gapicon.bmp bin/gapicon.ico bin/instcygwinterminfo.sh bin/cygwin-version.txt
+bin/gapicon.bmp: $(srcdir)/cnf/cygwin/gapicon.bmp
+	cp $< $@
+bin/gapicon.ico: $(srcdir)/cnf/cygwin/gapicon.ico
+	cp $< $@
+bin/instcygwinterminfo.sh: $(srcdir)/cnf/cygwin/instcygwinterminfo.sh
+	cp $< $@
+	chmod a+x $@
+bin/cygwin-version.txt:
+	uname -a > $@
+
+GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
+
+# Special build rules for CYGWIN / Windows: In order to allow kernel
+# extensions, we employ a trick: GAP itself is compiled into DLL, in which 
+# GAP's standard main function is renamed. And gap.exe is a tiny binary which
+# loads that DLL and calls the renamed main function.
+all: bin/$(GAPARCH)/gap.dll
+bin/$(GAPARCH)/gap.dll: libgap.la
+	ls -al .libs # HACK
+	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
+gap$(EXEEXT): libgap.la
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
+	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
+
+else
+
+# Linking rule and dependencies for the main gap executable
+gap$(EXEEXT): $(OBJS)
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
+
+endif
+
+
+########################################################################
+# The "docomp" target regenerates the various src/c_*.c files, and
+# replaces the old "etc/docomp" script.
+########################################################################
+ifeq ($(HPCGAP),yes)
+DOCOMP_PREFIX=$(abs_top_srcdir)/hpcgap
+else
+DOCOMP_PREFIX=$(abs_top_srcdir)
+endif
+docomp: #gap$(EXEEXT)
+	@for file in filter1 methsel1 oper1 random type1 ; do \
+	  "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
+	done
+
+.PHONY: docomp
+
+
+########################################################################
+# Rules for 'make clean'
+########################################################################
+distclean: clean
+	rm -f config.log config.status libtool stamp-h GNUmakefile
+	rm -f bin/gap.sh sysinfo.gap*
+	rm -rf gen
+
+clean:
+	rm -rf obj
+	rm -f gap$(EXEEXT) gac
+	rm -f libgap.la
+
+.PHONY: clean distclean
+
+
+########################################################################
+# Rules for 'make install'
+########################################################################
+
+LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
+
+install: install-libgap install-headers
+	@echo "Warning, 'make install' has not yet been fully implemented"
+	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
+	$(QUIET_INSTALL)$(INSTALL) gap $(DESTDIR)$(bindir)
+	$(QUIET_INSTALL)$(INSTALL) gac $(DESTDIR)$(bindir)
+
+install-headers:
+	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
+	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
+	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
+	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
+	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/hpcgap/src/*.h $(DESTDIR)$(includedir)/gap
+	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/*.h
+	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/hpc/*.h
+	# TODO: take care of config.h
+
+install-libgap: libgap.la
+	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
+	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
+
+
+.PHONY: install install-libgap
+
+########################################################################
+# Building subprojects
+########################################################################
+
+
+# master target for external dependencies / subprojects
+EXTERN_FILES =
+
+
+#
+# GMP
+#
+ifeq ($(BUILD_GMP),yes)
+
+GMP_BUILDDIR := extern/build/gmp
+GMP_PREFIX := extern/install/gmp
+# GMP_PREREQ := $(GMP_BUILDDIR)/config.status
+GMP_FILES := $(GMP_PREFIX)/lib/libgmp.la
+
+EXTERN_FILES += $(GMP_FILES)
+
+# Note: we pass the ABI flag to gmp, and also --enable-shared ; the latter
+# is there for the benefit of cygwin builds, where GMP otherwise defaults
+# to building only a static library.
+gmp: $(GMP_FILES)
+$(GMP_FILES):
+	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_top_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
+
+.PHONY: gmp
+
+# TODO: add clean, distclean, check targets?
+# TODO: pass on cachfile?
+# TODO: pass on certain *FLAGS ?
+
+
+else
+
+gmp:
+	echo "Using external GMP, nothing to do be done"
+
+endif # BUILD_GMP
+
+
+#
+# libatomic_ops
+#
+ifeq ($(BUILD_LIBATOMIC_OPS),yes)
+
+LIBATOMIC_OPS_BUILDDIR := extern/build/libatomic_ops
+LIBATOMIC_OPS_PREFIX := extern/install/libatomic_ops
+#LIBATOMIC_OPS_PREREQ := $(LIBATOMIC_OPS_BUILDDIR)/config.status
+LIBATOMIC_OPS_FILES := $(LIBATOMIC_OPS_PREFIX)/lib/libatomic_ops.la
+
+EXTERN_FILES += $(LIBATOMIC_OPS_FILES)
+
+libatomic_ops: $(LIBATOMIC_OPS_FILES)
+$(LIBATOMIC_OPS_FILES):
+	MAKE=$(MAKE) CFLAGS=$(ABI_CFLAGS) LDFLAGS=$(ABI_CFLAGS) \
+	$(srcdir)/cnf/build-extern.sh libatomic_ops "$(abs_top_srcdir)/hpcgap/extern/libatomic_ops" --disable-static --enable-shared
+
+# TODO: MAKEFLAGS=-j1
+
+.PHONY: libatomic_ops
+
+endif # BUILD_LIBATOMIC_OPS
+
+
+#
+# Boehm GC
+#
+ifeq ($(BUILD_BOEHM_GC),yes)
+
+# TODO: ensure Boehm GC is built *after* libatomic_ops, at least if
+# we are building or own libatomic_ops.
+# Also, ensure that it uses the right version of libatomic_ops,
+# by passing --with-libatomic-ops=...
+
+# TODO: also pass
+
+# TODO: refactor code which handles dependencies like GMP, Boehm, libatomic,
+# to reduce code duplication.
+
+# TODO: pass on more things to configure, e.g. the build / host system type...
+# 
+
+BOEHM_GC_BUILDDIR := extern/build/gc
+BOEHM_GC_PREFIX := extern/install/gc
+#BOEHM_GC_PREREQ := $(BOEHM_GC_BUILDDIR)/config.status
+BOEHM_GC_FILES := $(BOEHM_GC_PREFIX)/lib/libgc.la
+
+EXTERN_FILES += $(BOEHM_GC_FILES)
+
+boehm: gc # alias
+gc: $(BOEHM_GC_FILES)
+$(BOEHM_GC_FILES):
+	MAKE=$(MAKE) \
+	CFLAGS=$(ABI_CFLAGS) \
+	LDFLAGS=$(ABI_CFLAGS) \
+	ATOMIC_OPS_CFLAGS=$(LIBATOMIC_OPS_CPPFLAGS) \
+	ATOMIC_OPS_LIBS=$(LIBATOMIC_OPS_LDFLAGS) \
+	$(srcdir)/cnf/build-extern.sh gc "$(abs_top_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared
+
+ifeq ($(BUILD_LIBATOMIC_OPS),yes)
+$(BOEHM_GC_FILES): $(LIBATOMIC_OPS_FILES)
+endif
+
+.PHONY: boehm gc
+
+endif # BUILD_BOEHM_GC
+
+
+foobar:
+	echo FOOBAR: $(EXTERN_FILES) QUUX
+
+# ensure subprojects are built and "installed" before compiling and linking GAP
+gap$(EXEEXT): $(EXTERN_FILES)
+$(OBJS): $(EXTERN_FILES)
+ifeq ($(HPCGAP),yes)
+$(SOURCES): $(EXTERN_FILES)
+endif
+
+distclean: distclean-extern
+distclean-extern:
+	rm -rf extern/build
+	rm -rf extern/install
+
+
+########################################################################
+# Compatibility mode
+#
+# If enabled, we prepare the environment to look like it did with
+# the old build system, thus enabling existing packages with kernel
+# extensions to be compiled against this version of GAP/
+########################################################################
+ifeq ($(COMPAT_MODE),yes)
+
+# regenerate sysinfo.gap if necessary
+all: sysinfo.gap
+sysinfo.gap: $(srcdir)/cnf/compat/sysinfo.gap.in config.status
+	$(SHELL) ./config.status $@
+
+# regenerate bin/gap.sh if necessary
+all: bin/gap.sh
+bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
+	$(SHELL) ./config.status $@
+
+# regenerate bin/$(GAPARCH)/src symlink if necessary
+ifeq ($(HPCGAP),yes)
+compat_src_symlink=$(abs_top_srcdir)/hpcgap/src
+else
+compat_src_symlink=$(abs_top_srcdir)/src
+endif
+all: bin/$(GAPARCH)/src
+bin/$(GAPARCH)/src: config.status
+	ln -sf $(compat_src_symlink) $(@D)
+
+all: bin/$(GAPARCH)/gac
+bin/$(GAPARCH)/gac:
+	ln -sf ../../gac $(@D)
+
+endif
+
+########################################################################
+# Specifying GAP calls to use for the test suite and building manuals
+########################################################################
+
+GAPARGS=
+TESTGAP = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -A -q -x 80 -r $(GAPARGS)
+TESTGAPauto = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
+
+########################################################################
+# Documentation rules
+########################################################################
+
+# Alias for backwards compatibility
+manuals: doc
+
+# TODO: when in HPCGAP mode, we should perhaps instead
+# compile the documentation in the hpcgap dir?
+# But probably not; instead, we should merge the HPCGAP
+# stuff into the regular manual, but inside a (set of)
+# separate chapters, which we can perhaps conditionally
+# compile ?!?
+doc: gap$(EXEEXT)
+	( cd $(abs_top_srcdir) ;\
+	  echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
+	( cd $(abs_top_srcdir)/doc/ref ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd $(abs_top_srcdir)/doc/tut ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd $(abs_top_srcdir)/doc/changes ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd $(abs_top_srcdir)/doc/ref ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd $(abs_top_srcdir)/doc/tut ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd $(abs_top_srcdir)/doc/changes ;\
+	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	rm $(abs_top_srcdir)/doc/wsp.g
+
+clean-doc:
+	rm -f doc/*/chap*.html doc/*/chap*.txt doc/*/*.css doc/*/*.js
+	rm -f doc/*/chooser.html doc/*/manual*.pdf
+	rm -f doc/*/*.{aux,bbl,blg,brf,idx,ilg,ind,lab,log,out,pnr,six,tex,toc}
+	rm -f doc/manualbib.xml.bib
+
+# FIXME: we currently build the manual inside $srcdir; so we don't want "make clean"
+# to remove it, as other builds might share the manual.
+#clean: clean-doc
+
+# Manual consistency check
+check-manuals: all
+	mkdir -p dev/log
+	((cd doc/ref ; \
+	  echo 'Read("testconsistency.g");' | $(TESTGAP) ) \
+	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
+
+.PHONY: doc clean-doc manuals check-manuals
+
+########################################################################
+# Rules for test{install/standard/etc.} targets
+########################################################################
+
+# run testinstall.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+testinstall: all
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+
+# test manual examples three times:
+# - without packages
+# - with packages loaded by default
+# - with all packages loaded
+testmanuals: all
+	mkdir -p dev/log
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+
+# check how packages are loaded when loading obsoletes is disabled
+# - when all dependencies are loaded
+# - when packages are loaded with `OnlyNeeded` option
+testobsoletes: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
+            "dev/log/testobsoletes1", \
+            "$(TESTGAP) -O -L wsp.g", false, false );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletes1.in; ./testobsoletes1.in > \
+            `date -u +dev/log/testobsoletes1_%Y-%m-%d-%H-%M`; rm testobsoletes1.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletesN1.in", \
+            "dev/log/testobsoletesN1", \
+            "$(TESTGAP) -O -L wsp.g", false, true );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletesN1.in; ./testobsoletesN1.in > \
+            `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
+	( rm wsp.g )
+
+# For a package with the name given by the PKGNAME variable,
+# run its standard tests (i.e. those specified in PackageInfo.g):
+# - in GAP started without packages
+# - in GAP started with packages loaded by default
+# - in GAP started with all packages loaded
+testpackage: all
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage1", \
+            "$(TESTGAP) -L wsp.g", "false", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackageA", \
+            "$(TESTGAPauto) -L wsp.g", "auto", "$(PKGNAME)" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage2", \
+            "$(TESTGAP) -L wsp.g", "true", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+
+# For each package that specifies its standard tests in PackageInfo.g, run it
+# - in GAP started without packages
+# - in GAP started with packages loaded by default
+# - in GAP started with all packages loaded
+testpackages: all
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages1", \
+            "$(TESTGAP) -L wsp.g", "false" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackagesA", \
+            "$(TESTGAPauto) -L wsp.g", "auto" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages2", \
+            "$(TESTGAP) -L wsp.g", "true" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+
+# check how packages are loaded
+# - when all dependencies are loaded
+# - when packages are loaded with `OnlyNeeded` option
+testpackagesload: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesload1", \
+            "$(TESTGAP) -L wsp.g", false, false );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesloadN1", \
+            "$(TESTGAP) -L wsp.g", false, true );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadN1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadA", \
+            "$(TESTGAPauto) -L wsp.g", true, false );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadNA", \
+            "$(TESTGAPauto) -L wsp.g", true, true );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+
+# Produce an overview of new variables defined by each package
+testpackagesvars: all
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageVarsTestsInput( "testpackagesvars.in", \
+            "dev/log/testpackagesvars", \
+            "$(TESTGAP) -L wsp.g" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesvars.in; ./testpackagesvars.in > \
+            `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
+	( rm wsp.g )
+
+# run teststandard.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+teststandard: all
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+
+.PHONY: testinstall testmanuals testobsoletes teststandard
+.PHONY: testpackage testpackages testpackagesload testpackagesvars
+
+########################################################################
+# Bootstrap rules
+########################################################################
+
+PKG_BOOTSTRAP_URL="https://www.gap-system.org/pub/gap/gap4pkgs/"
+PKG_MINIMAL="bootstrap-pkg-minimal.tar.gz"
+PKG_FULL="bootstrap-pkg-full.tar.gz"
+
+bootstrap-pkg-minimal:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed."; \
+    else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
+        mkdir pkg ; \
+        cd pkg ; \
+        tar xzf ../$(PKG_MINIMAL) ; \
+    fi;
+
+bootstrap-pkg-full:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed" ; \
+    else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
+        mkdir pkg ; \
+        cd pkg ; \
+        tar xzf ../$(PKG_FULL) ; \
+    fi;
+
+.PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
+
+########################################################################
+# Test runner rules
+########################################################################
+
+# TODO
+
+
+
+########################################################################
+# Handle version information
+#
+# The approach we use is based on what git.git does. It stores the
+# generated version in a separate file cnf/GAP-VERSION-FILE, which makes
+# it possible to cleverly handle rebuilding files that use the version.
+# It also makes it possible to use version in non-C-code later one,
+# should we need to.
+########################################################################
+
+GVF = $(srcdir)/cnf/GAP-VERSION-FILE
+
+# the GAP-VERSION-FILE contains the raw version, nothing else
+$(GVF): FORCE
+	@cd $(top_srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
+-include $(GVF)
+
+# generate gen/gap_version.c
+gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
+	@$(MKDIR_P) $(@D)
+	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" < $< > $@
+
+.PHONY: FORCE
+
+
+########################################################################
+# Regenerate parts of the build system as needed.
+# The following is based in parts on the corresponding automake rules,
+# and in parts on an example in the autoconf manual.
+########################################################################
+
+ACLOCAL_M4 =
+#ACLOCAL_M4 = $(top_srcdir)/cnf/aclocal.m4
+aclocal_m4_deps = $(top_srcdir)/configure.ac
+configure_deps = $(top_srcdir)/configure.ac $(CONFIGURE_DEPENDENCIES) $(ACLOCAL_M4)
+
+config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(top_srcdir)/configure: $(configure_deps)
+	cd $(srcdir) && autoconf
+#$(ACLOCAL_M4): $(top_srcdir)/configure.ac $(wildcard $(srcdir)/cnf/m4/*.m4)
+#	cd $(srcdir) && $(ACLOCAL) -I cnf/m4
+
+gen/config.h: gen/stamp-h
+	@if test ! -f $@; then rm -f gen/stamp-h; else :; fi
+	@if test ! -f $@; then $(MAKE) gen/stamp-h; else :; fi
+
+gen/stamp-h: $(srcdir)/src/config.h.in config.status
+	@rm -f gen/stamp-h
+	$(SHELL) ./config.status gen/config.h
+	echo > $@
+
+$(srcdir)/src/config.h.in: $(configure_deps) 
+	cd $(top_srcdir) && autoheader
+	rm -f gen/stamp-h
+	touch $@
+
+GNUmakefile: $(srcdir)/GNUmakefile.in config.status
+	$(SHELL) ./config.status $@
+
+gac: $(srcdir)/cnf/gac.in config.status
+	$(SHELL) ./config.status $@

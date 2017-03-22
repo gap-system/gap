@@ -1,0 +1,18 @@
+/****************************************************************************
+**
+*W  gap_version.c
+**
+*Y  Copyright (C) 2016-2017 The GAP Group
+**
+**  This file contains the GAP build version
+*/
+
+#include <src/system.h>
+
+/****************************************************************************
+**
+*V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build
+*V  SyBuildDateTime . . . . . . . . . . . . . . . . . date and time of build
+*/
+const Char * SyBuildVersion  = "@GAP_VERSION@";
+const Char * SyBuildDateTime = "today";

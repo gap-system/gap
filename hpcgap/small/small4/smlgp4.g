@@ -192,7 +192,7 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
                    [ 1, 38, 70, 76, 77 ] ];
         fi;
         rank := PositionSorted( c[ n ], sid );
-        
+
         root := PrimitiveRootMod( inforec.p ) ^
                         ( (inforec.p - 1 ) / inforec.q ^ typ ) mod inforec.p;
 
@@ -216,8 +216,6 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
             Add( rels, gens[ n + 1 ] ^ gens[ i ] /
                        gens[ n + 1 ] ^ ( root ^ aut[ i ] mod inforec.p ) );
         od;
-        
-       
         for i in [ rank + 1 .. n ] do
             if not gS[ i ] in DerivedSubgroup( S ) then
                 j := 1;

@@ -59,6 +59,10 @@ end;
 #F SMALL_GROUP_FUNCS[ 19 ]( size, i, inforec )
 ##
 ## order p^4 , p >= 11
+## 
+## The groups of order p^4 (p >= 11) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 19 ] provided by 
+## Newman.
 ##
 SMALL_GROUP_FUNCS[ 19 ] := function( size, i, inforec )
     local g, f, p, c, w;
@@ -132,6 +136,10 @@ end;
 #F SMALL_GROUP_FUNCS[ 20 ]( size, i, inforec )
 ##
 ## order p^5 , p >= 7
+##
+## The groups of order p^5 (p >= 7) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 20 ] provided by 
+## Girnat (2004) [10].
 ##
 SMALL_GROUP_FUNCS[ 20 ] := function( size, i, inforec )
     local g, typ, k, f, c, w, p, a, b;
@@ -510,6 +518,19 @@ end;
 ##
 ## order p^6 , p >= 5
 ##
+## The groups of order p^6 (p >= 5) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 21 ] provided by 
+## Newman, O'Brien and Vaughan-Lee (2003) [13].
+##
+## The groups of order p^6 are given as a list of partially repetitive structures.
+## These are compressed into the file 'sml1.z'. At run-time, this compressed 
+## structure will be expanded, but restricted to those parts of the structure 
+## relevant for the given p when needed. It is cached into SMALL_GROUP_LIB[1]. 
+## As parts of this structure contain long ( O(p^2) ) lists of groups which are 
+## classified by additional parameters and these lists are not dense, it might 
+## be neccessary to set up the complete list of indices to find the presentation 
+## of a single group.
+## 
 SMALL_GROUP_FUNCS[ 21 ] := function( size, i, inforec )
     local n, p, phi, part,
           j, ind, ri, g, j1, j2, k, l, m, c1, c2,

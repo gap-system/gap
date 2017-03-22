@@ -1,7 +1,7 @@
 
 /****************************************************************************
 **
-*W  gap_boehm_gc.h
+*W  boehm_gc.h
 **
 **  This file stores code only required by the boehm garbage collector
 **
@@ -24,6 +24,7 @@
 #define TL_GC_SIZE (256 * sizeof(UInt))
 
 #ifndef DISABLE_GC
+#define GC_THREADS
 #include <gc/gc.h>
 #include <gc/gc_inline.h>
 #include <gc/gc_typed.h>
@@ -89,9 +90,7 @@ Region *RegionBag(Bag bag)
 
 FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
 
-void InitFinalizerFuncBags(
-    UInt		type,
-    FinalizerFunction   finalizer_func)
+void InitFinalizerFuncBags(UInt type, FinalizerFunction finalizer_func)
 {
   TabFinalizerFuncBags[type] = finalizer_func;
 }
@@ -220,14 +219,14 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       alloc_size = TLAllocatorSize[alloc_seg];
       if (!TLS(FreeList)[gc_type+1])
         TLS(FreeList)[gc_type+1] =
-	  GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
+          GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
       if (!(result = TLS(FreeList)[gc_type+1][alloc_seg])) {
         if (gc_type < 0)
-	  TLS(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
-	else
-	  GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
-	    &TLS(FreeList)[gc_type+1][alloc_seg]);
-	result = TLS(FreeList)[gc_type+1][alloc_seg];
+          TLS(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
+        else
+          GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
+            &TLS(FreeList)[gc_type+1][alloc_seg]);
+        result = TLS(FreeList)[gc_type+1][alloc_seg];
       }
       TLS(FreeList)[gc_type+1][alloc_seg] = *(void **)result;
       memset(result, 0, alloc_size);
@@ -239,7 +238,7 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
     }
     if (TabFinalizerFuncBags[type])
       GC_register_finalizer_no_order(result, StandardFinalizer,
-	NULL, NULL, NULL);
+        NULL, NULL, NULL);
     return result;
 }
 #endif
@@ -259,8 +258,7 @@ Region *NewRegion(void)
   lock = GC_malloc_atomic(sizeof(*lock));
   GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
 #else
-  result = malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
-  memset(result, 0, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  result = calloc(1, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);
@@ -315,7 +313,7 @@ void            InitBags (
     /* install the marking functions                                       */
     for ( i = 0; i < 255; i++ ) {
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
-	TabMarkTypeBags[i] = -1;
+        TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC
     if (!getenv("GC_MARKERS")) {
@@ -333,9 +331,9 @@ void            InitBags (
         SyNumGCThreads = SyNumProcessors;
       if (SyNumGCThreads) {
         if (SyNumGCThreads <= MAX_GC_THREADS)
-	  num_markers = (unsigned) SyNumProcessors;
-	else
-	  num_markers = MAX_GC_THREADS;
+          num_markers = (unsigned) SyNumProcessors;
+        else
+          num_markers = MAX_GC_THREADS;
       }
       sprintf(marker_env_str, "GC_MARKERS=%u", num_markers);
       putenv(marker_env_str);
@@ -369,7 +367,7 @@ UInt CollectBags (
 #ifndef DISABLE_GC
     GC_gcollect();
 #endif
-    return 1;	
+    return 1;
 }
 
 void RetypeBagIfWritable( Obj obj, UInt new_type )
@@ -400,11 +398,11 @@ void            RetypeBag (
       new_gctype = TabMarkTypeBags[new_type];
       if (old_gctype != new_gctype) {
         size = SIZE_BAG(bag) + HEADER_SIZE * sizeof(Bag);
-	new_mem = AllocateBagMemory(new_gctype, new_type, size);
-	old_mem = PTR_BAG(bag);
-	old_mem = ((char *) old_mem) - HEADER_SIZE * sizeof(Bag);
-	memcpy(new_mem, old_mem, size);
-	PTR_BAG(bag) = (void *)(((char *)new_mem) + HEADER_SIZE * sizeof(Bag));
+        new_mem = AllocateBagMemory(new_gctype, new_type, size);
+        old_mem = PTR_BAG(bag);
+        old_mem = ((char *) old_mem) - HEADER_SIZE * sizeof(Bag);
+        memcpy(new_mem, old_mem, size);
+        PTR_BAG(bag) = (void *)(((char *)new_mem) + HEADER_SIZE * sizeof(Bag));
       }
     }
     switch (DSInfoBags[new_type]) {
@@ -423,7 +421,7 @@ Bag NewBag (
 {
     Bag                 bag;            /* identifier of the new bag       */
     Bag *               dst;            /* destination of the new bag      */
-    UInt		alloc_size;
+    UInt                alloc_size;
 
     alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
@@ -474,8 +472,7 @@ Bag NewBag (
     dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
     bag = malloc(2*sizeof(Bag *));
-    dst = malloc(alloc_size);
-    memset(dst, 0, alloc_size);
+    dst = calloc(1, alloc_size);
 #endif /* DISABLE_GC */
 
     /* enter size-type words                                               */
@@ -509,97 +506,94 @@ Bag NewBag (
 }
 
 UInt ResizeBag (
-	Bag                 bag,
-	UInt                new_size )
+    Bag                 bag,
+    UInt                new_size )
 {
-	UInt                type;           /* type of the bag                 */
-	UInt                old_size;       /* old size of the bag             */
-	Bag *               dst;            /* destination in copying          */
-	Bag *               src;            /* source in copying               */
-	UInt                alloc_size;
+    UInt                type;           /* type of the bag                 */
+    UInt                old_size;       /* old size of the bag             */
+    Bag *               dst;            /* destination in copying          */
+    Bag *               src;            /* source in copying               */
+    UInt                alloc_size;
 
-	/* check the size                                                      */
+    /* check the size                                                      */
 
 #ifdef TREMBLE_HEAP
-	CollectBags(0,0);
+    CollectBags(0,0);
 #endif
 
-	/* get type and old size of the bag                                    */
-	type     = TNUM_BAG(bag);
-	old_size = SIZE_BAG(bag);
+    /* get type and old size of the bag                                    */
+    type     = TNUM_BAG(bag);
+    old_size = SIZE_BAG(bag);
 
-#ifdef  COUNT_BAGS
-	/* update the statistics                                               */
-	InfoBags[type].sizeLive += new_size - old_size;
-	InfoBags[type].sizeAll  += new_size - old_size;
+#ifdef COUNT_BAGS
+    /* update the statistics                                               */
+    InfoBags[type].sizeLive += new_size - old_size;
+    InfoBags[type].sizeAll  += new_size - old_size;
 #endif
-	SizeAllBags             += new_size - old_size;
+    SizeAllBags             += new_size - old_size;
 
 #ifndef DISABLE_GC
-	alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
-	/* An alternative implementation would be to compare
-	 * new_size <= alloc_size in the following test in order
-	 * to avoid reallocations for alternating contractions
-	 * and expansions. However, typed allocation in the Boehm
-	 * GC stores layout information in the last word of a memory
-	 * block and we may accidentally overwrite this information,
-	 * because GC_size() includes that extraneous word when
-	 * returning the size of a memory block.
-	 *
-	 * This is technically a bug in GC_size(), but until and
-	 * unless there is an upstream fix, we'll do it the safe
-	 * way.
-	 */
-	if ( new_size <= old_size
-			 && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
+    alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
+    /* An alternative implementation would be to compare
+     * new_size <= alloc_size in the following test in order
+     * to avoid reallocations for alternating contractions
+     * and expansions. However, typed allocation in the Boehm
+     * GC stores layout information in the last word of a memory
+     * block and we may accidentally overwrite this information,
+     * because GC_size() includes that extraneous word when
+     * returning the size of a memory block.
+     *
+     * This is technically a bug in GC_size(), but until and
+     * unless there is an upstream fix, we'll do it the safe
+     * way.
+     */
+    if ( new_size <= old_size
+             && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
 #else
-	if (new_size <= old_size) {
+    if (new_size <= old_size) {
 #endif /* DISABLE_GC */
 
-			/* change the size word                                            */
+        /* change the size word                                            */
 #ifdef USE_NEWSHAPE
-		*(*bag-2) = (new_size << 16 | type);
+        *(*bag-2) = (new_size << 16 | type);
 #else
-		*(*bag-2) = new_size;
+        *(*bag-2) = new_size;
 #endif
-	}
+    }
 
 
-	/* if the bag is enlarged                                              */
-	else {
-			alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
-			if (new_size == 0)
-					alloc_size++;
+    /* if the bag is enlarged                                              */
+    else {
+        alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
+        if (new_size == 0)
+                alloc_size++;
 #ifndef DISABLE_GC
-			dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
+        dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
-			dst       = malloc( alloc_size );
-			memset(dst, 0, alloc_size);
+        dst = calloc( 1, alloc_size );
 #endif
 
-			/* leave magic size-type word  for the sweeper, type must be 255   */
+        /* enter the new size-type word                                    */
 #ifdef USE_NEWSHAPE
-			*dst++ = (Bag)(new_size << 16 | type);
+        *dst++ = (Bag)(new_size << 16 | type);
 #else
-			/* enter the new size-type word                                    */
-			*dst++ = (Bag)type;
-			*dst++ = (Bag)new_size;
+        *dst++ = (Bag)type;
+        *dst++ = (Bag)new_size;
 #endif
 
+        *dst++ = bag;
+        /* set the masterpointer                                           */
+        src = PTR_BAG(bag);
+        PTR_BAG(bag) = dst;
 
-			*dst++ = bag;
-			/* set the masterpointer                                           */
-			src = PTR_BAG(bag);
-			PTR_BAG(bag) = dst;
-
-			if (dst != src) {
-					memcpy( dst, src, old_size < new_size ? old_size : new_size );
-			} else if (new_size < old_size) {
-					memset(dst+new_size, 0, old_size - new_size);
-			}
-	}
-	/* return success                                                      */
-	return 1;
+        if (dst != src) {
+            memcpy( dst, src, old_size < new_size ? old_size : new_size );
+        } else if (new_size < old_size) {
+            memset(dst+new_size, 0, old_size - new_size);
+        }
+    }
+    /* return success                                                      */
+    return 1;
 }
 
 

@@ -42,9 +42,6 @@ end);
 
 ErrorLVars := fail;
 
-
-
-
 BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     local   bottom,  lastcontext,  f;
     if depth <= 0 then

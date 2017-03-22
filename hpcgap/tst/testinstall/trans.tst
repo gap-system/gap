@@ -35,9 +35,11 @@ Error, TransformationListListNC: <src> and <ran> must have equal length,
 gap> TransformationListListNC([1], [1, 2, 3]);
 Error, TransformationListListNC: <src> and <ran> must have equal length,
 gap> TransformationListListNC("abc", [1, 2, 3]);
-Error, TransformationListListNC: <src>[3] must be a list (not a character)
+Error, TransformationListListNC: <src>[3] must be a small integer (not a chara\
+cter)
 gap> TransformationListListNC([1, 2, 3], "abc");
-Error, TransformationListListNC: <ran>[3] must be a list (not a character)
+Error, TransformationListListNC: <ran>[3] must be a small integer (not a chara\
+cter)
 gap> TransformationListListNC([-1, 2, 3], [4, 5, 6]);
 Error, TransformationListListNC: <src>[1] must be greater than 0
 gap> TransformationListListNC([1, 2, 3], [4, -5, 6]);
@@ -789,13 +791,13 @@ gap> q = p ^ -1;
 true
 gap> PermLeftQuoTransformationNC((), IdentityTransformation);
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not permutation (small) and transformation (sm
+ (not permutation (small) and transformation (small))
 gap> PermLeftQuoTransformationNC(IdentityTransformation, ());
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not transformation (small) and permutation (sm
+ (not transformation (small) and permutation (small))
 gap> PermLeftQuoTransformationNC((), ());
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not permutation (small) and permutation (small
+ (not permutation (small) and permutation (small))
 gap> g := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
 gap> f := (g ^ (2, 20)) * (1, 3, 8)(6, 9);;
 gap> PermLeftQuoTransformationNC(f, g);

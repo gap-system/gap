@@ -17,25 +17,9 @@
 **  dependent  functions.  This file contains  all system dependent functions
 **  except file and stream operations, which are implemented in "sysfiles.c".
 **  The following labels determine which operating system is actually used.
-**
-**  Under UNIX autoconf  is used to check  various features of  the operating
-**  system and the compiler.  Should you have problem compiling GAP check the
-**  file "bin/CPU-VENDOR-OS/config.h" after you have done a
-**
-**     ./configure ; make config
-**
-**  in the root directory.  And then do a
-**
-**     make compile
-**
-**  to compile and link GAP.
 */
 
 #include <src/system.h>                 /* system dependent part */
-
-#ifndef WARD_ENABLED
-#include <src/gap_version.h>            /* SCM information */
-#endif
 
 #include <src/gap.h>                    /* get UserHasQUIT */
 
@@ -50,10 +34,9 @@
 
 #include <assert.h>
 #include <dirent.h>
+#include <time.h>
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-#include <unistd.h>
-#endif
+#include <unistd.h>                     /* definition of 'R_OK' */
 
 
 #if HAVE_LIBREADLINE
@@ -67,6 +50,10 @@
 
 #if HAVE_MADVISE
 #include <sys/mman.h>
+#endif
+
+#if SYS_IS_DARWIN
+#include <mach/mach_time.h>
 #endif
 
 /****************************************************************************
@@ -84,19 +71,6 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
-
-/****************************************************************************
-**
-*V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
-*V  SyBuildDate . . . . . . . . . . . . . . . . . . . date and time of build 
-** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
-** and will typically contain the tag and commit SHA that was used to build
-** the executable.
-**
-** This variable will replace SyKernelVersion above.
-*/
-const Char * SyBuildVersion  = GAP_BUILD_VERSION;
-const Char * SyBuildDateTime = GAP_BUILD_DATETIME;
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -169,7 +143,7 @@ Int SyCheckCRCCompiledModule;
 **
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
-Char SyCompileInput [256];
+Char SyCompileInput[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -183,20 +157,20 @@ Char * SyCompileMagic1;
 **
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 */
-Char SyCompileName [256];
+Char SyCompileName[256];
 
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-Char SyCompileOutput [256];
+Char SyCompileOutput[GAP_PATH_MAX];
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-Char SyCompileOptions [256] = {'\0'};
+Char SyCompileOptions[256] = {'\0'};
 
 
 /****************************************************************************
@@ -236,9 +210,9 @@ Int SyDebugLoading;
 **
 #define MAX_GAP_DIRS 128
 */
-Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 #if HAVE_DOTGAPRC
-Char DotGapPath[512];
+Char DotGapPath[GAP_PATH_MAX];
 #endif
 
 /****************************************************************************
@@ -254,7 +228,7 @@ Int IgnoreGapRC;
 *V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
 */
 Int SyHasUserHome;
-Char SyUserHome [256];
+Char SyUserHome[GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -456,7 +430,7 @@ Int SyStorMin;
 **
 *V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
 */
-Char SySystemInitFile [256];
+Char SySystemInitFile[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -512,9 +486,7 @@ UInt SyStartTime;
 */
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>                   /* definition of 'struct timeval' */
-#endif
 #if HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
@@ -1475,6 +1447,140 @@ void SyExit (
 
 /****************************************************************************
 **
+*F  SyNanosecondsSinceEpoch()
+**
+**  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by SyNanosecondsSinceEpoch to be monotonic.
+**
+**  Returns -1 to represent failure
+**
+*/
+Int8 SyNanosecondsSinceEpoch()
+{
+  Int8 res;
+
+#if defined(SYS_IS_DARWIN)
+  static mach_timebase_info_data_t timeinfo;
+  if ( timeinfo.denom == 0 ) {
+    (void) mach_timebase_info(&timeinfo);
+  }
+  res = mach_absolute_time();
+
+  res *= timeinfo.numer;
+  res /= timeinfo.denom;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    res = ts.tv_sec;
+    res *= 1000000000L;
+    res += ts.tv_nsec;
+  } else {
+    res = -1;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  struct timeval tv;
+
+  if (gettimeofday(&tv, NULL) == 0) {
+    res = tv.tv_sec;
+    res *= 1000000L;
+    res += tv.tv_usec;
+    res *= 1000;
+  } else {
+    res = -1;
+  };
+#else
+  res = -1;
+#endif
+
+  return res;
+}
+
+
+/****************************************************************************
+**
+*V  SyNanosecondsSinceEpochMethod
+*V  SyNanosecondsSinceEpochMonotonic
+**  
+**  These constants give information about the method used to obtain
+**  NanosecondsSinceEpoch, and whether the values returned are guaranteed
+**  to be monotonic.
+*/
+#if defined(SYS_IS_DARWIN)
+  const char * const SyNanosecondsSinceEpochMethod = "mach_absolute_time";
+  const Int SyNanosecondsSinceEpochMonotonic = 1;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  const char * const SyNanosecondsSinceEpochMethod = "clock_gettime";
+  const Int SyNanosecondsSinceEpochMonotonic = 1;
+#elif defined(HAVE_GETTIMEOFDAY)
+  const char * const SyNanosecondsSinceEpochMethod = "gettimeofday";
+  const Int SyNanosecondsSinceEpochMonotonic = 0;
+#else
+  const char * const SyNanosecondsSinceEpochMethod = "unsupported";
+  const Int SyNanosecondsSinceEpochMonotonic = 0;
+#endif
+
+
+/****************************************************************************
+**
+*F  SyNanosecondsSinceEpochResolution()
+**
+**  'SyNanosecondsSinceEpochResolution' returns a 64-bit integer which
+**  represents the resolution in nanoseconds of the timer used for
+**  SyNanosecondsSinceEpoch. 
+**
+**  If the return value is positive then the value has been returned
+**  by the operating system can can probably be relied on. If the 
+**  return value is negative it is just an estimate (as in the case
+**  of gettimeofday we have no way to get the exact resolution so we
+**  just pretend that the resolution is 1000 nanoseconds).
+**
+**  A result of 0 signifies inability to obtain any sensible value.
+*/
+Int8 SyNanosecondsSinceEpochResolution()
+{
+  Int8 res;
+
+#if defined(SYS_IS_DARWIN)
+  static mach_timebase_info_data_t timeinfo;
+  if ( timeinfo.denom == 0 ) {
+    (void) mach_timebase_info(&timeinfo);
+  }
+  res = timeinfo.numer;
+  res /= timeinfo.denom;
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+  struct timespec ts;
+
+  if (clock_getres(CLOCK_MONOTONIC, &ts) == 0) {
+    res = ts.tv_sec;
+    res *= 1000000000L;
+    res += ts.tv_nsec;
+  } else {
+    res = 0;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  res = -1000;
+#else
+  res = 0;
+#endif
+
+  return res;
+}
+
+/****************************************************************************
+**
 *F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
 **
 **  'SySetGapRootPath' takes a string and modifies a list of root directories
@@ -1490,10 +1596,15 @@ void SyExit (
 /****************************************************************************
 **
 *f  SySetGapRootPath( <string> )
+**
+** This function assumes that the system uses '/' as path separator.
+** Currently, we support nothing else. For Windows (or rather: Cygwin), we
+** rely on a small hack which converts the path separator '\' used there
+** on '/' on the fly. Put differently: Systems that use completely different
+**  path separators, or none at all, are currently not supported.
 */
-#if HAVE_SLASH_SEPARATOR 
 
-void SySetGapRootPath( const Char * string )
+static void SySetGapRootPath( const Char * string )
 {
     const Char *          p;
     Char *          q;
@@ -1524,6 +1635,10 @@ void SySetGapRootPath( const Char * string )
         for( i = 0; i < MAX_GAP_DIRS; i++ ) 
             if( SyGapRootPaths[i][0] == '\0' ) break;
         i--;
+
+#ifdef HPCGAP
+        n *= 2; // for each root <ROOT> we also add <ROOT/hpcgap> as a root
+#endif
 
         /* Move existing root paths to the back                            */
         if( i + n >= MAX_GAP_DIRS ) return;
@@ -1571,11 +1686,17 @@ void SySetGapRootPath( const Char * string )
         if ( *p ) {
             p++;  n++;
         }
+#ifdef HPCGAP
+        // or each root <ROOT> we also add <ROOT/hpcgap> as a root (and first)
+        if( n < MAX_GAP_DIRS ) {
+            strlcpy( SyGapRootPaths[n+1], SyGapRootPaths[n], sizeof(SyGapRootPaths[n]) );
+        }
+        strxcat( SyGapRootPaths[n], "hpcgap/", sizeof(SyGapRootPaths[n]) );
+        n++;
+#endif
     }
     return; 
 }
-
-#endif
 
 
 /****************************************************************************
@@ -1881,14 +2002,10 @@ void InitSystem (
     strxcpy( SySystemInitFile, "lib/init.g", sizeof(SySystemInitFile) );
 #if SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
-#else
-
-#ifdef SYS_DEFAULT_PATHS
+#elif defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
 #else
     SySetGapRootPath( "./" );
-#endif
-
 #endif
 
     /* save the original command line for export to GAP */
@@ -2048,7 +2165,7 @@ void InitSystem (
            with a tilde ~ */
         for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
           if (SyGapRootPaths[i][0] == '~' && 
-              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < 512) {
+              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < sizeof(SyGapRootPaths[i])) {
             memmove(SyGapRootPaths[i]+strlen(SyUserHome),
                     /* don't copy the ~ but the trailing '\0' */
                     SyGapRootPaths[i]+1, strlen(SyGapRootPaths[i]));
@@ -2073,74 +2190,11 @@ void InitSystem (
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
  FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR(SyBuildVersion);
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );
-}
-
-static void Merge(char *to, char *from1, UInt size1, char *from2,
-  UInt size2, UInt width, int (*lessThan)(const void *a, const void *b))
-{
-  while (size1 && size2) {
-    if (lessThan(from1, from2)) {
-      memcpy(to, from1, width);
-      from1 += width;
-      size1--;
-    } else {
-      memcpy(to, from2, width);
-      from2 += width;
-      size2--;
-    }
-    to += width;
-  }
-  if (size1)
-    memcpy(to, from1, size1*width);
-  else
-    memcpy(to, from2, size2*width);
-}
-
-static void MergeSortRecurse(char *data, char *aux, UInt count, UInt width,
-  int (*lessThan)(const void *a, const void *))
-{
-  UInt nleft, nright;
-  /* assert(count > 1); */
-  if (count == 2) {
-    if (!lessThan(data, data+width))
-    {
-      memcpy(aux, data, width);
-      memcpy(data, data+width, width);
-      memcpy(data+width, aux, width);
-    }
-    return;
-  }
-  nleft = count/2;
-  nright = count-nleft;
-  if (nleft > 1)
-    MergeSortRecurse(data, aux, nleft, width, lessThan);
-  if (nright > 1)
-    MergeSortRecurse(data+nleft*width, aux+nleft*width, nright, width, lessThan);
-  memcpy(aux, data, count*width);
-  Merge(data, aux, nleft, aux+nleft*width, nright, width, lessThan);
-}
-
-/****************************************************************************
-**
-*F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
-**
-**  MergeSort() sorts an array of 'count' elements of individual size 'width'
-**  with ordering determined by the parameter 'lessThan'. The 'lessThan'
-**  function is to return a non-zero value if the first argument is less
-**  than the second argument, zero otherwise.
-*/
-
-void MergeSort(void *data, UInt count, UInt width,
-  int (*lessThan)(const void *a, const void *))
-{
-  char *aux = alloca(count * width);
-  if (count > 1)
-    MergeSortRecurse(data, aux, count, width, lessThan);
 }
 
 

@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 ##  This file contains the identification routines for groups of order up to
-##  1000 except 512, 768 andsize a product of more then 3 primes
+##  1000 except 512, 768 and size a product of more then 3 primes
 ##
 
 #############################################################################

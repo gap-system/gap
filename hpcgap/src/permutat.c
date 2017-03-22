@@ -774,94 +774,6 @@ Obj             ProdPerm44 (
     return prd;
 }
 
-Obj ProdPerm44Cooperman(
-    Obj                 opL,
-    Obj                 opR,
-    UInt                logBucketSize)
-{
-    Obj                 prd;            /* handle of the product (result)  */
-    UInt                degP;           /* degree of the product           */
-    UInt4 *             ptP;            /* pointer to the product          */
-    UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-    UInt4 *             ptB;
-    UInt4 **             ptBP;
-    UInt                nBuckets;
-    Obj                 bucketPointers;
-    UInt4               im;
-    UInt                bucketSize;
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degP = degL < degR ? degR : degL;
-    prd  = NEW_PERM4( degP );
-    bucketSize = 1 << logBucketSize;
-    nBuckets = (degP+(bucketSize-1))>>logBucketSize;
-    UseTmpPerm(sizeof(Obj)+4*degP);
-    bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
-    
-    
-
-    /* set up the pointers no GC now                                        */
-    ptL = ADDR_PERM4(opL);
-    ptR = ADDR_PERM4(opR);
-    ptP = ADDR_PERM4(prd);
-    ptB = ADDR_PERM4(TmpPerm);
-    ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
-    for (p = 0; p < nBuckets; p++)
-      ptBP[p] = ptB+ (p << logBucketSize);
-    
-    /* Pass 1 */
-    for (p = 0; p < degL; p++)
-      {
-	im = ptL[p];
-	*(ptBP[im>>logBucketSize]++) = im;
-      }
-    for (; p < degP; p++)
-	*(ptBP[p>>logBucketSize]++) = p;
-    
-    /* Pass 2 */
-
-    if (degR < degP)
-      for (p = 0; p < degP; p++)
-	{
-	  im = ptB[p];
-	  if (im < degR)
-	    ptB[p] = ptR[im];	
-	}
-    else
-      for (p = 0; p < degP; p++)
-	{
-	  im = ptB[p];
-	  ptB[p] = ptR[im];	
-	}
-      
-    /* Pass 3 */
-    for (p = 0; p < nBuckets; p++)
-      ptBP[p] = ptB+ (p << logBucketSize);
-    for (p = 0; p < degL; p++)
-      {
-	im = ptL[p];
-	ptP[p] = *(ptBP[im>>logBucketSize]++);
-      }
-    for (;p < degP; p++)
-      {
-	ptP[p] = *(ptBP[p>>logBucketSize]++);
-      }
-
-    /* return the result                                                   */
-    return prd;
-}
-
-Obj FuncMUL_PERMS_COOPERMAN( Obj self, Obj permL, Obj permR, Obj logbucketSize) {
-  return ProdPerm44Cooperman(permL, permR, INT_INTOBJ(logbucketSize));
-}
-
-
 /****************************************************************************
 **
 *F  QuoPerm( <opL>, <opR> ) . . . . . . . . . . . .  quotient of permutations
@@ -1263,54 +1175,6 @@ Obj             LQuoPerm44 (
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
 
-Obj InvPerm4Cooperman ( Obj perm, UInt logBucketSize )
-{
-  UInt deg = DEG_PERM4(perm);
-  UInt bucketSize = 1 << logBucketSize;
-  UInt nBuckets;
-  Obj bucketPointers;
-  Obj inv;
-  UInt4* ptP;
-  UInt4* ptI;
-  UInt4** ptBP;
-  UInt4* ptB;
-  UInt4 p;
-
-  UseTmpPerm(sizeof(Obj)+4*2*deg);
-  nBuckets = (deg+(bucketSize-1))>>logBucketSize;
-  bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
-  inv = NEW_PERM4(deg);
-  
-  ptP = ADDR_PERM4(perm);
-  ptI = ADDR_PERM4(inv);
-  ptB = ADDR_PERM4(TmpPerm);
-  ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
-  for (p = 0; p < nBuckets; p++)
-    ptBP[p] = ptB+ 2*(p << logBucketSize);
-  
-  for (p = 0;p<deg; p++)
-    {
-      UInt4 im = ptP[p];
-      UInt b = im >>logBucketSize;
-      UInt4 * pt = ptBP[b];
-      *(pt++) = p;
-      *(pt++) = im;
-      ptBP[b] = pt;
-    }
-  for (p = 0;p<deg; p++)
-    {
-      UInt4 im =*(ptB++);
-      ptI[*(ptB++)] = im;
-    }
-  return inv;
-
-}
-
-Obj FuncINV_PERM_COOPERMAN( Obj self, Obj perm, Obj logBucketSize)
-{
-  return InvPerm4Cooperman(perm, INT_INTOBJ(logBucketSize));
-}
-
 Obj FuncINV_PERM_SIMPLE( Obj self, Obj perm)
 {
   UInt deg = DEG_PERM4(perm);
@@ -1321,75 +1185,6 @@ Obj FuncINV_PERM_SIMPLE( Obj self, Obj perm)
   for (p = 0; p < deg; p++)
     ptI[ptP[p]] = p;
   return inv;
-}
-
-Obj LQuoPerm4Cooperman ( Obj perm1, Obj perm2, UInt logBucketSize )
-{
-  UInt deg1 = DEG_PERM4(perm1);
-  UInt deg2 = DEG_PERM4(perm2);
-  UInt degQ = (deg1 > deg2) ? deg1 : deg2;
-  UInt degmin = deg1+deg2 - degQ;
-  UInt bucketSize = 1 << logBucketSize;
-  UInt nBuckets;
-  Obj bucketPointers;
-  Obj quo;
-  UInt4* ptP1;
-  UInt4* ptP2;
-  UInt4* ptQ;
-  UInt4** ptBP;
-  UInt4* ptB;
-  UInt4 p;
-
-  UseTmpPerm(sizeof(Obj)+4*2*degQ);
-  nBuckets = (degQ+(bucketSize-1))>>logBucketSize;
-  bucketPointers = NewBag(T_DATOBJ, sizeof(Obj)+sizeof(UInt4 *)*nBuckets);
-  quo = NEW_PERM4(degQ);
-  
-  ptP1 = ADDR_PERM4(perm1);
-  ptP2 = ADDR_PERM4(perm2);
-  ptQ = ADDR_PERM4(quo);
-  ptB = ADDR_PERM4(TmpPerm);
-  ptBP = (UInt4 **)(ADDR_OBJ(bucketPointers)+1);
-  for (p = 0; p < nBuckets; p++)
-    ptBP[p] = ptB+ 2*(p << logBucketSize);
-  
-  for (p = 0;p<degmin; p++)
-    {
-      UInt4 im = ptP2[p];
-      UInt b = im >>logBucketSize;
-      UInt4 *pt = ptBP[b];
-      *(pt++) = ptP1[p];
-      *(pt++) = im;
-      ptBP[b] = pt;
-    }
-  for (; p < deg1; p++)
-    {
-      UInt4 im = p;
-      UInt b = im >>logBucketSize;
-      *(ptBP[b]++) = ptP1[p];
-      *(ptBP[b]++) = im;
-
-    }
-  for (; p < deg2; p++)
-    {
-      UInt4 im = ptP2[p];
-      UInt b = im >>logBucketSize;
-      *(ptBP[b]++) = p;
-      *(ptBP[b]++) = im;
-
-    }
-  for (p = 0;p<degQ; p++)
-    {
-      UInt4 im =*(ptB++);
-      ptQ[*(ptB++)] = im;
-    }
-  return quo;
-
-}
-
-Obj FuncLQUO_PERMS_COOPERMAN( Obj self, Obj perm1, Obj perm2, Obj logBucketSize)
-{
-  return LQuoPerm4Cooperman(perm1, perm2, INT_INTOBJ(logBucketSize));
 }
 
 Obj             PowPerm2Int (
@@ -1417,7 +1212,7 @@ Obj             PowPerm2Int (
     pow = NEW_PERM2( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TNUM_OBJ(opR) == T_INT
+    if ( IS_INTOBJ(opR)
       && 2 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1436,7 +1231,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -1527,7 +1322,7 @@ Obj             PowPerm2Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM2(opL);
@@ -1540,7 +1335,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TNUM_OBJ(opR) == T_INT
+    else if ( IS_INTOBJ(opR)
           && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1559,7 +1354,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -1677,7 +1472,7 @@ Obj             PowPerm4Int (
     pow = NEW_PERM4( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TNUM_OBJ(opR) == T_INT
+    if ( IS_INTOBJ(opR)
       && 0 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1696,7 +1491,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
 
@@ -1788,7 +1583,7 @@ Obj             PowPerm4Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM4(opL);
@@ -1801,7 +1596,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TNUM_OBJ(opR) == T_INT
+    else if ( IS_INTOBJ(opR)
            && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1820,7 +1615,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -2525,7 +2320,7 @@ Obj             FuncPermList (
                 return FuncPermList( 0, list ); */
 		return Fail;
             }
-            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
+            if ( !IS_INTOBJ(ptList[i]) ) {
                 /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
@@ -2594,7 +2389,7 @@ Obj             FuncPermList (
                 return FuncPermList( 0, list ); */
 		return Fail;
             }
-            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
+            if ( !IS_INTOBJ(ptList[i]) ) {
                 /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
@@ -2729,7 +2524,7 @@ Obj             FuncCycleLengthPermInt (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
@@ -2807,7 +2602,7 @@ Obj             FuncCyclePermInt (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
             "CyclePermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
@@ -2985,6 +2780,11 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
+
+        /* Recalculate after possible GC */
+        scratch2=ADDR_PERM2(TmpPerm);
+        offset2=(UInt2*)((UInt)scratch2+(bytes));
+
 	for (pnt=1;pnt<=max-1;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
@@ -3055,6 +2855,11 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
+
+        /* Recalculate after possible GC */
+        scratch4=ADDR_PERM4(TmpPerm);
+        offset4=(UInt4*)((UInt)scratch4+(bytes));
+
 	for (pnt=1;pnt<max;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
@@ -4233,7 +4038,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
@@ -4266,7 +4071,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
@@ -4962,18 +4767,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
       FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
 
-    { "MUL_PERMS_COOPERMAN", 3, "perm, perm, logBucketsize",
-      FuncMUL_PERMS_COOPERMAN, "src/permutat.c:MUL_PERMS_COOPERMAN" },
-    
-    { "INV_PERM_COOPERMAN", 2, "perm, logBucketsize",
-      FuncINV_PERM_COOPERMAN, "src/permutat.c:INV_PERM_COOPERMAN" },
-
-    /*    { "INV_PERM_SIMPLE", 1, "perm",
-	  FuncINV_PERM_SIMPLE, "src/permutat.cINV_PERM_SIMPLE" }, */
-    
-    { "LQUO_PERMS_COOPERMAN", 3, "perm1, perm2, logBucketsize",
-      FuncLQUO_PERMS_COOPERMAN, "src/permutat.c:LQUO_PERMS_COOPERMAN" },
-    
     { "DISTANCE_PERMS", 2, "perm1, perm2",
       FuncDistancePerms, "src/permutat.c:DISTANCE_PERMS" },
     
@@ -4999,14 +4792,6 @@ static StructGVarFunc GVarFuncs [] = {
 **
 
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
-*/
-
-/*
-static void initTmpPerm() {
-  TmpPerm = 0;
-}
-
-static TLSHandler listNode;
 */
 
 static Int InitKernel (

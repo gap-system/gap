@@ -45,7 +45,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <src/config.h>
+#include <gen/config.h>
 
 #include <src/hpc/atomic.h>
 
@@ -120,10 +120,50 @@ typedef UInt * *        Bag;
 */
 
 #ifdef USE_NEWSHAPE
-#define TNUM_BAG(bag)  (*(*(bag)-2) & 0xFFFFL)
+#define BAG_TNUM_OFFSET (-2)
 #else
-#define TNUM_BAG(bag)   (*(*(bag)-3))
+#define BAG_TNUM_OFFSET (-3)
 #endif
+
+#define TNUM_BAG(bag)  (*(*(bag) + BAG_TNUM_OFFSET) & 0xFFL)
+
+
+/****************************************************************************
+**
+*F  TEST_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . test object flag
+*F  SET_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . . set object flag
+*F  CLEAR_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . clear object flag
+**
+**  These three macros test, set, and clear object flags, respectively.
+**  Object flags are stored in the object header. Multiple flags can be ored
+**  together using '|' to set or clear multiple flags at once.
+**
+**  TEST_OBJ_FLAG() will return the ored version of all tested flags. To
+**  test that one of them is set, check if the result is not equal to zero.
+**  To test that all of them are set, compare the result to the original
+**  flags, e.g.
+**
+** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
+**
+**  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
+**  use:
+**
+** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
+**
+**  Each flag must be a an integer with exactly one bit set, e.g. a value
+**  of the form (1 << i). Currently, 'i' must be in the range from 8 to
+**  15 (inclusive).
+*/
+
+#define TEST_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) & (flag))
+
+#define SET_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) |= (flag))
+
+#define CLEAR_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) &= ~(flag))
+
 
 /****************************************************************************
 **
@@ -148,7 +188,32 @@ typedef UInt * *        Bag;
 #define SIZE_BAG(bag)   (*(*(bag)-2))
 #endif
 
+/****************************************************************************
+**
+*F  SIZE_BAG_CONTENTS(<ptr>)  . . . . . . . . . . . . . . . . . size of a bag
+**
+**  'SIZE_BAG_CONTENTS' performs the same function as 'SIZE_BAG', but takes
+**  a pointer to the contents of the bag instead. This is useful for certain
+**  atomic operations that require a memory barrier in between dereferencing
+**  the bag pointer and accessing the contents of the bag.
+*/
+#ifdef USE_NEWSHAPE
+#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2) >> 16)
+#else
+#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2))
+#endif
+
+
+/****************************************************************************
+**
+*F  LINK_BAG(<bag>) . . . . . . . . . . . . . . . . . . . link field of a bag
+**
+**  TODO: document this
+**
+*/
 #define LINK_BAG(bag)   (*(Bag *)(*(bag)-1))
+
+
 /****************************************************************************
 **
 *F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
@@ -248,6 +313,13 @@ typedef UInt * *        Bag;
 **  Note that 'CHANGED_BAG' is a macro, so do not call it with arguments that
 **  have side effects.
 */
+
+#ifdef BOEHM_GC
+
+#define CHANGED_BAG(bag) ((void) 0)
+
+#else
+
 extern  Bag *                   YoungBags;
 
 extern  Bag                     ChangedBags;
@@ -272,7 +344,10 @@ extern void CHANGED_BAG_IMPL(Bag b);
                   && PTR_BAG(bag)[-1] == (bag) ) {                          \
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
 
-#endif
+#endif // MEMORY_CANARY
+
+#endif // BOEHM_GC
+
 
 /****************************************************************************
 **
@@ -351,7 +426,13 @@ extern  void            RetypeBag (
             Bag                 bag,
             UInt                new_type );
 
+#ifdef HPCGAP
+extern  void            RetypeBagIfWritable (
+            Bag                 bag,
+            UInt                new_type );
+#else
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
+#endif
 
 /****************************************************************************
 **
@@ -541,10 +622,18 @@ typedef struct  {
 
 extern  TNumInfoBags            InfoBags [ 256 ];
 
+
+#ifdef HPCGAP
+void MakeBagTypePublic(int type);
+void MakeBagTypeProtected(int type);
+Bag MakeBagPublic(Bag bag);
+Bag MakeBagReadOnly(Bag bag);
+#else
 #define MakeBagTypePublic(type)     do { } while(0)
 #define MakeBagTypeProtected(type)  do { } while(0)
 #define MakeBagPublic(bag)          do { } while(0)
 #define MakeBagReadOnly(bag)        do { } while(0)
+#endif
 
 /****************************************************************************
 **
@@ -756,6 +845,8 @@ extern  Bag                     MarkedBags;
 #define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
 
 
+#ifndef BOEHM_GC
+
 #define MARK_BAG(bag)                                                       \
                 if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0                 \
                   && (Bag)MptrBags <= (bag)    && (bag) < (Bag)OldBags      \
@@ -763,6 +854,12 @@ extern  Bag                     MarkedBags;
                   && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
                   {                                                          \
                     PTR_BAG(bag)[-1] = MarkedBags; MarkedBags = (bag);      }
+
+#else
+
+#define MARK_BAG(bag)
+
+#endif
 
 extern void MarkAllSubBagsDefault ( Bag );
 
@@ -772,11 +869,18 @@ extern void MarkAllSubBagsDefault ( Bag );
 *F
 */
 
+#ifndef BOEHM_GC
 #define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
                                 (Bag)MptrBags <= (bag)    &&          \
                                 (bag) < (Bag)OldBags  &&              \
                                 (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
-
+#else
+#define IS_WEAK_DEAD_BAG(bag) (!(bag))
+#define REGISTER_WP(loc, obj) \
+	GC_general_register_disappearing_link((void **)(loc), (obj))
+#define FORGET_WP(loc) \
+	GC_unregister_disappearing_link((void **)(loc))
+#endif
              
 /****************************************************************************
 **
@@ -812,6 +916,14 @@ extern  void            InitSweepFuncBags (
             TNumSweepFuncBags    sweep_func );
  
 
+#ifdef BOEHM_GC
+typedef void 		(* FinalizerFunction) (
+	    Bag bag );
+
+extern void		InitFinalizerFuncBags (
+	    UInt		tnum,
+	    FinalizerFunction finalizer_func );
+#endif
 
 /****************************************************************************
 **
@@ -1081,6 +1193,49 @@ extern void FinishBags( void );
 extern void CallbackForAllBags(
      void (*func)(Bag) );
 
+#ifdef HPCGAP
+
+typedef struct
+{
+    void *lock;       /* void * so that we don't have to include pthread.h always */
+    Bag obj;          /* references a unique T_REGION object per region */
+    Bag name;         /* name of the region, or a null pointer */
+    Int prec;         /* locking precedence */
+    int fixed_owner;
+    int autolock;
+    void *owner;      /* opaque thread descriptor */
+    void *alt_owner;  /* for paused threads */
+    int count_active; /* whether we counts number of (contended) locks */
+    AtomicUInt locks_acquired;    /* number of times the lock was acquired successfully */
+    AtomicUInt locks_contended;   /* number of failed attempts at acuiring the lock */
+    unsigned char readers[0];     /* this field extends with number of threads
+                                     don't add any fields after it */
+} Region;
+
+/****************************************************************************
+**
+*F  NewRegion() . . . . . . . . . . . . . . . . allocate a new region
+*/
+
+Region *NewRegion(void);
+
+/****************************************************************************
+**
+*F  REGION(<bag>)  . . . . . . . .  return the region containing the bag
+*F  RegionBag(<bag>)   . . . . . .  return the region containing the bag
+**
+**  RegionBag() also contains a memory barrier.
+*/
+#define REGION(bag) (((Region **)(bag))[1])
+
+Region *RegionBag(Bag bag);
+
+#endif // HPCGAP
+
+
+#ifdef BOEHM_GC
+void *AllocateMemoryBlock(UInt size);
+#endif
 
 #endif // GAP_GASMAN_H
 

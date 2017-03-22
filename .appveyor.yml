@@ -5,12 +5,22 @@ environment:
   CFLAGS: "-fprofile-arcs -ftest-coverage"
   LDFLAGS: "-fprofile-arcs"
   TEST_SUITE: testinstall
+  BUILDDIR: .
   matrix:
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
+    - CYG_ARCH: x86
+      CYG_ROOT: C:\cygwin
+      ABI: 32
+      HPCGAP: yes
+      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
+    - CYG_ARCH: x86_64
+      CYG_ROOT: C:\cygwin64
+      HPCGAP: yes
+      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
 
 cache:
   - bootstrap-pkg-full.tar.gz
@@ -21,10 +31,8 @@ install:
 # scripts that run after cloning repository
 build_script:
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
-  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./configure --with-gmp=system"
-  - bash -lc "make -C $APPVEYOR_BUILD_FOLDER cygwin"
-  - sed -i -e "s/wget/wget -nv/g" Makefile
-  - bash -lc "make -C $APPVEYOR_BUILD_FOLDER bootstrap-pkg-full"
+  - SET "GAPROOT=%APPVEYOR_BUILD_FOLDER%"
+  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-prepare.sh"
 
 test_script:
   - bash -lc "rm $APPVEYOR_BUILD_FOLDER/tst/testinstall/timeout.tst" # HACK

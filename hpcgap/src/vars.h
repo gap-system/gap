@@ -44,10 +44,6 @@
 /* TL: extern  Bag             CurrLVars; */
 
 
-
-
-
-
 /****************************************************************************
 **
 *V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
@@ -75,6 +71,24 @@
 
 /****************************************************************************
 **
+*F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
+**
+*/
+#define FUNC_LVARS_PTR(lvars_ptr)   (lvars_ptr[0])
+#define FUNC_LVARS(lvars_obj)       FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj))
+
+
+/****************************************************************************
+**
+*F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
+**
+*/
+#define PARENT_LVARS_PTR(lvars_ptr) (lvars_ptr[2])
+#define PARENT_LVARS(lvars_obj)     PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj))
+
+
+/****************************************************************************
+**
 *F  CURR_FUNC . . . . . . . . . . . . . . . . . . . . . . .  current function
 **
 **  'CURR_FUNC' is the function that is currently executing.
@@ -82,7 +96,7 @@
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       (TLS(PtrLVars)[0])
+#define CURR_FUNC       FUNC_LVARS_PTR(TLS(PtrLVars))
 
 
 /****************************************************************************
@@ -112,8 +126,7 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 #ifndef NO_BRK_CALLS
 #define BRK_CALL_TO()                   ((Expr)(Int)(TLS(PtrLVars)[1]))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
-#endif
-#ifdef  NO_BRK_CALLS
+#else
 #define BRK_CALL_TO()                   /* do nothing */
 #define SET_BRK_CALL_TO(expr)           /* do nothing */
 #endif
@@ -125,10 +138,9 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 *F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 (TLS(PtrLVars)[2])
-#define SET_BRK_CALL_FROM(lvars)        (TLS(PtrLVars)[2] = (lvars))
-#endif
-#ifdef  NO_BRK_CALLS
+#define BRK_CALL_FROM()                 PARENT_LVARS_PTR(TLS(PtrLVars))
+#define SET_BRK_CALL_FROM(lvars)        (PARENT_LVARS_PTR(TLS(PtrLVars)) = (lvars))
+#else
 #define BRK_CALL_FROM()                 /* do nothing */
 #define SET_BRK_CALL_FROM(lvars)        /* do nothing */
 #endif
@@ -168,6 +180,8 @@ static inline void MakeHighVars( Bag bag ) {
 
 extern Obj STEVES_TRACING;
 extern Obj True;
+
+#include <src/hpc/tls.h>
 
 #include <stdio.h>
 

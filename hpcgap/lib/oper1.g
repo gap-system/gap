@@ -208,13 +208,13 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
             tmp := NARG_FUNC(rel);
             if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)   then
                 Error(NAME_FUNC(opr),": <famrel> must accept ",
-		      narg, " arguments");
+                      narg, " arguments");
             fi;
         fi;
         methods[i+1] := rel;
     else
         Error(NAME_FUNC(opr),
-	      ": <famrel> must be a function, `true', or `false'" );
+              ": <famrel> must be a function, `true', or `false'" );
     fi;
 
     # install the filters
@@ -232,13 +232,13 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
             tmp := NARG_FUNC(method);
             if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)  then
                Error(NAME_FUNC(opr),": <method> must accept ",
-	             narg, " arguments");
+                     narg, " arguments");
             fi;
         fi;
         methods[i+(narg+2)] := method;
     else
         Error(NAME_FUNC(opr),
-	      ": <method> must be a function, `true', or `false'" );
+              ": <method> must be a function, `true', or `false'" );
     fi;
     methods[i+(narg+3)] := rank;
 
@@ -347,6 +347,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           i,
           rank,
           method,
+          oreqs,
           req, reqs, match, j, k, imp, notmatch, lk;
 
     lk := READ_LOCK( OPERATIONS_REGION );
@@ -481,7 +482,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
       # (at least) one declaration.
       j:= 0;
       match:= false;
-	  notmatch:=0;
+      notmatch:=0;
       while j < LEN_LIST( req ) and not match do
         j:= j+1;
         reqs:= req[j];
@@ -490,7 +491,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           for i  in [ 1 .. LEN_LIST(reqs) ]  do
             if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
               match:= false;
-		      notmatch:=i;
+              notmatch:=i;
               break;
             fi;
           od;
@@ -504,16 +505,18 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
         # If the requirements do not match any of the declarations
         # then something is wrong or `InstallOtherMethod' should be used.
-	    if notmatch=0 then
-	      Error("the number of arguments does not match a declaration of ",
-	            NAME_FUNC(opr) );
+        if notmatch=0 then
+          Error("the number of arguments does not match a declaration of ",
+                NAME_FUNC(opr) );
         else
-	      Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
-	            Ordinal(notmatch)," argument do not match a declaration of ",
-		        NAME_FUNC(opr) );
+          Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
+                Ordinal(notmatch)," argument do not match a declaration of ",
+                NAME_FUNC(opr) );
         fi;
 
       else
+
+        oreqs:=reqs;
 
         # If the requirements match *more than one* declaration
         # then a warning is raised by `INFO_DEBUG'.
@@ -527,9 +530,9 @@ BIND_GLOBAL( "INSTALL_METHOD",
                 break;
               fi;
             od;
-            if match then
+            if match and reqs<>oreqs then
               INFO_DEBUG( 1,
-              		"method installed for ", NAME_FUNC(opr), 
+                    "method installed for ", NAME_FUNC(opr), 
                     " matches more than one declaration" );
             fi;
           fi;
@@ -571,23 +574,23 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
-	lk := DO_LOCK(FILTER_REGION, false, CATS_AND_REPS);
-	for i in [ 1 .. LEN_FLAGS( flags ) ] do
-	    if ELM_FLAGS( flags, i ) then
-		if i in CATS_AND_REPS  then
-		    cats := cats and FILTERS[i];
-		    rank := rank - RankFilter( FILTERS[i] );
-		elif i in NUMBERS_PROPERTY_GETTERS  then
-		    ADD_LIST( props, FILTERS[i] );
-		fi;
-	    fi;
-	od;
+        lk := DO_LOCK(FILTER_REGION, false, CATS_AND_REPS);
+        for i in [ 1 .. LEN_FLAGS( flags ) ] do
+            if ELM_FLAGS( flags, i ) then
+                if i in CATS_AND_REPS  then
+                    cats := cats and FILTERS[i];
+                    rank := rank - RankFilter( FILTERS[i] );
+                elif i in NUMBERS_PROPERTY_GETTERS  then
+                    ADD_LIST( props, FILTERS[i] );
+                fi;
+            fi;
+        od;
         UNLOCK(lk);
 
-	# Because the getter function may be called from other
-	# threads, <props> needs to be immutable or atomic.
+        # Because the getter function may be called from other
+        # threads, <props> needs to be immutable or atomic.
 
-	MakeImmutable(props);
+        MakeImmutable(props);
 
         if 0 < LEN_LIST( props ) then
 
@@ -633,6 +636,42 @@ InstallAttributeFunction(
             DO_NOTHING_SETTER );
     end );
 
+#############################################################################
+##
+#F  PositionSortedOddPositions( <list>, <elm> )
+##
+##  works like PositionSorted, but only looks at odd positions
+##  compared with the original algorithm, this translates
+##  indices i -> 2*i - 1
+##
+##  keep function here so it will be compiled
+##
+BIND_GLOBAL ("PositionSortedOddPositions",
+function (list, elm)
+
+    local i, j, k;
+
+    k := LEN_LIST( list ) + 1;
+    if k mod 2 = 0 then
+        k := k + 1;
+    fi;
+
+    i := -1;
+
+    while i + 2 < k do
+
+        # (i < 0 or list[i] < elm) and (k > Length( list ) or list[k] >= elm)
+
+        j := 2 * QUO_INT( i+k+2, 4 ) - 1;
+        if list[j] < elm then
+            i := j;
+        else
+            k := j;
+        fi;
+    od;
+
+    return k;
+end);
 
 #############################################################################
 ##
@@ -685,7 +724,9 @@ InstallAttributeFunction(
 ##  <Ref Func="KeyDependentOperation"/> declares the two operations and the
 ##  attribute as described above,
 ##  with names <A>name</A>, <A>name</A><C>Op</C>,
-##  and <C>Computed</C><A>name</A><C>s</C>.
+##  and <C>Computed</C><A>name</A><C>s</C>, as well as tester and setter operations
+##  <C>Has</C><A>name</A> and <C>Set</C><A>name</A>, respectively. Note, however,
+##  that the tester is not a filter.
 ##  <A>dom-req</A> and <A>key-req</A> specify the required filters for the
 ##  first and second argument of the operation <A>name</A><C>Op</C>,
 ##  which are needed to create this operation with
@@ -714,10 +755,14 @@ InstallAttributeFunction(
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4 := Group((1,2,3,4),(1,2));;
-##  gap> SylowSubgroup( s4, 5 );;  ComputedSylowSubgroups( s4 );
-##  [ 5, Group(()) ]
+##  gap> SylowSubgroup( s4, 7 );;  ComputedSylowSubgroups( s4 );
+##  [ 7, Group(()) ]
 ##  gap> SylowSubgroup( s4, 2 );;  ComputedSylowSubgroups( s4 );
-##  [ 2, Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), 5, Group(()) ]
+##  [ 2, Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), 7, Group(()) ]
+##  gap> HasSylowSubgroup( s4, 5 );
+##  false
+##  gap> SetSylowSubgroup( s4, 5, Group(()));; ComputedSylowSubgroups( s4 );
+##  [ 2, Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), 5, Group(()), 7, Group(()) ]
 ##  ]]></Example>
 ##  <P/>
 ##  <Log><![CDATA[
@@ -797,22 +842,64 @@ BIND_GLOBAL( "KeyDependentOperation",
 
         keytest( key );
         known:= attr( D );
-        i:= 1;
-        while i < LEN_LIST( known ) and known[i] < key do
-          i:= i + 2;
-        od;
 
-	# Start storing only after the result has been computed.
-        # This avoids errors if a calculation had been interrupted.
+        i:= PositionSortedOddPositions( known, key );
 
         if LEN_LIST( known ) < i or known[i] <> key then
-	  erg := oper( D, key );
-          known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
-            known{ [ i .. LEN_LIST( known ) ] };
-          known[  i  ]:= key;
-          known[ i+1 ]:= erg;
+            erg := oper( D, key );
+
+            # re-compute position, just in case the call to oper added to known
+            # including the possibility that the result is already stored
+            # don't use setter because erg isn't necessarily equal to the stored result
+            i:= PositionSortedOddPositions( known, key );
+            if LEN_LIST( known ) < i or known[i] <> key then
+                known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
+                    known{ [ i .. LEN_LIST( known ) ] };
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(erg);
+            fi;
         fi;
         return known[ i+1 ];
+        end );
+
+    # define tester function
+    str:= "Has";
+    APPEND_LIST_INTR( str, name );
+    DeclareOperation( str, [ domreq, keyreq ] );
+    InstallOtherMethod( VALUE_GLOBAL( str ),
+        "default method",
+        true,
+        [ domreq, keyreq ], 0,
+        function( D, key )
+
+            local known, i;
+
+            keytest( key );
+            known:= attr( D );
+            i:= PositionSortedOddPositions( known, key );
+            return i <= LEN_LIST( known ) and known[i] = key;
+        end );
+    # define tester function
+    str:= "Set";
+    APPEND_LIST_INTR( str, name );
+    DeclareOperation( str, [ domreq, keyreq, IS_OBJECT ] );
+    InstallOtherMethod( VALUE_GLOBAL( str ),
+        "default method",
+        true,
+        [ domreq, keyreq, IS_OBJECT ], 0,
+        function( D, key, obj )
+
+            local known, i;
+
+            keytest( key );
+            known:= attr( D );
+            i:= PositionSortedOddPositions( known, key );
+            if LEN_LIST( known ) < i or known[i] <> key then
+                known{ [ i + 2 .. LEN_LIST( known ) + 2 ] }:=
+                known{ [ i .. LEN_LIST( known ) ] };
+                known[  i  ]:= IMMUTABLE_COPY_OBJ(key);
+                known[ i+1 ]:= IMMUTABLE_COPY_OBJ(obj);
+            fi;
         end );
 end );
 

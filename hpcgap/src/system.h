@@ -24,10 +24,12 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <src/config.h>
+#include <gen/config.h>
 
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
+
+
 
 /****************************************************************************
 **
@@ -89,16 +91,10 @@
 #define HAVE_DOTGAPRC           1
 #endif
 
-/* Define as 1 if your systems uses '/' as path separator.
-**
-** Currently, we support nothing else. For Windows (or rather: Cygwin), we
-** rely on a small hack which converts the path separator '\' used there
-** on '/' on the fly. Put differently: Systems that use completely different
-**  path separators, or none at all, are currently not supported.
-*/
-#ifndef HAVE_SLASH_SEPARATOR
-#define HAVE_SLASH_SEPARATOR	1
-#endif
+
+enum {
+    GAP_PATH_MAX = 512
+};
 
 
 #define FPUTS_TO_STDERR(str) fputs (str, stderr)
@@ -120,6 +116,8 @@
 
 #if HAVE_STDINT_H
 #include <stdint.h>
+#endif
+
 typedef char              Char;
 
 typedef int8_t   Int1;
@@ -141,38 +139,6 @@ typedef Int4     Int;
 typedef UInt4    UInt;
 #endif
 
-/* 64 bit machines                                                         */
-#elif defined( SYS_IS_64_BIT )
-typedef char                    Char;
-typedef signed char             Int1;
-typedef short int               Int2;
-typedef int                     Int4;
-typedef long int                Int8;
-typedef long int                Int;
-typedef unsigned char           UChar;
-typedef unsigned char           UInt1;
-typedef unsigned short int      UInt2;
-typedef unsigned int            UInt4;
-typedef unsigned long int       UInt8;
-typedef unsigned long int       UInt;
-
-/* 32 bit machines                                                         */
-#else
-typedef char                    Char;
-typedef signed char             Int1;
-typedef short int               Int2;
-typedef long int                Int4;
-typedef long int                Int;
-typedef long long int           Int8;
-typedef unsigned char           UChar;
-typedef unsigned char           UInt1;
-typedef unsigned short int      UInt2;
-typedef unsigned long int       UInt4;
-typedef unsigned long int       UInt;
-typedef unsigned long long int  UInt8;
-
-#endif
-
 
 /****************************************************************************
 **
@@ -180,32 +146,14 @@ typedef unsigned long long int  UInt8;
 */
 typedef UInt * *        Bag;
 
-/****************************************************************************
-**
-*T  BagW  . . . . . . . . . . . . . . . . . . . . type of a write-guarded bag
-*/
-
-typedef struct { UInt MemW; } * * BagW;
-
-/****************************************************************************
-**
-*T  BagR  . . . . . . . . . . . . . . . . . . . .  type of a read-guarded bag
-*/
-
-typedef struct { UInt MemR; } * * BagR;
-
 
 /****************************************************************************
 **
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
-*T  ObjW  . . . . . . . . . . . . . . . . . . . type of write-guarded objects
-*T  ObjR  . . . . . . . . . . . . . . . . . . .  type of read-guarded objects
 **
 **  'Obj' is the type of objects.
 */
 #define Obj             Bag
-#define ObjW		BagW
-#define ObjR		BagR
 
 
 /****************************************************************************
@@ -282,7 +230,7 @@ extern Int SyCheckCRCCompiledModule;
 **
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
-extern Char SyCompileInput [256];
+extern Char SyCompileInput[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -296,20 +244,20 @@ extern Char * SyCompileMagic1;
 **
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 */
-extern Char SyCompileName [256];
+extern Char SyCompileName[256];
 
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-extern Char SyCompileOutput [256];
+extern Char SyCompileOutput[GAP_PATH_MAX];
 
 /****************************************************************************
 **
 *V  SyCompileOptions . . . . . . . . . . . . . . . . . with these options
 */
-extern Char SyCompileOptions [256];
+extern Char SyCompileOptions[256];
 
 
 /****************************************************************************
@@ -345,11 +293,12 @@ extern Int SyDebugLoading;
 **  
 **  Put in this package because the command line processing takes place here.
 */
-#define MAX_GAP_DIRS 128
-
-extern Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+enum {
+    MAX_GAP_DIRS = 128
+};
+extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 #if HAVE_DOTGAPRC
-extern Char DotGapPath[512];
+extern Char DotGapPath[GAP_PATH_MAX];
 #endif
 
 /****************************************************************************
@@ -367,7 +316,7 @@ extern Char DotGapPath[512];
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-extern Char SyInitfiles [32] [512];
+extern Char SyInitfiles[32][GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -383,7 +332,7 @@ extern Char SyPkgnames [SY_MAX_PKGNR][16];
 **
 *V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
 */
-extern Char SyGapRCFilename [512];
+extern Char SyGapRCFilename[GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -391,7 +340,7 @@ extern Char SyGapRCFilename [512];
 *V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
 */
 extern Int SyHasUserHome;
-extern Char SyUserHome [256];
+extern Char SyUserHome[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -559,7 +508,7 @@ extern Int SyStorMin;
 **
 *V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
 */
-extern Char SySystemInitFile [256];
+extern Char SySystemInitFile[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -638,6 +587,16 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsDigit(ch)     (isdigit((unsigned int)ch))
 
+
+/****************************************************************************
+**
+*F  IsHexDigit( <ch> ) . . . . . . . . . . . . . . .  is a character a digit
+**
+**  'IsDigit' returns 1 if its character argument is a digit from the ranges
+**  '0..9', 'A..F', or 'a..f' and 0 otherwise.
+*/
+#define IsHexDigit(ch)     (isxdigit((unsigned int)ch))
+
 /****************************************************************************
 **
 *F  IsSpace( <ch> ) . . . . . . . . . . . . . . . .is a character whitespace
@@ -646,7 +605,6 @@ extern UInt SyTimeChildrenSys ( void );
 **  carriage return, linefeed or vertical tab
 */
 #define IsSpace(ch)     (isspace((unsigned int)ch))
-
 
 /****************************************************************************
 **
@@ -1015,6 +973,35 @@ typedef struct {
 extern void SyExit (
     UInt                ret );
 
+
+/****************************************************************************
+**
+*F  SyNanosecondsSinceEpoch()
+**
+**  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by SyNanosecondsSinceEpoch to be monotonic.
+**
+**  Returns -1 to represent failure
+**
+*/
+extern Int8 SyNanosecondsSinceEpoch();
+extern Int8 SyNanosecondsSinceEpochResolution();
+
+extern const char * const SyNanosecondsSinceEpochMethod;
+extern const Int SyNanosecondsSinceEpochMonotonic;
+
 /****************************************************************************
 **
 *F  SySleep( <secs> ) . . . . . . . . . . . . Try to sleep for <secs> seconds
@@ -1043,19 +1030,6 @@ extern void SyUSleep( UInt msecs );
 
 extern Int getOptionCount (Char key);
 extern Char *getOptionArg(Char key, UInt which);
-
-/****************************************************************************
-**
-*F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
-**
-**  MergeSort() sorts an array of 'count' elements of individual size 'width'
-**  with ordering determined by the parameter 'lessThan'. The 'lessThan'
-**  function is to return a non-zero value if the first argument is less
-**  than the second argument, zero otherwise.
-*/
-
-extern void MergeSort(void *data, UInt count, UInt width,
-  int (*lessThan)(const void *a, const void *));
 
 /****************************************************************************
  **

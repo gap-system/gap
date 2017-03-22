@@ -63,109 +63,49 @@
 ##   -l|--gap-binary
 ##
 
+SHELL=@SHELL@
+abs_top_builddir=@abs_top_builddir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+
 # path of the directory in which GAP was compiled
-gap_bin=@gapbin@
+gap_bin="@abs_top_builddir@"
 
 # path of the directory the GAP sources contained in
-gap_dir="${gap_bin}/../..";
+gap_dir="@abs_top_srcdir@"
 
 # path to the GAP executable
-gap_compiler="${gap_bin}/gap";
+gap_compiler="${gap_bin}/gap"
 
 # path of the directory containing the *.o files; the OBJECTS variables
 # is evaluated relative to this
-gap_binary="${gap_bin}";
+gap_binary="${gap_bin}"
 
 # options to pass to the GAP executable when it is invokes as compiler
 gap_options=""
 
-# unused
-gap_include="${gap_dir}/src"
+libtool="$SHELL $abs_top_builddir/libtool"
+CC="@CC@"
 
 # These three should be filled in by the standard autoconf procedures 
-c_compiler="@CC@"
-c_options="@CPPFLAGS@ @CFLAGS@ @GMP_CFLAGS@"
-c_linker="@CC@"
+c_compiler="$libtool --mode=compile $CC"
+c_options="@CPPFLAGS@ @CFLAGS@"
+c_linker="$libtool --mode=link $CC"
 c_link_options="@LDFLAGS@"
 c_libs="@LIBS@ @GMP_LIBS@"
 
 # These will need special care
-c_dyn_options="@CPPFLAGS@ @CDYNOPTIONS@ @GMP_CFLAGS@"
-c_dyn_linker="@CDYNLINKER@"
-c_dyn_link_options="@CDYNLINKING@"
-c_dynlibs="@C_DYNLIBS@"
+c_dyn_options="@CPPFLAGS@"
+c_dyn_linker="$libtool --mode=link $CC -module -avoid-version -rpath $libdir"
+c_dyn_link_options="@ABI_CFLAGS@"
+c_dynlibs=""
 c_addlibs=""
 
 # hardwire this for now. There is probably a nicer way 
 # note: compstat.o is omitted on purpose from this list
 
-OBJECTS="\
-    ariths.o \
-    blister.o \
-    bool.o \
-    c_filt1.o \
-    c_meths1.o \
-    c_oper1.o \
-    c_random.o \
-    c_type1.o \
-    calls.o \
-    code.o \
-    compiler.o \
-    costab.o \
-    cyclotom.o \
-    dt.o \
-    dteval.o \
-    exprs.o \
-    ffdata.o \
-    finfield.o \
-    funcs.o \
-    gap.o \
-    gasman.o \
-    globalstate.o \
-    gmpints.o \
-    gvars.o \
-    intfuncs.o \
-    intrprtr.o \
-    iostream.o \
-    listfunc.o \
-    listoper.o \
-    lists.o \
-    macfloat.o \
-    objccoll.o \
-    objcftl.o \
-    objects.o \
-    objfgelm.o \
-    objpcgel.o \
-    objscoll.o \
-    opers.o \
-    permutat.o \
-    plist.o \
-    pperm.o \
-    precord.o \
-    profile.o \
-    range.o \
-    rational.o \
-    read.o \
-    records.o \
-    saveload.o \
-    scanner.o \
-    sctable.o \
-    set.o \
-    stats.o \
-    streams.o \
-    stringobj.o \
-    sysfiles.o \
-    system.o \
-    systimers.o \
-    tietze.o \
-    trans.o \
-    vars.o \
-    vec8bit.o \
-    vecffe.o \
-    vecgf2.o \
-    vector.o \
-    weakptr.o
-"
+OBJECTS="@OBJECTS@"
 
 
 #############################################################################
@@ -183,6 +123,8 @@ gap_compile () {
 #F  c_compile   <output> <input> <options>
 ##
 c_compile () {
+# FIXME: set correct -I flags (also for HPC-GAP, where
+# we may need different ones
     echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
          -I${gap_bin} -DCONFIG_H -c $2
     ${c_compiler} $3 -o $1 -I${gap_dir} \
@@ -196,7 +138,10 @@ c_compile () {
 ##
 c_link_dyn () {
     echo ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs}
-    ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs} || exit 1
+    output_la=${1/%.so/.la}
+    output_dir=$(dirname $1)
+    ${c_dyn_linker} ${c_dyn_link_options} -o "$output_la" $2 ${c_addlibs} || exit 1
+    cp -r $output_dir/.libs/*.so $output_dir
 }
 
 
@@ -205,6 +150,7 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
+# FIXM: get rid of the unconditional -lm 
     echo ${c_linker} ${c_dynlibs}  -o $1 $2 ${c_link_options} -lm ${c_libs}
     ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} \
         -lm ${c_libs} || exit 1
@@ -244,12 +190,12 @@ process_c_file () {
     extra_cflags=$3
 
     if [ $comp_howfar != "object" ]; then
-       o_file=${gactmp}/$$_${name}.o
+       o_file=${gactmp}/$$_${name}.lo
         temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
     else 
-       o_file=${name}.o
+       o_file=${name}.lo
     fi
     if [ $comp_mode = "comp_static" ]; then
        c_compile_opts=$c_options
@@ -388,8 +334,6 @@ while [ $# -gt 0 ]; do
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
 
-    -i|--gap-include)     shift; gap_include="$1";;
-
     -l|--gap-binary)      shift; gap_binary="$1";;
 
     -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
@@ -398,7 +342,7 @@ while [ $# -gt 0 ]; do
 
     -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
-    *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.o)
+    *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.o|*.lo)
                           inputs="${inputs} $1";;
 
     *)                    echo "$0: cannot handle this argument '$1'"
@@ -422,10 +366,12 @@ fi
 ##
 
 make_compstat () {
+# TODO: rewrite the following with heredocs?!
+
     # make 'compstat.c' and compile it
     temps_c="${temps_c} ${gactmp}/$$compstat.c"
     echo     "/* made by 'gac', can be thrown away */"   >  ${gactmp}/$$compstat.c
-    echo     "#include \"src/compiled.h\" "                   >> ${gactmp}/$$compstat.c
+    echo     "#include <src/compiled.h>"                   >> ${gactmp}/$$compstat.c
 
     echo     "#ifndef AVOID_PRECOMPILED"                         >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> ${gactmp}/$$compstat.c
@@ -509,6 +455,10 @@ for input in ${inputs}; do
         *.o) # look over '.o' source files
             name=`basename ${input} .o`
             process_o_file $name $input;;
+
+        *.lo) # look over '.lo' source files
+            name=`basename ${input} .lo`
+            process_o_file $name $input;;
         esac
     done
 
@@ -528,7 +478,7 @@ if [ $comp_howfar = "link" ]; then
         c_link ${output} "${objects}"
 
     else
-        if [ "X${output}" = "X" ]; then output="${name}.so"; fi
+        if [ "X${output}" = "X" ]; then output="${name}.la"; fi
         c_link_dyn ${output} "${objects}"
     fi
     
@@ -543,5 +493,6 @@ fi
 #Remove temporary directory.
 #We may assume it is empty at this stage.
 if [ "$savetemps" = "false" ]; then
+    rm -rf "${gactmp}/.libs"
     rmdir "${gactmp}"
 fi

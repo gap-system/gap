@@ -3,7 +3,7 @@
 #W  smlgp3.g                 GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-##  This file contains the reading and constrution functions for the groups
+##  This file contains the reading and construction functions for the groups
 ##  of size 2^n * p for 3 <= n <= 8 and p an odd prime. 2^n * p has to be
 ##  greater then 1000.
 ##
@@ -164,8 +164,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         iint := iint - c[ sid + 1 ];
         sid := sid * 1000 + 1;
         while ( not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
+                 or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
+                 or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
             if not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) then
                 # for typ = 1 an empty entry shows that it is the same like
                 # the precedessor

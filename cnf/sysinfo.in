@@ -36,6 +36,12 @@ c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
 c_addlibs=""
 
+# for backwards compatibility
+GAParch=@GAPARCH@
+GAParch_system=@GAPARCH@
+GAParch_abi=@ABI@-bit
+
+
 #############################################################################
 ##
 #E  sysinfo.in                ENDS HERE

@@ -202,7 +202,6 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-static char **sysargv;
 static char **sysenviron;
 
 /*
@@ -710,7 +709,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,1);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <x> must be an integer",
                            0L, 0L,
@@ -727,7 +726,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,2);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <y> must be an integer",
                            0L, 0L,
@@ -803,14 +802,14 @@ Obj FuncWindowCmd (
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
       tmp = ELM_LIST( args, i );
-      while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
+      while ( !IS_INTOBJ(tmp) && ! IsStringConv(tmp) ) {
         tmp = ErrorReturnObj(
                              "%d. argument must be a string or integer (not a %s)",
                              i, (Int)TNAM_OBJ(tmp),
                              "you can replace the argument <arg> via 'return <arg>;'" );
         SET_ELM_PLIST( args, i, tmp );
       }
-      if ( TNUM_OBJ(tmp) == T_INT )
+      if ( IS_INTOBJ(tmp) )
         len += 12;
       else
         len += 12 + LEN_LIST(tmp);
@@ -831,7 +830,7 @@ Obj FuncWindowCmd (
     {
       tmp = ELM_LIST(args,i);
 
-      if ( TNUM_OBJ(tmp) == T_INT ) {
+      if ( IS_INTOBJ(tmp) ) {
         *ptr++ = 'I';
         m = INT_INTOBJ(tmp);
         for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
@@ -1144,6 +1143,9 @@ syJmp_buf AlarmJumpBuffers[MAX_TIMEOUT_NESTING_DEPTH];
 UInt NumAlarmJumpBuffers = 0;
 
 Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
+#ifdef HPCGAP
+  return False;
+#endif
   return SyHaveAlarms ? True: False;
 }
 
@@ -1159,6 +1161,10 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   volatile Int iseconds, imicroseconds;
   volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
   Int restore_seconds = 0, restore_microseconds = 0;
+
+#ifdef HPCGAP
+  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
+#endif
 
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
@@ -1277,13 +1283,11 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   /* assemble and return the result */
   res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 2);
   SET_ELM_PLIST(res,1,True);
-  if (result)
-    {
-      SET_LEN_PLIST(res,2);
-      SET_ELM_PLIST(res,2,result);
-      CHANGED_BAG(res);
-    }
-  else {
+  if (result) {
+    SET_LEN_PLIST(res,2);
+    SET_ELM_PLIST(res,2,result);
+    CHANGED_BAG(res);
+  } else {
     SET_LEN_PLIST(res,1);
   }
   return res;
@@ -1366,7 +1370,7 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS(CurrStat));
-  Obj res =  CALL_2ARGS(ErrorInner,r,l);
+  Obj res = CALL_2ARGS(ErrorInner,r,l);
   return res;
 }
 
@@ -2181,11 +2185,11 @@ Obj FuncSWAP_MPTR (
     Obj                 obj1,
     Obj                 obj2 )
 {
-    if ( TNUM_OBJ(obj1) == T_INT || TNUM_OBJ(obj1) == T_FFE ) {
+    if ( IS_INTOBJ(obj1) || IS_FFE(obj1) ) {
         ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
-    if ( TNUM_OBJ(obj2) == T_INT || TNUM_OBJ(obj2) == T_FFE ) {
+    if ( IS_INTOBJ(obj2) || IS_FFE(obj2) ) {
         ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
@@ -2797,6 +2801,8 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 
+  MakeImmutable(res);
+  
   return res;
   
 }
@@ -3272,7 +3278,6 @@ void InitializeGap (
     NrImportedGVars = 0;
     NrImportedFuncs = 0;
 
-    sysargv = argv;
     sysenviron = environ;
 
     /* get info structures for the build in modules                        */

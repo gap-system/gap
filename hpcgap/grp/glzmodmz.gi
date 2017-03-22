@@ -127,7 +127,7 @@ local f,M2,o,e,MM,i;
 end);
 
 BindGlobal("SPRingGeneric",function(n,ring)
-local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh;
+local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh,g;
   nh:=n;
   n:=2*n;
   t:=function(i,j)
@@ -136,7 +136,7 @@ local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh;
   geni:=List([1..n],x->[]);
   mats:=[];
   slmats:=[];
-  id:=IdentityMat(n,One(ring));
+  id:=IdentityMat(n,ring);
   m:=0;
   for i in [1..nh] do
     #t_{i,n+i}
@@ -170,7 +170,10 @@ local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh;
     od;
   od;
 
-  return Group(slmats);
+  g := Group(slmats);
+  mat := Concatenation(id{[nh+1..n]},-id{[1..nh]});
+  SetInvariantBilinearForm(g,rec(matrix:=mat));
+  return g;
 end);
 
 InstallGlobalFunction("ConstructFormPreservingGroup",function(arg)

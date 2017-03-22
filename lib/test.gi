@@ -254,7 +254,7 @@ end;
 ##  file. (default is <K>true</K>).</Item>
 ##  </List>
 ## 
-##  <Example>
+##  <Example><![CDATA[
 ##  gap> tnam := Filename(DirectoriesLibrary(), "../doc/ref/demo.tst");;
 ##  gap> mask := function(str) return Concatenation("| ", 
 ##  >          JoinStringsWithSeparator(SplitString(str, "\n", ""), "\n| "),
@@ -271,7 +271,7 @@ end;
 ##  | 41
 ##  gap> ss := InputTextString(StringFile(tnam));;
 ##  gap> Test(ss);
-##  ########> Diff in test stream, line 8
+##  ########> Diff in test stream, line 8:
 ##  # Input is:
 ##  a := 13+29;
 ##  # Expected output:
@@ -298,7 +298,7 @@ end;
 ##  | # the following fails:
 ##  | gap> a := 13+29;
 ##  | 42
-##  </Example>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -331,7 +331,7 @@ InstallGlobalFunction("Test", function(arg)
              fi;
              Print("########> Time diff in ");
              if IsStream(fnam) then
-               Print("test stream, line ",line,"\n");
+               Print("test stream, line ",line,":\n");
              else
                Print(fnam,":",line,"\n");
              fi;
@@ -344,7 +344,7 @@ InstallGlobalFunction("Test", function(arg)
            reportDiff := function(inp, expout, found, fnam, line, time)
              Print("########> Diff in ");
              if IsStream(fnam) then
-               Print("test stream, line ",line,"\n");
+               Print("test stream, line ",line,":\n");
              else
                Print(fnam,":",line,"\n");
              fi;

@@ -1,0 +1,44 @@
+Originally written by Hans Boehm, with some platform-dependent code
+imported from the Boehm-Demers-Weiser GC, where it was contributed
+by many others.
+Currently maintained by Ivan Maidanski.
+
+Andreas Tobler <a.tobler@schweiz.org>
+Andrew Agno <agno+boehmgc@agno.net>
+Bradley Smith <brad@brad-smith.co.uk>
+Bruce Mitchener <bruce.mitchener@gmail.com>
+Carlos O'Donell <carlos@baldric.uwo.ca>
+Daniel Grayson <dan@math.uiuc.edu>
+Doug Lea <dl@cs.oswego.edu>
+Earl Chew <earl_chew@agilent.com>
+Emmanuel Stapf <manus@eiffel.com>
+Frank Schaefer <kelledin@gmail.com>
+Gilles Talis <gilles.talis@gmail.com>
+Gregory Farnum <gregory.farnum@dreamhost.com>
+H.J. Lu <hjl.tools@gmail.com>
+Hans Boehm <boehm@acm.org>
+Hans-Peter Nilsson <hp@gcc.gnu.org>
+Ian Wienand <ianw@gelato.unsw.edu.au>
+Ivan Maidanski <ivmai@mail.ru>
+James Cowgill <james410@cowgill.org.uk>
+Jeremy Huddleston <jeremyhu@apple.com>
+Jim Marshall <jim.marshall@wbemsolutions.com>
+Joerg Wagner <wagner@it.neclab.eu>
+Linas Vepstas <linasvepstas@gmail.com>
+Luca Barbato <lu_zero@gentoo.org>
+Kochin Chang <kochinc@outlook.com>
+Maged Michael <michael@cs.rochester.edu>
+Manuel Serrano <Manuel.Serrano@inria.fr>
+Michael Hope <michael.hope@linaro.org>
+Patrick Marlier <patrick.marlier@unine.ch>
+Pavel Raiskup <praiskup@redhat.com>
+Petter Urkedal <urkedal@nbi.dk>
+Philipp Zambelli <pzamb@iicm.edu>
+Ranko Zivojnovic <ranko@spidernet.net>
+Roger Hoover <roger.hoover@gmail.com>
+Sebastian Siewior <sebastian@breakpoint.cc>
+Takashi Yoshii <takashi.yoshii.zj@renesas.com>
+Thiemo Seufer <ica2_ts@csv.ica.uni-stuttgart.de>
+Thorsten Glaser <tg@debian.org>
+Tony Mantler <nicoya@ubb.ca>
+Yvan Roux <yvan.roux@linaro.org>

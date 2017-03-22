@@ -20,13 +20,11 @@
 #ifndef GAP_SYSTEM_H
 #define GAP_SYSTEM_H
 
-#define NOOP ((void) 0)
-
 /****************************************************************************
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <src/config.h>
+#include <gen/config.h>
 
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>

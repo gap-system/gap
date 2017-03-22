@@ -64,9 +64,7 @@
 #include <string.h>                     /* string functions */
 #include <time.h>                       /* time functions */
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
 #include <unistd.h>
-#endif
 
 
 #if HAVE_SIGNAL_H                       /* signal handling functions       */
@@ -134,41 +132,19 @@ Int SyFindOrLinkGapRootFile (
     Int4                crc_gap,
     TypGRF_Data *       result )
 {
-    UInt4               crc_dyn = 0;
     UInt4               crc_sta = 0;
     Int                 found_gap = 0;
-    Int                 found_dyn = 0;
     Int                 found_sta = 0;
-    Char                tmpbuffer[256];
-    Char *              tmp;
-    Char                module[256];
-    Char                name[256];
-    StructInitInfo *    info_dyn = 0;
+    Char                module[GAP_PATH_MAX];
+
     StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if HAVE_DLOPEN
-    const Char *        p;
-    const Char *        dot;
-    Int                 pos;
-    Int                 pot = 0;
-    InitInfoFunc        init;
-#endif
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
-    tmp = SyFindGapRootFile(filename, tmpbuffer);
-    if ( tmp ) {
-        strxcpy( result->pathname, tmp, sizeof(result->pathname) );
-        strxcpy( name, tmp, sizeof(name) );
-    }
-    if ( result->pathname[0] ) {
-        if ( SyIsReadableFile(result->pathname) == 0 ) {
-            found_gap = 1;
-        }
-        else {
-            result->pathname[0] = '\0';
-        }
+    if ( SyFindGapRootFile(filename, result->pathname, sizeof(result->pathname)) ) {
+        found_gap = 1;
     }
     if ( ! SyUseModule ) {
         return ( found_gap ? 3 : 0 );
@@ -190,106 +166,18 @@ Int SyFindOrLinkGapRootFile (
         }
     }
 
-
-    /* try to find any dynamically loadable module for filename            */
-#if HAVE_DLOPEN
-    pos = strlen(filename);
-    p   = filename + pos;
-    dot = 0;
-    while ( filename <= p && *p != '/' ) {
-        if ( *p == '.' ) {
-            dot = p;
-            pot = pos;
-        }
-        p--;
-        pos--;
-    }
-    strxcpy( module, "bin/", sizeof(module) );
-    strxcat( module, SyArchitecture, sizeof(module) );
-    strxcat( module, "/compiled/", sizeof(module) );
-    if ( dot ) {
-        if ( p < filename ) {
-            strxcat( module, dot+1, sizeof(module) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, filename, sizeof(module), pot );
-        }
-        else {
-            strxncat( module, filename, sizeof(module), pos );
-            strxcat( module, "/", sizeof(module) );
-            strxcat( module, dot+1, sizeof(module) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-        }
-    }
-    else {
-        strxcat( module, filename, sizeof(module) );
-    }
-    strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module, tmpbuffer);
-
-    /* special handling for the case of package files */
-    if (!tmp && !strncmp(filename, "pkg", 3)) {
-        Char pkgname[16];
-        const Char *p2;
-        Char *p1;
-        p2 = filename + 4; /* after the pkg/ */
-        p1 = pkgname;
-        while (*p2 != '\0' && *p2 != '/')
-          *p1++ = *p2++;
-        *p1 = '\0';
-
-        module[0] = '\0';
-        strxcat( module, "pkg/", sizeof(module) );
-        strxncat( module, pkgname, sizeof(module), p1 - pkgname + 1 );
-        strxcat( module, "/bin/", sizeof(module) );
-        strxcat( module, SyArchitecture, sizeof(module) );
-        strxcat( module, "/compiled/", sizeof(module) );
-        if ( dot ) {
-          if ( p <= p2 ) {
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, p2+1, sizeof(module), pot - (p2 + 1 - filename) );
-          }
-          else {
-            strxncat( module, p2+1, sizeof(module), pos - (p2 +1 - filename) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-          }
-        }
-        else {
-          strxcat( module, p2, sizeof(module) );
-        }
-        strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module, tmpbuffer);
-
-     }
-    if ( tmp ) {
-        init = SyLoadModule(tmp);
-        if ( ( (Int)init & 1 ) == 0 ) {
-            info_dyn  = (*init)();
-            crc_dyn   = info_dyn->crc;
-            found_dyn = 1;
-        }
-    }
-#endif
-
     /* check if we have to compute the crc                                 */
-    if ( found_gap && ( found_dyn || found_sta ) ) {
+    if ( found_gap && ( found_sta ) ) {
         if ( crc_gap == 0 ) {
-            crc_gap = SyGAPCRC(name);
+            crc_gap = SyGAPCRC(result->pathname);
         } else if ( SyCheckCRCCompiledModule ) {
-            if ( crc_gap != SyGAPCRC(name) ) {
+            if ( crc_gap != SyGAPCRC(result->pathname) ) {
                 return 4;
             }
         }
     }
 
-
     /* now decide what to do                                               */
-    if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-        Pr("#W Dynamic module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
-        found_dyn = 0;
-    }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
         Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
         found_sta = 0;
@@ -298,20 +186,12 @@ Int SyFindOrLinkGapRootFile (
         result->module_info = info_sta;
         return 2;
     }
-    if ( found_gap && found_dyn ) {
-        *(StructInitInfo**)result = info_dyn;
-        return 1;
-    }
     if ( found_gap ) {
         return 3;
     }
     if ( found_sta ) {
         result->module_info = info_sta;
         return 2;
-    }
-    if ( found_dyn ) {
-        result->module_info = info_dyn;
-        return 1;
     }
     return 0;
 }
@@ -494,11 +374,11 @@ Obj FuncCrcString( Obj self, Obj str ) {
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . link a module dynamically
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
 */
 
 /* some compiles define symbols beginning with an underscore               */
-/* but Mac OSX's dlopen adds one in for free!                              */
+/* but dlopen() on Mac OS X adds one in for free!                              */
 #if C_UNDERSCORE_SYMBOLS
 #if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"
@@ -525,25 +405,25 @@ Obj FuncCrcString( Obj self, Obj str ) {
 #define RTLD_LAZY               1
 #endif
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     void *          init;
     void *          handle;
 
+    *func = 0;
+
     handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
-#if 0
-    if ( handle == 0 )  return (InitInfoFunc) 1;
-#else
     if ( handle == 0 ) {
       Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
-      return (InitInfoFunc) 1;
+      return 1;
     }
-#endif
 
     init = dlsym( handle, SYS_INIT_DYNAMIC );
-    if ( init == 0 )  return (InitInfoFunc) 3;
+    if ( init == 0 )
+      return 3;
 
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -557,23 +437,26 @@ InitInfoFunc SyLoadModule ( const Char * name )
 
 #include <mach-o/rld.h>
 
-InitInfoFunc SyLoadModule ( const Char * name )
+InitInfoFunc SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     const Char *    names[2];
     unsigned long   init;
 
+    *func = 0;
+
     names[0] = name;
     names[1] = 0;
     if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
-        return (InitInfoFunc) 1;
+        return 1;
     }
     if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
-        return (InitInfoFunc) 3;
+        return 3;
     }
     if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
-        return (InitInfoFunc) 5;
+        return 5;
     }
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -585,9 +468,10 @@ InitInfoFunc SyLoadModule ( const Char * name )
 */
 #if !HAVE_DLOPEN && !HAVE_RLD_LOAD
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
-    return (InitInfoFunc) 7;
+    *func = 0;
+    return 7;
 }
 
 #endif
@@ -1365,224 +1249,6 @@ UInt SyIsIntr ( void )
     return isIntr;
 }
 
-
-/* Code for Timeouts */
-
-volatile int SyAlarmRunning = 0;
-volatile int SyAlarmHasGoneOff = 0;
-
-#endif
-
-
-#if HAVE_TIMER_CREATE && HAVE_SIGACTION && !defined(HPCGAP)
-
-/* Could live without sigaction but it seems to be pretty universal */
-
-/* This uses the POSIX 2001 API
-   which allows per-thread timing and minimises risk of
-   interference with other code using timers.
-
-   Sadly it's not always available, so we have an alternative implementation
-   below using the odler setitimer interface */
-
-/* Handler for the Alarm signal */
-
-int SyHaveAlarms = 1;
-
-/* This API lets us pick wich signal to use */
-#define TIMER_SIGNAL SIGVTALRM
-
-
-/* For now anyway we create one timer at initialisation and use it */
-static timer_t syTimer = 0;
-
-#if SYS_IS_CYGWIN32
-#define MY_CLOCK CLOCK_REALTIME
-#else
-#define MY_CLOCK CLOCK_THREAD_CPUTIME_ID
-#endif
-
-static void SyInitAlarm( void ) {
-/* Create the CPU timer used for timeouts */
-  struct sigevent se;
-  se.sigev_notify = SIGEV_SIGNAL;
-  se.sigev_signo = TIMER_SIGNAL;
-  se.sigev_value.sival_int = 0x12345678;
-  if (timer_create( MY_CLOCK, &se, &syTimer)) {
-    Pr("#E  Could not create interval timer. Timeouts will not be supported\n",0L,0L);
-    SyHaveAlarms = 0;
-  }
-}
-
-static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
-{
-    /* interrupt the executor                                             
-       Later we might want to do something cleverer with throwing an 
-       exception or dealing better if this isn't our timer     */
-  assert( signr == TIMER_SIGNAL);
-  assert( si->si_signo == TIMER_SIGNAL);
-  assert( si->si_code == SI_TIMER);
-  assert( si->si_value.sival_int == 0x12345678 );
-  SyAlarmRunning = 0;
-  SyAlarmHasGoneOff = 1;
-  InterruptExecStat();
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  struct sigaction sa;
-  
-  sa.sa_handler = NULL;
-  sa.sa_sigaction = syAnswerAlarm;
-  sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
-  
-  /* First install the handler */
-  if (sigaction( TIMER_SIGNAL, &sa, NULL ))
-    {
-      ErrorReturnVoid("Could not set handler for alarm signal",0L,0L,"you can return to ignore");
-      return;
-    }
-
-  
-  struct itimerspec tv;
-  tv.it_value.tv_sec = (time_t)seconds;
-  tv.it_value.tv_nsec = (long)nanoseconds;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_nsec = 0L;
-  
-  SyAlarmRunning = 1;
-  SyAlarmHasGoneOff = 0;
-  if (timer_settime(syTimer, 0, &tv, NULL)) {
-    signal(TIMER_SIGNAL, SIG_DFL);
-    ErrorReturnVoid("Could not set interval timer", 0L, 0L, "you can return to ignore");
-  }
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  struct itimerspec tv, buf;
-  tv.it_value.tv_sec = (time_t)0;
-  tv.it_value.tv_nsec = 0L;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_nsec = 0L;
-
-  timer_settime(syTimer, 0, &tv, &buf);
-  SyAlarmRunning = 0;
-  signal(TIMER_SIGNAL, SIG_IGN);
-
-  if (seconds)
-    *seconds = (UInt)buf.it_value.tv_sec;
-  if (nanoseconds)
-    *nanoseconds = (UInt)buf.it_value.tv_nsec;
-  return;
-}
-
-#else
-#if HAVE_SETITIMER && HAVE_SIGACTION && !defined(HPCGAP)
-
-/* Using setitimer and getitimer from sys/time.h */
-/* again sigaction could be replaced by signal if that was useful
- sigaction is just a bit more robust */
-
-/* Handler for the Alarm signal */
-
-int SyHaveAlarms = 1;
-
-
-static void SyInitAlarm( void ) {
-  /* No initialisation in this case */
-  return; 
-}
-
-static void syAnswerAlarm ( int signr, siginfo_t * si, void *context)
-{
-    /* interrupt the executor                                             
-       Later we might want to do something cleverer with throwing an 
-       exception or dealing better if this isn't our timer     */
-  assert( signr == SIGVTALRM);
-  assert( si->si_signo == SIGVTALRM);
-  SyAlarmRunning = 0;
-  SyAlarmHasGoneOff = 1;
-  InterruptExecStat();
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  struct sigaction sa;
-  
-  sa.sa_handler = NULL;
-  sa.sa_sigaction = syAnswerAlarm;
-  sigemptyset(&(sa.sa_mask));
-  sa.sa_flags = SA_RESETHAND | SA_SIGINFO | SA_RESTART;
-
-  
-  /* First install the handler */
-  if (sigaction( SIGVTALRM, &sa, NULL ))
-    {
-      ErrorReturnVoid("Could not set handler for alarm signal",0L,0L,"you can return to ignore");
-      return;
-    }
-
-  
-  struct itimerval tv;
-  tv.it_value.tv_sec = (time_t)seconds;
-  tv.it_value.tv_usec = (suseconds_t)(nanoseconds/1000);
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_usec = (suseconds_t)0L;
-  
-  SyAlarmRunning = 1;
-  SyAlarmHasGoneOff = 0;
-  if (setitimer(ITIMER_VIRTUAL, &tv, NULL)) {
-    signal(SIGVTALRM, SIG_IGN);
-    ErrorReturnVoid("Could not set interval timer", 0L, 0L, "you can return to ignore");
-  }
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  struct itimerval tv, buf;
-  tv.it_value.tv_sec = (time_t)0;
-  tv.it_value.tv_usec = (suseconds_t)0L;
-  tv.it_interval.tv_sec = (time_t)0;
-  tv.it_interval.tv_usec = (suseconds_t)0L;
-
-  setitimer(ITIMER_VIRTUAL, &tv, &buf);
-  SyAlarmRunning = 0;
-  signal(SIGVTALRM, SIG_IGN);
-
-  if (seconds)
-    *seconds = (UInt)buf.it_value.tv_sec;
-  if (nanoseconds)
-    *nanoseconds = 1000*(UInt)buf.it_value.tv_usec;
-  return;
-}
-
-#else
-int SyHaveAlarms = 0;
-
-/* stub implementations */
-
-static void SyInitAlarm( void ) {
-  /* No initialisation in this case */
-  return; 
-}
-
- 
-void SyInstallAlarm ( UInt seconds, UInt nanoseconds )
-{
-  assert(0);
-  return;
-}
-
-void SyStopAlarm(UInt *seconds, UInt *nanoseconds) {
-  assert(0);
-  return;
-}
-
-#endif
 #endif
 
 
@@ -2086,44 +1752,6 @@ Int SyGetch (
 
 /****************************************************************************
 **
-*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
-**
-**  'SyGetc' reads a character from <fid>, without any translation or
-**   interference
-*/
-
-Int SyGetc
-(
-    Int                 fid )
-{
-    unsigned char ch;
-    int ret = read(syBuf[fid].fp, &ch, 1);
-    if (ret < 1)
-      return EOF;
-    else
-      return (Int)ch;
-}
-
-/****************************************************************************
-**
-*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
-**
-**  'SyPutc' writes a character to <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyPutc
-(
-    Int                 fid,
-    Char                c )
-{
-    writeandcheck(syBuf[fid].fp,&c,1);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  SyFgets( <line>, <length>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
@@ -2342,7 +1970,7 @@ Int HasAvailableBytes( UInt fid )
       syBuf[fid].fp == -1)
     return -1;
 
-  if (syBuf[fid].bufno > 0)
+  if (syBuf[fid].bufno >= 0)
     {
       bufno = syBuf[fid].bufno;
       if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen)
@@ -2592,8 +2220,10 @@ Int ISINITREADLINE = 0;
 Int current_rl_fid;
 int charreadhook_rl ( void )
 {
+#if HAVE_SELECT
   if (OnCharReadHookActive != (Obj) 0)
     HandleCharReadHook(syBuf[current_rl_fid].fp);
+#endif
   return 0;
 }
 
@@ -2636,8 +2266,10 @@ Char * readlineFgets (
 
   /* read at most as much as we can buffer */
   rl_num_chars_to_read = length-2;
+#if HAVE_SELECT
   /* hook to read from other channels */
   rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
+#endif
   /* now do the real work */
   doingReadline = 1;
   rlres = readline(TLS(Prompt));
@@ -2754,24 +2386,6 @@ Char * syFgets (
     } else {
 #endif
 
-/*  EXPERIMENT    */
-    if ( LEN_PLIST(LineEditKeyHandlers) > 999 &&
-                         ELM_PLIST(LineEditKeyHandlers, 1000) != 0) {
-      linestr = Call0ArgsInNewReader(ELM_PLIST(LineEditKeyHandlers, 1000));
-      len = GET_LEN_STRING(linestr);
-      memcpy(line,CHARS_STRING(linestr),len);
-      line[len] = '\0';
-      /* switch back to cooked mode                                          */
-      if ( SyLineEdit == 1 )
-          syEndEdit(fid);
-
-      /* return the line (or '0' at end-of-file)                             */
-      if ( *line == '\0' )
-          return (Char*)0;
-      return line;
-    }
-
-/*  END EXPERIMENT    */
     /* In line editing mode 'length' is not allowed bigger than the
       yank buffer (= length of line buffer for input files).*/
     if (length > 32768)
@@ -3296,24 +2910,6 @@ Char *SyFgetsSemiBlock (
   return syFgets( line, length, fid, 0);
 }
 
-Obj FuncEchoLine(Obj self, Obj line, Obj len, Obj off, Obj pos, Obj gfid) {
-  Int i, clen, coff, cpos, fid;
-  Char *ptr;
-  clen = INT_INTOBJ(len);
-  coff = INT_INTOBJ(off);
-  ptr = CSTR_STRING(line);
-  cpos = INT_INTOBJ(pos);
-  fid = INT_INTOBJ(gfid);
-  for (i=0; i < coff; syEchoch('\b', fid), i++);
-  for (i=0; i < clen; i++) {
-    syEchoch(ptr[i], fid);
-  }
-  for (; cpos<0; syEchoch('\b', fid), cpos++);
-  for (; cpos>0; syEchoch('\6', fid), cpos--);
-  return (Obj)0;
-}
-
-
 
 /****************************************************************************
 **
@@ -3393,19 +2989,15 @@ void SySetErrorNo ( void )
 */
 #if HAVE_FORK || HAVE_VFORK
 
-#if HAVE_UNION_WAIT
-#include <sys/wait.h>
-#else
 #include <sys/types.h>
-# if HAVE_SYS_WAIT_H
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
-# endif
-# ifndef WEXITSTATUS
-#  define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
-# endif
-# ifndef WIFEXITED
-#  define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-# endif
+#endif
+#ifndef WEXITSTATUS
+# define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+#endif
+#ifndef WIFEXITED
+# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
 #endif
 
 extern char ** environ;
@@ -3504,17 +3096,25 @@ UInt SyExecuteProcess (
 {
     pid_t                   pid;                    /* process id          */
     pid_t                   wait_pid;
-#if HAVE_UNION_WAIT
-    union wait              status;                 /* non POSIX           */
-#else
     int                     status;                 /* do not use `Int'    */
-#endif
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
+    sig_handler_t           *func;
+    sig_handler_t           *func2;
 
-#if !HAVE_WAITPID
-    struct rusage           usage;
-#endif
+
+    /* turn off the SIGCHLD handling, so that we can be sure to collect this child
+       `After that, we call the old signal handler, in case any other children have died in the
+       meantime. This resets the handler */
+
+    func2 = signal( SIGCHLD, SIG_DFL );
+
+    /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
+     * was set to the default or 'ignore'. In these cases (or if SIG_ERR is
+     * returned), just use a null signal hander - the default on most systems
+     * is to do nothing */
+    if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
+      func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
     pid = vfork();
@@ -3525,19 +3125,24 @@ UInt SyExecuteProcess (
     /* we are the parent                                                   */
     if ( pid != 0 ) {
 
+        /* ignore a CTRL-C                                                 */
+        func = signal( SIGINT, SIG_IGN );
+
         /* wait for some action                                            */
-#if HAVE_WAITPID
         wait_pid = waitpid( pid, &status, 0 );
-#else
-        wait_pid = wait4( pid, &status, 0, &usage );
-#endif
         if ( wait_pid == -1 ) {
+            signal( SIGINT, func );
+            (*func2)(SIGCHLD);
             return -1;
         }
 
         if ( WIFSIGNALED(status) ) {
+            signal( SIGINT, func );
+            (*func2)(SIGCHLD);
             return -1;
         }
+        signal( SIGINT, func );
+        (*func2)(SIGCHLD);
         return WEXITSTATUS(status);
     }
 
@@ -3878,22 +3483,22 @@ Obj SyIsDir ( const Char * name )
 **
 *F  SyFindGapRootFile( <filename>,<buffer> ) . .  find file in system area
 */
-Char * SyFindGapRootFile ( const Char * filename, Char * result )
+Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSize )
 {
-    Int             k;
+    Int k;
 
-    for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
+    for ( k = 0; k < sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]); k++ ) {
         if ( SyGapRootPaths[k][0] ) {
-            result[0] = '\0';
-            if (strlcpy( result, SyGapRootPaths[k], 256 ) >= 256)
+            if (strlcpy( buffer, SyGapRootPaths[k], bufferSize ) >= bufferSize)
                 continue;
-            if (strlcat( result, filename, 256 ) >= 256)
+            if (strlcat( buffer, filename, bufferSize ) >= bufferSize)
             	continue;
-            if ( SyIsReadableFile(result) == 0 ) {
-                return result;
+            if ( SyIsReadableFile(buffer) == 0 ) {
+                return buffer;
             }
         }
     }
+    buffer[0] = '\0';
     return 0;
 }
 
@@ -3991,7 +3596,13 @@ Char * SyTmpdir( const Char * hint )
 {
   static char name[1024];
   static const char *base = TMPDIR_BASE;
-  strxcpy(name, base, sizeof(name));
+  char * env_tmpdir;
+  if ((env_tmpdir = getenv("TMPDIR")) != NULL) {
+    strxcpy(name, env_tmpdir, sizeof(name));
+    strxcat(name, "/", sizeof(name));
+  }
+  else
+    strxcpy(name, base, sizeof(name));
   if (hint)
     strxcat(name, hint, sizeof(name));
   else
@@ -4027,6 +3638,96 @@ Char * SyTmpdir ( const Char * hint )
 #endif
 #endif
 
+Obj SyReadStringFile(Int fid)
+{
+    Char            buf[32769];
+    Int             ret, len;
+    UInt            lstr;
+    Obj             str;
+
+    /* read <fid> until we see  eof   (in 32kB pieces)                     */
+    str = NEW_STRING(0);
+    len = 0;
+    do {
+        ret = read( syBuf[fid].fp , buf, 32768);
+        if (ret < 0) {
+            SySetErrorNo();
+            return Fail;
+        }
+        len += ret;
+        GROW_STRING( str, len );
+        lstr = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+lstr, buf, ret );
+        *(CHARS_STRING(str)+lstr+ret) = '\0';
+        SET_LEN_STRING(str, lstr+ret);
+    } while(ret > 0);
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    syBuf[fid].ateof = 1;
+    return str;
+}
+
+#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
+/* fstat seems completely broken under CYGWIN */
+/* first try to get the whole file as one chunk, this avoids garbage
+   collections because of the GROW_STRING calls below    */
+Obj SyReadStringFileStat(Int fid)
+{
+    Int             ret, len;
+    Obj             str;
+    Int             l;
+    char            *ptr;
+    struct stat     fstatbuf;
+
+    if( fstat( syBuf[fid].fp, &fstatbuf) == 0 ) {
+        if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
+            ErrorMayQuit(
+                "The file is too big to fit the current workspace",
+                (Int)0, (Int)0);
+        }
+        len = (Int) fstatbuf.st_size;
+        str = NEW_STRING( len );
+        CHARS_STRING(str)[len] = '\0';
+        SET_LEN_STRING(str, len);
+        ptr = CSTR_STRING(str);
+        while (len > 0) {
+            l = (len > 1048576) ? 1048576 : len;
+            ret = read( syBuf[fid].fp, ptr, l);
+            if (ret == -1) {
+                SySetErrorNo();
+                return Fail;
+            }
+            len -= ret;
+            ptr += ret;
+        }
+        syBuf[fid].ateof = 1;
+        return str;
+    } else {
+        SySetErrorNo();
+        return Fail;
+    }
+}
+
+Obj SyReadStringFid(Int fid)
+{
+    if(syBuf[fid].pipe == 1) {
+        return SyReadStringFile(fid);
+    } else {
+        return SyReadStringFileStat(fid);
+    }
+}
+
+#else
+
+Obj SyReadStringFid(Int fid) {
+    return SyReadStringFile(fid);
+}
+
+#endif
+
 
 
 /****************************************************************************
@@ -4037,9 +3738,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CrcString", 1, "string",
       FuncCrcString, "src/sysfiles.c:FuncCrcString" },
-
-    { "EchoLine", 5, "line, len, off, pos, fid",
-      FuncEchoLine, "src/sysfiles.c:FuncEchoLine" },
 
 #if HAVE_LIBREADLINE
     { "BINDKEYSTOGAPHANDLER", 1, "keyseq",

@@ -17,23 +17,9 @@
 **  dependent  functions.  This file contains  all system dependent functions
 **  except file and stream operations, which are implemented in "sysfiles.c".
 **  The following labels determine which operating system is actually used.
-**
-**  Under UNIX autoconf  is used to check  various features of  the operating
-**  system and the compiler.  Should you have problem compiling GAP check the
-**  file "bin/CPU-VENDOR-OS/config.h" after you have done a
-**
-**     ./configure ; make config
-**
-**  in the root directory.  And then do a
-**
-**     make compile
-**
-**  to compile and link GAP.
 */
 
 #include <src/system.h>                 /* system dependent part */
-
-#include <src/gap_version.h>            /* SCM information */
 
 #include <src/gap.h>                    /* get UserHasQUIT */
 
@@ -85,19 +71,6 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
-
-/****************************************************************************
-**
-*V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
-*V  SyBuildDate . . . . . . . . . . . . . . . . . . . date and time of build 
-** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
-** and will typically contain the tag and commit SHA that was used to build
-** the executable.
-**
-** This variable will replace SyKernelVersion above.
-*/
-const Char * SyBuildVersion  = GAP_BUILD_VERSION;
-const Char * SyBuildDateTime = GAP_BUILD_DATETIME;
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -2143,7 +2116,7 @@ void InitSystem (
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
  FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR(SyBuildVersion);
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");

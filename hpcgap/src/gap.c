@@ -17,22 +17,15 @@
 
 #include <src/system.h>                 /* system dependent part */
 
-#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-
 #include <sys/time.h>
 #include <unistd.h>                     /* move this and wrap execvp later */
-
-/* TL: extern char * In; */
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
 #include <src/scanner.h>                /* scanner */
 
 #include <src/gap.h>                    /* error handling, initialisation */
-#include <src/hpc/tls.h>                /* thread-local storage */
-
 #include <src/read.h>                   /* reader */
 
 #include <src/gvars.h>                  /* global variables */
@@ -99,24 +92,18 @@
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/weakptr.h>                /* weak pointers */
 #include <src/profile.h>                /* profiling */
-#include <src/hpc/serialize.h>          /* object serialization */
 
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
 
-#ifdef WITH_ZMQ
-#include <src/hpc/zmqgap.h>             /* GAP ZMQ support */
-#endif
-
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
+#include <src/hpc/aobjects.h>
 #include <src/hpc/threadapi.h>
-#include <src/hpc/aobjects.h>
+#include <src/hpc/serialize.h>          /* object serialization */
+
 #include <src/objset.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
-#include <src/hpc/aobjects.h>
 
 #include <src/vars.h>                   /* variables */
 
@@ -168,43 +155,30 @@ UInt Time;
 **  is not yet defined, or the fallback methods not yet installed. To avoid
 **  this problem, we check, and use PrintObj if there is a problem
 **
-**  We also install a hook to use the GAP level function 'CustomView' if
-**  it exists. This can for example be used to restrict the amount of output
-**  or to show long output in a pager or .....
-**  
 **  This function also supplies the \n after viewing.
 */
 UInt ViewObjGVar;
-UInt CustomViewGVar;
 
 void ViewObjHandler ( Obj obj )
 {
   volatile Obj        func;
-  volatile Obj        cfunc;
   syJmp_buf             readJmpError;
 
   /* get the functions                                                   */
   func = ValAutoGVar(ViewObjGVar);
-  cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-  if ( ! READ_ERROR() ) {
-    if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
-      CALL_1ARGS(cfunc, obj);
-    }
-    else if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
+  TRY_READ {
+    if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
     else {
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
-  else {
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-  }
+  memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
 }
 
 
@@ -231,14 +205,12 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-char *original_argv0;
-static char **sysargv;
 static char **sysenviron;
 
-/* TL: Obj ShellContext = 0; */
-/* TL: Obj BaseShellContext = 0; */
-/* TL: UInt ShellContextDepth; */
-
+/*
+TL: Obj ShellContext = 0;
+TL: Obj BaseShellContext = 0;
+*/
 
 Obj Shell ( Obj context, 
             UInt canReturnVoid,
@@ -264,7 +236,6 @@ Obj Shell ( Obj context,
   TLS(ShellContext) = context;
   oldBaseShellContext = TLS(BaseShellContext);
   TLS(BaseShellContext) = context;
-  TLS(ShellContextDepth) = 0;
   oldRecursionDepth = TLS(RecursionDepth);
   
   /* read-eval-print loop                                                */
@@ -510,239 +481,6 @@ Obj FuncSHELL (Obj self, Obj args)
   TLS(UserHasQuit) = 0;
   return res;
 }
-#ifdef HAVE_REALPATH
-
-static void StrAppend(char **st, const char *st2)
-{
-    Int len,len2;
-    if (*st == NULL)
-        len = 0;
-    else
-        len = strlen(*st);
-    len2 = strlen(st2);
-    *st = realloc(*st,len+len2+1);
-    if (*st == NULL) {
-        printf("Extremely unexpected out of memory error. Giving up.\n");
-        exit(1);
-    }
-    memcpy(*st + len, st2, len2);
-}
-
-static void DoFindMyself(char *myself, char **mypath, char **gappath)
-{
-    char *tmppath;
-    char *p;
-
-    /* First we find our own position in the filesystem: */
-    *mypath = realpath(myself,NULL);
-    if (*mypath == NULL) {
-        printf("Could not determine my own path, giving up.\n");
-        exit(-1);
-    }
-    tmppath = NULL;
-    StrAppend(&tmppath,*mypath);
-    p = tmppath+strlen(tmppath);
-    while (*p != '/') p--;
-    *p = 0;
-    StrAppend(&tmppath,"/../..");
-    *gappath = realpath(tmppath,NULL);
-    if (*gappath == NULL) {
-        printf("Could not determine GAP path, giving up.\n");
-        exit(-2);
-    }
-    free(tmppath);
-}
-
-
-int DoCreateStartupScript(int argc, char *argv[], int withws)
-{
-    /* This is used to create a startup shell script, possibly using
-     * a saved workspace in a standard location. */
-    /* We can use malloc/realloc here arbitrarily since this GAP
-     * process will never start its memory manager before terminating! */
-    char *mypath;
-    char *gappath;
-    char *tmppath;
-    char *p;
-    FILE *f;
-    int i;
-
-    DoFindMyself(argv[0],&mypath,&gappath);
-
-    /* Now write out the startup script: */
-    f = fopen(argv[2],"w");
-    if (f == NULL) {
-        printf("Could not write startup script to\n  %s\ngiving up.\n",argv[2]);
-        return -3;
-    }
-    fprintf(f,"#!/bin/sh\n");
-    fprintf(f,"# Created by %s\n",mypath);
-    fprintf(f,"GAP_DIR=\"%s\"\n",gappath);
-    fprintf(f,"GAP_PRG=\"%s\"\n",mypath);
-    fprintf(f,"GAP_ARCH=\"%s\"\n",SYS_ARCH);
-    tmppath = NULL;
-    StrAppend(&tmppath,SYS_ARCH);
-    p = tmppath;
-    while (*p != 0 && *p != '/') p++;
-    *p++ = 0;
-    fprintf(f,"GAP_ARCH_SYS=\"%s\"\n",tmppath);
-    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);	// FIXME: WRONG
-    fprintf(f,"exec %s -l %s",mypath,gappath);
-    if (withws) {
-        tmppath[0] = 0;
-        StrAppend(&tmppath,mypath);
-        p = tmppath+strlen(tmppath);
-        while (*p != '/') p--;
-        p[1] = 0;
-        StrAppend(&tmppath,"workspace.gap");
-        fprintf(f," -L %s",tmppath);
-    }
-    for (i = 3;i < argc;i++) fprintf(f," %s",argv[i]);
-    fprintf(f," \"$@\"\n");
-    fclose(f);
-#ifdef HAVE_CHMOD
-    chmod(argv[2],S_IRUSR | S_IWUSR | S_IXUSR |
-                  S_IRGRP | S_IWGRP | S_IXGRP |
-                  S_IROTH | S_IXOTH);
-#else
-    printf("Warning: Do not have chmod to make script executable!\n");
-#endif
-    free(tmppath);
-    free(mypath);
-    free(gappath);
-    return 0;
-}
-
-int DoCreateWorkspace(char *myself)
-{
-    /* This is used to create an architecture-dependent saved
-     * workspace in a standard location. */
-    char *mypath;
-    char *gappath;
-    char *command;
-    char *tmppath;
-    char *p;
-    FILE *f;
-
-    DoFindMyself(myself,&mypath,&gappath);
-
-    /* Now we create a saved workspace: */
-    printf("Creating workspace...\n");
-    command = NULL;
-    StrAppend(&command,mypath);
-    StrAppend(&command," -r");
-    StrAppend(&command," -l ");
-    StrAppend(&command,gappath);
-
-    tmppath = NULL;
-    StrAppend(&tmppath,mypath);
-    p = tmppath+strlen(tmppath);
-    while (*p != '/') p--;
-    p[1] = 0;
-    StrAppend(&tmppath,"workspace.gap");
-
-    /* Now to the action: */
-    f = popen(command,"w");
-    if (f == NULL) {
-        printf("Could not start myself to save workspace, giving up.\n");
-        return -6;
-    }
-    fprintf(f,"??blabla\n");
-    fprintf(f,"SaveWorkspace(\"%s\");\n",tmppath);
-    fprintf(f,"quit;\n");
-    fflush(f);
-    pclose(f);
-    printf("\nDone creating workspace in\n  %s\n",tmppath);
-
-    free(tmppath);
-    free(command);
-    free(gappath);
-    free(mypath);
-
-    return 0;
-}
-
-int DoFixGac(char *myself)
-{
-    char *mypath;
-    char *gappath;
-    FILE *f;
-    char *gacpath;
-    char *gapbin;
-    char *newpath;
-    char *p,*q,*r;
-    char *buf,*buf2;
-    size_t len,written;
-
-    DoFindMyself(myself,&mypath,&gappath);
-    gacpath = NULL;
-    StrAppend(&gacpath,mypath);
-    p = gacpath + strlen(gacpath);
-    while (*p != '/') p--;
-    *p = 0;
-    gapbin = NULL;
-    StrAppend(&gapbin,gacpath);
-    StrAppend(&gacpath,"/gac");
-    newpath = NULL;
-    StrAppend(&newpath,gacpath);
-    StrAppend(&newpath,".new");
-    f = fopen(gacpath,"r");
-    if (f == NULL) {
-        printf("Could not open gac. Giving up.\n");
-        return -7;
-    }
-    buf = malloc(65536);
-    buf2 = malloc(65536+strlen(gapbin)+10);
-    if (buf == NULL || buf2 == NULL) {
-        printf("Could not allocate 128kB of memory. Giving up.\n");
-        return -8;
-    }
-    len = fread(buf,1,65534,f);
-    fclose(f);
-
-    /* Now manipulate it: */
-    p = buf;
-    p[len] = 0;
-    p[len+1] = 0;
-    q = buf2;
-    while (*p) {
-        if (!strncmp(p,"gap_bin=",8)) {
-            while (*p != '\n' && *p != 0) p++;
-            *q++ = 'g'; *q++ = 'a'; *q++ = 'p'; *q++ = '_';
-            *q++ = 'b'; *q++ = 'i'; *q++ = 'n'; *q++ = '=';
-            r = gapbin;
-            while (*r) *q++ = *r++;
-            *q++ = '\n';
-        } else {
-            while (*p != '\n' && *p != 0) *q++ = *p++;
-            *q++ = *p++;
-        }
-    }
-    len = q - buf2;
-
-    f = fopen(newpath,"w");
-    if (f == NULL) {
-        printf("Could not open gac.new. Giving up.\n");
-        return -9;
-    }
-    written = fwrite(buf2,1,len,f);
-    if (written < len) {
-        printf("Could not write gac.new. Giving up.\n");
-        fclose(f);
-        return -10;
-    }
-    if (fclose(f) < 0) {
-        printf("Could not close gac.new. Giving up.\n");
-        fclose(f);
-        return -11;
-    }
-    if (rename(newpath,gacpath) < 0) {
-        printf("Could not replace gac with new version. Giving up.\n");
-        return -12;
-    }
-    return 0;
-}
-#endif
 
 int realmain (
 	  int                 argc,
@@ -773,37 +511,8 @@ int main (
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
-#ifdef HAVE_REALPATH
-  if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
-      return DoCreateStartupScript(argc,argv,0);
-  }
-  if (argc >= 3 && !strcmp(argv[1],"--createstartupscriptwithws")) {
-      return DoCreateStartupScript(argc,argv,1);
-  }
-  if (argc >= 2 && !strcmp(argv[1],"--createworkspace")) {
-      return DoCreateWorkspace(argv[0]);
-  }
-  if (argc >= 2 && !strcmp(argv[1],"--fixgac")) {
-      return DoFixGac(argv[0]);
-  }
-#endif
-  
-  original_argv0 = argv[0];
-  sysargv = argv;
-  sysenviron = environ;
-  
-  /* Initialize assorted variables in this file */
-  /*   BreakOnError = 1;
-       ErrorCount = 0; */
-  NrImportedGVars = 0;
-  NrImportedFuncs = 0;
-  ErrorHandler = (Obj) 0;
-  TLS(UserHasQUIT) = 0;
-  TLS(UserHasQuit) = 0;
-  SystemErrorCode = 0;
-    
   /* initialize everything and read init.g which runs the GAP session */
-  InitializeGap( &argc, argv );
+  InitializeGap( &argc, argv, environ );
   if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
@@ -901,21 +610,54 @@ Obj FuncRUNTIMES( Obj     self)
 
 /****************************************************************************
 **
-*F  FuncSystemClock( <self> . . . . . . . . . internal function 'SystemClock'
+*F  FuncNanosecondsSinceEpoch( <self> )
 **
-**  'FuncSystemClock' implements the internal function 'SystemClock'.
+**  'FuncNanosecondsSinceEpoch' returns an integer which represents the
+**  number of nanoseconds since some unspecified starting point. This
+**  function wraps SyNanosecondsSinceEpoch.
 **
-**  'SystemClock()'
-**
-**  'SystemClock' returns the current value of the system clock, as reported
-**  by gettimeofday(), as a floating point number valued in seconds.
 */
-
-Obj FuncSystemClock(Obj self)
+Obj FuncNanosecondsSinceEpoch(Obj self)
 {
-  struct timeval t;
-  gettimeofday(&t, NULL);
-  return NEW_MACFLOAT( (double) t.tv_sec + ((double) t.tv_usec) / 1000000.0);
+  Int8 val = SyNanosecondsSinceEpoch();
+
+  if(val == -1) {
+    return Fail;
+  }
+  else {
+    return ObjInt_Int8(val);
+  }
+}
+
+/****************************************************************************
+**
+*F  FuncNanosecondsSinceEpochInfo( <self> )
+**
+**  'FuncNanosecondsSinceEpochInformation' returns a plain record
+**  contains information about the timers used for FuncNanosecondsSinceEpoch
+**
+*/
+Obj FuncNanosecondsSinceEpochInfo(Obj self)
+{
+  Obj res, tmp;
+  Int8 resolution;
+
+  res = NEW_PREC(4);
+  /* Note this has to be "DYN" since we're not passing a
+     literal but a const char * */
+  C_NEW_STRING_DYN(tmp, SyNanosecondsSinceEpochMethod);
+  AssPRec(res, RNamName("Method"), tmp);
+  AssPRec(res, RNamName("Monotonic"),
+               SyNanosecondsSinceEpochMonotonic ? True : False);
+  resolution = SyNanosecondsSinceEpochResolution();
+  if (resolution > 0) {
+      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(resolution));
+      AssPRec(res, RNamName("Reliable"), True);
+  } else if (resolution <= 0) {
+      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(-resolution));
+      AssPRec(res, RNamName("Reliable"), False);
+  }
+  return res;
 }
 
 
@@ -979,7 +721,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,1);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <x> must be an integer",
                            0L, 0L,
@@ -996,7 +738,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,2);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <y> must be an integer",
                            0L, 0L,
@@ -1072,14 +814,14 @@ Obj FuncWindowCmd (
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
       tmp = ELM_LIST( args, i );
-      while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
+      while ( !IS_INTOBJ(tmp) && ! IsStringConv(tmp) ) {
         tmp = ErrorReturnObj(
                              "%d. argument must be a string or integer (not a %s)",
                              i, (Int)TNAM_OBJ(tmp),
                              "you can replace the argument <arg> via 'return <arg>;'" );
         SET_ELM_PLIST( args, i, tmp );
       }
-      if ( TNUM_OBJ(tmp) == T_INT )
+      if ( IS_INTOBJ(tmp) )
         len += 12;
       else
         len += 12 + LEN_LIST(tmp);
@@ -1100,7 +842,7 @@ Obj FuncWindowCmd (
     {
       tmp = ELM_LIST(args,i);
 
-      if ( TNUM_OBJ(tmp) == T_INT ) {
+      if ( IS_INTOBJ(tmp) ) {
         *ptr++ = 'I';
         m = INT_INTOBJ(tmp);
         for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
@@ -1165,7 +907,6 @@ Obj FuncWindowCmd (
     SET_ELM_PLIST( list, 1, tmp );
     SET_LEN_PLIST( list, i-1 );
     return CALL_XARGS(Error,list);
-    /*     return FuncError( 0, list );*/
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
@@ -1189,43 +930,38 @@ Obj FuncWindowCmd (
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
-/* Obj  ErrorLVars0;    */
-/* TL: Obj  ErrorLVars; */
-/* TL: Int  ErrorLLevel; */
-
-/* TL: extern Obj BottomLVars; */
-
+/*
+TL: Obj  ErrorLVars0;   // the initial ErrorLVars value, i.e. for the lvars were the break occurred
+TL: Obj  ErrorLVars;    // ErrorLVars as modified by DownEnv / UpEnv
+TL: Int  ErrorLLevel;   // record where on the stack ErrorLVars is relative to the top, i.e. ErrorLVars0
+*/
 
 void DownEnvInner( Int depth )
 {
-  /* if we really want to go up                                          */
-  if ( depth < 0 && -TLS(ErrorLLevel) <= -depth ) {
-    depth = 0;
+  /* if we are asked to go up ... */
+  if ( depth < 0 ) {
+    /* ... we determine which level we are supposed to end up on ... */
+    depth = TLS(ErrorLLevel) + depth;
+    if (depth < 0) {
+      depth = 0;
+    }
+    /* ... then go back to the top, and later go down to the appropriate level. */
     TLS(ErrorLVars) = TLS(ErrorLVars0);
     TLS(ErrorLLevel) = 0;
-    TLS(ShellContextDepth) = 0;
-    TLS(ShellContext) = TLS(BaseShellContext);
-  }
-  else if ( depth < 0 ) {
-    depth = -TLS(ErrorLLevel) + depth;
-    TLS(ErrorLVars) = TLS(ErrorLVars0);
-    TLS(ErrorLLevel) = 0;
-    TLS(ShellContextDepth) = 0;
     TLS(ShellContext) = TLS(BaseShellContext);
   }
   
-  /* now go down                                                         */
+  /* now go down */
   while ( 0 < depth
           && TLS(ErrorLVars) != TLS(BottomLVars)
-          && PTR_BAG(TLS(ErrorLVars))[2] != TLS(BottomLVars) ) {
-    TLS(ErrorLVars) = PTR_BAG(TLS(ErrorLVars))[2];
-    TLS(ErrorLLevel)--;
-    TLS(ShellContext) = PTR_BAG(TLS(ShellContext))[2];
-    TLS(ShellContextDepth)--;
+          && PARENT_LVARS(TLS(ErrorLVars)) != TLS(BottomLVars) ) {
+    TLS(ErrorLVars) = PARENT_LVARS(TLS(ErrorLVars));
+    TLS(ErrorLLevel)++;
+    TLS(ShellContext) = PARENT_LVARS(TLS(ShellContext));
     depth--;
   }
 }
-  
+
 Obj FuncDownEnv (
                  Obj                 self,
                  Obj                 args )
@@ -1242,14 +978,12 @@ Obj FuncDownEnv (
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == TLS(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
 
   DownEnvInner( depth);
-
-  /* return nothing                                                      */
   return 0;
 }
 
@@ -1268,7 +1002,7 @@ Obj FuncUpEnv (
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
   }
-  if ( TLS(ErrorLVars) == 0 ) {
+  if ( TLS(ErrorLVars) == TLS(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
     return 0;
   }
@@ -1277,6 +1011,38 @@ Obj FuncUpEnv (
   return 0;
 }
 
+Obj FuncExecutingStatementLocation(Obj self, Obj context)
+{
+  Obj currLVars = TLS(CurrLVars);
+  Expr call;
+  Int line;
+  Obj filename;
+  Obj retlist;
+  retlist = Fail;
+  if (context == TLS(BottomLVars))
+    return Fail;
+  SWITCH_TO_OLD_LVARS(context);
+  call = BRK_CALL_TO();
+  if (
+#if T_PROCCALL_0ARGS
+        ( FIRST_STAT_TNUM <= TNUM_STAT(call)
+                && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#else
+        ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
+#endif
+        ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
+              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
+    line = LINE_STAT(call);
+    filename = FILENAME_STAT(call);
+    retlist = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(retlist, 2);
+    SET_ELM_PLIST(retlist, 1, filename);
+    SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
+    CHANGED_BAG(retlist);
+  }
+  SWITCH_TO_OLD_LVARS( currLVars );
+  return retlist;
+}
 
 Obj FuncPrintExecutingStatement(Obj self, Obj context)
 {
@@ -1318,30 +1084,29 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
-    syJmp_buf readJmpError;
-    Obj plain_args;
-    Obj res;
-    Obj currLVars;
-    Obj result;
-    Int recursionDepth;
-    Stat currStat;
+    volatile syJmp_buf readJmpError;
+    volatile Obj res;
+    volatile Obj currLVars;
+    volatile Obj tilde;
+    volatile Int recursionDepth;
+    volatile Stat currStat;
     int lockSP;
     Region *savedRegion;
+
     if (!IS_FUNC(func))
-      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
-      ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <args> must be a list",0,0);
-    if (!IS_PLIST(args))
-      {
-        plain_args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(plain_args);
-      }
-    else 
-      plain_args = args;
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
+    if (!IS_PLIST(args)) {
+      args = SHALLOW_COPY_OBJ(args);
+      PLAIN_LIST(args);
+    }
+
     memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
+    tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
     savedRegion = TLS(currentRegion);
@@ -1361,43 +1126,16 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       if (TLS(CurrentHashLock))
         HashUnlock(TLS(CurrentHashLock));
     } else {
-      switch (LEN_PLIST(plain_args)) {
-      case 0: result = CALL_0ARGS(func);
-        break;
-      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
-        break;
-      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2));
-        break;
-      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
-        break;
-      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4));
-        break;
-      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
-        break;
-      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
-                                  ELM_PLIST(plain_args,6));
-        break;
-      default: result = CALL_XARGS(func, plain_args);
-      }
+      Obj result = CallFuncList(func, args);
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
       TLS(currentRegion) = savedRegion;
       SET_ELM_PLIST(res,1,True);
-      if (result)
-        {
-          SET_LEN_PLIST(res,2);
-          SET_ELM_PLIST(res,2,result);
-          CHANGED_BAG(res);
-        }
-      else
+      if (result) {
+        SET_LEN_PLIST(res,2);
+        SET_ELM_PLIST(res,2,result);
+        CHANGED_BAG(res);
+      } else
         SET_LEN_PLIST(res,1);
     }
     memcpy((void *)&TLS(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
@@ -1425,110 +1163,86 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
 }
 
 
- #define MAX_TIMEOUT_NESTING_DEPTH 1024
- 
- syJmp_buf AlarmJumpBuffers[MAX_TIMEOUT_NESTING_DEPTH];
- UInt NumAlarmJumpBuffers = 0;
+#define MAX_TIMEOUT_NESTING_DEPTH 1024
 
- Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
-   return SyHaveAlarms ? True: False;
- }
-   
- Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
+syJmp_buf AlarmJumpBuffers[MAX_TIMEOUT_NESTING_DEPTH];
+UInt NumAlarmJumpBuffers = 0;
+
+Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
+#ifdef HPCGAP
+  return False;
+#endif
+  return SyHaveAlarms ? True: False;
+}
+
+Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
-  Obj plain_args;
-    Obj res;
-    Obj currLVars;
-    Obj result;
-    Int recursionDepth;
-    Stat currStat;
-    if (!SyHaveAlarms)
-      ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
-    if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <seconds> must be a non-negative small integer",0,0);
-    if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <microseconds> must be a non-negative small integer less than 10^9",0,0);
-    if (!IS_FUNC(func))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <func> must be a function",0,0);
-    if (!IS_LIST(args))
-      ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>,<args>): <args> must be a list",0,0);
-    if (!IS_PLIST(args))
-      {
-        plain_args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(plain_args);
-      }
-    else 
-      plain_args = args;
-    if (SyAlarmRunning)
-      ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
-		   " There is already a timeout running", 0, 0);
-    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
-      ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
-    currLVars = TLS(CurrLVars);
-    currStat = TLS(CurrStat);
-    recursionDepth = TLS(RecursionDepth);
-    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
-      /* Timeout happened */
-      TLS(CurrLVars) = currLVars;
-      TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
-      TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-      TLS(CurrStat) = currStat;
-      TLS(RecursionDepth) = recursionDepth;
-      res = Fail;
-    } else {
-      SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
-      switch (LEN_PLIST(plain_args)) {
-      case 0: result = CALL_0ARGS(func);
-        break;
-      case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
-        break;
-      case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2));
-        break;
-      case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
-        break;
-      case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4));
-        break;
-      case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
-        break;
-      case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
-                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
-                                  ELM_PLIST(plain_args,6));
-        break;
-      default: result = CALL_XARGS(func, plain_args);
-      }
-      /* make sure the alarm is not still running */
-      SyStopAlarm( NULL, NULL);
-      /* Now the alarm might have gone off since we executed the last statement 
-	 of func. So */
-      if (SyAlarmHasGoneOff) {
-	SyAlarmHasGoneOff = 0;
-  // TODO : Fix in HPC-GAP
-  //UnInterruptExecStat();
-  Pr("Alarms not implemented in HPC-GAP",0,0);
-  abort();
-      }
-      assert(NumAlarmJumpBuffers);
-      NumAlarmJumpBuffers--;
-      res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
-      if (result)
-        {
-          SET_LEN_PLIST(res,1);
-          SET_ELM_PLIST(res,1,result);
-          CHANGED_BAG(res);
-        }
-      else {
-	RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
-        SET_LEN_PLIST(res,0);
-      }
+  Obj res;
+  volatile Obj currLVars;
+  Obj result;
+  volatile Int recursionDepth;
+  volatile Stat currStat;
+
+#ifdef HPCGAP
+  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
+#endif
+
+  if (!SyHaveAlarms)
+    ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
+  if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
+    ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+                 " <seconds> must be a non-negative small integer",0,0);
+  if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
+    ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
+                 " <microseconds> must be a non-negative small integer less than 10^9",0,0);
+  if (!IS_FUNC(func))
+    ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <func> must be a function",0,0);
+  if (!IS_LIST(args))
+    ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <args> must be a list",0,0);
+  if (!IS_PLIST(args)) {
+      args = SHALLOW_COPY_OBJ(args);
+      PLAIN_LIST(args);
+  }
+  if (SyAlarmRunning)
+    ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
+         " There is already a timeout running", 0, 0);
+  if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
+    ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
+  currLVars = TLS(CurrLVars);
+  currStat = TLS(CurrStat);
+  recursionDepth = TLS(RecursionDepth);
+  if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
+    /* Timeout happened */
+    TLS(CurrLVars) = currLVars;
+    TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
+    TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    TLS(CurrStat) = currStat;
+    TLS(RecursionDepth) = recursionDepth;
+    res = Fail;
+  } else {
+    SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
+    result = CallFuncList(func, args);
+
+    /* make sure the alarm is not still running */
+    SyStopAlarm( NULL, NULL);
+    /* Now the alarm might have gone off since we executed the last statement 
+   of func. So */
+    if (SyAlarmHasGoneOff) {
+      SyAlarmHasGoneOff = 0;
     }
-    return res;
+    assert(NumAlarmJumpBuffers);
+    NumAlarmJumpBuffers--;
+    res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
+    if (result) {
+      SET_LEN_PLIST(res,1);
+      SET_ELM_PLIST(res,1,result);
+      CHANGED_BAG(res);
+    } else {
+      RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
+      SET_LEN_PLIST(res,0);
+    }
+  }
+  return res;
 }
 
 Obj FuncSTOP_TIMEOUT( Obj self ) {
@@ -1576,7 +1290,7 @@ static Obj ErrorMessageToGAPString(
     Int                 arg1,
     Int                 arg2 )
 {
-  Char message[500];
+  Char message[1024];
   Obj Message;
   SPrTo(message, sizeof(message), msg, arg1, arg2);
   message[sizeof(message)-1] = '\0';
@@ -1597,7 +1311,6 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
-  Obj result;
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
@@ -1611,9 +1324,9 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS(CurrStat));
-  result = CALL_2ARGS(ErrorInner,r,l);  
+  Obj res = CALL_2ARGS(ErrorInner,r,l);
   TLS(currentRegion) = savedRegion;
-  return result;
+  return res;
 }
 
 void ErrorQuit (
@@ -1724,6 +1437,19 @@ void ErrorQuitNrArgs (
 {
     ErrorQuit(
         "Function Calls: number of arguments must be %d (not %d)",
+        narg, LEN_PLIST( args ) );
+}
+
+/****************************************************************************
+**
+*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*/
+void ErrorQuitNrAtLeastArgs (
+    Int                 narg,
+    Obj                 args )
+{
+    ErrorQuit(
+        "Function Calls: number of arguments must be at least %d (not %d)",
         narg, LEN_PLIST( args ) );
 }
 
@@ -1858,16 +1584,16 @@ Obj FuncLOAD_DYN (
     }
 
     /* try to read the module                                              */
-    init = SyLoadModule( CSTR_STRING(filename) );
-    if ( (Int)init == 1 )
+    res = SyLoadModule( CSTR_STRING(filename), &init );
+    if ( res == 1 )
         ErrorQuit( "module '%s' not found", (Int)CSTR_STRING(filename), 0L );
-    else if ( (Int) init == 3 )
+    else if ( res == 3 )
         ErrorQuit( "symbol 'Init_Dynamic' not found", 0L, 0L );
-    else if ( (Int) init == 5 )
+    else if ( res == 5 )
         ErrorQuit( "forget symbol failed", 0L, 0L );
 
     /* no dynamic library support                                          */
-    else if ( (Int) init == 7 ) {
+    else if ( res == 7 ) {
         if ( SyDebugLoading ) {
             Pr( "#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L );
         }
@@ -2108,11 +1834,10 @@ Obj FuncGASMAN (
     Char                buf[41];
 
     /* check the argument                                                  */
-    while ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
-        args = ErrorReturnObj(
+    if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
+        ErrorMayQuit(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
-            0L, 0L,
-            "you can replace the argument list <args> via 'return <args>;'" );
+            0L, 0L);
     }
 
     /* loop over the arguments                                             */
@@ -2356,6 +2081,9 @@ Obj FuncOBJ_HANDLE (
 /****************************************************************************
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
+**
+**  This is a very quick function which returns a unique integer for each object
+**  non-identical objects will have different handles. The integers may be large.
 */
 Obj FuncHANDLE_OBJ (
     Obj                 self,
@@ -2378,6 +2106,10 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
+/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0 for all 
+immediate objects (small integers or ffes) and (b) returns reasonably small results
+(roughly in teh range from 1 to the max number of objects that have existed in this session */
+
 Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
@@ -2387,6 +2119,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
     }
 }
 
+/* Returns a measure of the size of a GAP function */
 Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 {
     Obj body;
@@ -2407,11 +2140,11 @@ Obj FuncSWAP_MPTR (
     Obj                 obj1,
     Obj                 obj2 )
 {
-    if ( TNUM_OBJ(obj1) == T_INT || TNUM_OBJ(obj1) == T_FFE ) {
+    if ( IS_INTOBJ(obj1) || IS_FFE(obj1) ) {
         ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
-    if ( TNUM_OBJ(obj2) == T_INT || TNUM_OBJ(obj2) == T_FFE ) {
+    if ( IS_INTOBJ(obj2) || IS_FFE(obj2) ) {
         ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
@@ -2423,32 +2156,8 @@ Obj FuncSWAP_MPTR (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-
-
-/****************************************************************************
-**
-
-*F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
-*/
-void FillInVersion (
-    StructInitInfo *            module )
-{
-}
-
-
-/****************************************************************************
-**
-*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
-*/
-void RequireModule (
-    StructInitInfo *            module,
-    const Char *                required,
-    UInt                        version )
-{
-}
 
 
 /****************************************************************************
@@ -2564,6 +2273,25 @@ void InitGVarAttrsFromTable (
     }
 }
 
+void SetupFuncInfo(Obj func, const Char* cookie)
+{
+    const Char* pos = strchr(cookie, ':');
+    if ( pos ) {
+        Obj filename, start;
+        Obj body_bag = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        char buffer[512];
+        Int len = 511<(pos-cookie)?511:pos-cookie;
+        memcpy(buffer, cookie, len);
+        buffer[len] = 0;
+        C_NEW_STRING_DYN(filename, buffer);
+        C_NEW_STRING_DYN(start, pos+1);
+        SET_FILENAME_BODY(body_bag, filename);
+        SET_LOCATION_BODY(body_bag, start);
+        BODY_FUNC(func) = body_bag;
+        CHANGED_BAG(body_bag);
+        CHANGED_BAG(func);
+    }
+}
 
 /****************************************************************************
 **
@@ -2618,11 +2346,12 @@ void InitGVarFuncsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewFunction( NameGVarObj( gvar ),
-                         tab[i].nargs,
-                         ArgStringToList( tab[i].args ),
-                         tab[i].handler ) );
+        Obj func = NewFunction( NameGVarObj( gvar ),
+                                tab[i].nargs,
+                                ArgStringToList( tab[i].args ),
+                                tab[i].handler );
+        SetupFuncInfo( func, tab[i].cookie );
+        AssGVar( gvar, func );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -3056,6 +2785,12 @@ Obj FuncKERNEL_INFO(Obj self) {
   else
     AssPRec(res, r, False);
 
+  /* export GMP version  */
+  C_NEW_STRING_DYN( str, gmp_version );
+  RetypeBag( str, IMMUTABLE_TNUM(TNUM_OBJ(str)) );
+  r = RNamName("GMP_VERSION");
+  AssPRec(res, r, str);
+
   MakeImmutable(res);
   
   return res;
@@ -3120,19 +2855,19 @@ void ThreadedInterpreter(void *funcargs) {
   }
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
-  if (!READ_ERROR()) {
+  TRY_READ {
     Obj init, exit;
     if (sySetjmp(TLS(threadExit)))
       return;
     init = GVarOptFunction(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);
-    FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
+    CallFuncList(func, tmp);
     exit = GVarOptFunction(&GVarTHREAD_EXIT);
     if (exit) CALL_0ARGS(exit);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
-  } else {
+  } CATCH_READ_ERROR {
     IntrEnd( 1UL );
     ClearError();
   } 
@@ -3156,11 +2891,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
 
-    { "SystemClock", 0, "",
-      FuncSystemClock, "src/gap.c:SystemClock" },
-
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
+
+    { "NanosecondsSinceEpoch", 0, "",
+      FuncNanosecondsSinceEpoch, "src/gap.c:NanosecondsSinceEpoch" },
+
+    { "NanosecondsSinceEpochInfo", 0, "",
+      FuncNanosecondsSinceEpochInfo, "src/gap.c:NanosecondsSinceEpochInfo" },
 
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
@@ -3292,7 +3030,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "PRINT_CURRENT_STATEMENT", 1, "context",
       FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
 
-  
+    { "CURRENT_STATEMENT_LOCATION", 1, "context",
+      FuncExecutingStatementLocation,
+      "src/gap.c:CURRENT_STATEMENT_LOCATION" },
+
     { 0 }
 
 };
@@ -3358,7 +3099,6 @@ static Int PostRestore (
 
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
-    CustomViewGVar = GVarName( "CustomView" ); 
 
     /* construct the last and time variables                               */
     Last              = GVarName( "last"  );
@@ -3512,11 +3252,6 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoGapmpi,
 #endif
 
-#ifdef WITH_ZMQ
-    /* ZeroMQ module */
-    InitInfoZmq,
-#endif
-
     0
 };
 
@@ -3600,12 +3335,12 @@ static Obj POST_RESTORE;
 
 void InitializeGap (
     int *               pargc,
-    char *              argv [] )
+    char *              argv [],
+    char *              environ [] )
 {
   /*    UInt                type; */
     UInt                i;
     Int                 ret;
-
 
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
@@ -3621,6 +3356,22 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
+    TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)    = 0;
+    TLS(ReadTop)      = 0;
+    TLS(ReadTilde)    = 0;
+    TLS(CurrLHSGVar)  = 0;
+    TLS(IntrCoding)   = 0;
+    TLS(IntrIgnoring) = 0;
+    TLS(NrError)      = 0;
+    TLS(ThrownObject) = 0;
+    TLS(UserHasQUIT) = 0;
+    TLS(UserHasQuit) = 0;
+
+    NrImportedGVars = 0;
+    NrImportedFuncs = 0;
+
+    sysenviron = environ;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;
@@ -3717,8 +3468,9 @@ void InitializeGap (
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != (Obj) 0 &&
             IS_FUNC(POST_RESTORE))
-          if (!READ_ERROR())
+          TRY_READ {
             CALL_0ARGS(POST_RESTORE);
+          }
     }
 
 
@@ -3770,7 +3522,7 @@ void InitializeGap (
        past here when we're about to exit. 
                                            */
     if ( SySystemInitFile[0] ) {
-      if (!READ_ERROR()) {
+      TRY_READ {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
           /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find '%s' maybe",
@@ -3780,7 +3532,7 @@ void InitializeGap (
                     " script instead.", 0L, 0L );
             }
       }
-      else
+      CATCH_READ_ERROR
         {
           Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
           SyExit(1);

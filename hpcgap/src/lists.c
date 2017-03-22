@@ -19,7 +19,6 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
-
 #include <src/system.h>                 /* Ints, UInts */
 
 
@@ -279,7 +278,7 @@ Int LenListObject (
     Obj                 len;
 
     len = FuncLENGTH( LengthAttr, obj );
-    while ( TNUM_OBJ(len) != T_INT || INT_INTOBJ(len) < 0 ) {
+    while ( !IS_INTOBJ(len) || INT_INTOBJ(len) < 0 ) {
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
             (Int)TNAM_OBJ(len), 0L,
@@ -1702,25 +1701,25 @@ void            ElmListLevel (
             list = ELM_PLIST( lists, i );
 
             /* select the element                                          */
-	    switch(LEN_PLIST(ixs)) {
-	    case 1:
-	      pos = ELM_PLIST(ixs,1);
-	      if (IS_INTOBJ(pos))
-		elm = ELM_LIST( list, INT_INTOBJ(pos) );
-	      else
-		elm = ELMB_LIST(list, pos);
-	      break;
-	      
-	    case 2:
-	      pos1 = ELM_PLIST(ixs,1);
-	      pos2 = ELM_PLIST(ixs,2);
-	      elm = ELM2_LIST(list, pos1, pos2);
-	      break;
+            switch(LEN_PLIST(ixs)) {
+            case 1:
+              pos = ELM_PLIST(ixs,1);
+              if (IS_INTOBJ(pos))
+                elm = ELM_LIST( list, INT_INTOBJ(pos) );
+              else
+                elm = ELMB_LIST(list, pos);
+              break;
+          
+            case 2:
+              pos1 = ELM_PLIST(ixs,1);
+              pos2 = ELM_PLIST(ixs,2);
+              elm = ELM2_LIST(list, pos1, pos2);
+              break;
 
-	    default:
-	      elm = ELMB_LIST(list, ixs);
-	      
-	    }
+            default:
+              elm = ELMB_LIST(list, ixs);
+          
+            }
 
             /* replace the list with the element                           */
             SET_ELM_PLIST( lists, i, elm );
@@ -1882,25 +1881,25 @@ void            AssListLevel (
             /* select the element to assign                                */
             obj = ELMW_LIST( objs, i );
 
-	    switch(LEN_PLIST(ixs)) {
-	    case 1:
-	      /* assign the element                                          */
-	      pos = ELM_PLIST(ixs,1);
-	      if (IS_INTOBJ(pos))
-		ASS_LIST( list, INT_INTOBJ(pos), obj );
-	      else
-		ASSB_LIST(list, pos, obj);
-	      break;
-	      
-	    case 2:
-	      pos1 = ELM_PLIST(ixs,1);
-	      pos2 = ELM_PLIST(ixs,2);
-	      ASS2_LIST(list, pos1, pos2, obj);
-	      break;
+            switch(LEN_PLIST(ixs)) {
+            case 1:
+              /* assign the element                                          */
+              pos = ELM_PLIST(ixs,1);
+              if (IS_INTOBJ(pos))
+                ASS_LIST( list, INT_INTOBJ(pos), obj );
+              else
+                ASSB_LIST(list, pos, obj);
+              break;
+          
+            case 2:
+              pos1 = ELM_PLIST(ixs,1);
+              pos2 = ELM_PLIST(ixs,2);
+              ASS2_LIST(list, pos1, pos2, obj);
+              break;
 
-	    default:
-	      ASSB_LIST(list, ixs, obj);
-	    }
+            default:
+              ASSB_LIST(list, ixs, obj);
+            }
 
         }
 
@@ -1986,7 +1985,7 @@ void            AsssListLevel (
                 }
                 if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
                     obj = ErrorReturnObj(
-     "List Assigments: <objs> must have the same length as <positions> (%d)",
+     "List Assignments: <objs> must have the same length as <positions> (%d)",
                         LEN_LIST( poss ), 0L,
                         "you can replace <objs> via 'return <objs>;'" );
                 }

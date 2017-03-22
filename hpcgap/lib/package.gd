@@ -1134,7 +1134,7 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  <entry id="GAP4.5"><misc>
 ##    <title><C>GAP</C> &ndash; <C>G</C>roups, <C>A</C>lgorithms,
 ##           and <C>P</C>rogramming, <C>V</C>ersion 4.5.1</title>
-##    <howpublished><URL>http://www.gap-system.org</URL></howpublished>
+##    <howpublished><URL>https://www.gap-system.org</URL></howpublished>
 ##    <key>GAP</key>
 ##    <keywords>groups; *; gap; manual</keywords>
 ##    <other type="organization">The GAP <C>G</C>roup</other>
@@ -1145,8 +1145,8 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##    title =            {{GAP}   {\textendash}   {G}roups,   {A}lgorithms,  and
 ##                        {P}rogramming, {V}ersion 4.5.1},
 ##    organization =     {The GAP {G}roup},
-##    howpublished =     {\href                      {http://www.gap-system.org}
-##                        {\texttt{http://www.gap-system.org}}},
+##    howpublished =     {\href                      {https://www.gap-system.org}
+##                        {\texttt{https://www.gap-system.org}}},
 ##    key =              {GAP},
 ##    keywords =         {groups; *; gap; manual}
 ##  }

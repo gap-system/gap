@@ -16,10 +16,6 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#if !defined(USE_GMP) && !defined(USE_PRECOMPILED)
- #error "GAP integer code has been removed."
-#else
- #include <src/gmpints.h>
-#endif
+#include <src/gmpints.h>
 
 #endif

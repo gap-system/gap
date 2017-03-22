@@ -1417,7 +1417,7 @@ Obj FuncBLIST_LIST (
             if ( ptrSub[l] != 0 ) {
 
                 /* if <sub>[<l>] is an integer it is very easy             */
-                if ( TNUM_OBJ( ptrSub[l] ) == T_INT ) {
+                if ( IS_INTOBJ( ptrSub[l] ) ) {
                     t = INT_INTOBJ( ptrSub[l] ) - s + 1;
                     if ( 0 < t && t <= lenList )
                         ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
@@ -1994,7 +1994,7 @@ Obj FuncUNITE_BLIST_LIST (
             if ( ptrSub[l] != 0 ) {
 
                 /* if <sub>[<l>] is an integer it is very easy             */
-                if ( TNUM_OBJ( ptrSub[l] ) == T_INT ) {
+                if ( IS_INTOBJ( ptrSub[l] ) ) {
                     t = INT_INTOBJ( ptrSub[l] ) - s + 1;
                     if ( 0 < t && t <= lenList )
                         ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);

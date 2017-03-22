@@ -874,7 +874,7 @@ Obj             PosRange (
     }
 
     /* look for an integer                                                 */
-    else if ( TNUM_OBJ(val) == T_INT ) {
+    else if ( IS_INTOBJ(val) ) {
         v = INT_INTOBJ(val);
         if ( 0 < inc
           && low + istart * inc <= v && v <= low + (lenList-1) * inc
@@ -986,17 +986,17 @@ Int             IsRange (
     }
 
     /* if <list> is a list with just one integer, it is also a range     */
-    else if ( LEN_LIST(list)==1 && TNUM_OBJ(ELMW_LIST(list,1))==T_INT ) {
+    else if ( LEN_LIST(list)==1 && IS_INTOBJ(ELMW_LIST(list,1)) ) {
         isRange = 1;
     }
 
     /* if the first element is not an integer, it is not a range           */
-    else if ( ELMV0_LIST(list,1)==0 || TNUM_OBJ(ELMW_LIST(list,1))!=T_INT ) {
+    else if ( ELMV0_LIST(list,1)==0 || !IS_INTOBJ(ELMW_LIST(list,1)) ) {
         isRange = 0;
     }
 
     /* if the second element is not an integer, it is not a range          */
-    else if ( ELMV0_LIST(list,2)==0 || TNUM_OBJ(ELMW_LIST(list,2))!=T_INT ) {
+    else if ( ELMV0_LIST(list,2)==0 || !IS_INTOBJ(ELMW_LIST(list,2)) ) {
         isRange = 0;
     }
 

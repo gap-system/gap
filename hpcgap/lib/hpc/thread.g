@@ -81,10 +81,6 @@ BindGlobal("NewInterruptID", function()
   od;
 end);
 
-if IsBound(ZmqSocket) then
-  ReadLib("hpc/zmq.g");
-fi;
-
 CreateThread(function()
   local handlers;
   handlers := rec(

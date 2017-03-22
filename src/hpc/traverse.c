@@ -1,12 +1,6 @@
 /*
  * Functionality to traverse nested object structures.
  */
-
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <gc/gc.h>
-
 #include <src/system.h>
 #include <src/gasman.h>
 #include <src/objects.h>
@@ -24,6 +18,13 @@
 #include <src/hpc/traverse.h>
 #include <src/fibhash.h>
 #include <src/objset.h>
+
+#ifdef BOEHM_GC
+# ifdef HPCGAP
+#  define GC_THREADS
+# endif
+# include <gc/gc.h>
+#endif
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
@@ -62,8 +63,8 @@ static Obj NewList(UInt size)
 void QueueForTraversal(Obj obj);
 
 #define TRAVERSE_NONE (1)
-#define TRAVERSE_ALL (-1)
-#define TRAVERSE_ALL_BUT(n) (1 | ((-1) << (1+(n))))
+#define TRAVERSE_ALL (~0U)
+#define TRAVERSE_ALL_BUT(n) (1 | ((~0U) << (1+(n))))
 #define TRAVERSE_BY_FUNCTION (0)
 
 typedef void (*TraversalCopyFunction)(Obj copy, Obj original);

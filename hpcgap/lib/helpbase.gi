@@ -94,7 +94,7 @@ end);
 ##  - Modification of these rules (or using the patterns where one of
 ##    spelling variants is the trailing substring of another) may require
 ##    changing algorithms used in `FindMultiSpelledHelpEntries' and
-##    `SuggestedSpellings'.
+##    `HELP_SEARCH_ALTERNATIVES'.
 
 BindGlobal( "TRANSATL", 
            `[ [ "atalogue", "atalog" ],
@@ -104,21 +104,22 @@ BindGlobal( "TRANSATL",
               [ "ise", "ize" ],
               [ "abeling", "abelling" ],
               [ "olvable", "oluble" ],
-              [ "yse", "yze" ] ] );
+              [ "yse", "yze" ],
+              [ "roebner", "robner"]] );
 
 
 #############################################################################
 ##
-##  SuggestedSpellings
+##  HELP_SEARCH_ALTERNATIVES
 ## 
 ##  This function is used by HELP_GET_MATCHES to check if the search topic
-##  might have different spellings, lookign for patterns from `TRANSATL'.
+##  might have different spellings, looking for patterns from `TRANSATL'.
 ##  
 ##  It returns a list of suggested spellings of a string, for example:
 ##
-##  gap> SuggestedSpellings("TriangulizeMat");
+##  gap> HELP_SEARCH_ALTERNATIVES("TriangulizeMat");
 ##  [ "TrianguliseMat", "TriangulizeMat" ]
-##  gap> SuggestedSpellings("CentralizerSolvableGroup");
+##  gap> HELP_SEARCH_ALTERNATIVES("CentralizerSolvableGroup");
 ##  [ "CentraliserSolubleGroup", "CentraliserSolvableGroup", 
 ##    "CentralizerSolubleGroup", "CentralizerSolvableGroup" ]
 ##
@@ -135,7 +136,7 @@ BindGlobal( "TRANSATL",
 ##  about a dozen of entries which contains two occurrences of some patterns, 
 ##  and none with three or more of them.
 ##
-BindGlobal( "SuggestedSpellings", function( topic )
+BindGlobal( "HELP_SEARCH_ALTERNATIVES", function( topic )
 local positions, patterns, pattern, where, what, variant, pos,
       newwhere, newwhat, i, chop, begin, topics;
 
@@ -233,7 +234,7 @@ end);
 ##
 ##  This utility may be used in checks of the help system by GAP developers.
 ##
-##  `HELP_GET_MATCHES' uses `SuggestedSpellings' to look for other possible
+##  `HELP_GET_MATCHES' uses `HELP_SEARCH_ALTERNATIVES' to look for other possible
 ##  spellings, e.g. Normaliser/Normalizer, Center/Centre, Solvable/Soluble, 
 ##  Analyse/Analyze, Factorisation/Factorization etc. 
 ##
@@ -424,7 +425,7 @@ InstallGlobalFunction(SIMPLE_STRING, function(str)
 "efghijklmnopqrstuvwxyz[\000]^_\000abcdefghijklmnopqrstuvwxyz{ }~",
 "\177\200\201\202",
 "\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225",
-"\226\227\230\231\232\233\234\235\236\237\238",
+"\226\227\230\231\232\233\234\235\236\237\240",
 "\241\242\244\244\246\246\250\250\251\252\253\254\255\256\257\260\261\262",
 "\264\264\265\266\270\270\271\272\276\276\276\276\277aaaaaa",
 "aceeeeiiiidnooooo\327ouuuuypsaaaaaaaceeeeiiiidnooooo\367ouuuuypy"
@@ -945,7 +946,7 @@ atomic readwrite HELP_REGION do
   if topic = "size" then # "size" is a notable exception (lowercase is guaranteed)
     topics:=[ topic ];
   else
-    topics:=SuggestedSpellings( topic );
+    topics:=HELP_SEARCH_ALTERNATIVES( topic );
   fi;
 
   # <exact> and <match> contain the topics matching

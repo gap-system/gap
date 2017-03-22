@@ -4,8 +4,6 @@
 ##
 ##  Testing conversion to compressed vector representation
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("comprvec.tst");
 gap> z:=[Z(2),Z(2),0*Z(2)];
 [ Z(2)^0, Z(2)^0, 0*Z(2) ]

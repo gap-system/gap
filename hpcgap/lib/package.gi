@@ -1197,6 +1197,9 @@ InstallGlobalFunction( ReadPackage, function( arg )
     if   Length( arg ) = 1 then
       # Guess the package name.
       pos:= Position( arg[1], '/' );
+      if pos = fail then
+        ErrorNoReturn(arg[1], " is not a filename in the form 'package/filepath'");
+      fi;
       relpath:= arg[1]{ [ pos+1 .. Length( arg[1] ) ] };
       pkgname:= LowercaseString( arg[1]{ [ 1 .. pos-1 ] } );
       namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
@@ -1422,6 +1425,10 @@ InstallGlobalFunction( LoadPackage, function( arg )
     if not IsBound( GAPInfo.PackagesInfo.( name ) ) then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "no package with this name is installed, return 'fail'", name );
+      if InfoLevel(InfoPackageLoading) < 4 then
+        Info(InfoWarning,1, name, " package is not available. Check that the name is correct");
+        Info(InfoWarning,1, "and it is present in one of the GAP root directories (see '??RootPaths')");
+      fi;
       return fail;
     fi;
 
@@ -1485,6 +1492,12 @@ InstallGlobalFunction( LoadPackage, function( arg )
       else
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "return from LoadPackage, package is not available", Name );
+        if banner then
+          if InfoLevel(InfoPackageLoading) < 4 then
+            Info(InfoWarning,1, Name, " package is not available. To see further details, enter");
+            Info(InfoWarning,1, "SetInfoLevel(InfoPackageLoading,4); and try to load the package again.");
+          fi;
+        fi;
       fi;
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
       return path;
@@ -1556,7 +1569,7 @@ fi;
         # This is the first attempt to read stuff for this package.
         # So we handle the case of a `PreloadFile' entry.
         if IsBound( info.PreloadFile ) then
-          filename:= USER_HOME_EXPAND( info.PreloadFile );
+          filename:= UserHomeExpand( info.PreloadFile );
           if filename[1] = '/' then
             read:= READ( filename );
           else
@@ -1929,6 +1942,7 @@ fi;
         "GAP" );
     end );
 
+
 #############################################################################
 ##
 #F  GAPDocManualLab(<pkgname>) . create manual.lab for package w/ GAPDoc docs
@@ -2044,13 +2058,13 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 #F  ValidatePackageInfo( <info> )
 ##
 InstallGlobalFunction( ValidatePackageInfo, function( info )
-    local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool,
+    local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
           IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
           list;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
-	Unbind( GAPInfo.PackageInfoCurrent );
+        Unbind( GAPInfo.PackageInfoCurrent );
         Read( info );
         if IsBound( GAPInfo.PackageInfoCurrent ) then
           record:= GAPInfo.PackageInfoCurrent;
@@ -2082,6 +2096,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         ( pkgdir = fail or
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
+    IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
 
     result:= true;
 
@@ -2116,7 +2131,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
                  and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
         "a string of the form `dd/mm/yyyy'" );
-    TestMandat( record, "ArchiveURL", IsString, "a string" );
+    TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestMandat( record, "ArchiveFormats", IsString, "a string" );
     TestOption( record, "TextFiles", IsStringList, "a list of strings" );
     TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
@@ -2157,7 +2172,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           fi;
         fi;
         TestOption( subrec, "Email", IsString, "a string" );
-        TestOption( subrec, "WWWHome", IsString, "a string" );
+        TestOption( subrec, "WWWHome", IsURL, "a string started with http://, https:// or ftp://" );
         TestOption( subrec, "PostalAddress", IsString, "a string" );
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
@@ -2177,8 +2192,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                    and ForAll( x{ [1,2,4,5,6,7] }, IsDigitChar ),
           "a string of the form `mm/yyyy'" );
     fi;
-    TestMandat( record, "README_URL", IsString, "a string" );
-    TestMandat( record, "PackageInfoURL", IsString, "a string" );
+    TestMandat( record, "README_URL", IsURL, "a string started with http://, https:// or ftp://" );
+    TestMandat( record, "PackageInfoURL", IsURL, "a string started with http://, https:// or ftp://" );
 
     if TestOption( record, "SourceRepository", IsRecord, "a record" ) then
       if IsBound( record.SourceRepository ) then
@@ -2186,10 +2201,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestMandat( record.SourceRepository, "URL", IsString, "a string" );
       fi;  
     fi;
-    TestOption( record, "IssueTrackerURL", IsString, "a string" );
+    TestOption( record, "IssueTrackerURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestOption( record, "SupportEmail", IsString, "a string" );
     TestMandat( record, "AbstractHTML", IsString, "a string" );
-    TestMandat( record, "PackageWWWHome", IsString, "a string" );
+    TestMandat( record, "PackageWWWHome", IsURL, "a string started with http://, https:// or ftp://" );
     if TestMandat( record, "PackageDoc",
            x -> IsRecord( x ) or IsRecordList( x ),
            "a record or a list of records" ) then
@@ -2377,7 +2392,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "  with the current version of GAP.\n",
               "  It is strongly recommended to update to the ",
               "most recent version, see URL\n",
-              "      http://www.gap-system.org/Packages/autpgrp.html\n" );
+              "      https://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
         end ) ));
 
@@ -2662,7 +2677,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         " <C>G</C>roups, <C>A</C>lgorithms,\n",
         "         and <C>P</C>rogramming,",
         " <C>V</C>ersion ", GAPInfo.Version, "</title>\n",
-        "  <howpublished><URL>http://www.gap-system.org</URL></howpublished>\n",
+        "  <howpublished><URL>https://www.gap-system.org</URL></howpublished>\n",
         val,
         "  <key>GAP</key>\n",
         "  <keywords>groups; *; gap; manual</keywords>\n",
@@ -2787,7 +2802,7 @@ if name="GAP" then
         "\\bibitem[GAP]{GAP4}\n", 
         "\\emph{GAP -- Groups, Algorithms, and Programming}, ",
         "Version ", GAPInfo.Version, ",\n", 
-        "The GAP~Group (", year, "), \\verb+http://www.gap-system.org+.\n\n");
+        "The GAP~Group (", year, "), \\verb+https://www.gap-system.org+.\n\n");
   Print(
   "If you have (predominantly) used one or more particular GAP packages,\n", 
   "please cite these packages in addition to GAP itself (either check the\n", 

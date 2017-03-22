@@ -15,8 +15,6 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
-#include <gc/gc.h>
-
 #include <src/system.h>                 /* system dependent part */
 
 
@@ -42,6 +40,13 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
+
+#ifdef BOEHM_GC
+# ifdef HPCGAP
+#  define GC_THREADS
+# endif
+# include <gc/gc.h>
+#endif
 
 
 /****************************************************************************
@@ -95,6 +100,7 @@
 
 #define ELM_WPOBJ(list,pos)             (ADDR_OBJ(list)[pos])
 
+
 /****************************************************************************
 **
 *F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
@@ -103,7 +109,7 @@
 **  ensure that it has room for at least <plen> elements.
 **
 **  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have sideeffects.  */
+**  have side effects.  */
 
 #define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
                                  0L : GrowWPObj(wp,plen) )
@@ -827,7 +833,6 @@ StructInitInfo * InitInfoWeakPtr ( void )
 {
     return &module;
 }
-
 
 
 /****************************************************************************
