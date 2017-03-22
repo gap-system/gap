@@ -75,29 +75,29 @@
 *.toc
 
 # Documentation 
-/doc/manualbib.xml.bib
-/doc/*/*.html
-/doc/*/*.txt
-/doc/*/*.css
-/doc/*/*.js
-/doc/*/*.bbl
-/doc/*/*.blg
-/doc/*/*.brf
-/doc/*/*.idx
-/doc/*/*.ilg
-/doc/*/*.ind
-/doc/*/*.out
-/doc/*/*.pnr
-/doc/*/*.tex
-/doc/*/make_manuals.out
-/doc/*/manual.lab
-/doc/*/manual.six
-/doc/gapmacrodoc.example-1.tst
-/doc/gapmacrodoc.idx
-/doc/gapmacrodoc.lab
-/doc/gapmacrodoc.six
-/doc/gapmacrodoc.synctex.gz
-/doc/wsp.g
+*/doc/manualbib.xml.bib
+*/doc/*/*.html
+*/doc/*/*.txt
+*/doc/*/*.css
+*/doc/*/*.js
+*/doc/*/*.bbl
+*/doc/*/*.blg
+*/doc/*/*.brf
+*/doc/*/*.idx
+*/doc/*/*.ilg
+*/doc/*/*.ind
+*/doc/*/*.out
+*/doc/*/*.pnr
+*/doc/*/*.tex
+*/doc/*/make_manuals.out
+*/doc/*/manual.lab
+*/doc/*/manual.six
+*/doc/gapmacrodoc.example-1.tst
+*/doc/gapmacrodoc.idx
+*/doc/gapmacrodoc.lab
+*/doc/gapmacrodoc.six
+*/doc/gapmacrodoc.synctex.gz
+*/doc/wsp.g
 
 # GAP packages
 /bootstrap-pkg-full.tar.gz
