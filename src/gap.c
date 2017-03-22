@@ -1143,6 +1143,9 @@ syJmp_buf AlarmJumpBuffers[MAX_TIMEOUT_NESTING_DEPTH];
 UInt NumAlarmJumpBuffers = 0;
 
 Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
+#ifdef HPCGAP
+  return False;
+#endif
   return SyHaveAlarms ? True: False;
 }
 
@@ -1158,6 +1161,10 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   volatile Int iseconds, imicroseconds;
   volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
   Int restore_seconds = 0, restore_microseconds = 0;
+
+#ifdef HPCGAP
+  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
+#endif
 
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
@@ -2794,6 +2801,8 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 
+  MakeImmutable(res);
+  
   return res;
   
 }
