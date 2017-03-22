@@ -1251,6 +1251,7 @@ UInt SyIsIntr ( void )
 
 #endif
 
+
 /****************************************************************************
  **
  *F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
@@ -2385,24 +2386,6 @@ Char * syFgets (
     } else {
 #endif
 
-/*  EXPERIMENT    */
-    if ( LEN_PLIST(LineEditKeyHandlers) > 999 &&
-                         ELM_PLIST(LineEditKeyHandlers, 1000) != 0) {
-      linestr = Call0ArgsInNewReader(ELM_PLIST(LineEditKeyHandlers, 1000));
-      len = GET_LEN_STRING(linestr);
-      memcpy(line,CHARS_STRING(linestr),len);
-      line[len] = '\0';
-      /* switch back to cooked mode                                          */
-      if ( SyLineEdit == 1 )
-          syEndEdit(fid);
-
-      /* return the line (or '0' at end-of-file)                             */
-      if ( *line == '\0' )
-          return (Char*)0;
-      return line;
-    }
-
-/*  END EXPERIMENT    */
     /* In line editing mode 'length' is not allowed bigger than the
       yank buffer (= length of line buffer for input files).*/
     if (length > 32768)
