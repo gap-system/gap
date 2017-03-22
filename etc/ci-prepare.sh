@@ -18,5 +18,9 @@ mkdir -p $BUILDDIR
 cd $BUILDDIR
 $GAPROOT/configure $CONFIGFLAGS
 make V=1 -j4
+
+# Minimal test to see if the gap binary can at least start
+echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
+
 make bootstrap-pkg-full
 if [[ $BUILDDIR != . ]] ; then mv pkg $GAPROOT/ ; fi
