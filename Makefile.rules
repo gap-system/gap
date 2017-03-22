@@ -386,6 +386,7 @@ GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
 bin/$(GAPARCH)/gap.dll: libgap.la
+	ls -al .libs # HACK
 	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
 gap$(EXEEXT): libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
