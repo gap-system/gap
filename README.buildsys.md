@@ -196,7 +196,14 @@ GAP root paths. Specifically, the GAP kernel function `SySetGapRootPath` was
 modified so that for every root directory `FOO` that gets added, we first add
 `FOO/hpcgap` to the list of root directories. 
 
-5. Ward (a tool for scanning our C sources and inserting guard statements into it) is integrated as follows: Normally, `src/FOO.c` gets compiled to `obj/FOO.o`. With ward in the mix, `src/FOO.c` or (if it exists) `hpcgap/src/FOO.c` is first turned into `gen/FOO.c` by ward, and then the compiler turns the latter into `obj/FOO.o`. For each conversion, dependencies are tracked via `.../.deps/FOO.d` files. In particular, if `hpcgap/src/FOO.c` exists and is deleted, then the dependency rules in `gen/.deps/FOO.d` will ensure that `gen/FOO.c` is regenerated from `src/FOO.c`.
+5. Ward (a tool for scanning our C sources and inserting guard statements into
+it) is integrated as follows: Normally, `src/FOO.c` gets compiled to
+`obj/FOO.o`. With ward in the mix, `src/FOO.c` or (if it exists)
+`hpcgap/src/FOO.c` is first turned into `gen/FOO.c` by ward, and then the
+compiler turns the latter into `obj/FOO.o`. For each conversion, dependencies
+are tracked via `.../.deps/FOO.d` files. In particular, if `hpcgap/src/FOO.c`
+exists and is deleted, then the dependency rules in `gen/.deps/FOO.d` will
+ensure that `gen/FOO.c` is regenerated from `src/FOO.c`.
 
 
 ## Open tasks
