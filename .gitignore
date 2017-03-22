@@ -5,7 +5,6 @@
 /config.status
 /configure
 /libtool
-/cnf/ltmain.sh
 /src/config.h.in
 
 /gen/
