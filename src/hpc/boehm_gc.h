@@ -573,11 +573,10 @@ UInt ResizeBag (
         dst = calloc( 1, alloc_size );
 #endif
 
-			/* leave magic size-type word  for the sweeper, type must be 255   */
+        /* enter the new size-type word                                    */
 #ifdef USE_NEWSHAPE
         *dst++ = (Bag)(new_size << 16 | type);
 #else
-			/* enter the new size-type word                                    */
         *dst++ = (Bag)type;
         *dst++ = (Bag)new_size;
 #endif
