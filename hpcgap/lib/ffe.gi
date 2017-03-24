@@ -1169,22 +1169,36 @@ end);
 ##
 #M  RootFFE( <z>, <k> ) 
 ##
-InstallMethod( RootFFE, "use LogFFE",true,[IsFFE,IsPosInt],
-function(z,k)
-local q,e;
-  q:=Characteristic(z)^DegreeFFE(z);
-  e:=LogFFE(z,Z(q));
-  e:=e/k;
-  if Gcd(DenominatorRat(e),q-1)=1 then
-    return Z(q)^(e mod (q-1));
-  else
-    return fail;
-  fi;
+InstallMethod(RootFFE,"use field order",IsCollsElmsX,
+  [IsField,IsFFE,IsPosInt],0,
+function(F,z,k)
+  return RootFFE(Size(F),z,k);
 end);
 
+InstallOtherMethod(RootFFE,"use LogFFE",true,[IsPosInt,IsFFE,IsPosInt],
+function(q,z,k)
+local e,m,p,a;
+  if IsZero(z) or IsOne(z) then return z;fi;
+  m:=q-1;
+  e:=LogFFE(z,Z(q));
+  p:=GcdInt(m,e); #power for subgroup it is in
+  k:=k mod m;
+  a:=GcdInt(m,k); # power for subgroup we want
+  if p mod a<>0 then
+    return fail; # element does not lie in subgroup of a-th powers
+  fi;
+  # k/a is coprime to order of elts in subgroup and elt is an a-th power
+  a:=(e*(a/k mod (m/p))/a mod m);
+  return Z(q)^a;
+end);
+
+InstallOtherMethod(RootFFE,"without field",true,
+  [IsFFE,IsPosInt],0,
+function(z,k)
+  return RootFFE(Characteristic(z)^DegreeFFE(z),z,k);
+end);
 
 
 #############################################################################
 ##
 #E
-
