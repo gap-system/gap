@@ -35,9 +35,11 @@ Error, TransformationListListNC: <src> and <ran> must have equal length,
 gap> TransformationListListNC([1], [1, 2, 3]);
 Error, TransformationListListNC: <src> and <ran> must have equal length,
 gap> TransformationListListNC("abc", [1, 2, 3]);
-Error, TransformationListListNC: <src>[3] must be a list (not a character)
+Error, TransformationListListNC: <src>[3] must be a small integer (not a chara\
+cter)
 gap> TransformationListListNC([1, 2, 3], "abc");
-Error, TransformationListListNC: <ran>[3] must be a list (not a character)
+Error, TransformationListListNC: <ran>[3] must be a small integer (not a chara\
+cter)
 gap> TransformationListListNC([-1, 2, 3], [4, 5, 6]);
 Error, TransformationListListNC: <src>[1] must be greater than 0
 gap> TransformationListListNC([1, 2, 3], [4, -5, 6]);
