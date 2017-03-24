@@ -89,7 +89,7 @@ const Char * SyKernelVersion = "4.dev";
 /****************************************************************************
 **
 *V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build 
-*V  SyBuildDate . . . . . . . . . . . . . . . . . . . date and time of build 
+*V  SyBuildDateTime . . . . . . . . . . . . . . . . . date and time of build 
 ** GAP_BUILD_VERSION is defined in a generated header file gap_version.h,
 ** and will typically contain the tag and commit SHA that was used to build
 ** the executable.
@@ -2143,7 +2143,7 @@ void InitSystem (
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
  FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR(SyBuildVersion);
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");
