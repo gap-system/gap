@@ -1396,7 +1396,7 @@ DeclareGlobalVariable( "OnCharReadHookExcStreams",
 ##  in a situation when &GAP; is reading a character from the keyboard.
 ##  Handler functions should not use much time to complete.
 ##  <P/>
-##  This functionality does not work on the Macintosh architecture and
+##  This functionality
 ##  only works if the operating system has a <C>select</C> function.
 ##  </Description>
 ##  </ManSection>
@@ -1418,7 +1418,7 @@ DeclareGlobalFunction( "InstallCharReadHookFunc" );
 ##  <A>stream</A>. All instances are deinstalled, regardless of the mode
 ##  of operation (read, write, exception).
 ##  <P/>
-##  This functionality does not work on the Macintosh architecture and
+##  This functionality
 ##  only works if the operating system has a <C>select</C> function.
 ##  </Description>
 ##  </ManSection>
@@ -1450,4 +1450,3 @@ DeclareGlobalFunction( "InputFromUser" );
 #############################################################################
 ##
 #E
-

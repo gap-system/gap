@@ -103,30 +103,6 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  </Item>
-##  <Mark><C>exitAtEnd</C></Mark>
-##  <Item>
-##    can be <K>false</K> or <K>true</K>.
-##    If set to <K>true</K> (the default), the builtin pager is terminated
-##    as soon as the end of the list is shown;
-##    otherwise entering the <B>q</B> key is necessary in order to return
-##    from the pager.
-##  </Item>
-##  </List>
-##  <P/>
-##  The <Ref Func="Pager"/> command is used by &GAP;'s help system for
-##  displaying help sections in text format.
-##  But, of course, it may be used for other purposes as well.
-##  <P/>
-##  <Log><![CDATA[
-##  gap> s6 := SymmetricGroup(6);;
-##  gap> words := ["This", "is", "a", "very", "stupid", "example"];;
-##  gap> l := List(s6, p-> Permuted(words, p));;
-##  gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;
-##  ]]></Log>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
 ##  
 
 DeclareGlobalFunction("Pager");

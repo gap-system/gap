@@ -65,7 +65,8 @@ DeclareCategoryCollections( "IsChar" );
 ##  See <Ref Func="IsStringRep"/> below for more details.
 ##  <P/>
 ##  Each character, in particular those which cannot be typed directly from
-##  the keyboard, can also be typed in three digit octal notation.
+##  the keyboard, can also be typed in three digit octal notation, or
+##  two digit hexadecimal notation.
 ##  And for some special characters (like the newline character) there is a
 ##  further possibility to type them,
 ##  see section <Ref Sect="Special Characters"/>.
@@ -177,10 +178,10 @@ BIND_GLOBAL( "CopyToStringRep", COPY_TO_STRING_REP );
 ##
 ##  <#GAPDoc Label="CharsFamily">
 ##  <ManSection>
-##  <Var Name="CharsFamily"/>
+##  <Fam Name="CharsFamily"/>
 ##
 ##  <Description>
-##  Each character lies in the family <Ref Var="CharsFamily"/>,
+##  Each character lies in the family <Ref Fam="CharsFamily"/>,
 ##  each nonempty string lies in the collections family of this family.
 ##  Note the subtle differences between the empty list <C>[]</C> and the
 ##  empty string <C>""</C> when both are printed.
