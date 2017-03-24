@@ -791,13 +791,13 @@ gap> q = p ^ -1;
 true
 gap> PermLeftQuoTransformationNC((), IdentityTransformation);
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not permutation (small) and transformation (sm
+ (not permutation (small) and transformation (small))
 gap> PermLeftQuoTransformationNC(IdentityTransformation, ());
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not transformation (small) and permutation (sm
+ (not transformation (small) and permutation (small))
 gap> PermLeftQuoTransformationNC((), ());
 Error, PermLeftQuoTransformationNC: the arguments must both be transformations\
- (not permutation (small) and permutation (small
+ (not permutation (small) and permutation (small))
 gap> g := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
 gap> f := (g ^ (2, 20)) * (1, 3, 8)(6, 9);;
 gap> PermLeftQuoTransformationNC(f, g);
