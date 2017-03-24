@@ -2151,6 +2151,8 @@ static Int InitKernel (
   
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
+    InitMarkFuncBags( T_CYC, MarkCycSubBags );
+
     /* create the result buffer                                            */
     InitGlobalBag( &TLS(ResultCyc) , "src/cyclotom.c:ResultCyc" );
 
