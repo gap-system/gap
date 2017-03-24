@@ -559,7 +559,7 @@ gap>
 
 
 <ManSection>
-<Var Name="OnBreak"/>
+<Func Name="OnBreak" Arg=''/>
 
 <Description>
 By default, when a break loop is entered, &GAP; prints a trace of the 
@@ -678,7 +678,7 @@ gap> OnBreak := Where;;
 </ManSection>
 
 <ManSection>
-<Var Name="OnBreakMessage"/>
+<Func Name="OnBreakMessage" Arg=''/>
 
 <Description>
 <Index>Break loop message</Index>
@@ -1294,8 +1294,8 @@ directory <F>.vim</F> with  subdirectories  <F>.vim/syntax</F> and
 <F>.vim/indent</F>
 (If you are not using Unix, refer to the <C>vim</C> documentation
 on where to place syntax files).
-Then copy the file <F>etc/gap.vim</F> to <F>.vim/syntax/gap.vim</F> 
-and  the file <F>etc/gap_indent.vim</F> to <F>.vim/indent/gap.vim</F>.
+Then copy the file <F>etc/vim/gap.vim</F> to <F>.vim/syntax/gap.vim</F> 
+and  the file <F>etc/vim/gap_indent.vim</F> to <F>.vim/indent/gap.vim</F>.
 <P/>
 Then edit the <F>.vimrc</F> file in your home directory.
 Add lines as in the following example:

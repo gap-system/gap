@@ -168,10 +168,11 @@ DeclareSynonym("NrPerfectLibraryGroups",NumberPerfectLibraryGroups);
 ##  <M><A>n</A> = 1</M>.
 ##  The optional argument <A>filt</A> defines the filter in which the group is
 ##  returned.
-##  Possible filters so far are <Ref Func="IsPermGroup"/> and
-##  <Ref Func="IsSubgroupFpGroup"/>.
+##  Possible filters so far are <Ref Filt="IsPermGroup"/> and
+##  <Ref Filt="IsSubgroupFpGroup"/>.
 ##  In the latter case, the  generators and relators used coincide with those
 ##  given in&nbsp;<Cite Key="HP89"/>.
+##  The default filter is <Ref Filt="IsSubgroupFpGroup"/>.
 ##  <Example><![CDATA[
 ##  gap> G := PerfectGroup(IsPermGroup,6048,1);
 ##  U3(3)
