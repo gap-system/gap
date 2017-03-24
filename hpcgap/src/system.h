@@ -92,6 +92,11 @@
 #endif
 
 
+enum {
+    GAP_PATH_MAX = 512
+};
+
+
 #define FPUTS_TO_STDERR(str) fputs (str, stderr)
 
 /****************************************************************************
@@ -243,7 +248,7 @@ extern Int SyCheckCRCCompiledModule;
 **
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
-extern Char SyCompileInput [256];
+extern Char SyCompileInput[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -257,20 +262,20 @@ extern Char * SyCompileMagic1;
 **
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 */
-extern Char SyCompileName [256];
+extern Char SyCompileName[256];
 
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-extern Char SyCompileOutput [256];
+extern Char SyCompileOutput[GAP_PATH_MAX];
 
 /****************************************************************************
 **
 *V  SyCompileOptions . . . . . . . . . . . . . . . . . with these options
 */
-extern Char SyCompileOptions [256];
+extern Char SyCompileOptions[256];
 
 
 /****************************************************************************
@@ -306,11 +311,12 @@ extern Int SyDebugLoading;
 **  
 **  Put in this package because the command line processing takes place here.
 */
-#define MAX_GAP_DIRS 128
-
-extern Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+enum {
+    MAX_GAP_DIRS = 128
+};
+extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 #if HAVE_DOTGAPRC
-extern Char DotGapPath[512];
+extern Char DotGapPath[GAP_PATH_MAX];
 #endif
 
 /****************************************************************************
@@ -328,7 +334,7 @@ extern Char DotGapPath[512];
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-extern Char SyInitfiles [32] [512];
+extern Char SyInitfiles[32][GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -344,7 +350,7 @@ extern Char SyPkgnames [SY_MAX_PKGNR][16];
 **
 *V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
 */
-extern Char SyGapRCFilename [512];
+extern Char SyGapRCFilename[GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -352,7 +358,7 @@ extern Char SyGapRCFilename [512];
 *V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
 */
 extern Int SyHasUserHome;
-extern Char SyUserHome [256];
+extern Char SyUserHome[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -520,7 +526,7 @@ extern Int SyStorMin;
 **
 *V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
 */
-extern Char SySystemInitFile [256];
+extern Char SySystemInitFile[GAP_PATH_MAX];
 
 
 /****************************************************************************

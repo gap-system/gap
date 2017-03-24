@@ -138,7 +138,7 @@ Int SyCheckCRCCompiledModule;
 **
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
-Char SyCompileInput [256];
+Char SyCompileInput[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -152,20 +152,20 @@ Char * SyCompileMagic1;
 **
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 */
-Char SyCompileName [256];
+Char SyCompileName[256];
 
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-Char SyCompileOutput [256];
+Char SyCompileOutput[GAP_PATH_MAX];
 
 /****************************************************************************
 **
 *V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 */
-Char SyCompileOptions [256] = {'\0'};
+Char SyCompileOptions[256] = {'\0'};
 
 
 /****************************************************************************
@@ -205,9 +205,9 @@ Int SyDebugLoading;
 **
 #define MAX_GAP_DIRS 128
 */
-Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 #if HAVE_DOTGAPRC
-Char DotGapPath[512];
+Char DotGapPath[GAP_PATH_MAX];
 #endif
 
 /****************************************************************************
@@ -223,7 +223,7 @@ Int IgnoreGapRC;
 *V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
 */
 Int SyHasUserHome;
-Char SyUserHome [256];
+Char SyUserHome[GAP_PATH_MAX];
 
 /****************************************************************************
 **
@@ -425,7 +425,7 @@ Int SyStorMin;
 **
 *V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
 */
-Char SySystemInitFile [256];
+Char SySystemInitFile[GAP_PATH_MAX];
 
 
 /****************************************************************************
@@ -2026,7 +2026,7 @@ void InitSystem (
            with a tilde ~ */
         for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
           if (SyGapRootPaths[i][0] == '~' && 
-              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < 512) {
+              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < sizeof(SyGapRootPaths[i])) {
             memmove(SyGapRootPaths[i]+strlen(SyUserHome),
                     /* don't copy the ~ but the trailing '\0' */
                     SyGapRootPaths[i]+1, strlen(SyGapRootPaths[i]));
