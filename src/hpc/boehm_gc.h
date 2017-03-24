@@ -258,8 +258,7 @@ Region *NewRegion(void)
   lock = GC_malloc_atomic(sizeof(*lock));
   GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
 #else
-  result = malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
-  memset(result, 0, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  result = calloc(1, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);
@@ -473,8 +472,7 @@ Bag NewBag (
     dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
     bag = malloc(2*sizeof(Bag *));
-    dst = malloc(alloc_size);
-    memset(dst, 0, alloc_size);
+    dst = calloc(1, alloc_size);
 #endif /* DISABLE_GC */
 
     /* enter size-type words                                               */
@@ -572,8 +570,7 @@ UInt ResizeBag (
 #ifndef DISABLE_GC
         dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
-			dst       = malloc( alloc_size );
-			memset(dst, 0, alloc_size);
+        dst = calloc( 1, alloc_size );
 #endif
 
 			/* leave magic size-type word  for the sweeper, type must be 255   */
