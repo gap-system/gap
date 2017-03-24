@@ -8,18 +8,32 @@
 
 set -ex
 
+SRCDIR=${SRCDIR:-$PWD}
+
+# change into BUILDDIR (creating it if necessary), and turn it into an absolute path
+if [[ -n "$BUILDDIR" ]]
+then
+  mkdir -p "$BUILDDIR"
+  cd "$BUILDDIR"
+fi
+BUILDDIR=$PWD
+
+# Load gap-init.g when starting GAP to ensure that any Error() immediately exits
+# GAP with exit code 1.
+echo 'OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;' > gap-init.g
+
 # If we don't care about code coverage, just run the test directly
 if [[ -n ${NO_COVERAGE} ]]
 then
-    bin/gap.sh tst/${TEST_SUITE}.g
+    bin/gap.sh gap-init.g $SRCDIR/tst/${TEST_SUITE}.g
     exit 0
 fi
 
 if [[ "${TEST_SUITE}" == makemanuals ]]
 then
     make manuals
-    cat doc/*/make_manuals.out
-    if [[ $(cat doc/*/make_manuals.out | grep -c "manual.lab written") != '3' ]]
+    cat  $SRCDIR/doc/*/make_manuals.out
+    if [[ $(cat $SRCDIR/doc/*/make_manuals.out | grep -c "manual.lab written") != '3' ]]
     then
         echo "Build failed"
         exit 1
@@ -29,7 +43,7 @@ fi
 
 if [[ "${TEST_SUITE}" == testerror ]]
 then
-    cd tst/test-error
+    cd $SRCDIR/tst/test-error
     ./run_error_tests.sh
     exit 0
 fi
@@ -39,13 +53,21 @@ then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
+if [[ $HPCGAP = yes ]]
+then
+  # Add flags so that Boehm GC and libatomic headers are found, as well as HPC-GAP headers
+  CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
+  CPPFLAGS="-I$SRCDIR/hpcgap -I$SRCDIR $CPPFLAGS"
+  export CPPFLAGS
+fi
+
 # We need to compile the profiling package in order to generate coverage
 # reports; and also the IO package, as the profiling package depends on it.
-pushd pkg
+pushd $SRCDIR/pkg
 
 cd io*
-./configure $CONFIGFLAGS
-make
+./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
+make V=1
 cd ..
 
 # HACK: profiling 1.1.0 (shipped with GAP 4.8.6) is broken on 32 bit
@@ -54,11 +76,19 @@ rm -rf profiling*
 git clone https://github.com/gap-packages/profiling
 cd profiling
 ./autogen.sh
-./configure $CONFIGFLAGS
-make
+./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
+make V=1
 
 # return to base directory
 popd
+
+# HACK: do not actually run any tests for HPC-GAP, as they are currently
+# broken.
+if [[ $HPCGAP = yes ]]
+then
+    echo "Exiting early, as tests are not yet supported for HPC-GAP"
+    exit 0
+fi
 
 # create dir for coverage results
 COVDIR=coverage
@@ -66,17 +96,17 @@ mkdir -p $COVDIR
 
 case ${TEST_SUITE} in
 testmanuals)
-    bin/gap.sh -q tst/extractmanuals.g
+    bin/gap.sh -q gap-init.g $SRCDIR/tst/extractmanuals.g
 
-    bin/gap.sh -q <<GAPInput
+    bin/gap.sh -q gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
-        Read("tst/testmanuals.g");
+        Read("$SRCDIR/tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
         QUIT_GAP(0);
 GAPInput
 
     TESTMANUALSPASS=yes
-    for ch in tst/testmanuals/*.tst
+    for ch in $SRCDIR/tst/testmanuals/*.tst
     do
         bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
@@ -90,7 +120,7 @@ GAPInput
     fi
 
     # while we are at it, also test the workspace code
-    bin/gap.sh -q --cover $COVDIR/workspace.coverage <<GAPInput
+    bin/gap.sh -q --cover $COVDIR/workspace.coverage gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
@@ -98,26 +128,26 @@ GAPInput
 
     # run gap compiler to verify the src/c_*.c files are up-todate,
     # and also get coverage on the compiler
-    etc/docomp
+    make docomp
 
     # detect if there are any diffs
     git diff --exit-code
 
     ;;
 *)
-    if [[ ! -f  tst/${TEST_SUITE}.g ]]
+    if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
-        echo "Could not read test suite tst/${TEST_SUITE}.g"
+        echo "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
         exit 1
     fi
 
-    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage \
+    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage gap-init.g \
                <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
-               tst/${TEST_SUITE}.g
+               $SRCDIR/tst/${TEST_SUITE}.g
 esac;
 
 # generate library coverage reports
-bin/gap.sh -a 500M -q <<GAPInput
+bin/gap.sh -a 500M -m 500M -q gap-init.g <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
     FORCE_QUIT_GAP(1);
