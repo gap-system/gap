@@ -38,16 +38,30 @@ function(R)
   TryNextMethod();
 end);
 
+InstallImmediateMethod(IsFinite, IsReesMatrixSubsemigroup, 0,
+function(R)
+  if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
+    return ElementsFamily(FamilyObj(R))!.IsFinite;
+  fi;
+  TryNextMethod();
+end);
+
 InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
 [IsReesMatrixSubsemigroup], 
 function(R)
-  return IsFinite(ParentAttr(R));
+  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
+    return IsFinite(ParentAttr(R));
+  fi;
+  TryNextMethod();
 end);
 
 InstallMethod(IsFinite, "for a Rees 0-matrix subsemigroup",
 [IsReesZeroMatrixSubsemigroup], 
 function(R)
-  return IsFinite(ParentAttr(R));
+  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
+    return IsFinite(ParentAttr(R));
+  fi;
+  TryNextMethod();
 end);
 
 #
@@ -175,7 +189,7 @@ function(R)
   J:=Set(List(gens, x-> x![3]));
 
   return ForAll(GeneratorsOfReesMatrixSemigroupNC(ParentAttr(R), I, 
-    Semigroup(List(Elements(R), x-> x![2])), J), x-> x in R);
+    Semigroup(List(AsSSortedList(R), x-> x![2])), J), x-> x in R);
 end);
 
 #
@@ -213,7 +227,7 @@ function(R)
     Remove(gens, pos);
   fi;
   
-  elts:=ShallowCopy(Elements(R)); 
+  elts:=ShallowCopy(AsSSortedList(R)); 
   RemoveSet(elts, MultiplicativeZero(R));
 
   I:=Set(List(gens, x-> x![1]));
@@ -239,6 +253,10 @@ function(S, mat)
 
   fam := NewFamily( "ReesMatrixSemigroupElementsFamily",
           IsReesMatrixSemigroupElement);
+
+  if HasIsFinite(S) then
+    fam!.IsFinite := IsFinite(S);
+  fi;
 
   # create the Rees matrix semigroup
   R := Objectify( NewType( CollectionsFamily( fam ), IsWholeFamily and
@@ -316,8 +334,9 @@ function(S, mat)
   # cannot set IsZeroSimpleSemigroup to be <true> here since the matrix may
   # contain a row or column consisting entirely of 0s!
   # WW Also S might not be a simple semigroup (which is necessary)!
-
-  GeneratorsOfSemigroup(R);
+  if IsGroup(S) or (HasIsFinite(S) and IsFinite(S)) then 
+    GeneratorsOfSemigroup(R);
+  fi;
   SetIsSimpleSemigroup(R, false);
   return R;
 end);
@@ -629,7 +648,7 @@ function(R)
     return fail;
   fi;
 
-  gens:=List(Elements(R), x-> x![2]);
+  gens:=List(AsSSortedList(R), x-> x![2]);
 
   if IsGeneratorsOfMagmaWithInverses(gens) then 
     i:=1;
@@ -661,7 +680,7 @@ function(R)
   fi;
 
   #remove the 0
-  gens:=Filtered(Elements(R), x-> x![1]<>0);
+  gens:=Filtered(AsSSortedList(R), x-> x![1]<>0);
   Apply(gens, x-> x![2]);
   gens := Set(gens);
   
@@ -1336,8 +1355,8 @@ function(D, constructor)
   rms := constructor(G, mat);
 
   iso := function(x)
-    i := PositionProperty(R, y -> y in GreensRClassOfElement(D, x));
-    j := PositionProperty(L, y -> y in GreensLClassOfElement(D, x));
+    i := PositionProperty(R, y -> y in GreensRClassOfElement(Parent(D), x));
+    j := PositionProperty(L, y -> y in GreensLClassOfElement(Parent(D), x));
 
     if i = fail or j = fail then
       return fail;
@@ -1390,7 +1409,7 @@ end);
 InstallMethod(IsomorphismReesZeroMatrixSemigroup,
 "for a finite 0-simple", [IsSemigroup],
 function(S)
-  local D, inj;
+  local D, map, inj, inv;
 
   if not (IsZeroSimpleSemigroup(S) and IsFinite(S)) then
     Error("usage: the semigroup must be a finite 0-simple semigroup,");
@@ -1400,11 +1419,27 @@ function(S)
   D := First(GreensDClasses(S),
              x -> not IsMultiplicativeZero(S, Representative(x)));
 
-  inj := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
+  map := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
 
-  return MagmaIsomorphismByFunctionsNC(S, Range(inj),
-                                       x -> x ^ inj,
-                                       x -> x ^ InverseGeneralMapping(inj));
+  # the below is necessary since map is not defined on the zero of S 
+  inj := function(x)
+    if x = MultiplicativeZero(S) then
+      return MultiplicativeZero(Range(map));
+    fi;
+    return x ^ map;
+  end;
+  
+  inv := function(x)
+    if x = MultiplicativeZero(Range(map)) then
+      return MultiplicativeZero(S);
+    fi;
+    return x ^ InverseGeneralMapping(map);
+  end;
+
+  return MagmaIsomorphismByFunctionsNC(S, 
+                                       Range(map),
+                                       inj,
+                                       inv);
 end);
 
 #
