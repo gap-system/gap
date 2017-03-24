@@ -10,32 +10,8 @@
 ##  This file contains declarations for magmas with zero adjoined.
 ##
 
-##  <#GAPDoc Label="IsMultiplicativeElementWithZero">
-##  <ManSection>
-##  <Filt Name="IsMultiplicativeElementWithZero" Arg='elt' Type='Category'/>
-##  <Returns><K>true</K> or <K>false</K>.</Returns>
-##  <Description>
-##  This is the category of elements in a family which can be the operands of 
-##  <C>*</C> (multiplication) and the operation 
-##  <Ref Attr="MultiplicativeZero"/>.
-##  <Example><![CDATA[
-##  gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
-##  gap> M:=MagmaWithZeroAdjoined(S);
-##  <<commutative transformation semigroup of degree 3 with 1 generator>
-##    with 0 adjoined>
-##  gap> x:=Representative(M);
-##  <semigroup with 0 adjoined elt: Transformation( [ 1, 1, 1 ] )>
-##  gap> IsMultiplicativeElementWithZero(x);
-##  true
-##  gap> MultiplicativeZeroOp(x);
-##  <semigroup with 0 adjoined elt: 0>
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-
-DeclareCategory("IsMultiplicativeElementWithZero",IsMultiplicativeElement);
-DeclareCategoryCollections("IsMultiplicativeElementWithZero");
+# IsMultiplicativeElementWithZero is defined in arith.gd so that it can be read
+# in read1.g, and used in the kernel.
 
 ##  <#GAPDoc Label="MultiplicativeZeroOp">
 ##  <ManSection>
