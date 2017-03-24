@@ -18,6 +18,7 @@
 #include <src/gap.h>
 #include <src/objects.h>
 #include <src/stats.h>
+#include <src/scanner.h>  // for Pr()
 
 #include <assert.h>
 #include <time.h>
