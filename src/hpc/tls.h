@@ -7,8 +7,8 @@
  * HPC-GAP stubs.
  */
 
-#define ReadGuard(bag) NOOP
-#define WriteGuard(bag) NOOP
+#define ReadGuard(bag) ((void) 0)
+#define WriteGuard(bag) ((void) 0)
 
 static inline Bag ImpliedWriteGuard(Bag bag)
 {
