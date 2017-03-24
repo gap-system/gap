@@ -1,0 +1,163 @@
+# @configure_input@
+
+# This file is the part of the GAP build system. It is the first file
+# processed by GNU make when build GAP. If you want to understand the
+# build system, you can begin tracing it from here.
+
+
+#
+# Set lots of variables to values computed by the configure script
+#
+
+# GAP specific
+SYS_IS_DARWIN = @SYS_IS_DARWIN@
+SYS_IS_CYGWIN32 = @SYS_IS_CYGWIN32@
+ABI = @ABI@
+ABI_CFLAGS = @ABI_CFLAGS@
+
+# HPC-GAP specific
+HPCGAP = @HPCGAP@
+ADDGUARDS2 = @ADDGUARDS2@
+
+# compatibility mode
+COMPAT_MODE = @COMPAT_MODE@
+GAPARCH = @GAPARCH@
+
+# autoconf package metadata
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+
+# autoconf host information
+host = @host@
+host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
+
+# compile and linker flags
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+DEFS = @DEFS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+
+BUILD_GMP = @BUILD_GMP@
+GMP_CPPFLAGS = @GMP_CPPFLAGS@
+GMP_LDFLAGS = @GMP_LDFLAGS@
+GMP_LIBS = @GMP_LIBS@
+
+READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
+READLINE_LDFLAGS = @READLINE_LDFLAGS@
+READLINE_LIBS = @READLINE_LIBS@
+
+BUILD_BOEHM_GC = @BUILD_BOEHM_GC@
+BOEHM_GC_CPPFLAGS = @BOEHM_GC_CPPFLAGS@
+BOEHM_GC_LDFLAGS = @BOEHM_GC_LDFLAGS@
+BOEHM_GC_LIBS = @BOEHM_GC_LIBS@
+
+BUILD_LIBATOMIC_OPS = @BUILD_LIBATOMIC_OPS@
+LIBATOMIC_OPS_CPPFLAGS = @LIBATOMIC_OPS_CPPFLAGS@
+LIBATOMIC_OPS_LDFLAGS = @LIBATOMIC_OPS_LDFLAGS@
+LIBATOMIC_OPS_LIBS = @LIBATOMIC_OPS_LIBS@
+
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
+
+# tools
+AR = @AR@
+AS = @AS@
+AWK = @AWK@
+CC = @CC@
+CPP = @CPP@
+INSTALL = @INSTALL@
+LD = @LD@
+LIPO = @LIPO@
+LN_S = @LN_S@
+MANIFEST_TOOL = @MANIFEST_TOOL@
+MKDIR_P = @MKDIR_P@
+NM = @NM@
+NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
+RANLIB = @RANLIB@
+SED = @SED@
+SHELL = @SHELL@
+STRIP = @STRIP@
+
+# libtool
+LIBTOOL = @LIBTOOL@
+LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
+
+# misc
+EXEEXT = @EXEEXT@
+LIBOBJS = @LIBOBJS@
+OBJEXT = @OBJEXT@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+program_transform_name = @program_transform_name@
+target_alias = @target_alias@
+
+# paths
+abs_builddir = @abs_builddir@
+abs_srcdir = @abs_srcdir@
+abs_top_builddir = @abs_top_builddir@
+abs_top_srcdir = @abs_top_srcdir@
+bindir = @bindir@
+build = @build@
+build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
+builddir = @builddir@
+datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
+exec_prefix = @exec_prefix@
+htmldir = @htmldir@
+includedir = @includedir@
+infodir = @infodir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localedir = @localedir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
+prefix = @prefix@
+psdir = @psdir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+top_build_prefix = @top_build_prefix@
+top_builddir = @top_builddir@
+top_srcdir = @top_srcdir@
+
+
+#
+# Set vpath values to make GNU make read source files from $(srcdir).
+#
+# The vpath directives below ensure that if we reference src/foo.c, then if it
+# is not found in the build dir (e.g. because we are doing an out-of-tree
+# build), GNU make automatically looks for $(srcdir)/src/foo.c
+# #
+# Note that `vpath' is a GNU make extension. Unlike VPATH, it can be
+# restricted to certain file extensions. This way, we can mix in-tree and
+# out-of-tree builds without accidentally picking up e.g. *.o files from the
+# wrong tree. Wee still have to be careful about gen/config.h, though.
+#
+vpath %.h $(srcdir)
+vpath %.c $(srcdir)
+vpath %.s $(srcdir)
+
+
+#
+# Finally, include the actual make rules.
+#
+include $(srcdir)/Makefile.rules

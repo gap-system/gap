@@ -45,7 +45,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <src/config.h>
+#include <gen/config.h>
 
 #include <src/hpc/atomic.h>
 
