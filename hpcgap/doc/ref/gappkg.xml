@@ -28,9 +28,9 @@ All  &GAP;  users   who  develop  new  code  are   invited  to  share
 the  results  of their  efforts  with  other  &GAP; users  by  making
 the  code  and its  documentation  available  in  form of  a  package.
 Information how  to do  this is  available from  the &GAP;  Web pages
-(<URL>http://www.gap-system.org</URL>)
+(<URL>https://www.gap-system.org</URL>)
 and in the &GAP; package <Package>Example</Package>
-(see <URL>http://www.gap-system.org/Packages/example.html</URL>).
+(see <URL>https://www.gap-system.org/Packages/example.html</URL>).
 There  are  possibilities  to get  a  package  distributed together  with
 &GAP;  and it  is possible  to submit  a package  to a formal refereeing
 process.
@@ -95,6 +95,7 @@ package and not by users of a package.
 
 <#Include Label="ReadPackage">
 <#Include Label="TestPackageAvailability">
+<#Include Label="TestPackage">
 <#Include Label="InstalledPackageVersion">
 <#Include Label="DirectoriesPackageLibrary">
 <#Include Label="DirectoriesPackagePrograms">

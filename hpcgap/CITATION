@@ -3,7 +3,7 @@ Please use one of the following samples to cite GAP version from this installati
 Text:
 
 [GAP]  GAP  –  Groups,  Algorithms,  and Programming, Version 4.dev, 
-The GAP Group (this year), http://www.gap-system.org.
+The GAP Group (this year), https://www.gap-system.org.
 
 HTML:
 
@@ -11,7 +11,7 @@ HTML:
 [<span class='BibKey'>GAP</span>]   
  <i class='BibTitle'>GAP – Groups, Algorithms, and Programming, Version 4.dev</i>,
  <span class='BibOrganization'>The GAP Group</span> (<span class='BibYear'>this year</span>),
-<span class='BibHowpublished'><a href="http://www.gap-system.org">http://www.gap-system.org</a></span>.
+<span class='BibHowpublished'><a href="https://www.gap-system.org">https://www.gap-system.org</a></span>.
 </p>
 
 BibXML:
@@ -19,7 +19,7 @@ BibXML:
 <entry id="GAP4.dev"><misc>
   <title><C>GAP</C> &ndash; <C>G</C>roups, <C>A</C>lgorithms,
          and <C>P</C>rogramming, <C>V</C>ersion 4.dev</title>
-  <howpublished><URL>http://www.gap-system.org</URL></howpublished>
+  <howpublished><URL>https://www.gap-system.org</URL></howpublished>
   <year>this year</year>
   <key>GAP</key>
   <keywords>groups; *; gap; manual</keywords>
@@ -32,7 +32,7 @@ BibTeX:
   title =            {{GAP} {\textendash} {G}roups, {A}lgorithms, and {P}rogramming, {V}ersion 4.dev},
   organization =     {The GAP {G}roup},
   year =             {this year},
-  howpublished =     {\href{http://www.gap-system.org}{\texttt{http://www.gap-system.org}}},
+  howpublished =     {\href{https://www.gap-system.org}{\texttt{https://www.gap-system.org}}},
   key =              {GAP},
   keywords =         {groups; *; gap; manual}
 }
@@ -42,7 +42,7 @@ by BibTeX (in bibliography style `alpha'):
 
 \bibitem[GAP]{GAP4}
 \emph{GAP -- Groups, Algorithms, and Programming}, Version 4.dev,
-The GAP~Group (this year), \verb+http://www.gap-system.org+.
+The GAP~Group (this year), \verb+https://www.gap-system.org+.
 
 If you have (predominantly) used one or more particular GAP packages,
 please cite these packages in addition to GAP itself (either check the

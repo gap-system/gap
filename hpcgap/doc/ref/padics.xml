@@ -51,7 +51,7 @@ Pure <M>p</M>-adic numbers are the <M>p</M>-adic numbers described so far.
 <#Include Label="PurePadicNumberFamily">
 
 <ManSection>
-<Func Name="PadicNumber" Arg='fam, rat' Label="for pure padics"/>
+<Oper Name="PadicNumber" Arg='fam, rat' Label="for pure padics"/>
 
 <Description>
 returns the element of the <M>p</M>-adic number family <A>fam</A>

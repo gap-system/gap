@@ -325,7 +325,7 @@ elsewhere &ndash;see <Ref Func="String"/>, <Ref Func="PrintObj"/> and
 
 
 <ManSection>
-<Func Name="SetName" Arg='obj, name'/>
+<Oper Name="SetName" Arg='obj, name'/>
 
 <Description>
 for a suitable object <A>obj</A> sets that object to have  name  <A>name</A>  (a

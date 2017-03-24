@@ -299,7 +299,7 @@ for constructing a highest-weight module over a semisimple Lie algebra.
 <#Include Label="LatticeGeneratorsInUEA">
 
 <ManSection>
-<Func Name="ObjByExtRep" Arg="F, descr"
+<Meth Name="ObjByExtRep" Arg="F, descr"
  Label="for creating a UEALattice element"/>
 
 <Description>

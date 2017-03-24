@@ -222,7 +222,7 @@ a comparison function for a family of FpGroup elements.
 
 
 <ManSection>
-<Func Name="UnderlyingElement" Arg='elm' Label="fp group elements"/>
+<Oper Name="UnderlyingElement" Arg='elm' Label="fp group elements"/>
 
 <Description>
 Let <A>elm</A> be an element of a group whose elements are represented as
@@ -269,7 +269,7 @@ gap> f := FreeGroup( "a", "b" );
 gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
 <fp group on the generators [ a, b ]>
 gap> h := IsomorphismPermGroup( g );
-[ a, b ] -> [ (1,2)(4,5), (2,3,4) ]
+[ a, b ] -> [ (1,2)(3,5), (2,3,4) ]
 gap> u:=Subgroup(g,[g.1*g.2]);;rt:=RightTransversal(g,u);
 RightTransversal(<fp group of size 60 on the generators 
 [ a, b ]>,Group([ a*b ]))
@@ -321,7 +321,7 @@ which is based on the <Package>XGAP</Package> package.
 <#Include Label="TracedCosetFpGroup">
 
 <ManSection>
-<Func Name="FactorCosetAction" Arg='G, H' Label="for fp groups"/>
+<Oper Name="FactorCosetAction" Arg='G, H' Label="for fp groups"/>
 
 <Description>
 returns the action of <A>G</A> on the cosets of its subgroup <A>H</A>.

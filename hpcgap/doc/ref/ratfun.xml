@@ -728,7 +728,7 @@ possible
 
 <#Include Label="RationalFunctionByExtRepWithCancellation">
 <#Include Label="TryGcdCancelExtRepPolynomials">
-<#Include Label="HeuristicCancelPolynomials">
+<#Include Label="HeuristicCancelPolynomialsExtRep">
 
 </Section>
 </Chapter>

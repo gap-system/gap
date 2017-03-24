@@ -21,9 +21,9 @@ true
 
 <ManSection>
   <Attr Name="InjectionZeroMagma" Arg='M'/>
-  <Oper Name="MagmaWithZeroAdjoined" Arg='M'/>
+  <Attr Name="MagmaWithZeroAdjoined" Arg='M'/>
   <Description>
-  <C>InjectionZeroMagma</C> returns an embedding from the magma <A>M</A>
+  <Ref Attr="InjectionZeroMagma"/> returns an embedding from the magma <A>M</A>
   into a new magma formed from <A>M</A> by adjoining a single new element 
   which is the multiplicative zero of the resulting magma.
   The elements of the new magma form a family of elements in the 

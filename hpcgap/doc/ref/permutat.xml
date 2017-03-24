@@ -127,7 +127,7 @@ false
 <#Include Label="RestrictedPerm">
 
 <ManSection>
-  <Oper Name="AsPermutation" Arg="f"/>
+  <Attr Name="AsPermutation" Arg="f"/>
   <Returns>A permutation or <K>fail</K>.</Returns>
   <Description>
     Partial permutations and transformations which define permutations

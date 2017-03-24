@@ -1470,6 +1470,30 @@
   <other type="pages">xx+1028</other>
 </book></entry>
 
+<entry id="CRDQ11"><article>
+  <author>
+    <name><first>Hannah J.</first><last>Coutts</last></name>
+  </author>
+  <author>
+    <name><first>Colva M.</first><last>Roney-Dougal</last></name>
+  </author>
+  <author>
+    <name><first>Martyn</first><last>Quick</last></name>
+  </author>
+  <title>The primitive permutation groups of degree less than 4096</title>
+  <journal><value key="comma2"/></journal>
+  <year>2011</year>
+  <volume>39</volume>
+  <number>10</number>
+  <pages>3526&ndash;3546</pages>
+  <issn>0092-7872</issn>
+  <mrnumber>2845584</mrnumber>
+  <mrclass>20B15</mrclass>
+  <mrreviewer>Thomas Michael Keller</mrreviewer>
+  <other type="coden">COALDM</other>
+  <other type="fjournal">Communications in Algebra</other>
+</article></entry>
+
 <entry id="coxlittleoshea"><book>
   <author>
     <name><first>David</first><last>Cox</last></name>
@@ -1911,7 +1935,7 @@
   <year>2006</year>
   <key>GAP</key>
   <keywords>groups; *; gap; manual</keywords>
-  <url><URL>http://www.gap-system.org</URL></url>
+  <url><URL>https://www.gap-system.org</URL></url>
 </manual></entry>
 
 <entry id="GAP4"><manual>
@@ -1919,7 +1943,7 @@
                       4.4</C></title>
   <organization>The GAP&nbsp;Group</organization>
   <year>2004</year>
-  <note><URL>http://www.gap-system.org</URL></note>
+  <note><URL>https://www.gap-system.org</URL></note>
   <key>GAP</key>
   <keywords>groups; *; gap; manual</keywords>
 </manual></entry>

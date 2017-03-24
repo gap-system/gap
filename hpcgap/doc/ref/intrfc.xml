@@ -763,7 +763,7 @@ true
 gap> b:=mkposet([2,3,4]);
 [ 2, 3, 4 ]
 gap> a+b;
-[ 1, 2, 3, 4 ]
+[ 1 .. 4 ]
 gap> a*b;
 [ 2, 3 ]
 gap> s:=Semigroup(a,b);

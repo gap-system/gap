@@ -94,7 +94,7 @@ In any situation &GAP; is ended by typing <B>Ctrl-C</B> twice within a
 second.  Here as always, a combination like <B>Ctrl-D</B> means that you have
 to press the <B>D</B> key while you hold down the <B>Ctrl</B> key.
 <P/>
-On some systems (for example the Apple Macintosh) minor changes might be
+On some systems minor changes might be
 necessary. This is explained in &GAP; installation instructions (see the 
 <F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website).
 <!-- TODO: put URL -->
@@ -136,8 +136,7 @@ gap> Read("../../GAPProgs/Example.g");
 ]]></Log>
 <P/>
 You can either give the full absolute path name of the source file or
-its relative path name from the &GAP; root directory (the directory
-containing <F>bin/</F>, <F>doc/</F>, <F>lib/</F>, etc.).
+its relative path name from the current directory.
 
 </Section>
 

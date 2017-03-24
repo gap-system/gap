@@ -160,11 +160,11 @@ be anything, but it should be in some way meaningful.
   their names and formats are  not  prescribed.  The  <A>stream</A>  argument  is
   typically generated using <Ref Func="InputTextFile"/>, e.g.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> dirs := DirectoriesLibrary( "doc/ref" );;
 gap> file := Filename( dirs, "manual.six" );;
 gap> stream := InputTextFile( file );;
-]]></Example>
+]]></Log>
 </Item>
 <Mark><C>ShowChapters( <A>info</A> )</C> </Mark>
 <Item>

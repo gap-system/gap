@@ -160,7 +160,7 @@ is efficiently solvable in pc groups.
 <ManSection>
 <Heading>Arithmetic operations for elements of pc groups</Heading>
 <Meth Name="\*" Arg='pcword1, pcword2' Label="for pcwords"/>
-<Meth Name="Inverse" Arg='pcword' Label="for a pcword"/>
+<Attr Name="Inverse" Arg='pcword' Label="for a pcword"/>
 
 <Description>
 However, multiplication and inversion of elements in pc groups
@@ -274,8 +274,8 @@ see <Ref Func="IsomorphismRefinedPcGroup"/> and <Ref Func="RefinedPcGroup"/>.
 <#Include Label="PcGroupFpGroup">
 
 <ManSection>
-<Func Name="SingleCollector" Arg='fgrp, relorders'/>
-<Func Name="CombinatorialCollector" Arg='fgrp, relorders'/>
+<Oper Name="SingleCollector" Arg='fgrp, relorders'/>
+<Oper Name="CombinatorialCollector" Arg='fgrp, relorders'/>
 
 <Description>
 initializes a single collector or a combinatorial collector,
@@ -288,7 +288,7 @@ Here, the relative orders <A>relorders</A> must all be equal and a prime.
 </ManSection>
 
 <ManSection>
-<Func Name="SetConjugate" Arg='coll, j, i, w'/>
+<Oper Name="SetConjugate" Arg='coll, j, i, w'/>
 
 <Description>
 Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
@@ -301,7 +301,7 @@ For <A>i</A> <M>&lt;</M> <A>j</A>,
 </ManSection>
 
 <ManSection>
-<Func Name="SetCommutator" Arg='coll, j, i, w'/>
+<Oper Name="SetCommutator" Arg='coll, j, i, w'/>
 
 <Description>
 Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
@@ -315,7 +315,7 @@ to equal <A>w</A>, which is assumed to be a word in
 </ManSection>
 
 <ManSection>
-<Func Name="SetPower" Arg='coll, i, w'/>
+<Oper Name="SetPower" Arg='coll, i, w'/>
 
 <Description>
 Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
@@ -328,8 +328,8 @@ which is assumed to be a word in <M>f_{{i+1}}, \ldots, f_n</M>.
 </ManSection>
 
 <ManSection>
-<Func Name="GroupByRws" Arg='coll'/>
-<Func Name="GroupByRwsNC" Arg='coll'/>
+<Oper Name="GroupByRws" Arg='coll'/>
+<Oper Name="GroupByRwsNC" Arg='coll'/>
 
 <Description>
 creates a group from a rewriting system. In the first version it
@@ -339,7 +339,7 @@ version this is assumed to be true.
 </ManSection>
 
 <ManSection>
-<Func Name="IsConfluent" Arg='G' Label="for pc groups"/>
+<Prop Name="IsConfluent" Arg='G' Label="for pc groups"/>
 
 <Description>
 checks whether the pc group <A>G</A> has been built from a collector with
@@ -458,7 +458,7 @@ the groups of a given order.
 Finally we note that for the computation of split extensions it is not
 necessary that <A>M</A> must correspond to an elementary abelian group. Here
 it is possible to construct split extensions of arbitrary pc groups,
-see <Ref Func="SplitExtensions"/>.
+see <Ref Oper="SplitExtension"/>.
 
 <#Include Label="TwoCoboundaries">
 <#Include Label="TwoCocycles">
@@ -467,16 +467,18 @@ see <Ref Func="SplitExtensions"/>.
 <#Include Label="Extension">
 
 <ManSection>
-<Func Name="SplitExtension" Arg='G, M'/>
+<Oper Name="SplitExtension" Arg='G, M'/>
 
 <Description>
 returns the split extension of <A>G</A> by the <A>G</A>-module <A>M</A>.
+See also <Ref Oper="SplitExtension" Label="with specified homomorphism"/>
+for its 3-argument version.
 </Description>
 </ManSection>
 
 
 <ManSection>
-<Func Name="ModuleOfExtension" Arg='E'/>
+<Attr Name="ModuleOfExtension" Arg='E'/>
 
 <Description>
 returns the module of an extension <A>E</A> of <A>G</A> by <A>M</A>.
@@ -514,7 +516,7 @@ up to equivalence, but not up to isomorphism.
 <#Include Label="ExtensionRepresentatives">
 
 <ManSection>
-<Func Name="SplitExtensions" Arg='G, aut, N'/>
+<Oper Name="SplitExtension" Arg='G, aut, N' Label="with specified homomorphism"/>
 
 <Description>
 returns the split extensions of the pc group <A>G</A> by the pc group

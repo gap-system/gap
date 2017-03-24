@@ -976,8 +976,8 @@ To implement an external representation means to install methods for the
 following two operations.
 
 <ManSection>
-<Func Name="ExtRepOfObj" Arg='obj'/>
-<Func Name="ObjByExtRep" Arg='fam, data'/>
+<Oper Name="ExtRepOfObj" Arg='obj'/>
+<Oper Name="ObjByExtRep" Arg='fam, data'/>
 
 <Description>
 <Ref Func="ExtRepOfObj"/> returns the external representation of its argument,

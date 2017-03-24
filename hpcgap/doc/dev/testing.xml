@@ -53,7 +53,7 @@ performed after all other tests are completed.
 
 The directory <F>tst/testinstall</F> contains a subset of tests which are 
 recommended after installing &GAP;,
-see <URL>http://www.gap-system.org/Download/INSTALL</URL>.
+see <URL>https://www.gap-system.org/Download/INSTALL</URL>.
 The idea is that the examples in these <C>.tst</C> files are typical
 &GAP; computations,
 and that running these tests requires only a few minutes.
@@ -393,12 +393,7 @@ The following additional issues are related to testing
 when a new version of &GAP; is to be released.
 <List>
   <Item>
-    Use renormaliseStones option of TestDirectory to 
-    run the standard tests and renormalize the scaling factors in the
-    <C>STOP_TEST</C> statements of the files in the <C>tst</C> directory.
-  </Item>
-  <Item>
-    After these updates, repeat all tests.
+    Run all tests.
   </Item>
 </List>
 </Section>

@@ -263,8 +263,8 @@ gap> MultiplicativeZero(R);
   </ManSection>
 
   <ManSection>
-    <Prop Name="IsReesMatrixSubsemigroup" Arg="R"/>
-    <Prop Name="IsReesZeroMatrixSubsemigroup" Arg="R"/>
+    <Filt Name="IsReesMatrixSubsemigroup" Arg="R" Type="Synonym" />
+    <Filt Name="IsReesZeroMatrixSubsemigroup" Arg="R" Type="Synonym"/>
     <Returns><K>true</K> or <K>false</K>.</Returns>
     <Description>
     Every semigroup consisting of elements of a Rees matrix
