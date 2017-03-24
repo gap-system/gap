@@ -397,21 +397,28 @@ extern void PrintFunction (
 
 
 /****************************************************************************
+*
+*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
 **
-*F  FuncCALL_FUNC_LIST( <self>, <func>, <list> )  . . . . . . call a function
-**
-**  'FuncCALL_FUNC_LIST' implements the internal function 'CallFuncList'.
+**  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
+**  <func> is a function, and is installed as a kernel function, and False
+**  otherwise.
+*/
+extern Obj FuncIsKernelFunction(
+                        Obj self,
+                        Obj func);
+
+/****************************************************************************
 **
 **  'CallFuncList( <func>, <list> )'
 **
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
-extern Obj FuncCALL_FUNC_LIST (
-    Obj                 self,
-    Obj                 func,
-    Obj                 list );
 
+extern Obj CallFuncList(
+			Obj func,
+			Obj list);
 
 extern Obj CallFuncListOper;
 

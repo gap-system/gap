@@ -75,7 +75,7 @@
 #include <src/hpc/tls.h>
 
 
-#if 0
+#if defined(DEBUG_RATIONALS)
 #define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
                            GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
                              ErrorQuit("bad rational",0L,0L)
@@ -326,6 +326,61 @@ Obj             AInvRat (
     DEN_RAT(res) = DEN_RAT(op);
     CHANGED_BAG(res);
     CHECK_RAT(res);
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  AbsRat(<op>) . . . . . . . . . . . . . . . . absolute value of a rational
+*/
+Obj AbsRat( Obj op )
+{
+    Obj res;
+    Obj tmp;
+    CHECK_RAT(op);
+    tmp = AbsInt( NUM_RAT(op) );
+    if ( tmp == NUM_RAT(op))
+        return op;
+
+    res = NewBag( T_RAT, 2 * sizeof(Obj) );
+    NUM_RAT(res) = tmp;
+    DEN_RAT(res) = DEN_RAT(op);
+    CHANGED_BAG(res);
+    CHECK_RAT(res);
+    return res;
+
+}
+
+Obj FuncABS_RAT( Obj self, Obj op )
+{
+    Obj res;
+    res = ( TNUM_OBJ(op) == T_RAT ) ? AbsRat(op) : AbsInt(op);
+    if (res == Fail) {
+        ErrorMayQuit("AbsRat: argument must be a rational or integer (not a %s)",
+                     (Int)TNAM_OBJ(op), 0L);
+    }
+    return res;
+}
+
+/****************************************************************************
+**
+*F  SignRat(<op>) . . . . . . . . . . . . . . . . . . . .  sign of a rational
+*/
+Obj SignRat( Obj op )
+{
+    CHECK_RAT(op);
+    return SignInt( NUM_RAT(op) );
+}
+
+Obj FuncSIGN_RAT( Obj self, Obj op )
+{
+    Obj res;
+    res = ( TNUM_OBJ(op) == T_RAT ) ? SignRat(op) : SignInt(op);
+    if (res == Fail) {
+        ErrorMayQuit("SignRat: argument must be a rational or integer (not a %s)",
+                     (Int)TNAM_OBJ(op), 0L);
+    }
     return res;
 }
 
@@ -881,6 +936,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DENOMINATOR_RAT", 1, "rat",
       FuncDenominatorRat, "src/rational.c:DENOMINATOR_RAT" },
+
+    { "ABS_RAT", 1, "rat",
+      FuncABS_RAT, "src/rational.c:ABS_RAT" },
+
+    { "SIGN_RAT", 1, "rat",
+      FuncSIGN_RAT, "src/rational.c:SIGN_RAT" },
 
     { 0 }
 

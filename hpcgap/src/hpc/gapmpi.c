@@ -268,7 +268,7 @@ Obj UNIX_Catch( Obj self, Obj fnc, Obj arg2 )
 
   result = Fail;
   if ( ! MPI_READ_ERROR() )
-    result = FuncCALL_FUNC_LIST( 0L, fnc, arg2 );
+    result = CallFuncList( fnc, arg2 );
   else {
     while ( TLS(CurrLVars) != currLVars && TLS(CurrLVars) != TLS(BottomLVars) )
       SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );

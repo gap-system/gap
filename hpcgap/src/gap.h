@@ -172,6 +172,14 @@ extern void ErrorQuitNrArgs (
 
 /****************************************************************************
 **
+*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*/
+extern void ErrorQuitNrAtLeastArgs (
+    Int                 narg,
+    Obj                 args );
+
+/****************************************************************************
+**
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
 */
 extern void ErrorQuitRange3 (
@@ -201,9 +209,9 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
-extern Obj ErrorLVars;
-extern Obj ErrorLVars0;
-
+/* TL: extern Obj ErrorLVars;
+   TL: extern Obj ErrorLVars0;
+ */
 
 /****************************************************************************
 **
@@ -240,19 +248,6 @@ typedef UInt ExecStatus;
 // TL: extern UInt UserHasQuit;
 // TL: extern UInt UserHasQUIT;
 extern UInt SystemErrorCode;
-
-#if 0
-/****************************************************************************
-**
-*F  FuncError( <self>, <args> ) . . . . . . . . . . . . . . . signal an error
-**
-*/
-extern Obj FuncError (
-    Obj                 self,
-    Obj                 args );
-
-#endif
-
 
 /****************************************************************************
 **
@@ -340,21 +335,10 @@ extern Obj FuncError (
 
 /****************************************************************************
 **
-
-*F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
+*F  FillInVersion -- obsolete function, only kept for backwards compatibility
+**  with packages using it.
 */
-extern void FillInVersion (
-    StructInitInfo *            module );
-
-
-/****************************************************************************
-**
-*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
-*/
-extern void RequireModule (
-    StructInitInfo *            module,
-    const Char *                required,
-    UInt                        version );
+static inline void FillInVersion ( StructInitInfo * module ) {}
 
 
 /****************************************************************************
@@ -539,7 +523,8 @@ extern void RecordLoadedModule (
 */
 extern void InitializeGap (
             int *               pargc,
-            char *              argv [] );
+            char *              argv [],
+            char *              environ [] );
 
 
 #endif // GAP_GAP_H
