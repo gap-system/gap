@@ -64,9 +64,7 @@
 #include <string.h>                     /* string functions */
 #include <time.h>                       /* time functions */
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
 #include <unistd.h>
-#endif
 
 
 #if HAVE_SIGNAL_H                       /* signal handling functions       */
@@ -134,26 +132,17 @@ Int SyFindOrLinkGapRootFile (
     Int4                crc_gap,
     TypGRF_Data *       result )
 {
-    UInt4               crc_dyn = 0;
     UInt4               crc_sta = 0;
     Int                 found_gap = 0;
-    Int                 found_dyn = 0;
     Int                 found_sta = 0;
     Char                tmpbuffer[256];
     Char *              tmp;
     Char                module[256];
     Char                name[256];
-    StructInitInfo *    info_dyn = 0;
+
     StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if HAVE_DLOPEN
-    const Char *        p;
-    const Char *        dot;
-    Int                 pos;
-    Int                 pot = 0;
-    InitInfoFunc        init;
-#endif
 
     /* find the GAP file                                                   */
     result->pathname[0] = '\0';
@@ -191,90 +180,9 @@ Int SyFindOrLinkGapRootFile (
     }
 
 
-    /* try to find any dynamically loadable module for filename            */
-#if HAVE_DLOPEN
-    pos = strlen(filename);
-    p   = filename + pos;
-    dot = 0;
-    while ( filename <= p && *p != '/' ) {
-        if ( *p == '.' ) {
-            dot = p;
-            pot = pos;
-        }
-        p--;
-        pos--;
-    }
-    strxcpy( module, "bin/", sizeof(module) );
-    strxcat( module, SyArchitecture, sizeof(module) );
-    strxcat( module, "/compiled/", sizeof(module) );
-    if ( dot ) {
-        if ( p < filename ) {
-            strxcat( module, dot+1, sizeof(module) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, filename, sizeof(module), pot );
-        }
-        else {
-            strxncat( module, filename, sizeof(module), pos );
-            strxcat( module, "/", sizeof(module) );
-            strxcat( module, dot+1, sizeof(module) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-        }
-    }
-    else {
-        strxcat( module, filename, sizeof(module) );
-    }
-    strxcat( module, ".so", sizeof(module) );
-    tmp = SyFindGapRootFile(module, tmpbuffer);
-
-    /* special handling for the case of package files */
-    if (!tmp && !strncmp(filename, "pkg", 3)) {
-        Char pkgname[16];
-        const Char *p2;
-        Char *p1;
-        p2 = filename + 4; /* after the pkg/ */
-        p1 = pkgname;
-        while (*p2 != '\0' && *p2 != '/')
-          *p1++ = *p2++;
-        *p1 = '\0';
-
-        module[0] = '\0';
-        strxcat( module, "pkg/", sizeof(module) );
-        strxncat( module, pkgname, sizeof(module), p1 - pkgname + 1 );
-        strxcat( module, "/bin/", sizeof(module) );
-        strxcat( module, SyArchitecture, sizeof(module) );
-        strxcat( module, "/compiled/", sizeof(module) );
-        if ( dot ) {
-          if ( p <= p2 ) {
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, p2+1, sizeof(module), pot - (p2 + 1 - filename) );
-          }
-          else {
-            strxncat( module, p2+1, sizeof(module), pos - (p2 +1 - filename) );
-            strxcat( module, "/", sizeof(module) );
-            strxncat( module, dot+1, sizeof(module), strlen(dot+1) );
-            strxncat( module, filename+pos, sizeof(module), pot-pos );
-          }
-        }
-        else {
-          strxcat( module, p2, sizeof(module) );
-        }
-        strxcat( module, ".so", sizeof(module) );
-        tmp = SyFindGapRootFile(module, tmpbuffer);
-
-     }
-    if ( tmp ) {
-        init = SyLoadModule(tmp);
-        if ( ( (Int)init & 1 ) == 0 ) {
-            info_dyn  = (*init)();
-            crc_dyn   = info_dyn->crc;
-            found_dyn = 1;
-        }
-    }
-#endif
 
     /* check if we have to compute the crc                                 */
-    if ( found_gap && ( found_dyn || found_sta ) ) {
+    if ( found_gap && ( found_sta ) ) {
         if ( crc_gap == 0 ) {
             crc_gap = SyGAPCRC(name);
         } else if ( SyCheckCRCCompiledModule ) {
@@ -286,10 +194,6 @@ Int SyFindOrLinkGapRootFile (
 
 
     /* now decide what to do                                               */
-    if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-        Pr("#W Dynamic module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
-        found_dyn = 0;
-    }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
         Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
         found_sta = 0;
@@ -298,20 +202,12 @@ Int SyFindOrLinkGapRootFile (
         result->module_info = info_sta;
         return 2;
     }
-    if ( found_gap && found_dyn ) {
-        *(StructInitInfo**)result = info_dyn;
-        return 1;
-    }
     if ( found_gap ) {
         return 3;
     }
     if ( found_sta ) {
         result->module_info = info_sta;
         return 2;
-    }
-    if ( found_dyn ) {
-        result->module_info = info_dyn;
-        return 1;
     }
     return 0;
 }
@@ -494,11 +390,11 @@ Obj FuncCrcString( Obj self, Obj str ) {
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . link a module dynamically
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
 */
 
 /* some compiles define symbols beginning with an underscore               */
-/* but Mac OSX's dlopen adds one in for free!                              */
+/* but dlopen() on Mac OS X adds one in for free!                              */
 #if C_UNDERSCORE_SYMBOLS
 #if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"
@@ -525,25 +421,25 @@ Obj FuncCrcString( Obj self, Obj str ) {
 #define RTLD_LAZY               1
 #endif
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     void *          init;
     void *          handle;
 
+    *func = 0;
+
     handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
-#if 0
-    if ( handle == 0 )  return (InitInfoFunc) 1;
-#else
     if ( handle == 0 ) {
       Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
-      return (InitInfoFunc) 1;
+      return 1;
     }
-#endif
 
     init = dlsym( handle, SYS_INIT_DYNAMIC );
-    if ( init == 0 )  return (InitInfoFunc) 3;
+    if ( init == 0 )
+      return 3;
 
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -557,23 +453,26 @@ InitInfoFunc SyLoadModule ( const Char * name )
 
 #include <mach-o/rld.h>
 
-InitInfoFunc SyLoadModule ( const Char * name )
+InitInfoFunc SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     const Char *    names[2];
     unsigned long   init;
 
+    *func = 0;
+
     names[0] = name;
     names[1] = 0;
     if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
-        return (InitInfoFunc) 1;
+        return 1;
     }
     if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
-        return (InitInfoFunc) 3;
+        return 3;
     }
     if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
-        return (InitInfoFunc) 5;
+        return 5;
     }
-    return (InitInfoFunc) init;
+    *func = (InitInfoFunc) init;
+    return 0;
 }
 
 #endif
@@ -585,9 +484,10 @@ InitInfoFunc SyLoadModule ( const Char * name )
 */
 #if !HAVE_DLOPEN && !HAVE_RLD_LOAD
 
-InitInfoFunc SyLoadModule ( const Char * name )
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
-    return (InitInfoFunc) 7;
+    *func = 0;
+    return 7;
 }
 
 #endif
@@ -2086,44 +1986,6 @@ Int SyGetch (
 
 /****************************************************************************
 **
-*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
-**
-**  'SyGetc' reads a character from <fid>, without any translation or
-**   interference
-*/
-
-Int SyGetc
-(
-    Int                 fid )
-{
-    unsigned char ch;
-    int ret = read(syBuf[fid].fp, &ch, 1);
-    if (ret < 1)
-      return EOF;
-    else
-      return (Int)ch;
-}
-
-/****************************************************************************
-**
-*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
-**
-**  'SyPutc' writes a character to <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyPutc
-(
-    Int                 fid,
-    Char                c )
-{
-    writeandcheck(syBuf[fid].fp,&c,1);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  SyFgets( <line>, <length>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
@@ -3296,24 +3158,6 @@ Char *SyFgetsSemiBlock (
   return syFgets( line, length, fid, 0);
 }
 
-Obj FuncEchoLine(Obj self, Obj line, Obj len, Obj off, Obj pos, Obj gfid) {
-  Int i, clen, coff, cpos, fid;
-  Char *ptr;
-  clen = INT_INTOBJ(len);
-  coff = INT_INTOBJ(off);
-  ptr = CSTR_STRING(line);
-  cpos = INT_INTOBJ(pos);
-  fid = INT_INTOBJ(gfid);
-  for (i=0; i < coff; syEchoch('\b', fid), i++);
-  for (i=0; i < clen; i++) {
-    syEchoch(ptr[i], fid);
-  }
-  for (; cpos<0; syEchoch('\b', fid), cpos++);
-  for (; cpos>0; syEchoch('\6', fid), cpos--);
-  return (Obj)0;
-}
-
-
 
 /****************************************************************************
 **
@@ -3991,6 +3835,12 @@ Char * SyTmpdir( const Char * hint )
 {
   static char name[1024];
   static const char *base = TMPDIR_BASE;
+  char * env_tmpdir;
+  if ((env_tmpdir = getenv("TMPDIR")) != NULL) {
+    strxcpy(name, env_tmpdir, sizeof(name));
+    strxcat(name, "/", sizeof(name));
+  }
+  else
   strxcpy(name, base, sizeof(name));
   if (hint)
     strxcat(name, hint, sizeof(name));
@@ -4027,6 +3877,96 @@ Char * SyTmpdir ( const Char * hint )
 #endif
 #endif
 
+Obj SyReadStringFile(Int fid)
+{
+    Char            buf[32769];
+    Int             ret, len;
+    UInt            lstr;
+    Obj             str;
+
+    /* read <fid> until we see  eof   (in 32kB pieces)                     */
+    str = NEW_STRING(0);
+    len = 0;
+    do {
+        ret = read( syBuf[fid].fp , buf, 32768);
+        if (ret < 0) {
+            SySetErrorNo();
+            return Fail;
+        }
+        len += ret;
+        GROW_STRING( str, len );
+        lstr = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+lstr, buf, ret );
+        *(CHARS_STRING(str)+lstr+ret) = '\0';
+        SET_LEN_STRING(str, lstr+ret);
+    } while(ret > 0);
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    syBuf[fid].ateof = 1;
+    return str;
+}
+
+#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
+/* fstat seems completely broken under CYGWIN */
+/* first try to get the whole file as one chunk, this avoids garbage
+   collections because of the GROW_STRING calls below    */
+Obj SyReadStringFileStat(Int fid)
+{
+    Int             ret, len;
+    Obj             str;
+    Int             l;
+    char            *ptr;
+    struct stat     fstatbuf;
+
+    if( fstat( syBuf[fid].fp, &fstatbuf) == 0 ) {
+        if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
+            ErrorMayQuit(
+                "The file is too big to fit the current workspace",
+                (Int)0, (Int)0);
+        }
+        len = (Int) fstatbuf.st_size;
+        str = NEW_STRING( len );
+        CHARS_STRING(str)[len] = '\0';
+        SET_LEN_STRING(str, len);
+        ptr = CSTR_STRING(str);
+        while (len > 0) {
+            l = (len > 1048576) ? 1048576 : len;
+            ret = read( syBuf[fid].fp, ptr, l);
+            if (ret == -1) {
+                SySetErrorNo();
+                return Fail;
+            }
+            len -= ret;
+            ptr += ret;
+        }
+        syBuf[fid].ateof = 1;
+        return str;
+    } else {
+        SySetErrorNo();
+        return Fail;
+    }
+}
+
+Obj SyReadStringFid(Int fid)
+{
+    if(syBuf[fid].pipe == 1) {
+        return SyReadStringFile(fid);
+    } else {
+        return SyReadStringFileStat(fid);
+    }
+}
+
+#else
+
+Obj SyReadStringFid(Int fid) {
+    return SyReadStringFile(fid);
+}
+
+#endif
+
 
 
 /****************************************************************************
@@ -4037,9 +3977,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CrcString", 1, "string",
       FuncCrcString, "src/sysfiles.c:FuncCrcString" },
-
-    { "EchoLine", 5, "line, len, off, pos, fid",
-      FuncEchoLine, "src/sysfiles.c:FuncEchoLine" },
 
 #if HAVE_LIBREADLINE
     { "BINDKEYSTOGAPHANDLER", 1, "keyseq",

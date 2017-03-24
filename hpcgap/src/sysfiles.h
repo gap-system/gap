@@ -70,10 +70,14 @@ extern Int4 SyGAPCRC(
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
+**
+**  This function attempts to load a compiled module <name>.
+**  If successful, it returns 0, and sets <func> to a pointer to the init
+**  function of the module. In case of an error, <func> is set to 0, and the
+**  return value indicates which error occurred.
 */
-extern InitInfoFunc SyLoadModule(
-            const Char *    name );
+extern Int SyLoadModule( const Char * name, InitInfoFunc * func );
 
 
 /****************************************************************************
@@ -404,32 +408,6 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
-*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
-**
-**  'SyGetc' reads a character from <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyGetc
-(
-    Int                 fid );
-
-/****************************************************************************
-**
-*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
-**
-**  'SyPutc' writes a character to <fid>, without any translation or
-**   interference
-*/
-
-extern Int SyPutc
-(
-    Int                 fid,
-    Char                c );
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
@@ -659,7 +637,20 @@ extern void syWinPut (
     const Char *        cmd,
     const Char *        str );
 
+/***************************************************************************
+ **
+ *F SyReadStringFid( <fid> )
+ **   - read file given by <fid> into a string
+ *F SyReadStringFile( <fid> )
+ **   - read file given by <fid> into a string, only rely on read()
+ *F SyReadStringFileStat( <fid> )
+ **   - read file given by <fid> into a string, use stat() to determine
+ **     size of file before reading. This does not work for pipes
+ */
 
+extern Obj SyReadStringFid(Int fid);
+extern Obj SyReadStringFile(Int fid);
+extern Obj SyReadStringFileGeneric(Int fid);
      
 /****************************************************************************
 **
