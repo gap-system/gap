@@ -131,7 +131,7 @@ Transatlantic(VerifyStabilizer);
 #    list of names to check (default NamesGVars()),
 #    list of pairs to substitute 
 BindGlobal("CheckSynonyms", function(arg)
-  local pairs, a, p2, allnames, md, mnd, nid, ok, d, nd, pos, n2, doc, p, n;
+  local pairs, a, p2, allnames, md, mnd, nid, ok, d, nd, n2, doc, p, n;
   # default pairs to check
   pairs := [ [ "lizer", "liser" ], 
              [ "enter", "entre" ],
@@ -169,9 +169,8 @@ BindGlobal("CheckSynonyms", function(arg)
   for p in pairs do 
     Print("Checking pair ", p, "\n");
     for n in allnames do
-      pos := PositionSublist(n, p[1]);
-      if pos <> fail then
-        n2 := SubstitutionSublist(n, p[1], p[2]);
+      n2 := ReplacedString(n, p[1], p[2]);
+      if not IsIdenticalObj(n, n2) then
         doc := List([n,n2], IsDocumentedWord);
         if not n2 in allnames then
           if doc = [false, false] then
