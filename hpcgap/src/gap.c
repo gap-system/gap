@@ -897,26 +897,6 @@ Obj FuncRUNTIMES( Obj     self)
 
 /****************************************************************************
 **
-*F  FuncSystemClock( <self> . . . . . . . . . internal function 'SystemClock'
-**
-**  'FuncSystemClock' implements the internal function 'SystemClock'.
-**
-**  'SystemClock()'
-**
-**  'SystemClock' returns the current value of the system clock, as reported
-**  by gettimeofday(), as a floating point number valued in seconds.
-*/
-
-Obj FuncSystemClock(Obj self)
-{
-  struct timeval t;
-  gettimeofday(&t, NULL);
-  return NEW_MACFLOAT( (double) t.tv_sec + ((double) t.tv_usec) / 1000000.0);
-}
-
-
-/****************************************************************************
-**
 *F  FuncSizeScreen( <self>, <args> )  . . . .  internal function 'SizeScreen'
 **
 **  'FuncSizeScreen'  implements  the  internal  function 'SizeScreen' to get
@@ -3151,9 +3131,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
-
-    { "SystemClock", 0, "",
-      FuncSystemClock, "src/gap.c:SystemClock" },
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
