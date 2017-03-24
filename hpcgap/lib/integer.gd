@@ -799,7 +799,7 @@ DeclareGlobalFunction( "NextPrimeInt" );
 ##
 ##  <Description>
 ##  returns <M><A>r</A>^{<A>e</A>} \pmod{<A>m</A>}</M> for integers <A>r</A>,
-##  <A>e</A> and <A>m</A> (<M><A>e</A> \geq 0</M>).
+##  <A>e</A> and <A>m</A>.
 ##  <P/>
 ##  Note that <Ref Func="PowerModInt"/> can reduce intermediate results and
 ##  thus will generally be faster than using
@@ -855,9 +855,12 @@ DeclareGlobalFunction( "PrevPrimeInt" );
 ##  <M>[ p_1, e_1, \ldots, p_k, e_k ]</M> with
 ##  <A>n</A> = <M>p_1^{{e_1}} \cdot p_2^{{e_2}} \cdot ... \cdot p_k^{{e_k}}</M>.
 ##  <P/>
+##  For negative integers, the absolute value is taken. Zero is not allowed as input.
 ##  <Example><![CDATA[
 ##  gap> PrimePowersInt( Factorial( 7 ) );
 ##  [ 2, 4, 3, 2, 5, 1, 7, 1 ]
+##  gap> PrimePowersInt( 1 );
+##  [  ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -990,6 +993,7 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##  <Description>
 ##  prints the prime factorization of the integer <A>n</A> in human-readable
 ##  form.
+##  See also <Ref Func="StringPP"/>.
 ##  <Example><![CDATA[
 ##  gap> PrintFactorsInt( Factorial( 7 ) ); Print( "\n" );
 ##  2^4*3^2*5*7
