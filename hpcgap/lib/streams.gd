@@ -1102,7 +1102,7 @@ DeclareOperation( "PrintFormattingStatus", [IsOutputStream] );
 BIND_GLOBAL( "AppendTo", function( arg )
     if IsString(arg[1])  then
         arg := ShallowCopy(arg);
-        arg[1] := USER_HOME_EXPAND(arg[1]);
+        arg[1] := UserHomeExpand(arg[1]);
         CallFuncList( APPEND_TO, arg );
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting
@@ -1137,7 +1137,7 @@ end );
 BIND_GLOBAL( "PrintTo", function( arg )    
     if IsString(arg[1])  then
         arg := ShallowCopy(arg);
-        arg[1] := USER_HOME_EXPAND(arg[1]);
+        arg[1] := UserHomeExpand(arg[1]);
         CallFuncList( PRINT_TO, arg );
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting

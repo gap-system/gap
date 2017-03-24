@@ -1556,7 +1556,7 @@ fi;
         # This is the first attempt to read stuff for this package.
         # So we handle the case of a `PreloadFile' entry.
         if IsBound( info.PreloadFile ) then
-          filename:= USER_HOME_EXPAND( info.PreloadFile );
+          filename:= UserHomeExpand( info.PreloadFile );
           if filename[1] = '/' then
             read:= READ( filename );
           else
