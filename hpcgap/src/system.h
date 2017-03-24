@@ -994,6 +994,34 @@ extern void SyExit (
 
 /****************************************************************************
 **
+*F  SyNanosecondsSinceEpoch()
+**
+**  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the
+**  number of nanoseconds since some unspecified starting point. This means
+**  that the number returned by this function is not in itself meaningful,
+**  but the difference between the values returned by two consecutive calls
+**  can be used to measure wallclock time.
+**
+**  The accuracy of this is system dependent. For systems that implement
+**  clock_getres, we could get the promised accuracy.
+**
+**  Note that gettimeofday has been marked obsolete in the POSIX standard.
+**  We are using it because it is implemented in most systems still.
+**
+**  If we are using gettimeofday we cannot guarantee the values that
+**  are returned by SyNanosecondsSinceEpoch to be monotonic.
+**
+**  Returns -1 to represent failure
+**
+*/
+extern Int8 SyNanosecondsSinceEpoch();
+extern Int8 SyNanosecondsSinceEpochResolution();
+
+extern const char * const SyNanosecondsSinceEpochMethod;
+extern const Int SyNanosecondsSinceEpochMonotonic;
+
+/****************************************************************************
+**
 *F  SySleep( <secs> ) . . . . . . . . . . . . Try to sleep for <secs> seconds
 **
 **  The OS may wake us earlier, for example on receipt of a signal

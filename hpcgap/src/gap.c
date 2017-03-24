@@ -610,6 +610,59 @@ Obj FuncRUNTIMES( Obj     self)
 
 /****************************************************************************
 **
+*F  FuncNanosecondsSinceEpoch( <self> )
+**
+**  'FuncNanosecondsSinceEpoch' returns an integer which represents the
+**  number of nanoseconds since some unspecified starting point. This
+**  function wraps SyNanosecondsSinceEpoch.
+**
+*/
+Obj FuncNanosecondsSinceEpoch(Obj self)
+{
+  Int8 val = SyNanosecondsSinceEpoch();
+
+  if(val == -1) {
+    return Fail;
+  }
+  else {
+    return ObjInt_Int8(val);
+  }
+}
+
+/****************************************************************************
+**
+*F  FuncNanosecondsSinceEpochInfo( <self> )
+**
+**  'FuncNanosecondsSinceEpochInformation' returns a plain record
+**  contains information about the timers used for FuncNanosecondsSinceEpoch
+**
+*/
+Obj FuncNanosecondsSinceEpochInfo(Obj self)
+{
+  Obj res, tmp;
+  Int8 resolution;
+
+  res = NEW_PREC(4);
+  /* Note this has to be "DYN" since we're not passing a
+     literal but a const char * */
+  C_NEW_STRING_DYN(tmp, SyNanosecondsSinceEpochMethod);
+  AssPRec(res, RNamName("Method"), tmp);
+  AssPRec(res, RNamName("Monotonic"),
+               SyNanosecondsSinceEpochMonotonic ? True : False);
+  resolution = SyNanosecondsSinceEpochResolution();
+  if (resolution > 0) {
+      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(resolution));
+      AssPRec(res, RNamName("Reliable"), True);
+  } else if (resolution <= 0) {
+      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(-resolution));
+      AssPRec(res, RNamName("Reliable"), False);
+  }
+  return res;
+}
+
+
+/****************************************************************************
+**
 *F  FuncSizeScreen( <self>, <args> )  . . . .  internal function 'SizeScreen'
 **
 **  'FuncSizeScreen'  implements  the  internal  function 'SizeScreen' to get
@@ -2866,6 +2919,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
+
+    { "NanosecondsSinceEpoch", 0, "",
+      FuncNanosecondsSinceEpoch, "src/gap.c:NanosecondsSinceEpoch" },
+
+    { "NanosecondsSinceEpochInfo", 0, "",
+      FuncNanosecondsSinceEpochInfo, "src/gap.c:NanosecondsSinceEpochInfo" },
 
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
