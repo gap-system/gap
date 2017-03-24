@@ -792,7 +792,7 @@ Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(jmp_buf) );
-  if (!READ_ERROR()) {
+  TRY_READ {
     HashLock(target);
     locked = 1;
     CALL_0ARGS(function);
@@ -809,7 +809,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(jmp_buf) );
-  if (!READ_ERROR()) {
+  TRY_READ {
     HashLockShared(target);
     locked = 1;
     CALL_0ARGS(function);
@@ -864,9 +864,10 @@ Obj FuncDISABLE_GUARDS(Obj self, Obj flag) {
 }
 
 Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
-  Region *oldRegion = TLS(currentRegion);
-  Region *region = GetRegionOf(obj);
+  Region * volatile oldRegion = TLS(currentRegion);
+  Region * volatile region = GetRegionOf(obj);
   syJmp_buf readJmpError;
+
   if (TNUM_OBJ(func) != T_FUNCTION)
     ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))

@@ -164,43 +164,30 @@ UInt Time;
 **  is not yet defined, or the fallback methods not yet installed. To avoid
 **  this problem, we check, and use PrintObj if there is a problem
 **
-**  We also install a hook to use the GAP level function 'CustomView' if
-**  it exists. This can for example be used to restrict the amount of output
-**  or to show long output in a pager or .....
-**  
 **  This function also supplies the \n after viewing.
 */
 UInt ViewObjGVar;
-UInt CustomViewGVar;
 
 void ViewObjHandler ( Obj obj )
 {
   volatile Obj        func;
-  volatile Obj        cfunc;
   syJmp_buf             readJmpError;
 
   /* get the functions                                                   */
   func = ValAutoGVar(ViewObjGVar);
-  cfunc = ValAutoGVar(CustomViewGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-  if ( ! READ_ERROR() ) {
-    if ( cfunc != 0 && TNUM_OBJ(cfunc) == T_FUNCTION ) {
-      CALL_1ARGS(cfunc, obj);
-    }
-    else if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
+  TRY_READ {
+    if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
     else {
       PrintObj( obj );
     }
     Pr( "\n", 0L, 0L );
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
   }
-  else {
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-  }
+  memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
 }
 
 
@@ -3096,19 +3083,19 @@ void ThreadedInterpreter(void *funcargs) {
   }
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
-  if (!READ_ERROR()) {
+  TRY_READ {
     Obj init, exit;
     if (sySetjmp(TLS(threadExit)))
       return;
     init = GVarOptFunction(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);
-    FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
+    CallFuncList(func, tmp);
     exit = GVarOptFunction(&GVarTHREAD_EXIT);
     if (exit) CALL_0ARGS(exit);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
-  } else {
+  } CATCH_READ_ERROR {
     IntrEnd( 1UL );
     ClearError();
   } 
@@ -3331,7 +3318,6 @@ static Int PostRestore (
 
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
-    CustomViewGVar = GVarName( "CustomView" ); 
 
     /* construct the last and time variables                               */
     Last              = GVarName( "last"  );
@@ -3574,7 +3560,6 @@ void InitializeGap (
     UInt                i;
     Int                 ret;
 
-
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
     /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
@@ -3685,8 +3670,9 @@ void InitializeGap (
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != (Obj) 0 &&
             IS_FUNC(POST_RESTORE))
-          if (!READ_ERROR())
+          TRY_READ {
             CALL_0ARGS(POST_RESTORE);
+          }
     }
 
 
@@ -3738,7 +3724,7 @@ void InitializeGap (
        past here when we're about to exit. 
                                            */
     if ( SySystemInitFile[0] ) {
-      if (!READ_ERROR()) {
+      TRY_READ {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
           /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find '%s' maybe",
@@ -3748,7 +3734,7 @@ void InitializeGap (
                     " script instead.", 0L, 0L );
             }
       }
-      else
+      CATCH_READ_ERROR
         {
           Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
           SyExit(1);

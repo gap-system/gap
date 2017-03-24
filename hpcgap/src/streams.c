@@ -22,11 +22,7 @@
 #include <sys/types.h>
 #include <dirent.h>                     /* for reading a directory */
 #include <sys/stat.h>
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
-
-
 
 #include <src/sysfiles.h>               /* file input/output */
 
@@ -717,10 +713,10 @@ Obj FuncPrint (
             memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
-            if ( ! READ_ERROR() ) {
+            TRY_READ {
                 PrintObj( arg );
             }
-            else {
+            CATCH_READ_ERROR {
                 memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
@@ -775,10 +771,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
-            if ( ! READ_ERROR() ) {
+            TRY_READ {
                 PrintObj( arg );
             }
-            else {
+            CATCH_READ_ERROR {
                 CloseOutput();
                 memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
@@ -809,8 +805,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
     stream = ELM_LIST(args,1);
 
     /* try to open the file for output                                     */
-    i = append ? OpenAppendStream(stream)
-               : OpenOutputStream(stream);
+    i = OpenOutputStream(stream);
     if ( ! i ) {
         ErrorQuit( "%s: cannot open stream for output", (Int)funcname, 0L );
         return 0;
@@ -822,7 +817,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 
         /* if an error occurs stop printing                                */
         memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
-        if ( ! READ_ERROR() ) {
+        TRY_READ {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
             }
@@ -838,7 +833,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
                 PrintObj( arg );
             }
         }
-        else {
+        CATCH_READ_ERROR {
             CloseOutput();
             memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
@@ -875,6 +870,9 @@ Obj FuncPRINT_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
+    /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
+       same, they only differ in the function name they print as part
+       of their error messages. */
     return PRINT_OR_APPEND_TO_STREAM(args, 0);
 }
 
@@ -899,6 +897,9 @@ Obj FuncAPPEND_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
+    /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
+       same, they only differ in the function name they print as part
+       of their error messages. */
     return PRINT_OR_APPEND_TO_STREAM(args, 1);
 }
 
@@ -925,18 +926,14 @@ Obj FuncSET_OUTPUT (
           }
         }
     } else {  /* an open stream */
-        if ( append != False ) {
-          if ( ! OpenAppendStream( file ) ) {
+        if ( ! OpenOutputStream( file ) ) {
+          if ( append != False ) {
              ErrorQuit( "SET_OUTPUT: cannot open stream for appending", 0L, 0L );
           } else {
-             return 0;
+             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
           }
         } else {
-          if ( ! OpenOutputStream( file ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
-          } else {
-            return 0;
-          }
+          return 0;
         }
     }
     return 0;
@@ -1116,6 +1113,8 @@ Obj FuncREAD_GAP_ROOT (
     Obj                 self,
     Obj                 filename )
 {
+    Char filenamecpy[4096];
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1124,8 +1123,10 @@ Obj FuncREAD_GAP_ROOT (
             "you can replace <filename> via 'return <filename>;'" );
     }
 
+    /* Copy to avoid garbage collection moving string                      */
+    strlcpy(filenamecpy, CSTR_STRING(filename), 4096);
     /* try to open the file                                                */
-    return READ_GAP_ROOT(CSTR_STRING(filename)) ? True : False;
+    return READ_GAP_ROOT(filenamecpy) ? True : False;
 }
 
 
@@ -1638,54 +1639,6 @@ Obj FuncREAD_BYTE_FILE (
 **  
 **  This uses fgets and works only if there are no zero characters in <fid>.
 */
-
-/*  this would be a proper function but it reads single chars and is slower
-
-Now SyFputs uses read byte-by-byte, so probably OK
-
-Obj FuncREAD_LINE_FILE (
-    Obj             self,
-    Obj             fid )
-{
-    Int             fidc, len, i;
-    Obj             str;
-    UInt1           *p;
-    Int              c;
-
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-    
-    str = NEW_STRING(10);
-    len = 10;
-    i = 0;
-    fidc = INT_INTOBJ(fid);
-    p = CHARS_STRING(str); 
-    while (1) {
-      c = SyGetc(fidc);
-      if (i == len) {
-        len = GrowString(str, len+1);
-        p = CHARS_STRING(str);
-      }
-      if (c == '\n') {
-        p[i++] = (UInt1)c;
-        break;
-      }
-      else if (c == EOF) 
-        break;
-      else {
-        p[i++] = (UInt1)c;
-      }
-    }
-    ResizeBag( str, SIZEBAG_STRINGLEN(i) );
-    SET_LEN_STRING(str, i);
-      
-    return i == 0 ? Fail : str;
-}
-*/
 Obj FuncREAD_LINE_FILE (
     Obj             self,
     Obj             fid )
@@ -1943,15 +1896,25 @@ Obj FuncWRITE_STRING_FILE_NC (
     Obj             fid,
     Obj             str )
 {
-    Int             len = 0, ret;
+    Int             len = 0, l, ret;
+    char            *ptr;
 
     /* don't check the argument                                            */
     
     len = GET_LEN_STRING(str);
-    ret = write( syBuf[INT_INTOBJ(fid)].echo, CHARS_STRING(str), len);
-    return (ret == len)?True : Fail;
+    ptr = CSTR_STRING(str);
+    while (len > 0) {
+      l = (len > 1048576) ? 1048576 : len;
+      ret = write( syBuf[INT_INTOBJ(fid)].echo, ptr, l);
+      if (ret == -1) {
+        SySetErrorNo();
+        return Fail;
+      }
+      len -= ret;
+      ptr += ret;
+    }
+    return True;
 }
-
 
 Obj FuncREAD_STRING_FILE (
     Obj             self,
