@@ -80,7 +80,7 @@ BIND_GLOBAL("Where", function(arg)
     else
         WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
     fi;
-    Print("at line ",INPUT_LINENUMBER()," of ",INPUT_FILENAME(),"\n");
+    Print("at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
 end);
 
 OnBreak := Where;
@@ -111,7 +111,8 @@ Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
-            x,  prompt,  res, errorLVars, justQuit, printThisStatement, timeout;
+            x,  prompt,  res, errorLVars, justQuit, printThisStatement, timeout,
+            location;
 
     timeout := STOP_TIMEOUT();
 	context := arg[1].context;
@@ -189,17 +190,17 @@ BIND_GLOBAL("ErrorInner",
     ErrorLVars := context;
     if QUITTING or not BreakOnError then
         if not SilentErrors then
-	  PrintTo("*errout*","Error, ");
-	  for x in earlyMessage do
-	      PrintTo("*errout*",x);
-	  od;
-	  PrintTo("*errout*","\n");
-	fi;
-	LastErrorMessage := "";
-	for x in earlyMessage do
-	  Append(LastErrorMessage, x);
-	od;
-	MakeImmutable(LastErrorMessage);
+          PrintTo("*errout*","Error, ");
+          for x in earlyMessage do
+              PrintTo("*errout*",x);
+          od;
+          PrintTo("*errout*","\n");
+        fi;
+        LastErrorMessage := "";
+        for x in earlyMessage do
+          Append(LastErrorMessage, x);
+        od;
+        MakeImmutable(LastErrorMessage);
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
@@ -219,6 +220,9 @@ BIND_GLOBAL("ErrorInner",
             PrintTo("*errout*","\c\n");
         fi;
     else
+        location := CURRENT_STATEMENT_LOCATION(context);
+        if location <> fail then          PrintTo("*errout*", " at ", location[1], ":", location[2]);
+        fi;
         PrintTo("*errout*"," called from\c\n");
     fi;
     if IsBound(OnBreak) and IsFunction(OnBreak) then
@@ -279,6 +283,8 @@ BIND_GLOBAL("Error",
                                arg);
 end);
 
+Unbind(ErrorNoReturn);
+
 BIND_GLOBAL("ErrorNoReturn",
        function ( arg )
     ErrorInner( rec(
@@ -287,4 +293,3 @@ BIND_GLOBAL("ErrorNoReturn",
          lateMessage := "type 'quit;' to quit to outer loop",
          printThisStatement := false), arg);
 end);
- 
