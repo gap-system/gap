@@ -354,6 +354,7 @@ DeclareGlobalFunction( "StringTime" );
 ##  <Description>
 ##  returns a string representing the prime factor decomposition
 ##  of the integer <A>int</A>.
+##  See also <Ref Func="PrintFactorsInt"/>.
 ##  <Example><![CDATA[
 ##  gap> StringPP(40320);
 ##  "2^7*3^2*5*7"
@@ -397,7 +398,7 @@ DeclareGlobalFunction( "WordAlp" );
 ##  <Func Name="LowercaseString" Arg='string'/>
 ##
 ##  <Description>
-##  returns a lowercase version of the string <A>string</A>,
+##  Returns a lowercase version of the string <A>string</A>,
 ##  that is, a string in which each uppercase alphabet character is replaced
 ##  by the corresponding lowercase character.
 ##  <Example><![CDATA[

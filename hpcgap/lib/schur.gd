@@ -26,7 +26,7 @@ DeclareInfoClass( "InfoSchur" );
 ##
 ##  <#GAPDoc Label="SchurCover">
 ##  <ManSection>
-##  <Oper Name="SchurCover" Arg='G'/>
+##  <Attr Name="SchurCover" Arg='G'/>
 ##
 ##  <Description>
 ##  returns one (of possibly several) Schur covers of the group <A>G</A>.
@@ -63,7 +63,7 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##
 ##  <#GAPDoc Label="EpimorphismSchurCover">
 ##  <ManSection>
-##  <Oper Name="EpimorphismSchurCover" Arg='G[, pl]'/>
+##  <Attr Name="EpimorphismSchurCover" Arg='G[, pl]'/>
 ##
 ##  <Description>
 ##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.

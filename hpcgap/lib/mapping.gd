@@ -430,7 +430,7 @@ DeclareProperty( "IsSingleValued", IsGeneralMapping );
 ##
 ##  <#GAPDoc Label="IsMapping">
 ##  <ManSection>
-##  <Prop Name="IsMapping" Arg='map'/>
+##  <Filt Name="IsMapping" Arg='map'/>
 ##
 ##  <Description>
 ##  A <E>mapping</E> <A>map</A> is a general mapping that assigns to each

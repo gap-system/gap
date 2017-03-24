@@ -47,48 +47,48 @@ end);
 ## <#GAPDoc Label="FLOAT_UNARY">
 ## <ManSection>
 ##   <Heading>Mathematical operations</Heading>
-##   <Oper Name="Cos" Arg="x"/>
-##   <Oper Name="Sin" Arg="x"/>
-##   <Oper Name="SinCos" Arg="x"/>
-##   <Oper Name="Tan" Arg="x"/>
-##   <Oper Name="Sec" Arg="x"/>
-##   <Oper Name="Csc" Arg="x"/>
-##   <Oper Name="Cot" Arg="x"/>
-##   <Oper Name="Asin" Arg="x"/>
-##   <Oper Name="Acos" Arg="x"/>
-##   <Oper Name="Atan" Arg="x"/>
+##   <Attr Name="Cos" Arg="x"/>
+##   <Attr Name="Sin" Arg="x"/>
+##   <Attr Name="SinCos" Arg="x"/>
+##   <Attr Name="Tan" Arg="x"/>
+##   <Attr Name="Sec" Arg="x"/>
+##   <Attr Name="Csc" Arg="x"/>
+##   <Attr Name="Cot" Arg="x"/>
+##   <Attr Name="Asin" Arg="x"/>
+##   <Attr Name="Acos" Arg="x"/>
+##   <Attr Name="Atan" Arg="x"/>
 ##   <Oper Name="Atan2" Arg="y x"/>
-##   <Oper Name="Cosh" Arg="x"/>
-##   <Oper Name="Sinh" Arg="x"/>
-##   <Oper Name="Tanh" Arg="x"/>
-##   <Oper Name="Sech" Arg="x"/>
-##   <Oper Name="Csch" Arg="x"/>
-##   <Oper Name="Coth" Arg="x"/>
-##   <Oper Name="Asinh" Arg="x"/>
-##   <Oper Name="Acosh" Arg="x"/>
-##   <Oper Name="Atanh" Arg="x"/>
+##   <Attr Name="Cosh" Arg="x"/>
+##   <Attr Name="Sinh" Arg="x"/>
+##   <Attr Name="Tanh" Arg="x"/>
+##   <Attr Name="Sech" Arg="x"/>
+##   <Attr Name="Csch" Arg="x"/>
+##   <Attr Name="Coth" Arg="x"/>
+##   <Attr Name="Asinh" Arg="x"/>
+##   <Attr Name="Acosh" Arg="x"/>
+##   <Attr Name="Atanh" Arg="x"/>
 ##   <Oper Name="Log" Arg="x"/>
-##   <Oper Name="Log2" Arg="x"/>
-##   <Oper Name="Log10" Arg="x"/>
-##   <Oper Name="Log1p" Arg="x"/>
-##   <Oper Name="Exp" Arg="x"/>
-##   <Oper Name="Exp2" Arg="x"/>
-##   <Oper Name="Exp10" Arg="x"/>
-##   <Oper Name="Expm1" Arg="x"/>
-##   <Oper Name="Cuberoot" Arg="x"/>
-##   <Oper Name="Square" Arg="x"/>
+##   <Attr Name="Log2" Arg="x"/>
+##   <Attr Name="Log10" Arg="x"/>
+##   <Attr Name="Log1p" Arg="x"/>
+##   <Attr Name="Exp" Arg="x"/>
+##   <Attr Name="Exp2" Arg="x"/>
+##   <Attr Name="Exp10" Arg="x"/>
+##   <Attr Name="Expm1" Arg="x"/>
+##   <Attr Name="CubeRoot" Arg="x"/>
+##   <Attr Name="Square" Arg="x"/>
 ##   <Oper Name="Hypothenuse" Arg="x y"/>
-##   <Oper Name="Ceil" Arg="x"/>
-##   <Oper Name="Floor" Arg="x"/>
-##   <Oper Name="Round" Arg="x"/>
-##   <Oper Name="Trunc" Arg="x"/>
-##   <Oper Name="Frac" Arg="x"/>
-##   <Oper Name="SignFloat" Arg="x"/>
-##   <Oper Name="Argument" Arg="x" Label="for complex numbers" />
-##   <Oper Name="Erf" Arg="x"/>
-##   <Oper Name="Zeta" Arg="x"/>
-##   <Oper Name="Gamma" Arg="x"/>
-##   <Oper Name="ComplexI" Arg="x"/>
+##   <Attr Name="Ceil" Arg="x"/>
+##   <Attr Name="Floor" Arg="x"/>
+##   <Attr Name="Round" Arg="x"/>
+##   <Attr Name="Trunc" Arg="x"/>
+##   <Attr Name="Frac" Arg="x"/>
+##   <Attr Name="SignFloat" Arg="x"/>
+##   <Attr Name="Argument" Arg="x" Label="for complex numbers" />
+##   <Attr Name="Erf" Arg="x"/>
+##   <Attr Name="Zeta" Arg="x"/>
+##   <Attr Name="Gamma" Arg="x"/>
+##   <Attr Name="ComplexI" Arg="x"/>
 ##   <Description>
 ##     Usual mathematical functions.
 ##   </Description>
@@ -106,7 +106,7 @@ end);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Oper Name="PrecisionFloat" Arg="x"/>
+##   <Attr Name="PrecisionFloat" Arg="x"/>
 ##   <Returns>The precision of <A>x</A></Returns>
 ##   <Description>
 ##     This function returns the precision, counted in number of binary digits,
@@ -116,11 +116,11 @@ end);
 ##
 ## <ManSection>
 ##   <Heading>Interval operations</Heading>
-##   <Oper Name="Sup" Arg="interval"/>
-##   <Oper Name="Inf" Arg="interval"/>
-##   <Oper Name="Mid" Arg="interval"/>
-##   <Oper Name="AbsoluteDiameter" Arg="interval"/>
-##   <Oper Name="RelativeDiameter" Arg="interval"/>
+##   <Attr Name="Sup" Arg="interval"/>
+##   <Attr Name="Inf" Arg="interval"/>
+##   <Attr Name="Mid" Arg="interval"/>
+##   <Attr Name="AbsoluteDiameter" Arg="interval"/>
+##   <Attr Name="RelativeDiameter" Arg="interval"/>
 ##   <Oper Name="Overlaps" Arg="interval1 interval2"/>
 ##   <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
 ##   <Oper Name="IncreaseInterval" Arg="interval delta"/>
@@ -256,7 +256,7 @@ DeclareProperty("IsNaN", IsFloat);
 ##
 ## <#GAPDoc Label="Float">
 ## <ManSection>
-##   <Oper Name="Float" Arg="obj"/>
+##   <Func Name="Float" Arg="obj"/>
 ##   <Oper Name="NewFloat" Arg="filter, obj"/>
 ##   <Oper Name="MakeFloat" Arg="sample obj, obj"/>
 ##   <Returns>A new floating-point number, based on <A>obj</A></Returns>
@@ -285,7 +285,7 @@ DeclareProperty("IsNaN", IsFloat);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Oper Name="Rat" Arg="f" Label="for floats"/>
+##   <Attr Name="Rat" Arg="f" Label="for floats"/>
 ##   <Returns>A rational approximation to <A>f</A></Returns>
 ##   <Description>
 ##     This command constructs a rational approximation to the

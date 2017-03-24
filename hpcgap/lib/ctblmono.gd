@@ -270,8 +270,8 @@ DeclareProperty( "IsBergerCondition", IsClassFunction );
 ##  rec( character := Character( CharacterTable( Group(
 ##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
 ##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-##        [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
+##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked", 
 ##    isHomogeneous := false, multiplicity := 1 )
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
@@ -353,8 +353,8 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  rec( character := Character( CharacterTable( Group(
 ##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
 ##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-##        [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
+##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked", 
 ##    isQuasiPrimitive := false )
 ##  ]]></Example>
 ##  </Description>

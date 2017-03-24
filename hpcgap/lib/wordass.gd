@@ -332,7 +332,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 ##  <#GAPDoc Label="AssignGeneratorVariables">
 ##  <ManSection>
-##  <Func Name="AssignGeneratorVariables" Arg='G'/>
+##  <Oper Name="AssignGeneratorVariables" Arg='G'/>
 ##
 ##  <Description>
 ##  If <A>G</A> is a group, whose generators are represented by symbols (for 
@@ -371,7 +371,7 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##
 ##  <#GAPDoc Label="[2]{wordass}">
 ##  <ManSection>
-##  <Func Name="\=" Arg='w1, w2' Label="for associative words"/>
+##  <Oper Name="\=" Arg='w1, w2' Label="for associative words"/>
 ##
 ##  <Description>
 ##  <Index Subkey="associative words">equality</Index>
@@ -405,7 +405,7 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Func Name="\&lt;" Arg='w1, w2' Label="for associative words"/>
+##  <Oper Name="\&lt;" Arg='w1, w2' Label="for associative words"/>
 ##
 ##  <Description>
 ##  <Index Subkey="associative words">smaller</Index>

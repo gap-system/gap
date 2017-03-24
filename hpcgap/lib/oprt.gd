@@ -887,18 +887,20 @@ end );
 ##  <#GAPDoc Label="ActionHomomorphism">
 ##  <ManSection>
 ##  <Heading>ActionHomomorphism</Heading>
-##  <Oper Name="ActionHomomorphism"
+##  <Func Name="ActionHomomorphism"
 ##   Arg='G, Omega[, gens, acts][, act][, "surjective"]'
 ##   Label="for a group, an action domain, etc."/>
-##  <Attr Name="ActionHomomorphism" Arg='xset[, "surjective"]'
+##  <Func Name="ActionHomomorphism" Arg='xset[, "surjective"]'
 ##   Label="for an external set"/>
-##  <Attr Name="ActionHomomorphism" Arg='action'
+##  <Func Name="ActionHomomorphism" Arg='action'
 ##   Label="for an action image"/>
 ##
 ##  <Description>
 ##  computes a homomorphism from <A>G</A> into the symmetric group on
 ##  <M>|<A>Omega</A>|</M> points that gives the permutation action of
-##  <A>G</A> on <A>Omega</A>.
+##  <A>G</A> on <A>Omega</A>. (In particular, this homomorphism is a
+##  permutation equivalence, that is the permutation image of a group element
+##  is given by the positions of points in <A>Omega</A>.)
 ##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
@@ -1100,9 +1102,9 @@ DeclareGlobalFunction( "ImageElmActionHomomorphism" );
 ##
 ##  <#GAPDoc Label="Action">
 ##  <ManSection>
-##  <Oper Name="Action" Arg='G, Omega[, gens, acts][, act]'
+##  <Func Name="Action" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
-##  <Attr Name="Action" Arg='xset'
+##  <Func Name="Action" Arg='xset'
 ##   Label="for an external set"/>
 ##
 ##  <Description>
@@ -1602,7 +1604,7 @@ OrbitishFO( "Blocks",
 ##  is a subset of one block.
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
-##  [ [ 1, 2, 3, 8 ], [ 4, 5, 6, 7 ] ]
+##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1896,7 +1898,7 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 ##
 ##  <#GAPDoc Label="PermutationCycle">
 ##  <ManSection>
-##  <Oper Name="PermutationCycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, act]'/>
 ##
 ##  <Description>
 ##  computes the permutation that represents the cycle of <A>pnt</A> under
@@ -1925,7 +1927,7 @@ DeclareOperation( "PermutationCycleOp",
 ##
 ##  <#GAPDoc Label="Cycle">
 ##  <ManSection>
-##  <Oper Name="Cycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="Cycle" Arg='g, Omega, pnt[, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the points in the cycle of <A>pnt</A> under the action
@@ -1945,7 +1947,7 @@ DeclareOperation( "CycleOp", [ IsObject, IsList, IsObject, IsFunction ] );
 ##
 ##  <#GAPDoc Label="Cycles">
 ##  <ManSection>
-##  <Oper Name="Cycles" Arg='g, Omega[, act]'/>
+##  <Func Name="Cycles" Arg='g, Omega[, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the cycles (as lists of points) of the action of the
@@ -1965,7 +1967,7 @@ DeclareOperation( "CyclesOp", [ IsObject, IsList, IsFunction ] );
 ##
 ##  <#GAPDoc Label="CycleLength">
 ##  <ManSection>
-##  <Oper Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
 ##
 ##  <Description>
 ##  returns the length of the cycle of <A>pnt</A> under the action of the element
@@ -2065,7 +2067,7 @@ DeclareOperation( "CycleIndexOp",
 ##
 ##  <#GAPDoc Label="RepresentativeAction">
 ##  <ManSection>
-##  <Oper Name="RepresentativeAction"
+##  <Func Name="RepresentativeAction"
 ##   Arg='G[, Omega], d, e[, gens, acts][, act]'/>
 ##
 ##  <Description>
@@ -2181,7 +2183,7 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##
 ##  <#GAPDoc Label="OrbitStabilizerAlgorithm">
 ##  <ManSection>
-##  <Func Name="OrbitStabilizerAlgorithm"
+##  <Oper Name="OrbitStabilizerAlgorithm"
 ##   Arg='G, Omega, blist, gens, acts, pntact'/>
 ##
 ##  <Description>
@@ -2190,7 +2192,7 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##  (the word <Q>package</Q> here refers to the &GAP; functionality for 
 ##  group actions, not to a &GAP; package).
 ##  <P/>
-##  <Ref Func="OrbitStabilizerAlgorithm"/> performs an orbit stabilizer
+##  <Ref Oper="OrbitStabilizerAlgorithm"/> performs an orbit stabilizer
 ##  algorithm for the group <A>G</A> acting with the generators <A>gens</A>
 ##  via the generator images <A>gens</A> and the group action <A>act</A> on
 ##  the element <A>pnt</A>.

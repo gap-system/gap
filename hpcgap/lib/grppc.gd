@@ -286,7 +286,7 @@ DeclareAttribute( "GeneralizedPcgs", IsGroup );
 ##
 ##  <#GAPDoc Label="CanEasilyComputePcgs">
 ##  <ManSection>
-##  <Func Name="CanEasilyComputePcgs" Arg='grp'/>
+##  <Filt Name="CanEasilyComputePcgs" Arg='grp'/>
 ##
 ##  <Description>
 ##  This filter indicates whether it is possible to compute a pcgs for

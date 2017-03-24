@@ -32,6 +32,11 @@
 ##  takes <M>4m</M> bytes of storage.
 ##  It can take even more because the internal list has sometimes room for
 ##  more than <M>d</M> images.
+##  <P/> On 32-bit systems, the limit on the degree of permutations is, for 
+##  technical reasons, <M>2^{28}-1</M>.
+##  On 64-bit systems, it is <M>2^{32}-1</M> because only a 32-bit integer 
+##  is used to represent each image internally. Error messages should be given
+##  if any command would require creating a permutation exceeding this limit. 
 ##  <P/>
 ##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
 ##  its result and therefore can be used to save memory if intermediate
@@ -114,7 +119,7 @@ DeclareCategoryCollections( "IsPermCollection" );
 ##
 ##  <#GAPDoc Label="SmallestGeneratorPerm">
 ##  <ManSection>
-##  <Func Name="SmallestGeneratorPerm" Arg='perm'/>
+##  <Attr Name="SmallestGeneratorPerm" Arg='perm'/>
 ##
 ##  <Description>
 ##  is the smallest permutation that generates the same cyclic group
@@ -358,7 +363,7 @@ DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
 ##
 ##  <#GAPDoc Label="PermutationsFamily">
 ##  <ManSection>
-##  <Var Name="PermutationsFamily"/>
+##  <Fam Name="PermutationsFamily"/>
 ##
 ##  <Description>
 ##  is the family of all permutations.
@@ -429,8 +434,8 @@ SetOne( PermutationsFamily, () );
 ##  i.e., if <A>list</A> is not dense,
 ##  or if <A>list</A> contains a positive integer twice,
 ##  or if <A>list</A> contains an
-##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>.
-##  If <A>list</A> contains non-integer entries an error is raised.
+##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>,
+##  of if <A>list</A> contains non-integer entries, etc.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -550,9 +555,10 @@ end);
 ##
 ##  <Description>
 ##  Let <A>src</A> and <A>dst</A> be lists of positive integers of the same
-##  length, such that neither may contain an element twice.
-##  <Ref Func="MappingPermListList"/> returns a permutation <M>\pi</M> such
-##  that <A>src</A><C>[</C><M>i</M><C>]^</C><M>\pi =</M>
+##  length, such that there is a permutation <M>\pi</M> such that
+##  <C>OnTuples(<A>src</A>,</C> <M>\pi</M><C>) = <A>dst</A></C>.
+##  <Ref Func="MappingPermListList"/> returns the permutation <C>p</C> from the
+##  previous sentence, i.e.  <A>src</A><C>[</C><M>i</M><C>]^</C><M>p =</M>
 ##  <A>dst</A><C>[</C><M>i</M><C>]</C>.
 ##  The permutation <M>\pi</M> fixes all points larger than the maximum of
 ##  the entries in <A>src</A> and <A>dst</A>.
@@ -562,7 +568,6 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
 
 #############################################################################
 ##

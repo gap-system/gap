@@ -100,7 +100,7 @@ DeclareGlobalFunction("AbstractWordTietzeWord");
 ##
 ##  <#GAPDoc Label="TietzeWordAbstractWord">
 ##  <ManSection>
-##  <Func Name="TietzeWordAbstractWord" Arg='word, fgens'/>
+##  <Oper Name="TietzeWordAbstractWord" Arg='word, fgens'/>
 ##
 ##  <Description>
 ##  assumes <A>fgens</A> to be a list of free group generators
@@ -108,7 +108,7 @@ DeclareGlobalFunction("AbstractWordTietzeWord");
 ##  It converts <A>word</A> into a Tietze word,
 ##  i. e., a list of positive or negative generator numbers.
 ##  <P/>
-##  This function simply calls <Ref Func="LetterRepAssocWord"/>.
+##  This function simply calls <Ref Oper="LetterRepAssocWord"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -411,52 +411,30 @@ DeclareGlobalFunction("AddRelator");
 ##  gap> H := Subgroup( G, [ a, c ] );;
 ##  gap> SetInfoLevel( InfoFpGroup, 1 );
 ##  gap> P := PresentationSubgroupMtc( G, H );;
-##  #I  index = 240  total = 4737  max = 4507
-##  #I  MTC defined 2 primary and 4444 secondary subgroup generators
-##  #I  there are 246 generators and 617 relators of total length 2893
-##  #I  calling DecodeTree
-##  #I  there are 114 generators and 385 relators of total length 1860
-##  #I  there are 69 generators and 294 relators of total length 1855
-##  #I  there are 43 generators and 235 relators of total length 2031
-##  #I  there are 35 generators and 207 relators of total length 2348
-##  #I  there are 25 generators and 181 relators of total length 3055
-##  #I  there are 19 generators and 165 relators of total length 3290
-##  #I  there are 20 generators and 160 relators of total length 5151
-##  #I  there are 23 generators and 159 relators of total length 8177
-##  #I  there are 25 generators and 159 relators of total length 12241
-##  #I  there are 29 generators and 159 relators of total length 18242
-##  #I  there are 34 generators and 159 relators of total length 27364
-##  #I  there are 38 generators and 159 relators of total length 41480
-##  #I  there are 41 generators and 159 relators of total length 62732
-##  #I  there are 45 generators and 159 relators of total length 88872
-##  #I  there are 46 generators and 159 relators of total length 111092
-##  #I  there are 44 generators and 155 relators of total length 158181
-##  #I  there are 32 generators and 155 relators of total length 180478
-##  #I  there are 7 generators and 133 relators of total length 29897
-##  #I  there are 4 generators and 119 relators of total length 28805
-##  #I  there are 3 generators and 116 relators of total length 35209
-##  #I  there are 2 generators and 111 relators of total length 25658
-##  #I  there are 2 generators and 111 relators of total length 22634
+##  #I  there are 4 generators and 144 relators of total length 4373
+##  #I  there are 4 generators and 140 relators of total length 3898
+##  #I  there are 4 generators and 137 relators of total length 3715
+##  #I  there are 4 generators and 135 relators of total length 3380
+##  #I  there are 4 generators and 134 relators of total length 3291
+##  #I  there are 4 generators and 133 relators of total length 3212
+##  #I  there are 3 generators and 129 relators of total length 6494
+##  #I  there are 3 generators and 128 relators of total length 5465
+##  #I  there are 3 generators and 127 relators of total length 3722
+##  #I  there are 3 generators and 126 relators of total length 3048
+##  #I  there are 2 generators and 10 relators of total length 118
+##  #I  there are 2 generators and 5 relators of total length 38
 ##  gap> TzGoGo( P );
-##  #I  there are 2 generators and 108 relators of total length 11760
-##  #I  there are 2 generators and 95 relators of total length 6482
-##  #I  there are 2 generators and 38 relators of total length 1464
-##  #I  there are 2 generators and 8 relators of total length 116
-##  #I  there are 2 generators and 7 relators of total length 76
-##  #I  there are 2 generators and 6 relators of total length 66
-##  #I  there are 2 generators and 6 relators of total length 52
 ##  gap> TzPrintGenerators( P );
-##  #I  1.  _x1   26 occurrences
-##  #I  2.  _x2   26 occurrences
+##  #I  1.  _x1   19 occurrences
+##  #I  2.  _x2   19 occurrences
 ##  gap> TzPrint( P );
 ##  #I  generators: [ _x1, _x2 ]
 ##  #I  relators:
 ##  #I  1.  3  [ 1, 1, 1 ]
 ##  #I  2.  3  [ 2, 2, 2 ]
-##  #I  3.  8  [ 2, -1, 2, -1, 2, -1, 2, -1 ]
+##  #I  3.  8  [ 1, -2, 1, -2, 1, -2, 1, -2 ]
 ##  #I  4.  8  [ 2, 1, 2, 1, 2, 1, 2, 1 ]
-##  #I  5.  14  [ -1, -2, 1, 2, 1, -2, -1, 2, 1, -2, -1, -2, 1, 2 ]
-##  #I  6.  16  [ 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2 ]
+##  #I  5.  16  [ 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1 ]
 ##  gap> K :=  FpGroupPresentation( P );
 ##  <fp group on the generators [ _x1, _x2 ]>
 ##  gap> SetInfoLevel( InfoFpGroup, 0 );
@@ -1625,7 +1603,7 @@ DeclareAttribute("TzOptions",IsPresentation,"mutable");
 ##  <A>P</A>.
 ##  <Example><![CDATA[
 ##  gap> TzPrintOptions( P );
-##  #I  protected          = 0
+##  #I  protected          = 2
 ##  #I  eliminationsLimit  = 100
 ##  #I  expandLimit        = 150
 ##  #I  generatorsLimit    = 0

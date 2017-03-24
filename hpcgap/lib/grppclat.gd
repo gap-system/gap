@@ -33,7 +33,7 @@ DeclareInfoClass("InfoPcSubgroup");
 ##
 ##  <#GAPDoc Label="InvariantElementaryAbelianSeries">
 ##  <ManSection>
-##  <Oper Name="InvariantElementaryAbelianSeries" Arg='G, morph[, N [, fine]]'/>
+##  <Func Name="InvariantElementaryAbelianSeries" Arg='G, morph[, N [, fine]]'/>
 ##
 ##  <Description>
 ##  For a (solvable) group <A>G</A> and a list of automorphisms <A>morph</A>
@@ -68,7 +68,7 @@ DeclareGlobalFunction("InvariantElementaryAbelianSeries");
 ##
 ##  <#GAPDoc Label="InducedAutomorphism">
 ##  <ManSection>
-##  <Oper Name="InducedAutomorphism" Arg='epi, aut'/>
+##  <Func Name="InducedAutomorphism" Arg='epi, aut'/>
 ##
 ##  <Description>
 ##  Let <A>aut</A> be an automorphism of a group <M>G</M> and <A>epi</A> be

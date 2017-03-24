@@ -350,12 +350,12 @@ DeclareOperation( "QuotRemCoeffs", [IsList, IsInt, IsList, IsInt]);
 ##
 ##  <#GAPDoc Label="ValuePol">
 ##  <ManSection>
-##  <Func Name="ValuePol" Arg='coeff, x'/>
+##  <Oper Name="ValuePol" Arg='coeff, x'/>
 ##
 ##  <Description>
 ##  Let <A>coeff</A> be the coefficients list of a univariate polynomial
 ##  <M>f</M>, and <A>x</A> a ring element.
-##  Then <Ref Func="ValuePol"/> returns the value <M>f(<A>x</A>)</M>.
+##  Then <Ref Oper="ValuePol"/> returns the value <M>f(<A>x</A>)</M>.
 ##  <P/>
 ##  The coefficient of <M><A>x</A>^i</M> is assumed to be stored
 ##  at position <M>i+1</M> in the coefficients list.

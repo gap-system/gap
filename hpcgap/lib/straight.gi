@@ -959,6 +959,7 @@ end);
 ##
 InstallGlobalFunction(StraightLineProgElm,function(seeds,prog)
 local sr;
+
   if IsRecord(seeds) then
     sr:=seeds;
     seeds:=sr.seeds;
@@ -2069,7 +2070,7 @@ local z,d,l,count,b;
     return StraightLineProgElm(r,StraightLineProgramNC([[n,1]],Length(r)));
   fi;
 
-  # which elements are referred to several times
+  # which elements are referred to ? set count negative
   d:=ListWithIdenticalEntries(z,0);
   count:=function(i)
     if i>b then

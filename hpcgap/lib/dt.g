@@ -22,7 +22,7 @@
 ##  and the second entry is num(a). The third entry of (<tree>, i) gives a 
 ##  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,  
 ##  (<tree>, i)[3] = 0 means that (<tree>, i) is not marked. The fourth entry
-##  of (<tree>, i) contains the number of knodes of tree(<tree>, i).  The
+##  of (<tree>, i) contains the number of nodes of tree(<tree>, i).  The
 ##  fifth entry of (<tree>, i) finally contains a boundary for 
 ##  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that 
 ##  pos( tree(<tree>, i) ) is unbounded.  If tree(<tree>, i) is an atom we
@@ -44,8 +44,8 @@
 ##  with i > 0 represents binomial(x_i, j).  A pair (0, j) represents
 ##  binomial(y_gen, j) when word*gen^power is calculated.
 ##
-##  Finally deep thought has to deal with pseudorepresentatives. A
-##  pseudorepresentative <a> is stored in list of length 4. The first entry
+##  Finally deep thought has to deal with pseudo-representatives. A
+##  pseudo-representative <a> is stored in list of length 4. The first entry
 ##  stores left( <a> ),  the second entry contains right( <a> ),  the third
 ##  entry contains num( <a> ) and the last entry finally gives a boundary
 ##  for pos( <b> ) for all trees <b> which are represented by <a>.
@@ -223,8 +223,8 @@ end );
 ##  applying <Dt_Convert> <sortedpols> is a list of records with the
 ##  components <evlist> and <evlistvec> where <evlist> contains deep thought
 ##  monomials and <evlistvec> contains the corresponding coefficient vectors.
-##  <Dt_Convert> merges the <evlist>-compondents of the records contained
-##  in <sortedpols> into one component <evlist> and the <evlistvec>-coponents
+##  <Dt_Convert> merges the <evlist>-components of the records contained
+##  in <sortedpols> into one component <evlist> and the <evlistvec>-components
 ##  into one component <evlistvec>.
 ##
 BindGlobal( "Dt_Convert", function(sortedpols)
@@ -251,7 +251,7 @@ end );
 ##  <evlistvec>. Before applying <Dt_ConvertCoeffVecs>, an entry
 ##  <evlistvec>[i][j] = k means that the deep thought monomial <evlist>[i]
 ##  occurs in the polynomial f_j with coefficient k. After applying
-##  <Dt_ConvertCoeffVecs> a pair [j, k] occuring in <eclistvec>[i] means that
+##  <Dt_ConvertCoeffVecs> a pair [j, k] occurring in <evlistvec>[i] means that
 ##  <evlist>[i] occurs in f_j with coefficient k.
 ##
 BindGlobal( "Dt_ConvertCoeffVecs", function(evlistvec, pr)
@@ -447,31 +447,31 @@ end );
 
 ###########################################################################
 ##
-#F  Calcrepsn(<n>, <avec>, <pr>, <max>
+#F  Calcrepsn(<n>, <avec>, <pr>, <max>)
 ##
-##  'Calcrepsn' returns the polynomials f_{n1}1,..,f_{nm} which have to be
+##  'Calcrepsn' returns the polynomials f_{n1},...,f_{nm} which have to be
 ##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition 
 ##  length of the nilpotent group G given by the presentation <pr>.  This is 
-##  done  by first calculating a complete sytem of <n>-pseudorepresentatives
-##  for the presentation <pr> with bondary <max>. Then this sytem is used
+##  done  by first calculating a complete system of <n>-pseudo-representatives
+##  for the presentation <pr> with boundary <max>. Then this system is used
 ##  to get the required polynomials
 ##
 ##  If g_n is in the center of the group determined by the presentation <pr>
-##  then there don't exist any representatives exept for the atoms and 
+##  then there don't exist any representatives except for the atoms and 
 ##  finally 0 will be returned.
 ##
 BindGlobal( "Calcrepsn", function(n, avec, pr, max)
     
     local i,j,k,l,       #  loop variables
           x,y,z,a,b,c,   #  trees
-          reps,          #  list of pseudorepresentatives
-          pols,          #  stores the dt polynomials
+          reps,          #  list of pseudo-representatives
+          pols,          #  stores the deep thought polynomials
           boundary,      #  boundary for loop
           hilf,
           pos,
           start,
           max1, max2;    #  maximal values for pos(x) and pos(y)   
-    reps:=[];
+    reps := [];
     pols := [];
 
     for i  in [n..Length(pr)]  do
@@ -482,7 +482,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
             reps[i] := [ [1,i,0,1,-1] ];
         fi;
     od;
-    #  first compute the pseudorepresentatives which are also represenatives
+    #  first compute the pseudo-representatives which are also representatives
     for  i in [n..max]  do
         if  i < avec[n]  then
             boundary := i-1;
@@ -535,7 +535,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
             od;
         od;
     od;
-    #  now get the "real" pseudorepresentatives
+    #  now get the "real" pseudo-representatives
     for  i in [max+1..Length(pr)]  do
         if  i < avec[n]  then
             boundary := i-1;
@@ -556,8 +556,8 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                             if Length(reps[j][x]) = 5  
                                or  k >= Dt_GetNumRight(reps[j][x])  then
                                 # since reps[j] and reps[k] may contain
-                                # pseudorepresentatives which are trees
-                                # as well as "real" pseudorepresentatives
+                                # pseudo-representatives which are trees
+                                # as well as "real" pseudo-representatives
                                 # it is necessary to take several cases into
                                 # consideration.
                                 max1 := Dt_GetMax(reps[j][x], j, pr);
@@ -566,7 +566,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     if  reps[j][x][2] <> j  then
                                         # we have to ensure that 
                                         # num( <reps>[j][x] ) = j when we
-                                        # construct a new pseudorepresentative
+                                        # construct a new pseudo-representative
                                         # out of it.
                                         a := ShallowCopy(reps[j][x]);
                                         a[2] := j;
@@ -578,7 +578,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     if  reps[j][x][3] <> j  then
                                         # we have to ensure that 
                                         # num( <reps>[j][x] ) = j when we
-                                        # construct a new pseudorepresentative
+                                        # construct a new pseudo-representative
                                         # out of it.
                                         a := ShallowCopy(reps[j][x]);
                                         a[3] := j;
@@ -591,7 +591,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     if  y[2] <> k  then
                                         # we have to ensure that num(<y>) = k
                                         # when we construct a new
-                                        # pseudorepresentative out of it.
+                                        # pseudo-representative out of it.
                                         b := ShallowCopy(y);
                                         b[2] := k;
                                     else
@@ -602,7 +602,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     if  y[3] <> k  then
                                         # we have to ensure that num(<y>) = k
                                         # when we construct a new
-                                        # pseudorepresentative out of it.
+                                        # pseudo-representative out of it.
                                         b := ShallowCopy(y);
                                         b[3] := k;
                                     else
@@ -611,7 +611,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     b[4] := max2;
                                 fi;
                                 # now finally construct the 
-                                # pseudorepresentative and add it to
+                                # pseudo-representative and add it to
                                 # reps
                                 z := [a, b, i, 0];
                                 if  i >= avec[n]  then
@@ -632,10 +632,10 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
             od;
         od;
     od;
-    # now use the pseudorepresentatives to get the desired polynomials
+    # now use the pseudo-representatives to get the desired polynomials
     for  i in [n..Length(pr)]  do
         for  j in [2..Length(reps[i])]  do
-            # the first case: reps[i][j] is a "real" pseudorepresentative
+            # the first case: reps[i][j] is a "real" pseudo-representative
             if  Length(reps[i][j]) = 4  then
                 if  reps[i][j][3] = i  then
                     GetPols(reps[i][j], pr, pols);
@@ -659,7 +659,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
    if  pols <> 0  then
       Dt_ConvertCoeffVecs(pols.evlistvec, pr);
    fi;
-   return(pols);
+   return pols;
 end );
 
 

@@ -371,7 +371,9 @@ function( string )
     for i  in [ 1 .. Length(string) ]  do
         if i = p and string[i] = '-'  then
             m := -1;
-	    if Length(string)=1 then return fail;fi;
+            if Length(string) = 1 then
+                return fail;
+            fi;
         elif string[i] = '/' and IsBound(n)  then
             return fail;
         elif string[i] = '/' and not IsBound(n)  then

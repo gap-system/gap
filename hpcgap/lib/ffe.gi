@@ -197,7 +197,7 @@ InstallGlobalFunction( FFEFamily, function( p )
         # Store the type for the representation of prime field elements
         # via residues.
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
-	  and IsModulusRep and IsZDFRE);
+          and IsModulusRep and IsZDFRE);
         SetDataType( F!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
@@ -487,9 +487,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
       atomic readonly GALOIS_FIELDS do
         if IsBound( GALOIS_FIELDS[p] ) then
           if IsBound( GALOIS_FIELDS[p][d] ) then
-	        if Length(arg)=1 then
-	            GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
-	        fi;
+            if Length(arg)=1 then
+                GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+            fi;
             return GALOIS_FIELDS[p][d];
           fi;
         fi;

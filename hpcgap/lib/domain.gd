@@ -201,7 +201,7 @@ DeclareOperation( "DomainByGenerators", [ IsFamily, IsList ] );
 ##  <ManSection>
 ##  <Func Name="Parent" Arg='D'/>
 ##  <Oper Name="SetParent" Arg='D, P'/>
-##  <Func Name="HasParent" Arg='D'/>
+##  <Filt Name="HasParent" Arg='D'/>
 ##
 ##  <Description>
 ##  It is possible to assign to a domain <A>D</A> one other domain <A>P</A>
@@ -216,7 +216,7 @@ DeclareOperation( "DomainByGenerators", [ IsFamily, IsList ] );
 ##  calls to <Ref Func="SetParent"/> will be ignored.
 ##  <P/>
 ##  If <A>D</A> has a parent <A>P</A>
-##  &ndash;this can be checked with <Ref Func="HasParent"/>&ndash;
+##  &ndash;this can be checked with <Ref Filt="HasParent"/>&ndash;
 ##  then <A>P</A> can be used to gain information about <A>D</A>.
 ##  First, the call of <Ref Func="SetParent"/> causes
 ##  <Ref Func="UseSubsetRelation"/> to be called.

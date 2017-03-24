@@ -975,7 +975,7 @@ DeclareOperation( "DepthAndLeadingExponentOfPcElement",
 ##
 ##  <#GAPDoc Label="PcElementByExponents">
 ##  <ManSection>
-##  <Oper Name="PcElementByExponents" Arg='pcgs, list'/>
+##  <Func Name="PcElementByExponents" Arg='pcgs, list'/>
 ##  <Oper Name="PcElementByExponentsNC" Arg='pcgs[, basisind], list'/>
 ##
 ##  <Description>
@@ -1006,7 +1006,7 @@ DeclareOperation( "PcElementByExponentsNC",
 ##
 ##  <#GAPDoc Label="LinearCombinationPcgs">
 ##  <ManSection>
-##  <Oper Name="LinearCombinationPcgs" Arg='pcgs, list[, one]'/>
+##  <Func Name="LinearCombinationPcgs" Arg='pcgs, list[, one]'/>
 ##
 ##  <Description>
 ##  returns the product <M>\prod_i <A>pcgs</A>[i]^{{<A>list</A>[i]}}</M>.

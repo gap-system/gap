@@ -91,12 +91,12 @@ InstallTrueMethod( IsFreeLeftModule,
 ##
 ##  <#GAPDoc Label="IsGaussianSpace">
 ##  <ManSection>
-##  <Func Name="IsGaussianSpace" Arg='V'/>
+##  <Filt Name="IsGaussianSpace" Arg='V'/>
 ##
 ##  <Description>
 ##  The filter <Ref Filt="IsGaussianSpace"/> (see&nbsp;<Ref Sect="Filters"/>)
-##  for the row space (see&nbsp;<Ref Func="IsRowSpace"/>)
-##  or matrix space (see&nbsp;<Ref Func="IsMatrixSpace"/>) <A>V</A>
+##  for the row space (see&nbsp;<Ref Filt="IsRowSpace"/>)
+##  or matrix space (see&nbsp;<Ref Filt="IsMatrixSpace"/>) <A>V</A>
 ##  over the field <M>F</M>, say,
 ##  indicates that the entries of all row vectors or matrices in <A>V</A>,
 ##  respectively, are all contained in <M>F</M>.
@@ -245,7 +245,7 @@ DeclareAttribute( "CanonicalBasis", IsFreeLeftModule );
 ##
 ##  <#GAPDoc Label="IsRowSpace">
 ##  <ManSection>
-##  <Func Name="IsRowSpace" Arg='V'/>
+##  <Filt Name="IsRowSpace" Arg='V'/>
 ##
 ##  <Description>
 ##  A <E>row space</E> in &GAP; is a vector space that consists of
@@ -318,7 +318,7 @@ DeclareHandlingByNiceBasis( "IsNonGaussianRowSpace",
 ##
 ##  <#GAPDoc Label="IsMatrixSpace">
 ##  <ManSection>
-##  <Func Name="IsMatrixSpace" Arg='V'/>
+##  <Filt Name="IsMatrixSpace" Arg='V'/>
 ##
 ##  <Description>
 ##  A <E>matrix space</E> in &GAP; is a vector space that consists of matrices

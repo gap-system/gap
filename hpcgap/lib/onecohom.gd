@@ -170,7 +170,7 @@ DeclareOperation( "OCCoprimeComplement",
 ##
 ##  <#GAPDoc Label="OneCoboundaries">
 ##  <ManSection>
-##  <Oper Name="OneCoboundaries" Arg='G, M'/>
+##  <Func Name="OneCoboundaries" Arg='G, M'/>
 ##
 ##  <Description>
 ##  computes the group of 1-coboundaries.
@@ -295,11 +295,11 @@ DeclareGlobalFunction( "OneCoboundaries" );
 ##  <#GAPDoc Label="OneCocycles">
 ##  <ManSection>
 ##  <Heading>OneCocycles</Heading>
-##  <Oper Name="OneCocycles" Arg='G, M' Label="for two groups"/>
-##  <Oper Name="OneCocycles" Arg='G, mpcgs' Label="for a group and a pcgs"/>
-##  <Oper Name="OneCocycles" Arg='gens, M'
+##  <Func Name="OneCocycles" Arg='G, M' Label="for two groups"/>
+##  <Func Name="OneCocycles" Arg='G, mpcgs' Label="for a group and a pcgs"/>
+##  <Func Name="OneCocycles" Arg='gens, M'
 ##   Label="for generators and a group"/>
-##  <Oper Name="OneCocycles" Arg='gens, mpcgs'
+##  <Func Name="OneCocycles" Arg='gens, mpcgs'
 ##   Label="for generators and a pcgs"/>
 ##
 ##  <Description>
@@ -429,7 +429,7 @@ DeclareOperation("OCAddComplement",
 ##
 ##  <#GAPDoc Label="OCOneCocycles">
 ##  <ManSection>
-##  <Oper Name="OCOneCocycles" Arg='ocr, onlySplit'/>
+##  <Func Name="OCOneCocycles" Arg='ocr, onlySplit'/>
 ##
 ##  <Description>
 ##  is the more technical function to compute 1-cocycles. It takes an record
@@ -459,7 +459,7 @@ DeclareGlobalFunction("OCOneCocycles");
 ##
 ##  <#GAPDoc Label="ComplementClassesRepresentativesEA">
 ##  <ManSection>
-##  <Oper Name="ComplementClassesRepresentativesEA" Arg='G, N'/>
+##  <Func Name="ComplementClassesRepresentativesEA" Arg='G, N'/>
 ##
 ##  <Description>
 ##  computes complement classes to an elementary abelian normal subgroup

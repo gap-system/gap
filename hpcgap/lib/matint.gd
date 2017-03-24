@@ -195,7 +195,7 @@ DeclareOperation("SmithNormalFormIntegerMatTransforms",[IsMatrix]);
 ##
 ##  <#GAPDoc Label="DiagonalizeIntMat">
 ##  <ManSection>
-##  <Oper Name="DiagonalizeIntMat" Arg='mat'/>
+##  <Func Name="DiagonalizeIntMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  This function changes <A>mat</A> to its SNF.
@@ -233,7 +233,7 @@ DeclareGlobalFunction( "DiagonalizeIntMat" );
 ##
 ##  <#GAPDoc Label="NormalFormIntMat">
 ##  <ManSection>
-##  <Oper Name="NormalFormIntMat" Arg='mat, options'/>
+##  <Func Name="NormalFormIntMat" Arg='mat, options'/>
 ##
 ##  <Description>
 ##  This general operation for computation of various Normal Forms
@@ -338,7 +338,7 @@ DeclareAttribute( "BaseIntMat",
 ##
 ##  <#GAPDoc Label="BaseIntersectionIntMats">
 ##  <ManSection>
-##  <Attr Name="BaseIntersectionIntMats" Arg='m,n'/>
+##  <Oper Name="BaseIntersectionIntMats" Arg='m,n'/>
 ##
 ##  <Description>
 ##  If <A>m</A> and <A>n</A> are matrices with integral entries,
@@ -365,7 +365,7 @@ DeclareOperation( "BaseIntersectionIntMats",
 ##
 ##  <#GAPDoc Label="ComplementIntMat">
 ##  <ManSection>
-##  <Attr Name="ComplementIntMat" Arg='full, sub'/>
+##  <Oper Name="ComplementIntMat" Arg='full, sub'/>
 ##
 ##  <Description>
 ##  Let <A>full</A> be a list of integer vectors generating an integral row
@@ -522,7 +522,7 @@ DeclareAttribute( "AbelianInvariantsOfList", IsCyclotomicCollection );
 ##
 ##  <#GAPDoc Label="DeterminantIntMat">
 ##  <ManSection>
-##  <Oper Name="DeterminantIntMat" Arg='mat'/>
+##  <Func Name="DeterminantIntMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  <Index Subkey="integer matrix">determinant</Index>

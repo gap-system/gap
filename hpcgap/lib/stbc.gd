@@ -247,7 +247,7 @@ DeclareGlobalFunction( "StabChainBaseStrongGenerators" );
 ##  <Func Name="CopyStabChain" Arg='S'/>
 ##
 ##  <Description>
-##  This function returns a copy of the stabilizer chain <A>S</A>
+##  This function returns a mutable copy of the stabilizer chain <A>S</A>
 ##  that has no mutable object (list or record) in common with <A>S</A>.
 ##  The <C>labels</C> components of the result are possibly shared by several
 ##  levels, but superfluous labels are removed.
@@ -860,4 +860,3 @@ DeclareGlobalFunction( "ClosureRandomPermGroup" );
 #############################################################################
 ##
 #E
-

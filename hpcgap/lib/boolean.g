@@ -67,7 +67,7 @@ BIND_GLOBAL( "TYPE_BOOL",
 
 #############################################################################
 ##
-#m  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
+#M  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
 ##
 InstallMethod( String,
     "for a boolean",

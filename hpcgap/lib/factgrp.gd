@@ -141,9 +141,8 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  15
 ##  gap> FactorCosetAction(g,u);
 ##  <action epimorphism>
-##  gap> Range(last);
-##  Group([ (1,7,13,10,4)(2,9,14,11,5)(3,8,15,12,6), (1,7)(2,8)(3,9)(4,5)
-##  (10,12)(13,14) ])
+##  gap> StructureDescription(Range(last));
+##  "S5"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

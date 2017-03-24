@@ -167,7 +167,7 @@ AbelianInvariantsSubgroupFpGroup := AbelianInvariantsSubgroupFpGroupRrs;
 ##
 ##  <#GAPDoc Label="AugmentedCosetTableInWholeGroup">
 ##  <ManSection>
-##  <Oper Name="AugmentedCosetTableInWholeGroup" Arg='H[, gens]'/>
+##  <Func Name="AugmentedCosetTableInWholeGroup" Arg='H[, gens]'/>
 ##
 ##  <Description>
 ##  For a subgroup <A>H</A> of a finitely presented group, this function
@@ -505,8 +505,6 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##  implicitly called function <Ref Func="DecodeTree"/> will be suppressed.
 ##  <Example><![CDATA[
 ##  gap> p := PresentationSubgroupMtc( g, u );
-##  #I  there are 3 generators and 4 relators of total length 12
-##  #I  there are 2 generators and 3 relators of total length 14
 ##  <presentation with 2 gens and 3 rels of total length 14>
 ##  ]]></Example>
 ##  <P/>

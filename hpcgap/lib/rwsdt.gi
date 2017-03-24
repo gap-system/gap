@@ -128,8 +128,6 @@ function( efam, gens, orders )
     type := NewType( fam, IsDeepThoughtCollectorRep and IsMutable );
     Objectify( type, dt );
 
-    # underlying family vermutlich nicht n"otig
-
     # and the generators
     SetGeneratorsOfRws( dt, gens );
     SetNumberGeneratorsOfRws( dt, Length(gens) );
@@ -578,7 +576,7 @@ function( dtrws )
     dtrws![PC_DEEP_THOUGHT_POLS] := Calcreps2(dtrws![PC_CONJUGATES], 8, 1);
     Print("done\n");
 
-    # Compute the orders of the genrators of dtrws
+    # Compute the orders of the generators of dtrws
     Print("computing generator orders  ...\n");
     CompleteOrdersOfRws(dtrws);
     Print("done\n");

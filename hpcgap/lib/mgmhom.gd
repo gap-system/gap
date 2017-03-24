@@ -16,7 +16,7 @@
 ##
 ##  <#GAPDoc Label="IsMagmaHomomorphism">
 ##  <ManSection>
-##  <Prop Name="IsMagmaHomomorphism" Arg='mapp'/>
+##  <Filt Name="IsMagmaHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
 ##  A <E>magma homomorphism</E> is a total single valued mapping

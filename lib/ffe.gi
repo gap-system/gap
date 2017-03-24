@@ -191,13 +191,13 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         F:= NewFamily( "FFEFamily", IsFFE, 
                        CanEasilySortElements,
-                       CanEasilySortElements  );
+                       CanEasilySortElements );
         SetCharacteristic( F, p );
 
         # Store the type for the representation of prime field elements
         # via residues.
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
-	  and IsModulusRep and IsZDFRE);
+          and IsModulusRep and IsZDFRE);
         SetDataType( F!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
@@ -1179,8 +1179,6 @@ function(z,k)
 end);
 
 
-
 #############################################################################
 ##
 #E
-

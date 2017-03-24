@@ -74,7 +74,7 @@ DeclareAttribute( "AsNearRing", IsNearRingElementCollection );
 ##
 ##  <#GAPDoc Label="IsRing">
 ##  <ManSection>
-##  <Prop Name="IsRing" Arg='R'/>
+##  <Filt Name="IsRing" Arg='R'/>
 ##
 ##  <Description>
 ##  A <E>ring</E> in &GAP; is an additive group
@@ -101,7 +101,7 @@ DeclareSynonymAttr( "IsRing",
 ##
 ##  <#GAPDoc Label="IsRingWithOne">
 ##  <ManSection>
-##  <Prop Name="IsRingWithOne" Arg='R'/>
+##  <Filt Name="IsRingWithOne" Arg='R'/>
 ##
 ##  <Description>
 ##  A <E>ring-with-one</E> in &GAP; is a ring (see&nbsp;<Ref Func="IsRing"/>)

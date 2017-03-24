@@ -256,7 +256,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##
 ##  <#GAPDoc Label="[2]{word}">
 ##  <ManSection>
-##  <Func Name="\=" Label="for nonassociative words" Arg='w1, w2'/>
+##  <Oper Name="\=" Label="for nonassociative words" Arg='w1, w2'/>
 ##
 ##  <Description>
 ##  <Index Subkey="nonassociative words">equality</Index>
@@ -271,7 +271,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Func Name="\&lt;" Label="for nonassociative words" Arg='w1, w2'/>
+##  <Oper Name="\&lt;" Label="for nonassociative words" Arg='w1, w2'/>
 ##
 ##  <Description>
 ##  <Index Subkey="nonassociative words">smaller</Index>

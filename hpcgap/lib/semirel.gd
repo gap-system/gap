@@ -54,12 +54,12 @@
 ##
 ##  <#GAPDoc Label="IsGreensRelation">
 ##  <ManSection>
-##  <Prop Name="IsGreensRelation" Arg='bin-relation'/>
-##  <Prop Name="IsGreensRRelation" Arg='equiv-relation'/>
-##  <Prop Name="IsGreensLRelation" Arg='equiv-relation'/>
-##  <Prop Name="IsGreensJRelation" Arg='equiv-relation'/>
-##  <Prop Name="IsGreensHRelation" Arg='equiv-relation'/>
-##  <Prop Name="IsGreensDRelation" Arg='equiv-relation'/>
+##  <Filt Name="IsGreensRelation" Arg='bin-relation'/>
+##  <Filt Name="IsGreensRRelation" Arg='equiv-relation'/>
+##  <Filt Name="IsGreensLRelation" Arg='equiv-relation'/>
+##  <Filt Name="IsGreensJRelation" Arg='equiv-relation'/>
+##  <Filt Name="IsGreensHRelation" Arg='equiv-relation'/>
+##  <Filt Name="IsGreensDRelation" Arg='equiv-relation'/>
 ##
 ##  <Description>
 ##  Categories for the Green's relations.
@@ -160,12 +160,12 @@ DeclareSynonymAttr("RightCayleyGraphSemigroup", CayleyGraphSemigroup);
 ##
 ##  <#GAPDoc Label="IsGreensClass">
 ##  <ManSection>
-##  <Prop Name="IsGreensClass" Arg='equiv-class'/>
-##  <Prop Name="IsGreensRClass" Arg='equiv-class'/>
-##  <Prop Name="IsGreensLClass" Arg='equiv-class'/>
-##  <Prop Name="IsGreensJClass" Arg='equiv-class'/>
-##  <Prop Name="IsGreensHClass" Arg='equiv-class'/>
-##  <Prop Name="IsGreensDClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensRClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensLClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensJClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensHClass" Arg='equiv-class'/>
+##  <Filt Name="IsGreensDClass" Arg='equiv-class'/>
 ##
 ##  <Description>
 ##  return <K>true</K> if the equivalence class <A>equiv-class</A> is

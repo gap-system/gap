@@ -966,8 +966,16 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##  <Filt Name="IsMatrix" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  A <E>matrix</E> is a list of lists of equal length whose entries lie in a
-##  common ring.
+##  By convention <E>matrix</E> is a list of lists of equal length whose
+##  entries lie in a common ring.
+##  <P/>
+##  For technical reasons laid out at the top of Chapter <Ref Chap="Matrices"/>,
+##  the filter <Ref Filt="IsMatrix"/> is a synonym for a table of ring elements,
+##  (see <Ref Filt="IsTable"/> and <Ref Filt="IsRingElement"/>). This means that
+##  <Ref Filt="IsMatrix"/> returns <K>true</K> for tables such as 
+##  <C>[[1,2],[3]]</C>.
+##  If necessary, <Ref Prop="IsRectangularTable"/> can be used to test whether
+##  an object is a list of homogenous lists of equal lengths manually.
 ##  <P/>
 ##  Note that matrices may have different multiplications,
 ##  besides the usual matrix product there is for example the Lie product.
@@ -982,11 +990,13 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##  [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
 ##  gap> IsMatrix(mat);
 ##  true
+##  gap> mat:=[[1,2],[3]];
+##  [ [ 1, 2 ], [ 3 ] ]
+##  gap> IsMatrix(mat);
+##  true
+##  gap> IsRectangularTable(mat);
+##  false
 ##  ]]></Example>
-##  <P/>
-##  Note also the filter <Ref Func="IsTable"/>
-##  which may be more appropriate than <Ref Filt="IsMatrix"/>
-##  for some purposes.
 ##  <P/>
 ##  Note that the empty list <C>[]</C> and more complex
 ##  <Q>empty</Q> structures such as <C>[[]]</C> are <E>not</E> matrices,

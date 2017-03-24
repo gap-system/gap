@@ -1754,7 +1754,6 @@ SetDimension( Cyclotomics, infinity );
 SetRepresentative(Cyclotomics, 0);
 
 
-
 #############################################################################
 ##
 ##  Automorphisms of abelian number fields
@@ -2113,12 +2112,10 @@ InstallMethod( GaloisGroup,
     return group;
 end );
     
-    
+
 InstallMethod( Representative, [IsCyclotomicField], f->0);
 
-    
 
 #############################################################################
 ##
 #E
-

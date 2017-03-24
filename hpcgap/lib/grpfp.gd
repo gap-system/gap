@@ -221,7 +221,7 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##
 ##  <#GAPDoc Label="IsFpGroup">
 ##  <ManSection>
-##  <Func Name="IsFpGroup" Arg='G'/>
+##  <Filt Name="IsFpGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  is a synonym for
@@ -229,6 +229,11 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##  <P/>
 ##  Free groups are a special case of finitely presented groups,
 ##  namely finitely presented groups with no relators.
+##  <P/>
+##  Another special case are groups given by polycyclic presentations.
+##  &GAP; uses a special representation for these groups which is created
+##  in a different way.
+##  See chapter <Ref Chap="Pc Groups"/> for details.
 ##  <Example><![CDATA[
 ##  gap> g:=FreeGroup(2);
 ##  <free group on the generators [ f1, f2 ]>
@@ -239,11 +244,6 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##  gap> IsFpGroup(h);
 ##  false
 ##  ]]></Example>
-##  <P/>
-##  Another special case are groups given by polycyclic presentations.
-##  &GAP; uses a special representation for these groups which is created
-##  in a different way.
-##  See chapter <Ref Chap="Pc Groups"/> for details.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
