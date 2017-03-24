@@ -134,6 +134,53 @@ Obj FILENAME_STAT(Stat stat)
   return filename;
 }
 
+Obj GET_FILENAME_BODY(Obj body)
+{
+    return PTR_BAG(body)[0];
+}
+
+void SET_FILENAME_BODY(Obj body, Obj val)
+{
+    PTR_BAG(body)[0] = val;
+}
+
+Obj GET_STARTLINE_BODY(Obj body)
+{
+    Obj line = PTR_BAG(body)[1];
+    if(IS_INTOBJ(line))
+        return line;
+    else
+        return 0;
+}
+
+void SET_STARTLINE_BODY(Obj body, Obj val)
+{
+    PTR_BAG(body)[1] = val;
+}
+
+Obj GET_LOCATION_BODY(Obj body)
+{
+    Obj location = PTR_BAG(body)[1];
+    if(IS_STRING(location))
+        return location;
+    else
+        return 0;
+}
+
+void SET_LOCATION_BODY(Obj body, Obj val)
+{
+    PTR_BAG(body)[1] = val;
+}
+
+Obj GET_ENDLINE_BODY(Obj body)
+{
+    return PTR_BAG(body)[2];
+}
+
+void SET_ENDLINE_BODY(Obj body, Obj val)
+{
+    PTR_BAG(body)[2] = val;
+}
 
 /****************************************************************************
 **
@@ -733,8 +780,8 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     setup_gapname(TLS(Input));
-    FILENAME_BODY(body) = TLS(Input)->gapname;
-    STARTLINE_BODY(body) = INTOBJ_INT(startLine);
+    SET_FILENAME_BODY(body, TLS(Input)->gapname);
+    SET_STARTLINE_BODY(body, INTOBJ_INT(startLine));
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS(Input)->name),TLS(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
     TLS(OffsBody) = 0;
@@ -774,7 +821,7 @@ void CodeFuncExprEnd (
     assert(!TLS(LoopNesting));
     
     /* get the body of the function                                        */
-    /* push an addition return-void-statement if neccessary                */
+    /* push an additional return-void-statement if neccessary              */
     /* the function interpreters depend on each function ``returning''     */
     if ( nr == 0 ) {
         CodeReturnVoid();
@@ -811,7 +858,7 @@ void CodeFuncExprEnd (
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), TLS(OffsBody)+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    ENDLINE_BODY(BODY_FUNC(fexp)) = INTOBJ_INT(TLS(Input)->number);
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(TLS(Input)->number));
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS(Input)->number); */
 
     /* switch back to the previous function                                */
@@ -1335,7 +1382,7 @@ void            CodeBreak ( void )
     Stat                stat;           /* break-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("break statement not enclosed in a loop");
+      SyntaxError("'break' statement not enclosed in a loop");
     
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
@@ -1356,7 +1403,7 @@ void            CodeContinue ( void )
     Stat                stat;           /* continue-statement, result         */
 
     if (!TLS(LoopNesting))
-      SyntaxError("continue statement not enclosed in a loop");
+      SyntaxError("'continue' statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
@@ -3538,6 +3585,5 @@ StructInitInfo * InitInfoCode ( void )
 
 /****************************************************************************
 **
-
 *E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
