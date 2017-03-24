@@ -1806,13 +1806,10 @@ Obj FuncGALOIS_CYC (
       }
 
     /* get and check <ord>                                                 */
-    if ( TNAM_OBJ(ord) == T_INT ) {
-        o = INT_INTOBJ(ord);
-    }
-    else {
+    if ( ! IS_INTOBJ(ord) ) {
         ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
-        o = INT_INTOBJ(ord);
     }
+    o = INT_INTOBJ(ord);
 
     /* every galois automorphism fixes the rationals                       */
     if ( tnumcyc == T_INT    || tnumcyc == T_RAT
