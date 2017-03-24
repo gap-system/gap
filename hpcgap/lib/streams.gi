@@ -617,13 +617,13 @@ InstallGlobalFunction( InputTextCustom,
     function(state, read, close)
       return Objectify( InputTextCustomType,
         rec(
-	  state := state,
-	  read := read,
-	  close := close,
-	  pos := 0,
-	  endofinput := false,
-	  buffer := ""
-	) );
+          state := state,
+          read := read,
+          close := close,
+          pos := 0,
+          endofinput := false,
+          buffer := ""
+        ) );
     end);
 
 #############################################################################
@@ -738,7 +738,7 @@ function( stream )
       stream!.buffer := stream!.read(stream!.state);
       if stream!.buffer = "" then
         stream!.endofinput := true;
-	return fail;
+        return fail;
       fi;
     fi;
     stream!.pos := stream!.pos + 1;
@@ -762,8 +762,8 @@ function ( stream )
       if chunk = "" then
         stream!.endofinput := true;
       else
-	Append(stream!.buffer, chunk);
-	pos := Position(stream!.buffer, '\n');
+        Append(stream!.buffer, chunk);
+        pos := Position(stream!.buffer, '\n');
       fi;
     od;
     if stream!.buffer = "" then
@@ -851,9 +851,9 @@ function( str )
     if fid = fail  then
         return fail;
     else
-	atomic InputTextFileStillOpen do
+        atomic InputTextFileStillOpen do
             AddSet( InputTextFileStillOpen, fid );
-	od;
+        od;
         return Objectify( InputTextFileType, [fid,Immutable(str)] );
     fi;
 end );
@@ -880,9 +880,9 @@ InstallAtExit( function()
     local   i;
 
     atomic InputTextFileStillOpen do
-	for i  in InputTextFileStillOpen  do
-	    CLOSE_FILE(i);
-	od;
+        for i  in InputTextFileStillOpen  do
+            CLOSE_FILE(i);
+        od;
     od;
 
 end );
@@ -1180,31 +1180,6 @@ end );
 
 
 #############################################################################
-##  formatting status for stdout
-GAPInfo.FormattingStatusStdout := true;
-InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
-function(str)
-  if str <> "*stdout*" then
-    Error("Only the string \"*stdout*\" is recognized by this method.");
-  fi;
-  return GAPInfo.FormattingStatusStdout;
-end);
-
-InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
-function(str, status)
-  if str <> "*stdout*" then
-    Error("Only the string \"*stdout*\" is recognized by this method.");
-  fi;
-  if status = false then
-    SET_PRINT_FORMATTING_STDOUT(false);
-    GAPInfo.FormattingStatusStdout := false;
-  else
-    SET_PRINT_FORMATTING_STDOUT(true);
-    GAPInfo.FormattingStatusStdout := true;
-  fi;
-end);
-
-
 ##
 #M  PrintObj( <output-text-string> )
 ##
@@ -1370,14 +1345,14 @@ function( stream, byte )
     fi;
     if byte = 3 then
       if stream!.buffer <> "" then
-	stream!.write(stream!.state, stream!.buffer);
-	stream!.buffer := "";
+        stream!.write(stream!.state, stream!.buffer);
+        stream!.buffer := "";
       fi;
     else
       Add( stream!.buffer, CHAR_INT(byte) );
       if byte = 10 then
         stream!.write(stream!.state, stream!.buffer);
-	stream!.buffer := "";
+        stream!.buffer := "";
       fi;
     fi;
     return true;
@@ -1457,9 +1432,9 @@ function( str, append )
     if fid = fail  then
         return fail;
     else
-	atomic OutputTextFileStillOpen do
+        atomic OutputTextFileStillOpen do
             AddSet( OutputTextFileStillOpen, fid );
-	od;
+        od;
         return Objectify( OutputTextFileType, [fid,Immutable(str), true] );
     fi;
 end );
@@ -1491,9 +1466,9 @@ InstallAtExit( function()
     local   i;
 
     atomic OutputTextFileStillOpen do
-	for i  in OutputTextFileStillOpen  do
-	    CLOSE_FILE(i);
-	od;
+        for i  in OutputTextFileStillOpen  do
+            CLOSE_FILE(i);
+        od;
     od;
 
 end );
@@ -1562,6 +1537,31 @@ InstallMethod( SetPrintFormattingStatus, "output text file",
         str![3] := stat;
     fi;
 end);
+
+##  formatting status for stdout
+GAPInfo.FormattingStatusStdout := true;
+InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
+function(str)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  return GAPInfo.FormattingStatusStdout;
+end);
+
+InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
+function(str, status)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  if status = false then
+    SET_PRINT_FORMATTING_STDOUT(false);
+    GAPInfo.FormattingStatusStdout := false;
+  else
+    SET_PRINT_FORMATTING_STDOUT(true);
+    GAPInfo.FormattingStatusStdout := true;
+  fi;
+end);
+
 
 
 #############################################################################

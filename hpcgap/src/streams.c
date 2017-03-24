@@ -94,6 +94,70 @@ Int READ_COMMAND ( void )
     return 1;
 }
 
+
+/*
+ * This function reads all code from the stream and returns either `fail` if the stream
+ * cannot be opened, or a list of lists of length at most two, where the first entry is
+ * either `true` or `false` depending on whether the statement was successfuly executed
+ * and the second entry is the result of the statement if there was one.
+ *
+ * This function is curently used in interactive tools such as the GAP Jupyter kernel to
+ * execute cells and is likely to be replaced by a function that can read a single command
+ * from a stream without losing the rest of its content.
+ */
+Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
+{
+    ExecStatus status;
+    Int resultCount, resultCapacity;
+    Obj result, resultList;
+
+    /* try to open the stream */
+    if (!OpenInputStream(stream) ) {
+      return Fail;
+    }
+
+    resultCount = 0;
+    resultCapacity = 16;
+    resultList = NEW_PLIST( T_PLIST, resultCapacity );
+    SET_LEN_PLIST(resultList, resultCount);
+
+    if (echo == True) {
+        TLS(Input)->echo = 1;
+    } else {
+        TLS(Input)->echo = 0;
+    }
+
+    do {
+        ClearError();
+        status = ReadEvalCommand(TLS(BottomLVars), 0);
+
+        if(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
+            resultCount++;
+            if (resultCount > resultCapacity) {
+                resultCapacity += 16;
+                GROW_PLIST(resultList, resultCapacity);
+            }
+            result = NEW_PLIST( T_PLIST, 2 );
+            SET_LEN_PLIST(result, 1);
+            SET_ELM_PLIST(result, 1, False);
+            SET_ELM_PLIST(resultList, resultCount, result );
+            SET_LEN_PLIST(resultList, resultCount );
+
+            if(!(status & STATUS_ERROR)) {
+                SET_ELM_PLIST(result, 1, True);
+                if (TLS(ReadEvalResult)) {
+                    SET_LEN_PLIST(result, 2);
+                    SET_ELM_PLIST(result, 2, TLS(ReadEvalResult));
+                }
+            }
+        }
+    } while(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
+    CloseInput();
+    ClearError();
+
+    return resultList;
+}
+
 /*
  Returns a list with one or two entries. The first
  entry is set to "false" if there was any error
@@ -1920,11 +1984,6 @@ Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
 {
-    Char            buf[20001];
-    Int             ret, len;
-    UInt            lstr;
-    Obj             str;
-
     /* check the argument                                                  */
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
@@ -1932,56 +1991,7 @@ Obj FuncREAD_STRING_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-
-#if ! SYS_IS_CYGWIN32
-    /* fstat seems completely broken under CYGWIN */
-#if HAVE_STAT
-    /* first try to get the whole file as one chunk, this avoids garbage
-       collections because of the GROW_STRING calls below    */
-    {
-        struct stat fstatbuf;
-        if ( syBuf[INT_INTOBJ(fid)].pipe == 0 &&
-            fstat( syBuf[INT_INTOBJ(fid)].fp, &fstatbuf) == 0 ) {
-            if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
-                ErrorMayQuit(
-                    "The file is too big to fit the current workspace",
-                    (Int)0, (Int)0);
-            }
-            len = (Int) fstatbuf.st_size;
-            str = NEW_STRING( len );
-            ret = read( syBuf[INT_INTOBJ(fid)].fp, 
-                        CHARS_STRING(str), len);
-            CHARS_STRING(str)[ret] = '\0';
-            SET_LEN_STRING(str, ret);
-            if ( (off_t) ret == fstatbuf.st_size ) {
-                 return str;
-            }
-        }
-    }
-#endif
-#endif
-    /* read <fid> until we see  eof   (in 20kB pieces)                     */
-    str = NEW_STRING(0);
-    len = 0;
-    while (1) {
-        if ( (ret = read( syBuf[INT_INTOBJ(fid)].fp , buf, 20000)) <= 0 )
-            break;
-        len += ret;
-        GROW_STRING( str, len );
-	lstr = GET_LEN_STRING(str);
-        memcpy( CHARS_STRING(str)+lstr, buf, ret );
-	*(CHARS_STRING(str)+lstr+ret) = '\0';
-	SET_LEN_STRING(str, lstr+ret);
-    }
-
-    /* fix the length of <str>                                             */
-    len = GET_LEN_STRING(str);
-    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
-
-    /* and return */
-
-    syBuf[INT_INTOBJ(fid)].ateof = 1;
-    return len == 0 ? Fail : str;
+    return SyReadStringFid(INT_INTOBJ(fid));
 }
 
 /****************************************************************************
@@ -2242,6 +2252,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "READ_NORECOVERY", 1L, "filename",
       FuncREAD_NORECOVERY, "src/streams.c:READ_NORECOVERY" },
+
+    { "READ_ALL_COMMANDS", 2L, "stream, echo",
+      FuncREAD_ALL_COMMANDS, "src/streams.c:READ_ALL_COMMANDS" },
 
     { "READ_COMMAND_REAL", 2L, "stream, echo",
       FuncREAD_COMMAND_REAL, "src/streams.c:READ_COMMAND_REAL" },
