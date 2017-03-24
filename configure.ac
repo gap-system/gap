@@ -6,7 +6,6 @@ AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [http://www.gap-system.
 
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])
-AC_CONFIG_MACRO_DIR([cnf/m4])
 
 AC_CONFIG_HEADERS([gen/config.h:src/config.h.in])
 AC_CONFIG_COMMANDS([gen/stamp-h], [echo timestamp > gen/stamp-h])

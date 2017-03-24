@@ -14,7 +14,6 @@ comments inside the various parts of the build system.
 In order to work on the build system, you need at least the following:
 
 * GNU autoconf (we recommend 2.69 or later)
-* GNU libtool (we recommend 2.4.2 or later)
 * GNU make
 
 Note that we extensively use features provided by GNU make, so in general
