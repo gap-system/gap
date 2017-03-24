@@ -1322,7 +1322,7 @@ void            RetypeBag (
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
 #ifndef BOEHM_GC
-   UInt ResizeBag (
+UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
 {
@@ -1382,9 +1382,9 @@ void            RetypeBag (
 
         /* change the size- word                                       */
 #ifdef USE_NEWSHAPE
-      *(*bag-2) = (new_size << 16 | type);
+        *(*bag-2) = (new_size << 16 | type);
 #else
-      *(*bag-2) = new_size;
+        *(*bag-2) = new_size;
 #endif
 
 
@@ -1407,9 +1407,9 @@ void            RetypeBag (
         ADD_CANARY();
         /* change the size-type word                                       */
 #ifdef USE_NEWSHAPE
-      *(*bag-2) = (new_size << 16 | type);
+        *(*bag-2) = (new_size << 16 | type);
 #else
-      *(*bag-2) = new_size;
+        *(*bag-2) = new_size;
 #endif
     }
 
@@ -1426,16 +1426,19 @@ void            RetypeBag (
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
         ADD_CANARY();
+
         /* leave magic size-type word  for the sweeper, type must be 255   */
 #ifdef USE_NEWSHAPE
         *(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
-        *dst++ = (Bag)(new_size << 16 | type);
 #else
         *(*bag-3) = 255;
         *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
+#endif
 
         /* enter the new size-type word                                    */
-
+#ifdef USE_NEWSHAPE
+        *dst++ = (Bag)(new_size << 16 | type);
+#else
         *dst++ = (Bag)type;
         *dst++ = (Bag)new_size;
 #endif
@@ -1456,7 +1459,7 @@ void            RetypeBag (
         else {
             *dst++ = bag;
         }
-	    CANARY_ENABLE_VALGRIND();
+        CANARY_ENABLE_VALGRIND();
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
