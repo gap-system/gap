@@ -709,7 +709,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,1);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <x> must be an integer",
                            0L, 0L,
@@ -726,7 +726,7 @@ Obj FuncSizeScreen (
   }
   else {
     elm = ELMW_LIST(size,2);
-    while ( TNUM_OBJ(elm) != T_INT ) {
+    while ( !IS_INTOBJ(elm) ) {
       elm = ErrorReturnObj(
                            "SizeScreen: <y> must be an integer",
                            0L, 0L,
@@ -802,14 +802,14 @@ Obj FuncWindowCmd (
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
       tmp = ELM_LIST( args, i );
-      while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
+      while ( !IS_INTOBJ(tmp) && ! IsStringConv(tmp) ) {
         tmp = ErrorReturnObj(
                              "%d. argument must be a string or integer (not a %s)",
                              i, (Int)TNAM_OBJ(tmp),
                              "you can replace the argument <arg> via 'return <arg>;'" );
         SET_ELM_PLIST( args, i, tmp );
       }
-      if ( TNUM_OBJ(tmp) == T_INT )
+      if ( IS_INTOBJ(tmp) )
         len += 12;
       else
         len += 12 + LEN_LIST(tmp);
@@ -830,7 +830,7 @@ Obj FuncWindowCmd (
     {
       tmp = ELM_LIST(args,i);
 
-      if ( TNUM_OBJ(tmp) == T_INT ) {
+      if ( IS_INTOBJ(tmp) ) {
         *ptr++ = 'I';
         m = INT_INTOBJ(tmp);
         for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
@@ -2178,11 +2178,11 @@ Obj FuncSWAP_MPTR (
     Obj                 obj1,
     Obj                 obj2 )
 {
-    if ( TNUM_OBJ(obj1) == T_INT || TNUM_OBJ(obj1) == T_FFE ) {
+    if ( IS_INTOBJ(obj1) || IS_FFE(obj1) ) {
         ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
         return 0;
     }
-    if ( TNUM_OBJ(obj2) == T_INT || TNUM_OBJ(obj2) == T_FFE ) {
+    if ( IS_INTOBJ(obj2) || IS_FFE(obj2) ) {
         ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
         return 0;
     }

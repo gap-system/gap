@@ -477,7 +477,7 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* check the arguments                                                 */
-  while ( TNUM_OBJ(opSeed) != T_INT ) {
+  while ( !IS_INTOBJ(opSeed) ) {
       opSeed = ErrorReturnObj(
 	  "HASHKEY_BAG: <seed> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opSeed), 0L,
@@ -487,7 +487,7 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   do {
     offs = -1;
 
-    while ( TNUM_OBJ(opOffset) != T_INT  ) {
+    while ( !IS_INTOBJ(opOffset)  ) {
       opOffset = ErrorReturnObj(
        "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
        (Int)TNAM_OBJ(opOffset), 0L,
@@ -503,7 +503,7 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
     }
   } while (offs < 0);
 
-  while ( TNUM_OBJ(opMaxLen) != T_INT ) {
+  while ( !IS_INTOBJ(opMaxLen) ) {
       opMaxLen = ErrorReturnObj(
         "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
         (Int)TNAM_OBJ(opMaxLen), 0L,

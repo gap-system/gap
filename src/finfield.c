@@ -1645,7 +1645,7 @@ Obj FuncIS_FFE (
     Obj                 obj )
 {
     /* return 'true' if <obj> is a finite field element                    */
-    if ( TNUM_OBJ(obj) == T_FFE ) {
+    if ( IS_FFE(obj) ) {
         return True;
     }
     else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
@@ -1866,11 +1866,11 @@ Obj FuncZ (
     UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
-    if ( (TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536)) ||
+    if ( (IS_INTOBJ(q) && (INT_INTOBJ(q) > 65536)) ||
          (TNUM_OBJ(q) == T_INTPOS))
       return CALL_1ARGS(ZOp, q);
     
-    if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 ) {
+    if ( !IS_INTOBJ(q) || INT_INTOBJ(q)<=1 ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
             (Int)TNAM_OBJ(q), 0L,

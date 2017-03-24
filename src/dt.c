@@ -982,9 +982,8 @@ void    GetReps(
             SET_ELM_PLIST(tree, 2, ELM_PLIST( list, 3) );
             SET_ELM_PLIST(tree, 3, INTOBJ_INT(0) );
             SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
-            if  (  TNUM_OBJ( ELM_PLIST(list, 4) ) == T_INT        &&
-                   CELM(list, 4) < 100                            &&
-                   CELM(list, 4) > 0                                 )
+            if ( IS_INTOBJ( ELM_PLIST(list, 4) ) &&
+                   CELM(list, 4) < 100 && CELM(list, 4) > 0 )
                 SET_ELM_PLIST(tree, 5, ELM_PLIST(list, 4) );
             else
                 SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );

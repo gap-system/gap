@@ -1128,7 +1128,7 @@ Obj             ProdCycInt (
     }
 
     /* for $cyc * small$ use immediate multiplication if possible          */
-    else if ( TNUM_OBJ(opR) == T_INT ) {
+    else if ( IS_INTOBJ(opR) ) {
         hdP = NewBag( T_CYC, SIZE_CYC(opL) * (sizeof(Obj)+sizeof(UInt4)) );
         NOF_CYC(hdP) = NOF_CYC(opL);
         len = SIZE_CYC(opL);
@@ -1267,7 +1267,7 @@ Obj             ProdCyc (
         }
 
         /* if the coefficient is a small integer use immediate operations  */
-        else if ( TNUM_OBJ(c) == T_INT ) {
+        else if ( IS_INTOBJ(c) ) {
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
@@ -1497,7 +1497,7 @@ Obj FuncE (
     }
 
     /* get and check the argument                                          */
-    while ( TNUM_OBJ(n) != T_INT || INT_INTOBJ(n) <= 0 ) {
+    while ( !IS_INTOBJ(n) || INT_INTOBJ(n) <= 0 ) {
         n = ErrorReturnObj(
             "E: <n> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(n), 0L,
@@ -1544,8 +1544,8 @@ Obj FuncIS_CYC (
     Obj                 val )
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
-    if ( TNUM_OBJ(val) == T_CYC
-      || TNUM_OBJ(val) == T_INT    || TNUM_OBJ(val) == T_RAT
+    if ( IS_INTOBJ(val)
+      || TNUM_OBJ(val) == T_CYC    || TNUM_OBJ(val) == T_RAT
       || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG )
         return True;
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
@@ -1581,7 +1581,7 @@ Obj FuncIS_CYC_INT (
     UInt                i;              /* loop variable                   */
 
     /* return 'true' if <obj> is a cyclotomic integer and 'false' otherwise*/
-    if ( TNUM_OBJ(val) == T_INT
+    if ( IS_INTOBJ(val)
       || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
@@ -1635,7 +1635,7 @@ Obj FuncCONDUCTOR (
     }
 
     /* check the argument                                                  */
-    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+    while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
          && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
          && TNUM_OBJ(cyc) != T_CYC
          && ! IS_SMALL_LIST(cyc) ) {
@@ -1646,7 +1646,7 @@ Obj FuncCONDUCTOR (
     }
 
     /* handle cyclotomics                                                  */
-    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+    if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
       || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
         n = 1;
     }
@@ -1660,7 +1660,7 @@ Obj FuncCONDUCTOR (
         n = 1;
         for ( i = 1; i <= LEN_LIST( list ); i++ ) {
             cyc = ELMV_LIST( list, i );
-            while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+            while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
                  && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
                  && TNUM_OBJ(cyc) != T_CYC ) {
                 cyc = ErrorReturnObj(
@@ -1668,7 +1668,7 @@ Obj FuncCONDUCTOR (
                     (Int)i, (Int)TNAM_OBJ(cyc),
                     "you can replace the list element with <cyc> via 'return <cyc>;'" );
             }
-            if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+            if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
               || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
                 m = 1;
             }
@@ -1717,7 +1717,7 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* check the argument                                                  */
-    while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
+    while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
          && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
          && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
@@ -1727,7 +1727,7 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
-    if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
+    if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
       || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
         list = NEW_PLIST( T_PLIST, 1 );
         SET_LEN_PLIST( list, 1 );
@@ -1979,7 +1979,7 @@ Obj FuncCycList (
     res = &(ELM_PLIST( TLS(ResultCyc), 1 ));
     for ( i = 0; i < n; i++ ) {
         val = ELM_PLIST( list, i+1 );
-        if ( ! ( TNUM_OBJ(val) == T_INT ||
+        if ( ! ( IS_INTOBJ(val) ||
                  TNUM_OBJ(val) == T_RAT ||
                  TNUM_OBJ(val) == T_INTPOS ||
                  TNUM_OBJ(val) == T_INTNEG ) ) {

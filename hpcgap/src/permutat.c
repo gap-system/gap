@@ -1212,7 +1212,7 @@ Obj             PowPerm2Int (
     pow = NEW_PERM2( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TNUM_OBJ(opR) == T_INT
+    if ( IS_INTOBJ(opR)
       && 2 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1231,7 +1231,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -1322,7 +1322,7 @@ Obj             PowPerm2Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM2(opL);
@@ -1335,7 +1335,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TNUM_OBJ(opR) == T_INT
+    else if ( IS_INTOBJ(opR)
           && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1354,7 +1354,7 @@ Obj             PowPerm2Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -1472,7 +1472,7 @@ Obj             PowPerm4Int (
     pow = NEW_PERM4( deg );
 
     /* compute the power by repeated mapping for small positive exponents  */
-    if ( TNUM_OBJ(opR) == T_INT
+    if ( IS_INTOBJ(opR)
       && 0 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1491,7 +1491,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && 8 <= INT_INTOBJ(opR) ) {
+    else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
 
         /* make sure that the buffer bag is large enough                   */
 
@@ -1583,7 +1583,7 @@ Obj             PowPerm4Int (
     }
 
     /* special case for inverting permutations                             */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) == -1 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
         ptL = ADDR_PERM4(opL);
@@ -1596,7 +1596,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by repeated mapping for small negative exponents  */
-    else if ( TNUM_OBJ(opR) == T_INT
+    else if ( IS_INTOBJ(opR)
            && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
         /* get pointer to the permutation and the power                    */
@@ -1615,7 +1615,7 @@ Obj             PowPerm4Int (
     }
 
     /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) <= -8 ) {
+    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
 
         /* make sure that the buffer bag is large enough                   */
       UseTmpPerm(SIZE_OBJ(opL));
@@ -2320,7 +2320,7 @@ Obj             FuncPermList (
                 return FuncPermList( 0, list ); */
 		return Fail;
             }
-            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
+            if ( !IS_INTOBJ(ptList[i]) ) {
                 /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
@@ -2389,7 +2389,7 @@ Obj             FuncPermList (
                 return FuncPermList( 0, list ); */
 		return Fail;
             }
-            if ( TNUM_OBJ(ptList[i]) != T_INT ) {
+            if ( !IS_INTOBJ(ptList[i]) ) {
                 /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
@@ -2524,7 +2524,7 @@ Obj             FuncCycleLengthPermInt (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
@@ -2602,7 +2602,7 @@ Obj             FuncCyclePermInt (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
+    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
             "CyclePermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
@@ -4038,7 +4038,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
@@ -4071,7 +4071,7 @@ Obj             OnSetsPerm (
         /* loop over the entries of the tuple                              */
         isint = 1;
         for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
                     tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );

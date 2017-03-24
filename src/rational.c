@@ -607,7 +607,7 @@ Obj             QuoRat (
 
     /* we multiply the left numerator with the right denominator           */
     /* so the right denominator should carry the sign of the right operand */
-    if ( (TNUM_OBJ(numR) == T_INT && INT_INTOBJ(numR) < 0)
+    if ( (IS_INTOBJ(numR) && INT_INTOBJ(numR) < 0)
       || TNUM_OBJ(numR) == T_INTNEG ) {
         numR = ProdInt( INTOBJ_INT( -1L ), numR );
         denR = ProdInt( INTOBJ_INT( -1L ), denR );
@@ -678,7 +678,7 @@ Obj             ModRat (
     Obj                 a, aL, b, bL, c, cL, hdQ;
 
     /* make the integer positive                                           */
-    if ( (TNUM_OBJ(opR) == T_INT && INT_INTOBJ(opR) < 0)
+    if ( (IS_INTOBJ(opR) && INT_INTOBJ(opR) < 0)
       || TNUM_OBJ(opR) == T_INTNEG ) {
         opR = ProdInt( INTOBJ_INT( -1L ), opR );
     }
@@ -739,7 +739,7 @@ Obj             PowRat (
     }
 
     /* if <opR> is positive raise numerator and denominator seperately    */
-    else if ( (TNUM_OBJ(opR) == T_INT && 0 < INT_INTOBJ(opR))
+    else if ( (IS_INTOBJ(opR) && 0 < INT_INTOBJ(opR))
            || TNUM_OBJ(opR) == T_INTPOS ) {
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
@@ -766,7 +766,7 @@ Obj             PowRat (
         numP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         denP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        if ( (TNUM_OBJ(denP) == T_INT && 0 < INT_INTOBJ(denP))
+        if ( (IS_INTOBJ(denP) && 0 < INT_INTOBJ(denP))
           || TNUM_OBJ(denP) == T_INTPOS ) {
             NUM_RAT(pow) = numP;
             DEN_RAT(pow) = denP;
@@ -802,7 +802,7 @@ Obj             IsRatHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a rational and 'false' otherwise          */
-    if ( TNUM_OBJ(val) == T_RAT    || TNUM_OBJ(val) == T_INT
+    if ( TNUM_OBJ(val) == T_RAT    || IS_INTOBJ(val)
       || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
         return True;
     }
@@ -830,7 +830,7 @@ Obj             FuncNumeratorRat (
     Obj                 rat )
 {
     /* check the argument                                                   */
-    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+    while ( TNUM_OBJ(rat) != T_RAT    && !IS_INTOBJ(rat)
          && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
@@ -863,7 +863,7 @@ Obj             FuncDenominatorRat (
     Obj                 rat )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rat) != T_RAT    && TNUM_OBJ(rat) != T_INT
+    while ( TNUM_OBJ(rat) != T_RAT    && !IS_INTOBJ(rat)
          && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
