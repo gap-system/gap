@@ -7,11 +7,32 @@ env:
   global:
     - CFLAGS="-fprofile-arcs -ftest-coverage"
     - LDFLAGS="-fprofile-arcs"
+  matrix:
+  # - TEST_SUITE=testinstall ABI=32 # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
+    - TEST_SUITE=testinstall ABI=32 CONFIGFLAGS=--with-gmp=builtin
+    - TEST_SUITE=testinstall ABI=64
+    - TEST_SUITE=testinstall ABI=64 CONFIGFLAGS=--with-gmp=builtin
+      # out of tree builds
+    - TEST_SUITE=testinstall ABI=32 BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+    - TEST_SUITE=testinstall ABI=64 BUILDDIR=build
+    - TEST_SUITE=testinstall ABI=64 BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+      # out of tree builds with --enable-hpcgap
+      # (note that in-tree builds do not currently work together with kernel extensions
+      # which are not adapted to the new build system, as we cannot get them to load
+      # headers from hpcgap/src before headers from src/
+    - TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+    - TEST_SUITE=testinstall ABI=64 HPCGAP=yes BUILDDIR=build
+    - TEST_SUITE=testinstall ABI=64 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+
+# TODO: boehm GC, HPC-GAP compatibility mode
 
 addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
+    - gcc-multilib
+    - g++-multilib
+    - texinfo
 
 matrix:
   include:
