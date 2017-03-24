@@ -60,6 +60,8 @@ function( str )
     return Objectify( DirectoryType, [str] );
 end );
 
+# Make Directory() idempotent, like String() and Int()
+InstallOtherMethod( Directory, "directory", [ IsDirectory ], IdFunc );
 
 #############################################################################
 ##
@@ -139,14 +141,16 @@ end );
 ##
 BindGlobal("MakeExternalFilename",
   function(name)
-    local path;
-    if ARCH_IS_WINDOWS() then
-        if name{[1..10]} = "/cygdrive/" then
-            path := Concatenation("C:",name{[12..Length(name)]});
-            path[1] := name[11];
+    local path, prefix;
+    if ARCH_IS_WINDOWS() and name <> fail then
+        prefix := First( [ "/proc/cygdrive/", "/cygdrive/" ], s -> StartsWith( name, s ) );
+        if prefix <> fail then
+            path := Concatenation("C:",name{[Length(prefix)+2..Length(name)]});
+            path[1] := name[Length(prefix)+1]; # drive name
             return ReplacedString(path,"/","\\");
+        else
+            return ReplacedString(name,"/","\\");
         fi;
-        return ReplacedString(name,"/","\\");
     else
         return name;
     fi;

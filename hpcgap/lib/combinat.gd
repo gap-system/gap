@@ -1455,7 +1455,7 @@ DeclareGlobalFunction("Bernoulli");
 ##
 ##  <#GAPDoc Label="Permanent">
 ##  <ManSection>
-##  <Func Name="Permanent" Arg='mat'/>
+##  <Attr Name="Permanent" Arg='mat'/>
 ##
 ##  <Description>
 ##  returns the <E>permanent</E> of the matrix <A>mat</A>.
@@ -1489,7 +1489,7 @@ DeclareGlobalFunction("Bernoulli");
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction("Permanent");
+DeclareAttribute("Permanent", IsMatrix);
 
 
 #############################################################################

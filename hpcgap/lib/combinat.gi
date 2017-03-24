@@ -1344,7 +1344,10 @@ Permanent2 := function ( mat, m, n, r, v, i, sum )
 end;
 MakeReadOnlyGlobal( "Permanent2" );
 
-InstallGlobalFunction(Permanent,function ( mat )
+InstallMethod(Permanent,
+   "for matrices",
+   [ IsMatrix ],
+function ( mat )
     local m, n;
 
     m := Length(mat);
