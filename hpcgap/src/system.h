@@ -146,32 +146,14 @@ typedef UInt4    UInt;
 */
 typedef UInt * *        Bag;
 
-/****************************************************************************
-**
-*T  BagW  . . . . . . . . . . . . . . . . . . . . type of a write-guarded bag
-*/
-
-typedef struct { UInt MemW; } * * BagW;
-
-/****************************************************************************
-**
-*T  BagR  . . . . . . . . . . . . . . . . . . . .  type of a read-guarded bag
-*/
-
-typedef struct { UInt MemR; } * * BagR;
-
 
 /****************************************************************************
 **
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
-*T  ObjW  . . . . . . . . . . . . . . . . . . . type of write-guarded objects
-*T  ObjR  . . . . . . . . . . . . . . . . . . .  type of read-guarded objects
 **
 **  'Obj' is the type of objects.
 */
 #define Obj             Bag
-#define ObjW		BagW
-#define ObjR		BagR
 
 
 /****************************************************************************
