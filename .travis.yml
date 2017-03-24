@@ -87,10 +87,7 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 script:
-  - ./configure --with-gmp=system
-  - make config
-  - make -j4
-  - make bootstrap-pkg-full
+  - bash etc/ci-prepare.sh
   - bash etc/ci.sh
 
 notifications:
