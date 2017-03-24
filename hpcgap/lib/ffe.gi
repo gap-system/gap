@@ -222,7 +222,7 @@ InstallGlobalFunction( FFEFamily, function( p )
     else
 
       # small characteristic
-      # (The list `TYPES_FFE' is used to store the types.)
+      # (The list `TYPE_FFE' is used to store the types.)
       F:= FamilyType( TYPE_FFE( p ) );
       if not HasOne( F ) then
 

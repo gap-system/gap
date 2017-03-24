@@ -1733,7 +1733,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareSynonym( "RandomList", RANDOM_LIST);
+DeclareGlobalFunction( "RandomList" );
 
 
 #############################################################################
@@ -3281,13 +3281,6 @@ DeclareOperation( "CanComputeIsSubset", [IsObject,IsObject] );
 DeclareFilter( "CanComputeSize" );
 
 InstallTrueMethod( CanComputeSize, HasSize );
-
-
-DeclareOperation( "Randomizer", [IsCollection] );
-DeclareOperation( "CheapRandomizer", [IsCollection] );
-
-DeclareAttribute( "RandomizerAttr", IsCollection );
-DeclareAttribute( "CheapRandomizerAttr", IsCollection );
 
 # to allow for recusive calls
 DeclareGlobalFunction("JoinRanges");

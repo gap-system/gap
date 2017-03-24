@@ -72,7 +72,9 @@ InstallMethod( AddSet,
       Error( "<set> must be a mutable proper set" );
     fi;
     pos:= PositionSorted( set, obj );
-    if set[ pos ] <> obj then
+    if pos>Length(set) then
+      set[ pos ]:= obj;
+    elif set[ pos ] <> obj then
       len:= Length( set );
       set{ [ pos+1 .. len+1 ] }:= set{ [ pos .. len ] };
       set[ pos ]:= obj;

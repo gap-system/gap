@@ -244,11 +244,15 @@ InstallMethod( RepresentativeSmallest,
 ##
 ##  The default function for random selection in a finite collection computes
 ##  an enumerator of <C> and selects a random element of this list using the
-##  function `RANDOM_LIST', which is a pseudo random number generator.
+##  function `RandomList', which is a pseudo random number generator.
 ##
+MakeThreadLocal( "GlobalMersenneTwister" );
+InstallGlobalFunction( RandomList, function(list)
+  return list[Random(GlobalMersenneTwister, 1, Length(list))];
+end );
 InstallMethod( Random, "for a (finite) collection",
     [ IsCollection and IsFinite ],
-    C -> RANDOM_LIST( Enumerator( C ) ) );
+    C -> RandomList( Enumerator( C ) ) );
 
 RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
 
@@ -260,8 +264,7 @@ RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
 InstallMethod( PseudoRandom,
     "for an internal list",
     [ IsList and IsInternalRep ], 100,
-#T ?
-    RANDOM_LIST );
+    RandomList );
 
 
 #############################################################################

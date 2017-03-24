@@ -89,7 +89,7 @@ InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
         D := F/[F.1];
         return GroupHomomorphismByImages(
                    D,  G,
-                   GeneratorsOfGroup(D), Elements(G));
+                   GeneratorsOfGroup(D), AsSSortedList(G));
     fi;
     ## 
     ##
@@ -707,7 +707,7 @@ InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
     
             return GroupHomomorphismByImages(
                        D, Image(epi,D),
-                       Elements(D), Elements(Image(epi,D)));
+                       AsSSortedList(D), AsSSortedList(Image(epi,D)));
         fi;
 
         return GroupHomomorphismByImages(
