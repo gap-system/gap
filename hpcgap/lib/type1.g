@@ -296,13 +296,6 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
 end );
 
 
-BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
-    return NEW_TYPE( typeOfTypes,
-                     family,
-                     family!.IMP_FLAGS,
-                     fail, fail );
-end );
-
 
 BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
     return NEW_TYPE( typeOfTypes,
@@ -324,21 +317,6 @@ BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
 end );
 
 
-BIND_GLOBAL( "NewType5",
-    function ( typeOfTypes, family, filter, data, stuff )
-    local   type, temp;
-    temp := [];
-    temp[POS_FIRST_FREE_TYPE] := stuff;
-    type := NEW_TYPE( typeOfTypes,
-                      family,
-                      WITH_IMPS_FLAGS( AND_FLAGS(
-                         family!.IMP_FLAGS,
-                         FLAGS_FILTER(filter) ) ),
-                      data, temp );
-    return type;
-end );
-
-
 BIND_GLOBAL( "NewType", function ( arg )
     local   type;
 
@@ -347,25 +325,17 @@ BIND_GLOBAL( "NewType", function ( arg )
         Error("<family> must be a family");
     fi;
 
-    # only one argument (why would you want that?)
-    if LEN_LIST(arg) = 1  then
-        type := NewType2( TypeOfTypes, arg[1] );
-
     # NewType( <family>, <filter> )
-    elif LEN_LIST(arg) = 2  then
+    if LEN_LIST(arg) = 2  then
         type := NewType3( TypeOfTypes, arg[1], arg[2] );
 
     # NewType( <family>, <filter>, <data> )
     elif LEN_LIST(arg) = 3  then
         type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
 
-    # NewType( <family>, <filter>, <data>, <stuff> )
-    elif LEN_LIST(arg) = 4  then
-        type := NewType5( TypeOfTypes, arg[1], arg[2], arg[3], arg[4] );
-
     # otherwise signal an error
     else
-        Error("usage: NewType( <family> [, <filter> [, <data> ]] )");
+        Error("usage: NewType( <family>, <filter> [, <data> ] )");
 
     fi;
 
@@ -521,20 +491,6 @@ end );
 
 #############################################################################
 ##
-#F  SharedType( <K> ) . . . . . . . . . . . . . . shared data of the type <K>
-##
-##  <ManSection>
-##  <Func Name="SharedType" Arg='K'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SharedType", K -> K![ POS_DATA_TYPE ] );
-
-
-#############################################################################
-##
 #F  TypeObj( <obj> )  . . . . . . . . . . . . . . . . . . . type of an object
 ##
 ##  <#GAPDoc Label="TypeObj">
@@ -648,20 +604,6 @@ BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 #############################################################################
 ##
-#F  SharedObj( <obj> )  . . . . . . . . . . . . . .  shared data of an object
-##
-##  <ManSection>
-##  <Func Name="SharedObj" Arg='obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SharedObj", obj -> SharedType( TypeObj( obj ) ) );
-
-
-#############################################################################
-##
 #F  SetTypeObj( <type>, <obj> )
 ##
 ##  <ManSection>
@@ -715,14 +657,14 @@ BIND_GLOBAL( "Objectify", function(type, obj)
         fi;
 
         SET_TYPE_COMOBJ( obj, type );
-  fi;
+    fi;
     if not IsNoImmediateMethodsObject(obj) then
       RunImmediateMethods( obj, type![2] );
     fi;
-  if IsReadOnlyPositionalObjectRep(obj) then
-      MakeReadOnlyObj(obj);
-  fi;
-  return obj;
+    if IsReadOnlyPositionalObjectRep(obj) then
+        MakeReadOnlyObj(obj);
+    fi;
+    return obj;
 end );
 
 
@@ -1055,9 +997,9 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     fi;
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
-	        INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
-		              "with non-standard setter\n" );
-	        ResetFilterObj(obj, Tester(extra[i]));
+            INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
+                      "with non-standard setter\n" );
+            ResetFilterObj(obj, Tester(extra[i]));
 #T If there is an immediate method relying on an attribute
 #T whose tester is set to `true' in `type'
 #T and that has a special setter
