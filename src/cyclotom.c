@@ -2158,6 +2158,7 @@ static Int InitKernel (
 
     /* tell Gasman about the place were we remember the primitive root     */
     InitGlobalBag( &TLS(LastECyc), "src/cyclotom.c:LastECyc" );
+
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
     TypeObjFuncs[ T_CYC ] = TypeCyc;
@@ -2226,6 +2227,7 @@ static Int InitKernel (
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
 
+    MakeBagTypePublic(T_CYC);
     /* return success                                                      */
     return 0;
 }
