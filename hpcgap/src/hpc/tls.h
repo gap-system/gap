@@ -54,7 +54,9 @@ typedef struct ThreadLocalStorage
   Obj IntrState;
   Obj StackObj;
   Int CountObj;
+#if defined(HPCGAP)
   UInt PeriodicCheckCount;
+#endif
 
   /* From gvar.c */
   Obj CurrNamespace;
@@ -63,7 +65,9 @@ typedef struct ThreadLocalStorage
   Bag BottomLVars;
   Bag CurrLVars;
   Obj *PtrLVars;
+#if defined(HPCGAP)
   Bag LVarsPool[16];
+#endif
 
   /* From read.c */
   syJmp_buf ReadJmpError;
@@ -76,8 +80,6 @@ typedef struct ThreadLocalStorage
   UInt CurrentGlobalForLoopVariables[100];
   UInt CurrentGlobalForLoopDepth;
   Obj ExprGVars;
-  Obj ErrorLVars;
-  Obj ErrorLVars0;
   Obj ReadEvalResult;
 
   /* From scanner.c */
@@ -96,12 +98,11 @@ typedef struct ThreadLocalStorage
   TypOutputFile * Output;
   TypOutputFile * InputLog;
   TypOutputFile * OutputLog;
-  TypInputFile *  TestInput;
-  TypOutputFile * TestOutput;
   TypOutputFile * IgnoreStdoutErrout;
+#if defined(HPCGAP)
   Obj		  DefaultOutput;
   Obj		  DefaultInput;
-  Char            TestLine [256];
+#endif
   TypOutputFile LogFile;
   TypOutputFile LogStream;
   TypOutputFile InputLogFile;
@@ -131,7 +132,7 @@ typedef struct ThreadLocalStorage
   UInt LoopNesting;
   UInt *LoopStack;
   UInt LoopStackCount;
-  
+
   Obj CodeResult;
   Bag StackStat;
   Int CountStat;
@@ -159,9 +160,9 @@ typedef struct ThreadLocalStorage
 
   /* From trans.c */
   Obj TmpTrans;
- 
+
   /* From pperm.c */
-  Obj TmpPPerm; 
+  Obj TmpPPerm;
 
   /* From gap.c */
   Obj ThrownObject;
@@ -169,11 +170,11 @@ typedef struct ThreadLocalStorage
   UInt UserHasQUIT;
   Obj ShellContext;
   Obj BaseShellContext;
-  UInt ShellContextDepth;
   Int ErrorLLevel;
+  Obj ErrorLVars;
+  Obj ErrorLVars0;
 
   /* From objects.c */
-
   Obj PrintObjThis;
   Int PrintObjIndex;
   Int PrintObjDepth;
@@ -183,12 +184,14 @@ typedef struct ThreadLocalStorage
   Obj PrintObjIndicesObj;
   Int *PrintObjIndices;
 
+#if defined(HPCGAP)
   /* For serializer.c */
   Obj SerializationObj;
   UInt SerializationIndex;
   void *SerializationDispatcher;
   Obj SerializationRegistry;
   Obj SerializationStack;
+#endif
 
   /* For objscoll*, objccoll* */
   Obj SC_NW_STACK;
@@ -200,10 +203,12 @@ typedef struct ThreadLocalStorage
   Obj SC_CW2_VECTOR;
   UInt SC_MAX_STACK_SIZE;
 
+#if defined(HPCGAP)
   /* Profiling */
   UInt CountActive;
   UInt LocksAcquired;
   UInt LocksContended;
+#endif
 
   /* Allocation */
 #ifdef BOEHM_GC

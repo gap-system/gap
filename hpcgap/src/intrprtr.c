@@ -165,6 +165,28 @@ void            PushObj (
     CHANGED_BAG(   TLS(StackObj) );
 }
 
+/* Special marker value to denote that a function returned no value, so we
+ * can produce a useful error message. This value only ever appears on the
+ * stack, and should never be visible outside the Push and Pop methods below
+ *
+ * The only place other than these methods which access the stack is
+ * the permutation reader, but it only directly accesses values it wrote,
+ * so it will not see this magic value. */
+Obj VoidReturnMarker;
+
+void            PushFunctionVoidReturn ( void )
+{
+    /* there must be a stack, it must not be underfull or overfull         */
+    assert( TLS(StackObj) != 0 );
+    assert( 0 <= TLS(CountObj) && TLS(CountObj) == LEN_PLIST(TLS(StackObj)) );
+
+    /* count up and put the void value onto the stack                      */
+    TLS(CountObj)++;
+    GROW_PLIST(    TLS(StackObj), TLS(CountObj) );
+    SET_LEN_PLIST( TLS(StackObj), TLS(CountObj) );
+    SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), (Obj)&VoidReturnMarker );
+}
+
 void            PushVoidObj ( void )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -192,6 +214,11 @@ Obj             PopObj ( void )
     SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
     TLS(CountObj)--;
 
+    if(val == (Obj)&VoidReturnMarker) {
+        ErrorQuit(
+            "Function call: <func> must return a value",
+            0L, 0L );
+    }
     /* return the popped value (which must be non-void)                    */
     assert( val != 0 );
     return val;
@@ -210,6 +237,11 @@ Obj             PopVoidObj ( void )
     SET_ELM_PLIST( TLS(StackObj), TLS(CountObj), 0 );
     SET_LEN_PLIST( TLS(StackObj), TLS(CountObj)-1  );
     TLS(CountObj)--;
+
+    /* Treat a function which returned no value the same as 'void'         */
+    if(val == (Obj)&VoidReturnMarker) {
+        val = 0;
+    }
 
     /* return the popped value (which may be void)                         */
     return val;
@@ -436,19 +468,12 @@ void            IntrFuncCallEnd (
       }
     }
 
-    /* check the return value                                              */
-    if ( funccall && val == 0 ) {
-        ErrorQuit(
-            "Function call: <func> must return a value",
-            0L, 0L );
-    }
-
     if (options)
       CALL_0ARGS(PopOptions);
 
     /* push the value onto the stack                                       */
     if ( val == 0 )
-        PushVoidObj();
+        PushFunctionVoidReturn();
     else
         PushObj( val );
 }
@@ -1266,7 +1291,7 @@ void            IntrBreak ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A break statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
     return;
@@ -1291,7 +1316,7 @@ void            IntrContinue ( void )
 
     /* otherwise must be coding                                            */
     if ( TLS(IntrCoding) == 0 )
-      ErrorQuit("A continue statement can only appear inside a loop",0L,0L);
+      ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
     return;
@@ -2974,7 +2999,7 @@ void            IntrAssDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     ASS_HVAR( dvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -3002,9 +3027,8 @@ void            IntrUnbDVar (
     /* assign the right hand side                                          */
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     ASS_HVAR( dvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -3039,7 +3063,7 @@ void            IntrRefDVar (
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
@@ -3067,9 +3091,8 @@ void            IntrIsbDVar (
     /* get the value                                                       */
     currLVars = TLS(CurrLVars);
     SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
-    SWITCH_TO_OLD_LVARS( TLS(ErrorLVars) );
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PTR_BAG(TLS(CurrLVars)) [2] );
+      SWITCH_TO_OLD_LVARS( PARENT_LVARS(TLS(CurrLVars)) );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
@@ -4504,7 +4527,7 @@ void            IntrIsbComObjExpr ( void )
     /* get the result                                                      */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
-        isb = ElmPRec( record, rnam ) ? True : False;
+        isb = IsbPRec( record, rnam ) ? True : False;
         break;
       case T_ACOMOBJ:
         isb = GetARecordField( record, rnam ) ? True : False;

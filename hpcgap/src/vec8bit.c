@@ -39,6 +39,7 @@
 
 #include <src/code.h>                   /* for TakeInterrupt */
 #include <src/stats.h> 
+
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
@@ -48,8 +49,8 @@
 #define NDEBUG 1
 #endif
 #endif
-#include <assert.h>
 
+#include <assert.h>
 #include <stdio.h>
 
 /****************************************************************************
@@ -716,8 +717,8 @@ void RewriteGF2Vec( Obj vec, UInt q )
     assert(q % 2 == 0);
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorReturnVoid("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
-        q, 0, "You can `return;' to ignore the conversion");
+        ErrorMayQuit("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
+        q, 0);
         return;
     }
 
@@ -4919,7 +4920,7 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     SetTypeDatObj(vn, type);
 
     /* Now we start to build up the result */
-    shifts = NEW_PLIST(T_PLIST_TAB, elts + 2);
+    shifts = NEW_PLIST(T_PLIST_TAB + IMMUTABLE, elts + 2);
     SET_ELM_PLIST(shifts, elts + 1, INTOBJ_INT(len));
     SET_ELM_PLIST(shifts, elts + 2, xi);
     SET_LEN_PLIST(shifts, elts + 2);
