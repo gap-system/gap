@@ -242,8 +242,6 @@ ReadLib( "tom.gd" );
 # prototyping utilities
 ReadLib("proto.gd");
 
-ReadLib("other.gd");
-
 ReadLib("gasman.gd");
 
 # files dealing with function calling
