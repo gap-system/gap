@@ -535,17 +535,6 @@ void InitSweepFuncBags (
 #endif
 
 
-#if ITANIUM
-extern void * ItaniumRegisterStackTop();
-
-static Bag* ItaniumRegisterStackBottom = (Bag *)0;
-
-static void ItaniumSpecialMarkingInit() {
-    ItaniumRegisterStackBottom = (Bag *)ItaniumRegisterStackTop();
-}
-
-#endif
-
 /****************************************************************************
 **
 *F  InitMarkFuncBags(<type>,<mark-func>)  . . . . .  install marking function
@@ -1069,9 +1058,6 @@ void            InitBags (
     StackFuncBags   = stack_func;
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
-#if ITANIUM
-    ItaniumSpecialMarkingInit();
-#endif
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
@@ -1210,15 +1196,7 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = dst;
-#if 0
-    {
-      extern void * stderr;
-      UInt i;
-      for (i = 0; i < WORDS_BAG(size); i++)
-        if (*dst++)
-          fprintf(stderr, "dirty bag being returned\n");
-    }
-#endif
+
     /* return the identifier of the new bag                                */
     return bag;
 }
@@ -1700,7 +1678,7 @@ void            RetypeBag (
 
 syJmp_buf RegsBags;
 
-#if defined(SPARC) && SPARC
+#if defined(SPARC)
 void SparcStackFuncBags( void )
 {
   asm (" ta 0x3 ");
@@ -1729,14 +1707,6 @@ void GenStackFuncBags ( void )
                 MARK_BAG( *p );
         }
     }
-#if ITANIUM
-    /* Itanium has two stacks */
-    top = ItaniumRegisterStackTop();
-    for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
-        for ( p = (Bag*)((char*)ItaniumRegisterStackBottom + i); p < top; p++ )
-            MARK_BAG( *p );
-    }
-#endif
 
     /* mark from registers, dirty dirty hack                               */
     for ( p = (Bag*)((void*)RegsBags);
@@ -1841,10 +1811,8 @@ again:
     }
     else {
       sySetjmp( RegsBags );
-#ifdef  SPARC
-#if SPARC
+#if defined(SPARC)
         SparcStackFuncBags();
-#endif
 #endif
         GenStackFuncBags();
     }

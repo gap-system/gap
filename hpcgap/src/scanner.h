@@ -427,6 +427,7 @@ extern Int BreakLoopPending( void );
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
+
 /****************************************************************************
 **
 
@@ -491,88 +492,6 @@ extern UInt OpenInputStream (
 **  close the current output file, which will lead to very strange behaviour.
 */
 extern UInt CloseInput ( void );
-
-
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-**  'OpenTest'  opens the file with the  name <filename> as current input for
-**  test mode.  All subsequent input will  be taken  from that file, until it
-**  is closed   again with  'CloseTest'   or another  file is   opened   with
-**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
-**  <filename> is  closed again, input will be  taken again from  the current
-**  input file.
-**
-**  Test mode works as follows.  If the  scanner is about  to print a line to
-**  the current output  file (or to be  more precise to  the output file that
-**  was current when  'OpenTest' was called) this  line is compared with  the
-**  next line from the test  input file, i.e.,  the one opened by 'OpenTest'.
-**  If this line does not start  with  'gap>' and the rest  of it matches the
-**  output line the output line is not printed and the  input comment line is
-**  discarded.   Otherwise the scanner  prints the  output  line and does not
-**  discard the input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  does not start with 'gap>'  the scanner assumes that  this is an expected
-**  output  line that  did not appear  and  echoes  this line  to the current
-**  output file.
-**
-**  The upshot is that you  can write test files  that consist of alternating
-**  input starting with 'gap>' and lines the expected output.  If GAP behaves
-**  normal and produces the expected output then  nothing is printed.  But if
-**  something  goes wrong  you  see what actually   was printed and what  was
-**  expected instead.
-**
-**  As a convention GAP test files should start with:
-**
-**    gap> START_TEST("%Id%");
-**
-**  where the '%' is to be replaced by '$' and end with
-**
-**    gap> STOP_TEST( "filename.tst", 123456789 );
-**
-**  This tells the user that the  test file completed  and also how much time
-**  it took.  The constant should be such that a P5-133MHz gets roughly 10000
-**  GAPstones.
-**
-**  'OpenTest' returns 1 if it could successfully open <filename> for reading
-**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
-**  exist or if you have no permissions to read it.  'OpenTest' may also fail
-**  if you have too many files open at once.  It is system dependent how many
-**  are too may, but 16 files shoule work everywhere.
-**
-**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-*/
-extern UInt OpenTest (
-    const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  OpenTestStream( <stream> )  . . . . .  open an input stream for test mode
-**
-**  The same as 'OpenTest' but for streams.
-*/
-extern UInt OpenTestStream (
-    Obj                 stream );
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
-**  Subsequent  input   will again be taken   from  the previous  input file.
-**  Output will no longer be compared with  comment lines from the test input
-**  file.  'CloseTest' will return 1 to indicate success.
-**
-**  'CloseTest' will not close a non test input file and returns 0 if such an
-**  attempt is made.
-*/
-extern UInt CloseTest ( void );
 
 
 /****************************************************************************
@@ -742,7 +661,7 @@ extern UInt OpenOutput (
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
 **
-**  The same as 'OpenOutput' but for streams.
+**  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
 */
 extern UInt OpenOutputStream (
     Obj                 stream );
@@ -781,16 +700,6 @@ extern UInt CloseOutput ( void );
 */
 extern UInt OpenAppend (
     const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  OpenAppendStream( <stream> )  . . . . . . open a stream as current output
-**
-**  The same as 'OpenAppend' but for streams.
-*/
-extern UInt OpenAppendStream (
-    Obj                 stream );
 
 
 /****************************************************************************
@@ -855,7 +764,7 @@ typedef struct {
 **  current input character.  It points into the buffer 'Input->line'.
 */
 
-/* extern TypInputFile    InputFiles [16]; */
+/* TL: extern TypInputFile    InputFiles [16]; */
 /* TL: extern TypInputFile *  Input; */
 /* TL: extern Char *          In; */
 
@@ -984,270 +893,10 @@ extern  void            SPrTo (
 
 /****************************************************************************
 **
-*F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
-**
-**  'OpenInput' opens  the file with  the name <filename>  as  current input.
-**  All  subsequent input will  be taken from that  file, until it is  closed
-**  again  with 'CloseInput'  or  another file  is opened  with  'OpenInput'.
-**  'OpenInput'  will not  close the  current  file, i.e., if  <filename>  is
-**  closed again, input will again be taken from the current input file.
-**
-**  'OpenInput'  returns 1 if  it   could  successfully open  <filename>  for
-**  reading and 0  to indicate  failure.   'OpenInput' will fail if  the file
-**  does not exist or if you do not have permissions to read it.  'OpenInput'
-**  may  also fail if  you have too  many files open at once.   It  is system
-**  dependent how many are  too many, but  16  files should  work everywhere.
-**
-**  Directely after the 'OpenInput' call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-**
-**  You can open  '*stdin*' to  read  from the standard  input file, which is
-**  usually the terminal, or '*errin*' to  read from the standard error file,
-**  which  is  the  terminal  even if '*stdin*'  is  redirected from  a file.
-**  'OpenInput' passes those  file names  to  'SyFopen' like any other  name,
-**  they are  just  a  convention between the  main  and the system  package.
-**  'SyFopen' and thus 'OpenInput' will  fail to open  '*errin*' if the  file
-**  'stderr'  (Unix file  descriptor  2)  is  not a  terminal,  because  of a
-**  redirection say, to avoid that break loops take their input from a file.
-**
-**  It is not neccessary to open the initial input  file, 'InitScanner' opens
-**  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
-**  closed by 'CloseInput'.
-*/
-extern  UInt            OpenInput (
-            const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  CloseInput()  . . . . . . . . . . . . . . . . .  close current input file
-**
-**  'CloseInput'  will close the  current input file.   Subsequent input will
-**  again be taken from the previous input file.   'CloseInput' will return 1
-**  to indicate success.
-**
-**  'CloseInput' will not close the initial input file '*stdin*', and returns
-**  0  if such  an  attempt is made.   This is  used in  'Error'  which calls
-**  'CloseInput' until it returns 0, therebye closing all open input files.
-**
-**  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-*/
-extern  UInt            CloseInput ( void );
-
-/****************************************************************************
-**
 *F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
 */
 
 extern void FlushRestOfInputLine( void );
-
-
-/****************************************************************************
-**
-*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
-**
-**  'OpenOutput' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  The file is truncated to size 0 if it existed, otherwise it  is  created.
-**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
-**  closed again, output will go again to the current output file.
-**
-**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
-**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
-**  have  permissions to create the  file or write   to it.  'OpenOutput' may
-**  also   fail if you   have  too many files   open  at once.   It is system
-**  dependent how many are too many, but 16 files should work everywhere.
-**
-**  You can open '*stdout*'  to write  to the standard output  file, which is
-**  usually the terminal, or '*errout*' to write  to the standard error file,
-**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
-**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
-**  they are just a convention between the main and the system package.
-**
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
-*/
-extern  UInt            OpenOutput (
-            const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-extern  UInt            CloseOutput ( void );
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-extern  UInt            OpenAppend (
-            const Char *              filename );
-
-
-/****************************************************************************
-**
-*F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
-**
-**  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files
-**  '*stdin*' and  '*errin*'  and  all  output to  the  files '*stdout*'  and
-**  '*errout*' to the file with  name <filename>.  The  file is truncated  to
-**  size 0 if it existed, otherwise it is created.
-**
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
-**  fail if you have too many files open at once.  It is system dependent how
-**  many   are too   many, but  16   files should  work everywhere.   Finally
-**  'OpenLog' will fail if there is already a current logfile.
-*/
-extern  UInt            OpenLog (
-            const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  CloseLog()  . . . . . . . . . . . . . . . . . . close the current logfile
-**
-**  'CloseLog' closes the current logfile again, so that input from '*stdin*'
-**  and '*errin*' and output to '*stdout*' and '*errout*' will no  longer  be
-**  echoed to a file.  'CloseLog' will return 1 to indicate success.
-**
-**  'CloseLog' will fail if there is no logfile active and will return  0  in
-**  this case.
-*/
-extern  UInt            CloseLog ( void );
-
-
-/****************************************************************************
-**
-*F  OpenInputLog( <filename> )  . . . . . . . . . . . . . log input to a file
-**
-**  'OpenInputLog'  instructs the  scanner  to echo  all input from the files
-**  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
-**  truncated to size 0 if it existed, otherwise it is created.
-**
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
-*/
-extern  UInt            OpenInputLog (
-            const Char *        filename );
-
-
-
-/****************************************************************************
-**
-*F  CloseInputLog() . . . . . . . . . . . . . . . . close the current logfile
-**
-**  'CloseInputLog'  closes  the current  logfile again,  so  that input from
-**  '*stdin*'  and   '*errin*'  will  no  longer   be  echoed   to  a   file.
-**  'CloseInputLog' will return 1 to indicate success.
-**
-**  'CloseInputLog' will fail if there is no logfile active and will return 0
-**  in this case.
-*/
-extern  UInt            CloseInputLog ( void );
-
-
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-**  'OpenTest'  opens the file with the  name <filename> as current input for
-**  test mode.  All subsequent input will  be taken  from that file, until it
-**  is closed   again with  'CloseTest'   or another  file is   opened   with
-**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
-**  <filename> is  closed again, input will be  taken again from  the current
-**  input file.
-**
-**  Test mode works as follows.  If the  scanner is about  to print a line to
-**  the current output  file (or to be  more precise to  the output file that
-**  was current when  'OpenTest' was called) this  line is compared with  the
-**  next line from the test  input file, i.e.,  the one opened by 'OpenTest'.
-**  If this line does not start  with  'gap>' and the rest  of it matches the
-**  output line the output line is not printed and the  input comment line is
-**  discarded.   Otherwise the scanner  prints the  output  line and does not
-**  discard the input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  does not start with 'gap>'  the scanner assumes that  this is an expected
-**  output  line that  did not appear  and  echoes  this line  to the current
-**  output file.
-**
-**  The upshot is that you  can write test files  that consist of alternating
-**  input starting with 'gap>' and lines the expected output.  If GAP behaves
-**  normal and produces the expected output then  nothing is printed.  But if
-**  something  goes wrong  you  see what actually   was printed and what  was
-**  expected instead.
-**
-**  As a convention GAP test files should start with:
-**
-**    gap> START_TEST("%Id%");
-**
-**  where the '%' is to be replaced by '$' and end with
-**
-**    gap> STOP_TEST( "filename.tst", 123456789 );
-**
-**  This tells the user that the  test file completed  and also how much time
-**  it took.  The constant should be such that a P5-133MHz gets roughly 10000
-**  GAPstones.
-**
-**  'OpenTest' returns 1 if it could successfully open <filename> for reading
-**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
-**  exist or if you have no permissions to read it.  'OpenTest' may also fail
-**  if you have too many files open at once.  It is system dependent how many
-**  are too may, but 16 files shoule work everywhere.
-**
-**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-*/
-extern  UInt            OpenTest (
-            const Char *        filename );
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
-**  Subsequent  input   will again be taken   from  the previous  input file.
-**  Output will no longer be compared with  comment lines from the test input
-**  file.  'CloseTest' will return 1 to indicate success.
-**
-**  'CloseTest' will not close a non test input file and returns 0 if such an
-**  attempt is made.
-*/
-extern  UInt            CloseTest ( void );
 
 
 

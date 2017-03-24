@@ -1329,7 +1329,7 @@ void PlainString (
 
     /* find the length and allocate a temporary copy                       */
     lenList = GET_LEN_STRING( list );
-    tmp = NEW_PLIST( T_PLIST, lenList );
+    tmp = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, lenList );
     SET_LEN_PLIST( tmp, lenList );
 
     /* copy the characters                                                 */
@@ -1441,6 +1441,8 @@ Obj CopyToStringRep(
     CHANGED_BAG(copy);
     return (copy);
 }
+
+
 
 /****************************************************************************
 **
@@ -2561,9 +2563,6 @@ static Int InitKernel (
     UInt                t2;
     Int                 i, j;
     const Char *        cookie_base = "src/stringobj.c:Char";
-
-    /* check dependencies                                                  */
-    RequireModule( module, "lists", 403600000UL );
 
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );

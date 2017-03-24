@@ -238,19 +238,6 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define IS_FFE(o)               \
                         ((Int)(o) & 0x02)
 
-/**************************************************************************
- * **
- * **
- * *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
- * **
- * **  Allocates a TNUM for use by a package. The parameters <name> and
- * **  <typeObjFunc> are used to initialize the relevant entries in the
- * **  InfoBags and TypeObjFuncs arrays.
- * **
- * **  If allocation fails (e.g. because no more TNUMs are available),
- * **  a negative value is returned.
- * */
-Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
@@ -380,10 +367,10 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
 /* Object sets and maps */
-#define FIRST_OBJSET_TNUM	(LAST_LIST_TNUM+1)
-#define T_OBJSET		(FIRST_OBJSET_TNUM+0)
-#define T_OBJMAP		(FIRST_OBJSET_TNUM+2)
-#define LAST_OBJSET_TNUM	(T_OBJMAP+IMMUTABLE)
+#define FIRST_OBJSET_TNUM       (LAST_LIST_TNUM+1)
+#define T_OBJSET                (FIRST_OBJSET_TNUM+0)
+#define T_OBJMAP                (FIRST_OBJSET_TNUM+2)
+#define LAST_OBJSET_TNUM        (T_OBJMAP+IMMUTABLE)
 
 /* IMMUTABLE is not used for external types but keep the parity */
 #define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
@@ -466,6 +453,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #error T_BODY out of range
 #endif
 
+
 /****************************************************************************
 **
 *F  TNUM_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
@@ -521,7 +509,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  FLAGS_TYPE( <type> )  . . . . . . . . . . .  flags boolean list of a type
+*F  FLAGS_TYPE( <type> ) . . . . . . . . . . . . flags boolean list of a type
 **
 **  'FLAGS_TYPE' returns the flags boolean list of the type <type>.
 */
@@ -530,13 +518,12 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  SHARED_TYPE( <type> ) . . . . . . . . . . . . . . . shared data of a type
+*F  DATA_TYPE( <type> ) . . . . . . . . . . . . . . . . shared data of a type
 **
-**  'SHARED_TYPE' returns the shared data of the type <type>.
-XXX nowhere used, throw away??? (FL)
+**  'DATA_TYPE' returns the shared data of the type <type>.
+**  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
-/* #define SHARED_TYPE(type)       ELM_PLIST( type, 3 )
-*/                        
+#define DATA_TYPE(type)       ELM_PLIST( type, 3 )
                         
 /****************************************************************************
 **

@@ -9,7 +9,6 @@
 **  This file contains the GAP interface for thread primitives.
 */
 #include <assert.h>
-#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 #include <string.h>                     /* memcpy */
 #include <stdlib.h>
 
@@ -17,48 +16,20 @@
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
 
 #include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/read.h>                   /* reader */
 #include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/gmpints.h>                /* integers */
 #include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
 #include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-#include <src/funcs.h>                  /* functions */
 
 #include <src/fibhash.h>
 
-#include <src/stringobj.h>
-
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
-#include <src/vars.h>                   /* variables */
-
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/compiler.h>               /* compiler */
-
 #include <src/objset.h>
+
+#include <src/scanner.h>
+
+#include <src/hpc/tls.h>
 
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;
@@ -672,8 +643,8 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
       len = LEN_LIST(list);
       for (i = 1; i <= len; i++) {
         Obj obj = ELM_LIST(list, i);
-	if (obj)
-	  AddObjSet(result, obj);
+        if (obj)
+          AddObjSet(result, obj);
       }
       return result;
     default:
@@ -801,8 +772,8 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
       for (i = 1; i <= len; i += 2) {
         Obj key = ELM_LIST(list, i);
         Obj value = ELM_LIST(list, i+1);
-	if (key && value)
-	  AddObjMap(result, key, value);
+        if (key && value)
+          AddObjMap(result, key, value);
       }
       return result;
     default:
@@ -1007,18 +978,6 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
@@ -1047,7 +1006,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                         		/* postRestore                    */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoObjSets ( void )

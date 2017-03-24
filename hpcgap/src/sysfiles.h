@@ -416,12 +416,6 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
-*V  SyLastMacErrorNo . . . . . . . . . . . . . .last error number, Macintosh
-*/
-
-
-/****************************************************************************
-**
 *V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
 */
 extern Int SyLastErrorNo;
@@ -652,7 +646,7 @@ extern void syWinPut (
 extern Obj SyReadStringFid(Int fid);
 extern Obj SyReadStringFile(Int fid);
 extern Obj SyReadStringFileGeneric(Int fid);
-     
+
 /****************************************************************************
 **
 

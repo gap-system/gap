@@ -455,7 +455,7 @@ Obj FuncADD_SET (
   UInt                wasTab;
     
   /* check the arguments                                                 */
-  while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
+  while ( ! IS_MUTABLE_OBJ(set) || ! IsSet(set) ) {
     set = ErrorReturnObj(
 			 "AddSet: <set> must be a mutable proper set (not a %s)",
 			 (Int)TNAM_OBJ(set), 0L,
@@ -474,13 +474,6 @@ Obj FuncADD_SET (
       Obj *ptr;
       ptr = PTR_BAG(set);
       memmove((void *)(ptr + pos+1),(void*)(ptr+pos),(size_t)(sizeof(Obj)*(len+1-pos)));
-#if 0
-      for ( i = len+1; pos < i; i-- ) {
-	*ptr = *(ptr-1);
-	ptr--;   */
-	/* SET_ELM_PLIST( set, i, ELM_PLIST(set,i-1) ); */
-      }
-#endif
     }
     SET_ELM_PLIST( set, pos, obj );
     CHANGED_BAG( set );
@@ -586,7 +579,7 @@ Obj FuncREM_SET (
     Obj                 *ptr;
 
     /* check the arguments                                                 */
-    while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
+    while ( ! IS_MUTABLE_OBJ(set) || ! IsSet(set) ) {
         set = ErrorReturnObj(
             "RemoveSet: <set> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set), 0L,
@@ -661,7 +654,7 @@ Obj FuncUNITE_SET (
     Obj                 TmpUnion;
 
     /* check the arguments                                                 */
-    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
+    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
         set1 = ErrorReturnObj(
             "UniteSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
@@ -840,7 +833,7 @@ Obj FuncINTER_SET (
     UInt                lenr;           /* length  of result set           */
 
     /* check the arguments                                                 */
-    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
+    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
         set1 = ErrorReturnObj(
             "IntersectSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
@@ -1019,7 +1012,7 @@ Obj FuncSUBTR_SET (
     UInt                ll;           
 
     /* check the arguments                                                 */
-    while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
+    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
         set1 = ErrorReturnObj(
             "SubtractSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,

@@ -5,6 +5,14 @@
 **  Objects Collected From The Left.
 **  This file contains a collector from the left for polycyclic
 **  presentations.
+**
+**  This code (in particular the function "CollectPolycyc") is used exclusively by
+**  the polycyclic package. So in an ideal world, we'd turn it into a kernel      
+**  extensions that is shipped with polycyclic. However, doing so could lead to a 
+**  significant number of people not being able to use polycyclic (as they would   
+**  not know how to compile a kernel extension). And polycyclic is a very central 
+**  package upon which tons of other packages depend... so for now, we leave this 
+**  code here.                                                                    
 */
 #include <src/system.h>
 

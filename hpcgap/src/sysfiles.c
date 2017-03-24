@@ -1985,7 +1985,7 @@ Int HasAvailableBytes( UInt fid )
       syBuf[fid].fp == -1)
     return -1;
 
-  if (syBuf[fid].bufno > 0)
+  if (syBuf[fid].bufno >= 0)
     {
       bufno = syBuf[fid].bufno;
       if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen)
@@ -2235,8 +2235,10 @@ Int ISINITREADLINE = 0;
 Int current_rl_fid;
 int charreadhook_rl ( void )
 {
+#if HAVE_SELECT
   if (OnCharReadHookActive != (Obj) 0)
     HandleCharReadHook(syBuf[current_rl_fid].fp);
+#endif
   return 0;
 }
 
@@ -2279,8 +2281,10 @@ Char * readlineFgets (
 
   /* read at most as much as we can buffer */
   rl_num_chars_to_read = length-2;
+#if HAVE_SELECT
   /* hook to read from other channels */
   rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
+#endif
   /* now do the real work */
   doingReadline = 1;
   rlres = readline(TLS(Prompt));
@@ -3020,7 +3024,7 @@ void SySetErrorNo ( void )
 
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-# include <sys/wait.h>
+#include <sys/wait.h>
 #endif
 #ifndef WEXITSTATUS
 # define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
@@ -3631,7 +3635,7 @@ Char * SyTmpdir( const Char * hint )
     strxcat(name, "/", sizeof(name));
   }
   else
-  strxcpy(name, base, sizeof(name));
+    strxcpy(name, base, sizeof(name));
   if (hint)
     strxcat(name, hint, sizeof(name));
   else

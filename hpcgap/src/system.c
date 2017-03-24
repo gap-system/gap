@@ -35,9 +35,7 @@
 #include <assert.h>
 #include <dirent.h>
 
-#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
-#include <unistd.h>
-#endif
+#include <unistd.h>                     /* definition of 'R_OK' */
 
 
 #if HAVE_LIBREADLINE
@@ -483,9 +481,7 @@ UInt SyStartTime;
 */
 #if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>                   /* definition of 'struct timeval' */
-#endif
 #if HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
@@ -1461,10 +1457,15 @@ void SyExit (
 /****************************************************************************
 **
 *f  SySetGapRootPath( <string> )
+**
+** This function assumes that the system uses '/' as path separator.
+** Currently, we support nothing else. For Windows (or rather: Cygwin), we
+** rely on a small hack which converts the path separator '\' used there
+** on '/' on the fly. Put differently: Systems that use completely different
+**  path separators, or none at all, are currently not supported.
 */
-#if HAVE_SLASH_SEPARATOR 
 
-void SySetGapRootPath( const Char * string )
+static void SySetGapRootPath( const Char * string )
 {
     const Char *          p;
     Char *          q;
@@ -1557,8 +1558,6 @@ void SySetGapRootPath( const Char * string )
     }
     return; 
 }
-
-#endif
 
 
 /****************************************************************************
@@ -2056,7 +2055,7 @@ void InitSystem (
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
  FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyKernelVersion);
+ FPUTS_TO_STDERR(SyBuildVersion);
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");

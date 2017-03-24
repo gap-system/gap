@@ -2691,9 +2691,6 @@ static Int InitKernel (
     UInt                t1;
     UInt                t2;
 
-    /* check dependencies                                                  */
-    RequireModule( module, "lists", 403600000UL );
-
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
