@@ -300,7 +300,7 @@ function( G )
     for i in [1..dim] do
         orb   := [ basis[i] ];
         gens  := GeneratorsOfGroup( grp );
-        gensp := List(gens,gen->ImmutableMatrix(2,gen*Z(2),true));
+        gensp := List(gens,i->ImmutableMatrix(2,i*Z(2),true));
         rep   := [ One( grp ) ];
         stb   := [];
         for pnt in orb do
