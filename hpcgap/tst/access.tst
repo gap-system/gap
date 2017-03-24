@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  2012
 ##
-##  To be listed in testinstall.g
-##
 gap> START_TEST("access.tst");
 gap> CallAsTask := function(arg)
 > return TaskResult( RunTask( CallFuncList, arg[1], arg{[2..Length(arg)]} ) );
