@@ -205,8 +205,6 @@ static Int NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
-char *original_argv0;
-static char **sysargv;
 static char **sysenviron;
 
 /*
@@ -513,20 +511,8 @@ int main (
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
-  original_argv0 = argv[0];
-  sysargv = argv;
-  sysenviron = environ;
-  
-  /* Initialize assorted variables in this file */
-  NrImportedGVars = 0;
-  NrImportedFuncs = 0;
-  ErrorHandler = (Obj) 0;
-  TLS(UserHasQUIT) = 0;
-  TLS(UserHasQuit) = 0;
-  SystemErrorCode = 0;
-    
   /* initialize everything and read init.g which runs the GAP session */
-  InitializeGap( &argc, argv );
+  InitializeGap( &argc, argv, environ );
   if (!TLS(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
@@ -1045,29 +1031,30 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 {
-    syJmp_buf readJmpError;
+    volatile syJmp_buf readJmpError;
+    volatile Obj res;
+    volatile Obj currLVars;
+    volatile Obj tilde;
+    volatile Int recursionDepth;
+    volatile Stat currStat;
     Obj plain_args;
-    Obj res;
-    Obj currLVars;
-    Int recursionDepth;
-    Stat currStat;
     int lockSP;
     Region *savedRegion;
+
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
-    if (!IS_PLIST(args))
-      {
-        plain_args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(plain_args);
-      }
-    else 
+    if (!IS_PLIST(args)) {
+      plain_args = SHALLOW_COPY_OBJ(args);
+      PLAIN_LIST(plain_args);
+    } else 
       plain_args = args;
     memcpy((void *)&readJmpError, (void *)&TLS(ReadJmpError), sizeof(syJmp_buf));
     currLVars = TLS(CurrLVars);
     currStat = TLS(CurrStat);
     recursionDepth = TLS(RecursionDepth);
+    tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
     savedRegion = TLS(currentRegion);
@@ -1093,9 +1080,9 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS(currentRegion) = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result) {
-          SET_LEN_PLIST(res,2);
-          SET_ELM_PLIST(res,2,result);
-          CHANGED_BAG(res);
+        SET_LEN_PLIST(res,2);
+        SET_ELM_PLIST(res,2,result);
+        CHANGED_BAG(res);
       } else
         SET_LEN_PLIST(res,1);
     }
@@ -1132,15 +1119,16 @@ UInt NumAlarmJumpBuffers = 0;
 Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
   return SyHaveAlarms ? True: False;
 }
-  
+
 Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
   Obj plain_args;
   Obj res;
-  Obj currLVars;
+  volatile Obj currLVars;
   Obj result;
-  Int recursionDepth;
-  Stat currStat;
+  volatile Int recursionDepth;
+  volatile Stat currStat;
+
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
   if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
@@ -1223,7 +1211,7 @@ abort();
         CHANGED_BAG(res);
       }
     else {
-  RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
+      RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
       SET_LEN_PLIST(res,0);
     }
   }
@@ -1309,7 +1297,7 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS(CurrStat));
-  Obj res = CALL_2ARGS(ErrorInner,r,l);  
+  Obj res = CALL_2ARGS(ErrorInner,r,l);
   TLS(currentRegion) = savedRegion;
   return res;
 }
@@ -2258,6 +2246,25 @@ void InitGVarAttrsFromTable (
     }
 }
 
+void SetupFuncInfo(Obj func, const Char* cookie)
+{
+    const Char* pos = strchr(cookie, ':');
+    if ( pos ) {
+        Obj filename, start;
+        Obj body_bag = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        char buffer[512];
+        Int len = 511<(pos-cookie)?511:pos-cookie;
+        memcpy(buffer, cookie, len);
+        buffer[len] = 0;
+        C_NEW_STRING_DYN(filename, buffer);
+        C_NEW_STRING_DYN(start, pos+1);
+        SET_FILENAME_BODY(body_bag, filename);
+        SET_LOCATION_BODY(body_bag, start);
+        BODY_FUNC(func) = body_bag;
+        CHANGED_BAG(body_bag);
+        CHANGED_BAG(func);
+    }
+}
 
 /****************************************************************************
 **
@@ -2312,11 +2319,12 @@ void InitGVarFuncsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewFunction( NameGVarObj( gvar ),
-                         tab[i].nargs,
-                         ArgStringToList( tab[i].args ),
-                         tab[i].handler ) );
+        Obj func = NewFunction( NameGVarObj( gvar ),
+                                tab[i].nargs,
+                                ArgStringToList( tab[i].args ),
+                                tab[i].handler );
+        SetupFuncInfo( func, tab[i].cookie );
+        AssGVar( gvar, func );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -3294,7 +3302,8 @@ static Obj POST_RESTORE;
 
 void InitializeGap (
     int *               pargc,
-    char *              argv [] )
+    char *              argv [],
+    char *              environ [] )
 {
   /*    UInt                type; */
     UInt                i;
@@ -3314,6 +3323,22 @@ void InitializeGap (
               SyCacheSize, 0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
+    TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );
+    TLS(CountNams)    = 0;
+    TLS(ReadTop)      = 0;
+    TLS(ReadTilde)    = 0;
+    TLS(CurrLHSGVar)  = 0;
+    TLS(IntrCoding)   = 0;
+    TLS(IntrIgnoring) = 0;
+    TLS(NrError)      = 0;
+    TLS(ThrownObject) = 0;
+    TLS(UserHasQUIT) = 0;
+    TLS(UserHasQuit) = 0;
+
+    NrImportedGVars = 0;
+    NrImportedFuncs = 0;
+
+    sysenviron = environ;
 
     /* get info structures for the build in modules                        */
     NrModules = 0;
