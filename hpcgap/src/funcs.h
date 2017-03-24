@@ -17,6 +17,8 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
+/* HACK: need to include this for TLS() below in CheckRecursionBefore */
+#include "src/hpc/tls.h"
 
 /****************************************************************************
 **
@@ -43,9 +45,20 @@ extern  void            ExecEnd (
 
 
 /* TL: extern Int RecursionDepth; */
+extern UInt RecursionTrapInterval;
+extern void RecursionDepthTrap( void );
+
+static inline void CheckRecursionBefore( void )
+{
+    TLS(RecursionDepth)++;
+    if ( RecursionTrapInterval &&
+         0 == (TLS(RecursionDepth) % RecursionTrapInterval) )
+      RecursionDepthTrap();
+}
+
+
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
