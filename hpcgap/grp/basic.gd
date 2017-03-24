@@ -60,6 +60,8 @@ DeclareConstructor( "TrivialGroupCons", [ IsGroup ] );
 ##  constructs a trivial group in the category given by the filter
 ##  <A>filter</A>.
 ##  If <A>filter</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TrivialGroup();
@@ -114,6 +116,8 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
 ##  The generators of the group returned are the elements corresponding to
 ##  the integers in <A>ints</A>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> AbelianGroup([1,2,3]);
@@ -131,12 +135,8 @@ BindGlobal( "AbelianGroup", function ( arg )
     fi;
     return AbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return AbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return AbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: AbelianGroup( [<filter>, ]<ints> )" );
@@ -173,6 +173,8 @@ DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the alternating group of degree <A>deg</A> in the category given
 ##  by the filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  In the second version, the function constructs the alternating group on
 ##  the points given in the set <A>dom</A> which must be a set of positive
 ##  integers.
@@ -194,7 +196,7 @@ BindGlobal( "AlternatingGroup", function ( arg )
       return  AlternatingGroupCons( arg[1], arg[2] );
     fi;
   fi;
-  Error( "usage:  AlternatingGroup( [<filter>, ]<deg> )" );
+  Error( "usage: AlternatingGroup( [<filter>, ]<deg> )" );
 
 end );
 
@@ -225,6 +227,8 @@ DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the cyclic group of size <A>n</A> in the category given by the
 ##  filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> CyclicGroup(12);
@@ -252,11 +256,10 @@ BindGlobal( "CyclicGroup", function ( arg )
     fi;
     return CyclicGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return CyclicGroupCons( arg[1], arg[2] );
-
     elif Length(arg) = 3  then
+      # some filters require extra arguments, e.g. IsMatrixGroup + field
       return CyclicGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
@@ -291,10 +294,14 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the dihedral group of size <A>n</A> in the category given by the
 ##  filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> DihedralGroup(10);
-##  <pc group of size 10 with 2 generators>
+##  gap> DihedralGroup(8);
+##  <pc group of size 8 with 3 generators>
+##  gap> DihedralGroup( IsPermGroup, 8 );
+##  Group([ (1,2,3,4), (2,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -305,12 +312,8 @@ BindGlobal( "DihedralGroup", function ( arg )
   if Length(arg) = 1  then
     return DihedralGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return DihedralGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return DihedralGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: DihedralGroup( [<filter>, ]<size> )" );
@@ -345,6 +348,8 @@ DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
 ##  <A>n</A> in the category given by the filter <A>filt</A>.  Here, <A>n</A>
 ##  is a multiple of 4.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  Methods are also available for permutation and matrix groups (of minimal
 ##  degree and minimal dimension in coprime characteristic).
 ##  <P/>
@@ -363,11 +368,10 @@ BindGlobal( "QuaternionGroup", function ( arg )
   if Length(arg) = 1  then
     return QuaternionGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return QuaternionGroupCons( arg[1], arg[2] );
-
     elif Length(arg) = 3  then
+      # some filters require extra arguments, e.g. IsMatrixGroup + field
       return QuaternionGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
@@ -404,6 +408,8 @@ DeclareConstructor( "ElementaryAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the elementary abelian group of size <A>n</A> in the category
 ##  given by the filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ElementaryAbelianGroup(8192);
@@ -418,12 +424,8 @@ BindGlobal( "ElementaryAbelianGroup", function ( arg )
   if Length(arg) = 1  then
     return ElementaryAbelianGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return ElementaryAbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return ElementaryAbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: ElementaryAbelianGroup( [<filter>, ]<size> )" );
@@ -457,6 +459,8 @@ DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the free abelian group of rank <A>n</A> in the category
 ##  given by the filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsFpGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> FreeAbelianGroup(4);
@@ -471,15 +475,11 @@ BindGlobal( "FreeAbelianGroup", function ( arg )
   if Length(arg) = 1  then
     return FreeAbelianGroupCons( IsFpGroup, arg[1] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 2  then
       return FreeAbelianGroupCons( arg[1], arg[2] );
-
-    elif Length(arg) = 3  then
-      return FreeAbelianGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
-  Error( "usage: FreeAbelianGroup( [<filter>, ]<size> )" );
+  Error( "usage: FreeAbelianGroup( [<filter>, ]<rank> )" );
 
 end );
 
@@ -519,6 +519,8 @@ DeclareConstructor( "ExtraspecialGroupCons", [ IsGroup, IsInt, IsObject ] );
 ##  For <M>p = 2</M>, only the above plus or minus signs are admissible.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ExtraspecialGroup( 27, 3 );
@@ -537,12 +539,8 @@ BindGlobal( "ExtraspecialGroup", function ( arg )
   if Length(arg) = 2  then
     return ExtraspecialGroupCons( IsPcGroup, arg[1], arg[2] );
   elif IsOperation(arg[1]) then
-
     if Length(arg) = 3  then
       return ExtraspecialGroupCons( arg[1], arg[2], arg[3] );
-
-    elif Length(arg) = 4  then
-      return ExtraspecialGroupCons( arg[1], arg[2], arg[3], arg[4] );
     fi;
   fi;
   Error( "usage: ExtraspecialGroup( [<filter>, ]<order>, <exponent> )" );
@@ -577,6 +575,8 @@ DeclareConstructor( "MathieuGroupCons", [ IsGroup, IsInt ] );
 ##  given by the filter <A>filt</A>, where <A>degree</A> must be in the set
 ##  <M>\{ 9, 10, 11, 12, 21, 22, 23, 24 \}</M>.
 ##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> MathieuGroup( 11 );
@@ -591,12 +591,8 @@ BindGlobal( "MathieuGroup", function( arg )
   if Length( arg ) = 1 then
     return MathieuGroupCons( IsPermGroup, arg[1] );
   elif IsOperation( arg[1] ) then
-
     if Length( arg ) = 2 then
       return MathieuGroupCons( arg[1], arg[2] );
-
-    elif Length( arg ) = 3 then
-      return MathieuGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
   Error( "usage: MathieuGroup( [<filter>, ]<degree> )" );
@@ -633,6 +629,8 @@ DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the symmetric group of degree <A>deg</A> in the category
 ##  given by the filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  In the second version, the function constructs the symmetric group on
 ##  the points given in the set <A>dom</A> which must be a set of positive
 ##  integers.
@@ -659,7 +657,7 @@ BindGlobal( "SymmetricGroup", function ( arg )
       return  SymmetricGroupCons( arg[1], arg[2] );
     fi;
   fi;
-  Error( "usage:  SymmetricGroup( [<filter>, ]<deg> )" );
+  Error( "usage: SymmetricGroup( [<filter>, ]<deg> )" );
 
 end );
 

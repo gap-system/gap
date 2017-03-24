@@ -101,22 +101,10 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     od;
     if not HasIsCyclic( k ) then
       SetIsCyclic( k, true );
-      SetNameIsomorphismClass( k, Concatenation( "c", String( Size( f ))));
       return k;
     fi;
     Sort( pis );
     SetAbelianInvariants( k, pis );
-    pis := Collected( pis );
-    name := "";
-    for i in pis do
-      Append( name, String( i[ 1 ] ) );
-      if i[ 2 ] > 1 then
-        name := Concatenation( name, "^", String( i[ 2 ] ) );
-      fi;
-      Append( name, "x" );
-    od;
-    Unbind( name[ Length( name ) ] );
-    SetNameIsomorphismClass( k, name );
     return k;
 end );
 
@@ -182,7 +170,6 @@ function( filter, n )
 
     SetSize( f, n );
     SetIsCyclic( f, true );
-    SetNameIsomorphismClass( f, Concatenation( "c", String( n ) ) );
     return f;
 end );
 

@@ -37,6 +37,8 @@ DeclareConstructor( "SuzukiGroupCons", [ IsGroup, IsInt ] );
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the Suzuki group itself.
+##  For more information on possible values of <A>filt</A> see section
+##  (<Ref Sect="Basic Groups"/>).
 ##  <Example><![CDATA[
 ##  gap> SuzukiGroup( 32 );
 ##  Sz(32)
@@ -64,4 +66,3 @@ DeclareSynonym( "Sz", SuzukiGroup );
 #############################################################################
 ##
 #E
-

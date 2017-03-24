@@ -403,7 +403,7 @@ BindGlobal( "Oplus45", function()
 
     # construct the group without calling 'Group'
     g := [ phi*tau2, tau*eichler*delta ];
-    g:=List(g,i->ImmutableMatrix(f,i),true);
+    g:=List(g,i->ImmutableMatrix(f,i));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
     SetFieldOfMatrixGroup( g, f );
@@ -1418,16 +1418,16 @@ InstallMethod( GeneralOrthogonalGroupCons,
 
     # <e> must be -1, 0, +1
     if e <> -1 and e <> 0 and e <> +1  then
-        Error( "sign <e> must be -1, 0, +1\n" );
+        Error( "sign <e> must be -1, 0, +1" );
     fi;
 
     # if <e> = 0  then <d> must be odd
     if e = 0 and d mod 2 = 0  then
-        Error( "sign <e> = 0 but dimension <d> is even\n" );
+        Error( "sign <e> = 0 but dimension <d> is even" );
 
     # if <e> <> 0  then <d> must be even
     elif e <> 0 and d mod 2 = 1  then
-        Error( "sign <e> <> 0 but dimension <d> is odd\n" );
+        Error( "sign <e> <> 0 but dimension <d> is odd" );
     fi;
 
     # construct the various orthogonal groups
@@ -1945,11 +1945,11 @@ InstallMethod( OmegaCons,
 
     # if <e> = 0  then <d> must be odd
     if e = 0 and d mod 2 = 0  then
-        Error( "sign <e> = 0 but dimension <d> is even\n" );
+        Error( "sign <e> = 0 but dimension <d> is even" );
 
     # if <e> <> 0  then <d> must be even
     elif e <> 0 and d mod 2 = 1  then
-        Error( "sign <e> <> 0 but dimension <d> is odd\n" );
+        Error( "sign <e> <> 0 but dimension <d> is odd" );
     fi;
 
     # construct the various orthogonal groups
