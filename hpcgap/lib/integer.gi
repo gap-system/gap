@@ -1872,20 +1872,6 @@ InstallOtherMethod(Iterator, "more helpful error for integers", true,
           " did you mean the range [1..",n,"]");
 end);
 
-InstallGlobalFunction(PowerDecompositions,function(n)
-local d,i,r;
-  i:=2;
-  d:=[];
-  repeat
-    r:=RootInt(n,i);
-    if n=r^i then
-      Add(d,[r,i]);
-    fi;
-    i:=i+1;
-  until r<2;
-  return d;
-end);
-
 ##  The behaviour of View(String) for large integers can be configured via a
 ##  user preference.
 DeclareUserPreference( rec(
