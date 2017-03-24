@@ -822,6 +822,9 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef HPCGAP
+    InstallTLSHandler(SetupCollectorStacks, NULL);
+#else
     InitGlobalBag( &TLS(SC_NW_STACK), "SC_NW_STACK" );
     InitGlobalBag( &TLS(SC_LW_STACK), "SC_LW_STACK" );
     InitGlobalBag( &TLS(SC_PW_STACK), "SC_PW_STACK" );
@@ -829,6 +832,7 @@ static Int InitKernel (
     InitGlobalBag( &TLS(SC_GE_STACK), "SC_GE_STACK" );
     InitGlobalBag( &TLS(SC_CW_VECTOR), "SC_CW_VECTOR" );
     InitGlobalBag( &TLS(SC_CW2_VECTOR), "SC_CW2_VECTOR" );
+#endif
 
     /* return success                                                      */
     return 0;
@@ -872,7 +876,9 @@ static Int InitLibrary (
     AssGVar( GVarName( "SCP_AVECTOR2" ),
              INTOBJ_INT(SCP_AVECTOR2) );
 
+#ifndef HPCGAP
     SetupCollectorStacks();
+#endif
 
     /* export collector number                                             */
     AssGVar( GVarName( "8Bits_SingleCollector" ),
