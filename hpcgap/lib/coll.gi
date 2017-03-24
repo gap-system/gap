@@ -726,8 +726,8 @@ InstallGlobalFunction( List,
     function( arg )
     local tnum, C, func, res, i, elm, l;
     l := Length(arg);
-    if l = 0 then
-      Error( "usage: List( <C>[, <func>] )" );
+    if l = 0 or l > 2 then
+      ErrorNoReturn( "usage: List( <C>[, <func>] )" );
     fi;
     tnum:= TNUM_OBJ_INT( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
@@ -1757,7 +1757,7 @@ ListXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 ListXHelp( result, gens, i+1, vals, l+1 );
@@ -1765,7 +1765,7 @@ ListXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1784,7 +1784,7 @@ BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -1793,7 +1793,7 @@ BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1811,13 +1811,13 @@ BIND_GLOBAL( "ListXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 ListXHelp2( result, gens, i+1, val1, val2 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1835,13 +1835,13 @@ BIND_GLOBAL( "ListXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 ListXHelp1( result, gens, i+1, val1 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1871,7 +1871,7 @@ SetXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 SetXHelp( result, gens, i+1, vals, l+1 );
@@ -1879,7 +1879,7 @@ SetXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1898,7 +1898,7 @@ BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -1907,7 +1907,7 @@ BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1925,13 +1925,13 @@ BIND_GLOBAL( "SetXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 SetXHelp2( result, gens, i+1, val1, val2 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1949,13 +1949,13 @@ BIND_GLOBAL( "SetXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 SetXHelp1( result, gens, i+1, val1 );
             od;
             return;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -1985,7 +1985,7 @@ SumXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 result := SumXHelp( result, gens, i+1, vals, l+1 );
@@ -1993,7 +1993,7 @@ SumXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2017,7 +2017,7 @@ BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -2026,7 +2026,7 @@ BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2049,13 +2049,13 @@ BIND_GLOBAL( "SumXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 result := SumXHelp2( result, gens, i+1, val1, val2 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2078,13 +2078,13 @@ BIND_GLOBAL( "SumXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 result := SumXHelp1( result, gens, i+1, val1 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2119,7 +2119,7 @@ ProductXHelp := function ( result, gens, i, vals, l )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val  in gen  do
                 vals[l+1] := val;
                 result := ProductXHelp( result, gens, i+1, vals, l+1 );
@@ -2127,7 +2127,7 @@ ProductXHelp := function ( result, gens, i, vals, l )
             Unbind( vals[l+1] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2151,7 +2151,7 @@ BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             vals := [ val1, val2 ];
             for val3  in gen  do
                 vals[3] := val3;
@@ -2160,7 +2160,7 @@ BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
             Unbind( vals[3] );
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2183,13 +2183,13 @@ BIND_GLOBAL( "ProductXHelp1", function ( result, gens, i, val1 )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val2  in gen  do
                 result := ProductXHelp2( result, gens, i+1, val1, val2 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2212,13 +2212,13 @@ BIND_GLOBAL( "ProductXHelp0", function ( result, gens, i )
             i := i + 1;
         elif gen = false  then
             return result;
-        elif IsCollection( gen )  then
+        elif IsListOrCollection( gen )  then
             for val1  in gen  do
                 result := ProductXHelp1( result, gens, i+1, val1 );
             od;
             return result;
         else
-            Error( "gens[",i+1,"] must be a collection, a boolean, ",
+            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
                    "or a function" );
         fi;
     od;
@@ -2370,6 +2370,16 @@ InstallOtherMethod( Intersection2,
     [ IsList, IsList ],
     IntersectionSet );
 
+InstallOtherMethod( Intersection2,
+    "for two lists or collections, the second being empty",
+    [ IsListOrCollection, IsListOrCollection and IsEmpty ],
+    function(C1, C2) return []; end);
+
+InstallOtherMethod( Intersection2,
+    "for two lists or collections, the first being empty",
+    [ IsListOrCollection and IsEmpty, IsListOrCollection ],
+    function(C1, C2) return []; end);
+
 InstallMethod( Intersection2,
     "for two collections in the same family, both lists",
     IsIdenticalObj,
@@ -2462,6 +2472,9 @@ InstallGlobalFunction( Intersection, function ( arg )
     # unravel the argument list if necessary
     if Length(arg) = 1  then
         arg := arg[1];
+        if IsEmpty(arg) then
+            return [];
+        fi;
     fi;
 
     # start with the first domain or list
@@ -2678,223 +2691,393 @@ end);
 
 Unbind(AbsInt);
 
-# Test routine for joining random ranges.
-# Test:=function()
-# local a0,b0,da,db,a1,b1,ra,rb,r,u;
-#   a0:=Random([1..50]);
-#   da:=Random([0..6]);
-#   a1:=a0+Random([1..5])*da;
-#   if da=0 then
-#     ra:=[a0];
-#   else
-#     ra:=[a0,a0+da..a1];
-#   fi;
-#   b0:=Random([1..50]);
-#   db:=Random([0..6]);
-#   b1:=b0+Random([1..5])*db;
-#   if db=0 then
-#     rb:=[b0];
-#   else
-#     rb:=[b0,b0+db..b1];
-#   fi;
-# 
-#   u:=Union(ra,rb);
-#   IsRange(u);
-#   r:=JoinRanges(a0,da,a1,b0,db,b1);
-#   if r=fail then
-#     Print("Join ",ra," ",rb," to ",r,"\n");
-#     if IsRangeRep(u) then
-#       Error("did not recognize range");
-#     fi;
-#   elif r<>fail then
-#     if r[2]=0 then
-#       r:=[r[1]];
-#     else
-#       r:=[r[1],r[1]+r[2]..r[3]];
-#     fi;
-#     Print("Join ",ra," ",rb," to ",r,"\n");
-#     if u<>r then
-#       Error("wrong union");
-#     fi;
-#   fi;
-# end;
-
-
 #############################################################################
 ##
 #F  Union( <list> )
 #F  Union( <C>, ... )
 ##
-InstallGlobalFunction( Union, function ( arg )
-    local   lists,      # concatenation of arguments that are lists
-	    ranges,     # those arguments that are proper ranges
-            other,      # those arguments that are not lists
-            D,          # domain or list, running over the arguments
-            U,          # union, result
-            start,      # start position in `other'
-	    better,     # did pairwise join of ranges give improvement?
-            i,j,        # loop variable
-            passes,     # attempts to merge passes
-            progress;   # inner loop finding matches
-
-  # unravel the argument list if necessary
-  if Length(arg) = 1  then
-      arg := arg[1];
-  fi;
-
-  # empty case first
-  if Length( arg ) = 0  then
-      return [  ];
-  fi;
-
-  # Separate ranges, lists and domains.
-  lists:= [];
-  other:= [];
-  ranges:=[];
-  for D in arg do
-    if (IsPlistRep(D) and Length(D)=1 and IsSmallIntRep(D[1])) then
-      # detect lists that could be ranges
-      Add(ranges,[D[1],0,D[1]]);
-    elif IS_RANGE_REP(D) then
-      Add(ranges,[D[1],D[2]-D[1],D[Length(D)]]);
-    elif IsList( D ) then
-      Append( lists, D );
-    else
-      Add( other, D );
+## This apparently simple function (given that the work is usually done in
+## Union2, UniteSet or Set) is complicated by the presence of ranges, something
+## which comes up in a lot of permutation group and combinatorial applications
+## We want to avoid unpacking long ranges if we possibly can, and return the result
+## as a range if it can be.
+##
+## This code uses IS_RANGE and IS_RANGE_REP in place of ConvertToRangeRep and
+## IsRangeRep because it is loaded early.
+##
+InstallGlobalFunction(Union, function(arg)
+    local  tounite, handles, x, useUnion2, rangeSeen, distinct, 
+           lasthandle, i, h, u, allDense, smallest, secondsmallest, 
+           largest, ranges, sets, singletons, rd, singleton, min, max, 
+           smin, s, stride, goal, data, sizebound, needed, minNeeded, 
+           rstart, r, rmax, split, r2, newneeded;
+    #
+    # Union of one list is assumed to run over the list
+    #
+    if Length(arg) = 1 then
+        arg := arg[1];
     fi;
-  od;
-
-  # if lists is long processing would take long
-  if Length(ranges)>0 and Length(lists)<50 and ForAll(lists,IsSmallIntRep) then
-    # is lists also a range?
-    lists:=Set(lists);
-    if Length(lists)>0 and IS_RANGE(lists) then
-      if Length(lists)=1 then
-	Add(ranges,[lists[1],0,lists[1]]);
-      else
-	Add(ranges,[lists[1],lists[2]-lists[1],lists[Length(lists)]]);
-      fi;
-      lists:=[];
+    if Length(arg) = 0 then
+        return [];
     fi;
-
-    # try to merge smaller by considering all pairs of ranges
-    better:=true; # in case of length 1
-    passes:=3; # only going to try 3 passes
-    while Length(ranges)>1 and passes > 0 do
-      passes:=passes-1;
-      ranges:=Set(ranges);
-      better:=false;
-      i:=1;
-      while i<Length(ranges) do
-        if IsBound(ranges[i]) then
-	      j:=i+1;
-          progress:=true;
-	      while IsBound(ranges[j]) and j<=Length(ranges) and progress do
-            progress:=false;
-	        # now try range i with range j
-	        U:=JoinRanges(ranges[i][1],ranges[i][2],ranges[i][3],
-	  		              ranges[j][1],ranges[j][2],ranges[j][3]);
-	        if U<>fail then
-	          # worked, replace one and overwrite other
-	          ranges[i]:=U;
-	          Unbind(ranges[j]);
-	          better:=true;
-              progress:=true;
-	        fi;
-	        j:=j+1;
-	      od;
+    #
+    # First scan. O(1) time per list
+    #
+    tounite := [];
+    handles := [];
+    useUnion2 := false;
+    rangeSeen := false;
+    for x in arg do
+        if not IsListOrCollection(x) then
+            Error("Union: arguments must be lists or collections");
         fi;
-	    i:=i+1;
-      od;
-
-      if better=false then
-	    # no join was possible -- need to go list way
-	    for i in ranges do
-	      if i[2]= 0 then
-	        j:=[i[1]];
-	      else
-	        j:=[i[1],i[1]+i[2]..i[3]];
-	      fi;
-	      Append(lists,j);
-	    od;
-	    ranges:=[];
-      fi;
-
+        if (HasLength(x) and Length(x) = 0) or (HasSize(x) and Size(x) = 0) then
+            continue;
+        fi;
+        if IS_RANGE_REP(x) then
+            rangeSeen := true;
+        elif not IsPlistRep(x) then
+            useUnion2 := true;
+        fi;
+        Add(tounite,x);
+        Add(handles, HANDLE_OBJ(x));
     od;
-
-    if better then
-      # we were able to join to a single range
-      ranges:=ranges[1];
-
-      i:=1;
-      better:=true;
-      while i<=Length(lists) and better do
-	    U:=JoinRanges(ranges[1],ranges[2],ranges[3],lists[i],0,lists[i]);
-	    if U<>fail then
-	      ranges:=U;
-	    else
-	      better:=false;
-	    fi;
-	    i:=i+1;
-      od;
-
-      if ranges[2]=0 then
-	    ranges:=[ranges[1]];
-      else
-	    ranges:=[ranges[1],ranges[1]+ranges[2]..ranges[3]];
-      fi;
-
-      if better then
-	    # all one range
-	    lists:=ranges;
-      else
-	    Append(lists,ranges);
-      fi;
-      # now all ranges are merged in lists, but lists might be in range
-      # rep.
-
+    if Length(tounite) = 0 then
+        return [];
+    elif Length(tounite) = 1 then
+        x := tounite[1];
+        if IsList(x) then
+            return Set(x);
+        else
+            return x;
+        fi;        
     fi;
-
-  else
-    # joining nonintegers or a lot of lists -- forget the ranges.
-    for i in ranges do
-      if i[2]= 0 then
-	    Add(lists,i[1]);
-      else
-	    Append(lists,[i[1],i[1]+i[2]..i[3]]);
-      fi;
+    #
+    # if we spotted anything except a plain list or range then we use
+    # Union2 and UniteSet since the objects might have good methods installed
+    #T could be cleverer if the first "non-plain" object is late in a long list
+    #T but it's not clear whether the clever thing is to unite all the rest, or 
+    #T to start with the external object.
+    #
+    if useUnion2 then
+        u := Union2(tounite[1],tounite[2]);
+        for i in [3..Length(tounite)] do
+            x := tounite[i];
+            if IsSet(u) and IsMutable(u) and IsList(x) then
+                UniteSet(u,x);
+            else
+                u := Union2(u,x);
+            fi;
+        od;
+        IS_RANGE(u);
+        return u;
+    fi;
+    #
+    # Now eliminate identical lists
+    #
+    SortParallel(handles,tounite);
+    distinct := [];
+    lasthandle := fail;
+    for i in [1..Length(tounite)] do
+        h := handles[i];
+        if h <> lasthandle then
+            x := tounite[i];
+            Add(distinct,x);
+            lasthandle := h;
+        fi;
     od;
-
-  fi;
-
-  # Then unite the lists.
-  # (This can be regarded as the most usual case.
-  # For efficiency reasons, we use one `Set' call instead of
-  # repeated `UniteSet' calls.)
-#T However, this causes a lot of space loss
-#T if many long and redundant lists occur;
-#T using `UniteSet' would be much slower but ``conservative''.
-  if Length( lists ) = 0 then
-    if Length(other)=0 then
-      return lists;
+    tounite := distinct;
+    
+    if Length(tounite) = 1 then
+        x := tounite[1];
+        if IsList(x) then
+            return Set(x);
+        else
+            return x;
+        fi;        
     fi;
-    U:= other[1];
-    start:= 2;
-  else
-    U:= Set( lists );
-    start:= 1;
-  fi;
-
-  # Now loop over the domains.
-  for i in [ start .. Length( other ) ] do
-    U:= Union2( U, other[i] );
-  od;
-
-  # return the union
-  if IsList( U ) and not IsSSortedList( U ) then
-    U := Set( U );
-  fi;
-  return U;
+    #
+    # if we have nothing but plain lists then it is at most linear in space and time
+    # to concatenate and sort and then check for range
+    #
+    if not rangeSeen then
+        u := Set(Concatenation(tounite));
+        IS_RANGE(u);
+        return u;
+    fi;
+    #
+    # Next pass looks at all entries of lists and the defining data of ranges     
+    # linear in the total memory occupied by the (remaining) input.
+    # in this pass we will notice any elements that are not small integers and also
+    # work out what range the union is, if in fact it is a range. 
+    #
+    
+    smallest := infinity;
+    secondsmallest := infinity;
+    largest := -infinity;
+    ranges := [];
+    sets := [];
+    singletons := [];
+    
+    
+    
+    for x in tounite do
+        rd := fail;
+        singleton := false;
+              
+        if Length(x) = 1 then
+            singleton := true;
+            min := x[1];
+            max := x[1];
+        elif IS_RANGE_REP(x) then
+            if x[2] < x[1] then
+                x := Reversed(x);
+            fi;
+            rd := x;
+            min := x[1];
+            smin := x[2];
+            max := x[Length(x)];
+        else
+            s := Set(x);
+            if Length(s) = 1 then
+                singleton := true;
+                min := s[1];
+                max := s[1];
+            else
+                if IS_RANGE(s) then
+                    rd := s;
+                else
+                    rd := fail;
+                    if not ForAll(s, IsSmallIntRep) then
+                        #
+                        # result cannot be a range, so fall back
+                        #
+                        return Set(Concatenation(tounite));
+                    fi;
+                fi;
+                min := s[1];
+                smin := s[2];
+                max := s[Length(s)];
+            fi;
+        fi;
+        #
+        # At this point either x was a singleton whose value is now in max and min
+        # or x was a range of length 2 or more and rd contains it
+        # or x was NOT a range rd is fail and s contains x sorted and with duplicates removed
+        # but x does consist entirely of small integers
+        #
+        # Furthermore min, smin and max contain the smallest, second smallest and largest 
+        # entries of x (except if singleton is true)
+        #
+        
+        if singleton then
+            if not IsSmallIntRep(min) then
+                return Set(Concatenation(tounite));
+            fi;
+            Add(singletons, min);
+        elif rd = fail then
+            Add(sets,s);
+        else
+            Add(ranges,rd);
+        fi;
+           
+        if min < smallest then
+            secondsmallest := smallest;
+            smallest := min;
+        elif min > smallest and min < secondsmallest then
+            secondsmallest := min;
+        fi;
+        if not singleton and smin < secondsmallest then
+            secondsmallest := smin;
+        fi;
+        if max > largest then
+            largest := max;
+        fi;
+    od;
+    
+    singletons := Set(singletons);
+    Add(sets, singletons);
+    
+    # So, if we get to here we know that everything is small integers and that if the result is a range
+    # then we know which range it is. Now we somehow have to work out if it actually is that range or not
+    # it's not too hard to check if it is a subset of that range (indeed if the stride is 1 we know it is).
+    # but we're trying hard to avoid time or space proportional to the size of that range.
+    
+    # Since we know by this point that we started with at least one range, we know we had
+    # at least two values, so if the result is a range it will have a defined stride
+    
+    stride := secondsmallest - smallest;
+    if (largest - smallest) mod stride <> 0 then
+        return Set(Concatenation(tounite));
+    fi;
+    
+    goal := [smallest, secondsmallest .. largest];
+    
+        
+    #
+    # We want the stride 1 ranges in front, ordered by starting position
+    #
+    
+    data := List(ranges, r-> [r[2]-r[1],r[1],-Length(r)]);
+    SortParallel(data,ranges);
+    
+    #
+    # Check for inclusion
+    #
+    
+    if stride > 1 and
+        (ForAny(ranges, r->not r[1] in goal or (r[2]-r[1]) mod stride <> 0) or
+            ForAny(sets, s-> ForAny(s, a -> not a in goal))) then
+       return Set(Concatenation(tounite));
+    fi;
+    
+    
+    #
+    # So now we have the hard part. We need to check that the whole range is actually covered
+    #
+    
+    
+    #
+    # Start with an easy size bound    
+    #
+    
+    sizebound := Sum(sets,Size) + Sum(ranges, Size);
+    
+    if sizebound < Size(goal) then
+        #
+        # Even if everything is disjoint there are not enough points to cover the range
+        #
+        return Set(Concatenation(tounite));
+    fi;
+    
+    #
+    # We can deal with the ranges with matching stride super-quickly by 
+    # sweeping through them in order
+    #
+    needed := [];
+    minNeeded := goal[1];
+    rstart := Length(ranges)+1;
+    for i in [1..Length(ranges)] do
+        r := ranges[i];       
+        if r[2] -r[1] > stride then
+            #
+            # passed all the stuff with matching stride, leave the rest to the more complex
+            # code
+            #
+            rstart := i;
+            break;
+        fi;
+        # if we were out of phase we'd have failed the inclusion check above
+        if r[1] > minNeeded then
+            #
+            #  leaves a hole
+            #
+            Add(needed,[minNeeded, minNeeded+stride..r[1]-stride]);
+        fi;
+        rmax := r[Length(r)];
+        if rmax >= minNeeded then
+            #
+            # Progress with sweep
+            #
+            minNeeded := rmax+stride;
+        fi;
+    od;
+    #
+    # Don't forget the last bit.
+    #
+    if minNeeded <= largest then
+        Add(needed,[minNeeded, minNeeded+stride.. largest]);
+    fi;
+    
+    if needed = [] then
+        return goal;
+    fi;
+    
+   
+    # Finally then, we are in a case where we really need to be clever, so
+    # We keep track of the points in goal we haven't seen yet as we run through the ranges
+    # of non-matching stride
+    # But we represent them as a union of ranges.
+                    
+    split := function(r, r2)
+        local  outs, max2, max, stride, stride2, i;
+        #
+        # This function essentially computes the difference between r and r2
+        # but represents it as a union of ranges
+        #
+        outs := [];
+        max2 := r2[Length(r2)];
+        if Length(r) = 1 then
+            #
+            # This case is simpler
+            if not r[1] in r2 then 
+                Add(outs,r);
+            fi;
+            return outs;
+        fi;
+        max := r[Length(r)];
+        
+        #
+        # There is a good kernel intersection for two ranges
+        # replacing r2 by the intersection (which is always a range)
+        # makes the next part simpler
+        #
+        r2 := Intersection(r2,r);
+        
+        #
+        # We might miss completely
+        #
+        
+        if Length(r2) = 0 then
+            Add(outs,r);
+            return outs;
+        fi;
+        
+        max2 := r2[Length(r2)];
+        
+        #
+        # In general we have the bit before r2, the bit after and 
+        # the stuff within r2 but which it misses
+        #
+        stride := r[2]-r[1];
+        if r2[1] > r[1] then
+            Add(outs, [r[1],r[2]..r2[1]-stride]);
+        fi;
+        if max > max2 then
+            Add(outs, [max2+stride,max2+2*stride..max]);
+        fi;
+        if Length(r2) > 1 then
+            stride2 := r2[2]-r2[1];
+            if stride2 > stride then
+                for i in [stride,stride*2..stride2-stride] do
+                    Add(outs,[r2[1]+i,r2[1]+stride2+i..max2-stride2+i]);
+                od;
+            fi;
+        fi;
+        
+        return outs;
+    end;
+    
+    #
+    # Now we subtract the ranges we have from the goal
+    #
+    for r2 in ranges{[rstart..Length(ranges)]} do
+        newneeded := [];
+        for r in needed do
+            Append(newneeded,split(r,r2));
+        od;
+        needed := newneeded;
+    od;
+    
+    #
+    # and then any remaining points must be in the sets
+    #
+    
+    if ForAny(needed, r-> ForAny(r, x-> ForAll(sets, s -> not x in s))) then
+        return Set(Concatenation(tounite));
+    else
+        return goal;
+    fi;
 end);
 
 
@@ -3070,4 +3253,3 @@ InstallMethod( CanComputeIsSubset,"default: no, unless identical",
 #############################################################################
 ##
 #E
-
