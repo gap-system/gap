@@ -330,14 +330,14 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSupersolvable )) or
                ( func in [ IsSolvable, IsSolvableGroup ] and not
                IsBound( PROPERTIES_SMALL_GROUPS[ size ].isSolvable )) then
-                if val = [ false ] then
-                    if all then
-                        return [ ];
-                    fi;
-                    return fail;
-                # else
+                 if val = [ false ] then
+                   if all then
+                     return [ ];
+                   fi;
+                   return fail;
+                 # else
                     # all groups of this size have the property
-                fi;
+                 fi;
             else
                 if func = IsAbelian then
                     prop := PROPERTIES_SMALL_GROUPS[ size ].isAbelian;

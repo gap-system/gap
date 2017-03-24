@@ -536,7 +536,7 @@ SMALL_GROUP_FUNCS[ 21 ] := function( size, i, inforec )
           j, ind, ri, g, j1, j2, k, l, m, c1, c2,
           r, mem, rel,
           F, famRels, grpRels;
-    
+
     if not IsBound( inforec.F ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ 21 ]( size, inforec );
     fi;
@@ -1173,5 +1173,4 @@ NUMBER_SMALL_GROUPS_FUNCS[ 21 ] := function( size, inforec )
         od;
     fi;
     return inforec;
-    
 end;

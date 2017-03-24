@@ -68,7 +68,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
                   CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l ) + 1;
         l := Int( l / p^d );
         sml.arraytails[ pn ].inc :=
-                      CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l );
+                  CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l );
         sml.arraytails[ pn ].n := Product( sml.arraytails[ pn ].width );
         sml.arraytails[ pn ] := AtomicRecord( `sml.arraytails[ pn ] );
     end;
@@ -103,10 +103,10 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         # (which may be changed in the future)
         sml.index := [];
         for j in [ 1 .. Length( l ) ] do
-             sml.index[ Int( j / Length( l ) * ub ) ] := l[ j ];
+            sml.index[ Int( j / Length( l ) * ub ) ] := l[ j ];
         od;
     fi;
-    
+
     # search segment by divide et impera
     lb := 0;
     m := Int( ub / 2 );

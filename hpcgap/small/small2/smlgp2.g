@@ -73,7 +73,6 @@ CODE_SMALL_GROUP_FUNCS[ 8 ] := function( size, i, inforec )
 
     return SMALL_GROUP_LIB[ size ][ i ];
 end;
-
 CODE_SMALL_GROUP_FUNCS[ 9 ] := CODE_SMALL_GROUP_FUNCS[ 8 ];
 
 #############################################################################
@@ -98,7 +97,6 @@ CODE_SMALL_GROUP_FUNCS[ 10 ] := function( size, i, inforec )
     fi;
 
     return SMALL_GROUP_LIB[ size ][ file ][ pos ];
-        
 end;
 
 #############################################################################
@@ -339,7 +337,7 @@ SELECT_SMALL_GROUPS_FUNCS[ 8 ] := function( size, funcs, vals, inforec, all,
                      return [ ];
                    fi;
                    return fail;
-                  # else
+                 # else
                     # all groups of this size have the property
                  fi;
             else
@@ -495,7 +493,5 @@ NUMBER_SMALL_GROUPS_FUNCS[ 8 ] := function( size, inforec )
 
     inforec.number := Length( SMALL_GROUP_LIB[ size ] );
     return inforec;
-    
 end;
-
 NUMBER_SMALL_GROUPS_FUNCS[ 9 ] := NUMBER_SMALL_GROUPS_FUNCS[ 8 ];
