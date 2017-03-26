@@ -1029,13 +1029,13 @@ end);
 #############################################################################
 ##
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
-#F  STOP_TEST( <file>, <fac> )  . . . . . . . . . . . . . . .  stop test file
+#F  STOP_TEST( <file> )  . . . . . . . . . . . . . . . . . . . stop test file
 ##
 ##  <#GAPDoc Label="StartStopTest">
 ##  <ManSection>
 ##  <Heading>Starting and stopping test</Heading>
 ##  <Func Name="START_TEST" Arg='id'/>
-##  <Func Name="STOP_TEST" Arg='file, fac'/>
+##  <Func Name="STOP_TEST" Arg='file'/>
 ##
 ##  <Description>
 ##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
@@ -1058,16 +1058,10 @@ end);
 ##  and should be finished with a line
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> STOP_TEST( "filename", 10000 );
+##  gap> STOP_TEST( "filename" );
 ##  ]]></Log>
 ##  <P/>
 ##  Here the string <C>"filename"</C> should give the name of the test file.
-##  The number is a proportionality factor that is used to output a
-##  <Q>&GAP;stone</Q> speed ranking after the file has been completely
-##  processed.
-##  For the files provided with the distribution this scaling is roughly
-##  equalized to yield the same numbers as produced by the test file
-##  <F>tst/combinat.tst</F>.
 ##  <P/>
 ##  Note that the functions in <F>tst/testutil.g</F> temporarily replace
 ##  <Ref Func="STOP_TEST"/> before they call <Ref Func="Test"/>.
@@ -1086,9 +1080,13 @@ START_TEST := function( name )
     if GAPInfo.TestData.AssertionLevel < 2 then
         SetAssertionLevel( 2 );
     fi;
+    GAPInfo.TestData.InfoPerformanceLevel:= InfoLevel( InfoPerformance );
+    if GAPInfo.TestData.InfoPerformanceLevel > 0 then
+        SetInfoLevel( InfoPerformance, 0 );
+    fi;
 end;
 
-STOP_TEST := function( file, fac )
+STOP_TEST := function( file, args... )
     local time;
 
     if not IsBound( GAPInfo.TestData.START_TIME ) then
@@ -1097,12 +1095,9 @@ STOP_TEST := function( file, fac )
     fi;
     time:= Runtime() - GAPInfo.TestData.START_TIME;
     Print( GAPInfo.TestData.START_NAME, "\n" );
-    if time <> 0 and IsInt( fac ) then
-      Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
-    else
-      Print( "GAP4stones: infinity\n" );
-    fi;
+    Print( "msecs: ", time, "\n" );
     SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
+    SetInfoLevel( InfoPerformance, GAPInfo.TestData.InfoPerformanceLevel );
     Unbind( GAPInfo.TestData.AssertionLevel );
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );

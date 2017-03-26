@@ -204,8 +204,10 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     wordpre:=List(wordfpgens,x->PreImagesRepresentative(ff.factorhom,
 	      PreImagesRepresentative(fphom,x)));
     fphom:=ff.factorhom*fphom;
-    f:=GroupHomomorphismByImagesNC(Range(fphom),Source(fphom),
-	wordfpgens,wordpre);
+    # no assertion as this is not a proper homomorphism, but an inverse
+    # multiplicative map
+    f:=GroupGeneralMappingByImagesNC(Range(fphom),Source(fphom),
+	wordfpgens,wordpre:noassert);
     SetInverseGeneralMapping(fphom,f);
 
     homliftlevel:=0;
@@ -225,8 +227,9 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
 	    RUN_IN_GGMBI:=true;
 	    fphom:=LiftFactorFpHom(fphom,G,Group(spec),
-	      Group(spec{[homliftlevel+1..f-1]}),pcgsM);
+	      Group(spec{[f..Length(spec)]}),pcgsM);
 	    RUN_IN_GGMBI:=false;
+	    homliftlevel:=f-1;
 	    # translate words
 	    L:=FreeGeneratorsOfFpGroup(Range(fphom)){[1..Length(wordgens)]};
 	    words:=List(words,x->MappedWord(x,wordgens,L));
@@ -329,7 +332,8 @@ end);
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-InstallMethod( FrattiniSubgroup, "Using radical", [ IsGroup ],0,
+InstallMethod( FrattiniSubgroup, "Using radical",
+[ IsGroup and CanComputeFittingFree ],0,
 function(G)
 local m,f,i;
   if IsTrivial(G) then
@@ -391,7 +395,7 @@ end);
 # here in case the generic normalizer code is still missing improvements
 BindGlobal("MaxesCalcNormalizer",function(P,U)
 local map, s, b, bl, bb, sp;
-  map:=SmallerDegreePermutationRepresentation(P);
+  map:=SmallerDegreePermutationRepresentation(P:inmax);
   if Range(map)=P then
     map:=fail;
   else
@@ -523,29 +527,60 @@ local hom,embs,s,k,agens,ad,i,j,perm,dia,ggens,e,tgens,d,m,reco,emba,outs,id;
   return m;
 end);
 
-BindGlobal("MaxesAlmostSimple",function(G)
-local id,m,epi;
-  # which cases can we deal with already?
-  if IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G) then
-    Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
-    return MaximalSubgroupClassReps(G);
+InstallGlobalFunction(MaxesAlmostSimple,function(G)
+local id,m,epi,cnt,h;
+
+  # is a permutation degree too big?
+  if IsPermGroup(G) then
+    if NrMovedPoints(G)>
+        SufficientlySmallDegreeSimpleGroupOrder(Size(PerfectResiduum(G))) then
+      h:=G;
+      for cnt in [1..5] do
+	epi:=SmallerDegreePermutationRepresentation(h);
+	if NrMovedPoints(Range(epi))<NrMovedPoints(h) then
+	  m:=MaxesAlmostSimple(Image(epi,G));
+	  m:=List(m,x->PreImage(epi,x));
+	  return m;
+	fi;
+	# new group to avoid storing the map
+	h:=Group(GeneratorsOfGroup(G));
+	SetSize(h,Size(G));
+      od;
+    fi;
+
+
+    # Are just finding out that a group is symmetric or alternating?
+    # if so, try to use method that uses data library
+    if not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G))
+      and (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
+      Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
+      m:=MaximalSubgroupsSymmAlt(G,false);
+      if m<>fail then
+	return m;
+      fi;
+    fi;
   fi;
+
+  # is the degree bad?
 
   # does the table of marks have it?
   m:=TomDataMaxesAlmostSimple(G);
   if m<>fail then return m;fi;
 
-  id:=DataAboutSimpleGroup(G);
-  if id.idSimple.series="A" then
-    Info(InfoWarning,1,"Alternating recognition needed!");
-  elif id.idSimple.series="L" then
-    m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
-    if m<>fail then
-      epi:=EpimorphismFromClassical(G);
-      if epi<>fail then
-	m:=List(m,x->SubgroupNC(Range(epi),
-             List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
-        return m;
+  if IsSimpleGroup(G) then 
+    # following is stopgap for L
+    id:=DataAboutSimpleGroup(G);
+    if id.idSimple.series="A" then
+      Info(InfoPerformance,1,"Alternating recognition needed!");
+    elif id.idSimple.series="L" then
+      m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
+      if m<>fail then
+	epi:=EpimorphismFromClassical(G);
+	if epi<>fail then
+	  m:=List(m,x->SubgroupNC(Range(epi),
+	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
+	  return m;
+	fi;
       fi;
     fi;
 
@@ -754,9 +789,6 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
   return m;
 end);
 
-# declare as the function calls itself recursively.
-DeclareGlobalFunction("DoMaxesTF");
-
 InstallGlobalFunction(DoMaxesTF,function(arg)
 local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   a1emb,a2emb,anew,wnew,e1,e2,emb,a1,a2,mm;
@@ -933,10 +965,10 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . TF method
 ##
 InstallMethod(MaximalSubgroupClassReps,"TF method",true,
-  [IsGroup and IsFinite and HasFittingFreeLiftSetup],OVERRIDENICE,DoMaxesTF);
+  [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,DoMaxesTF);
 
-InstallMethod(MaximalSubgroupClassReps,"perm group",true,
-  [IsPermGroup and IsFinite],0,DoMaxesTF);
+#InstallMethod(MaximalSubgroupClassReps,"perm group",true,
+#  [IsPermGroup and IsFinite],0,DoMaxesTF);
 
 BindGlobal("NextLevelMaximals",function(g,l)
 local m;
