@@ -501,14 +501,6 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
   fi;
 end );
 
-InstallMethod( \+, "coeff + laurent", IsCoeffsElms,
-    [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
-    SumCoeffLaurpol);
-
-InstallMethod( \+, "laurent + coeff", IsElmsCoeffs,
-    [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
-    function(l,c) return SumCoeffLaurpol(c,l); end);
-
 InstallMethod( \+, "coeff(embed) + laurent", true,
     [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
 function(c,l)
@@ -520,6 +512,14 @@ InstallMethod( \+, "laurent + coeff(embed)", true,
 function(l,c)
   return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
 end);
+
+InstallMethod( \+, "coeff + laurent", IsCoeffsElms,
+    [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
+    SumCoeffLaurpol);
+
+InstallMethod( \+, "laurent + coeff", IsElmsCoeffs,
+    [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
+    function(l,c) return SumCoeffLaurpol(c,l); end);
 
 
 #############################################################################

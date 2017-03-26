@@ -612,7 +612,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
+	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, OnPoints );
         end );
@@ -648,7 +648,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
+	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, act );
         end );
@@ -678,7 +678,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
         [ IsGroup, IsObject, IsList, IsList ], 0,
         function( G, D, gens, acts )
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
+	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, acts, OnPoints );
         end );
@@ -807,7 +807,7 @@ local str, nname, orbish, func,isnotest;
 	    then
 	      D := arg[ 2 ];
 	      if IsDomain( D )  then
-	   if IsFinite( D ) then D:= Elements( D ); else D:= Enumerator( D ); fi;
+	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
 	      fi;
 	      p := 3;
 	  else

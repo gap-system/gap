@@ -49,7 +49,7 @@ DeclareRepresentation( "IsDefaultGeneralMappingRep",
 ##
 InstallGlobalFunction( TypeOfDefaultGeneralMapping,
     function( source, range, filter )
-    local Type, family;
+    local Type;
 
     # Do a cheap test whether the general mapping has equal source and range.
     if IsIdenticalObj( source, range ) then
@@ -58,9 +58,10 @@ InstallGlobalFunction( TypeOfDefaultGeneralMapping,
 
     # Construct the type.
     Type:= NewType( GeneralMappingsFamily(
-			  ElementsFamily( FamilyObj( source ) ),
-			  ElementsFamily( FamilyObj( range  ) ) ),
-		    IsDefaultGeneralMappingRep and filter );
+                          ElementsFamily( FamilyObj( source ) ),
+                          ElementsFamily( FamilyObj( range  ) ) ),
+                    IsDefaultGeneralMappingRep and filter );
+
     # Store source and range.
     SetDataType( Type, [ source, range ] );
 

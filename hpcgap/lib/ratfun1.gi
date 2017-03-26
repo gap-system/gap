@@ -47,8 +47,8 @@ local f,typ,lc;
     if IsFFECollection(coeff) then
       ConvertToVectorRep(coeff);
       if IS_DATOBJ(coeff) then
-	coeff := ShallowCopy(coeff);
-	MakeReadOnly(coeff);
+        coeff := ShallowCopy(coeff);
+        MakeReadOnly(coeff);
       fi;
     fi;
   fi;
@@ -878,7 +878,7 @@ end;
 
 # This function is destructive on the first argument!
 QUOTREM_LAURPOLS_LISTS:=function(fc,gc)
-local q,m,n,i,c,k,f;
+local q,m,n,i,c,k,f,z;
   # try to divide
   q:=[];
   n:=Length(gc);
@@ -894,10 +894,14 @@ local q,m,n,i,c,k,f;
   else
     f:=0;
   fi;
+  z:=Zero(gc[n]);
   for i in [0..m] do
-    c:=fc[m-i+n]/gc[n];
-    k:=[1..n]+m-i;
-    fc{k}:=fc{k}-c*gc;
+    c := fc[m-i+n];
+    if c <> z then
+      c:=c/gc[n];
+      k:=[1+m-i..n+m-i];
+      fc{k}:=fc{k}-c*gc;
+    fi;
     q[m-i+1]:=c;
   od;
   if f>0 then

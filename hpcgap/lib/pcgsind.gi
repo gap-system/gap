@@ -1393,15 +1393,14 @@ function( pcgs, elm,range )
     ros := RelativeOrders(pa);
     while elm <> id  do
         d := DepthOfPcElement( pa, elm );
-	if map[d]>max then
+	if not IsBound(map[d])  then
+	  Error( "<elm> lies not in group defined by <pcgs>" );
+	elif map[d]>max then
 	  # we have reached the maximum of the range we asked for. Thus we
 	  # can stop calculating exponents now, all further exponents would
 	  # be discarded anyhow
 	  elm:=id;
 	else
-	  if not IsBound(map[d])  then
-	      Error( "<elm> lies not in group defined by <pcgs>" );
-	  fi;
 	  ll := LeadingExponentOfPcElement( pa, elm );
 	  #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
 	  lr := lc[d];

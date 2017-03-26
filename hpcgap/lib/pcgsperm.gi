@@ -23,7 +23,7 @@ DeclareRepresentation( "IsMemberPcSeriesPermGroup",
 #F  AddNormalizingElementPcgs( <G>, <z> ) . . . . . cyclic extension for pcgs
 ##
 InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
-    local   S,  A,  pos,  relord,
+  local   S,  A,  pos,  relord,
             pnt,  orb,  l,  L,  n,  m,  img,  i,  f,  p,  edg;
 
     StretchImportantSLPElement(z);
@@ -362,7 +362,6 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     series := [ U ];
     series[ 1 ].relativeOrders := [  ];
 
-step:="W";
     if not IsTrivial( grp )  then
         
         # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
@@ -1133,7 +1132,7 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     # routines).
     pcgs:=PcgsElementaryAbelianSeries(G);
     if not IsPcgs( pcgs )  then
-	return fail;
+        return fail;
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.

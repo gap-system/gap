@@ -3250,7 +3250,7 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
 
   D:=List(GeneratorsOfGroup(Source(hom)),DeterminantMat);
-  D:=Elements(Group(D));
+  D:=AsSSortedList(Group(D));
 
   if Length(roots)<=1 then
     # 1 will always be root
@@ -3262,7 +3262,7 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
     # even the kernel determinants are not reached, so clearly kernel not in
     return fail;
   else
-    kero:=List(Elements(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
+    kero:=List(AsSSortedList(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
   fi;
   
   if not IsSubset(kero,roots) then
@@ -3272,7 +3272,7 @@ local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
 
   dets:=[];
   roots:=[];
-  for i in Filtered(Elements(f),x->not IsZero(x)) do
+  for i in Filtered(AsSSortedList(f),x->not IsZero(x)) do
     b:=i^dim;
     if not b in dets then
       Add(dets,b);

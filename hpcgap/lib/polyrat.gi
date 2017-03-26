@@ -157,7 +157,7 @@ local r,e,f,x,nf,lf,c,store,letzt;
     lf:=nf;
     Add(letzt,x);
     x:=ApproxRational(1/e*((e-1)*x+r/(x^(e-1))),f+6);
-    nf:=AbsInt(x^e-r);
+    nf:=AbsoluteValue(x^e-r);
     if nf=0 then
       c:=6;
     else
