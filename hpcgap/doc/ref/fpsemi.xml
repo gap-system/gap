@@ -290,9 +290,9 @@ in finitely presented semigroups and monoids.
 
 <ManSection>
 <Heading>KnuthBendixRewritingSystem</Heading>
-<Func Name="KnuthBendixRewritingSystem" Arg='s, wordord'
+<Oper Name="KnuthBendixRewritingSystem" Arg='s, wordord'
  Label="for a semigroup and a reduction ordering"/>
-<Func Name="KnuthBendixRewritingSystem" Arg='m, wordord'
+<Oper Name="KnuthBendixRewritingSystem" Arg='m, wordord'
  Label="for a monoid and a reduction ordering"/>
 
 <Description>

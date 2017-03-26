@@ -124,7 +124,7 @@ gap> InversesOfSemigroupElement(S, x);
 
 <ManSection>
   <Prop Name="IsInverseSemigroup" Arg="S"/>
-  <Prop Name="IsInverseMonoid" Arg="S"/>
+  <Filt Name="IsInverseMonoid" Arg="S" Type="Category"/>
   <Returns><K>true</K> or <K>false</K>.</Returns>
   <Description>
     A semigroup is an <E>inverse semigroup</E> if every element

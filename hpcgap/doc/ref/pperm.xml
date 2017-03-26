@@ -130,7 +130,7 @@ The fundamental attributes of a partial permutation are:
   union of its domain and its image, and the <E>zero</E> of a partial
   permutation is just the empty partial permutation; see 
   <Ref Oper="One" Label="for a partial perm"/> and
-  <Ref Oper="Zero" Label="for a partial perm"/>.
+  <Ref Oper="MultiplicativeZero" Label="for a partial perm"/>.
   <P/>
 
   If <C>S</C> is an arbitrary inverse semigroup, the <E>natural partial
@@ -278,12 +278,12 @@ For example, the category test function for partial permutations is
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Func Name="PartialPermOp" Arg='obj, list[, func]'/>
-    <Func Name="PartialPermOpNC" Arg='obj, list[, func]'/>
+    <Oper Name="PartialPermOp" Arg='obj, list[, func]'/>
+    <Oper Name="PartialPermOpNC" Arg='obj, list[, func]'/>
     <Returns>A partial permutation or <K>fail</K>.</Returns>
     <Description>
-      <C>PartialPermOp</C> returns the partial permutation that corresponds to
-      the action of the object <A>obj</A> on the domain or list <A>list</A>
+      <Ref Oper="PartialPermOp"/> returns the partial permutation that corresponds
+      to the action of the object <A>obj</A> on the domain or list <A>list</A>
       via the function <A>func</A>. If the optional third argument <A>func</A>
       is not specified, then the action <Ref Func="OnPoints"/> is used by
       default.  Note that the returned partial permutation
@@ -291,14 +291,15 @@ For example, the category test function for partial permutations is
       consists of integers.  <P/>
       
       This function is the analogue in the context of
-      partial permutations of <Ref Func="Permutation" BookName="ref"/> or 
+      partial permutations of <Ref Func="Permutation" BookName="ref" 
+        Label="for a group, an action domain, etc."/> or 
       <Ref Func="TransformationOp"/>.<P/>
       
       If <A>obj</A> does not map the elements of <A>list</A> injectively,
       then <K>fail</K> is returned.<P/>
 
-      <C>PartialPermOpNC</C> does not check that <A>obj</A> maps elements of
-      <A>list</A> injectively or that a partial permutation is
+      <Ref Oper="PartialPermOpNC"/> does not check that <A>obj</A> maps
+      elements of <A>list</A> injectively or that a partial permutation is
       defined by the action of <A>obj</A> on <A>list</A> via <A>func</A>. This
       function should be used only with caution, in situations where it is
       guaranteed that the arguments have the required properties.
@@ -389,7 +390,7 @@ gap> JoinOfPartialPerms(f, f^-1);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="MeetOfPartialPerms" Arg="arg"/>
+    <Func Name="MeetOfPartialPerms" Arg="arg"/>
     <Returns>A partial permutation.</Returns>
     <Description>
       The meet of partial permutations <A>f</A> and <A>g</A> is just the meet,
@@ -401,7 +402,7 @@ gap> JoinOfPartialPerms(f, f^-1);
       Note that unlike the join of partial permutations, the meet always
       exists. <P/>
 
-      <C>MeetOfPartialPerms</C> returns the meet of the partial permutations
+      <Ref Func="MeetOfPartialPerms"/> returns the meet of the partial permutations
       in its argument. The argument <A>arg</A> can be a partial permutation
       collection or a number of partial permutations. 
 
@@ -439,10 +440,10 @@ gap> EmptyPartialPerm();
 <!-- *************************************************************** -->
 
   <ManSection><Heading>RandomPartialPerm</Heading>
-    <Oper Name="RandomPartialPerm" Arg="n" Label="for a positive integer"/>
-    <Oper Name="RandomPartialPerm" Arg="set" Label="for a set of positive
+    <Func Name="RandomPartialPerm" Arg="n" Label="for a positive integer"/>
+    <Func Name="RandomPartialPerm" Arg="set" Label="for a set of positive
       integers"/>
-    <Oper Name="RandomPartialPerm" Arg="dom, img" Label="for domain and image"/>
+    <Func Name="RandomPartialPerm" Arg="dom, img" Label="for domain and image"/>
     <Returns>A random partial permutation.</Returns>
     <Description>
       In its first form, 
@@ -478,7 +479,7 @@ gap> EmptyPartialPerm();
   finding various attributes of partial permutations.  <P/>
 
   <ManSection>
-    <Attr Name="DegreeOfPartialPerm" Arg="f"/>
+    <Func Name="DegreeOfPartialPerm" Arg="f"/>
     <Attr Name="DegreeOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -499,7 +500,7 @@ gap> DegreeOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="CodegreeOfPartialPerm" Arg="f"/>
+    <Func Name="CodegreeOfPartialPerm" Arg="f"/>
     <Attr Name="CodegreeOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -519,7 +520,7 @@ gap> CodegreeOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="RankOfPartialPerm" Arg="f"/>
+    <Func Name="RankOfPartialPerm" Arg="f"/>
     <Attr Name="RankOfPartialPermCollection" Arg="coll"/>
     <Returns>A non-negative integer.</Returns>
     <Description>
@@ -543,8 +544,8 @@ gap> RankOfPartialPerm(f);
 <!-- *************************************************************** -->
 
 <ManSection>
-    <Oper Name="DomainOfPartialPerm" Arg="f"/>
-    <Oper Name="DomainOfPartialPermCollection" Arg="f"/>
+    <Attr Name="DomainOfPartialPerm" Arg="f"/>
+    <Attr Name="DomainOfPartialPermCollection" Arg="f"/>
     <Returns>A set of positive integers (maybe empty).</Returns>
     <Description>
       The <E>domain</E> of a partial permutation <A>f</A> is the set of
@@ -564,7 +565,7 @@ gap> DomainOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="ImageOfPartialPermCollection" Arg="coll"/>
+    <Attr Name="ImageOfPartialPermCollection" Arg="coll"/>
     <Returns>A set of positive integers (maybe empty).</Returns>
     <Description>
       The <E>image</E> of a partial permutation collection <A>coll</A> is the
@@ -574,14 +575,14 @@ gap> DomainOfPartialPerm(f);
 gap> S := SymmetricInverseSemigroup(5);                                
 <symmetric inverse monoid of degree 5>
 gap> ImageOfPartialPermCollection(GeneratorsOfInverseSemigroup(S));
-[ 1, 2, 3, 4, 5 ]]]></Example>
+[ 1 .. 5 ]]]></Example>
     </Description>
   </ManSection>
 
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="ImageListOfPartialPerm" Arg="f"/>
+    <Attr Name="ImageListOfPartialPerm" Arg="f"/>
     <Returns>The list of images of a partial permutation.</Returns>
     <Description>
       The <E>image list</E> of a partial permutation <A>f</A> is the list of
@@ -616,8 +617,8 @@ gap> ImageSetOfPartialPerm(f);
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="FixedPointsOfPartialPerm" Arg="f" Label="for a partial perm"/>
-    <Oper Name="FixedPointsOfPartialPerm" Arg="coll" Label="for a partial perm coll"/>
+    <Attr Name="FixedPointsOfPartialPerm" Arg="f" Label="for a partial perm"/>
+    <Meth Name="FixedPointsOfPartialPerm" Arg="coll" Label="for a partial perm coll"/>
     <Returns>A set of positive integers.</Returns>
     <Description>
       <C>FixedPointsOfPartialPerm</C> returns the set of points <C>i</C> in the
@@ -639,8 +640,8 @@ gap> FixedPointsOfPartialPerm(f);
   </ManSection>
   
   <ManSection>
-    <Oper Name="MovedPoints" Arg="f" Label="for a partial perm"/>
-    <Oper Name="MovedPoints" Arg="coll" Label="for a partial perm coll"/>
+    <Attr Name="MovedPoints" Arg="f" Label="for a partial perm"/>
+    <Meth Name="MovedPoints" Arg="coll" Label="for a partial perm coll"/>
     <Returns>A set of positive integers.</Returns>
     <Description>
       <C>MovedPoints</C> returns the set of points <C>i</C> in the domain of
@@ -665,8 +666,8 @@ gap> FixedPointsOfPartialPerm(PartialPerm([1 .. 4]));
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Oper Name="NrFixedPoints" Arg="f" Label="for a partial perm"/>
-    <Oper Name="NrFixedPoints" Arg="coll" Label="for a partial perm coll"/>
+    <Attr Name="NrFixedPoints" Arg="f" Label="for a partial perm"/>
+    <Meth Name="NrFixedPoints" Arg="coll" Label="for a partial perm coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
       <C>NrFixedPoints</C> returns the number of points <C>i</C> in the domain
@@ -686,8 +687,8 @@ gap> NrFixedPoints(PartialPerm([1 .. 10]));
   </ManSection>
   
   <ManSection>
-    <Oper Name="NrMovedPoints" Arg="f" Label="for a partial perm"/>
-    <Oper Name="NrMovedPoints" Arg="coll" Label="for a partial perm coll"/>
+    <Attr Name="NrMovedPoints" Arg="f" Label="for a partial perm"/>
+    <Meth Name="NrMovedPoints" Arg="coll" Label="for a partial perm coll"/>
     <Returns>A positive integer.</Returns>
     <Description>
       <C>NrMovedPoints</C> returns the number of points <C>i</C> in the domain
@@ -711,8 +712,8 @@ gap> NrMovedPoints(PartialPerm([1 .. 4]));
 <!-- *************************************************************** -->
 
 <ManSection>
-  <Oper Name="SmallestMovedPoint" Arg="f" Label="for a partial perm"/>
-  <Oper Name="SmallestMovedPoint" Arg="coll" Label="for a partial perm coll"/>
+  <Attr Name="SmallestMovedPoint" Arg="f" Label="for a partial perm"/>
+  <Meth Name="SmallestMovedPoint" Arg="coll" Label="for a partial perm coll"/>
   <Returns>A positive integer or <K>infinity</K>.</Returns>
   <Description>
     <C>SmallestMovedPoint</C> returns the smallest  positive integer <C>i</C>
@@ -736,8 +737,8 @@ infinity</Example>
 </ManSection>
 
 <ManSection>
-  <Oper Name="LargestMovedPoint" Arg="f" Label="for a partial perm"/>
-  <Oper Name="LargestMovedPoint" Arg="coll" Label="for a partial perm coll"/>
+  <Attr Name="LargestMovedPoint" Arg="f" Label="for a partial perm"/>
+  <Meth Name="LargestMovedPoint" Arg="coll" Label="for a partial perm coll"/>
   <Returns>A positive integer or <K>infinity</K>.</Returns>
   <Description>
      <C>LargestMovedPoint</C> returns the largest positive integers <C>i</C>
@@ -759,8 +760,8 @@ gap> LargestMovedPoint(PartialPerm([1 .. 10]));
 </ManSection>
 
 <ManSection>
-  <Oper Name="SmallestImageOfMovedPoint" Arg="f" Label="for a partial permutation"/>
-  <Oper Name="SmallestImageOfMovedPoint" Arg="coll" 
+  <Attr Name="SmallestImageOfMovedPoint" Arg="f" Label="for a partial permutation"/>
+  <Meth Name="SmallestImageOfMovedPoint" Arg="coll"
     Label="for a partial permutation coll"/>
   <Returns>A positive integer or <K>infinity</K>.</Returns>
   <Description>
@@ -793,9 +794,9 @@ gap> SmallestImageOfMovedPoint(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Oper Name="LargestImageOfMovedPoint" Arg="f" 
+  <Attr Name="LargestImageOfMovedPoint" Arg="f"
     Label="for a partial permutation"/>
-  <Oper Name="LargestImageOfMovedPoint" Arg="coll" 
+  <Meth Name="LargestImageOfMovedPoint" Arg="coll"
     Label="for a partial permutation coll"/>
   <Returns>A positive integer.</Returns>
   <Description>
@@ -979,15 +980,15 @@ gap> One(f);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Meth Name="Zero" Arg="f" Label="for a partial perm"/>
+  <Meth Name="MultiplicativeZero" Arg="f" Label="for a partial perm"/>
   <Returns>The empty partial permutation.</Returns>
   <Description>
-    As described in <Ref Attr="ZeroImmutable" BookName="ref"/>,
+    As described in <Ref Attr="MultiplicativeZero" BookName="ref"/>,
     <C>Zero</C> returns the multiplicative zero element of the partial
     permutation <A>f</A>, which is the empty partial permutation. 
     <Example>
-gap> f:=PartialPerm([ 1, 2, 3, 4, 5, 7, 10 ], [ 3, 7, 9, 6, 1, 10, 2 ]);;
-gap> Zero(f);
+gap> f := PartialPerm([ 1, 2, 3, 4, 5, 7, 10 ], [ 3, 7, 9, 6, 1, 10, 2 ]);;
+gap> MultiplicativeZero(f);
 &lt;empty partial perm></Example>
   </Description>
 </ManSection>
@@ -1012,10 +1013,10 @@ gap> Zero(f);
   in &GAP; into partial permutations. 
   
   <ManSection>
-  <Func Name="AsPartialPerm" Arg="f, set" Label="for a permutation and a set of
+  <Oper Name="AsPartialPerm" Arg="f, set" Label="for a permutation and a set of
     positive integers"/>
-  <Func Name="AsPartialPerm" Arg="f" Label="for a permutation"/>
-  <Func Name="AsPartialPerm" Arg="f, n" Label="for a permutation and a positive integer"/>
+  <Meth Name="AsPartialPerm" Arg="f" Label="for a permutation"/>
+  <Meth Name="AsPartialPerm" Arg="f, n" Label="for a permutation and a positive integer"/>
   <Returns>A partial permutation.</Returns>
   <Description>
     A permutation <A>f</A> defines a partial permutation when it is restricted
@@ -1063,11 +1064,10 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
 <!-- *************************************************************** -->
   
   <ManSection>
-    <Func Name="AsPartialPerm" Arg="f, set" Label="for a transformation and a
-      set of positive integer"/> 
-    <Func Name="AsPartialPerm" Arg="f, n" Label="for a transformation and a
-      positive integer"/> 
-    <Func Name="AsPartialPerm" Arg="f" Label="for a transformation"/> 
+    <Oper Name="AsPartialPerm" Arg="f, set" 
+      Label="for a transformation and a set of positive integer"/> 
+    <Meth Name="AsPartialPerm" Arg="f, n" 
+      Label="for a transformation and a positive integer"/> 
   <Returns>A partial permutation or <K>fail</K>.</Returns>
   <Description>
     A transformation <A>f</A> defines a partial permutation when it is
@@ -1094,33 +1094,19 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
         integer and this set satisfies the
         conditions given above.
       </Item>
-      <Mark>for a transformation</Mark>
-      <Item> 
-        Let <C>n</C> denote the degree of <A>f</A>. If 
-        <C>n^<A>f</A>=n</C> and <A>f</A> is injective on those <C>i</C> such
-        that <C>i^<A>f</A>&lt;>n</C>, then <C>AsPartialPerm</C> returns
-        the partial permutation obtained by restricting <A>f</A> to those
-        <C>i</C> such that <C>i^<A>f</A>&lt;>n</C>.
-      </Item>
     </List>
-
-    <C>AsPartialPerm</C> returns <K>fail</K> if the arguments do not describe a
-    partial permutation.<P/>
 
     The operation <Ref Oper="PartialPermOp"/> can also be used to convert
     transformations into partial permutations.
 
   <Example>
 gap> f:=Transformation( [ 8, 3, 5, 9, 6, 2, 9, 7, 9 ] );;
-gap> AsPartialPerm(f);
-[1,8,7](2,3,5,6)
+gap> AsPartialPerm(f, [1, 2, 3, 5, 8]);
+[1,8,7][2,3,5,6]
 gap> AsPartialPerm(f, 3);
 [1,8][2,3,5]
 gap> AsPartialPerm(f, [ 2 .. 4 ] );
-[2,3,5][4,9]
-gap> f:=Transformation( [ 2, 10, 2, 4, 4, 7, 6, 9, 10, 1 ] );;
-gap> AsPartialPerm(f);
-fail</Example>
+[2,3,5][4,9]</Example>
   </Description>
 </ManSection>
 </Section>
@@ -1361,7 +1347,7 @@ false</Example>
   </ManSection>
  
   <ManSection>
-    <Func Name="TrimPartialPerm" Arg="f"/>
+    <Oper Name="TrimPartialPerm" Arg="f"/>
     <Returns>Nothing.</Returns>
     <Description>
       It can happen that the internal representation of a partial permutation
@@ -1525,8 +1511,8 @@ Since a partial permutation semigroup is also a partial permutation collection, 
 when applied to a partial permutation semigroup. 
 
 <ManSection>
-  <Prop Name="IsPartialPermSemigroup" Arg="obj"/>
-  <Prop Name="IsPartialPermMonoid" Arg="obj"/>
+  <Filt Name="IsPartialPermSemigroup" Arg="obj"/>
+  <Filt Name="IsPartialPermMonoid" Arg="obj"/>
   <Returns><K>true</K> or <K>false</K>.</Returns>
   <Description> 
     A <E>partial perm semigroup</E> is simply a semigroup consisting of partial
@@ -1686,17 +1672,17 @@ false]]></Example>
 </ManSection>
 
 <ManSection>
-  <Oper Name="IsomorphismPartialPermMonoid" Arg="S"/>
-  <Oper Name="IsomorphismPartialPermSemigroup" Arg="S"/>
+  <Attr Name="IsomorphismPartialPermSemigroup" Arg="S"/>
+  <Attr Name="IsomorphismPartialPermMonoid" Arg="S"/>
   <Returns>An isomorphism.</Returns>
   <Description>
     <C>IsomorphismPartialPermSemigroup(<A>S</A>)</C>
-     returns an isomorphism from the inverse semigroup or group <A>S</A> to an
+     returns an isomorphism from the inverse semigroup <A>S</A> to an
      inverse semigroup of partial permutations.<P/>
 
      <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism from
-     the inverse monoid or group <A>S</A> to an inverse monoid of partial
-     permutations.<P/> 
+     the inverse semigroup <A>S</A> to an inverse monoid of partial
+     permutations, if possible.<P/> 
      
      We only describe <C>IsomorphismPartialPermMonoid</C>,
      the corresponding statements for <C>IsomorphismPartialPermSemigroup</C>
@@ -1725,11 +1711,11 @@ false]]></Example>
 
       <Mark>Transformation semigroups</Mark>
       <Item>
-        If <A>S</A> is a transformation semigroup satisfying 
-        <Ref Prop="IsInverseMonoid"/>, then
+        If <A>S</A> is a transformation semigroup which is mathematically a
+        monoid but which does not necessarily belong to the category <Ref Filt
+          = "IsMonoid"/>, then
         <C>IsomorphismPartialPermMonoid</C> returns an isomorphism from
-        <A>S</A> to an inverse monoid of partial permutations on a subset of
-        <C>[1 .. DegreeOfTransformationSemigroup(<A>S</A>)]</C>.
+        <A>S</A> to an inverse monoid of partial permutations.
       </Item>
     </List>
     <Example><![CDATA[
@@ -1739,9 +1725,10 @@ gap> S := InverseSemigroup(
 gap> IsMonoid(S); 
 false
 gap> iso := IsomorphismPartialPermMonoid(S);
-MappingByFunction( <inverse partial perm semigroup of rank 5 with 2 
- generators>, <inverse partial perm monoid of rank 5 with 2 
- generators>, function( object ) ... end, function( object ) ... end )
+MappingByFunction( <inverse partial perm semigroup of size 508, 
+ rank 5 with 2 generators>, <inverse partial perm monoid of size 508, 
+ rank 5 with 2 generators>
+ , function( object ) ... end, function( object ) ... end )
 gap> Size(S);
 508
 gap> Size(Range(iso));
@@ -1750,17 +1737,17 @@ gap> G := Group((1,2)(3,8)(4,6)(5,7), (1,3,4,7)(2,5,6,8), (1,4)(2,6)(3,7)(5,8));
 gap> IsomorphismPartialPermSemigroup(G);
 MappingByFunction( Group([ (1,2)(3,8)(4,6)(5,7), (1,3,4,7)
 (2,5,6,8), (1,4)(2,6)(3,7)
-(5,8) ]), <inverse partial perm semigroup of rank 8 with 3 generators>
- , function( p ) ... end, function( f ) ... end )
+(5,8) ]), <partial perm group of rank 8 with 3 generators>
+, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> S := Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ), 
 > Transformation( [ 3, 6, 5, 7, 2, 1, 7 ] ) );;
 gap> iso := IsomorphismPartialPermMonoid(S);;
 gap> MultiplicativeNeutralElement(S) ^ iso;
-<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+<identity partial perm on [ 1, 2, 3, 4, 5, 6 ]>
 gap> One(Range(iso));
-<identity partial perm on [ 1, 2, 3, 5, 6, 7 ]>
+<identity partial perm on [ 1, 2, 3, 4, 5, 6 ]>
 gap> MovedPoints(Range(iso));
-[ 1, 2, 3, 5, 6 ]]]></Example>
+[ 1 .. 5 ]]]></Example>
   </Description>
 </ManSection>
 </Section>

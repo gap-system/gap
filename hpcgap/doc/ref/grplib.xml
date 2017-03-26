@@ -61,7 +61,18 @@ incarnations.
 Note that a system administrator may choose to install all, or
 only a  few,  or even  none of the  libraries.  So some  of the libraries
 mentioned below may not be available on your installation.
+<P/>
+&GAP; might use data libraries that are available to speed up calculations,
+for example in using a classification to determine that groups must be
+isomorphic, based on agreement of properties; or to determine maximal
+subgroups or subgroup maximality. This will be indicated by an info message
+of level 2 in the info class <C>InfoPerformance</C>.
 
+If the calculation is to be independent of such data library use, for
+example if it is used to verify the data library, functions can be called
+with the option <C>NoPrecomputedData</C>, to turn these features off. Doing
+so might cause significantly longer calculations, or even failure of certain
+calculations.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Basic Groups">

@@ -81,7 +81,7 @@ error message of the following form
 <P/>
 <Log><![CDATA[
 gap> 1 * ;
-Syntax error: expression expected
+Syntax error: Expression expected
 1 * ;
     ^
 ]]></Log>
@@ -944,8 +944,6 @@ This break loop can only be exited with <C>quit;</C>. The function differs from
 <Ref Func="ErrorCount"/> returns a count of the number of errors
 (including user interruptions) which have occurred in the &GAP; session
 so far.
-This count is reduced modulo <M>2^{28}</M> on <M>32</M> bit systems,
-<M>2^{60}</M> on <M>64</M> bit systems.
 The count is incremented by each error, even if &GAP; was
 started with the <C>-T</C> option to disable the break loop.
 </Description>

@@ -60,7 +60,7 @@
 <#Include Label="GaloisGroup:field">
 
 <ManSection>
-<Func Name="MinimalPolynomial" Arg='F, z[, ind]' Label="over a field"/>
+<Oper Name="MinimalPolynomial" Arg='F, z[, ind]' Label="over a field"/>
 
 <Description>
 returns the minimal polynomial of <A>z</A> over the field <A>F</A>.

@@ -147,10 +147,10 @@ next line
 There are a number of <E>special character sequences</E> that can be used
 between the singlequotes of a character literal or between the
 doublequotes of a string literal to specify characters. 
-They consist of two characters.
-The first is a backslash <C>\</C>. The second may be any character.
-If it is an octal digit (from <C>0</C> to <C>7</C>) there must be two more
-such digits. The meaning is given in the following list
+They consist of a backslash <C>\</C> followed by a second character
+indicating the type of special character sequence, and possibly more characters.
+The following special character sequences are currently defined.
+For any other sequence starting with a backslash, the backslash is ignored.
 <P/>
 <List>
 <Mark><C>\n</C></Mark>
@@ -227,17 +227,31 @@ such digits. The meaning is given in the following list
 <Index>octal character codes</Index>
 <C>\XYZ</C></Mark>
 <Item>
-    with <C>X</C>, <C>Y</C>, <C>Z</C> three octal digits.
+    with <C>X</C>, <C>Y</C>, <C>Z</C> three octal digits, that is one
+    of <C>"01234567"</C>.
     This is translated to the character corresponding to the number
     <C>X * 64 + Y * 8 + Z modulo 256</C>.
     This can be used to specify and store arbitrary binary data as a string
     in &GAP;.
 </Item>
 <Mark>
+<Index><C>\0xYZ</C></Index>
+<Index>hexadecimal character codes</Index>
+<C>\0xYZ</C></Mark>
+<Item>
+    with <C>Y</C>, and <C>Z</C> hexadecimal digits, that is one of
+    <C>"0123456789ABCDEFabcdef"</C>, where <C>a</C> to <C>f</C> and
+    <C>A</C> to <C>F</C> are interpreted as the numbers <C>10</C> to
+    <C>15</C>. This is translated to the character corresponding
+    to the number <C>Y*16 + Z</C>.
+</Item>
+<Mark>
 <Index>escaping non-special characters</Index>
 other</Mark>
 <Item>
-    For any other character the backslash is simply ignored.
+  For any other character the backslash is ignored.
+  <!--If the character is a letter, that is one of <C>a..zA..Z</C>, then a
+      warning is displayed.-->
 </Item>
 </List>
 <P/>
@@ -453,6 +467,9 @@ The inverse translation can be achieved with <Ref Func="IntHexString"/>.
 <#Include Label="StringPP">
 <#Include Label="WordAlp">
 <#Include Label="LowercaseString">
+<#Include Label="LowercaseChar">
+<#Include Label="UppercaseString">
+<#Include Label="UppercaseChar">
 <#Include Label="SplitString">
 <#Include Label="ReplacedString">
 
