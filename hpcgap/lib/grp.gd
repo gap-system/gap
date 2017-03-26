@@ -140,20 +140,6 @@ DeclareOperation( "GroupString", [IsGroup,IsString] );
 
 #############################################################################
 ##
-#A  NameIsomorphismClass( <G> ) . . . . . . . . . . . . . . . .  experimental
-##
-##  <ManSection>
-##  <Attr Name="NameIsomorphismClass" Arg='G'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareAttribute( "NameIsomorphismClass", IsGroup );
-
-
-#############################################################################
-##
 #P  IsCyclic( <G> )
 ##
 ##  <#GAPDoc Label="IsCyclic">
@@ -449,6 +435,37 @@ InstallFactorMaintenance( IsPGroup,
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 
+#############################################################################
+##
+#P  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
+##
+##  <#GAPDoc Label="IsPowerfulPGroup">
+##  <ManSection>
+##  <Prop Name="IsPowerfulPGroup" Arg='G'/>
+##
+##  <Description>
+##  <Index Key="PowerfulPGroup">Powerful <M> p</M>-group</Index>
+##  A finite p-group <A>G</A> is said to be a Powerful <M>p</M>-group if the 
+##  commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
+##  <M><A>G</A>^{p}</M> if the prime <M>p</M> is odd, or if
+##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M> 
+##  if<M> p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first 
+##  Agemo subgroup, (see&nbsp;<Ref Func="Agemo"/>).
+##  <Ref Prop="IsPowerfulPGroup"/> returns <K>true</K> if <A>G</A> is a 
+##  powerful <M>p</M>-group, and <K>false</K> otherwise. 
+##  <E>Note: </E>This function returns <K>true</K> if <A>G</A> is the trivial 
+##  group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsPowerfulPGroup", IsGroup );
+
+#Quotients of powerful of powerful p groups are powerful
+InstallFactorMaintenance( IsPowerfulPGroup,
+    IsPowerfulPGroup, IsGroup, IsGroup );
+#abelian p-groups are powerful
+InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
 
 #############################################################################
 ##
@@ -935,6 +952,25 @@ DeclareOperation( "ChiefSeriesUnderAction", [ IsGroup, IsGroup ] );
 ##
 DeclareOperation( "ChiefSeriesThrough", [ IsGroup, IsList ] );
 
+#############################################################################
+##
+#F  RefinedSubnormalSeries( <ser>, <n> )
+##
+##  <#GAPDoc Label="RefinedSubnormalSeries">
+##  <ManSection>
+##  <Oper Name="RefinedSubnormalSeries" Arg='ser,n'/>
+##
+##  <Description>
+##  If <A>ser</A> is a subnormal series of a group <A>G</A>, and <A>n</A> is a
+##  normal subgroup, this function returns the series obtained by refining with
+##  <A>n</A>, that is closures and intersections are inserted at the appropriate
+##  place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "RefinedSubnormalSeries" );
+
 
 #############################################################################
 ##
@@ -1152,6 +1188,10 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
+
+# utility function in maximal subgroups code
+DeclareGlobalFunction("DoMaxesTF");
+DeclareGlobalFunction("MaxesAlmostSimple");
 
 #############################################################################
 ##
@@ -1809,6 +1849,29 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "NormalSubgroups", IsGroup );
+
+#############################################################################
+##
+#A  CharacteristicSubgroups( <G> )
+##
+##  <#GAPDoc Label="CharacteristicSubgroups">
+##  <ManSection>
+##  <Attr Name="CharacteristicSubgroups" Arg='G'/>
+##
+##  <Description>
+##  returns a list of all characteristic subgroups of <A>G</A>, that is
+##  subgroups that are invariant under all automorphisms.
+##  <Example><![CDATA[
+##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
+##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "CharacteristicSubgroups", IsGroup );
 
 
 #############################################################################
@@ -3304,6 +3367,45 @@ KeyDependentOperation( "HallSubgroup", IsGroup, IsList, ReturnTrue );
 
 #############################################################################
 ##
+#F  NormalHallSubgroupsFromSylows( <G>[, <method>] )
+##
+##  <ManSection>
+##  <Func Name="NormalHallSubgroupsFromSylows" Arg="G[, method]"/>
+##
+##  <Description>
+##    Computes all normal Hall subgroups, that is all normal subgroups
+##    <A>N</A> for which the size of <A>N</A> is relatively prime to the
+##    index of <A>N</A> in <A>G</A>.
+##
+##    Sometimes it is not desirable to compute all normal Hall subgroups. The
+##    user can express such a wish by using the <A>method</A> <Q>"any"</Q>.
+##    Then NormalHallSubgroupsFromSylows returns a nontrivial normal Hall
+##    subgroup, if there is one, and returns fail, otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "NormalHallSubgroupsFromSylows", [ IsGroup ] );
+
+
+#############################################################################
+##
+#A  NormalHallSubgroups( <G> )
+##
+##  <ManSection>
+##  <Attr Name="NormalHallSubgroups" Arg="G"/>
+##
+##  <Description>
+##    Returns a list of all normal Hall subgroups, that is of all normal
+##    subgroups <A>N</A> for which the size of <A>N</A> is relatively prime
+##    to the index of <A>N</A> in <A>G</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "NormalHallSubgroups", IsGroup );
+
+
+#############################################################################
+##
 #O  NrConjugacyClassesInSupergroup( <U>, <G> )
 ##
 ##  <ManSection>
@@ -4377,6 +4479,40 @@ DeclareFilter("IsGroupOfFamily");
 DeclareGlobalFunction("Group_PseudoRandom");
 
 DeclareGlobalFunction("GroupEnumeratorByClosure");
+
+############################################################################
+##
+#O  LowIndexSubgroups( <G>, <index> )
+##
+##  <#GAPDoc Label="LowIndexSubgroups">
+##  <ManSection>
+##  <Oper Name="LowIndexSubgroups"
+##   Arg='G, index'/>
+##  <Oper Name="LowIndexSubgroups" Arg='G, index'/>
+##
+##  <Description>
+##  These operations computes representatives of the conjugacy classes of
+##  subgroups of the group <A>G</A> that 
+##  index less than or equal to
+##  <A>index</A>.
+##  <P/>
+##  For finitely presented groups this operation simply defaults to
+##  <C>LowIndexSubgroupsFpGroup</C>. In other cases, it uses repeated
+##  calculation of maximal subgroups.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:=TransitiveGroup(18,950);;
+##  gap> l:=LowIndexSubgroups(g,20);;Collected(List(l,x->Index(g,x)));
+##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ], 
+##    [ 16, 2 ], [ 18, 1 ], [ 20, 9 ] ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "LowIndexSubgroups",
+    [ IsGroup, IsPosInt ] );
 
 #############################################################################
 ##

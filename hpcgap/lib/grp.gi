@@ -62,12 +62,33 @@ InstallMethod( IsCyclic,
     fi;
     end );
 
+InstallMethod( Size,
+    "for a cyclic group",
+    [ IsGroup and IsCyclic and HasGeneratorsOfGroup ],
+    -RankFilter(HasGeneratorsOfGroup),
+function(G)
+  local gens;
+  if HasMinimalGeneratingSet(G) then
+    gens:=MinimalGeneratingSet(G);
+  else
+    gens:=GeneratorsOfGroup(G);
+  fi;
+  if Length(gens) = 1 and gens[1] <> One(G) then
+    SetMinimalGeneratingSet(G,gens);
+    return Order(gens[1]);
+  elif Length(gens) <= 1 then
+    SetMinimalGeneratingSet(G,[]);
+    return 1;
+  fi;
+  TryNextMethod();
+end);
+
 InstallMethod( MinimalGeneratingSet,"cyclic groups",true,
     [ IsGroup and IsCyclic and IsFinite ],
     RankFilter(IsFinite and IsPcGroup),
 function ( G )
 local g;
-  if Size(G)=1 then return [];fi;
+  if IsTrivial(G) then return []; fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   Assert( 1, Index(G,Subgroup(G,[g])) = 1 );
   return [g];
@@ -156,8 +177,57 @@ InstallMethod( IsElementaryAbelian,
 ##
 #M  IsPGroup( <G> ) . . . . . . . . . . . . . . . . .  is a group a p-group ?
 ##
+BindGlobal( "IS_PGROUP_FOR_NILPOTENT",
+
+    function( G )
+    local s, gen, ord;
+
+    s:= [];
+    for gen in GeneratorsOfGroup( G ) do
+      ord:= Order( gen );
+      if ord = infinity then
+        return false;
+      elif 1 < ord then
+        if not IsPrimePowerInt( ord ) then
+          return false;
+        else
+          AddSet( s, Factors( ord )[1] );
+          if 1 < Length( s ) then
+            return false;
+          fi;
+        fi;
+      fi;
+    od;
+    if IsEmpty( s ) then
+      return true;
+    fi;
+
+    SetPrimePGroup( G, s[1] );
+    return true;
+    end);
+
+BindGlobal( "IS_PGROUP_FROM_SIZE",
+
+    function( G )
+    local s;
+
+    s:= Size( G );
+    if s = 1 then
+      return true;
+    elif s = infinity then
+      return false;
+    elif not IsPrimePowerInt( s ) then
+      return false;
+    else
+      s:= Factors( s );
+    fi;
+
+    SetPrimePGroup( G, s[1] );
+    return true;
+    end);
+
 InstallMethod( IsPGroup,
-    "generic method (check order of the group or of generators)",
+    "generic method (check order of the group or of generators if nilpotent)",
     [ IsGroup ],
     function( G )
     local s, gen, ord;
@@ -169,40 +239,10 @@ InstallMethod( IsPGroup,
     if     ( not HasSize( G ) )
        and (    ( HasIsNilpotentGroup( G ) and IsNilpotentGroup( G ) )
              or IsAbelian( G ) ) then
-
-      s:= [];
-      for gen in GeneratorsOfGroup( G ) do
-        ord:= Order( gen );
-        if ord = infinity then
-          return false;
-        elif 1 < ord then
-          UniteSet( s, Factors( ord ) );
-          if 1 < Length( s ) then
-            return false;
-          fi;
-        fi;
-      od;
-      if IsEmpty( s ) then
-        return true;
-      fi;
-
+      return IS_PGROUP_FOR_NILPOTENT( G );
     else
-
-      s:= Size( G );
-      if s = 1 then
-        return true;
-      elif s = infinity then
-        return false;
-      fi;
-      s:= Set( Factors( s ) );
-      if 1 < Length( s ) then
-        return false;
-      fi;
-
+      return IS_PGROUP_FROM_SIZE( G );
     fi;
-
-    SetPrimePGroup( G, s[1] );
-    return true;
     end );
 
 InstallMethod( IsPGroup,
@@ -212,43 +252,86 @@ InstallMethod( IsPGroup,
     local s, gen, ord;
 
     if HasSize( G ) then
-      s:= Size( G );
-      if s = 1 then
-        return true;
-      elif s = infinity then
-        return false;
-      fi;
-      s:= Set( Factors( s ) );
-      if 1 < Length( s ) then
-        return false;
-      fi;
+      return IS_PGROUP_FROM_SIZE( G );
     else
-      s:= [];
-      for gen in GeneratorsOfGroup( G ) do
-        ord:= Order( gen );
-        if ord = infinity then
-          return false;
-        elif 1 < ord then
-          UniteSet( s, Factors( ord ) );
-          if 1 < Length( s ) then
-            return false;
-          fi;
-        fi;
-      od;
-      if IsEmpty( s ) then
-        return true;
-      fi;
+      return IS_PGROUP_FOR_NILPOTENT( G );
+    fi;
+    end );
+#############################################################################
+##
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+##
+InstallMethod( IsPowerfulPGroup,
+    "use characterisation of powerful p-groups based on rank ",
+    [ IsGroup and HasRankPGroup and HasComputedOmegas ],
+     function( G )
+    local p;
+    if (IsTrivial(G)) then
+	return true;
+    else
+	p:=PrimePGroup(G);
+	#We use the less known characterisation of powerful p groups
+	# for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
+	# can be found in 'A characterization of powerful p-groups'
+	if (p>3) then
+		if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
+			return true;
+		else
+			return false;
+		fi;
+	else
+	TryNextMethod();
+	fi;
     fi;
 
-    SetPrimePGroup( G, s[1] );
-    return true;
-    end );
+
+      
+    end);
+     
+  
+InstallMethod( IsPowerfulPGroup,
+    "generic method checks inclusion of commutator subgroup in agemo subgroup",
+    [ IsGroup ],
+     function( G )
+    local p;
+    if IsPGroup( G ) = false then
+      return false;
+    elif IsTrivial(G) then
+      return true;
+	
+    else
+    
+      p:=PrimePGroup(G);
+      if p = 2 then 
+        return IsSubgroup(Agemo(G,2,2),DerivedSubgroup( G ));
+      else 
+        return IsSubgroup(Agemo(G,p), DerivedSubgroup( G ));
+      fi; 
+    fi;
+    end);                                              
 
 
 #############################################################################
 ##
 #M  PrimePGroup . . . . . . . . . . . . . . . . . . . . .  prime of a p-group
 ##
+InstallMethod( PrimePGroup,
+    "generic method, check the order of a nontrivial generator",
+    [ IsPGroup and HasGeneratorsOfGroup ],
+function( G )
+local gen, s;
+  if IsTrivial( G ) then
+    return fail;
+  fi;
+  for gen in GeneratorsOfGroup( G ) do
+    s := Order( gen );
+    if s <> 1 then
+      break;
+    fi;
+  od;
+  return Factors( s )[1];
+end );
+
 InstallMethod( PrimePGroup,
     "generic method, check the group order",
     [ IsPGroup ],
@@ -263,8 +346,12 @@ local s;
   if s = 1 then
     return fail;
   fi;
-  return Set( Factors( s ) )[1];
+  return Factors( s )[1];
 end );
+
+RedispatchOnCondition (PrimePGroup, true,
+    [IsGroup],
+    [IsPGroup], 0);
 
 
 #############################################################################
@@ -285,6 +372,24 @@ end );
 #T for example one that checks only small integers?)
 
 InstallMethod( IsNilpotentGroup,
+    "if group size can be computed and is a prime power",
+    [ IsGroup and CanComputeSize ], 25,
+    function ( G )
+    local s;
+
+    s := Size ( G );
+    if IsInt( s ) and IsPrimePowerInt( s ) then
+        SetIsPGroup( G, true );
+        SetPrimePGroup( G, Factors( s )[1] );
+        return true;
+    else
+        SetIsPGroup( G, false );
+    fi;
+    TryNextMethod();
+    end );
+
+
+InstallMethod( IsNilpotentGroup,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
@@ -303,9 +408,18 @@ InstallMethod( IsNilpotentGroup,
 #M  IsPerfectGroup( <G> ) . . . . . . . . . . . .  test if a group is perfect
 ##
 InstallImmediateMethod( IsPerfectGroup,
-    IsGroup and IsSolvableGroup and HasSize,
+    IsSolvableGroup and HasIsTrivial,
     0,
-    grp -> Size( grp ) = 1 );
+    IsTrivial );
+
+InstallImmediateMethod( IsPerfectGroup,
+    IsGroup and HasIsAbelian and IsSimpleGroup,
+    0,
+    grp -> not IsAbelian( grp ) );
+
+InstallMethod( IsPerfectGroup, "for groups having abelian invariants",
+    [ IsGroup and HasAbelianInvariants ],
+    grp -> Length( AbelianInvariants( grp ) ) = 0 );
 
 InstallMethod( IsPerfectGroup,
     "method for finite groups",
@@ -423,13 +537,22 @@ InstallMethod( IsSolvableGroup,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
-    local   S;          # derived series of <G>
+    local   S,          # derived series of <G>
+            isAbelian,  # true if <G> is abelian
+            isSolvable; # true if <G> is solvable
 
     # compute the derived series of <G>
     S := DerivedSeriesOfGroup( G );
 
     # the group is solvable if the derived series reaches the trivial group
-    return IsTrivial( S[ Length( S ) ] );
+    isSolvable := IsTrivial( S[ Length( S ) ] );
+
+    # set IsAbelian filter
+    isAbelian := isSolvable and Length( S ) <= 2;
+    Assert(3, IsAbelian(G) = isAbelian);
+    SetIsAbelian(G, isAbelian);
+
+    return isSolvable;
     end );
 
 
@@ -612,6 +735,45 @@ InstallMethod( ChiefSeries,
 
 #############################################################################
 ##
+#M  RefinedSubnormalSeries( <ser>,<n> ) 
+##
+InstallGlobalFunction("RefinedSubnormalSeries",function(ser,sub)
+local new,i,c;
+  new:=[];
+  i:=1;
+  if not IsSubset(ser[1],sub) then
+    sub:=Intersection(ser[1],sub);
+  fi;
+  while i<=Length(ser) and IsSubset(ser[i],sub) do
+    Add(new,ser[i]);
+    i:=i+1;
+  od;
+  while i<=Length(ser) and not IsSubset(sub,ser[i]) do
+    c:=ClosureGroup(sub,ser[i]);
+    if Size(new[Length(new)])>Size(c) then
+      Add(new,c);
+    fi;
+    if Size(new[Length(new)])>Size(ser[i]) then
+      Add(new,ser[i]);
+    fi;
+    sub:=Intersection(sub,ser[i]);
+    i:=i+1;
+  od;
+  if Size(sub)<Size(new[Length(new)]) and i<=Length(ser) and Size(sub)>Size(ser[i]) then
+    Add(new,sub);
+  fi;
+  while i<=Length(ser) do
+    Add(new,ser[i]);
+    i:=i+1;
+  od;
+  Assert(1,ForAll([1..Length(new)-1],x->Size(new[x])<>Size(new[x+1])));
+  return new;
+end);
+
+
+
+#############################################################################
+##
 #M  CommutatorFactorGroup( <G> )  . . . .  commutator factor group of a group
 ##
 InstallMethod( CommutatorFactorGroup,
@@ -749,11 +911,36 @@ InstallMethod( DerivedSeriesOfGroup,
     S := [ G ];
     Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
     D := DerivedSubgroup( G );
-    while D <> S[ Length(S) ]  do
+   
+    while
+      (not HasIsTrivial(S[Length(S)]) or
+	    not IsTrivial(S[Length(S)])) and
+      (
+        (not HasIsPerfectGroup(S[Length(S)]) and
+         not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
+        (HasIsPerfectGroup(S[Length(S)]) and not IsPerfectGroup(S[Length(S)]))
+        or (HasAbelianInvariants(S[Length(S)])
+                            and Length(AbelianInvariants(S[Length(S)])) > 0)
+      ) do
         Add( S, D );
         Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
         D := DerivedSubgroup( D );
     od;
+
+    # set filters if the last term is known to be trivial
+    if HasIsTrivial(S[Length(S)]) and IsTrivial(S[Length(S)]) then
+      SetIsSolvableGroup(G, true);
+      if Length(S) <=2 then
+        Assert(3, IsAbelian(G));
+        SetIsAbelian(G, true);
+      fi;
+    fi;
+
+    # set IsAbelian filter if length of derived series is more than 2
+    if Length(S) > 2 then
+      Assert(3, not IsAbelian(G));
+      SetIsAbelian(G, false);
+    fi;
 
     # return the series when it becomes stable
     return S;
@@ -958,19 +1145,20 @@ InstallMethod( Exponent,
 #M  FittingSubgroup( <G> )  . . . . . . . . . . . Fitting subgroup of a group
 ##
 InstallMethod( FittingSubgroup, "for nilpotent group",
-    [ IsGroup and IsNilpotentGroup ], 0, IdFunc );
+    [ IsGroup and IsNilpotentGroup ], SUM_FLAGS, IdFunc );
 
 InstallMethod( FittingSubgroup,
     "generic method for groups",
     [ IsGroup and IsFinite ],
     function (G)
-        if IsTrivial (G) then
-            return G;
-        else
-            return SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
+        if not IsTrivial( G ) then
+            G := SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
                          p -> GeneratorsOfGroup( PCore( G, p ) ) ) ),
                          p->p<>One(G)));
+            Assert( 2, IsNilpotentGroup( G ) );
+            SetIsNilpotentGroup( G, true );
         fi;
+        return G;
     end);
 
 RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
@@ -980,14 +1168,67 @@ RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-InstallMethod( FrattiniSubgroup, "generic method for groups", [ IsGroup ],0,
+InstallMethod( FrattiniSubgroup, "method for trivial groups",
+            [ IsGroup and IsTrivial ],
+function(G)
+    return G;
+end);
+
+InstallMethod( FrattiniSubgroup, "for abelian groups",
+            [ IsGroup and IsAbelian ],
+function(G)
+    local i, abinv, indgen, p, q, gen;
+    
+    gen := [ ];
+    abinv := AbelianInvariants(G);
+    indgen := IndependentGeneratorsOfAbelianGroup(G);
+    for i in [1..Length(abinv)] do
+        q := abinv[i];
+        if q<>0 and not IsPrime(q) then
+            p := SmallestRootInt(q);
+            Add(gen, indgen[i]^p);
+        fi;
+    od;
+    return SubgroupNC(G, gen);
+end);
+
+InstallMethod( FrattiniSubgroup, "for powerful p-groups",
+            [ IsPGroup and IsPowerfulPGroup and HasComputedAgemos ],100,
+function(G)
+    local p;
+#If the group is powerful and has computed agemos, then no work needs
+#to be done, since FrattiniSubgroup(G)=Agemo(G,p) in this case
+#by properties of powerful p-groups.
+	p:=PrimePGroup(G);
+	return Agemo(G,p);
+end);
+
+InstallMethod( FrattiniSubgroup, "for nilpotent groups",
+            [ IsGroup and IsNilpotentGroup ],
+function(G)
+    local hom, Gf;
+
+    hom := MaximalAbelianQuotient(G);
+    Gf := Image(hom);
+    SetIsAbelian(Gf, true);
+    return PreImage(hom, FrattiniSubgroup(Gf));
+end);
+
+InstallMethod( FrattiniSubgroup, "generic method for groups",
+            [ IsGroup ],
+            0,
 function(G)
 local m;
     if IsTrivial(G) then
       return G;
     fi;
-    m:=List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
-    return Intersection(m);
+    m := List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
+    m := Intersection(m);
+    if HasIsFinite(G) and IsFinite(G) then
+      Assert(2,IsNilpotentGroup(m));
+      SetIsNilpotentGroup(m,true);
+    fi;
+    return m;
 end);
 
 
@@ -1555,6 +1796,8 @@ function( G )
         comp[i] := SubgroupByPcgs( G, sub );
         SetIsPGroup( comp[i], true );
         SetPrimePGroup( comp[i], primes[i] );
+        SetSylowSubgroup(G, primes[i], comp[i]);
+        SetHallSubgroup(G, [primes[i]], comp[i]);
     od;
     return comp;
 end );
@@ -1582,10 +1825,95 @@ function( G )
                            x -> weights[x][3] in pis[i] )};
         sub  := InducedPcgsByPcSequenceNC( spec, gens );
         comp[i] := SubgroupByPcgs( G, sub );
+        SetHallSubgroup(G, pis[i], comp[i]);
+        if Length(pis[i])=1 then
+            SetSylowSubgroup(G, pis[i][1], comp[i]);
+        fi;
     od;
     return comp;
 end );
 
+#############################################################################
+##
+#M  Socle( <G> )  . . . . . . . . . . . . . . . . . . . . . for simple groups
+##
+InstallMethod( Socle, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS, IdFunc );
+
+#############################################################################
+##
+#M  Socle( <G> )  . . . . . . . . . . . . . . . for elementary abelian groups
+##
+InstallMethod( Socle, "for elementary abelian groups",
+              [ IsGroup and IsElementaryAbelian ], SUM_FLAGS, IdFunc );
+
+#############################################################################
+##
+#M  Socle( <G> ) . . . . . . . . . . . . . . . . . . . . for nilpotent groups
+##
+InstallMethod( Socle, "for nilpotent groups",
+              [ IsGroup and IsNilpotentGroup ],
+              RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+              - RankFilter( IsGroup and IsNilpotentGroup ),
+  function(G)
+    local P, C, size, gen, abinv, indgen, i, p, q, soc;
+
+    # for finite groups the usual methods are faster
+    # for SylowSystem and Omega
+    if ( CanComputeSize(G) or HasIsFinite(G) ) and IsFinite(G) then
+      soc := TrivialSubgroup(G);
+      # now socle is the product of Omega of Sylow subgroups of the center
+      for P in SylowSystem(Center(G)) do
+        soc := ClosureSubgroupNC(soc, Omega(P, PrimePGroup(P)));
+      od;
+    else
+      # compute generators for the torsion Omega p-subgroups of the center
+      C := Center(G);
+      gen := [ ];
+      abinv := [ ];
+      indgen := [ ];
+      size := 1;
+      for i in [1..Length(AbelianInvariants(C))] do
+        q := AbelianInvariants(C)[i];
+        if q<>0 then
+          p := SmallestRootInt(q);
+          if not IsBound(gen[p]) then
+            gen[p] := [ IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p) ];
+          else
+            Add(gen[p], IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p));
+          fi;
+          size := size * p;
+          Add(abinv, p);
+          Add(indgen, IndependentGeneratorsOfAbelianGroup(C)[i]^(q/p));
+        fi;
+      od;
+      # Socle is the product of the torsion Omega p-groups of the center
+      soc := Subgroup(G, Concatenation(Compacted(gen)));
+      SetSize(soc, size);
+      SetAbelianInvariants(soc, abinv);
+      SetIndependentGeneratorsOfAbelianGroup(soc, indgen);
+    fi;
+
+    # Socle is central in G, set some properties and attributes accordingly
+    SetIsAbelian(soc, true);
+    if not HasParent(soc) then
+      SetParent(soc, G);
+      SetCentralizerInParent(soc, G);
+      SetIsNormalInParent(soc, true);
+    elif CanComputeIsSubset(G, Parent(soc))
+         and IsSubgroup(G, Parent(soc)) then
+      SetCentralizerInParent(soc, Parent(soc));
+      SetIsNormalInParent(soc, true);
+    elif CanComputeIsSubset(G, Parent(soc))
+         and IsSubgroup(Parent(soc), G) and IsNormal(Parent(soc), G) then
+      # characteristic subgroup of a normal subgroup is normal
+      SetIsNormalInParent(soc, true);
+    fi;
+
+    return soc;
+  end);
+
+RedispatchOnCondition(Socle, true, [IsGroup], [IsNilpotentGroup], 0);
 
 #############################################################################
 ##
@@ -2239,7 +2567,7 @@ local n,a;
   fi;
   # computing the automorphism group is quite expensive. We therefore test
   # first whether there are image candidates
-  if not IsAbelian(G) then #(otherwise there might be to many normal sgrps)
+  if not IsAbelian(G) and not HasAutomorphismGroup(G) then #(otherwise there might be to many normal sgrps)
     n:=NormalSubgroups(G);
     n:=Filtered(n,i->Size(i)=Size(H)); # probably do further tests here
     if Length(n)=1 then
@@ -2436,6 +2764,12 @@ InstallMethod( NormalClosureOp,
     return N;
     end );
 
+InstallMethod( NormalClosureOp, "trivial subgroup",
+  IsIdenticalObj, [ IsGroup, IsGroup and IsTrivial ], SUM_FLAGS,
+function(G,U)
+  return U;
+end);
+
 #############################################################################
 ##
 #M  NormalIntersection( <G>, <U> )  . . . . . intersection with normal subgrp
@@ -2577,6 +2911,13 @@ end);
 ##  <p> subgroup of <G>.  This is the core of the <p> Sylow subgroups.
 ##
 InstallMethod( PCoreOp,
+    "generic method for nilpotent group and prime",
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
+    function ( G, p )
+    return SylowSubgroup( G, p );
+    end );
+
+InstallMethod( PCoreOp,
     "generic method for group and prime",
     [ IsGroup, IsPosInt ],
     function ( G, p )
@@ -2685,7 +3026,7 @@ InstallMethod( SylowSubgroupOp,
 ##
 InstallMethod( SylowSubgroupOp,
     "method for a nilpotent group, and a prime",
-    [ IsGroup and IsNilpotentGroup, IsPosInt ],
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsPosInt ],
     function( G, p )
     local gens, g, ord, S;
 
@@ -2704,6 +3045,8 @@ InstallMethod( SylowSubgroupOp,
     if Size(S) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
+        SetHallSubgroup(G, [p], S);
+        SetPCore(G, p, S);
     fi;
     return S;
     end );
@@ -2739,6 +3082,152 @@ InstallMethod (HallSubgroupOp, "test trivial cases", true,
             fi;
         fi;
     end);
+
+
+#############################################################################
+##
+#M  HallSubgroupOp( <G>, <pi> ) . . . . . . . . . . . . for a nilpotent group
+##
+InstallMethod( HallSubgroupOp,
+    "method for a nilpotent group",
+    [ IsGroup and IsNilpotentGroup and IsFinite, IsList ],
+    function( G, pi )
+    local p, smallpi, S;
+
+    S := TrivialSubgroup(G);
+    smallpi := [];
+    for p in pi do
+      AddSet(smallpi, p);
+      S := ClosureSubgroupNC(S, SylowSubgroup(G, p));
+      SetHallSubgroup(G, ShallowCopy(smallpi), S);
+    od;
+    return S;
+    end );
+
+
+#############################################################################
+##
+#M  NormalHallSubgroupsFromSylows( <G> )
+##
+InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
+
+  local G, method, primes, edges, i, j, S, N, UpSets, part, U, NHs;
+
+  if Length(arg) = 1 and IsGroup(arg[1]) then
+    G := arg[1];
+    method := "all";
+  elif Length(arg) = 2 and IsGroup(arg[1]) and arg[2] in ["all", "any"] then
+    G := arg[1];
+    method := arg[2];
+  else
+    Error("usage: NormalHallSubgroupsFromSylows( <G> [, <mthd> ] )");
+  fi;
+  if HasNormalHallSubgroups(G) then
+    if method = "any" then
+      for N in NormalHallSubgroups(G) do
+        if not IsTrivial(N) and G<>N then
+          return N;
+        fi;
+      od;
+      return fail;
+    else
+      return NormalHallSubgroups(G);
+    fi;
+  elif method ="any" and Length(ComputedHallSubgroups(G))>0 then
+    i := 0;
+    while i < Length(ComputedHallSubgroups(G)) do
+      i := i+2;
+      N := ComputedHallSubgroups(G)[i];
+      if N <> fail and IsNormal(G, N) then
+        return N;
+      fi;
+    od;
+  # no need to factor Size(G) if G is a p-group
+  elif IsTrivial(G) or IsPGroup(G) then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    if method = "any" then
+      return fail;
+    else
+      return Set([ TrivialSubgroup(G), G ]);
+    fi;
+  ## ? might take a long time to check if G is simple ?
+  # simple groups have no nontrivial normal subgroups
+  elif IsSimpleGroup(G) then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    if method = "any" then
+      return fail;
+    else
+      return Set([ TrivialSubgroup(G), G ]);
+    fi;
+  fi;
+  primes := PrimeDivisors(Size(G));
+  edges := [];
+  S := [];
+  # create edges of directed graph
+  for i in [1..Length(primes)] do
+    # S[i] is the normal closure of the Sylow subgroup for primes[i]
+    if IsNilpotentGroup(G) then
+      S[i] := SylowSubgroup(G, primes[i]);
+    else
+      S[i] := NormalClosure(G, SylowSubgroup(G, primes[i]));
+    fi;
+    if IsNilpotentGroup(G) then
+      edges[i] := [i];
+    else
+      edges[i] := [];
+      # factoring Size(S[i]) probably takes more time
+      for j in [1..Length(primes)] do
+        # i -> j is an edge if Size(S[i]) has prime divisor primes[j]
+        if Size(S[i]) mod primes[j] = 0 then
+          AddSet(edges[i], j);
+        fi;
+      od;
+    fi;
+    if method = "any" and edges[i] = [i] then
+      return S[i];
+    fi;
+  od;
+  # compute the reachable points from every point of the digraph
+  # and then collapse same sets
+  # the relation defined by edges is already reflexive
+  UpSets := Set(Successors(TransitiveClosureBinaryRelation(
+                                            BinaryRelationOnPoints(edges))));
+  NHs := [ TrivialSubgroup(G), G ];
+  for part in IteratorOfCombinations(UpSets) do
+    U := Union(part);
+    # trivial subgroup and G should not be added again
+    if U <> [] and U <> [1..Length(primes)] then
+      N := TrivialSubgroup(G);
+      for i in Union(part) do
+        N := ClosureGroup(N, S[i]);
+      od;
+      if method = "any" then
+        return N;
+      else
+        AddSet(NHs, N);
+      fi;
+    fi;
+  od;
+  if method = "any" then
+    SetNormalHallSubgroups(G, Set([ TrivialSubgroup(G), G ]));
+    return fail;
+  else
+    SetNormalHallSubgroups(G, NHs);
+    return NHs;
+  fi;
+end);
+
+############################################################################
+##
+#M  NormalHallSubgroups( <G> )
+##
+InstallMethod( NormalHallSubgroups,
+               "by normal closure of Sylow subgroups", true,
+               [ IsGroup and CanComputeSizeAnySubgroup and IsFinite ], 0,
+
+function( G )
+  return NormalHallSubgroupsFromSylows(G, "all");
+end);
 
 
 ############################################################################
@@ -4131,9 +4620,14 @@ end);
 ##  anyhow,you should compute it before computing the maximal normal
 ##  subgroups.
 ##
+##  *Note* that for abelian and solvable groups the maximal normal subgroups
+##  can be computed very quickly. Thus if you suspect your group to be
+##  abelian or solvable, then check it before computing the maximal normal
+##  subgroups.
+##
 InstallMethod( MaximalNormalSubgroups,
     "generic search",
-    [ IsGroup ],
+    [ IsGroup and IsFinite ],
     function(G)
     local
           maximal, # list of maximal normal subgroups,result
@@ -4159,6 +4653,36 @@ InstallMethod( MaximalNormalSubgroups,
     return maximal;
 
 end);
+
+RedispatchOnCondition( MaximalNormalSubgroups, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
+
+#############################################################################
+##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS,
+              function(G) return [ TrivialSubgroup(G) ]; end);
+
+
+#############################################################################
+##
+#M  MaximalNormalSubgroups( <G> )
+##
+InstallMethod( MaximalNormalSubgroups, "general method selection",
+              [ IsGroup ],
+    function(G)
+
+    if 0 in AbelianInvariants(G) then
+      # (p) is a maximal normal subgroup in Z for every prime p
+      Error("number of maximal normal subgroups is infinity");
+    else
+      TryNextMethod();
+    fi;
+end);
+
 
 ##############################################################################
 ##
@@ -4213,6 +4737,14 @@ InstallMethod( MinimalNormalSubgroups,
     function( G )
     local nt, c, r, U;
 
+    # force an IsNilpotent check
+    # should have and IsSolvable check, as well,
+    # but methods for solvable groups are only in CRISP
+    # which aggeressively checks for solvability, anyway
+    if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
+      return MinimalNormalSubgroups( G );
+    fi;
+
     nt:= [];
     for c in ConjugacyClasses( G ) do
       r:= Representative( c );
@@ -4226,6 +4758,10 @@ InstallMethod( MinimalNormalSubgroups,
     od;
     return nt;
     end );
+
+RedispatchOnCondition(MinimalNormalSubgroups, true,
+    [IsGroup],
+    [IsFinite], 0);
 
 
 #############################################################################
@@ -4245,6 +4781,77 @@ InstallMethod (MinimalNormalSubgroups,
    end);
    
    
+#############################################################################
+##
+#M  MinimalNormalSubgroups( <G> )
+##
+InstallMethod( MinimalNormalSubgroups, "for simple groups",
+              [ IsGroup and IsSimpleGroup ], SUM_FLAGS,
+              function(G) return [ G ]; end);
+
+
+#############################################################################
+##
+#M  MinimalNormalSubgroups (<G>)
+##
+InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
+              [ IsGroup and IsNilpotentGroup ],
+  # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
+  # so we have to increase the rank, otherwise the method for computation
+  # by conjugacy classes above is selected.
+  RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+  - RankFilter( IsGroup and IsNilpotentGroup ),
+  function(G)
+    local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;
+
+    MinimalSubgroupsOfPGroupByGenerators := function(G, p, gen)
+    # G is the big group
+    # p is the prime p
+    # gens is the generators by which the p-group is given
+      local min, tuples, g, h, k, i;
+
+      min := [ ];
+      if Length(gen[p])=1 then
+        Add(min, Subgroup(G, gen[p]));
+      else
+        g := Remove(gen[p]);
+        for tuples in IteratorOfTuples([0..p-1], Length(gen[p])) do
+          h := g;
+          for i in [1..Length(tuples)] do
+            h := h*gen[p][i]^tuples[i];
+          od;
+          Add(min, Subgroup(G, [h]));
+        od;
+        Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
+      fi;
+
+      return min;
+    end;
+
+    soc := Socle(G);
+    primes := [ ];
+    gen := [ ];
+    min := [ ];
+    for i in [1..Length(AbelianInvariants(soc))] do
+      p := AbelianInvariants(soc)[i];
+      AddSet(primes, p);
+      if not IsBound(gen[p]) then
+        gen[p] := [ IndependentGeneratorsOfAbelianGroup(soc)[i] ];
+      else
+        Add(gen[p], IndependentGeneratorsOfAbelianGroup(soc)[i]);
+      fi;
+    od;
+
+    for p in primes do
+      Append(min, MinimalSubgroupsOfPGroupByGenerators(G, p, gen));
+    od;
+    return min;
+  end);
+
+RedispatchOnCondition(MinimalNormalSubgroups, true,
+    [IsGroup],
+    [IsNilpotentGroup], 0);
+
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>)
@@ -4452,6 +5059,10 @@ InstallMethod( KnowsHowToDecompose,
 ##
 InstallGlobalFunction(HasAbelianFactorGroup,function(G,N)
 local gen;
+  if HasIsAbelian(G) and IsAbelian(G) then
+    return true;
+  fi;
+  Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
   gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
   return ForAll([1..Length(gen)],
                 i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N));
@@ -4459,10 +5070,32 @@ end);
 
 #############################################################################
 ##
-#M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is abelian
+#M  HasSolvableFactorGroup(<G>,<N>)   test whether G/N is solvable
 ##
 InstallGlobalFunction(HasSolvableFactorGroup,function(G,N)
-  return ForAny(DerivedSeriesOfGroup(G),x->IsSubset(N,x));
+local gen, D, s, l;
+
+  if HasIsSolvableGroup(G) and IsSolvableGroup(G) then
+    return true;
+  fi;
+  Assert(2,IsNormal(G,N) and IsSubgroup(G,N));
+  if HasDerivedSeriesOfGroup(G) then
+    s := DerivedSeriesOfGroup(G);
+    l := Length(s);
+    return IsSubgroup(N,s[l]);
+  fi;
+  D := G;
+  repeat
+    gen:=Filtered(GeneratorsOfGroup(D),i->not i in N);
+    if ForAll([1..Length(gen)],
+                i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N)) then
+      return true;
+    fi;
+    D := DerivedSubgroup(D);
+  until IsPerfectGroup(D);
+  # this may be dangerous if N does not contain the identity of G
+  SetIsSolvableGroup(G, false);
+  return false;
 end);
 
 #############################################################################
@@ -4471,10 +5104,16 @@ end);
 ##
 InstallGlobalFunction(HasElementaryAbelianFactorGroup,function(G,N)
 local gen,p;
+  if HasIsElementaryAbelian(G) and IsElementaryAbelian(G) then
+    return true;
+  fi;
   if not HasAbelianFactorGroup(G,N) then
     return false;
   fi;
   gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
+  if gen = [] then
+    return true;
+  fi;
   p:=First([2..Order(gen[1])],i->gen[1]^i in N);
   return IsPrime(p) and ForAll(gen{[2..Length(gen)]},i->i^p in N);
 end);
@@ -4560,6 +5199,13 @@ function(G,U)
   fi;
   return AsList(ConjugacyClassSubgroups(G,U));
 end);
+
+#############################################################################
+##
+#M  CharacteristicSubgroups( <G> )
+##
+InstallMethod(CharacteristicSubgroups,"use automorphisms",true,[IsGroup],
+  G->Filtered(NormalSubgroups(G),x->IsCharacteristicSubgroup(G,x)));
 
 InstallTrueMethod( CanComputeSize, HasSize );
 
@@ -4774,8 +5420,10 @@ function(G,elm)
             S:=SC;
             for d in [1..Length(e)] do
               img:=elm[d]; # image base point
-              pos:=pos+val*S.orbitpos[img];
-              val:=val*S.ol;
+              #pos:=pos+val*S.orbitpos[img];
+              #val:=val*S.ol;
+              pos:=pos+val*(Position(S.orbit,img)-1);
+              val:=val*Length(S.orbit);
               #elm:=OnTuples(elm,InverseRepresentative(S,img));
               while img<>S.orbit[1] do
                 te:=S.transversal[img];
@@ -4789,7 +5437,9 @@ function(G,elm)
 
         actobj:=OnTuples;
       fi;
+
     fi;
+
     info.objelm:=objelm;
     info.objnum:=objnum;
     info.numobj:=numobj;
