@@ -59,6 +59,7 @@ if not IsBound(InfoData) then
     InfoData.Output := [];
     ShareInternalObj(InfoData);
 fi;
+
 InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
   if IsBound(DefaultInfoOutput) then
     MakeReadWriteGlobal("DefaultInfoOutput");

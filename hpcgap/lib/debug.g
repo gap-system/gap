@@ -9,15 +9,15 @@
 #Y  Copyright (C) 2003 The GAP Group
 ##
 ##  This file contains some global variables and functions to support
-##  debugging of functions in GAP. See `etc/debugvim.txt' for details.
+##  debugging of functions in GAP. See `etc/vim/debugvim.txt' for details.
 ##  As of now this is not automatically loaded and there is no documentation
 ##  apart from the above file. There is no support for other editors
 ##  than vim.
 ##
 
 BindGlobal( "DEBUG", rec() );
-DEBUG.debugvim_txt:= Filename( DirectoriesLibrary( "etc" ), "debugvim.txt" );
-DEBUG.debug_vim:= Filename( DirectoriesLibrary( "etc" ), "debug.vim" );
+DEBUG.debugvim_txt:= Filename( DirectoriesLibrary( "etc/vim" ), "debugvim.txt" );
+DEBUG.debug_vim:= Filename( DirectoriesLibrary( "etc/vim" ), "debug.vim" );
 DEBUG.LIST := [];
 DEBUG.EDITORS := [ rec(
     name := "Vim",

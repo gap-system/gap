@@ -1071,6 +1071,7 @@ InstallMethod( OrdinaryCharacterTable,
     # Store the attribute values of the interface.
     SetUnderlyingGroup( tbl, G );
     SetUnderlyingCharacteristic( tbl, 0 );
+    IsFinite(G);
     ccl:= ConjugacyClasses( G );
     idpos:= First( [ 1 .. Length( ccl ) ],
                    i -> Order( Representative( ccl[i] ) ) = 1 );

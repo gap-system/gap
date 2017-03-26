@@ -481,27 +481,20 @@ InstallMethod( PrintObj,
 
 InstallMethod( \=,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsInfinity ], ReturnFalse );
 
 InstallMethod( \=,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsInfinity, IsCyclotomic ], ReturnFalse );
 
 InstallMethod( \<,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsCyclotomic, IsInfinity ], ReturnTrue );
 
 InstallMethod( \<,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], ReturnFalse );
+    IsIdenticalObj, [ IsInfinity, IsCyclotomic ], ReturnFalse );
 
-InstallMethod( \<,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
 DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
@@ -515,43 +508,20 @@ InstallMethod( PrintObj,
 
 InstallMethod( \=,
     "for cyclotomic and `-infinity'",
-    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsNegInfinity ], ReturnFalse );
 
 InstallMethod( \=,
     "for `-infinity' and cyclotomic",
-    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `infinity' and `-infinity'",
-    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `-infinity' and `infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnFalse );
-
-InstallMethod( \=,
-    "for `-infinity' and `-infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], ReturnTrue );
+    IsIdenticalObj, [ IsNegInfinity, IsCyclotomic ], ReturnFalse );
 
 InstallMethod( \<,
     "for cyclotomic and `-infinity'",
-    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+    IsIdenticalObj, [ IsCyclotomic, IsNegInfinity ], ReturnFalse );
 
 InstallMethod( \<,
     "for `-infinity' and cyclotomic",
-    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnTrue );
+    IsIdenticalObj, [ IsNegInfinity, IsCyclotomic ], ReturnTrue );
 
-InstallMethod( \<,
-    "for `infinity' and `-infinity'",
-    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
-
-InstallMethod( \<,
-    "for `-infinity' and `infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnTrue );
-
-InstallMethod( \<,
-    "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
 InstallMethod( AdditiveInverseOp,
     "for `infinity'",

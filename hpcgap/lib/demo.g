@@ -41,13 +41,13 @@ BindGlobal( "Demonstration", function( file )
     Print( "demo> \c" );
     while CHAR_INT( ReadByte( keyboard ) ) <> 'q' do
         storedtime := Runtime();
-        result:=READ_COMMAND( input, true ); # Executing the command.
+        result:=READ_COMMAND_REAL( input, true ); # Executing the command.
         time := Runtime()-storedtime;
-        if result <> SuPeRfail then
+        if Length(result) = 2 then
             last3 := last2;
             last2 := last;
-            last := result;
-            View( result);
+            last := result[2];
+            View( result[2] );
             Print("\n" );
         fi;
 
@@ -86,16 +86,16 @@ local   input,command,exec,result,blank,semic,hash,process,l,view,estream;
         fi;
         estream:=InputTextString( exec );
         storedtime := Runtime();
-        result:=READ_COMMAND( estream, true ); # Executing the command.
+        result:=READ_COMMAND_REAL( estream, true ); # Executing the command.
         time := Runtime()-storedtime;
         CloseStream(estream);
-        if result<>SuPeRfail then
+        if Length(result) = 2 then
             last3 := last2;
             last2 := last;
-            last := result;
+            last := result[2];
             if view then
-               View(result);
-                Print("\n");
+               View(result[2]);
+               Print("\n");
             fi;
         fi;
         exec:="";

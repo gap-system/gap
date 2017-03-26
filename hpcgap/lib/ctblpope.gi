@@ -761,7 +761,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     end;
 
     solveKnot:= function(const, free)
-       local i, p, s, char, fail;
+       local i, p, s, char;
 
        free:= ShallowCopy(free);
        if Set(free) = [false] then
@@ -770,8 +770,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
          for j in [2..ncha] do
            char:= char + a[j] * X[j];
          od;
-         fail:= TestPerm2(tbl, char);
-         if fail = 0 then
+         if TestPerm2(tbl, char) = 0 then
            Add(permch, char);
            Info( InfoCharacterTable, 2, Length(permch), a, "\n", char );
          fi;
@@ -823,7 +822,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     else
 
        suche:= function(s)
-          local unten, oben, i, j, char, fail,
+          local unten, oben, i, j, char,
                 maxu, mino, c;
 
           unten:= [];
@@ -868,8 +867,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
             else
               total:= total+1;
               char:= a * X;
-              fail:= TestPerm2(tbl, char);
-              if fail = 0 then
+              if TestPerm2(tbl, char) = 0 then
                 Add(permch, char);
                 Info( InfoCharacterTable, 2, Length(permch), a, "\n", char );
               fi;

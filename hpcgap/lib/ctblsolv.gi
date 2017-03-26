@@ -894,9 +894,9 @@ InstallValue( BaumClausenInfoDebug, rec(
         return true;
     end ) );
 
-
 MakeImmutable(BaumClausenInfoDebug);
-    
+
+
 #############################################################################
 ##
 #M  BaumClausenInfo( <G> )  . . . . .  info about irreducible representations
