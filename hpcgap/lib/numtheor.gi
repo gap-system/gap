@@ -335,45 +335,7 @@ end );
 #F  Jacobi( <n>, <m> ) . . . . . . . . . . . . . . . . . . . .  Jacobi symbol
 ##
 ##
-InstallGlobalFunction( Jacobi, function ( n, m )
-    local  jac, t;
-
-    # check the argument
-    if m <= 0  then Error("<m> must be positive");  fi;
-
-    # compute the Jacobi symbol similar to Euclid's algorithm
-    jac := 1;
-    while m <> 1  do
-
-        # if the gcd of $n$ and $m$ is $>1$ Jacobi returns $0$
-        if n = 0 or (n mod 2 = 0 and m mod 2 = 0)  then
-            jac := 0;  m := 1;
-
-        # $J(n,2*m) = J(n,m) * J(n,2) = J(n,m) * (-1)^{(n^2-1)/8}$
-        elif m mod 2 = 0  then
-            if n mod 8 = 3  or  n mod 8 = 5  then jac := -jac;  fi;
-            m := m / 2;
-
-        # $J(2*n,m) = J(n,m) * J(2,m) = J(n,m) * (-1)^{(m^2-1)/8}$
-        elif n mod 2 = 0  then
-            if m mod 8 = 3  or  m mod 8 = 5  then jac := -jac;  fi;
-            n := n / 2;
-
-        # $J(-n,m) = J(n,m) * J(-1,m) = J(n,m) * (-1)^{(m-1)/2}$
-        elif n < 0  then
-            if m mod 4 = 3  then jac := -jac;  fi;
-            n := -n;
-
-        # $J(n,m) = J(m,n) * (-1)^{(n-1)*(m-1)/4}$ (quadratic reciprocity)
-        else
-            if n mod 4 = 3  and m mod 4 = 3  then jac := -jac;  fi;
-            t := n;  n := m mod n;  m := t;
-
-        fi;
-    od;
-
-    return jac;
-end );
+InstallGlobalFunction( Jacobi, JACOBI_INT );
 
 
 #############################################################################
@@ -437,6 +399,14 @@ BindGlobal( "RootModPrime", function ( n, k, p )
     # reduce $n$ into the range $0..p-1$
     Info( InfoNumtheor, 1, "RootModPrime(", n, ",", k, ",", p, ")" );
     n := n mod p;
+
+    # If n is non-zero, then the code below requires that p is a Fermat
+    # pseudoprime with respect to n, i.e. that $n^(p-1) mod p = 1$ holds.
+    # This is of course automatically true if $p$ is a prime, but for efficiency
+    # reasons we actually use this with pseudo primes.
+    if n <> 0 and PowerModInt( n, p-1, p ) <> 1 then
+        Error( "<p> is not a Fermat pseudoprime with respect to <n>. Please report this error to the GAP team" );
+    fi;
 
     # handle $p = 2$
     if p = 2  then
@@ -594,8 +564,7 @@ InstallGlobalFunction( RootMod, function ( arg )
             r,                  # <k>th root of <n> mod <qq>
             s,                  # <k>th root of <n> mod <q>
 	    f, # factors
-	    i, # loop
-            t;                  # temporary variable
+	    i; # loop
 
     # get the arguments
     if   Length(arg) = 2  then n := arg[1];  k := 2;       m := arg[2];
@@ -633,7 +602,7 @@ InstallGlobalFunction( RootMod, function ( arg )
 
     # combine the root modulo every prime power $p^l$
     r := 0;  qq := 1;
-    for p  in Set( FactorsInt( m ) )  do
+    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) ) do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -648,8 +617,7 @@ InstallGlobalFunction( RootMod, function ( arg )
 
         # combine $r$ (the root mod $qq$) with $s$ (the root mod $p^l$)
         ii := 1/qq mod q;
-        t := r + qq * ((s - r)*ii mod q);
-        r := t;
+        r := r + qq * ((s - r)*ii mod q);
         qq := qq * q;
 
     od;
@@ -677,6 +645,14 @@ BindGlobal( "RootsModPrime", function ( n, k, p )
     # reduce $n$ into the range $0..p-1$
     Info( InfoNumtheor, 1, "RootsModPrime(", n, ",", k, ",", p, ")" );
     n := n mod p;
+
+    # If n is non-zero, then the code below requires that p is a Fermat
+    # pseudoprime with respect to n, i.e. that $n^(p-1) mod p = 1$ holds.
+    # This is of course automatically true if $p$ is a prime, but for efficiency
+    # reasons we actually use this with pseudo primes.
+    if n <> 0 and PowerModInt( n, p-1, p ) <> 1 then
+        Error( "<p> is not a Fermat pseudoprime with respect to <n>. Please report this error to the GAP team" );
+    fi;
 
     # handle $p = 2$
     if p = 2  then
@@ -783,6 +759,8 @@ RootsModPrimePower := function ( n, k, p, l )
     # handle the case that the roots split
     elif k = p  then
 
+	Info( InfoNumtheor, 3, "k=p case" );
+
         # compute the root mod $p^{l/2}$, or $p^{l/2+1}$ if 32 divides $p^l$
         if 2 < p  or l < 5  then
             ss := RootsModPrimePower( n, k, p, QuoInt(l+1,2) );
@@ -869,7 +847,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
 
     # combine the roots modulo every prime power $p^l$
     rr := [0];  qq := 1;
-    for p  in Set( FactorsInt( m ) )  do
+    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) )  do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -1385,6 +1363,19 @@ InstallGlobalFunction( TwoSquares, function ( n )
     return [ c * x, c * y ];
 end );
 
+
+InstallGlobalFunction(PValuation,function(n,p)
+local v;
+  if not IsInt(p) or not IsRat(n) or p = 0 then
+    Error("wrong parameters");
+  fi;
+  if n = 0 then
+    return infinity;
+  elif IsInt(n) then
+    return PVALUATION_INT(n,p);
+  fi;
+  return PVALUATION_INT(NumeratorRat(n),p) - PVALUATION_INT(DenominatorRat(n),p);
+end);
 
 #T ##########################################################################
 #T ##

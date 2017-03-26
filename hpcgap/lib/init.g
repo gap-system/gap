@@ -525,7 +525,7 @@ BindGlobal( "ShowKernelInformation", function()
   else
     btop := "*********"; vert := "*"; bbot := btop;
   fi;
-  Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.BuildVersion,
+  Print( " ",btop,"   HPC-GAP ", GAPInfo.BuildVersion,
          " of ", sysdate, "\n",
          " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
          " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
@@ -972,7 +972,7 @@ BindGlobal( "ShowPackageInformation", function()
                 "\n" );
   fi;
 
-  Print( " Try '?help' for help. See also  '?copyright' and  '?authors'",
+  Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
          "\n" );
 end );
 #T show also root paths?
