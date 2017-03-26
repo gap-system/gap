@@ -176,7 +176,7 @@ gap> FromAtomicRecord(r);
 rec( x := 1, y := 2, z := 3 )
 ]]></Example>
 
-    </Subsection>`
+    </Subsection>
   </Section>
   <Section Label="Replacement policy functions">
     <Heading>Replacement policy functions</Heading>
