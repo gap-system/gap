@@ -926,6 +926,10 @@ local hom,u;
   fi;
   u:=PreImage(hom,TrivialSubgroup(Range(hom)));
   SetIndexInWholeGroup(u,Size(Range(hom)));
+  if IsFreeGroup(G) and not IsAbelian(G) then
+    SetIsFinite(u,false);
+    SetIsFinitelyGeneratedGroup(u,false);
+  fi;
   return u;
 end);
 
@@ -935,7 +939,14 @@ function(G)
 local iso,hom,u;
   iso:=IsomorphismFpGroup(G);
   hom:=MaximalAbelianQuotient(Range(iso));
-  if Size(Range(hom))=1 then
+  if HasAbelianInvariants(Range(iso)) then
+    SetAbelianInvariants(G,AbelianInvariants(Range(iso)));
+  fi;
+  if HasIsAbelian(G) and IsAbelian(G) then
+    return TrivialSubgroup(G);
+  elif Size(Image(hom))=infinity then
+    Error("Derived subgroup has infinite index, cannot represent");
+  elif Size(Range(hom))=1 then
     return G; # this is needed because the trivial quotient is represented
               # as fp group on no generators
   fi;

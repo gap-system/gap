@@ -343,6 +343,32 @@ InstallMethod( Size,
 
 #############################################################################
 ##
+#M  IsCommutative( <G> ) . . . . . . . . . . . . . . . . . . for a free group
+##
+InstallMethod( IsCommutative,
+    "for a free group",
+    [ IsFreeGroup and HasIsFinitelyGeneratedGroup ],
+    function( G )
+    if not IsFinitelyGeneratedGroup( G ) then
+      return false;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  IsSolvableGroup( <G> ) . . . . . . . . . . . . . . . . . for a free group
+##
+InstallMethod( IsSolvableGroup,
+    "for a free group",
+    [ IsFreeGroup ],
+    10, # rank it higher than the method in the fr package
+    G -> IsAbelian( G ) );
+
+
+#############################################################################
+##
 #M  MagmaGeneratorsOfFamily( <F> )
 ##
 InstallMethod( MagmaGeneratorsOfFamily,
@@ -476,8 +502,10 @@ InstallGlobalFunction( FreeGroup, function ( arg )
 
     SetIsWholeFamily( G, true );
 
-    # Store whether the group is trivial.
+    # Store whether the group is trivial / abelian / solvable
     SetIsTrivial( G, Length( names ) = 0 );
+    SetIsAbelian( G, Length( names ) <= 1 );
+    SetIsSolvableGroup( G, Length( names ) <= 1 );
 
     # Store the whole group in the family.
     FamilyObj(G)!.wholeGroup := G;

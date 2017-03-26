@@ -369,6 +369,7 @@ InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
 
 ShareSpecialObj(ProbablePrimes2);
+
 #############################################################################
 ##
 #F  BestQuoInt( <n>, <m> )
@@ -477,7 +478,7 @@ InstallGlobalFunction(DivisorsInt,function ( n )
         return DivisorsIntCache[n];  
     fi;
     factors := FactorsInt( n );
-    
+
     # recursive function to compute the divisors
     divs := function ( i, m )
         if Length(factors) < i     then return [ m ];
@@ -994,10 +995,10 @@ BindGlobal( "IsProbablyPrimeIntWithFail", function( n )
     if n in Primes   then return true;   fi;
     atomic readonly Primes2 do
     if n in Primes2  then return true;   fi;
-od;
-atomic readonly ProbablePrimes2 do
-if n in ProbablePrimes2  then return fail;   fi;
-od;
+    od;
+    atomic readonly ProbablePrimes2 do
+    if n in ProbablePrimes2  then return fail;   fi;
+    od;
     if n <= 1000     then return false;  fi;
 
     # do trial divisions by the primes less than 1000
@@ -1006,9 +1007,10 @@ od;
         if n mod p = 0  then return false;  fi;
         if n < (p+1)^2  then 
             atomic readwrite Primes2 do
-            AddSet( Primes2, n );  od; 
-            return true;   fi;
-            
+            AddSet( Primes2, n );
+            od; 
+            return true;
+        fi;
     od;
 
     # do trial division by the other known primes
@@ -1082,10 +1084,10 @@ InstallGlobalFunction(IsPrimeIntOld,function ( n )
       atomic readwrite ProbablePrimes2 do
       AddSet( ProbablePrimes2, n );
       od;
-  else
+    else
       atomic readwrite Primes2 do
       AddSet( Primes2, n );
-  od;
+      od;
     fi;
     return true;
   fi;

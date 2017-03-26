@@ -134,6 +134,7 @@ BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^(8*GAPInfo.BytesPerVariable-4) - 1 );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeKernel( "Length", IsList, LENGTH );
+InstallTrueMethod(HasLength,IsPlistRep);
 
 
 #############################################################################
@@ -162,8 +163,8 @@ DeclareAttributeKernel( "Length", IsList, LENGTH );
 ##  false
 ##  ]]></Example>
 ##
-##  <C>IsBound(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...]</C> is a short-hand for  
-##  <C>IsBound(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>   
+##  <C>IsBound(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
+##  <C>IsBound(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -235,8 +236,8 @@ DeclareOperationKernel( "Elm0List",
 ##  and there would be no way to tell
 ##  <Ref Func="Unbind" Label="unbind a list entry"/>
 ##  which component to remove.
-##  <C>Unbind(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...]</C> is a short-hand for  
-##  <C>Unbind(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>   
+##  <C>Unbind(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
+##  <C>Unbind(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -523,7 +524,7 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  <#GAPDoc Label="IsDuplicateFree">
 ##  <ManSection>
 ##  <Prop Name="IsDuplicateFree" Arg='obj'/>
-##  <Prop Name="IsDuplicateFreeList" Arg='obj'/>
+##  <Filt Name="IsDuplicateFreeList" Arg='obj'/>
 ##
 ##  <Description>
 ##  <Ref Prop="IsDuplicateFree"/> returns <K>true</K> if <A>obj</A> is both a
@@ -867,6 +868,44 @@ DeclareGlobalFunction( "PositionSet" );
 DeclareOperation( "PositionProperty", [ IsList, IsFunction ] );
 DeclareOperation( "PositionProperty", [ IsList, IsFunction, IS_INT ] );
 
+#############################################################################
+##
+#O  PositionMaximum( <list> [, <func>] )
+#O  PositionMinimum( <list> [, <func>] )
+##
+##  <#GAPDoc Label="PositionMaximum">
+##  <ManSection>
+##  <Func Name="PositionMaximum" Arg='list [, func]'/>
+##  <Func Name="PositionMinimum" Arg='list [, func]'/>
+##
+##  <Description>
+##  returns the position of maximum (with <Ref Func="PositionMaximum"/>) or
+##  minimum (with <Ref Func="PositionMinimum"/>) entry in the list <A>list</A>.
+##  If a second argument <A>func</A> is passed, then return instead the position
+##  of the largest/smallest entry in <C>List( <A>list</A> , <A>func</A> )</C>.
+##  If several entries of the list are equal
+##  to the maximum/minimum, the first such position is returned.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PositionMaximum( [2,4,-6,2,4] );
+##  2
+##  gap> PositionMaximum( [2,4,-6,2,4], x -> -x);
+##  3
+##  gap> PositionMinimum( [2,4,-6,2,4] );
+##  3
+##  gap> PositionMinimum( [2,4,-6,2,4], x -> -x);
+##  2
+##  ]]></Example>
+##  <P/>
+##  <Ref Func="Maximum" Label="for various objects"/> and 
+##  <Ref Func="Minimum" Label="for various objects"/>
+##  allow you to find the maximum or minimum element of a list directly.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PositionMaximum" );
+DeclareGlobalFunction( "PositionMinimum" );
 
 #############################################################################
 ##
@@ -1426,14 +1465,14 @@ DeclareOperation( "ReversedOp", [ IsDenseList ] );
 ##  gap> l := [1..20];
 ##  [ 1 .. 20 ]
 ##  gap> m := Shuffle(ShallowCopy(l));
-##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 
-##    20 ]
+##  [ 8, 13, 1, 3, 20, 15, 4, 7, 5, 18, 6, 12, 16, 11, 2, 10, 19, 17, 9, 
+##    14 ]
 ##  gap> l;
 ##  [ 1 .. 20 ]
 ##  gap> Shuffle(l);;
 ##  gap> l;
-##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 
-##    5 ]
+##  [ 19, 5, 7, 20, 16, 1, 10, 15, 12, 11, 13, 2, 14, 3, 4, 17, 6, 8, 9, 
+##    18 ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -1474,7 +1513,8 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <ManSection>
 ##  <Oper Name="Sort" Arg='list[, func]'/>
 ##  <Oper Name="SortBy" Arg='list, func'/>
-##
+##  <Oper Name="StableSort" Arg='list, [func]'/>
+##  <Oper Name="StableSortBy" Arg='list, [func]'/>
 ##  <Description>
 ##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
@@ -1488,8 +1528,9 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <K>true</K> if the first is regarded as strictly smaller than the second,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  Note that, in cases where it is applicable, <Ref Oper="SortBy"/> is likely to be more
-##  efficient.
+##  <Ref Oper="StableSort"/> behaves identically to <Ref Oper="Sort"/>, except
+##  that <Ref Oper="StableSort"/> will keep elements which compare equal in the
+##  same relative order, while <Ref Oper="Sort"/> may change their relative order.
 ##  <P/>
 ##  <Ref Oper="Sort"/> does not return anything,
 ##  it just changes the argument <A>list</A>.
@@ -1497,30 +1538,36 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  Use <Ref Func="Reversed"/> if you want to get a new list that is
 ##  sorted in decreasing order.
 ##  <P/>
-##  It is possible to sort lists that contain multiple elements which compare
-##  equal.
-##  It is not guaranteed that those elements keep their relative order,
-##  i.e., <Ref Oper="Sort"/> is not stable.
+##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
+##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
+##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
+##  values that can be compared.  Each <C>func(list[i])</C> is computed just
+##  once and stored, making this more efficient than using the two-argument
+##  version of <Ref Oper="Sort"/> in many cases.
+##  <P/>
+##  <Ref Oper="StableSortBy"/> behaves the same as <Ref Oper="SortBy"/> except that,
+## like <Ref Oper="StableSort"/>, it keeps pairs of values which compare equal when
+## <C>func</C> is applied to them in the same relative order.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
 ##  [ 1, 4, 5, 5, 6, 7 ]
+##  gap> SortBy(list, x -> x mod 3);
+##  gap> list; # Sorted by mod 3
+##  [ 6, 1, 4, 7, 5, 5]
 ##  gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
 ##  gap> Sort( list, function(v,w) return v*v < w*w; end );
 ##  gap> list;  # sorted according to the Euclidean distance from [0,0]
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
+##  gap> SortBy( list, function(v) return v[1] + v[2]; end );
+##  gap> list;  # sorted according to Manhattan distance from [0,0]
+##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 1, 5 ], [ 0, 6 ], [ 3, 4 ] ]
 ##  gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
 ##  gap> Sort( list, function(v,w) return v[1] < w[1]; end );
 ##  gap> # note the random order of the elements with equal first component:
 ##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
-##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
-##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
-##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
-##  values that can be compared.  Each <C>func(list[i])</C> is computed just
-##  once and stored, making this more efficient than using the two-argument
-##  version of <Ref Oper="Sort"/> in many cases.  
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1636,13 +1683,18 @@ DeclareGlobalFunction( "PermListList" );
 ##  <#GAPDoc Label="SortParallel">
 ##  <ManSection>
 ##  <Oper Name="SortParallel" Arg='list1, list2[, func]'/>
+##  <Oper Name="StableSortParallel" Arg='list1, list2[, func]'/>
 ##
 ##  <Description>
-##  sorts the list <A>list1</A> in increasing order
+##  <Ref Oper="SortParallel"/> sorts the list <A>list1</A> in increasing order
 ##  just as <Ref Func="Sort"/> does.
 ##  In parallel it applies the same exchanges that are necessary to sort
 ##  <A>list1</A> to the list <A>list2</A>,
 ##  which must of course have at least as many elements as <A>list1</A> does.
+##  <P/>
+##  <Ref Oper="StableSortParallel"/> behaves identically to
+##  <Ref Oper="SortParallel"/>, except it keeps elements in <A>list1</A> which
+##  compare equal in the same relative order.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
@@ -1655,7 +1707,8 @@ DeclareGlobalFunction( "PermListList" );
 ##  ]]></Example>
 ##  <P/>
 ##  Note that <C>[ 7, 3, 2, 9, 5, 8 ]</C> or <C>[ 7, 3, 9, 2, 5, 8 ]</C>
-##  are possible results.
+##  are possible results. <Ref Oper="StableSortParallel"/> will always
+##  return <C>[ 7, 3, 2, 9, 5, 8]</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1701,6 +1754,7 @@ DeclareOperation( "StableSortParallel",
 ##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  
 ##  [ 2, -11 ]
 ##  ]]></Example>
+##  To get the index of the maximum element use <Ref Func="PositionMaximum"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1743,6 +1797,7 @@ DeclareGlobalFunction( "Maximum" );
 ##  gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
 ##  [ 0, 15 ]
 ##  ]]></Example>
+##  To get the index of the minimum element use <Ref Func="PositionMinimum"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1783,6 +1838,7 @@ DeclareOperation( "MaximumList", [ IsList, IsObject ] );
 
 DeclareOperation( "MinimumList", [ IsList ] );
 DeclareOperation( "MinimumList", [ IsList, IsObject ] );
+
 
 #############################################################################
 ##

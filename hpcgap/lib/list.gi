@@ -353,8 +353,8 @@ local   str,ls, i;
     if IsBound(list[i]) then
       str:=ViewString(list[i]);
       if str=DEFAULTVIEWSTRING then
-	# there might not be a method
-	str:=String(list[i]);
+        # there might not be a method
+        str:=String(list[i]);
       fi;
       ls[i]:=str;
     else
@@ -454,17 +454,17 @@ InstallOtherMethod(
 ##
 #M  Random( <list> )  . . . . . . . . . . . . . . . .  for a dense small list
 ##
-InstallOtherMethod( Random,
+InstallMethod( Random,
     "for a dense small list",
     [ IsList and IsDenseList and IsSmallList ],
-    RANDOM_LIST );
+    RandomList );
 
-InstallOtherMethod( Random,
+InstallMethod( Random,
     "for a dense (small) list",
     [ IsList and IsDenseList ],
     function( list )
     if IsSmallList( list ) then
-      return RANDOM_LIST( list );
+      return RandomList( list );
     else
       TryNextMethod();
     fi;
@@ -1573,6 +1573,74 @@ InstallMethod( PositionProperty,
 
 #############################################################################
 ##
+#M  PositionMaximum(<list>[, <func>]) .  position of the largest element
+#M  PositionMinimum(<list>[, <func>]) .  position of the smallest element
+##
+
+InstallGlobalFunction( PositionMaximum,
+    function ( args... )
+    local list, func, i, bestval, bestindex, ival;
+
+    if Length(args) < 1 or Length(args) > 2
+       or not(IsList(args[1]))
+       or (Length(args) = 2 and not(IsFunction(args[2]))) then
+        ErrorNoReturn("Usage: PositionMaximum(<list>, [<func>])");
+    fi;
+
+    list := args[1];
+    if Length(args) = 2 then
+        func := args[2];
+    else
+        func := IdFunc;
+    fi;
+
+    bestindex := fail;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+            ival := func ( list[ i ] );
+
+            if not( IsBound(bestval) ) or ival > bestval then
+                bestval := ival;
+                bestindex := i;
+            fi;
+        fi;
+    od;
+    return bestindex;
+    end );
+
+InstallGlobalFunction( PositionMinimum,
+    function ( args... )
+    local list, func, i, bestval, bestindex, ival;
+
+    if Length(args) < 1 or Length(args) > 2
+       or not(IsList(args[1]))
+       or (Length(args) = 2 and not(IsFunction(args[2]))) then
+        ErrorNoReturn("Usage: PositionMinimum(<list>, [<func>])");
+    fi;
+
+    list := args[1];
+    if Length(args) = 2 then
+        func := args[2];
+    else
+        func := IdFunc;
+    fi;
+
+    bestindex := fail;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+            ival := func ( list[ i ] );
+
+            if not( IsBound(bestval) ) or ival < bestval then
+                bestval := ival;
+                bestindex := i;
+            fi;
+        fi;
+    od;
+    return bestindex;
+    end );
+
+#############################################################################
+##
 #M  PositionsProperty(<list>,<func>)  . positions of elements with a property
 ##
 InstallMethod( PositionsProperty,
@@ -2544,28 +2612,6 @@ InstallMethod( MaximumList,
     return max;
     end );
 
-InstallMethod( MaximumList,
-    "for a list and a comparison function",
-    [ IsList, IsFunction ],
-    function( list, comp )
-        local m, i, len;
-
-        len := Length(list);
-
-        if Length(list) = 0 then
-            Error( "MaximumList: <list> must contain at least one element" );
-        else
-            m := list[1];
-
-            for i in [2 .. len] do
-                if comp(m, list[i]) = true then
-                    m := list[i];
-                fi;
-            od;
-        fi;
- 
-        return m;
-end);
 
 #############################################################################
 ##
@@ -2672,29 +2718,6 @@ InstallMethod( MinimumList,
     fi;
     return min;
     end );
-
-InstallMethod( MinimumList,
-    "for a list and a comparison function",
-    [ IsList, IsFunction ],
-    function( list, comp )
-        local m, i, len;
-
-        len := Length(list);
-
-        if Length(list) = 0 then
-            Error( "MinimumList: <list> must contain at least one element" );
-        else
-            m := list[1];
-
-            for i in [2 .. len] do
-                if comp(list[i], m) = true then
-                    m := list[i];
-                fi;
-            od;
-        fi;
- 
-        return m;
-    end);
 
 #############################################################################
 ##

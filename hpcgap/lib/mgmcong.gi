@@ -863,7 +863,7 @@ InstallMethod( \in, "for a magma congruence class", true,
          # first ensure that <x> is in the right family
          if FamilyObj(x) <>
              ElementsFamily(FamilyObj(Source(EquivalenceClassRelation(C)))) then
-             Error("incompatible arguments for \in");
+             Error("incompatible arguments for \\in");
          fi;
 
          # quick check to see if element is representative

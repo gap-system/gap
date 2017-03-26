@@ -28,6 +28,7 @@ local   orb,             # orbit
   depths:=[];
   rel := [  ];
   for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
+    Info(InfoAction,3,"Step ",i,": ",Length(orb));
     img := act( pnt, acts[ i ] );
     MakeImmutable(img);
     pos := LookupDictionary( d, img );

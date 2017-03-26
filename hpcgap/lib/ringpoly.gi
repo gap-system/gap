@@ -53,20 +53,20 @@ local reuse, idn, nbound, p, i,str;
     elif nbound and reuse and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
       atomic rfam!.namesIndets do
-	p:=Position(rfam!.namesIndets,str);
-	if p<>fail then
-	  if p in avoid then
-	    Info(InfoWarning,1,
+      p:=Position(rfam!.namesIndets,str);
+      if p<>fail then
+        if p in avoid then
+          Info(InfoWarning,1,
   "A variable with the name '", str, "' already exists, yet the variable\n",
   "#I  with this name was explicitly to be avoided. I will create a\n",
   "#I  new variables with the same name.");
 
-	    p:=fail;
-	  else
-	    # reuse the old variable
-	    Add(idn,p);
-	  fi;
-	fi;
+          p:=fail;
+        else
+          # reuse the old variable
+          Add(idn,p);
+        fi;
+      fi;
       od;
     else
       p:=fail;

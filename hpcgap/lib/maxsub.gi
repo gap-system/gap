@@ -344,6 +344,9 @@ local m,f,i;
       f:=Core(G,NormalIntersection(f,m[i]));
     fi;
   od;
+  if HasIsFinite(G) and IsFinite(G) then
+    SetIsNilpotentGroup(f,true);
+  fi;
   return f;
 end);
 
