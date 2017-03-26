@@ -395,7 +395,7 @@ Receives the message and puts it into <C>message</C> string buffer.  If <C>sourc
 that MPI node is received. If <C>tag</C> is specified, only the message with that tag is received.
 
     </Subsection>
-    <Subsection Label="MPI_Probe()">
+    <Subsection Label="MPI_Probe">
       <Heading>MPI_Probe()</Heading>
 
 Blocking probe for a message. The call returns when a new message is available, and the message can be received with

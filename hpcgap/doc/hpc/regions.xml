@@ -141,7 +141,7 @@ precedence level can be adjusted with <C>prec</C>, which must be an integer in t
 <C>prec</C> will be added to the normal precedence level.
 
   </Subsection>
-  <Subsection Label="NewLibraryRegion)">
+  <Subsection Label="NewLibraryRegion">
     <Heading>NewLibraryRegion(name|prec|name,prec)</Heading>
 
 <C>NewLibraryRegion</C> functions like <C>NewRegion</C>, except that the precedence of the region it creates is below
@@ -600,7 +600,7 @@ then call <C>ViewObj(obj)</C>. If it cannot acquire a lock for the region, it wi
 of the object.
 
     </Subsection>
-    <Subsection Label="UNSAFE_VIEW(obj)">
+    <Subsection Label="UNSAFE_VIEW">
       <Heading>UNSAFE_VIEW(obj)</Heading>
 
 The <C>UNSAFE_VIEW</C> function allows the inspection of any object in the system, regardless of whether the current

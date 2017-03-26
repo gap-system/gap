@@ -17,7 +17,7 @@ gap> SyncRead(sv);
 [ 1, 2, 3 ]
 ]]></Example>
 
-  <Section Label="CreateSyncVar()">
+  <Section Label="CreateSyncVar">
     <Heading>CreateSyncVar()</Heading>
 
 The function <C>CreateSyncVar</C> takes no arguments. It returns a new synchronization variable. There is no need to
@@ -34,7 +34,7 @@ In order to make sure that the recipient can read the result, the <C>obj</C> arg
 object; it should be public, read-only, or shared.
 
   </Section>
-  <Section Label="SyncRead(syncvar)">
+  <Section Label="SyncRead">
     <Heading>SyncRead(syncvar)</Heading>
 
 <C>SyncRead</C> reads the value previously assigned to <C>syncvar</C> with <C>SyncWrite</C>. If no value has been
