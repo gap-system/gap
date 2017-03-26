@@ -894,6 +894,7 @@ InstallValue( BaumClausenInfoDebug, rec(
         return true;
     end ) );
 
+MakeImmutable(BaumClausenInfoDebug);
 
 
 #############################################################################
