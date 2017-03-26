@@ -1015,7 +1015,7 @@ Obj DeserializeError(UInt tnum) {
 Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
   Obj result;
   volatile SerializationState state;
-  volatile syJmp_buf readJmpError;
+  syJmp_buf readJmpError;
   SaveSerializationState(&state);
   InitNativeStringSerializer(NEW_STRING(0));
   memcpy(readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf));
@@ -1036,7 +1036,7 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
 Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
   Obj result;
   volatile SerializationState state;
-  volatile syJmp_buf readJmpError;
+  syJmp_buf readJmpError;
 
   SaveSerializationState(&state);
 

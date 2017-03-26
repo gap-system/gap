@@ -48,10 +48,8 @@
 
 #include <src/hpc/gapmpi.h>             /* MPI functions and UNIX utils */
 #include <mpi.h>                        /* provided with MPI distribution */
-#ifndef SYS_UNISTD_H                     /* definition of 'chdir'          */
-#include <unistd.h>
-# define SYS_UNISTD_H
-#endif
+
+#include <unistd.h>                     /* definition of 'chdir' */
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -205,6 +203,11 @@ SYS_SIG_T syAnswerIntr ( int                 signr );
 
 static SYS_SIG_T               (*savedSignal)(int);
 static jmp_buf                 readJmpError; /* TOP level => non-reentrant */
+/* FIXME: READ_ERROR was replaced by TRY_READ. Thus, MPI_READ_ERROR
+ * needs to be adapted. Doing so shouldn't be hard, but currently I (Max Horn
+ * have no way to test this code at all. If you want to resurrect this
+ * code, feel free to contact me for hints on how to do that.
+ */
 #define MPI_READ_ERROR() \
           ( memcpy( readJmpError, TLS(ReadJmpError), sizeof(jmp_buf) ), \
             savedSignal = signal( SIGINT, &ParGAPAnswerIntr), \
