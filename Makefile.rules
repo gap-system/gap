@@ -639,22 +639,8 @@ manuals: doc
 # stuff into the regular manual, but inside a (set of)
 # separate chapters, which we can perhaps conditionally
 # compile ?!?
-doc: gap$(EXEEXT)
-	( cd $(abs_top_srcdir) ;\
-	  echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
-	( cd $(abs_top_srcdir)/doc/ref ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	( cd $(abs_top_srcdir)/doc/tut ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	( cd $(abs_top_srcdir)/doc/changes ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	( cd $(abs_top_srcdir)/doc/ref ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	( cd $(abs_top_srcdir)/doc/tut ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	( cd $(abs_top_srcdir)/doc/changes ;\
-	  echo 'Read( "makedocrel.g" );' | $(TESTGAP) -L ../wsp.g | tee make_manuals.out )
-	rm $(abs_top_srcdir)/doc/wsp.g
+doc: gap$(EXEEXT) doc/make_doc
+	doc/make_doc
 
 clean-doc:
 	rm -f doc/*/chap*.html doc/*/chap*.txt doc/*/*.css doc/*/*.js
