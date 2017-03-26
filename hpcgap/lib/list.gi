@@ -3909,83 +3909,85 @@ end);
 # Stuff for better storage of blists (trans grp. library)
 #
 
-BLISTBYTES:=[];
-HEXBYTES:=[];
-BLISTBYTES1:=[];
-HEXBYTES1:=[];
-BindGlobal("HexBlistSetup",function()
-local BLISTFT,BLISTIND;
-  if Length(BLISTBYTES)>0 then return;fi;
-  BLISTFT:=[false,true];
-  for BLISTIND in [0..255] do
-    BLISTBYTES[BLISTIND+1]:=
-      BLISTFT{1+Reversed(CoefficientsQadic(256+BLISTIND,2){[1..8]})};
-    IsBlist(BLISTBYTES[BLISTIND+1]);
-    MakeImmutable(BLISTBYTES[BLISTIND+1]);
-    HEXBYTES[BLISTIND+1]:=HexStringInt(256+BLISTIND){[2,3]};
-    MakeImmutable(HEXBYTES[BLISTIND+1]);
-  od;
-  SortParallel(BLISTBYTES,HEXBYTES);
-  HEXBYTES1:=ShallowCopy(HEXBYTES);
-  BLISTBYTES1:=ShallowCopy(BLISTBYTES);
-  SortParallel(HEXBYTES1,BLISTBYTES1);
-  MakeImmutable(BLISTBYTES);
-  MakeImmutable(BLISTBYTES1);
-  MakeImmutable(HEXBYTES);
-  MakeImmutable(HEXBYTES1);
-end);
+BLISTNIBBLES:=MakeImmutable([
+  [   true,   true,   true,   true ],
+  [   true,   true,   true,  false ],
+  [   true,   true,  false,   true ],
+  [   true,   true,  false,  false ],
+  [   true,  false,   true,   true ],
+  [   true,  false,   true,  false ],
+  [   true,  false,  false,   true ],
+  [   true,  false,  false,  false ],
+  [  false,   true,   true,   true ],
+  [  false,   true,   true,  false ],
+  [  false,   true,  false,   true ],
+  [  false,   true,  false,  false ],
+  [  false,  false,   true,   true ],
+  [  false,  false,   true,  false ],
+  [  false,  false,  false,   true ],
+  [  false,  false,  false,  false ],
+]);
+BLISTZERO:=MakeImmutable(BlistList([1..8],[]));
+HEXNIBBLES:=MakeImmutable("0123456789ABCDEF");
 
-HexBlistSetup();
-
+DECODE_BITS_TO_HEX:=function(b,i)
+local n,v;
+  v:=0;
+  if b[i+0] then v:=v+8; fi;
+  if b[i+1] then v:=v+4; fi;
+  if b[i+2] then v:=v+2; fi;
+  if b[i+3] then v:=v+1; fi;
+  return HEXNIBBLES[v+1];
+end;
 
 InstallGlobalFunction(HexStringBlist,function(b)
 local i,n,s;
-#  HexBlistSetup();
   n:=Length(b);
   i:=1;
   s:="";
-  while i+7<=n do
-    Append(s,HEXBYTES[PositionSorted(BLISTBYTES,b{[i..i+7]})]);
-    i:=i+8;
+  while i+3<=n do
+    Add(s,DECODE_BITS_TO_HEX(b,i));
+    i:=i+4;
   od;
-  b:=b{[i..n]};
-  if Length(b) = 0 then
-    return s;
+  if i <= n then
+    b:=b{[i..n]};
+    while Length(b)<4 do
+      Add(b,false);
+    od;
+    Add(s,DECODE_BITS_TO_HEX(b,1));
   fi;  
-  while Length(b)<8 do
-    Add(b,false);
-  od;
-  Append(s,HEXBYTES[PositionSorted(BLISTBYTES,b)]);
+  if IsOddInt(Length(s)) then Add(s,'0'); fi;
   return s;
 end);
 
 InstallGlobalFunction(HexStringBlistEncode,function(b)
 local i,n,s,t,u,zero;
-#  HexBlistSetup();
   zero:="00";
   n:=Length(b);
   i:=1;
   s:="";
   u:=0;
   while i+7<=n do
-    t:=HEXBYTES[PositionSorted(BLISTBYTES,b{[i..i+7]})];
+    t:="";
+    Add(t,DECODE_BITS_TO_HEX(b,i));
+    Add(t,DECODE_BITS_TO_HEX(b,i+4));
     if t<>zero then
       if u>0 then
-	if u=1 then
-	  Append(s,zero);
-	else
-	  Add(s,'s');
-	  Append(s,HexStringInt(256+u){[2,3]});
-	fi;
-	u:=0;
+        if u=1 then
+          Append(s,zero);
+        else
+          Add(s,'s');
+          Append(s,HexStringInt(256+u){[2,3]});
+        fi;
+        u:=0;
       fi;
       Append(s,t);
     else
       u:=u+1;
       if u=255 then
         Add(s,'s');
-	Append(s,HexStringInt(256+u){[2,3]});
-	u:=0;
+        Append(s,HexStringInt(256+u){[2,3]});
+        u:=0;
       fi;
     fi;
     i:=i+8;
@@ -3994,44 +3996,47 @@ local i,n,s,t,u,zero;
   while Length(b)<8 do
     Add(b,false);
   od;
-  b:=HEXBYTES[PositionSorted(BLISTBYTES,b)];
-  if b<>zero then
+  t:="";
+  Add(t,DECODE_BITS_TO_HEX(b,1));
+  Add(t,DECODE_BITS_TO_HEX(b,5));
+  if t<>zero then
     if u>0 then
       if u=1 then
-	Append(s,zero);
+        Append(s,zero);
       else
-	Add(s,'s');
-	Append(s,HexStringInt(256+u){[2,3]});
+        Add(s,'s');
+        Append(s,HexStringInt(256+u){[2,3]});
       fi;
       u:=0;
     fi;
-    Append(s,b);
+    Append(s,t);
   fi;
   return s;
 end);
 
 InstallGlobalFunction(BlistStringDecode,function(arg)
 local s,b,i,j,zero,l;
-#  HexBlistSetup();
-  zero:=BLISTBYTES1[PositionSorted(HEXBYTES1,"00")];
   s:=arg[1];
   b:=[];
   i:=1;
   while i<=Length(s) do
     if s[i]='s' then
       for j in [1..IntHexString(s{[i+1,i+2]})] do
-        Append(b,zero);
+        Append(b,BLISTZERO);
       od;
       i:=i+3;
     else
-      Append(b,BLISTBYTES1[PositionSorted(HEXBYTES1,s{[i,i+1]})]);
+      l:=IntHexString(s{[i]});
+      Append(b,BLISTNIBBLES[16-l]);
+      l:=IntHexString(s{[i+1]});
+      Append(b,BLISTNIBBLES[16-l]);
       i:=i+2;
     fi;
   od;
   if Length(arg)>1 then
     l:=arg[2];
     while Length(b)<l do
-      Append(b,zero);
+      Append(b,BLISTZERO);
     od;
     if Length(b)>l then
       b:=b{[1..l]};
