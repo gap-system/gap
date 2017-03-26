@@ -1725,12 +1725,12 @@ NrBitsInt := function ( n )
     return nr;
 end;
 
-InstallMethod( Random,
-    "for `Integers'",
-    true,
-    [ IsIntegers ], 0,
-    function( Integers )
-    return NrBitsInt( Random( [0..2^20-1] ) ) - 10;
+InstallMethodWithRandomSource(Random,
+    "for a random source and `Integers'", true,
+    [IsRandomSource, IsIntegers],
+    0,
+    function( rg, Integers )
+    return NrBitsInt( Random( rg, [0..2^20-1] ) ) - 10;
     end );
 
 
