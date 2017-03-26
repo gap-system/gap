@@ -1333,20 +1333,20 @@ local r,i,p,A,f,a;
       # right type PCGS -- test relations
       a:=a!.DefiningPcgs;
       if (needindices=false or  (not HasIndicesEANormalSteps(a)) or
-	IndicesEANormalSteps(a)=IndicesEANormalSteps(pcgs)) and
-	ForAll([1..Length(r)-1],x->
+        IndicesEANormalSteps(a)=IndicesEANormalSteps(pcgs)) and
+        ForAll([1..Length(r)-1],x->
         ExponentsOfPcElement(a,a[x]^r[x])
         =ExponentsOfPcElement(pcgs,pcgs[x]^r[x])) and
-	ForAll([1..Length(r)],x->ForAll([x+1..Length(r)],y->
-	  ExponentsOfPcElement(a,a[y]^a[x])
-	  =ExponentsOfPcElement(pcgs,pcgs[y]^pcgs[x]))) then
+        ForAll([1..Length(r)],x->ForAll([x+1..Length(r)],y->
+          ExponentsOfPcElement(a,a[y]^a[x])
+          =ExponentsOfPcElement(pcgs,pcgs[y]^pcgs[x]))) then
 
-	# indeed the group is OK
-	if not HasIndicesEANormalSteps(a) then
-	  SetIndicesEANormalSteps(a,IndicesEANormalSteps(pcgs));
-	fi;
+        # indeed the group is OK
+        if not HasIndicesEANormalSteps(a) then
+          SetIndicesEANormalSteps(a,IndicesEANormalSteps(pcgs));
+        fi;
         A:=GroupOfPcgs(a);
-	return A;
+        return A;
       fi;
     fi;
     i:=i+2;
