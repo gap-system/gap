@@ -2162,6 +2162,9 @@ local z,d,l,count,b;
   end;
   count(n);
 
+  if Length(l)>0 and Length(l[Length(l)])=0 then 
+    return One(r[1]);
+  fi;
   return StraightLineProgElm(r,StraightLineProgramNC(l,Length(r)));
 end);
 

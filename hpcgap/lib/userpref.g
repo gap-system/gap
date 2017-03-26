@@ -659,7 +659,7 @@ ShowUserPreferences:= function(arg)
         Append(str, undec[1]);
         for i in [2..Length(undec)] do
           Append(str, ", ");
-          Append(undec[i]);
+          Append(str, undec[i]);
         od;
       fi;
 
@@ -727,10 +727,16 @@ Please specify directory to write gap.ini file.");
       Error("Cannot write backup file ",target,".bak.\nError message: ",
             LastSystemError().message,".\n");
       return fail;
+    else
+      Info(InfoWarning, 1, "Copied existing gap.ini to ", target, ".bak");
     fi;
   fi;
   # content of resulting file as string
   res := StringUserPreferences(ignorecurrent);
+  if ARCH_IS_WINDOWS() then
+    # use DOS/Windows style line breaks
+    res := ReplacedString(res, "\n", "\r\n");
+  fi;
   # finally write the gap.ini file
   ret := FileString(target, res);
   if ret = fail then

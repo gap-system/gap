@@ -44,6 +44,7 @@ InstallTrueMethod(IsFinite,CanComputeFittingFree);
 InstallTrueMethod(IsGroup,CanComputeFittingFree);
 
 InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
+InstallTrueMethod(CanComputeFittingFree, IsPcGroup);
 
 
 
@@ -84,6 +85,7 @@ InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareAttribute("FittingFreeLiftSetup",IsGroup);
+InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 
 #############################################################################
 ##
