@@ -176,8 +176,13 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
   for i in [1..Length(methods)/lent] do
     nam:=methods[lent*(i-1)+l+4];
     val:=methods[lent*(i-1)+l+3];
+    oper:=methods[lent*(i-1)+l+2];
     if verbos>1 then
-      Print("#I  Method ",i,": ``",nam,"'', value: ");
+      Print("#I  Method ",i,": ``",nam,"''");
+      if LocationFunc(oper) <> "" then
+        Print(" at ",LocationFunc(oper));
+      fi;
+      Print(", value: ");
       Print_Value_SFF(val);
       Print("\n");
     fi;
@@ -205,12 +210,16 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     od;
     if flag then
       if fams=fail or CallFuncList(methods[lent*(i-1)+1],fams) then
+	oper:=methods[lent*(i-1)+j+1];
 	if verbos=1 then
-	  Print("#I  Method ",i,": ``",nam,"'', value: ");
+	  Print("#I  Method ",i,": ``",nam,"''");
+	  if LocationFunc(oper) <> "" then
+	    Print(" at ",LocationFunc(oper));
+	  fi;
+	  Print(" , value: ");
 	  Print_Value_SFF(val);
 	  Print("\n");
 	fi;
-	oper:=methods[lent*(i-1)+j+1];
 	if verbos>5 then
 	  Print("#I  Function Body:\n");
 	  Print(oper);
@@ -330,6 +339,7 @@ local flags,f,i,j,l,m,n;
     od;
   fi;
 end);
+
 #############################################################################
 ##
 #F  PageSource( func ) . . . . . . . . . . . . . . . show source code in pager
@@ -378,7 +388,6 @@ BIND_GLOBAL("PageSource", function ( fun )
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
     fi;
 end);
-
 
 #############################################################################
 ##
