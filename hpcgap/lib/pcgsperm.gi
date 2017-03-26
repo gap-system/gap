@@ -673,7 +673,7 @@ end );
 InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
     local   U,  oldlen,  series,  bound,  z,  S;
 
-    U := CopyStabChain( StabChainMutable( TrivialSubgroup( G ) ) );
+    U := CopyStabChain( StabChainImmutable( TrivialSubgroup( G ) ) );
     oldlen := Length( U.labels );
     
     # The `genlabels' at every level of $U$ must be sets.
@@ -821,7 +821,7 @@ InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
     local   series,  G,  N,  i;
 
     G := GroupOfPcgs( pcgs );
-    N := CopyStabChain( StabChainMutable( TrivialSubgroup( G ) ) );
+    N := CopyStabChain( StabChainImmutable( TrivialSubgroup( G ) ) );
     series := [ GroupStabChain( G, CopyStabChain( N ), true ) ];
     for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
         AddNormalizingElementPcgs( N, pcgs[ i ] );
