@@ -218,17 +218,6 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       Error("usage: FreeMonoid(<name1>,<name2>..) or FreeMonoid(<rank>)");
     fi;
 
-    # Handle the trivial case.
-    if IsEmpty( names ) then
-      M:=FreeGroup( 0 );
-      # we still need to set some monoid specific entries to keep
-      # the monoid code happy
-      F:=ElementsFamily(FamilyObj(M));
-      FamilyObj(M)!.wholeMonoid:= M;
-      F!.freeMonoid:=M;
-      return M;
-    fi;
-
     # deal with letter words family types
     if lesy=IsLetterWordsFamily then
       if Length(names)>127 then
@@ -250,22 +239,31 @@ InstallGlobalFunction( FreeMonoid, function( arg )
     StoreInfoFreeMagma( F, names, IsAssocWordWithOne );
 
     # Make the monoid
-    if IsFinite( names ) then
+    if IsEmpty( names ) then
+      M:= MonoidByGenerators( [], One(F) );
+      SetIsFinite(M, true);
+      SetIsTrivial(M, true);
+      SetIsCommutative(M, true);
+    elif IsFinite( names ) then
       M:= MonoidByGenerators( List( [ 1 .. Length( names ) ],
                               i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
+      SetIsTrivial( M, false );
+      if Length(names) > 1 then
+          SetIsCommutative(M, false);
+      fi;
     else
       M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
+      SetIsTrivial( M, false );
+      SetIsFinite( M, false );
+      SetIsCommutative(M, false );
     fi;
 
-    SetIsFreeMonoid(M,true);
-
+    SetIsFreeMonoid( M, true);
     SetIsWholeFamily( M, true );
-    SetIsTrivial( M, false );
 
 		# store the whole monoid in the family
     FamilyObj(M)!.wholeMonoid:= M;
     F!.freeMonoid:=M;
-
 
     # Return the free monoid.
     return M;

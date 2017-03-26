@@ -257,44 +257,27 @@ InstallMethod( IsCommutative,
 #F  Monoid( <gens>, <id> )
 ##
 
-InstallGlobalFunction( Monoid, function( arg )
+InstallGlobalFunction(Monoid, 
+function( arg )
   local out, i;
   
-  if Length(arg)=0 or (Length(arg)=1 and HasIsEmpty(arg[1]) and IsEmpty(arg[1]))
-   then 
-    Error("usage: cannot create a monoid with no generators,");
-    return;
+  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1]) 
+      and IsEmpty(arg[1])) then 
+    ErrorNoReturn("Usage: cannot create a monoid with no generators,");
+  fi;
 
-  # special case for matrices, because they may look like lists
-  elif Length( arg ) = 1 and IsMatrix( arg[1] )  then
-    return MonoidByGenerators( [ arg[1] ] );
-
-  # special case for matrices, because they look like lists
-  elif Length( arg ) = 2 and IsMatrix( arg[1] )  then
-    return MonoidByGenerators( arg );
-
-  # list of generators
-  elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] )  then
-    return MonoidByGenerators( arg[1] );
-
-  # list of generators plus identity
-  elif Length( arg ) = 2 and IsList( arg[1] ) and not IsEmpty(arg[1]) then
-    return MonoidByGenerators( arg[1], arg[2] );
-
-  # generators and collections of generators 
-  elif (IsMultiplicativeElementWithOne(arg[1]) 
-        and IsGeneratorsOfSemigroup([arg[1]]))
-    or (IsMultiplicativeElementWithOneCollection(arg[1])
-        and IsGeneratorsOfSemigroup(arg[1])) 
-    or (HasIsEmpty(arg[1]) and IsEmpty(arg[1])) then
-    out:=[];
-    for i in [1..Length(arg)] do
-      #so that we can pass the options record in the Semigroups package 
-      if i=Length(arg) and IsRecord(arg[i]) then
-        return MonoidByGenerators(out, arg[i]);
-      elif IsMultiplicativeElementWithOne(arg[i]) and IsGeneratorsOfSemigroup([arg[i]]) then
-        Add(out, arg[i]);
-      elif IsGeneratorsOfSemigroup(arg[i]) then
+  out := [];
+  for i in [1 .. Length(arg)] do
+    if i = Length(arg) and IsRecord(arg[i]) then
+      if not IsGeneratorsOfSemigroup(out) then 
+        ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
+                      "Monoid(<D>)," );
+      fi;
+      return MonoidByGenerators(out, arg[i]);
+    elif IsMultiplicativeElementWithOne(arg[i]) or IsMatrix(arg[i]) then 
+      Add(out, arg[i]);
+    elif IsListOrCollection(arg[i]) then 
+      if IsGeneratorsOfSemigroup(arg[i]) then 
         if HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
         elif IsList(arg[i]) then 
@@ -302,26 +285,29 @@ InstallGlobalFunction( Monoid, function( arg )
         else 
           Append(out, AsList(arg[i]));
         fi;
-      else
-        if not IsEmpty(arg[i]) then 
-          Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
-          return;
-        fi;
+      elif not IsEmpty(arg[i]) then 
+        ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
+                      "Monoid(<D>)," );
       fi;
-    od;
-    return MonoidByGenerators(out);
-
-  # generators
-  elif 0 < Length( arg )  then
-    return MonoidByGenerators( arg );
-  # no argument given, error
-  else
-    Error( "Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>)," );
-    return;
+    else 
+      ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
+                    "Monoid(<D>)," );
+    fi;
+  od;
+  if not IsGeneratorsOfSemigroup(out) then 
+    ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
+    "Monoid(<D>),");
   fi;
+  return MonoidByGenerators(out);
 end);
+
+InstallMethod( IsFinitelyGeneratedMonoid, "for a monoid",
+               [ IsMonoid and HasGeneratorsOfMonoid ],
+function(M)
+    return IsFinite(GeneratorsOfMonoid(M));
+end);
+
 
 #############################################################################
 ##
 #E
-

@@ -17,21 +17,22 @@ DeclareGlobalFunction("InverseMonoid");
 DeclareGlobalFunction("InverseSemigroup");
 
 DeclareProperty("IsGeneratorsOfInverseSemigroup", IsListOrCollection);
+InstallTrueMethod(IsGeneratorsOfSemigroup, IsGeneratorsOfInverseSemigroup);
 
 DeclareAttribute("GeneratorsOfInverseMonoid", IsInverseSemigroup);
 DeclareAttribute("GeneratorsOfInverseSemigroup", IsInverseSemigroup);
 
-DeclareOperation("InverseMonoidByGenerators", [IsGeneratorsOfSemigroup]);
-DeclareOperation("InverseSemigroupByGenerators", [IsGeneratorsOfSemigroup]);
+DeclareOperation("InverseMonoidByGenerators", [IsCollection]);
+DeclareOperation("InverseSemigroupByGenerators", [IsCollection]);
 
 DeclareOperation("InverseSubsemigroup",
-[IsInverseSemigroup, IsGeneratorsOfSemigroup]);
+[IsInverseSemigroup, IsCollection]);
 DeclareOperation("InverseSubsemigroupNC",
-[IsInverseSemigroup, IsGeneratorsOfSemigroup]);
+[IsInverseSemigroup, IsCollection]);
 DeclareOperation("InverseSubmonoid",
-[IsInverseMonoid, IsGeneratorsOfSemigroup]);
+[IsInverseMonoid, IsCollection]);
 DeclareOperation("InverseSubmonoidNC",
-[IsInverseMonoid, IsGeneratorsOfSemigroup]);
+[IsInverseMonoid, IsCollection]);
 
 DeclareAttribute("AsInverseSemigroup", IsCollection);
 DeclareAttribute("AsInverseMonoid", IsCollection);
