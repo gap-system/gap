@@ -40,18 +40,6 @@ DeclareInfoClass("InfoGlobal");
 
 #############################################################################
 ##
-#V  IdentifierLetters . . . . . . . .characters allowed in normal identifiers
-##                               
-##  This is used to produce warning messages when the XxxxGlobal functions
-##  are applied to a name which could not be read in by the parser without
-##  escapes
-##
-
-IdentifierLetters := MakeImmutable(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@" );
-
-#############################################################################
-##
 #F  IsValidIdentifier( <str> ) . . .  check if a string is a valid identifier
 ##
 

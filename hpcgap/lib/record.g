@@ -199,6 +199,21 @@ BIND_GLOBAL( "NamesOfComponents", function( obj )
 
 #############################################################################
 ##
+#V  IdentifierLetters . . . . . . . .characters allowed in normal identifiers
+##
+##  This is used to produce warning messages when the XxxxGlobal functions
+##  are applied to a name which could not be read in by the parser without
+##  escapes
+##
+
+BIND_GLOBAL( "IdentifierLetters",
+  Immutable("0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz") );
+
+IsSet( IdentifierLetters ); # ensure GAP knows that this is a set
+
+
+#############################################################################
+##
 #m  PrintObj( <record> )
 ##
 ##  The record <record> is printed by printing all its components.
@@ -211,9 +226,7 @@ InstallMethod( PrintObj,
 ## first used). Except for the sorting of components this does the same as 
 ## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
     function( record )
-    local okchars, com, i, snam, nam, names, order;
-    okchars :=
-          "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+    local com, i, snam, nam, names, order;
     Print("\>\>rec(\n\>\>");
     com := false;
 
@@ -230,7 +243,7 @@ InstallMethod( PrintObj,
         fi;
         SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
+        if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, "\< := \>");
         else 
           # otherwise we use (...) syntax:
@@ -287,9 +300,7 @@ InstallMethod( ViewObj,
     "record",
     [ IsRecord ],
     function( record )
-    local nam, com, i, snam, okchars, names, order;
-    okchars :=
-          "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+    local nam, com, i, snam, names, order;
     Print("\>\>rec( \>\>");
     com := false;
 
@@ -306,7 +317,7 @@ InstallMethod( ViewObj,
         fi;
         SET_PRINT_OBJ_INDEX(order[i]);
         # easy if nam is integer or valid identifier:
-        if ForAll(nam, x-> x in okchars) and Size(nam) > 0 then
+        if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, " := ");
         else 
           # otherwise we use (...) syntax:
