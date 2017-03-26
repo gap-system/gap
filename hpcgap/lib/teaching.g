@@ -194,9 +194,9 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
-##  [ [ (1,3,4,2), (1,2,4) ] -> [ (), () ], 
-##    [ (1,3,4,2), (1,2,4) ] -> [ (1,2), () ], 
-##    [ (1,3,4,2), (1,2,4) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (2,4,3), (1,2,3,4) ] -> [ (), () ], 
+##    [ (2,4,3), (1,2,3,4) ] -> [ (), (1,2) ], 
+##    [ (2,4,3), (1,2,3,4) ] -> [ (1,2,3), (1,2) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -265,7 +265,7 @@ DeclareGlobalFunction("AllHomomorphisms");
 ##  <#/GAPDoc>
 ##
 BindGlobal("AllSubgroups",
-  G->Concatenation(List(ConjugacyClassesSubgroups(G),Elements)));
+  G->Concatenation(List(ConjugacyClassesSubgroups(G),AsSSortedList)));
 
 #############################################################################
 ##
@@ -448,7 +448,7 @@ DeclareGlobalFunction("SetExecutionObject");
 
 InstallGlobalFunction(CosetDecomposition,function(G,S)
 local i,l,e,t;
-  e:=Elements(S);
+  e:=AsSSortedList(S);
   l:=[e];
   for i in RightTransversal(G,S) do
     if not i in S then
@@ -693,7 +693,7 @@ InstallGlobalFunction(ShowMultiplicationTable,function(arg)
 local obj,op;
   obj:=arg[1];
   if not IsList(obj) then
-    obj:=Elements(obj);
+    obj:=AsSSortedList(obj);
   fi;
   op:=\*;
   if Length(arg)>1 and IsInt(arg[2]) then
@@ -706,7 +706,7 @@ InstallGlobalFunction(ShowAdditionTable,function(arg)
 local obj,op;
   obj:=arg[1];
   if not IsList(obj) then
-    obj:=Elements(obj);
+    obj:=AsSSortedList(obj);
   fi;
   op:=\+;
   if Length(arg)>1 and IsInt(arg[2]) then
@@ -865,7 +865,7 @@ BindGlobal("GallianCyclic",function(n,a)
   if Gcd(a,n)<>1 then
     Error("a must be coprime to n");
   fi;
-  return Elements(Group(a*One(Integers mod n)));
+  return AsSSortedList(Group(a*One(Integers mod n)));
 end);
 
 BindGlobal("GallianOrderFrequency",function(G)
@@ -890,7 +890,7 @@ local c,l,i;
   l:=[];
   for i in c do
     if CycleStructurePerm(Representative(i))=s then
-      l:=Union(l,Elements(i));
+      l:=Union(l,AsSSortedList(i));
     fi;
   od;
   return l;
@@ -912,7 +912,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     if Size(H)=1 then
       k:=One(H);
     else
-      k:=SmallGeneratingSet(H)[1];
+      k:=MinimalGeneratingSet(H)[1];
     fi;
     c:=Order(k);
     Assert(1,Order(k)=Order(H));
@@ -989,7 +989,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   fi;
 
   params:=rec(gens:=bg,from:=H);
-  # find all embeddings
+  # find all homs
   emb:=MorClassLoop(G,bi,params,
     # all homs = 1+8
     9); 
@@ -1015,7 +1015,7 @@ BindGlobal("AllEndomorphisms",G->AllHomomorphisms(G,G));
 
 BindGlobal("GallianHomoDn",AllEndomorphisms);
 
-BindGlobal("AllAutomorphisms",G->Elements(AutomorphismGroup(G)));
+BindGlobal("AllAutomorphisms",G->AsSSortedList(AutomorphismGroup(G)));
 
 BindGlobal("GallianAutoDn",AllAutomorphisms);
 
