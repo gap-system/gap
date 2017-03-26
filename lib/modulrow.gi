@@ -328,7 +328,7 @@ BindGlobal( "PosVecEnumFF", function( enum, v )
     for i in v do
       if not (IsFFE(i) and IsInt(l/DegreeFFE(i))) then
         # cannot convert, wrong type of object
-	return NumberElement_FiniteFullRowModule( enum, v );
+        return NumberElement_FiniteFullRowModule( enum, v );
       fi;
     od;
 

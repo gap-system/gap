@@ -197,7 +197,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  3000
 ##  gap> n:=Group((1,2),(3,4));;
 ##  gap> au:=AutomorphismGroup(n);;
-##  gap> au:=First(Elements(au),i->Order(i)=3);;
+##  gap> au:=First(AsSet(au),i->Order(i)=3);;
 ##  gap> au:=Group(au);
 ##  <group with 1 generators>
 ##  gap> IsGroupOfAutomorphisms(au);

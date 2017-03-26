@@ -470,7 +470,7 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("DivisorsInt: <n> must not be 0");  fi;
     if n <= Length(DivisorsIntCache)  then 
-      return DivisorsIntCache[n];  
+        return DivisorsIntCache[n];  
     fi;
     factors := FactorsInt( n );
 
@@ -988,7 +988,10 @@ BindGlobal( "IsProbablyPrimeIntWithFail", function( n )
     # faster than anything fancier because $n$ mod <small int> is very fast
     for p  in Primes  do
         if n mod p = 0  then return false;  fi;
-        if n < (p+1)^2  then AddSet( Primes2, n );  return true;   fi;
+        if n < (p+1)^2  then
+            AddSet( Primes2, n );
+            return true;
+        fi;
     od;
 
     # do trial division by the other known primes

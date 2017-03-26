@@ -32,7 +32,7 @@ end);
 InstallMethod(\<, "for transformation semigroups",
 [IsTransformationSemigroup, IsTransformationSemigroup],
 function(S, T)
-  return Elements(S)<Elements(T);
+  return AsSet(S)<AsSet(T);
 end);
 
 InstallMethod(MovedPoints, "for a transformation semigroup",

@@ -137,7 +137,6 @@ DeclareAttributeKernel( "Length", IsList, LENGTH );
 InstallTrueMethod(HasLength,IsPlistRep);
 
 
-
 #############################################################################
 ##
 #O  IsBound( <list>[<pos>] )  . . . . . . . . test for an element from a list

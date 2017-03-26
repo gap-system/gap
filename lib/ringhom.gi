@@ -458,7 +458,7 @@ local e, z, one, o, sel, g, go, elms, dec, p, cands, m, a, b, nr, hom, i, j;
     Error("R is too big");
   fi;
   # find generators
-  e:=Elements(R);
+  e:=AsSet(R);
   z:=Zero(R);
   one:=One(R);
   one:=Position(e,one);
