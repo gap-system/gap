@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -e
+
+abs_top_builddir=@abs_top_builddir@
+abs_top_srcdir=@abs_top_srcdir@
+HPCGAP=@HPCGAP@
+
+GAP=$abs_top_builddir/bin/gap.sh
+GAPARGS="-b -m 100m -o 1g -q -x 80 -r"
+
+WSP=$abs_top_builddir/doc/wsp.g
+
+echo "--------------------"
+echo "Building GAP manuals"
+echo "--------------------"
+
+cd "$abs_top_srcdir"
+"$GAP" $GAPARGS <<EOF
+OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;
+SaveWorkspace( "$WSP" );
+EOF
+
+books="ref tut changes"
+if [[ "$HPCGAP" = "yes" ]]
+then
+  books="$books hpc"
+fi
+
+for run in 1 2
+do
+  for book in $books
+  do
+    cd "$abs_top_srcdir/doc/$book"
+    echo "----------------------------"
+    echo "Building GAP manual '$book' at $PWD"
+    echo "Run $run of 2"
+    echo "----------------------------"
+    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A -L "$WSP" | tee make_manuals.out
+  done
+done
+
+rm -f "$WSP"

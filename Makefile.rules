@@ -1011,5 +1011,8 @@ $(srcdir)/src/config.h.in: $(configure_deps)
 GNUmakefile: $(srcdir)/GNUmakefile.in config.status
 	$(SHELL) ./config.status $@
 
+doc/make_doc: $(srcdir)/doc/make_doc.in config.status
+	$(SHELL) ./config.status $@
+
 gac: $(srcdir)/cnf/gac.in config.status
 	$(SHELL) ./config.status $@
