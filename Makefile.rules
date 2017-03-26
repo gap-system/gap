@@ -623,8 +623,8 @@ endif
 ########################################################################
 
 GAPARGS=
-TESTGAP = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -A -q -x 80 -r $(GAPARGS)
-TESTGAPauto = $(abs_top_builddir)/gap$(EXEEXT) -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
+TESTGAP = $(abs_top_builddir)/bin/gap.sh -b -m 100m -o 1g -q -x 80 -r -A $(GAPARGS)
+TESTGAPauto = $(abs_top_builddir)/bin/gap.sh -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
 
 ########################################################################
 # Documentation rules
