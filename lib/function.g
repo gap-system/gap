@@ -648,7 +648,7 @@ BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
         class := "Filter";
         flags := FLAGS_FILTER(op);
         if flags <> false then
-            flags := TRUES_FLAGS(FLAGS_FILTER(op));
+            flags := TRUES_FLAGS(flags);
         else
             flags := [];
         fi;

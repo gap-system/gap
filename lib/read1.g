@@ -83,8 +83,8 @@ ReadLib( "cmdledit.g"  );
 
 ReadLib( "objset.g" );
 
-ReadLib( "error.g"   );
-ReadLib( "session.g" );
-
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
+
+ReadLib( "error.g"   );
+ReadLib( "session.g" );

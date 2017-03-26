@@ -265,7 +265,7 @@ DeclareGlobalFunction("AllHomomorphisms");
 ##  <#/GAPDoc>
 ##
 BindGlobal("AllSubgroups",
-  G->Concatenation(List(ConjugacyClassesSubgroups(G),Elements)));
+  G->Concatenation(List(ConjugacyClassesSubgroups(G),AsSSortedList)));
 
 #############################################################################
 ##
