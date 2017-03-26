@@ -314,6 +314,47 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 
+#############################################################################
+##
+##  <#GAPDoc Label="LocationFunc">
+##  <ManSection>
+##  <Func Name="LocationFunc" Arg='func'/>
+##
+##  <Description>
+##  Let <A>func</A> be a function.
+##  Returns a string describing the location of <A>func</A>, or an empty
+##  string if the information cannot be found. This uses the information
+##  provided by <Ref Func="FilenameFunc"/> and <Ref Func="StartlineFunc"/>
+##  <P/>
+##  <Log><![CDATA[
+##  gap> LocationFunc( Intersection );
+##  "... some path ... gap/lib/coll.gi:2467"
+##  # String is an attribute, so no information is stored
+##  gap> LocationFunc( String );
+##  ""
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "LocationFunc", function(x)
+    local nam, line, ret;
+    # If someone passes something which isn't a true function,
+    # like a method or attribute, just return.
+    if not(IS_FUNCTION(x)) then
+        return "";
+    fi;
+    nam := FILENAME_FUNC(x);
+    line := STARTLINE_FUNC(x);
+    ret := "";
+    if nam <> fail and line <> fail then
+        APPEND_LIST(ret, nam);
+        APPEND_LIST(ret, ":");
+        APPEND_LIST(ret, STRING_INT(line));
+    fi;
+    return ret;
+end);
+
 
 #############################################################################
 ##
@@ -322,6 +363,7 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  <#GAPDoc Label="CallFuncList">
 ##  <ManSection>
 ##  <Oper Name="CallFuncList" Arg='func, args'/>
+##  <Oper Name="CallFuncListWrap" Arg='func, args'/>
 ##
 ##  <Description>
 ##  returns the result, when calling function <A>func</A> with the arguments
@@ -374,6 +416,17 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  gap> PrintDigits( 1, 9, 7, 3, 2 );
 ##  [ 1, 9, 7, 3, 2 ]
 ##  ]]></Example>
+##  <Ref Oper="CallFuncListWrap"/> differs only in that the result is a list.
+##  This returned list is empty if the called function returned no value,
+##  else it contains the returned value as it's single member. This allows
+##  wrapping functions which may, or may not return a value.
+##
+##  <Example><![CDATA[
+##  gap> CallFuncListWrap( x -> x, [1] );
+##  [ 1 ]
+##  gap> CallFuncListWrap( function(x) end, [1] );
+##  [ ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -382,6 +435,7 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##
 UNBIND_GLOBAL("CallFuncList"); # was declared 2b defined
 DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
+DeclareOperationKernel( "CallFuncListWrap", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST_WRAP );
 
 
 #############################################################################
@@ -555,12 +609,12 @@ BIND_GLOBAL( "IdFunc", ID_FUNC );
 InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
     local  locks, nams, narg, i, isvarg;
+    Print("function( ");
     isvarg := false;
     locks := LOCKS_FUNC(func);
     if locks <> fail then
         Print("atomic ");
     fi;
-    Print("function( ");
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
     if narg < 0 then
@@ -600,10 +654,9 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print(" ) ... end");
 end);
 
-    
-BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
-    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
-            t;
+BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
+    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,
+            t, res;
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
@@ -611,10 +664,15 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
-        flags := TRUES_FLAGS(FLAGS_FILTER(op));
-	atomic readonly FILTER_REGION do
+        flags := FLAGS_FILTER(op);
+        if flags <> false then
+            flags := TRUES_FLAGS(flags);
+        else
+            flags := [];
+        fi;
+        atomic readonly FILTER_REGION do
             types := INFO_FILTERS{flags};
-	od;
+        od;
         catok := true;
         repok := true;
         propok := true;
@@ -644,14 +702,32 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
         # op is an attribute
         class := "Attribute";
     fi;
-    Print("<",class," \"",NAME_FUNC(op),"\">");
-          end);  
-    
+
+    # Horrible.
+    res := "<";
+    APPEND_LIST(res, class);
+    APPEND_LIST(res, " \"");
+    APPEND_LIST(res, NAME_FUNC(op));
+    APPEND_LIST(res, "\">");
+    return res;
+end);
+
+BIND_GLOBAL( "PRINT_OPERATION",
+function ( op )
+    Print(VIEW_STRING_OPERATION(op));
+end);
+
 InstallMethod( ViewObj,
     "for an operation",
     [ IsOperation ],
     PRINT_OPERATION );
-    
+
+InstallMethod( ViewString,
+    "for an operation",
+    [ IsOperation ],
+function(op)
+    return VIEW_STRING_OPERATION(op);
+end);
 
 #############################################################################
 ##
