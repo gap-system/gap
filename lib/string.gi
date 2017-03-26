@@ -391,7 +391,7 @@ function( string )
             d := 1;
         else
             s := Position( CHARS_DIGITS, string[i] );
-            if s <> false and s<>fail  then
+            if s <> fail  then
                 z := 10 * z + (s-1);
             else
                 return fail;

@@ -411,15 +411,59 @@ DeclareGlobalFunction( "WordAlp" );
 ##
 DeclareGlobalFunction( "LowercaseString" );
 
-#########################################################################
+#############################################################################
+##
+#F  LowercaseChar( <char> ) . . . map char to lower case
+##
+##  <#GAPDoc Label="LowercaseChar">
+##  <ManSection>
+##  <Func Name="LowercaseChar" Arg='character'/>
+##
+##  <Description>
+##  Returns the lowercase version of the character <A>character</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "LowercaseChar" );
+
+#############################################################################
 ##
 #F  UppercaseString( <string> ) . . . string consisting of upper case letters
 ##
-##  returns a uppercase version of the string <string>,
+##  <#GAPDoc Label="UppercaseString">
+##  <ManSection>
+##  <Func Name="UppercaseString" Arg='string'/>
+##
+##  <Description>
+##  Returns a uppercase version of the string <A>string</A>,
 ##  that is, a string in which each lowercase alphabet character is replaced
 ##  by the corresponding uppercase character.
+##  <Example><![CDATA[
+##  gap> UppercaseString("This Is UpperCase");
+##  "THIS IS UPPERCASE"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "UppercaseString" );
+
+#############################################################################
+##
+#F  UppercaseChar( <char> ) . . . map char to upper case
+##
+##  <#GAPDoc Label="UppercaseChar">
+##  <ManSection>
+##  <Func Name="UppercaseChar" Arg='character'/>
+##
+##  <Description>
+##  Returns the uppercase version of the character <A>character</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "UppercaseChar" );
 
 #############################################################################
 ##
