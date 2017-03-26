@@ -14,6 +14,7 @@
 # by using a comparator. We need this second case to ensure we
 # check some non-plists. Also need to test with and without comparators.
 gap> START_TEST("stablesort.tst");
+gap> lowAlpha := Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz"));;
 gap> CheckStabilityPair := function(inputlist)
 > local pairlist, listcpy1, listcpy2, intlist;
 > pairlist := List([1..Length(inputlist)], x -> [inputlist[x],x]);
@@ -96,7 +97,7 @@ gap> for i in [0..100] do
 >      for j in [0..10] do
 >        l := "";
 >        for a in [1..j] do for b in [1..i] do
->          Add(l, CHARS_LALPHA[a]);
+>          Add(l, lowAlpha[a]);
 >        od; od;
 >        l2 := Shuffle(List(l));
 >        if not(IsStringRep(l)) or not(IsStringRep(l2)) then
@@ -148,11 +149,11 @@ gap> for i in [0..100] do
 >    od;
 
 # Just sanity check I really am making string reps
-gap> IsStringRep(CHARS_LALPHA{[1..0]}) and IsStringRep(CHARS_LALPHA{[1..10]});
+gap> IsStringRep(lowAlpha{[1..0]}) and IsStringRep(lowAlpha{[1..10]});
 true
 gap> for i in [0..26] do
 >      for j in [0..10] do
->        CheckSortParallel(CHARS_LALPHA{[1..i]},Random(SymmetricGroup([1..i])), i);
+>        CheckSortParallel(lowAlpha{[1..i]},Random(SymmetricGroup([1..i])), i);
 >      od;
 >    od;
 gap> STOP_TEST("stablesort.tst", 1);

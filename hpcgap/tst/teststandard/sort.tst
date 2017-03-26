@@ -7,6 +7,7 @@
 # Most of these checks are generate a whole bunch of random tests
 
 gap> START_TEST("sort.tst");
+gap> lowAlpha := Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz"));;
 gap> CheckSort := function(list, sorted)
 >  local listcpy, perm;
 >  listcpy := DEEP_COPY_OBJ(list); Sort(listcpy);
@@ -135,11 +136,11 @@ gap> for i in [0..100] do
 >    od;
 
 # Just sanity check I really am making string reps
-gap> IsStringRep(CHARS_LALPHA{[1..0]}) and IsStringRep(CHARS_LALPHA{[1..10]});
+gap> IsStringRep(lowAlpha{[1..0]}) and IsStringRep(lowAlpha{[1..10]});
 true
 gap> for i in [0..26] do
 >      for j in [0..10] do
->        CheckSortParallel(CHARS_LALPHA{[1..i]},Random(SymmetricGroup([1..i])), i);
+>        CheckSortParallel(lowAlpha{[1..i]},Random(SymmetricGroup([1..i])), i);
 >      od;
 >    od;
 gap> # Pass two lists, where reverse-ordering x orders y

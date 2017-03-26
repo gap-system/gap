@@ -6,7 +6,7 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g: why? (takes a few seconds to run)
 ##
 gap> START_TEST("matrix.tst");
 gap> ##
@@ -278,8 +278,8 @@ true
 gap> ##
 gap> x := Indeterminate(Integers,1);;
 gap> hm := [[x,x^0,0*x,0*x], [x^0,x,x^0,0*x], [0*x,x^0,x,x^0], [0*x,0*x,x^0,x]];;
-gap> DeterminantMatDivFree(hm);
-x_1^4-3*x_1^2+1
+gap> DeterminantMatDivFree(hm) = x^4-3*x^2+1;
+true
 gap> ##
 gap> ## Simple matrix functions for testing
 gap> ##

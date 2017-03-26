@@ -44,8 +44,6 @@ gap> Size(R);
 1501
 gap> ForAll(R, x-> x in R);
 true
-gap> Representative(R);
-(1,(1,2)(3,5)(4,6),6)
 gap> Representative(R) in R;
 true
 gap> RMSElement(R, 25, (), 10);
@@ -179,8 +177,7 @@ gap> VV:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(V, [3,13],
 
 #
 gap> V:=Monoid(Random(R));
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, Usage: Monoid(<gen>,...), Monoid(<gens>), Monoid(<D>),
 
 #
 gap> x:=Random(UnderlyingSemigroup(R));;
@@ -608,12 +605,13 @@ gap> Length(GreensDClasses(UUU));
 4
 gap> Size(V);
 33
-gap> Vt:=Range(IsomorphismTransformationSemigroup(V));
-<transformation semigroup of degree 34 with 5 generators>
+gap> Vt:=Range(IsomorphismTransformationSemigroup(V));;
+gap> Length(GeneratorsOfSemigroup(Vt));
+5
+gap> DegreeOfTransformationSemigroup(Vt);
+34
 gap> Size(Vt);
 33
-gap> Representative(R);
-(1,(1,2),3)
 gap> Representative(R) in R;
 true
 gap> Representative(S);
@@ -673,10 +671,7 @@ gap> Size(V);
 33
 gap> IsSimpleSemigroup(V);
 false
-gap> enum:=Enumerator(R);
-<enumerator of Rees 0-matrix semigroup>
-gap> enum[1];
-0
+gap> enum:=Enumerator(R);;
 gap> ForAll(enum, x-> x in R);
 true
 gap> Length(enum);
@@ -687,8 +682,7 @@ gap> ForAll(enum, x-> enum[Position(enum, x)]=x);
 true
 gap> ForAll([1..Length(enum)], i-> Position(enum, enum[i])=i);
 true
-gap> enum[1];
-0
+gap> enum[1];;
 gap> enum:=Enumerator(S);
 <enumerator of <subsemigroup of 7x6 Rees 0-matrix semigroup with 12 generators
   >>
@@ -1082,6 +1076,51 @@ true
 gap> HasIsFinite(S);
 true
 gap> IsFinite(S);
+true
+
+# Test bug in IsFinite for RMS or RZMS created over a free group
+gap> S := FreeGroup(1);;
+gap> R := ReesMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
+gap> IsFinite(R);
+false
+
+# Test bug in creation of RZMS over a free semigroup
+gap> S := FreeSemigroup(1);;
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1]]);;
+
+# Test IsomorphismReesZeroMatrixSemigroup 
+gap> BruteForceIsoCheck := function(iso)
+>   local x, y;
+>   if not IsInjective(iso) or not IsSurjective(iso) then
+>     return false;
+>   fi;
+>   for x in GeneratorsOfSemigroup(Source(iso)) do
+>     for y in GeneratorsOfSemigroup(Source(iso)) do
+>       if x ^ iso * y ^ iso <> (x * y) ^ iso then
+>         return false;
+>       fi;
+>     od;
+>   od;
+>   return true;
+> end;;
+gap> BruteForceInverseCheck := function(map)
+> local inv;
+>   inv := InverseGeneralMapping(map);
+>   return ForAll(Source(map), x -> x = (x ^ map) ^ inv)
+>     and ForAll(Range(map), x -> x = (x ^ inv) ^ map);
+> end;;
+gap> S := Semigroup(Transformation([1, 2, 1, 4, 1, 2]),
+>                   Transformation([1, 3, 1, 5, 1, 3]), 
+>                   Transformation([1, 1, 2, 1, 4, 4]));;
+gap> IsZeroSimpleSemigroup(S);
+true
+gap> map := IsomorphismReesZeroMatrixSemigroup(S);;
+gap> BruteForceIsoCheck(map);
+true
+gap> BruteForceInverseCheck(map);
 true
 
 #

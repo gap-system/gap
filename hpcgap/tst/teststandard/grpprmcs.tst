@@ -5,7 +5,7 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grpprmcs.tst");
 
