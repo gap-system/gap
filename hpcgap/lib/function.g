@@ -81,7 +81,7 @@ DeclareCategoryKernel( "IsOperation",
 ##
 ##  <#GAPDoc Label="FunctionsFamily">
 ##  <ManSection>
-##  <Var Name="FunctionsFamily"/>
+##  <Fam Name="FunctionsFamily"/>
 ##
 ##  <Description>
 ##  is the family of all functions.
@@ -129,7 +129,7 @@ BIND_GLOBAL( "TYPE_OPERATION",
 ##
 ##  <#GAPDoc Label="NameFunction">
 ##  <ManSection>
-##  <Func Name="NameFunction" Arg='func'/>
+##  <Oper Name="NameFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns the name of a function. For operations, this is the name used in
@@ -186,7 +186,7 @@ DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC
 ##
 ##  <#GAPDoc Label="NumberArgumentsFunction">
 ##  <ManSection>
-##  <Func Name="NumberArgumentsFunction" Arg='func'/>
+##  <Oper Name="NumberArgumentsFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns the number of arguments the function <A>func</A> accepts.
@@ -220,7 +220,7 @@ DeclareOperationKernel( "NumberArgumentsFunction", [IS_OBJECT], NARG_FUNC );
 ##
 ##  <#GAPDoc Label="NamesLocalVariablesFunction">
 ##  <ManSection>
-##  <Func Name="NamesLocalVariablesFunction" Arg='func'/>
+##  <Oper Name="NamesLocalVariablesFunction" Arg='func'/>
 ##
 ##  <Description>
 ##  returns a mutable list of strings;
