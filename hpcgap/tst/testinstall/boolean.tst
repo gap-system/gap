@@ -5,7 +5,6 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: too trivial?
 ##
 gap> START_TEST("boolean.tst");
 gap> not true;
@@ -44,6 +43,16 @@ gap> false and true;
 false
 gap> false and false;
 false
+gap> String(true); String(false); String(fail);
+"true"
+"false"
+"fail"
+gap> ViewString(true); ViewString(false); ViewString(fail);
+"true"
+"false"
+"fail"
+gap> TNUM_OBJ(fail)[2];
+"boolean or fail"
 gap> STOP_TEST( "boolean.tst", 1);
 
 #############################################################################

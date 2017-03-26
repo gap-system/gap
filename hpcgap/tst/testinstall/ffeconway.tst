@@ -5,7 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  This  file  tests  the large finite fields .
+##  This  file  tests  the large finite fields.
 ##
 gap> START_TEST("ffeconway.tst");
 

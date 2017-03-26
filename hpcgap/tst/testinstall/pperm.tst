@@ -93,6 +93,12 @@ true
 gap> f:=PartialPermNC([1..100000]);;
 gap> IsIdempotent(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> IndexPeriodOfPartialPerm(f);
+[ 1, 1 ]
+gap> SmallestIdempotentPower(f);
+1
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
@@ -114,6 +120,14 @@ true
 gap> List(ComponentRepsOfPartialPerm(f), i-> ComponentPartialPermInt(f, i))
 > =ComponentsOfPartialPerm(f);
 true
+gap> f := PartialPerm([], []);
+<empty partial perm>
+gap> ComponentsOfPartialPerm(f);
+[  ]
+gap> ComponentRepsOfPartialPerm(f);
+[  ]
+gap> NrComponentsOfPartialPerm(f);
+0
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
@@ -656,6 +670,18 @@ gap> g:=PartialPermNC([100001,2,3,4,5]);
 [1,100001](2)(3)(4)(5)
 gap> MeetOfPartialPerms(f,g);
 <identity partial perm on [ 2, 3, 4, 5 ]>
+gap> MeetOfPartialPerms(PartialPerm([1]));
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([2]));
+<empty partial perm>
+gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([1, 2]));
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms([]);
+Error, usage: the argument should be a collection of partial perms, 
+gap> MeetOfPartialPerms([PartialPerm([1]), PartialPerm([1, 2])]);
+<identity partial perm on [ 1 ]>
+gap> MeetOfPartialPerms(SymmetricInverseMonoid(3));
+<empty partial perm>
 
 # RestrictedPartialPerm
 gap> f:=PartialPermNC([100000,2,3,4,5]);
@@ -2374,6 +2400,16 @@ gap> x := PartialPerm([70000], [1]);
 [70000,1]
 gap> CodegreeOfPartialPerm(x / x);
 70000
+
+# Test Zero and MultiplicativeZeroOp
+gap> x := PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);;
+gap> Zero(x);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+gap> MultiplicativeZeroOp(x);
+<empty partial perm>
+gap> MultiplicativeZero(x);
+<empty partial perm>
 
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;

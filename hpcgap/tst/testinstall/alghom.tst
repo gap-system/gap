@@ -70,6 +70,13 @@ gap> f:= AlgebraWithOneHomomorphismByImages( A, B, [ C[2] ], [ m2 ] );
 [ v.2, v.1+v.2 ] -> [ [ [ 0, 0 ], [ 0, 1 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
 gap> IsBijective( f );
 true
+gap> P := PolynomialRing(Rationals, 3);;
+gap> x:=P.1;;y:=P.2;;z:=P.3;;
+gap> pols:=[ x^3-3*x-1, x^2+x*y+y^2-3, x+y+z ];;
+gap> I := Ideal(P, pols);;
+gap> pr := NaturalHomomorphismByIdeal(P, I);;
+gap> IsZero(Image(pr,x));
+false
 gap> STOP_TEST( "alghom.tst", 1);
 
 #############################################################################

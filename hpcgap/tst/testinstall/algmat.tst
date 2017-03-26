@@ -250,7 +250,8 @@ gap> IsFullMatrixModule( sum );
 false
 
 #############################################################################
-gap> n:= NullAlgebra( GF(3) );;
+gap> n:= NullAlgebra( GF(3) );
+<algebra over GF(3)>
 gap> Dimension( n );
 0
 gap> b:= Basis( n );

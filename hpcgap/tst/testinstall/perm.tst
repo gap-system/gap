@@ -24,4 +24,20 @@ gap> ForAll(checklens, n -> not(
 >  PermList(Concatenation([1..n-1], [n+1,n,n+2,n+4,n+3])) =
 >  PermList(Concatenation([1..n-1], [n+1,n+2,n,n+4,n+3]))));
 true
+gap> MappingPermListList([1,1], [2,2]);
+(1,2)
+gap> MappingPermListList([1,2], [2,1]);
+(1,2)
+gap> MappingPermListList([1,2], [3,4]);
+(1,3)(2,4)
+gap> (1,128000) = ();
+false
+gap> (1,128000) * (129000, 129002);
+(1,128000)(129000,129002)
+gap> (1,128000) * (128000,128001);
+(1,128001,128000)
+gap> (128000,256000,512000) ^ (-1);
+(128000,512000,256000)
+gap> (1,2) * (128000,128001);
+(1,2)(128000,128001)
 gap> STOP_TEST("perm.tst", 1);

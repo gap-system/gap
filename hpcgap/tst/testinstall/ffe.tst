@@ -117,6 +117,24 @@ gap> Subfields( GF(81) );
 [ GF(3), GF(3^2), GF(3^4) ]
 gap> Subfields( GF(2^6) );
 [ GF(2), GF(2^2), GF(2^3), GF(2^6) ]
+
+# RootFFE
+gap> Rochambeau:=function(F)
+> local e,i,p,a,r;
+>  e:=Elements(F);
+>  for i in [1..2*Size(F)] do
+>    p:=Set(List(e,x->x^i));
+>    for a in e do
+>      r:=RootFFE(F,a,i);
+>      if a in p and r=fail then Error("-1"); return -1;fi;
+>      if r<>fail and a<>r^i then Error("1");return 1;fi;
+>    od;
+>  od;
+>  return 0;
+> end;;
+gap> qs:=[2,3,4,5,7,8,9,11,13,16,17,19,25,27,32,64,81,125,128,243,256];;
+gap> ForAll(qs,x->Rochambeau(GF(x))=0);
+true
 gap> STOP_TEST( "ffe.tst", 1);
 
 #############################################################################

@@ -42,6 +42,22 @@ gap> Print(first50,"\n");
   b^-1*a^-1*b^-1, a*b^-2 ]
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
+
+#
+gap> ForAll([0,1,2,3,infinity], n -> (n < infinity) = IsFinitelyGeneratedGroup(FreeGroup(n)));
+true
+gap> ForAll([0,1,2,3], n -> (n < 2) = IsFinitelyGeneratedGroup(DerivedSubgroup(FreeGroup(n))));
+true
+gap> ForAll([0,1,2,3,infinity], n -> (n < 2) = IsAbelian(FreeGroup(n)));
+true
+gap> ForAll([0,1,2,3,infinity], n -> (n < 2) = IsSolvableGroup(FreeGroup(n)));
+true
+gap> ForAll([0,1,2,3], n -> (n < 2) = IsAbelian(DerivedSubgroup(FreeGroup(n))));
+true
+gap> ForAll([0,1,2,3], n -> (n < 2) = IsSolvableGroup(DerivedSubgroup(FreeGroup(n))));
+true
+
+#
 gap> STOP_TEST( "grpfree.tst", 1);
 
 #############################################################################

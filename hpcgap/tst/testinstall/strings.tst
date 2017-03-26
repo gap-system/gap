@@ -41,6 +41,40 @@ gap> PrintString(x);
 "abc"
 gap> String(x);
 "abc"
+gap> x:="\0xFF";
+"\377"
+gap> x:="\0x42\0x23\0x10\0x10\0x10";
+"B#\020\020\020"
+gap> x:="A string with \0xFF Hex stuff \0x42 in it";
+"A string with \377 Hex stuff B in it"
+gap> "\0yab";
+Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
+:1
+"\0yab";
+  ^
+gap> "\090";
+Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
+:1
+"\090";
+  ^
+gap> "\0x1g";
+Syntax error: Expecting hexadecimal digit in stream:1
+"\0x1g";
+    ^
+gap> '\0x1bc';
+Syntax error: Missing single quote in character constant in stream:1
+'\0x1bc';
+     ^
+gap> "\0x1bc";
+"\033c"
+gap> '
+Syntax error: Character literal must not include <newline> in stream:1
+'
+^
+gap> "
+Syntax error: String must not include <newline> in stream:1
+"
+^
 
 # Empty string
 gap> x:="";
@@ -113,6 +147,12 @@ gap> PrintString(x);
 "'a'"
 gap> String(x);
 "'a'"
+gap> x:='\0x42';
+'B'
+gap> x:='\0xFF';
+'\377'
+gap> x:='\0xab';
+'\253'
 
 # RemoveCharacters
 gap> s := "I love pies pies pies";;
@@ -144,6 +184,20 @@ gap> s;
 gap> RemoveCharacters(s, " ");
 gap> s;
 "Ilovepiespiespies"
+
+# Lowercase - Uppercase
+gap> List("abcxyzABCXYZ\n\t !019?\377\000$", LowercaseChar);
+"abcxyzabcxyz\n\t !019?\377\000$"
+gap> List("abcxyzABCXYZ\n\t !019?\377\000$", UppercaseChar);
+"ABCXYZABCXYZ\n\t !019?\377\000$"
+gap> UppercaseString("abcxyzABCXYZ\n\t !019?\377\000$");
+"ABCXYZABCXYZ\n\t !019?\377\000$"
+gap> LowercaseString("abcxyzABCXYZ\n\t !019?\377\000$");
+"abcxyzabcxyz\n\t !019?\377\000$"
+gap> UppercaseString("");
+""
+gap> LowercaseString("");
+""
 
 # StringRep
 gap> OldCopyToStringRep := function(s)

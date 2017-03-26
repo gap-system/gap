@@ -37,7 +37,7 @@ gap> Blocks(eo);
 gap> RepresentativesMinimalBlocks(eo);
 [ [ 1, 5, 9 ], [ 1, 7 ] ]
 gap> MaximalBlocks(eo);
-[ [ 1, 3, 5, 7, 9, 11 ], [ 2, 4, 6, 8, 10, 12 ] ]
+[ [ 1, 3 .. 11 ], [ 2, 4 .. 12 ] ]
 gap> eo:=ExternalOrbit(G,[1..12],1,OnPoints);
 1^G
 gap> IsTransitive(eo); 

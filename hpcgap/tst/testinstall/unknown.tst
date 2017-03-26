@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
-##
 gap> START_TEST("unknown.tst");
 gap> LargestUnknown:= 0;;
 gap> u:= Unknown();

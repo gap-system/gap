@@ -294,6 +294,13 @@ true
 gap> IMAGE_SET_TRANS(Transformation([1], [65537])) 
 > = [2 .. 65537];
 true
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> IMAGE_SET_TRANS(f);
+[  ]
+gap> FLAT_KERNEL_TRANS(f);
+[  ]
 
 # Test IMAGE_SET_TRANS_INT
 gap> IMAGE_SET_TRANS_INT(IdentityTransformation, -1);
@@ -1826,6 +1833,13 @@ gap> TRANS_IMG_CONJ(f, LeftOne(f));
 (1,6,4,12,11)(2,7,5,9)(3,8,10)
 gap> TRANS_IMG_CONJ(LeftOne(f), f);
 (1,11,12,4,6)(2,9,5,7)(3,10,8)
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> TRANS_IMG_CONJ(Transformation([2, 1, 3]), f);
+(1,2)
+gap> TRANS_IMG_CONJ(f, Transformation([2, 1, 3]));
+(1,2)
 
 # One, IsOne, IdentityTransformation
 gap> f := Transformation([11, 9, 10, 6, 7, 7, 10, 7, 10, 9, 7, 4]);;
@@ -1935,6 +1949,21 @@ gap> g := Transformation([1, 2, 3, 4, 5, 6], [1, 2, 1, 5, 4, 65537]);;
 gap> f = g;
 false
 gap> g = f;
+false
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> Transformation([1, 2, 3, 5, 4]) = f * (1, 2);
+false
+gap> f * (1, 2) = Transformation([1, 2, 3, 5, 4]);
+false
+gap> Transformation([2, 1, 3, 4, 5]) = f * (1, 2);
+true
+gap> f * (1, 2) = Transformation([2, 1, 3, 4, 5]);
+true
+gap> Transformation([2, 1, 3, 5, 4]) = f * (1, 2);
+false
+gap> f * (1, 2) = Transformation([2, 1, 3, 5, 4]);
 false
 
 # \<, less than, LT
@@ -2074,6 +2103,45 @@ gap> f < g;
 false
 gap> g < f;
 true
+gap> x := (2 ^ 16, 2 ^ 16 + 1);
+(65536,65537)
+gap> y := AsTransformation(x);
+<transformation on 65537 pts with rank 65537>
+gap> IsTrans4Rep(y);
+true
+gap> x := y ^ 2;
+IdentityTransformation
+gap> IsTrans4Rep(x);
+true
+gap> x < Transformation([2, 1, 3]);
+true
+gap> x < Transformation([1, 1, 3]);
+false
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> Transformation([1, 2, 3, 5, 4]) < f * (1, 2);
+true
+gap> Transformation([3, 2, 3, 5, 4]) < f * (1, 2);
+false
+gap> f * (1, 2) < Transformation([1, 2, 3, 5, 4]);
+false
+gap> f * (1, 2) < Transformation([3, 2, 3, 5, 4]);
+true
+gap> f * (1, 2) < Transformation([1, 2, 3, 5, 4]);
+false
+gap> Transformation([2, 1, 3, 4, 5]) < f * (1, 2);
+false
+gap> Transformation([2, 1, 4, 4, 5]) < f * (1, 2);
+false
+gap> Transformation([2, 1, 1, 4, 5]) < f * (1, 2);
+true
+gap> f * (1, 2) < Transformation([2, 1, 3, 4, 5]);
+false
+gap> f * (1, 2) < Transformation([2, 1, 4, 4, 5]);
+true
+gap> f * (1, 2) < Transformation([2, 1, 1, 4, 5]);
+false
 
 # \*, product, PROD: transformation and transformation
 gap> f := Transformation([8, 8, 2, 7, 9, 11, 7, 7, 6, 3, 1, 9, 13, 14]);;
@@ -2108,6 +2176,31 @@ gap> g * f;
 Transformation( [ 2, 3, 2, 3 ] )
 gap> f * g * f * g * f * g; 
 Transformation( [ 2, 1, 1, 1 ] )
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> Transformation([1, 2, 3, 5, 4]) * (f * (1, 2));
+Transformation( [ 2, 1, 3, 5, 4 ] )
+gap> Transformation([3, 2, 3, 5, 4]) * (f * (1, 2));
+Transformation( [ 3, 1, 3, 5, 4 ] )
+gap> (f * (1, 2)) * Transformation([1, 2, 3, 5, 4]);
+Transformation( [ 2, 1, 3, 5, 4 ] )
+gap> (f * (1, 2)) * Transformation([3, 2, 3, 5, 4]);
+Transformation( [ 2, 3, 3, 5, 4 ] )
+gap> (f * (1, 2)) * Transformation([1, 2, 3, 5, 4]);
+Transformation( [ 2, 1, 3, 5, 4 ] )
+gap> Transformation([2, 1, 3, 4, 5]) * (f * (1, 2));
+IdentityTransformation
+gap> Transformation([2, 1, 4, 4, 5]) * (f * (1, 2));
+Transformation( [ 1, 2, 4, 4 ] )
+gap> Transformation([2, 1, 1, 4, 5]) * (f * (1, 2));
+Transformation( [ 1, 2, 2 ] )
+gap> (f * (1, 2)) * Transformation([2, 1, 3, 4, 5]);
+IdentityTransformation
+gap> (f * (1, 2)) * Transformation([2, 1, 4, 4, 5]);
+Transformation( [ 1, 2, 4, 4 ] )
+gap> (f * (1, 2)) * Transformation([2, 1, 1, 4, 5]);
+Transformation( [ 1, 2, 1 ] )
 
 # \*, PROD, product: for a transformation and a permutation
 gap> Transformation([1, 4, 2, 1]) * (1, 2);
@@ -2161,6 +2254,30 @@ gap> f := Transformation([8, 1, 9, 7, 7, 6, 4, 2, 2, 4]);;
 gap> f * (1, 10, 2, 3, 6, 7)(11, 15)(12, 17, 19, 16, 20, 18);
 Transformation( [ 8, 10, 9, 1, 1, 7, 4, 3, 3, 4, 15, 17, 13, 14, 11, 20, 19,
   12, 16, 18 ] )
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> p := AS_PERM_TRANS(f);;
+gap> IsPerm4Rep(p);
+true
+gap> Transformation([2, 1, 4, 4, 5]) * p; 
+Transformation( [ 2, 1, 4, 4 ] )
+gap> p * Transformation([2, 1, 4, 4, 5]); 
+Transformation( [ 2, 1, 4, 4 ] )
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> (f * (1, 2)) * (1, 2, 3);
+Transformation( [ 3, 2, 1 ] )
+gap> (1, 2, 3) * (f * (1, 2));
+Transformation( [ 1, 3, 2 ] )
+gap> p := AS_PERM_TRANS(f) * (1,2);;
+gap> IsPerm4Rep(p);
+true
+gap> p * Transformation([2, 1, 4, 4, 5]);
+Transformation( [ 1, 2, 4, 4 ] )
+gap> Transformation([2, 1, 4, 4, 5]) * p;
+Transformation( [ 1, 2, 4, 4 ] )
 
 # \*, PROD, product: for a permutation and a transformation
 gap> (1, 2) * Transformation([1, 4, 2, 1]);
@@ -2241,6 +2358,16 @@ gap> f ^ p = p ^ -1 * f * p;
 true
 gap> Transformation([1, 2, 1]) ^ (1, 2, 3);
 Transformation( [ 2, 2 ] )
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> p := AS_PERM_TRANS(f) * (1,2);;
+gap> IsPerm4Rep(p);
+true
+gap> Transformation([2, 1]) ^ p;
+Transformation( [ 2, 1 ] )
+gap> (f * (1, 2)) ^ (1, 2);
+Transformation( [ 2, 1 ] )
 
 # \/, quotient, QUO: for a transformation and a permutation
 gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
@@ -2308,6 +2435,16 @@ gap> OnTuples(MovedPoints(f), f);
 gap> Transformation([1], [65537]) / (1, 2) 
 > = Transformation([1], [65537]) * (1, 2);
 true
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> p := AS_PERM_TRANS(f);;
+gap> IsPerm4Rep(p);
+true
+gap> Transformation([2, 1]) / p;
+Transformation( [ 2, 1 ] )
+gap> (f * (1, 2)) / (1, 2, 3);
+Transformation( [ 1, 3, 2 ] )
 
 # left quotient, LQUO: for a permutation and a transformation
 gap> f := Transformation([8, 2, 6, 6, 7, 10, 8, 2, 1, 10]);;
@@ -2393,6 +2530,18 @@ gap> p := p * (1, 65538) ^ 2;
 (1,9,7,8,6,10,2,5,4,3)
 gap> LQUO(p, f) = p ^ -1 * f;
 true
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> p := AS_PERM_TRANS(f);;
+gap> IsPerm4Rep(p);
+true
+gap> LQUO(p, Transformation([2, 1]));
+Transformation( [ 2, 1 ] )
+gap> LQUO(p * (1, 2), Transformation([2, 1]));
+IdentityTransformation
+gap> LQUO((1,2,3), f * (1, 2));
+Transformation( [ 3, 2, 1 ] )
 
 # ^, POW: for a positive integer and a transformation
 gap> 2 ^ Transformation([1, 1]);
@@ -2837,6 +2986,13 @@ Error, PermLeftQuoTransformation: usage, the arguments must have equal
 image set and kernel,
 gap> PermLeftQuoTransformation(f, f * (2,11,5,6,9));
 (2,11,5,6,9)
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> PermLeftQuoTransformation(Transformation([2, 1, 3]), f);
+(1,2)
+gap> PermLeftQuoTransformation(f, Transformation([2, 1, 3]));
+(1,2)
 
 # String
 gap> String(Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]));

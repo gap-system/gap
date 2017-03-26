@@ -10,8 +10,6 @@
 ##  (The test files 'vspcrow.tst' and 'vspcmat.tst' should contain the same
 ##  tests.)
 ##
-##  Exclude from testinstall.g: why?
-##
 gap> START_TEST("vspcmali.tst");
 
 #############################################################################

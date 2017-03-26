@@ -51,10 +51,6 @@ gap> HasSize(t);
 true
 gap> Size(t); 
 1
-gap> f := FreeGroup(2);;
-gap> g:=f/[f.1^2,f.2^3];;
-gap> g.1^5=g.1;
-true
 gap> STOP_TEST( "xgap.tst", 1);
 
 #############################################################################

@@ -286,57 +286,37 @@ gap>
 #T# Checking for correct non-removal of one from generating sets in
 # SemigroupByGenerators JDM
 gap> S := Semigroup(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<trivial transformation monoid of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseMonoid(S);
 [ IdentityTransformation ]
 
 #T# Checking for correct non-removal of one from generating sets in
 # MonoidByGenerators JDM
 gap> S := Monoid(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> S := Monoid(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<trivial partial perm monoid of rank 1 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> S := Monoid(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<trivial transformation monoid of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfInverseMonoid(S);
 [ IdentityTransformation ]
 
 #T# Checking for correct non-removal of one from generating sets in
@@ -347,19 +327,11 @@ gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseSemigroup(S);
-[ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfInverseMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
 gap> S := InverseSemigroup(IdentityTransformation);
 <trivial transformation group of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ IdentityTransformation ]
@@ -374,8 +346,6 @@ gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
-gap> GeneratorsOfGroup(S);
-[ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseMonoid(S);
@@ -385,8 +355,6 @@ gap> S := InverseMonoid(IdentityTransformation);
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
-gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfInverseSemigroup(S);
 [ IdentityTransformation ]
@@ -428,6 +396,33 @@ gap> IsTrivial(T);
 false
 gap> IsEmpty(T);
 true
+
+# Check for correct ViewString method for IsInverseSemigroup and
+# HasGeneratorsOfSemigroup
+gap> S := Semigroup(Transformation([4, 3, 5, 5, 5]),
+>                   Transformation([4, 1, 5, 2, 5]), 
+>                   Transformation([5, 5, 2, 1, 5]));
+<transformation semigroup of degree 5 with 3 generators>
+gap> IsInverseSemigroup(S);
+true
+gap> Size(S);
+36
+gap> S;
+<inverse transformation semigroup of size 36, degree 5 with 3 generators>
+
+# Check correct view method is used for inverse monoids without
+# GeneratorsOfInverseSemigroup
+gap> S := Monoid(Transformation([1, 2, 3, 4, 5, 6, 7, 7, 7]), 
+>                Transformation([4, 6, 3, 6, 6, 6, 7, 7, 7]),
+>                Transformation([4, 5, 6, 1, 6, 6, 7, 7, 7]), 
+>                Transformation([6, 6, 3, 1, 6, 6, 7, 7, 7]), 
+>                Transformation([4, 6, 6, 1, 2, 6, 7, 7, 7]));;
+gap> IsInverseSemigroup(S);
+true
+gap> Size(S);
+18
+gap> S;
+<inverse transformation monoid of size 18, degree 9 with 5 generators>
 
 #
 gap> STOP_TEST( "semigrp.tst", 1);
