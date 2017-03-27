@@ -21,11 +21,7 @@ OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;
 SaveWorkspace( "$WSP" );
 EOF
 
-books="ref tut changes"
-if [[ "$HPCGAP" = "yes" ]]
-then
-  books="$books hpc"
-fi
+books="ref tut changes hpc"
 
 for run in 1 2
 do
