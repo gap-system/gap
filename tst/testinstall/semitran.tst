@@ -161,7 +161,7 @@ gap> H := GreensHClassOfElement(S, Transformation([1, 1, 2, 3]));;
 gap> FullTransformationMonoid(2);
 <full transformation monoid of degree 2>
 gap> FullTransformationMonoid(0);
-Error, usage: the argument must be a positive integer,
+Error, the argument must be a positive integer
 
 # Test IsFullTransformationMonoid 
 gap> S := Semigroup(GeneratorsOfSemigroup(FullTransformationMonoid(3)));
@@ -270,8 +270,7 @@ gap> BruteForceInverseCheck(last2);
 true
 gap> S := SemigroupByMultiplicationTable([[1, 1, 1], [1, 1, 1], [1, 1, 1]]);;
 gap> IsomorphismTransformationMonoid(S);
-Error, IsomorphismTransformationMonoid: usage,
-the argument must be a semigroup with a multiplicative neutral element,
+Error, the argument must be a semigroup with a multiplicative neutral element
 
 # Test IsomorphismTransformationMonoid for a transformation semigroup
 gap> S := Semigroup(Transformation([1, 4, 6, 2, 5, 3, 7, 8, 9, 9]),
@@ -283,8 +282,7 @@ gap> BruteForceInverseCheck(last2);
 true
 gap> S := Semigroup([Transformation([2, 2]), Transformation([2, 1, 2])]);;
 gap> IsomorphismTransformationMonoid(S);
-Error, IsomorphismTransformationMonoid: usage,
-the argument must be a semigroup with a multiplicative neutral element,
+Error, the argument must be a semigroup with a multiplicative neutral element
 
 # Test IsomorphismTransformationSemigroup for a transformation semigroup
 gap> S := Semigroup(Transformation([1, 4, 6, 2, 5, 3, 7, 8, 9, 9]));;
@@ -309,8 +307,7 @@ gap> BruteForceInverseCheck(last2);
 true
 gap> T := SemigroupIdealByGenerators(S, [S.3]);;
 gap> IsomorphismTransformationMonoid(T);
-Error, IsomorphismTransformationMonoid: usage,
-the argument must be a semigroup with a multiplicative neutral element,
+Error, the argument must be a semigroup with a multiplicative neutral element
 gap> T := SemigroupIdealByGenerators(S, [S.1]);;
 gap> IsomorphismTransformationMonoid(T);;
 gap> BruteForceIsoCheck(last);

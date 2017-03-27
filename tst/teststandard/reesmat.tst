@@ -51,8 +51,8 @@ gap> RMSElement(R, 25, (), 10);
 gap> RMSElement(R, 25, (), 10) in R;
 true
 gap> RMSElement(R, 25, (), 11) in R;
-Error, usage: the fourth argument <j> does not belong to the columns
-of the first argument <R>,
+Error, the fourth argument (a positive integer) does not belong to the columns\
+ of the first argument (a Rees (0-)matrix semigroup)
 gap> U:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(R, 
 > [1..20], Group(()), [5,6,7,8,10]));
 <subsemigroup of 25x10 Rees 0-matrix semigroup with 24 generators>
@@ -193,8 +193,7 @@ gap> f[3];
 gap> f[2]=x;
 true
 gap> f[4];
-Error, usage: the first argument <x> must be non-zero and the
-second argument <i> must equal 1, 2, or 3,
+Error, the second argument must be 1, 2, or 3
 
 #
 gap> gens:=[Transformation([3,3,2,6,2,4,4,6]),
@@ -213,14 +212,16 @@ gap> Semigroup(GeneratorsOfReesZeroMatrixSemigroup(R, [i], Group(()), [1]));
 #
 gap> U:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(R, [1,3,4,5], 
 > Group((1,3)), [1,9]));
-Error, usage: <T> must be a subsemigroup of the underlying semigroup of <R>,
+Error, the third argument must be a subsemigroup of the underlying semigroup o\
+f the first argument (a Rees 0-matrix semigroup)
 gap> U:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(R, [1,3,4,5], Group(()),
 > [1,9]));
 <subsemigroup of 25x10 Rees 0-matrix semigroup with 5 generators>
 gap> IsReesZeroMatrixSemigroup(U);
 true
 gap> UU:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(U, [1], Group(()), [6]));
-Error, usage: <J> must be a non-empty subset of the columns of <R>,
+Error, the fourth argument must be a non-empty subset of the columns of the fi\
+rst argument (a Rees 0-matrix semigroup)
 gap> UU:=Semigroup(GeneratorsOfReesZeroMatrixSemigroup(R, [1], Group(()),
 > [9]), MultiplicativeZero(R));;
 gap> V:=Range(IsomorphismTransformationSemigroup(UU));;
@@ -402,8 +403,8 @@ gap> RMSElement(R, 8, (), 11);
 gap> RMSElement(R, 8, (), 11) in R;
 true
 gap> RMSElement(R, 8, (), 12) in R;
-Error, usage: the fourth argument <j> does not belong to the columns
-of the first argument <R>,
+Error, the fourth argument (a positive integer) does not belong to the columns\
+ of the first argument (a Rees (0-)matrix semigroup)
 gap> U:=Semigroup(GeneratorsOfReesMatrixSemigroup(R, [5], Group(()), 
 > [1,8,11]));
 <subsemigroup of 9x11 Rees matrix semigroup with 3 generators>
@@ -532,7 +533,8 @@ gap> ForAll(V, x-> x in R);
 true
 gap> VV:=Semigroup(GeneratorsOfReesMatrixSemigroup(V, [1,3], Group(()), 
 > [1,8,9]));
-Error, usage: <I> must be a non-empty subset of the rows of <R>,
+Error, the second argument must be a non-empty subset of the rows of the first\
+ argument (a Rees matrix semigroup)
 
 #
 gap> x:=Random(UnderlyingSemigroup(R));;
@@ -548,7 +550,7 @@ gap> f[3];
 gap> f[2]=x;
 true
 gap> f[4];
-Error, usage: the second argument <i> must equal 1, 2, or 3,
+Error, the second argument must equal 1, 2, or 3
 
 # more general tests
 gap> mat:=[ [ 0, 0, 0, (), (), (), () ], [ 0, (), (), 0, 0, (), () ], 
@@ -629,8 +631,8 @@ gap> Rows(U);
 gap> RMSElement(R, 3, (), 5) in U;
 false
 gap> RMSElement(U, 3, (), 5) in U;
-Error, usage: the second argument <i> does not belong to the rows of
-the first argument <R>,
+Error, the second argument (a positive integer) does not belong to the rows of\
+ the first argument (a Rees (0-)matrix semigroup)
 gap> RMSElement(V, 4, (), 3);
 (4,(),3)
 gap> Representative(UU);
@@ -739,13 +741,14 @@ gap> Elements(UU)*last3;
 gap> RMSElement(UU, 1, (1,2), 5);
 (1,(1,2),5)
 gap> RMSElement(UU, 10000, (), 5);
-Error, usage: the second argument <i> does not belong to the rows of
-the first argument <R>,
+Error, the second argument (a positive integer) does not belong to the rows of\
+ the first argument (a Rees (0-)matrix semigroup)
 gap> RMSElement(UU, 1, (), 10);
-Error, usage: the fourth argument <j> does not belong to the columns
-of the first argument <R>,
+Error, the fourth argument (a positive integer) does not belong to the columns\
+ of the first argument (a Rees (0-)matrix semigroup)
 gap> RMSElement(V, 1, (), 10);
-Error, the arguments do not describe an element of <R>,
+Error, the arguments do not describe an element of the first argument (a Rees \
+(0-)matrix semigroup)
 gap> RMSElement(V, 1, (), 1);
 (1,(),1)
 gap> x:=RMSElement(V, 7, (), 4);; y:=RMSElement(V, x[1], x[2], x[3]);;
@@ -876,13 +879,16 @@ gap> IsomorphismReesZeroMatrixSemigroup(V);;
 
 #over semigroups not groups!
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[,0],[0,0]]);
-Error, usage: <mat> must be a list of dense lists of equal length,
+Error, the entries of the second argument (a list) must be lists of equal leng\
+th
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[0],[0,0]]);
-Error, usage: <mat> must be a list of dense lists of equal length,
+Error, the entries of the second argument (a list) must be lists of equal leng\
+th
 gap> mat:=List([1..3], x-> List([1..4], x->
 > Random(FullTransformationSemigroup(4))));;
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), mat);
-Error, usage: the entries of <mat> must be 0 or belong to <S>,
+Error, the entries of the second argument must be 0 or belong to the first arg\
+ument (a semigroup)
 gap> mat:=List([1..3], x-> List([1..4], x->
 > Random(FullTransformationSemigroup(3))));;
 gap> R:=ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), mat);

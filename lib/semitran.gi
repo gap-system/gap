@@ -125,8 +125,7 @@ function( h )
 
   if not( IsGroupHClass(h) ) then
     # What is an example where this can happen?
-    Error("can only create isomorphisms of group H-classes");
-    return;
+    ErrorNoReturn("can only create isomorphisms of group H-classes");
   fi;
 
   elts:=[]; 
@@ -174,7 +173,7 @@ function(d)
   local gens, s, i;
 
   if not IsPosInt(d) then
-    Error("usage: the argument must be a positive integer,");
+    ErrorNoReturn("the argument must be a positive integer");
   fi;
 
   if d =1 then
@@ -324,9 +323,8 @@ function(S)
   local iso1, inv1, iso2, inv2;
 
   if MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
-                  "the argument must be a semigroup with a ",
-                  "multiplicative neutral element,");
+    ErrorNoReturn("the argument must be a semigroup with a ",
+                  "multiplicative neutral element");
   fi;
 
   iso1 := IsomorphismTransformationSemigroup(S);
@@ -355,9 +353,8 @@ function(S)
   fi;
 
   if MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
-                  "the argument must be a semigroup with a ",
-                  "multiplicative neutral element,");
+    ErrorNoReturn("the argument must be a semigroup with a ",
+                  "multiplicative neutral element");
   fi;
 
   id := MultiplicativeNeutralElement(S);
@@ -427,9 +424,8 @@ function(S)
   local n, T, inv;
   
   if not (IsMonoid(S) or One(S) <> fail) then 
-    ErrorNoReturn("IsomorphismTransformationMonoid: usage,\n",
-                  "the argument must be a semigroup with a ",
-                  "multiplicative neutral element,");
+    ErrorNoReturn("the argument must be a semigroup with a ",
+                  "multiplicative neutral element");
     # in the case of partial perm semigroups having a One is the equivalent to
     # having a MultiplicativeNeutralElement
   fi;
