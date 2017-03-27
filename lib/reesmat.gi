@@ -246,8 +246,8 @@ function(S, mat)
   
   for x in mat do 
     if ForAny(x, s-> not s in S) then
-      Error("usage: the entries of <mat> must belong to <S>,");
-      return;
+      ErrorNoReturn("the entries of the second argument (a rectangular ", 
+                    "table) must belong to the first argument (a semigroup)");
     fi;
   od;
 
@@ -293,14 +293,14 @@ function(S, mat)
   local fam, R, type, x;
 
   if not ForAll(mat, x -> IsDenseList(x) and Length(x) = Length(mat[1])) then
-    Error("usage: <mat> must be a list of dense lists of equal length,");
-    return;
+    ErrorNoReturn("the entries of the second argument (a list) must be ",
+                  "lists of equal length");
   fi;
 
   for x in mat do
     if ForAny(x, s -> not (s = 0 or s in S)) then
-      Error("usage: the entries of <mat> must be 0 or belong to <S>,");
-      return;
+      ErrorNoReturn("the entries of the second argument must be 0 or belong ",
+                    "to the first argument (a semigroup)");
     fi;
   od;
 
@@ -719,27 +719,24 @@ function(R, i, s, j)
 
   if not (IsReesMatrixSubsemigroup(R) 
      or IsReesZeroMatrixSubsemigroup(R)) then
-    Error("usage: the first argument must be a Rees matrix semigroup", 
-    " or Rees 0-matrix semigroup,");
-    return;
+    ErrorNoReturn("the first argument must be a Rees matrix semigroup", 
+                  " or Rees 0-matrix semigroup");
   fi;
 
   if (HasIsReesMatrixSemigroup(R) and IsReesMatrixSemigroup(R)) or
     (HasIsReesZeroMatrixSemigroup(R) and IsReesZeroMatrixSemigroup(R)) then 
     if not i in Rows(R) then 
-      Error("usage: the second argument <i> does not belong to the rows of\n", 
-      "the first argument <R>,");
-      return;
-    fi;
-    if not j in Columns(R) then 
-      Error("usage: the fourth argument <j> does not belong to the columns\n",  
-      "of the first argument <R>,");
-      return;
-    fi;
-    if not s in UnderlyingSemigroup(R) then 
-      Error("usage: the second argument <s> does not belong to the\n",  
-      "underlying semigroup of the first argument <R>,");
-      return;
+      ErrorNoReturn("the second argument (a positive integer) does not ",
+                    "belong to the rows of the first argument (a Rees ",
+                    "(0-)matrix semigroup)");
+    elif not j in Columns(R) then 
+      ErrorNoReturn("the fourth argument (a positive integer) does not ",
+                    "belong to the columns of the first argument (a Rees ",
+                    "(0-)matrix semigroup)");
+    elif not s in UnderlyingSemigroup(R) then 
+      ErrorNoReturn("the second argument does not belong to the",
+                    "underlying semigroup of the first argument (a Rees ",
+                    "(0-)matrix semgiroup)");
     fi;
     return Objectify(TypeReesMatrixSemigroupElements(R), [i, s, j, Matrix(R)]);
   fi;
@@ -748,8 +745,8 @@ function(R, i, s, j)
    [i, s, j, Matrix(ParentAttr(R))]);
 
   if not out in R then # for the case R is defined by a generating set
-    Error("the arguments do not describe an element of <R>,");
-    return;
+    ErrorNoReturn("the arguments do not describe an element of the first ", 
+                  "argument (a Rees (0-)matrix semigroup)");
   fi;
   return out;
 end);
@@ -840,12 +837,10 @@ end);
 InstallMethod(ELM_LIST, "for a Rees matrix semigroup element",
 [IsReesMatrixSemigroupElement, IsPosInt], 
 function(x, i)
-  if i<4 then 
-    return x![i];
-  else
-    Error("usage: the second argument <i> must equal 1, 2, or 3,");
-    return;
+  if i > 3 then 
+    ErrorNoReturn("the second argument must equal 1, 2, or 3");
   fi;
+  return x![i];
 end);
 
 #
@@ -853,13 +848,13 @@ end);
 InstallMethod(ELM_LIST, "for a Rees 0-matrix semigroup element",
 [IsReesZeroMatrixSemigroupElement, IsPosInt], 
 function(x, i)
-  if i<4 and x![1]<>0 then 
-    return x![i];
-  else
-    Error("usage: the first argument <x> must be non-zero and the\n",     
-     "second argument <i> must equal 1, 2, or 3,"); 
-    return;
+  if x![1] = 0 then 
+    ErrorNoReturn("the first argument (an element of a Rees 0-matrix ",
+                  "semigroup) must be non-zero");
+  elif i > 3 then 
+    ErrorNoReturn("the second argument must be 1, 2, or 3");
   fi;
+  return x![i];
 end);
 
 #
@@ -1119,18 +1114,17 @@ InstallMethod(GeneratorsOfReesMatrixSemigroup,
 function(R, I, U, J)
 
   if not IsReesMatrixSemigroup(R) then 
-    Error("usage: <R> must be a Rees matrix semigroup,");
-    return;
+    ErrorNoReturn("the first argument must be a Rees matrix semigroup");
   elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
-    Error("usage: <I> must be a non-empty subset of the rows of <R>,");
-    return;
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
-    Error("usage: <J> must be a non-empty subset of the columns of <R>,");
-    return;
+    ErrorNoReturn("the second argument must be a non-empty subset of the ",
+                  "rows of the first argument (a Rees matrix semigroup)");
   elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
-    Error("usage: <U> must be a subsemigroup of the underlying semigroup", 
-    " of <R>,");
-    return;
+    ErrorNoReturn("the third argument must be a subsemigroup of the ",
+                  "underlying semigroup of the first argument (a Rees matrix ",
+                  "semigroup)");
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+    ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
+                  "columns of the first argument (a Rees matrix semigroup)");
   fi;
   
   return GeneratorsOfReesMatrixSemigroupNC(R, I, U, J);
@@ -1149,18 +1143,17 @@ InstallMethod(GeneratorsOfReesZeroMatrixSemigroup,
 function(R, I, U, J)
 
   if not IsReesZeroMatrixSemigroup(R) then 
-    Error("usage: <R> must be a Rees 0-matrix semigroup,");
-    return;
+    ErrorNoReturn("the first argument must be a Rees 0-matrix semigroup");
   elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
-    Error("usage: <I> must be a non-empty subset of the rows of <R>,");
-    return;
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
-    Error("usage: <J> must be a non-empty subset of the columns of <R>,");
-    return;
+    ErrorNoReturn("the second argument must be a non-empty subset of the ",
+                  "rows of the first argument (a Rees 0-matrix semigroup)");
   elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
-    Error("usage: <T> must be a subsemigroup of the underlying semigroup", 
-    " of <R>,");
-    return;
+    ErrorNoReturn("the third argument must be a subsemigroup of the ",
+                  "underlying semigroup of the first argument (a Rees ",
+                  "0-matrix semigroup)");
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+    ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
+                  "columns of the first argument (a Rees 0-matrix semigroup)");
   fi;
 
   return GeneratorsOfReesZeroMatrixSemigroupNC(R, I, U, J);
@@ -1207,21 +1200,19 @@ InstallMethod(ReesZeroMatrixSubsemigroup,
 "for a Rees 0-matrix semigroup, rows, semigroup, columns",
 [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList], 
 function(R, I, U, J)
-  local S;
    
   if not IsReesZeroMatrixSemigroup(R) then 
-    Error("usage: <R> must be a Rees 0-matrix semigroup,");
-    return;
+    ErrorNoReturn("the first argument must be a Rees 0-matrix semigroup");
   elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
-    Error("usage: <I> must be a non-empty subset of the rows of <R>,");
-    return;
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
-    Error("usage: <J> must be a non-empty subset of the columns of <R>,");
-    return;
+    ErrorNoReturn("the second argument must be a non-empty subset of the ",
+                  "rows of the first argument (a Rees 0-matrix semigroup)");
   elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
-    Error("usage: <T> must be a subsemigroup of the underlying semigroup", 
-    " of <R>,");
-    return;
+    ErrorNoReturn("the third argument must be a subsemigroup of the ",
+                  "underlying semigroup of the first argument (a Rees ",
+                  "0-matrix semigroup)");
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+    ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
+                  "columns of the first argument (a Rees 0-matrix semigroup)");
   fi;
 
   return ReesZeroMatrixSubsemigroupNC(R, I, U, J);
@@ -1259,18 +1250,17 @@ InstallMethod(ReesMatrixSubsemigroup,
 function(R, I, U, J)
   
   if not IsReesMatrixSemigroup(R) then 
-    Error("usage: <R> must be a Rees matrix semigroup,");
-    return;
+    ErrorNoReturn("the first argument must be a Rees matrix semigroup");
   elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
-    Error("usage: <I> must be a non-empty subset of the rows of <R>,");
-    return;
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
-    Error("usage: <J> must be a non-empty subset of the columns of <R>,");
-    return;
+    ErrorNoReturn("the second argument must be a non-empty subset of the ",
+                  "rows of the first argument (a Rees matrix semigroup)");
   elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
-    Error("usage: <U> must be a subsemigroup of the underlying semigroup", 
-    " of <R>,");
-    return;
+    ErrorNoReturn("the third argument must be a subsemigroup of the ",
+                  "underlying semigroup of the first argument (a Rees ",
+                  "matrix semigroup)");
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+    ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
+                  "columns of the first argument (a Rees matrix semigroup)");
   fi;
 
   return ReesMatrixSubsemigroupNC(R, I, U, J);
@@ -1381,8 +1371,7 @@ InstallMethod(IsomorphismReesMatrixSemigroup, "for a D-class",
 [IsGreensDClass],
 function(D)
   if Number(D, IsIdempotent) <> Length(GreensHClasses(D)) then
-    ErrorNoReturn("IsomorphismReesMatrixSemigroup: usage,\n",
-                 "the D-class is not a subsemigroup,");
+    ErrorNoReturn("the argument (a Green's D-class) is not a subsemigroup");
   fi;
   return _InjectionPrincipalFactor(D, ReesMatrixSemigroup);
 end);
@@ -1393,8 +1382,7 @@ function(S)
   local rep, inj;
 
   if not (IsSimpleSemigroup(S) and IsFinite(S)) then
-    Error("usage: the semigroup must be a finite simple semigroup,");
-    return;
+    ErrorNoReturn("the argument must be a finite simple semigroup");
   fi;
 
   rep := Representative(S);
@@ -1412,8 +1400,7 @@ function(S)
   local D, map, inj, inv;
 
   if not (IsZeroSimpleSemigroup(S) and IsFinite(S)) then
-    Error("usage: the semigroup must be a finite 0-simple semigroup,");
-    return;
+    ErrorNoReturn("the argument must be a finite 0-simple semigroup");
   fi;
 
   D := First(GreensDClasses(S),
@@ -1454,8 +1441,7 @@ function(D)
   fi;
 
   if not IsRegularDClass(D) then
-    Error("usage: the argument should be a regular D-class,");
-    return;
+    ErrorNoReturn("the argument should be a regular D-class");
   fi;
 
   if Length(GreensHClasses(D)) = Number(D, IsIdempotent) then

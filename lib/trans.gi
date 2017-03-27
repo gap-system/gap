@@ -33,9 +33,8 @@ InstallMethod(NumberTransformation,
 function(t, n)
   local a, i;
   if DegreeOfTransformation(t) > n then 
-    ErrorNoReturn("NumberTransformation: usage,", 
-                  "the second argument must be greater\nthan or equal to the ",
-                  "degree of the transformation,");
+    ErrorNoReturn("the second argument must be greater than or equal to the ",
+                  "degree of the first argument (a transformation)");
   fi;
   a := 0;
   for i in [1 .. n] do
@@ -51,8 +50,7 @@ function(a, n)
   local l, q, i;
 
   if a > n ^ n then 
-    ErrorNoReturn("TransformationNumber: usage, ", 
-                  "the first argument must be at most ", n ^ n, ",");
+    ErrorNoReturn("the first argument must be at most ", n ^ n);
   fi;
 
   l := EmptyPlist(n);
@@ -70,8 +68,7 @@ InstallMethod(TransformationNumber,
 [IsPosInt, IsZeroCyc],
 function(a, n)
   if a > 1 then 
-    ErrorNoReturn("TransformationNumber: usage, ", 
-                  "the first argument must be at most 1,");
+    ErrorNoReturn("the first argument must be at most 1");
   fi;
   return IdentityTransformation;
 end);
@@ -110,8 +107,7 @@ function(list)
   if IsDenseList(list) and ForAll(list, i -> IsPosInt(i) and i <= len) then
     return TransformationNC(list);
   fi;
-  ErrorNoReturn("Transformation: usage, the argument does not describe ",
-                "a transformation,");
+  ErrorNoReturn("the argument does not describe a transformation");
 end);
 
 InstallMethod(TransformationListList, "for a list and list",
@@ -122,8 +118,7 @@ function(src, ran)
       and IsDuplicateFree(src) then
     return TransformationListListNC(src, ran);
   fi;
-  ErrorNoReturn("TransformationListList: usage, the argument does not ",
-                "describe a\ntransformation,");
+  ErrorNoReturn("the argument does not describe a transformation");
 end);
 
 InstallMethod(Transformation, "for a list and list",
@@ -150,9 +145,8 @@ InstallMethod(OnKernelAntiAction, "for a list and transformation",
 function(ker, f)
 
   if not IsFlatKernelOfTransformation(ker) then 
-    ErrorNoReturn("OnKernelAntiAction: usage,",
-                  "the first argument <ker> does not\ndescribe the ",
-                  "flat kernel of a transformation,");
+    ErrorNoReturn("the first argument does not describe the ",
+                  "flat kernel of a transformation");
   fi;
 
   return ON_KERNEL_ANTI_ACTION(ker, f, 0);
@@ -274,8 +268,8 @@ InstallMethod(ConstantTransformation, "for a pos int and pos int",
 [IsPosInt, IsPosInt],
 function(m, n)
   if m < n then
-    ErrorNoReturn("ConstantTransformation: usage, the first argument ", 
-                  "must be greater than or equal to the second,");
+    ErrorNoReturn("the first argument (a positive integer) must be greater ", 
+                  "than or equal to the second (a positive integer)");
   fi;
   return Transformation(ListWithIdenticalEntries(m, n));
 end);
@@ -361,8 +355,8 @@ function(f, g)
   n := Maximum(DegreeOfTransformation(f), DegreeOfTransformation(g));
   if FlatKernelOfTransformation(f, n) <> FlatKernelOfTransformation(g, n)
       or ImageSetOfTransformation(f, n) <> ImageSetOfTransformation(g, n) then
-    ErrorNoReturn("PermLeftQuoTransformation: usage, ",
-                  "the arguments must have equal\nimage set and kernel,");
+    ErrorNoReturn("the arguments (transformations) must have equal image ",
+                  "set and kernel");
   fi;
   return PermLeftQuoTransformationNC(f, g);
 end);
@@ -657,8 +651,7 @@ InstallMethod(AsTransformation, "for binary relations on points",
 [IsBinaryRelation and IsBinaryRelationOnPointsRep],
 function(rel)
   if not IsMapping(rel) then
-    ErrorNoReturn("AsTransformation: usage,\n",
-                  "the argument must be a binary relation which is a mapping,");
+    ErrorNoReturn("the argument must be a binary relation which is a mapping");
   fi;
   return Transformation(Flat(Successors(rel)));
 end);

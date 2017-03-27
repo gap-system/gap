@@ -231,8 +231,7 @@ function(S)
   local set, iso, gens, T;
 
   if not IsInverseSemigroup(S) then 
-    ErrorNoReturn("IsomorphismPartialPermSemigroup: usage,\n",
-                  "the argument must be an inverse semigroup,");
+    ErrorNoReturn("the argument must be an inverse semigroup");
   fi;
   
   set := AsSet(S);
@@ -263,12 +262,10 @@ function(S)
   local iso1, inv1, iso2, inv2;
 
   if MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
-                  "the argument must be a semigroup with a ",
-                  "multiplicative neutral element,");
+    ErrorNoReturn("the argument must be a semigroup with a ",
+                  "multiplicative neutral element");
   elif not IsInverseSemigroup(S) then
-    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
-                  "the argument must be an inverse semigroup,");
+    ErrorNoReturn("the argument must be an inverse semigroup");
   fi;
 
   iso1 := IsomorphismTransformationMonoid(S);
@@ -305,9 +302,8 @@ function(S)
   local T;
 
   if MultiplicativeNeutralElement(S) = fail then
-    ErrorNoReturn("IsomorphismPartialPermMonoid: usage,\n",
-                  "the argument must be a semigroup with a ",
-                  "multiplicative neutral element,");
+    ErrorNoReturn("the argument must be a semigroup with a ",
+                  "multiplicative neutral element");
   fi;
 
   # In this case One(S) = MultiplicativeNeutralElement(S), but we want to make
@@ -333,8 +329,7 @@ function(S)
   local deg, iso, T;
 
   if not IsInverseSemigroup(S) then
-    ErrorNoReturn("IsomorphismPartialPermSemigroup: usage,\n",
-                  "the argument must be an inverse semigroup,");
+    ErrorNoReturn("the argument must be an inverse semigroup");
   fi;
 
   deg := DegreeOfTransformationSemigroup(S);
@@ -396,8 +391,7 @@ function(n)
   local s;
 
   if n<0 then
-    Error("usage: the argument should be a non-negative integer,");
-    return;
+    ErrorNoReturn("the argument should be a non-negative integer");
   elif n=0 then
     s:=InverseMonoid(PartialPermNC([]));
   elif n=1 then

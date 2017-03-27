@@ -241,8 +241,7 @@ gap> S := SemigroupByMultiplicationTable(
 >  [1, 1, 4, 2],
 >  [1, 1, 2, 1]]);;
 gap> IsomorphismPartialPermSemigroup(S);
-Error, IsomorphismPartialPermSemigroup: usage,
-the argument must be an inverse semigroup,
+Error, the argument must be an inverse semigroup
 
 # Test IsomorphismPartialPermMonoid for a semigroup
 gap> S := SemigroupByMultiplicationTable(
@@ -251,16 +250,14 @@ gap> S := SemigroupByMultiplicationTable(
 >  [1, 1, 4, 2],
 >  [1, 1, 2, 1]]);;
 gap> IsomorphismPartialPermMonoid(S);
-Error, IsomorphismPartialPermMonoid: usage,
-the argument must be a semigroup with a multiplicative neutral element,
+Error, the argument must be a semigroup with a multiplicative neutral element
 gap> S := MonoidByMultiplicationTable(
 > [[1, 2, 3, 4],
 >  [2, 2, 2, 2],
 >  [3, 2, 2, 2],
 >  [4, 2, 2, 2]]);;
 gap> IsomorphismPartialPermMonoid(S);
-Error, IsomorphismPartialPermMonoid: usage,
-the argument must be an inverse semigroup,
+Error, the argument must be an inverse semigroup
 gap> S := MonoidByMultiplicationTable(
 > [[1, 2],
 >  [2, 2]]);
@@ -294,8 +291,7 @@ true
 # Test IsomorphismPartialPermMonoid for a partial perm semigroup
 gap> S := Semigroup(PartialPerm([2], [2]), PartialPerm([1], [1]));;
 gap> IsomorphismPartialPermMonoid(S);
-Error, IsomorphismPartialPermMonoid: usage,
-the argument must be a semigroup with a multiplicative neutral element,
+Error, the argument must be a semigroup with a multiplicative neutral element
 gap> S := Semigroup(PartialPerm([2, 1]));;
 gap> IsomorphismPartialPermMonoid(S);;
 gap> IsMonoid(Range(last));
@@ -327,8 +323,7 @@ true
 gap> S := Semigroup(Transformation([1, 1, 1, 1, 1]),
 >                   Transformation([1, 3, 4, 1, 2]));;
 gap> IsomorphismPartialPermSemigroup(S);
-Error, IsomorphismPartialPermSemigroup: usage,
-the argument must be an inverse semigroup,
+Error, the argument must be an inverse semigroup
 
 # Test IsomorphismPartialPermSemigroup for a perm group
 gap> IsomorphismPartialPermSemigroup(Group((1,2,3)));
@@ -348,7 +343,7 @@ true
 
 # Test SymmetricInverseMonoid
 gap> SymmetricInverseMonoid(-1);
-Error, usage: the argument should be a non-negative integer,
+Error, the argument should be a non-negative integer
 gap> SymmetricInverseMonoid(0);
 <symmetric inverse monoid of degree 0>
 gap> SymmetricInverseMonoid(1);

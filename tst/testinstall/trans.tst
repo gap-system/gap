@@ -2762,8 +2762,8 @@ gap> List(FullTransformationMonoid(3), x -> NumberTransformation(x, 3));
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
   22, 23, 24, 25, 26, 27 ]
 gap> NumberTransformation(Transformation([1, 2, 1]), 2);
-Error, NumberTransformation: usage,the second argument must be greater
-than or equal to the degree of the transformation,
+Error, the second argument must be greater than or equal to the degree of the \
+first argument (a transformation)
 
 # TransformationNumber
 gap> List([1 .. 27], x -> TransformationNumber(x, 3)) =
@@ -2776,9 +2776,9 @@ IdentityTransformation
 gap> TransformationNumber(123456790, 10);
 IdentityTransformation
 gap> TransformationNumber(5, 2);
-Error, TransformationNumber: usage, the first argument must be at most 4,
+Error, the first argument must be at most 4
 gap> TransformationNumber(2, 0);
-Error, TransformationNumber: usage, the first argument must be at most 1,
+Error, the first argument must be at most 1
 
 # IsGeneratorsOfMagmaWithInverses
 gap> IsGeneratorsOfMagmaWithInverses([Transformation([1, 2, 1])]);
@@ -2796,29 +2796,23 @@ true
 
 # Transformation
 gap> Transformation([4]);
-Error, Transformation: usage, the argument does not describe a transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, 2, 4]);
-Error, Transformation: usage, the argument does not describe a transformation,
+Error, the argument does not describe a transformation
 
 # TransformationListList
 gap> Transformation([-11, 2], [1, 1]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, 2], [1, -1]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, 2], [1]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, , 2], [1, 2, 3]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, 2, 2], [1, , 3]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([1, 2, 2], [1, 2, 3]);
-Error, TransformationListList: usage, the argument does not describe a
-transformation,
+Error, the argument does not describe a transformation
 gap> Transformation([3, 2, 1], [1, 1, 2]);
 Transformation( [ 2, 1, 1 ] )
 
@@ -2836,20 +2830,20 @@ gap> OnKernelAntiAction([1, ,3], Transformation([1, 3, 4, 1, 3, 5]));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
 gap> OnKernelAntiAction([], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> does not
-describe the flat kernel of a transformation,
+Error, the first argument does not describe the flat kernel of a transformatio\
+n
 gap> OnKernelAntiAction([-1], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> does not
-describe the flat kernel of a transformation,
+Error, the first argument does not describe the flat kernel of a transformatio\
+n
 gap> OnKernelAntiAction([1, "a"], Transformation([1, 3, 4, 1, 3, 5]));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `OnKernelAntiAction' on 2 arguments
 gap> OnKernelAntiAction([1, 3], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> does not
-describe the flat kernel of a transformation,
+Error, the first argument does not describe the flat kernel of a transformatio\
+n
 gap> OnKernelAntiAction([1, 2, 1, 4], Transformation([1, 3, 4, 1, 3, 5]));
-Error, OnKernelAntiAction: usage,the first argument <ker> does not
-describe the flat kernel of a transformation,
+Error, the first argument does not describe the flat kernel of a transformatio\
+n
 
 # SmallestMovedPoint
 gap> SmallestMovedPoint(IdentityTransformation);
@@ -2933,8 +2927,8 @@ gap> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(S));
 
 # ConstantTransformation
 gap> ConstantTransformation(1, 10);
-Error, ConstantTransformation: usage, the first argument must be greater than \
-or equal to the second,
+Error, the first argument (a positive integer) must be greater than or equal t\
+o the second (a positive integer)
 gap> ConstantTransformation(10, 1);
 Transformation( [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] )
 
@@ -2979,11 +2973,9 @@ gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 11, 1, 12, 5]);;
 gap> PermLeftQuoTransformation(f, f);
 ()
 gap> PermLeftQuoTransformation(f, f ^ (1, 2)); # wrong kernel
-Error, PermLeftQuoTransformation: usage, the arguments must have equal
-image set and kernel,
+Error, the arguments (transformations) must have equal image set and kernel
 gap> PermLeftQuoTransformation(f, f * (7, 8)); # wrong image
-Error, PermLeftQuoTransformation: usage, the arguments must have equal
-image set and kernel,
+Error, the arguments (transformations) must have equal image set and kernel
 gap> PermLeftQuoTransformation(f, f * (2,11,5,6,9));
 (2,11,5,6,9)
 gap> f := ID_TRANS4;;
@@ -3167,8 +3159,7 @@ gap> Successors(b);
 gap> AsTransformation(b);
 Transformation( [ 10, 5, 9, 10, 9, 6, 3, 8, 4, 6 ] )
 gap> AsTransformation(b ^ -1);
-Error, AsTransformation: usage,
-the argument must be a binary relation which is a mapping,
+Error, the argument must be a binary relation which is a mapping
 
 #
 gap> SetUserPreference("TransformationDisplayLimit", display);;
