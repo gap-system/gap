@@ -713,7 +713,7 @@ together with a serial number if this is necessary to make it unique.
 
 <Description>
 In <Cite Key="DixonMortimer88"/> the primitive groups are sorted in
-<Q>cohorts</Q> according to their socle. For each degree, the variable
+<Q>cohorts</Q> according to their socle. For each degree less than 2500, the variable
 <Ref Var="COHORTS_PRIMITIVE_GROUPS"/> contains a list of the cohorts
 for the primitive groups of this degree. Each cohort is represented by a
 list of length 2, the first entry specifies the socle type (see
@@ -1381,38 +1381,18 @@ gap> # Perform the computations in an isomorphic permutation group.
 gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
 Group([ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ])
-gap> D := DerivedSubgroup( P );
-Group([ (1,2,10,9)(3,8)(4,5)(6,7), (1,6)(2,7,9,4)(3,8)(5,10), (1,2)
-(4,5)(6,7)(9,10), (1,9)(2,10)(3,6,8,5)(4,7) ])
+gap> D := DerivedSubgroup( P );;
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );
 true
 gap> # We have found the solvable residuum of P,
 gap> # now move the results back to the matrix group G.
-gap> R := PreImage( phi, D );
-<matrix group of size 960 with 4 generators>
-gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
-[ [  -1,  -1,  -1,  -1,   2 ],
-  [   0,  -1,   0,   0,   0 ],
-  [   0,   0,   0,   1,   0 ],
-  [   0,   0,   1,   0,   0 ],
-  [  -1,  -1,   0,   0,   1 ] ]
-[ [   0,   0,  -1,   0,   0 ],
-  [   0,  -1,   0,   0,   0 ],
-  [   1,   0,   0,   0,   0 ],
-  [  -1,  -1,  -1,  -1,   2 ],
-  [   0,  -1,  -1,   0,   1 ] ]
-[ [   1,   1,   1,   1,  -2 ],
-  [   0,   1,   0,   0,   0 ],
-  [   0,   0,   0,   1,   0 ],
-  [   0,   0,   1,   0,   0 ],
-  [   0,   1,   1,   1,  -1 ] ]
-[ [  -1,  -1,  -1,  -1,   2 ],
-  [   0,   0,   0,  -1,   0 ],
-  [   0,   0,  -1,   0,   0 ],
-  [   0,   1,   0,   0,   0 ],
-  [   0,   0,  -1,  -1,   1 ] ]
+gap> R := PreImage( phi, D );;
+gap> StructureDescription(R);
+"(C2 x C2 x C2 x C2) : A5"
+gap> IdGroup(D)=IdGroup(R);
+true
 ]]></Example>
 </Description>
 </ManSection>

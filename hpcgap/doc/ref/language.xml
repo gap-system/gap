@@ -1819,23 +1819,55 @@ Also see Chapter&nbsp;<Ref Chap="Functions"/>.
 <P/>
 <Index Subkey="definition by arrow notation">functions</Index>
 <Index>arrow notation for functions</Index>
-<C><A>arg-ident</A> -> <A>expr</A></C>
+<C>{ <A>arg-list</A> } -> <A>expr</A></C>
 <P/>
 This is a shorthand for
 <P/>
-<C>function ( <A>arg-ident</A> ) return <A>expr</A>; end.</C>
+<C>function ( <A>arg-list</A> ) return <A>expr</A>; end.</C>
 <P/>
-<A>arg-ident</A> must be a single identifier, i.e., it is not possible to
-write functions of several arguments this way. Also <C>arg</C> is not treated
-specially, so it is also impossible to write functions that take a
-variable number of arguments this way.
+<A>arg-list</A> is a (possibly empty) argument list. Any arguments list
+which would be valid for a normal GAP function is also valid here (including
+variadic arguments).
 <P/>
-The following is an example of a typical use of such a function
+The following gives a couple of examples of a typical use of such a function
 <P/>
 <Example><![CDATA[
+gap> Sum( List( [1..100], {x} -> x^2 ) );
+338350
+gap> list := [3, 5, 2, 1, 3];;
+gap> Sort(list, {x,y} -> x > y);
+gap> list;
+[ 5, 3, 3, 2, 1 ]
+gap> f := {x,y...} -> y;;
+gap> f(1,2,3,4);
+[ 2, 3, 4 ]
+]]></Example>
+<P/>
+The <C>{</C> and <C>}</C> may be omitted for
+functions with one and zero arguments:
+<Example><![CDATA[
+gap> Sum( List( [1..100], {x} -> x^2 ) );
+338350
 gap> Sum( List( [1..100], x -> x^2 ) );
 338350
+gap> f := {} -> 2;
+function(  ) ... end
+gap> Print(f);
+function (  )
+    return 2;
+end
+gap> f();
+2
+gap> g := -> 2;
+function(  ) ... end
+gap> Print(g);
+function (  )
+    return 2;
+end
+gap> g();
+2
 ]]></Example>
+
 <P/>
 When the definition of a function <A>fun1</A> is evaluated inside another
 function <A>fun2</A>,
