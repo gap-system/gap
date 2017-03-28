@@ -1,10 +1,10 @@
+#include <src/system.h>
+
 #ifdef PRINT_BACKTRACE
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-#include <src/system.h>
 
 void BacktraceHandler(int sig) {
   void *trace[32];

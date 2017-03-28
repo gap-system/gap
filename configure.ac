@@ -602,8 +602,9 @@ AS_IF([test "x$enable_hpcgap" = xyes],[
 
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
+  dnl also enable backtrace, to help debug spurious crashes
+  AC_DEFINE([PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
   ])
-
 
 dnl
 dnl Output everything
