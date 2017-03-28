@@ -33,11 +33,6 @@ if [[ "${TEST_SUITE}" == makemanuals ]]
 then
     make manuals
     cat  $SRCDIR/doc/*/make_manuals.out
-    if [[ $(cat $SRCDIR/doc/*/make_manuals.out | grep -c "manual.lab written") != '3' ]]
-    then
-        echo "Build failed"
-        exit 1
-    fi
     exit 0
 fi
 
