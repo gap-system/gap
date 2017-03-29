@@ -123,7 +123,7 @@ echo_run() {
   # when printf is given a format string with only one format specification,
   # it applies that format string to each argument in sequence
   notice "Running $(printf "'%s' " "$@")"
-  eval "$@"
+  "$@"
 }
 
 build_carat() {
