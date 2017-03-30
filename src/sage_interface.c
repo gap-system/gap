@@ -114,7 +114,7 @@ char* libgap_get_error()
 
 void libgap_finish_interaction()
 {
-  while (Symbol != S_EOF)
+  while (TLS(Symbol) != S_EOF)
     GetSymbol();
   stdin_buffer = NULL;
 

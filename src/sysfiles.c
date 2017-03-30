@@ -2752,6 +2752,7 @@ Char * SyFgets (
     return libgap_get_input(line, length);
     // return syFgets( line, length, fid, 1);
 #endif
+}
 
 Char *SyFgetsSemiBlock (
     Char *              line,

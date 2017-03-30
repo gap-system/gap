@@ -3247,7 +3247,6 @@ void InitializeGap (
 
     JumpToCatchFunc = 0;
 
-    sysargv = argv;
     sysenviron = environ;
 
     /* get info structures for the build in modules                        */
