@@ -398,8 +398,6 @@ gap$(EXEEXT): $(OBJS)
 
 endif
 
-libgap.la: $(OBJS)
-	$(QUIET_LINK)$(LINK) -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(LIBS) -o $@
 
 ########################################################################
 # The "docomp" target regenerates the various src/c_*.c files, and
@@ -1028,10 +1026,6 @@ doc/make_doc: $(srcdir)/doc/make_doc.in config.status
 
 gac: $(srcdir)/cnf/gac.in config.status
 	$(SHELL) ./config.status $@
-
-LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
-install-libgap: libgap.la
-	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(libdir)
 
 # TODO: This needs to be done more elegantly
 obj/libgap-test-0001.lo: $(top_srcdir)/tst/testlibgap/0001.c
