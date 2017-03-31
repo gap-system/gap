@@ -567,9 +567,6 @@ endif
 endif # BUILD_BOEHM_GC
 
 
-foobar:
-	echo FOOBAR: $(EXTERN_FILES) QUUX
-
 # ensure subprojects are built and "installed" before compiling and linking GAP
 gap$(EXEEXT): $(EXTERN_FILES)
 $(OBJS): $(EXTERN_FILES)
