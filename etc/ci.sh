@@ -142,28 +142,3 @@ GAPInput
                <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
                $SRCDIR/tst/${TEST_SUITE}.g
 esac;
-
-# generate library coverage reports
-bin/gap.sh -a 500M -m 500M -q gap-init.g <<GAPInput
-if LoadPackage("profiling") <> true then
-    Print("ERROR: could not load profiling package");
-    FORCE_QUIT_GAP(1);
-fi;
-d := Directory("$COVDIR");;
-covs := [];;
-for f in DirectoryContents(d) do
-    if f in [".", ".."] then continue; fi;
-    Add(covs, Filename(d, f));
-od;
-Print("Merging coverage results\n");
-r := MergeLineByLineProfiles(covs);;
-Print("Outputting JSON\n");
-OutputJsonCoverage(r, "gap-coverage.json");;
-QUIT_GAP(0);
-GAPInput
-
-# generate kernel coverage reports by running gcov
-. sysinfo.gap
-cd bin/${GAParch}
-gcov -o . ../../src/*
-cd ../..
