@@ -415,7 +415,7 @@ docomp: #gap$(EXEEXT)
 # Rules for 'make clean'
 ########################################################################
 distclean: clean
-	rm -f config.log config.status libtool stamp-h GNUmakefile
+	rm -f config.log config.status libtool stamp-h GNUmakefile configure
 	rm -f bin/gap.sh sysinfo.gap*
 	rm -rf gen
 
