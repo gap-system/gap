@@ -375,7 +375,9 @@ AS_IF([test "x$enable_hpcgap" = xyes],
 dnl
 dnl User setting: Compatibility mode (on by default)
 dnl
-CONFIGNAME="default${ABI}"
+AS_IF([test "x$enable_hpcgap" = xyes],
+  [CONFIGNAME="hpcgap${ABI}"],
+  [CONFIGNAME="default${ABI}"])
 BASECC=`basename ${CC}`
 GAPARCH="$host-$BASECC-${CONFIGNAME}"
 AC_DEFINE_UNQUOTED([CONFIGNAME], ["$CONFIGNAME"], [for backwards compatibility])
