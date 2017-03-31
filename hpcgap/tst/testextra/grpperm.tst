@@ -5,7 +5,7 @@
 ##
 #Y  Copyright (C)  1997
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grpperm.tst");
 gap> G1 := TrivialSubgroup (Group ((1,2)));;
@@ -144,7 +144,9 @@ Sym( [ 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 2\
  82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 ]\
  )
 gap> Centralizer(s,(1,2,3,4)(5,6,7,8)(9,10,11)(12,13,14));
-<permutation group with 91 generators>
+<permutation group of size 139548069409954938518969413651821655960040854381993\
+238884831283501108134558516513594307316297031600121692765028352000000000000000\
+00000 with 91 generators>
 gap> GeneratorsOfGroup(last);
 [ (1,2,3,4), (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (9,10,11), (9,12)(10,13)(11,14),
   (12,13,14), (15,100), (16,100), (17,100), (18,100), (19,100), (20,100), 
@@ -171,6 +173,23 @@ gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
 2
 gap> u56 := Stabilizer( a8, orbs[2][1], OnPairs );; Index( a8, u56 );
 56
+gap> g:=TransitiveGroup(12,250);;
+gap> hom:=IsomorphismPcGroup(g);;
+gap> Length(ConjugacyClassesByHomomorphicImage(g,hom));
+65
+
+# test of data library use
+gap> SetInfoLevel(InfoPerformance,2);
+gap> Size(Normalizer(SymmetricGroup(12),PrimitiveGroup(12,2)));
+#I  Using Primitive Groups Library
+95040
+gap> Size(Normalizer(SymmetricGroup(12),
+> PrimitiveGroup(12,2):NoPrecomputedData));
+95040
+gap> SetInfoLevel(InfoPerformance,0);
+gap> s:=SymmetricGroup(56);;
+gap> List([1..7],x->Size(Normalizer(s,PrimitiveGroup(56,x))));
+[ 80640, 80640, 80640, 80640, 80640, 40320, 40320 ]
 gap> STOP_TEST( "grpperm.tst", 1);
 
 #############################################################################

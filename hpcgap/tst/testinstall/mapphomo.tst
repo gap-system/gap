@@ -63,6 +63,16 @@ false
 gap> HasIsSurjective(hom); IsSurjective(hom);
 true
 true
+gap> G := Group((1,2));;
+gap> H := Group((1,2,3));;
+gap> GroupHomomorphismByImages(G, H, [(1,2)], [(1,2)]);
+Error, images must lie in range group
+gap> GroupHomomorphismByImages(G, H, [(2,3)], [(2,3)]);
+Error, generators must lie in source group
+gap> GroupHomomorphismByImages(G, H, [(1,2)], [(1,2,3)]);
+fail
+gap> GroupHomomorphismByImages(G, H, [], []);
+fail
 gap> STOP_TEST( "mapphomo.tst", 1);
 
 #############################################################################

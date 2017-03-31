@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
-##
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -44,6 +42,8 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 >     Error( "wrong result for ", [ entry, entry ], " and \"equal\"" );
 >   fi;
 > od;
+gap> ReadPackage("packagename");
+Error, packagename is not a filename in the form 'package/filepath'
 gap> STOP_TEST( "package.tst", 1);
 
 #############################################################################
