@@ -10,6 +10,8 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
+GAP="bin/gap.sh --quitonbreak -q"
+
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
 if [[ -n "$BUILDDIR" ]]
 then
@@ -25,7 +27,7 @@ echo 'OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;' > ga
 # If we don't care about code coverage, just run the test directly
 if [[ -n ${NO_COVERAGE} ]]
 then
-    bin/gap.sh gap-init.g $SRCDIR/tst/${TEST_SUITE}.g
+    $GAP gap-init.g $SRCDIR/tst/${TEST_SUITE}.g
     exit 0
 fi
 
@@ -91,9 +93,9 @@ mkdir -p $COVDIR
 
 case ${TEST_SUITE} in
 testmanuals)
-    bin/gap.sh -q gap-init.g $SRCDIR/tst/extractmanuals.g
+    $GAP gap-init.g $SRCDIR/tst/extractmanuals.g
 
-    bin/gap.sh -q gap-init.g <<GAPInput
+    $GAP gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         Read("$SRCDIR/tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
@@ -103,7 +105,7 @@ GAPInput
     TESTMANUALSPASS=yes
     for ch in $SRCDIR/tst/testmanuals/*.tst
     do
-        bin/gap.sh -q -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
+        $GAP -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QUIT_GAP(0);
 GAPInput
@@ -115,7 +117,7 @@ GAPInput
     fi
 
     # while we are at it, also test the workspace code
-    bin/gap.sh -q --cover $COVDIR/workspace.coverage gap-init.g <<GAPInput
+    $GAP --cover $COVDIR/workspace.coverage gap-init.g <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
@@ -136,7 +138,7 @@ GAPInput
         exit 1
     fi
 
-    bin/gap.sh --cover $COVDIR/${TEST_SUITE}.coverage gap-init.g \
+    $GAP --cover $COVDIR/${TEST_SUITE}.coverage gap-init.g \
                <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
                $SRCDIR/tst/${TEST_SUITE}.g
 esac;
