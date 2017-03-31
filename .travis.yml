@@ -104,12 +104,13 @@ matrix:
           - gcc-multilib
           - g++-multilib
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
 script:
   - bash etc/ci-prepare.sh
   - bash etc/ci.sh
+
+after_script:
+  - bash etc/ci-gather-coverage.sh
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   slack:
