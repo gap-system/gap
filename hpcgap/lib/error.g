@@ -225,6 +225,11 @@ BIND_GLOBAL("ErrorInner",
         fi;
         PrintTo("*errout*"," called from\c\n");
     fi;
+
+    if SHOULD_QUIT_ON_BREAK() then
+        FORCE_QUIT_GAP(1);
+    fi;
+
     if IsBound(OnBreak) and IsFunction(OnBreak) then
         OnBreak();
     fi;

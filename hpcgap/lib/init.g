@@ -63,6 +63,9 @@ Error := function( arg )
       Print(x);
     od;
     Print("\n");
+    if SHOULD_QUIT_ON_BREAK() then
+        FORCE_QUIT_GAP(1);
+    fi;
     JUMP_TO_CATCH("early error");
 end;
 
@@ -75,6 +78,9 @@ ErrorInner := function(arg)
       Print(arg[x]);
     od;
     Print("\n");
+    if SHOULD_QUIT_ON_BREAK() then
+        FORCE_QUIT_GAP(1);
+    fi;
     JUMP_TO_CATCH("early error");
 end;
 

@@ -2679,6 +2679,17 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
   return (Obj) 0; /* should never get here */
 }
 
+/****************************************************************************
+**
+*F  FuncShouldQuitOnBreak()
+**
+*/
+
+Obj FuncShouldQuitOnBreak( Obj self)
+{
+  return SyQuitOnBreak ? True : False;
+}
+
 
 /****************************************************************************
 **
@@ -2977,12 +2988,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GAP_EXIT_CODE", 1, "exit code",
       FuncGAP_EXIT_CODE, "src/gap.c:GAP_EXIT_CODE" },
-        
+
     { "QUIT_GAP", -1, "args",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
     { "FORCE_QUIT_GAP", -1, "args",
       FuncFORCE_QUIT_GAP, "src/gap.c:FORCE_QUIT_GAP" },
+
+    { "SHOULD_QUIT_ON_BREAK", 0, "",
+      FuncShouldQuitOnBreak, "src/gap.c:FuncShouldQuitOnBreak"},
 
     { "SHELL", -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile",
       FuncSHELL, "src/gap.c:FuncSHELL" },

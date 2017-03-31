@@ -349,6 +349,11 @@ UInt SyNrRowsLocked;
 */
 UInt SyQuiet;
 
+/****************************************************************************
+**
+*V  SyQuitOnBreak . . . . . . . . . . exit GAP instead of entering break loop
+*/
+UInt SyQuitOnBreak;
 
 /****************************************************************************
 **
@@ -1877,8 +1882,10 @@ struct optInfo options[] = {
   { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Thread UI */
   { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
   { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
-  { 0  , "prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup, has to be kernel to start early enough */
-  { 0  , "cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup, has to be kernel to start early enough */
+  /* The following three options must be handled in the kernel so they happen early enough */
+  { 0  , "prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
+  { 0  , "cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
+  { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
   { 0, "",0,0}};
 
 

@@ -427,6 +427,18 @@ extern UInt SyNrRowsLocked;
 */
 extern UInt SyQuiet;
 
+/****************************************************************************
+**
+*V  SyQuitOnBreak . . . . . . . . . . exit GAP instead of entering break loop
+**
+**  'SyQuitOnBreak' determines whether GAP should quit (with non-zero return
+**  value) instead of entering the break loop.
+**
+**  False by default, can be changed with the '--quitonbreak' option.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+extern UInt SyQuitOnBreak;
 
 /****************************************************************************
 **
