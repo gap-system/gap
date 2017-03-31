@@ -587,35 +587,37 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   files := [];
   filetimes := [];
   
-  recurseFiles := function(dir, basedir)
-    local dircontents, testfiles, t, testrecs, shortName, recursedirs, d;
-    dircontents := List(DirectoryContents(dir), x -> Filename(Directory(dir), x));
-    testfiles := Filtered(dircontents, x -> Length(x) > 4 and x{[Length(x)-3..Length(x)]} = ".tst");
+  recurseFiles := function(dirs, prefix)
+    local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
+    if Length(dirs) = 0 then return; fi;
+    dircontents := Union(List(dirs, DirectoryContents));
+    testfiles := Filtered(dircontents, x -> EndsWith(x, ".tst"));
     testrecs := [];
     for t in testfiles do
-      shortName := t{[Length(basedir)+1..Length(t)]};
+      shortName := Concatenation(prefix, t);
       if shortName[1] = '/' then
         shortName := shortName{[2..Length(shortName)]};
       fi;
-      Add(testrecs, rec(name := t, shortName := shortName));
+      Add(testrecs, rec(name := Filename(dirs, t), shortName := shortName));
     od;
     Append(files, testrecs);
-    recursedirs := Filtered(dircontents, x -> IsDirectoryPath(x)
-                                              and not EndsWith(x,"/.")
-                                              and not EndsWith(x,"/.."));
+
+    recursedirs := Difference(dircontents, testfiles);
+    RemoveSet(recursedirs, ".");
+    RemoveSet(recursedirs, "..");
     for d in recursedirs do
-      recurseFiles(d, basedir);
+      subdirs := List(dirs, x -> Directory(Filename(x, d)));
+      subdirs := Filtered(subdirs, IsDirectoryPath);
+      recurseFiles(subdirs, Concatenation(prefix,"/",d));
     od;
   end;
   
   files := [];
   for f in basedirs do
-    if IsDirectoryPath(f) then
-      if IsDirectory(f) then
-        recurseFiles(f![1], f![1]);
-      else
-        recurseFiles(f,f);
-      fi;
+    if IsList(f) and ForAll(f, IsDirectoryPath) then
+      recurseFiles(List(f, Directory), "");
+    elif IsDirectoryPath(f) then
+      recurseFiles( [ Directory(f) ], "" );
     else
       Add(files, rec(name := f, shortName := f));
     fi;
