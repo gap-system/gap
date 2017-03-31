@@ -7,7 +7,7 @@
 ##
 ##  This  file  tests the subgroup lattice program
 ##
-##  Exclude from testinstall.g: why?
+##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grplatt.tst");
 gap> g:=PerfectGroup(IsPermGroup,95040);;
@@ -174,6 +174,23 @@ gap> Collected(List(NormalSubgroups(g),Size));
 [ [ 1, 1 ], [ 2, 1 ], [ 4, 3 ], [ 8, 7 ], [ 16, 15 ], [ 32, 27 ], [ 64, 55 ], 
   [ 128, 87 ], [ 256, 115 ], [ 512, 195 ], [ 1024, 267 ], [ 2048, 283 ], 
   [ 4096, 227 ], [ 8192, 155 ], [ 16384, 31 ], [ 32768, 1 ] ]
+gap> Length(MaximalSubgroupClassReps(PSL(5,11)));
+16
+gap> g:=Group(
+> [ (3,5,4)(7,8,9)(10,18,14)(11,20,17)(12,21,15)(13,19,16)(22,32,41)(24,36,
+>     29)(25,40,33)(26,28,37)(30,42,34)(31,35,39),
+>   (1,2,7,3,11,10,6)(4,15,20,21,13,18,9)(5,19,17,16,12,14,8)(22,34,39,40,29,
+>     32,28)(23,27,33,37,42,35,38)(24,26,36,30,31,25,41),
+>   (7,8,9)(10,14,18)(11,16,21)(12,17,19)(13,15,20)(22,28,29)(24,32,37)(25,40,
+>     33)(26,36,41)(31,39,35), (1,38)(2,23)(3,42)(4,34)(5,30)(6,27)(7,33)(8,
+>     40)(9,25)(10,35)(11,37)(12,36)(13,22)(14,39)(15,29)(16,32)(17,26)(18,
+>     31)(19,41)(20,28)(21,24) ]);;
+gap> Length(MaximalSubgroupClassReps(g));
+6
+gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7)));
+96
+gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7):NoPrecomputedData));
+96
 
 # thats all, folks
 gap> STOP_TEST( "grplatt.tst", 1);

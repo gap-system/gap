@@ -121,6 +121,30 @@ gap> Exp(last);
 0.948683
 gap> last^2;
 0.9
+gap> 1.0/0.0;
+inf
+gap> -1.0/0.0;
+-inf
+gap> -Float(infinity) = Float(-infinity);
+true
+gap> posinf := Float(infinity);
+inf
+gap> neginf := Float(-infinity);
+-inf
+gap> neginf < posinf;
+true
+gap> neginf <> posinf;
+true
+gap> neginf < 0.0;
+true
+gap> 0.0 < posinf;
+true
+gap> MakeFloat(1.0, infinity) = posinf;
+true
+gap> -MakeFloat(1.0, infinity) = neginf;
+true
+gap> MakeFloat(1.0, -infinity) = neginf;
+true
 gap> STOP_TEST( "float.tst", 1);
 
 #############################################################################

@@ -5,8 +5,6 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-##  Exclude from testinstall.g: why?
-##
 gap> START_TEST("matblock.tst");
 gap> m1 := BlockMatrix( [ [ 1, 1, [[1,1],[0,1]] ],
 >                         [ 1, 3, [[1,0],[0,1]] ],
