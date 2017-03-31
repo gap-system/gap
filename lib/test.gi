@@ -91,7 +91,7 @@ InstallGlobalFunction(RunTests, function(arg)
         s, res, fres, t, f, i;
   # don't enter break loop in case of error during test
   tests := arg[1];
-  opts := rec( breakOnError := false, showProgress := false );
+  opts := rec( breakOnError := false, showProgress := "some" );
   if Length(arg) > 1 and IsRecord(arg[2]) then
     for f in RecFields(arg[2]) do
       opts.(f) := arg[2].(f);
@@ -111,6 +111,8 @@ InstallGlobalFunction(RunTests, function(arg)
   for i in [1..Length(inp)] do
     if opts.showProgress = true then
       Print("# line ", pos[i], ", input:\n",inp[i]);
+    elif opts.showProgress = "some" then
+      Print("\r# line ", pos[i], "\c");
     fi;
     s := InputTextString(inp[i]);
     res := "";
@@ -124,6 +126,9 @@ InstallGlobalFunction(RunTests, function(arg)
     Add(cmp, res);
     Add(times, Runtime()-t);
   od;
+  if opts.showProgress = "some" then
+    Print("\r                      \c\r"); # clear the line
+  fi;
   # add total time to 'times'
   Add(times, Runtime() - ttime);
   tests[4] := cmp;
@@ -246,15 +251,17 @@ end;
 ##  -->
 ##  <Mark><C>showProgress</C></Mark>
 ##  <Item>If this is <K>true</K> then &GAP; prints position information
-##  and the input line before it is processed
-##  (default is <K>false</K>).</Item>
+##  and the input line before it is processed; if set to <C>"some"</C>,
+##  then GAP shows the current line number of the test being processed;
+##  if set to <K>false</K>, no progress updates are displayed
+##  (default is <C>"some"</C>).</Item>
 ##  <Mark><C>subsWindowsLineBreaks</C></Mark>
 ##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
 ##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
 ##  file. (default is <K>true</K>).</Item>
 ##  </List>
 ## 
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> tnam := Filename(DirectoriesLibrary(), "../doc/ref/demo.tst");;
 ##  gap> mask := function(str) return Concatenation("| ", 
 ##  >          JoinStringsWithSeparator(SplitString(str, "\n", ""), "\n| "),
@@ -298,7 +305,7 @@ end;
 ##  | # the following fails:
 ##  | gap> a := 13+29;
 ##  | 42
-##  ]]></Example>
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -320,7 +327,7 @@ InstallGlobalFunction("Test", function(arg)
            width := 80,
            ignoreSTOP_TEST := true,
            compareFunction := EQ,
-           showProgress := false,
+           showProgress := "some",
            writeTimings := false,
            compareTimings := false,
            reportTimeDiff := function(inp, fnam, line, oldt, newt)
@@ -512,7 +519,7 @@ end);
 ##  <Item>If <K>true</K>, stop as soon as any <Ref Func="Test" /> fails (defaults to <K>false</K>).
 ##  </Item>
 ##  <Mark><C>showProgress</C></Mark>
-##  <Item>Print information about how tests are progressing (defaults to <K>true</K>).
+##  <Item>Print information about how tests are progressing (defaults to <K>"some"</K>).
 ##  </Item>
 ##  <Mark><C>suppressStatusMessage</C></Mark>
 ##  <Item>suppress displaying status messages <C>#I  Errors detected while testing</C> and
@@ -536,7 +543,7 @@ end);
 ## 
 ##    testOptions := rec()   : Options to pass on to Test
 ##    earlyStop := false     : Stop once one test fails
-##    showProgress := true   : Show progress
+##    showProgress := "some" : Show some progress
 ##    suppressStatusMessage := false: do not print status messages after the test
 ##    recursive := true      : Search through directories recursively
 ##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
