@@ -623,7 +623,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     fi;
   od;
 
-  SortBy(files, f -> f.name);
+  SortBy(files, f -> [f.shortName, f.name]);
 
   if opts.showProgress then
     Print( "Architecture: ", GAPInfo.Architecture, "\n\n" );
