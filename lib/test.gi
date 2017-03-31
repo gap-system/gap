@@ -132,8 +132,8 @@ InstallGlobalFunction(RunTests, function(arg)
   BreakOnError := breakOnError;
 end);
 
-BindGlobal("TEST", rec(Timings := rec()));
-TEST.compareFunctions := rec();
+BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
+TEST.compareFunctions := AtomicRecord(rec());
 TEST.compareFunctions.uptonl := function(a, b)
   a := ShallowCopy(a);
   b := ShallowCopy(b);
