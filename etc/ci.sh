@@ -79,13 +79,7 @@ make V=1
 # return to base directory
 popd
 
-# HACK: do not actually run any tests for HPC-GAP, as they are currently
-# broken.
-if [[ $HPCGAP = yes ]]
-then
-    echo "Exiting early, as tests are not yet supported for HPC-GAP"
-    exit 0
-fi
+
 
 # create dir for coverage results
 COVDIR=coverage
