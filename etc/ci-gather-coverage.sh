@@ -45,7 +45,4 @@ QUIT_GAP(0);
 GAPInput
 
 # generate kernel coverage reports by running gcov
-. sysinfo.gap
-cd bin/${GAParch}
-gcov -o . ../../src/*
-cd ../..
+make coverage
