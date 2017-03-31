@@ -894,8 +894,12 @@ teststandard: all
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
+coverage:
+	gcov -o . $(SOURCES)
+
 .PHONY: testinstall testmanuals testobsoletes teststandard
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
+.PHONY: coverage
 
 ########################################################################
 # Bootstrap rules
