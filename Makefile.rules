@@ -653,7 +653,7 @@ clean-doc:
 
 # Manual consistency check
 check-manuals: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	((cd doc/ref ; \
 	  echo 'Read("testconsistency.g");' | $(TESTGAP) ) \
 	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
@@ -668,7 +668,7 @@ check-manuals: all
 # - without packages (except needed to run GAP)
 # - with all packages loaded
 testinstall: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
@@ -683,7 +683,7 @@ testinstall: all
 # - with packages loaded by default
 # - with all packages loaded
 testmanuals: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	((cd doc/tut ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
@@ -742,7 +742,7 @@ testmanuals: all
 # - when all dependencies are loaded
 # - when packages are loaded with `OnlyNeeded` option
 testobsoletes: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
 	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
@@ -768,7 +768,7 @@ testobsoletes: all
 # - in GAP started with packages loaded by default
 # - in GAP started with all packages loaded
 testpackage: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageTestsInput( "testpackage.in", \
@@ -799,7 +799,7 @@ testpackage: all
 # - in GAP started with packages loaded by default
 # - in GAP started with all packages loaded
 testpackages: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageTestsInput( "testpackages.in", \
@@ -829,7 +829,7 @@ testpackages: all
 # - when all dependencies are loaded
 # - when packages are loaded with `OnlyNeeded` option
 testpackagesload: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
@@ -869,7 +869,7 @@ testpackagesload: all
 
 # Produce an overview of new variables defined by each package
 testpackagesvars: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageVarsTestsInput( "testpackagesvars.in", \
@@ -884,7 +884,7 @@ testpackagesvars: all
 # - without packages (except needed to run GAP)
 # - with all packages loaded
 teststandard: all
-	mkdir -p dev/log
+	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
 	        ReadGapRoot( "tst/testutil.g" ); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
