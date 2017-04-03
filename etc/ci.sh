@@ -10,6 +10,7 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
+# Make sure any Error() immediately exits GAP with exit code 1.
 GAP="bin/gap.sh --quitonbreak -q"
 
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
@@ -20,14 +21,10 @@ then
 fi
 BUILDDIR=$PWD
 
-# Load gap-init.g when starting GAP to ensure that any Error() immediately exits
-# GAP with exit code 1.
-echo 'OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;' > gap-init.g
-
 # If we don't care about code coverage, just run the test directly
 if [[ -n ${NO_COVERAGE} ]]
 then
-    $GAP gap-init.g $SRCDIR/tst/${TEST_SUITE}.g
+    $GAP $SRCDIR/tst/${TEST_SUITE}.g
     exit 0
 fi
 
@@ -87,9 +84,9 @@ mkdir -p $COVDIR
 
 case ${TEST_SUITE} in
 testmanuals)
-    $GAP gap-init.g $SRCDIR/tst/extractmanuals.g
+    $GAP $SRCDIR/tst/extractmanuals.g
 
-    $GAP gap-init.g <<GAPInput
+    $GAP <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         Read("$SRCDIR/tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
@@ -111,7 +108,7 @@ GAPInput
     fi
 
     # while we are at it, also test the workspace code
-    $GAP --cover $COVDIR/workspace.coverage gap-init.g <<GAPInput
+    $GAP --cover $COVDIR/workspace.coverage <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
@@ -132,7 +129,7 @@ GAPInput
         exit 1
     fi
 
-    $GAP --cover $COVDIR/${TEST_SUITE}.coverage gap-init.g \
+    $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
                <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
                $SRCDIR/tst/${TEST_SUITE}.g || [[ $HPCGAP = yes ]] # HPCGAP HACK TO MAKE TEST PASS
 esac;
