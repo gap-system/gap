@@ -11,6 +11,7 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
+# Make sure any Error() immediately exits GAP with exit code 1.
 GAP="bin/gap.sh --quitonbreak -q"
 
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
@@ -21,15 +22,11 @@ then
 fi
 BUILDDIR=$PWD
 
-# Load gap-init.g when starting GAP to ensure that any Error() immediately exits
-# GAP with exit code 1.
-echo 'OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;' > gap-init.g
-
 # Get dir for coverage results
 COVDIR=coverage
 
 # generate library coverage reports
-$GAP -a 500M -m 500M -q gap-init.g <<GAPInput
+$GAP -a 500M -m 500M -q <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
     FORCE_QUIT_GAP(1);
