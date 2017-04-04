@@ -1339,12 +1339,6 @@ function( H )
   return AugmentedCosetTableRrsInWholeGroup(H).cosetTable;
 end );
 
-InstallMethod( CosetTableInWholeGroup,"from augmented table Mtc",
-    true, [ IsSubgroupFpGroup and HasAugmentedCosetTableMtcInWholeGroup], 0,
-function( H )
-  return AugmentedCosetTableMtcInWholeGroup(H).cosetTable;
-end );
-
 InstallMethod(CosetTableInWholeGroup,"ByQuoSubRep",true,
   [IsSubgroupOfWholeGroupByQuotientRep],0,
 function(G)
@@ -3098,6 +3092,13 @@ InstallMethod(LowIndexSubgroupsFpGroup, "subgroups of full fp group",
   [IsSubgroupFpGroup and IsWholeFamily,IsSubgroupFpGroup,IsPosInt],0,
   DoLowIndexSubgroupsFpGroupViaIterator );
 
+InstallMethod(LowIndexSubgroups, "FpFroups, using LowIndexSubgroupsFpGroup",
+  true,
+  [IsSubgroupFpGroup,IsPosInt],
+  # rank higher than method for finit groups using maximal subgroups
+  SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsGroup and IsFinite))),
+  LowIndexSubgroupsFpGroup );
+
 InstallOtherMethod(LowIndexSubgroupsFpGroup,
   "subgroups of full fp group, with exclusion list", IsFamFamXY,
   [IsSubgroupFpGroup and IsWholeFamily,IsSubgroupFpGroup,IsPosInt,IsList],0,
@@ -3760,6 +3761,7 @@ local   fgens,      # generators of the free group
 	H,          # subgroup of <G>
 	gen,	    # generator of cyclic subgroup
 	max,        # maximal coset table length required
+	e,
 	T;          # coset table of <G> by <H>
 
   fgens := FreeGeneratorsOfFpGroup( G );
@@ -3785,11 +3787,14 @@ local   fgens,      # generators of the free group
     gen:=gen[1];
 
     H := Subgroup(G,[gen]);
-    T := AugmentedCosetTableMtc( G, H, -1, "_x":max:=max );
-    if T.exponent = infinity then
+    T := NEWTC_CosetEnumerator( FreeGeneratorsOfFpGroup(G),
+	  RelatorsOfFpGroup(G),GeneratorsOfGroup(H),true,false:
+	    cyclic:=true,limit:=1+max );
+    e:=NEWTC_CyclicSubgroupOrder(T);
+    if e=0 then
       return infinity;
     else
-      return T.index * T.exponent;
+      return T.index * e;
     fi;
   fi;
 
@@ -3896,23 +3901,25 @@ function(arg)
     if t<>fail then
       gen:=t[1];
       Unbind(t);
-      t:=AugmentedCosetTableMtc(G,Subgroup(G,[gen]),1,"@":
-          silent:=true,max:=max );
+      t := NEWTC_CosetEnumerator( FreeGeneratorsOfFpGroup(G),
+	    RelatorsOfFpGroup(G),[gen],true,false:
+	      cyclic:=true,limit:=1+max,quiet:=true );
     fi;
     if t=fail then
       # we cannot get the size within the permitted limits -- give up
       return fail;
     fi;
-    if t.exponent=infinity then
+    e:=NEWTC_CyclicSubgroupOrder(t);
+    if e=0 then
       SetSize(G,infinity);
       return fail;
     fi;
-    sz:=t.exponent*IndexCosetTab(t.cosetTable);
+    sz:=e*t.index;
     SetSize(G,sz);
     Info(InfoFpGroup,1,"found size ",sz);
-    if sz>200*IndexCosetTab(t.cosetTable) then
+    if sz>200*t.index then
       # try the corresponding perm rep
-      p:=t.cosetTable{[1,3..Length(t.cosetTable)-1]};
+      p:=t.ct{t.offset+[1..Length(FreeGeneratorsOfFpGroup(G))]};
       Unbind(t);
 
       for j in [1..Length(p)] do
@@ -5234,7 +5241,7 @@ local GO,q,d,e,b,r,val,agemo,ngens;
     q:=PQuotient(G,p,2,ngens);
   until q<>fail;
   q:=Image(EpimorphismQuotientSystem(q));
-  q:=PCentralSeries(q,p);
+  q:=ShallowCopy(PCentralSeries(q,p));
   if Length(q)=1 then
     Error("Trivial <p> quotient");
   fi;

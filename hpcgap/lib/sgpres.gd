@@ -1038,6 +1038,10 @@ DeclareGlobalFunction("SecondaryGeneratorWordsAugmentedCosetTable");
 ##
 DeclareGlobalFunction("CopiedAugmentedCosetTable");
 
+# forward declaration of the new mtc worker and presentation builder fct.
+DeclareGlobalFunction("NEWTC_CosetEnumerator");
+DeclareGlobalFunction("NEWTC_PresentationMTC");
+DeclareGlobalFunction("NEWTC_CyclicSubgroupOrder");
 
 #############################################################################
 ##  
