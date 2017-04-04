@@ -1067,7 +1067,7 @@ extern void CheckMasterPointers( void );
 **
 **  InitBags( <alloc-func>, <initial-size>,
 **            <stack-func>, <stack-start>, <stack-align>,
-**            <cache-size>, <dirty>, <abort-func> )
+**            <dirty>, <abort-func> )
 **
 **  'InitBags'  initializes {\Gasman}.  It  must be called from a application
 **  using {\Gasman} before any bags can be allocated.
@@ -1128,20 +1128,6 @@ extern void CheckMasterPointers( void );
 **  on  the   machine,  the  operating system,   and   the compiler.   If the
 **  application provides another <stack-func>, <stack-align> is ignored.
 **
-**  <cache-size>  informs {\Gasman} whether  the  processor has a usable data
-**  cache and how large it is  measured in bytes.   If the application passes
-**  0, {\Gasman} assumes that the processor has no data cache or a data cache
-**  to small to be   useful.  In this case  the  entire free storage is  made
-**  available for allocations after garbage  collections.  If the application
-**  passes a  nonzero value, {\Gasman}  assumes that this is  the size of the
-**  part of the data cache that should  be used for  the allocation area, and
-**  tries  to keep the allocation  area small enough  so that it fits.  For a
-**  processor that has separate  data and instruction caches, the application
-**  should pass the size of the data cache minus 65536.  For a processor with
-**  a  unified cache,  the application  should  pass the size  of the unified
-**  cache minus   131072.  The application probably should   not pass a value
-**  less than 131072.
-**
 **  The initialization  flag  <dirty> determines  whether  bags allocated  by
 **  'NewBag' are initialized to contain only 0 or not.   If <dirty> is 0, the
 **  bags are  initialized to  contain only 0.    If  <dirty> is  1, the  bags
@@ -1169,7 +1155,6 @@ extern  void            InitBags (
             TNumStackFuncBags   stack_func,
             Bag *               stack_bottom,
             UInt                stack_align,
-            UInt                cache_size,
             UInt                dirty,
             TNumAbortFuncBags   abort_func );
 

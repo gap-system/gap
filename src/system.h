@@ -204,22 +204,6 @@ extern UInt SyCTRD;
 
 
 /****************************************************************************
-**
-*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
-**
-**  'SyCacheSize' is the size of the data cache, in kilobytes
-**
-**  This is per  default 0, which means that  there is no usuable data cache.
-**  It is usually changed with the '-c' option in the script that starts GAP.
-**
-**  This value is passed to 'InitBags'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-extern UInt SyCacheSize;
-
-
-/****************************************************************************
  **
  *V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
  */

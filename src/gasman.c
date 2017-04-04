@@ -270,19 +270,6 @@ TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 **  allocation.   'StopBags'  points  to  the  beginning  of  this  area  and
 **  'EndBags' to the end.
 **
-**  If <cache-size>  (see "InitBags") was 0,  'CollectBags' makes all of  the
-**  free storage available for allocations by setting 'StopBags' to 'EndBags'
-**  after garbage collections.   In   this case garbage  collections are only
-**  performed when no  free storage   is left.  If <cache-size> was  nonzero,
-**  'CollectBags' makes 'AllocSizeBags' bytes available by setting 'StopBags'
-**  to  'AllocBags   + 2+WORDS_BAG(<size>) +  WORDS_BAG(AllocSizeBags)' after
-**  garbage  collections, where <size>   is the  size  of the bag 'NewBag' is
-**  currently allocating.  'AllocSizeBags'  is  usually <cache-size>,  but is
-**  increased if only very few large bags have been  allocated since the last
-**  garbage collection and decreased  again  if sufficiently many  bags  have
-**  been allocated since the  last  garbage collection.  The  idea is to keep
-**  the allocation area small enough so that it fits in the processor cache.
-**
 **  Note that  the  borders between the areas are not static.  In  particular
 **  each allocation increases the size of the young bags area and reduces the
 **  size of the  allocation area.  On the other hand each garbage  collection
@@ -950,7 +937,6 @@ void FinishedRestoringBags( void )
   SizeDeadBags = 0;
   NrHalfDeadBags = 0;
   ChangedBags = 0;
-  return;
 }
 
 
@@ -1016,7 +1002,7 @@ void FinishBags( void )
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
 **  'InitBags'   remembers   <alloc-func>,  <stack-func>,     <stack-bottom>,
-**  <stack-align>, <cache-size>,  <dirty>,    and   <abort-func>  in   global
+**  <stack-align>, <dirty>,    and   <abort-func>  in   global
 **  variables.   It also  allocates  the initial workspace,   and sets up the
 **  linked list of available masterpointer.
 */
@@ -1028,8 +1014,6 @@ Bag *                   StackBottomBags;
 
 UInt                    StackAlignBags;
 
-UInt                    CacheSizeBags;
-
 UInt                    DirtyBags;
 
 TNumAbortFuncBags       AbortFuncBags;
@@ -1040,7 +1024,6 @@ void            InitBags (
     TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align,
-    UInt                cache_size,
     UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
@@ -1080,17 +1063,8 @@ void            InitBags (
     YoungBags = OldBags;
     AllocBags = OldBags;
 
-    /* remember the cache size                                             */
-    CacheSizeBags = cache_size;
-    if ( ! CacheSizeBags ) {
-        AllocSizeBags = 256;
-        StopBags = EndBags;
-    }
-    else {
-        AllocSizeBags = (CacheSizeBags+1023)/1024;
-        StopBags  = AllocBags + WORDS_BAG(1024*AllocSizeBags) <= EndBags ?
-                    AllocBags + WORDS_BAG(1024*AllocSizeBags) :  EndBags;
-    }
+    AllocSizeBags = 256;
+    StopBags = EndBags;
 
     /* remember whether bags should be clean                               */
     DirtyBags = dirty;
@@ -2158,24 +2132,15 @@ again:
     if ( ! FullBags ) {
 
         /* maybe adjust the size of the allocation area                    */
-        if ( ! CacheSizeBags ) {
-            if ( nrLiveBags+nrDeadBags +nrHalfDeadBags < 512
+        if ( nrLiveBags+nrDeadBags +nrHalfDeadBags < 512
 
-                 /* The test below should stop AllocSizeBags
-                    growing uncontrollably when all bags are big */
-                 && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
-                AllocSizeBags += 256L;
-            else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
-                   && 256 < AllocSizeBags )
-                AllocSizeBags -= 256;
-        }
-        else {
-            if ( nrLiveBags+nrDeadBags < 512 )
-                AllocSizeBags += CacheSizeBags/1024;
-            else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
-                   && CacheSizeBags < AllocSizeBags )
-                AllocSizeBags -= CacheSizeBags/1024;
-        }
+             /* The test below should stop AllocSizeBags
+                growing uncontrollably when all bags are big */
+             && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
+            AllocSizeBags += 256;
+        else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
+               && 256 < AllocSizeBags )
+            AllocSizeBags -= 256;
 
         /* if we dont get enough free storage or masterpointers do full gc */
         if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
@@ -2297,10 +2262,7 @@ again:
                          SpaceBetweenPointers(EndBags, MptrBags)/(1024/sizeof(Bag)));
 
     /* reset the stop pointer                                              */
-    if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(1024*AllocSizeBags) )
-        StopBags = EndBags;
-    else
-        StopBags = StopBags + WORDS_BAG(1024*AllocSizeBags);
+    StopBags = EndBags;
 
     /* if we are not done, then true again                                 */
     if ( ! done ) {
