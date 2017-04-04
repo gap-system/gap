@@ -197,29 +197,28 @@ end);
 InstallMethod(CosetTableFpHom,"for fp homomorphisms",true,
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages],0,
 function(hom)
-local u,aug,hgu,mapi;
+local u,aug,hgu,mapi,w;
   # source group with suitable generators
   u:=Source(hom);
   aug:=false;
   mapi:=MappingGeneratorsImages(hom);
   hgu:=List(mapi[1],UnderlyingElement);
-  # try to re-use an existing augmented coset table:
-  aug:=AugmentedCosetTableInWholeGroup(u,mapi[1]);
-  if not IsSubset(hgu,aug.primaryGeneratorWords) then
-    # we don't know what to do with the extra primary words, so enforce MTC
-    # version
-    aug:=AugmentedCosetTableMtcInWholeGroup(
-           SubgroupNC(FamilyObj(u)!.wholeGroup,mapi[1]));
-  fi;
-  # as we add homomorphism specific entries, lets be safe and copy.
-  aug:=CopiedAugmentedCosetTable(aug);
+
+  # construct augmented coset table
+  w:=FamilyObj(mapi[1])!.wholeGroup;
+  aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
+	RelatorsOfFpGroup(w),
+	hgu,
+	true);
 
   aug.homgens:=mapi[1];
   aug.homgenims:=mapi[2];
 
   # assign the primary generator images
-  aug.primaryImages:=List(aug.primaryGeneratorWords,
+  aug.primaryImages:=List(aug.subgens,
                           i->aug.homgenims[Position(hgu,i)]);
+
+  # TODO: possibly re-use an existing augmented table stored already
 
   TrySecondaryImages(aug);
 
@@ -235,7 +234,7 @@ InstallMethod( ImagesRepresentative, "map from (sub)fp group, rewrite",
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, word )
-local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e;
+local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
   # get a coset table
   aug:=CosetTableFpHom(hom);
   r:=One(Range(hom));
@@ -247,6 +246,36 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e;
   else
     Error("no decoding possible");
   fi;
+  word:=UnderlyingElement(word);
+
+  if IsBound(aug.isNewAugmentedTable) then
+
+    eval:=function(i)
+    local w,j;
+      w:=One(si[1]);
+      if not IsBound(si[i]) then
+	for j in aug.secondary[i] do
+	  if j<0 then
+	    w:=w/eval(-j);
+	  else
+	    w:=w*eval(j);
+	  fi;
+	od;
+	si[i]:=w;
+      fi;
+      return si[i];
+    end;
+
+    for i in NEWTC_Rewrite(aug,1,LetterRepAssocWord(word)) do
+      if i<0 then r:=r/eval(-i);
+      else r:=r*eval(i);
+      fi;
+    od;
+    return r;
+
+  fi;
+
+  # old version
 
   # instead of calling `RewriteWord', we rewrite locally in the images.
   # this ought to be a bit faster and better on memory.
@@ -260,7 +289,6 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e;
   fi;
   tt:=aug.transtab;
 
-  word:=UnderlyingElement(word);
   c:=1; # current coset
 
   if not IsLetterAssocWordRep(word) then
@@ -801,7 +829,9 @@ local aug,w,p,pres,f,fam,opt;
 
   # write the homomorphism in terms of the image's free generators
   # (so preimages are cheap)
-  f:=GroupHomomorphismByImagesNC(u,f,w,GeneratorsOfGroup(f));
+  # this object cannot test whether is is a proper mapping, so skip
+  # safety assertions that could be triggered by the construction process
+  f:=GroupHomomorphismByImagesNC(u,f,w,GeneratorsOfGroup(f):noassert);
   # but give it `aug' as coset table, so we will use rewriting for images
   SetCosetTableFpHom(f,aug);
 
@@ -815,43 +845,40 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
   [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection,
    IsString],0,
 function(u,gens,nam)
-local aug,w,p,pres,f,fam;
+local aug,w,p,pres,f,fam,G;
   if HasIsWholeFamily(u) and IsWholeFamily(u) and
     IsIdenticalObj(gens,GeneratorsOfGroup(u)) then
       return IdentityMapping(u);
   fi;
   # get an augmented coset table from the group. It must be compatible with
   # `gens', so we must always use MTC.
-  if HasGeneratorsOfGroup(u) and IsIdenticalObj(GeneratorsOfGroup(u),gens) then
-    aug:=AugmentedCosetTableMtcInWholeGroup(u);
-  else
-    w:=FamilyObj(u)!.wholeGroup;
-    aug:=AugmentedCosetTableMtc(w,SubgroupNC(w,gens),2,"%");
-    # do not store the generators for the subgroup (the user could do this
-    # himself if he wanted), the danger of consequential errors due to a
-    # wrong <gens> list is too high.
-  fi;
+  
+  # use new MTC
+  w:=FamilyObj(u)!.wholeGroup;
+  aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
+	RelatorsOfFpGroup(w),
+	List(gens,UnderlyingElement),
+	true);
 
-  # force computation of words for the secondary generators
-  SecondaryGeneratorWordsAugmentedCosetTable(aug);
+  pres:=NEWTC_PresentationMTC(aug,1,nam);
+  if Length(GeneratorsOfPresentation(pres))>Length(gens) then
+    aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
+	  RelatorsOfFpGroup(w),
+	  List(gens,UnderlyingElement),
+	  true,false);
 
-  # create a tietze object to reduce the presentation a bit
-  if not IsBound(aug.subgroupRelators) then
-    aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
+    pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;
-  aug:=CopiedAugmentedCosetTable(aug);
-  pres := PresentationAugmentedCosetTable( aug,nam,0,true );
-  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
-  DecodeTree(pres);
+  Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens));
 
   # new free group
   f:=FpGroupPresentation(pres);
   aug.homgens:=gens;
   aug.homgenims:=GeneratorsOfGroup(f);
   aug.primaryImages:=GeneratorsOfGroup(f);
-  SecondaryImagesAugmentedCosetTable(aug);
+  aug.secondaryImages:=ShallowCopy(GeneratorsOfGroup(f));
 
-  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f));
+  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f):noassert);
 
   # tell f, that `aug' can be used as its coset table
   SetCosetTableFpHom(f,aug);
@@ -1029,12 +1056,17 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     SetAbelianInvariants(f,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
    
     if Length(m[1])>s.rank then
+      img:=[];
       for i in [1..s.rank] do  
+	Add(img,s.normal[i][i]);
         Add(rel,g.(i)^s.normal[i][i]);
       od;
+      Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
+      SetAbelianInvariants(f,img);
       g:=g/rel;
       fin:=false;
     else  
+      SetAbelianInvariants(f,DiagonalOfMat(s.normal));
       g:=AbelianGroup(DiagonalOfMat(s.normal));
       fin:=true;
     fi;
@@ -1053,6 +1085,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     g:=g/rel;
     fin:=Length(gen)=0;
     img:=GeneratorsOfGroup(g);
+    SetAbelianInvariants(f,ListWithIdenticalEntries(Length(gen),0));
   fi;
 
   SetIsFinite(g,fin);

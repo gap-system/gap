@@ -806,7 +806,6 @@ local aug,w,p,pres,f,fam,opt;
   fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
-  #Error("hier");
   TzGoGo(pres); # cleanup
 
   # new free group
