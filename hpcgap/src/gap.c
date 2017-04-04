@@ -3367,7 +3367,7 @@ void InitializeGap (
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
-              SyCacheSize, 0, SyAbortBags );
+              0, SyAbortBags );
               InitMsgsFuncBags( SyMsgsBags ); 
 
     TLS(StackNams)    = NEW_PLIST( T_PLIST, 16 );

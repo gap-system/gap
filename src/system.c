@@ -118,22 +118,6 @@ UInt SyCTRD;
 
 /****************************************************************************
 **
-*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
-**
-**  'SyCacheSize' is the size of the data cache.
-**
-**  This is per  default 0, which means that  there is no usuable data cache.
-**  It is usually changed with the '-c' option in the script that starts GAP.
-**
-**  This value is passed to 'InitBags'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-UInt SyCacheSize;
-
-
-/****************************************************************************
-**
 *V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
 */
 Int SyCheckCRCCompiledModule;
@@ -1809,8 +1793,6 @@ struct optInfo options[] = {
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
   { 'U', "", storeString, SyCompileOptions, 1}, /* kernel */
   { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
-  { 'c', "", storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
-                                           never seems to be useful */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
@@ -1845,7 +1827,6 @@ void InitSystem (
     /* Initialize global and static variables. Do it here rather than
        with initializers to allow for restart */
     SyCTRD = 1;             
-    SyCacheSize = 0;
     SyCheckCRCCompiledModule = 0;
     SyCompilePlease = 0;
     SyDebugLoading = 0;

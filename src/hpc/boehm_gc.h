@@ -304,7 +304,6 @@ void            InitBags (
     TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align,
-    UInt                cache_size,
     UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
