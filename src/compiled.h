@@ -75,7 +75,7 @@ extern "C" {
 
 
 #include <src/intrprtr.h>               /* interpreter */
-#include <src/globalstate.h>    /* */
+#include <src/gapstate.h>    /* */
 
 #include <src/compiler.h>               /* compiler */
 
