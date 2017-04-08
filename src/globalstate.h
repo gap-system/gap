@@ -64,8 +64,13 @@ typedef struct GlobalState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
-  TypInputFile   InputFiles[16];
+#if defined(HPCGAP)
+  TypInputFile * InputFiles[16];
+  TypOutputFile * OutputFiles[16];
+#else
+  TypInputFile InputFiles[16];
   TypOutputFile OutputFiles[16];
+#endif
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;
@@ -154,13 +159,18 @@ typedef struct GlobalState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  // HPC-GAP Obj PrintObjThissObj;
+#if defined(HPCGAP)
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Int *PrintObjIndices;
+#else
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
+#endif
 
 #if defined(HPCGAP)
-  /* For serializer.c */
+  /* For serialize.c */
   Obj SerializationObj;
   UInt SerializationIndex;
   void *SerializationDispatcher;
@@ -178,19 +188,11 @@ typedef struct GlobalState
   Obj SC_CW2_VECTOR;
   UInt SC_MAX_STACK_SIZE;
 
-#if defined(HPCGAP)
-  /* Profiling */
-  UInt CountActive;
-  UInt LocksAcquired;
-  UInt LocksContended;
-#endif
-
   /* Allocation */
 #ifdef BOEHM_GC
 #define MAX_GC_PREFIX_DESC 4
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
-  /* Extra storage */
 } GlobalState;
 
 extern GlobalState *MainGlobalState;
