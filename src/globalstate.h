@@ -21,6 +21,26 @@
 
 typedef struct GlobalState
 {
+#if defined(HPCGAP)
+  int threadID;
+  void *threadLock;
+  void *threadSignal;
+  void *acquiredMonitor;
+  unsigned multiplexRandomSeed;
+  void *currentRegion;
+  void *threadRegion;
+  void *traversalState;
+  Obj threadObject;
+  Obj tlRecords;
+  Obj lockStack;
+  int lockStackPointer;
+  Obj copiedObjs;
+  Obj interruptHandlers;
+  void *CurrentHashLock;
+  char *CurrFuncName;
+  int DisableGuards;
+#endif
+
   /* From intrprtr.c */
   Obj IntrResult;
   UInt IntrIgnoring;
@@ -64,8 +84,13 @@ typedef struct GlobalState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
-  TypInputFile   InputFiles[16];
+#if defined(HPCGAP)
+  TypInputFile * InputFiles[16];
+  TypOutputFile * OutputFiles[16];
+#else
+  TypInputFile InputFiles[16];
   TypOutputFile OutputFiles[16];
+#endif
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;
@@ -154,10 +179,15 @@ typedef struct GlobalState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  // HPC-GAP Obj PrintObjThissObj;
+#if defined(HPCGAP)
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Obj *PrintObjIndices;
+#else
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
+#endif
 
 #if defined(HPCGAP)
   /* For serializer.c */
@@ -191,6 +221,9 @@ typedef struct GlobalState
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
   /* Extra storage */
+#if defined(HPCGAP)
+  void *Extra[TLS_NUM_EXTRA];
+#endif
 } GlobalState;
 
 extern GlobalState *MainGlobalState;
