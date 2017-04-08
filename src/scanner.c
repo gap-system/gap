@@ -2973,12 +2973,12 @@ StructInitInfo * InitInfoScanner ( void )
  *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
  */
 
-void InitScannerState(GlobalState *state)
+void InitScannerState(GAPState *state)
 {
   state->HELPSubsOn = 1;
 }
 
-void DestroyScannerState(GlobalState *state)
+void DestroyScannerState(GAPState *state)
 {
 }
 

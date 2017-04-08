@@ -19,7 +19,7 @@
 
 #define MAXPRINTDEPTH 1024L
 
-typedef struct GlobalState
+typedef struct GAPState
 {
 #if defined(HPCGAP)
   int threadID;
@@ -224,25 +224,25 @@ typedef struct GlobalState
 #if defined(HPCGAP)
   void *Extra[TLS_NUM_EXTRA];
 #endif
-} GlobalState;
+} GAPState;
 
-extern GlobalState *MainGlobalState;
+extern GAPState *MainGAPState;
 
-void InitMainGlobalState(void);
+void InitMainGAPState(void);
 
-void InitScannerState(GlobalState *);
-void InitStatState(GlobalState *);
-void InitExprState(GlobalState *);
-void InitCoderState(GlobalState *);
-void InitOpersState(GlobalState *);
+void InitScannerState(GAPState *);
+void InitStatState(GAPState *);
+void InitExprState(GAPState *);
+void InitCoderState(GAPState *);
+void InitOpersState(GAPState *);
 
-void DestroyScannerState(GlobalState *);
-void DestroyStatState(GlobalState *);
-void DestroyExprState(GlobalState *);
-void DestroyCoderState(GlobalState *);
-void DestroyOpersState(GlobalState *);
+void DestroyScannerState(GAPState *);
+void DestroyStatState(GAPState *);
+void DestroyExprState(GAPState *);
+void DestroyCoderState(GAPState *);
+void DestroyOpersState(GAPState *);
 
-void InitGlobalState(GlobalState *state);
-void DestroyGlobalState(GlobalState *state);
+void InitGAPState(GAPState *state);
+void DestroyGAPState(GAPState *state);
 
 #endif // GAP_GLOBAL_STATE_H

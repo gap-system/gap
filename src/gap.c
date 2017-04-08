@@ -497,7 +497,7 @@ int main (
   InstallBacktraceHandlers();
 #endif
 
-  InitMainGlobalState();
+  InitMainGAPState();
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -3326,7 +3326,7 @@ void InitializeGap (
         }
     }
 
-    InitGlobalState(MainGlobalState);
+    InitGAPState(MainGAPState);
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

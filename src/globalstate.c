@@ -15,20 +15,20 @@
 static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
 static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
 
-static GlobalState _MainGlobalState;
+static GAPState _MainGAPState;
 
-GlobalState *MainGlobalState = 0;
+GAPState *MainGAPState = 0;
 
-void InitMainGlobalState(void)
+void InitMainGAPState(void)
 {
     // with GASMAN mallocing this struct could
     // lead to unwanted effects.
-    MainGlobalState = &_MainGlobalState;
-    MainGlobalState->OffsBodyStack = MainOffsBodyStack;
-    MainGlobalState->LoopStack = MainLoopStack;
+    MainGAPState = &_MainGAPState;
+    MainGAPState->OffsBodyStack = MainOffsBodyStack;
+    MainGAPState->LoopStack = MainLoopStack;
 }
 
-void InitGlobalState(GlobalState *state)
+void InitGAPState(GAPState *state)
 {
     InitScannerState(state);
     InitStatState(state);
@@ -39,7 +39,7 @@ void InitGlobalState(GlobalState *state)
     // RunConstructors?
 }
 
-void DestroyGlobal(GlobalState *state)
+void DestroyGlobal(GAPState *state)
 {
     DestroyScannerState(state);
     DestroyStatState(state);

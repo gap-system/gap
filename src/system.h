@@ -1092,7 +1092,7 @@ extern void InitSystem (
 
 // FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
 // to keep the diffs between it and master branch small(er).
-#define TLS(x) (MainGlobalState->x)
+#define TLS(x) (MainGAPState->x)
 
 
 #endif // GAP_SYSTEM_H
