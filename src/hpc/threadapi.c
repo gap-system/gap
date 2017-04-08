@@ -1517,11 +1517,11 @@ static Int InitLibrary (
     return 0;
 }
 
-void InitThreadAPITLS()
+void InitThreadAPIState(GAPState * state)
 {
 }
 
-void DestroyThreadAPITLS()
+void DestroyThreadAPIState(GAPState * state)
 {
 }
 

@@ -255,4 +255,12 @@ void DestroyOpersState(GAPState *);
 void InitGAPState(GAPState *state);
 void DestroyGAPState(GAPState *state);
 
+#if defined(HPCGAP)
+void InitAObjectsState(GAPState *state);
+void InitThreadAPIState(GAPState *state);
+
+void DestroyObjectsState(GAPState *state);
+void DestroyThreadAPIState(GAPState *state);
+#endif
+
 #endif // GAP_GLOBAL_STATE_H

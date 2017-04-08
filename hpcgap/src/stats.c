@@ -2324,17 +2324,17 @@ static Int InitKernel (
     return 0;
 }
 
-void InitStatTLS()
+void InitStatState(GAPState * state)
 {
-  TLS(CurrExecStatFuncs) = ExecStatFuncs;
-  MEMBAR_FULL();
-  if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
+    state->CurrExecStatFuncs = ExecStatFuncs;
     MEMBAR_FULL();
-    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
-  }
+    if (GetThreadState(state->threadID) >= TSTATE_INTERRUPT) {
+        MEMBAR_FULL();
+        state->CurrExecStatFuncs = IntrExecStatFuncs;
+    }
 }
 
-void DestroyStatTLS()
+void DestroyStatState(GAPState * state)
 {
 }
 

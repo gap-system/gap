@@ -1593,19 +1593,21 @@ void UnbAList(Obj list, Int pos)
   HashUnlockShared(list);
 }
 
-void InitAObjectsTLS() {
-  TLS(tlRecords) = (Obj) 0;
+void InitAObjectsState(GAPState * state)
+{
+    state->tlRecords = (Obj)0;
 }
 
-void DestroyAObjectsTLS() {
-  Obj records;
-  UInt i, len;
-  records = TLS(tlRecords);
-  if (records) {
-    len = LEN_PLIST(records);
-    for (i=1; i<=len; i++)
-      UpdateThreadRecord(ELM_PLIST(records, i), (Obj) 0);
-  }
+void DestroyAObjectsState(GAPState * state)
+{
+    Obj  records;
+    UInt i, len;
+    records = state->tlRecords;
+    if (records) {
+        len = LEN_PLIST(records);
+        for (i = 1; i <= len; i++)
+            UpdateThreadRecord(ELM_PLIST(records, i), (Obj)0);
+    }
 }
 
 #endif /* WARD_ENABLED */

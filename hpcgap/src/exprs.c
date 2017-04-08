@@ -2146,12 +2146,12 @@ static Int InitLibrary (
     return 0;
 }
 
-void InitExprTLS()
+void InitExprState(GAPState * state)
 {
-    TLS(CurrEvalExprFuncs) = EvalExprFuncs;
+    state->CurrEvalExprFuncs = EvalExprFuncs;
 }
 
-void DestroyExprTLS()
+void DestroyExprState(GAPState * state)
 {
 }
 

@@ -1,4 +1,5 @@
 #include <src/system.h>
+#include <src/globalstate.h>
 #include <src/gasman.h>
 #include <src/objects.h>
 #include <src/scanner.h>
@@ -78,39 +79,27 @@ Int AllocateExtraTLSSlot() {
 
 void InitTLS()
 {
-  void InitScannerTLS();
-  void InitStatTLS();
-  void InitExprTLS();
-  void InitCoderTLS();
-  void InitThreadAPITLS();
-  void InitOpersTLS();
-  void InitAObjectsTLS();
-  InitScannerTLS();
-  InitStatTLS();
-  InitExprTLS();
-  InitCoderTLS();
-  InitThreadAPITLS();
-  InitOpersTLS();
-  InitAObjectsTLS();
+  GAPState *state = GetTLS();
+  InitScannerState(state);
+  InitStatState(state);
+  InitExprState(state);
+  InitCoderState(state);
+  InitThreadAPIState(state);
+  InitOpersState(state);
+  InitAObjectsState(state);
   RunTLSConstructors();
-  TLS(CountActive) = 1;
+  state->CountActive = 1;
 }
 
 void DestroyTLS()
 {
-  void DestroyScannerTLS();
-  void DestroyStatTLS();
-  void DestroyExprTLS();
-  void DestroyCoderTLS();
-  void DestroyThreadAPITLS();
-  void DestroyOpersTLS();
-  void DestroyAObjectsTLS();
-  DestroyScannerTLS();
-  DestroyStatTLS();
-  DestroyExprTLS();
-  DestroyCoderTLS();
-  DestroyThreadAPITLS();
-  DestroyOpersTLS();
-  DestroyAObjectsTLS();
+  GAPState *state = GetTLS();
+  DestroyScannerState(state);
+  DestroyStatState(state);
+  DestroyExprState(state);
+  DestroyCoderState(state);
+  DestroyThreadAPIState(state);
+  DestroyOpersState(state);
+  DestroyAObjectsState(state);
   RunTLSDestructors();
 }
