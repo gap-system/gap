@@ -1,14 +1,14 @@
-/***********************************************************************
+	/***********************************************************************
  **
- *W  globalstate.h      GAP source                 Markus Pfeiffer
+ *W  gapstate.h      GAP source                 Markus Pfeiffer
  **
  **
  ** This file declares all variables that are considered state for the
  ** interpreter
  **
  */
-#ifndef GAP_GLOBAL_STATE_H
-#define GAP_GLOBAL_STATE_H
+#ifndef GAP_GAPSTATE_H
+#define GAP_GAPSTATE_H
 
 #include <stdint.h>
 
@@ -19,7 +19,7 @@
 
 #define MAXPRINTDEPTH 1024L
 
-typedef struct GlobalState
+typedef struct GAPState
 {
   /* From intrprtr.c */
   Obj IntrResult;
@@ -193,25 +193,25 @@ typedef struct GlobalState
 #define MAX_GC_PREFIX_DESC 4
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
-} GlobalState;
+} GAPState;
 
-extern GlobalState *MainGlobalState;
+extern GAPState *MainGAPState;
 
-void InitMainGlobalState(void);
+void InitMainGAPState(void);
 
-void InitScannerState(GlobalState *);
-void InitStatState(GlobalState *);
-void InitExprState(GlobalState *);
-void InitCoderState(GlobalState *);
-void InitOpersState(GlobalState *);
+void InitScannerState(GAPState *);
+void InitStatState(GAPState *);
+void InitExprState(GAPState *);
+void InitCoderState(GAPState *);
+void InitOpersState(GAPState *);
 
-void DestroyScannerState(GlobalState *);
-void DestroyStatState(GlobalState *);
-void DestroyExprState(GlobalState *);
-void DestroyCoderState(GlobalState *);
-void DestroyOpersState(GlobalState *);
+void DestroyScannerState(GAPState *);
+void DestroyStatState(GAPState *);
+void DestroyExprState(GAPState *);
+void DestroyCoderState(GAPState *);
+void DestroyOpersState(GAPState *);
 
-void InitGlobalState(GlobalState *state);
-void DestroyGlobalState(GlobalState *state);
+void InitGAPState(GAPState *state);
+void DestroyGAPState(GAPState *state);
 
-#endif // GAP_GLOBAL_STATE_H
+#endif // GAP_GAPSTATE_H

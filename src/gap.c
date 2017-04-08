@@ -93,7 +93,7 @@
 #include <src/weakptr.h>                /* weak pointers */
 #include <src/profile.h>                /* profiling */
 
-#include <src/globalstate.h>            /* Global State */
+#include <src/gapstate.h>            /* Global State */
 
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
@@ -497,7 +497,7 @@ int main (
   InstallBacktraceHandlers();
 #endif
 
-  InitMainGlobalState();
+  InitMainGAPState();
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -3326,7 +3326,7 @@ void InitializeGap (
         }
     }
 
-    InitGlobalState(MainGlobalState);
+    InitGAPState(MainGAPState);
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

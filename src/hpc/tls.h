@@ -19,7 +19,7 @@ static inline Bag ImpliedWriteGuard(Bag bag)
 
 #include <stdint.h>
 
-#include <src/globalstate.h>
+#include <src/gapstate.h>
 #include <src/code.h>
 #include <src/hpc/tlsconfig.h>
 #include <src/scanner.h>
@@ -50,7 +50,7 @@ typedef struct ThreadLocalStorage
   GlobalState state;
   /* Extra storage */
   void *Extra[TLS_NUM_EXTRA];
-};
+} ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
 
