@@ -18,6 +18,7 @@
 #include <src/gasman.h>
 
 #define MAXPRINTDEPTH 1024L
+#define TLS_NUM_EXTRA 256
 
 typedef struct GAPState
 {
@@ -226,9 +227,16 @@ typedef struct GAPState
 #endif
 } GAPState;
 
-#define TLS(x) (MainGAPState->x)
+#if defined(HPCGAP)
 
+#define TLS(x) (realTLS->x)
+
+#else
+
+#define TLS(x) (MainGAPState->x)
 extern GAPState *MainGAPState;
+
+#endif
 
 void InitMainGAPState(void);
 

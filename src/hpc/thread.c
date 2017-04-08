@@ -110,7 +110,7 @@ void *AllocateTLS()
   void *addr;
   void *result;
   size_t pagesize = getpagesize();
-  size_t tlssize = (sizeof(ThreadLocalStorage)+pagesize-1) & ~ (pagesize-1);
+  size_t tlssize = (sizeof(GAPState)+pagesize-1) & ~ (pagesize-1);
   addr = mmap(0, 2 * TLS_SIZE, PROT_READ|PROT_WRITE,
     MAP_PRIVATE|MAP_ANONYMOUS, -1 , 0);
   result = (void *)((((uintptr_t) addr) + (TLS_SIZE-1)) & TLS_MASK);
@@ -140,16 +140,16 @@ void FreeTLS(void *address)
 void AddGCRoots()
 {
   void *p = realTLS;
-  GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+  GC_add_roots(p, (char *)p + sizeof(GAPState));
 }
 
 void RemoveGCRoots()
 {
   void *p = realTLS;
 #if defined(__CYGWIN__) || defined(__CYGWIN32__)
-  memset(p, '\0', sizeof(ThreadLocalStorage));
+  memset(p, '\0', sizeof(GAPState));
 #else
-  GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+  GC_remove_roots(p, (char *)p + sizeof(GAPState));
 #endif
 }
 #endif /* DISABLE_GC */
@@ -351,7 +351,7 @@ void *DispatchThread(void *arg)
   SetRegionName(region, this_thread->region_name);
   TLS(threadObject) = this_thread->thread_object;
   pthread_mutex_lock(this_thread->lock);
-  *(ThreadLocalStorage **)(ADDR_OBJ(TLS(threadObject))) = realTLS;
+  *(GAPState **)(ADDR_OBJ(TLS(threadObject))) = realTLS;
   pthread_cond_broadcast(this_thread->cond);
   pthread_mutex_unlock(this_thread->lock);
   this_thread->start(this_thread->arg);
@@ -359,7 +359,7 @@ void *DispatchThread(void *arg)
   region->fixed_owner = 0;
   RegionWriteUnlock(region);
   DestroyTLS();
-  memset(realTLS, 0, sizeof(ThreadLocalStorage));
+  memset(realTLS, 0, sizeof(GAPState));
 #ifndef DISABLE_GC
   RemoveGCRoots();
 #endif
@@ -482,7 +482,7 @@ Int ThreadID(Obj thread)
 
 void *ThreadTLS(Obj thread)
 {
-  return *(ThreadLocalStorage **)(ADDR_OBJ(thread)+1);
+  return *(GAPState **)(ADDR_OBJ(thread)+1);
 }
 
 
@@ -804,7 +804,7 @@ int UpdateThreadState(int threadID, int oldState, int newState) {
 }
 
 static void SetInterrupt(int threadID) {
-  ThreadLocalStorage *tls = thread_data[threadID].tls;
+  GAPState *tls = thread_data[threadID].tls;
   MEMBAR_FULL();
   tls->CurrExecStatFuncs = IntrExecStatFuncs;
 }

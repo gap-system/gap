@@ -13,17 +13,17 @@
 static TLSHandler TLSHandlers[MAX_TLS_HANDLERS];
 static Int TLSHandlerCount = 0;
 
-ThreadLocalStorage *MainThreadTLS;
+GAPState *MainThreadTLS;
 
 #ifdef HAVE_NATIVE_TLS
 
-__thread ThreadLocalStorage TLSInstance;
+__thread GAPState TLSInstance;
 
 #endif
 
 void InitializeTLS()
 {
-  memset((void *)(realTLS), 0, sizeof(ThreadLocalStorage));
+  memset((void *)(realTLS), 0, sizeof(GAPState));
 }
 
 void InstallTLSHandler(

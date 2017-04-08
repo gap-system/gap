@@ -66,7 +66,7 @@
 struct WaitList {
   struct WaitList *prev;
   struct WaitList *next;
-  ThreadLocalStorage *thread;
+  GAPState *thread;
 };
 
 typedef struct Channel
@@ -149,17 +149,17 @@ Obj NewMonitor()
   return monitorBag;
 }
 
-void LockThread(ThreadLocalStorage *thread)
+void LockThread(GAPState *thread)
 {
   pthread_mutex_lock(thread->threadLock);
 }
 
-void UnlockThread(ThreadLocalStorage *thread)
+void UnlockThread(GAPState *thread)
 {
   pthread_mutex_unlock(thread->threadLock);
 }
 
-void SignalThread(ThreadLocalStorage *thread)
+void SignalThread(GAPState *thread)
 {
   pthread_cond_signal(thread->threadSignal);
 }
@@ -337,7 +337,7 @@ UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
 void SignalMonitor(Monitor *monitor)
 {
   struct WaitList *queue;
-  ThreadLocalStorage *thread = NULL;
+  GAPState *thread = NULL;
   queue = monitor->head;
   if (queue != NULL)
   {
