@@ -485,7 +485,7 @@ dnl to also adjust the C code simultaneously, and e.g. remove
 dnl checks for things like HAVE_SYS_WAIT_H if appropriate.
 dnl
 
-AC_CHECK_HEADERS([fcntl.h termios.h termio.h sgtty.h])
+AC_CHECK_HEADERS([fcntl.h termios.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/stat.h sys/wait.h])
 
 # Check for POSIX 98 pty APIs
