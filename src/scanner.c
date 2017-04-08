@@ -33,7 +33,7 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/globalstate.h>
 
 #include <src/sysfiles.h>               /* file input/output */
 

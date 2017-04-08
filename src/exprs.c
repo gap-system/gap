@@ -13,6 +13,7 @@
 **  expressions to their values and prints expressions.
 */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/globalstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

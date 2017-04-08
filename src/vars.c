@@ -17,7 +17,7 @@
 **  global variables, list elements, and record elements.
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/globalstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */

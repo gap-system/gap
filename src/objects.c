@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #include <src/system.h>                 /* Ints, UInts, SyIsIntr */
-
+#include <src/globalstate.h>
 
 #include <src/sysfiles.h>               /* file input/output */
 

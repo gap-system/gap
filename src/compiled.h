@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 #include <src/system.h>                 /* system dependent part */
+#include <src/globalstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
@@ -75,7 +76,6 @@ extern "C" {
 
 
 #include <src/intrprtr.h>               /* interpreter */
-#include <src/globalstate.h>    /* */
 
 #include <src/compiler.h>               /* compiler */
 

@@ -226,6 +226,8 @@ typedef struct GAPState
 #endif
 } GAPState;
 
+#define TLS(x) (MainGAPState->x)
+
 extern GAPState *MainGAPState;
 
 void InitMainGAPState(void);

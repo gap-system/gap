@@ -13,7 +13,7 @@
 */
 #include <stdarg.h>                     /* variable argument list macros */
 #include <src/system.h>                 /* Ints, UInts */
-
+#include <src/globalstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */

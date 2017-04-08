@@ -19,6 +19,8 @@
                                            but does not include stdio.h    */
 #include <assert.h>                     /* assert */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/globalstate.h>
+
 #include <src/bool.h>
 
 

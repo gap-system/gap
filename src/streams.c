@@ -13,6 +13,7 @@
 */
 
 #include <src/system.h>                 /* system dependent part */
+#include <src/globalstate.h>
 
 #include <errno.h>
 #include <stdio.h>
