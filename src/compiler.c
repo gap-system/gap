@@ -1269,7 +1269,7 @@ CVar CompFuncExpr (
     Emit( ", HdlrFunc%d );\n", nr );
 
     /* this should probably be done by 'NewFunction'                       */
-    Emit( "ENVI_FUNC( %c ) = TLS(CurrLVars);\n", func );
+    Emit( "ENVI_FUNC( %c ) = STATE(CurrLVars);\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
     Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
@@ -1278,7 +1278,7 @@ CVar CompFuncExpr (
     Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
-    Emit( "CHANGED_BAG( TLS(CurrLVars) );\n" );
+    Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
 
     /* we know that the result is a function                               */
     SetInfoCVar( func, W_FUNC );
@@ -5602,7 +5602,7 @@ void CompFunc (
     }
     else {
         Emit( "\n/* restoring old stack frame */\n" );
-        Emit( "oldFrame = TLS(CurrLVars);\n" );
+        Emit( "oldFrame = STATE(CurrLVars);\n" );
         Emit( "SWITCH_TO_OLD_FRAME(ENVI_FUNC(self));\n" );
     }
 
@@ -5787,8 +5787,8 @@ Int CompileFunc (
     }
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);\n" );
-    Emit( "ENVI_FUNC( func1 ) = TLS(CurrLVars);\n" );
-    Emit( "CHANGED_BAG( TLS(CurrLVars) );\n" );
+    Emit( "ENVI_FUNC( func1 ) = STATE(CurrLVars);\n" );
+    Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
     Emit( "body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));\n" );
     Emit( "BODY_FUNC( func1 ) = body1;\n" );
     Emit( "CHANGED_BAG( func1 );\n");

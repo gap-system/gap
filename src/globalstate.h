@@ -229,11 +229,11 @@ typedef struct GAPState
 
 #if defined(HPCGAP)
 
-#define TLS(x) (realTLS->x)
+#define STATE(x) (realTLS->x)
 
 #else
 
-#define TLS(x) (MainGAPState->x)
+#define STATE(x) (MainGAPState->x)
 extern GAPState *MainGAPState;
 
 #endif

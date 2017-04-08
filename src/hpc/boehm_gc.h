@@ -193,7 +193,7 @@ static void TLAllocatorInit(void) {
     k ++;
   }
   TLAllocatorMaxSeg = k;
-  if (MAX_GC_PREFIX_DESC * sizeof(void *) > sizeof(TLS(FreeList)))
+  if (MAX_GC_PREFIX_DESC * sizeof(void *) > sizeof(STATE(FreeList)))
     abort();
 }
 
@@ -217,18 +217,18 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       alloc_size = (size + GRANULE_SIZE - 1 ) / GRANULE_SIZE;
       alloc_seg = TLAllocatorSeg[alloc_size];
       alloc_size = TLAllocatorSize[alloc_seg];
-      if (!TLS(FreeList)[gc_type+1])
-        TLS(FreeList)[gc_type+1] =
+      if (!STATE(FreeList)[gc_type+1])
+        STATE(FreeList)[gc_type+1] =
           GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
-      if (!(result = TLS(FreeList)[gc_type+1][alloc_seg])) {
+      if (!(result = STATE(FreeList)[gc_type+1][alloc_seg])) {
         if (gc_type < 0)
-          TLS(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
+          STATE(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
         else
           GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
-            &TLS(FreeList)[gc_type+1][alloc_seg]);
-        result = TLS(FreeList)[gc_type+1][alloc_seg];
+            &STATE(FreeList)[gc_type+1][alloc_seg]);
+        result = STATE(FreeList)[gc_type+1][alloc_seg];
       }
-      TLS(FreeList)[gc_type+1][alloc_seg] = *(void **)result;
+      STATE(FreeList)[gc_type+1][alloc_seg] = *(void **)result;
       memset(result, 0, alloc_size);
     } else {
       if (gc_type >= 0)
@@ -429,10 +429,10 @@ Bag NewBag (
     bag = GC_malloc(2*sizeof(Bag *));
 #else
     bag = GC_malloc(4*sizeof(Bag *));
-    if (TLS(PtrLVars)) {
+    if (STATE(PtrLVars)) {
       bag[2] = (void *)(CURR_FUNC);
-      if (TLS(CurrLVars) != TLS(BottomLVars)) {
-        Obj plvars = PARENT_LVARS(TLS(CurrLVars));
+      if (STATE(CurrLVars) != STATE(BottomLVars)) {
+        Obj plvars = PARENT_LVARS(STATE(CurrLVars));
         bag[3] = (void *) (FUNC_LVARS(plvars));
       }
     }

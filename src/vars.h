@@ -96,7 +96,7 @@
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       FUNC_LVARS_PTR(TLS(PtrLVars))
+#define CURR_FUNC       FUNC_LVARS_PTR(STATE(PtrLVars))
 
 
 /****************************************************************************
@@ -114,17 +114,17 @@ extern Obj True;
 static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
-            (int)expr, (int)TLS(CurrLVars), file, line);
+            (int)expr, (int)STATE(CurrLVars), file, line);
   }
-  (TLS(PtrLVars)[1] = (Obj)(Int)(expr));
+  (STATE(PtrLVars)[1] = (Obj)(Int)(expr));
 }
 
 #else
-#define SetBrkCallTo(expr, file, line)  (TLS(PtrLVars)[1] = (Obj)(Int)(expr))
+#define SetBrkCallTo(expr, file, line)  (STATE(PtrLVars)[1] = (Obj)(Int)(expr))
 #endif
 
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(TLS(PtrLVars)[1]))
+#define BRK_CALL_TO()                   ((Expr)(Int)(STATE(PtrLVars)[1]))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #else
 #define BRK_CALL_TO()                   /* do nothing */
@@ -138,8 +138,8 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 *F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 */
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 PARENT_LVARS_PTR(TLS(PtrLVars))
-#define SET_BRK_CALL_FROM(lvars)        (PARENT_LVARS_PTR(TLS(PtrLVars)) = (lvars))
+#define BRK_CALL_FROM()                 PARENT_LVARS_PTR(STATE(PtrLVars))
+#define SET_BRK_CALL_FROM(lvars)        (PARENT_LVARS_PTR(STATE(PtrLVars)) = (lvars))
 #else
 #define BRK_CALL_FROM()                 /* do nothing */
 #define SET_BRK_CALL_FROM(lvars)        /* do nothing */
@@ -166,20 +166,20 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #endif
 )
 {
-  Obj old = TLS(CurrLVars);
+  Obj old = STATE(CurrLVars);
   CHANGED_BAG( old );
-  TLS(CurrLVars) = NewBag( T_LVARS,
+  STATE(CurrLVars) = NewBag( T_LVARS,
                       sizeof(Obj)*(3+narg+nloc) );
-  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
+  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
   CURR_FUNC = func;
-  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
   SET_BRK_CALL_FROM( old );
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
     fprintf(stderr,"STNL: %s %i\n   func %lx narg %i nloc %i function name %s\n     old lvars %lx new lvars %lx\n",
-            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS(CurrLVars));
+            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)STATE(CurrLVars));
   }
 #endif
   return old;
@@ -208,13 +208,13 @@ static inline void SwitchToOldLVars( Obj old
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)TLS(CurrLVars),(UInt)old);
+           file, line, (UInt)STATE(CurrLVars),(UInt)old);
   }
 #endif
-  CHANGED_BAG( TLS(CurrLVars) );
-  TLS(CurrLVars) = (old);
-  TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-  TLS(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  CHANGED_BAG( STATE(CurrLVars) );
+  STATE(CurrLVars) = (old);
+  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
 #ifdef TRACEFRAMES
@@ -237,7 +237,7 @@ static inline void SwitchToOldLVars( Obj old
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)      (TLS(PtrLVars)[(lvar)+2] = (val))
+#define ASS_LVAR(lvar,val)      (STATE(PtrLVars)[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -246,7 +246,7 @@ static inline void SwitchToOldLVars( Obj old
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-#define OBJ_LVAR(lvar)          (TLS(PtrLVars)[(lvar)+2])
+#define OBJ_LVAR(lvar)          (STATE(PtrLVars)[(lvar)+2])
 
 
 /****************************************************************************

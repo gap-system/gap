@@ -17,7 +17,7 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
-/* HACK: need to include this for TLS() below in CheckRecursionBefore */
+/* HACK: need to include this for STATE() below in CheckRecursionBefore */
 #include "src/hpc/tls.h"
 
 /****************************************************************************
@@ -34,7 +34,7 @@ extern  Obj             MakeFunction (
 /****************************************************************************
 **
 *F  ExecBegin( <frame> ) . . . . . . . . .begin an execution in context frame
-**  if in doubt, pass TLS(BottomLVars) as <frame>
+**  if in doubt, pass STATE(BottomLVars) as <frame>
 **
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
@@ -50,9 +50,9 @@ extern void RecursionDepthTrap( void );
 
 static inline void CheckRecursionBefore( void )
 {
-    TLS(RecursionDepth)++;
+    STATE(RecursionDepth)++;
     if ( RecursionTrapInterval &&
-         0 == (TLS(RecursionDepth) % RecursionTrapInterval) )
+         0 == (STATE(RecursionDepth) % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 

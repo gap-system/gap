@@ -77,7 +77,7 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -141,7 +141,7 @@ UInt            ExecUnknownStat (
 */
 
 UInt HaveInterrupt( void ) {
-  return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
+  return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
 
 
@@ -1640,7 +1640,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    TLS(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    STATE(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1670,8 +1670,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'TLS(ReturnObjStat)' to void                                         */
-    TLS(ReturnObjStat) = 0;
+    /* set 'STATE(ReturnObjStat)' to void                                         */
+    STATE(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -1714,9 +1714,9 @@ static void CheckAndRespondToAlarm(void) {
 
 UInt TakeInterrupt( void ) {
   UInt i;
-  if (TLS(CurrExecStatFuncs) == IntrExecStatFuncs) {
-      assert(TLS(CurrExecStatFuncs) != ExecStatFuncs);
-      TLS(CurrExecStatFuncs) = ExecStatFuncs;
+  if (STATE(CurrExecStatFuncs) == IntrExecStatFuncs) {
+      assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
+      STATE(CurrExecStatFuncs) = ExecStatFuncs;
       CheckAndRespondToAlarm();
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
       return 1;
@@ -1740,7 +1740,7 @@ UInt ExecIntrStat (
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    TLS(CurrExecStatFuncs) = ExecStatFuncs;
+    STATE(CurrExecStatFuncs) = ExecStatFuncs;
 
     /* One reason we might be here is a timeout. If so longjump out to the 
        CallWithTimeLimit where we started */
@@ -1771,7 +1771,7 @@ UInt ExecIntrStat (
 void InterruptExecStat ( void )
 {
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    TLS(CurrExecStatFuncs) = IntrExecStatFuncs;
+    STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
 
 }
 
@@ -1799,15 +1799,15 @@ void InitIntrExecStats ( void )
 */
 
 Int BreakLoopPending( void ) {
-     return TLS(CurrExecStatFuncs) == IntrExecStatFuncs;
+     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
 
 void ClearError ( void )
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( TLS(CurrExecStatFuncs) == IntrExecStatFuncs ) {
-        TLS(CurrExecStatFuncs) = ExecStatFuncs;
+    if ( STATE(CurrExecStatFuncs) == IntrExecStatFuncs ) {
+        STATE(CurrExecStatFuncs) = ExecStatFuncs;
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
@@ -1821,8 +1821,8 @@ void ClearError ( void )
         }
     }
 
-    /* reset <TLS(NrError)>                                                     */
-    TLS(NrError) = 0;
+    /* reset <STATE(NrError)>                                                     */
+    STATE(NrError) = 0;
 }
 
 /****************************************************************************

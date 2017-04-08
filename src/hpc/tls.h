@@ -126,7 +126,7 @@ static inline int CheckWriteAccess(Bag bag)
     return 1;
   region = REGION(bag);
   return !(region && region->owner != realTLS && region->alt_owner != realTLS)
-    || TLS(DisableGuards) >= 2;
+    || STATE(DisableGuards) >= 2;
 }
 
 static inline int CheckExclusiveWriteAccess(Bag bag)
@@ -138,7 +138,7 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   if (!region)
     return 0;
   return region->owner == realTLS || region->alt_owner == realTLS
-    || TLS(DisableGuards) >= 2;
+    || STATE(DisableGuards) >= 2;
 }
 
 #ifdef VERBOSE_GUARDS
@@ -153,7 +153,7 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
     return bag;
   region = REGION(bag);
   if (region && region->owner != realTLS &&
-      !region->readers[TLS(threadID)] && region->alt_owner != realTLS)
+      !region->readers[STATE(threadID)] && region->alt_owner != realTLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -176,13 +176,13 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
     return 1;
   region = REGION(bag);
   return !(region && region->owner != realTLS &&
-    !region->readers[TLS(threadID)] && region->alt_owner != realTLS)
-    || TLS(DisableGuards) >= 2;
+    !region->readers[STATE(threadID)] && region->alt_owner != realTLS)
+    || STATE(DisableGuards) >= 2;
 }
 
 static inline int IsMainThread()
 {
-  return TLS(threadID) == 0;
+  return STATE(threadID) == 0;
 };
 
 void InitializeTLS();
