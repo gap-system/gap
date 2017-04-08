@@ -961,56 +961,19 @@ extern UInt syStartraw (
 extern void syStopraw (
             Int                 fid );
 
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
-
-
-#if HAVE_TERMIOS_H
-
-  /****************************************************************************
-  **  For UNIX System V, input/output redirection and typeahead are  supported.
-  **  We  turn off input buffering  and canonical input editing and  also echo.
-  **  Because we leave the signals enabled  we  have  to disable the characters
-  **  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
-  **  We   also turn off the  xon/xoff  start  and  stop  characters, which are
-  **  usually set to  '<ctr>-S'  and '<ctr>-Q' so we  can get those characters.
-  **  We do  not turn of  signals  'ISIG' because  we want   to catch  stop and
-  **  continue signals if this particular version  of UNIX supports them, so we
-  **  can turn the terminal line back to cooked mode before stopping GAP.
-  */
-  #include <termios.h>
-  struct termios   syOld, syNew;           /* old and new terminal state      */
-
-#elif HAVE_TERMIO_H
-
-  #include <termio.h>
-  struct termio   syOld, syNew;           /* old and new terminal state      */
-
-  #ifndef TCSETAW
-    /* cygwin32 provides no SETAW. Try using SETA instead in that case */
-    #define TCSETAW TCSETA
-  #endif
-
-#elif HAVE_SGTTY_H
-
-  /****************************************************************************
-  **  For Berkeley UNIX, input/output redirection and typeahead are  supported.
-  **  We switch the terminal line into 'CBREAK' mode and also disable the echo.
-  **  We do not switch to 'RAW'  mode because  this would flush  all typeahead.
-  **  Because 'CBREAK' leaves signals enabled we have to disable the characters
-  **  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
-  **  We also turn  off  the  xon/xoff  start and  stop characters,  which  are
-  **  usually set  to '<ctr>-S' and '<ctr>-Q' so  we can get  those characters.
-  **  We  do not  change the  suspend  character, which  is usually  '<ctr>-Z',
-  **  instead we catch the signal, so that we  can turn  the terminal line back
-  **  to cooked mode before stopping GAP and back to raw mode when continuing.
-  */
-
-  #include <sgtty.h>
-  struct sgttyb   syOld, syNew;           /* old and new terminal state      */
-  struct tchars   syOldT, syNewT;         /* old and new special characters  */
-
-#endif
-
+/****************************************************************************
+**  For UNIX System V, input/output redirection and typeahead are  supported.
+**  We  turn off input buffering  and canonical input editing and  also echo.
+**  Because we leave the signals enabled  we  have  to disable the characters
+**  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
+**  We   also turn off the  xon/xoff  start  and  stop  characters, which are
+**  usually set to  '<ctr>-S'  and '<ctr>-Q' so we  can get those characters.
+**  We do  not turn of  signals  'ISIG' because  we want   to catch  stop and
+**  continue signals if this particular version  of UNIX supports them, so we
+**  can turn the terminal line back to cooked mode before stopping GAP.
+*/
+#include <termios.h>
+struct termios   syOld, syNew;           /* old and new terminal state      */
 
 #ifdef SIGTSTP
 
@@ -1041,16 +1004,9 @@ UInt syStartraw ( Int fid )
         else {                                             return 0; }
     }
 
-#if HAVE_TERMIOS_H || HAVE_TERMIO_H
-
     /* try to get the terminal attributes, will fail if not terminal       */
-#if HAVE_TERMIOS_H
     if ( tcgetattr( syBuf[fid].fp, &syOld) == -1 )
         return 0;
-#elif HAVE_TERMIO_H
-    if ( ioctl( syBuf[fid].fp, TCGETA, &syOld ) == -1 )
-        return 0;
-#endif
 
     /* disable interrupt, quit, start and stop output characters           */
     syNew = syOld;
@@ -1065,41 +1021,8 @@ UInt syStartraw ( Int fid )
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
 
-#if HAVE_TERMIOS_H
     if ( tcsetattr( syBuf[fid].fp, TCSANOW, &syNew) == -1 )
         return 0;
-#elif HAVE_TERMIO_H
-    if ( ioctl( syBuf[fid].fp, TCSETAW, &syNew ) == -1 )
-        return 0;
-#endif
-
-#elif HAVE_SGTTY_H
-
-    /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( syBuf[fid].fp, TIOCGETP, (char*)&syOld ) == -1 )
-        return 0;
-
-    /* disable interrupt, quit, start and stop output characters           */
-    if ( ioctl( syBuf[fid].fp, TIOCGETC, (char*)&syOldT ) == -1 )
-        return 0;
-    syNewT = syOldT;
-    syNewT.t_intrc  = -1;
-    syNewT.t_quitc  = -1;
-    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
-    /*C syNewT.t_startc = -1;                                              */
-    /*C syNewT.t_stopc  = -1;                                              */
-    if ( ioctl( syBuf[fid].fp, TIOCSETC, (char*)&syNewT ) == -1 )
-        return 0;
-
-    /* disable input buffering, line editing and echo                      */
-    syNew = syOld;
-    syNew.sg_flags |= CBREAK;
-    syNew.sg_flags &= ~ECHO;
-    if ( ioctl( syBuf[fid].fp, TIOCSETN, (char*)&syNew ) == -1 )
-        return 0;
-
-#endif
-
 
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
@@ -1112,14 +1035,10 @@ UInt syStartraw ( Int fid )
 }
 
 
-#endif /* HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H */
-
-
 /****************************************************************************
 **
 *F  syStopraw( <fid> )  . . . . . .  stop raw mode on input file <fid>, local
 */
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syStopraw (
     Int                 fid )
@@ -1133,33 +1052,10 @@ void syStopraw (
     signal( SIGTSTP, SIG_DFL );
 #endif
 
-#if HAVE_TERMIOS_H
-
     /* enable input buffering, line editing and echo again                 */
     if (tcsetattr(syBuf[fid].fp, TCSANOW, &syOld) == -1)
         fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-
-#elif HAVE_TERMIO_H
-
-    /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( syBuf[fid].fp, TCSETAW, &syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-
-#elif HAVE_SGTTY_H
-
-    /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( syBuf[fid].fp, TIOCSETN, (char*)&syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-
-    /* enable interrupt, quit, start and stop output characters again      */
-    if ( ioctl( syBuf[fid].fp, TIOCSETC, (char*)&syOldT ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-
-#endif
 }
-
-#endif /* HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H */
-
 
 
 /****************************************************************************
@@ -1359,8 +1255,6 @@ void getwindowsize( void )
 **
 *f  syEchoch( <ch>, <fid> )
 */
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
-
 void syEchoch (
     Int                 ch,
     Int                 fid )
@@ -1377,8 +1271,6 @@ void syEchoch (
         writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
     }
 }
-
-#endif /* HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H */
 
 /****************************************************************************
 **
@@ -1411,8 +1303,6 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )
 */
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
-
 void syEchos (
     const Char *        str,
     Int                 fid )
@@ -1425,8 +1315,6 @@ void syEchos (
     else
         writeandcheck( syBuf[fid].echo, str, strlen(str) );
 }
-
-#endif /* HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H */
 
 
 /****************************************************************************
@@ -1444,8 +1332,6 @@ Char   syPrompt [256];                  /* characters already on the line   */
 **
 *f  SyFputs( <line>, <fid> )
 */
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
-
 void SyFputs (
     const Char *        line,
     Int                 fid )
@@ -1476,8 +1362,6 @@ void SyFputs (
     else
         writeandcheck( syBuf[fid].fp, line, i );
 }
-
-#endif /* HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H */
 
 
 /****************************************************************************
@@ -1562,7 +1446,7 @@ Int SyFseek (
 **  that return odd things rather than waiting for a key
 **
 */
-#if HAVE_SGTTY_H || HAVE_TERMIO_H || HAVE_TERMIOS_H
+
 
 /* In the cygwin environment it is not predictable if text files get the
  * '\r' in their line ends filtered out *before* GAP sees them. This leads
@@ -1699,9 +1583,6 @@ Int syGetchNonTerm (
 
 
 
-
-
-
 /****************************************************************************
 **
 *f  syGetch( <fid> )
@@ -1715,8 +1596,6 @@ Int syGetch (
     else
       return syGetchNonTerm(fid);
 }
-
-#endif
 
 
 /****************************************************************************

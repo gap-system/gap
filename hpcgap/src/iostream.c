@@ -62,9 +62,7 @@
 
 #include <errno.h>
 
-#if HAVE_TERMIOS_H
 #include <termios.h>
-#endif
 
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
@@ -378,18 +376,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     int             slave;   /* pipe to child                   */
     Int            stream;
 
-#if HAVE_TERMIOS_H
     struct termios  tst;     /* old and new terminal state      */
-#elif HAVE_TERMIO_H
-    struct termio   tst;     /* old and new terminal state      */
-#elif HAVE_SGTTY_H
-    struct sgttyb   tst;     /* old and new terminal state      */
-#elif !defined(USE_PRECOMPILED)
-/* If no way to store and reset terminal states is known, and we are
-   not currently re-making the dependency list (via cnf/Makefile),
-   then trigger an error. */
-    #error No supported way of (re)storing terminal state is available
-#endif
 
     /* Get a stream record */
     stream = NewStream();
@@ -405,7 +392,6 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     }
 
     /* Now fiddle with the terminal sessions on the pty */
-#if HAVE_TERMIOS_H
     if ( tcgetattr( slave, &tst ) == -1 )
     {
         Pr( "tcgetattr on slave pty failed (errno %d)\n", errno, 0);
@@ -424,40 +410,6 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
         Pr("tcsetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
-#elif HAVE_TERMIO_H
-    if ( ioctl( slave, TCGETA, &tst ) == -1 )
-    {
-        Pr( "ioctl TCGETA on slave pty failed (errno %d)\n", errno, 0);
-        goto cleanup;
-    }
-    tst.c_cc[VINTR] = 0377;
-    tst.c_cc[VQUIT] = 0377;
-    tst.c_iflag    &= ~(INLCR|ICRNL);
-    tst.c_cc[VMIN]  = 1;
-    tst.c_cc[VTIME] = 0;   
-    /* Note that this is at least on Linux dangerous! 
-       Therefore, we now have the HAVE_TERMIOS_H section for POSIX
-       Terminal control. */
-    tst.c_lflag    &= ~(ECHO|ICANON);
-    if ( ioctl( slave, TCSETAW, &tst ) == -1 )
-    {
-        Pr( "ioctl TCSETAW on slave pty failed (errno %d)\n", errno, 0);
-        goto cleanup;
-    }
-#elif HAVE_SGTTY_H
-    if ( ioctl( slave, TIOCGETP, (char*)&tst ) == -1 )
-    {
-        Pr( "ioctl TIOCGETP on slave pty failed (errno %d)\n", errno, 0);
-        goto cleanup;
-    }
-    tst.sg_flags |= RAW;
-    tst.sg_flags &= ~ECHO;
-    if ( ioctl( slave, TIOCSETN, (char*)&tst ) == -1 )
-    {
-        Pr( "ioctl on TIOCSETN slave pty failed (errno %d)\n", errno, 0);
-        goto cleanup;
-    }
-#endif
 
     /* set input to non blocking operation */
     /* Not any more */
