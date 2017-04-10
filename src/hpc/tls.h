@@ -43,7 +43,6 @@ typedef struct ThreadLocalStorage
   Obj copiedObjs;
   Obj interruptHandlers;
   void *CurrentHashLock;
-  char *CurrFuncName;
   int DisableGuards;
 
   /* From intrprtr.c */
