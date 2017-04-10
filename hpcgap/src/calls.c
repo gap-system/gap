@@ -1299,8 +1299,10 @@ void PrintFunction (
     Int                 nloc;           /* number of locals                */
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
-    UChar               *locks = 0L;
     UInt                isvarg;         /* does function have varargs?     */
+#ifdef HPCGAP
+    UChar               *locks = 0L;
+#endif
 
     isvarg = 0;
 
@@ -1309,12 +1311,17 @@ void PrintFunction (
       return;
     }
 
+#ifdef HPCGAP
     /* print 'function (' or 'atomic function ('                          */
     if (LCKS_FUNC(func)) {
       locks = CHARS_STRING(LCKS_FUNC(func));
       Pr("%5>atomic function%< ( %>",0L,0L);
     } else
       Pr("%5>function%< ( %>",0L,0L);
+#else
+    /* print 'function ('                                                  */
+    Pr("%5>function%< ( %>",0L,0L);
+#endif
 
     /* print the arguments                                                 */
     narg = NARG_FUNC(func);
@@ -1324,6 +1331,7 @@ void PrintFunction (
     }
     
     for ( i = 1; i <= narg; i++ ) {
+#ifdef HPCGAP
         if (locks) {
             switch(locks[i-1]) {
             case 1:
@@ -1334,6 +1342,7 @@ void PrintFunction (
                 break;
             }
         }
+#endif
         if ( NAMS_FUNC(func) != 0 )
             Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else

@@ -3062,7 +3062,9 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
+#if !defined(HPCGAP)
+    InitGlobalBag( &TLS(ThrownObject), "src/gap.c:ThrownObject"      );
+#endif
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
@@ -3255,11 +3257,13 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* main module                                                         */
     InitInfoGap,
 
+#ifdef HPCGAP
     /* threads                                                             */
     InitInfoThreadAPI,
     InitInfoAObjects,
     InitInfoObjSets,
     InitInfoSerialize,
+#endif
 
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */

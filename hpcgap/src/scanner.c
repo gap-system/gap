@@ -2998,9 +2998,11 @@ static Int InitLibrary (
  **
  *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
  */
-/* TL: static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
-/* TL: static Char MoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
-/* TL: static Char StillMoreCookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9]; */
+#if !defined(HPCGAP)
+static Char Cookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
+static Char MoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
+static Char StillMoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
+#endif
 
 static Int InitKernel (
     StructInitInfo *    module )
@@ -3016,44 +3018,43 @@ static Int InitKernel (
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
 
+#ifdef HPCGAP
     /* Initialize default stream functions */
-
     DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
+#else
     /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
-    /* We don't need the cookies anymore, since the data got moved to thread-local
+    /* For HPC-GAP we don't need the cookies anymore, since the data got moved to thread-local
      * storage. */
-#if 0
-    for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
+    for ( i = 0;  i < sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]);  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
       Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
       Cookie[i][8] = '\0';
-      /* TL: InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0])); */
+      InitGlobalBag(&(TLS(InputFiles)[i].stream), &(Cookie[i][0]));
 
       MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
       MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
       MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
       MoreCookie[i][8] = '\0';
-      /* TL: InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0])); */
+      InitGlobalBag(&(TLS(InputFiles)[i].sline), &(MoreCookie[i][0]));
 
       StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
       StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
       StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
       StillMoreCookie[i][8] = '\0';
-      /* TL: InitGlobalBag(&(InputFiles[i].gapname), &(StillMoreCookie[i][0])); */
+      InitGlobalBag(&(TLS(InputFiles)[i].gapname), &(StillMoreCookie[i][0]));
     }
-#endif
 
     /* tell GASMAN about the global bags                                   */
-    /* TL: InitGlobalBag(&(LogFile.stream),        "src/scanner.c:LogFile"        ); */
-    /* TL: InitGlobalBag(&(LogStream.stream),      "src/scanner.c:LogStream"      ); */
-    /* TL: InitGlobalBag(&(InputLogStream.stream), "src/scanner.c:InputLogStream" ); */
-    /* TL: InitGlobalBag(&(outputLogStream.stream),"src/scanner.c:outputLogStream"); */
-
+    InitGlobalBag(&(TLS(LogFile).stream),        "src/scanner.c:LogFile"        );
+    InitGlobalBag(&(TLS(LogStream).stream),      "src/scanner.c:LogStream"      );
+    InitGlobalBag(&(TLS(InputLogStream).stream), "src/scanner.c:InputLogStream" );
+    InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
+#endif
 
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );

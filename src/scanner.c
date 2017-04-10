@@ -2881,9 +2881,11 @@ static Int InitLibrary (
  **
  *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
  */
+#if !defined(HPCGAP)
 static Char Cookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
 static Char MoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
 static Char StillMoreCookie[sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0])][9];
+#endif
 
 static Int InitKernel (
     StructInitInfo *    module )
@@ -2899,9 +2901,17 @@ static Int InitKernel (
 
     TLS(InputLog)  = 0;  TLS(OutputLog)  = 0;
 
+#ifdef HPCGAP
+    /* Initialize default stream functions */
+    DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
+    DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
+
+#else
     /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
+    /* For HPC-GAP we don't need the cookies anymore, since the data got moved to thread-local
+     * storage. */
     for ( i = 0;  i < sizeof(TLS(InputFiles))/sizeof(TLS(InputFiles)[0]);  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
@@ -2927,7 +2937,7 @@ static Int InitKernel (
     InitGlobalBag(&(TLS(LogStream).stream),      "src/scanner.c:LogStream"      );
     InitGlobalBag(&(TLS(InputLogStream).stream), "src/scanner.c:InputLogStream" );
     InitGlobalBag(&(TLS(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
-
+#endif
 
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );

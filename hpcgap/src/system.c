@@ -1860,13 +1860,15 @@ struct optInfo options[] = {
   { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
   { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
   { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
+#ifdef HPCGAP
   { 'S', "", toggle, &ThreadUI, 0 }, /* Thread UI */
   { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Thread UI */
   { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
   { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
+#endif
   /* The following three options must be handled in the kernel so they happen early enough */
-  { 0  , "prof",  enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
-  { 0  , "cover",  enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
+  { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
+  { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
   { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
   { 0, "",0,0}};
 
@@ -1892,7 +1894,11 @@ void InitSystem (
     SyDebugLoading = 0;
     SyHasUserHome = 0;
     SyLineEdit = 1;
+#ifdef HPCGAP
     SyUseReadline = 0;
+#else
+    SyUseReadline = 1;
+#endif
     SyMsgsFlagBags = 0;
     SyNrCols = 0;
     SyNrColsLocked = 0;
