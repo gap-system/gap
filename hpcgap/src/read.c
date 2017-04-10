@@ -1313,8 +1313,7 @@ void ReadFuncExpr (
 		SET_LEN_STRING(locks, 1);
                 GetSymbol();
 	    }
-        C_NEW_STRING_DYN( name, TLS(Value) );
-	    MakeImmutableString(name);
+        name = MakeImmString( TLS(Value) );
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1365,8 +1364,7 @@ void ReadFuncExpr (
 		    SyntaxError("Name used for two arguments");
 		}
 	    }
-        C_NEW_STRING_DYN( name, TLS(Value) );
-	    MakeImmutableString(name);
+        name = MakeImmString( TLS(Value) );
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1390,8 +1388,7 @@ void ReadFuncExpr (
         if ( strcmp("~", TLS(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
         }
-        C_NEW_STRING_DYN( name, TLS(Value) );
-	      MakeImmutableString(name);
+        name = MakeImmString( TLS(Value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1412,8 +1409,7 @@ void ReadFuncExpr (
             if ( strcmp("~", TLS(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
             }
-            C_NEW_STRING_DYN( name, TLS(Value) );
-	          MakeImmutableString(name);
+            name = MakeImmString( TLS(Value) );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1490,8 +1486,7 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     TLS(CountNams)++;
     ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    C_NEW_STRING_DYN( name, TLS(Value) );
-    MakeImmutableString( name );
+    name = MakeImmString( TLS(Value) );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */

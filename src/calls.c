@@ -1207,8 +1207,7 @@ Obj NewFunctionCT (
     Obj                 name_o;         /* name as an object               */
 
     /* convert the name to an object                                       */
-    C_NEW_STRING_DYN(name_o, name_c);
-    RetypeBag(name_o, T_STRING+IMMUTABLE);
+    name_o = MakeImmString(name_c);
 
     /* make the function                                                   */
     return NewFunctionT( type, size, name_o, narg, ArgStringToList( nams_c ), hdlr );
@@ -1653,8 +1652,7 @@ Obj FuncNAME_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-            C_NEW_STRING_CONST(name, "unknown");
-            RetypeBag(name, T_STRING+IMMUTABLE);
+            name = MakeImmString("unknown");
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
         }
