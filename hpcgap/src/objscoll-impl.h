@@ -21,7 +21,6 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     /* construct a new object                                              */
     NEW_WORD_READ_WRITE( obj, type, num );
 
-
     /* clear <vv>                                                          */
     ptr = (UIntN*)DATA_WORD(obj);
     qtr = (Int*)(ADDR_OBJ(vv)+1);

@@ -19,7 +19,7 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD( obj, type, num );
+    NEW_WORD_READ_WRITE( obj, type, num );
 
     /* clear <vv>                                                          */
     ptr = (UIntN*)DATA_WORD(obj);

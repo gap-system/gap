@@ -123,23 +123,25 @@
 **  <npairs> pairs of generator number/exponent.  The new  word is return  in
 **  <word>.
 */
-static inline Obj NewWord(Obj type, UInt npairs, Int makeReadOnly) {
+static inline Obj NewWord(Obj type, UInt npairs) {
   Obj word;
   word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(type)/8L);
   (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
   SET_TYPE_DATOBJ( word, type);
-  if (makeReadOnly)
-    MakeBagReadOnly( word );
   return word;
 }
 
-#define NEW_WORD(word, type, npairs) \
-  ReadGuard(type), \
-  (word) = NewWord((type), (npairs), 1);
-
 #define NEW_WORD_READ_WRITE(word, type, npairs) \
-  ReadGuard(type), \
-  (word) = NewWord((type), (npairs), 0);
+  do { \
+    ReadGuard(type); \
+    (word) = NewWord((type), (npairs)); \
+  } while(0)
+
+#define NEW_WORD(word, type, npairs) \
+  do { \
+    NEW_WORD_READ_WRITE(word, type, npairs); \
+    MakeBagReadOnly( word ); \
+  } while(0)
 
 
 /****************************************************************************
