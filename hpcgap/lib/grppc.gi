@@ -593,6 +593,7 @@ InstallMethod( SubgroupByPcgs, "subgroup with pcgs",
 function( G, pcgs )
     local U;
     U := SubgroupNC( G, AsList( pcgs ) );
+    SetSize(U,Product(RelativeOrders(pcgs)));
     SetPcgs( U, pcgs );
     SetGroupOfPcgs (pcgs, U);
     # home pcgs will be inherited
@@ -2697,7 +2698,9 @@ BindGlobal("Omega_Sims_RUNTIME",5000);
 #-Charles Sims
 BindGlobal("Omega_Sims",
 function(G,p,e)
-local H,K,Knew,fails,gens,r;
+local H,K,Knew,fails,gens,r, timerFunc;
+
+  timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 
   if(IsTrivial(G)) then return G; fi;
 
@@ -2718,9 +2721,9 @@ local H,K,Knew,fails,gens,r;
 
   # Step 2, reduce until we have fail lots of times in a row
   # or waste a lot of time.
-  r:=Runtime();
+  r:=timerFunc();
   fails:=0;
-  while(fails<Omega_Sims_CENTRAL and Runtime()-r<Omega_Sims_RUNTIME) do
+  while(fails<Omega_Sims_CENTRAL and timerFunc()-r<Omega_Sims_RUNTIME) do
     Knew:=Omega_UpperBoundCentralQuotient(K,p,e);
     if(K=Knew) then fails:=fails+1; continue; fi;
     fails:=0;
