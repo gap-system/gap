@@ -285,12 +285,12 @@ extern Int IsStringConv (
 void MakeImmutableString(Obj str);
 
 
-Obj MakeString(Char *cstr);
-Obj MakeString2(Char *cstr1, Char *cstr2);
-Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3);
-Obj MakeImmString(Char *cstr);
-Obj MakeImmString2(Char *cstr1, Char *cstr2);
-Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3);
+Obj MakeString(const Char *cstr);
+Obj MakeString2(const Char *cstr1, const Char *cstr2);
+Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
+Obj MakeImmString(const Char *cstr);
+Obj MakeImmString2(const Char *cstr1, const Char *cstr2);
+Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
 Obj ConvImmString(Obj str);
 
 
