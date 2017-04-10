@@ -19,6 +19,13 @@
 
 extern void RewriteGF2Vec( Obj vec, UInt q);
 
+/****************************************************************************
+**
+*F  CopyVec8Bit( <list>, <mut> ) .copying function
+**
+*/
+
+extern Obj CopyVec8Bit( Obj list, UInt mut );
 
 /****************************************************************************
 **

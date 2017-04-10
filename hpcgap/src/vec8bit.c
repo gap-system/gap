@@ -220,7 +220,11 @@ Obj TypeVec8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
+#ifdef HPCGAP
   type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+#else
+  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+#endif
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT, INTOBJ_INT(q), mut ? True: False);
   else
@@ -231,7 +235,11 @@ Obj TypeVec8BitLocked( UInt q, UInt mut)
 {
   UInt col = mut ? 3 : 4;
   Obj type;
+#ifdef HPCGAP
   type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+#else
+  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+#endif
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT_LOCKED, INTOBJ_INT(q), mut ? True : False);
   else
@@ -250,7 +258,11 @@ Obj TypeMat8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
+#ifdef HPCGAP
   type = ELM0_LIST(ELM0_LIST(TYPES_MAT8BIT, col),q);
+#else
+  type = ELM_PLIST(ELM_PLIST(TYPES_MAT8BIT, col),q);
+#endif
   if (type == 0)
     return CALL_2ARGS(TYPE_MAT8BIT, INTOBJ_INT(q), mut ? True: False);
   else
@@ -436,9 +448,10 @@ void MakeFieldInfo8Bit( UInt q)
             FELT_FFE_FIELDINFO_8BIT(info)[i] = Char2Lookup[d][i];
 
     /* simply invert the permutation to get the other one */
-    for (i = 0; i < q; i++)
-        FFE_FELT_FIELDINFO_8BIT(info)[FELT_FFE_FIELDINFO_8BIT(info)[i]] = NEW_FFE(gfq, i);
-
+    for (i = 0; i < q; i++) {
+        j = FELT_FFE_FIELDINFO_8BIT(info)[i];
+        FFE_FELT_FIELDINFO_8BIT(info)[j] = NEW_FFE(gfq, i);
+    }
 
     /* Now we need to store the position in Elements(GF(q)) of each field element
        for the sake of NumberFFVector
@@ -592,7 +605,11 @@ void MakeFieldInfo8Bit( UInt q)
 
     MakeBagReadOnly(info);
     /* remember the result */
+#ifdef HPCGAP
     ATOMIC_SET_ELM_PLIST_ONCE(FieldInfo8Bit, q, info);
+#else
+    SET_ELM_PLIST(FieldInfo8Bit, q, info);
+#endif
     CHANGED_BAG(FieldInfo8Bit);
 }
      
@@ -600,11 +617,19 @@ Obj GetFieldInfo8Bit( UInt q)
 {
     Obj info;
     assert(2 < q && q <= 256);
+#ifdef HPCGAP
     info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q);
     if (info == 0) {
         MakeFieldInfo8Bit(q);
         info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q);
     }
+#else
+    info = ELM_PLIST(FieldInfo8Bit, q);
+    if (info == 0) {
+        MakeFieldInfo8Bit(q);
+        info = ELM_PLIST(FieldInfo8Bit, q);
+    }
+#endif
     return info;
 }
   
@@ -1680,16 +1705,6 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
 
     /*  so we have some work. get the tables */
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(sum));
-
-    /* check everything */
-#if 0
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vl));
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vr));
-    assert(LEN_VEC8BIT(sum) >= stop);
-    assert(LEN_VEC8BIT(vl) >= stop);
-    assert(LEN_VEC8BIT(vr) >= stop);
-    assert(SIZE_FF(FLD_FFE(mult)) == FIELD_VEC8BIT(vl));
-#endif
 
     p = P_FIELDINFO_8BIT(info);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
