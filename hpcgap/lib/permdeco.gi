@@ -12,25 +12,117 @@
 
 InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
-local   pcgs,r,hom,A,iso,p,i;
+local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   
   r:=RadicalGroup(G);
-  hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+  if Size(r)=1 then
+    hom:=IdentityMapping(G);
+  else
+    hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+  fi;
+
+  A:=Image(hom);
+  if IsPermGroup(A) and NrMovedPoints(A)/Size(A)*Size(Socle(A))
+      >SufficientlySmallDegreeSimpleGroupOrder(Size(A)) then
+    A:=SmallerDegreePermutationRepresentation(A);
+    Info(InfoGroup,3,"Radical factor degree reduced ",NrMovedPoints(Image(hom)),
+         " -> ",NrMovedPoints(Image(A)));
+    hom:=hom*A;
+  fi;
   
   pcgs := TryPcgsPermGroup( G,r, false, false, true );
   if not IsPcgs( pcgs )  then
     return fail;
   fi;
+
+  # do we have huge steps? Refine.
+  limit:=10^5;
+  depths:=IndicesEANormalSteps(pcgs);
+  ords:=RelativeOrders(pcgs);
+
+  # can we simply use the existing Pcgs?
+  A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  good:=true;
+  while Length(A)>0 and Maximum(A)>limit and good do
+    A:=depths[Position(A,Maximum(A))];
+    p:=Filtered([A+1..Length(pcgs)],x->IsNormal(G,SubgroupNC(G,pcgs{[x..Length(pcgs)]})));
+    # maximal split in middle
+    if Length(p)>0 then
+      i:=List(p,x->[(x-A)*(18-x),x]);
+      Sort(i);
+      p:=i[Length(i)][2]; # best split
+      depths:=Concatenation(Filtered(depths,x->x<=A),[p],
+	        Filtered(depths,x->x>A));
+    else
+      good:=false;
+    fi;
+    A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  od;
+
+  # still bad?
+  good:=true;
+  if Length(A)>0 and Maximum(A)>limit and good then
+    A:=depths[Position(A,Maximum(A))];
+    p:=ords[A];
+    A:=[A..depths[Position(depths,A)+1]-1];
+    pc:=InducedPcgsByPcSequence(pcgs,pcgs{[A[1]..Length(pcgs)]}) mod
+	InducedPcgsByPcSequence(pcgs,pcgs{[A[Length(A)]+1..Length(pcgs)]});
+    mo:=LinearActionLayer(G,pc);
+    mo:=GModuleByMats(mo,GF(p));
+    b:=MTX.BasesCompositionSeries(mo);
+    if Length(b)>2 then
+      new:=[1];
+      start:=1;
+      for i in [2..Length(b)] do
+	if p^Length(b[i])/start>limit then
+	  if i-1 in new then
+	    Add(new,i);
+	    start:=p^Length(b[i]);
+	  else
+	    Add(new,i-1);
+	    start:=p^Length(b[i-1]);
+	  fi;
+	fi;
+      od;
+      if not Length(b) in new then
+	Add(new,Length(b));
+      fi;
+
+      # now form pc elements
+      np:=[];
+      for i in [2..Length(new)] do
+	start:=BaseSteinitzVectors(b[new[i]],b[new[i-1]]).factorspace;
+	start:=List(start,x->PcElementByExponents(pc,List(x,Int)));
+	Add(np,start);
+      od;
+      np:=Reversed(np);
+      b:=A[1];
+      pc:=Concatenation(pcgs{[1..b-1]},
+	   Concatenation(np),
+	   pcgs{[A[Length(A)]+1..Length(pcgs)]});
+
+      pcgs:=PermgroupSuggestPcgs(G,pc);
+      #depths:=Concatenation(Filtered(depths,x->x<=b),
+#	       List([1..Length(np)-1],x->b+Sum(List(np{[1..x]},Length))),
+#	       Filtered(depths,x->x>A[Length(A)]));
+      depths:=IndicesEANormalSteps(pcgs);
+      ords:=RelativeOrders(pcgs);
+    else
+      good:=false;
+    fi;
+    A:=List([2..Length(depths)],x->Product(ords{[depths[x-1]..depths[x]-1]}));
+  fi;
+
   if not HasPcgsElementaryAbelianSeries(r) then
     SetPcgsElementaryAbelianSeries(r,pcgs);
   fi;
 
   A:=CreateIsomorphicPcGroup(pcgs,true,false);
 
-  iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ));
+  iso := GroupHomomorphismByImagesNC( r, A, pcgs, GeneratorsOfGroup( A ));
   SetIsBijective( iso, true );
   return rec(pcgs:=pcgs,
-             depths:=IndicesEANormalSteps(pcgs),
+             depths:=depths,
 	     radical:=r,
 	     pcisom:=iso,
 	     factorhom:=hom);
@@ -62,11 +154,8 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
        Gi:=Image(rep,G);
      fi;
      Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
-     repi:=InverseGeneralMapping(rep);
-     maps:=List(sel,x->repi*autos[x]*rep);
-     for v in maps do
-       SetIsBijective(v,true);
-     od;
+     maps:=List(sel,x->InducedAutomorphism(rep,autos[x]));
+     #for v in maps do SetIsBijective(v,true); od;
      if ForAll(maps,IsConjugatorAutomorphism) then
 	# the representation extends
 	v:=List( maps, ConjugatorOfConjugatorIsomorphism );
@@ -141,11 +230,13 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
     # otherwise go to new small deg rep
     G:=Image(iso,G);
-    autos:=List(autos,x->InverseGeneralMapping(iso)*x*iso);
+    autos:=List(autos,x->InducedAutomorphism(iso,x));
   fi;
 
-  # test the automorphisms that are not conjugator
-  seln:=Filtered(sel,x->not IsConjugatorAutomorphism(autos[x]));
+  # test the automorphisms that are not inner. (The conjugator automorphisms
+  # have no reason to be normal in all automoirphisms, so this will not
+  # work.)
+  seln:=Filtered(sel,x->not IsInnerAutomorphism(autos[x]));
 
   # autos{seln} generates the non-perm automorphism group. Enumerate
   # use that automorphism is conjugator is stabilizer is conjugate
@@ -154,18 +245,19 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   i:=1;
   while i<=Length(stabs) do
     for j in seln do
-      map:=outs[i]*autos[j];
       sub:=Image(autos[j],stabs[i]);
       p:=0;
       found:=fail;
       while found=fail and p<Length(stabs) do
 	p:=p+1;
 	found:=RepresentativeAction(G,sub,stabs[p]);
+	#Print(j," maps ",i," to ",p,"\n");
       od;
 
       if found=fail then
 	# new copy
 	Add(stabs,sub);
+	map:=outs[i]*autos[j];
 	Add(outs,map);
       fi;
 
@@ -187,7 +279,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   for i in GeneratorsOfGroup(G) do
     a:=One(d);
     for j in [1..Length(stabs)] do
-      a:=a*Image(Embedding(d,j),Image(outs[j],i));
+      a:=a*Image(Embedding(d,j),PreImagesRepresentative(outs[j],i));
     od;
     Add(p,a);
   od;
@@ -282,16 +374,15 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # the cs with N gives a cs for M/N.
   # take the first subnormal subgroup that is not  in N. This will be the
   # subgroup
-  i:=Length(cs);
   u:=fail;
   if Size(N)=1 then
-    u:=cs[Length(cs)-1];
+    u:=cs[2];
   else
-    while u=fail and i>0 do
-      if not IsSubset(N,cs[i]) then
-	u:=ClosureGroup(N,cs[i]);
-      fi;
-      i:=i-1;
+    i:=2;
+    u:=ClosureGroup(N,cs[i]);
+    while Size(u)=Size(M) do
+      i:=i+1;
+      u:=ClosureGroup(N,cs[i]);
     od;
   fi;
 
@@ -302,7 +393,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   Info(InfoHomClass,1,"Factor: ",Index(u,N),"^",n);
   Qhom:=ActionHomomorphism(G,o,"surjective");
   Q:=Image(Qhom,G);
-  Thom:=NaturalHomomorphismByNormalSubgroup(u,N);
+  Thom:=NaturalHomomorphismByNormalSubgroup(M,u);
   T:=Image(Thom);
   if IsSubset(M,norm) then
     # nothing outer possible
@@ -350,14 +441,14 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # allow also mapping of `a' by enlarging
   gens:=GeneratorsOfGroup(G);
 
-  if AssertionLevel()>0 then
+  if AssertionLevel()>1 then
     Ehom:=GroupHomomorphismByImages(G,w,gens,genimages);
     Assert(1,fail<>Ehom);
   else
     Ehom:=GroupHomomorphismByImagesNC(G,w,gens,genimages);
   fi;
 
-  return [w,Ehom,a,Image(Thom,u),n];
+  return [w,Ehom,a,Image(Thom,M),n];
 end);
 
 #############################################################################

@@ -32,6 +32,21 @@ DeclareGlobalFunction("MappedPcElement");
 
 #############################################################################
 ##
+#F  TracedPointPcElement( <elm>, <pcgs>, <list>, <pt> )
+##
+##  <ManSection>
+##  <Func Name="TracedPointPcElement" Arg='elm, pcgs, list,pt'/>
+##
+##  <Description>
+##  returns the image of <A>pt</A> under the permutation image of <A>elm</A> when mapping the pcgs <A>pcgs</A> onto <A>list</A>
+##  homomorphically.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("TracedPointPcElement");
+
+#############################################################################
+##
 #F  ExtensionSQ( <C>, <G>, <M>, <c> )
 ##
 ##  <ManSection>

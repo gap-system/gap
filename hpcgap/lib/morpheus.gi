@@ -156,6 +156,16 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     i:=i+1;
   od;
 
+  if not IsTransitive(syno,MovedPoints(syno)) then
+    return fail;
+    # # characteristic product?
+    # w:=Orbits(syno,MovedPoints(syno));
+    # n:=List(w,x->Stabilizer(g,Difference(MovedPoints(g),x),OnTuples));
+    # if ForAll(n,x->ForAll(GeneratorsOfGroup(au),y->Image(y,x)=x)) then
+    #   Error("WR5");
+    # fi;
+  fi;
+
   cen:=Centralizer(syno,g);
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
   if Size(cen)>1 then
@@ -234,7 +244,8 @@ end);
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv, v, val, o, i, comb, best;
+local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
+v, val, o, i, comb, best,actbase;
 
   hom:=fail;
   allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
@@ -332,7 +343,8 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
 	      return Image(img[2],ConjugatorOfConjugatorIsomorphism(auto));
 	    fi;
 	    return RepresentativeAction(img[1],r,
-	             List(GeneratorsOfGroup(g),i->Image(img[2],Image(auto,i))));
+	             List(GeneratorsOfGroup(g),i->Image(img[2],Image(auto,i))),
+		     OnTuples);
 	  end,
 	  function(perm)
 	    if perm in ran then
@@ -378,10 +390,14 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
 	  fi;
 	od;
       else
+	actbase:=ValueOption("autactbase");
+	if actbase=fail then
+	  actbase:=[g];
+	fi;
 	repeat
 	  cnt:=cnt+1;
 	  repeat
-	    r:=Random(g);
+	    r:=Random(Random(actbase));
 	  until not r in u;
 	  # force prime power order
 	  if not IsPrimePowerInt(Order(r)) then
@@ -660,6 +676,8 @@ end);
 ##  dom   a set of elements on which automorphisms act faithful
 ##  aut   Subgroup of already known automorphisms
 ##  condition function that must return `true' on the homomorphism.
+##  setrun  If set to true approximate a run through sets by having the
+##          class indices increasing.
 ##
 ##  action is a number whose bit-representation indicates the action to be
 ##  taken:
@@ -727,8 +745,11 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond,outerorder,setrun,
+      finsrc;
 
+  finsrc:=IsBound(params.from) and HasIsFinite(params.from)
+          and IsFinite(params.from);
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
     return []; # trivial case: no images for generator
@@ -752,6 +773,12 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     outerorder:=params.outerorder;
   else
     outerorder:=false;
+  fi;
+
+  if IsBound(params.setrun) then
+    setrun:=params.setrun;
+  else
+    setrun:=false;
   fi;
 
 
@@ -795,16 +822,26 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     free:=GeneratorsOfGroup(FreeGroup(Length(gens)));
     mfw:=MorFroWords(free);
     # get some more
-    if Product(List(gens,Order))<2000 then
+    if finsrc and Product(List(gens,Order))<2000 then
       for i in Cartesian(List(gens,i->[1..Order(i)])) do
 	Add(mfw,Product(List([1..Length(gens)],z->free[z]^i[z])));
       od;
     fi;
-    rels:=List(mfw,i->[i,Order(MappedWord(i,free,gens))]);
+    rels:=[];
+    for i in mfw do
+      p:=Order(MappedWord(i,free,gens));
+      if p<>infinity then
+        Add(rels,[i,p]);
+      fi;
+    od;
+    if Length(rels)=0 then
+      rels:=false;
+    fi;
   else
     rels:=false;
   fi;
 
+  pows:=[];
   if rels<>false then
     # sort the relators according to the generators they contain
     genums:=List(free,i->GeneratorSyllable(i,1));
@@ -832,9 +869,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     for i in [1..len] do
       Sort(sortrels[i],function(x,y) return x[3]<y[3];end);
     od;
-    offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
-                           i->i[1])); # smallest occuring index
-
+    if Length(pows)>0 then
+      offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
+			    i->i[1])); # smallest occuring index
+    fi;
     # test the relators at level tlev and set imgs
     TestRels:=function(tlev)
     local rel,k,j,p,start,gn,ex;
@@ -889,6 +927,8 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     TestRels:=x->true; # to satisfy the code below.
   fi;
 
+  pop:=false; # just to initialize
+
   # backtrack over all classes in clali
   l:=ListWithIdenticalEntries(len,1);
   ind:=len;
@@ -910,7 +950,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       fi;
     fi;
 
-    if not skip then
+    if pows<>fail and not skip then
       if rels<>false and IsPermGroup(range) then
 	# and precompute the powers
 	repspows:=List([1..len],i->[]);
@@ -1105,7 +1145,13 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     # 'free for increment'
     l[ind]:=l[ind]+1;
     while ind>0 and l[ind]>Length(clali[ind]) do
-      l[ind]:=1;
+      if setrun and ind>1 then
+	# if we are running through sets, approximate by having the
+	# l-indices increasing
+	l[ind]:=Minimum(l[ind-1]+1,Length(clali[ind]));
+      else
+	l[ind]:=1;
+      fi;
       ind:=ind-1;
       if ind>0 then
 	l[ind]:=l[ind]+1;
@@ -1587,7 +1633,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
     if Size(gal)>1 then
       # Galois
       auts:=Concatenation(auts,
-	List(SmallGeneratingSet(gal),
+	List(MinimalGeneratingSet(gal),
 		s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
 		  Image(hom,
 		    List(PreImagesRepresentative(hom,x),r->List(r,y->Image(s,y))))))));
@@ -1894,11 +1940,15 @@ local A;
     if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
       A:=AutomorphismGroupFrattFreeGroup(G);
     else
+      # currently autactbase does not work well, as the representation might
+      # change.
       A:=AutomorphismGroupSolvableGroup(G);
     fi;
   elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
     A:=AutomorphismGroupFittingFree(G);
+  elif Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) then
+    A:=AutomGrpSR(G);
   else
     A:=AutomorphismGroupMorpheus(G);
   fi;
@@ -1962,6 +2012,15 @@ InstallMethod( InnerAutomorphismsAutomorphismGroup,
 InstallGlobalFunction(IsomorphismGroups,function(G,H)
 local m;
 
+  if not HasIsFinite(G) or not HasIsFinite(H) then
+    Info(InfoWarning,1,"Forcing finiteness test");
+    IsFinite(G);
+    IsFinite(H);
+  fi;
+  if not IsFinite(G) and IsFinite(H) then
+    Error("cannot test isomorphism of infinite groups");
+  fi;
+
   #AH: Spezielle Methoden ?
   if Size(G)=1 then
     if Size(H)<>1 then
@@ -1980,15 +2039,28 @@ local m;
 
   if Size(G)<>Size(H) then
     return fail;
-  elif ID_AVAILABLE(Size(G)) <> fail then
+  elif ID_AVAILABLE(Size(G)) <> fail
+    and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+    Info(InfoPerformance,2,"Using Small Groups Library");
     if IdGroup(G)<>IdGroup(H) then
       return fail;
     elif ValueOption("hard")=fail 
       and IsSolvableGroup(G) and Size(G) <= 2000 then
       return IsomorphismSolvableSmallGroups(G,H);
     fi;
-  elif Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H)) then
+  elif AbelianInvariants(G)<>AbelianInvariants(H) then
     return fail;
+  elif Collected(List(ConjugacyClasses(G),
+          x->[Order(Representative(x)),Size(x)]))
+	<>Collected(List(ConjugacyClasses(H),
+	  x->[Order(Representative(x)),Size(x)])) then
+    return fail;
+  fi;
+
+  if (Length(AbelianInvariants(G))>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
+    # In place until a proper implementation of Cannon/Holt automorphism is
+    # made available.
+    return PatheticIsomorphism(G,H);
   fi;
 
   m:=Morphium(G,H,false);

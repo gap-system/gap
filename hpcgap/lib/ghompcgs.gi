@@ -16,7 +16,14 @@ local p,q;
     p:=hom!.sourcePcgs;
     q:=hom!.sourcePcgsImages;
     hom!.sourcePcgsImagesPowers := List([1..Length(p)],
-      i->List([1..RelativeOrders(p)[i]-1], j->q[i]^j));
+      function (i)
+        local pow, j;
+        pow := [q[i]];
+        for j in [2..RelativeOrders(p)[i]-1] do
+            pow[j] := pow[j-1]*q[i];
+        od;
+        return pow;
+      end);
   fi;
   return hom!.sourcePcgsImagesPowers;
 end);

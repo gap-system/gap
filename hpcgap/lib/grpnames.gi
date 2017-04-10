@@ -1,6 +1,7 @@
 #############################################################################
 ##
-#W  grpnames.gi                                                   Stefan Kohl
+#W  grpnames.gi                                                 Gábor Horváth
+##                                                                Stefan Kohl
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
@@ -20,21 +21,522 @@
 ##  from GAP3 code written by Markus Püschel and Sebastian Egner.
 ##
 
+
+#############################################################################
+##
+#M  IsTrivialNormalIntersectionInList( <L>, <U>, <V> ) . . . . generic method
+##
+InstallGlobalFunction( IsTrivialNormalIntersectionInList,
+
+  function( MinNs, U, V )
+    local N, g;
+
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail and g in U and g in V then
+        return false;
+      fi;
+    od;
+    return true;
+  end);
+
+#############################################################################
+##
+#M  IsTrivialNormalIntersection( <G>, <U>, <V> ) . . . . . . . generic method
+##
+
+InstallMethod( IsTrivialNormalIntersection,
+               "if minimal normal subgroups are computed", IsFamFamFam,
+               [ IsGroup and HasMinimalNormalSubgroups, IsGroup, IsGroup ],
+
+  function( G, U, V )
+    local N, g;
+
+    for N in MinimalNormalSubgroups(G) do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail and g in U and g in V then
+        # found a nontrivial common element
+        return false;
+      fi;
+    od;
+    # if U and V intersect nontrivially, then their intersection must contain
+    # a minimal normal subgroup, and therefore both U and V contains any of
+    # its generators
+    return true;
+  end);
+
+InstallMethod( IsTrivialNormalIntersection,
+               "generic method", IsFamFamFam,
+               [ IsGroup, IsGroup, IsGroup ],
+
+  function( G, U, V )
+
+    return IsTrivial(NormalIntersection(U, V));
+  end);
+
+#############################################################################
+##
+#M  UnionIfCanEasilySortElements( <L1>[, <L2>, ... ] ) . . . . generic method
+##
+InstallGlobalFunction( UnionIfCanEasilySortElements,
+
+  function( arg )
+    local i, N;
+
+    for i in [1..Length(arg)] do
+      for N in arg[i] do
+        if not CanEasilySortElements(N) then
+          return Concatenation(arg);
+        fi;
+      od;
+    od;
+    return Union(arg);
+  end);
+
+#############################################################################
+##
+#M  AddSetIfCanEasilySortElements( <list>[, <obj> ) . . . . . generic method
+##
+InstallGlobalFunction( AddSetIfCanEasilySortElements,
+
+  function( list, obj )
+
+    if CanEasilySortElements( list ) and IsSet( list ) then
+      AddSet( list, obj );
+    else
+      Add( list, obj );
+    fi;
+  end);
+
+#############################################################################
+##
+#M  NormalComplement( <G>, <N> ) . . . . . . . . . . . generic method
+##
+InstallMethod( NormalComplement,
+               "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
+
+  function( G, N )
+
+    # if <N> is trivial then the only complement is <G>
+    if IsTrivial(N) then
+      return G;
+
+    # if <G> and <N> are equal then the only complement is trivial
+    elif G = N  then
+      return TrivialSubgroup(G);
+
+    elif not (IsSubgroup(G, N) and IsNormal(G, N)) then
+      Error("N must be a normal subgroup of G");
+
+    else
+      return NormalComplementNC(G, N);
+    fi;
+  end);
+
+InstallMethod( NormalComplementNC,
+               "generic method", IsIdenticalObj, [ IsGroup,  IsGroup ],
+
+  function( G, N )
+
+    local F,    # G/N
+          DfF,  # Direct factors of F=G/N
+          gF,   # element of F=G/N
+          g,    # element of G corresponding to gF
+          x,    # element of G
+          i,    # running index
+          l,    # list for storing stuff
+          b,    # elements of abelian complement
+          C,    # Center of G
+          S,    # Subgroup of C
+          r,    # RationalClass of C
+          R,    # right coset
+          gens, # generators of subgroup of C
+          B,    # complement to N
+          T,    # = [C_G(N), G] = 1 x B'
+          Gf,   # = G/T = N x B/B'
+          Nf,   # = NT/T
+          Bf,   # abelian complement to Nf in Gf ( = B/B')
+          BfF;  # Direct factors of Bf
+
+    # if <N> is trivial then the only complement is <G>
+    if IsTrivial(N) then
+      return G;
+
+    # if <G> and <N> are equal then the only complement is trivial
+    elif G = N  then
+      return TrivialSubgroup(G);
+
+    # if G/N is abelian
+    elif HasAbelianFactorGroup(G, N) then
+      F := FactorGroupNC(G, N);
+      b := [];
+      l := [];
+      i:=0;
+      for gF in IndependentGeneratorsOfAbelianGroup(F) do
+        i := i+1;
+        g := PreImagesRepresentative(NaturalHomomorphism(F), gF);
+        R := RightCoset(N, g);
+        # DirectFactorsOfGroup already computed Center and RationalClasses
+        # when calling NormalComplement
+        if HasCenter(G) and HasRationalClasses(Center(G)) then
+          l := [];
+          C := Center(G);
+          for r in RationalClasses(C) do
+            if Order(Representative(r)) = Order(gF) then
+              for x in Set(r) do
+                if x in R then
+                  l := [x];
+                  break;
+                fi;
+              od;
+            fi;
+          od;
+          # Intersection(l, R) can take a long time
+          l := First(l, x -> true);
+        # if N is big, then Center is hopefully small and fast to compute
+        elif HasCenter(G) or Size(N) > Index(G, N) then
+          C := Center(G);
+          # it is enough to look for the Order(gF)-part of C
+          gens := [];
+          for x in IndependentGeneratorsOfAbelianGroup(C) do
+            Add(gens, x^(Order(x)/GcdInt(Order(x), Order(gF))));
+          od;
+          S := SubgroupNC(C, gens);
+          if Size(S) > Size(N) then
+            # Intersection(S, R) can take a long time
+            l := First(R, x -> Order(x) = Order(gF) and x in S);
+          else
+            # Intersection(C, R) can take a long time
+            l := First(S, x -> Order(x) = Order(gF) and x in R);
+          fi;
+        # N is small, then looping through its elements might be more
+        # efficient than computing the Center
+        else
+          l := First(R, x -> Order(x) = Order(gF)
+                          and IsCentral(G, SubgroupNC(G, [x])));
+        fi;
+        if l <> fail then
+          b[i] := l;
+        else
+          return fail;
+        fi;
+      od;
+      B := SubgroupNC(G, b);
+      return B;
+
+    # if G/N is not abelian
+    else
+      T := CommutatorSubgroup(Centralizer(G, N), G);
+      if not IsTrivial(T) and IsTrivialNormalIntersection(G, T, N) then
+        Gf := FactorGroupNC(G, T);
+        Nf := Image(NaturalHomomorphism(Gf), N);
+        # not quite sure if this check is needed
+        if HasAbelianFactorGroup(Gf, Nf) then
+          Bf := NormalComplementNC(Gf, Nf);
+          if Bf = fail then
+            return fail;
+          else
+            B := PreImage(NaturalHomomorphism(Gf), Bf);
+            return B;
+          fi;
+        else
+          return fail;
+        fi;
+      else
+        return fail;
+      fi;
+    fi;
+  end);
+
 #############################################################################
 ##
 #M  DirectFactorsOfGroup( <G> ) . . . . . . . . . . . . . . .  generic method
 ##
-InstallMethod( DirectFactorsOfGroup,
-               "generic method", true, [ IsGroup ], 0,
+InstallMethod(DirectFactorsOfGroup,
+            "for direct products if normal subgroups are computed", true,
+            [ IsGroup and HasDirectProductInfo and HasNormalSubgroups ], 0,
 
-  function ( G )
+  function(G)
+    local i, info, Ns, MinNs, H, Df, DfNs, DfMinNs, N, g, gs;
 
-    local  N, facts, sizes, i, j, s1, s2;
+    Ns := NormalSubgroups(G);
+    MinNs := MinimalNormalSubgroups(G);
+    Df := [];
+    info := DirectProductInfo(G).groups;
+    for i in [1..Length(info)] do
+      H := Image(Embedding(G,i),info[i]);
+      DfMinNs := Filtered(MinNs, N ->IsSubset(H, N));
+      if Length(DfMinNs) = 1 then
+        # size of DfMinNs is an upper bound to the number of components of H
+        Df := UnionIfCanEasilySortElements(Df, [H]);
+      else
+        DfNs := Filtered(Ns, N ->IsSubset(H, N));
+        gs := [ ];
+        for N in DfMinNs do
+          g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+          if g <> fail then
+            AddSetIfCanEasilySortElements(gs, g);
+          fi;
+        od;
+        # normal subgroup containing all minimal subgroups cannot have complement in H
+        DfNs := Filtered(DfNs, N -> not IsSubset(N, gs));
+        Df := UnionIfCanEasilySortElements(Df,
+                            DirectFactorsOfGroupFromList(H, DfNs, DfMinNs));
+      fi;
+    od;
+    return Df;
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "for direct products", true,
+                      [ IsGroup and HasDirectProductInfo ], 0,
+
+  function(G)
+    local i, info, Ns;
+
+    Ns := [];
+    info := DirectProductInfo(G).groups;
+    for i in [1..Length(info)] do
+      Ns := UnionIfCanEasilySortElements(Ns,
+                        DirectFactorsOfGroup(Image(Embedding(G,i),info[i])));
+    od;
+    return Ns;
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "if normal subgroups are computed", true,
+                      [ IsGroup and HasNormalSubgroups ], 0,
+
+  function(G)
+    local Ns, MinNs, GGd, g, N, gs;
+
+    Ns := NormalSubgroups(G);
+    MinNs := MinimalNormalSubgroups(G);
+
+    if Length(MinNs)= 1 then
+      # size of MinNs is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    if IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      if IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)) then
+        # G is direct indecomposable, because has a unique maximal subgroup
+        return [ G ];
+      fi;
+    else
+      GGd := CommutatorFactorGroup(G);
+      # if GGd is not cyclic of prime power size then there are at least two
+      # maximal subgroups
+      if (IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd))))
+        and Length(MaximalNormalSubgroups(G))= 1 then
+        # size of MaximalNormalSubgroups is an upper bound to the number of
+        # components
+        return [ G ];
+      fi;
+    fi;
+
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSetIfCanEasilySortElements(gs, g);
+      fi;
+    od;
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+    return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+  end);
+
+InstallMethod(DirectFactorsOfGroup, "generic method", true,
+                        [ IsGroup ], 0,
+  function(G)
+
+    local Gd,       # G'
+          GGd,      # G/G'
+          C,        # Center(G)
+          D,        # Intersection(C, Gd)
+          Ns,       # list of normal subgroups
+          MinNs,    # list of minimal normal subgroups
+          gs,       # list containing one generator for each MinNs
+          g,        # group element
+          N,        # (possible) component of G, containing g
+          B;        # (possible) complement of G in N
+
+    # for abelian groups return the canonical decomposition
+    if IsTrivial(G) then
+      return [G];
+    elif IsAbelian(G) then
+      Ns := [];
+      for g in IndependentGeneratorsOfAbelianGroup(G) do
+        Ns := UnionIfCanEasilySortElements(Ns, [SubgroupNC(G, [g])]);
+      od;
+      return Ns;
+    fi;
 
     if not IsFinite(G) then TryNextMethod(); fi;
-    N := ShallowCopy(NormalSubgroups(G));
-    sizes := List(N,Size);
-    SortParallel(sizes,N);
+
+    # the KN method performs slower in practice, only called if forced
+    if ValueOption("useKN") = true then
+      return DirectFactorsOfGroupByKN(G);
+    fi;
+
+    # nilpotent groups are direct products of Sylow subgroups
+    if IsNilpotentGroup(G) then
+      if not IsPGroup(G) then
+        Ns := [ ];
+        for N in SylowSystem(G) do
+          Ns := UnionIfCanEasilySortElements(Ns, DirectFactorsOfGroup(N));
+        od;
+        return Ns;
+      elif IsCyclic(Center(G)) then
+        # G is direct indecomposable, because has a unique minimal subgroup
+        return [ G ];
+      fi;
+    # nonabelian p-groups cannot have a unique maximal subgroup
+    elif IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      if IsCyclic(GGd) and IsPrimePowerInt(Size(GGd)) then
+        # G is direct indecomposable, because has a unique maximal subgroup
+        return [ G ];
+      fi;
+    fi;
+
+    # look for abelian cyclic component from the center
+    C := Center(G);
+    # abelian cyclic components have trivial intersection with the commutator
+    Gd := DerivedSubgroup(G);
+    D := Intersection(C, Gd);
+    for g in RationalClasses(C) do
+      N := Subgroup(C, [Representative(g)]);
+      if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
+        B := NormalComplementNC(G, N);
+        # if B is a complement to N
+        if B <> fail then
+          return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
+                                                  DirectFactorsOfGroup(B));
+        fi;
+      fi;
+    od;
+
+    # all components are nonabelian
+    if IsCyclic(Gd) and IsPrimePowerInt(Size(Gd)) then
+      # if A and B are two nonabelian components, then
+      # A' and B' must be nontrivial
+      # this can only help for some metabelian groups
+      return [ G ];
+    fi;
+
+    if not IsTrivial(C) and HasAbelianFactorGroup(G, C)
+      and Length(DirectFactorsOfGroup(G/C)) < 4 then
+      # if A and B are two nonabelian components,
+      # where A/Center(A) and B/Center(B) are abelian, then
+      # A/Center(A) and B/Center(B) must have at least two components each
+      return [ G ];
+    fi;
+
+    # if everything else fails, compute all normal subgroups
+    Ns := NormalSubgroups(G);
+    if IsNilpotentGroup(G) then
+        # minimal normal subgroups are central in nilpotent groups
+        MinNs := MinimalNormalSubgroups(Center(G));
+    else
+      # MinimalNormalSubgroups seems to compute faster after NormalSubgroups
+      MinNs := MinimalNormalSubgroups(G);
+    fi;
+
+    if Length(MinNs)= 1 then
+      # size of MinNs is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    if not IsSolvableGroup(G) then
+      GGd := CommutatorFactorGroup(G);
+      # if GGd is not cyclic of prime power size then there are at least two
+      # maximal subgroups
+      if (IsTrivial(GGd) or (IsCyclic(GGd) and IsPrimePowerInt(Size(GGd))))
+        and Length(MaximalNormalSubgroups(G))= 1 then
+        # size of MaximalNormalSubgroups is an upper bound to the number of
+        # components
+        return [ G ];
+      fi;
+    fi;
+
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSetIfCanEasilySortElements(gs, g);
+      fi;
+    od;
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+    return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+  end);
+
+InstallMethod(CharacteristicFactorsOfGroup, "generic method", true,
+                        [ IsGroup ], 0,
+function(G)
+local Ns,MinNs,sel,a,sz,j,gs,g,N;
+
+  Ns := ShallowCopy(CharacteristicSubgroups(G));
+  SortBy(Ns,Size);
+  MinNs:=[];
+  sel:=[2..Length(Ns)-1];
+  while Length(sel)>0 do
+    a:=sel[1];
+    sz:=Size(Ns[a]);
+    RemoveSet(sel,sel[1]);
+    Add(MinNs,Ns[a]);
+    for j in ShallowCopy(sel) do
+      if Size(Ns[j])>sz and Size(Ns[j]) mod sz=0 and IsSubset(Ns[j],Ns[a]) then
+	RemoveSet(sel,j);
+      fi;
+    od;
+  od;
+
+  if Length(MinNs)= 1 then
+    # size of MinNs is an upper bound to the number of components
+    return [ G ];
+  fi;
+
+  gs := [ ];
+  for N in MinNs do
+    g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+    if g <> fail then
+      AddSetIfCanEasilySortElements(gs, g);
+    fi;
+  od;
+  # normal subgroup containing all minimal subgroups cannot have complement
+  Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+
+  return DirectFactorsOfGroupFromList(G, Ns, MinNs);
+end);
+
+InstallGlobalFunction( DirectFactorsOfGroupFromList,
+
+  function ( G, NList, MinList )
+
+    local g, N, gs, Ns, MinNs, NNs, MinNNs, facts, sizes, i, j, s1, s2;
+
+    if Length(MinList)=1 then
+      # size of MinList is an upper bound to the number of components
+      return [ G ];
+    fi;
+
+    Ns := ShallowCopy(NList);
+    MinNs := ShallowCopy(MinList);
+    gs := [ ];
+    for N in MinNs do
+      g := First(GeneratorsOfGroup(N), g -> g<>One(N));
+      if g <> fail then
+        AddSetIfCanEasilySortElements(gs, g);
+      fi;
+    od;
+    # normal subgroup containing all minimal subgroups cannot have complement
+    Ns := Filtered(Ns, N -> not IsSubset(N, gs));
+    sizes := List(Ns,Size);
+    SortParallel(sizes,Ns);
     for s1 in Difference(Set(sizes),[Size(G),1]) do
       i := PositionSet(sizes,s1);
       s2 := Size(G)/s1;
@@ -46,73 +548,323 @@ InstallMethod( DirectFactorsOfGroup,
           else 
             j := i + 1;
           fi;
-          while sizes[j] = s2 do
-            if IsTrivial(Intersection(N[i],N[j])) then
-              return Union(DirectFactorsOfGroup(N[i]),
-                           DirectFactorsOfGroup(N[j]));
+          while j <= Size(sizes) and sizes[j] = s2 do
+            if IsTrivialNormalIntersectionInList(MinList,Ns[i],Ns[j]) then
+            # Ns[i] is the smallest direct factor, hence direct irreducible
+            # we keep from Ns only the subgroups of Ns[j] having size min. s1
+              NNs := Filtered(Ns{[i..j]}, N -> Size(N) >= s1
+                              and s2 mod Size(N) = 0 and IsSubset(Ns[j], N));
+              MinNNs := Filtered(MinNs, N -> s2 mod Size(N) = 0
+                                                and IsSubset(Ns[j], N));
+              return UnionIfCanEasilySortElements( [ Ns[i] ],
+                          DirectFactorsOfGroupFromList(Ns[j], NNs, MinNNs));
             fi;
             j := j + 1;
           od;
           i := i + 1;
-        until sizes[i] <> s1;
+        until i>=Size(sizes) or sizes[i] <> s1;
       fi;
     od;
     return [ G ];
   end );
 
-#############################################################################
-##
-#M  SemidirectFactorsOfGroup( <G> ) . . . . . . . . . . . . .  generic method
-##
-InstallMethod( SemidirectFactorsOfGroup,
-               "generic method", true, [ IsGroup ], 0,
+InstallGlobalFunction(DirectFactorsOfGroupByKN,
 
-  function ( G )
+  function(G)
 
-    local  Hs, Ns, H, N, sizeH, sizeN, firstHN, HNs;
+    local Ns,       # list of some direct components
+          i,        # running index
+          Gd,       # derived subgroup G'
+          p,        # prime
+          N,        # (possible) component of G
+          B,        # complement of G in N
+          K,        # normal subgroup
+          prodK,    # product of normal subgroups
+          Z1,       # contains a (unique) component with trivial center
+          g,a,b,    # elements of G
+          C,        # Center(G)
+          D,        # Intersection(C, Gd)
+          Cl,       # all conjugacy classes of G
+          Clf,      # filtered list of conjugacy classes of G
+          c1,c2,c3, # conjugacy class of G
+          com,      # true if c1 and c2 commute, false otherwise
+          prod,     # product of c1 and c2
+          RedCl,    # reducible conjugacy classes of G
+          IrrCl,    # irreducible conjugacy classes of G
+          preedges, # pre-edges of the non-commuting graph
+          edges,    # final edges of the non-commuting graph
+          e,        # one edge of the non-commuting graph
+          comp,     # components of the non-commuting graph
+          DfZ1,     # nonabelian direct factors of Z1
+          S1;       # index set corresponding to first component
 
-    if not IsFinite(G) then TryNextMethod(); fi;
+    # for abelian groups return the canonical decomposition
+    if IsTrivial(G) then
+      return [G];
+    elif IsAbelian(G) then
+      Ns := [];
+      for g in IndependentGeneratorsOfAbelianGroup(G) do
+        Ns := UnionIfCanEasilySortElements(Ns, [SubgroupNC(G, [g])]);
+      od;
+      return Ns;
+    fi;
 
-    # representatives of non-1-or-G subgroups
-    Hs := ConjugacyClassesSubgroups(G);
-    Hs := List(Hs{[2..Length(Hs)-1]}, Representative);
+    # look for abelian cyclic component from the center
+    C := Center(G);
+    # abelian cyclic components have trivial intersection with the commutator
+    Gd := DerivedSubgroup(G);
+    D := Intersection(C, Gd);
+    for g in RationalClasses(C) do
+      N := Subgroup(C, [Representative(g)]);
+      if not IsTrivial(N) and IsTrivialNormalIntersection(C, D, N) then
+        B := NormalComplementNC(G, N);
+        # if B is a complement to N
+        if B <> fail then
+          return UnionIfCanEasilySortElements( DirectFactorsOfGroup(N),
+                                                    DirectFactorsOfGroup(B));
+        fi;
+      fi;
+    od;
 
-    # non-1-or-G normal subgroups
-    Ns := Reversed( Filtered(Hs, H -> IsNormal(G, H)) );
-
-    # find first decomposition
-    firstHN := function ()
-
-      local H, N, sizeNs;
-
-      sizeNs := List(Ns, Size);
-      for H in Hs do
-        if Size(G)/Size(H) in sizeNs then
-          for N in Filtered(Ns, N -> Size(N) = Size(G)/Size(H)) do
-            if IsTrivial(NormalIntersection(N, H)) then
-              return Size(H);
+    # all components are nonabelian
+    # !!! this can (and should) be made more efficient later !!!
+    # instead of conjugacy classes we should calculate by normal subgroups
+    # generated by 1 element
+    Cl := Set(ConjugacyClasses(G));
+    RedCl := Set(Filtered(Cl, x -> Size(x) = 1));
+    Clf := Difference(Cl, RedCl);
+    preedges := [];
+    for c1 in Clf do
+      for c2 in Clf do
+        com := true;
+        prod := [];
+        if c1 <> c2 then
+          for a in c1 do
+            for b in c2 do
+              g := a*b;
+              if g<>b*a then
+                com := false;
+                AddSetIfCanEasilySortElements(preedges, [c1, c2]);
+                break;
+              else
+                AddSetIfCanEasilySortElements(prod, g);
+              fi;
+            od;
+            if not com then
+              break;
             fi;
           od;
-        fi;
-      od;
-      return 0;
-    end;
-
-    sizeH := firstHN();
-    if sizeH = 0 then return [ ]; fi;
-
-    # find all minimal decompositions
-    sizeN := Size(G)/sizeH;
-    HNs := [ ];
-    for H in Filtered(Hs, H -> Size(H) = sizeH) do
-      for N in Filtered(Ns, N -> Size(N) = sizeN) do
-        if IsTrivial(NormalIntersection(N, H)) then
-          Add(HNs, [H, N]);
+          if com and Size(prod) = Size(c1)*Size(c2) then
+            a := Representative(c1);
+            b := Representative(c2);
+            c3 := ConjugacyClass(G, a*b);
+            if Size(c3)=Size(prod) then
+              AddSetIfCanEasilySortElements(RedCl, c3);
+            fi;
+          fi;
         fi;
       od;
     od;
-    return HNs;
+    IrrCl := Difference(Clf, RedCl);
+
+    # need to remove edges corresponding to reducible classes
+    edges := ShallowCopy(preedges);
+    for e in preedges do
+      if Intersection(e, RedCl) <> [] then
+        RemoveSet(edges, e);
+      fi;
+    od;
+
+    # now we create the graph components of the irreducible class graph
+    # as an equivalence relation
+    # this is not compatible with and not using the grape package
+    comp := EquivalenceRelationPartition(
+              EquivalenceRelationByPairsNC(IrrCl, edges));
+
+    # replace classes in comp by their representatives
+    comp := List(comp, x-> Set(x, Representative));
+
+    # now replace every list by their generated normal subgroup
+    Ns := List(comp, x-> NormalClosure(G, SubgroupNC(G, x)));
+    Ns := UnionIfCanEasilySortElements(Ns);
+    if IsTrivial(C) or Size(Ns)=1 then
+      return Ns;
+    fi;
+
+    # look for the possible direct components from Ns
+    # partition to two sets, consider both
+    for S1 in IteratorOfCombinations(Ns) do
+      if S1 <> [] and S1<>Ns then
+        prodK := TrivialSubgroup(G);
+        for K in S1 do
+          prodK := ClosureGroup(prodK, K);
+        od;
+        Z1 := Centralizer(G, prodK);
+        # Z1 is nonabelian <==> contains a nonabelian factor
+        if not IsAbelian(Z1) then
+          N := First(DirectFactorsOfGroupByKN(Z1), x-> not IsAbelian(x));
+          # not sure if IsNormal(G, N) should be checked
+
+          # this certainly can be done better,
+          # because we basically know all possible normal subgroups
+          # but it suffices for now
+          B := NormalComplement(G, N);
+          if B <> fail then
+            # N is direct indecomposable by construction
+            return UnionIfCanEasilySortElements([N],
+                                                  DirectFactorsOfGroupByKN(B));
+          fi;
+        fi;
+      fi;
+    od;
+
+    # if no direct component is found
+    return [ G ];
+  end);
+
+
+#############################################################################
+##
+#M  SemidirectDecompositions( <G> ) . . . . . . . . . . . . .  generic method
+##
+InstallGlobalFunction(SemidirectDecompositionsOfFiniteGroup, function( arg )
+
+  local  G, Ns, fullNs, method, NHs, i, N, H, NH; #, sizes;
+
+  method := "all";
+  if Length(arg) = 1 and IsGroup(arg[1]) then
+    G := arg[1];
+    fullNs := true;
+  elif Length(arg) = 2 and IsGroup(arg[1]) and arg[2] in ["all",
+                                                          "any", "str"] then
+    G := arg[1];
+    method := arg[2];
+    fullNs := true;
+  elif Length(arg) = 2 and IsGroup(arg[1]) and IsList(arg[2])
+      and ForAll( Set(arg[2]), N ->
+                              IsSubgroup(arg[1], N) and IsNormal(arg[1], N))
+      then
+    G := arg[1];
+    Ns := ShallowCopy(arg[2]);
+    fullNs := false;
+  elif Length(arg) = 3 and IsGroup(arg[1]) and IsList(arg[2])
+      and ForAll( Set(arg[2]), N ->
+                              IsSubgroup(arg[1], N) and IsNormal(arg[1], N))
+      and arg[3] in ["all", "any", "str"] then
+    G := arg[1];
+    Ns := ShallowCopy(arg[2]);
+    method := arg[3];
+    fullNs := false;
+  else
+    Error("usage: SemidirectDecompositionsOfFiniteGroup(<G> [, <Ns>] [, <mthd>])");
+  fi;
+
+  if HasSemidirectDecompositions(G) then
+    NHs := [ ];
+    for NH in SemidirectDecompositions(G) do
+      N := NH[1];
+      H := NH[2];
+      if method in [ "any", "str" ] and not IsTrivial(N)
+        and not IsTrivial(H) and
+        ( not IsBound(Ns) or N in Ns ) then
+        return [ N, H ];
+      elif method="all" and
+        ( not IsBound(Ns) or N in Ns ) then
+        AddSetIfCanEasilySortElements(NHs, [ N, H ]);
+      fi;
+    od;
+    if method in [ "any", "str" ] then
+      return fail;
+    elif method = "all" then
+      return NHs;
+    fi;
+  fi;
+
+  if method in [ "any", "str" ] then
+    if HasSemidirectProductInfo(G) then
+      N := Image(Embedding(G, 2));
+      H := Image(Embedding(G, 1));
+      if not IsTrivial(N) and not IsTrivial(H) and
+        ( not IsBound(Ns) or N in Ns ) then
+        return [ N, H ];
+      fi;
+    fi;
+    N := NormalHallSubgroupsFromSylows(G, "any");
+    if N <> fail then
+      # by the Schur-Zassenhaus theorem there must exist a complement
+      if method = "any" then
+        H := ComplementClassesRepresentatives(G, N)[1];
+        return [ N, H ];
+      # only the isomorphism type of the complement is interesting
+      elif method = "str" then
+        Assert(1, Length( ComplementClassesRepresentatives(G, N) ) > 0);
+        return [ N, G/N ];
+      fi;
+    fi;
+  fi;
+
+  # simple groups have no nontrivial normal subgroups
+  if IsSimpleGroup(G) then
+    if method in [ "any", "str" ] then
+      return fail;
+    elif method = "all" then
+      return [ [TrivialSubgroup(G), G], [G, TrivialSubgroup(G)] ];
+    fi;
+  fi;
+
+  if not IsBound(Ns) then
+    Ns := ShallowCopy(NormalSubgroups(G));
+  fi;
+# does not seem to make things faster
+#  if method in [ "any", "str" ] then
+#    sizes := List(Ns, Size);
+#    SortParallel(sizes, Ns);
+#    Ns := Reversed(Ns);
+#  fi;
+
+  NHs := [ ];
+  for N in Ns do
+    if not IsSolvableGroup(N) and not HasSolvableFactorGroup(G, N) then
+      # compute subgroup lattice, currently no other method for complement
+      ConjugacyClassesSubgroups(G);;
+    fi;
+    H := ComplementClassesRepresentatives(G, N);
+    if Length(H)>0 then
+      if method in ["any", "str"] and not IsTrivial(N)
+                                  and not IsTrivial(H[1]) then
+        return [ N, H[1] ];
+      else
+        for i in [1..Length(H)] do
+          AddSetIfCanEasilySortElements( NHs, [ N, H[i] ] );
+        od;
+      fi;
+    fi;
+  od;
+  if method in [ "any", "str" ] then
+    # no nontrivial decompositions exist
+    if fullNs then
+      SetSemidirectDecompositions(G,
+                      [ [TrivialSubgroup(G), G], [G, TrivialSubgroup(G)] ]);
+    fi;
+    return fail;
+  else
+    if fullNs then
+      SetSemidirectDecompositions(G, NHs);
+    fi;
+    return NHs;
+  fi;
+end);
+
+InstallMethod( SemidirectDecompositions,
+               "generic method", true, [ IsGroup and IsFinite ], 0,
+
+  function( G )
+    return SemidirectDecompositionsOfFiniteGroup(G);
   end );
+
+RedispatchOnCondition( SemidirectDecompositions, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
 
 #############################################################################
 ##
@@ -848,42 +1600,14 @@ InstallMethod( GLUnderlyingField,
 
 #############################################################################
 ##
-#M  StructureDescription( <G> ) . . . . . . . . . . . . . .  for finite group
+#M  StructureDescription( <G> ) . . . . . . . . . for abelian or finite group
 ##
-InstallMethod( StructureDescription,
-               "for finite groups", true, [ IsGroup ], 0,
+BindGlobal( "SD_insertsep", # function to join parts of name
+    function ( strs, sep, brack )
 
-  function ( G )
+      local  short, s, i;
 
-    local  G1,           # the group G reconstructed; result
-           Hs,           # split factors of G
-           Gs,           # factors of G
-           cyclics,      # cyclic factors of G
-           cycsizes,     # sizes of cyclic factors of G
-           noncyclics,   # noncyclic factors of G
-           cycname,      # part of name corresponding to cyclics
-           noncycname,   # part of name corresponding to noncyclics
-           insertsep,    # function to join parts of name
-           cycsaspowers, # function to write C2 x C2 x C2 as 2^3, etc.
-           name,         # buffer for computed name
-           cname,        # name for centre of G
-           dname,        # name for derived subgroup of G
-           series,       # series of simple groups
-           parameter,    # parameters of G in series
-           HNs,          # minimal [H, N] decompositions
-           HNs1,         # HN's with prefered H or N
-           HNs1Names,    # names of products in HNs1
-           HN, H, N,     # semidirect factors of G
-           HNname,       # name of HN
-           len,          # maximal number of direct factors
-           g,            # an element of G
-           id,           # id of G in the library of perfect groups
-           short,        # short / long output format
-           i;            # counter
-
-    insertsep := function ( strs, sep, brack )
-
-      local  s, i;
+      short := ValueOption("short") = true;
 
       if strs = [] then return ""; fi;
       strs := Filtered(strs,str->str<>"");
@@ -899,31 +1623,135 @@ InstallMethod( StructureDescription,
       od;
       if short then RemoveCharacters(s," "); fi;
       return s;
-    end;
+    end);
 
-    cycsaspowers := function ( name )
+BindGlobal( "SD_cycsaspowers", # function to write C2 x C2 x C2 as 2^3, etc.
+    function ( name, cycsizes )
 
-      local  p, k, q;
+      local  short, d, k, j, n;
 
+      short := ValueOption("short") = true;
       if not short then return name; fi;
       RemoveCharacters(name," ");
-      for q in Filtered(Reversed(DivisorsInt(Size(G))),
-                        IsPrimePowerInt)
-      do
-        p := SmallestRootInt(q); k := LogInt(q,p);
-        if k > 1 then
-          name := ReplacedString(name,insertsep(List([1..k],
-                    i->Concatenation("C",String(p))),"x",""),
-                    Concatenation(String(p),"^",String(k)));
-        fi;
-      od;
+        cycsizes := Collected(cycsizes);
+        for n in cycsizes
+        do
+          d := n[1]; k := n[2];
+          if k > 1 then
+            for j in Reversed([2..k]) do
+              name := ReplacedString(name,SD_insertsep(List([1..j],
+                        i->Concatenation("C",String(d))),"x",""),
+                        Concatenation(String(d),"^",String(j)));
+            od;
+          fi;
+        od;
       RemoveCharacters(name,"C");
       return name;
-    end;
+    end);
 
-    if not IsFinite(G) then TryNextMethod(); fi;
+BindGlobal( "StructureDescriptionForAbelianGroups", # for abelian groups
+
+  function ( G )
+
+    local  cycsizes;     # sizes of cyclic factors of G
+
+    # special case trivial group
+    if IsTrivial(G) then return "1"; fi;
+
+    # special case abelian group
+    cycsizes := AbelianInvariants(G);
+    cycsizes := Reversed(ElementaryDivisorsMat(DiagonalMat(cycsizes)));
+    cycsizes := Filtered(cycsizes,n->n<>1);
+    return SD_cycsaspowers(SD_insertsep(List(cycsizes,
+                                             n->Concatenation("C",String(n))),
+                                        " x ",""), cycsizes);
+  end );
+
+BindGlobal( "StructureDescriptionForFiniteSimpleGroups", # for simple groups
+
+  function ( G )
+
+    local  name,         # buffer for computed name
+           series,       # series of simple groups
+           parameter;    # parameters of G in series
+
+    # special case abelian group
+    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
+
+    # special case alternating group
+    if   IsAlternatingGroup(G)
+    then return Concatenation("A",String(AlternatingDegree(G))); fi;
+
+    # special case PSL
+    if IsPSL(G) then
+      return Concatenation("PSL(",String(PSLDegree(G)),",",
+                                  String(Size(PSLUnderlyingField(G))),")");
+    fi;
+
+    name := SplitString(IsomorphismTypeInfoFiniteSimpleGroup(G).name," ");
+    name := name[1];
+    if Position(name,',') = fail then RemoveCharacters(name,"()"); else
+      series    := IsomorphismTypeInfoFiniteSimpleGroup(G).series;
+      parameter := IsomorphismTypeInfoFiniteSimpleGroup(G).parameter;
+      if   series = "2A" then
+        name := Concatenation("PSU(",String(parameter[1]+1),",",
+                                     String(parameter[2]),")");
+      elif series = "B" then
+        name := Concatenation("O(",String(2*parameter[1]+1),",",
+                                   String(parameter[2]),")");
+      elif series = "2B" then
+        name := Concatenation("Sz(",String(parameter),")");
+      elif series = "C" then
+        name := Concatenation("PSp(",String(2*parameter[1]),",",
+                                     String(parameter[2]),")");
+      elif series = "D" then
+        name := Concatenation("O+(",String(2*parameter[1]),",",
+                                    String(parameter[2]),")");
+      elif series = "2D" then
+        name := Concatenation("O-(",String(2*parameter[1]),",",
+                                    String(parameter[2]),")");
+      elif series = "3D" then
+        name := Concatenation("3D(4,",String(parameter),")");
+      elif series in ["2F","2G"] and parameter > 2 then
+        name := Concatenation("Ree(",String(parameter),")");
+      fi;
+    fi;
+    return name;
+  end );
+
+BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
+
+  function ( G )
+
+    local  G1,           # the group G reconstructed; result
+           Hs,           # split factors of G
+           Gs,           # factors of G
+           cyclics,      # cyclic factors of G
+           cycsizes,     # sizes of cyclic factors of G
+           noncyclics,   # noncyclic factors of G
+           cycname,      # part of name corresponding to cyclics
+           noncycname,   # part of name corresponding to noncyclics
+           name,         # buffer for computed name
+           cname,        # name for centre of G
+           dname,        # name for derived subgroup of G
+           NH, H, N, N1, # semidirect factors of G
+           NHs,          # [N, H] decompositions
+           NHname,       # name of NH
+           NHs1,         # NH's with preferred N and H
+           NHs1Names,    # names of products in NHs1
+           len,          # maximal number of direct factors
+           g,            # an element of G
+           id,           # id of G in the library of perfect groups
+           short,        # short / long output format
+           nice,         # nice output (slower)
+           i,j,          # counters
+           primes,       # prime divisors of Size(G)
+           d,            # divisor of Size(G)
+           k,            # maximal power of d in Size(G)
+           pi;           # subset of primes
 
     short := ValueOption("short") = true;
+    nice := ValueOption("nice") = true;
 
     # fetch name from precomputed list, if available
     if ValueOption("recompute") <> true and Size(G) <= 2000 then
@@ -931,7 +1759,21 @@ InstallMethod( StructureDescription,
         i := IdGroup(G)[2];
         if IsBound(NAMES_OF_SMALL_GROUPS[Size(G)][i]) then
           name := ShallowCopy(NAMES_OF_SMALL_GROUPS[Size(G)][i]);
-          return cycsaspowers(name);
+          cycsizes := [];
+          if short then
+          # DivisorsInt is rather slow, but we only call it for small groups
+            for d in Reversed(DivisorsInt(Size(G))) do
+              if d >1 then
+                k := LogInt(Size(G), d);
+                if k>1 then
+                  for j in [1..k] do
+                    Add(cycsizes, d);
+                  od;
+                fi;
+              fi;
+            od;
+          fi;
+          return SD_cycsaspowers(name, cycsizes);
         fi;
       fi;
     fi;
@@ -940,14 +1782,7 @@ InstallMethod( StructureDescription,
     if IsTrivial(G) then return "1"; fi;
 
     # special case abelian group
-    if IsAbelian(G) then
-      cycsizes := AbelianInvariants(G);
-      cycsizes := Reversed(ElementaryDivisorsMat(DiagonalMat(cycsizes)));
-      cycsizes := Filtered(cycsizes,n->n<>1);
-      return cycsaspowers(insertsep(List(cycsizes,
-                                         n->Concatenation("C",String(n))),
-                                    " x ",""));
-    fi;
+    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
 
     # special case alternating group
     if   IsAlternatingGroup(G)
@@ -989,35 +1824,7 @@ InstallMethod( StructureDescription,
 
     # other simple group
     if IsSimpleGroup(G) then
-      name := SplitString(IsomorphismTypeInfoFiniteSimpleGroup(G).name," ");
-      name := name[1];
-      if Position(name,',') = fail then RemoveCharacters(name,"()"); else
-        series    := IsomorphismTypeInfoFiniteSimpleGroup(G).series;
-        parameter := IsomorphismTypeInfoFiniteSimpleGroup(G).parameter;
-        if   series = "2A" then
-          name := Concatenation("PSU(",String(parameter[1]+1),",",
-                                       String(parameter[2]),")");
-        elif series = "B" then
-          name := Concatenation("O(",String(2*parameter[1]+1),",",
-                                     String(parameter[2]),")");
-        elif series = "2B" then
-          name := Concatenation("Sz(",String(parameter),")");
-        elif series = "C" then
-          name := Concatenation("PSp(",String(2*parameter[1]),",",
-                                       String(parameter[2]),")");
-        elif series = "D" then
-          name := Concatenation("O+(",String(2*parameter[1]),",",
-                                      String(parameter[2]),")");
-        elif series = "2D" then
-          name := Concatenation("O-(",String(2*parameter[1]),",",
-                                      String(parameter[2]),")");
-        elif series = "3D" then
-          name := Concatenation("3D(4,",String(parameter),")");
-        elif series in ["2F","2G"] and parameter > 2 then
-          name := Concatenation("Ree(",parameter,")");
-        fi;
-      fi;
-      return name;
+      return StructureDescriptionForFiniteSimpleGroups(G);
     fi;
 
     # direct product decomposition
@@ -1032,85 +1839,101 @@ InstallMethod( StructureDescription,
       if cyclics <> [] then
         cycsizes := ElementaryDivisorsMat(DiagonalMat(List(cyclics,Size)));
         cycsizes := Filtered(cycsizes,n->n<>1);
-        cycname  := cycsaspowers(insertsep(List(cycsizes,
-                                 n->Concatenation("C",String(n))),
-                                 " x ",":."));
+        cycname  := SD_cycsaspowers(SD_insertsep(List(cycsizes,
+                                    n->Concatenation("C",String(n))),
+                                    " x ",":."), cycsizes);
       else cycname := ""; fi;
       noncyclics := Difference(Gs,cyclics);
-      noncycname := insertsep(List(noncyclics,StructureDescription),
-                              " x ",":.");
+      noncycname := SD_insertsep(List(noncyclics,StructureDescription),
+                                 " x ",":.");
 
-      return insertsep([cycname,noncycname]," x ",":.");
+      return SD_insertsep([cycname,noncycname]," x ",":.");
     fi;
 
     # semidirect product decomposition
-    HNs := SemidirectFactorsOfGroup( G );
-    if Length(HNs) > 0 then
-
-      # prefer abelian H; abelian N; many direct factors in N; phi injective
-      HNs1 := Filtered(HNs, HN -> IsAbelian(HN[1])); 
-      if Length(HNs1) > 0 then HNs := HNs1; fi;
-      HNs1 := Filtered(HNs, HN -> IsAbelian(HN[2]));
-      if Length(HNs1) > 0 then
-        HNs := HNs1;
-        len := Maximum( List(HNs, HN -> Length(AbelianInvariants(HN[2]))) );
-        HNs := Filtered(HNs, HN -> Length(AbelianInvariants(HN[2])) = len);
+    if not nice then
+      NH := SemidirectDecompositionsOfFiniteGroup( G, "str" );
+      if NH <> fail then
+        H := NH[2]; N := NH[1];
+        return SD_insertsep([StructureDescription(N),
+                             StructureDescription(H)]," : ","x:.");
       fi;
-      HNs1 := Filtered(HNs, HN -> Length(DirectFactorsOfGroup(HN[2])) > 1);
-      if Length(HNs1) > 0 then
-        HNs := HNs1;
-        len := Maximum(List(HNs,HN -> Length(DirectFactorsOfGroup(HN[2]))));
-        HNs := Filtered(HNs,HN -> Length(DirectFactorsOfGroup(HN[2]))=len);
-      fi;
-      HNs1 := Filtered(HNs, HN -> IsTrivial(Centralizer(HN[1],HN[2])));
-      if Length(HNs1) > 0 then HNs := HNs1; fi;
-      if Length(HNs) > 1 then
-
-        # decompose the pairs [H, N] and remove isomorphic copies
-        HNs1      := [];
-        HNs1Names := [];
-        for HN in HNs do
-          HNname := Concatenation(StructureDescription(HN[1]),
-                                  StructureDescription(HN[2]));
-          if not HNname in HNs1Names then
-            Add(HNs1,      HN);
-            Add(HNs1Names, HNname);
-          fi;
-        od;
-        HNs := HNs1;
-
-        if Length(HNs) > 1 then
-          Info(InfoWarning,2,"Warning! Non-unique semidirect product:");
-          Info(InfoWarning,2,List(HNs,HN -> List(HN,StructureDescription)));
+    else
+      NHs := [ ];
+      for NH in SemidirectDecompositions( G ) do
+        if not IsTrivial( NH[1] ) and not IsTrivial( NH[2] ) then
+          AddSetIfCanEasilySortElements(NHs, [ NH[1], NH[2] ]);
         fi;
+      od;
+      if Length(NHs) > 0 then
+
+        # prefer abelian H; abelian N; many direct factors in N; phi injective
+        NHs1 := Filtered(NHs, NH -> IsAbelian(NH[2]));
+        if Length(NHs1) > 0 then NHs := NHs1; fi;
+        NHs1 := Filtered(NHs, NH -> IsAbelian(NH[1]));
+        if Length(NHs1) > 0 then
+          NHs := NHs1;
+          len := Maximum( List(NHs, NH -> Length(AbelianInvariants(NH[1]))) );
+          NHs := Filtered(NHs, NH -> Length(AbelianInvariants(NH[1])) = len);
+        fi;
+        NHs1 := Filtered(NHs, NH -> Length(DirectFactorsOfGroup(NH[1])) > 1);
+        if Length(NHs1) > 0 then
+          NHs := NHs1;
+          len := Maximum(List(NHs,NH -> Length(DirectFactorsOfGroup(NH[1]))));
+          NHs := Filtered(NHs,NH -> Length(DirectFactorsOfGroup(NH[1]))=len);
+        fi;
+        NHs1 := Filtered(NHs, NH -> IsTrivial(Centralizer(NH[2],NH[1])));
+        if Length(NHs1) > 0 then NHs := NHs1; fi;
+        if Length(NHs) > 1 then
+
+          # decompose the pairs [N, H] and remove isomorphic copies
+          NHs1      := [];
+          NHs1Names := [];
+          for NH in NHs do
+            NHname := SD_insertsep([StructureDescription(NH[1]),
+                                    StructureDescription(NH[2])],
+                                                                " : ","x:.");
+            if not NHname in NHs1Names then
+              Add(NHs1,      NH);
+              Add(NHs1Names, NHname);
+            fi;
+          od;
+          NHs := NHs1;
+
+          if Length(NHs) > 1 then
+            Info(InfoWarning,2,"Warning! Non-unique semidirect product:");
+            Info(InfoWarning,2,List(NHs,NH -> List(NH,StructureDescription)));
+          fi;
+        fi;
+
+        H := NHs[1][2]; N := NHs[1][1];
+
+        return SD_insertsep([StructureDescription(N:nice),
+                             StructureDescription(H:nice)]," : ","x:.");
       fi;
-
-      H := HNs[1][1]; N := HNs[1][2];
-
-      return insertsep([StructureDescription(N),
-                        StructureDescription(H)]," : ","x:.");
     fi;
 
     # non-splitting, non-simple group
     if not IsTrivial(Centre(G)) then
-      cname := insertsep([StructureDescription(Centre(G)),
-                          StructureDescription(G/Centre(G))]," . ","x:.");
+      cname := SD_insertsep([StructureDescription(Centre(G)),
+                             StructureDescription(G/Centre(G))]," . ","x:.");
     fi;
     if not IsPerfectGroup(G) then
-      dname := insertsep([StructureDescription(DerivedSubgroup(G)),
-                          StructureDescription(G/DerivedSubgroup(G))],
-                         " . ","x:.");
+      dname := SD_insertsep([StructureDescription(DerivedSubgroup(G)),
+                             StructureDescription(G/DerivedSubgroup(G))],
+                            " . ","x:.");
     fi;
     if   IsBound(cname) and IsBound(dname) and cname <> dname
     then return Concatenation(cname," = ",dname);
     elif IsBound(cname) then return cname;
     elif IsBound(dname) then return dname;
     elif not IsTrivial(FrattiniSubgroup(G))
-    then return insertsep([StructureDescription(FrattiniSubgroup(G)),
-                           StructureDescription(G/FrattiniSubgroup(G))],
-                          " . ","x:.");
+    then return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
+                              StructureDescription(G/FrattiniSubgroup(G))],
+                             " . ","x:.");
     elif     IsPosInt(NrPerfectGroups(Size(G)))
          and not Size(G) in [ 86016, 368640, 737280 ]
+    # this does not happen for Size(G)<10^6
     then
          id := PerfectIdentification(G);
          return Concatenation("PerfectGroup(",String(id[1]),",",
@@ -1122,17 +1945,25 @@ InstallMethod( StructureDescription,
     fi;
   end );
 
-#############################################################################
-##
-#M  StructureDescription( <G> ) . . . . . . . . . . .  for group by nice mono
-##
-InstallMethod( StructureDescription,
-               "for groups handled by nice monomorphism", true, 
-			   [ IsGroup and IsHandledByNiceMonomorphism], 0,
-	function ( G )
-		return StructureDescription ( NiceObject ( G ) );
-	end );
-	
+InstallMethod( StructureDescription, "for abelian groups",
+               true, [ IsGroup and IsAbelian ], 0,
+               StructureDescriptionForAbelianGroups );
+
+RedispatchOnCondition( StructureDescription, true,
+    [ IsGroup ],
+    [ IsAbelian ], 0);
+
+InstallMethod( StructureDescription, "for finite simple groups",
+               true, [ IsGroup and IsFinite and IsSimpleGroup ], 0,
+               StructureDescriptionForFiniteSimpleGroups );
+
+InstallMethod( StructureDescription, "for finite groups",
+               true, [ IsGroup and IsFinite ], 0,
+               StructureDescriptionForFiniteGroups );
+
+RedispatchOnCondition( StructureDescription, true,
+    [ IsGroup ],
+    [ IsFinite ], 0);
 
 #############################################################################
 ##

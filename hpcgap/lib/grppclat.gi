@@ -1195,16 +1195,32 @@ end);
 
 #############################################################################
 ##
+#M  CharacteristicSubgroups( <G> )
+##
+InstallMethod(CharacteristicSubgroups,"solvable, automorphisms",true,
+  [IsGroup and IsSolvableGroup],0,
+function(G)
+local A,s;
+  if Length(AbelianInvariants(G))<5 then
+    TryNextMethod();
+  fi;
+  A:=AutomorphismGroup(G);
+  s:=SubgroupsSolvableGroup(G,rec(normal:=true,actions:=GeneratorsOfGroup(A)));
+  return Filtered(s,x->IsCharacteristicSubgroup(G,x));
+end);
+
+#############################################################################
+##
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
 InstallMethod(LatticeSubgroups,"elementary abelian extension",true,
-  [IsGroup],
+  [IsGroup and IsFinite and CanComputeFittingFree],
   # want to be better than cyclic extension.
   1,
 function(G)
 local s,i,c,classes, lattice,map,GI;
 
-  if not IsSolvableGroup(G) then #or not CanEasilyComputePcgs(G) then
+  if Size(G)=1 or not IsSolvableGroup(G) then #or not CanEasilyComputePcgs(G) then
     TryNextMethod();
   fi;
   if not IsPcGroup(G) or IsPermGroup(G) then

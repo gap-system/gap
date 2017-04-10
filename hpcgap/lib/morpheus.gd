@@ -560,6 +560,7 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##
 DeclareOperation("IsomorphicSubgroups",[IsGroup,IsGroup]);
 
+DeclareGlobalFunction("PatheticIsomorphism");
 
 #############################################################################
 ##

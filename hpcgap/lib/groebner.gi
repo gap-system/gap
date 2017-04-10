@@ -971,21 +971,24 @@ BindGlobal("GAPGBASIS",`rec(
   GroebnerBasis:=function(elms,order)
   local orderext, bas, baslte, fam, t, B, i, j, s;
     orderext:=MonomialExtrepComparisonFun(order);
-    bas:=ShallowCopy(elms);
+    bas:=Filtered(elms,x->not IsZero(x));
     baslte:=List(bas,ExtRepPolynomialRatFun);
     fam:=FamilyObj(bas[1]);
     baslte:=List(baslte,i->i[LeadingMonomialPosExtRep(fam,i,orderext)]);
     t:=Length(bas);
     B:=Concatenation(List([1..t],i->List([1..i-1],j->[j,i])));
     while Length(B)>0 do
-      i:=B[1]; # take one
-      j:=i[1];
-      i:=i[2];
+      j:=B[1][1];
+      i:=B[1][2];
+      # remove first entry of B
+      Remove(B, 1);
 
-      if # are the leading monomials coprime?
-	Length(Intersection(baslte[i]{[1,3..Length(baslte[i])-1]},
-	                    baslte[j]{[1,3..Length(baslte[j])-1]}))<>0
-        and not SyzygyCriterion(baslte,i,j,t,B) then
+      if Length(Intersection(baslte[i]{[1,3..Length(baslte[i])-1]},
+	                    baslte[j]{[1,3..Length(baslte[j])-1]}))=0 then
+	Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by product criterion");
+      elif SyzygyCriterion(baslte,i,j,t,B) then
+	Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by chain criterion");
+      else
 	s:=SPolynomial(bas[i],bas[j],order);
 	if InfoLevel(InfoGroebner)<3 then
 	  Info(InfoGroebner,2,"Spol(",i,",",j,")");
@@ -1000,19 +1003,12 @@ BindGlobal("GAPGBASIS",`rec(
 	  Add(baslte,s[LeadingMonomialPosExtRep(fam,s,orderext)]);
 	  t:=t+1;
 	  # add new pairs
-	  for i in [1..t] do
+	  for i in [1..t-1] do
 	    Add(B,[i,t]);
 	  od;
 	  Info(InfoGroebner,1,"|bas|=",t,", ",Length(B)," pairs left");
 	fi;
-      else
-	Info(InfoGroebner,2,"Pair (",i,",",j,") avoided");
       fi;
-      # remove first entry of B
-      for j in [2..Length(B)] do
-	B[j-1]:=B[j];
-      od;
-      Unbind(B[Length(B)]);
     od;
     return bas;
   end)
@@ -1243,7 +1239,7 @@ end);
 InstallMethod( NaturalHomomorphismByIdeal,"polynomial rings",IsIdenticalObj,
     [ IsPolynomialRing,IsRing],
 function(R,I)
-  local ord,b,ind,num,c,corners,i,j,a,bound,mon,n,monb,dim,sc,k,l,char,hom;
+local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
   if not IsIdeal(R,I) then
     Error("I is not an ideal!");
   fi;
@@ -1300,10 +1296,12 @@ function(R,I)
 	a[i]:=a[i]+1;
       fi;
     od;
+
     if i>0 then
       if ForAny(corners,x->ForAll([1..n],j->x[j]<=a[j])) then
 	# set last coordinate to become 0 again
 	a[n]:=bound[n];
+	i:=n;
       else
 	Add(mon,ShallowCopy(a));
 	i:=Length(a);
@@ -1320,7 +1318,8 @@ function(R,I)
   sc:=EmptySCTable(dim,0);
   for i in [1..dim] do
     for j in [1..dim] do
-      a:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
+      rem:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
+      a:=rem;
       if not IsZero(a) then
 	a:=Coefficients(monb,a);
 	if char>0 then
@@ -1362,7 +1361,9 @@ function(R,I)
     if j<>fail then
       Add(l,GeneratorsOfLeftOperatorRing(a)[j]);
     else
-      Add(l,Zero(a));
+      rem:=PolynomialReducedRemainder(i,b,ord);
+      rem:=Coefficients(monb,rem);
+      Add(l,GeneratorsOfLeftOperatorRing(a)*rem);
     fi;
   od;
 

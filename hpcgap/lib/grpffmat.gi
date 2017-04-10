@@ -90,8 +90,10 @@ InstallMethod( IsNaturalGL,
     0,
 
 function( grp )
-    return Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
-                   Size( FieldOfMatrixGroup( grp ) ) ) );
+  return MTX.IsAbsolutelyIrreducible(
+    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+   Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
+		  Size( FieldOfMatrixGroup( grp ) ) ) );
 end );
 
 InstallMethod( IsNaturalSL,
@@ -101,12 +103,14 @@ InstallMethod( IsNaturalSL,
     0,
 
 function( grp )
-    local gen, d, f;
-    f := FieldOfMatrixGroup( grp );
-    d := DimensionOfMatrixGroup( grp );
-    gen := GeneratorsOfGroup( grp );
-    return ForAll(gen, x-> DeterminantMat(x) = One(f)) 
-             and Size(grp) = Size(SL(d, Size(f)));
+local gen, d, f;
+  f := FieldOfMatrixGroup( grp );
+  d := DimensionOfMatrixGroup( grp );
+  gen := GeneratorsOfGroup( grp );
+  return MTX.IsAbsolutelyIrreducible(
+    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+    ForAll(gen, x-> DeterminantMat(x) = One(f)) 
+	    and Size(grp) = Size(SL(d, Size(f)));
 end );
 
 
@@ -161,19 +165,10 @@ end );
 #M  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
 ##
 InstallGlobalFunction(ProjectiveActionOnFullSpace,function(g,f,n)
-local o,i,s,nrv;
+local o;
   # as the groups are large, we can take all normed vectors
-  nrv:=NormedRowVectors(f^n);
-  s:=Size(f);
-  o := [];
-  for i in nrv do
-    if s <= 256 then
-      Add(o, CopyToVectorRep(i,s));
-    else
-      Add(o, i);
-    fi;  
-    MakeImmutable(i);
-  od;
+  o:=NormedRowVectors(f^n);
+  o:=ImmutableMatrix(f,o);
   o:=Set(o);
   return Action(g,o,OnLines);
 end);
@@ -756,7 +751,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
 
   StabChainMutable(PG);; # needed anyhow and will speed up images under act
   z:=Size(Centre(G));
-  zel:=Filtered(Elements(Centre(G)),x->Order(x)>1);
+  zel:=Filtered(AsSSortedList(Centre(G)),x->Order(x)>1);
   cl:=ConjugacyClasses(G);
   if IsNaturalGL(G) then
     goal:=NrConjugacyClassesPGL(Length(One(G)),

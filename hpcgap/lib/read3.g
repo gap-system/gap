@@ -2,6 +2,7 @@
 ##
 #X  now read all the definition parts
 ##
+ReadLib( "type.gd"     );
 ReadLib( "tuples.gd"   );
 ReadLib( "rvecempt.gd" );
 
