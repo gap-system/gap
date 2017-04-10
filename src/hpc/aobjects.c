@@ -1702,11 +1702,9 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
 }
 
 
-void FuncError(char *message) {
-  ErrorQuit("%s: %s", (Int)(TLS(CurrFuncName)), (Int)message);
-}
+#define FuncError(message)  ErrorQuit("%s: %s", (Int)currFuncName, (Int)message)
 
-Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
+Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   Int n;
   Bag *contents;
   Bag result;
@@ -1759,7 +1757,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
 #endif
 }
 
-Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
+Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   UInt n;
   UInt len;
   AtomicObj anew;
@@ -1793,28 +1791,28 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
 }
 
 
-Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval) {
+Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   FuncError("not yet implemented");
   return (Obj) 0;
 }
 
 
-Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval) {
+Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   FuncError("not yet implemented");
   return (Obj) 0;
 }
 
 
-Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
+Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   switch (TNUM_OBJ(obj)) {
     case T_POSOBJ:
-      return BindOncePosObj(obj, index, new, eval);
+      return BindOncePosObj(obj, index, new, eval, currFuncName);
     case T_APOSOBJ:
-      return BindOnceAPosObj(obj, index, new, eval);
+      return BindOnceAPosObj(obj, index, new, eval, currFuncName);
     case T_COMOBJ:
-      return BindOnceComObj(obj, index, new, eval);
+      return BindOnceComObj(obj, index, new, eval, currFuncName);
     case T_ACOMOBJ:
-      return BindOnceAComObj(obj, index, new, eval);
+      return BindOnceAComObj(obj, index, new, eval, currFuncName);
     default:
       FuncError("first argument must be a positional or component object");
       return (Obj) 0; /* flow control hint */
@@ -1823,15 +1821,13 @@ Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
 
 Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS(CurrFuncName) = "BindOnce";
-  result = BindOnce(obj, index, &new, 0);
+  result = BindOnce(obj, index, &new, 0, "BindOnce");
   return result ? result : new;
 }
 
 Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS(CurrFuncName) = "StrictBindOnce";
-  result = BindOnce(obj, index, &new, 0);
+  result = BindOnce(obj, index, &new, 0, "StrictBindOnce");
   if (result)
     ErrorQuit("StrictBindOnce: Element already initialized", 0L, 0L);
   return result;
@@ -1839,22 +1835,19 @@ Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
 
 Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS(CurrFuncName) = "TestBindOnce";
-  result = BindOnce(obj, index, &new, 0);
+  result = BindOnce(obj, index, &new, 0, "TestBindOnce");
   return result ? False : True;
 }
 
 Obj FuncBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS(CurrFuncName) = "BindOnceExpr";
-  result = BindOnce(obj, index, &new, 1);
+  result = BindOnce(obj, index, &new, 1, "BindOnceExpr");
   return result ? result : new;
 }
 
 Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
-  TLS(CurrFuncName) = "TestBindOnceExpr";
-  result = BindOnce(obj, index, &new, 1);
+  result = BindOnce(obj, index, &new, 1, "TestBindOnceExpr");
   return result ? False : True;
 }
 
