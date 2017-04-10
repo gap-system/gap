@@ -17,8 +17,10 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
+#ifdef HPCGAP
 /* HACK: need to include this for TLS() below in CheckRecursionBefore */
 #include "src/hpc/tls.h"
+#endif
 
 /****************************************************************************
 **

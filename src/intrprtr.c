@@ -3828,6 +3828,11 @@ void            IntrAssPosObj ( void )
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
     }
+#ifdef HPCGAP
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        AssListFuncs[T_FIXALIST]( list, p, rhs );
+    }
+#endif
     else {
         ASS_LIST( list, p, rhs );
     }
@@ -3974,10 +3979,22 @@ void            IntrUnbPosObj ( void )
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects. Hence the explicit WriteGuard().
+         */
+        WriteGuard(list);
+#endif
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
     }
+#ifdef HPCGAP
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        UnbListFuncs[T_FIXALIST]( list, p );
+    }
+#endif
     else {
         UNB_LIST( list, p );
     }
@@ -4033,6 +4050,11 @@ void            IntrElmPosObj ( void )
                 (Int)p, 0L );
         }
     }
+#ifdef HPCGAP
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        elm = ElmListFuncs[T_FIXALIST]( list, p );
+    }
+#endif
     else {
         elm = ELM_LIST( list, p );
     }
@@ -4173,6 +4195,11 @@ void            IntrIsbPosObj ( void )
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
     }
+#ifdef HPCGAP
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);
+    }
+#endif
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
     }
@@ -4210,6 +4237,11 @@ void            IntrAssComObjName (
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
+#endif
       default:
         ASS_REC( record, rnam, rhs );
         break;
@@ -4245,6 +4277,11 @@ void            IntrAssComObjExpr ( void )
       case T_COMOBJ:
         AssPRec( record, rnam, rhs );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
+#endif
       default:
         ASS_REC( record, rnam, rhs );
         break;
@@ -4273,6 +4310,11 @@ void            IntrUnbComObjName (
       case T_COMOBJ:
         UnbPRec( record, rnam );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+        break;
+#endif
       default:
         UNB_REC( record, rnam );
         break;
@@ -4304,6 +4346,11 @@ void            IntrUnbComObjExpr ( void )
       case T_COMOBJ:
         UnbPRec( record, rnam );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+        break;
+#endif
       default:
         UNB_REC( record, rnam );
         break;
@@ -4340,6 +4387,11 @@ void            IntrElmComObjName (
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        elm = ElmARecord ( record, rnam );
+        break;
+#endif
       default:
         elm = ELM_REC( record, rnam );
         break;
@@ -4372,6 +4424,11 @@ void            IntrElmComObjExpr ( void )
       case T_COMOBJ:
         elm = ElmPRec( record, rnam );
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        elm = ElmARecord ( record, rnam );
+        break;
+#endif
       default:
         elm = ELM_REC( record, rnam );
         break;
@@ -4401,6 +4458,11 @@ void            IntrIsbComObjName (
       case T_COMOBJ:
         isb = IsbPRec( record, rnam ) ? True : False;
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
+        break;
+#endif
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
         break;
@@ -4433,6 +4495,11 @@ void            IntrIsbComObjExpr ( void )
       case T_COMOBJ:
         isb = IsbPRec( record, rnam ) ? True : False;
         break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
+        break;
+#endif
       default:
         isb = ISB_REC( record, rnam ) ? True : False;
         break;
@@ -4681,9 +4748,11 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
+#if !defined(HPCGAP)
     InitGlobalBag( &TLS(IntrResult), "src/intrprtr.c:IntrResult" );
     InitGlobalBag( &TLS(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &TLS(StackObj),   "src/intrprtr.c:StackObj"   );
+#endif
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

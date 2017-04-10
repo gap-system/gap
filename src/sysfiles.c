@@ -1239,7 +1239,17 @@ UInt SyIsIntr ( void )
     UInt                isIntr;
 
     isIntr = (syLastIntr != 0);
+#ifdef HPCGAP
+    /* The following write has to be conditional to avoid serious
+     * performance degradation on shared memory (especially NUMA)
+     * architectures when multiple threads all try to write to the same
+     * location at the same time. Branch prediction can be expected to
+     * be near perfect.
+     */
+    if (isIntr) syLastIntr = 0;
+#else
     syLastIntr = 0;
+#endif
     return isIntr;
 }
 
