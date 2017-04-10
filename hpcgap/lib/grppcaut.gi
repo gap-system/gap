@@ -52,7 +52,10 @@ InducedActionFactor := function( mats, fac, low )
 end;
 
 VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
-  local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine, acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp, stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset, i;
+  local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine,
+  acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp,
+  stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset,
+  i,action,lineflag;
 
   PrunedBasis:=function(p)
   local b,q,i;
@@ -73,7 +76,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   lim:=2;
   mo:=GModuleByMats(mats,f);
   dim:=mo.dimension;
-  bas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+  bas:=PrunedBasis(MTX.BasesCSSmallDimDown(mo));
 
   # form new basis of space
   newbas:=ShallowCopy(bas[2]);
@@ -92,6 +95,8 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   vec:=vec*q;
 
   bp:=Length(dims)-1;
+  action:=false;
+  lineflag:=true;
   while bp>=1 do
     ind:=[dims[bp]+1..dims[bp+1]];
     q:=[dims[bp+1]+1..dim];
@@ -100,11 +105,25 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       ind:=[dims[bp]+1..dim];
     else
       affine:=List(mats,i->vec{q}*(i{q}{ind}));
+      if ForAll(affine,IsZero) then
+	affine:=false;
+      fi;
     fi;
     Info(InfoMatOrb,2,"Acting dimension ",ind);
     acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
     nv:=vec{ind};
-    
+
+    if affine=false then
+      if lineflag and Size(mo.field)>2 then
+	action:=OnLines;
+	nv:=NormedRowVector(nv);
+      else
+	action:=OnRight;
+      fi;
+    else
+      action:=false;
+    fi;
+
     if (affine=false and ForAny([1..Length(acts)],i->nv*acts[i]<>nv))
     or (affine<>false and ForAny([1..Length(acts)],i->nv*acts[i]+affine[i]<>nv))
       then
@@ -120,15 +139,18 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       stabp:=[];
       stabm:=[];
       dict:=NewDictionary(nv,true,f^Length(nv));
+
+      MakeImmutable(nv);
       orb:=[nv];
       AddDictionary(dict,nv,1);
       tp:=[One(group)];
       tm:=[One(free)];
       p:=1;
+
       while incstb and p<=Length(orb) do
 	for i in [1..Length(gens)] do
-	  if affine=false then
-	    img:=orb[p]*acts[i];
+	  if action<>false then
+	    img:=action(orb[p],acts[i]);
 	  else
 	    img:=orb[p]*acts[i]+affine[i];
 	  fi;
@@ -192,14 +214,14 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	p:=p+1;
       od;
       #sz:=Maximum(Difference(DivisorsInt(sz),[sz]));
-      if Length(orb)<=idxh then
+      if Length(orb)<=idxh and Length(orb)<idx then
 	Info(InfoWarning,1,"too small stabilizer");
 	p:=incpermstop;
 	sz:=Size(group)/Length(orb);
 	while Size(stb)<sz do
 	  for i in [1..Length(gens)] do
-	    if affine=false then
-	      img:=orb[p]*acts[i];
+	    if action<>false then
+	      img:=action(orb[p],acts[i]);
 	    else
 	      img:=orb[p]*acts[i]+affine[i];
 	    fi;
@@ -248,7 +270,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       gens:=stabp;
       mats:=List(stabm,i->MappedWord(i,freegens,mats));
       shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
-      if AssertionLevel()>0 then
+      if AssertionLevel()>0 and (action=false or action=OnRight) then
 	    ind:=[dims[bp]+1..dim];
 	    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	    nv:=vec{ind};
@@ -262,7 +284,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	mo:=GModuleByMats(acts,f);
 	#if not MTX.IsIrreducible(mo) then
-	nbas:=PrunedBasis(MTX.BasesCompositionSeries(mo));
+	nbas:=PrunedBasis(MTX.BasesCSSmallDimDown(mo));
 	offset:=Length(nbas)-bp;
         if offset>0 then
 	  #nbas:=nbas{[2..Length(nbas)]};
@@ -288,7 +310,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	  bp:=bp+offset;
 
 	fi;
-	if AssertionLevel()>0 then
+	if AssertionLevel()>0 and (action=false or action=OnRight) then
 	  ind:=[dims[bp]+1..dim];
 	  acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	  nv:=vec{ind};
@@ -297,7 +319,12 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 
       fi;
     fi;
-    bp:=bp-1;
+    if action<>OnLines then
+      bp:=bp-1;
+      lineflag:=true;
+    else
+      lineflag:=false;
+    fi;
   od;
   Assert(1,ForAll(mats,i->vec*i=vec));
   return rec(stabilizer:=group,
@@ -481,6 +508,7 @@ end;
 if not IsBound( MyFingerprint ) then MyFingerprint := false; fi;
 
 FingerprintSmall := function( G, U )
+    Info(InfoPerformance,2,"Using Small Groups Library");
     return [IdGroup( U ), Size( CommutatorSubgroup(G,U) )];
 end;
 
@@ -509,7 +537,8 @@ Fingerprint := function ( G, U )
     if not IsBool( MyFingerprint ) then
         return MyFingerprint( G, U );
     fi;
-    if ID_AVAILABLE( Size( U ) ) <> fail then 
+    if ID_AVAILABLE( Size( U ) ) <> fail and
+      ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
         return FingerprintSmall( G, U );
     elif Size( U ) <= 1000 then
         return FingerprintMedium( G, U );
@@ -520,10 +549,11 @@ end;
 
 #############################################################################
 ##
-#F NormalizingReducedGL( spec, s, n, M )
+#F NormalizingReducedGL( spec, s, n, M [,B] )
 ##
-NormalizingReducedGL := function( spec, s, n, M )
-    local G, p, d, field, B, U, hom, pcgs, pcs, rels, w,
+NormalizingReducedGL := function(arg)
+local spec,s,n,M,
+    G, p, d, field, B, U, hom, pcgs, pcs, rels, w,
           S, L,
           f, P, norm,
           pcgsN, pcgsM, pcgsF, 
@@ -531,11 +561,21 @@ NormalizingReducedGL := function( spec, s, n, M )
           par, done, i, elm, elms, pcgsH, H, tup, pos, 
           perms, V;
 
+    spec:=arg[1];
+    s:=arg[2];
+    n:=arg[3];
+    M:=arg[4];
+
     G      := GroupOfPcgs( spec );
     d      := M.dimension;
     field  := M.field;
     p      := Characteristic( field );
-    B      := GL( d, p );
+
+    if Length(arg)>4 then
+      B:=arg[5];
+    else
+      B := GL( d, p );
+    fi;
     U      := SubgroupNC( B, M.generators );
 
     # the trivial case 
@@ -552,7 +592,7 @@ NormalizingReducedGL := function( spec, s, n, M )
     S := B;
 
     # in case that we cannot compute a perm rep of pgl
-    if p^d > 10000 then
+    if p^d > 100000 then
         return S;
     fi;
 
@@ -869,12 +909,481 @@ end;
 ##
 #F AutomorphismGroupSolvableGroup( G )
 ##
+
+# should be more generic -- test whether orbit length exceeds limit
+BindGlobal("OrbitIsLonger",function(acts,pnt,act,lim)
+local orb,d,gen,i,p,D;
+  # try to find a domain
+  D:=DomainForAction(pnt,acts,act);
+  pnt:=Immutable(pnt);
+  d:=NewDictionary(pnt,false,D);
+  orb := [ pnt ];
+  AddDictionary(d,pnt);
+  for p in orb do
+    for gen in acts do
+      i:=act(p,gen);
+      MakeImmutable(i);
+      if not KnowsDictionary(d,i) then
+	Add( orb, i );
+	if Length(orb)>lim then
+	  return true;
+	fi;
+	AddDictionary(d,i);
+      fi;
+    od;
+  od;
+  return false;
+end);
+
+# another function that should be more general and has space for improvement.
+BindGlobal("SubspaceStabilizerMatrixGroup",function(G,bas)
+local f,act,xset,stb,hom,n,m,l,i;
+  n:=DimensionOfMatrixGroup(G);
+  if Length(bas)=0 or ForAll(GeneratorsOfGroup(G),
+	     x->ForAll(bas,y->SolutionMat(bas,y*x)<>fail)) then
+    # space is fixed
+    return G;
+  fi;
+  bas:=OnSubspacesByCanonicalBasis(bas,One(G)); # canonical form
+  f:=DefaultFieldOfMatrixGroup(G);
+  if IsNaturalGL(G) then
+    # write down stabilizer
+    l:=Length(bas);
+    act:=BaseSteinitzVectors(IdentityMat(n,f),
+	  bas);
+    act:=Concatenation(bas,act.factorspace);
+    stb:=[];
+    # subspace
+    for i in GeneratorsOfGroup(GL(l,f)) do
+      m:=IdentityMat(n,f);
+      m{[1..l]}{[1..l]}:=i;
+      Add(stb,m);
+    od;
+    # factor
+    for i in GeneratorsOfGroup(GL(n-l,f)) do
+      m:=IdentityMat(n,f);
+      m{[l+1..n]}{[l+1..n]}:=i;
+      Add(stb,m);
+    od;
+    # mixer
+    m:=IdentityMat(n,f);
+    m[l+1][1]:=One(f);
+    Add(stb,m);
+    stb:=List(stb,x->x^act); # base change
+    stb:=Group(stb);
+    SetSize(stb,Size(GL(l,f))*Size(GL(n-l,f))*Size(f)^(l*(n-l)));
+    Info(InfoMatOrb,2,"reduced full GL by ",Size(G)/Size(stb));
+    return stb;
+  fi;
+  if not OrbitIsLonger(GeneratorsOfGroup(G),bas,OnSubspacesByCanonicalBasis,
+	   Size(f)^QuoInt(Length(bas[1]),2)) then
+    #just plain
+    act:=OnSubspacesByCanonicalBasis;
+    xset:=Orbit(G,bas,act);
+    stb:=[Position(xset,bas)];
+  else
+    act:=OnLines;
+    stb:=NormedVectors(VectorSpace(f,bas));
+    xset:=Union(Orbits(G,stb,act));
+    stb:=Set(List(stb,x->Position(xset,x)));
+  fi;
+  hom:=ActionHomomorphism(G,xset,act,"surjective");
+  act:=PreImage(hom,Stabilizer(Image(hom),stb,OnSets));
+  Info(InfoMatOrb,2,"reduce ",Size(G), " to ",Size(act));
+  return act;
+end);
+
+# construct subgroup of GL that stabilizes the spaces given and fixes the
+# listed spaceorbits.
+
+# auxillary
+RedmatSpanningIndices:=function(gens)
+local bas,n,one,new,a,b,g;
+  n:=Length(gens[1]);
+  one:=One(gens[1]);
+  new:=[];
+  bas:=[];
+  while Length(bas)<n do
+    a:=First(one,x->Length(bas)=0 or SolutionMat(bas,x)=fail);
+    Add(new,Position(one,a));
+    Add(bas,a);
+    # spin
+    for b in bas do
+      for g in gens do
+        a:=b*g;
+	if SolutionMat(bas,a)=fail then
+	  Add(bas,a);
+	fi;
+      od;
+    od;
+  od;
+  return new;
+end;
+
+InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
+local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
+      gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces,
+      sofars,b,act,pairs,direct,subs,allstab;
+
+  # replace later by better functions
+  canonicalform:=function(space)
+    if Length(space)=0 then
+      return space;
+    else
+      space:=TriangulizedMat(space);
+      space:=Filtered(space,x->not IsZero(x));
+      return space;
+    fi;
+  end;
+
+  spaceincl:=function(big,small)
+    return canonicalform(big)=canonicalform(Concatenation(big,small));
+  end;
+
+  outvecs:=function(space,new)
+    return BaseSteinitzVectors(canonicalform(Concatenation(new,space)),space).factorspace;
+
+  end;
+
+  one:=IdentityMat(n,field);
+  sub:=[]; # space so far
+  spaces:=Unique(List(ospaces,canonicalform));
+
+  SortBy(spaces,Length);
+  if not ForAny(spaces,x->Length(x)=n) then
+    Add(spaces,List(one,ShallowCopy));
+  fi;
+  l:=Length(spaces);
+
+  sporb:=List(osporb,ShallowCopy);
+  sporb:=List(sporb,x->List(x,canonicalform));
+  allstab:=[];
+
+  # do not aim to produce the whole lattice, but ony layers of subspaces that
+  # are invariant and always intersect in the next lower layer. (Then deal
+  # with the rest by stabilizer).
+  # The reason behind this is that the whole lattice could be huge. Also do
+  # so layer by layer.
+
+  # As c(a\cap b)<>ca\cap cb in general, there is little value in preserving
+  # intersections between rounds
+
+  sub:=[]; # basis
+  sofar:=[]; # space spanned so far (canonized)
+
+  gens:=[]; # matrix gens, in new basis (sub)
+  sz:=1;
+  notyet:=[]; # unstabilized yet (if there are diagonals)
+
+  while Length(sofar)<n do
+
+    new:=Filtered(spaces,x->Length(x)>Length(sofar));
+    l:=Length(new);
+    min:=[1..Length(new)];
+    pairs:=Concatenation(List([1..l],x->List([x+1..l],y->[x,y])));
+
+    # we try to find a direct sum structure (modulo sofar).
+    # But since we do not form closures, there could still be intersections,
+    # e.g. if <1,0,0>, <0,1,0> and <(1,1,0),(1,1,1)>,
+    # Thus, when trying to form a direct sum modulo sofar, we could still find
+    # some not minimal, so we might need to iterate
+
+    repeat
+      direct:=true;
+      i:=1;
+
+      while i<=Length(pairs) do
+	# intersect
+	s:=SumIntersectionMat(new[pairs[i][1]],new[pairs[i][2]])[2];
+	s:=canonicalform(s);
+	if Length(s)>Length(sofar) then
+	  # are intersectants not minimal
+	  if Length(s)<Length(new[pairs[i][1]]) then
+	    RemoveSet(min,pairs[i][1]);
+	  fi;
+	  if Length(s)<Length(new[pairs[i][2]]) then
+	    RemoveSet(min,pairs[i][2]);
+	  fi;
+	  # is intersection new?
+	  if not ForAny(new,x->Length(x)=Length(s) and s=x) then
+	    j:=pairs[i];
+	    # clean out pairs to save memory?
+	    if i*4>Length(pairs) then
+	      pairs:=pairs{[i..Length(pairs)]};
+	      i:=0;
+	    fi;
+
+	    if Length(s)>Length(sofar)+1 then
+	      Append(pairs,
+		List(Difference([1..Length(new)],j),x->[x,l+1]));
+	    fi;
+	    Add(new,s);
+	    l:=l+1;
+	    AddSet(min,l);
+	    # new intersection
+	  fi;
+	fi;
+	i:=i+1;
+      od;
+      pairs:=pairs{[i..Length(pairs)]};
+      # now new{min} is a list of spaces that are minimal wrt intersection.
+
+      subs:=List(sub,ShallowCopy);
+      sofars:=List(sofar,ShallowCopy);
+      rans:=[];
+      SortBy(min,x->Length(new[x]));
+      i:=1;
+      incl:=[];
+      done:=[];
+      while direct and i<=Length(min) do
+	s:=SumIntersectionMat(sofars,new[min[i]]);
+	if Length(s[2])=Length(sofar) then
+	  # trivial intersection (modulo), just add new vectors
+	  j:=outvecs(sofar,new[min[i]]);
+	  rans[i]:=[Length(subs)+1..Length(s[1])];
+if Length(rans[i])=0 then Error("EGAD");fi;
+	  Append(subs,j);
+	  Append(sofars,j);
+	  sofars:=canonicalform(sofars);
+	elif Length(s[2])=Length(new[min[i]]) then
+	  # space is contained in direct sum so far -- don't grow
+	  rans[i]:=fail;
+	else
+	  # there is a new intersection, we did not yet know. Add it
+	  if Length(s[2])>Length(sofar)+1 then
+	    Append(pairs,List(Difference([1..Length(new)],[min[i]]),x->[x,l+1]));
+	  fi;
+	  l:=l+1;
+	  Add(new,s[2]);
+	  AddSet(done,min[i]);
+	  AddSet(incl,l); # i is not minimal
+	  direct:=false;
+	fi;
+	i:=i+1;
+      od;
+      if direct=false then
+	min:=Union(Difference(Set(min),done),incl);
+      fi;
+    until direct;
+
+    # now min and associated rans give us the spaces to add
+    Append(allstab,new{min});
+
+    # go through each needed space and add a GL (or GL\wr) in that space
+    for i in [1..Length(min)] do
+      if rans[i]<>fail then
+	spl:=[];
+	for j in sporb do
+	  s:=List(j,x->SumIntersectionMat(x,new[min[i]])[2]);
+	  # if the dimension changes, its hard to be clever
+	  if Length(Set(List(s,Length)))=1 and
+	    Length(s[1])>Length(sofar) and Length(s[1])<Length(new[min[i]]) then
+	    Add(spl,s);
+	  fi;
+	od;
+	if Length(spl)>0 then
+	  spl:=spl[1]; # so far only use one...
+	  # new basis vectors
+	  a:=[];
+	  for j in spl do
+	    Add(a,outvecs(sofar,j));
+	  od;
+	  if Sum(a,Length)=Length(rans[i]) then
+	    # otherwise its strange and we can't do...
+	    Append(sub,Concatenation(a)); # basis vectors for product
+	    a:=MatWreathProduct(GL(Length(a[1]),field),SymmetricGroup(Length(a)));
+	  else
+	    a:=GL(Length(rans[i]),field);
+	    Append(sub,subs{rans[i]}); # use the existing basis vectors
+	  fi;
+	else
+	  # make a GL on the space
+	  a:=GL(Length(rans[i]),field);
+	  Append(sub,subs{rans[i]}); # use the existing basis vectors
+	fi;
+
+	sz:=sz*Size(a);
+	for k in GeneratorsOfGroup(a) do
+	  m:=List(one,ShallowCopy);
+	  m{rans[i]}{rans[i]}:=k;
+	  Add(gens,m);
+	od;
+      else
+	# mark that we need to stabilizer this space as well
+        Add(notyet,new[min[i]]); 
+      fi;
+
+    od;
+
+    if Length(sofar)>0 then
+      sz:=sz*Size(field)^(Length(sofar)*(Length(sub)-Length(sofar)));
+      # add generators for the bimodule.
+      rans:=[1..Length(sofar)];
+      s:=List(gens,x->x{rans}{rans});
+      s:=RedmatSpanningIndices(s);
+
+      rans:=[Length(sofar)+1..Length(sub)];
+      t:=List(gens,x->TransposedMat(x{rans}{rans}));
+      t:=RedmatSpanningIndices(t);
+      for i in s do
+        for j in t do
+	  m:=List(one,ShallowCopy);
+	  m[Length(sofar)+j][i]:=One(field);
+	  Add(gens,m);
+	od;
+      od;
+    fi;
+
+    sofar:=canonicalform(List(sub,ShallowCopy));
+    if Length(sofar)<n then
+      # move spaces to images in factor
+      new:=[];
+      for i in spaces do
+	a:=canonicalform(Concatenation(sofar,i));
+	if not a in new then
+	  Add(new,a);
+	fi;
+      od;
+      spaces:=new;
+      new:=[];
+      for i in sporb do
+	a:=List(i,x->canonicalform(Concatenation(sofar,x)));
+	a:=Set(a);
+	if not ForAny(new,x->x=a) then
+	  Add(new,a);
+	fi;
+      od;
+      sporb:=new;
+      #Print(Collected(List(spaces,Length)),"\n");
+    fi;
+
+  od;
+
+  gens:=Filtered(gens,x->not IsOne(x));
+  spl:=gens;
+
+  gens:=List(gens,x->x^sub);
+  a:=Group(gens,one);
+  SetSize(a,sz);
+
+  # are there diagonals we did not deal with, also original spaces?
+  Append(notyet,ospaces);
+  SortBy(notyet,Length);
+  for i in notyet do
+    a:=Stabilizer(a,canonicalform(i),OnSubspacesByCanonicalBasis);
+    Add(allstab,canonicalform(i));
+  od;
+
+  done:=a;
+
+  if Length(osporb)>0 then
+    # we only stabilized one pair so far
+    for i in osporb do
+      # assumption: orbit is not too long... (i.e. TODO: improve)
+      m:=Orbit(a,i[1],OnSubspacesByCanonicalBasis);
+      for yet in i do
+	if not yet in m then
+	  m:=Union(m,Orbit(a,yet,OnSubspacesByCanonicalBasis));
+	fi;
+      od;
+      if Length(m)>Length(i) then
+        yet:=ActionHomomorphism(a,m,OnSubspacesByCanonicalBasis,"surjective");
+	sub:=Stabilizer(Image(yet),Set(List(i,x->Position(m,x))),OnSets);
+	a:=PreImage(yet,sub);
+      fi;
+    od;
+  fi;
+
+  # test for correctness. This is not an assertion for two reasons:
+  # - Assertions also turn on heavy checks for homomophisms that can slow
+  # the whole calculation down beyond reasonable
+  # - This is a hard test which would slow testing down, implying that the
+  # tests would be thrown out of the standard test suite.
+  if ValueOption("TestSpaces")=true and
+   Size(field)^n<=10^5 then
+   # test
+   Print("Test\n");
+   b:=GL(n,field);
+   # fixing spaces is projective
+   yet:=NormedVectors(field^n);
+   act:=ActionHomomorphism(b,yet,OnLines,"surjective");
+   b:=Image(act,b);
+   spaces:=ShallowCopy(ospaces);
+   SortBy(spaces,Length);
+   for i in spaces do
+      i:=Set(List(NormedVectors(VectorSpace(field,i)),x->Position(yet,x)));
+      b:=Stabilizer(b,i,OnSets);
+      Print("Stab ",Size(b),"\n");
+    od;
+    for i in osporb do
+      i:=List(i,x->Set(List(NormedVectors(VectorSpace(field,x)),x->Position(yet,x))));
+      b:=Stabilizer(b,Union(i),OnSets);
+      b:=Stabilizer(b,Set(i),OnSetsSets);
+    od;
+
+    b:=PreImage(act,b);
+    if b<>a then Error("WRONG");fi;
+    Print("Test succeeded\n");
+  fi;
+
+
+  return a;
+end);
+
+PcgsCharacteristicTails:=function(G,aut)
+local gens,ser,new,pcgs,f,mo,i,j,k,s;
+  gens:=GeneratorsOfGroup(aut);
+  ser:=InvariantElementaryAbelianSeries(G,gens);
+  new:=[G];
+  for i in [2..Length(ser)] do
+    pcgs:=ModuloPcgs(ser[i-1],ser[i]);
+    f:=GF(RelativeOrders(pcgs)[1]);
+    mo:=List(gens,x->List(pcgs,y->ExponentsOfPcElement(pcgs,y^x))*One(f));
+    mo:=GModuleByMats(mo,f);
+    for j in
+      Reversed(Filtered(MTX.BasesCompositionSeries(mo),
+        x->Length(x)<Length(pcgs))) do
+      s:=ser[i];
+      for k in j do
+	s:=ClosureSubgroupNC(s,PcElementByExponents(pcgs,List(k,Int)));
+      od;
+      Add(new,s);
+    od;
+  od;
+  # build pcgs
+  ser:=[];
+  for i in [2..Length(new)] do
+    pcgs:=ModuloPcgs(new[i-1],new[i]);
+    Append(ser,pcgs);
+  od;
+  pcgs:=PcgsByPcSequence(FamilyObj(One(G)),ser);
+  return pcgs;
+end;
+
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
-          gensA, new,as;
+          gensA, new,as,somechar,scharorb,asAutom,actbase,
+	  quotimg,eN,field,act,spaces,sporb,npcgs,nM;
 
+    asAutom:=function(sub,hom) return Image(hom,sub);end;
+
+    # image of subgroup in quotient by pcgs
+    quotimg:=function(F,pcgs,U)
+      return SubgroupNC(F,List(GeneratorsOfGroup(U),
+        x->PcElementByExponents(pcgs,ExponentsOfPcElement(spec,x){[1..Length(pcgs)]})));
+    end;
+
+    actbase:=ValueOption("autactbase");
+    PushOptions(rec(actbase:=fail)); # remove this option from concern
+    somechar:=ValueOption("someCharacteristics");
+    if somechar<>fail then
+      scharorb:=somechar.orbits;
+      somechar:=somechar.subgroups;
+    else
+      scharorb:=fail;
+    fi;
     # get LG series
     spec    := SpecialPcgs(G);
     weights := LGWeights( spec );
@@ -890,13 +1399,116 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     M     := rec( field := GF( weights[1][3] ),
                   dimension := first[2]-1,
                   generators := [] );
-    B     := NormalizingReducedGL( spec, 1, first[2], M );
+
+    spaces:=[];
+    sporb:=[];
+
+    if somechar<>fail then
+      field:=M.field;
+      B:=IdentityMat(M.dimension,field);
+      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
+      C:=List(C,x->List(SmallGeneratingSet(x),
+	  x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+      C:=Filtered(C,x->Length(x)>0);
+      C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+	      y->not IsZero(y)));
+      C:=Unique(C);
+      Append(spaces,C);
+      if scharorb<>fail then
+	C:=List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x)));
+	C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+	C:=List(C,Set);
+	D:=Unique(C);
+	for C in D do
+	  C:=List(C,x->List(SmallGeneratingSet(x),
+	      x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+	  C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+	  if Length(C)=1 and
+	    not ForAny(spaces,x->Length(x)=Length(C[1]) and
+	      RankMat(Concatenation(x,C[1]))=Length(C[1])) then
+	    Add(spaces,C[1]);
+	  else
+	    Add(sporb,C);
+	  fi;
+	od;
+      fi;
+    fi;
+
+    # fix the spaces first
+    B:=SpaceAndOrbitStabilizer(M.dimension,M.field,spaces,sporb);
+    B := NormalizingReducedGL( spec, 1, first[2], M, B );
+
+    Assert(2,
+      ForAll(spaces,x->Length(Orbit(B,x,OnSubspacesByCanonicalBasis))=1));
+    Assert(2,
+      ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis))<=Length(x)));
+
+# not needed any longer -- fixed
+#    if somechar<>fail then
+#      field:=DefaultFieldOfMatrixGroup(B);
+#      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
+#      C:=List(C,x->List(SmallGeneratingSet(x),
+#	  x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+#      C:=Filtered(C,x->Length(x)>0);
+#      C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+#	      y->not IsZero(y)));
+#      C:=Unique(C);
+#      for D in C do
+#	B:=SubspaceStabilizerMatrixGroup(B,D);
+#      od;
+#      if scharorb<>fail then
+#	C:=List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x)));
+#	C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+#	C:=List(C,Set);
+#	D:=Unique(C);
+#	for C in D do
+#	  C:=List(C,x->List(SmallGeneratingSet(x),
+#	      x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
+#	  C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+#
+#	  if Length(C)=1 then
+#	    C:=SubspaceStabilizerMatrixGroup(B,C[1]);
+#	    if B<>C then Error("UGH1");fi;
+#	    B:=C;
+#	  else
+#	    act:=OnSubspacesByCanonicalBasis;
+#	    xset:=Orbit(B,C[1],act);
+#	    C:=Filtered(C,x->x in xset);
+#	    if Length(xset)>Length(C) then
+#	      hom:=ActionHomomorphism(B,xset,act,"surjective");
+#	      C:=List(C,x->Position(xset,x));
+#	      e:=Size(B);
+#	      C:=Stabilizer(Image(hom),C,OnSets);
+#	      if C<>Image(hom) then Error("UGH!");fi;
+#	      #B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+#	      Info(InfoAutGrp,2,"characteristics reduce ",e,
+#		" to ",Size(B));
+#	    fi;
+#	  fi;
+#	od;
+#      fi;
+#    fi;
+
     A     := AutomorphismGroupElAbGroup( F, B );
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
+
+    # for first step
+    H:=F;
+    pcgsH:=Pcgs(H);
 
     # run down series
     for i in [2..Length(first)-1] do
 
+	if Length(GeneratorsOfGroup(A))>0 and not HasNiceMonomorphism(A) then
+	  if Source(A.1)<>H then
+	    Error("wrong source");
+	  fi;
+	  if actbase<>fail then
+	    e:=List(actbase,x->quotimg(H,pcgsH,x));
+	    NiceMonomorphism(A:autactbase:=e);
+	  fi;
+
+	fi;
         # get factor
         s := first[i];
         n := first[i+1];
@@ -911,7 +1523,11 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         ocr   := rec( group := H, generators := pcgsH );
         # we will modify the generators later!
 
+
         pcgsN := InducedPcgsByPcSequenceNC( pcgsH, pcgsH{[s..n-1]} );
+        eN:=SubgroupNC(G,InducedPcgsByPcSequenceNC( spec, spec{[s..m]}));
+	field:=GF(RelativeOrders(pcgsN)[1]);
+
         ocr.modulePcgs := pcgsN;
 	ocr.generators:=ocr.generators mod NumeratorOfModuloPcgs(pcgsN);
 
@@ -924,14 +1540,102 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         mats := LinearOperationLayer( H, pcgsH{[1..s-1]}, pcgsN );
         M    := GModuleByMats( mats, GF( p ) );
                   
-        # compatible / inducible pairs
-        if weights[s][2] = 1 then
-            Info( InfoAutGrp, 2,"compute reduced gl ");
-            B := NormalizingReducedGL( spec, s, n, M );
+	# compatible / inducible pairs
+	Info( InfoAutGrp, 2,"compute reduced gl ");
 
-	    # A and B will not be used later, so it is no problem to 
-	    # replace them by other groups with fewer generators
-            B:=SubgroupNC(B,SmallGeneratingSet(B));
+	spaces:=[];
+	sporb:=[];
+
+	if somechar<>fail then
+	  field:=GF(RelativeOrders(pcgsN)[1]);
+	  B:=IdentityMat(M.dimension,field);
+	  e:=Product(RelativeOrders(pcgsN));
+	  C:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
+
+	  C:=List(C,x->List(SmallGeneratingSet(x),
+	      x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+	  C:=Filtered(C,x->Length(x)>0);
+	  C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+		  y->not IsZero(y)));
+	  C:=Unique(C);
+	  Append(spaces,C);
+	  if scharorb<>fail then
+	    C:=List(scharorb,
+	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN))));
+	    C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+	    D:=Unique(List(C,Set));
+	    for C in D do
+	      C:=List(C,x->List(SmallGeneratingSet(x),
+		x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+	      C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+	      if Length(C)=1 and
+		not ForAny(spaces,x->Length(x)=Length(C[1]) and
+		  RankMat(Concatenation(x,C[1]))=Length(C[1])) then
+		Add(spaces,C[1]);
+	      else
+		Add(sporb,C);
+	      fi;
+
+	    od;
+	  fi;
+	fi;
+
+	# fix the spaces first
+	B:=SpaceAndOrbitStabilizer(M.dimension,M.field,spaces,sporb);
+
+	B := NormalizingReducedGL( spec, s, n, M,B );
+	# A and B will not be used later, so it is no problem to 
+	# replace them by other groups with fewer generators
+	B:=SubgroupNC(B,SmallGeneratingSet(B));
+
+	# not needed any longer
+#	if somechar<>fail then
+#	  field:=GF(RelativeOrders(pcgsN)[1]);
+#	  e:=Product(RelativeOrders(pcgsN));
+#	  C:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
+#
+#	  C:=List(C,x->List(SmallGeneratingSet(x),
+#	      x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+#	  C:=Filtered(C,x->Length(x)>0);
+#	  C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
+#		  y->not IsZero(y)));
+#	  C:=Unique(C);
+#	  for D in C do
+#	    B:=SubspaceStabilizerMatrixGroup(B,D);
+#	  od;
+#	  if scharorb<>fail then
+#	    C:=List(scharorb,
+#	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN))));
+#	    C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
+#	    D:=Unique(List(C,Set));
+#	    for C in D do
+#	      C:=List(C,x->List(SmallGeneratingSet(x),
+#		x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
+#	      C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
+#
+#	      if Length(C)=1 then
+#		B:=SubspaceStabilizerMatrixGroup(B,C[1]);
+#	      else
+#		act:=OnSubspacesByCanonicalBasis;
+#		xset:=Orbit(B,C[1],act);
+#		C:=Filtered(C,x->x in xset);
+#		if Length(xset)>Length(C) then
+#		  hom:=ActionHomomorphism(B,xset,act,"surjective");
+#		  C:=List(C,x->Position(xset,x));
+#		  e:=Size(B);
+#		  B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
+#		  Info(InfoAutGrp,2,"characteristics reduce ",e,
+#		    " to ",Size(B));
+#		fi;
+#	      fi;
+#	    od;
+#	  fi;
+#	fi;
+
+        if weights[s][2] = 1 then
+            #Info( InfoAutGrp, 2,"compute reduced gl ");
+            #B := MormalizingReducedGL( spec, s, n, M );
+
 	    if HasPcgs(A) 
 	     and Length(Pcgs(A))<Length(GeneratorsOfGroup(A)) then
 	      as:=Size(A);
@@ -945,13 +1649,25 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
             Info( InfoAutGrp, 2,"compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B),", ",
 				  Length(GeneratorsOfGroup(D))," generators");
-            C := CompatiblePairs( F, M, D );
+            
+            if Size(D)>10^10 and Size(A)>4 then
+	      # translate to different pcgs to make tails A-invariant
+	      npcgs:=PcgsCharacteristicTails(F,A);
+	      C:=GroupWithGenerators(npcgs);
+	      SetPcgs(C,npcgs);
+	      Assert(1,Pcgs(C)=npcgs); # ensure no magic took place
+	      as:=GroupHomomorphismByImagesNC(F,Group(M.generators),
+	            Pcgs(F),M.generators);
+              nM:=rec(field:=M.field,dimension:=M.dimension,
+		      generators:=List(npcgs,x->ImagesRepresentative(as,x)));
+	      C:=CompatiblePairs(C,nM,D);
+	    else
+	      C := CompatiblePairs( F, M, D );
+	    fi;
         else
-            Info( InfoAutGrp, 2,"compute reduced gl ");
-            B := NormalizingReducedGL( spec, s, n, M );
+            #Info( InfoAutGrp, 2,"compute reduced gl ");
+            #B := MormalizingReducedGL( spec, s, n, M );
 
-	    # A and B will not be used later, so it is no problem to 
-            B:=SubgroupNC(B,SmallGeneratingSet(B));
 	    if HasPcgs(A) 
 	     and Length(Pcgs(A))<Length(GeneratorsOfGroup(A)) then
 	      as:=Size(A);
@@ -1036,6 +1752,39 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                 SetSize( A, tmp );
             fi;
         fi;
+
+      if somechar<>fail then
+	B:=List(somechar,x->quotimg(H,pcgsH,x));
+	B:=Unique(B);
+	B:=Filtered(B,x->ForAny(GeneratorsOfGroup(A),y->x<>asAutom(x,y)));
+	if Length(B)>0 then
+	  SortBy(B,Size);
+	  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
+	  tmp:=Size(A);
+	  if actbase<>fail then
+	    e:=List(actbase,x->quotimg(H,pcgsH,x));
+	    NiceMonomorphism(A:autactbase:=e);
+	  fi;
+	  for e in B do
+	    A:=Stabilizer(A,e,asAutom);
+	  od;
+	  Info(InfoAutGrp,2,"given chars reduce by ",tmp/Size(A));
+	fi;
+      fi;
+
+      # as yet disabled
+      if false and scharorb<>fail then
+	# these are subgroups for which certain orbits must be stabilized.
+	B:=List(Reversed(scharorb),x->List(x,x->quotimg(H,pcgsH,x)));
+	B:=Filtered(B,x->Size(x[1])>1 and Size(x[1])<Size(H));
+	for e in B do
+	  tmp:=Orbits(A,e,asAutom);
+	  if Length(tmp)>Length(e) then
+	    Error("eng");
+	  fi;
+	od;
+      fi;
+
     od; 
 
     # the last step
@@ -1056,6 +1805,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     od;
     B := GroupByGenerators( autos );
     SetSize( B, Size(A) );
+    PopOptions(); # undo the added `fail'
     return B;
 end);
 

@@ -306,6 +306,13 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
     Error("<gens> and <imgs> must be lists of same length");
   fi;
 
+  if not HasIsHandledByNiceMonomorphism(G) and ValueOption("noassert")<>true then
+    Assert( 2, ForAll( gens, x -> x in G ) );
+  fi;
+  if not HasIsHandledByNiceMonomorphism(H) and ValueOption("noassert")<>true then
+    Assert( 2, ForAll( imgs, x -> x in H ) );
+  fi;
+
   mapi:=[Immutable(gens),Immutable(imgs)];
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
             and HasMappingGeneratorsImages;
@@ -409,33 +416,37 @@ function( G, gens, imgs )
     return GroupGeneralMappingByImagesNC(G,GroupWithGenerators(imgs),gens,imgs);
 end);
 
-# temporarily disabled until we separate GroupGeneralMappingByImages from
-# its NC version.
-#InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
-#    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
-#function( G, H, gens, imgs )
-#    if not ForAll(gens,x->x in G) then
-#      Error("generators must lie in source group");
-#    elif not ForAll(imgs,x->x in H) then
-#      Error("images must lie in range group");
-#    fi;
-#    return GroupGeneralMappingByImagesNC(G,H,gens,imgs);
-#end);
-#
-#InstallMethod( GroupGeneralMappingByImages, "make onto",
-#    true, [ IsGroup, IsList, IsList ], 0, 
-#function( G, gens, imgs )
-#    if not ForAll(gens,x->x in G) then
-#      Error("generators must lie in source group");
-#    fi;
-#    return GroupGeneralMappingByImagesNC(G,gens,imgs);
-#end);
+InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
+    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
+function( G, H, gens, imgs )
+    if not ForAll(gens,x->x in G) then
+      Error("generators must lie in source group");
+    elif not ForAll(imgs,x->x in H) then
+      Error("images must lie in range group");
+    fi;
+    return GroupGeneralMappingByImagesNC(G,H,gens,imgs);
+end);
+
+InstallMethod( GroupGeneralMappingByImages, "make onto",
+    true, [ IsGroup, IsList, IsList ], 0,
+function( G, gens, imgs )
+    if not ForAll(gens,x->x in G) then
+      Error("generators must lie in source group");
+    fi;
+    return GroupGeneralMappingByImagesNC(G,gens,imgs);
+end);
 
 InstallMethod( GroupHomomorphismByImagesNC, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, H, gens, imgs );
+  if not (HasIsHandledByNiceMonomorphism(G) or
+    HasIsHandledByNiceMonomorphism(H)) 
+    and ValueOption("noassert")<>true 
+    and not IsSubgroupFpGroup(H) then
+    Assert( 3, IsMapping( hom ) );
+  fi;
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -445,6 +456,9 @@ InstallMethod( GroupHomomorphismByImagesNC, "for group, list, list",
 function( G, gens, imgs )
 local   hom;
   hom := GroupGeneralMappingByImagesNC( G, gens, imgs );
+  if not HasIsHandledByNiceMonomorphism(G) and ValueOption("noassert")<>true then
+    Assert( 3, IsMapping( hom ) );
+  fi;
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -453,25 +467,15 @@ InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group, list",
                     true, [ IsGroup, IsGroup, IsList ], 0,
 
   function( G, H, imgs )
-
-    local  hom;
-
-    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G), imgs );
-    SetIsMapping( hom, true );
-    return hom;
+    return GroupHomomorphismByImagesNC( G, H, GeneratorsOfGroup(G), imgs );
   end );
 
 InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group",
                     true, [ IsGroup, IsGroup ], 0,
 
   function( G, H )
-
-    local  hom;
-
-    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G),
+    return GroupHomomorphismByImagesNC( G, H, GeneratorsOfGroup(G),
                                               GeneratorsOfGroup(H) );
-    SetIsMapping( hom, true );
-    return hom;
   end );
 
 #############################################################################
@@ -685,7 +689,7 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   mapi:=GroupHomomorphismByImagesNC( Range( hom ),   Source( hom ),
-                                      mapi[2], mapi[1] );
+                                      mapi[2], mapi[1]);
   SetIsBijective( mapi, true );
   return mapi;
 end );
@@ -1398,7 +1402,9 @@ BindGlobal( "IsomorphismAbelianGroupViaIndependentGenerators", function ( filter
 
   if IsTrivial( G ) then
     K := TrivialGroup( filter );
-    return GroupHomomorphismByImagesNC( G, K, [], [] );
+    nice := GroupHomomorphismByImagesNC( G, K, [], [] );
+    SetIsBijective( nice, true );
+    return nice;
   fi;
 
   gens := IndependentGeneratorsOfAbelianGroup( G );

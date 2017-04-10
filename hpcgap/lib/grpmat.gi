@@ -447,8 +447,12 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
 #  RUN_IN_GGMBI:=p;
-  base:=ImmutableMatrix(field,base);
-  SetLinearActionBasis(hom,base);
+  if act=OnRight or act=OnPoints then
+    # only store for action on right. projective action needs is own call to
+    # `LinearActionBase' as this will set other needed parameters.
+    base:=ImmutableMatrix(field,base);
+    SetLinearActionBasis(hom,base);
+  fi;
 
   return hom;
 end);

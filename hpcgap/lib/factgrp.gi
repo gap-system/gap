@@ -314,9 +314,31 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
   if Length(arg)>1 then
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
+    if Length(p)=0 then
+      return;
+    fi;
+    SortParallel(List(pool.ker{p},Size),p);
+    if Size(pool.ker[p[1]])=Size(N) and Length(p)>3 then
+      # N in pool
+      c:=pool.cost[p[1]];
+      p:=Filtered(p,x->pool.cost[x]<c);
+    fi;
   else
     N:=fail;
   fi;
+
+  # minimal ones
+  c:=Filtered([1..Length(p)],
+      x->not ForAny([1..x-1],y->IsSubset(pool.ker[p[x]],pool.ker[p[y]])));
+  c:=p{c};
+  if Size(Intersection(pool.ker{c}))>Size(N) then
+    # cannot reach N
+    return; 
+  elif Length(p)>20 or Size(N)=1 then
+    p:=c; # use only minimal ones if there is lots
+  fi;
+
+  #if Length(p)>20 then Error("hier!");fi;
 
   # do the abelians extra.
   p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
@@ -482,6 +504,7 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
       allb:=ShallowCopy(RepresentativesMinimalBlocks(Go,mov));
       for j in allb do
 	b:=Orbit(G,i{j},OnSets);
+
 	Add(bl,Immutable(Set(b)));
 	# also one finer blocks (as we iterate only once)
 	newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
@@ -491,6 +514,7 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 	    Add(allb,newb);
 	  fi;
 	fi;
+
       od;
 
       #if Length(i)<500 and Size(Go)>10*Length(i) then
@@ -515,6 +539,43 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 
 end);
 
+BindGlobal("DoActionBlocksForKernel",
+function(G,mustfaithful)
+local pool, dom, o, bl, op, Go, j, b, i,allb,newb,movl;
+
+  dom:=MovedPoints(G);
+  # orbits
+  o:=OrbitsDomain(G,dom);
+  o:=Set(List(o,Set));
+
+
+  # all good blocks
+  bl:=dom;
+  allb:=ShallowCopy(RepresentativesMinimalBlocks(G,dom));
+  for j in allb do
+    if Length(dom)/Length(j)<Length(bl) and
+      Size(Core(mustfaithful,Stabilizer(mustfaithful,j,OnSets)))=1
+      then
+	b:=Orbit(G,j,OnSets);
+	bl:=b;
+	# also one finer blocks (as we iterate only once)
+	newb:=Blocks(G,b,OnSets);
+	if Length(newb)>1 then
+	  newb:=Union(newb[1]);
+	  if not newb in allb then
+	    Add(allb,newb);
+	  fi;
+	fi;
+    fi;
+  od;
+  if Length(bl)<Length(dom) then
+    return bl;
+  else
+    return fail;
+  fi;
+
+end);
+
 
 #############################################################################
 ##
@@ -523,7 +584,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 
   G:=arg[1];
   N:=arg[2];
@@ -635,7 +696,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(Index(G,v),knowi)<20000 
+	  Minimum(Index(G,v),knowi)<100000 
 	     and 5*totalcnt>Minimum(Index(G,v),knowi,1000) then
 	  # interupt if we're already quite good
 	  interupt:=true;
@@ -673,7 +734,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
 	Add(badcores,cor);
       fi;
-      # store known information(we do't act, just store the subgroup.
+      # store known information(we do't act, just store the subgroup).
       # Thus this is fairly cheap
       pool.dotriv:=true;
       zzz:=AddNaturalHomomorphismsPool(G,cor,u,Index(G,u));
@@ -686,6 +747,22 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores;
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
 
       Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
+      if cnt<10 and Size(cor)>Size(N) and Index(G,u)*2<knowi and
+	ValueOption("inmax")=fail then
+	if IsSubset(RadicalGroup(u),N) and Size(N)<Size(RadicalGroup(u)) then
+	  # only affine ones are needed, rest will have wrong kernel
+	  max:=DoMaxesTF(u,["1"]:inmax,cheap);
+	else
+	  max:=MaximalSubgroupClassReps(u:inmax,cheap);
+	fi;
+        max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
+        for i in max do
+	  cor:=Core(G,i);
+	  AddNaturalHomomorphismsPool(G,cor,i,Index(G,i));
+	od;
+	zzz:=DegreeNaturalHomomorphismsPool(G,N);
+	Info(InfoFactor,3,"  Maxes: ",Length(max)," best degree:",zzz);
+      fi;
     else
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
     fi;
@@ -714,7 +791,9 @@ end;
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
 local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
-  i,cheap,first;
+  i,cheap,first,k2;
+#if not HasSize(G) then Error("SZ");fi;
+  Info(InfoFactor,1,"Smaller degree for order ",Size(G),", deg: ",NrMovedPoints(G));
   cheap:=ValueOption("cheap");
   if cheap="skip" then
     return IdentityMapping(G);
@@ -722,21 +801,23 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
 
   cheap:=cheap=true;
 
-  # deal with large abelian cases first (which could be direct)
-  hom:=MaximalAbelianQuotient(G);
-  i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
-  o:=List(i,Order);
-  if ValueOption("norecurse")<>true and 
-    Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
-    Info(InfoFactor,2,"append abelian rep");
-    s:=AbelianGroup(IsPermGroup,o);
-    ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
-    erg:=SubdirectDiagonalPerms(
-	  List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
-	  GeneratorsOfGroup(G));
-    k:=Group(erg);SetSize(k,Size(G));
-    hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
-    return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+  # deal with large abelian components first (which could be direct)
+  if cheap<>true then
+    hom:=MaximalAbelianQuotient(G);
+    i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
+    o:=List(i,Order);
+    if ValueOption("norecurse")<>true and 
+      Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
+      Info(InfoFactor,2,"append abelian rep");
+      s:=AbelianGroup(IsPermGroup,o);
+      ihom:=GroupHomomorphismByImagesNC(Image(hom),s,i,GeneratorsOfGroup(s));
+      erg:=SubdirectDiagonalPerms(
+	    List(GeneratorsOfGroup(G),x->Image(ihom,Image(hom,x))),
+	    GeneratorsOfGroup(G));
+      k:=Group(erg);SetSize(k,Size(G));
+      hom:=GroupHomomorphismByImagesNC(G,k,GeneratorsOfGroup(G),erg);
+      return hom*SmallerDegreePermutationRepresentation(k:norecurse);
+    fi;
   fi;
 
 
@@ -762,12 +843,28 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
       Sort(o,function(a,b)return Length(a)>Length(b);end);
     od;
 
+    Sort(o,function(a,b)return Length(a)<Length(b);end);
+
     erg:=List(GeneratorsOfGroup(G),i->());
+    k:=G;
     for i in [1..Length(o)] do
       Info(InfoFactor,1,"Try to shorten orbit ",i," Length ",Length(o[i]));
       s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
-      Range(s);
+      k2:=Image(s,k);
+      k:=Stabilizer(k,o[i],OnTuples);
+      H:=Range(s);
+
+      # is there an action that is good enough for improving the overall
+      # kernel, even if it is not faithful? If so use the best of them.
+      b:=DoActionBlocksForKernel(H,k2);
+      if b<>fail then
+	Info(InfoFactor,2,"Blocks for kernel reduce to ",Length(b));
+	b:=ActionHomomorphism(H,b,OnSets,"surjective");
+	s:=s*b;
+      fi;
+
       s:=s*SmallerDegreePermutationRepresentation(Image(s));
+      Info(InfoFactor,1,"Shortened to ",NrMovedPoints(Range(s)));
       erg:=SubdirectDiagonalPerms(erg,List(GeneratorsOfGroup(G),i->Image(s,i)));
     od;
     if NrMovedPoints(erg)<NrMovedPoints(G) then
@@ -779,7 +876,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
     fi;
     return IdentityMapping(G);
   # simple test is comparatively cheap for permgrp
-  elif IsSimpleGroup(G) and not IsAbelian(G) then 
+  elif HasIsSimpleGroup(G) and IsSimpleGroup(G) and not IsAbelian(G) then 
     H:=SimpleGroup(ClassicalIsomorphismTypeFiniteSimpleGroup(G));
     if IsPermGroup(H) and NrMovedPoints(H)>=NrMovedPoints(G) then
       return IdentityMapping(G);
@@ -837,7 +934,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
     if map<>fail and Image(map)<>H then
       improve:=true;
       H:=Image(map);
-      Info(InfoFactor,2," improved to degree ",NrMovedPoints(H));
+      Info(InfoFactor,2,"improved to degree ",NrMovedPoints(H));
       hom:=hom*map;
       ihom:=H;
     fi;

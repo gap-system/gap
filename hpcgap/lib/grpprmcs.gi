@@ -1366,7 +1366,7 @@ InstallMethod( PCoreOp,
             factorsize, # the sizes of factor groups in composition series
             index,      # loop variable running through the indices of
                         # subgroups in the composition series
-            pri,primes, # list of primes in the factorization of numbers
+            primes,     # list of primes in the factorization of numbers
             ppart,      # p-part of Size(G)
             homlist,    # list of homomorphisms applied to workgroup
             lenhomlist, # length of homlist
@@ -1390,8 +1390,7 @@ InstallMethod( PCoreOp,
             pgenlist;   # list of generators for the p-core
 
     # handle trivial cases
-    pri := FactorsInt(p);
-    if Length(pri) > 1  then
+    if not IsPrime(p)  then
         return TrivialSubgroup(workgroup);
     fi;
     if IsTrivial(workgroup)  then
@@ -1415,6 +1414,8 @@ InstallMethod( PCoreOp,
            if ppart > 1 then
                SetIsPGroup( D, true );
                SetPrimePGroup( D, p );
+               SetSylowSubgroup( workgroup, p, D );
+               SetHallSubgroup( workgroup, [p], D );
            fi;
            return D;
     fi;

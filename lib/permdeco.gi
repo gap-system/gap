@@ -183,7 +183,6 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
 	fi;
      else
-       #Error("ZZZ");
        Info(InfoGroup,2,"Does not work");
      fi;
      return fail;

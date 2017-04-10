@@ -12,12 +12,6 @@
 ##  This file contains the methods for symmetric and alternating groups
 ##
 
-# xref to transgrp library
-if not IsBound(TRANSDEGREES) then
-  TRANSDEGREES:=0;
-fi;
-
-
 #############################################################################
 ##
 #M  <perm> in <nat-alt-grp>
@@ -1014,8 +1008,14 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up	
         RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
-        function(g, arg...) 
-    return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
+function(g, arg...) 
+local s;
+  s:=SymmetricParentGroup(g);
+  # we cannot go to the symmetric group if the acting elements are different
+  if arg[2]<>arg[3] or not IsSubset(s,arg[2]) then
+    TryNextMethod();
+  fi;
+  return AlternatingSubgroup(Stabilizer(s,arg[1],GeneratorsOfGroup(s),GeneratorsOfGroup(s),arg[4]));
 end);
 
 
@@ -1049,9 +1049,11 @@ function ( G, g )
             cycle,      # one cycle from <cycles>
             lasts,      # '<lasts>[<l>]' is the last cycle of length <l>
             last,       # one cycle from <lasts>
-	    mov,
-            i;          # loop variable
-
+            counts,     # number of cycles of each length
+	    mov,        # moved points of group
+            siz,        # size of centraliser
+            l;
+    
     # test for internal rep
     if HasGeneratorsOfGroup(G) and 
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -1069,19 +1071,27 @@ function ( G, g )
     sgs := [];
 
     # compute the cycles and find for each length the last one
+    # and the count
     cycles := Cycles( g, mov );
     lasts := [];
+    counts := [];
     for cycle  in cycles  do
-      lasts[Length(cycle)] := cycle;
+        l := Length(cycle);
+        lasts[l] := cycle;
+        if not IsBound(counts[l]) then
+            counts[l] := 1;
+        else
+            counts[l] := counts[l]+1;
+        fi;
     od;
-
+    
     # loop over the cycles
     for cycle  in cycles  do
-
+        l := Length(cycle);
       # add that cycle itself to the strong generators
-      if Length( cycle ) <> 1  then
+      if l <> 1  then
 	  gen := MappingPermListList(cycle,
-	            Concatenation(cycle{[2..Length(cycle)]},[cycle[1]]));
+	            Concatenation(cycle{[2..l]},[cycle[1]]));
 	  Add( sgs, gen );
       fi;
 
@@ -1094,9 +1104,18 @@ function ( G, g )
       fi;
 
   od;
-
+  
+  siz := 1;
+  for l in [1..Length(counts)] do
+      if IsBound(counts[l]) then
+          siz := siz*l^counts[l]*Factorial(counts[l]);
+      fi;
+  od;
+  
   # make the centralizer
-  C := Subgroup(  G , sgs );
+  C := SubgroupNC(  G , sgs );
+  SetSize(C,siz);
+  
 
   # return the centralizer
   return C;
@@ -1109,17 +1128,22 @@ local b, bl,prop;
   # what properties can we find easily
   prop:=function(s)
   local p;
-  s:=Set(dom{s});
+
+    s:=Set(dom{s});
     p:=[Length(s)];
 
-    # type of action on blocks
-    if TRANS_AVAILABLE=true and Length(dom)/Length(s)<=TRANSDEGREES then
-      Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
-    fi;
+    if  ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      Info(InfoPerformance,2,"Using Transitive Groups Library");
 
-    # type of action on blocks
-    if TRANS_AVAILABLE=true and Length(s)<=TRANSDEGREES then
-      Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+      # type of action on blocks
+      if TransitiveGroupsAvailable(Length(dom)/Length(s)) then
+	Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
+      fi;
+
+      # type of action on blocks
+      if TransitiveGroupsAvailable(Length(s)) then
+	Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+      fi;
     fi;
 
     if Length(p)=1 then
@@ -1162,8 +1186,69 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
   o:=ShallowCopy(Orbits(u,dom));
   Info(InfoGroup,1,"SymmAlt normalizer: orbits ",List(o,Length));
 
-  # transitive?
-  if Length(o)=1 then
+  if Length(o)=1 and IsAbelian(u) then
+    b:=List(Set(Factors(Size(u))),p->Omega(SylowSubgroup(u,p),p,1));
+    if Length(b)=1 and IsTransitive(b[1],dom) then
+      # elementary abelian, regular -- construct the correct AGL
+      b:=b[1];
+      bas:=Pcgs(b);
+      pg:=Centralizer(s,b);
+      for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
+	w:=GroupHomomorphismByImagesNC(b,b,bas,
+	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
+	w:=List(dom,x->1^Image(w,First(AsSSortedList(b),a->1^a=x)));
+	w:=PermList(w);
+	pg:=ClosureGroup(pg,w);
+      od;
+      return Intersection(s,pg);
+    else
+      SortBy(b,Size);
+      b:=Reversed(b); # larger ones should give most reduction.
+      pg:=NormalizerParentSA(s,b[1]);
+      for i in [2..Length(b)] do
+	pg:=Normalizer(pg,b[i]);
+      od;
+      return Intersection(s,pg);
+    fi;
+  elif Length(o)=1 and IsPrimitive(u,dom) then
+    # natural symmetric/alternating
+    if IsNormal(s,u) then
+      return s;
+    fi;
+    # can there be more in the normalizer -- primitive groups
+    b:=Socle(u);
+    if IsElementaryAbelian(b) then
+      return NormalizerParentSA(s,b);
+    fi;
+    # nonabelian socle
+    if PrimitiveGroupsAvailable(Length(dom)) 
+      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      Info(InfoPerformance,2,"Using Primitive Groups Library");
+      # use library
+      beta:=Factorial(Length(dom))/2;
+      w:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
+	  [NrMovedPoints,Length(dom),IsSolvableGroup,false,
+	  x->Size(x)>Size(u) and Size(x) mod Size(u)=0 and
+	  Size(x)<beta,true]);
+      if Length(w)=0 then
+	return u; # must be self-normalizing
+      fi;
+    fi;
+    # find right automorphisms (socle cannot have centralizer)
+    w:=AutomorphismGroup(b);
+    opg:=NaturalHomomorphismByNormalSubgroupNC(w,
+	  InnerAutomorphismsAutomorphismGroup(w));
+    ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentative(opg,x));
+    ll:=Filtered(ll,IsConjugatorAutomorphism);
+    ll:=List(ll,ConjugatorInnerAutomorphism);
+    pg:=b;
+    for i in ll do
+      pg:=ClosureGroup(pg,i);
+    od;
+    return Intersection(s,pg);
+
+  elif Length(o)=1 then
+
     b0:=AllNormalizerfixedBlockSystem(u,o[1]);
     if b0=fail then
       # none -- no improvement
@@ -1221,7 +1306,9 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 
       syll:=SymmetricGroup(ll);
       # if the degrees are small enough, even get local types
-      if ll>1 and TRANS_AVAILABLE=true and ll<=TRANSDEGREES then
+      if ll>1 and TransitiveGroupsAvailable(ll) 
+        and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+	Info(InfoPerformance,2,"Using Transitive Groups Library");
 	Info(InfoGroup,1,"Length ",ll," sort by types");
 	act:=[];
 	typ:=[];
@@ -1232,7 +1319,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
 	# rearrange
 	for i in Set(typ) do
 	  sel:=Filtered([is..ie-1],j->typ[j]=i);
-	  bas:=Normalizer(syll,act[sel[1]]);
+	  bas:=NormalizerParentSA(syll,act[sel[1]]);
+	  bas:=Normalizer(bas,act[sel[1]]);
 	  w:=WreathProduct(bas,SymmetricGroup(Length(sel)));
 	  wdom:=[1..ll*Length(sel)];
 	  comp:=WreathProductInfo(w).components;
@@ -1571,8 +1659,10 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     od;
 
     # make the Sylow subgroup
-    S := Subgroup(  G , sgs );
-
+    S := SubgroupNC(  G , sgs );
+    SetSize(S,p^Length(sgs));
+    
+    
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
@@ -2045,6 +2135,10 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   fi;
   dom:=Set(MovedPoints(G));
   n:=Length(dom);
+  if  ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true or
+   not PrimitiveGroupsAvailable(n) then
+    return fail;
+  fi;
 
   A:=AlternatingGroup(n);
   issn:=Size(A)<>Size(G);

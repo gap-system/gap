@@ -438,6 +438,251 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     return pcgs;
 end);
 
+## Based on `TryPcgsPermGroup', a method for PcgsByPcSequence
+
+BindGlobal("ExtendSeriesPGParticular", function(
+            G,       # the group in which factors are to be normal
+            series,  # the series being constructed
+            adds)     # the elements to be added to `series[ <lev> ]'
+			
+  local   M0,  M1,  C,  X,  oldX,  T,  t,  u,  w,  r,  done,
+	  ord,  p,ap,s;
+  
+  # As series  need not be   fastest-descending, prepare to add  a new
+  # group to the list.
+  M1 := series[ 1 ];
+  M0 := StructuralCopy( M1 );
+  X := [  ];
+  r := 1;
+
+  # find next elt to add
+  ap:=1;
+  while MembershipTestKnownBase(M0,G,adds[ap])=true do
+    ap:=ap+1;
+    if ap>Length(adds) then
+      return fail; # nothing to add
+    fi;
+  od;
+  s:=adds[ap];
+
+  # find prime.
+  ord:=Factors(Order( s ));
+  p:=First(Set(ord),x->MembershipTestKnownBase(M0,G,s^x)=true);
+
+  # Loop over adds
+  ap:=ap-1;
+  C := [s];
+  while not IsEmpty( C )  do
+    t := C[ 1 ];
+    if not MembershipTestKnownBase( M0, G, t )  then
+      
+      # Form  all necessary  commutators with  <t>   and for elementary
+      # abelian factors also a <p>th power.
+      T := SSortedList( X );
+      done := false;
+      while not done  and  not IsEmpty( T ) do
+	if not IsEmpty( T )  then
+	  u := T[ 1 ];        RemoveSet( T, u );
+	  w := Comm( t, u );
+	else
+	  done := true;
+	  w := t ^ p;
+	fi;
+    
+	# If   the commutator or  power  is not  in <M1>, 
+	# it was not a proper pcgs
+	if not MembershipTestKnownBase( M1, G, w )  then
+	  return w;
+	fi;
+	
+      od;
+      
+      ap:=ap+1;
+      t:=adds[ap];
+
+      # Add <t> to <M0> and register its conjugates.
+      if AddNormalizingElementPcgs( M0, t )  then
+	Add( X, t );
+      fi;
+      Append( C, List( GeneratorsOfGroup( G ), g -> t ^ g ) );
+
+    else
+      # this t is done with
+      C := C{ [ 2 .. Length( C ) ] };
+    fi;
+  od;
+
+  if not IsEmpty( X )  then
+    Add( series, M0, 1 );
+  fi;
+
+  return true;
+end );
+
+InstallGlobalFunction(PermgroupSuggestPcgs,function(G,pcseq)
+local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  
+	bound,  deg,  step,  i,  S,  filter,gens;
+
+  U := TrivialSubgroup( G );
+  G := [ G, U ]; 
+  # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
+  # components on all levels.
+  U := EmptyStabChain( [  ], One( U ) );
+
+  # The `genlabels' at every level of $U$ must be sets.
+  S := U;
+  while not IsEmpty( S.genlabels )  do
+    Sort( S.genlabels );
+    S := S.stabilizer;
+  od;
+
+  grp := G[ 1 ];
+  
+  series := [ U ];
+  series[ 1 ].relativeOrders := [  ];
+
+  # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
+  # class of <G> is at most Max( log_p(d)-1 ).
+  deg := NrMovedPoints( grp );
+  bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
+  if HasSize( grp ) and Length( FactorsInt( Size( grp ) ) ) < bound  then
+    bound:=Length( FactorsInt( Size( grp ) ) );
+  fi;
+
+  pcseq:=Reversed(pcseq); # build up
+
+  # can do repeat-until as group is not trivial
+  repeat
+    w := ExtendSeriesPGParticular( G[1], series, pcseq);
+    if w <> true  and w<>fail then
+      # if it fails the pcgs does not fit an elementary
+      # abelian series. In this case we need to defer to the
+      # generic approach.
+      return fail;
+    fi;
+    #Print(List(series,SizeStabChain),":",Length(series[1].labels),":",List(series[1].labels,x->Position(pcseq,x)),"\n");
+  until w=fail;
+
+  # Construct the pcgs object.
+  filter := IsPcgsPermGroupRep and IsPcgsElementaryAbelianSeries;
+
+  pcgs := PcgsStabChainSeries( filter, grp, series, 1,true);
+
+  if Set(GeneratorsOfGroup(grp))=Set(pcseq) then
+    SetIsSolvableGroup( grp, true );
+    SetPcgs( grp, pcgs );
+    SetHomePcgs( grp, pcgs );
+  fi;
+  SetGroupOfPcgs (pcgs, grp);
+  return pcgs;
+end);
+
+# arbitrary pc sequence pcgs for perm group. Construct pcgs from it using
+# variant of sims' algorithm, then use translation of exponents.
+InstallMethod(PcgsByPcSequenceNC,"perm group, Sims' algorithm",true,
+  [IsFamily,IsHomogeneousList and IsPermCollection],0,
+
+function( efam, pcs )
+    local   rws,  pfa,  pcgs,  pag,  id,  g,  dg,  i,  new,
+    ord,codepths,pagpow,sorco,filter;
+
+    # quick check
+    if not IsIdenticalObj( efam, ElementsFamily(FamilyObj(pcs)) )  then
+        Error( "elements family of <pcs> does not match <efam>" );
+    fi;
+
+    if ForAll(pcs,IsOne) then
+      TryNextMethod(); # degenerate case
+    fi;
+
+    pfa := PermgroupSuggestPcgs(Group(pcs),pcs);
+    if pfa=fail then
+      TryNextMethod();
+    fi;
+
+    if pfa=pcs then
+      # is it by happenstance the one we want?
+      return pfa;
+
+    else
+      # make a sorted/unsorted pcgs
+
+      # sort the elements according to the depth wrt pfa
+      pag := [];
+      new := [];
+      ord := [];
+      id  := One(pcs[1]);
+      for i  in [ Length(pcs), Length(pcs)-1 .. 1 ]  do
+	g  := pcs[i];
+	dg := DepthOfPcElement( pfa, g );
+	while g <> id and IsBound(pag[dg])  do
+	  g  := ReducedPcElement( pfa, g, pag[dg] );
+	  dg := DepthOfPcElement( pfa, g );
+	od;
+	if g <> id  then
+	  pag[dg] := g;
+	  new[dg] := i;
+	  ord[i]  := RelativeOrderOfPcElement( pfa, g );
+	fi;
+      od;
+      if not IsHomogeneousList(ord) then
+	Error("not all relative orders given");
+      fi;
+
+      filter:=IsPcgs;
+
+      if IsSSortedList(new) and Length(new)=Length(pfa) then
+	filter:=filter and IsSortedPcgsRep;
+      else
+	filter:=filter and IsUnsortedPcgsRep;
+      fi;
+
+      # we have the same sequence, same depths, just changed by
+      # multiplying elements of a lower level
+      pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep, filter,
+		  efam, pcs,[] );
+
+      pcgs!.sortedPcSequence := pag;
+      pcgs!.newDepths        := new;
+      pcgs!.sortingPcgs      := pfa;
+
+      # Precompute the leading coeffs and the powers of pag up to the
+      # relative order
+      pagpow:=[];
+      sorco:=[];
+      for i in [1..Length(pag)] do
+	if IsBound(pag[i]) then
+	  pagpow[i]:=
+	    List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
+	  sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
+	fi;
+      od;
+      pcgs!.sortedPcSeqPowers:=pagpow;
+      pcgs!.sortedPcSequenceLeadCoeff:=sorco;
+
+      # codepths[i]: the minimum pcgs-depth that can be implied by pag-depth i
+      codepths:=[];
+      for dg in [1..Length(new)] do
+	g:=Length(new)+1;
+	for i in [dg..Length(new)] do
+	  if IsBound(new[i]) and new[i]<g then
+	    g:=new[i];
+	  fi;
+	od;
+	codepths[dg]:=g;
+      od;
+      pcgs!.minimumCodepths:=codepths;
+      SetRelativeOrders( pcgs, ord );
+      if IsSortedPcgsRep(pcgs) then
+	pcgs!.inversePowers:=
+		      List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
+      fi;
+  fi;
+
+  return pcgs;
+
+end );
+
 #############################################################################
 ##
 #F  PcgsStabChainSeries( <filter>, <G>, <series>, <oldlen>,<iselab> )

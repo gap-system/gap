@@ -3,6 +3,8 @@
 #X  now read all the implementation parts
 ##
 
+ReadLib( "type.gi"     );
+
 ReadLib( "rvecempt.gi" );
 ReadLib( "ratfun1.gi"  );
 ReadLib( "matrix.gi"   );
@@ -205,6 +207,7 @@ ReadLib( "clashom.gi"  );
 ReadLib( "maxsub.gi"   );
 ReadLib( "norad.gi"    );
 
+ReadLib( "autsr.gi"    );
 ReadLib( "morpheus.gi" );
 ReadLib( "grplatt.gi"  );
 ReadLib( "oprtglat.gi" );

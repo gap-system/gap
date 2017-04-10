@@ -1420,6 +1420,7 @@ local   S;
   if Size(S) > 1 then
     SetIsPGroup( S, true );
     SetPrimePGroup( S, p );
+    SetHallSubgroup(G, [p], S);
   fi;
   return S;
 end );
@@ -1593,15 +1594,14 @@ end );
 ##
 InstallMethod( FrattiniSubgroup,"for permgrp", true, [ IsPermGroup ], 0,
     function( G )
-    local   fac,  p,  l,  k,  i,  j;
+    local   p,  l,  k,  i,  j;
 
-    fac := Set( FactorsInt( Size( G ) ) );
-    if Length( fac ) > 1  then
+    if not IsPGroup( G ) then
         TryNextMethod();
-    elif fac[1]=1 then
+    elif IsTrivial( G ) then
       return G;
     fi;
-    p := fac[ 1 ];
+    p := PrimePGroup( G );
     l := GeneratorsOfGroup( G );
     k := [ l[1]^p ];
     for i  in [ 2 .. Length(l) ]  do
@@ -1829,7 +1829,7 @@ end );
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
 function (G)
-local  i, j, U, gens,o,v,a,sel;
+local  i, j, U, gens,o,v,a,sel,min;
 
   # remove obvious redundancies
   gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
@@ -1863,14 +1863,19 @@ local  i, j, U, gens,o,v,a,sel;
     return MinimalGeneratingSet(G);
   fi;
 
+
+  min:=2;
   if Length(gens)>2 then
-    i:=2;
-    while i<=3 and i<Length(gens) do
+  # minimal: AbelianInvariants
+    min:=Maximum(List(Collected(Factors(Size(G)/Size(DerivedSubgroup(G)))),x->x[2]));
+    i:=Maximum(2,min);
+    while i<=min+1 and i<Length(gens) do
       # try to find a small generating system by random search
       j:=1;
       while j<=5 and i<Length(gens) do
         U:=Subgroup(G,List([1..i],j->Random(G)));
-        StabChain(U,rec(random:=1));
+	StabChainOptions(U).random:=100; # randomized size
+#Print("A:",i,",",j," ",Size(G)/Size(U),"\n");
         if Size(U)=Size(G) then
           gens:=Set(GeneratorsOfGroup(U));
         fi;
@@ -1879,13 +1884,16 @@ local  i, j, U, gens,o,v,a,sel;
       i:=i+1;
     od;
   fi;
+
   i := 1;
   if not IsAbelian(G) then
     i:=i+1;
   fi;
-  while i < Length(gens)  do
+  while i <= Length(gens) and Length(gens)>min do
     # random did not improve much, try subsets
     U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
+    StabChainOptions(U).random:=100; # randomized size
+#Print("B:",i," ",Size(G)/Size(U),"\n");
     if Size(U)<Size(G) then
       i:=i+1;
     else
