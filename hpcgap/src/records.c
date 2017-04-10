@@ -297,7 +297,7 @@ Obj             NameRNamHandler (
     Obj                 rnam )
 {
     Obj                 name;
-    Char                *cname;
+    Obj                 oname;
     while ( ! IS_INTOBJ(rnam)
          || INT_INTOBJ(rnam) <= 0
         || CountRNam < INT_INTOBJ(rnam) ) {
@@ -306,8 +306,8 @@ Obj             NameRNamHandler (
             (Int)TNAM_OBJ(rnam), 0L,
             "you can replace <rnam> via 'return <rnam>;'" );
     }
-    cname = NAME_RNAM( INT_INTOBJ(rnam) );
-    C_NEW_STRING_DYN( name, cname);
+    oname = NAME_OBJ_RNAM( INT_INTOBJ(rnam) );
+    name = CopyToStringRep(oname);
     return name;
 }
 
@@ -606,12 +606,12 @@ Obj FuncALL_RNAMES (
 {
     Obj                 copy, s;
     UInt                i;
-    Char*               name;
+    Obj                 name;
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
     for ( i = 1;  i <= CountRNam;  i++ ) {
-        name = NAME_RNAM( i );
-        C_NEW_STRING_DYN(s, name);
+        name = NAME_OBJ_RNAM( i );
+        s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
     }
     SET_LEN_PLIST( copy, CountRNam );

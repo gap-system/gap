@@ -19,15 +19,17 @@
 
 /****************************************************************************
 **
-
-*F  NAME_RNAM(<rnam>) . . . . . . . . . . . . . . . .  name for a record name
+*F  NAME_RNAM(<rnam>) . . . . . . . . . . .name for a record name as C string
+*F  NAME_OBJ_RNAM(<rnam>) . . . . . . . . .name for a record name as an Obj
 **
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
+**  'NAME_OBJ_RNAM' returns the name (as an Obj) for the record name <rnam>.
 **
-**  Note that 'NAME_RNAM' is a  macro, so do not call  it with arguments that
-**  have side effects.
+**  Note that 'NAME_RNAM' and 'NAME_OBJ_RNAM' are macros, so do not call them
+**  with arguments that have side effects.
 */
 #define NAME_RNAM(rnam) CSTR_STRING( ELM_PLIST( NamesRNam, rnam ) )
+#define NAME_OBJ_RNAM(rnam) ELM_PLIST( NamesRNam, rnam )
 
 extern  Obj             NamesRNam;
 
@@ -149,7 +151,6 @@ extern  void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, O
                         ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
 extern  void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
-
 
 
 /****************************************************************************
