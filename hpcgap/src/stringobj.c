@@ -1525,14 +1525,14 @@ void MakeImmutableString( Obj str )
 }
 
 
-Obj MakeString(Char *cstr)
+Obj MakeString(const Char *cstr)
 {
   Obj result;
   C_NEW_STRING(result, strlen(cstr), cstr);
   return result;
 }
 
-Obj MakeString2(Char *cstr1, Char *cstr2)
+Obj MakeString2(const Char *cstr1, const Char *cstr2)
 {
   Obj result;
   size_t len1 = strlen(cstr1), len2 = strlen(cstr2);
@@ -1542,7 +1542,7 @@ Obj MakeString2(Char *cstr1, Char *cstr2)
   return result;
 }
 
-Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3)
+Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
 {
   Obj result;
   size_t len1 = strlen(cstr1), len2 = strlen(cstr2), len3 = strlen(cstr3);
@@ -1553,21 +1553,21 @@ Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3)
   return result;
 }
 
-Obj MakeImmString(Char *cstr)
+Obj MakeImmString(const Char *cstr)
 {
   Obj result = MakeString(cstr);
   MakeImmutableString(result);
   return result;
 }
 
-Obj MakeImmString2(Char *cstr1, Char *cstr2)
+Obj MakeImmString2(const Char *cstr1, const Char *cstr2)
 {
   Obj result = MakeString2(cstr1, cstr2);
   MakeImmutableString(result);
   return result;
 }
 
-Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3)
+Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
 {
   Obj result = MakeString3(cstr1, cstr2, cstr3);
   MakeImmutableString(result);
