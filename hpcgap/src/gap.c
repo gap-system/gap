@@ -2821,16 +2821,6 @@ Obj FuncTHREAD_UI(Obj self)
 }
 
 
-/****************************************************************************
-**
-*F FuncGETPID  ... export UNIX getpid to GAP level
-**
-*/
-
-Obj FuncGETPID(Obj self) {
-  return INTOBJ_INT(getpid());
-}
-
 GVarDescriptor GVarTHREAD_INIT;
 GVarDescriptor GVarTHREAD_EXIT;
 
@@ -2882,14 +2872,6 @@ void ThreadedInterpreter(void *funcargs) {
     IntrEnd( 1UL );
     ClearError();
   } 
-}
-
-UInt BreakPointValue;
-
-Obj BREAKPOINT(Obj self, Obj arg) {
-  if (IS_INTOBJ(arg))
-    BreakPointValue = INT_INTOBJ(arg);
-  return (Obj) 0;
 }
 
 
@@ -3028,12 +3010,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
-
-    { "GETPID", 0, "",
-      FuncGETPID, "src/gap.c:GETPID" },
-
-    { "BREAKPOINT", 1, "num",
-      BREAKPOINT, "src/gap.c:BREAKPOINT" },
 
     { "MASTER_POINTER_NUMBER", 1, "ob",
       FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
