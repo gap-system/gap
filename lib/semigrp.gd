@@ -590,7 +590,7 @@ InstallTrueMethod(IsCliffordSemigroup, IsSemilattice);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsCliffordSemigroup);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsSimpleSemigroup);
 InstallTrueMethod(IsCompletelySimpleSemigroup, IsSimpleSemigroup and IsFinite);
-InstallTrueMethod(IsIdempotentGenerated, IsSemilattice);
+InstallTrueMethod(IsIdempotentGenerated, IsBand);
 InstallTrueMethod(IsInverseSemigroup, IsSemilattice);
 InstallTrueMethod(IsInverseSemigroup, IsCliffordSemigroup);
 InstallTrueMethod(IsInverseSemigroup, IsGroupAsSemigroup);
