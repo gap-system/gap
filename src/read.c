@@ -1453,7 +1453,7 @@ void ReadFuncExpr (
         if ( strcmp("~", TLS(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
         }
-        C_NEW_STRING_DYN( name, TLS(Value) );
+        name = MakeImmString( TLS(Value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1474,7 +1474,7 @@ void ReadFuncExpr (
             if ( strcmp("~", TLS(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
             }
-            C_NEW_STRING_DYN( name, TLS(Value) );
+            name = MakeImmString( TLS(Value) );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
