@@ -131,10 +131,11 @@ static inline Obj NewWord(Obj type, UInt npairs) {
   return word;
 }
 
-#define NEW_WORD(word, type, npairs) \
-  ReadGuard(type), \
-  (word) = NewWord((type), (npairs));
+#define NEW_WORD_READ_WRITE(word, type, npairs) \
+  (word) = NewWord((type), (npairs))
 
+#define NEW_WORD(word, type, npairs) \
+  (word) = NewWord((type), (npairs))
 
 /****************************************************************************
 **
