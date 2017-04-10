@@ -958,7 +958,7 @@ extern TNumGlobalBags GlobalBags;
 **  problem  if  such a  variable does not   actually  hold a bag identifier,
 **  {\Gasman} will simply ignore it then.
 **
-**  There is a limit on the number of calls to 'InitGlobalBags', which is 512
+**  There is a limit on the number of calls to 'InitGlobalBag', which is 512
 **  by default.   If the application has  more global variables that may hold
 **  bag  identifier, you  have to  compile  {\Gasman} with a  higher value of
 **  'NR_GLOBAL_BAGS', i.e., with 'make COPTS=-DNR_GLOBAL_BAGS=<nr>'.
