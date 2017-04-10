@@ -147,7 +147,7 @@ Obj             IdentityPerm;
 **  be initialized to 0 and functions wanting to use it can initialize it.
 **  Using the UseTmpPerm(<size>) utility function
 */
-#define  TmpPerm TLS(TmpPerm)
+#define  TmpPerm STATE(TmpPerm)
 
 static void UseTmpPerm( UInt size) {
   if (TmpPerm == (Obj)0)

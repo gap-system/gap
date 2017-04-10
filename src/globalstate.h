@@ -18,9 +18,30 @@
 #include <src/gasman.h>
 
 #define MAXPRINTDEPTH 1024L
+#define TLS_NUM_EXTRA 256
 
-typedef struct GlobalState
+typedef struct GAPState
 {
+#if defined(HPCGAP)
+  int threadID;
+  void *threadLock;
+  void *threadSignal;
+  void *acquiredMonitor;
+  unsigned multiplexRandomSeed;
+  void *currentRegion;
+  void *threadRegion;
+  void *traversalState;
+  Obj threadObject;
+  Obj tlRecords;
+  Obj lockStack;
+  int lockStackPointer;
+  Obj copiedObjs;
+  Obj interruptHandlers;
+  void *CurrentHashLock;
+  char *CurrFuncName;
+  int DisableGuards;
+#endif
+
   /* From intrprtr.c */
   Obj IntrResult;
   UInt IntrIgnoring;
@@ -64,8 +85,13 @@ typedef struct GlobalState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
-  TypInputFile   InputFiles[16];
+#if defined(HPCGAP)
+  TypInputFile * InputFiles[16];
+  TypOutputFile * OutputFiles[16];
+#else
+  TypInputFile InputFiles[16];
   TypOutputFile OutputFiles[16];
+#endif
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;
@@ -154,10 +180,15 @@ typedef struct GlobalState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  // HPC-GAP Obj PrintObjThissObj;
+#if defined(HPCGAP)
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Obj *PrintObjIndices;
+#else
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
+#endif
 
 #if defined(HPCGAP)
   /* For serializer.c */
@@ -191,25 +222,45 @@ typedef struct GlobalState
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
   /* Extra storage */
-} GlobalState;
+#if defined(HPCGAP)
+  void *Extra[TLS_NUM_EXTRA];
+#endif
+} GAPState;
 
-extern GlobalState *MainGlobalState;
+#if defined(HPCGAP)
 
-void InitMainGlobalState(void);
+#define STATE(x) (realTLS->x)
 
-void InitScannerState(GlobalState *);
-void InitStatState(GlobalState *);
-void InitExprState(GlobalState *);
-void InitCoderState(GlobalState *);
-void InitOpersState(GlobalState *);
+#else
 
-void DestroyScannerState(GlobalState *);
-void DestroyStatState(GlobalState *);
-void DestroyExprState(GlobalState *);
-void DestroyCoderState(GlobalState *);
-void DestroyOpersState(GlobalState *);
+#define STATE(x) (MainGAPState->x)
+extern GAPState *MainGAPState;
 
-void InitGlobalState(GlobalState *state);
-void DestroyGlobalState(GlobalState *state);
+#endif
+
+void InitMainGAPState(void);
+
+void InitScannerState(GAPState *);
+void InitStatState(GAPState *);
+void InitExprState(GAPState *);
+void InitCoderState(GAPState *);
+void InitOpersState(GAPState *);
+
+void DestroyScannerState(GAPState *);
+void DestroyStatState(GAPState *);
+void DestroyExprState(GAPState *);
+void DestroyCoderState(GAPState *);
+void DestroyOpersState(GAPState *);
+
+void InitGAPState(GAPState *state);
+void DestroyGAPState(GAPState *state);
+
+#if defined(HPCGAP)
+void InitAObjectsState(GAPState *state);
+void InitThreadAPIState(GAPState *state);
+
+void DestroyObjectsState(GAPState *state);
+void DestroyThreadAPIState(GAPState *state);
+#endif
 
 #endif // GAP_GLOBAL_STATE_H

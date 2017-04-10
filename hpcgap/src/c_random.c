@@ -391,13 +391,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 23, "GET_RANDOM_SEED_COUNTER" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(25));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(29));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* R_228 := 2 ^ 28; */
@@ -413,13 +413,13 @@ static Obj  HdlrFunc1 (
       return list[QUO_INT( r_x[r_n] * LEN_LIST( list ), R_228 ) + 1];
   end; */
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_1 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_1 ) = STATE(CurrLVars);
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_2, INTOBJ_INT(34));
  SET_ENDLINE_BODY(t_2, INTOBJ_INT(41));
  SET_FILENAME_BODY(t_2, FileName);
  BODY_FUNC(t_1) = t_2;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_RANDOM__LIST, t_1 );
  
  /* RANDOM_SEED := function ( n )
@@ -438,13 +438,13 @@ static Obj  HdlrFunc1 (
       return;
   end; */
  t_1 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
- ENVI_FUNC( t_1 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_1 ) = STATE(CurrLVars);
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_2, INTOBJ_INT(43));
  SET_ENDLINE_BODY(t_2, INTOBJ_INT(55));
  SET_FILENAME_BODY(t_2, FileName);
  BODY_FUNC(t_1) = t_2;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_RANDOM__SEED, t_1 );
  
  /* BIND_GLOBAL( "RANDOM_SEED_CONSTRUCTOR", function (  )
@@ -455,13 +455,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 23, "RANDOM_SEED_CONSTRUCTOR" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(57));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(60));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BindThreadLocalConstructor( _R_N, RANDOM_SEED_CONSTRUCTOR ); */
@@ -585,8 +585,8 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = TLS(CurrLVars);
- CHANGED_BAG( TLS(CurrLVars) );
+ ENVI_FUNC( func1 ) = STATE(CurrLVars);
+ CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );

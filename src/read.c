@@ -11,7 +11,7 @@
 */
 #include <string.h>                     /* memcpy */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/globalstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -123,25 +123,25 @@ void ReadAtom (
 
 void PushGlobalForLoopVariable( UInt var)
 {
-  if (TLS(CurrentGlobalForLoopDepth) < 100)
-    TLS(CurrentGlobalForLoopVariables)[TLS(CurrentGlobalForLoopDepth)] = var;
-  TLS(CurrentGlobalForLoopDepth)++;
+  if (STATE(CurrentGlobalForLoopDepth) < 100)
+    STATE(CurrentGlobalForLoopVariables)[STATE(CurrentGlobalForLoopDepth)] = var;
+  STATE(CurrentGlobalForLoopDepth)++;
 }
 
 void PopGlobalForLoopVariable( void )
 {
-  assert(TLS(CurrentGlobalForLoopDepth));
-  TLS(CurrentGlobalForLoopDepth)--;
+  assert(STATE(CurrentGlobalForLoopDepth));
+  STATE(CurrentGlobalForLoopDepth)--;
 }
 
 UInt GlobalComesFromEnclosingForLoop (UInt var)
 {
   UInt i;
-  for (i = 0; i < TLS(CurrentGlobalForLoopDepth); i++)
+  for (i = 0; i < STATE(CurrentGlobalForLoopDepth); i++)
     {
       if (i==100)
 	return 0;
-      if (TLS(CurrentGlobalForLoopVariables)[i] == var)
+      if (STATE(CurrentGlobalForLoopVariables)[i] == var)
 	return 1;
     }
   return 0;
@@ -191,12 +191,12 @@ extern Obj ExprGVars;
 void ReadFuncCallOption( TypSymbolSet follow )
 {
   volatile UInt       rnam;           /* record component name           */
-  if ( TLS(Symbol) == S_IDENT ) {
-    rnam = RNamName( TLS(Value) );
+  if ( STATE(Symbol) == S_IDENT ) {
+    rnam = RNamName( STATE(Value) );
     Match( S_IDENT, "identifier", S_COMMA | follow );
     TRY_READ { IntrFuncCallOptionsBeginElmName( rnam ); }
   }
-  else if ( TLS(Symbol) == S_LPAREN ) {
+  else if ( STATE(Symbol) == S_LPAREN ) {
     Match( S_LPAREN, "(", S_COMMA | follow );
     ReadExpr( follow, 'r' );
     Match( S_RPAREN, ")", S_COMMA | follow );
@@ -205,7 +205,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
   else {
     SyntaxError("Identifier expected");
   }
-  if ( TLS(Symbol) == S_ASSIGN )
+  if ( STATE(Symbol) == S_ASSIGN )
     {
       Match( S_ASSIGN, ":=", S_COMMA | follow );
       ReadExpr( S_COMMA | S_RPAREN|follow, 'r' );
@@ -224,7 +224,7 @@ void ReadFuncCallOptions( TypSymbolSet follow )
   TRY_READ { IntrFuncCallOptionsBegin( ); }
   ReadFuncCallOption( follow);
   nr = 1;
-  while ( TLS(Symbol) == S_COMMA )
+  while ( STATE(Symbol) == S_COMMA )
     {
       Match(S_COMMA, ",", follow );
       ReadFuncCallOption( follow );
@@ -249,13 +249,13 @@ void ReadReferenceModifiers( TypSymbolSet follow )
     UInt narg = 0;
     UInt rnam  = 0;
     /* followed by one or more selectors                                   */
-    while ( IS_IN( TLS(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
+    while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
         /* <Var> '[' <Expr> ']'  list selector                             */
-        if ( TLS(Symbol) == S_LBRACK ) {
+        if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
             ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
             narg = 1;
-            while ( TLS(Symbol) == S_COMMA) {
+            while ( STATE(Symbol) == S_COMMA) {
               Match(S_COMMA,",", follow|S_RBRACK);
               ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
               narg++;
@@ -265,7 +265,7 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '{' <Expr> '}'  sublist selector                          */
-        else if ( TLS(Symbol) == S_LBRACE ) {
+        else if ( STATE(Symbol) == S_LBRACE ) {
             Match( S_LBRACE, "{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
@@ -273,7 +273,7 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '![' <Expr> ']'  list selector                            */
-        else if ( TLS(Symbol) == S_BLBRACK ) {
+        else if ( STATE(Symbol) == S_BLBRACK ) {
             Match( S_BLBRACK, "![", follow );
             ReadExpr( S_RBRACK|follow, 'r' );
             Match( S_RBRACK, "]", follow );
@@ -281,7 +281,7 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '!{' <Expr> '}'  sublist selector                         */
-        else if ( TLS(Symbol) == S_BLBRACE ) {
+        else if ( STATE(Symbol) == S_BLBRACE ) {
             Match( S_BLBRACE, "!{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
@@ -289,14 +289,14 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '.' <Ident>  record selector                              */
-        else if ( TLS(Symbol) == S_DOT ) {
+        else if ( STATE(Symbol) == S_DOT ) {
             Match( S_DOT, ".", follow );
-            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
-                rnam = RNamName( TLS(Value) );
-                Match( TLS(Symbol), "identifier", follow );
+            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
+                rnam = RNamName( STATE(Value) );
+                Match( STATE(Symbol), "identifier", follow );
                 type = '.';
             }
-            else if ( TLS(Symbol) == S_LPAREN ) {
+            else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
@@ -309,14 +309,14 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '!.' <Ident>  record selector                             */
-        else if ( TLS(Symbol) == S_BDOT ) {
+        else if ( STATE(Symbol) == S_BDOT ) {
             Match( S_BDOT, "!.", follow );
-            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
-                rnam = RNamName( TLS(Value) );
-                Match( TLS(Symbol), "identifier", follow );
+            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
+                rnam = RNamName( STATE(Value) );
+                Match( STATE(Symbol), "identifier", follow );
                 type = '!';
             }
-            else if ( TLS(Symbol) == S_LPAREN ) {
+            else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
@@ -329,23 +329,23 @@ void ReadReferenceModifiers( TypSymbolSet follow )
         }
 
         /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
-        else if ( TLS(Symbol) == S_LPAREN ) {
+        else if ( STATE(Symbol) == S_LPAREN ) {
             Match( S_LPAREN, "(", follow );
             TRY_READ { IntrFuncCallBegin(); }
             narg = 0;
-            if ( TLS(Symbol) != S_RPAREN && TLS(Symbol) != S_COLON) {
+            if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
-            while ( TLS(Symbol) == S_COMMA ) {
+            while ( STATE(Symbol) == S_COMMA ) {
                 Match( S_COMMA, ",", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
             type = 'c';
-            if (TLS(Symbol) == S_COLON ) {
+            if (STATE(Symbol) == S_COLON ) {
               Match( S_COLON, ":", follow );
-              if ( TLS(Symbol) != S_RPAREN ) /* save work for empty options */
+              if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
                 {
                   ReadFuncCallOptions(S_RPAREN | follow);
                   type = 'C';
@@ -394,17 +394,17 @@ void ReadCallVarAss (
     Char                varname[MAX_VALUE_LEN]; /* copy of variable name   */
 
     /* all variables must begin with an identifier                         */
-    if ( TLS(Symbol) != S_IDENT ) {
+    if ( STATE(Symbol) != S_IDENT ) {
         SyntaxError( "Identifier expected" );
         return;
     }
 
     /* try to look up the variable on the stack of local variables         */
     nest = 0;
-    while ( type == ' ' && nest < TLS(CountNams) ) {
-        nams = ELM_LIST( TLS(StackNams), TLS(CountNams)-nest );
+    while ( type == ' ' && nest < STATE(CountNams) ) {
+        nams = ELM_LIST( STATE(StackNams), STATE(CountNams)-nest );
         for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( strcmp( TLS(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+            if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 if ( nest == 0 ) {
                     type = 'l';
                     var = indx;
@@ -424,12 +424,12 @@ void ReadCallVarAss (
     /* try to look up the variable on the error stack                      */
     /* the outer loop runs up the calling stack, while the inner loop runs
        up the static definition stack for each call function */
-    lvars0 = TLS(ErrorLVars);
+    lvars0 = STATE(ErrorLVars);
     nest0 = 0;
-    while ( type == ' ' && lvars0 != 0 && lvars0 != TLS(BottomLVars)) {
+    while ( type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
       lvars = lvars0;
       nest = 0;
-      while ( type == ' ' && lvars != 0 && lvars != TLS(BottomLVars) ) {
+      while ( type == ' ' && lvars != 0 && lvars != STATE(BottomLVars) ) {
 	nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
 	if (nams != (Obj) 0)
 	  {
@@ -437,12 +437,12 @@ void ReadCallVarAss (
 	    if (indx >= 1024)
 	      {
 		Pr("Warning; Ignoring local names after 1024th in search for %s\n",
-		   (Int) TLS(Value),
+		   (Int) STATE(Value),
 		   0L);
 		indx = 1023;
 	      }
 	    for ( ; 1 <= indx; indx-- ) {
-	      if ( strcmp( TLS(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+	      if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
 		type = 'd';
 
 		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
@@ -456,7 +456,7 @@ void ReadCallVarAss (
 	if (nest >= 65536)
 	  {
 	    Pr("Warning: abandoning search for %s at 65536th higher frame\n",
-	       (Int)TLS(Value),0L);
+	       (Int)STATE(Value),0L);
 	    break;
 	  }
       }
@@ -465,7 +465,7 @@ void ReadCallVarAss (
 	if (nest0 >= 65536)
 	  {
 	    Pr("Warning: abandoning search for %s 65536 frames up stack\n",
-	       (Int)TLS(Value),0L);
+	       (Int)STATE(Value),0L);
 	    break;
 	  }
     }
@@ -475,7 +475,7 @@ void ReadCallVarAss (
         type = 'g';
         /* we do not want to call GVarName on this value until after we
          * have checked if this is the argument to a lambda function       */
-        strlcpy(varname, TLS(Value), sizeof(varname));
+        strlcpy(varname, STATE(Value), sizeof(varname));
     }
 
     /* match away the identifier, now that we know the variable            */
@@ -483,7 +483,7 @@ void ReadCallVarAss (
 
     /* if this was actually the beginning of a function literal            */
     /* then we are in the wrong function                                   */
-    if ( TLS(Symbol) == S_MAPTO ) {
+    if ( STATE(Symbol) == S_MAPTO ) {
       if (mode == 'r' || mode == 'x')
 	{
 	  ReadFuncExpr1( follow );
@@ -504,12 +504,12 @@ void ReadCallVarAss (
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
     if ( type == 'g'
-      && TLS(CountNams) != 0
-      && var != TLS(CurrLHSGVar)
+      && STATE(CountNams) != 0
+      && var != STATE(CurrLHSGVar)
       && var != Tilde
       && VAL_GVAR(var) == 0
       && ELM_PLIST(ExprGVars,var) == 0
-      && ! TLS(IntrIgnoring)
+      && ! STATE(IntrIgnoring)
       && ! GlobalComesFromEnclosingForLoop(var)
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
@@ -519,10 +519,10 @@ void ReadCallVarAss (
     }
 
     /* check whether this is a reference to the global variable '~'        */
-    if ( type == 'g' && var == Tilde ) { TLS(ReadTilde) = 1; }
+    if ( type == 'g' && var == Tilde ) { STATE(ReadTilde) = 1; }
 
     /* followed by one or more selectors                                   */
-    while ( IS_IN( TLS(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
+    while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
 
         /* so the prefix was a reference                                   */
         TRY_READ {
@@ -546,11 +546,11 @@ void ReadCallVarAss (
 	  { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
         } /* end TRY_READ */
         /* <Var> '[' <Expr> ']'  list selector                             */
-        if ( TLS(Symbol) == S_LBRACK ) {
+        if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
 	    ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
 	    narg = 1;
-	    while ( TLS(Symbol) == S_COMMA) {
+	    while ( STATE(Symbol) == S_COMMA) {
 	      Match(S_COMMA,",", follow|S_RBRACK);
 	      ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
 	      narg++;
@@ -560,7 +560,7 @@ void ReadCallVarAss (
         }
 
         /* <Var> '{' <Expr> '}'  sublist selector                          */
-        else if ( TLS(Symbol) == S_LBRACE ) {
+        else if ( STATE(Symbol) == S_LBRACE ) {
             Match( S_LBRACE, "{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
@@ -568,7 +568,7 @@ void ReadCallVarAss (
         }
 
         /* <Var> '![' <Expr> ']'  list selector                            */
-        else if ( TLS(Symbol) == S_BLBRACK ) {
+        else if ( STATE(Symbol) == S_BLBRACK ) {
             Match( S_BLBRACK, "![", follow );
             ReadExpr( S_RBRACK|follow, 'r' );
             Match( S_RBRACK, "]", follow );
@@ -576,7 +576,7 @@ void ReadCallVarAss (
         }
 
         /* <Var> '!{' <Expr> '}'  sublist selector                         */
-        else if ( TLS(Symbol) == S_BLBRACE ) {
+        else if ( STATE(Symbol) == S_BLBRACE ) {
             Match( S_BLBRACE, "!{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
@@ -584,14 +584,14 @@ void ReadCallVarAss (
         }
 
         /* <Var> '.' <Ident>  record selector                              */
-        else if ( TLS(Symbol) == S_DOT ) {
+        else if ( STATE(Symbol) == S_DOT ) {
             Match( S_DOT, ".", follow );
-            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
-                rnam = RNamName( TLS(Value) );
-                Match( TLS(Symbol), "identifier", follow );
+            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
+                rnam = RNamName( STATE(Value) );
+                Match( STATE(Symbol), "identifier", follow );
                 type = '.';
             }
-            else if ( TLS(Symbol) == S_LPAREN ) {
+            else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
@@ -604,14 +604,14 @@ void ReadCallVarAss (
         }
 
         /* <Var> '!.' <Ident>  record selector                             */
-        else if ( TLS(Symbol) == S_BDOT ) {
+        else if ( STATE(Symbol) == S_BDOT ) {
             Match( S_BDOT, "!.", follow );
-            if ( TLS(Symbol) == S_IDENT || TLS(Symbol) == S_INT ) {
-                rnam = RNamName( TLS(Value) );
-                Match( TLS(Symbol), "identifier", follow );
+            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
+                rnam = RNamName( STATE(Value) );
+                Match( STATE(Symbol), "identifier", follow );
                 type = '!';
             }
-            else if ( TLS(Symbol) == S_LPAREN ) {
+            else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
@@ -624,23 +624,23 @@ void ReadCallVarAss (
         }
 
         /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
-        else if ( TLS(Symbol) == S_LPAREN ) {
+        else if ( STATE(Symbol) == S_LPAREN ) {
             Match( S_LPAREN, "(", follow );
             TRY_READ { IntrFuncCallBegin(); }
             narg = 0;
-            if ( TLS(Symbol) != S_RPAREN && TLS(Symbol) != S_COLON) {
+            if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
-            while ( TLS(Symbol) == S_COMMA ) {
+            while ( STATE(Symbol) == S_COMMA ) {
                 Match( S_COMMA, ",", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
 	    type = 'c';
-	    if (TLS(Symbol) == S_COLON ) {
+	    if (STATE(Symbol) == S_COLON ) {
 	      Match( S_COLON, ":", follow );
-	      if ( TLS(Symbol) != S_RPAREN ) /* save work for empty options */
+	      if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
 		{
 		  ReadFuncCallOptions(S_RPAREN | follow);
 		  type = 'C';
@@ -652,7 +652,7 @@ void ReadCallVarAss (
     }
 
     /* if we need a reference                                              */
-    if ( mode == 'r' || (mode == 'x' && !IS_IN(TLS(Symbol), S_ASSIGN)) ) {
+    if ( mode == 'r' || (mode == 'x' && !IS_IN(STATE(Symbol), S_ASSIGN)) ) {
       TRY_READ {
              if ( type == 'l' ) { IntrRefLVar( var );             }
         else if ( type == 'h' ) { IntrRefHVar( var );             }
@@ -671,7 +671,7 @@ void ReadCallVarAss (
         else if ( type == '!' ) { IntrElmComObjName( rnam );      }
         else if ( type == '|' ) { IntrElmComObjExpr();            }
         else if ( type == 'c' || type == 'C') {
-            if ( mode == 'x' && TLS(Symbol) == S_SEMICOLON ) {
+            if ( mode == 'x' && STATE(Symbol) == S_SEMICOLON ) {
                 IntrFuncCallEnd( 0UL, type == 'C', narg );
             }
             else {
@@ -688,13 +688,13 @@ void ReadCallVarAss (
 #endif
 
     /* if we need a statement                                              */
-    else if ( mode == 's' || (mode == 'x' && IS_IN(TLS(Symbol), S_ASSIGN)) ) {
+    else if ( mode == 's' || (mode == 'x' && IS_IN(STATE(Symbol), S_ASSIGN)) ) {
         if ( type != 'c' && type != 'C') {
-	    if (TLS(Symbol) != S_ASSIGN)
+	    if (STATE(Symbol) != S_ASSIGN)
 	      Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
 	    else
 	      Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
-            if ( TLS(CountNams) == 0 || !TLS(IntrCoding) ) { TLS(CurrLHSGVar) = (type == 'g' ? var : 0); }
+            if ( STATE(CountNams) == 0 || !STATE(IntrCoding) ) { STATE(CurrLHSGVar) = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
       TRY_READ {
@@ -721,7 +721,7 @@ void ReadCallVarAss (
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
-      if (TLS(Symbol) != S_RPAREN) {
+      if (STATE(Symbol) != S_RPAREN) {
 	SyntaxError("'Unbind': argument should be followed by ')'");
       }
       TRY_READ {
@@ -801,7 +801,7 @@ void ReadPerm (
 
     /* read the first cycle (first expression has already been read)       */
     nrx = 1;
-    while ( TLS(Symbol) == S_COMMA ) {
+    while ( STATE(Symbol) == S_COMMA ) {
         Match( S_COMMA, ",", follow );
         ReadExpr( S_COMMA|S_RPAREN|follow, 'r' );
         nrx++;
@@ -811,11 +811,11 @@ void ReadPerm (
     TRY_READ { IntrPermCycle( nrx, nrc ); }
 
     /* read the remaining cycles                                           */
-    while ( TLS(Symbol) == S_LPAREN ) {
+    while ( STATE(Symbol) == S_LPAREN ) {
         Match( S_LPAREN, "(", follow );
         ReadExpr( S_COMMA|S_RPAREN|follow, 'r' );
         nrx = 1;
-        while ( TLS(Symbol) == S_COMMA ) {
+        while ( STATE(Symbol) == S_COMMA ) {
             Match( S_COMMA, ",", follow );
             ReadExpr( S_COMMA|S_RPAREN|follow, 'r' );
             nrx++;
@@ -833,17 +833,17 @@ void ReadPerm (
 **
 *F  ReadLongNumber( <follow> )  . . . . . . . . . . . . . . . read a long integer
 **
-**  A `long integer' here means one whose digits don't fit into `TLS(Value)',
-**  see scanner.c.  This function copies repeatedly  digits from `TLS(Value)'
+**  A `long integer' here means one whose digits don't fit into `STATE(Value)',
+**  see scanner.c.  This function copies repeatedly  digits from `STATE(Value)'
 **  into a GAP string until the full integer is read.
 **
 */
 
 static UInt appendToString(Obj string, UInt len)
 {
-       UInt len1 = strlen(TLS(Value));
+       UInt len1 = strlen(STATE(Value));
        GROW_STRING(string, len+len1+1);
-       memcpy(CHARS_STRING(string) + len, (void *)TLS(Value), len1+1);
+       memcpy(CHARS_STRING(string) + len, (void *)STATE(Value), len1+1);
        SET_LEN_STRING(string, len+len1);
        return len + len1;
 }
@@ -857,19 +857,19 @@ void ReadLongNumber(
      UInt done;
 
      /* string in which to accumulate number */
-     len = strlen(TLS(Value));
-     C_NEW_STRING( string, len, (void *)TLS(Value));
+     len = strlen(STATE(Value));
+     C_NEW_STRING( string, len, (void *)STATE(Value));
      done = 0;
 
      while (!done) {
        /* remember the current symbol and get the next one */
-       status = TLS(Symbol);
-       Match(TLS(Symbol), "partial number", follow);
+       status = STATE(Symbol);
+       Match(STATE(Symbol), "partial number", follow);
 
        /* Now there are just lots of cases */
        switch (status) {
        case S_PARTIALINT:
-	 switch (TLS(Symbol)) {
+	 switch (STATE(Symbol)) {
 	 case S_INT:
 	   len = appendToString(string, len);
 	   Match(S_INT, "integer", follow);
@@ -890,9 +890,9 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT2:
 	 case S_PARTIALFLOAT3:
 	 case S_PARTIALFLOAT4:
-	   status = TLS(Symbol);
+	   status = STATE(Symbol);
 	   len = appendToString(string, len);
-	   /* Match(TLS(Symbol), "float", follow); */
+	   /* Match(STATE(Symbol), "float", follow); */
 	   break;
 
 	 case S_FLOAT:
@@ -913,7 +913,7 @@ void ReadLongNumber(
 	 break;
 
        case S_PARTIALFLOAT1:
-	 switch (TLS(Symbol)) {
+	 switch (STATE(Symbol)) {
 	 case S_INT:
 	 case S_PARTIALINT:
 	 case S_PARTIALFLOAT1:
@@ -925,9 +925,9 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT2:
 	 case S_PARTIALFLOAT3:
 	 case S_PARTIALFLOAT4:
-	   status = TLS(Symbol);
+	   status = STATE(Symbol);
 	   len = appendToString(string, len);
-	   /* Match(TLS(Symbol), "float", follow); */
+	   /* Match(STATE(Symbol), "float", follow); */
 	   break;
 
 	 case S_FLOAT:
@@ -943,7 +943,7 @@ void ReadLongNumber(
 	 break;
 
        case S_PARTIALFLOAT2:
-	 switch (TLS(Symbol)) {
+	 switch (STATE(Symbol)) {
 	 case S_INT:
 	 case S_PARTIALINT:
 	 case S_PARTIALFLOAT1:
@@ -955,9 +955,9 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT2:
 	 case S_PARTIALFLOAT3:
 	 case S_PARTIALFLOAT4:
-	   status = TLS(Symbol);
+	   status = STATE(Symbol);
 	   len = appendToString(string, len);
-	   /* Match(TLS(Symbol), "float", follow); */
+	   /* Match(STATE(Symbol), "float", follow); */
 	   break;
 
 	 case S_FLOAT:
@@ -979,7 +979,7 @@ void ReadLongNumber(
 	 break;
 
        case S_PARTIALFLOAT3:
-	 switch (TLS(Symbol)) {
+	 switch (STATE(Symbol)) {
 	 case S_INT:
 	 case S_PARTIALINT:
 	 case S_PARTIALFLOAT1:
@@ -991,9 +991,9 @@ void ReadLongNumber(
 
 
 	 case S_PARTIALFLOAT4:
-	   status = TLS(Symbol);
+	   status = STATE(Symbol);
 	   len = appendToString(string, len);
-	   /* Match(TLS(Symbol), "float", follow); */
+	   /* Match(STATE(Symbol), "float", follow); */
 	   break;
 
 	 case S_FLOAT:
@@ -1010,7 +1010,7 @@ void ReadLongNumber(
 	 }
 	 break;
        case S_PARTIALFLOAT4:
-	 switch (TLS(Symbol)) {
+	 switch (STATE(Symbol)) {
 	 case S_INT:
 	 case S_PARTIALINT:
 	 case S_PARTIALFLOAT1:
@@ -1022,9 +1022,9 @@ void ReadLongNumber(
 
 
 	 case S_PARTIALFLOAT4:
-	   status = TLS(Symbol);
+	   status = STATE(Symbol);
 	   len = appendToString(string, len);
-	   /* Match(TLS(Symbol), "float", follow); */
+	   /* Match(STATE(Symbol), "float", follow); */
 	   break;
 
 	 case S_FLOAT:
@@ -1056,8 +1056,8 @@ void ReadLongNumber(
 **
 *F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
 **
-**  A string is  read by copying parts of `TLS(Value)'  (see scanner.c) given
-**  by `TLS(ValueLen)' into  a string GAP object. This is  repeated until the
+**  A string is  read by copying parts of `STATE(Value)'  (see scanner.c) given
+**  by `STATE(ValueLen)' into  a string GAP object. This is  repeated until the
 **  end of the string is reached.
 **
 */
@@ -1067,15 +1067,15 @@ void ReadString(
      Obj  string;
      UInt len;
 
-     C_NEW_STRING( string, TLS(ValueLen), (void *)TLS(Value) );
-     len = TLS(ValueLen);
+     C_NEW_STRING( string, STATE(ValueLen), (void *)STATE(Value) );
+     len = STATE(ValueLen);
 
-     while (TLS(Symbol) == S_PARTIALSTRING || TLS(Symbol) == S_PARTIALTRIPSTRING) {
-         Match(TLS(Symbol), "", follow);
-         GROW_STRING(string, len + TLS(ValueLen));
-         memcpy(CHARS_STRING(string) + len, (void *)TLS(Value),
-                                        TLS(ValueLen));
-         len += TLS(ValueLen);
+     while (STATE(Symbol) == S_PARTIALSTRING || STATE(Symbol) == S_PARTIALTRIPSTRING) {
+         Match(STATE(Symbol), "", follow);
+         GROW_STRING(string, len + STATE(ValueLen));
+         memcpy(CHARS_STRING(string) + len, (void *)STATE(Value),
+                                        STATE(ValueLen));
+         len += STATE(ValueLen);
      }
 
      Match(S_STRING, "", follow);
@@ -1104,15 +1104,15 @@ void ReadListExpr (
 
     /* '['                                                                 */
     Match( S_LBRACK, "[", follow );
-    TLS(ReadTop)++;
-    if ( TLS(ReadTop) == 1 ) { TLS(ReadTilde) = 0; }
-    TRY_READ { IntrListExprBegin( (TLS(ReadTop) == 1) ); }
+    STATE(ReadTop)++;
+    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    TRY_READ { IntrListExprBegin( (STATE(ReadTop) == 1) ); }
     pos   = 1;
     nr    = 0;
     range = 0;
 
     /* [ <Expr> ]                                                          */
-    if ( TLS(Symbol) != S_COMMA && TLS(Symbol) != S_RBRACK ) {
+    if ( STATE(Symbol) != S_COMMA && STATE(Symbol) != S_RBRACK ) {
         TRY_READ { IntrListExprBeginElm( pos ); }
         ReadExpr( S_RBRACK|follow, 'r' );
         TRY_READ { IntrListExprEndElm(); }
@@ -1120,10 +1120,10 @@ void ReadListExpr (
     }
 
     /* {',' [ <Expr> ] }                                                   */
-    while ( TLS(Symbol) == S_COMMA ) {
+    while ( STATE(Symbol) == S_COMMA ) {
         Match( S_COMMA, ",", follow );
         pos++;
-        if ( TLS(Symbol) != S_COMMA && TLS(Symbol) != S_RBRACK ) {
+        if ( STATE(Symbol) != S_COMMA && STATE(Symbol) != S_RBRACK ) {
             TRY_READ { IntrListExprBeginElm( pos ); }
             ReadExpr( S_RBRACK|follow, 'r' );
             TRY_READ { IntrListExprEndElm(); }
@@ -1132,12 +1132,12 @@ void ReadListExpr (
     }
 
     /* incorrect place for three dots                                      */
-    if (TLS(Symbol) == S_DOTDOTDOT) {
+    if (STATE(Symbol) == S_DOTDOTDOT) {
             SyntaxError("Only two dots in a range");
     }
 
     /* '..' <Expr> ']'                                                     */
-    if ( TLS(Symbol) == S_DOTDOT ) {
+    if ( STATE(Symbol) == S_DOTDOT ) {
         if ( pos != nr ) {
             SyntaxError("Must have no unbound entries in range");
         }
@@ -1151,7 +1151,7 @@ void ReadListExpr (
         ReadExpr( S_RBRACK|follow, 'r' );
         TRY_READ { IntrListExprEndElm(); }
         nr++;
-        if ( TLS(ReadTop) == 1 && TLS(ReadTilde) == 1 ) {
+        if ( STATE(ReadTop) == 1 && STATE(ReadTilde) == 1 ) {
             SyntaxError("Sorry, '~' not allowed in range");
         }
     }
@@ -1159,10 +1159,10 @@ void ReadListExpr (
     /* ']'                                                                 */
     Match( S_RBRACK, "]", follow );
     TRY_READ {
-        IntrListExprEnd( nr, range, (TLS(ReadTop) == 1), (TLS(ReadTilde) == 1) );
+        IntrListExprEnd( nr, range, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
     }
-    if ( TLS(ReadTop) == 1 ) { TLS(ReadTilde) = 0; }
-    TLS(ReadTop)--;
+    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    STATE(ReadTop)--;
 }
 
 
@@ -1184,28 +1184,28 @@ void ReadRecExpr (
     /* 'rec('                                                              */
     Match( S_REC, "rec", follow );
     Match( S_LPAREN, "(", follow|S_RPAREN|S_COMMA );
-    TLS(ReadTop)++;
-    if ( TLS(ReadTop) == 1 ) { TLS(ReadTilde) = 0; }
-    TRY_READ { IntrRecExprBegin( (TLS(ReadTop) == 1) ); }
+    STATE(ReadTop)++;
+    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    TRY_READ { IntrRecExprBegin( (STATE(ReadTop) == 1) ); }
     nr = 0;
 
     /* [ <Ident> | '(' <Expr> ')' ':=' <Expr>                              */
     do {
-      if (nr || TLS(Symbol) == S_COMMA) {
+      if (nr || STATE(Symbol) == S_COMMA) {
 	Match(S_COMMA, ",", follow);
       }
-      if ( TLS(Symbol) != S_RPAREN ) {
-        if ( TLS(Symbol) == S_INT ) {
-	  rnam = RNamName( TLS(Value) );
+      if ( STATE(Symbol) != S_RPAREN ) {
+        if ( STATE(Symbol) == S_INT ) {
+	  rnam = RNamName( STATE(Value) );
 	  Match( S_INT, "integer", follow );
 	  TRY_READ { IntrRecExprBeginElmName( rnam ); }
         }
-        else if ( TLS(Symbol) == S_IDENT ) {
-	  rnam = RNamName( TLS(Value) );
+        else if ( STATE(Symbol) == S_IDENT ) {
+	  rnam = RNamName( STATE(Value) );
 	  Match( S_IDENT, "identifier", follow );
 	  TRY_READ { IntrRecExprBeginElmName( rnam ); }
         }
-        else if ( TLS(Symbol) == S_LPAREN ) {
+        else if ( STATE(Symbol) == S_LPAREN ) {
 	  Match( S_LPAREN, "(", follow );
 	  ReadExpr( follow, 'r' );
 	  Match( S_RPAREN, ")", follow );
@@ -1221,15 +1221,15 @@ void ReadRecExpr (
       }
 
     }
-  while ( TLS(Symbol) == S_COMMA );
+  while ( STATE(Symbol) == S_COMMA );
 
     /* ')'                                                                 */
     Match( S_RPAREN, ")", follow );
     TRY_READ {
-        IntrRecExprEnd( nr, (TLS(ReadTop) == 1), (TLS(ReadTilde) == 1) );
+        IntrRecExprEnd( nr, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
     }
-    if ( TLS(ReadTop) == 1) { TLS(ReadTilde) = 0; }
-    TLS(ReadTop)--;
+    if ( STATE(ReadTop) == 1) { STATE(ReadTilde) = 0; }
+    STATE(ReadTop)--;
 }
 
 /****************************************************************************
@@ -1285,11 +1285,11 @@ struct ArgList ReadFuncArgList(
     narg = 0;
     nams = NEW_PLIST( T_PLIST, narg );
     SET_LEN_PLIST( nams, narg );
-    TLS(CountNams) += 1;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    if ( TLS(Symbol) != symbol ) {
+    STATE(CountNams) += 1;
+    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
+    if ( STATE(Symbol) != symbol ) {
         lockmode = 0;
-        switch (TLS(Symbol)) {
+        switch (STATE(Symbol)) {
             case S_READWRITE:
             if (!is_atomic) {
                 SyntaxError("'readwrite' argument of non-atomic function");
@@ -1308,31 +1308,31 @@ struct ArgList ReadFuncArgList(
             SET_LEN_STRING(locks, 1);
             GetSymbol();
         }
-        if ( strcmp("~", TLS(Value)) == 0 ) {
+        if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for an argument");
         }
-        C_NEW_STRING_DYN( name, TLS(Value) );
+        C_NEW_STRING_DYN( name, STATE(Value) );
         narg += 1;
         ASS_LIST( nams, narg, name );
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
     }
 
-    if(TLS(Symbol) == S_DOTDOT) {
+    if(STATE(Symbol) == S_DOTDOT) {
         SyntaxError("Three dots required for variadic argument list");
     }
-    if(TLS(Symbol) == S_DOTDOTDOT) {
+    if(STATE(Symbol) == S_DOTDOTDOT) {
         isvarg = 1;
         GetSymbol();
     }
 
-    while ( TLS(Symbol) == S_COMMA ) {
+    while ( STATE(Symbol) == S_COMMA ) {
         if (isvarg) {
             SyntaxError("Only final argument can be variadic");
         }
 
         Match( S_COMMA, ",", follow );
         lockmode = 0;
-        switch (TLS(Symbol)) {
+        switch (STATE(Symbol)) {
             case S_READWRITE:
             if (!is_atomic) {
                 SyntaxError("'readwrite' argument of non-atomic function");
@@ -1353,26 +1353,26 @@ struct ArgList ReadFuncArgList(
             GetSymbol();
         }
 
-        if(TLS(Symbol) != S_IDENT) {
+        if(STATE(Symbol) != S_IDENT) {
             SyntaxError("Expect identifier");
         }
 
         for (i = 1; i <= narg; i++ ) {
-            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
                 SyntaxError("Name used for two arguments");
             }
         }
-        if ( strcmp("~", TLS(Value)) == 0 ) {
+        if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for an argument");
         }
-        C_NEW_STRING_DYN( name, TLS(Value) );
+        C_NEW_STRING_DYN( name, STATE(Value) );
         narg += 1;
         ASS_LIST( nams, narg, name );
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
-        if(TLS(Symbol) == S_DOTDOT) {
+        if(STATE(Symbol) == S_DOTDOT) {
             SyntaxError("Three dots required for variadic argument list");
         }
-        if(TLS(Symbol) == S_DOTDOTDOT) {
+        if(STATE(Symbol) == S_DOTDOTDOT) {
             isvarg = 1;
             GetSymbol();
         }
@@ -1403,8 +1403,8 @@ void ReadFuncExpr (
     volatile Obj        name;           /* one local variable name         */
     volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_block = 0;   /* is this a do ... od block?      */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
@@ -1415,18 +1415,18 @@ void ReadFuncExpr (
     nloc = 0;
 
     /* begin the function               */
-    startLine = TLS(Input)->number;
-    if (TLS(Symbol) == S_DO) {
+    startLine = STATE(Input)->number;
+    if (STATE(Symbol) == S_DO) {
 	Match( S_DO, "do", follow );
         is_block = 1;
         /* make and push the new local variables list (args and locals)        */
         narg = 0;
         nams = NEW_PLIST( T_PLIST, narg );
         SET_LEN_PLIST( nams, narg );
-        TLS(CountNams) += 1;
-        ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
+        STATE(CountNams) += 1;
+        ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
     } else {
-        if (TLS(Symbol) == S_ATOMIC) {
+        if (STATE(Symbol) == S_ATOMIC) {
             Match(S_ATOMIC, "atomic", follow);
             is_atomic = 1;
         } else if (mode == 'a') { /* in this case the atomic keyword
@@ -1443,38 +1443,38 @@ void ReadFuncExpr (
     }
 
 
-    if ( TLS(Symbol) == S_LOCAL ) {
+    if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
                 SyntaxError("Name used for argument and local");
             }
         }
-        if ( strcmp("~", TLS(Value)) == 0 ) {
+        if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
         }
-        C_NEW_STRING_DYN( name, TLS(Value) );
+        C_NEW_STRING_DYN( name, STATE(Value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
-        while ( TLS(Symbol) == S_COMMA ) {
+        while ( STATE(Symbol) == S_COMMA ) {
             /* init to avoid strange message in case of empty string */
-            TLS(Value)[0] = '\0';
+            STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
                     SyntaxError("Name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
                     SyntaxError("Name used for two locals");
                 }
             }
-            if ( strcmp("~", TLS(Value)) == 0 ) {
+            if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
             }
-            C_NEW_STRING_DYN( name, TLS(Value) );
+            C_NEW_STRING_DYN( name, STATE(Value) );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1493,8 +1493,8 @@ void ReadFuncExpr (
 	   narg = -1; */
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
 
     /* now finally begin the function                                      */
     TRY_READ { IntrFuncExprBegin( narg, nloc, nams, startLine ); }
@@ -1508,17 +1508,17 @@ void ReadFuncExpr (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 && TLS(IntrCoding) ) {
+    else if ( nrError == 0 && STATE(IntrCoding) ) {
         CodeEnd(1);
-        TLS(IntrCoding)--;
-        TLS(CurrLVars) = currLVars;
-        TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-        TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        STATE(IntrCoding)--;
+        STATE(CurrLVars) = currLVars;
+        STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+        STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
-    assert(TLS(CountNams) > 0);
-    TLS(CountNams)--;
+    assert(STATE(CountNams) > 0);
+    STATE(CountNams)--;
 
     /* 'end'                                                               */
     if (is_block)
@@ -1543,19 +1543,19 @@ void ReadFuncExprBody (
     Obj nams,
     UInt narg)
 {
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
 
     /* match away the '->'                                                 */
     Match( S_MAPTO, "->", follow );
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
 
     /* begin interpreting the function expression (with 1 argument)        */
     TRY_READ {
-        IntrFuncExprBegin( narg, 0L, nams, TLS(Input)->number );
+        IntrFuncExprBegin( narg, 0L, nams, STATE(Input)->number );
     }
 
     /* read the expression and turn it into a return-statement             */
@@ -1568,17 +1568,17 @@ void ReadFuncExprBody (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  && TLS(IntrCoding) ) {
+    else if ( nrError == 0  && STATE(IntrCoding) ) {
         CodeEnd(1);
-        TLS(IntrCoding)--;
-        TLS(CurrLVars) = currLVars;
-        TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-        TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        STATE(IntrCoding)--;
+        STATE(CurrLVars) = currLVars;
+        STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+        STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
-    assert(TLS(CountNams) > 0);
-    TLS(CountNams)--;
+    assert(STATE(CountNams) > 0);
+    STATE(CountNams)--;
 }
 
 /****************************************************************************
@@ -1629,9 +1629,9 @@ void ReadFuncExpr1 (
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( nams, 0 );
-    TLS(CountNams)++;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    C_NEW_STRING_DYN( name, TLS(Value) );
+    STATE(CountNams)++;
+    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
+    C_NEW_STRING_DYN( name, STATE(Value) );
     ASS_LIST( nams, 1, name );
 
     ReadFuncExprBody(follow, nams, 1);
@@ -1654,8 +1654,8 @@ void ReadFuncExpr0 (
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
-    TLS(CountNams)++;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
+    STATE(CountNams)++;
+    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
 
     ReadFuncExprBody(follow, nams, 0);
 }
@@ -1687,17 +1687,17 @@ void ReadLiteral (
     TypSymbolSet        follow,
     Char mode)
 {
-    switch (TLS(Symbol)) {
+    switch (STATE(Symbol)) {
 
     /* <Int>                                                               */
     case S_INT:
-        TRY_READ { IntrIntExpr( TLS(Value) ); }
+        TRY_READ { IntrIntExpr( STATE(Value) ); }
         Match( S_INT, "integer", follow );
         break;
 
     /* <Float> */
     case S_FLOAT:
-        TRY_READ { IntrFloatExpr( TLS(Value) ); }
+        TRY_READ { IntrFloatExpr( STATE(Value) ); }
         Match( S_FLOAT, "float", follow );
         break;
 
@@ -1722,7 +1722,7 @@ void ReadLiteral (
 
     /* <Char>                                                              */
     case S_CHAR:
-        TRY_READ { IntrCharExpr( TLS(Value)[0] ); }
+        TRY_READ { IntrCharExpr( STATE(Value)[0] ); }
         Match( S_CHAR, "character", follow );
         break;
 
@@ -1769,9 +1769,9 @@ void ReadLiteral (
            of the right kind to end with a . and an associated value and dive
            into the long float literal handler in the parser
          */
-        TLS(Symbol) = S_PARTIALFLOAT1;
-        TLS(Value)[0] = '.';
-        TLS(Value)[1] = '\0';
+        STATE(Symbol) = S_PARTIALFLOAT1;
+        STATE(Value)[0] = '.';
+        STATE(Value)[1] = '\0';
         ReadLongNumber( follow );
         break;
 
@@ -1807,16 +1807,16 @@ void ReadAtom (
     Char                mode )
 {
     /* read a variable                                                     */
-    if ( TLS(Symbol) == S_IDENT ) {
+    if ( STATE(Symbol) == S_IDENT ) {
         ReadCallVarAss( follow, mode );
     }
 
     /* 'IsBound' '(' <Var> ')'                                             */
-    else if ( TLS(Symbol) == S_ISBOUND ) {
+    else if ( STATE(Symbol) == S_ISBOUND ) {
         ReadIsBound( follow );
     }
     /* otherwise read a literal expression                                 */
-    else if (IS_IN(TLS(Symbol),S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
+    else if (IS_IN(STATE(Symbol),S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
                           S_REC|S_FUNCTION|
 #ifdef HPCGAP
                           S_DO|
@@ -1827,15 +1827,15 @@ void ReadAtom (
     }
 
     /* '(' <Expr> ')'                                                      */
-    else if ( TLS(Symbol) == S_LPAREN ) {
+    else if ( STATE(Symbol) == S_LPAREN ) {
         Match( S_LPAREN, "(", follow );
-        if ( TLS(Symbol) == S_RPAREN ) {
+        if ( STATE(Symbol) == S_RPAREN ) {
             Match( S_RPAREN, ")", follow );
             TRY_READ { IntrPerm( 0UL ); }
             return;
         }
         ReadExpr( S_RPAREN|follow, 'r' );
-        if ( TLS(Symbol) == S_COMMA ) {
+        if ( STATE(Symbol) == S_COMMA ) {
             ReadPerm( follow );
             return;
         }
@@ -1869,27 +1869,27 @@ void ReadFactor (
 
     /* { '+'|'-' }  leading sign                                           */
     sign1 = 0;
-    if ( TLS(Symbol) == S_MINUS  || TLS(Symbol) == S_PLUS ) {
+    if ( STATE(Symbol) == S_MINUS  || STATE(Symbol) == S_PLUS ) {
         if ( sign1 == 0 )  sign1 = 1;
-        if ( TLS(Symbol) == S_MINUS ) { sign1 = -sign1; }
-        Match( TLS(Symbol), "unary + or -", follow );
+        if ( STATE(Symbol) == S_MINUS ) { sign1 = -sign1; }
+        Match( STATE(Symbol), "unary + or -", follow );
     }
 
     /* <Atom>                                                              */
     ReadAtom( follow, (sign1 == 0 ? mode : 'r') );
 
     /* ['^' <Atom> ] implemented as {'^' <Atom> } for better error message */
-    while ( TLS(Symbol) == S_POW ) {
+    while ( STATE(Symbol) == S_POW ) {
 
         /* match the '^' away                                              */
         Match( S_POW, "^", follow );
 
         /* { '+'|'-' }  leading sign                                       */
         sign2 = 0;
-        if ( TLS(Symbol) == S_MINUS  || TLS(Symbol) == S_PLUS ) {
+        if ( STATE(Symbol) == S_MINUS  || STATE(Symbol) == S_PLUS ) {
             if ( sign2 == 0 )  sign2 = 1;
-            if ( TLS(Symbol) == S_MINUS ) { sign2 = -sign2; }
-            Match( TLS(Symbol), "unary + or -", follow );
+            if ( STATE(Symbol) == S_MINUS ) { sign2 = -sign2; }
+            Match( STATE(Symbol), "unary + or -", follow );
         }
 
         /* ['^' <Atom>]                                                    */
@@ -1904,7 +1904,7 @@ void ReadFactor (
         TRY_READ { IntrPow(); }
 
         /* check for multiple '^'                                          */
-        if ( TLS(Symbol) == S_POW ) { SyntaxError("'^' is not associative"); }
+        if ( STATE(Symbol) == S_POW ) { SyntaxError("'^' is not associative"); }
 
     }
 
@@ -1935,9 +1935,9 @@ void ReadTerm (
 
     /* { '*'|'/'|'mod' <Factor> }                                          */
     /* do not use 'IS_IN', since 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is true */
-    while ( TLS(Symbol) == S_MULT || TLS(Symbol) == S_DIV || TLS(Symbol) == S_MOD ) {
-        symbol = TLS(Symbol);
-        Match( TLS(Symbol), "*, /, or mod", follow );
+    while ( STATE(Symbol) == S_MULT || STATE(Symbol) == S_DIV || STATE(Symbol) == S_MOD ) {
+        symbol = STATE(Symbol);
+        Match( STATE(Symbol), "*, /, or mod", follow );
         ReadFactor( follow, 'r' );
         TRY_READ {
             if      ( symbol == S_MULT ) { IntrProd(); }
@@ -1967,9 +1967,9 @@ void ReadAri (
     ReadTerm( follow, mode );
 
     /* { '+'|'-' <Term> }                                                  */
-    while ( IS_IN( TLS(Symbol), S_PLUS|S_MINUS ) ) {
-        symbol = TLS(Symbol);
-        Match( TLS(Symbol), "+ or -", follow );
+    while ( IS_IN( STATE(Symbol), S_PLUS|S_MINUS ) ) {
+        symbol = STATE(Symbol);
+        Match( STATE(Symbol), "+ or -", follow );
         ReadTerm( follow, 'r' );
         TRY_READ {
             if      ( symbol == S_PLUS  ) { IntrSum();  }
@@ -1997,7 +1997,7 @@ void ReadRel (
 
     /* { 'not' }                                                           */
     isNot = 0;
-    while ( TLS(Symbol) == S_NOT ) {
+    while ( STATE(Symbol) == S_NOT ) {
         isNot++;
         Match( S_NOT, "not", follow );
     }
@@ -2006,9 +2006,9 @@ void ReadRel (
     ReadAri( follow, (isNot == 0 ? mode : 'r') );
 
     /* { '=|<>|<|>|<=|>=|in' <Arith> }                                     */
-    if ( IS_IN( TLS(Symbol), S_EQ|S_LT|S_GT|S_NE|S_LE|S_GE|S_IN ) ) {
-        symbol = TLS(Symbol);
-        Match( TLS(Symbol), "comparison operator", follow );
+    if ( IS_IN( STATE(Symbol), S_EQ|S_LT|S_GT|S_NE|S_LE|S_GE|S_IN ) ) {
+        symbol = STATE(Symbol);
+        Match( STATE(Symbol), "comparison operator", follow );
         ReadAri( follow, 'r' );
         TRY_READ {
             if      ( symbol == S_EQ ) { IntrEq(); }
@@ -2045,7 +2045,7 @@ void ReadAnd (
     ReadRel( follow, mode );
 
     /* { 'and' <Rel> }                                                     */
-    while ( TLS(Symbol) == S_AND ) {
+    while ( STATE(Symbol) == S_AND ) {
         Match( S_AND, "and", follow );
         TRY_READ { IntrAndL(); }
         ReadRel( follow, 'r' );
@@ -2072,12 +2072,12 @@ void ReadQualifiedExpr (
     Char                mode )
 {
   UInt access  = 0;
-  if (TLS(Symbol) == S_READWRITE) 
+  if (STATE(Symbol) == S_READWRITE) 
     {
       Match( S_READWRITE, "readwrite", follow | EXPRBEGIN );
       access = 2;
     }
-  else if (TLS(Symbol) == S_READONLY) 
+  else if (STATE(Symbol) == S_READONLY) 
     {
       Match( S_READONLY, "readonly", follow | EXPRBEGIN );
       access = 1;
@@ -2106,7 +2106,7 @@ void ReadExpr (
     ReadAnd( follow, mode );
 
     /* { 'or' <And> }                                                      */
-    while ( TLS(Symbol) == S_OR ) {
+    while ( STATE(Symbol) == S_OR ) {
         Match( S_OR, "or", follow );
         TRY_READ { IntrOrL(); }
         ReadAnd( follow, 'r' );
@@ -2170,7 +2170,7 @@ void ReadInfo (
     ReadExpr( S_RPAREN | S_COMMA | follow, 'r');
     TRY_READ { IntrInfoMiddle(); }
     narg = 0;
-    while ( TLS(Symbol) == S_COMMA ) {
+    while ( STATE(Symbol) == S_COMMA ) {
         narg++;
         Match( S_COMMA, "", 0L);
         ReadExpr( S_RPAREN | S_COMMA | follow, 'r');
@@ -2200,7 +2200,7 @@ void ReadAssert (
     Match( S_COMMA, ",", S_RPAREN|follow );
     ReadExpr( S_RPAREN | S_COMMA | follow, 'r' );
     TRY_READ { IntrAssertAfterCondition(); }
-    if ( TLS(Symbol) == S_COMMA )
+    if ( STATE(Symbol) == S_COMMA )
       {
         Match( S_COMMA, "", 0L);
         ReadExpr( S_RPAREN |  follow, 'r' );
@@ -2244,7 +2244,7 @@ void ReadIf (
     nrb++;
 
     /* { 'elif' <Expr>  'then' <Statments> }                               */
-    while ( TLS(Symbol) == S_ELIF ) {
+    while ( STATE(Symbol) == S_ELIF ) {
         TRY_READ { IntrIfElif(); }
         Match( S_ELIF, "elif", follow );
         ReadExpr( S_THEN|S_ELIF|S_ELSE|S_FI|follow, 'r' );
@@ -2256,7 +2256,7 @@ void ReadIf (
     }
 
     /* [ 'else' <Statments> ]                                              */
-    if ( TLS(Symbol) == S_ELSE ) {
+    if ( STATE(Symbol) == S_ELSE ) {
         TRY_READ { IntrIfElse(); }
         Match( S_ELSE, "else", follow );
         TRY_READ { IntrIfBeginBody(); }
@@ -2288,12 +2288,12 @@ void ReadFor (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>               */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>               */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
 
     /* 'for'                                                               */
     TRY_READ { IntrForBegin(); }
@@ -2323,12 +2323,12 @@ void ReadFor (
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && TLS(IntrCoding) ) {
+        if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
-            TLS(IntrCoding)--;
-            TLS(CurrLVars) = currLVars;
-            TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-            TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            STATE(IntrCoding)--;
+            STATE(CurrLVars) = currLVars;
+            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
 }
@@ -2349,12 +2349,12 @@ void ReadWhile (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>             */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
 
     /* 'while' <Expr>  'do'                                                */
     TRY_READ { IntrWhileBegin(); }
@@ -2377,12 +2377,12 @@ void ReadWhile (
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && TLS(IntrCoding) ) {
+        if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
-            TLS(IntrCoding)--;
-            TLS(CurrLVars) = currLVars;
-            TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-            TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            STATE(IntrCoding)--;
+            STATE(CurrLVars) = currLVars;
+            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
 }
@@ -2404,17 +2404,17 @@ void ReadAtomic (
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;         /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
     /* lockSP    = RegionLockSP(); */
 
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
-    if (TLS(Symbol) == S_FUNCTION) {
+    if (STATE(Symbol) == S_FUNCTION) {
       ReadExpr(follow, 'a');
       return; }
 
@@ -2422,7 +2422,7 @@ void ReadAtomic (
     
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
-    while (TLS(Symbol) == S_COMMA) {
+    while (STATE(Symbol) == S_COMMA) {
       Match( S_COMMA, "comma", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
@@ -2445,12 +2445,12 @@ void ReadAtomic (
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && TLS(IntrCoding) ) {
+        if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
-            TLS(IntrCoding)--;
-            TLS(CurrLVars) = currLVars;
-            TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-            TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            STATE(IntrCoding)--;
+            STATE(CurrLVars) = currLVars;
+            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
 }
@@ -2471,12 +2471,12 @@ void ReadRepeat (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <TLS(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <TLS(CurrLVars)>        */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
 
     /* remember the current variables in case of an error                  */
-    currLVars = TLS(CurrLVars);
-    nrError   = TLS(NrError);
+    currLVars = STATE(CurrLVars);
+    nrError   = STATE(NrError);
 
     /* 'repeat'                                                            */
     TRY_READ { IntrRepeatBegin(); }
@@ -2498,12 +2498,12 @@ void ReadRepeat (
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && TLS(IntrCoding) ) {
+        if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
-            TLS(IntrCoding)--;
-            TLS(CurrLVars) = currLVars;
-            TLS(PtrLVars)  = PTR_BAG( TLS(CurrLVars) );
-            TLS(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            STATE(IntrCoding)--;
+            STATE(CurrLVars) = currLVars;
+            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
 }
@@ -2568,7 +2568,7 @@ void ReadReturn (
     Match( S_RETURN, "return", follow );
 
     /* 'return' with no expression following                               */
-    if ( TLS(Symbol) == S_SEMICOLON ) {
+    if ( STATE(Symbol) == S_SEMICOLON ) {
         TRY_READ { IntrReturnVoid(); }
     }
 
@@ -2671,23 +2671,23 @@ UInt ReadStats (
 
     /* read the statements                                                 */
     nr = 0;
-    while ( IS_IN( TLS(Symbol), STATBEGIN|S_SEMICOLON ) ) {
+    while ( IS_IN( STATE(Symbol), STATBEGIN|S_SEMICOLON ) ) {
 
         /* read a statement                                                */
-        if      ( TLS(Symbol) == S_IDENT  ) ReadCallVarAss(follow,'s');
-        else if ( TLS(Symbol) == S_UNBIND ) ReadUnbind(    follow    );
-        else if ( TLS(Symbol) == S_INFO   ) ReadInfo(      follow    );
-        else if ( TLS(Symbol) == S_ASSERT ) ReadAssert(    follow    );
-        else if ( TLS(Symbol) == S_IF     ) ReadIf(        follow    );
-        else if ( TLS(Symbol) == S_FOR    ) ReadFor(       follow    );
-        else if ( TLS(Symbol) == S_WHILE  ) ReadWhile(     follow    );
-        else if ( TLS(Symbol) == S_REPEAT ) ReadRepeat(    follow    );
-        else if ( TLS(Symbol) == S_BREAK  ) ReadBreak(     follow    );
-        else if ( TLS(Symbol) == S_CONTINUE) ReadContinue(     follow    );
-        else if ( TLS(Symbol) == S_RETURN ) ReadReturn(    follow    );
-        else if ( TLS(Symbol) == S_TRYNEXT) ReadTryNext(   follow    );
-	else if ( TLS(Symbol) == S_QUIT   ) ReadQuit(      follow    );
-	else if ( TLS(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
+        if      ( STATE(Symbol) == S_IDENT  ) ReadCallVarAss(follow,'s');
+        else if ( STATE(Symbol) == S_UNBIND ) ReadUnbind(    follow    );
+        else if ( STATE(Symbol) == S_INFO   ) ReadInfo(      follow    );
+        else if ( STATE(Symbol) == S_ASSERT ) ReadAssert(    follow    );
+        else if ( STATE(Symbol) == S_IF     ) ReadIf(        follow    );
+        else if ( STATE(Symbol) == S_FOR    ) ReadFor(       follow    );
+        else if ( STATE(Symbol) == S_WHILE  ) ReadWhile(     follow    );
+        else if ( STATE(Symbol) == S_REPEAT ) ReadRepeat(    follow    );
+        else if ( STATE(Symbol) == S_BREAK  ) ReadBreak(     follow    );
+        else if ( STATE(Symbol) == S_CONTINUE) ReadContinue(     follow    );
+        else if ( STATE(Symbol) == S_RETURN ) ReadReturn(    follow    );
+        else if ( STATE(Symbol) == S_TRYNEXT) ReadTryNext(   follow    );
+	else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
+	else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
 	else                           ReadEmpty(     follow    );
 	nr++;
         Match( S_SEMICOLON, ";", follow );
@@ -2731,27 +2731,27 @@ void RecreateStackNams( Obj context )
   Obj lvars = context;
   Obj nams;
   UInt i;
-  while (lvars != TLS(BottomLVars) && lvars != (Obj)0)
+  while (lvars != STATE(BottomLVars) && lvars != (Obj)0)
     {
       nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
       if (nams != (Obj) 0)
 	{
-	  GROW_PLIST(TLS(StackNams), ++TLS(CountNams));
-	  SET_ELM_PLIST( TLS(StackNams), TLS(CountNams), nams);
-	  SET_LEN_PLIST( TLS(StackNams), TLS(CountNams));
+	  GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
+	  SET_ELM_PLIST( STATE(StackNams), STATE(CountNams), nams);
+	  SET_LEN_PLIST( STATE(StackNams), STATE(CountNams));
 	}
       lvars = ENVI_FUNC(PTR_BAG(lvars)[0]);
     }
 
   /* At this point we have the stack upside down, so invert it */
-  for (i = 1; i <= TLS(CountNams)/2; i++)
+  for (i = 1; i <= STATE(CountNams)/2; i++)
     {
-      nams = ELM_PLIST(TLS(StackNams), i);
-      SET_ELM_PLIST( TLS(StackNams),
+      nams = ELM_PLIST(STATE(StackNams), i);
+      SET_ELM_PLIST( STATE(StackNams),
 		     i,
-		     ELM_PLIST(TLS(StackNams), TLS(CountNams) + 1 -i));
-      SET_ELM_PLIST( TLS(StackNams),
-		     TLS(CountNams) + 1 -i,
+		     ELM_PLIST(STATE(StackNams), STATE(CountNams) + 1 -i));
+      SET_ELM_PLIST( STATE(StackNams),
+		     STATE(CountNams) + 1 -i,
 		     nams);
     }
 }
@@ -2770,70 +2770,70 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     syJmp_buf           readJmpError;
 
     /* get the first symbol from the input                                 */
-    Match( TLS(Symbol), "", 0UL );
+    Match( STATE(Symbol), "", 0UL );
 
     /* using TRY_READ sets the jump buffer and mucks up the interpreter    */
-    if (TLS(NrError)) {
+    if (STATE(NrError)) {
         return STATUS_ERROR;
     }
 
     /* if we have hit <end-of-file>, then give up                          */
-    if ( TLS(Symbol) == S_EOF )  { return STATUS_EOF; }
+    if ( STATE(Symbol) == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
     if ( !SyQuiet )
-      TLS(Prompt) = "> ";
+      STATE(Prompt) = "> ";
     else
-      TLS(Prompt) = "";
+      STATE(Prompt) = "";
 
     /* remember the old reader context                                     */
-    stackNams   = TLS(StackNams);
-    countNams   = TLS(CountNams);
-    readTop     = TLS(ReadTop);
-    readTilde   = TLS(ReadTilde);
-    currLHSGVar = TLS(CurrLHSGVar);
-    memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
+    stackNams   = STATE(StackNams);
+    countNams   = STATE(CountNams);
+    readTop     = STATE(ReadTop);
+    readTilde   = STATE(ReadTilde);
+    currLHSGVar = STATE(CurrLHSGVar);
+    memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
-    TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-    TLS(CountNams)   = 0;
-    TLS(ReadTop)     = 0;
-    TLS(ReadTilde)   = 0;
-    TLS(CurrLHSGVar) = 0;
+    STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+    STATE(CountNams)   = 0;
+    STATE(ReadTop)     = 0;
+    STATE(ReadTilde)   = 0;
+    STATE(CurrLHSGVar) = 0;
     RecreateStackNams(context);
-    errorLVars = TLS(ErrorLVars);
-    errorLVars0 = TLS(ErrorLVars0);
-    TLS(ErrorLVars) = context;
-    TLS(ErrorLVars0) = TLS(ErrorLVars);
+    errorLVars = STATE(ErrorLVars);
+    errorLVars0 = STATE(ErrorLVars0);
+    STATE(ErrorLVars) = context;
+    STATE(ErrorLVars0) = STATE(ErrorLVars);
 
     IntrBegin( context );
 
     /* read an expression or an assignment or a procedure call             */
-    if      (TLS(Symbol) == S_IDENT   ) { ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); }
+    if      (STATE(Symbol) == S_IDENT   ) { ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); }
 
     /* otherwise read a statement                                          */
-    else if (TLS(Symbol)==S_UNBIND    ) { ReadUnbind(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_INFO      ) { ReadInfo(    S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_ASSERT    ) { ReadAssert(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_IF        ) { ReadIf(      S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_FOR       ) { ReadFor(     S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_WHILE     ) { ReadWhile(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_REPEAT    ) { ReadRepeat(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_BREAK     ) { ReadBreak(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_CONTINUE  ) { ReadContinue(S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_RETURN    ) { ReadReturn(  S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_TRYNEXT   ) { ReadTryNext( S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_QUIT      ) { ReadQuit(    S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_QQUIT     ) { ReadQUIT(    S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_SEMICOLON ) { ReadEmpty(   S_SEMICOLON|S_EOF      ); }
-    else if (TLS(Symbol)==S_ATOMIC    ) { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_UNBIND    ) { ReadUnbind(  S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_INFO      ) { ReadInfo(    S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_ASSERT    ) { ReadAssert(  S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_IF        ) { ReadIf(      S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_FOR       ) { ReadFor(     S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_WHILE     ) { ReadWhile(   S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_REPEAT    ) { ReadRepeat(  S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_BREAK     ) { ReadBreak(   S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_CONTINUE  ) { ReadContinue(S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_RETURN    ) { ReadReturn(  S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_TRYNEXT   ) { ReadTryNext( S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_QUIT      ) { ReadQuit(    S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_QQUIT     ) { ReadQUIT(    S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_SEMICOLON ) { ReadEmpty(   S_SEMICOLON|S_EOF      ); }
+    else if (STATE(Symbol)==S_ATOMIC    ) { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
 
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
     else                           { ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); }
 
     /* every statement must be terminated by a semicolon                  */
-    if ( TLS(Symbol) != S_SEMICOLON ) {
+    if ( STATE(Symbol) != S_SEMICOLON ) {
         SyntaxError( "; expected");
     }
 
@@ -2844,7 +2844,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
         type = IntrEnd( 0UL );
 
         /* check for dual semicolon */
-        if ( *TLS(In) == ';' ) {
+        if ( *STATE(In) == ';' ) {
             GetSymbol();
             if (dualSemicolon) *dualSemicolon = 1;
         } else {
@@ -2857,17 +2857,17 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     }
 
     /* switch back to the old reader context                               */
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-    TLS(StackNams)   = stackNams;
-    TLS(CountNams)   = countNams;
-    TLS(ReadTop)     = readTop;
-    TLS(ReadTilde)   = readTilde;
-    TLS(CurrLHSGVar) = currLHSGVar;
-    TLS(ErrorLVars) = errorLVars;
-    TLS(ErrorLVars0) = errorLVars0;
+    memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    STATE(StackNams)   = stackNams;
+    STATE(CountNams)   = countNams;
+    STATE(ReadTop)     = readTop;
+    STATE(ReadTilde)   = readTilde;
+    STATE(CurrLHSGVar) = currLHSGVar;
+    STATE(ErrorLVars) = errorLVars;
+    STATE(ErrorLVars0) = errorLVars0;
 
     /* copy the result (if any)                                            */
-    TLS(ReadEvalResult) = TLS(IntrResult);
+    STATE(ReadEvalResult) = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2899,54 +2899,54 @@ UInt ReadEvalFile ( void )
     volatile Int        i;
 
     /* get the first symbol from the input                                 */
-    Match( TLS(Symbol), "", 0UL );
+    Match( STATE(Symbol), "", 0UL );
 
     /* if we have hit <end-of-file>, then give up                          */
-    if ( TLS(Symbol) == S_EOF )  { return STATUS_EOF; }
+    if ( STATE(Symbol) == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
     if ( !SyQuiet )
-      TLS(Prompt) = "> ";
+      STATE(Prompt) = "> ";
     else
-      TLS(Prompt) = "";
+      STATE(Prompt) = "";
 
     /* remember the old reader context                                     */
-    stackNams   = TLS(StackNams);
-    countNams   = TLS(CountNams);
-    readTop     = TLS(ReadTop);
-    readTilde   = TLS(ReadTilde);
-    currLHSGVar = TLS(CurrLHSGVar);
-    memcpy( readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
+    stackNams   = STATE(StackNams);
+    countNams   = STATE(CountNams);
+    readTop     = STATE(ReadTop);
+    readTilde   = STATE(ReadTilde);
+    currLHSGVar = STATE(CurrLHSGVar);
+    memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
-    TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-    TLS(CountNams)   = 0;
-    TLS(ReadTop)     = 0;
-    TLS(ReadTilde)   = 0;
-    TLS(CurrLHSGVar) = 0;
-    IntrBegin(TLS(BottomLVars));
+    STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+    STATE(CountNams)   = 0;
+    STATE(ReadTop)     = 0;
+    STATE(ReadTilde)   = 0;
+    STATE(CurrLHSGVar) = 0;
+    IntrBegin(STATE(BottomLVars));
 
     /* check for local variables                                           */
     nloc = 0;
     nams = NEW_PLIST( T_PLIST, nloc );
     SET_LEN_PLIST( nams, nloc );
-    TLS(CountNams) += 1;
-    ASS_LIST( TLS(StackNams), TLS(CountNams), nams );
-    if ( TLS(Symbol) == S_LOCAL ) {
+    STATE(CountNams) += 1;
+    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
+    if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        C_NEW_STRING_DYN( name, TLS(Value) );
+        C_NEW_STRING_DYN( name, STATE(Value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
-        while ( TLS(Symbol) == S_COMMA ) {
-            TLS(Value)[0] = '\0';
+        while ( STATE(Symbol) == S_COMMA ) {
+            STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS(Value)) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
                     SyntaxError("Name used for two locals");
                 }
             }
-            C_NEW_STRING_DYN( name, TLS(Value) );
+            C_NEW_STRING_DYN( name, STATE(Value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2955,13 +2955,13 @@ UInt ReadEvalFile ( void )
     }
 
     /* fake the 'function ()'                                              */
-    IntrFuncExprBegin( 0L, nloc, nams, TLS(Input)->number );
+    IntrFuncExprBegin( 0L, nloc, nams, STATE(Input)->number );
 
     /* read the statements                                                 */
     nr = ReadStats( S_SEMICOLON | S_EOF );
 
     /* we now want to be at <end-of-file>                                  */
-    if ( TLS(Symbol) != S_EOF ) {
+    if ( STATE(Symbol) != S_EOF ) {
         SyntaxError("<end-of-file> expected");
     }
 
@@ -2972,7 +2972,7 @@ UInt ReadEvalFile ( void )
     CATCH_READ_ERROR {
         Obj fexp;
         CodeEnd(1);
-        TLS(IntrCoding)--;
+        STATE(IntrCoding)--;
         fexp = CURR_FUNC;
         if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
     }
@@ -2987,15 +2987,15 @@ UInt ReadEvalFile ( void )
     }
 
     /* switch back to the old reader context                               */
-    memcpy( TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-    TLS(StackNams)   = stackNams;
-    TLS(CountNams)   = countNams;
-    TLS(ReadTop)     = readTop;
-    TLS(ReadTilde)   = readTilde;
-    TLS(CurrLHSGVar) = currLHSGVar;
+    memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    STATE(StackNams)   = stackNams;
+    STATE(CountNams)   = countNams;
+    STATE(ReadTop)     = readTop;
+    STATE(ReadTilde)   = readTilde;
+    STATE(CurrLHSGVar) = currLHSGVar;
 
     /* copy the result (if any)                                            */
-    TLS(ReadEvalResult) = TLS(IntrResult);
+    STATE(ReadEvalResult) = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -3008,9 +3008,9 @@ UInt ReadEvalFile ( void )
 */
 void            ReadEvalError ( void )
 {
-    TLS(PtrBody)  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-    TLS(PtrLVars) = PTR_BAG(TLS(CurrLVars));
-    syLongjmp( TLS(ReadJmpError), 1 );
+    STATE(PtrBody)  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
+    syLongjmp( STATE(ReadJmpError), 1 );
 }
 
 
@@ -3037,44 +3037,44 @@ struct SavedReaderState {
 };
 
 static void SaveReaderState( struct SavedReaderState *s) {
-  s->stackNams   = TLS(StackNams);
-  s->countNams   = TLS(CountNams);
-  s->readTop     = TLS(ReadTop);
-  s->readTilde   = TLS(ReadTilde);
-  s->currLHSGVar = TLS(CurrLHSGVar);
-  s->userHasQuit = TLS(UserHasQuit);
-  s->intrCoding = TLS(IntrCoding);
-  s->intrIgnoring = TLS(IntrIgnoring);
-  s->intrReturning = TLS(IntrReturning);
-  s->nrError = TLS(NrError);
-  memcpy( s->readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf) );
+  s->stackNams   = STATE(StackNams);
+  s->countNams   = STATE(CountNams);
+  s->readTop     = STATE(ReadTop);
+  s->readTilde   = STATE(ReadTilde);
+  s->currLHSGVar = STATE(CurrLHSGVar);
+  s->userHasQuit = STATE(UserHasQuit);
+  s->intrCoding = STATE(IntrCoding);
+  s->intrIgnoring = STATE(IntrIgnoring);
+  s->intrReturning = STATE(IntrReturning);
+  s->nrError = STATE(NrError);
+  memcpy( s->readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 }
 
 static void ClearReaderState( void ) {
-  TLS(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  TLS(CountNams)   = 0;
-  TLS(ReadTop)     = 0;
-  TLS(ReadTilde)   = 0;
-  TLS(CurrLHSGVar) = 0;
-  TLS(UserHasQuit) = 0;
-  TLS(IntrCoding) = 0;
-  TLS(IntrIgnoring) = 0;
-  TLS(IntrReturning) = 0;
-  TLS(NrError) = 0;
+  STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  STATE(CountNams)   = 0;
+  STATE(ReadTop)     = 0;
+  STATE(ReadTilde)   = 0;
+  STATE(CurrLHSGVar) = 0;
+  STATE(UserHasQuit) = 0;
+  STATE(IntrCoding) = 0;
+  STATE(IntrIgnoring) = 0;
+  STATE(IntrReturning) = 0;
+  STATE(NrError) = 0;
 }
 
 static void RestoreReaderState( const struct SavedReaderState *s) {
-  memcpy( TLS(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
-  TLS(UserHasQuit) = s->userHasQuit;
-  TLS(StackNams)   = s->stackNams;
-  TLS(CountNams)   = s->countNams;
-  TLS(ReadTop)     = s->readTop;
-  TLS(ReadTilde)   = s->readTilde;
-  TLS(CurrLHSGVar) = s->currLHSGVar;
-  TLS(IntrCoding) = s->intrCoding;
-  TLS(IntrIgnoring) = s->intrIgnoring;
-  TLS(IntrReturning) = s->intrReturning;
-  TLS(NrError) = s->nrError;
+  memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
+  STATE(UserHasQuit) = s->userHasQuit;
+  STATE(StackNams)   = s->stackNams;
+  STATE(CountNams)   = s->countNams;
+  STATE(ReadTop)     = s->readTop;
+  STATE(ReadTilde)   = s->readTilde;
+  STATE(CurrLHSGVar) = s->currLHSGVar;
+  STATE(IntrCoding) = s->intrCoding;
+  STATE(IntrIgnoring) = s->intrIgnoring;
+  STATE(IntrReturning) = s->intrReturning;
+  STATE(NrError) = s->nrError;
 }
 
 
@@ -3097,7 +3097,7 @@ Obj Call0ArgsInNewReader(Obj f)
 
   /* intialize everything and begin an interpreter                       */
   ClearReaderState();
-  IntrBegin( TLS(BottomLVars) );
+  IntrBegin( STATE(BottomLVars) );
 
   TRY_READ {
     result = CALL_0ARGS(f);
@@ -3136,7 +3136,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 
   /* intialize everything and begin an interpreter                       */
   ClearReaderState();
-  IntrBegin( TLS(BottomLVars) );
+  IntrBegin( STATE(BottomLVars) );
 
   TRY_READ {
     result = CALL_1ARGS(f,a);
@@ -3169,10 +3169,10 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    TLS(ErrorLVars) = (UInt **)0;
-    TLS(CurrentGlobalForLoopDepth) = 0;
-    InitGlobalBag( &TLS(ReadEvalResult), "src/read.c:ReadEvalResult" );
-    InitGlobalBag( &TLS(StackNams),      "src/read.c:StackNams"      );
+    STATE(ErrorLVars) = (UInt **)0;
+    STATE(CurrentGlobalForLoopDepth) = 0;
+    InitGlobalBag( &STATE(ReadEvalResult), "src/read.c:ReadEvalResult" );
+    InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;

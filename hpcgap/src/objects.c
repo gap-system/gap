@@ -382,13 +382,13 @@ Obj CopyObj (
 #ifdef SINGLE_THREADED_COPY_OBJ
     Obj                 new;            /* copy of <obj>                   */
 
-    TLS(CopiedObjs) = NULL;
+    STATE(CopiedObjs) = NULL;
     /* make a copy                                                         */
     new = COPY_OBJ( obj, mut );
 
     /* clean up the marks                                                  */
     CLEAN_OBJ( obj );
-    TLS(CopiedObjs) = NULL;
+    STATE(CopiedObjs) = NULL;
 
     /* return the copy                                                     */
     return new;
@@ -932,8 +932,8 @@ static inline UInt IS_MARKED( Obj obj )
   UInt i;
   if (!IS_MARKABLE(obj))
     return 0;
-  for (i = 0; i < TLS(PrintObjDepth)-1; i++)
-    if (TLS(PrintObjThiss)[i] == obj)
+  for (i = 0; i < STATE(PrintObjDepth)-1; i++)
+    if (STATE(PrintObjThiss)[i] == obj)
       return 1;
   return 0;
 }
@@ -974,11 +974,11 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   innermost such is Print (1) or View (2) */
 
 void InitPrintObjStack() {
-  if (!TLS(PrintObjThiss)) {
-    TLS(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
-    TLS(PrintObjThiss) = ADDR_OBJ(TLS(PrintObjThissObj))+1;
-    TLS(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
-    TLS(PrintObjIndices) = (Int *)(ADDR_OBJ(TLS(PrintObjIndicesObj))+1);
+  if (!STATE(PrintObjThiss)) {
+    STATE(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
+    STATE(PrintObjThiss) = ADDR_OBJ(STATE(PrintObjThissObj))+1;
+    STATE(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
+    STATE(PrintObjIndices) = (Int *)(ADDR_OBJ(STATE(PrintObjIndicesObj))+1);
   }
 }
     
@@ -992,13 +992,13 @@ void            PrintObj (
 
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
-        i = TLS(PrintObjDepth);
+        i = STATE(PrintObjDepth);
         Pr( "%c%c", (Int)'\03', (Int)'\04' );
         ErrorReturnVoid(
             "user interrupt while printing",
             0L, 0L,
             "you can 'return;'" );
-        TLS(PrintObjDepth) = i;
+        STATE(PrintObjDepth) = i;
     }
 
 #ifndef WARD_ENABLED
@@ -1013,30 +1013,30 @@ void            PrintObj (
 
     lastPV = LastPV;
     LastPV = 1;
-    fromview = (lastPV == 2) && (obj == TLS(PrintObjThis));
+    fromview = (lastPV == 2) && (obj == STATE(PrintObjThis));
 
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
     
     InitPrintObjStack();
-    if ( !fromview  && 0 < TLS(PrintObjDepth) ) {
-        if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
-        TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
-        TLS(PrintObjIndices)[TLS(PrintObjDepth)-1] = TLS(PrintObjIndex);
+    if ( !fromview  && 0 < STATE(PrintObjDepth) ) {
+        if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
+        STATE(PrintObjThiss)[STATE(PrintObjDepth)-1]   = STATE(PrintObjThis);
+        STATE(PrintObjIndices)[STATE(PrintObjDepth)-1] = STATE(PrintObjIndex);
     }
 
     /* handle the <obj>                                                    */
     if (!fromview)
       {
-	TLS(PrintObjDepth) += 1;
-	TLS(PrintObjThis)   = obj;
-	TLS(PrintObjIndex)  = 0;
+	STATE(PrintObjDepth) += 1;
+	STATE(PrintObjThis)   = obj;
+	STATE(PrintObjIndex)  = 0;
       }
 
     /* dispatch to the appropriate printing function                       */
-    if ( (! IS_MARKED( TLS(PrintObjThis) )) ) {
-      if (TLS(PrintObjDepth) < MAXPRINTDEPTH) {
-        (*PrintObjFuncs[ TNUM_OBJ(TLS(PrintObjThis)) ])( TLS(PrintObjThis) );
+    if ( (! IS_MARKED( STATE(PrintObjThis) )) ) {
+      if (STATE(PrintObjDepth) < MAXPRINTDEPTH) {
+        (*PrintObjFuncs[ TNUM_OBJ(STATE(PrintObjThis)) ])( STATE(PrintObjThis) );
       }
       else {
         /* don't recurse if depth too high */
@@ -1047,9 +1047,9 @@ void            PrintObj (
     /* or print the path                                                   */
     else {
         Pr( "~", 0L, 0L );
-        for ( i = 0; TLS(PrintObjThis) != TLS(PrintObjThiss)[i]; i++ ) {
-            (*PrintPathFuncs[ TNUM_OBJ(TLS(PrintObjThiss)[i])])
-                ( TLS(PrintObjThiss)[i], TLS(PrintObjIndices)[i] );
+        for ( i = 0; STATE(PrintObjThis) != STATE(PrintObjThiss)[i]; i++ ) {
+            (*PrintPathFuncs[ TNUM_OBJ(STATE(PrintObjThiss)[i])])
+                ( STATE(PrintObjThiss)[i], STATE(PrintObjIndices)[i] );
         }
     }
 
@@ -1057,13 +1057,13 @@ void            PrintObj (
     /* done with <obj>                                                     */
     if (!fromview)
       {
-	TLS(PrintObjDepth) -= 1;
+	STATE(PrintObjDepth) -= 1;
 	
 	/* if <obj> is a subobject, then restore and unmark the superobject    */
-	if ( 0 < TLS(PrintObjDepth) ) {
-	  TLS(PrintObjThis)  = TLS(PrintObjThiss)[TLS(PrintObjDepth)-1];
-	  TLS(PrintObjIndex) = TLS(PrintObjIndices)[TLS(PrintObjDepth)-1];
-	  if ( IS_MARKED(TLS(PrintObjThis)) )  UNMARK( TLS(PrintObjThis) );
+	if ( 0 < STATE(PrintObjDepth) ) {
+	  STATE(PrintObjThis)  = STATE(PrintObjThiss)[STATE(PrintObjDepth)-1];
+	  STATE(PrintObjIndex) = STATE(PrintObjIndices)[STATE(PrintObjDepth)-1];
+	  if ( IS_MARKED(STATE(PrintObjThis)) )  UNMARK( STATE(PrintObjThis) );
 	}
       }
     LastPV = lastPV;
@@ -1113,7 +1113,7 @@ Obj PrintObjHandler (
 Obj FuncSET_PRINT_OBJ_INDEX (Obj self, Obj ind)
 {
   if (IS_INTOBJ(ind))
-    TLS(PrintObjIndex) = INT_INTOBJ(ind);
+    STATE(PrintObjIndex) = INT_INTOBJ(ind);
   return 0;
 }
 
@@ -1151,21 +1151,21 @@ void            ViewObj (
 
     InitPrintObjStack();
 
-    if ( 0 < TLS(PrintObjDepth) ) {
-        if ( IS_MARKABLE(TLS(PrintObjThis)) )  MARK( TLS(PrintObjThis) );
-        TLS(PrintObjThiss)[TLS(PrintObjDepth)-1]   = TLS(PrintObjThis);
-        TLS(PrintObjIndices)[TLS(PrintObjDepth)-1] =  TLS(PrintObjIndex);
+    if ( 0 < STATE(PrintObjDepth) ) {
+        if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
+        STATE(PrintObjThiss)[STATE(PrintObjDepth)-1]   = STATE(PrintObjThis);
+        STATE(PrintObjIndices)[STATE(PrintObjDepth)-1] =  STATE(PrintObjIndex);
     }
 
     /* handle the <obj>                                                    */
-    TLS(PrintObjDepth) += 1;
-    TLS(PrintObjThis)   = obj;
-    TLS(PrintObjIndex)  = 0;
+    STATE(PrintObjDepth) += 1;
+    STATE(PrintObjThis)   = obj;
+    STATE(PrintObjIndex)  = 0;
 
     /* dispatch to the appropriate viewing function                       */
 
-    if ( ! IS_MARKED( TLS(PrintObjThis) ) ) {
-      if (TLS(PrintObjDepth) < MAXPRINTDEPTH) {
+    if ( ! IS_MARKED( STATE(PrintObjThis) ) ) {
+      if (STATE(PrintObjDepth) < MAXPRINTDEPTH) {
         DoOperation1Args( ViewObjOper, obj );
       }
       else {
@@ -1177,20 +1177,20 @@ void            ViewObj (
     /* or view the path                                                   */
     else {
         Pr( "~", 0L, 0L );
-        for ( i = 0; TLS(PrintObjThis) != TLS(PrintObjThiss)[i]; i++ ) {
-            (*PrintPathFuncs[ TNUM_OBJ(TLS(PrintObjThiss)[i]) ])
-                ( TLS(PrintObjThiss)[i], TLS(PrintObjIndices)[i] );
+        for ( i = 0; STATE(PrintObjThis) != STATE(PrintObjThiss)[i]; i++ ) {
+            (*PrintPathFuncs[ TNUM_OBJ(STATE(PrintObjThiss)[i]) ])
+                ( STATE(PrintObjThiss)[i], STATE(PrintObjIndices)[i] );
         }
     }
 
     /* done with <obj>                                                     */
-    TLS(PrintObjDepth) -= 1;
+    STATE(PrintObjDepth) -= 1;
 
     /* if <obj> is a subobject, then restore and unmark the superobject    */
-    if ( 0 < TLS(PrintObjDepth) ) {
-        TLS(PrintObjThis)  = TLS(PrintObjThiss)[TLS(PrintObjDepth)-1];
-        TLS(PrintObjIndex) = TLS(PrintObjIndices)[TLS(PrintObjDepth)-1];
-        if ( IS_MARKED(TLS(PrintObjThis)) )  UNMARK( TLS(PrintObjThis) );
+    if ( 0 < STATE(PrintObjDepth) ) {
+        STATE(PrintObjThis)  = STATE(PrintObjThiss)[STATE(PrintObjDepth)-1];
+        STATE(PrintObjIndex) = STATE(PrintObjIndices)[STATE(PrintObjDepth)-1];
+        if ( IS_MARKED(STATE(PrintObjThis)) )  UNMARK( STATE(PrintObjThis) );
     }
 
     LastPV = lastPV;

@@ -453,13 +453,13 @@ Obj NameGVarObj ( UInt gvar )
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
-    TLS(CurrNamespace) = str;
+    STATE(CurrNamespace) = str;
     return 0;
 }
 
 Obj FuncGET_NAMESPACE(Obj self)
 {
-    return TLS(CurrNamespace);
+    return STATE(CurrNamespace);
 }
 
 /****************************************************************************
@@ -484,7 +484,7 @@ UInt GVarName (
     Int                 len;            /* length of name                  */
 
     /* First see whether it could be namespace-local: */
-    cns = TLS(CurrNamespace) ? CSTR_STRING(TLS(CurrNamespace)) : "";
+    cns = STATE(CurrNamespace) ? CSTR_STRING(STATE(CurrNamespace)) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
@@ -1530,8 +1530,8 @@ static Int InitLibrary (
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
     /* Create the current namespace: */
-    TLS(CurrNamespace) = NEW_STRING(0);
-    SET_LEN_STRING(TLS(CurrNamespace),0);
+    STATE(CurrNamespace) = NEW_STRING(0);
+    SET_LEN_STRING(STATE(CurrNamespace),0);
     
     /* fix C vars                                                          */
     PostRestore( module );

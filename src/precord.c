@@ -28,6 +28,7 @@
 #include <stdlib.h>                     /* for qsort */
 #include <sys/time.h>                   /* for gettimeofday() */
 #include <src/system.h>                 /* system dependent part */
+#include <src/globalstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -783,19 +784,19 @@ Obj FuncEQ_PREC (
 
         /* compare the names                                               */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            TLS(RecursionDepth)--;
+            STATE(RecursionDepth)--;
             return False;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-            TLS(RecursionDepth)--;
+            STATE(RecursionDepth)--;
             return False;
         }
     }
 
     /* the records are equal                                               */
-    TLS(RecursionDepth)--;
+    STATE(RecursionDepth)--;
     return True;
 }
 
@@ -856,7 +857,7 @@ Obj FuncLT_PREC (
     }
 
     /* the records are equal or the right is a prefix of the left          */
-    TLS(RecursionDepth)--;
+    STATE(RecursionDepth)--;
     return res ? True : False;
 }
 

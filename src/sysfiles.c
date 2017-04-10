@@ -16,7 +16,7 @@
 **  are described in "system.c".
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/globalstate.h>
 
 #include <src/sysfiles.h>               /* file input/output */
 
@@ -2266,13 +2266,13 @@ Char * readlineFgets (
 #endif
   /* now do the real work */
   doingReadline = 1;
-  rlres = readline(TLS(Prompt));
+  rlres = readline(STATE(Prompt));
   doingReadline = 0;
   /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
   if (!rlres) {
     if (!SyCTRD) {
       while (!rlres)
-        rlres = readline(TLS(Prompt));
+        rlres = readline(STATE(Prompt));
     }
     else {
       printf("\n");fflush(stdout);
