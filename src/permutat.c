@@ -193,7 +193,7 @@ Obj             TypePerm4 (
 **  This may in the worst case, for (1,2,..,n), take n^2/2 steps, but is fast
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 */
-void            PrintPermP (
+void            PrintPerm2 (
     Obj                 perm )
 {
     UInt                degPerm;        /* degree of the permutation       */
@@ -238,7 +238,7 @@ void            PrintPermP (
     if ( isId )  Pr("()",0L,0L);
 }
 
-void            PrintPermQ (
+void            PrintPerm4 (
     Obj                 perm )
 {
     UInt                degPerm;        /* degree of the permutation       */
@@ -4840,8 +4840,8 @@ static Int InitKernel (
     LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
 
     /* install the printing functions                                      */
-    PrintObjFuncs[ T_PERM2   ] = PrintPermP;
-    PrintObjFuncs[ T_PERM4   ] = PrintPermQ;
+    PrintObjFuncs[ T_PERM2   ] = PrintPerm2;
+    PrintObjFuncs[ T_PERM4   ] = PrintPerm4;
 
     /* install the comparison methods                                      */
     EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm22;
