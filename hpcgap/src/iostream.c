@@ -52,37 +52,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#ifdef HAVE_SYS_STAT_H
+#include <sys/types.h>
 #include <sys/stat.h>
-#endif
-
-#if HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
-
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+
+#include <signal.h>
+#include <fcntl.h>
+
 
 #if HAVE_ERRNO_H
 #include <errno.h>
-#endif
-
-#if HAVE_SIGNAL_H
-#include <signal.h>
-#endif
-
-#if HAVE_FCNTL_H
-#include <fcntl.h>
+#else
+extern int errno;
 #endif
 
 #if HAVE_TERMIOS_H
 #include <termios.h>
-#endif
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
 #endif
 
 #if HAVE_SYS_WAIT_H
@@ -97,10 +83,6 @@
 #else
 #define assert( a ) do if (!(a)) {fprintf(stderr,"Assertion failed at line %d file %s\n",__LINE__,__FILE__); abort();} while (0)
 #endif
-#endif
-
-#if HAVE_SYS_STAT_H
-#include <sys/stat.h>
 #endif
 
 #if HAVE_UTIL_H
@@ -133,7 +115,11 @@ typedef struct {
                      implying that the child has vanished under our noses */
 } PtyIOStream;
 
+/* maximal number of pseudo ttys we will allocate */
 #define MAX_PTYS 64
+
+/* maximal length of argument string for CREATE_PTY_IOSTREAM */
+#define MAX_ARGS 1000
 
 static PtyIOStream PtyIOStreams[MAX_PTYS];
 static Int FreePtyIOStreams;
@@ -402,9 +388,6 @@ void ChildStatusChanged( int whichsig )
 
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 {
-/*  Int             j;       / loop variables                  */
-/*  char            c[8];    / buffer for communication        */
-/*  int             n;       / return value of 'select'        */
     int             slave;   /* pipe to child                   */
     Int            stream;
 
@@ -424,12 +407,12 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     /* Get a stream record */
     stream = NewStream();
     if (stream == -1)
-      return -1;
+        return -1;
     
     /* open pseudo terminal for communication with gap */
     if ( OpenPty(&PtyIOStreams[stream].ptyFD, &slave) )
     {
-        Pr( "open pseudo tty failed\n", 0L, 0L);
+        Pr( "open pseudo tty failed (errno %d)\n", errno, 0);
         FreeStream(stream);
         return -1;
     }
@@ -438,7 +421,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 #if HAVE_TERMIOS_H
     if ( tcgetattr( slave, &tst ) == -1 )
     {
-        Pr( "tcgetattr on slave pty failed\n", 0L, 0L);
+        Pr( "tcgetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
 
     }
@@ -451,13 +434,13 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     tst.c_oflag    &= ~(ONLCR);
     if ( tcsetattr( slave, TCSANOW, &tst ) == -1 )
     {
-        Pr("tcsetattr on slave pty failed\n", 0, 0 );
+        Pr("tcsetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #elif HAVE_TERMIO_H
     if ( ioctl( slave, TCGETA, &tst ) == -1 )
     {
-        Pr( "ioctl TCGETA on slave pty failed\n");
+        Pr( "ioctl TCGETA on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
     tst.c_cc[VINTR] = 0377;
@@ -471,20 +454,20 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     tst.c_lflag    &= ~(ECHO|ICANON);
     if ( ioctl( slave, TCSETAW, &tst ) == -1 )
     {
-        Pr( "ioctl TCSETAW on slave pty failed\n");
+        Pr( "ioctl TCSETAW on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #elif HAVE_SGTTY_H
     if ( ioctl( slave, TIOCGETP, (char*)&tst ) == -1 )
     {
-        Pr( "ioctl TIOCGETP on slave pty failed\n");
+        Pr( "ioctl TIOCGETP on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
     tst.sg_flags |= RAW;
     tst.sg_flags &= ~ECHO;
     if ( ioctl( slave, TIOCSETN, (char*)&tst ) == -1 )
     {
-        Pr( "ioctl on TIOCSETN slave pty failed\n");
+        Pr( "ioctl on TIOCSETN slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
 #endif
@@ -529,7 +512,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     /* check if the fork was successful */
     if ( PtyIOStreams[stream].childPID == -1 )
     {
-        Pr( "Panic: cannot fork to subprocess.\n", 0, 0);
+        Pr( "Panic: cannot fork to subprocess (errno %d).\n", errno, 0);
         goto cleanup;
     }
     close(slave);
@@ -578,8 +561,6 @@ void HandleChildStatusChanges( UInt pty)
   }
   HashUnlock(PtyIOStreams);
 }
-
-#define MAX_ARGS 1000
 
 Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
 {
@@ -660,9 +641,6 @@ Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
 }
   
   
-
-extern int errno;
-
 UInt WriteToPty ( UInt stream, Char *buf, Int len )
 {
     Int         res;
