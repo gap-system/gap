@@ -1577,15 +1577,17 @@ Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
 Obj ConvImmString(Obj str)
 {
   Obj result;
+  size_t len;
   if (!str || !IsStringConv(str))
     return (Obj) 0;
   if (!IS_MUTABLE_OBJ(str))
     return str;
-  C_NEW_STRING(result, GET_LEN_STRING(str), CSTR_STRING(str))
+  len = GET_LEN_STRING(str);
+  result = NEW_STRING(len);
+  memcpy(CHARS_STRING(result), CHARS_STRING(str), len);
   MakeImmutableString(result);
   return result;
 }
-
 
 
 /****************************************************************************
