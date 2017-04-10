@@ -1360,6 +1360,16 @@ static Int IsSmallListAList(Obj list)
   return 1;
 }
 
+static Int IsRecNot(Obj obj)
+{
+  return 0;
+}
+
+static Int IsRecYes(Obj obj)
+{
+  return 1;
+}
+
 static Int LenListAList(Obj list)
 {
   MEMBAR_READ();
