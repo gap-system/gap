@@ -608,7 +608,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     for d in recursedirs do
       subdirs := List(dirs, x -> Directory(Filename(x, d)));
       subdirs := Filtered(subdirs, IsDirectoryPath);
-      recurseFiles(subdirs, Concatenation(prefix,"/",d));
+      recurseFiles(subdirs, Concatenation(prefix,d,"/"));
     od;
   end;
   
