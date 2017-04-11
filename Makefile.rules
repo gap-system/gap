@@ -53,11 +53,7 @@ SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
 SOURCES += src/gasman.c
-ifeq ($(HPCGAP),no)
-# FIXME: HPC-GAP are compatible, but some functions still
-# need to be merged between hpc/tls.c and globalstate.c
 SOURCES += src/gapstate.c
-endif
 SOURCES += src/gmpints.c
 SOURCES += src/gvars.c
 SOURCES += src/intfuncs.c
