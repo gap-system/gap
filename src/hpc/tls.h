@@ -47,7 +47,11 @@ typedef struct ThreadLocalStorage
   char *CurrFuncName;
   int DisableGuards;
 
-  GlobalState state;
+  UInt LocksAcquired;
+  UInt LocksContended;
+  UInt CountActive;
+
+  GAPState state;
   /* Extra storage */
   void *Extra[TLS_NUM_EXTRA];
 } ThreadLocalStorage;
@@ -103,6 +107,7 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #endif /* HAVE_NATIVE_TLS */
 
 #define TLS(x) realTLS->x
+#define STATE(x) TLS(state).x
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 

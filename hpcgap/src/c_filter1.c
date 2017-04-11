@@ -567,13 +567,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 15, "CLEAR_IMP_CACHE" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(43));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
@@ -618,13 +618,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 15, "WITH_IMPS_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(46));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(89));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "RankFilter", function ( filter )
@@ -649,13 +649,13 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 10, "RankFilter" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
- ENVI_FUNC( t_3 ) = TLS(CurrLVars);
+ ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(98));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(117));
  SET_FILENAME_BODY(t_4, FileName);
  BODY_FUNC(t_3) = t_4;
- CHANGED_BAG( TLS(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
@@ -769,8 +769,8 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = TLS(CurrLVars);
- CHANGED_BAG( TLS(CurrLVars) );
+ ENVI_FUNC( func1 ) = STATE(CurrLVars);
+ CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
  BODY_FUNC( func1 ) = body1;
  CHANGED_BAG( func1 );

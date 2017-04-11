@@ -1797,29 +1797,29 @@ static inline Obj CacheOper (
     }
     else
       cacheIndex = INT_INTOBJ(cache);
-    if (cacheIndex > TLS(MethodCacheSize))
+    if (cacheIndex > STATE(MethodCacheSize))
     {
-      UInt len = TLS(MethodCacheSize);
+      UInt len = STATE(MethodCacheSize);
       while (cacheIndex > len)
 	len *= 2;
-      GROW_PLIST(TLS(MethodCache), len);
-      SET_LEN_PLIST(TLS(MethodCache), len);
-      TLS(MethodCacheItems) = ADDR_OBJ(TLS(MethodCache));
-      TLS(MethodCacheSize) = len;
+      GROW_PLIST(STATE(MethodCache), len);
+      SET_LEN_PLIST(STATE(MethodCache), len);
+      STATE(MethodCacheItems) = ADDR_OBJ(STATE(MethodCache));
+      STATE(MethodCacheSize) = len;
     }
-    cache = ELM_PLIST(TLS(MethodCache), cacheIndex);
+    cache = ELM_PLIST(STATE(MethodCache), cacheIndex);
     if ( cache == 0 ) {
         len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
-        SET_ELM_PLIST( TLS(MethodCache), cacheIndex, cache );
-        CHANGED_BAG( TLS(MethodCache) );
+        SET_ELM_PLIST( STATE(MethodCache), cacheIndex, cache );
+        CHANGED_BAG( STATE(MethodCache) );
     }
     return cache;
 }
 
 #define GET_METHOD_CACHE( oper, i ) \
-  ( TLS(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
+  ( STATE(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -1874,9 +1874,9 @@ Obj DoOperation0Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[2*TLS(CacheIndex)] = method;
-              cache[2*TLS(CacheIndex)+1] = prec;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[2*STATE(CacheIndex)] = method;
+              cache[2*STATE(CacheIndex)+1] = prec;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -1964,10 +1964,10 @@ Obj DoOperation1Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[3*TLS(CacheIndex)] = method;
-              cache[3*TLS(CacheIndex)+1] = prec;
-              cache[3*TLS(CacheIndex)+2] = id1;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[3*STATE(CacheIndex)] = method;
+              cache[3*STATE(CacheIndex)+1] = prec;
+              cache[3*STATE(CacheIndex)+2] = id1;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -2063,11 +2063,11 @@ Obj DoOperation2Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[4*TLS(CacheIndex)] = method;
-              cache[4*TLS(CacheIndex)+1] = prec;
-              cache[4*TLS(CacheIndex)+2] = id1;
-              cache[4*TLS(CacheIndex)+3] = id2;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[4*STATE(CacheIndex)] = method;
+              cache[4*STATE(CacheIndex)+1] = prec;
+              cache[4*STATE(CacheIndex)+2] = id1;
+              cache[4*STATE(CacheIndex)+3] = id2;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -2168,12 +2168,12 @@ Obj DoOperation3Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[5*TLS(CacheIndex)] = method;
-              cache[5*TLS(CacheIndex)+1] = prec;
-              cache[5*TLS(CacheIndex)+2] = id1;
-              cache[5*TLS(CacheIndex)+3] = id2;
-              cache[5*TLS(CacheIndex)+4] = id3;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[5*STATE(CacheIndex)] = method;
+              cache[5*STATE(CacheIndex)+1] = prec;
+              cache[5*STATE(CacheIndex)+2] = id1;
+              cache[5*STATE(CacheIndex)+3] = id2;
+              cache[5*STATE(CacheIndex)+4] = id3;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -2282,13 +2282,13 @@ Obj DoOperation4Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[6*TLS(CacheIndex)] = method;
-              cache[6*TLS(CacheIndex)+1] = prec;
-              cache[6*TLS(CacheIndex)+2] = id1;
-              cache[6*TLS(CacheIndex)+3] = id2;
-              cache[6*TLS(CacheIndex)+4] = id3;
-              cache[6*TLS(CacheIndex)+5] = id4;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[6*STATE(CacheIndex)] = method;
+              cache[6*STATE(CacheIndex)+1] = prec;
+              cache[6*STATE(CacheIndex)+2] = id1;
+              cache[6*STATE(CacheIndex)+3] = id2;
+              cache[6*STATE(CacheIndex)+4] = id3;
+              cache[6*STATE(CacheIndex)+5] = id4;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -2417,14 +2417,14 @@ Obj DoOperation5Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[7*TLS(CacheIndex)] = method;
-              cache[7*TLS(CacheIndex)+1] = prec;
-              cache[7*TLS(CacheIndex)+2] = id1;
-              cache[7*TLS(CacheIndex)+3] = id2;
-              cache[7*TLS(CacheIndex)+4] = id3;
-              cache[7*TLS(CacheIndex)+5] = id4;
-              cache[7*TLS(CacheIndex)+6] = id5;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[7*STATE(CacheIndex)] = method;
+              cache[7*STATE(CacheIndex)+1] = prec;
+              cache[7*STATE(CacheIndex)+2] = id1;
+              cache[7*STATE(CacheIndex)+3] = id2;
+              cache[7*STATE(CacheIndex)+4] = id3;
+              cache[7*STATE(CacheIndex)+5] = id4;
+              cache[7*STATE(CacheIndex)+6] = id5;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -2573,15 +2573,15 @@ Obj DoOperation6Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[8*TLS(CacheIndex)] = method;
-              cache[8*TLS(CacheIndex)+1] = prec;
-              cache[8*TLS(CacheIndex)+2] = id1;
-              cache[8*TLS(CacheIndex)+3] = id2;
-              cache[8*TLS(CacheIndex)+4] = id3;
-              cache[8*TLS(CacheIndex)+5] = id4;
-              cache[8*TLS(CacheIndex)+6] = id5;
-              cache[8*TLS(CacheIndex)+7] = id6;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[8*STATE(CacheIndex)] = method;
+              cache[8*STATE(CacheIndex)+1] = prec;
+              cache[8*STATE(CacheIndex)+2] = id1;
+              cache[8*STATE(CacheIndex)+3] = id2;
+              cache[8*STATE(CacheIndex)+4] = id3;
+              cache[8*STATE(CacheIndex)+5] = id4;
+              cache[8*STATE(CacheIndex)+6] = id5;
+              cache[8*STATE(CacheIndex)+7] = id6;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3279,9 +3279,9 @@ Obj DoConstructor0Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[2*TLS(CacheIndex)] = method;
-              cache[2*TLS(CacheIndex)+1] = prec;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[2*STATE(CacheIndex)] = method;
+              cache[2*STATE(CacheIndex)+1] = prec;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3373,10 +3373,10 @@ Obj DoConstructor1Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[3*TLS(CacheIndex)] = method;
-              cache[3*TLS(CacheIndex)+1] = prec;
-              cache[3*TLS(CacheIndex)+2] = type1;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[3*STATE(CacheIndex)] = method;
+              cache[3*STATE(CacheIndex)+1] = prec;
+              cache[3*STATE(CacheIndex)+2] = type1;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3473,11 +3473,11 @@ Obj DoConstructor2Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[4*TLS(CacheIndex)] = method;
-              cache[4*TLS(CacheIndex)+1] = prec;
-              cache[4*TLS(CacheIndex)+2] = type1;
-              cache[4*TLS(CacheIndex)+3] = id2;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[4*STATE(CacheIndex)] = method;
+              cache[4*STATE(CacheIndex)+1] = prec;
+              cache[4*STATE(CacheIndex)+2] = type1;
+              cache[4*STATE(CacheIndex)+3] = id2;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3582,12 +3582,12 @@ Obj DoConstructor3Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[5*TLS(CacheIndex)] = method;
-              cache[5*TLS(CacheIndex)+1] = prec;
-              cache[5*TLS(CacheIndex)+2] = type1;
-              cache[5*TLS(CacheIndex)+3] = id2;
-              cache[5*TLS(CacheIndex)+4] = id3;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[5*STATE(CacheIndex)] = method;
+              cache[5*STATE(CacheIndex)+1] = prec;
+              cache[5*STATE(CacheIndex)+2] = type1;
+              cache[5*STATE(CacheIndex)+3] = id2;
+              cache[5*STATE(CacheIndex)+4] = id3;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3699,13 +3699,13 @@ Obj DoConstructor4Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[6*TLS(CacheIndex)] = method;
-              cache[6*TLS(CacheIndex)+1] = prec;
-              cache[6*TLS(CacheIndex)+2] = type1;
-              cache[6*TLS(CacheIndex)+3] = id2;
-              cache[6*TLS(CacheIndex)+4] = id3;
-              cache[6*TLS(CacheIndex)+5] = id4;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[6*STATE(CacheIndex)] = method;
+              cache[6*STATE(CacheIndex)+1] = prec;
+              cache[6*STATE(CacheIndex)+2] = type1;
+              cache[6*STATE(CacheIndex)+3] = id2;
+              cache[6*STATE(CacheIndex)+4] = id3;
+              cache[6*STATE(CacheIndex)+5] = id4;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3836,14 +3836,14 @@ Obj DoConstructor5Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[7*TLS(CacheIndex)] = method;
-              cache[7*TLS(CacheIndex)+1] = prec;
-              cache[7*TLS(CacheIndex)+2] = type1;
-              cache[7*TLS(CacheIndex)+3] = id2;
-              cache[7*TLS(CacheIndex)+4] = id3;
-              cache[7*TLS(CacheIndex)+5] = id4;
-              cache[7*TLS(CacheIndex)+6] = id5;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[7*STATE(CacheIndex)] = method;
+              cache[7*STATE(CacheIndex)+1] = prec;
+              cache[7*STATE(CacheIndex)+2] = type1;
+              cache[7*STATE(CacheIndex)+3] = id2;
+              cache[7*STATE(CacheIndex)+4] = id3;
+              cache[7*STATE(CacheIndex)+5] = id4;
+              cache[7*STATE(CacheIndex)+6] = id5;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -3994,15 +3994,15 @@ Obj DoConstructor6Args (
             {
               Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
               cache = 1+ADDR_OBJ( cacheBag );
-              cache[8*TLS(CacheIndex)] = method;
-              cache[8*TLS(CacheIndex)+1] = prec;
-              cache[8*TLS(CacheIndex)+2] = type1;
-              cache[8*TLS(CacheIndex)+3] = id2;
-              cache[8*TLS(CacheIndex)+4] = id3;
-              cache[8*TLS(CacheIndex)+5] = id4;
-              cache[8*TLS(CacheIndex)+6] = id5;
-              cache[8*TLS(CacheIndex)+7] = id6;
-              TLS(CacheIndex) = (TLS(CacheIndex) + 1) % CACHE_SIZE;
+              cache[8*STATE(CacheIndex)] = method;
+              cache[8*STATE(CacheIndex)+1] = prec;
+              cache[8*STATE(CacheIndex)+2] = type1;
+              cache[8*STATE(CacheIndex)+3] = id2;
+              cache[8*STATE(CacheIndex)+4] = id3;
+              cache[8*STATE(CacheIndex)+5] = id4;
+              cache[8*STATE(CacheIndex)+6] = id5;
+              cache[8*STATE(CacheIndex)+7] = id6;
+              STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
               CHANGED_BAG( cacheBag );
             }
 #ifdef COUNT_OPERS
@@ -6590,10 +6590,10 @@ StructInitInfo * InitInfoOpers ( void )
 
 void InitOpersTLS()
 {
-  TLS(MethodCache) = NEW_PLIST(T_PLIST, 1);
-  TLS(MethodCacheItems) = ADDR_OBJ(TLS(MethodCache));
-  TLS(MethodCacheSize) = 1;
-  SET_LEN_PLIST(TLS(MethodCache), 1);
+  STATE(MethodCache) = NEW_PLIST(T_PLIST, 1);
+  STATE(MethodCacheItems) = ADDR_OBJ(STATE(MethodCache));
+  STATE(MethodCacheSize) = 1;
+  SET_LEN_PLIST(STATE(MethodCache), 1);
 }
 
 void DestroyOpersTLS()

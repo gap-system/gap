@@ -293,7 +293,7 @@ static void RunThreadedMain2(
   thread_data[0].state = TSTATE_RUNNING;
   thread_data[0].tls = realTLS;
   InitSignals();
-  if (sySetjmp(TLS(threadExit)))
+  if (sySetjmp(STATE(threadExit)))
     exit(0);
   /* Traversal functionality may be needed during the initialization
    * of some modules, so we set it up now. */
@@ -806,7 +806,7 @@ int UpdateThreadState(int threadID, int oldState, int newState) {
 static void SetInterrupt(int threadID) {
   ThreadLocalStorage *tls = thread_data[threadID].tls;
   MEMBAR_FULL();
-  tls->CurrExecStatFuncs = IntrExecStatFuncs;
+  tls->state.CurrExecStatFuncs = IntrExecStatFuncs;
 }
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState) {
@@ -856,7 +856,7 @@ static void TerminateCurrentThread(int locked) {
   PopRegionLocks(0);
   if (TLS(CurrentHashLock))
     HashUnlock(TLS(CurrentHashLock));
-  syLongjmp(TLS(threadExit), 1);
+  syLongjmp(STATE(threadExit), 1);
 }
 
 static void PauseCurrentThread(int locked) {
@@ -888,7 +888,7 @@ static void InterruptCurrentThread(int locked, Stat stat) {
     return;
   if (!locked)
     pthread_mutex_lock(thread->lock);
-  TLS(CurrExecStatFuncs) = ExecStatFuncs;
+  STATE(CurrExecStatFuncs) = ExecStatFuncs;
   SET_BRK_CURR_STAT(stat);
   state = GetThreadState(TLS(threadID));
   if ((state & TSTATE_MASK) == TSTATE_INTERRUPTED)
