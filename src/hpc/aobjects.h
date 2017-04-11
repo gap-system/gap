@@ -9,6 +9,9 @@
 
 #else
 
+void InitAObjectsState();
+void DestroyAObjectsState();
+
 StructInitInfo *InitInfoAObjects(void);
 Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
