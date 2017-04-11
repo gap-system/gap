@@ -16,6 +16,7 @@
 **  are described in "system.c".
 */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 #include <src/sysfiles.h>               /* file input/output */

@@ -14,7 +14,7 @@
 #include <assert.h>
 
 #include <src/system.h>                 /* Ints, UInts */
-
+#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */

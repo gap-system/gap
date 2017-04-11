@@ -34,7 +34,7 @@
 **  ...what the other components are...
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/gapstate.h>               /* system dependent part */
 
 
 #include <src/gasman.h>                 /* garbage collector */

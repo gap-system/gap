@@ -89,7 +89,7 @@
 **  Chnaged the exponent size from 2 to 4 bytes to avoid overflows SL, 2008
 */
 #include <src/system.h>                 /* Ints, UInts */
-
+#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */

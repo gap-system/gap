@@ -19,8 +19,9 @@
                                            but does not include stdio.h    */
 #include <assert.h>                     /* assert */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/bool.h>
+#include <src/gapstate.h>
 
+#include <src/bool.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
