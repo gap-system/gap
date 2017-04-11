@@ -39,7 +39,7 @@ void InitGAPState(GAPState *state)
     // RunConstructors?
 }
 
-void DestroyGlobal(GAPState *state)
+void DestroyGAPState(GAPState *state)
 {
     DestroyScannerState(state);
     DestroyStatState(state);
