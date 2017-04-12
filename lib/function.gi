@@ -60,25 +60,49 @@ function(func)
     return result;
 end);
 
-
-InstallMethod(DisplayString, "for a function, using string stream", [IsFunction], 
+InstallMethod(DisplayString, "for a function, using string stream", [IsFunction],
 function(fun)
     local  s, stream;
     s := "";
     stream := OutputTextString(s, true);
     PrintTo(stream, fun);
     CloseStream(stream);
-    Add(s, '\n');    
+    Add(s, '\n');
     return MakeImmutable(s);
 end);
 
-InstallMethod(String, "for a function, with whitespace reduced", [IsFunction], 
+InstallMethod(String, "for a function, with whitespace reduced", [IsFunction],
 function(fun)
     local  s, str;
     s := ShallowCopy(DisplayString(fun));
-    Remove(s);    
+    Remove(s);
     NormalizeWhitespace(s);
     return MakeImmutable(s);
 end);
 
-    
+BIND_GLOBAL( "VIEW_STRING_OPERATION",
+function ( op )
+    return STRINGIFY("<", TypeOfOperation(op),
+                     " \"", NAME_FUNC(op), "\">");
+end);
+
+BIND_GLOBAL( "PRINT_OPERATION",
+function ( op )
+    Print(VIEW_STRING_OPERATION(op));
+end);
+
+InstallMethod( ViewObj,
+    "for an operation",
+    [ IsOperation ],
+    PRINT_OPERATION );
+
+InstallMethod( ViewString,
+    "for an operation",
+    [ IsOperation ],
+function(op)
+    return VIEW_STRING_OPERATION(op);
+end);
+
+#############################################################################
+##
+#E
