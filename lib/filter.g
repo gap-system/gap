@@ -344,4 +344,70 @@ BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 
 #############################################################################
 ##
+#V  IdOfFilterByName
+#V  FilterByName
+##
+##  <#GAPDoc Label="FilterByName">
+##  <ManSection>
+##  <Func Name="IdOfFilterByName" Arg="name"/>
+##  <Func Name="FilterByName" Arg="name"/>
+##
+##  <Description>
+##  finds the id of the filter, or the filter with name <A>name</A> respectively,
+##  in the global FILTERS list. 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "IdOfFilterByName",
+function(name)
+    local fid;
+    for fid in [1..LEN_LIST(FILTERS)] do
+        if NAME_FUNC(FILTERS[fid]) = name then
+           return fid;
+        fi;
+    od;
+    return fail;
+end);
+
+BIND_GLOBAL( "FilterByName",
+function(name)
+    local fid;
+    fid := IdOfFilterByName(name);
+    if fid <> fail then
+        return FILTERS[fid];
+    else
+        return fail;
+    fi;
+end);
+
+
+#############################################################################
+##
+#V  IdOfFilter
+##
+##  <#GAPDoc Label="IdOfFilter">
+##  <ManSection>
+##  <Func Name="IdOfFilter" Arg="filter"/>
+##
+##  <Description>
+##  finds the id of the filter <A>filter</A>. This is equal to the
+##  position of this filter in the global FILTERS list.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "IdOfFilter",
+function(filter)
+    local fid;
+    for fid in [1..LEN_LIST(FILTERS)] do
+        if FILTERS[fid] = filter then
+            return fid;
+        fi;
+    od;
+    return fail;
+end);
+
+#############################################################################
+##
 #E
