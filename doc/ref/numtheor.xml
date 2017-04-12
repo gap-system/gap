@@ -87,6 +87,7 @@
 <Section Label="Miscellaneous">
 <Heading>Miscellaneous</Heading>
 
+<#Include Label="PValuation">
 <#Include Label="TwoSquares">
 
 </Section>
