@@ -134,6 +134,7 @@ DeclareCategoryFamily( "IsPadicExtensionNumber" );
 ##
 ##  <Description>
 ##  The valuation is the <M>p</M>-part of the <M>p</M>-adic number.
+##  See also <Ref Func="PValuation"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
