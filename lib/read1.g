@@ -49,6 +49,7 @@ ReadLib( "permutat.g"  );
 ReadLib( "trans.g"  );
 ReadLib( "pperm.g"  );
 
+ReadLib( "filter.gi"   );
 ReadLib( "object.gi"   );
 ReadLib( "listcoef.gd" );
 ReadLib( "info.gd"     );
