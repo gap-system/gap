@@ -29,9 +29,6 @@ typedef struct GAPState
   Obj IntrState;
   Obj StackObj;
   Int CountObj;
-#if defined(HPCGAP)
-  UInt PeriodicCheckCount;
-#endif
 
   /* From gvar.c */
   Obj CurrNamespace;
@@ -40,9 +37,6 @@ typedef struct GAPState
   Bag BottomLVars;
   Bag CurrLVars;
   Obj *PtrLVars;
-#if defined(HPCGAP)
-  Bag LVarsPool[16];
-#endif
 
   /* From read.c */
   syJmp_buf ReadJmpError;
@@ -64,8 +58,13 @@ typedef struct GAPState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
+#if defined(HPCGAP)
+  TypInputFile * InputFiles[16];
+  TypOutputFile * OutputFiles[16];
+#else
   TypInputFile   InputFiles[16];
   TypOutputFile OutputFiles[16];
+#endif
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;
@@ -74,10 +73,6 @@ typedef struct GAPState
   TypOutputFile * InputLog;
   TypOutputFile * OutputLog;
   TypOutputFile * IgnoreStdoutErrout;
-#if defined(HPCGAP)
-  Obj		  DefaultOutput;
-  Obj		  DefaultInput;
-#endif
   TypOutputFile LogFile;
   TypOutputFile LogStream;
   TypOutputFile InputLogFile;
@@ -154,10 +149,15 @@ typedef struct GAPState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  // HPC-GAP Obj PrintObjThissObj;
+#if defined(HPCGAP)
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Int *PrintObjIndices;
+#else
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
+#endif
 
 #if defined(HPCGAP)
   /* For serializer.c */
@@ -177,13 +177,6 @@ typedef struct GAPState
   Obj SC_CW_VECTOR;
   Obj SC_CW2_VECTOR;
   UInt SC_MAX_STACK_SIZE;
-
-#if defined(HPCGAP)
-  /* Profiling */
-  UInt CountActive;
-  UInt LocksAcquired;
-  UInt LocksContended;
-#endif
 
   /* Allocation */
 #ifdef BOEHM_GC

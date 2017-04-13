@@ -1110,7 +1110,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
-    savedRegion = STATE(currentRegion);
+    savedRegion = TLS(currentRegion);
     if (sySetjmp(STATE(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1123,14 +1123,14 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
       PopRegionLocks(lockSP);
-      STATE(currentRegion) = savedRegion;
-      if (STATE(CurrentHashLock))
-        HashUnlock(STATE(CurrentHashLock));
+      TLS(currentRegion) = savedRegion;
+      if (TLS(CurrentHashLock))
+        HashUnlock(TLS(CurrentHashLock));
     } else {
       Obj result = CallFuncList(func, args);
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
-      STATE(currentRegion) = savedRegion;
+      TLS(currentRegion) = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result) {
         SET_LEN_PLIST(res,2);
@@ -1312,8 +1312,8 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
-  Region *savedRegion = STATE(currentRegion);
-  STATE(currentRegion) = STATE(threadRegion);
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), STATE(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1326,7 +1326,7 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
   Obj res = CALL_2ARGS(ErrorInner,r,l);
-  STATE(currentRegion) = savedRegion;
+  TLS(currentRegion) = savedRegion;
   return res;
 }
 

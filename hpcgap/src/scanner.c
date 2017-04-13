@@ -278,7 +278,7 @@ GVarDescriptor DEFAULT_OUTPUT_STREAM;
 UInt OpenDefaultInput( void )
 {
   Obj func, stream;
-  stream = STATE(DefaultInput);
+  stream = TLS(DefaultInput);
   if (stream)
     return OpenInputStream(stream);
   func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
@@ -289,14 +289,14 @@ UInt OpenDefaultInput( void )
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenInput(CSTR_STRING(stream));
-  STATE(DefaultInput) = stream;
+  TLS(DefaultInput) = stream;
   return OpenInputStream(stream);
 }
 
 UInt OpenDefaultOutput( void )
 {
   Obj func, stream;
-  stream = STATE(DefaultOutput);
+  stream = TLS(DefaultOutput);
   if (stream)
     return OpenOutputStream(stream);
   func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
@@ -307,7 +307,7 @@ UInt OpenDefaultOutput( void )
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
     return OpenOutput(CSTR_STRING(stream));
-  STATE(DefaultOutput) = stream;
+  TLS(DefaultOutput) = stream;
   return OpenOutputStream(stream);
 }
 
@@ -365,7 +365,7 @@ UInt OpenInput (
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (! strcmp(filename, "*defin*") ||
-        (! strcmp(filename, "*errin*") && STATE(DefaultInput)) )
+        (! strcmp(filename, "*errin*") && TLS(DefaultInput)) )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -857,7 +857,7 @@ UInt OpenOutput (
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if ( ! strcmp( filename, "*defout*" ) ||
-         (! strcmp( filename, "*errout*" ) && STATE(threadID) != 0) )
+         (! strcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -952,7 +952,7 @@ UInt CloseOutput ( void )
 
     /* refuse to close the initial output file '*stdout*'                  */
     if ( STATE(OutputFilesSP) <= 1 && STATE(Output)->isstream
-         && STATE(DefaultOutput) == STATE(Output)->stream)
+         && TLS(DefaultOutput) == STATE(Output)->stream)
       return 1;
 
 
@@ -2435,7 +2435,7 @@ void PutChrTo (
   /* normal character, room on the current line                          */
   /* TODO: For threads other than the main thread, reserve some extra
      space for the thread id indicator. See issue #136. */
-  else if ( stream->pos < SyNrCols-2-6*(STATE(threadID) != 0)-STATE(NoSplitLine) ) {
+  else if ( stream->pos < SyNrCols-2-6*(TLS(threadID) != 0)-STATE(NoSplitLine) ) {
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
