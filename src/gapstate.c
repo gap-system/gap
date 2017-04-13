@@ -18,7 +18,7 @@ static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
 
 static GAPState _MainGAPState;
 
-GAPState *MainGAPState = 0;
+GAPState * MainGAPState = 0;
 
 void InitMainGAPState(void)
 {
@@ -29,7 +29,7 @@ void InitMainGAPState(void)
     MainGAPState->LoopStack = MainLoopStack;
 }
 
-void InitGAPState(GAPState *state)
+void InitGAPState(GAPState * state)
 {
     InitScannerState(state);
     InitStatState(state);
@@ -40,7 +40,7 @@ void InitGAPState(GAPState *state)
     // RunConstructors?
 }
 
-void DestroyGlobal(GAPState *state)
+void DestroyGlobal(GAPState * state)
 {
     DestroyScannerState(state);
     DestroyStatState(state);
