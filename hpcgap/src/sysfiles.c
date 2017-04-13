@@ -1054,7 +1054,7 @@ void syStopraw (
 
     /* enable input buffering, line editing and echo again                 */
     if (tcsetattr(syBuf[fid].fp, TCSANOW, &syOld) == -1)
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+        fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
 }
 
 
