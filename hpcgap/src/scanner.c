@@ -3095,18 +3095,12 @@ StructInitInfo * InitInfoScanner ( void )
   return &module;
 }
 
-/****************************************************************************
- **
- *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
- *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
- */
-
-void InitScannerTLS()
+void InitScannerState(GAPState * state)
 {
-  STATE(HELPSubsOn) = 1;
+    state->HELPSubsOn = 1;
 }
 
-void DestroyScannerTLS()
+void DestroyScannerState(GAPState * state)
 {
 }
 

@@ -3449,13 +3449,13 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void InitCoderTLS( void )
+void InitCoderState(GAPState * state)
 {
-    STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
-    STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+    state->StackStat = NewBag(T_BODY, 64 * sizeof(Stat));
+    state->StackExpr = NewBag(T_BODY, 64 * sizeof(Expr));
 }
 
-void DestroyCoderTLS( void )
+void DestroyCoderState(GAPState * state)
 {
 }
 
