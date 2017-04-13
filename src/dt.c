@@ -52,6 +52,7 @@
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
 #include <src/system.h>
+#include <src/gapstate.h>
 
 
 

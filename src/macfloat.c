@@ -12,6 +12,7 @@
 ** macfloats are stored as bags containing a 64 bit value
 */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

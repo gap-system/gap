@@ -11,6 +11,7 @@
 */
 #include <string.h>                     /* memcpy */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 

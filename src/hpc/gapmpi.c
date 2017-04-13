@@ -20,6 +20,7 @@
 #include <stdlib.h>                     /* exit */
 #include <stdio.h>                      /* NULL, fprintf */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */

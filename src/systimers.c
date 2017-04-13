@@ -15,6 +15,7 @@
 */
 
 #include <src/system.h>
+#include <src/gapstate.h>
 #include <src/gap.h>
 #include <src/objects.h>
 #include <src/stats.h>

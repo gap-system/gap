@@ -28,6 +28,7 @@
 #include <stdlib.h>                     /* for qsort */
 #include <sys/time.h>                   /* for gettimeofday() */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

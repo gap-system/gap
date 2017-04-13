@@ -24,6 +24,7 @@
 #define _GNU_SOURCE  /* is used for getpt(), ptsname_r prototype etc. */
 
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 #include <src/iostream.h>               /* file input/output */
 

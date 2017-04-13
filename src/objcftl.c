@@ -15,6 +15,7 @@
 **  code here.                                                                    
 */
 #include <src/system.h>
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
