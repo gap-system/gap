@@ -8,6 +8,7 @@
  **
  */
 
+#include <src/system.h>
 #include <src/gapstate.h>
 
 #define MAX_FUNC_EXPR_NESTING 1024
