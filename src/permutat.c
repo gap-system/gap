@@ -146,7 +146,7 @@ Obj             IdentityPerm;
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-#define  TmpPerm TLS(TmpPerm)
+#define  TmpPerm STATE(TmpPerm)
 
 static void UseTmpPerm( UInt size) {
   if (TmpPerm == (Obj)0)

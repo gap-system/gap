@@ -93,7 +93,7 @@ void InitTLS()
   InitOpersTLS();
   InitAObjectsTLS();
   RunTLSConstructors();
-  TLS(CountActive) = 1;
+  STATE(CountActive) = 1;
 }
 
 void DestroyTLS()
