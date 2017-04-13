@@ -6,6 +6,8 @@
 #include <src/code.h>
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
+#include <src/hpc/threadapi.h>
+#include <src/hpc/aobjects.h>
 
 #include <string.h>
 
@@ -79,39 +81,18 @@ Int AllocateExtraTLSSlot() {
 
 void InitTLS()
 {
-  void InitScannerTLS();
-  void InitStatTLS();
-  void InitExprTLS();
-  void InitCoderTLS();
-  void InitThreadAPITLS();
-  void InitOpersTLS();
-  void InitAObjectsTLS();
-  InitScannerTLS();
-  InitStatTLS();
-  InitExprTLS();
-  InitCoderTLS();
-  InitThreadAPITLS();
-  InitOpersTLS();
-  InitAObjectsTLS();
-  RunTLSConstructors();
-  TLS(CountActive) = 1;
+    InitGAPState(&TLS(state));
+    InitThreadAPIState();
+    InitAObjectsState();
+    RunTLSConstructors();
+
+    TLS(CountActive) = 1;
 }
 
 void DestroyTLS()
 {
-  void DestroyScannerTLS();
-  void DestroyStatTLS();
-  void DestroyExprTLS();
-  void DestroyCoderTLS();
-  void DestroyThreadAPITLS();
-  void DestroyOpersTLS();
-  void DestroyAObjectsTLS();
-  DestroyScannerTLS();
-  DestroyStatTLS();
-  DestroyExprTLS();
-  DestroyCoderTLS();
-  DestroyThreadAPITLS();
-  DestroyOpersTLS();
-  DestroyAObjectsTLS();
-  RunTLSDestructors();
+    DestroyGAPState(&TLS(state));
+    DestroyThreadAPIState();
+    DestroyAObjectsState();
+    RunTLSDestructors();
 }
