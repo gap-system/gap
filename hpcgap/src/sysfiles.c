@@ -43,6 +43,9 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
+#include <src/read.h>                   /* reader */
+
+
 #include <assert.h>
 #include <fcntl.h>
 
@@ -50,14 +53,13 @@
 #include <readline/readline.h>          /* readline for interactive input */
 #endif
 
-#include <src/read.h>                   /* reader */
 
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #if HAVE_SELECT
 /* Only for the Hook handler calls: */
-
 #include <sys/time.h>
-#include <sys/types.h>
 #endif
 
 #include <stdio.h>                      /* standard input/output functions */
@@ -3442,9 +3444,6 @@ Int SyRmdir ( const Char * name )
 **  device 'P' for a FIFO (named pipe) and 'S' for a socket.
 */
 #ifdef HAVE_LSTAT
-
-#include <sys/types.h>
-#include <sys/stat.h>
 
 Obj SyIsDir ( const Char * name )
 {
