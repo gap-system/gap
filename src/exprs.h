@@ -37,8 +37,8 @@
 #endif
 
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)TLS(PtrLVars))+OFFSET_REFLVAR(expr)) != 0 ? \
-                         *(Obj*)(((char*)TLS(PtrLVars))+OFFSET_REFLVAR(expr)) : \
+                        (*(Obj*)(((char*)STATE(PtrLVars))+OFFSET_REFLVAR(expr)) != 0 ? \
+                         *(Obj*)(((char*)STATE(PtrLVars))+OFFSET_REFLVAR(expr)) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 

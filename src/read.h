@@ -45,12 +45,12 @@
 /* TL: extern syJmp_buf ReadJmpError; */
 
 #define TRY_READ \
-    if (!TLS(NrError)) { \
-        if (sySetjmp(TLS(ReadJmpError))) { \
-            TLS(NrError)++; \
+    if (!STATE(NrError)) { \
+        if (sySetjmp(STATE(ReadJmpError))) { \
+            STATE(NrError)++; \
         }\
     }\
-    if (!TLS(NrError))
+    if (!STATE(NrError))
 
 #define CATCH_READ_ERROR \
     else
