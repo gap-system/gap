@@ -69,16 +69,14 @@
 
 #include <assert.h>
 
-#if HAVE_UTIL_H
-#include <util.h>                       /* for openpty() on Mac OS X, OpenBSD and NetBSD */
-#endif
-
-#if HAVE_LIBUTIL_H
-#include <libutil.h>                    /* for openpty() on FreeBSD */
-#endif
-
-#if HAVE_PTY_H
-#include <pty.h>                        /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
+#if HAVE_OPENPTY
+  #if HAVE_UTIL_H
+    #include <util.h>     /* for openpty() on Mac OS X, OpenBSD and NetBSD */
+  #elif HAVE_LIBUTIL_H
+    #include <libutil.h>  /* for openpty() on FreeBSD */
+  #elif HAVE_PTY_H
+    #include <pty.h>      /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
+  #endif
 #endif
 
 
@@ -162,44 +160,21 @@ void KillChild (UInt stream)
 *F  GetMasterPty( <fid> ) . . . . . . . . .  open a master pty (from "xterm")
 */
 
-#if !defined(HAVE_OPENPTY)
+#if HAVE_OPENPTY
 
-#ifndef SYS_PTYDEV
-#  ifdef hpux
-#    define SYS_PTYDEV          "/dev/ptym/ptyxx"
-#  else
-#    define SYS_PTYDEV          "/dev/ptyxx"
-#  endif
-#endif
-
-#ifndef SYS_TTYDEV
-#  ifdef hpux
-#    define SYS_TTYDEV          "/dev/pty/ttyxx"
-#  else
-#    define SYS_TTYDEV          "/dev/ttyxx"
-#  endif
-#endif
-
-#ifndef SYS_PTYCHAR1
-#  ifdef hpux
-#    define SYS_PTYCHAR1        "zyxwvutsrqp"
-#  else
-#    define SYS_PTYCHAR1        "pqrstuvwxyz"
-#  endif
-#endif
-
-#ifndef SYS_PTYCHAR2
-#  ifdef hpux
-#    define SYS_PTYCHAR2        "fedcba9876543210"
-#  else
-#    define SYS_PTYCHAR2        "0123456789abcdef"
-#  endif
-#endif
-
-
-static UInt GetMasterPty ( int *pty, Char *nametty, Char *namepty )
+static UInt OpenPty( int *master, int *slave )
 {
-#if HAVE_POSIX_OPENPT && HAVE_PTSNAME
+    /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
+       Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
+       on most modern Linux systems. See also:
+       http://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
+    return (openpty(master, slave, NULL, NULL, NULL) < 0);
+}
+
+#elif HAVE_POSIX_OPENPT
+
+static UInt OpenPty( int *master, int *slave )
+{
     /* Attempt to use POSIX 98 pseudo ttys. Opening a master tty is done
        via posix_openpt, which is available on virtually every current
        UNIX system; indeed, according to gnulib, it is available on at
@@ -223,122 +198,45 @@ static UInt GetMasterPty ( int *pty, Char *nametty, Char *namepty )
          - Interix 3.5
          - BeOS
        */
-    *pty = posix_openpt( O_RDWR | O_NOCTTY );
-    if (*pty > 0) {
-        if (grantpt(*pty) || unlockpt(*pty)) {
-            close(*pty);
-            return 1;
-        }
-        strxcpy(nametty, ptsname(*pty), 32);
-        return 0;
-    }
-    return 1;
-
-#elif HAVE_GETPT && HAVE_PTSNAME_R
-    /* Attempt to use glibc specific APIs, for compatibility with older
-       glibc versions (before 2.2.1, release January 2001). */
-    *pty = getpt();
-    if (*pty > 0) {
-        if (grantpt(*pty) || unlockpt(*pty)) {
-            close(*pty);
-            return 1;
-        }
-        ptsname_r(*pty, nametty, 32); 
-        return 0;
-    }
-    return 1;
-
-#elif HAVE_PTSNAME
-    /* Attempt to use Sys V pseudo ttys on systems that don't have posix_openpt,
-       getpt or openpty, but do have ptsname.
-       Platforms *missing* ptsname include:
-       Mac OS X 10.3, OpenBSD 3.8, Minix 3.1.8, mingw, MSVC 9, BeOS. */
-    *pty = open( "/dev/ptmx", O_RDWR );
-    if ( *pty < 0 )
+    *master = posix_openpt( O_RDWR | O_NOCTTY );
+    if (*master < 0) {
+        Pr( "OpenPty: posix_openpt failed\n", 0L, 0L );
         return 1;
-    strxcpy(nametty, ptsname(*pty), 32);
+    }
+
+    if (grantpt(*master)) {
+        Pr( "OpenPty: grantpt failed\n", 0L, 0L );
+        goto error;
+    }
+    if (unlockpt(*master)) {
+        close(*master);
+        Pr( "OpenPty: unlockpt failed\n", 0L, 0L );
+        goto error;
+    }
+
+    ttyname = ;
+    *slave = open( ptsname(*master), O_RDWR, 0 );
+    if ( *slave < 0 ) {
+        Pr( "OpenPty: opening slave tty failed\n", 0L, 0L );
+        goto error;
+    }
     return 0;
 
-#elif HAVE_GETPSEUDOTTY
-    /* TODO: From which system(s) does getpseudotty originate? */
-    *pty = getpseudotty( nametty, namepty );
-    return *pty < 0 ? 1 : 0;
-
-#elif HAVE__GETPTY
-    /* Available on SGI IRIX >= 4.0 (released September 1991).
-       See also http://techpubs.sgi.com/library/tpl/cgi-bin/getdoc.cgi?cmd=getdoc&coll=0530&db=man&fname=7%20pty */
-    char  * line;
-    line = _getpty(pty, O_RDWR|O_NDELAY, 0600, 0) ;
-    if (0 == line)
-        return 1;
-    strcpy( nametty, line );
-    return 0;
-
-#else
-    /* fallback to old-style BSD pseudoterminals, doing a brute force
-       search over all pty device files. */
-    int devindex;
-    int letter;
-    int ttylen, ptylen;
-
-    ttylen = strlen(nametty);
-    ptylen = strlen(namepty);
-
-    for ( letter = 0; SYS_PTYCHAR1[letter]; ++letter ) {
-        nametty[ttylen-2] = SYS_PTYCHAR1[letter];
-        namepty[ptylen-2] = SYS_PTYCHAR1[letter];
-
-        for ( devindex = 0; SYS_PTYCHAR2[devindex]; ++devindex ) {
-            nametty[ttylen-1] = SYS_PTYCHAR2[devindex];
-            namepty[ptylen-1] = SYS_PTYCHAR2[devindex];
-                    
-            *pty = open( namepty, O_RDWR );
-            if ( *pty >= 0 ) {
-                int slave = open( nametty, O_RDWR );
-                if ( slave >= 0 ) {
-                    close(slave);
-                    return 0;
-                }
-                close(*pty);
-            } 
-        }
-    }
+error:
+    close(*master);
     return 1;
-#endif
 }
 
-#endif /* !defined(HAVE_OPENPTY) */
+#else
 
-
-static UInt OpenPty( int *pty, int *tty )
+static UInt OpenPty( int *master, int *slave )
 {
-#if HAVE_OPENPTY
-    /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
-       Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
-       on most modern Linux systems. See also:
-       http://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
-    return (openpty(pty, tty, NULL, NULL, NULL) < 0);
-#else
-    Char ttyname[32];
-    Char ptyname[32];
-
-    /* construct the name of the pseudo terminal */
-    strcpy( ttyname, SYS_TTYDEV );
-    strcpy( ptyname, SYS_PTYDEV );
-
-    if ( GetMasterPty(pty, ttyname, ptyname) ) {
-        Pr( "open master failed\n", 0L, 0L );
-        return 1;
-    }
-    *tty = open( ttyname, O_RDWR, 0 );
-    if ( *tty < 0 ) {
-        Pr( "open slave failed\n", 0L, 0L );
-        close(*pty);
-        return 1;
-    }
-    return 0;
-#endif
+    Pr( "no pseudo tty support available\n", 0L, 0L );
+    return 1;
 }
+
+#endif
+
 
 /****************************************************************************
 **

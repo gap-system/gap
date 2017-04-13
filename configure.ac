@@ -488,22 +488,20 @@ dnl
 AC_CHECK_HEADERS([fcntl.h termios.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/stat.h sys/wait.h])
 
-# Check for POSIX 98 pty APIs
-AC_CHECK_FUNCS([ptsname grantpt unlockpt posix_openpt])
-
-# Check for glibc specific pty APIs
-AC_CHECK_FUNCS([getpt ptsname_r])
-
-# Check for some legacy APIs
-AC_CHECK_FUNCS([getpseudotty _getpty])
 
 # openpty() is available on various BSD variants, but also in glibc.
 # On BSD systems, one usually needs to add -lutil to LIBS in order
 # to use it.
-AC_CHECK_HEADERS([util.h pty.h libutil.h])
 AC_SEARCH_LIBS([openpty], [util],
     AC_DEFINE([HAVE_OPENPTY], [1], [define as 1 if you have `openpty']))
 
+AS_IF([test "x$ac_cv_search_openpty" = xno],[
+  # Check for POSIX 98 pty APIs to use instead of openpty()
+  AC_CHECK_FUNCS([ptsname grantpt unlockpt posix_openpt])
+],[
+  # Check for headers declaring openpty()
+  AC_CHECK_HEADERS([util.h pty.h libutil.h])
+])
 
 dnl check for input/output functions
 AC_CHECK_HEADERS([signal.h])
