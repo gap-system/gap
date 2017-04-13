@@ -341,8 +341,11 @@ true
 <Description>
 <Ref Func="IsDirectoryPath"/>
 returns <K>true</K> if the file with the filename <A>filename</A> exists
-<E>and</E> is a directory,
-and <K>false</K> otherwise.
+<E>and</E> is a directory, <K>false</K> if it exists and is not a file,
+and <K>fail</K> otherwise. If <Ref Func="IsDirectoryPath"/> returns <K>fail</K>,
+you can use <Ref Func="LastSystemError"/> to get more information about the
+nature of the failure.
+
 Note that this function does not check if the &GAP; process actually has
 write or execute permissions for the directory.
 You can use <Ref Func="IsWritableFile"/>,

@@ -1411,7 +1411,16 @@ Obj FuncIsDirectoryPathString (
     
     /* call the system dependent function                                  */
     res = SyIsDirectoryPath( CSTR_STRING(filename) );
-    return res == -1 ? False : True;
+    switch(res) {
+    case 0:
+        return True;
+        break;
+    case -1:
+        return False;
+        break;
+    default:
+        return Fail;
+    }
 }
 
 
