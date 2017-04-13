@@ -551,7 +551,7 @@ AC_CHECK_FUNCS([atol strlcpy strlcmp strlcat])
 
 dnl check for file access functions
 AC_HEADER_STAT
-AC_CHECK_FUNCS([access stat fstat lstat unlink mkdir rmdir mkdtemp mkstemp link rename chmod dup dup2 realpath])
+AC_CHECK_FUNCS([stat lstat mkdtemp mkstemp])
 
 dnl check for large-file support (for accessing files whose sizes or inodes require 64bits)
 AC_SYS_LARGEFILE
