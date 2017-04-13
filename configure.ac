@@ -24,10 +24,9 @@ AC_LANG([C])
 
 
 dnl
-dnl Check whether to use _GNU_SOURCE etc. (needed for e.g. exp10).
-dnl Must come before anything else using AC_COMPILE_IFELSE
+dnl Use _GNU_SOURCE enable extensions like exp10 in glibc
 dnl
-AC_USE_SYSTEM_EXTENSIONS
+AC_DEFINE([_GNU_SOURCE], [], [Enable GNU extensions in glibc])
 
 
 dnl
