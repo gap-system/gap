@@ -3197,14 +3197,6 @@ UInt SyExecuteProcess (
 **  It does not check if the file is readable, writable or excuteable. <name>
 **  is a system dependent description of the file.
 */
-
-
-/****************************************************************************
-**
-*f  SyIsExistingFile( <name> )  . . . . . . . . . . . . . . .  using `access'
-*/
-#if HAVE_ACCESS
-
 Int SyIsExistingFile ( const Char * name )
 {
     Int         res;
@@ -3217,8 +3209,6 @@ Int SyIsExistingFile ( const Char * name )
     return res;
 }
 
-#endif
-
 /****************************************************************************
 **
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
@@ -3226,14 +3216,6 @@ Int SyIsExistingFile ( const Char * name )
 **  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
 **  otherwise. <name> is a system dependent description of the file.
 */
-
-
-/****************************************************************************
-**
-*f  SyIsReadableFile( <name> )  . . . . . . . . . . . . . . .  using `access'
-*/
-#if HAVE_ACCESS
-
 Int SyIsReadableFile ( const Char * name )
 {
     Int         res;
@@ -3260,8 +3242,6 @@ Int SyIsReadableFile ( const Char * name )
     return res;
 }
 
-#endif
-
 
 /****************************************************************************
 **
@@ -3270,14 +3250,6 @@ Int SyIsReadableFile ( const Char * name )
 **  'SyIsWritableFile'   returns  1  if  the  file  <name> is  writable and 0
 **  otherwise. <name> is a system dependent description of the file.
 */
-
-
-/****************************************************************************
-**
-*f  SyIsWritableFile( <name> )  . . . . . . . . . . . . . . .  using `access'
-*/
-#if HAVE_ACCESS
-
 Int SyIsWritableFile ( const Char * name )
 {
     Int         res;
@@ -3290,8 +3262,6 @@ Int SyIsWritableFile ( const Char * name )
     return res;
 }
 
-#endif
-
 
 /****************************************************************************
 **
@@ -3300,14 +3270,6 @@ Int SyIsWritableFile ( const Char * name )
 **  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
 **  otherwise. <name> is a system dependent description of the file.
 */
-
-
-/****************************************************************************
-**
-*f  SyIsExecutableFile( <name> )  . . . . . . . . . . . . . .  using `access'
-*/
-#if HAVE_ACCESS
-
 Int SyIsExecutableFile ( const Char * name )
 {
     Int         res;
@@ -3320,8 +3282,6 @@ Int SyIsExecutableFile ( const Char * name )
     return res;
 }
 
-#endif
-
 
 /****************************************************************************
 **
@@ -3330,16 +3290,6 @@ Int SyIsExecutableFile ( const Char * name )
 **  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
 **  otherwise. <name> is a system dependent description of the file.
 */
-
-
-/****************************************************************************
-**
-*f  SyIsDirectoryPath( <name> ) . . . . . . . . . . . . . . . .  using `stat'
-*/
-#if HAVE_STAT
-
-#include <sys/stat.h>
-
 Int SyIsDirectoryPath ( const Char * name )
 {
     struct stat     buf;                /* buffer for `stat'               */
@@ -3352,21 +3302,11 @@ Int SyIsDirectoryPath ( const Char * name )
     return S_ISDIR(buf.st_mode) ? 0 : -1;
 }
 
-#endif
-
 
 /****************************************************************************
 **
 *F  SyRemoveFile( <name> )  . . . . . . . . . . . . . . .  remove file <name>
 */
-
-
-/****************************************************************************
-**
-*f  SyRemoveFile( <name> )  . . . . . . . . . . . . . . . . .  using `unlink'
-*/
-#if HAVE_UNLINK
-
 Int SyRemoveFile ( const Char * name )
 {
     Int res;
@@ -3377,15 +3317,11 @@ Int SyRemoveFile ( const Char * name )
     return res;
 }
 
-#endif
-
 /****************************************************************************
 **
 *f  SyMkdir( <name> )  . . . . . . . . . . . . . . . . create directory
 **  with users umask permissions.
 */
-#if HAVE_MKDIR
-
 Int SyMkdir ( const Char * name )
 {
     Int res;
@@ -3396,14 +3332,10 @@ Int SyMkdir ( const Char * name )
     return res;
 }
 
-#endif
-
 /****************************************************************************
 **
 *f  SyRemoveDir( <name> )  . . . . . . . . . . . . . . . . .  using `rmdir'
 */
-#if HAVE_RMDIR
-
 Int SyRmdir ( const Char * name )
 {
     Int res;
@@ -3413,8 +3345,6 @@ Int SyRmdir ( const Char * name )
        SySetErrorNo();
     return res;
 }
-
-#endif
 
 /****************************************************************************
 **
@@ -3453,11 +3383,14 @@ Obj SyIsDir ( const Char * name )
 #endif
   else return ObjsChar['?'];
 }
+
 #else
+
 Obj SyIsDir ( const Char * name )
 {
   return ObjsChar['?'];
 }
+
 #endif
 
 /****************************************************************************
@@ -3573,6 +3506,7 @@ Char * SyTmpname ( void )
 
 
 #if HAVE_MKDTEMP
+
 Char * SyTmpdir( const Char * hint )
 {
   static char name[1024];
@@ -3591,8 +3525,8 @@ Char * SyTmpdir( const Char * hint )
   strxcat(name, "XXXXXX", sizeof(name));
   return mkdtemp(name);
 }
+
 #else
-#if HAVE_MKDIR
 
 Char * SyTmpdir ( const Char * hint )
 {
@@ -3615,8 +3549,6 @@ Char * SyTmpdir ( const Char * hint )
     return tmp;
 }
 
-
-#endif
 #endif
 
 Obj SyReadStringFile(Int fid)
@@ -3651,7 +3583,7 @@ Obj SyReadStringFile(Int fid)
     return str;
 }
 
-#if !defined(SYS_IS_CYGWIN32) && defined(HAVE_STAT)
+#if !defined(SYS_IS_CYGWIN32)
 /* fstat seems completely broken under CYGWIN */
 /* first try to get the whole file as one chunk, this avoids garbage
    collections because of the GROW_STRING calls below    */
