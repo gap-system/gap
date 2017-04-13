@@ -1071,17 +1071,6 @@ extern void InitSystem (
             Int                 argc,
             Char *              argv [] );
 
-
-#if !defined(HPCGAP)
-
-#include <src/gapstate.h>
-
-// FIXME: The TLS macro is for compatibility with the HPC-GAP branch, and helps
-// to keep the diffs between it and master branch small(er).
-#define STATE(x) (MainGAPState->x)
-
-#endif
-
 #endif // GAP_SYSTEM_H
 
 /****************************************************************************
