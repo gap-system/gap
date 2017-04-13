@@ -9,6 +9,12 @@
 
 set -ex
 
+# If we don't care about code coverage, do nothing
+if [[ -n ${NO_COVERAGE} ]]
+then
+    exit 0
+fi
+
 SRCDIR=${SRCDIR:-$PWD}
 
 # Make sure any Error() immediately exits GAP with exit code 1.
