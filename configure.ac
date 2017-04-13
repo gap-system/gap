@@ -556,13 +556,6 @@ AC_CHECK_FUNCS([access stat fstat lstat unlink mkdir rmdir mkdtemp mkstemp link 
 dnl check for large-file support (for accessing files whose sizes or inodes require 64bits)
 AC_SYS_LARGEFILE
 
-dnl check for socket access functions
-AC_CHECK_FUNCS([socket accept connect bind send])
-
-dnl check for directory access functions
-AC_HEADER_DIRENT
-AC_CHECK_FUNCS([opendir closedir readdir])
-
 dnl check whether libm / -lm is available and necessary
 AC_SEARCH_LIBS([cos], [m], [], [
   AC_MSG_ERROR([unable to find the cos() function])
