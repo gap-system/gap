@@ -167,10 +167,10 @@ void SignalThread(ThreadLocalStorage *thread)
 
 void WaitThreadSignal()
 {
-  int id = STATE(threadID);
+  int id = TLS(threadID);
   if (!UpdateThreadState(id, TSTATE_RUNNING, TSTATE_BLOCKED))
     HandleInterrupts(1, T_NO_STAT);
-  pthread_cond_wait(STATE(threadSignal), STATE(threadLock));
+  pthread_cond_wait(TLS(threadSignal), TLS(threadLock));
   if (!UpdateThreadState(id, TSTATE_BLOCKED, TSTATE_RUNNING) &&
     GetThreadState(id) != TSTATE_RUNNING)
     HandleInterrupts(1, T_NO_STAT);
@@ -207,7 +207,7 @@ void WaitForMonitor(Monitor *monitor)
   AddWaitList(monitor, &node);
   UnlockMonitor(monitor);
   LockThread(realTLS);
-  while (!STATE(acquiredMonitor))
+  while (!TLS(acquiredMonitor))
     WaitThreadSignal();
   if (!TryLockMonitor(monitor))
   {
@@ -215,7 +215,7 @@ void WaitForMonitor(Monitor *monitor)
     LockMonitor(monitor);
     LockThread(realTLS);
   }
-  STATE(acquiredMonitor) = NULL;
+  TLS(acquiredMonitor) = NULL;
   RemoveWaitList(monitor, &node);
   UnlockThread(realTLS);
 }
@@ -301,9 +301,9 @@ UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
   for (i=0; i<count; i++)
     UnlockMonitor(monitors[i]);
   LockThread(realTLS);
-  while (!STATE(acquiredMonitor))
+  while (!TLS(acquiredMonitor))
     WaitThreadSignal();
-  monitor = STATE(acquiredMonitor);
+  monitor = TLS(acquiredMonitor);
   UnlockThread(realTLS);
   for (i=0; i<count; i++)
   {
@@ -321,7 +321,7 @@ UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
     }
   }
   LockThread(realTLS);
-  STATE(acquiredMonitor) = NULL;
+  TLS(acquiredMonitor) = NULL;
   UnlockThread(realTLS);
   return result;
 }
@@ -471,7 +471,7 @@ Obj FuncWaitThread(Obj self, Obj thread) {
 */
 
 Obj FuncCurrentThread(Obj self) {
-  return STATE(threadObject);
+  return TLS(threadObject);
 }
 
 /****************************************************************************
@@ -854,18 +854,18 @@ Obj FuncCREATOR_OF(Obj self, Obj obj) {
 
 Obj FuncDISABLE_GUARDS(Obj self, Obj flag) {
   if (flag == False)
-    STATE(DisableGuards) = 0;
+    TLS(DisableGuards) = 0;
   else if (flag == True)
-    STATE(DisableGuards) = 1;
+    TLS(DisableGuards) = 1;
   else if (IS_INTOBJ(flag))
-    STATE(DisableGuards) = (int) (INT_INTOBJ(flag));
+    TLS(DisableGuards) = (int) (INT_INTOBJ(flag));
   else
     ErrorQuit("DISABLE_GUARDS: Argument must be boolean or integer", 0L, 0L);
   return (Obj) 0;
 }
 
 Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
-  Region * volatile oldRegion = STATE(currentRegion);
+  Region * volatile oldRegion = TLS(currentRegion);
   Region * volatile region = GetRegionOf(obj);
   syJmp_buf readJmpError;
 
@@ -876,13 +876,13 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
   memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
   if (sySetjmp(STATE(ReadJmpError))) {
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
-    STATE(currentRegion) = oldRegion;
+    TLS(currentRegion) = oldRegion;
     syLongjmp(STATE(ReadJmpError), 1);
   }
-  STATE(currentRegion) = region;
+  TLS(currentRegion) = region;
   CALL_0ARGS(func);
   memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
-  STATE(currentRegion) = oldRegion;
+  TLS(currentRegion) = oldRegion;
   return (Obj) 0;
 }
 
@@ -1665,7 +1665,7 @@ static Obj RetrieveFromChannel(Channel *channel)
 {
   Obj obj = ADDR_OBJ(channel->queue)[++channel->head];
   Obj children = ADDR_OBJ(channel->queue)[++channel->head];
-  Region *region = STATE(currentRegion);
+  Region *region = TLS(currentRegion);
   UInt i, len = children ? LEN_PLIST(children) : 0;
   ADDR_OBJ(channel->queue)[channel->head-1] = 0;
   ADDR_OBJ(channel->queue)[channel->head] = 0;
@@ -1859,9 +1859,9 @@ static Obj ReceiveAnyChannel(Obj channelList, int with_index)
   for (i = 0; i<count; i++)
     monitors[i] = ObjPtr(channels[i]->monitor);
   LockMonitors(count, monitors);
-  p = STATE(multiplexRandomSeed);
+  p = TLS(multiplexRandomSeed);
   p = (p * 5 + 1);
-  STATE(multiplexRandomSeed) = p;
+  TLS(multiplexRandomSeed) = p;
   p %= count;
   for (i=0; i<count; i++)
   {
@@ -2601,7 +2601,7 @@ void DoLockFunc(Obj args, int mode)
     ErrorQuit("%s: Too many arguments",
       mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
   }
-  if (STATE(lockStackPointer) == 0) {
+  if (TLS(lockStackPointer) == 0) {
     ErrorQuit("%s: Not inside an atomic region or function",
       mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
   }
@@ -2740,11 +2740,11 @@ Obj FuncUNLOCK(Obj self, Obj sp)
 
 Obj FuncCURRENT_LOCKS(Obj self)
 {
-  UInt i, len = STATE(lockStackPointer);
+  UInt i, len = TLS(lockStackPointer);
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=1; i<=len; i++)
-    SET_ELM_PLIST(result, i, ELM_PLIST(STATE(lockStack), i));
+    SET_ELM_PLIST(result, i, ELM_PLIST(TLS(lockStack), i));
   return result;
 }
 
@@ -2843,7 +2843,7 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, STATE(threadRegion), 0))
+  if (!MigrateObjects(1, &obj, TLS(threadRegion), 0))
     ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2928,7 +2928,7 @@ Obj FuncADOPT(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, STATE(threadRegion), 0))
+       ADDR_OBJ(reachable)+1, TLS(threadRegion), 0))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -3180,8 +3180,8 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
    * increasing value and we only need it to succeed eventually.
    */
   n = INT_INTOBJ(count)/10;
-  if (STATE(PeriodicCheckCount) + n < SigVTALRMCounter) {
-    STATE(PeriodicCheckCount) = SigVTALRMCounter;
+  if (TLS(PeriodicCheckCount) + n < SigVTALRMCounter) {
+    TLS(PeriodicCheckCount) = SigVTALRMCounter;
     CALL_0ARGS(func);
   }
   return (Obj) 0;
@@ -3250,14 +3250,14 @@ Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
 
 Obj FuncTHREAD_COUNTERS_ENABLE(Obj self)
 {
-  STATE(CountActive) = 1;
+  TLS(CountActive) = 1;
 
   return (Obj) 0;
 }
 
 Obj FuncTHREAD_COUNTERS_DISABLE(Obj self)
 {
-  STATE(CountActive) = 0;
+  TLS(CountActive) = 0;
 
   return (Obj) 0;
 }
@@ -3266,14 +3266,14 @@ Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
 {
   Obj result;
 
-  result = INTOBJ_INT(STATE(CountActive));
+  result = INTOBJ_INT(TLS(CountActive));
 
   return result;
 }
 
 Obj FuncTHREAD_COUNTERS_RESET(Obj self)
 {
-  STATE(LocksAcquired) = STATE(LocksContended) = 0;
+  TLS(LocksAcquired) = TLS(LocksContended) = 0;
 
   return (Obj) 0;
 }
@@ -3284,8 +3284,8 @@ Obj FuncTHREAD_COUNTERS_GET(Obj self)
 
   result = NEW_PLIST(T_PLIST, 2);
   SET_LEN_PLIST(result, 2);
-  SET_ELM_PLIST(result, 1, INTOBJ_INT(STATE(LocksAcquired)));
-  SET_ELM_PLIST(result, 2, INTOBJ_INT(STATE(LocksContended)));
+  SET_ELM_PLIST(result, 1, INTOBJ_INT(TLS(LocksAcquired)));
+  SET_ELM_PLIST(result, 2, INTOBJ_INT(TLS(LocksContended)));
 
   return result;
 }

@@ -797,10 +797,10 @@ Obj STEVES_TRACING;
             ProfileLineByLineOutFunction(func);
 
 #define REMEMBER_LOCKSTACK() \
-    int			lockSP = STATE(lockStackPointer)
+    int			lockSP = TLS(lockStackPointer)
 
 #define CLEAR_LOCK_STACK() \
-    if (lockSP != STATE(lockStackPointer)) \
+    if (lockSP != TLS(lockStackPointer)) \
       PopRegionLocks(lockSP)
 
 
@@ -1206,7 +1206,7 @@ Obj             DoExecFunc0argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[1];
     LockFuncArgs(func, args);
 
@@ -1247,7 +1247,7 @@ Obj             DoExecFunc1argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[1];
     args[0] = arg1;
     LockFuncArgs(func, args);
@@ -1293,7 +1293,7 @@ Obj             DoExecFunc2argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[2];
     args[0] = arg1;
     args[1] = arg2;
@@ -1341,7 +1341,7 @@ Obj             DoExecFunc3argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[3];
     args[0] = arg1;
     args[1] = arg2;
@@ -1393,7 +1393,7 @@ Obj             DoExecFunc4argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[4];
     args[0] = arg1;
     args[1] = arg2;
@@ -1447,7 +1447,7 @@ Obj             DoExecFunc5argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[5];
     args[0] = arg1;
     args[1] = arg2;
@@ -1504,7 +1504,7 @@ Obj             DoExecFunc6argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
     Obj                 args[6];
     args[0] = arg1;
     args[1] = arg2;
@@ -1560,7 +1560,7 @@ Obj             DoExecFuncXargsL (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
-    int			lockSP = STATE(lockStackPointer);
+    int			lockSP = TLS(lockStackPointer);
 
     CHECK_RECURSION_BEFORE
 

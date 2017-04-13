@@ -471,7 +471,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
 void visitStat(Stat stat)
 {
 #ifdef HPCGAP
-  if(profileState.profiledThread != STATE(threadID))
+  if(profileState.profiledThread != TLS(threadID))
     return;
 #endif
 
@@ -625,7 +625,7 @@ void enableAtStartup(char* filename, Int repeats)
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
-    profileState.profiledThread = STATE(threadID);
+    profileState.profiledThread = TLS(threadID);
 #endif
     profileState.lastNotOutputted.line = -1;
 #ifdef HAVE_GETTIMEOFDAY
@@ -758,7 +758,7 @@ Obj FuncACTIVATE_PROFILING (
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
-    profileState.profiledThread = STATE(threadID);
+    profileState.profiledThread = TLS(threadID);
 #endif
     profileState.lastNotOutputted.line = -1;
 

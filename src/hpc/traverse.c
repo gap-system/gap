@@ -49,7 +49,7 @@ typedef struct TraversalState {
 } TraversalState;
 
 static inline TraversalState *currentTraversal() {
-  return STATE(traversalState);
+  return TLS(traversalState);
 }
 
 static Obj NewList(UInt size)
@@ -267,12 +267,12 @@ static void BeginTraversal(TraversalState *traversal)
   traversal->listCapacity = 10;
   traversal->listCurrent = 0;
   traversal->previousTraversal = currentTraversal();
-  STATE(traversalState) = traversal;
+  TLS(traversalState) = traversal;
 }
 
 static void EndTraversal()
 {
-  STATE(traversalState) = currentTraversal()->previousTraversal;
+  TLS(traversalState) = currentTraversal()->previousTraversal;
 }
 
 #if SIZEOF_VOID_P == 4

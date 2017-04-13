@@ -2789,8 +2789,8 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
         IntrEnd( 1UL );
         type = STATUS_ERROR;
         PopRegionLocks(lockSP);
-        if (STATE(CurrentHashLock))
-            HashUnlock(STATE(CurrentHashLock));
+        if (TLS(CurrentHashLock))
+            HashUnlock(TLS(CurrentHashLock));
     }
 
     /* switch back to the old reader context                               */
@@ -2928,8 +2928,8 @@ UInt ReadEvalFile ( void )
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
     PopRegionLocks(lockSP);
-    if (STATE(CurrentHashLock))
-      HashUnlock(STATE(CurrentHashLock));
+    if (TLS(CurrentHashLock))
+      HashUnlock(TLS(CurrentHashLock));
     STATE(StackNams)   = stackNams;
     STATE(CountNams)   = countNams;
     STATE(ReadTop)     = readTop;

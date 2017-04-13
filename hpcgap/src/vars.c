@@ -119,10 +119,10 @@ Obj             ObjLVar (
 
 Bag NewLVarsBag(UInt slots) {
   Bag result;
-  if (slots < sizeof(STATE(LVarsPool))/(sizeof(STATE(LVarsPool)[0]))) {
-    result = STATE(LVarsPool)[slots];
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+    result = TLS(LVarsPool)[slots];
     if (result) {
-      STATE(LVarsPool)[slots] = ADDR_OBJ(result)[0];
+      TLS(LVarsPool)[slots] = ADDR_OBJ(result)[0];
       return result;
     }
   }
@@ -131,10 +131,10 @@ Bag NewLVarsBag(UInt slots) {
 
 void FreeLVarsBag(Bag bag) {
   UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
-  if (slots < sizeof(STATE(LVarsPool))/(sizeof(STATE(LVarsPool)[0]))) {
+  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
-    ADDR_OBJ(bag)[0] = STATE(LVarsPool)[slots];
-    STATE(LVarsPool)[slots] = bag;
+    ADDR_OBJ(bag)[0] = TLS(LVarsPool)[slots];
+    TLS(LVarsPool)[slots] = bag;
   }
 }
 

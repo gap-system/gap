@@ -2329,7 +2329,7 @@ void InitStatTLS()
 {
   STATE(CurrExecStatFuncs) = ExecStatFuncs;
   MEMBAR_FULL();
-  if (GetThreadState(STATE(threadID)) >= TSTATE_INTERRUPT) {
+  if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
     MEMBAR_FULL();
     STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
   }
