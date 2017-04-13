@@ -78,11 +78,7 @@ typedef void       sig_handler_t ( int );
 #include <vfork.h>
 #endif
 
-#if HAVE_ERRNO_H
 #include <errno.h>
-#else
-extern int errno;
-#endif
 
 #if SYS_IS_CYGWIN32
 #include <process.h>

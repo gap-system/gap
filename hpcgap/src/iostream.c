@@ -62,11 +62,7 @@
 #include <fcntl.h>
 
 
-#if HAVE_ERRNO_H
 #include <errno.h>
-#else
-extern int errno;
-#endif
 
 #if HAVE_TERMIOS_H
 #include <termios.h>
@@ -76,15 +72,7 @@ extern int errno;
 #include <sys/wait.h>
 #endif
 
-#if HAVE_ASSERT_H
 #include <assert.h>
-#else
-#ifdef NDEBUG
-#define assert( a )
-#else
-#define assert( a ) do if (!(a)) {fprintf(stderr,"Assertion failed at line %d file %s\n",__LINE__,__FILE__); abort();} while (0)
-#endif
-#endif
 
 #if HAVE_UTIL_H
 #include <util.h>                       /* for openpty() on Mac OS X, OpenBSD and NetBSD */

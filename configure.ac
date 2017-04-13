@@ -489,10 +489,6 @@ dnl
 AC_CHECK_HEADERS([fcntl.h termios.h termio.h sgtty.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/stat.h sys/wait.h])
 
-# FIXME: get rid of the following (requires code changes!!!)
-AC_CHECK_HEADERS( assert.h errno.h )
-
-
 # Check for POSIX 98 pty APIs
 AC_CHECK_FUNCS([ptsname grantpt unlockpt posix_openpt])
 
@@ -539,9 +535,6 @@ AC_SEARCH_LIBS([dlopen], [dl],
     [AC_DEFINE([HAVE_DLOPEN], [1], [define as 1 if you have `dlopen' and `dlsym'])]
 )
 
-
-dnl error handling
-AC_CHECK_HEADERS([errno.h])
 
 dnl check for timing functions
 AC_CHECK_HEADERS([time.h sys/time.h sys/times.h])
