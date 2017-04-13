@@ -486,7 +486,7 @@ dnl checks for things like HAVE_SYS_WAIT_H if appropriate.
 dnl
 
 AC_CHECK_HEADERS([fcntl.h termios.h])
-AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/stat.h sys/wait.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/stat.h])
 
 
 # openpty() is available on various BSD variants, but also in glibc.
