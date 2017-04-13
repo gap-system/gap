@@ -1,5 +1,6 @@
 #include <src/systhread.h>
 #include <src/system.h>
+#include <src/gapstate.h>
 #include <src/gasman.h>
 #include <src/objects.h>
 #include <src/bool.h>

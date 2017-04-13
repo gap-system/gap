@@ -22,6 +22,7 @@
 **  assume that the vectors are cleared.
 */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

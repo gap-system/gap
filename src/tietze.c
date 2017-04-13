@@ -11,6 +11,7 @@
 **  This file contains the functions for computing with finite presentations.
 */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 #include <src/code.h>
 #include <src/stats.h>                  /* for TakeInterrupt */
 

@@ -38,6 +38,7 @@
 *N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

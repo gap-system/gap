@@ -13,6 +13,7 @@
 **  statements for their effects and prints statements.
 */
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 
 #include <src/sysfiles.h>               /* file input/output */

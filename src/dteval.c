@@ -24,6 +24,7 @@
 **  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
 */
 #include <src/system.h>
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

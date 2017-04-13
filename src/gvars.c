@@ -27,6 +27,7 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 #include <src/system.h>                 /* system dependent part */
+#include <src/gapstate.h>
 
 #include <sys/stat.h>
 #include <sys/time.h>

@@ -10,6 +10,7 @@
 **  This file contains the functions for generic lists.
 */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
 
 
 
