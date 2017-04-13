@@ -20,7 +20,7 @@
 **  by the plain list package to access and modify plain lists.
 */
 #include <src/system.h>                 /* Ints, UInts */
-
+#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
@@ -2112,14 +2112,14 @@ void            PrintListDefault (
     }
 
     Pr("%2>[ %2>",0L,0L);
-    for ( TLS(PrintObjIndex)=1; TLS(PrintObjIndex)<=LEN_LIST(list); TLS(PrintObjIndex)++ ) {
-        elm = ELMV0_LIST( list, TLS(PrintObjIndex) );
+    for ( STATE(PrintObjIndex)=1; STATE(PrintObjIndex)<=LEN_LIST(list); STATE(PrintObjIndex)++ ) {
+        elm = ELMV0_LIST( list, STATE(PrintObjIndex) );
         if ( elm != 0 ) {
-            if ( 1 < TLS(PrintObjIndex) )  Pr( "%<,%< %2>", 0L, 0L );
+            if ( 1 < STATE(PrintObjIndex) )  Pr( "%<,%< %2>", 0L, 0L );
             PrintObj( elm );
         }
         else {
-            if ( 1 < TLS(PrintObjIndex) )  Pr( "%2<,%2>", 0L, 0L );
+            if ( 1 < STATE(PrintObjIndex) )  Pr( "%2<,%2>", 0L, 0L );
         }
     }
     Pr(" %4<]",0L,0L);

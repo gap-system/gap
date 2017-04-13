@@ -13,7 +13,7 @@
 **  statements for their effects and prints statements.
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/gapstate.h>
 
 #include <src/sysfiles.h>               /* file input/output */
 
@@ -77,7 +77,7 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*TLS(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -1570,7 +1570,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    TLS(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    STATE(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
     return 1;
@@ -1600,8 +1600,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'TLS(ReturnObjStat)' to void                                         */
-    TLS(ReturnObjStat) = 0;
+    /* set 'STATE(ReturnObjStat)' to void                                         */
+    STATE(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
     return 2;
@@ -1783,8 +1783,8 @@ void ClearError ( void )
         }
     }
 
-    /* reset <TLS(NrError)>                                                */
-    TLS(NrError) = 0;
+    /* reset <STATE(NrError)>                                                */
+    STATE(NrError) = 0;
 }
 
 /****************************************************************************
@@ -2197,7 +2197,7 @@ static Int InitKernel (
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
 
-    InitGlobalBag( &TLS(ReturnObjStat), "src/stats.c:ReturnObjStat" );
+    InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
@@ -2286,12 +2286,12 @@ static Int InitKernel (
     return 0;
 }
 
-void InitStatState(GlobalState *state)
+void InitStatState(GAPState *state)
 {
   state->CurrExecStatFuncs = ExecStatFuncs;
 }
 
-void DestroyStatState(GlobalState *state)
+void DestroyStatState(GAPState *state)
 {
 }
 

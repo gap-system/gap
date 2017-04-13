@@ -1,14 +1,14 @@
-/***********************************************************************
+	/***********************************************************************
  **
- *W  globalstate.h      GAP source                 Markus Pfeiffer
+ *W  gapstate.h      GAP source                 Markus Pfeiffer
  **
  **
  ** This file declares all variables that are considered state for the
  ** interpreter
  **
  */
-#ifndef GAP_GLOBAL_STATE_H
-#define GAP_GLOBAL_STATE_H
+#ifndef GAP_GAPSTATE_H
+#define GAP_GAPSTATE_H
 
 #include <stdint.h>
 
@@ -19,7 +19,7 @@
 
 #define MAXPRINTDEPTH 1024L
 
-typedef struct GlobalState
+typedef struct GAPState
 {
   /* From intrprtr.c */
   Obj IntrResult;
@@ -64,8 +64,13 @@ typedef struct GlobalState
   UInt NrErrLine;
   UInt            Symbol;
   Char *          Prompt;
-  TypInputFile   InputFiles[16];
+#if defined(HPCGAP)
+  TypInputFile * InputFiles[16];
+  TypOutputFile * OutputFiles[16];
+#else
+  TypInputFile InputFiles[16];
   TypOutputFile OutputFiles[16];
+#endif
   int InputFilesSP;
   int OutputFilesSP;
   TypInputFile *  Input;
@@ -154,13 +159,18 @@ typedef struct GlobalState
   Int PrintObjIndex;
   Int PrintObjDepth;
   Int PrintObjFull;
-  // HPC-GAP Obj PrintObjThissObj;
+#if defined(HPCGAP)
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Int *PrintObjIndices;
+#else
   Obj PrintObjThiss[MAXPRINTDEPTH];
-  // HPC-GAP Obj PrintObjIndicesObj;
   Int PrintObjIndices[MAXPRINTDEPTH];
+#endif
 
 #if defined(HPCGAP)
-  /* For serializer.c */
+  /* For serialize.c */
   Obj SerializationObj;
   UInt SerializationIndex;
   void *SerializationDispatcher;
@@ -178,38 +188,34 @@ typedef struct GlobalState
   Obj SC_CW2_VECTOR;
   UInt SC_MAX_STACK_SIZE;
 
-#if defined(HPCGAP)
-  /* Profiling */
-  UInt CountActive;
-  UInt LocksAcquired;
-  UInt LocksContended;
-#endif
-
   /* Allocation */
 #ifdef BOEHM_GC
 #define MAX_GC_PREFIX_DESC 4
   void **FreeList[MAX_GC_PREFIX_DESC+2];
 #endif
-  /* Extra storage */
-} GlobalState;
+} GAPState;
 
-extern GlobalState *MainGlobalState;
+extern GAPState *MainGAPState;
 
-void InitMainGlobalState(void);
+#if !defined(HPCGAP)
+#define STATE(x) MainGAPState->x
+#endif
 
-void InitScannerState(GlobalState *);
-void InitStatState(GlobalState *);
-void InitExprState(GlobalState *);
-void InitCoderState(GlobalState *);
-void InitOpersState(GlobalState *);
+void InitMainGAPState(void);
 
-void DestroyScannerState(GlobalState *);
-void DestroyStatState(GlobalState *);
-void DestroyExprState(GlobalState *);
-void DestroyCoderState(GlobalState *);
-void DestroyOpersState(GlobalState *);
+void InitScannerState(GAPState *);
+void InitStatState(GAPState *);
+void InitExprState(GAPState *);
+void InitCoderState(GAPState *);
+void InitOpersState(GAPState *);
 
-void InitGlobalState(GlobalState *state);
-void DestroyGlobalState(GlobalState *state);
+void DestroyScannerState(GAPState *);
+void DestroyStatState(GAPState *);
+void DestroyExprState(GAPState *);
+void DestroyCoderState(GAPState *);
+void DestroyOpersState(GAPState *);
 
-#endif // GAP_GLOBAL_STATE_H
+void InitGAPState(GAPState *state);
+void DestroyGAPState(GAPState *state);
+
+#endif // GAP_GAPSTATE_H

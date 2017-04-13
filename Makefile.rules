@@ -53,11 +53,7 @@ SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
 SOURCES += src/gasman.c
-ifeq ($(HPCGAP),no)
-# FIXME: HPC-GAP and src/globalstate.c are not yet compatible; need to "merge"
-# struct GlobalState with ThreadLocalStorage from hpc/tls.h
-SOURCES += src/globalstate.c
-endif
+SOURCES += src/gapstate.c
 SOURCES += src/gmpints.c
 SOURCES += src/gvars.c
 SOURCES += src/intfuncs.c

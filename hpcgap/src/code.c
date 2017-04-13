@@ -90,28 +90,28 @@ Obj FilenameCache;
 /* TL: UInt LoopStackCount = 0; */
 
 static inline void PushOffsBody( void ) {
-  assert(TLS(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
-  TLS(OffsBodyStack)[TLS(OffsBodyCount)++] = TLS(OffsBody);
+  assert(STATE(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
+  STATE(OffsBodyStack)[STATE(OffsBodyCount)++] = STATE(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
-  assert(TLS(OffsBodyCount));
-  TLS(OffsBody) = TLS(OffsBodyStack)[--TLS(OffsBodyCount)];
+  assert(STATE(OffsBodyCount));
+  STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
 static void SetupOffsBodyStackAndLoopStack() {
-  TLS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  TLS(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+  STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 }
 
 static inline void PushLoopNesting( void ) {
-  assert(TLS(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
-  TLS(LoopStack)[TLS(LoopStackCount)++] = TLS(LoopNesting);
+  assert(STATE(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
+  STATE(LoopStack)[STATE(LoopStackCount)++] = STATE(LoopNesting);
 }
 
 static inline void PopLoopNesting( void ) {
-  assert(TLS(LoopStackCount));
-  TLS(LoopNesting) = TLS(LoopStack)[--TLS(LoopStackCount)];
+  assert(STATE(LoopStackCount));
+  STATE(LoopNesting) = STATE(LoopStack)[--STATE(LoopStackCount)];
 }
 
 static inline void setup_gapname(TypInputFile* i)
@@ -226,24 +226,24 @@ Stat NewStatWithLine (
     Stat                stat;           /* result                          */
 
     /* this is where the new statement goes                                */
-    stat = TLS(OffsBody) + FIRST_STAT_CURR_FUNC;
+    stat = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
 
     /* increase the offset                                                 */
-    TLS(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
+    STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-      ResizeBag( BODY_FUNC(CURR_FUNC), TLS(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-        TLS(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+      ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        TLS(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    setup_gapname(TLS(Input));
+    setup_gapname(STATE(Input));
     
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = fillFilenameLine(TLS(Input)->gapnameid, line, size, type);
+    ADDR_STAT(stat)[-1] = fillFilenameLine(STATE(Input)->gapnameid, line, size, type);
     RegisterStatWithProfiling(stat);
     /* return the new statement                                            */
     return stat;
@@ -253,7 +253,7 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    return NewStatWithLine(type, size, TLS(Input)->number);
+    return NewStatWithLine(type, size, STATE(Input)->number);
 }
 
 
@@ -271,24 +271,24 @@ Expr            NewExpr (
     Expr                expr;           /* result                          */
 
     /* this is where the new expression goes                               */
-    expr = TLS(OffsBody) + FIRST_STAT_CURR_FUNC;
+    expr = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
 
     /* increase the offset                                                 */
-    TLS(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
+    STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), TLS(OffsBody) );
-        TLS(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) );
+        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < TLS(OffsBody) ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        TLS(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = fillFilenameLine(TLS(Input)->gapnameid,
-                                           TLS(Input)->number, size, type);
+    ADDR_EXPR(expr)[-1] = fillFilenameLine(STATE(Input)->gapnameid,
+                                           STATE(Input)->number, size, type);
     RegisterStatWithProfiling(expr);
     /* return the new expression                                           */
     return expr;
@@ -331,17 +331,17 @@ void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( TLS(StackStat) != 0 );
-    assert( 0 <= TLS(CountStat) );
-    assert( TLS(CountStat) <= SIZE_BAG(TLS(StackStat))/sizeof(Stat) );
+    assert( STATE(StackStat) != 0 );
+    assert( 0 <= STATE(CountStat) );
+    assert( STATE(CountStat) <= SIZE_BAG(STATE(StackStat))/sizeof(Stat) );
     assert( stat != 0 );
 
     /* count up and put the statement onto the stack                       */
-    if ( TLS(CountStat) == SIZE_BAG(TLS(StackStat))/sizeof(Stat) ) {
-        ResizeBag( TLS(StackStat), 2*TLS(CountStat)*sizeof(Stat) );
+    if ( STATE(CountStat) == SIZE_BAG(STATE(StackStat))/sizeof(Stat) ) {
+        ResizeBag( STATE(StackStat), 2*STATE(CountStat)*sizeof(Stat) );
     }
-    ((Stat*)PTR_BAG(TLS(StackStat)))[TLS(CountStat)] = stat;
-    TLS(CountStat)++;
+    ((Stat*)PTR_BAG(STATE(StackStat)))[STATE(CountStat)] = stat;
+    STATE(CountStat)++;
 }
 
 Stat PopStat ( void )
@@ -349,13 +349,13 @@ Stat PopStat ( void )
     Stat                stat;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( TLS(StackStat) != 0 );
-    assert( 1 <= TLS(CountStat) );
-    assert( TLS(CountStat) <= SIZE_BAG(TLS(StackStat))/sizeof(Stat) );
+    assert( STATE(StackStat) != 0 );
+    assert( 1 <= STATE(CountStat) );
+    assert( STATE(CountStat) <= SIZE_BAG(STATE(StackStat))/sizeof(Stat) );
 
     /* get the top statement from the stack, and count down                */
-    TLS(CountStat)--;
-    stat = ((Stat*)PTR_BAG(TLS(StackStat)))[TLS(CountStat)];
+    STATE(CountStat)--;
+    stat = ((Stat*)PTR_BAG(STATE(StackStat)))[STATE(CountStat)];
 
     /* return the popped statement                                         */
     return stat;
@@ -425,17 +425,17 @@ void PushExpr (
     Expr                expr )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( TLS(StackExpr) != 0 );
-    assert( 0 <= TLS(CountExpr) );
-    assert( TLS(CountExpr) <= SIZE_BAG(TLS(StackExpr))/sizeof(Expr) );
+    assert( STATE(StackExpr) != 0 );
+    assert( 0 <= STATE(CountExpr) );
+    assert( STATE(CountExpr) <= SIZE_BAG(STATE(StackExpr))/sizeof(Expr) );
     assert( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
-    if ( TLS(CountExpr) == SIZE_BAG(TLS(StackExpr))/sizeof(Expr) ) {
-        ResizeBag( TLS(StackExpr), 2*TLS(CountExpr)*sizeof(Expr) );
+    if ( STATE(CountExpr) == SIZE_BAG(STATE(StackExpr))/sizeof(Expr) ) {
+        ResizeBag( STATE(StackExpr), 2*STATE(CountExpr)*sizeof(Expr) );
     }
-    ((Expr*)PTR_BAG(TLS(StackExpr)))[TLS(CountExpr)] = expr;
-    TLS(CountExpr)++;
+    ((Expr*)PTR_BAG(STATE(StackExpr)))[STATE(CountExpr)] = expr;
+    STATE(CountExpr)++;
 }
 
 Expr PopExpr ( void )
@@ -443,13 +443,13 @@ Expr PopExpr ( void )
     Expr                expr;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( TLS(StackExpr) != 0 );
-    assert( 1 <= TLS(CountExpr) );
-    assert( TLS(CountExpr) <= SIZE_BAG(TLS(StackExpr))/sizeof(Expr) );
+    assert( STATE(StackExpr) != 0 );
+    assert( 1 <= STATE(CountExpr) );
+    assert( STATE(CountExpr) <= SIZE_BAG(STATE(StackExpr))/sizeof(Expr) );
 
     /* get the top expression from the stack, and count down               */
-    TLS(CountExpr)--;
-    expr = ((Expr*)PTR_BAG(TLS(StackExpr)))[TLS(CountExpr)];
+    STATE(CountExpr)--;
+    expr = ((Expr*)PTR_BAG(STATE(StackExpr)))[STATE(CountExpr)];
 
     /* return the popped expression                                        */
     return expr;
@@ -604,14 +604,14 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 void CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
-    assert( TLS(CountStat) == 0 );
-    assert( TLS(CountExpr) == 0 );
+    assert( STATE(CountStat) == 0 );
+    assert( STATE(CountExpr) == 0 );
 
     /* remember the current frame                                          */
-    TLS(CodeLVars) = TLS(CurrLVars);
+    STATE(CodeLVars) = STATE(CurrLVars);
 
     /* clear the code result bag                                           */
-    TLS(CodeResult) = 0;
+    STATE(CodeResult) = 0;
 }
 
 UInt CodeEnd (
@@ -621,24 +621,24 @@ UInt CodeEnd (
     if ( ! error ) {
 
         /* the stacks must be empty                                        */
-        assert( TLS(CountStat) == 0 );
-        assert( TLS(CountExpr) == 0 );
+        assert( STATE(CountStat) == 0 );
+        assert( STATE(CountExpr) == 0 );
 
-        /* we must be back to 'TLS(CurrLVars)'                                  */
-        assert( TLS(CurrLVars) == TLS(CodeLVars) );
+        /* we must be back to 'STATE(CurrLVars)'                                  */
+        assert( STATE(CurrLVars) == STATE(CodeLVars) );
 
-        /* 'CodeFuncExprEnd' left the function already in 'TLS(CodeResult)'     */
+        /* 'CodeFuncExprEnd' left the function already in 'STATE(CodeResult)'     */
     }
 
     /* otherwise clean up the mess                                         */
     else {
 
         /* empty the stacks                                                */
-        TLS(CountStat) = 0;
-        TLS(CountExpr) = 0;
+        STATE(CountStat) = 0;
+        STATE(CountExpr) = 0;
 
         /* go back to the correct frame                                    */
-        SWITCH_TO_OLD_LVARS( TLS(CodeLVars) );
+        SWITCH_TO_OLD_LVARS( STATE(CodeLVars) );
     }
 
     /* return value is ignored                                             */
@@ -779,18 +779,18 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    setup_gapname(TLS(Input));
-    SET_FILENAME_BODY(body, TLS(Input)->gapname);
+    setup_gapname(STATE(Input));
+    SET_FILENAME_BODY(body, STATE(Input)->gapname);
     SET_STARTLINE_BODY(body, INTOBJ_INT(startLine));
-    /*    Pr("Coding begin at %s:%d ",(Int)(TLS(Input)->name),TLS(Input)->number);
+    /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
-    TLS(OffsBody) = 0;
-    TLS(LoopNesting) = 0;
+    STATE(OffsBody) = 0;
+    STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
-    ENVI_FUNC( fexp ) = TLS(CurrLVars);
+    ENVI_FUNC( fexp ) = STATE(CurrLVars);
     CHANGED_BAG( fexp );
-    MakeHighVars(TLS(CurrLVars));
+    MakeHighVars(STATE(CurrLVars));
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
@@ -818,7 +818,7 @@ void CodeFuncExprEnd (
 
     /* get the function expression                                         */
     fexp = CURR_FUNC;
-    assert(!TLS(LoopNesting));
+    assert(!STATE(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an additional return-void-statement if neccessary              */
@@ -857,9 +857,9 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), TLS(OffsBody)+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(TLS(Input)->number));
-    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), TLS(Input)->number); */
+    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(STATE(Input)->number));
+    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
@@ -868,12 +868,12 @@ void CodeFuncExprEnd (
     PopLoopNesting();
     
     /* restore the remembered offset                                       */
-    TLS(OffsBody) = BRK_CALL_TO();
+    STATE(OffsBody) = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( TLS(CurrLVars) != TLS(CodeLVars) ) {
+    if ( STATE(CurrLVars) != STATE(CodeLVars) ) {
         fexs = FEXS_FUNC( CURR_FUNC );
         len = LEN_PLIST( fexs );
         GROW_PLIST(      fexs, len+1 );
@@ -885,9 +885,9 @@ void CodeFuncExprEnd (
         PushExpr( expr );
     }
 
-    /* otherwise, make the function and store it in 'TLS(CodeResult)'           */
+    /* otherwise, make the function and store it in 'STATE(CodeResult)'           */
     else {
-        TLS(CodeResult) = MakeFunction( fexp );
+        STATE(CodeResult) = MakeFunction( fexp );
     }
 
 }
@@ -1033,7 +1033,7 @@ void CodeForIn ( void )
 
 void CodeForBeginBody ( void )
 {
-  TLS(LoopNesting)++;
+  STATE(LoopNesting)++;
 }
 
 void CodeForEndBody (
@@ -1095,7 +1095,7 @@ void CodeForEndBody (
     PushStat( stat );
 
     /* decrement loop nesting count */
-    TLS(LoopNesting)--;
+    STATE(LoopNesting)--;
 }
 
 void CodeForEnd ( void )
@@ -1236,7 +1236,7 @@ void CodeWhileBegin ( void )
 
 void CodeWhileBeginBody ( void )
 {
-  TLS(LoopNesting)++;
+  STATE(LoopNesting)++;
 }
 
 void CodeWhileEndBody (
@@ -1274,7 +1274,7 @@ void CodeWhileEndBody (
     ADDR_STAT(stat)[0] = cond;
 
     /* decrmement loop nesting */
-    TLS(LoopNesting)--;
+    STATE(LoopNesting)--;
     
     /* push the while-statement                                            */
     PushStat( stat );
@@ -1314,7 +1314,7 @@ void CodeRepeatBegin ( void )
 
 void CodeRepeatBeginBody ( void )
 {
-  TLS(LoopNesting)++;
+  STATE(LoopNesting)++;
 }
 
 void CodeRepeatEndBody (
@@ -1322,7 +1322,7 @@ void CodeRepeatEndBody (
 {
     /* leave the number of statements in the body on the expression stack  */
     PushExpr( INTEXPR_INT(nr) );
-    TLS(LoopNesting)--;
+    STATE(LoopNesting)--;
 }
 
 void CodeRepeatEnd ( void )
@@ -1381,7 +1381,7 @@ void            CodeBreak ( void )
 {
     Stat                stat;           /* break-statement, result         */
 
-    if (!TLS(LoopNesting))
+    if (!STATE(LoopNesting))
       SyntaxError("'break' statement not enclosed in a loop");
     
     /* allocate the break-statement                                        */
@@ -1402,7 +1402,7 @@ void            CodeContinue ( void )
 {
     Stat                stat;           /* continue-statement, result         */
 
-    if (!TLS(LoopNesting))
+    if (!STATE(LoopNesting))
       SyntaxError("'continue' statement not enclosed in a loop");
 
     /* allocate the continue-statement                                        */
@@ -3448,13 +3448,13 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void InitCoderTLS( void )
+void InitCoderState(GAPState * state)
 {
-    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
-    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+    state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }
 
-void DestroyCoderTLS( void )
+void DestroyCoderState(GAPState * state)
 {
 }
 
@@ -3481,8 +3481,8 @@ static Int InitKernel (
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
     /* allocate the statements and expressions stacks                      */
-    InitGlobalBag( &TLS(StackStat), "TLS(StackStat)" );
-    InitGlobalBag( &TLS(StackExpr), "TLS(StackExpr)" );
+    InitGlobalBag( &STATE(StackStat), "STATE(StackStat)" );
+    InitGlobalBag( &STATE(StackExpr), "STATE(StackExpr)" );
 
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
@@ -3504,8 +3504,8 @@ static Int InitLibrary (
   UInt gv;
   Obj cache;
     /* allocate the statements and expressions stacks                      */
-    TLS(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
-    TLS(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+    STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
     FilenameCache = NewAtomicList(0);
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
@@ -3541,17 +3541,17 @@ static Int PreSave (
   UInt i;
 
   /* Can't save in mid-parsing */
-  if (TLS(CountExpr) || TLS(CountStat))
+  if (STATE(CountExpr) || STATE(CountStat))
     return 1;
 
   /* push the FP cache index out into a GAP Variable */
   AssGVar(GVAR_SAVED_FLOAT_INDEX, INTOBJ_INT(NextFloatExprNumber));
 
   /* clean any old data out of the statement and expression stacks */
-  for (i = 0; i < SIZE_BAG(TLS(StackStat))/sizeof(UInt); i++)
-    ADDR_OBJ(TLS(StackStat))[i] = (Obj)0;
-  for (i = 0; i < SIZE_BAG(TLS(StackExpr))/sizeof(UInt); i++)
-    ADDR_OBJ(TLS(StackExpr))[i] = (Obj)0;
+  for (i = 0; i < SIZE_BAG(STATE(StackStat))/sizeof(UInt); i++)
+    ADDR_OBJ(STATE(StackStat))[i] = (Obj)0;
+  for (i = 0; i < SIZE_BAG(STATE(StackExpr))/sizeof(UInt); i++)
+    ADDR_OBJ(STATE(StackExpr))[i] = (Obj)0;
   /* return success                                                      */
   return 0;
 }

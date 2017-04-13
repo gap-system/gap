@@ -791,7 +791,7 @@ Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target) {
 Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
-  memcpy( readJmpError, TLS(ReadJmpError), sizeof(jmp_buf) );
+  memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
   TRY_READ {
     HashLock(target);
     locked = 1;
@@ -801,14 +801,14 @@ Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function) {
   }
   if (locked)
     HashUnlock(target);
-  memcpy( TLS(ReadJmpError), readJmpError, sizeof(jmp_buf) );
+  memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
 
 Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   volatile int locked = 0;
   jmp_buf readJmpError;
-  memcpy( readJmpError, TLS(ReadJmpError), sizeof(jmp_buf) );
+  memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
   TRY_READ {
     HashLockShared(target);
     locked = 1;
@@ -818,7 +818,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   }
   if (locked)
     HashUnlockShared(target);
-  memcpy( TLS(ReadJmpError), readJmpError, sizeof(jmp_buf) );
+  memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
   return (Obj) 0;
 }
 
@@ -872,15 +872,15 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
     ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))
     ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
-  memcpy(readJmpError, TLS(ReadJmpError), sizeof(syJmp_buf));
-  if (sySetjmp(TLS(ReadJmpError))) {
-    memcpy(TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+  memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
+  if (sySetjmp(STATE(ReadJmpError))) {
+    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     TLS(currentRegion) = oldRegion;
-    syLongjmp(TLS(ReadJmpError), 1);
+    syLongjmp(STATE(ReadJmpError), 1);
   }
   TLS(currentRegion) = region;
   CALL_0ARGS(func);
-  memcpy(TLS(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+  memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
   TLS(currentRegion) = oldRegion;
   return (Obj) 0;
 }
@@ -1517,11 +1517,11 @@ static Int InitLibrary (
     return 0;
 }
 
-void InitThreadAPITLS()
+void InitThreadAPIState()
 {
 }
 
-void DestroyThreadAPITLS()
+void DestroyThreadAPIState()
 {
 }
 
@@ -3179,8 +3179,8 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
    * increasing value and we only need it to succeed eventually.
    */
   n = INT_INTOBJ(count)/10;
-  if (TLS(PeriodicCheckCount) + n < SigVTALRMCounter) {
-    TLS(PeriodicCheckCount) = SigVTALRMCounter;
+  if (STATE(PeriodicCheckCount) + n < SigVTALRMCounter) {
+    STATE(PeriodicCheckCount) = SigVTALRMCounter;
     CALL_0ARGS(func);
   }
   return (Obj) 0;

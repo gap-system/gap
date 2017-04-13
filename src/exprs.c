@@ -13,6 +13,7 @@
 **  expressions to their values and prints expressions.
 */
 #include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -73,8 +74,8 @@
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)TLS(PtrLVars))+(expr)+5) : \
+                        (*(Obj*)(((char*)STATE(PtrLVars))+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)STATE(PtrLVars))+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */
@@ -2107,12 +2108,12 @@ static Int InitLibrary (
     return 0;
 }
 
-void InitExprState(GlobalState *state)
+void InitExprState(GAPState *state)
 {
     state->CurrEvalExprFuncs = EvalExprFuncs;
 }
 
-void DestroyExprState(GlobalState *state)
+void DestroyExprState(GAPState *state)
 {
 }
 

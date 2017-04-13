@@ -1593,11 +1593,11 @@ void UnbAList(Obj list, Int pos)
   HashUnlockShared(list);
 }
 
-void InitAObjectsTLS() {
+void InitAObjectsState() {
   TLS(tlRecords) = (Obj) 0;
 }
 
-void DestroyAObjectsTLS() {
+void DestroyAObjectsState() {
   Obj records;
   UInt i, len;
   records = TLS(tlRecords);

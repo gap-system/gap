@@ -30,6 +30,8 @@ void LockMonitors(UInt count, Monitor **monitors);
 void UnlockMonitors(UInt count, Monitor **monitors);
 
 void InitSignals();
+void InitThreadAPIState();
+void DestroyThreadAPIState();
 
 
 /****************************************************************************

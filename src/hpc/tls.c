@@ -78,39 +78,21 @@ Int AllocateExtraTLSSlot() {
 
 void InitTLS()
 {
-  void InitScannerTLS();
-  void InitStatTLS();
-  void InitExprTLS();
-  void InitCoderTLS();
-  void InitThreadAPITLS();
-  void InitOpersTLS();
-  void InitAObjectsTLS();
-  InitScannerTLS();
-  InitStatTLS();
-  InitExprTLS();
-  InitCoderTLS();
-  InitThreadAPITLS();
-  InitOpersTLS();
-  InitAObjectsTLS();
+  InitGAPState(&TLS(state));
+
+  InitThreadAPIState();
+  InitAObjectsState();
+
   RunTLSConstructors();
   TLS(CountActive) = 1;
 }
 
 void DestroyTLS()
 {
-  void DestroyScannerTLS();
-  void DestroyStatTLS();
-  void DestroyExprTLS();
-  void DestroyCoderTLS();
-  void DestroyThreadAPITLS();
-  void DestroyOpersTLS();
-  void DestroyAObjectsTLS();
-  DestroyScannerTLS();
-  DestroyStatTLS();
-  DestroyExprTLS();
-  DestroyCoderTLS();
-  DestroyThreadAPITLS();
-  DestroyOpersTLS();
-  DestroyAObjectsTLS();
+  DestroyGAPState(&TLS(state));
+
+  DestroyThreadAPIState();
+  DestroyAObjectsState();
+
   RunTLSDestructors();
 }

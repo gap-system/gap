@@ -38,7 +38,7 @@
 *N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
 #include <src/system.h>                 /* system dependent part */
-
+#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
@@ -146,7 +146,7 @@ Obj             IdentityPerm;
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-#define  TmpPerm TLS(TmpPerm)
+#define  TmpPerm STATE(TmpPerm)
 
 static void UseTmpPerm( UInt size) {
   if (TmpPerm == (Obj)0)
