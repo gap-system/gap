@@ -185,7 +185,12 @@ typedef struct GAPState
 #endif
 } GAPState;
 
+#if !defined(HPCGAP)
+
 extern GAPState *MainGAPState;
+#define STATE(x) (MainGAPState->x)
+
+#endif
 
 void InitMainGAPState(void);
 
