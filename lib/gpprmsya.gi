@@ -1174,7 +1174,7 @@ end);
 
 InstallGlobalFunction(NormalizerParentSA,function(s,u)
 local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll,
-syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
+syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
 
   dom:=Set(MovedPoints(s));
   issym:=IsNaturalSymmetricGroup(s);
@@ -1194,10 +1194,11 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg;
       bas:=Pcgs(b);
       pg:=Centralizer(s,b);
       for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
+        bp:=dom[1];
 	w:=GroupHomomorphismByImagesNC(b,b,bas,
 	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
-	w:=List(dom,x->1^Image(w,First(AsSSortedList(b),a->1^a=x)));
-	w:=PermList(w);
+	w:=List(dom,x->bp^Image(w,First(AsSSortedList(b),a->bp^a=x)));
+	w:=MappingPermListList(dom,w);
 	pg:=ClosureGroup(pg,w);
       od;
       return Intersection(s,pg);
