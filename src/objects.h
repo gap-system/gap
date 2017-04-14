@@ -217,7 +217,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
                                   (o) != (Obj) 0)
-   
+
 /****************************************************************************
 **
 *F  IS_FFE( <o> ) . . . . . . . . test if an object is a finite field element
@@ -297,8 +297,8 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
-#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
-#define T_SINGULAR              (FIRST_CONSTANT_TNUM+14)   
+#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)
+#define T_SINGULAR              (FIRST_CONSTANT_TNUM+14)
 #define T_POLYMAKE              (FIRST_CONSTANT_TNUM+15)
 #define T_TRANS2                (FIRST_CONSTANT_TNUM+16)
 #define T_TRANS4                (FIRST_CONSTANT_TNUM+17)
@@ -470,7 +470,8 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
 #define DATA_TYPE(type)       ELM_PLIST( type, 3 )
-                        
+
+
 /****************************************************************************
 **
 *F  ID_TYPE( <type> ) . . . . . . . . . . . . . . . . . . . . .  id of a type
@@ -784,11 +785,10 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 *F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
 #define SET_TYPE_POSOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
- 
+
 
 /****************************************************************************
 **
-
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
 #define IS_DATOBJ(obj)            (TNUM_OBJ(obj) == T_DATOBJ)

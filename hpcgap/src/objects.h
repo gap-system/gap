@@ -217,7 +217,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
                                   (o) != (Obj) 0)
-   
+
 /****************************************************************************
 **
 *F  IS_FFE( <o> ) . . . . . . . . test if an object is a finite field element
@@ -297,9 +297,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
-#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
-#define T_HVARS                 (FIRST_CONSTANT_TNUM+14)   
-#define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)   
+#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)
+#define T_HVARS                 (FIRST_CONSTANT_TNUM+14)
+#define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)
 #define T_POLYMAKE              (FIRST_CONSTANT_TNUM+16)
 #define T_TRANS2                (FIRST_CONSTANT_TNUM+17)
 #define T_TRANS4                (FIRST_CONSTANT_TNUM+18)
@@ -369,29 +369,29 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 
 /* The next two TNUMA are BOTH external AND shared! */
-#define FIRST_SHARED_TNUM	(T_WPOBJ+1)
-#define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
-#define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
+#define FIRST_SHARED_TNUM       (T_WPOBJ+1)
+#define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
+#define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
 
 /* Primitive types */
-#define T_THREAD		(FIRST_SHARED_TNUM+ 2)
-#define T_MUTEX			(FIRST_SHARED_TNUM+ 3)
-#define T_CONDVAR		(FIRST_SHARED_TNUM+ 4)
-#define T_RWLOCK		(FIRST_SHARED_TNUM+ 5)
-#define T_MONITOR		(FIRST_SHARED_TNUM+ 6)
-#define T_REGION		(FIRST_SHARED_TNUM+ 7)
+#define T_THREAD                (FIRST_SHARED_TNUM+ 2)
+#define T_MUTEX                 (FIRST_SHARED_TNUM+ 3)
+#define T_CONDVAR               (FIRST_SHARED_TNUM+ 4)
+#define T_RWLOCK                (FIRST_SHARED_TNUM+ 5)
+#define T_MONITOR               (FIRST_SHARED_TNUM+ 6)
+#define T_REGION                (FIRST_SHARED_TNUM+ 7)
 /* User-programmable types */
-#define T_LOCK			(FIRST_SHARED_TNUM+ 8)
-#define T_SEMAPHORE		(FIRST_SHARED_TNUM+ 9)
-#define T_CHANNEL		(FIRST_SHARED_TNUM+ 10)
-#define T_BARRIER		(FIRST_SHARED_TNUM+ 11)
-#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 12)
-#define T_FIXALIST		(FIRST_SHARED_TNUM+ 13)
-#define T_ALIST			(FIRST_SHARED_TNUM+ 14)
-#define T_AREC 			(FIRST_SHARED_TNUM+ 15)
-#define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 16)
-#define T_TLREC 		(FIRST_SHARED_TNUM+ 17)
-#define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 18)
+#define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
+#define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
+#define T_CHANNEL               (FIRST_SHARED_TNUM+ 10)
+#define T_BARRIER               (FIRST_SHARED_TNUM+ 11)
+#define T_SYNCVAR               (FIRST_SHARED_TNUM+ 12)
+#define T_FIXALIST              (FIRST_SHARED_TNUM+ 13)
+#define T_ALIST                 (FIRST_SHARED_TNUM+ 14)
+#define T_AREC                  (FIRST_SHARED_TNUM+ 15)
+#define T_AREC_INNER            (FIRST_SHARED_TNUM+ 16)
+#define T_TLREC                 (FIRST_SHARED_TNUM+ 17)
+#define T_TLREC_INNER           (FIRST_SHARED_TNUM+ 18)
 
 /* reserve space for 40 package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
@@ -509,7 +509,8 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
 #define DATA_TYPE(type)       ELM_PLIST( type, 3 )
-                        
+
+
 /****************************************************************************
 **
 *F  ID_TYPE( <type> ) . . . . . . . . . . . . . . . . . . . . .  id of a type
@@ -857,11 +858,10 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 *F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
 #define SET_TYPE_POSOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
- 
+
 
 /****************************************************************************
 **
-
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
 #define IS_DATOBJ(obj)            (TNUM_OBJ(obj) == T_DATOBJ)
