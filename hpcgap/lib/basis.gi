@@ -678,7 +678,7 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     atomic readwrite NiceBasisFiltersInfo do
       entry:= First( NiceBasisFiltersInfo,
                      x -> IsIdenticalObj( filter, x[1] ) );
-      Add( entry, record.detect );
+      entry[3] := record.detect;
     od;
     
     InstallTrueMethod( IsHandledByNiceBasis, filter );

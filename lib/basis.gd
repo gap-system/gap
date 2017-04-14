@@ -884,13 +884,10 @@ DeclareGlobalFunction( "CheckForHandlingByNiceBasis" );
 
 
 InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
-    local len, i;
-    len:= Length( NiceBasisFiltersInfo );
-    for i in [ len, len-1 .. 1 ] do
-      NiceBasisFiltersInfo[ i+1 ]:= NiceBasisFiltersInfo[i];
-    od;
+    local entry;
     DeclareFilter( name );
-    NiceBasisFiltersInfo[1]:= [ ValueGlobal( name ), info ];
+    entry := [ ValueGlobal( name ), info ];
+    Add( NiceBasisFiltersInfo, entry, 1 );
 end );
 
 #############################################################################

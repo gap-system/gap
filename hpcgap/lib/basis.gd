@@ -884,15 +884,12 @@ DeclareGlobalFunction( "CheckForHandlingByNiceBasis" );
 
 
 InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
-    local len, i;
+    local entry;
     atomic readwrite NiceBasisFiltersInfo do
-      len:= Length( NiceBasisFiltersInfo );
-      for i in [ len, len-1 .. 1 ] do
-        NiceBasisFiltersInfo[ i+1 ]:= NiceBasisFiltersInfo[i];
-      od;
-      DeclareFilter( name );
-      NiceBasisFiltersInfo[1] := 
-        MigrateObj([ ValueGlobal( name ), info ],NiceBasisFiltersInfo);
+    DeclareFilter( name );
+    entry := [ ValueGlobal( name ), info ];
+    MigrateObj( entry, NiceBasisFiltersInfo );
+    Add( NiceBasisFiltersInfo, entry, 1 );
     od;
 end );
 
