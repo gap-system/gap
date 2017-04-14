@@ -502,15 +502,6 @@ extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 /****************************************************************************
 **
-*F  SetTypeDatobj( <obj>, <kind> ) . . . . . . . .  set kind of a data object
-**
-**  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
-*/
-
-#define SetTypeDatObj(obj, type)  SET_TYPE_DATOBJ(obj, type)
-
-/****************************************************************************
-**
 
 *F  MUTABLE_TNUM( <type> )  . . . . . . . . . . mutable type of internal type
 */
@@ -810,9 +801,11 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 
 /****************************************************************************
 **
-*F  SET_TYPE_DATOBJ( <obj>, <val> )  . . . . .  set the type of a data object
+*F  SetTypeDatobj( <obj>, <kind> ) . . . . . .  set the type of a data object
+**
+**  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-#define SET_TYPE_DATOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
+#define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
 
 
 /****************************************************************************

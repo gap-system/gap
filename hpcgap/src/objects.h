@@ -548,15 +548,6 @@ extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
 
-/****************************************************************************
-**
-*F  SetTypeDatobj( <obj>, <kind> ) . . . . . . . .  set kind of a data object
-**
-**  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
-*/
-
-extern void SetTypeDatObj( Obj obj, Obj type );
-
 
 /****************************************************************************
 **
@@ -880,9 +871,11 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 
 /****************************************************************************
 **
-*F  SET_TYPE_DATOBJ( <obj>, <val> )  . . . . .  set the type of a data object
+*F  SetTypeDatobj( <obj>, <kind> ) . . . . . .  set the type of a data object
+**
+**  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-#define SET_TYPE_DATOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
+extern void SetTypeDatObj( Obj obj, Obj type );
 
 
 /****************************************************************************
