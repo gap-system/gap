@@ -27,6 +27,7 @@ void AssAList(Obj list, Int pos, Obj obj);
 Obj ElmAList(Obj list, Int pos);
 Obj Elm0AList(Obj list, Int pos);
 Obj LengthAList(Obj list);
+void UnbARecord(Obj record, UInt rnam);
 
 void InitAObjectsState();
 void DestroyAObjectsState();
