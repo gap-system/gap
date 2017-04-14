@@ -535,14 +535,6 @@ extern UInt SyWindow;
 
 /****************************************************************************
 **
-
-*V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
-*/
-extern UInt SyStartTime;
-
-
-/****************************************************************************
-**
 *F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.

@@ -2219,9 +2219,7 @@ Char * syFgets (
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
     if ( SyLineEdit == 0 || ! syStartraw(fid) ) {
-        SyStopTime = SyTime();
         p = syFgetsNoEdit(line, length, fid, block );
-        SyStartTime += SyTime() - SyStopTime;
         return p;
     }
 
@@ -2231,12 +2229,8 @@ Char * syFgets (
       if ( SyLineEdit )
           syStopraw(fid);
 
-      /* stop the clock, reading should take no time                         */
-      SyStopTime = SyTime();
-
       p = readlineFgets(line, length, fid, block);
-      /* start the clock again                                               */
-      SyStartTime += SyTime() - SyStopTime;
+
       if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
       if (!p)
         return p;
@@ -2249,8 +2243,6 @@ Char * syFgets (
       yank buffer (= length of line buffer for input files).*/
     if (length > 32768)
        ErrorQuit("Cannot handle lines with more than 32768 characters in line edit mode.",0,0);
-    /* stop the clock, reading should take no time                         */
-    SyStopTime = SyTime();
 
     /* the line starts out blank                                           */
     line[0] = '\0';  p = line;
@@ -2743,9 +2735,6 @@ Char * syFgets (
     /* switch back to cooked mode                                          */
     if ( SyLineEdit == 1 )
         syStopraw(fid);
-
-    /* start the clock again                                               */
-    SyStartTime += SyTime() - SyStopTime;
 
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
