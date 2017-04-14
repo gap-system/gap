@@ -2184,6 +2184,39 @@ Char * readlineFgets (
 
 #endif
 
+#ifdef HPCGAP
+
+static GVarDescriptor GVarBeginEdit, GVarEndEdit;
+
+static Int syBeginEdit(Int fid)
+{
+  Obj func = GVarFunction(&GVarBeginEdit);
+  Obj result;
+  if (!func)
+    return syStartraw(fid);
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
+static Int syEndEdit(Int fid)
+{
+  Obj func = GVarFunction(&GVarEndEdit);
+  Obj result;
+  if (!func) {
+    syStopraw(fid);
+    return 1;
+  }
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
+#else
+
+#define syBeginEdit(fid)    syStartraw(fid)
+#define syEndEdit(fid)      syStopraw(fid)
+
+#endif
+
 Char * syFgets (
     Char *              line,
     UInt                length,
@@ -2218,7 +2251,7 @@ Char * syFgets (
 
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
-    if ( SyLineEdit == 0 || ! syStartraw(fid) ) {
+    if ( SyLineEdit == 0 || ! syBeginEdit(fid) ) {
         p = syFgetsNoEdit(line, length, fid, block );
         return p;
     }
@@ -3574,6 +3607,13 @@ static Int InitKernel(
   ImportGVarFromLibrary("GAPInfo", &GAPInfo);
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
+
+#ifdef HPCGAP
+  /* GAP hooks to allow library to override how we start/stop raw mode   */  
+  DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
+  DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
+#endif
+
   /* return success                                                      */
   return 0;
 
