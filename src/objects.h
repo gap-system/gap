@@ -245,6 +245,15 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
+*F  NEXT_EVEN_INT( <n> )
+**
+**  Compute next even integer larger than <n>. Note that <n> must be a
+**  positive, literal integer constant.
+*/
+#define NEXT_EVEN_INT(n)   ( (n+2UL) & ~1UL )
+
+/****************************************************************************
+**
 
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
@@ -312,12 +321,12 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #define IMMUTABLE               1
 
-#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)    /* Should be even */
+#define FIRST_IMM_MUT_TNUM      NEXT_EVEN_INT(LAST_CONSTANT_TNUM)
 #define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
 #define T_PREC                  (FIRST_RECORD_TNUM+ 0)
 #define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)
 
-#define FIRST_LIST_TNUM         (LAST_RECORD_TNUM+1)
+#define FIRST_LIST_TNUM         NEXT_EVEN_INT(LAST_RECORD_TNUM)
 #define FIRST_PLIST_TNUM        FIRST_LIST_TNUM
 #define T_PLIST                 (FIRST_LIST_TNUM+ 0)
 #define T_PLIST_NDENSE          (FIRST_LIST_TNUM+ 2)
@@ -352,13 +361,13 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
 /* Object sets and maps */
-#define FIRST_OBJSET_TNUM       (LAST_LIST_TNUM+1)
+#define FIRST_OBJSET_TNUM       NEXT_EVEN_INT(LAST_LIST_TNUM)
 #define T_OBJSET                (FIRST_OBJSET_TNUM+0)
 #define T_OBJMAP                (FIRST_OBJSET_TNUM+2)
 #define LAST_OBJSET_TNUM        (T_OBJMAP+IMMUTABLE)
 
 /* IMMUTABLE is not used for external types but keep the parity */
-#define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
+#define FIRST_EXTERNAL_TNUM     NEXT_EVEN_INT(LAST_OBJSET_TNUM)
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
@@ -371,8 +380,8 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 
-#define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
-#define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
+#define FIRST_COPYING_TNUM      NEXT_EVEN_INT(LAST_REAL_TNUM)
+#define COPYING                 (FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
 
 /* share the same numbers between `COPYING' and `TESTING' */
