@@ -454,14 +454,6 @@ UInt SyWindow;
 
 /****************************************************************************
 **
-
-*V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
-*/
-UInt SyStartTime;
-
-
-/****************************************************************************
-**
 *F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.
@@ -476,7 +468,7 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 - SyStartTime;
+    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000;
 }
 UInt SyTimeSys ( void )
 {
@@ -2093,13 +2085,6 @@ void InitSystem (
         }
     }
 #endif
-
-
-#if !HAVE_GETRUSAGE
-    /* start the clock                                                     */
-    SyStartTime = SyTime();
-#endif
-
 
 
     /* now we start                                                        */

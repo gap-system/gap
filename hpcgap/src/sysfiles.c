@@ -2253,13 +2253,8 @@ Char * syFgets (
       if ( SyLineEdit )
           syStopraw(fid);
 
-      /* stop the clock, reading should take no time                         */
-      /* TODO: Make time adjustment thread-safe? */
-      /* SyStopTime = SyTime(); */
-
       p = readlineFgets(line, length, fid, block);
-      /* start the clock again                                               */
-      /* SyStartTime += SyTime() - SyStopTime; */
+
       if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
       if (!p)
         return p;
