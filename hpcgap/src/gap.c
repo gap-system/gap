@@ -189,7 +189,6 @@ void ViewObjHandler ( Obj obj )
 */
 UInt QUITTINGGVar;
 
-Obj ErrorHandler;               /* not yet settable from GAP level */
 
 typedef struct {
     const Char *                name;
