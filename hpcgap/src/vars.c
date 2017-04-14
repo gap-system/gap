@@ -2345,7 +2345,7 @@ UInt            ExecUnbComObjName (
         UnbPRec( record, rnam );
         break;
       case T_ACOMOBJ:
-        UnbRecFuncs[T_AREC]( record, rnam);
+        UnbARecord( record, rnam);
         break;
       default:
         UNB_REC( record, rnam );
@@ -2383,7 +2383,7 @@ UInt            ExecUnbComObjExpr (
         UnbPRec( record, rnam );
         break;
       case T_ACOMOBJ:
-        UnbRecFuncs[T_AREC]( record, rnam);
+        UnbARecord( record, rnam);
         break;
       default:
         UNB_REC( record, rnam );

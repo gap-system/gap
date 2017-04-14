@@ -4313,7 +4313,7 @@ void            IntrUnbComObjName (
         break;
 #ifdef HPCGAP
       case T_ACOMOBJ:
-        UnbRecFuncs[T_AREC]( record, rnam);
+        UnbARecord( record, rnam);
         break;
 #endif
       default:
@@ -4349,7 +4349,7 @@ void            IntrUnbComObjExpr ( void )
         break;
 #ifdef HPCGAP
       case T_ACOMOBJ:
-        UnbRecFuncs[T_AREC]( record, rnam);
+        UnbARecord( record, rnam);
         break;
 #endif
       default:
