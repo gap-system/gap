@@ -2260,7 +2260,7 @@ Char * syFgets (
     if (SyUseReadline) {
       /* switch back to cooked mode                                          */
       if ( SyLineEdit )
-          syStopraw(fid);
+          syEndEdit(fid);
 
       p = readlineFgets(line, length, fid, block);
 
@@ -2767,7 +2767,7 @@ Char * syFgets (
 
     /* switch back to cooked mode                                          */
     if ( SyLineEdit == 1 )
-        syStopraw(fid);
+        syEndEdit(fid);
 
     /* return the line (or '0' at end-of-file)                             */
     if ( *line == '\0' )
