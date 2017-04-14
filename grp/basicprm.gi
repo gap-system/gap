@@ -18,9 +18,7 @@ InstallMethod( TrivialGroupCons,
     "perm group",
     [ IsPermGroup and IsFinite ],
     function( filter )
-    filter:= Group( () );
-    SetIsTrivial( filter, true );
-    return filter;
+    return GroupByGenerators( [], () );
     end );
 
 
