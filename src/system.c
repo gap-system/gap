@@ -48,10 +48,6 @@
 
 #include <sys/time.h>                   /* definition of 'struct timeval' */
 
-#if HAVE_SYS_TIMES_H                    /* time functions                  */
-#include <sys/times.h>
-#endif
-
 #if HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
@@ -445,17 +441,6 @@ UInt SyStopTime;
 **
 **  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
-
-
-/****************************************************************************
-**
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . using `getrusage'
-**
-**  Use use   'getrusage'  if possible,  because  it gives  us  a much better
-**  resolution. 
-*/
-#if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
-
 UInt SyTime ( void )
 {
     struct rusage       buf;
@@ -496,69 +481,6 @@ UInt SyTimeChildrenSys ( void )
     }
     return buf.ru_stime.tv_sec*1000 + buf.ru_stime.tv_usec/1000;
 }
-
-#endif
-
-
-/****************************************************************************
-**
-*f  SyTime()
-**
-**  The 'times' POSIX call measures clock ticks in 1/CLOCKS_PER_SEC. Typically,
-**  CLOCKS_PER_SEC equals 60 or 100. On most systems, the 'times' API has been
-**  deprecated in favor of 'getrusage', which provides a much better resolution.
-**
-**  Cygwin claims to support 'getrusage' but child times are not given properly.
-*/
-#if HAVE_TIMES && (SYS_IS_CYGWIN32 || !HAVE_GETRUSAGE)
-
-#include <time.h>                       /* for CLOCKS_PER_SEC */
-
-UInt SyTime ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return tbuf.tms_utime * 1000L / CLOCKS_PER_SEC - SyStartTime;
-}
-
-UInt SyTimeSys ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTimeSys' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return tbuf.tms_stime * 1000L / CLOCKS_PER_SEC;
-}
-
-UInt SyTimeChildren ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTimeChildren' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return tbuf.tms_cutime * 1000L / CLOCKS_PER_SEC;
-}
-
-UInt SyTimeChildrenSys ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTimeChildrenSys' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return tbuf.tms_cstime * 1000L / CLOCKS_PER_SEC;
-}
-
-#endif
 
 
 /****************************************************************************
