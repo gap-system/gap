@@ -421,10 +421,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define TESTED (1 << 9)
 #define FIXED_REGION (1 << 10)
 
-#if LAST_COPYING_TNUM > 254
-#error LAST_COPYING_TNUM out of range
-#endif
-
 
 /****************************************************************************
 **
