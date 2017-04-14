@@ -23,7 +23,7 @@ small integer result.
 The jump tables  are indexed by the TNUMs of their
 one or two arguments. Certain entries, relating entirely to kernel
 objects (types in the range \verb|FIRST_REAL_TNUM| to
-\verb|LAST_VIRTUAL_TNUM| are installed there, permanently. 
+\verb|LAST_REAL_TNUM| are installed there, permanently. 
 Certain additional entries are initialized via a call to function like
 \verb|InstallZeroObject|. This takes one argument specifying whether
 to install the verbose or silent versions of the functions. These
@@ -126,7 +126,7 @@ In \verb|vecffe.c| something very similar is done for
 XTNum is defined in lists.c. It's behaviour is controlled by entries
 in the IsXTNumListFuncs jump table. These are boolean (C style)
 unctions, possibly defined for types from \verb|FIRST_REAL_TNUM| up to
-\verb|LAST_VIRTUAL_TNUM|. Each one is tried in reverse TNUM order, with
+\verb|LAST_REAL_TNUM|. Each one is tried in reverse TNUM order, with
 \verb|T_OBJECT| as the fallback.
 
 In fact, only a few functions are installed, in vector.c and

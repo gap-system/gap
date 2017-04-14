@@ -1847,12 +1847,6 @@ static Int InitLibrary (
     AssGVar(GVarName("LAST_REAL_TNUM"), INTOBJ_INT(LAST_REAL_TNUM));
     MakeReadOnlyGVar(GVarName("LAST_REAL_TNUM"));
     
-    AssGVar(GVarName("FIRST_VIRTUAL_TNUM"), Fail);
-    MakeReadOnlyGVar(GVarName("FIRST_VIRTUAL_TNUM"));
-
-    AssGVar(GVarName("LAST_VIRTUAL_TNUM"), INTOBJ_INT(LAST_VIRTUAL_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_VIRTUAL_TNUM"));
-    
     AssGVar(GVarName("FIRST_IMM_MUT_TNUM"), INTOBJ_INT(FIRST_IMM_MUT_TNUM));
     MakeReadOnlyGVar(GVarName("FIRST_IMM_MUT_TNUM"));
 
