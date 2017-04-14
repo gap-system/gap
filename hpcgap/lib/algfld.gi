@@ -200,7 +200,7 @@ local f,p,nam,e,fam,colf;
   fi;
 
   # AH: Noch VR-Eigenschaften!
-  SetDimension( e, DegreeOverPrimeField( e ) );
+  SetDimension( e, DegreeOfUnivariateLaurentPolynomial( p ) );
 
   SetOne(e,One(fam));
   SetZero(e,Zero(fam));
@@ -1130,7 +1130,7 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
 
     # over finite field alg ext we cannot multiply with Integers
     kone:=Zero(one); for j in [1..k] do kone:=kone+one; od;
-    factors:= List( factors,f -> Value( f, xe + kone*theta ),one );
+    factors:= List( factors,f -> Value( f, xe + kone*theta ,one) );
     factors:= List( factors,f -> Gcd( Re, U, f ) );
     factors:=Filtered( factors,
                      x -> DegreeOfUnivariateLaurentPolynomial( x ) <> 0 );

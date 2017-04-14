@@ -600,7 +600,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
     # Construct the default type of the family.
     Fam!.defaultTypeDenseCoeffVectorRep :=
-        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep);
+        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
 
     SetCharacteristic( Fam, Characteristic( R ) );
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( R ) ) );

@@ -881,6 +881,7 @@ InstallHandlingByNiceBasis( "IsSpaceOfRationalFunctions", rec(
         info.zerovector := ListWithIdenticalEntries( Length( monomials ),
                                                      zero );
       fi;
+      MakeImmutable( info.zerovector );
 
       return info;
       end,

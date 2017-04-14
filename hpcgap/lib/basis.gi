@@ -881,11 +881,12 @@ InstallHandlingByNiceBasis( "IsSpaceOfRationalFunctions", rec(
 
       # For the zero row vector, catch the case of empty `monomials' list.
       if IsEmpty( monomials ) then
-        info.zerovector := `[ zero ];
+        info.zerovector := [ zero ];
       else
-        info.zerovector := `ListWithIdenticalEntries( Length( monomials ),
-                                                      zero );
+        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
+                                                     zero );
       fi;
+      MakeImmutable( info.zerovector );
 
       return info;
       end,
