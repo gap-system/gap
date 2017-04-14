@@ -362,13 +362,11 @@ static inline UInt getFilenameId(Stat stat)
 static inline Int8 CPUmicroseconds()
 {
 #if defined(HAVE_GETRUSAGE)
-  struct timeval timebuf;
   struct rusage buf;
 
   getrusage( RUSAGE_SELF, &buf );
-  timebuf = buf.ru_utime;
 
-  return (Int8)timebuf.tv_sec * 1000000 + (Int8)timebuf.tv_usec;
+  return (Int8)buf.ru_utime.tv_sec * 1000000 + (Int8)buf.ru_utime.tv_usec;
 #else
   // Should never get here!
   abort();
