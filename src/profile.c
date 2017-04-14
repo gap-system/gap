@@ -361,7 +361,7 @@ static inline UInt getFilenameId(Stat stat)
 
 static inline Int8 CPUmicroseconds()
 {
-#if defined(HAVE_GETTIMEOFDAY)
+#if defined(HAVE_GETRUSAGE)
   struct timeval timebuf;
   struct rusage buf;
 
@@ -388,8 +388,10 @@ static inline void outputStat(Stat stat, int exec, int visited)
   // Explicitly skip these two cases, as they are often specially handled
   // and also aren't really interesting statements (something else will
   // be executed whenever they are).
-  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR)
+  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
+    HashUnlock(&profileState);
     return;
+  }
 
   // Catch the case we arrive here and profiling is already disabled
   if(!profileState_Active) {
@@ -464,7 +466,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
 void visitStat(Stat stat)
 {
 #ifdef HPCGAP
-  if(profileState.profiledThread != STATE(threadID))
+  if(profileState.profiledThread != TLS(threadID))
     return;
 #endif
 
@@ -618,7 +620,7 @@ void enableAtStartup(char* filename, Int repeats)
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
-    profileState.profiledThread = STATE(threadID);
+    profileState.profiledThread = TLS(threadID);
 #endif
     profileState.lastNotOutputted.line = -1;
 #ifdef HAVE_GETTIMEOFDAY
@@ -749,7 +751,7 @@ Obj FuncACTIVATE_PROFILING (
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
-    profileState.profiledThread = STATE(threadID);
+    profileState.profiledThread = TLS(threadID);
 #endif
     profileState.lastNotOutputted.line = -1;
 
