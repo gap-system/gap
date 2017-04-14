@@ -184,7 +184,11 @@ typedef struct GAPState {
 #endif
 } GAPState;
 
-#if !defined(HPCGAP)
+#if defined(HPCGAP)
+
+#include <src/hpc/tls.h>
+
+#else
 
 extern GAPState * MainGAPState;
 #define STATE(x) (MainGAPState->x)
