@@ -68,7 +68,7 @@ extern Obj ZEROOp;
 **
 *V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
 */
-extern ArithMethod1 ZeroFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 ZeroFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -92,7 +92,7 @@ extern Obj ZeroOp;
 **
 *V  ZeroMutFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
 */
-extern ArithMethod1 ZeroMutFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -118,7 +118,7 @@ extern Obj AInvOp;
 **
 *V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
 */
-extern ArithMethod1 AInvFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 AInvFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -142,7 +142,7 @@ extern Obj AdditiveInverseOp;
 **
 *V  AInvMutFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
 */
-extern ArithMethod1 AInvMutFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 AInvMutFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -191,7 +191,7 @@ extern Obj OneOp;
 **
 *V  OneFuncs[<type>]  . . . . . . . . . . . . . . . . .  table of one methods
 */
-extern ArithMethod1 OneFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -216,7 +216,7 @@ extern Obj OneMutOp;
 **
 *V  OneMutFuncs[<type>]  . . . . . .table of mutability preservingone methods
 */
-extern ArithMethod1 OneMutFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 OneMutFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -241,7 +241,7 @@ extern Obj InvOp;
 **
 *V  InvFuncs[<type>]  . . . . . . . . . . . . . .  table of inverse functions
 */
-extern ArithMethod1 InvFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -266,7 +266,7 @@ extern Obj InvMutOp;
 **
 *V  InvMutFuncs[<type>]  .. .table of mutability preserving inverse functions
 */
-extern ArithMethod1 InvMutFuncs [LAST_VIRTUAL_TNUM+1];
+extern ArithMethod1 InvMutFuncs [LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -301,7 +301,7 @@ extern Obj EqOper;
 **
 *V  EqFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
 */
-extern CompaMethod EqFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern CompaMethod EqFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -330,7 +330,7 @@ extern Obj LtOper;
 **
 *V  LtFuncs[<typeL>][<typeR>] . . . . . . . . . . table of comparison methods
 */
-extern CompaMethod LtFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -357,7 +357,7 @@ extern Obj InOper;
 **
 *V  InFuncs[<typeL>][<typeR>] . . . . . . . . . . table of membership methods
 */
-extern CompaMethod InFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern CompaMethod InFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -395,7 +395,7 @@ extern Obj SumOper;
 **
 *V  SumFuncs[<typeL>][<typeR>]  . . . . . . . . . . . .  table of sum methods
 */
-extern ArithMethod2 SumFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -455,7 +455,7 @@ extern Obj DiffOper;
 **
 *V  DiffFuncs[<typeL>][<typeR>] . . . . . . . . . table of difference methods
 */
-extern ArithMethod2 DiffFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -515,7 +515,7 @@ extern Obj ProdOper;
 **
 *V  ProdFuncs[<typeL>][<typeR>] . . . . . . . . . .  table of product methods
 */
-extern  ArithMethod2    ProdFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern  ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -569,7 +569,7 @@ extern Obj QuoOper;
 **
 *V  QuoFuncs[<typeL>][<typeR>]  . . . . . . . . . . table of quotient methods
 */
-extern ArithMethod2 QuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -595,7 +595,7 @@ extern Obj LQuoOper;
 **
 *V  LQuoFuncs[<typeL>][<typeR>] . . . . . . .  table of left quotient methods
 */
-extern ArithMethod2 LQuoFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -623,7 +623,7 @@ extern Obj PowDefault ( Obj opL, Obj opR );
 **
 *V  PowFuncs[<typeL>][<typeR>]  . . . . . . . . . . .  table of power methods
 */
-extern ArithMethod2 PowFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -649,7 +649,7 @@ extern Obj CommOper;
 **
 *V  CommFuncs[<typeL>][<typeR>] . . . . . . . . . table of commutator methods
 */
-extern ArithMethod2 CommFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************
@@ -675,7 +675,7 @@ extern Obj ModOper;
 **
 *V  ModFuncs[<typeL>][<typeR>]  . . . . . . . . .  table of remainder methods
 */
-extern ArithMethod2 ModFuncs [LAST_VIRTUAL_TNUM+1][LAST_VIRTUAL_TNUM+1];
+extern ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 
 /****************************************************************************

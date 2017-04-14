@@ -252,7 +252,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 *S  FIRST_LIST_TNUM,     LAST_LIST_TNUM . . . . . . range of list       types
 *S  FIRST_EXTERNAL_TNUM, LAST_EXTERNAL_TNUM . . . . range of external   types
 *S  FIRST_REAL_TNUM,     LAST_REAL_TNUM . . . . . . range of real       types
-*S  FIRST_VIRTUAL_TNUM,  LAST_VIRTUAL_TNUM  . . . . range of virtual    types
 *S  FIRST_IMM_MUT_TNUM,  LAST_IMM_MUT_TNUM  . . . . range of im/mutable types
 **
 **  For every type of objects there is a symbolic name defined for this type.
@@ -274,9 +273,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **
 **  'FIRST_REAL_TNUM' is the first  real  type, namely 'FIRST_CONSTANT_TNUM'.
 **  'LAST_REAL_TNUM'  is the last   real  type, namely  'LAST_EXTERNAL_TNUM'.
-**
-**  'FIRST_VIRTUAL_TNUM' is   the first virtual type.  'LAST_VIRTUAL_TNUM' is
-**  the last virtual type.
 **
 **  'FIRST_IMM_MUT_TNUM'  is the first  real  internal type of objects  which
 **  might be mutable, 'LAST_IMM_MUT_TNUM' is the last such type.
@@ -406,7 +402,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
-#define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
