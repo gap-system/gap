@@ -30,45 +30,6 @@
 #define Obj             Bag
 */
 
-/****************************************************************************
-**
-*F OVERFLOW_INT( <i> ) . . . . test if the result of an operation overflowed
-*F LSL_INT( <i> ) . . . . . . . . . . logical left shift of signed integers
-*F LSR_INT( <i> ) . . . . . . . . . . logical right shift of signed integers
-*F ASL_INT( <i> ) . . . . . . . . . arithmetic left shift of signed integers
-*F ASR_INT( <i> ) . . . . . . . . . arithmetic right shift of signed integers
-*F CPL_IF_NEG( <i>, <s> ) . . . logical complement if second argument is < 0
-**
-** These macros define various useful operations on signed integers in a
-** portable way. The only assumption is that the integers use two's
-** complement representation, which should be the case on all modern
-** processors
-*/
-
-#define OVERFLOW_INT(x) \
-  ((Int)((UInt)(x) ^ (((UInt)(x)) << 1)) < 0)
-
-#define HAVE_ASR ((-1L >> 1) == -1L)
-
-/* For testing:        */
-/* #define HAVE_ASR 0  */
-
-#define LSL_INT(x, y) \
-  ((Int)(((UInt)(x)) << (y)))
-
-#define LSR_INT(x, y) \
-  ((Int)(((UInt)(x)) >> (y)))
-
-#define ASL_INT(x, y) \
-  ((Int)(((UInt)(x)) << (y)))
-
-#define CPL_IF_NEG(x, y) ((x) ^ -((y)<0))
-
-#define ASR_INT(x, y) \
-  ((HAVE_ASR) ? (((Int)(x)) >> (y)) : \
-    CPL_IF_NEG(LSR_INT(CPL_IF_NEG((x), (x)), (y)), (x)))
-
-
 
 /****************************************************************************
 **
@@ -110,7 +71,7 @@
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 #define INTOBJ_INT(i) \
-    ((Obj)(ASL_INT(i,2)+1))
+    ((Obj)(((UInt)(Int)(i) << 2) + 0x01))
 
 
 /****************************************************************************
@@ -122,7 +83,13 @@
 /* Note that the C standard does not define what >> does here if the
  * value is negative. So we have to be careful if the C compiler
  * chooses to do a logical right shift. */
-#define INT_INTOBJ(o) ASR_INT((Int)(o), 2)
+#if HAVE_ARITHRIGHTSHIFT
+#define INT_INTOBJ(o) \
+    ((Int)(o) >> 2)
+#else
+#define INT_INTOBJ(o) \
+    (((Int)(o)-1) / 4)
+#endif
 
 
 
@@ -160,7 +127,7 @@
 */
 #define SUM_INTOBJS(o,l,r)             \
     ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-    (!OVERFLOW_INT((Int)(o))))
+     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
 
 
 /****************************************************************************
@@ -173,7 +140,7 @@
 */
 #define DIFF_INTOBJS(o,l,r)            \
     ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-    (!OVERFLOW_INT((Int)(o))))
+     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
 
 
 /****************************************************************************
@@ -184,6 +151,33 @@
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The product itself is stored in <o>.
 */
+
+
+#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_SMUL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(int l, int r)
+{
+  int prod;
+  if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_SMULL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(long l, long r)
+{
+  long prod;
+  if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_SMULLL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+static inline Obj prod_intobjs(long long l, long long r)
+{
+  long long prod;
+  if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
+    return (Obj) 0;
+  return (Obj) ((prod >> 1) ^ 1);
+}
+#else
 
 #ifdef SYS_IS_64_BIT
 #define HALF_A_WORD 32
@@ -202,16 +196,11 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)l;
   prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
 
-#if HAVE_ARITHRIGHTSHIFT
-  if ((prod << 1)>> 1 !=  prod)
-    return (Obj) 0;
-#else
   if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
     return (Obj) 0;
-#endif
 
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
+      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
 #if HAVE_ARITHRIGHTSHIFT
@@ -224,6 +213,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 
   return (Obj) 0;
 }
+#endif
 
 #define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
                                   (o) != (Obj) 0)
