@@ -677,7 +677,7 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     # Install the detection of the filter.
     entry:= First( NiceBasisFiltersInfo,
                    x -> IsIdenticalObj( filter, x[1] ) );
-    Add( entry, record.detect );
+    entry[3] := record.detect;
     InstallTrueMethod( IsHandledByNiceBasis, filter );
     filter:= IsFreeLeftModule and filter;
 
