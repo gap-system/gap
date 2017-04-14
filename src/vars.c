@@ -1969,9 +1969,11 @@ UInt            ExecAssPosObj (
         }
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
-    }
-    /* generic case                                                        */
-    else {
+#ifdef HPCGAP
+    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        AssListFuncs[T_FIXALIST](list, p, rhs);
+#endif
+    } else {
         ASS_LIST( list, p, rhs );
     }
 
@@ -2014,8 +2016,11 @@ UInt            ExecUnbPosObj (
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
-    }
-    else {
+#ifdef HPCGAP
+    } else if (TNUM_OBJ(list) == T_APOSOBJ ) {
+        UnbListFuncs[T_FIXALIST](list, p);
+#endif
+    } else {
         UNB_LIST( list, p );
     }
 
@@ -2067,10 +2072,11 @@ Obj             EvalElmPosObj (
                 (Int)p, 0L,
                 "you can 'return;' after assigning a value" );
         }
-    }
-
-    /* generic case                                                        */
-    else {
+#ifdef HPCGAP
+    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        elm = ElmListFuncs[T_FIXALIST](list, p);
+#endif
+    } else {
         elm = ELM_LIST( list, p );
     }
 
@@ -2112,6 +2118,11 @@ Obj             EvalIsbPosObj (
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
     }
+#ifdef HPCGAP
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
+    }
+#endif
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
     }
@@ -2213,11 +2224,29 @@ UInt            ExecAssComObjName (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+#ifdef CHECK_TL_ASSIGNS
+        if (GetRegionOf(rhs) == STATE(threadRegion)) {
+            if (strcmp(NAME_RNAM(rnam), "buffer") != 0
+             && strcmp(NAME_RNAM(rnam), "state") != 0) {
+                ErrorReturnObj("Warning: thread local assignment of '%s'",
+                               (Int)NAME_RNAM(rnam), 0L,
+                               "type 'return <value>; to continue'");
+            }
+
+        }
+#endif
+        SetARecordField( record, rnam, rhs);
+        break;
+#endif
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2250,11 +2279,18 @@ UInt            ExecAssComObjExpr (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+        break;
+#endif
+      default:
         ASS_REC( record, rnam, rhs );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2283,11 +2319,18 @@ UInt            ExecUnbComObjName (
     rnam = (UInt)(ADDR_STAT(stat)[1]);
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        UnbARecord( record, rnam);
+        break;
+#endif
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2316,11 +2359,18 @@ UInt            ExecUnbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        UnbARecord( record, rnam);
+        break;
+#endif
+      default:
         UNB_REC( record, rnam );
+        break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2349,11 +2399,18 @@ Obj             EvalElmComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        elm = ElmARecord( record, rnam );
+        break;
+#endif
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* return the element                                                  */
@@ -2382,11 +2439,18 @@ Obj             EvalElmComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        elm = ElmARecord( record, rnam );
+        break;
+#endif
+      default:
         elm = ELM_REC( record, rnam );
+        break;
     }
 
     /* return the element                                                  */
@@ -2415,11 +2479,18 @@ Obj             EvalIsbComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+        break;
+#endif
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+        break;
     }
 
     /* return the result                                                   */
@@ -2448,11 +2519,18 @@ Obj             EvalIsbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+        break;
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+        break;
+#endif
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+        break;
     }
 
     /* return the result                                                   */
@@ -2761,9 +2839,11 @@ static Int InitKernel (
     UInt                i;              /* loop variable                   */
     STATE(CurrLVars) = (Bag) 0;
 
+#if !defined(HPCGAP)
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &STATE(BottomLVars), "src/vars.c:BottomLVars" );
+#endif
 
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";
