@@ -364,14 +364,17 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
-     /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
-        remove to get parity right */
 
+/* reserve space for package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+31)
 
-/* The next two TNUMA are BOTH external AND shared! */
-#define FIRST_SHARED_TNUM       (T_WPOBJ+1)
+/* The next two TNUMs are BOTH external AND shared! This way, jump
+   tables get entries calling method selection for them. */
+#define FIRST_SHARED_TNUM       (LAST_PACKAGE_TNUM+1)
 #define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
 #define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
+#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
 
 /* Primitive types */
 #define T_THREAD                (FIRST_SHARED_TNUM+ 2)
@@ -380,6 +383,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_RWLOCK                (FIRST_SHARED_TNUM+ 5)
 #define T_MONITOR               (FIRST_SHARED_TNUM+ 6)
 #define T_REGION                (FIRST_SHARED_TNUM+ 7)
+
 /* User-programmable types */
 #define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
 #define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
@@ -392,16 +396,11 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_AREC_INNER            (FIRST_SHARED_TNUM+ 16)
 #define T_TLREC                 (FIRST_SHARED_TNUM+ 17)
 #define T_TLREC_INNER           (FIRST_SHARED_TNUM+ 18)
-
-/* reserve space for 40 package TNUMs */
-#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+43)
-
-#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
-
-#define LAST_SHARED_TNUM	(LAST_EXTERNAL_TNUM)
+#define LAST_SHARED_TNUM        (T_TLREC_INNER)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
+
+
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
