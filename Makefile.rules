@@ -901,17 +901,18 @@ coverage:
 # Bootstrap rules
 ########################################################################
 
-PKG_BOOTSTRAP_URL="https://www.gap-system.org/pub/gap/gap4pkgs/"
-PKG_MINIMAL="bootstrap-pkg-minimal.tar.gz"
-PKG_FULL="bootstrap-pkg-full.tar.gz"
+PKG_BOOTSTRAP_URL = https://www.gap-system.org/pub/gap/gap4pkgs/
+PKG_MINIMAL = bootstrap-pkg-minimal.tar.gz
+PKG_FULL = bootstrap-pkg-full.tar.gz
+WGET = wget -N
 
 bootstrap-pkg-minimal:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed."; \
     else \
-        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
-        mkdir pkg ; \
-        cd pkg ; \
+        $(WGET) $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) && \
+        mkdir pkg && \
+        cd pkg && \
         tar xzf ../$(PKG_MINIMAL) ; \
     fi;
 
@@ -919,9 +920,9 @@ bootstrap-pkg-full:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed" ; \
     else \
-        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
-        mkdir pkg ; \
-        cd pkg ; \
+        $(WGET) $(PKG_BOOTSTRAP_URL)$(PKG_FULL) && \
+        mkdir pkg && \
+        cd pkg && \
         tar xzf ../$(PKG_FULL) ; \
     fi;
 

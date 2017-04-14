@@ -33,8 +33,9 @@ make V=1 -j4
 # check that GAP is at least apple to start
 echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
 
-# download packages
-make bootstrap-pkg-full
+# download packages; instruct wget to retry several times if the
+# connection is refused, to work around intermittent failures
+make bootstrap-pkg-full WGET="wget -N --no-check-certificate --tries=5 --waitretry=5 --retry-connrefused"
 
 # packages must be placed inside SRCDIR, as only that
 # is a GAP root, while BUILDDIR is not.
