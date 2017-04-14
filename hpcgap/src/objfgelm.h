@@ -127,7 +127,7 @@ static inline Obj NewWord(Obj type, UInt npairs) {
   Obj word;
   word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(type)/8L);
   (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
-  SET_TYPE_DATOBJ( word, type);
+  SetTypeDatObj( word, type);
   return word;
 }
 
