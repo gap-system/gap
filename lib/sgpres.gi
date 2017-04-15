@@ -1735,22 +1735,24 @@ end );
 
 #############################################################################
 ##
-#M  RewriteSubgroupRelators( <aug>, <prels> ) rewrite subgroup relators from
-#M                                                   an augmented coset table
+#M  RewriteSubgroupRelators( <aug>, <prels> [,<indices>] )
 ##
 ##  'RewriteSubgroupRelators'  is a subroutine  of the  Reduced Reidemeister-
 ##  Schreier and the  Modified Todd-Coxeter  routines.  It computes  a set of
 ##  subgroup relators from the coset factor table of an augmented coset table
 ##  and the  relators <prels> of the  parent  group.  It assumes  that  <aug>
 ##  is an augmented coset table of type 2.
+##  If <indices> are given only those cosets are used
 ##
 InstallGlobalFunction( RewriteSubgroupRelators,
-    function ( aug, prels )
+function (arg)
 
     local app2, coFacTable, cols, convert, cosTable, factor, ggensi,
           greli,grel, i, index, j, last, length, nums, numgens, p, rel, rels,
-          treelength, type,si,nneg,ei,word;
+          treelength, type,si,nneg,ei,word,aug,prels,indices;
 
+    aug:=arg[1];
+    prels:=arg[2];
     # check the type.
     type := aug.type;
     if type <> 2 then  Error( "invalid type; it should be 2" );  fi;
@@ -1760,6 +1762,11 @@ InstallGlobalFunction( RewriteSubgroupRelators,
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
+    if Length(arg)=2 then
+      indices:=[1..index];
+    else
+      indices:=arg[3];
+    fi;
     rels := [ ];
 
     # initialize the structure that is passed to 'ApplyRel2'
@@ -1819,7 +1826,7 @@ InstallGlobalFunction( RewriteSubgroupRelators,
 
         # loop over all cosets and determine the subgroup relators which are
         # induced by the current group relator.
-        for i in [ 1 .. index ] do
+        for i in indices do
 
             # scan the ith coset through the current group relator and
             # collect the factors of its inverse (!) in rel.
@@ -1835,7 +1842,7 @@ InstallGlobalFunction( RewriteSubgroupRelators,
             if last > 0 then
                 MakeCanonical( rel );
                 if Length( rel ) > 0 and not rel in rels then
-                    AddSet( rels, CopyRel( rel ) );
+                    AddSet( rels, Immutable(CopyRel( rel ) ));
                 fi;
             fi;
         od;
@@ -1916,7 +1923,7 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         if last > 0 then
             MakeCanonical( rel );
             if Length( rel ) > 0 and not rel in rels then
-                AddSet( rels, CopyRel( rel ) );
+                AddSet( rels, Immutable(CopyRel(rel)));
             fi;
         fi;
       else
@@ -1925,6 +1932,9 @@ InstallGlobalFunction( RewriteSubgroupRelators,
       fi;
     od;
     CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
+
+    # make mutable again to overwrite
+    rels:=List(rels,ShallowCopy);
 
     # renumber the generators in the relators, if necessary.
     numgens := Length( aug.subgroupGenerators );
@@ -2242,6 +2252,12 @@ end);
 # Holt (refered # to as "Handbook" from here on). Function names after the
 # NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.
 
+NEWTC_AddDeduction:=function(list,ded)
+  if not ded in list then
+    Add(list,ded);
+  fi;
+end;
+
 # the tables produced internally are indexed at rec.offset+k for generator
 # number k, that is in the form ...,-2,-1,empty,1,2,...
 # This avoids lots of even/od decisions and the cost of the empty list is
@@ -2364,7 +2380,7 @@ local c,o,n,j,au;
     DATA.pp[n]:=DATA.one;
   fi;
 
-  Add(DATA.deductions,[i,a]);
+  NEWTC_AddDeduction(DATA.deductions,[i,a]);
   #if IsBound(DATA.ds) then Add(DATA.ds,[i,a]); fi;
   DATA.defcount:=DATA.defcount+1;
   if IsBound(DATA.with) then
@@ -2433,7 +2449,7 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
         else
           ct[x+offset][mu]:=nu;
           ct[-x+offset][nu]:=mu;
-          Add(DATA.deductions,[mu,x]);
+	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
         fi;
       fi;
     od;
@@ -2521,40 +2537,40 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
     i:=i+1;
     for x in DATA.A do
       if ct[x+offset][c]<>0 then
-        d:=ct[x+offset][c];
-        ct[-x+offset][d]:=0;
-        mu:=MRep(c);
-        nu:=MRep(d);
-        if ct[x+offset][mu]<>0 then
-          if DATA.useAddition then
-            v:=-pp[d]-aug[x+offset][c]+pp[c]+aug[x+offset][mu];
-          else
-            v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
-                pp[c],aug[x+offset][mu]);
-          fi;
-          MMerge(nu,ct[x+offset][mu],v);
-        elif ct[-x+offset][nu]<>0 then
-          if DATA.useAddition then
-            v:=-pp[c]+aug[x+offset][c]+pp[d]+aug[-x+offset][nu];
-          else
-            v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
-                  pp[d],aug[-x+offset][nu]);
-          fi;
-          MMerge(mu,ct[-x+offset][nu],v);
-        else
-          ct[x+offset][mu]:=nu;
-          ct[-x+offset][nu]:=mu;
-          if DATA.useAddition then
-            v:=-pp[c]+aug[x+offset][c]+pp[d];
-            aug[x+offset][mu]:=v;
-            aug[-x+offset][nu]:=-v;
-          else
-            v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
-            aug[x+offset][mu]:=v;
-            aug[-x+offset][nu]:=-Reversed(v);
-          fi;
-          Add(DATA.deductions,[mu,x]);
-        fi;
+	d:=ct[x+offset][c];
+	ct[-x+offset][d]:=0;
+	mu:=MRep(c);
+	nu:=MRep(d);
+	if ct[x+offset][mu]<>0 then
+	  if DATA.useAddition then
+	    v:=-pp[d]-aug[x+offset][c]+pp[c]+aug[x+offset][mu];
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
+		pp[c],aug[x+offset][mu]);
+	  fi;
+	  MMerge(nu,ct[x+offset][mu],v);
+	elif ct[-x+offset][nu]<>0 then
+	  if DATA.useAddition then
+	    v:=-pp[c]+aug[x+offset][c]+pp[d]+aug[-x+offset][nu];
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
+		  pp[d],aug[-x+offset][nu]);
+	  fi;
+	  MMerge(mu,ct[-x+offset][nu],v);
+	else
+	  ct[x+offset][mu]:=nu;
+	  ct[-x+offset][nu]:=mu;
+	  if DATA.useAddition then
+	    v:=-pp[c]+aug[x+offset][c]+pp[d];
+	    aug[x+offset][mu]:=v;
+	    aug[-x+offset][nu]:=-v;
+	  else
+	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
+	    aug[x+offset][mu]:=v;
+	    aug[-x+offset][nu]:=-Reversed(v);
+	  fi;
+	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
+	fi;
       fi;
     od;
   od;
@@ -2621,7 +2637,7 @@ local c,offset,f,b,r,i,j,t;
     # deduction
     c[w[i]+offset][f]:=b;
     c[-w[i]+offset][b]:=f;
-    Add(DATA.deductions,[f,w[i]]);
+    NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
   fi;
   return;
 
@@ -2662,10 +2678,14 @@ end;
 
 NEWTC_ModifiedScan:=function(DATA,alpha,w,y)
 local c,offset,f,b,r,i,j,fp,bp,t;
+  #Info(InfoFpGroup,3,"MS",alpha,w,y,"\n");
   c:=DATA.ct;
   offset:=DATA.offset;
   t:=TC_QUICK_SCAN(c,offset,alpha,w,DATA.scandata);
-  if t=false then return; fi;
+  if t=false then 
+    return;
+  fi;
+
 
   f:=alpha;i:=1;
   fp:=DATA.one;
@@ -2690,6 +2710,7 @@ local c,offset,f,b,r,i,j,fp,bp,t;
     fi;
     return;
   fi;
+  #Info(InfoFpGroup,3,"MS2\n");
 
   #backward scan
   b:=alpha;j:=r;
@@ -2720,7 +2741,7 @@ local c,offset,f,b,r,i,j,fp,bp,t;
       DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
       DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
     fi;
-    Add(DATA.deductions,[f,w[i]]);
+    NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
   fi;
 end;
 
@@ -2756,7 +2777,7 @@ local c,offset,f,b,r,i,j;
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
-      Add(DATA.deductions,[f,w[i]]);
+      NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
       return;
     else
       NEWTC_Define(DATA,f,w[i]);
@@ -2818,7 +2839,7 @@ local c,offset,f,b,r,i,j,fp,bp;
         DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
         DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
       fi;
-      Add(DATA.deductions,[f,w[i]]);
+      NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
       return;
     else
       NEWTC_Define(DATA,f,w[i]);
@@ -2868,7 +2889,7 @@ end;
 
 NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap;
 
   PERCFACT:=100;
 
@@ -2980,16 +3001,22 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
       if IsList(w[1]) then
         w:=w[1]; # get word from value
       fi;
-      i:=1;
-      for a in w do
-        if ct[a+offset][i]=0 then
-          dr:=NEWTC_Define(DATA,i,a);
-          if dr=fail then return fail;fi;
-          NEWTC_ProcessDeductions(DATA);
-          i:=p[i]; # in case there is a change
-        fi;
-        i:=ct[a+offset][i];
-      od;
+      repeat
+	i:=1;
+	ap:=1;
+	while ap<=Length(w) do
+	  a:=w[ap];
+	  if ct[a+offset][i]=0 then
+	    dr:=NEWTC_Define(DATA,i,a);
+	    if dr=fail then return fail;fi;
+	    NEWTC_ProcessDeductions(DATA);
+	    #i:=p[i]; # in case there is a change
+	    ap:=Length(w)+10;
+	  fi;
+	  i:=ct[a+offset][i];
+	  ap:=ap+1;
+	od;
+      until ap=Length(w)+1;
     od;
   fi;
 
@@ -3162,15 +3189,15 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
         first:=e.defcount;
         Info(InfoFpGroup,1,"optimize definition sequence");
       fi;
-      Append(trace,e.collapse);
+      Append(trace,Filtered(e.collapse,x->x[2]>2));
       SortBy(trace,x->-x[2]);
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace:
           # that's what we had last time -- no need to whine
           limit:=e.limit);
       if e=fail then return fail;fi;
-      if e.defcount<bl then
-        bl:=e.defcount;
-        bw:=ShallowCopy(trace);
+      if e.defcount/bl<98/100 then
+	bl:=e.defcount;
+	bw:=ShallowCopy(trace);
       fi;
 
       # 2% improvement threshold
