@@ -265,7 +265,17 @@ DeclareGlobalFunction("AllHomomorphisms");
 ##  <#/GAPDoc>
 ##
 BindGlobal("AllSubgroups",
-  G->Concatenation(List(ConjugacyClassesSubgroups(G),AsSSortedList)));
+function(G)
+local cl;
+  cl:=ConjugacyClassesSubgroups(G);
+  if Sum(cl,Size)>10^5 then
+    Info(InfoPerformance,1,"G has ",Sum(cl,Size),
+    " subgroups. Writing them all down\n",
+    "takes lots of memory and time. Use `ConjugacyClassesSubgroups' to get\n",
+    "classes up to conjugaction action, this will be more efficient!");
+  fi;
+  return Concatenation(List(cl,Elements));
+end);
 
 #############################################################################
 ##
