@@ -1102,7 +1102,7 @@ local a;
   if n<=10^55 and Length(a)=0 then
     # L2 case
     return 2*RootInt(n,3);
-  elif ForAll(a,x->Length(x)>4) then
+  elif Length(a)>0 and ForAll(a,x->Length(x)>4) then
     return Maximum(List(a,x->x[5]));
   fi;
   # we don't know a smallest degree
