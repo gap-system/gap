@@ -1624,12 +1624,26 @@ fi;
 ##
 #F  LoadAllPackages()
 ##
-InstallGlobalFunction( LoadAllPackages, function()
-    if ValueOption( "reversed" ) = true then
-    	List( Reversed( RecNames( GAPInfo.PackagesInfo ) ), LoadPackage );
-    else
-    	List( RecNames( GAPInfo.PackagesInfo ), LoadPackage );
-    fi;	
+    InstallGlobalFunction( LoadAllPackages, function()
+        local  toload, exclude, p;
+
+        toload := RecNames( GAPInfo.PackagesInfo );
+        
+        if ValueOption( "reversed" ) = true then
+            toload := Reversed(toload);
+        fi;	
+        
+        exclude := ValueOption( "exclude" );
+        
+        if exclude   <> fail then
+            if IsString(exclude) then exclude := [exclude]; fi;
+            
+            toload := Filtered(toload, p -> not p in exclude);
+        fi;
+        
+        for p in toload do
+            LoadPackage(p);
+        od;
     end );
 
 
