@@ -30,5 +30,25 @@ gap> rels := [ [ F.1^2, F.1 ], [ F.2^2, F.2 ] ];;
 gap> FactorFreeMonoidByRelations(F, rels);
 Error, first argument <F> should be a free monoid
 
+# Test isomorphisms from fp monoids to fp semigroups and vice versa
+gap> F := FreeMonoid(2);;
+gap> M := F / [[F.2 ^ 2, F.2]];;
+gap> iso := IsomorphismFpSemigroup(M);;
+gap> S := Range(iso);;
+gap> x := S.2 * S.3 * S.2;;
+gap> y := x ^ InverseGeneralMapping(iso);
+m1*m2*m1
+gap> y := x ^ InverseGeneralMapping(iso);
+m1*m2*m1
+gap> y in M;
+true
+gap> x := M.1 * M.2 * M.1;;
+gap> y := x ^ iso;
+m1*m2*m1
+gap> y := x ^ iso;
+m1*m2*m1
+gap> y in S;
+true
+
 #
 gap> STOP_TEST( "fpmon.tst", 1);
