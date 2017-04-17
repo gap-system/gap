@@ -53,7 +53,7 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include <src/systhread.h>              /* system thread primitives */
+#include <src/hpc/systhread.h>          /* system thread primitives */
 #include <src/hpc/atomic.h>
 
 /****************************************************************************

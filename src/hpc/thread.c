@@ -1,4 +1,4 @@
-#include <src/systhread.h>
+#include <src/hpc/systhread.h>          /* system thread primitives */
 #include <src/system.h>
 #include <src/gapstate.h>
 #include <src/gasman.h>
