@@ -94,10 +94,13 @@
 #include <src/weakptr.h>                /* weak pointers */
 #include <src/profile.h>                /* profiling */
 
+#include <src/gapstate.h>
+
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
 
+#ifdef HPCGAP
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 #include <src/hpc/aobjects.h>
@@ -105,6 +108,7 @@
 #include <src/hpc/serialize.h>          /* object serialization */
 
 #include <src/objset.h>
+#endif
 
 #include <src/vars.h>                   /* variables */
 
@@ -482,34 +486,15 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 
-int realmain (
-	  int                 argc,
-	  char *              argv [],
-          char *              environ [] );
-
-int main (
-	  int                 argc,
-	  char *              argv [],
-          char *              environ [] )
-{
-#ifdef PRINT_BACKTRACE
-  void InstallBacktraceHandlers();
-  InstallBacktraceHandlers();
-#endif
-  RunThreadedMain(realmain, argc, argv, environ);
-  return 0;
-}
-
-#define main realmain
-
-int main (
-          int                 argc,
-          char *              argv [],
-          char *              environ [] )
+int realmain( int argc, char * argv[], char * environ[] )
 {
   UInt                type;                   /* result of compile       */
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
+
+#if !defined(HPCGAP)
+  InitMainGAPState();
+#endif
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -538,6 +523,25 @@ int main (
   SyExit(SystemErrorCode);
   return 0;
 }
+
+#if !defined(COMPILECYGWINDLL)
+
+int main ( int argc, char * argv[], char * environ[] )
+{
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
+
+#ifdef HPCGAP
+  RunThreadedMain(realmain, argc, argv, environ);
+  return 0;
+#else
+  return realmain(argc, argv, environ);
+#endif
+}
+
+#endif
 
 /****************************************************************************
 **
@@ -1090,17 +1094,17 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     volatile Obj tilde;
     volatile Int recursionDepth;
     volatile Stat currStat;
-    int lockSP;
-    Region *savedRegion;
 
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
+#ifdef HPCGAP
     if (!IS_PLIST(args)) {
       args = SHALLOW_COPY_OBJ(args);
       PLAIN_LIST(args);
     }
+#endif
 
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError), sizeof(syJmp_buf));
     currLVars = STATE(CurrLVars);
@@ -1108,8 +1112,10 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     recursionDepth = STATE(RecursionDepth);
     tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
-    lockSP = RegionLockSP();
-    savedRegion = TLS(currentRegion);
+#ifdef HPCGAP
+    int lockSP = RegionLockSP();
+    Region *savedRegion = TLS(currentRegion);
+#endif
     if (sySetjmp(STATE(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1121,15 +1127,22 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
+#ifdef HPCGAP
+      AssGVar(Tilde, tilde);
       PopRegionLocks(lockSP);
       TLS(currentRegion) = savedRegion;
       if (TLS(CurrentHashLock))
         HashUnlock(TLS(CurrentHashLock));
+#else
+      AssGVarUnsafe(Tilde, tilde);
+#endif
     } else {
       Obj result = CallFuncList(func, args);
+#ifdef HPCGAP
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
       TLS(currentRegion) = savedRegion;
+#endif
       SET_ELM_PLIST(res,1,True);
       if (result) {
         SET_LEN_PLIST(res,2);
@@ -1177,72 +1190,148 @@ Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
 
 Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
+#ifdef HPCGAP
+  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
+  return 0;
+#else
   Obj res;
   volatile Obj currLVars;
   Obj result;
   volatile Int recursionDepth;
   volatile Stat currStat;
+  UInt newJumpBuf = 1;
+  volatile UInt mayNeedToRestore = 0;
+  volatile Int iseconds, imicroseconds;
+  volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
+  Int restore_seconds = 0, restore_microseconds = 0;
 
-#ifdef HPCGAP
-  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
-#endif
 
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
   if (!IS_INTOBJ(seconds) || 0 > INT_INTOBJ(seconds))
     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
                  " <seconds> must be a non-negative small integer",0,0);
-  if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999999 < INT_INTOBJ(microseconds))
+  if (!IS_INTOBJ(microseconds) || 0 > INT_INTOBJ(microseconds) || 999999 < INT_INTOBJ(microseconds))
     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>):"
                  " <microseconds> must be a non-negative small integer less than 10^9",0,0);
+  iseconds = INT_INTOBJ(seconds);
+  imicroseconds = INT_INTOBJ(microseconds);
   if (!IS_FUNC(func))
     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <func> must be a function",0,0);
   if (!IS_LIST(args))
     ErrorMayQuit("CALL_WITH_TIMEOUT(<seconds>, <microseconds>, <func>, <args>): <args> must be a list",0,0);
-  if (!IS_PLIST(args)) {
-      args = SHALLOW_COPY_OBJ(args);
-      PLAIN_LIST(args);
+  if (SyAlarmRunning) {            
+    /* ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
+       " There is already a timeout running", 0, 0); */
+    SyStopAlarm((UInt *)&curr_seconds, (UInt *)&curr_nanoseconds);
+    curr_microseconds = curr_nanoseconds/1000;
+    if (iseconds > curr_seconds || (iseconds == curr_seconds && imicroseconds > curr_microseconds)) {
+      /* The existing timeout will go off before we would so don't bother to set a timeout
+         just reset the existing one and call the function */
+      iseconds = curr_seconds;
+      imicroseconds = curr_microseconds;
+      newJumpBuf = 0;
+    } else {
+      /* We would time out before the other function, so we need to
+         set our timeout, but remember to reset things later */
+      mayNeedToRestore = 1;
+      newJumpBuf = 1;
+    }
   }
-  if (SyAlarmRunning)
-    ErrorMayQuit("CALL_WITH_TIMEOUT cannot currently be nested except via break loops."
-         " There is already a timeout running", 0, 0);
-  if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
-    ErrorMayQuit("Nesting depth of timeouts via break loops limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
-  currLVars = STATE(CurrLVars);
-  currStat = STATE(CurrStat);
-  recursionDepth = STATE(RecursionDepth);
-  if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
-    /* Timeout happened */
-    STATE(CurrLVars) = currLVars;
-    STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
-    STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-    STATE(CurrStat) = currStat;
-    STATE(RecursionDepth) = recursionDepth;
-    res = Fail;
-  } else {
-    SyInstallAlarm( INT_INTOBJ(seconds), 1000*INT_INTOBJ(microseconds));
-    result = CallFuncList(func, args);
+  if (newJumpBuf) {
+    if (NumAlarmJumpBuffers >= MAX_TIMEOUT_NESTING_DEPTH-1)
+      ErrorMayQuit("Nesting depth of timeouts limited to %i", MAX_TIMEOUT_NESTING_DEPTH, 0L);
+    currLVars = STATE(CurrLVars);
+    currStat = STATE(CurrStat);
+    recursionDepth = STATE(RecursionDepth);
+    if (sySetjmp(AlarmJumpBuffers[NumAlarmJumpBuffers++])) {
+      /* Timeout happened */
+      STATE(CurrLVars) = currLVars;
+      STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
+      STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      STATE(CurrStat) = currStat;
+      STATE(RecursionDepth) = recursionDepth;
+      if (mayNeedToRestore) {
+        /* In this case we used our ration of CPU time,
+           so we know how much we need to restore 
 
-    /* make sure the alarm is not still running */
-    SyStopAlarm( NULL, NULL);
+           The jump buffer stack is already taken care of by the time we
+           get here */
+        restore_seconds = curr_seconds - iseconds;
+        restore_microseconds = curr_microseconds - imicroseconds;
+        if (restore_microseconds < 0) {
+          restore_microseconds += 1000000;
+          restore_seconds -= 1;
+        }
+        SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
+      }
+      res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,1);
+      SET_ELM_PLIST(res,1,False);
+      SET_LEN_PLIST(res,1);
+      return res;
+    }
+  }
+
+  /* The next timeout was too close, this is a bit of a hack, just as below */
+  if ((iseconds==0) && (imicroseconds==0)) {
+     imicroseconds = 1;
+  }
+  /* Here we actually call the function */
+  SyInstallAlarm( iseconds, 1000*imicroseconds);
+  result = CallFuncList(func, args);
+   
+  /* if newJumpBuf is false then we didn't set up our own alarm,
+     just  reset the outer one, 
+     and the outer one hasn't gone off yet, so we just return */
+  if (newJumpBuf) {
+    /* Here we did set our own alarm, but it hasn't gone off */
+    Int unused_seconds, unused_microseconds, unused_nanoseconds;
+    SyStopAlarm( (UInt *)&unused_seconds, (UInt *)&unused_nanoseconds);
+    unused_microseconds = unused_nanoseconds/1000;
     /* Now the alarm might have gone off since we executed the last statement 
-   of func. So */
+       of func. So */
     if (SyAlarmHasGoneOff) {
       SyAlarmHasGoneOff = 0;
+      UnInterruptExecStat();
     }
     assert(NumAlarmJumpBuffers);
     NumAlarmJumpBuffers--;
-    res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 1);
-    if (result) {
-      SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,result);
-      CHANGED_BAG(res);
-    } else {
-      RetypeBag(res, T_PLIST_EMPTY+IMMUTABLE);
-      SET_LEN_PLIST(res,0);
+     
+    /* If there is an outer timer, we need to reset it */
+    if (mayNeedToRestore) {
+      restore_seconds = curr_seconds - (iseconds - unused_seconds);
+      restore_microseconds = curr_microseconds - (imicroseconds - unused_microseconds);
+      while (restore_microseconds < 0) {
+        restore_microseconds += 1000000;
+        restore_seconds -= 1;
+      }
+      while (restore_microseconds > 999999) {
+        restore_microseconds -= 1000000;
+        restore_seconds += 1;
+      }
+
+      /* nasty hack -- if the outer timer was right on the edge of going off
+         and we try to restore it to zero we will actually stop it */
+      if (!restore_seconds && !restore_microseconds)
+        restore_microseconds = 1;
+
+      SyInstallAlarm(restore_seconds, 1000*restore_microseconds);
     }
+     
+  }
+   
+  /* assemble and return the result */
+  res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE, 2);
+  SET_ELM_PLIST(res,1,True);
+  if (result) {
+    SET_LEN_PLIST(res,2);
+    SET_ELM_PLIST(res,2,result);
+    CHANGED_BAG(res);
+  } else {
+    SET_LEN_PLIST(res,1);
   }
   return res;
+#endif
 }
 
 Obj FuncSTOP_TIMEOUT( Obj self ) {
@@ -1311,8 +1400,10 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+#ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
+#endif
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), STATE(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1325,7 +1416,9 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
   Obj res = CALL_2ARGS(ErrorInner,r,l);
+#ifdef HPCGAP
   TLS(currentRegion) = savedRegion;
+#endif
   return res;
 }
 
@@ -2578,20 +2671,8 @@ Obj FuncSleep( Obj self, Obj secs )
   return (Obj) 0;
 }
 
-// Common code in the next 3 methods.
-static int SetExitValue(Obj code)
-{
-  if (code == False || code == Fail)
-    SystemErrorCode = 1;
-  else if (code == True)
-    SystemErrorCode = 0;
-  else if (IS_INTOBJ(code))
-    SystemErrorCode = INT_INTOBJ(code);
-  else
-    return 0;
-  return 1;
-}
 
+#ifdef HPCGAP
 
 /****************************************************************************
 **
@@ -2621,6 +2702,23 @@ Obj FuncMicroSleep( Obj self, Obj msecs )
     }
   
   return (Obj) 0;
+}
+
+#endif
+
+
+// Common code in the next 3 methods.
+static int SetExitValue(Obj code)
+{
+  if (code == False || code == Fail)
+    SystemErrorCode = 1;
+  else if (code == True)
+    SystemErrorCode = 0;
+  else if (IS_INTOBJ(code))
+    SystemErrorCode = INT_INTOBJ(code);
+  else
+    return 0;
+  return 1;
 }
 
 /****************************************************************************
@@ -2690,7 +2788,6 @@ Obj FuncShouldQuitOnBreak( Obj self)
   return SyQuitOnBreak ? True : False;
 }
 
-
 /****************************************************************************
 **
 *F  KERNEL_INFO() ......................record of information from the kernel
@@ -2705,7 +2802,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
-  extern UInt SyNumProcessors;
 
   /* GAP_ARCHITECTURE                                                    */
   C_NEW_STRING_DYN( tmp, SyArchitecture );
@@ -2786,8 +2882,11 @@ Obj FuncKERNEL_INFO(Obj self) {
   C_NEW_STRING_DYN( str, CONFIGNAME );
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
+#ifdef HPCGAP
+  extern UInt SyNumProcessors;
   r = RNamName("NUM_CPUS");
   AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+#endif
 
   /* export if we want to use readline  */
   r = RNamName("HAVE_LIBREADLINE");
@@ -2807,6 +2906,9 @@ Obj FuncKERNEL_INFO(Obj self) {
   return res;
   
 }
+
+
+#ifdef HPCGAP
 
 /****************************************************************************
 **
@@ -2873,6 +2975,8 @@ void ThreadedInterpreter(void *funcargs) {
     ClearError();
   } 
 }
+
+#endif
 
 
 /****************************************************************************
@@ -2962,8 +3066,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
+#ifdef HPCGAP
     { "MicroSleep", 1, "msecs",
       FuncMicroSleep, "src/gap.c:MicroSleep" },
+#endif
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
@@ -3005,8 +3111,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "KERNEL_INFO", 0, "",
       FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
 
+#ifdef HPCGAP
     { "THREAD_UI", 0, "",
       FuncTHREAD_UI, "src/gap.c:THREAD_UI" },
+#endif
 
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
@@ -3055,9 +3163,10 @@ static Int InitKernel (
     ImportFuncFromLibrary(  "Error", &Error );
     ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
 
+#ifdef HPCGAP
     DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
     DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
-
+#endif
 
 #if HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
@@ -3097,6 +3206,7 @@ static Int PostRestore (
     Last2             = GVarName( "last2" );
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
+    AssGVar(Time, INTOBJ_INT(0));
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */
@@ -3400,8 +3510,12 @@ void InitializeGap (
         }
     }
 
+#ifdef HPCGAP
     InitMainThread();
     InitTLS();
+#else
+    InitGAPState(MainGAPState);
+#endif
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

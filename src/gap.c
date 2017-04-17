@@ -94,15 +94,21 @@
 #include <src/weakptr.h>                /* weak pointers */
 #include <src/profile.h>                /* profiling */
 
-#include <src/gapstate.h>            /* Global State */
+#include <src/gapstate.h>
 
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
 
+#ifdef HPCGAP
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 #include <src/hpc/aobjects.h>
+#include <src/hpc/threadapi.h>
+#include <src/hpc/serialize.h>          /* object serialization */
+
+#include <src/objset.h>
+#endif
 
 #include <src/vars.h>                   /* variables */
 
@@ -480,25 +486,15 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 
-#ifdef COMPILECYGWINDLL
-#define main realmain
-#endif
-
-int main (
-          int                 argc,
-          char *              argv [],
-          char *              environ [] )
+int realmain( int argc, char * argv[], char * environ[] )
 {
   UInt                type;                   /* result of compile       */
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
-#ifdef PRINT_BACKTRACE
-  void InstallBacktraceHandlers();
-  InstallBacktraceHandlers();
-#endif
-
+#if !defined(HPCGAP)
   InitMainGAPState();
+#endif
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -527,6 +523,25 @@ int main (
   SyExit(SystemErrorCode);
   return 0;
 }
+
+#if !defined(COMPILECYGWINDLL)
+
+int main ( int argc, char * argv[], char * environ[] )
+{
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
+
+#ifdef HPCGAP
+  RunThreadedMain(realmain, argc, argv, environ);
+  return 0;
+#else
+  return realmain(argc, argv, environ);
+#endif
+}
+
+#endif
 
 /****************************************************************************
 **
@@ -1084,6 +1099,12 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
       ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
+#ifdef HPCGAP
+    if (!IS_PLIST(args)) {
+      args = SHALLOW_COPY_OBJ(args);
+      PLAIN_LIST(args);
+    }
+#endif
 
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError), sizeof(syJmp_buf));
     currLVars = STATE(CurrLVars);
@@ -1091,6 +1112,10 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     recursionDepth = STATE(RecursionDepth);
     tilde = VAL_GVAR(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
+#ifdef HPCGAP
+    int lockSP = RegionLockSP();
+    Region *savedRegion = TLS(currentRegion);
+#endif
     if (sySetjmp(STATE(ReadJmpError))) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1102,9 +1127,22 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
+#ifdef HPCGAP
+      AssGVar(Tilde, tilde);
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
+      if (TLS(CurrentHashLock))
+        HashUnlock(TLS(CurrentHashLock));
+#else
       AssGVarUnsafe(Tilde, tilde);
+#endif
     } else {
       Obj result = CallFuncList(func, args);
+#ifdef HPCGAP
+      /* There should be no locks to pop off the stack, but better safe than sorry. */
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
+#endif
       SET_ELM_PLIST(res,1,True);
       if (result) {
         SET_LEN_PLIST(res,2);
@@ -1152,6 +1190,10 @@ Obj FuncTIMEOUTS_SUPPORTED(Obj self) {
 
 Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Obj args )
 {
+#ifdef HPCGAP
+  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
+  return 0;
+#else
   Obj res;
   volatile Obj currLVars;
   Obj result;
@@ -1163,9 +1205,6 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
   Int restore_seconds = 0, restore_microseconds = 0;
 
-#ifdef HPCGAP
-  ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported in HPC-GAP", 0L, 0L);
-#endif
 
   if (!SyHaveAlarms)
     ErrorMayQuit("CALL_WITH_TIMEOUT: timeouts not supported on this system", 0L, 0L);
@@ -1292,6 +1331,7 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
     SET_LEN_PLIST(res,1);
   }
   return res;
+#endif
 }
 
 Obj FuncSTOP_TIMEOUT( Obj self ) {
@@ -1360,6 +1400,10 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+#ifdef HPCGAP
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
+#endif
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), STATE(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1372,6 +1416,9 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
   Obj res = CALL_2ARGS(ErrorInner,r,l);
+#ifdef HPCGAP
+  TLS(currentRegion) = savedRegion;
+#endif
   return res;
 }
 
@@ -2623,6 +2670,42 @@ Obj FuncSleep( Obj self, Obj secs )
   return (Obj) 0;
 }
 
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*F  FuncMicroSleep( <self>, <secs> )
+**
+*/
+
+Obj FuncMicroSleep( Obj self, Obj msecs )
+{
+  extern UInt HaveInterrupt();
+  Int  s;
+
+  while( ! IS_INTOBJ(msecs) )
+    msecs = ErrorReturnObj( "<usecs> must be a small integer", 0L, 0L, 
+                           "you can replace <usecs> via 'return <usecs>;'" );
+
+  
+  if ( (s = INT_INTOBJ(msecs)) > 0)
+    SyUSleep((UInt)s);
+  
+  /* either we used up the time, or we were interrupted. */
+  if (HaveInterrupt())
+    {
+      ClearError(); /* The interrupt may still be pending */
+      ErrorReturnVoid("user interrupt in microsleep", 0L, 0L,
+                    "you can 'return;' as if the microsleep was finished");
+    }
+  
+  return (Obj) 0;
+}
+
+#endif
+
+
 // Common code in the next 3 methods.
 static int SetExitValue(Obj code)
 {
@@ -2798,7 +2881,12 @@ Obj FuncKERNEL_INFO(Obj self) {
   C_NEW_STRING_DYN( str, CONFIGNAME );
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
-  
+#ifdef HPCGAP
+  extern UInt SyNumProcessors;
+  r = RNamName("NUM_CPUS");
+  AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+#endif
+
   /* export if we want to use readline  */
   r = RNamName("HAVE_LIBREADLINE");
   if (SyUseReadline)
@@ -2817,6 +2905,77 @@ Obj FuncKERNEL_INFO(Obj self) {
   return res;
   
 }
+
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*F FuncTHREAD_UI  ... Whether we use a multi-threaded interface
+**
+*/
+
+Obj FuncTHREAD_UI(Obj self)
+{
+  extern UInt ThreadUI;
+  return ThreadUI ? True : False;
+}
+
+
+GVarDescriptor GVarTHREAD_INIT;
+GVarDescriptor GVarTHREAD_EXIT;
+
+void ThreadedInterpreter(void *funcargs) {
+  Obj tmp, func;
+  int i;
+
+  /* intialize everything and begin an interpreter                       */
+  STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  STATE(CountNams)   = 0;
+  STATE(ReadTop)     = 0;
+  STATE(ReadTilde)   = 0;
+  STATE(CurrLHSGVar) = 0;
+  STATE(IntrCoding) = 0;
+  STATE(IntrIgnoring) = 0;
+  STATE(NrError) = 0;
+  STATE(ThrownObject) = 0;
+  STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
+  tmp = NewFunctionC( "bottom", 0, "", 0 );
+  PTR_BAG(STATE(BottomLVars))[0] = tmp;
+  tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+  BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0] ) = tmp;
+  STATE(CurrLVars) = STATE(BottomLVars);
+
+  IntrBegin( STATE(BottomLVars) );
+  tmp = KEPTALIVE(funcargs);
+  StopKeepAlive(funcargs);
+  func = ELM_PLIST(tmp, 1);
+  for (i=2; i<=LEN_PLIST(tmp); i++)
+  {
+    Obj item = ELM_PLIST(tmp, i);
+    SET_ELM_PLIST(tmp, i-1, item);
+  }
+  SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
+
+  TRY_READ {
+    Obj init, exit;
+    if (sySetjmp(STATE(threadExit)))
+      return;
+    init = GVarOptFunction(&GVarTHREAD_INIT);
+    if (init) CALL_0ARGS(init);
+    CallFuncList(func, tmp);
+    exit = GVarOptFunction(&GVarTHREAD_EXIT);
+    if (exit) CALL_0ARGS(exit);
+    PushVoidObj();
+    /* end the interpreter                                                 */
+    IntrEnd( 0UL );
+  } CATCH_READ_ERROR {
+    IntrEnd( 1UL );
+    ClearError();
+  } 
+}
+
+#endif
 
 
 /****************************************************************************
@@ -2906,13 +3065,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
+#ifdef HPCGAP
+    { "MicroSleep", 1, "msecs",
+      FuncMicroSleep, "src/gap.c:MicroSleep" },
+#endif
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
 
     { "GAP_EXIT_CODE", 1, "exit code",
       FuncGAP_EXIT_CODE, "src/gap.c:GAP_EXIT_CODE" },
-        
+
     { "QUIT_GAP", -1, "args",
       FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
 
@@ -2946,6 +3109,11 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "KERNEL_INFO", 0, "",
       FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
+
+#ifdef HPCGAP
+    { "THREAD_UI", 0, "",
+      FuncTHREAD_UI, "src/gap.c:THREAD_UI" },
+#endif
 
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
@@ -2994,6 +3162,10 @@ static Int InitKernel (
     ImportFuncFromLibrary(  "Error", &Error );
     ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
 
+#ifdef HPCGAP
+    DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
+    DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
+#endif
 
 #if HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
@@ -3337,7 +3509,12 @@ void InitializeGap (
         }
     }
 
+#ifdef HPCGAP
+    InitMainThread();
+    InitTLS();
+#else
     InitGAPState(MainGAPState);
+#endif
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
