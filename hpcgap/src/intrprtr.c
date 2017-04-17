@@ -997,6 +997,8 @@ void IntrQualifiedExprEnd( void )
 **  when  the reader encounters  the  end of  the  statement, i.e., immediate
 **  after 'IntrAtomicEndBody'.
 **
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 void            IntrAtomicBegin ( void )
 {
@@ -1038,12 +1040,11 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
        
        If we are not in a break loop, then this would be a waste of time and effort */
     
-    if (STATE(CountNams) > 0)
-      {
-	GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-	SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-	SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
-      }
+    if (STATE(CountNams) > 0) {
+      GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
+      SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
+      SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    }
     
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
 }
@@ -1064,7 +1065,7 @@ void            IntrAtomicEndBody (
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
       if (STATE(CountNams) > 0)
-	STATE(CountNams)--;
+        STATE(CountNams)--;
 
       /* Code the body as a function expression */
       CodeFuncExprEnd( nrstats, 0UL );
@@ -1088,13 +1089,16 @@ void            IntrAtomicEnd ( void )
 {
     Obj                 body;           /* the function, result            */
     UInt                nrexprs;
-    UInt                mode,i,j;
+    UInt                i;
 
+#ifdef HPCGAP
+    UInt                mode,j;
     Obj tolock[MAX_ATOMIC_OBJS];
     int locktypes[MAX_ATOMIC_OBJS];
     int lockstatus[MAX_ATOMIC_OBJS];
     int lockSP;
     Obj o;
+#endif
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -1106,6 +1110,7 @@ void            IntrAtomicEnd ( void )
 
     nrexprs = INT_INTOBJ(PopObj());
 
+#ifdef HPCGAP
     j = 0;
     for (i = 0; i < nrexprs; i++) {
       o = PopObj();
@@ -1120,24 +1125,23 @@ void            IntrAtomicEnd ( void )
     GetLockStatus(nrexprs, tolock, lockstatus);
 
     j = 0;
-    for (i = 0; i < nrexprs; i++)
-      {
-	switch(lockstatus[i]) {
-	case 0:
-	  tolock[j] = tolock[i];
-	  locktypes[j] = locktypes[i];
-	  j++;
-	  break;
-	case 2:
-	  if (locktypes[i] == 1)
-	    ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
-	  break;
-	case 1:
-	    break;
- 	default:
-	  assert(0);
-	}
+    for (i = 0; i < nrexprs; i++) {
+      switch (lockstatus[i]) {
+      case 0:
+        tolock[j] = tolock[i];
+        locktypes[j] = locktypes[i];
+        j++;
+        break;
+      case 2:
+        if (locktypes[i] == 1)
+          ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+        break;
+      case 1:
+          break;
+      default:
+        assert(0);
       }
+    }
     lockSP = LockObjects(j, tolock, locktypes);
     /* Push at least one empty region on the stack so we can tell
      * that we are inside an atomic section. */
@@ -1146,8 +1150,17 @@ void            IntrAtomicEnd ( void )
     if (lockSP >= 0) {
       CALL_0ARGS( body );
       PopRegionLocks(lockSP);
-    } else
+    } else {
       ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+    }
+#else
+    for (i = 0; i < nrexprs; i++) {
+      PopObj(); /* pop object */
+      PopObj(); /* pop mode */
+    }
+    
+    CALL_0ARGS( body );
+#endif
 
     /* push void                                                           */
     PushVoidObj();
@@ -2242,11 +2255,9 @@ void            IntrPermCycle (
                 (Int)TNAM_OBJ(val), 0L );
         }
         c = INT_INTOBJ(val);
-	if (c > MAX_DEG_PERM4)
-	  ErrorQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
-		     c, MAX_DEG_PERM4);
-	
-	  
+        if (c > MAX_DEG_PERM4)
+          ErrorQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
+                     c, MAX_DEG_PERM4);
 
         /* if necessary resize the permutation                             */
         if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
@@ -3241,9 +3252,9 @@ void            IntrAssList ( Int narg )
     default:
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = narg; i > 0; i--) {
-	pos = PopObj();
-	SET_ELM_PLIST(ixs, i, pos);
-	CHANGED_BAG(ixs);
+        pos = PopObj();
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
@@ -3298,8 +3309,8 @@ void            IntrAsssList ( void )
 }
 
 void            IntrAssListLevel (
-				  Int narg,
-				  UInt                level )
+                                  Int narg,
+                                  UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
@@ -3398,9 +3409,9 @@ void            IntrUnbList ( Int narg )
     } else {
       ixs = NEW_PLIST(T_PLIST,narg);
       for (i = narg; i > 0; i--) {
-	pos = PopObj();
-	SET_ELM_PLIST(ixs, i, pos);
-	CHANGED_BAG(ixs);
+        pos = PopObj();
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
@@ -3464,8 +3475,8 @@ void            IntrElmList ( Int narg )
     if (narg > 2) {
       ixs = NEW_PLIST(T_PLIST,narg);
       for (i = narg; i > 0; i--) {
-	SET_ELM_PLIST(ixs,i,PopObj());
-	CHANGED_BAG(ixs);
+        SET_ELM_PLIST(ixs,i,PopObj());
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
@@ -3607,9 +3618,9 @@ void            IntrIsbList ( Int narg )
     } else {
       ixs = NEW_PLIST(T_PLIST,narg);
       for (i = narg; i > 0; i--) {
-	pos = PopObj();
-	SET_ELM_PLIST(ixs, i, pos);
-	CHANGED_BAG(ixs);
+        pos = PopObj();
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
@@ -3863,11 +3874,13 @@ void            IntrAssPosObj ( void )
 
     /* assign to the element of the list                                   */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         /* Because BindOnce() functions can reallocate the list even if they
          * only have read-only access, we have to be careful when accessing
          * positional objects. Hence the explicit WriteGuard().
          */
         WriteGuard(list);
+#endif
         if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -4364,7 +4377,7 @@ void            IntrUnbComObjName (
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* unbind the element of the record             			   */
+    /* unbind the element of the record                                    */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
@@ -4400,7 +4413,7 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* unbind the element of the record             			   */
+    /* unbind the element of the record                                    */
     switch (TNUM_OBJ(record)) {
       case T_COMOBJ:
         UnbPRec( record, rnam );
