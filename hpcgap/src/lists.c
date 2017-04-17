@@ -211,12 +211,18 @@ Obj FuncLENGTH (
     Obj             list )
 {
     /* internal list types                                                 */
+#ifdef HPCGAP
     ReadGuard(list);
     ImpliedWriteGuard(list);
     if ( (FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM)
          || TNUM_OBJ(list) == T_ALIST || TNUM_OBJ(list) == T_FIXALIST) {
         return ObjInt_Int( LEN_LIST(list) );
     }
+#else
+    if ( FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM) {
+        return ObjInt_Int( LEN_LIST(list) );
+    }
+#endif
 
     /* external types                                                      */
     else {
@@ -1805,11 +1811,11 @@ void            ElmsListLevel (
 
         }
 
-	/* Since the elements of lists are now mutable lists
-	   (made by ELMS_LIST in the list above), we cannot remember too much
-	   about them */
-	RetypeBag(lists, T_PLIST_DENSE);
-	
+        /* Since the elements of lists are now mutable lists
+           (made by ELMS_LIST in the list above), we cannot remember too much
+           about them */
+        RetypeBag(lists, T_PLIST_DENSE);
+
     }
 
     /* otherwise recurse                                                   */
@@ -1826,7 +1832,7 @@ void            ElmsListLevel (
             ElmsListLevel( list, poss, level-1 );
 
         }
-	RetypeBag(lists, T_PLIST_DENSE);
+        RetypeBag(lists, T_PLIST_DENSE);
 
     }
 
@@ -2059,16 +2065,20 @@ UInt            TYPES_LIST_FAM_RNam;
 Obj             TYPES_LIST_FAM (
     Obj                 fam )
 {
+#ifdef HPCGAP
     switch (TNUM_OBJ(fam))
     {
       case T_COMOBJ:
         return ElmPRec( fam, TYPES_LIST_FAM_RNam );
       case T_ACOMOBJ:
-	MEMBAR_READ();
+        MEMBAR_READ();
         return GetARecordField( fam, TYPES_LIST_FAM_RNam );
       default:
         return 0;
     }
+#else
+    return ElmPRec( fam, TYPES_LIST_FAM_RNam );
+#endif
 }
 
 
