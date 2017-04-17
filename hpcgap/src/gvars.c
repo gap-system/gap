@@ -26,9 +26,6 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
-#include <stdio.h>
-#include <src/systhread.h>              /* system thread primitives */
-
 #include <src/system.h>                 /* Ints, UInts */
 #include <src/gapstate.h>
 
@@ -59,6 +56,11 @@
 #include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
+
+#include <src/hpc/systhread.h>          /* system thread primitives */
+
+#include <stdio.h>
+
 
 /****************************************************************************
 **

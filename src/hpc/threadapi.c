@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include <src/systhread.h>              /* system thread primitives */
+#include <src/hpc/systhread.h>          /* system thread primitives */
 
 #include <src/system.h>                 /* system dependent part */
 #include <src/gapstate.h>
