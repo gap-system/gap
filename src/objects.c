@@ -1263,6 +1263,25 @@ Obj IsIdenticalHandler (
 
 /****************************************************************************
 **
+
+*F  ObjMasterPointer( <self>, <obj> )  . . . . .  Returns the bag of an object
+**
+**  'ObjMasterPointer' implements the GAP-level function 'ObjMasterPointer'
+*/
+Obj ObjMasterPointer (
+    Obj                 self,
+    Obj                 obj )
+{
+    if(obj > (Obj)MptrBags && obj < (Obj)OldBags) {
+        return INTOBJ_INT(obj - (Obj)MptrBags);
+    }
+    else {
+        return Fail;
+    }
+}
+
+/****************************************************************************
+**
 *V  SaveObjFuncs (<type>) . . . . . . . . . . . . . functions to save objects
 **
 ** 'SaveObjFuncs' is the dispatch table that  contains, for every type
@@ -1624,6 +1643,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IS_IDENTICAL_OBJ", 2, "obj1, obj2", 
       IsIdenticalHandler, "src/objects.c:IS_IDENTICAL_OBJ" },
+
+    { "OBJ_MASTER_POINTER", 1, "obj",
+      ObjMasterPointer, "src/objects.c:OBJ_MASTER_POINTER" },
 
     { "IS_COMOBJ", 1, "obj",
       IS_COMOBJ_Handler, "src/objects.c:IS_COMOBJ" },
