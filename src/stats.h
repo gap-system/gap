@@ -47,14 +47,46 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
+#ifdef HPCGAP
 
-#include <stdio.h>
+#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
+
+#else
 
 static inline UInt EXEC_STAT(Stat stat)
 { 
   return ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) ); 
 }
-//#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+
+#endif
+
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>
+**
+**  'ExecStatFuncs' is   the dispatch table  that contains  for every type of
+**  statements a pointer to the executor  for statements of  this type, i.e.,
+**  the function  that should  be  called  if a  statement   of that type  is
+**  executed.
+*/
+extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
+
+/****************************************************************************
+**
+*V  IntrExecStatFuncs[<type>] . . . .  pseudo executor to handle interrupts
+**
+**  'IntrExecStatFuncs' is a dispatch table that dispatches to an interrupt
+**  function for every single entry; it is used in lieu of 'ExecStatFuncs'
+**  when the normal control flow needs to be interrupted by an external
+**  event.
+*/
+
+extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
+
+#endif
 
 
 /****************************************************************************

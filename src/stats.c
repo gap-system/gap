@@ -501,7 +501,7 @@ UInt            ExecFor (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -621,7 +621,7 @@ UInt            ExecFor2 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -754,7 +754,7 @@ UInt            ExecFor3 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -1050,8 +1050,64 @@ UInt            ExecForRange3 (
 UInt ExecAtomic(
 		Stat stat)
 {
+#ifdef HPCGAP
+  Obj tolock[MAX_ATOMIC_OBJS];
+  int locktypes[MAX_ATOMIC_OBJS];
+  int lockstatus[MAX_ATOMIC_OBJS];
+  Region *locked[MAX_ATOMIC_OBJS];
+  int lockSP;
+  UInt mode, nrexprs,i,j,status;
+  Obj o;
+  
+  SET_BRK_CURR_STAT( stat );
+  nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
+  
+  j = 0;
+  for (i = 1; i <= nrexprs; i++) {
+    o = EVAL_EXPR(ADDR_STAT(stat)[2*i]);
+    if (!((Int)o & 0x3)) {
+      tolock[j] =  o;
+      mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
+      locktypes[j] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      j++;
+    }
+  }
+  
+  nrexprs = j;
+
+  GetLockStatus(nrexprs, tolock, lockstatus);
+
+  j = 0;
+  for (i = 0; i < nrexprs; i++) { 
+    switch (lockstatus[i]) {
+    case 0:
+      tolock[j] = tolock[i];
+      locktypes[j] = locktypes[i];
+      j++;
+      break;
+    case 2:
+      if (locktypes[i] == 1)
+        ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+      break;
+    case 1:
+      break;
+    default:
+      assert(0);
+    }
+  }
+  lockSP = LockObjects(j, tolock, locktypes);
+  if (lockSP >= 0) {
+    status = EXEC_STAT(ADDR_STAT(stat)[0]);
+    PopRegionLocks(lockSP);
+  } else {
+    status = 0;
+    ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
+  }
+  return status;
+#else
     // In non-HPC GAP, we completely ignore all the 'atomic' terms
     return EXEC_STAT(ADDR_STAT(stat)[0]);
+#endif
 }
 
 
@@ -1697,7 +1753,7 @@ UInt ExecIntrStat (
     /* One reason we might be here is a timeout. If so longjump out to the 
        CallWithTimeLimit where we started */
     CheckAndRespondToAlarm();
-      
+
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );
     if ( SyStorOverrun != 0 ) {
@@ -2197,8 +2253,9 @@ static Int InitKernel (
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
-
+#if !defined HPCGAP
     InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
+#endif
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
