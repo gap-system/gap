@@ -316,8 +316,7 @@ void            AssGVar (
 	    CHANGED_BAG(val);
 	}
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        name = NameGVar(gvar);
-        C_NEW_STRING_DYN(onam, name);
+        onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -581,17 +580,6 @@ UInt GVarName (
 
     /* return the global variable                                          */
     return INT_INTOBJ(gvar);
-}
-
-Int FindGVarByValue(Obj value, Int start) {
-  Int max = CountGVars;
-  MEMBAR_READ();
-  while (start < max) {
-    if (VAL_GVAR(start) == value)
-      return start;
-    start++;
-  }
-  return -1;
 }
 
 /****************************************************************************
@@ -1478,6 +1466,8 @@ static Int PostRestore (
     /* create the global variable '~'                                      */
     Tilde = GVarName( "~" );
 
+    /* stop unauthorised changes to '~'                                    */
+    MakeReadOnlyGVar(Tilde);
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
