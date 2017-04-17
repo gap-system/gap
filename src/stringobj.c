@@ -1388,7 +1388,13 @@ Int IsStringList (
     lenList = LEN_LIST( list );
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || TNUM_OBJ( elm ) != T_CHAR )
+        if ( elm == 0 )
+            break;
+#ifdef HPCGAP
+        if ( !CheckReadAccess(elm) )
+            break;
+#endif
+        if ( TNUM_OBJ( elm ) != T_CHAR )
             break;
     }
 
@@ -2053,6 +2059,78 @@ Obj FuncSplitString (
   return res;
 }
 
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*F FuncFIND_ALL_IN_STRING( <self>, <string>, <chars> )
+**
+** Kernel function to return a list of all occurrences of a set of characters
+** within a string.
+*/
+
+Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
+{
+  Obj result;
+  UInt i, len, matches;
+  unsigned char table[1<<(8*sizeof(char))];
+  unsigned char *s;
+  if (!IsStringConv(string) || !IsStringConv(chars))
+    ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0L, 0L);
+  memset(table, 0, sizeof(table));
+  len = GET_LEN_STRING(chars);
+  s = (unsigned char *) CSTR_STRING(chars);
+  for (i=0; i<len; i++)
+    table[s[i]] = 1;
+  len = GET_LEN_STRING(string);
+  s = (unsigned char *) CSTR_STRING(string);
+  matches = 0;
+  for (i = 0; i < len; i++)
+    if (table[s[i]])
+      matches++;
+  result = NEW_PLIST(T_PLIST_DENSE, matches);
+  SET_LEN_PLIST(result, matches);
+  matches = 1;
+  for (i = 0; i < len; i++)
+    if (table[s[i]]) {
+      SET_ELM_PLIST(result, matches, INTOBJ_INT(i+1));
+      matches++;
+    }
+  return result;
+}
+
+/****************************************************************************
+**
+*F FuncNORMALIZE_NEWLINES( <self>, <string> )
+**
+** Kernel function to replace all occurrences of CR or CRLF within a
+** string with LF characters. This function modifies its argument and
+** returns it also as its result.
+*/
+
+Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
+{
+  UInt i, j, len;
+  Char *s;
+  if (!IsStringConv(string) || !REGION(string))
+    ErrorQuit("NORMALIZE_NEWLINES: Requires a mutable string argument", 0L, 0L);
+  len = GET_LEN_STRING(string);
+  s = CSTR_STRING(string);
+  for (i = j = 0; i < len; i++) {
+    if (s[i] == '\r') {
+      s[j++] = '\n';
+      if (i + 1 < len && s[i+1] == '\n')
+        i++;
+    } else {
+      s[j++] = s[i];
+    }
+  }
+  SET_LEN_STRING(string, j);
+  return string;
+}
+
+#endif
+
 /****************************************************************************
 **
 *F FuncSMALLINT_STR( <self>, <string> )
@@ -2456,6 +2534,14 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "POSITION_SUBSTRING", 3, "string, substr, off",
       FuncPOSITION_SUBSTRING, "src/stringobj.c:POSITION_SUBSTRING" },
+
+#ifdef HPCGAP
+    { "FIND_ALL_IN_STRING", 2, "string, characters",
+      FuncFIND_ALL_IN_STRING, "src/stringobj.c:FIND_ALL_IN_STRING" },
+
+    { "NORMALIZE_NEWLINES", 1, "string",
+      FuncNORMALIZE_NEWLINES, "src/stringobj.c:NORMALIZE_NEWLINES" },
+#endif
 
     { "NormalizeWhitespace", 1, "string",
       FuncNormalizeWhitespace, "src/stringobj.c:NormalizeWhitespace" },
