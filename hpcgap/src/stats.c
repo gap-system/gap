@@ -46,8 +46,6 @@
 
 #include <src/stats.h>                  /* statements */
 
-#include <src/profile.h>                /* installing methods */
-
 #include <assert.h>
 
 #include <src/hpc/tls.h>
@@ -55,6 +53,7 @@
 
 #include <src/vars.h>                   /* variables */
 
+#include <src/hookintrprtr.h>
 #include <src/profile.h>                /* visit statements for profiling */
 
 /****************************************************************************
@@ -847,7 +846,7 @@ UInt            ExecForRange (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
-    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
+    VisitStatIfHooked(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
@@ -912,7 +911,7 @@ UInt            ExecForRange2 (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
-    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
+    VisitStatIfHooked(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
@@ -984,7 +983,7 @@ UInt            ExecForRange3 (
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
-    VisitStatIfProfiling(ADDR_STAT(stat)[1]);
+    VisitStatIfHooked(ADDR_STAT(stat)[1]);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(

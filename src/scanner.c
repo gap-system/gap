@@ -65,6 +65,8 @@
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
+#include <src/code.h>                   /* FilenameCache */
+
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -2825,6 +2827,11 @@ Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   return val;
 }
 
+Obj FuncGET_FILENAME_CACHE(Obj self)
+{
+  return CopyObj(FilenameCache, 1);
+}
+
 
 
 /****************************************************************************
@@ -2859,6 +2866,9 @@ static StructGVarFunc GVarFuncs [] = {
   { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
     FuncSET_PRINT_FORMATTING_STDOUT,
     "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
+
+  { "GET_FILENAME_CACHE", 0, "",
+     FuncGET_FILENAME_CACHE, "src/scanner.c:GET_FILENAME_CACHE" },
 
   { 0 }
 

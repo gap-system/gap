@@ -56,6 +56,7 @@ SOURCES += src/gasman.c
 SOURCES += src/gapstate.c
 SOURCES += src/gmpints.c
 SOURCES += src/gvars.c
+SOURCES += src/hookintrprtr.c
 SOURCES += src/intfuncs.c
 SOURCES += src/intrprtr.c
 SOURCES += src/iostream.c

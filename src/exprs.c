@@ -49,7 +49,7 @@
 #include <src/exprs.h>                  /* expressions */
 
 #include <src/hpc/tls.h>                /* thread-local storage */
-#include <src/profile.h>                /* installing methods */
+#include <src/hookintrprtr.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <src/vars.h>                   /* variables */

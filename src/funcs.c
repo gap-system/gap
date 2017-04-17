@@ -55,8 +55,8 @@
 
 #include <src/vars.h>                   /* variables */
 
+#include <src/hookintrprtr.h>
 
-#include <src/profile.h>                /* installing methods */
 /****************************************************************************
 **
 *F ExecProccallOpts( <call> ). . execute a procedure call with options
@@ -790,11 +790,11 @@ Obj STEVES_TRACING;
 
 #define CHECK_RECURSION_BEFORE \
             CheckRecursionBefore(); \
-            ProfileLineByLineIntoFunction(func);
+            HookedLineIntoFunction(func);
 
 #define CHECK_RECURSION_AFTER \
             STATE(RecursionDepth)--; \
-            ProfileLineByLineOutFunction(func);
+            HookedLineOutFunction(func);
 
 #ifdef HPCGAP
 

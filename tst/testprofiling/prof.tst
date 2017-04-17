@@ -25,8 +25,9 @@ gap> IsLineByLineProfileActive();
 false
 gap> if not prof then ProfileLineByLine(Filename(tempdir, "profout")); fi;
 #I  Profile filenames must end in .gz to enable compression
-#I Profiling only works on the first 65,535 lines of each file
-#I (this warning will only appear once).
+#I Interpreter hooking only works on the first 65,535 lines
+#I of each file (this warning will only appear once).
+#I This will effect profiling and debugging.
 gap> IsLineByLineProfileActive();
 true
 gap> if not prof then UnprofileLineByLine(); fi;
@@ -41,8 +42,9 @@ gap> Read(Filename(tempdir, "line-65535.g"));;
 gap> f(0);
 65535
 gap> Read(Filename(tempdir, "line-65536.g"));;
-#I Profiling only works on the first 65,535 lines of each file
-#I (this warning will only appear once).
+#I Interpreter hooking only works on the first 65,535 lines
+#I of each file (this warning will only appear once).
+#I This will effect profiling and debugging.
 gap> f(0);
 65536
 gap> Read(Filename(tempdir, "line-65536.g"));;
