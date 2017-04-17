@@ -245,10 +245,10 @@ static UInt WarnOnUnboundGlobalsRNam;
 
 void ReadReferenceModifiers( TypSymbolSet follow )
 {
-    char type = ' ';
-    UInt level = 0;
-    UInt narg = 0;
-    UInt rnam  = 0;
+    volatile char type = ' ';
+    volatile UInt level = 0;
+    volatile UInt narg = 0;
+    volatile UInt rnam  = 0;
     /* followed by one or more selectors                                   */
     while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
         /* <Var> '[' <Expr> ']'  list selector                             */
