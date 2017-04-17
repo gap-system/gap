@@ -1388,8 +1388,12 @@ Int IsStringList (
     lenList = LEN_LIST( list );
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || !CheckReadAccess(elm) )
+        if ( elm == 0 )
             break;
+#ifdef HPCGAP
+        if ( !CheckReadAccess(elm) )
+            break;
+#endif
         if ( TNUM_OBJ( elm ) != T_CHAR )
             break;
     }
@@ -2055,6 +2059,8 @@ Obj FuncSplitString (
   return res;
 }
 
+#ifdef HPCGAP
+
 /****************************************************************************
 **
 *F FuncFIND_ALL_IN_STRING( <self>, <string>, <chars> )
@@ -2122,6 +2128,8 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
   SET_LEN_STRING(string, j);
   return string;
 }
+
+#endif
 
 /****************************************************************************
 **
@@ -2527,11 +2535,13 @@ static StructGVarFunc GVarFuncs [] = {
     { "POSITION_SUBSTRING", 3, "string, substr, off",
       FuncPOSITION_SUBSTRING, "src/stringobj.c:POSITION_SUBSTRING" },
 
+#ifdef HPCGAP
     { "FIND_ALL_IN_STRING", 2, "string, characters",
       FuncFIND_ALL_IN_STRING, "src/stringobj.c:FIND_ALL_IN_STRING" },
 
     { "NORMALIZE_NEWLINES", 1, "string",
       FuncNORMALIZE_NEWLINES, "src/stringobj.c:NORMALIZE_NEWLINES" },
+#endif
 
     { "NormalizeWhitespace", 1, "string",
       FuncNormalizeWhitespace, "src/stringobj.c:NormalizeWhitespace" },
