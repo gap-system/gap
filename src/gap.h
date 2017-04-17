@@ -90,6 +90,22 @@ extern Obj FuncPrint (
 
 /****************************************************************************
 **
+*F RegisterBreakloopObserver( <func> )
+**
+** Register a function which will be called when the break loop is entered
+** and left. Function should take a single Int argument which will be 1 when
+** break loop is entered, 0 when leaving.
+**
+** Note that it is also possible to leave the break loop (or any GAP code)
+** by longjmping. This should be tracked with RegisterSyLongjmpObserver.
+*/
+
+typedef void (*intfunc)(Int);
+
+Int RegisterBreakloopObserver(intfunc func);
+
+/****************************************************************************
+**
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 extern void ErrorQuit (

@@ -54,8 +54,7 @@
 
 #include <src/vars.h>                   /* variables */
 
-
-#include <src/profile.h>                /* access to stat register function */
+#include <src/hookintrprtr.h>
 
 /****************************************************************************
 **
@@ -195,12 +194,12 @@ Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
   if(fileid < 0 || fileid >= (1 << 16))
   {
     fileid = (1 << 16) - 1;
-    RegisterProfilingFileOverflowOccured();
+    ReportFileNumberOverflowOccured();
   }
   if(line < 0 || line >= (1 << 16))
   {
     line = (1 << 16) - 1;
-    RegisterProfilingLineOverflowOccured();
+    ReportLineNumberOverflowOccured();
   }
 
   stat = ((Stat)fileid << 48) + ((Stat)line << 32) +
@@ -247,7 +246,7 @@ static Stat NewStatWithProf (
     
     /* enter type and size                                                 */
     ADDR_STAT(stat)[-1] = fillFilenameLine(file, line, size, type);
-    RegisterStatWithProfiling(stat);
+    RegisterStatWithHook(stat);
     /* return the new statement                                            */
     return stat;
 }
@@ -294,7 +293,7 @@ Expr            NewExpr (
     /* enter type and size                                                 */
     ADDR_EXPR(expr)[-1] = fillFilenameLine(STATE(Input)->gapnameid,
                                            STATE(Input)->number, size, type);
-    RegisterStatWithProfiling(expr);
+    RegisterStatWithHook(expr);
     /* return the new expression                                           */
     return expr;
 }

@@ -1024,26 +1024,39 @@ extern Char *getOptionArg(Char key, UInt which);
  *F    sySetjmp( <jump buffer> )
  *F    syLongjmp( <jump buffer>, <value>)
  ** 
- **   macros, defining our selected longjump mechanism
+ **   macros and functions, defining our selected longjump mechanism
  */
 
 #include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 
+
 #if HAVE_SIGSETJMP
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))
-#define syLongjmp siglongjmp
+#define syLongjmpInternal siglongjmp
 #define syJmp_buf sigjmp_buf
 #else
 #if HAVE__SETJMP
 #define sySetjmp _setjmp
-#define syLongjmp _longjmp
+#define syLongjmpInternal _longjmp
 #define syJmp_buf jmp_buf
 #else
 #define sySetjmp setjmp
-#define syLongjmp longjmp
+#define syLongjmpInternal longjmp
 #define syJmp_buf jmp_buf
 #endif
 #endif
+
+void syLongjmp(syJmp_buf buf, int val);
+
+/****************************************************************************
+**
+*F RegisterSyLongjmpObserver : register a function to be called before
+**                   longjmp is called.
+*/
+
+typedef void (*voidfunc)(void);
+
+Int RegisterSyLongjmpObserver(voidfunc);
 
 extern syJmp_buf AlarmJumpBuffer;
 

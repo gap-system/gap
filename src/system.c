@@ -1578,6 +1578,40 @@ static void SySetGapRootPath( const Char * string )
 
 /****************************************************************************
 **
+*F syLongjmp( <jump buffer>, <value>)
+** Perform a long jump
+**
+*F RegisterSyLongjmpObserver( <func> )
+** Register a function to be called before longjmp is called.
+** returns 1 on success, 0 if the table of functions is already full.
+*/
+
+enum { signalSyLongjmpFuncsLen = 16 };
+
+static voidfunc signalSyLongjmpFuncs[signalSyLongjmpFuncsLen];
+
+Int RegisterSyLongjmpObserver(voidfunc func)
+{
+    Int i;
+    for (i = 0; i < signalSyLongjmpFuncsLen; ++i) {
+        if (signalSyLongjmpFuncs[i] == 0) {
+            signalSyLongjmpFuncs[i] = func;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void syLongjmp(syJmp_buf buf, int val)
+{
+    Int i;
+    for (i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
+        (signalSyLongjmpFuncs[i])();
+    syLongjmpInternal(buf, val);
+}
+
+/****************************************************************************
+**
 *F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.

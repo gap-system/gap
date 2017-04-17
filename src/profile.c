@@ -46,6 +46,7 @@
 #include <assert.h>
 
 #include <src/profile.h>
+#include <src/hookintrprtr.h>
 
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
@@ -87,7 +88,7 @@
 **     line of each created statement, so we can chck which lines have code
 **     on them.
 **
-**  2) If we wait until the user can run ProfileLineByLine, they have missed
+**  2) If we wait until the user can run HookedLine, they have missed
 **     the reading and execution of lots of the standard library. Therefore
 **     we provide -P (profiling) and -c (code coverage) options to the GAP
 **     executable so the user can start before code loading starts
@@ -177,7 +178,7 @@ UInt profileState_Active;
 
 
 
-void ProfileLineByLineOutput(Obj func, char type)
+void HookedLineOutput(Obj func, char type)
 {
   HashLock(&profileState);
   if(profileState_Active && profileState.OutputRepeats)
@@ -213,6 +214,12 @@ void ProfileLineByLineOutput(Obj func, char type)
   }
   HashUnlock(&profileState);
 }
+
+void enterFunction(Obj func)
+{ HookedLineOutput(func, 'I'); }
+
+void leaveFunction(Obj func)
+{ HookedLineOutput(func, 'O'); }
 
 /****************************************************************************
 **
@@ -265,71 +272,6 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
   ps->Stream = 0;
 }
 
-/****************************************************************************
-**
-** Store the true values of each function we wrap for profiling. These always
-** store the correct values and are never changed.
-*/
-
-
-UInt (* OriginalExecStatFuncsForProf[256]) ( Stat stat );
-
-Obj  (* OriginalEvalExprFuncsForProf[256]) ( Expr expr );
-Obj  (* OriginalEvalBoolFuncsForProf[256]) ( Expr expr );
-
-void (* OriginalPrintStatFuncsForProf[256]) ( Stat stat );
-void (* OriginalPrintExprFuncsForProf[256]) ( Expr expr );
-
-/****************************************************************************
-**
-** These functions are here because the library may want to install
-** functions once profiling has started.
-*/
-
-void InstallEvalBoolFunc( Int pos, Obj(*expr)(Expr)) {
-  OriginalEvalBoolFuncsForProf[pos] = expr;
-  HashLock(&profileState);
-  if(!profileState_Active) {
-    EvalBoolFuncs[pos] = expr;
-  }
-  HashUnlock(&profileState);
-}
-
-void InstallEvalExprFunc( Int pos, Obj(*expr)(Expr)) {
-  OriginalEvalExprFuncsForProf[pos] = expr;
-  HashLock(&profileState);
-  if(!profileState_Active) {
-    EvalExprFuncs[pos] = expr;
-  }
-  HashUnlock(&profileState);
-}
-
-void InstallExecStatFunc( Int pos, UInt(*stat)(Stat)) {
-  OriginalExecStatFuncsForProf[pos] = stat;
-  HashLock(&profileState);
-  if(!profileState_Active) {
-    ExecStatFuncs[pos] = stat;
-  }
-  HashUnlock(&profileState);
-}
-
-void InstallPrintStatFunc(Int pos, void(*stat)(Stat)) {
-  OriginalPrintStatFuncsForProf[pos] = stat;
-  HashLock(&profileState);
-  if(!profileState.ColouringOutput) {
-    PrintStatFuncs[pos] = stat;
-  }
-  HashUnlock(&profileState);
-}
-
-void InstallPrintExprFunc(Int pos, void(*expr)(Expr)) {
-  OriginalPrintExprFuncsForProf[pos] = expr;
-  HashLock(&profileState);
-  if(!profileState.ColouringOutput) {
-    PrintExprFuncs[pos] = expr;
-  }
-  HashUnlock(&profileState);
-}
 
 /****************************************************************************
 **
@@ -479,101 +421,6 @@ void visitStat(Stat stat)
   }
 }
 
-UInt ProfileStatPassthrough(Stat stat)
-{
-  visitStat(stat);
-  return OriginalExecStatFuncsForProf[TNUM_STAT(stat)](stat);
-}
-
-Obj ProfileEvalExprPassthrough(Expr stat)
-{
-  visitStat(stat);
-  return OriginalEvalExprFuncsForProf[TNUM_STAT(stat)](stat);
-}
-
-Obj ProfileEvalBoolPassthrough(Expr stat)
-{
-  /* There are two cases we must pass through without touching */
-  /* From TNUM_EXPR */
-  if(IS_REFLVAR(stat)) {
-    return OriginalEvalBoolFuncsForProf[T_REFLVAR](stat);
-  }
-  if(IS_INTEXPR(stat)) {
-    return OriginalEvalBoolFuncsForProf[T_INTEXPR](stat);
-  }
-  visitStat(stat);
-  return OriginalEvalBoolFuncsForProf[TNUM_STAT(stat)](stat);
-}
-
-
-/****************************************************************************
-**
-** This functions check if we overflow either 2^16 lines, or files.
-** In this case profiling will "give up". We print a warning to tell users
-** that this happens.
-**/
-
-Int HaveReportedLineProfileOverflow;
-Int ShouldReportLineProfileOverflow;
-
-Int HaveReportedFileProfileOverflow;
-Int ShouldReportFileProfileOverflow;
-
-// This function only exists to allow testing of these overflow checks
-Obj FuncCLEAR_PROFILE_OVERFLOW_CHECKS(Obj self) {
-  HaveReportedLineProfileOverflow = 0;
-  ShouldReportLineProfileOverflow = 0;
-
-  HaveReportedFileProfileOverflow = 0;
-  ShouldReportFileProfileOverflow = 0;
-  
-  return 0;
-}
-
-void CheckPrintOverflowWarnings() {
-    if(!HaveReportedLineProfileOverflow && ShouldReportLineProfileOverflow)
-    {
-      HaveReportedLineProfileOverflow = 1;
-      Pr("#I Profiling only works on the first 65,535 lines of each file\n"
-         "#I (this warning will only appear once).\n",
-          0L, 0L);
-    }
-    
-    if(!HaveReportedFileProfileOverflow && ShouldReportFileProfileOverflow)
-    {
-      HaveReportedFileProfileOverflow = 1;
-      Pr("#I Profiling only works for the first 65,535 read files\n"
-         "#I (this warning will only appear once).\n",
-          0L, 0L );
-    }
-}
-
-void RegisterProfilingLineOverflowOccured()
-{
-    Int active;
-    HashLock(&profileState);
-    active = profileState_Active;
-    HashUnlock(&profileState);
-    ShouldReportLineProfileOverflow = 1;
-    if(active)
-    {
-        CheckPrintOverflowWarnings();
-    }
-}
-
-void RegisterProfilingFileOverflowOccured()
-{
-    Int active;
-    HashLock(&profileState);
-    active = profileState_Active;
-    HashUnlock(&profileState);
-    ShouldReportFileProfileOverflow = 1;
-    if(active)
-    {
-        CheckPrintOverflowWarnings();
-    }
-}
-
 /****************************************************************************
 **
 ** Activating and deacivating profiling, either at startup or by user request
@@ -589,17 +436,37 @@ void outputVersionInfo()
   
 }
 
+/****************************************************************************
+**
+** This function exists to help with code coverage -- this outputs which
+** lines have statements on expressions on them, so later we can
+** check we executed something on those lines!
+**/
+
+void registerStat(Stat stat)
+{
+    int active;
+    HashLock(&profileState);
+    active = profileState_Active;
+    HashUnlock(&profileState);
+    if(active) {
+      outputStat(stat, 0, 0);
+    }
+}
+
+
+struct InterpreterHooks profileHooks = {
+  visitStat, enterFunction, leaveFunction, registerStat,
+ "line-by-line profiling"};
+
+
 void enableAtStartup(char* filename, Int repeats)
 {
-    Int i;
-
     if(profileState_Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
         exit(1);
     }
     
-    
-
     profileState.OutputRepeats = repeats;
 
     fopenMaybeCompressed(filename, &profileState);
@@ -609,11 +476,7 @@ void enableAtStartup(char* filename, Int repeats)
         exit(1);
     }
 
-    for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-      ExecStatFuncs[i] = ProfileStatPassthrough;
-      EvalExprFuncs[i] = ProfileEvalExprPassthrough;
-      EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
-    }
+    ActivateHooks(&profileHooks);
 
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
@@ -659,8 +522,6 @@ Obj FuncACTIVATE_PROFILING (
     Obj                 wallTime,
     Obj                 resolution)
 {
-    Int i;
-
     if(profileState_Active) {
       return Fail;
     }
@@ -671,8 +532,6 @@ Obj FuncACTIVATE_PROFILING (
                      " GAP session. Please exit GAP and restart. Sorry.",0,0);
         return Fail;
     }
-
-    CheckPrintOverflowWarnings();
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
 
@@ -733,11 +592,7 @@ Obj FuncACTIVATE_PROFILING (
       return Fail;
     }
 
-    for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-      ExecStatFuncs[i] = ProfileStatPassthrough;
-      EvalExprFuncs[i] = ProfileEvalExprPassthrough;
-      EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
-    }
+    ActivateHooks(&profileHooks);
 
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
@@ -762,8 +617,6 @@ Obj FuncACTIVATE_PROFILING (
 Obj FuncDEACTIVATE_PROFILING (
     Obj                 self)
 {
-  int i;
-
   HashLock(&profileState);
 
   if(!profileState_Active) {
@@ -773,12 +626,7 @@ Obj FuncDEACTIVATE_PROFILING (
 
   fcloseMaybeCompressed(&profileState);
 
-  for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-    ExecStatFuncs[i] = OriginalExecStatFuncsForProf[i];
-    EvalExprFuncs[i] = OriginalEvalExprFuncsForProf[i];
-    EvalBoolFuncs[i] = OriginalEvalBoolFuncsForProf[i];
-  }
-
+  DeactivateHooks(&profileHooks);
   profileState_Active = 0;
 
   HashUnlock(&profileState);
@@ -803,8 +651,6 @@ Obj FuncIS_PROFILE_ACTIVE (
 ** their output either green or red depending on if statements are marked
 ** as being executed.
 */
-
-
 
 Int CurrentColour = 0;
 
@@ -831,7 +677,7 @@ void ProfilePrintStatPassthrough(Stat stat)
     CurrentColour = 2;
   }
   setColour();
-  OriginalPrintStatFuncsForProf[TNUM_STAT(stat)](stat);
+  OriginalPrintStatFuncsForHook[TNUM_STAT(stat)](stat);
   CurrentColour = SavedColour;
   setColour();
 }
@@ -842,9 +688,9 @@ void ProfilePrintExprPassthrough(Expr stat)
   /* There are two cases we must pass through without touching */
   /* From TNUM_EXPR */
   if(IS_REFLVAR(stat)) {
-    OriginalPrintExprFuncsForProf[T_REFLVAR](stat);
+    OriginalPrintExprFuncsForHook[T_REFLVAR](stat);
   } else if(IS_INTEXPR(stat)) {
-    OriginalPrintExprFuncsForProf[T_INTEXPR](stat);
+    OriginalPrintExprFuncsForHook[T_INTEXPR](stat);
   } else {
     SavedColour = CurrentColour;
     if(VISITED_STAT(stat)) {
@@ -854,16 +700,17 @@ void ProfilePrintExprPassthrough(Expr stat)
       CurrentColour = 2;
     }
     setColour();
-    OriginalPrintExprFuncsForProf[TNUM_STAT(stat)](stat);
+    OriginalPrintExprFuncsForHook[TNUM_STAT(stat)](stat);
     CurrentColour = SavedColour;
     setColour();
   }
 }
 
+struct PrintHooks profilePrintHooks =
+  {ProfilePrintStatPassthrough, ProfilePrintExprPassthrough};
+
 Obj activate_colored_output_from_profile(void)
 {
-    int i;
-
     HashLock(&profileState);
 
     if(profileState.ColouringOutput) {
@@ -871,10 +718,7 @@ Obj activate_colored_output_from_profile(void)
       return Fail;
     }
 
-    for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-      PrintStatFuncs[i] = ProfilePrintStatPassthrough;
-      PrintExprFuncs[i] = ProfilePrintExprPassthrough;
-    }
+    ActivatePrintHooks(&profilePrintHooks);
 
     profileState.ColouringOutput = 1;
     CurrentColour = 0;
@@ -887,8 +731,6 @@ Obj activate_colored_output_from_profile(void)
 
 Obj deactivate_colored_output_from_profile(void)
 {
-  int i;
-
   HashLock(&profileState);
 
   if(!profileState.ColouringOutput) {
@@ -896,10 +738,7 @@ Obj deactivate_colored_output_from_profile(void)
     return Fail;
   }
 
-  for( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++) {
-    PrintStatFuncs[i] = OriginalPrintStatFuncsForProf[i];
-    PrintExprFuncs[i] = OriginalPrintExprFuncsForProf[i];
-  }
+  DeactivatePrintHooks(&profilePrintHooks);
 
   profileState.ColouringOutput = 0;
   CurrentColour = 0;
@@ -924,25 +763,6 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
     return Fail;
 }
 
-/****************************************************************************
-**
-** This function exists to help with code coverage -- this outputs which
-** lines have statements on expressions on them, so later we can
-** check we executed something on those lines!
-**/
-
-void RegisterStatWithProfiling(Stat stat)
-{
-    int active;
-    HashLock(&profileState);
-    active = profileState_Active;
-    HashUnlock(&profileState);
-    if(active) {
-      outputStat(stat, 0, 0);
-    }
-
-}
-
 
 
 
@@ -962,8 +782,6 @@ static StructGVarFunc GVarFuncs [] = {
       FuncACTIVATE_PROFILING, "src/profile.c:ACTIVATE_PROFILING" },
     { "DEACTIVATE_PROFILING", 0, "",
       FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
-    { "CLEAR_PROFILE_OVERFLOW_CHECKS", 0, "",
-      FuncCLEAR_PROFILE_OVERFLOW_CHECKS, "src/profile.c:CLEAR_PROFILE_OVERFLOW_CHECKS" },
     { "IsLineByLineProfileActive", 0, "",
       FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
     { "ACTIVATE_COLOR_PROFILING", 1, "bool",
