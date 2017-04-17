@@ -1763,6 +1763,7 @@ static Int toggle( Char ** argv, void *Variable )
   return 0;
 }
 
+#ifdef HPCGAP
 static Int storePosInteger( Char **argv, void *Where )
 {
   UInt *where = (UInt *)Where;
@@ -1778,6 +1779,7 @@ static Int storePosInteger( Char **argv, void *Where )
   *where = n;
   return 1;
 }
+#endif
 
 static Int storeString( Char **argv, void *Where )
 {
