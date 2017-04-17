@@ -2287,12 +2287,12 @@ static Int InitKernel (
     return 0;
 }
 
-void InitStatState(GAPState *state)
+void InitStatState(GAPState * state)
 {
   state->CurrExecStatFuncs = ExecStatFuncs;
 }
 
-void DestroyStatState(GAPState *state)
+void DestroyStatState(GAPState * state)
 {
 }
 

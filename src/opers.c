@@ -6426,7 +6426,7 @@ StructInitInfo * InitInfoOpers ( void )
 *F  DestroyOpersTLS()  . . . . . . . . . . . . . . . . . . . . .  destroy TLS
 */
 
-void InitOpersState(GAPState *state)
+void InitOpersState(GAPState * state)
 {
   state->MethodCache = NEW_PLIST(T_PLIST, 1);
   state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
@@ -6434,7 +6434,7 @@ void InitOpersState(GAPState *state)
   SET_LEN_PLIST(state->MethodCache, 1);
 }
 
-void DestroyOpersState(GAPState *state)
+void DestroyOpersState(GAPState * state)
 {
   /* Nothing for now. */
 }
