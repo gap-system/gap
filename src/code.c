@@ -150,7 +150,7 @@ Obj FILENAME_STAT(Stat stat)
   if (filenameid == 0)
       filename = NEW_STRING(0);
   else
-      filename = ELM_PLIST(FilenameCache, filenameid);
+      filename = ELM_LIST(FilenameCache, filenameid);
   return filename;
 }
 
@@ -278,7 +278,6 @@ Stat NewStat (
 
     return NewStatWithProf(type, size, STATE(Input)->number, STATE(Input)->gapnameid);
 }
-
 
 
 /****************************************************************************

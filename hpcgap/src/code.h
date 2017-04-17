@@ -849,9 +849,13 @@ extern  void            CodeReturnObj ( void );
 **
 **  'CodeReturnVoid' is the action  to  code a return-void-statement.   It is
 **  called when the reader encounters a 'return;'.
+**
+**  'CodeReturnVoidWhichIsNotProfiled' creates a return which will not
+**  be tracked by profiling. This is used for the implicit return put
+**  at the end of functions.
 */
 extern  void            CodeReturnVoid ( void );
-
+extern  void            CodeReturnVoidWhichIsNotProfiled ( void );
 
 /****************************************************************************
 **
