@@ -43,13 +43,6 @@
 
 #include <src/hpc/systhread.h>          /* system thread primitives */
 
-/****************************************************************************
-**
-*F  RNameLock . . . . . . . . . . . . . . . . . . . . .  lock for name table
-**
-**  'CountRnam' is the number of record names.
-*/
-static pthread_rwlock_t RNameLock;
 
 /****************************************************************************
 **
@@ -75,7 +68,18 @@ UInt            CountRNam;
 */
 Obj             NamesRNam;
 
-static void LockNames(int write)
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*F  RNameLock . . . . . . . . . . . . . . . . . . . . .  lock for name table
+**
+**  'CountRnam' is the number of record names.
+*/
+static pthread_rwlock_t RNameLock;
+
+static void HPC_LockNames(int write)
 {
   if (PreThreadCreation)
     return;
@@ -85,11 +89,18 @@ static void LockNames(int write)
     pthread_rwlock_rdlock(&RNameLock);
 }
 
-static void UnlockNames()
+static void HPC_UnlockNames()
 {
   if (!PreThreadCreation)
     pthread_rwlock_unlock(&RNameLock);
 }
+
+#else
+
+static inline void HPC_LockNames(int write) {}
+static inline void HPC_UnlockNames() {}
+
+#endif
 
 
 /****************************************************************************
@@ -125,12 +136,12 @@ UInt            RNamName (
     }
     pos = (pos % SizeRNam) + 1;
 
-    LockNames(0); /* try a read lock first */
-    if(len >= 1023) {
+    HPC_LockNames(0); /* try a read lock first */
+    if (len >= 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
-	UnlockNames();
-	ErrorQuit("Record names must consist of less than 1023 characters", 0, 0);
-	return 0;
+        HPC_UnlockNames();
+        ErrorQuit("Record names must consist of less than 1023 characters", 0, 0);
+        return 0;
     }
     /* look through the table until we find a free slot or the global      */
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
@@ -138,12 +149,13 @@ UInt            RNamName (
         pos = (pos % SizeRNam) + 1;
     }
     if (rnam != 0) {
-      UnlockNames();
+      HPC_UnlockNames();
       return INT_INTOBJ(rnam);
     }
+#ifdef HPCGAP
     if (!PreThreadCreation) {
-      UnlockNames(); /* switch to a write lock */
-      LockNames(1);
+      HPC_UnlockNames(); /* switch to a write lock */
+      HPC_LockNames(1);
       /* look through the table until we find a free slot or the global      */
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
 	   && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
@@ -151,31 +163,34 @@ UInt            RNamName (
       }
     }
     if (rnam != 0) {
-      UnlockNames();
+      HPC_UnlockNames();
       return INT_INTOBJ(rnam);
     }
+#endif
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-        CountRNam++;
-        rnam = INTOBJ_INT(CountRNam);
-        SET_ELM_PLIST( HashRNam, pos, rnam );
-        strlcpy( namx, name, sizeof(namx) );
-        C_NEW_STRING_DYN(string, namx);
-        GROW_PLIST(    NamesRNam,   CountRNam );
-        SET_LEN_PLIST( NamesRNam,   CountRNam );
-        SET_ELM_PLIST( NamesRNam,   CountRNam, string );
-        CHANGED_BAG(   NamesRNam );
+    CountRNam++;
+    rnam = INTOBJ_INT(CountRNam);
+    SET_ELM_PLIST( HashRNam, pos, rnam );
+    strlcpy( namx, name, sizeof(namx) );
+    C_NEW_STRING_DYN(string, namx);
+    GROW_PLIST(    NamesRNam,   CountRNam );
+    SET_LEN_PLIST( NamesRNam,   CountRNam );
+    SET_ELM_PLIST( NamesRNam,   CountRNam, string );
+    CHANGED_BAG(   NamesRNam );
 
     /* if the table is too crowed, make a larger one, rehash the names     */
     if ( SizeRNam < 3 * CountRNam / 2 ) {
         table = HashRNam;
         SizeRNam = 2 * SizeRNam + 1;
         HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
-	/* The list is briefly non-public, but this is safe, because
-	 * the mutex protects it from being accessed by other threads.
-	 */
-	MakeBagPublic(HashRNam);
+#ifdef HPCGAP
+        /* The list is briefly non-public, but this is safe, because
+         * the mutex protects it from being accessed by other threads.
+         */
+        MakeBagPublic(HashRNam);
+#endif
         SET_LEN_PLIST( HashRNam, SizeRNam );
         for ( i = 1; i <= (SizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
@@ -191,7 +206,7 @@ UInt            RNamName (
             SET_ELM_PLIST( HashRNam, pos, rnam2 );
         }
     }
-    UnlockNames();
+    HPC_UnlockNames();
 
     /* return the record name                                              */
     return INT_INTOBJ(rnam);
