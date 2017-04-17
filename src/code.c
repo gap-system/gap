@@ -3487,7 +3487,7 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
-void InitCoderState(GAPState *state)
+void InitCoderState(GAPState * state)
 {
     state->OffsBodyCount = 0;
     state->LoopNesting = 0;
@@ -3496,7 +3496,7 @@ void InitCoderState(GAPState *state)
     state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 }
 
-void DestroyCoderState(GAPState *state)
+void DestroyCoderState(GAPState * state)
 {
 }
 
