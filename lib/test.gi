@@ -614,7 +614,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   files := [];
   for f in basedirs do
-    if IsList(f) and ForAll(f, IsDirectoryPath) then
+    if not IsString(f) and IsList(f) and ForAll(f, IsDirectoryPath) then
       recurseFiles(List(f, Directory), "");
     elif IsDirectoryPath(f) then
       recurseFiles( [ Directory(f) ], "" );
