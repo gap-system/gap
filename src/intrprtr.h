@@ -318,7 +318,8 @@ extern void IntrQualifiedExprEnd( void);
 **  when  the reader encounters  the  end of  the  statement, i.e., immediate
 **  after 'IntrAtomicEndBody'.
 **
-**  These functions are just placeholders for future HPC-GAP code
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 
 extern  void            IntrAtomicBegin ( void );
@@ -329,6 +330,14 @@ extern  void            IntrAtomicEndBody (
             Int                nrstats );
 
 extern  void            IntrAtomicEnd ( void );
+
+#ifdef HPCGAP
+/* TODO: move these constants to a more appropriate location */
+enum {
+    DEFAULT_LOCK_TYPE  = 1,
+    MAX_ATOMIC_OBJS = 256
+};
+#endif
 
 
 /****************************************************************************

@@ -294,10 +294,6 @@ extern void IntrQualifiedExprBegin( UInt access);
 extern void IntrQualifiedExprEnd( void);
 
 
-#define DEFAULT_LOCK_TYPE 1
-#define MAX_ATOMIC_OBJS 256
-
-
 /****************************************************************************
 **
 *F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
@@ -322,6 +318,8 @@ extern void IntrQualifiedExprEnd( void);
 **  when  the reader encounters  the  end of  the  statement, i.e., immediate
 **  after 'IntrAtomicEndBody'.
 **
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 
 extern  void            IntrAtomicBegin ( void );
@@ -332,6 +330,14 @@ extern  void            IntrAtomicEndBody (
             Int                nrstats );
 
 extern  void            IntrAtomicEnd ( void );
+
+#ifdef HPCGAP
+/* TODO: move these constants to a more appropriate location */
+enum {
+    DEFAULT_LOCK_TYPE  = 1,
+    MAX_ATOMIC_OBJS = 256
+};
+#endif
 
 
 /****************************************************************************
