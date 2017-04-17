@@ -796,13 +796,24 @@ Obj STEVES_TRACING;
             STATE(RecursionDepth)--; \
             ProfileLineByLineOutFunction(func);
 
+#ifdef HPCGAP
+
 #define REMEMBER_LOCKSTACK() \
-    int			lockSP = TLS(lockStackPointer)
+    int lockSP = TLS(lockStackPointer)
 
 #define CLEAR_LOCK_STACK() \
     if (lockSP != TLS(lockStackPointer)) \
       PopRegionLocks(lockSP)
 
+#else
+
+#define REMEMBER_LOCKSTACK() \
+    do { } while (0)
+
+#define CLEAR_LOCK_STACK() \
+    do { } while (0)
+
+#endif
 
 Obj DoExecFunc0args (
     Obj                 func )
@@ -826,7 +837,7 @@ Obj DoExecFunc0args (
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
-    /* Switch back to the old values bag                                   */
+    /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
@@ -1164,6 +1175,9 @@ Obj             DoExecFuncXargs (
       }
 }
 
+
+#ifdef HPCGAP
+
 void            LockFuncArgs (
     Obj                 func,
     Obj *               args )
@@ -1177,20 +1191,20 @@ void            LockFuncArgs (
     for (i=0; i<nargs; i++) {
       Obj obj = args[i];
       switch (locks[i]) {
-	case 1:
-	  if (CheckReadAccess(obj))
-	    break;
-	  mode[count] = 0;
-	  objects[count] = obj;
-	  count++;
-	  break;
-	case 2:
-	  if (CheckWriteAccess(obj))
-	    break;
-	  mode[count] = 1;
-	  objects[count] = obj;
-	  count++;
-	  break;
+        case 1:
+          if (CheckReadAccess(obj))
+            break;
+          mode[count] = 0;
+          objects[count] = obj;
+          count++;
+          break;
+        case 2:
+          if (CheckWriteAccess(obj))
+            break;
+          mode[count] = 1;
+          objects[count] = obj;
+          count++;
+          break;
       }
     }
     if (count && LockObjects(count, objects, mode) < 0)
@@ -1206,7 +1220,7 @@ Obj             DoExecFunc0argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[1];
     LockFuncArgs(func, args);
 
@@ -1247,7 +1261,7 @@ Obj             DoExecFunc1argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[1];
     args[0] = arg1;
     LockFuncArgs(func, args);
@@ -1293,7 +1307,7 @@ Obj             DoExecFunc2argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[2];
     args[0] = arg1;
     args[1] = arg2;
@@ -1341,7 +1355,7 @@ Obj             DoExecFunc3argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[3];
     args[0] = arg1;
     args[1] = arg2;
@@ -1393,7 +1407,7 @@ Obj             DoExecFunc4argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[4];
     args[0] = arg1;
     args[1] = arg2;
@@ -1447,7 +1461,7 @@ Obj             DoExecFunc5argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[5];
     args[0] = arg1;
     args[1] = arg2;
@@ -1504,7 +1518,7 @@ Obj             DoExecFunc6argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
     Obj                 args[6];
     args[0] = arg1;
     args[1] = arg2;
@@ -1560,7 +1574,7 @@ Obj             DoExecFuncXargsL (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
-    int			lockSP = TLS(lockStackPointer);
+    int                 lockSP = TLS(lockStackPointer);
 
     CHECK_RECURSION_BEFORE
 
@@ -1609,19 +1623,21 @@ Obj             DoExecFuncXargsL (
       }
 }
 
+#endif /* HPCGAP */
 
 
-Obj DoPartialUnWrapFunc(Obj func, Obj args) {
-  
-  Bag                 oldLvars;       /* old values bag                  */
-  OLD_BRK_CURR_STAT                   /* old executing statement         */
-    UInt                named;            /* number of arguments             */
-  UInt                i;              /* loop variable                   */
-  UInt len;
-  Obj argx;
+Obj DoPartialUnWrapFunc(Obj func, Obj args)
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    REMEMBER_LOCKSTACK();
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+    UInt                named;          /* number of arguments             */
+    UInt                i;              /* loop variable                   */
+    UInt len;
+    Obj argx;
 
 
-      named = ((UInt)-NARG_FUNC(func))-1;
+    named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
 
     if (named > len) { /* Can happen for > 6 arguments */
@@ -1629,28 +1645,33 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args) {
       return DoOperation2Args(CallFuncListOper, func, argx);
     }
 
-    CHECK_RECURSION_BEFORE    
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
 
+    /* enter the arguments                                                 */
     for (i = 1; i <= named; i++) {
       ASS_LVAR(i, ELM_PLIST(args,i));
     }
     for (i = named+1; i <= len; i++) {
-    SET_ELM_PLIST(args, i-named, ELM_PLIST(args,i));
-  }
-  SET_LEN_PLIST(args, len-named);
-  ASS_LVAR(named+1, args);
+      SET_ELM_PLIST(args, i-named, ELM_PLIST(args,i));
+    }
+    SET_LEN_PLIST(args, len-named);
+    ASS_LVAR(named+1, args);
+
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
+    CLEAR_LOCK_STACK();
 
    /* remove the link to the calling function, in case this values bag
        stays alive due to higher variable reference */
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1674,32 +1695,33 @@ Obj             MakeFunction (
 {
     Obj                 func;           /* function, result                */
     ObjFunc             hdlr;           /* handler                         */
+#ifdef HPCGAP
     Obj                 locks;          /* Locks of the function?   */
 
     locks = LCKS_FUNC(fexp);
     /* select the right handler                                            */
     if (locks) {
-	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0argsL;
-	else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1argsL;
-	else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2argsL;
-	else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3argsL;
-	else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4argsL;
-	else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5argsL;
-	else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6argsL;
-	else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargsL;
-	else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1argsL;
-    } else {
-	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
-	else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
-	else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2args;
-	else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3args;
-	else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4args;
-	else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5args;
-	else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6args;
-	else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
-	else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
+        if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0argsL;
+        else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1argsL;
+        else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2argsL;
+        else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3argsL;
+        else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4argsL;
+        else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5argsL;
+        else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6argsL;
+        else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargsL;
+        else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1argsL;
+    } else
+#endif
+    if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
+    else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
+    else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2args;
+    else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3args;
+    else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4args;
+    else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5args;
+    else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6args;
+    else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
+    else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
     else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
-    }
 
     /* make the function                                                   */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC,
@@ -1713,8 +1735,10 @@ Obj             MakeFunction (
     ENVI_FUNC( func ) = STATE(CurrLVars);
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
+#ifdef HPCGAP
     MakeHighVars(STATE(CurrLVars));
     LCKS_FUNC( func ) = locks;
+#endif
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
     /* return the function                                                 */
@@ -1947,8 +1971,10 @@ static Int InitKernel (
     RecursionTrapInterval = 5000;
     InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
   
+#if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
-    /* TL: InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );           */
+    InitGlobalBag( &STATE(ExecState), "src/funcs.c:ExecState" );
+#endif
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -1970,6 +1996,7 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFunc6args, "i6");
     InitHandlerFunc( DoExecFuncXargs, "iX");
 
+#ifdef HPCGAP
     InitHandlerFunc( DoExecFunc1argsL, "i1l");
     InitHandlerFunc( DoExecFunc2argsL, "i2l");
     InitHandlerFunc( DoExecFunc3argsL, "i3l");
@@ -1977,6 +2004,7 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFunc5argsL, "i5l");
     InitHandlerFunc( DoExecFunc6argsL, "i6l");
     InitHandlerFunc( DoExecFuncXargsL, "iXl");
+#endif
 
     InitHandlerFunc( DoPartialUnWrapFunc, "pUW");
 
