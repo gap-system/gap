@@ -404,7 +404,7 @@ function(M)
   FMtoFS := function(id, w)
     local wlist, i;
 
-    wlist := ShallowCopy(ExtRepOfObj(w));
+    wlist := ExtRepOfObj(w);
 
     if Length(wlist) = 0 then # it is the identity
       return id;
@@ -412,6 +412,7 @@ function(M)
 
     # have to increment the generators by one to shift past the identity
     # generator
+    wlist := ShallowCopy(wlist);
     for i in [1 .. 1 / 2 * (Length(wlist))] do
       wlist[2 * i - 1] := wlist[2 * i - 1] + 1;
     od;
@@ -430,6 +431,7 @@ function(M)
     fi;
     
     # have to decrease each entry by one because of the identity generator
+    wlist := ShallowCopy(wlist);
     for i in [1 .. 1 / 2 * (Length(wlist))] do
       wlist[2 * i - 1] := wlist[2 * i - 1] - 1;
     od;
