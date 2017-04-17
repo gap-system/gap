@@ -1052,6 +1052,7 @@ UInt            ExecForRange3 (
 UInt ExecAtomic(
 		Stat stat)
 {
+#ifdef HPCGAP
   Obj tolock[MAX_ATOMIC_OBJS];
   int locktypes[MAX_ATOMIC_OBJS];
   int lockstatus[MAX_ATOMIC_OBJS];
@@ -1078,35 +1079,37 @@ UInt ExecAtomic(
 
   GetLockStatus(nrexprs, tolock, lockstatus);
 
-    j = 0;
-    for (i = 0; i < nrexprs; i++)
-      {	
-
-	switch(lockstatus[i]) {
-	case 0:
-	  tolock[j] = tolock[i];
-	  locktypes[j] = locktypes[i];
-	  j++;
-	  break;
-	case 2:
-	  if (locktypes[i] == 1)
-	    ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
-	  break;
-	case 1:
-	  break;
- 	default:
-	  assert(0);
-	}
-      }
-    lockSP = LockObjects(j, tolock, locktypes);
-    if (lockSP >= 0) {
-      status = EXEC_STAT(ADDR_STAT(stat)[0]);
-      PopRegionLocks(lockSP);
-    } else {
-      status = 0;
-      ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
+  j = 0;
+  for (i = 0; i < nrexprs; i++) { 
+    switch (lockstatus[i]) {
+    case 0:
+      tolock[j] = tolock[i];
+      locktypes[j] = locktypes[i];
+      j++;
+      break;
+    case 2:
+      if (locktypes[i] == 1)
+        ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+      break;
+    case 1:
+      break;
+    default:
+      assert(0);
     }
-    return status;
+  }
+  lockSP = LockObjects(j, tolock, locktypes);
+  if (lockSP >= 0) {
+    status = EXEC_STAT(ADDR_STAT(stat)[0]);
+    PopRegionLocks(lockSP);
+  } else {
+    status = 0;
+    ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
+  }
+  return status;
+#else
+    // In non-HPC GAP, we completely ignore all the 'atomic' terms
+    return EXEC_STAT(ADDR_STAT(stat)[0]);
+#endif
 }
 
 
@@ -1807,7 +1810,7 @@ void ClearError ( void )
         }
     }
 
-    /* reset <STATE(NrError)>                                                     */
+    /* reset <STATE(NrError)>                                                */
     STATE(NrError) = 0;
 }
 
@@ -2218,8 +2221,9 @@ static Int InitKernel (
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
-
-    /* TL: InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" ); */
+#if !defined HPCGAP
+    InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
+#endif
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
