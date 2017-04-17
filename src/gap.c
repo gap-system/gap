@@ -1157,7 +1157,7 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   Obj result;
   volatile Int recursionDepth;
   volatile Stat currStat;
-  UInt newJumpBuf = 1;
+  volatile UInt newJumpBuf = 1;
   volatile UInt mayNeedToRestore = 0;
   volatile Int iseconds, imicroseconds;
   volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
