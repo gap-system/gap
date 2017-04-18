@@ -12,6 +12,7 @@
 #include <src/precord.h>
 #include <src/stats.h>
 #include <src/gap.h>
+#include <src/hpc/misc.h>
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
@@ -1054,8 +1055,6 @@ void ResumeAllThreads() {
  *  is to facilitate more complex precedence schemes that cannot be
  *  embedded in a total ordering.
  */
-
-extern UInt DeadlockCheck;
 
 static Int CurrentRegionPrecedence() {
   Int sp;

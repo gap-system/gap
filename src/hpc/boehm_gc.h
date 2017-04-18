@@ -33,6 +33,7 @@
 
 
 #include <src/code.h>                   /* coder */
+#include <src/hpc/misc.h>
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
 #ifdef TRACK_CREATOR
@@ -324,8 +325,6 @@ void            InitBags (
        */
       static char marker_env_str[32];
       unsigned num_markers = 2;
-      extern UInt SyNumProcessors;
-      extern UInt SyNumGCThreads;
       if (!SyNumGCThreads)
         SyNumGCThreads = SyNumProcessors;
       if (SyNumGCThreads) {
