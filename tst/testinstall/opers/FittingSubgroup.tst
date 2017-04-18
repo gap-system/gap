@@ -39,9 +39,9 @@ gap> f := FittingSubgroup(g);;
 gap> HasIsNilpotentGroup(f);
 true
 gap> p := SylowSubgroup(g, 2);;
-gap> HasIsNilpotentGroup(p);
+gap> HasIsNilpotentGroup(p) and IsNilpotentGroup(p);
 true
-gap> HasIsNilpotentGroup(FittingSubgroup(p));
+gap> HasFittingSubgroup(p) and HasIsNilpotentGroup(FittingSubgroup(p)) and FittingSubgroup(p)=p;
 true
 
 #

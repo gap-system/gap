@@ -1144,8 +1144,8 @@ InstallMethod( Exponent,
 ##
 #M  FittingSubgroup( <G> )  . . . . . . . . . . . Fitting subgroup of a group
 ##
-InstallMethod( FittingSubgroup, "for nilpotent group",
-    [ IsGroup and IsNilpotentGroup ], SUM_FLAGS, IdFunc );
+InstallImmediateMethod( FittingSubgroup,
+    IsGroup and IsNilpotentGroup, SUM_FLAGS, IdFunc );
 
 InstallMethod( FittingSubgroup,
     "generic method for groups",
