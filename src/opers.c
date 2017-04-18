@@ -6420,18 +6420,12 @@ StructInitInfo * InitInfoOpers ( void )
     return &module;
 }
 
-/****************************************************************************
-**
-*F  InitOpersTLS() . . . . . . . . . . . . . . . . . . . . . . initialize TLS
-*F  DestroyOpersTLS()  . . . . . . . . . . . . . . . . . . . . .  destroy TLS
-*/
-
 void InitOpersState(GAPState * state)
 {
-  state->MethodCache = NEW_PLIST(T_PLIST, 1);
-  state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
-  state->MethodCacheSize = 1;
-  SET_LEN_PLIST(state->MethodCache, 1);
+    state->MethodCache = NEW_PLIST(T_PLIST, 1);
+    state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
+    state->MethodCacheSize = 1;
+    SET_LEN_PLIST(state->MethodCache, 1);
 }
 
 void DestroyOpersState(GAPState * state)
