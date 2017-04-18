@@ -358,9 +358,10 @@ void SignalMonitor(Monitor *monitor)
   }
 }
 
-static void ArgumentError(char *message)
+static Obj ArgumentError(char *message)
 {
   ErrorQuit(message, 0, 0);
+  return 0;
 }
 
 /* TODO: register globals */
@@ -422,10 +423,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
   Obj templist;
   n = LEN_PLIST(funcargs);
   if (n == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
-  {
-    ArgumentError("CreateThread: Needs at least one function argument");
-    return (Obj) 0; /* flow control hint */
-  }
+    return ArgumentError("CreateThread: Needs at least one function argument");
   templist = NEW_PLIST(T_PLIST, n);
   SET_LEN_PLIST(templist, n);
   REGION(templist) = NULL; /* make it public */
@@ -449,7 +447,7 @@ Obj FuncWaitThread(Obj self, Obj thread) {
   UInt thread_status;
   char *error = NULL;
   if (TNUM_OBJ(thread) != T_THREAD)
-    ArgumentError("WaitThread: Argument must be a thread object");
+    return ArgumentError("WaitThread: Argument must be a thread object");
   LockThreadControl(1);
   thread_num = *(UInt *)(ADDR_OBJ(thread)+1);
   thread_status = *(UInt *)(ADDR_OBJ(thread)+2);
@@ -482,7 +480,7 @@ Obj FuncCurrentThread(Obj self) {
 
 Obj FuncThreadID(Obj self, Obj thread) {
   if (TNUM_OBJ(thread) != T_THREAD)
-    ArgumentError("ThreadID: Argument must be a thread object");
+    return ArgumentError("ThreadID: Argument must be a thread object");
   return INTOBJ_INT(ThreadID(thread));
 }
 
@@ -492,17 +490,16 @@ Obj FuncThreadID(Obj self, Obj thread) {
 **
 */
 
-
 Obj FuncKillThread(Obj self, Obj thread) {
   int id;
   if (IS_INTOBJ(thread)) {
     id = INT_INTOBJ(thread);
     if (id < 0 || id >= MAX_THREADS)
-      ArgumentError("KillThread: Thread ID out of range");
+      return ArgumentError("KillThread: Thread ID out of range");
   } else if (TNUM_OBJ(thread) == T_THREAD) {
     id = ThreadID(thread);
   } else
-    ArgumentError("KillThread: Argument must be a thread object");
+    return ArgumentError("KillThread: Argument must be a thread object");
   KillThread(id);
   return (Obj) 0;
 }
@@ -522,14 +519,14 @@ Obj FuncInterruptThread(Obj self, Obj thread, Obj handler) {
   if (IS_INTOBJ(thread)) {
     id = INT_INTOBJ(thread);
     if (id < 0 || id >= MAX_THREADS)
-      ArgumentError("InterruptThread: Thread ID out of range");
+      return ArgumentError("InterruptThread: Thread ID out of range");
   } else if (TNUM_OBJ(thread) == T_THREAD) {
     id = ThreadID(thread);
   } else
-    ArgumentError("InterruptThread: First argument must identify a thread");
+    return ArgumentError("InterruptThread: First argument must identify a thread");
   if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 0 ||
       INT_INTOBJ(handler) > MAX_INTERRUPT)
-    ArgumentError("InterruptThread: Second argument must be an integer "
+    return ArgumentError("InterruptThread: Second argument must be an integer "
       "between 0 and " AS_STRING(MAX_INTERRUPT));
   InterruptThread(id, (int)(INT_INTOBJ(handler)));
   return (Obj) 0;
@@ -544,14 +541,14 @@ Obj FuncInterruptThread(Obj self, Obj thread, Obj handler) {
 Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func) {
   if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 1 ||
       INT_INTOBJ(handler) > MAX_INTERRUPT)
-    ArgumentError("SetInterruptHandler: First argument must be an integer "
+    return ArgumentError("SetInterruptHandler: First argument must be an integer "
       "between 1 and " AS_STRING(MAX_INTERRUPT));
   if (func == Fail) {
     SetInterruptHandler((int)(INT_INTOBJ(handler)), (Obj) 0);
     return (Obj) 0;
   }
   if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 || !BODY_FUNC(func))
-    ArgumentError("SetInterruptHandler: Second argument must be a parameterless function or 'fail'");
+    return ArgumentError("SetInterruptHandler: Second argument must be a parameterless function or 'fail'");
   SetInterruptHandler((int)(INT_INTOBJ(handler)), func);
   return (Obj) 0;
 }
@@ -571,11 +568,11 @@ Obj FuncPauseThread(Obj self, Obj thread) {
   if (IS_INTOBJ(thread)) {
     id = INT_INTOBJ(thread);
     if (id < 0 || id >= MAX_THREADS)
-      ArgumentError("PauseThread: Thread ID out of range");
+      return ArgumentError("PauseThread: Thread ID out of range");
   } else if (TNUM_OBJ(thread) == T_THREAD) {
     id = ThreadID(thread);
   } else
-    ArgumentError("PauseThread: Argument must be a thread object");
+    return ArgumentError("PauseThread: Argument must be a thread object");
   PauseThread(id);
   return (Obj) 0;
 }
@@ -593,11 +590,11 @@ Obj FuncResumeThread(Obj self, Obj thread) {
   if (IS_INTOBJ(thread)) {
     id = INT_INTOBJ(thread);
     if (id < 0 || id >= MAX_THREADS)
-      ArgumentError("ResumeThread: Thread ID out of range");
+      return ArgumentError("ResumeThread: Thread ID out of range");
   } else if (TNUM_OBJ(thread) == T_THREAD) {
     id = ThreadID(thread);
   } else
-    ArgumentError("ResumeThread: Argument must be a thread object");
+    return ArgumentError("ResumeThread: Argument must be a thread object");
   ResumeThread(id);
   return (Obj) 0;
 }
@@ -628,7 +625,7 @@ Obj FuncRegionOf(Obj self, Obj obj) {
 Obj FuncSetAutoLockRegion(Obj self, Obj obj, Obj flag) {
   Region *region = GetRegionOf(obj);
   if (!region || region->fixed_owner) {
-    ArgumentError("SetAutoLockRegion: cannot change autolock status of this region");
+    return ArgumentError("SetAutoLockRegion: cannot change autolock status of this region");
   }
   if (flag == True) {
     region->autolock = 1;
@@ -637,8 +634,7 @@ Obj FuncSetAutoLockRegion(Obj self, Obj obj, Obj flag) {
     region->autolock = 0;
     return (Obj) 0;
   } else {
-    ArgumentError("SetAutoLockRegion: Second argument must be boolean");
-    return (Obj) 0; /* flow control hint */
+    return ArgumentError("SetAutoLockRegion: Second argument must be boolean");
   }
 }
 
@@ -663,9 +659,9 @@ Obj FuncIsAutoLockRegion(Obj self, Obj obj) {
 Obj FuncSetRegionName(Obj self, Obj obj, Obj name) {
   Region *region = GetRegionOf(obj);
   if (!region)
-    ArgumentError("SetRegionName: Cannot change name of the public region");
+    return ArgumentError("SetRegionName: Cannot change name of the public region");
   if (!IsStringConv(name))
-    ArgumentError("SetRegionName: Region name must be a string");
+    return ArgumentError("SetRegionName: Region name must be a string");
   SetRegionName(region, name);
   return (Obj) 0;
 }
@@ -673,7 +669,7 @@ Obj FuncSetRegionName(Obj self, Obj obj, Obj name) {
 Obj FuncClearRegionName(Obj self, Obj obj) {
   Region *region = GetRegionOf(obj);
   if (!region)
-    ArgumentError("ClearRegionName: Cannot change name of the public region");
+    return ArgumentError("ClearRegionName: Cannot change name of the public region");
   SetRegionName(region, (Obj) 0);
   return (Obj) 0;
 }
@@ -869,9 +865,9 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
   syJmp_buf readJmpError;
 
   if (TNUM_OBJ(func) != T_FUNCTION)
-    ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
+    return ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))
-    ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
+    return ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
   memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
   if (sySetjmp(STATE(ReadJmpError))) {
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
@@ -1989,13 +1985,12 @@ Obj FuncCreateChannel(Obj self, Obj args)
       {
 	capacity = INT_INTOBJ(ELM_PLIST(args, 1));
 	if (capacity <= 0)
-	  ArgumentError("CreateChannel: Capacity must be positive");
+	  return ArgumentError("CreateChannel: Capacity must be positive");
 	break;
       }
-      ArgumentError("CreateChannel: Argument must be capacity of the channel");
+      return ArgumentError("CreateChannel: Argument must be capacity of the channel");
     default:
-      ArgumentError("CreateChannel: Function takes up to two arguments");
-      return (Obj) 0; /* control flow hint */
+      return ArgumentError("CreateChannel: Function takes up to two arguments");
   }
   return CreateChannel(capacity);
 }
@@ -2008,26 +2003,23 @@ static int IsChannel(Obj obj)
 Obj FuncDestroyChannel(Obj self, Obj channel)
 {
   if (!IsChannel(channel))
-  {
-    ArgumentError("DestroyChannel: Argument is not a channel");
-    return (Obj) 0;
-  }
+    return ArgumentError("DestroyChannel: Argument is not a channel");
   if (!DestroyChannel(ObjPtr(channel)))
-    ArgumentError("DestroyChannel: Channel is in use");
+    return ArgumentError("DestroyChannel: Channel is in use");
   return (Obj) 0;
 }
 
 Obj FuncTallyChannel(Obj self, Obj channel)
 {
   if (!IsChannel(channel))
-    ArgumentError("TallyChannel: First argument must be a channel");
+    return ArgumentError("TallyChannel: First argument must be a channel");
   return INTOBJ_INT(TallyChannel(ObjPtr(channel)));
 }
 
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("SendChannel: First argument must be a channel");
+    return ArgumentError("SendChannel: First argument must be a channel");
   SendChannel(ObjPtr(channel), obj);
   return (Obj) 0;
 }
@@ -2035,7 +2027,7 @@ Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("TransmitChannel: First argument must be a channel");
+    return ArgumentError("TransmitChannel: First argument must be a channel");
   TransmitChannel(ObjPtr(channel), obj);
   return (Obj) 0;
 }
@@ -2043,9 +2035,9 @@ Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 {
   if (!IsChannel(channel))
-    ArgumentError("MultiSendChannel: First argument must be a channel");
+    return ArgumentError("MultiSendChannel: First argument must be a channel");
   if (!IS_DENSE_LIST(list))
-    ArgumentError("MultiSendChannel: Second argument must be a dense list");
+    return ArgumentError("MultiSendChannel: Second argument must be a dense list");
   MultiSendChannel(ObjPtr(channel), list);
   return (Obj) 0;
 }
@@ -2053,9 +2045,9 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
   if (!IsChannel(channel))
-    ArgumentError("MultiTransmitChannel: First argument must be a channel");
+    return ArgumentError("MultiTransmitChannel: First argument must be a channel");
   if (!IS_DENSE_LIST(list))
-    ArgumentError("MultiTransmitChannel: Second argument must be a dense list");
+    return ArgumentError("MultiTransmitChannel: Second argument must be a dense list");
   MultiTransmitChannel(ObjPtr(channel), list);
   return (Obj) 0;
 }
@@ -2063,9 +2055,9 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 {
   if (!IsChannel(channel))
-    ArgumentError("TryMultiSendChannel: First argument must be a channel");
+    return ArgumentError("TryMultiSendChannel: First argument must be a channel");
   if (!IS_DENSE_LIST(list))
-    ArgumentError("TryMultiSendChannel: Second argument must be a dense list");
+    return ArgumentError("TryMultiSendChannel: Second argument must be a dense list");
   return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list));
 }
 
@@ -2073,9 +2065,9 @@ Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
   if (!IsChannel(channel))
-    ArgumentError("TryMultiTransmitChannel: First argument must be a channel");
+    return ArgumentError("TryMultiTransmitChannel: First argument must be a channel");
   if (!IS_DENSE_LIST(list))
-    ArgumentError("TryMultiTransmitChannel: Second argument must be a dense list");
+    return ArgumentError("TryMultiTransmitChannel: Second argument must be a dense list");
   return INTOBJ_INT(TryMultiTransmitChannel(ObjPtr(channel), list));
 }
 
@@ -2083,21 +2075,21 @@ Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("TrySendChannel: Argument is not a channel");
+    return ArgumentError("TrySendChannel: Argument is not a channel");
   return TrySendChannel(ObjPtr(channel), obj) ? True : False;
 }
 
 Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("TryTransmitChannel: Argument is not a channel");
+    return ArgumentError("TryTransmitChannel: Argument is not a channel");
   return TryTransmitChannel(ObjPtr(channel), obj) ? True : False;
 }
 
 Obj FuncReceiveChannel(Obj self, Obj channel)
 {
   if (!IsChannel(channel))
-    ArgumentError("ReceiveChannel: Argument is not a channel");
+    return ArgumentError("ReceiveChannel: Argument is not a channel");
   return ReceiveChannel(ObjPtr(channel));
 }
 
@@ -2121,10 +2113,7 @@ Obj FuncReceiveAnyChannel(Obj self, Obj args)
         && IsChannelList(ELM_PLIST(args, 1)))
       return ReceiveAnyChannel(ELM_PLIST(args, 1), 0);
     else
-    {
-      ArgumentError("ReceiveAnyChannel: Argument list must be channels");
-      return (Obj) 0;
-    }
+      return ArgumentError("ReceiveAnyChannel: Argument list must be channels");
   }
 }
 
@@ -2138,10 +2127,7 @@ Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
         && IsChannelList(ELM_PLIST(args, 1)))
       return ReceiveAnyChannel(ELM_PLIST(args, 1), 1);
     else
-    {
-      ArgumentError("ReceiveAnyChannel: Argument list must be channels");
-      return (Obj) 0;
-    }
+      return ArgumentError("ReceiveAnyChannel: Argument list must be channels");
   }
 }
 
@@ -2149,26 +2135,26 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 {
   int count;
   if (!IsChannel(channel))
-    ArgumentError("MultiReceiveChannel: Argument is not a channel");
+    return ArgumentError("MultiReceiveChannel: Argument is not a channel");
   if (!IS_INTOBJ(countobj))
-    ArgumentError("MultiReceiveChannel: Size must be a number");
+    return ArgumentError("MultiReceiveChannel: Size must be a number");
   count = INT_INTOBJ(countobj);
   if (count < 0)
-    ArgumentError("MultiReceiveChannel: Size must be non-negative");
+    return ArgumentError("MultiReceiveChannel: Size must be non-negative");
   return MultiReceiveChannel(ObjPtr(channel), count);
 }
 
 Obj FuncInspectChannel(Obj self, Obj channel)
 {
   if (!IsChannel(channel))
-    ArgumentError("InspectChannel: Argument is not a channel");
+    return ArgumentError("InspectChannel: Argument is not a channel");
   return InspectChannel(ObjPtr(channel));
 }
 
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
 {
   if (!IsChannel(channel))
-    ArgumentError("TryReceiveChannel: Argument must be a channel");
+    return ArgumentError("TryReceiveChannel: Argument must be a channel");
   return TryReceiveChannel(ObjPtr(channel), obj);
 }
 
@@ -2197,13 +2183,12 @@ Obj FuncCreateSemaphore(Obj self, Obj args)
       {
 	count = INT_INTOBJ(ELM_PLIST(args, 1));
 	if (count < 0)
-	  ArgumentError("CreateSemaphore: Initial count must be non-negative");
+	  return ArgumentError("CreateSemaphore: Initial count must be non-negative");
 	break;
       }
-      ArgumentError("CreateSemaphore: Argument must be initial count");
+      return ArgumentError("CreateSemaphore: Argument must be initial count");
     default:
-      ArgumentError("CreateSemaphore: Function takes up to two arguments");
-      return (Obj) 0; /* control flow hint */
+      return ArgumentError("CreateSemaphore: Function takes up to two arguments");
   }
   return CreateSemaphore(count);
 }
@@ -2212,7 +2197,7 @@ Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 {
   Semaphore *sem;
   if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-    ArgumentError("SignalSemaphore: Argument must be a semaphore");
+    return ArgumentError("SignalSemaphore: Argument must be a semaphore");
   sem = ObjPtr(semaphore);
   LockMonitor(ObjPtr(sem->monitor));
   sem->count++;
@@ -2226,7 +2211,7 @@ Obj FuncWaitSemaphore(Obj self, Obj semaphore)
 {
   Semaphore *sem;
   if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-    ArgumentError("WaitSemaphore: Argument must be a semaphore");
+    return ArgumentError("WaitSemaphore: Argument must be a semaphore");
   sem = ObjPtr(semaphore);
   LockMonitor(ObjPtr(sem->monitor));
   sem->waiting++;
@@ -2245,7 +2230,7 @@ Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
   Semaphore *sem;
   int success;
   if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-    ArgumentError("WaitSemaphore: Argument must be a semaphore");
+    return ArgumentError("WaitSemaphore: Argument must be a semaphore");
   sem = ObjPtr(semaphore);
   LockMonitor(ObjPtr(sem->monitor));
   success = (sem->count > 0);
@@ -2334,9 +2319,9 @@ int IsBarrier(Obj obj)
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
   if (!IsBarrier(barrier))
-    ArgumentError("StartBarrier: First argument must be a barrier");
+    return ArgumentError("StartBarrier: First argument must be a barrier");
   if (!IS_INTOBJ(count))
-    ArgumentError("StartBarrier: Second argument must be the number of threads to synchronize");
+    return ArgumentError("StartBarrier: Second argument must be the number of threads to synchronize");
   StartBarrier(ObjPtr(barrier), INT_INTOBJ(count));
   return (Obj) 0;
 }
@@ -2344,7 +2329,7 @@ Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 Obj FuncWaitBarrier(Obj self, Obj barrier)
 {
   if (!IsBarrier(barrier))
-    ArgumentError("StartBarrier: Argument must be a barrier");
+    return ArgumentError("StartBarrier: Argument must be a barrier");
   WaitBarrier(ObjPtr(barrier));
   return (Obj) 0;
 }
@@ -2424,7 +2409,7 @@ Obj FuncCreateSyncVar(Obj self)
 Obj FuncSyncWrite(Obj self, Obj var, Obj value)
 {
   if (!IsSyncVar(var))
-    ArgumentError("SyncWrite: First argument must be a synchronization variable");
+    return ArgumentError("SyncWrite: First argument must be a synchronization variable");
   SyncWrite(ObjPtr(var), value);
   return (Obj) 0;
 }
@@ -2432,21 +2417,21 @@ Obj FuncSyncWrite(Obj self, Obj var, Obj value)
 Obj FuncSyncTryWrite(Obj self, Obj var, Obj value)
 {
   if (!IsSyncVar(var))
-    ArgumentError("SyncTryWrite: First argument must be a synchronization variable");
+    return ArgumentError("SyncTryWrite: First argument must be a synchronization variable");
   return SyncTryWrite(ObjPtr(var), value) ? True : False;
 }
 
 Obj FuncSyncRead(Obj self, Obj var)
 {
   if (!IsSyncVar(var))
-    ArgumentError("SyncRead: Argument must be a synchronization variable");
+    return ArgumentError("SyncRead: Argument must be a synchronization variable");
   return SyncRead(ObjPtr(var));
 }
 
 Obj FuncSyncIsBound(Obj self, Obj var)
 {
   if (!IsSyncVar(var))
-    ArgumentError("SyncRead: Argument must be a synchronization variable");
+    return ArgumentError("SyncRead: Argument must be a synchronization variable");
   return SyncIsBound(ObjPtr(var));
 }
 
@@ -2626,7 +2611,7 @@ Obj FuncLOCK(Obj self, Obj args)
   int result;
 
   if (numargs > 1024)
-    ArgumentError("LOCK: Too many arguments");
+    return ArgumentError("LOCK: Too many arguments");
   objects = alloca(sizeof(Obj) * numargs);
   modes = alloca(sizeof(int) * numargs);
   for (i=1; i<=numargs; i++)
@@ -2692,7 +2677,7 @@ Obj FuncTRYLOCK(Obj self, Obj args)
   int result;
 
   if (numargs > 1024)
-    ArgumentError("TRYLOCK: Too many arguments");
+    return ArgumentError("TRYLOCK: Too many arguments");
   objects = alloca(sizeof(Obj) * numargs);
   modes = alloca(sizeof(int) * numargs);
   for (i=1; i<=numargs; i++)
@@ -2720,7 +2705,7 @@ Obj FuncTRYLOCK(Obj self, Obj args)
 Obj FuncUNLOCK(Obj self, Obj sp)
 {
   if (!IS_INTOBJ(sp) || INT_INTOBJ(sp) < 0)
-    ArgumentError("UNLOCK: argument must be a non-negative integer");
+    return ArgumentError("UNLOCK: argument must be a non-negative integer");
   PopRegionLocks(INT_INTOBJ(sp));
   return (Obj) 0;
 }
@@ -2779,14 +2764,14 @@ Obj FuncREFINE_TYPE(Obj self, Obj obj) {
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 {
   if (!MigrateObjects(1, &obj, NULL, 0))
-    ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have exclusive access to objects");
+    return ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
 
 Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 {
   if (!IS_BAG_REF(obj))
-    ArgumentError("FORCE_MAKE_PUBLIC: Argument is a short integer or finite-field element");
+    return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a short integer or finite-field element");
   MakeBagPublic(obj);
   return obj;
 }
@@ -2795,9 +2780,9 @@ Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 Obj FuncFIX_OBJ_REGION(Obj self, Obj obj)
 {
   if (!IS_BAG_REF(obj))
-    ArgumentError("FIX_OBJ_REGION: Argument must not be a short integer or finite field element");
+    return ArgumentError("FIX_OBJ_REGION: Argument must not be a short integer or finite field element");
   if (!CheckExclusiveWriteAccess(obj))
-    ArgumentError("FIX_OBJ_REGION: Thread does not have exclusive access to object");
+    return ArgumentError("FIX_OBJ_REGION: Thread does not have exclusive access to object");
   SET_OBJ_FLAG(obj, FIXED_REGION);
   return obj;
 }
@@ -2805,14 +2790,13 @@ Obj FuncFIX_OBJ_REGION(Obj self, Obj obj)
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
   Region *region = NewRegion();
-  Obj reachable;
   if (name != Fail && !IsStringConv(name))
-    ArgumentError("SHARE_NORECURSE: Second argument must be a string or fail");
+    return ArgumentError("SHARE_NORECURSE: Second argument must be a string or fail");
   if (!IS_INTOBJ(prec))
-    ArgumentError("SHARE_NORECURSE: Third argument must be an integer");
+    return ArgumentError("SHARE_NORECURSE: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   if (!MigrateObjects(1, &obj, region, 0))
-    ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
+    return ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
   if (name != Fail)
     SetRegionName(region, name);
   return obj;
@@ -2822,16 +2806,16 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
   Region *target_region = GetRegionOf(target);
   if (!target_region || IsLocked(target_region) != 1)
-    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
+    return ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
   if (!MigrateObjects(1, &obj, target_region, 0))
-    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
+    return ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
   return obj;
 }
 
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
   if (!MigrateObjects(1, &obj, TLS(threadRegion), 0))
-    ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
+    return ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2860,9 +2844,9 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
   Region *region = NewRegion();
   if (name != Fail && !IsStringConv(name))
-    ArgumentError("NEW_REGION: Second argument must be a string or fail");
+    return ArgumentError("NEW_REGION: Second argument must be a string or fail");
   if (!IS_INTOBJ(prec))
-    ArgumentError("NEW_REGION: Third argument must be an integer");
+    return ArgumentError("NEW_REGION: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   if (name != Fail)
     SetRegionName(region, name);
@@ -2880,14 +2864,14 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
   Region *region = NewRegion();
   Obj reachable;
   if (name != Fail && !IsStringConv(name))
-    ArgumentError("SHARE: Second argument must be a string or fail");
+    return ArgumentError("SHARE: Second argument must be a string or fail");
   if (!IS_INTOBJ(prec))
-    ArgumentError("SHARE: Third argument must be an integer");
+    return ArgumentError("SHARE: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, region, 1))
-    ArgumentError("SHARE: Thread does not have exclusive access to objects");
+    return ArgumentError("SHARE: Thread does not have exclusive access to objects");
   if (name != Fail)
     SetRegionName(region, name);
   return obj;
@@ -2898,14 +2882,14 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
   Region *region = NewRegion();
   Obj reachable;
   if (name != Fail && !IsStringConv(name))
-    ArgumentError("SHARE_RAW: Second argument must be a string or fail");
+    return ArgumentError("SHARE_RAW: Second argument must be a string or fail");
   if (!IS_INTOBJ(prec))
-    ArgumentError("SHARE_RAW: Third argument must be an integer");
+    return ArgumentError("SHARE_RAW: Third argument must be an integer");
   region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, region, 0))
-    ArgumentError("SHARE_RAW: Thread does not have exclusive access to objects");
+    return ArgumentError("SHARE_RAW: Thread does not have exclusive access to objects");
   if (name != Fail)
     SetRegionName(region, name);
   return obj;
@@ -2916,7 +2900,7 @@ Obj FuncADOPT(Obj self, Obj obj)
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, TLS(threadRegion), 0))
-    ArgumentError("ADOPT: Thread does not have exclusive access to objects");
+    return ArgumentError("ADOPT: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2925,7 +2909,7 @@ Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, NULL, 0))
-    ArgumentError("MAKE_PUBLIC: Thread does not have exclusive access to objects");
+    return ArgumentError("MAKE_PUBLIC: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2934,11 +2918,11 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
   Region *target_region = GetRegionOf(target);
   Obj reachable;
   if (!target_region || IsLocked(target_region) != 1)
-    ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
+    return ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, target_region, 1))
-    ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
+    return ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2947,11 +2931,11 @@ Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
   Region *target_region = GetRegionOf(target);
   Obj reachable;
   if (!target_region || IsLocked(target_region) != 1)
-    ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
+    return ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, target_region, 0))
-    ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
+    return ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2960,7 +2944,7 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
   char *name;
   UInt gvar;
   if (!IsStringConv(var) || GET_LEN_STRING(var) == 0)
-    ArgumentError("MakeThreadLocal: Argument must be a variable name");
+    return ArgumentError("MakeThreadLocal: Argument must be a variable name");
   name = CSTR_STRING(var);
   gvar = GVarName(name);
   name = NameGVar(gvar); /* to apply namespace scopes where needed. */
@@ -2977,7 +2961,7 @@ Obj FuncMakeReadOnly(Obj self, Obj obj)
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, ReadOnlyRegion, 1))
-    ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
+    return ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -2990,7 +2974,7 @@ Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, ReadOnlyRegion, 0))
-    ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
+    return ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -3000,7 +2984,7 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
   if (!region || region == ReadOnlyRegion)
     return obj;
   if (!MigrateObjects(1, &obj, ReadOnlyRegion, 0))
-    ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
+    return ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
   return obj;
 }
 
@@ -3013,7 +2997,7 @@ Obj FuncMakeProtected(Obj self, Obj obj)
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, ProtectedRegion, 1))
-    ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
+    return ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
   return obj;
 }
 
@@ -3023,7 +3007,7 @@ Obj FuncMakeProtectedObj(Obj self, Obj obj)
   if (region == ProtectedRegion)
     return obj;
   if (!MigrateObjects(1, &obj, ProtectedRegion, 0))
-    ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
+    return ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
   return obj;
 }
 
@@ -3113,7 +3097,7 @@ Obj FuncSIGWAIT(Obj self, Obj handlers)
 {
   int sig;
   if (!IS_REC(handlers))
-    ArgumentError("SIGWAIT: Argument must be a record");
+    return ArgumentError("SIGWAIT: Argument must be a record");
   if (sigwait(&GAPSignals, &sig) >= 0) {
     switch (sig) {
       case SIGINT:
@@ -3157,9 +3141,9 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 {
   UInt n;
   if (!IS_INTOBJ(count) || INT_INTOBJ(count) < 0)
-    ArgumentError("PERIODIC_CHECK: First argument must be a non-negative small integer");
+    return ArgumentError("PERIODIC_CHECK: First argument must be a non-negative small integer");
   if (TNUM_OBJ(func) != T_FUNCTION)
-    ArgumentError("PERIODIC_CHECK: Second argument must be a function");
+    return ArgumentError("PERIODIC_CHECK: Second argument must be a function");
   /*
    * The following read of SigVTALRMCounter is a dirty read. We don't
    * need to synchronize access to it because it's a monotonically
@@ -3182,7 +3166,7 @@ Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
   Region *region = GetRegionOf(obj);
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_ENABLE: Cannot enable counters for this region");
+    return ArgumentError("REGION_COUNTERS_ENABLE: Cannot enable counters for this region");
 
   region->count_active = 1;
   return (Obj) 0;
@@ -3193,7 +3177,7 @@ Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
   Region *region = GetRegionOf(obj);
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_DISABLE: Cannot disable counters for this region");
+    return ArgumentError("REGION_COUNTERS_DISABLE: Cannot disable counters for this region");
 
   region->count_active = 0;
   return (Obj) 0;
@@ -3205,7 +3189,7 @@ Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
   Region *region = GetRegionOf(obj);
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_GET_STATE: Cannot get counters for this region");
+    return ArgumentError("REGION_COUNTERS_GET_STATE: Cannot get counters for this region");
 
   result = INTOBJ_INT(region->count_active);
 
@@ -3217,7 +3201,7 @@ Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
   Region *region = GetRegionOf(obj);
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_GET: Cannot get counters for this region");
+    return ArgumentError("REGION_COUNTERS_GET: Cannot get counters for this region");
 
   return GetRegionLockCounters(region);
 }
@@ -3227,7 +3211,7 @@ Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
   Region *region = GetRegionOf(obj);
 
   if(!region)
-    ArgumentError("REGION_COUNTERS_RESET: Cannot reset counters for this region");
+    return ArgumentError("REGION_COUNTERS_RESET: Cannot reset counters for this region");
 
   ResetRegionLockCounters(region);
 
