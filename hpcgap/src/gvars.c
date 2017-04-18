@@ -235,9 +235,7 @@ void            AssGVar (
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
-    Char *              name;           /* name of a function              */
     Obj                 onam;           /* object of <name>                */
-    Int                 len;            /* length of string                */
     UInt		gvar_bucket = GVAR_BUCKET(gvar);
     UInt		gvar_index = GVAR_INDEX(gvar);
 
@@ -305,16 +303,6 @@ void            AssGVar (
 
     /* assign name to a function                                           */
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
-	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-	    name = NameGVar(gvar);
-	    /*CCC        onam = NEW_STRING(strlen(name));
-	      strncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
-	    len = strlen(name);
-	    C_NEW_STRING_DYN(onam, name);
-	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
-	    NAME_FUNC(val) = onam;
-	    CHANGED_BAG(val);
-	}
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
