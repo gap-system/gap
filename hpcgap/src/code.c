@@ -119,7 +119,6 @@ static inline void PopLoopNesting( void ) {
 
 static inline void setup_gapname(TypInputFile* i)
 {
-  UInt len;
   if(!i->gapname) {
     C_NEW_STRING_DYN(i->gapname, i->name);
     i->gapnameid = AddAList(FilenameCache, i->gapname);

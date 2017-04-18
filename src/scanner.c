@@ -2891,8 +2891,6 @@ static Char StillMoreCookie[sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int                 i;
-
     STATE(Input) = 0;
     (void)OpenInput(  "*stdin*"  );
     STATE(Input)->echo = 1; /* echo stdin */
@@ -2913,6 +2911,7 @@ static Int InitKernel (
        latest lines read from the streams  and the name of the current input file*/
     /* For HPC-GAP we don't need the cookies anymore, since the data got moved to thread-local
      * storage. */
+    Int i;
     for ( i = 0;  i < sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0]);  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
@@ -2978,15 +2977,9 @@ StructInitInfo * InitInfoScanner ( void )
   return &module;
 }
 
-/****************************************************************************
- **
- *F  InitScannerTLS() . . . . . . . . . . . . . . . . . . . . . initialize TLS
- *F  DestroyScannerTLS()  . . . . . . . . . . . . . . . . . . . .  destroy TLS
- */
-
 void InitScannerState(GAPState * state)
 {
-  state->HELPSubsOn = 1;
+    state->HELPSubsOn = 1;
 }
 
 void DestroyScannerState(GAPState * state)

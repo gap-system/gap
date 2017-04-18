@@ -213,11 +213,11 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
 Int LengthWPObj(Obj wp)
 {
   Int len;
-  Obj elm;
   Int changed = 0;
   len = STORED_LEN_WPOBJ(wp);
   if (CheckExclusiveWriteAccess(wp)) {
 #ifndef BOEHM_GC
+    Obj elm;
     for (; len > 0 && 
            (!(elm = ELM_WPOBJ(wp,len)) ||
             IS_WEAK_DEAD_BAG(elm)); 
@@ -548,13 +548,12 @@ Obj CopyObjWPObj (
 void MakeImmutableWPObj( Obj obj )
 {
   UInt i;
-  Obj elm;
   
 #ifndef BOEHM_GC
   /* remove any weak dead bags */
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++)
     {
-      elm = ELM_WPOBJ(obj,i);
+      Obj elm = ELM_WPOBJ(obj,i);
       if (elm != 0 && IS_WEAK_DEAD_BAG(elm)) 
         ELM_WPOBJ(obj,i) = 0;
     }

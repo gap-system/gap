@@ -338,7 +338,6 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 {
   UInt n;
   UInt len;
-  Obj result;
   AtomicObj *addr;
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
     ArgumentError("GET_ATOMIC_LIST: First argument must be an atomic list");
@@ -437,8 +436,6 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
 
 static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
 {
-  AtomicObj *data;
-  UInt i, len;
   if (TNUM_OBJ(list) != T_ALIST)
     ArgumentError("AddAtomicList: First argument must be an atomic list");
   return INTOBJ_INT(AddAList(list, obj));
@@ -504,6 +501,7 @@ static void MarkAtomicList(Bag bag)
 #define TLR_CONSTRUCTORS 2
 #define TLR_DATA 3
 
+/*
 static void MarkTLRecordInner(Bag bag)
 {
   Bag *ptr, *ptrend;
@@ -517,6 +515,7 @@ static void MarkTLRecordInner(Bag bag)
     ptr++;
   }
 }
+*/
 
 static Obj GetTLInner(Obj obj)
 {
@@ -527,8 +526,7 @@ static Obj GetTLInner(Obj obj)
 
 static void MarkTLRecord(Bag bag)
 {
-  Bag contents = GetTLInner(bag);
-  MARK_BAG(contents);
+  MARK_BAG(GetTLInner(bag));
 }
 
 
@@ -1308,7 +1306,6 @@ static int OnlyConstructors(Obj precord) {
 
 static Obj FuncThreadLocalRecord(Obj self, Obj args)
 {
-  Obj result;
   switch (LEN_PLIST(args)) {
     case 0:
       return NewTLRecord(NEW_PREC(0), NEW_PREC(0));
@@ -1961,7 +1958,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  UInt i, cap;
+  UInt i;
   /* compute UsageCap */
   for (i=0; i<=3; i++)
     UsageCap[i] = (1<<i)-1;
@@ -2073,18 +2070,6 @@ static Int InitKernel (
   UnbRecFuncs[ T_TLREC ] = UnbTLRecord;
   /* return success                                                      */
   return 0;
-}
-
-
-/****************************************************************************
-**
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* return success                                                      */
-    return 0;
 }
 
 
