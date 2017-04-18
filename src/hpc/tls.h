@@ -1,6 +1,8 @@
 #ifndef GAP_TLS_H
 #define GAP_TLS_H
 
+#define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
+
 #if !defined(HPCGAP)
 
 /*
@@ -121,8 +123,6 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 
 #define TLS(x) realTLS->x
 #define STATE(x) TLS(state).x
-
-#define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
 #ifdef VERBOSE_GUARDS
 

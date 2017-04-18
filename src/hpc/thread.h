@@ -12,6 +12,8 @@
 #define HashUnlock(obj)       do { } while(0)
 #define HashUnlockShared(obj) do { } while(0)
 
+#define REGION(x) (void*)0
+
 #else
 
 /* Maximum number of threads excluding the main thread */
@@ -120,4 +122,3 @@ void SetInterruptHandler(int handler, Obj func);
 #endif // HPCGAP
 
 #endif // GAP_THREAD_H
-

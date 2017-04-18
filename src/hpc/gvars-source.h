@@ -26,61 +26,111 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include        <stdio.h>
+//#include        "systhread.h"		    /* system thread primitives	       */
+
+#include        "../system.h"              /* Ints, UInts                     */
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
+#include        "../gasman.h"              /* garbage collector               */
+#include        "../objects.h"             /* objects                         */
 
-#include <src/scanner.h>                /* scanner */
+#include        "../scanner.h"             /* scanner                         */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include        "../gap.h"                 /* error handling, initialisation  */
 
-#include <src/code.h>                   /* coder */
+#include        "../code.h"                /* coder                           */
 
-#include <src/gvars.h>                  /* global variables */
+#include        "../gvars.h"               /* global variables                */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include        "../calls.h"               /* generic call mechanism          */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include        "../records.h"             /* generic records                 */
+#include        "../precord.h"             /* plain records                   */
 
-#include <src/lists.h>                  /* generic lists */
+#include        "../lists.h"               /* generic lists                   */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include        "../plist.h"               /* plain lists                     */
+#include        "../stringobj.h"              /* strings                         */
 
-#include <src/bool.h>                   /* booleans */
+#include        "../bool.h"                /* booleans                        */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#include        "tls.h"                 /* thread-local storage            */
+#include        "thread.h"              /* threads                         */
+#include        "aobjects.h"            /* atomic objects                  */
+#include <pthread.h>
 
-#ifdef TWO_LEVEL_HEADERS
-
-#include "hpc/gvars-source.h"
-
-#else
+static int PreThreadCreation = 0;
+#define realTLS MainGlobalState
+#define SetTLDefault(x,y,z) abort();
+#define GetTLRecordField(x,y) fprintf(stderr, "FATAL ERROR\n")
+#define AssTLRecord(x,y,z) abort();
 
 /****************************************************************************
 **
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **
-**  'ValGVars' is the bag containing the values of the global variables.
+**  'ValGVars' references the bags containing the values of the global
+**  variables.
 **
-**  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
+**  'PtrGVars' is a pointer  to the 'ValGVars' bag+1. This makes it faster to
 **  access global variables.
 **
 **  Since a   garbage  collection may move   this  bag around,    the pointer
 **  'PtrGVars' must be  revalculated afterwards.   This  should be done by  a
 **  function in this package, but is still done in 'VarsAfterCollectBags'.
 */
-Obj   ValGVars;
+Obj   ValGVars[GVAR_BUCKETS];
 
-Obj * PtrGVars;
+Obj * PtrGVars[GVAR_BUCKETS];
 
+/****************************************************************************
+**
+*V  TLVars  . . . . . . . . . . . . . . . . . . . . . thread-local variables
+*/
+
+static Obj TLVars;
+
+/****************************************************************************
+**
+*V  GVarLock  . . . . . . . . . . . . . . . . . .  lock for global variables
+**
+**  This lock is only needed for accessing global variables by name rather
+**  than index and to initialize copy/fopy information.
+*/
+
+pthread_rwlock_t GVarLock;
+void *GVarLockOwner;
+UInt GVarLockDepth;
+
+void LockGVars(int write) {
+  if (PreThreadCreation)
+    return;
+  if (GVarLockOwner == realTLS) {
+    GVarLockDepth++;
+    return;
+  }
+  if (write) {
+    pthread_rwlock_wrlock(&GVarLock);
+    GVarLockOwner = realTLS;
+    GVarLockDepth = 1;
+  }
+  else
+    pthread_rwlock_rdlock(&GVarLock);
+}
+
+void UnlockGVars() {
+  if (PreThreadCreation)
+    return;
+  if (GVarLockOwner == realTLS) {
+    GVarLockDepth--;
+    if (GVarLockDepth != 0)
+      return;
+    GVarLockOwner = NULL;
+  }
+  pthread_rwlock_unlock(&GVarLock);
+}
 
 /****************************************************************************
 **
@@ -94,7 +144,8 @@ Obj * PtrGVars;
 **
 **  'VAL_GVAR' is defined in the declaration part of this package as follows
 **
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)-1])
 */
 
 
@@ -107,11 +158,11 @@ Obj * PtrGVars;
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 *V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */
-Obj             NameGVars;
-Obj             WriteGVars;
-Obj             ExprGVars;
-Obj             CopiesGVars;
-Obj             FopiesGVars;
+Obj             NameGVars[GVAR_BUCKETS];
+Obj             WriteGVars[GVAR_BUCKETS];
+Obj             ExprGVars[GVAR_BUCKETS];
+Obj             CopiesGVars[GVAR_BUCKETS];
+Obj             FopiesGVars[GVAR_BUCKETS];
 UInt            CountGVars;
 
 
@@ -181,29 +232,6 @@ Obj             ErrorMustHaveAssObjHandler (
 
 static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
-/****************************************************************************
-**
-** AssGVarUnsafe(<gvar>,<val>)
-**
-** Assign to a global variable with no safety checks
-** - Does not check if the variable is readonly
-** - Does not check if it is automatic, has internal copies or fopies
-**
-** The current main use of this function is to handle the `~` variable,
-** both for speed and because it is marked read-only to avoid users editing
-** it.
-*/
-
-void            AssGVarUnsafe (
-    UInt                gvar,
-    Obj                 val )
-{
-    /* assign the value to the global variable                             */
-    VAL_GVAR(gvar) = val;
-    CHANGED_BAG( ValGVars );
-
-}
-
 void            AssGVar (
     UInt                gvar,
     Obj                 val )
@@ -211,32 +239,40 @@ void            AssGVar (
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
+    Char *              name;           /* name of a function              */
     Obj                 onam;           /* object of <name>                */
+    Int                 len;            /* length of string                */
+    UInt		gvar_bucket = GVAR_BUCKET(gvar);
+    UInt		gvar_index = GVAR_INDEX(gvar);
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-            (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
-            
-        if(gvar == Tilde) {
-                ErrorMayQuit("'~' cannot be assigned",0L,0L);
-        }
-        else {
-            ErrorReturnVoid(
-                "Variable: '%s' is read only",
-                (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
-                "you can 'return;' after making it writable" );
-        }
+            (ELM_PLIST( WriteGVars[gvar_bucket], gvar_index )
+	      == INTOBJ_INT(0)) ) {
+        ErrorReturnVoid(
+            "Variable: '%s' is read only",
+            (Int)CSTR_STRING( ELM_PLIST(NameGVars[gvar_bucket],
+	      gvar_index) ), 0L,
+            "you can 'return;' after making it writable" );
     }
 
     /* assign the value to the global variable                             */
+    if (!VAL_GVAR(gvar)) {
+        Obj expr = ELM_PLIST(ExprGVars[gvar_bucket], gvar_index);
+	if (IS_INTOBJ(expr)) {
+	  AssTLRecord(TLVars, INT_INTOBJ(expr), val);
+	  return;
+	}
+    }
+    MEMBAR_WRITE();
     VAL_GVAR(gvar) = val;
-    CHANGED_BAG( ValGVars );
+    CHANGED_BAG( ValGVars[gvar_bucket] );
 
     /* if the global variable was automatic, convert it to normal          */
-    SET_ELM_PLIST( ExprGVars, gvar, 0 );
+    SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, 0 );
 
     /* assign the value to all the internal copies                         */
-    cops = ELM_PLIST( CopiesGVars, gvar );
+    cops = ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
             copy  = (Obj*) ELM_PLIST(cops,i);
@@ -245,12 +281,14 @@ void            AssGVar (
     }
 
     /* if the value is a function, assign it to all the internal fopies    */
-    cops = ELM_PLIST( FopiesGVars, gvar );
-    if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
-        for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
-            *copy = val;
-        }
+    cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
+	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
+	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
+		copy  = (Obj*) ELM_PLIST(cops,i);
+		*copy = val;
+	    }
+	}
     }
 
     /* if the values is not a function, assign the error function          */
@@ -270,11 +308,19 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
+	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
+	    onam = CopyToStringRep(NameGVarObj(gvar));
+	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
+	    NAME_FUNC(val) = onam;
+	    CHANGED_BAG(val);
+	}
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        onam = CopyToStringRep(NameGVarObj(gvar));
+	      onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
+    }
     }
 }
 
@@ -290,29 +336,86 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
+    Obj			expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
+    Obj			val;
+    UInt		gvar_bucket = GVAR_BUCKET(gvar);
+    UInt		gvar_index  = GVAR_INDEX(gvar);
 
     /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 && ELM_PLIST( ExprGVars, gvar ) != 0 ) {
+    val = ValGVar(gvar);
+    if ( val == 0 &&
+         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
 
+	if (IS_INTOBJ(expr)) {
+	  /* thread-local variable */
+	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+	}
         /* make the function call                                          */
-        func = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 1 );
-        arg  = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 2 );
+        func = ELM_PLIST( expr, 1 );
+        arg  = ELM_PLIST( expr, 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-        while ( VAL_GVAR(gvar) == 0 ) {
+        val = ValGVar(gvar);
+        while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
-                (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
-                "you can 'return;' after assigning a value" );
+            (Int)CSTR_STRING( ELM_PLIST(NameGVars[gvar_bucket],gvar_index)), 0L,
+            "you can 'return;' after assigning a value" );
+	    val = ValGVar(gvar);
         }
 
     }
 
     /* return the value                                                    */
-    return VAL_GVAR(gvar);
+    return val;
+}
+
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+Obj             ValGVarTL (
+    UInt                gvar )
+{
+    Obj			expr;
+    Obj                 func;           /* function to call for automatic  */
+    Obj                 arg;            /* argument to pass for automatic  */
+    Obj			val;
+    UInt		gvar_bucket = GVAR_BUCKET(gvar);
+    UInt		gvar_index  = GVAR_INDEX(gvar);
+
+    val = ValGVar(gvar);
+    /* is this a thread-local variable? */
+    if ( val == 0 &&
+         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
+
+	if (IS_INTOBJ(expr)) {
+	  /* thread-local variable */
+	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+	}
+    }
+
+    /* return the value                                                    */
+    return val;
+}
+
+Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
+  UInt gvar, gvar_bucket, gvar_index;
+  if (!IsStringConv(name))
+    ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
+		 (Int)TNAM_OBJ(name), 0L);
+
+  gvar = GVarName(CSTR_STRING(name));
+  gvar_bucket = GVAR_BUCKET(gvar);
+  gvar_index = GVAR_INDEX(gvar);
+  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ELM_PLIST(ExprGVars[gvar_bucket], gvar_index))) ?
+    True: False;
 }
 
 
@@ -325,12 +428,25 @@ Obj             ValAutoGVar (
 Char *          NameGVar (
     UInt                gvar )
 {
-    return CSTR_STRING( ELM_PLIST( NameGVars, gvar ) );
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index  = GVAR_INDEX(gvar);
+    Obj str = ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
+    return CSTR_STRING(str);
+}
+
+Obj NewGVarBucket() {
+    Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
+    SET_LEN_PLIST(result, GVAR_BUCKET_SIZE);
+    MakeBagPublic(result);
+    return result;
 }
 
 Obj NameGVarObj ( UInt gvar )
 {
-    return ELM_PLIST( NameGVars, gvar );
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index  = GVAR_INDEX(gvar);
+
+    return ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
 }
 
 #define NSCHAR '@'
@@ -339,13 +455,13 @@ Obj NameGVarObj ( UInt gvar )
 
 Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
-    STATE(CurrNamespace) = str;
+    TLS(CurrNamespace) = str;
     return 0;
 }
 
 Obj FuncGET_NAMESPACE(Obj self)
 {
-    return STATE(CurrNamespace);
+    return TLS(CurrNamespace);
 }
 
 /****************************************************************************
@@ -370,7 +486,7 @@ UInt GVarName (
     Int                 len;            /* length of name                  */
 
     /* First see whether it could be namespace-local: */
-    cns = CSTR_STRING(STATE(CurrNamespace));
+    cns = TLS(CurrNamespace) ? CSTR_STRING(TLS(CurrNamespace)) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
@@ -380,58 +496,73 @@ UInt GVarName (
         }
     }
 
+    
     /* start looking in the table at the following hash position           */
     pos = 0;
     for ( p = name; *p != '\0'; p++ ) {
         pos = 65599 * pos + *p;
     }
+    LockGVars(0);
     pos = (pos % SizeGVars) + 1;
+    i = pos;
 
     /* look through the table until we find a free slot or the global      */
-    while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
+    while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
          && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
-        pos = (pos % SizeGVars) + 1;
+        i = (i % SizeGVars) + 1;
+    }
+    if (gvar == 0 && !PreThreadCreation) {
+        /* upgrade to write lock and repeat search */
+	UnlockGVars();
+	LockGVars(1);
+	i = pos;
+
+	/* look through the table until we find a free slot or the global  */
+	while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
+	     && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+	    i = (i % SizeGVars) + 1;
+	}
     }
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
+        UInt gvar_bucket, gvar_index;
+        pos = i;
         CountGVars++;
+        gvar_bucket = GVAR_BUCKET(CountGVars);
+        gvar_index = GVAR_INDEX(CountGVars);
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         strlcpy(namx, name, sizeof(namx));
         C_NEW_STRING_DYN(string, namx);
 
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
-        GROW_PLIST(    ValGVars,    CountGVars );
-        SET_LEN_PLIST( ValGVars,    CountGVars );
-        SET_ELM_PLIST( ValGVars,    CountGVars, 0 );
-        GROW_PLIST(    NameGVars,   CountGVars );
-        SET_LEN_PLIST( NameGVars,   CountGVars );
-        SET_ELM_PLIST( NameGVars,   CountGVars, string );
-        CHANGED_BAG(   NameGVars );
-        GROW_PLIST(    WriteGVars,  CountGVars );
-        SET_LEN_PLIST( WriteGVars,  CountGVars );
-        SET_ELM_PLIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
-        GROW_PLIST(    ExprGVars,   CountGVars );
-        SET_LEN_PLIST( ExprGVars,   CountGVars );
-        SET_ELM_PLIST( ExprGVars,   CountGVars, 0 );
-        GROW_PLIST(    CopiesGVars, CountGVars );
-        SET_LEN_PLIST( CopiesGVars, CountGVars );
-        SET_ELM_PLIST( CopiesGVars, CountGVars, 0 );
-        GROW_PLIST(    FopiesGVars, CountGVars );
-        SET_LEN_PLIST( FopiesGVars, CountGVars );
-        SET_ELM_PLIST( FopiesGVars, CountGVars, 0 );
-        PtrGVars = ADDR_OBJ( ValGVars );
-    }
+        if (!ValGVars[gvar_bucket]) {
+           ValGVars[gvar_bucket] = NewGVarBucket();
+           PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
+           NameGVars[gvar_bucket] = NewGVarBucket();
+           WriteGVars[gvar_bucket] = NewGVarBucket();
+           ExprGVars[gvar_bucket] = NewGVarBucket();
+           CopiesGVars[gvar_bucket] = NewGVarBucket();
+           FopiesGVars[gvar_bucket] = NewGVarBucket();
+        }
+        SET_ELM_PLIST(ValGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(NameGVars[gvar_bucket], gvar_index, string);
+        CHANGED_BAG(NameGVars[gvar_bucket]);
+        SET_ELM_PLIST(WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1));
+        SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_PLIST(FopiesGVars[gvar_bucket], gvar_index, 0);
 
-    /* if the table is too crowed, make a larger one, rehash the names     */
-    if ( SizeGVars < 3 * CountGVars / 2 ) {
-        table = TableGVars;
-        SizeGVars = 2 * SizeGVars + 1;
-        TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-        SET_LEN_PLIST( TableGVars, SizeGVars );
-        for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
+        /* if the table is too crowed, make a larger one, rehash the names     */
+        if ( SizeGVars < 3 * CountGVars / 2 ) {
+            table = TableGVars;
+            SizeGVars = 2 * SizeGVars + 1;
+            TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+            MakeBagPublic(TableGVars);
+            SET_LEN_PLIST( TableGVars, SizeGVars );
+            for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
             gvar2 = ELM_PLIST( table, i );
             if ( gvar2 == 0 )  continue;
             pos = 0;
@@ -443,11 +574,26 @@ UInt GVarName (
                 pos = (pos % SizeGVars) + 1;
             }
             SET_ELM_PLIST( TableGVars, pos, gvar2 );
+            CHANGED_BAG(TableGVars);
+            }
         }
     }
 
+    UnlockGVars();
+
     /* return the global variable                                          */
     return INT_INTOBJ(gvar);
+}
+
+Int FindGVarByValue(Obj value, Int start) {
+  Int max = CountGVars;
+  MEMBAR_READ();
+  while (start < max) {
+    if (VAL_GVAR(start) == value)
+      return start;
+    start++;
+  }
+  return -1;
 }
 
 /****************************************************************************
@@ -471,8 +617,30 @@ UInt Tilde;
 void MakeReadOnlyGVar (
     UInt                gvar )
 {       
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars)
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index = GVAR_INDEX(gvar);
+    SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(0) );
+    CHANGED_BAG(WriteGVars[gvar_bucket]);
+}
+
+/****************************************************************************
+**
+*F  MakeThreadLocalVar( <gvar> )  . . . . . .  make a variable thread-local
+*/
+void MakeThreadLocalVar (
+    UInt                gvar,
+    UInt                rnam )
+{       
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index = GVAR_INDEX(gvar);
+    Obj value = ValGVar(gvar);
+    VAL_GVAR(gvar) = (Obj) 0;
+    if (IS_INTOBJ(ELM_PLIST( ExprGVars[gvar_bucket], gvar_index)))
+       value = (Obj) 0;
+    SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
+    CHANGED_BAG(ExprGVars[gvar_bucket]);
+    if (value && TLVars)
+        SetTLDefault(TLVars, rnam, value);
 }
 
 
@@ -514,8 +682,10 @@ Obj MakeReadOnlyGVarHandler (
 void MakeReadWriteGVar (
     UInt                gvar )
 {
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(1) );
-    CHANGED_BAG(WriteGVars)
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index = GVAR_INDEX(gvar);
+    SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1) );
+    CHANGED_BAG(WriteGVars[gvar_bucket]);
 }
 
 
@@ -556,7 +726,9 @@ Obj MakeReadWriteGVarHandler (
 Int IsReadOnlyGVar (
     UInt                gvar )
 {
-  return !INT_INTOBJ(ELM_PLIST(WriteGVars, gvar));
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index = GVAR_INDEX(gvar);
+    return !INT_INTOBJ(ELM_PLIST(WriteGVars[gvar_bucket], gvar_index));
 }
 
 
@@ -610,6 +782,7 @@ Obj             AUTOHandler (
     Obj                 name;           /* one name (as a GAP string)      */
     UInt                gvar;           /* one global variable             */
     UInt                i;              /* loop variable                   */
+    UInt		gvar_bucket, gvar_index;
 
     /* check that there are enough arguments                               */
     if ( LEN_LIST(args) < 2 ) {
@@ -647,9 +820,11 @@ Obj             AUTOHandler (
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
-        SET_ELM_PLIST( ValGVars,   gvar, 0    );
-        SET_ELM_PLIST( ExprGVars, gvar, list );
-        CHANGED_BAG(   ExprGVars );
+        gvar_bucket = GVAR_BUCKET(gvar);
+        gvar_index = GVAR_INDEX(gvar);
+        SET_ELM_PLIST( ValGVars[gvar_bucket],   gvar_index, 0    );
+        SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, list );
+        CHANGED_BAG(   ExprGVars[gvar_bucket] );
     }
 
     /* return void                                                         */
@@ -688,7 +863,8 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+        if ( VAL_GVAR( i ) ||
+	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -720,17 +896,18 @@ Obj FuncIDENTS_GVAR (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
-    Obj                 strcopy;
+    UInt		num_gvars;
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
-    for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-        /* Copy the string here, because we do not want members of NameGVars
-         * accessable to users, as these strings must not be changed */
-        strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
-        SET_ELM_PLIST( copy, i, strcopy );
-        CHANGED_BAG( copy );
+    LockGVars(0);
+    num_gvars = CountGVars;
+    UnlockGVars();
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, num_gvars );
+    for ( i = 1;  i <= num_gvars;  i++ ) {
+        SET_ELM_PLIST( copy, i,
+	  ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
     }
-    SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
+    SET_LEN_PLIST( copy, num_gvars );
     return copy;
 }
 
@@ -740,17 +917,18 @@ Obj FuncIDENTS_BOUND_GVARS (
     /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i, j;
-    Obj                 strcopy;
+    UInt		num_gvars;
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
-    for ( i = 1, j = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
-           /* Copy the string here, because we do not want members of
-            * NameGVars accessable to users, as these strings must not be
-            * changed */
-           strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
-           SET_ELM_PLIST( copy, j, strcopy );
-           CHANGED_BAG( copy );
+    LockGVars(0);
+    num_gvars = CountGVars;
+    UnlockGVars();
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, num_gvars );
+    for ( i = 1, j = 1;  i <= num_gvars;  i++ ) {
+        if ( VAL_GVAR( i ) ||
+	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
+           SET_ELM_PLIST( copy, j,
+	     ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
            j++;
         }
     }
@@ -789,6 +967,7 @@ Obj FuncISB_GVAR (
     Obj                 gvar )
 {
   UInt gv;
+  Obj expr;
     /* check the argument                                                  */
     while ( ! IsStringConv( gvar ) ) {
         gvar = ErrorReturnObj(
@@ -798,8 +977,14 @@ Obj FuncISB_GVAR (
     }
 
     gv = GVarName( CSTR_STRING(gvar) );
-    return ( VAL_GVAR( gv ) ||
-             ELM_PLIST( ExprGVars, gv )) ? True : False;
+    if (VAL_GVAR(gv))
+      return True;
+    expr = ELM_PLIST( ExprGVars[GVAR_BUCKET(gv)], GVAR_INDEX(gv) );
+    if (expr && !IS_INTOBJ(expr)) /* auto gvar */
+      return False;
+    if (!expr || !TLVars)
+      return False;
+    return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;
 }
 
 
@@ -822,7 +1007,7 @@ Obj FuncVAL_GVAR (
     }
 
     /* get the value */
-    val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
+    val = ValGVarTL( GVarName( CSTR_STRING(gvar) ) );
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
@@ -909,7 +1094,9 @@ void InitCopyGVar (
     Obj *               copy )
 {
     /* make a record in the kernel for saving and loading                  */
+    LockGVars(1);
     if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+        UnlockGVars();
         Pr( "Panic, no room to record CopyGVar\n", 0L, 0L );
         SyExit(1);
     }
@@ -917,6 +1104,7 @@ void InitCopyGVar (
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
+    UnlockGVars();
 }
 
 
@@ -938,7 +1126,9 @@ void InitFopyGVar (
     Obj *               copy )
 {
     /* make a record in the kernel for saving and loading                  */
+    LockGVars(1);
     if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+        UnlockGVars();
         Pr( "Panic, no room to record FopyGVar\n", 0L, 0L );
         SyExit(1);
     }
@@ -946,6 +1136,7 @@ void InitFopyGVar (
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
+    UnlockGVars();
 }
 
 
@@ -955,6 +1146,8 @@ void InitFopyGVar (
 */
 static Int NCopyAndFopyDone;
 
+void DeclareAllGVars( void );
+
 void UpdateCopyFopyInfo ( void )
 {
     Obj                 cops;           /* copies list                     */
@@ -962,32 +1155,38 @@ void UpdateCopyFopyInfo ( void )
     UInt                gvar;
     const Char *        name;           /* name of the variable            */
     Obj *               copy;           /* address of the copy             */
+    UInt		gvar_bucket, gvar_index;
 
+    LockGVars(1);
     /* loop over new copies and fopies                                     */
     for ( ; NCopyAndFopyDone < NCopyAndFopyGVars; NCopyAndFopyDone++ ) {
         name = CopyAndFopyGVars[NCopyAndFopyDone].name;
         copy = CopyAndFopyGVars[NCopyAndFopyDone].copy;
         gvar = GVarName(name);
+        gvar_bucket = GVAR_BUCKET(gvar);
+        gvar_index = GVAR_INDEX(gvar);
 
         /* get the copies list and its length                              */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( ELM_PLIST( FopiesGVars, gvar ) != 0 ) {
-                cops = ELM_PLIST( FopiesGVars, gvar );
+            if ( ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index ) != 0 ) {
+                cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
             }
             else {
                 cops = NEW_PLIST( T_PLIST, 0 );
-                SET_ELM_PLIST( FopiesGVars, gvar, cops );
-                CHANGED_BAG(FopiesGVars);
+                MakeBagPublic(cops);
+                SET_ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index, cops );
+                CHANGED_BAG(FopiesGVars[gvar_bucket]);
             }
         }
         else {
-            if ( ELM_PLIST( CopiesGVars, gvar ) != 0 ) {
-                cops = ELM_PLIST( CopiesGVars, gvar );
+            if ( ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index ) != 0 ) {
+                cops = ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index );
             }
             else {
                 cops = NEW_PLIST( T_PLIST, 0 );
-                SET_ELM_PLIST( CopiesGVars, gvar, cops );
-                CHANGED_BAG(CopiesGVars);
+                MakeBagPublic(cops);
+                SET_ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index, cops );
+                CHANGED_BAG(CopiesGVars[gvar_bucket]);
             }
         }
         ncop = LEN_PLIST(cops);
@@ -1000,10 +1199,11 @@ void UpdateCopyFopyInfo ( void )
 
         /* now copy the value of <gvar> to <cvar>                          */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( VAL_GVAR(gvar) != 0 && IS_FUNC(VAL_GVAR(gvar)) ) {
-                *copy = VAL_GVAR(gvar);
+            Obj val = ValGVar(gvar);
+            if ( val != 0 && IS_FUNC(val) ) {
+                *copy = val;
             }
-            else if ( VAL_GVAR(gvar) != 0 ) {
+            else if ( val != 0 ) {
                 *copy = ErrorMustEvalToFuncFunc;
             }
             else {
@@ -1011,9 +1211,11 @@ void UpdateCopyFopyInfo ( void )
             }
         }
         else {
-            *copy = VAL_GVAR(gvar);
+            *copy = ValGVar(gvar);
         }
     }
+    UnlockGVars();
+    DeclareAllGVars();
 }
 
 
@@ -1025,13 +1227,15 @@ void RemoveCopyFopyInfo( void )
 {
     UInt        i, l;
 
+    LockGVars(1);
     l = LEN_PLIST(CopiesGVars);
     for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( CopiesGVars, i, 0 );
+        SET_ELM_PLIST( CopiesGVars[GVAR_BUCKET(i)], GVAR_INDEX(i), 0 );
     l = LEN_PLIST(FopiesGVars);
     for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( FopiesGVars, i, 0 );
+        SET_ELM_PLIST( FopiesGVars[GVAR_BUCKET(i)], GVAR_INDEX(i), 0 );
     NCopyAndFopyDone = 0;
+    UnlockGVars();
     return;
 }
 
@@ -1042,9 +1246,103 @@ void RemoveCopyFopyInfo( void )
 */
 void RestoreCopyFopyInfo( void )
 {
+    LockGVars(1);
     NCopyAndFopyDone = 0;
+    UnlockGVars();
     UpdateCopyFopyInfo();
 }
+
+GVarDescriptor *FirstDeclaredGVar;
+GVarDescriptor *LastDeclaredGVar;
+
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunction(<gvar>) . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
+
+void DeclareGVar(GVarDescriptor *gvar, char *name)
+{
+  gvar->ref = NULL;
+  gvar->name = name;
+  gvar->next = NULL;
+  if (LastDeclaredGVar) {
+    LastDeclaredGVar->next = gvar;
+    LastDeclaredGVar = gvar;
+  } else {
+    FirstDeclaredGVar = gvar;
+    LastDeclaredGVar = gvar;
+  }
+}
+
+void DeclareAllGVars( void )
+{
+  GVarDescriptor *gvar;
+  LockGVars(1);
+  for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
+    UInt index = GVarName(gvar->name);
+    gvar->ref = &(VAL_GVAR(index));
+  }
+  FirstDeclaredGVar = LastDeclaredGVar = 0;
+  UnlockGVars();
+}
+
+Obj GVarValue(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarObj(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarFunction(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  if (REGION(result))
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarOptFunction(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    return (Obj) 0;
+  if (REGION(result))
+    return (Obj) 0;
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    return (Obj) 0;
+  MEMBAR_READ();
+  return result;
+}
+
+void SetGVar(GVarDescriptor *gvar, Obj obj)
+{
+  MEMBAR_WRITE();
+  *(gvar->ref) = obj;
+}
+
+
+
 
 
 /****************************************************************************
@@ -1097,6 +1395,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "GET_NAMESPACE", 0L, "",
       FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
 
+    { "IsThreadLocalGVar", 1L, "name",
+      FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
+
     { 0 }
 
 };
@@ -1110,7 +1411,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  ValGVars = (Obj) 0;
+  int i;
+  static char cookies[6][GVAR_BUCKETS][10];
   NCopyAndFopyGVars = 0;
   NCopyAndFopyDone = 0;
   InitHandlerRegistration();
@@ -1120,21 +1422,23 @@ static Int InitKernel (
                    "src/gvars.c:ErrorMustEvalToFuncFunc" );
     InitGlobalBag( &ErrorMustHaveAssObjFunc,
                    "src/gvars.c:ErrorMustHaveAssObjFunc" );
-    InitGlobalBag( &ValGVars,
-                   "src/gvars.c:ValGVars" );
-    InitGlobalBag( &NameGVars,
-                   "src/gvars.c:NameGVars" );
-    InitGlobalBag( &WriteGVars,
-                   "src/gvars.c:WriteGVars" );
-    InitGlobalBag( &ExprGVars,
-                   "src/gvars.c:ExprGVars" );
-    InitGlobalBag( &CopiesGVars,
-                   "src/gvars.c:CopiesGVars" );
-    InitGlobalBag( &FopiesGVars,
-                   "src/gvars.c:FopiesGVars"  );
+    for (i=0; i<GVAR_BUCKETS; i++) {
+      sprintf((cookies[0][i]), "Vgv%d", i);
+      sprintf((cookies[1][i]), "Ngv%d", i);
+      sprintf((cookies[2][i]), "Wgv%d", i);
+      sprintf((cookies[3][i]), "Egv%d", i);
+      sprintf((cookies[4][i]), "Cgv%d", i);
+      sprintf((cookies[5][i]), "Fgv%d", i);
+      InitGlobalBag( ValGVars+i, (cookies[0][i]) );
+      InitGlobalBag( NameGVars+i, (cookies[1][i]) );
+      InitGlobalBag( WriteGVars+i, (cookies[2][i]) );
+      InitGlobalBag( ExprGVars+i, (cookies[3][i]) );
+      InitGlobalBag( CopiesGVars+i, (cookies[4][i]) );
+      InitGlobalBag( FopiesGVars+i, (cookies[5][i])  );
+    }
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
-    InitGlobalBag( &STATE(CurrNamespace),
+    InitGlobalBag( &TLS(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
@@ -1144,6 +1448,9 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* For thread-local variables */
+    InitCopyGVar("ThreadVar", &TLVars);
 
     /* Get a copy of REREADING                                             */
     ImportGVarFromLibrary("REREADING", &REREADING);
@@ -1163,15 +1470,16 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     /* make the lists for global variables                                 */
+    /* TODO: Implement with buckets. */
+#if 0
     CountGVars = LEN_PLIST( ValGVars );
     PtrGVars   = ADDR_OBJ( ValGVars );
     SizeGVars  = LEN_PLIST( TableGVars );
+#endif
 
     /* create the global variable '~'                                      */
     Tilde = GVarName( "~" );
 
-    /* stop unauthorised changes to '~'                                    */
-    MakeReadOnlyGVar(Tilde);
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
@@ -1210,6 +1518,9 @@ static Int PostSave (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+    /* Init lock */
+    pthread_rwlock_init(&GVarLock, NULL);
+
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
         "ErrorMustEvalToFunc", -1,"args", ErrorMustEvalToFuncHandler );
@@ -1217,33 +1528,15 @@ static Int InitLibrary (
     ErrorMustHaveAssObjFunc = NewFunctionC(
         "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
 
-    /* make the lists for global variables                                 */
-    ValGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( ValGVars, 0 );
-
-    NameGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( NameGVars, 0 );
-
-    WriteGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( WriteGVars, 0 );
-
-    ExprGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( ExprGVars, 0 );
-
-    CopiesGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( CopiesGVars, 0 );
-
-    FopiesGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( FopiesGVars, 0 );
-
     /* make the list of global variables                                   */
-    SizeGVars  = 14033;
+    SizeGVars  = 997;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+    MakeBagPublic(TableGVars);
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
     /* Create the current namespace: */
-    STATE(CurrNamespace) = NEW_STRING(0);
-    SET_LEN_STRING(STATE(CurrNamespace),0);
+    TLS(CurrNamespace) = NEW_STRING(0);
+    SET_LEN_STRING(TLS(CurrNamespace),0);
     
     /* fix C vars                                                          */
     PostRestore( module );
@@ -1299,7 +1592,6 @@ StructInitInfo * InitInfoGVars ( void )
     return &module;
 }
 
-#endif // TWO_LEVEL_HEADERS
 
 /****************************************************************************
 **
