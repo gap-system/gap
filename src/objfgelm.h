@@ -132,10 +132,17 @@ static inline Obj NewWord(Obj type, UInt npairs) {
 }
 
 #define NEW_WORD_READ_WRITE(word, type, npairs) \
-  (word) = NewWord((type), (npairs))
+  do { \
+    ReadGuard(type); \
+    (word) = NewWord((type), (npairs)); \
+  } while(0)
 
 #define NEW_WORD(word, type, npairs) \
-  (word) = NewWord((type), (npairs))
+  do { \
+    NEW_WORD_READ_WRITE(word, type, npairs); \
+    MakeBagReadOnly( word ); \
+  } while(0)
+
 
 /****************************************************************************
 **

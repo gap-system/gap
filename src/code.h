@@ -734,8 +734,6 @@ extern  void            CodeForEnd ( void );
 **  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeAtomicEndBody'.
-**
-**  These functions are just placeholders for the future HPC-GAP code.
 */
 
 void CodeAtomicBegin ( void );

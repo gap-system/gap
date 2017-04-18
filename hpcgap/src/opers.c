@@ -660,7 +660,7 @@ Obj FuncAND_FLAGS (
     Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
-    Obj			        locked;
+    Obj                 locked;
     UInt                hash;
     UInt                hash2;
     static UInt         next = 0;
@@ -747,15 +747,15 @@ Obj FuncAND_FLAGS (
     size2  = NRB_FLAGS(flags2);
     if ( len1 == 0 ) {
 #   ifdef AND_FLAGS_HASH_SIZE
-	if (locked)
-	    HashUnlock(locked);
+        if (locked)
+            HashUnlock(locked);
 #   endif
         return flags2;
     }
     if ( len2 == 0 ) {
 #   ifdef AND_FLAGS_HASH_SIZE
-	if (locked)
-	    HashUnlock(locked);
+        if (locked)
+            HashUnlock(locked);
 #   endif
         return flags1;
     }
@@ -792,8 +792,8 @@ Obj FuncAND_FLAGS (
         SET_ELM_PLIST( cache, 2*hash+1, flagsX );
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
-	if (locked)
-	    HashUnlock(locked);
+        if (locked)
+            HashUnlock(locked);
 #   endif
 
     /* and return the result                                               */
@@ -1777,7 +1777,7 @@ static inline Obj CacheOper (
     UInt                i )
 {
     Obj                 cache;
-    UInt		cacheIndex;
+    UInt                cacheIndex;
     UInt len;
     cache = CACHE_OPER( oper, i );
     if ( cache == 0 )
@@ -1789,7 +1789,7 @@ static inline Obj CacheOper (
       if (cache == 0 )
       {
         CacheSize++;
-	cacheIndex = CacheSize;
+        cacheIndex = CacheSize;
         CACHE_OPER( oper, i ) = INTOBJ_INT(cacheIndex);
       }
       else
@@ -1802,7 +1802,7 @@ static inline Obj CacheOper (
     {
       UInt len = STATE(MethodCacheSize);
       while (cacheIndex > len)
-	len *= 2;
+        len *= 2;
       GROW_PLIST(STATE(MethodCache), len);
       SET_LEN_PLIST(STATE(MethodCache), len);
       STATE(MethodCacheItems) = ADDR_OBJ(STATE(MethodCache));
@@ -5100,16 +5100,16 @@ Obj DoSetProperty (
       break;
     default:
       if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
-	   || IS_BLIST_REP(obj) )  {
+           || IS_BLIST_REP(obj) )  {
         if ( val == True ) {
             FuncSET_FILTER_LIST( 0, obj, self );
         }
       }
       else {
           ErrorReturnVoid(
-			"Value cannot be set for internal objects",
-			0L, 0L,
-			"you can 'return;' without setting it" );
+                        "Value cannot be set for internal objects",
+                        0L, 0L,
+                        "you can 'return;' without setting it" );
       }
     }
     
@@ -5792,7 +5792,7 @@ Obj DoSetterFunction (
     Obj                 flags;
     UInt                flag2;
     Obj                 type;
-    int			atomic = 0;
+    int                 atomic = 0;
 
     switch (TNUM_OBJ(obj)) {
       case T_ACOMOBJ:
@@ -6586,13 +6586,14 @@ StructInitInfo * InitInfoOpers ( void )
 void InitOpersState(GAPState * state)
 {
     state->MethodCache = NEW_PLIST(T_PLIST, 1);
-    state->MethodCacheItems = ADDR_OBJ(STATE(MethodCache));
+    state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
     state->MethodCacheSize = 1;
     SET_LEN_PLIST(state->MethodCache, 1);
 }
 
 void DestroyOpersState(GAPState * state)
 {
+  /* Nothing for now. */
 }
 
 
