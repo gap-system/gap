@@ -1065,9 +1065,6 @@ extern void InitSystem (
             Int                 argc,
             Char *              argv [] );
 
-
-
-
 #endif // GAP_SYSTEM_H
 
 /****************************************************************************

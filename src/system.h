@@ -1001,6 +1001,15 @@ extern void SySleep( UInt secs );
 
 /****************************************************************************
 **
+*F  SyUSleep( <msecs> ) . . . . . . . . .Try to sleep for <msecs> microseconds
+**
+**  The OS may wake us earlier, for example on receipt of a signal
+*/
+
+extern void SyUSleep( UInt msecs );
+
+/****************************************************************************
+**
 *F  getOptionCount ( <key> ) . number of times a command line option was used
 *F  getOptionArg ( <key>, <which> ) get arguments used on <which>'th occurrence
 *F                             of <key> as a command line option NULL if none
