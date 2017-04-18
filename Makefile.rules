@@ -104,6 +104,7 @@ ifeq ($(HPCGAP),yes)
   ifeq ($(GAPMPI),yes)
     SOURCES += src/hpc/gapmpi.c
   endif
+  SOURCES += src/hpc/misc.c
   SOURCES += src/hpc/serialize.c
   SOURCES += src/hpc/thread.c
   SOURCES += src/hpc/threadapi.c

@@ -26,6 +26,11 @@
 
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/gasman.h>            
+
+#ifdef HPCGAP
+#include <src/hpc/misc.h>
+#endif
+
 #include <fcntl.h>
 
 

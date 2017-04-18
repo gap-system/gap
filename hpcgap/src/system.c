@@ -26,6 +26,11 @@
 
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/gasman.h>            
+
+#ifdef HPCGAP
+#include <src/hpc/misc.h>
+#endif
+
 #include <fcntl.h>
 
 
@@ -227,40 +232,6 @@ Char SyUserHome[GAP_PATH_MAX];
 **  2: always line editing (EMACS)
 */
 UInt SyLineEdit;
-
-/****************************************************************************
-**
-*V  ThreadUI  . . . . . . . . . . . . . . . . . . . .  support UI for threads
-**
-*/
-UInt ThreadUI = 1;
-
-/****************************************************************************
-**
-*V  DeadlockCheck  . . . . . . . . . . . . . . . . . .  check for deadlocks
-**
-*/
-UInt DeadlockCheck = 1;
-
-/****************************************************************************
-**
-*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
-**
-*/
-#ifdef NUM_CPUS
-UInt SyNumProcessors = NUM_CPUS;
-#else
-UInt SyNumProcessors = 4;
-#endif
-
-/****************************************************************************
-**
-*V  SyNumGCThreads  . . . . . . . . . . . . . . . number of GC worker threads
-**
-*/
-UInt SyNumGCThreads = 0;
-
-
 
 /****************************************************************************
 **
