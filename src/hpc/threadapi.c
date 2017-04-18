@@ -542,7 +542,6 @@ Obj FuncInterruptThread(Obj self, Obj thread, Obj handler) {
 */
 
 Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func) {
-  int id;
   if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 1 ||
       INT_INTOBJ(handler) > MAX_INTERRUPT)
     ArgumentError("SetInterruptHandler: First argument must be an integer "
@@ -1388,10 +1387,12 @@ static Int NeverMutable(Obj obj)
   return 0;
 }
 
+#ifndef BOEHM_GC
 static void MarkSemaphoreBag(Bag);
 static void MarkChannelBag(Bag);
 static void MarkBarrierBag(Bag);
 static void MarkSyncVarBag(Bag);
+#endif
 static void FinalizeMonitor(Bag);
 static void PrintThread(Obj);
 static void PrintSemaphore(Obj);
@@ -1445,10 +1446,12 @@ static Int InitKernel (
     DeclareGVar(&MAX_INTERRUPTGVar,"MAX_INTERRUPT");
     /* install mark functions */
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);
+#ifndef BOEHM_GC
     InitMarkFuncBags(T_SEMAPHORE, MarkSemaphoreBag);
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
+#endif
     InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
     InitMarkFuncBags(T_REGION, MarkAllSubBags);
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
@@ -1473,18 +1476,6 @@ static Int InitKernel (
     MakeBagTypePublic(T_SYNCVAR);
     MakeBagTypePublic(T_BARRIER);
     PublicRegion = NewBag(T_REGION, sizeof(Region *));
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
     /* return success                                                      */
     return 0;
 }
@@ -1551,6 +1542,7 @@ StructInitInfo * InitInfoThreadAPI ( void )
     return &module;
 }
 
+#ifndef BOEHM_GC
 static void MarkSemaphoreBag(Bag bag)
 {
   Semaphore *sem = (Semaphore *)(PTR_BAG(bag));
@@ -1576,6 +1568,7 @@ static void MarkSyncVarBag(Bag bag)
   MARK_BAG(syncvar->queue);
   MARK_BAG(syncvar->monitor);
 }
+#endif
 
 static void FinalizeMonitor(Bag bag)
 {
@@ -1679,11 +1672,6 @@ static Obj RetrieveFromChannel(Channel *channel)
   return obj;
 }
 #endif
-
-static void ContractChannel(Channel *channel)
-{
-  /* Not yet implemented */
-}
 
 static Int TallyChannel(Channel *channel)
 {
@@ -2511,7 +2499,6 @@ static void PrintChannel(Obj obj)
 {
   Channel *channel = ObjPtr(obj);
   Int size, waiting, capacity;
-  int dynamic;
   char buffer[20];
   Pr("<channel ", 0L, 0L);
   sprintf(buffer, "%p: ", channel);
@@ -3010,7 +2997,6 @@ Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
-  Obj reachable;
   if (!region || region == ReadOnlyRegion)
     return obj;
   if (!MigrateObjects(1, &obj, ReadOnlyRegion, 0))

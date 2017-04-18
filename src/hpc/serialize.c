@@ -494,7 +494,7 @@ Obj DeserializeList(UInt tnum) {
 }
 
 void SerializeObjSet(Obj obj) {
-  UInt i, j, len;
+  UInt i, len;
   if (SerializedAlready(obj))
     return;
   len = (UInt)(ADDR_OBJ(obj)[OBJSET_USED]);
@@ -523,7 +523,7 @@ Obj DeserializeObjSet(UInt tnum) {
 }
 
 void SerializeObjMap(Obj obj) {
-  UInt i, j, len;
+  UInt i, len;
   if (SerializedAlready(obj))
     return;
   len = (UInt)(ADDR_OBJ(obj)[OBJSET_USED]);
@@ -1141,18 +1141,6 @@ static Int InitKernel (
 
   /* return success                                                      */
   return 0;
-}
-
-
-/****************************************************************************
-**
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* return success                                                      */
-    return 0;
 }
 
 

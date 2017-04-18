@@ -1056,7 +1056,6 @@ UInt ExecAtomic(
   Obj tolock[MAX_ATOMIC_OBJS];
   int locktypes[MAX_ATOMIC_OBJS];
   int lockstatus[MAX_ATOMIC_OBJS];
-  Region *locked[MAX_ATOMIC_OBJS];
   int lockSP;
   UInt mode, nrexprs,i,j,status;
   Obj o;
@@ -1702,7 +1701,6 @@ static void CheckAndRespondToAlarm(void) {
 */
 
 UInt TakeInterrupt( void ) {
-  UInt i;
   if (STATE(CurrExecStatFuncs) == IntrExecStatFuncs) {
       assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
       STATE(CurrExecStatFuncs) = ExecStatFuncs;

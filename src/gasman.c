@@ -466,6 +466,7 @@ TNumInfoBags            InfoBags [ NTYPES ];
 **
 *F  IS_BAG -- check if a value looks like a masterpointer reference.
 */
+#ifndef BOEHM_GC
 static inline UInt IS_BAG (
     UInt                bid )
 {
@@ -473,6 +474,7 @@ static inline UInt IS_BAG (
          && (bid < (UInt)OldBags)
          && (bid & (sizeof(Bag)-1)) == 0);
 }
+#endif
 
 /****************************************************************************
 **
@@ -700,10 +702,10 @@ TNumGlobalBags GlobalBags;
 **  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
 **  be matched up after loading a saved workspace.
 */
-static UInt GlobalSortingStatus;
 Int WarnInitGlobalBag;
 
 #ifndef BOEHM_GC
+static UInt GlobalSortingStatus;
 extern TNumAbortFuncBags   AbortFuncBags;
 
 void ClearGlobalBags ( void )

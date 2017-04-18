@@ -108,7 +108,6 @@ static UInt FindTraversedObj(Obj);
 
 static inline Obj ReplaceByCopy(Obj obj)
 {
-  Obj result;
   TraversalState *traversal = currentTraversal();
   UInt found = FindTraversedObj(obj);
   if (found)
@@ -286,7 +285,6 @@ static void TraversalRehash(TraversalState *traversal);
 
 static int SeenDuringTraversal(Obj obj)
 {
-  Int type;
   TraversalState *traversal = currentTraversal();
   Obj *hashTable;
   unsigned long hash;
@@ -313,7 +311,6 @@ static int SeenDuringTraversal(Obj obj)
 
 static UInt FindTraversedObj(Obj obj)
 {
-  Int type;
   TraversalState *traversal = currentTraversal();
   Obj *hashTable = ADDR_OBJ(traversal->hashTable)+1;
   UInt hash;
@@ -412,9 +409,9 @@ void TraverseRegionFrom(
   SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
-static int IsReadable(Obj obj) {
-  return CheckReadAccess(obj);
-}
+// static int IsReadable(Obj obj) {
+//   return CheckReadAccess(obj);
+// }
 
 static int IsSameRegion(Obj obj) {
   return REGION(obj) == currentTraversal()->region;

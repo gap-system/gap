@@ -384,8 +384,6 @@ Obj             ValGVarTL (
     UInt                gvar )
 {
     Obj			expr;
-    Obj                 func;           /* function to call for automatic  */
-    Obj                 arg;            /* argument to pass for automatic  */
     Obj			val;
     UInt		gvar_bucket = GVAR_BUCKET(gvar);
     UInt		gvar_index  = GVAR_INDEX(gvar);
