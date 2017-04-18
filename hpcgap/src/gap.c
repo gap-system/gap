@@ -1086,7 +1086,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 /* syJmp_buf CatchBuffer; */
 /* TL: Obj ThrownObject = 0; */
 
-Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
+Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
 {
     volatile syJmp_buf readJmpError;
     volatile Obj res;
