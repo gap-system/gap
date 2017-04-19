@@ -103,7 +103,6 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       ,
       rec( short:= "p", default := false, help := ["enable/disable package output mode"] ),
       rec( short := "E", default :=false ),
-      rec( short := "U", default := "" ),     # -C -U undocumented options to the compiler
       rec( short := "s", default := "4g" ),
       rec( short := "z", default := "20" ),
       rec( long := "prof", default := "", arg := "<file>",

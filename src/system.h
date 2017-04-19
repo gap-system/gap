@@ -237,12 +237,6 @@ extern Char SyCompileName[256];
 */
 extern Char SyCompileOutput[GAP_PATH_MAX];
 
-/****************************************************************************
-**
-*V  SyCompileOptions . . . . . . . . . . . . . . . . . with these options
-*/
-extern Char SyCompileOptions[256];
-
 
 /****************************************************************************
 **
