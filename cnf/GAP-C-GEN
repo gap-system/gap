@@ -27,8 +27,7 @@ fi
 
 # invoke GAP in compiler mode
 echo "#ifndef AVOID_PRECOMPILED" > "$C_FILE.tmp"
-"$GAPBIN" -U FAST_PLAIN_LISTS,FAST_INT_ARITH \
-          -C "*stdout*" \
+"$GAPBIN" -C "*stdout*" \
           "$GAP_FILE" \
           "Init_$STEM" \
           GAPROOT/lib/$STEM.g >> "$C_FILE.tmp"

@@ -437,10 +437,9 @@ If a file cannot be opened &GAP; will print an error message and will abort.
 </List>
 <P/>
 <Index Subkey="command line, internal">options</Index>
-<Index Key="-C"><C>-C</C></Index><Index Key="-U"><C>-U</C></Index>
 <Index Key="-P"><C>-P</C></Index><Index Key="-W"><C>-W</C></Index>
 <Index Key="-z"><C>-z</C></Index><Index Key="-p"><C>-p</C></Index>
-Additional options, <C>-C</C>, <C>-U</C>, <C>-P</C>, <C>-W</C>, <C>-p</C>
+Additional options, <C>-C</C>, <C>-P</C>, <C>-W</C>, <C>-p</C>
 and <C>-z</C> are  used  
 internally by the <Package>gac</Package> script (see <Ref Label="Kernel modules"/>)
 and/or on specific operating systems.

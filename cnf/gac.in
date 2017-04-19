@@ -33,19 +33,6 @@
 ##
 ##  The option '-save-temps' tells 'gac' to not delete any intermediate files
 ##
-##  The option  '-ffast-int-arith' tells  'gac' to emit  code for  arithmetic
-##  operations, which works faster if both  operands are  small integers  and
-##  slower otherwise.
-##
-##  The option '-ffast-plain-lists' tells 'gac' to emit code for list access,
-##  which works faster if the list is a plain list and slower otherwise.
-##
-##  The option '-ffast-list-funcs' tells 'gac' to inline  the functions 'Add'
-##  and 'Length' the code, which makes it a bit faster.
-##
-##  The option '-fno-check-types' tells 'gac' to  emit  no  error checks  for
-##  list access, which makes it faster but may dump core if an error happens.
-#
 ##  The option '-p <option>' tells 'gac' to pass the option  <option> to  the
 ##  C compiler.
 ##
@@ -82,9 +69,6 @@ gap_compiler="${gap_bin}/gap"
 # is evaluated relative to this
 gap_binary="${gap_bin}"
 
-# options to pass to the GAP executable when it is invokes as compiler
-gap_options=""
-
 libtool="$SHELL $abs_top_builddir/libtool"
 CC="@CC@"
 
@@ -113,8 +97,8 @@ OBJECTS="@OBJECTS@"
 #F  gap_compile <output> <input> <module-name> <identifier>
 ##
 gap_compile () {
-    echo ${gap_compiler} ${gap_options} -C $1 $2 $3 $4
-    ${gap_compiler} ${gap_options} -C "$1" "$2" "$3" "$4"
+    echo ${gap_compiler} -C $1 $2 $3 $4
+    ${gap_compiler} -C "$1" "$2" "$3" "$4"
 }
 
 
@@ -297,37 +281,6 @@ while [ $# -gt 0 ]; do
     -r)                   comp_static_root_relative="yes";;
 
     -save-temps)          savetemps="true";;
-
-    -ffast-int-arith)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-U FAST_INT_ARITH"
-                          else
-                              gap_options="${gap_options},FAST_INT_ARITH"
-                          fi;;
-
-    -ffast-plain-lists)   if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-U FAST_PLAIN_LISTS"
-                          else
-                              gap_options="${gap_options},FAST_PLAIN_LISTS"
-                          fi;;
-
-    -ffast-list-funcs)   # echo "$0: option $1 is not currently allowed, ignoring it";;
-                          if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-U FAST_LIST_FUNCS"
-                          else
-                              gap_options="${gap_options},FAST_LIST_FUNCS"
-                          fi;;
-
-    -fno-check-types)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-U NO_CHECK_TYPES"
-                          else
-                              gap_options="${gap_options},NO_CHECK_TYPES"
-                          fi;;
-
-    -fno-check-list-elms) if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-U NO_CHECK_LIST_ELMS"
-                          else
-                              gap_options="${gap_options},NO_CHECK_LIST_ELMS"
-                          fi;;
 
     -f*)                  echo "$0: no such option '$1'"
                           exit 1;;

@@ -508,8 +508,6 @@ int realmain( int argc, char * argv[], char * environ[] )
       }
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
-      if (strlen(SyCompileOptions) != 0)
-        SetCompileOpts(SyCompileOptions);
       type = CompileFunc(
                          SyCompileOutput,
                          func,

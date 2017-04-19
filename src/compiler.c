@@ -96,59 +96,6 @@ Int CompCheckTypes ;
 */
 Int CompCheckListElements;
 
-/****************************************************************************
-**
-*V  CompOptNames . .  names for all the compiler options passed by gac
-**
-*/
-
-struct CompOptStruc { const Char *extname;
-  Int *variable;
-  Int val;};
-
-struct CompOptStruc CompOptNames[] = {
-  { "FAST_INT_ARITH", &CompFastIntArith, 1 },
-  { "FAST_PLAIN_LISTS", &CompFastPlainLists, 1 },
-  { "FAST_LIST_FUNCS", &CompFastListFuncs, 1 },
-  { "NO_CHECK_TYPES", &CompCheckTypes, 0 },
-  { "NO_CHECK_LIST_ELMS", &CompCheckListElements, 0 }};
-
-#define N_CompOpts  (sizeof(CompOptNames)/sizeof(struct CompOptStruc))
-
-
-/****************************************************************************
-**
-*F  SetCompileOpts( <string> ) . . parse the compiler options from <string>
-**                                 and set the appropriate variables
-**                                 unrecognised options are ignored for now
-*/
-#include <ctype.h>
-
-void SetCompileOpts( Char *opts )
-{
-  Char *s = opts;
-  Int i;
-  while (*s)
-    {
-      while (IsSpace(*s))
-        s++;
-      for (i = 0; i < N_CompOpts; i++)
-        {
-          if (0 == strncmp(CompOptNames[i].extname,
-                             s,
-                             strlen(CompOptNames[i].extname)))
-            {
-              *(CompOptNames[i].variable) = CompOptNames[i].val;
-              break;
-            }
-        }
-      while (*s && *s != ',')
-        s++;
-      if (*s == ',')
-        s++;
-    }
-  return;
-}
 
 /****************************************************************************
 **

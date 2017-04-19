@@ -159,12 +159,6 @@ Char SyCompileName[256];
 */
 Char SyCompileOutput[GAP_PATH_MAX];
 
-/****************************************************************************
-**
-*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
-*/
-Char SyCompileOptions[256] = {'\0'};
-
 
 /****************************************************************************
 **
@@ -1770,7 +1764,6 @@ struct optInfo options[] = {
   { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
   { 'X', "", toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
-  { 'U', "", storeString, SyCompileOptions, 1}, /* kernel */
   { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */

@@ -26,15 +26,6 @@ extern Int CompileFunc (
             Int                 magic1,
             Char *              magic2 );
 
-/****************************************************************************
-**
-*F  SetCompileOpts( <string> ) . . parse the compiler options from <string>
-**                                 and set the appropriate variables
-**                                 unrecognised options are ignored for now
-*/
-
-extern void SetCompileOpts( Char *opts );
-
 
 /****************************************************************************
 **
