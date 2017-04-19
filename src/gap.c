@@ -3660,12 +3660,12 @@ void InitializeGap (
        this now actually runs the GAP session, we only get 
        past here when we're about to exit. 
                                            */
-    if ( SySystemInitFile[0] ) {
+    if ( SyLoadSystemInitFile ) {
       TRY_READ {
-        if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
+        if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
           /*             if ( ! SyQuiet ) { */
-                Pr( "gap: hmm, I cannot find '%s' maybe",
-                    (Int)SySystemInitFile, 0L );
+                Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
+                    0L, 0L );
                 Pr( " use option '-l <gaproot>'?\n If you ran the GAP"
                     " binary directly, try running the 'gap.sh' or 'gap.bat'"
                     " script instead.", 0L, 0L );

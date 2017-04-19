@@ -96,7 +96,6 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       rec( short:= "X", default := false, help := ["enable/disable CRC checking for compiled modules"] ),
       rec( short:= "T", default := false, help := ["disable/enable break loop"] ),
       rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead of entering break loop"]),
-      rec( short:= "i", default := "", arg := "<file>", help := [ "change the name of the init file"] ),
       ,
       rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace"] ),
       rec( short:= "R", default := false, help := ["prevent restoring of workspace (ignoring -L)"] ),

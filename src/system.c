@@ -386,9 +386,9 @@ Int SyStorMin;
 
 /****************************************************************************
 **
-*V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
+*V  SyLoadSystemInitFile  . . . . . . should GAP load 'lib/init.g' at startup
 */
-Char SySystemInitFile[GAP_PATH_MAX];
+Int SyLoadSystemInitFile = 1;
 
 
 /****************************************************************************
@@ -1768,7 +1768,6 @@ struct optInfo options[] = {
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
-  { 'i', "", storeString, SySystemInitFile, 1}, /* kernel */
   { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
   { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
   { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
@@ -1909,8 +1908,6 @@ void InitSystem (
     
     SyInstallAnswerIntr();
 
-    SySystemInitFile[0] = '\0';
-    strxcpy( SySystemInitFile, "lib/init.g", sizeof(SySystemInitFile) );
 #if SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
 #elif defined(SYS_DEFAULT_PATHS)
@@ -2033,9 +2030,9 @@ void InitSystem (
       if ( ptr != 0 )  free( ptr ); */
     }
 
-    /* try to find 'LIBNAME/init.g' to read it upon initialization         */
+    /* should GAP load 'init/lib.g' on initialization */
     if ( SyCompilePlease || SyRestoring ) {
-        SySystemInitFile[0] = 0;
+        SyLoadSystemInitFile = 0;
     }
 
     /* the compiler will *not* read in the .gaprc file                     

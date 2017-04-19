@@ -496,9 +496,9 @@ extern Int SyStorMin;
 
 /****************************************************************************
 **
-*V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
+*V  SyLoadSystemInitFile  . . . . . . should GAP load 'lib/init.g' at startup
 */
-extern Char SySystemInitFile[GAP_PATH_MAX];
+extern Int SyLoadSystemInitFile;
 
 
 /****************************************************************************

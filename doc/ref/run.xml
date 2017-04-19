@@ -217,12 +217,6 @@ tells &GAP; to print a summary of all available options (<C>-h</C> is mnemonic
 for <Q>help</Q>). &GAP; exits after printing the summary, all other options
 are ignored.
 </Item>
-<Mark><Index Key="-i"><C>-i</C></Index>
-<C>-i </C><A>filename</A></Mark>
-<Item>
-changes  the  name  of  the  init  file  from  the  default  <F>init.g</F>  to
-<A>filename</A>. (Usually not needed.)
-</Item>
 <Mark><Index Key="-K"><C>-K</C></Index> 
 <C>-K </C><A>memory</A></Mark>
 <Item>
