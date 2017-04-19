@@ -1735,8 +1735,8 @@ Obj             MakeFunction (
     ENVI_FUNC( func ) = STATE(CurrLVars);
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
-#ifdef HPCGAP
     MakeHighVars(STATE(CurrLVars));
+#ifdef HPCGAP
     LCKS_FUNC( func ) = locks;
 #endif
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );

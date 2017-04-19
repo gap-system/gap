@@ -148,6 +148,29 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 
 /****************************************************************************
 **
+*F  NewLVarsBag( <slots> ) . . make new lvars bag with <slots> variable slots
+*F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
+*/
+
+Bag NewLVarsBag(UInt slots);
+void FreeLVarsBag(Bag bag);
+
+/****************************************************************************
+**
+*F  MakeHighVars( <bag> ) . . turn all frames on the stack into high vars
+*/
+
+static inline void MakeHighVars( Bag bag ) {
+  while (bag && TNUM_OBJ(bag) == T_LVARS) {
+    RetypeBag(bag, T_HVARS);
+    bag = ADDR_OBJ(bag)[2];
+  }
+}
+
+
+
+/****************************************************************************
+**
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
@@ -168,8 +191,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 {
   Obj old = STATE(CurrLVars);
   CHANGED_BAG( old );
-  STATE(CurrLVars) = NewBag( T_LVARS,
-                      sizeof(Obj)*(3+narg+nloc) );
+  STATE(CurrLVars) = NewLVarsBag( narg+nloc );
   STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
   CURR_FUNC = func;
   STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
@@ -217,17 +239,37 @@ static inline void SwitchToOldLVars( Obj old
   STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
+static inline void SwitchToOldLVarsAndFree( Obj old
+#ifdef TRACEFRAMES
+, char *file, int line
+#endif
+)
+{
+#ifdef TRACEFRAMES
+  if (STEVES_TRACING == True) {
+    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
+           file, line, (UInt)STATE(CurrLVars),(UInt)old);
+  }
+#endif
+  CHANGED_BAG( STATE(CurrLVars) );
+  if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
+    FreeLVarsBag(STATE(CurrLVars));
+  STATE(CurrLVars) = (old);
+  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
+  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+}
+
+
 #ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
 #else
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
 #endif
 
-// The following is here for HPC-GAP compatibility
 #ifdef TRACEFRAMES
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old), __FILE__,__LINE__)
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
 #else
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVars((old))
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old))
 #endif
 
 

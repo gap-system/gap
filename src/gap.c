@@ -416,7 +416,7 @@ Obj FuncSHELL (Obj self, Obj args)
     ErrorMayQuit("SHELL takes 10 arguments",0,0);
   
   context = ELM_PLIST(args,1);
-  if (TNUM_OBJ(context) != T_LVARS)
+  if (TNUM_OBJ(context) != T_LVARS && TNUM_OBJ(context) != T_HVARS)
     ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
   
   if (ELM_PLIST(args,2) == True)

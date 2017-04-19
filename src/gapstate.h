@@ -36,6 +36,7 @@ typedef struct GAPState {
     Bag   BottomLVars;
     Bag   CurrLVars;
     Obj * PtrLVars;
+    Bag   LVarsPool[16];
 
     /* From read.c */
     syJmp_buf ReadJmpError;

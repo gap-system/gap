@@ -809,6 +809,7 @@ void CodeFuncExprBegin (
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = STATE(CurrLVars);
     CHANGED_BAG( fexp );
+    MakeHighVars(STATE(CurrLVars));
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
