@@ -181,8 +181,6 @@ static inline void MakeHighVars( Bag bag ) {
 extern Obj STEVES_TRACING;
 extern Obj True;
 
-#include <src/hpc/tls.h>
-
 #include <stdio.h>
 
 static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc

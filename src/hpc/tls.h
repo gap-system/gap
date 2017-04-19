@@ -48,9 +48,6 @@ typedef struct ThreadLocalStorage
   /* From intrprtr.c */
   UInt PeriodicCheckCount;
 
-  /* From vars.c */
-  Bag LVarsPool[16];
-
   /* From read.c */
   syJmp_buf threadExit;
 

@@ -120,10 +120,10 @@ Obj             ObjLVar (
 
 Bag NewLVarsBag(UInt slots) {
   Bag result;
-  if (slots < ARRAY_SIZE(TLS(LVarsPool))) {
-    result = TLS(LVarsPool)[slots];
+  if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
+    result = STATE(LVarsPool)[slots];
     if (result) {
-      TLS(LVarsPool)[slots] = ADDR_OBJ(result)[0];
+      STATE(LVarsPool)[slots] = ADDR_OBJ(result)[0];
       return result;
     }
   }
@@ -132,10 +132,10 @@ Bag NewLVarsBag(UInt slots) {
 
 void FreeLVarsBag(Bag bag) {
   UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
-  if (slots < ARRAY_SIZE(TLS(LVarsPool))) {
+  if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
-    ADDR_OBJ(bag)[0] = TLS(LVarsPool)[slots];
-    TLS(LVarsPool)[slots] = bag;
+    ADDR_OBJ(bag)[0] = STATE(LVarsPool)[slots];
+    STATE(LVarsPool)[slots] = bag;
   }
 }
 
@@ -2715,6 +2715,11 @@ Obj FuncGetBottomLVars( Obj self )
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
+  if (TNUM_OBJ(lvars) != T_LVARS && TNUM_OBJ(lvars) != T_HVARS) {
+    ErrorQuit( "<lvars> must be an lvars (not a %s)",
+               (Int)TNAM_OBJ(lvars), 0L );
+    return 0;
+  }
   return PARENT_LVARS(lvars);
 }
 
