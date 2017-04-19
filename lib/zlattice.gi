@@ -1377,7 +1377,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     anz := 0;
     con := true;
     srt( n, 0 );
-
+    c.vectors := c.vectors{[1..Length(c.norms)]};
     Info( InfoZLattice, 2,
           "ShortestVectors: ", Length( c.vectors ), " vectors found" );
     return c;
