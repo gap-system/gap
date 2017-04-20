@@ -2140,9 +2140,25 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 ** options
 */
 
-Obj FuncSMALLINT_STR( Obj self, Obj string )
+Obj FuncSMALLINT_STR( Obj self, Obj str )
 {
-  return INTOBJ_INT(SyIntString(CSTR_STRING(string)));
+  const Char *string = CSTR_STRING(str);
+  Int x = 0;
+  Int sign = 1;
+  while (IsSpace(*string))
+    string++;
+  if (*string == '-') {
+    sign = -1;
+    string++;
+  } else if (*string == '+') {
+    string++;
+  }
+  while (IsDigit(*string)) {
+    x *= 10;
+    x += (*string - '0');
+    string++;
+  }
+  return INTOBJ_INT(sign*x);
 }
 
 /****************************************************************************

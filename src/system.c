@@ -480,42 +480,6 @@ UInt SyTimeChildrenSys ( void )
 */
 
 
-/****************************************************************************
-**
-*F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
-**
-*/
-
-#if HAVE_ATOL
-Int SyIntString( const Char *string) {
-  return atol (string);
-}
-#else
-Int SyIntString( const Char *string) {
-  Int x = 0;
-  Int sign = 1;
-  while (IsSpace(*string))
-    string++;
-  if (*string == '-')
-    {
-      sign = -1;
-      string++;
-    }
-  else if (*string == '+')
-    {
-      string++;
-    }
-  while (IsDigit(*string)) {
-    x *= 10;
-    x += (*string - '0');
-    string++;
-  }
-  return sign*x;
-}
-
-#endif
-
-
 #ifndef HAVE_STRLCPY
 
 size_t strlcpy (
