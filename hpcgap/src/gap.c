@@ -935,12 +935,6 @@ Obj FuncWindowCmd (
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
-/*
-TL: Obj  ErrorLVars0;   // the initial ErrorLVars value, i.e. for the lvars were the break occurred
-TL: Obj  ErrorLVars;    // ErrorLVars as modified by DownEnv / UpEnv
-TL: Int  ErrorLLevel;   // record where on the stack ErrorLVars is relative to the top, i.e. ErrorLVars0
-*/
-
 void DownEnvInner( Int depth )
 {
   /* if we are asked to go up ... */
