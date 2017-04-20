@@ -49,6 +49,8 @@
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 
+#include <src/util.h>
+
 /* List of active hooks */
 struct InterpreterHooks * activeHooks[HookCount];
 
@@ -181,7 +183,7 @@ Int ActivateHooks(struct InterpreterHooks * hook)
         }
     }
 
-    for (i = 0; i < sizeof(ExecStatFuncs) / sizeof(ExecStatFuncs[0]); i++) {
+    for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
         ExecStatFuncs[i] = ProfileStatPassthrough;
         EvalExprFuncs[i] = ProfileEvalExprPassthrough;
         EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
@@ -212,7 +214,7 @@ Int DeactivateHooks(struct InterpreterHooks * hook)
     }
 
     if (HookActiveCount == 0) {
-        for (i = 0; i < sizeof(ExecStatFuncs) / sizeof(ExecStatFuncs[0]); i++) {
+        for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
             ExecStatFuncs[i] = OriginalExecStatFuncsForHook[i];
             EvalExprFuncs[i] = OriginalEvalExprFuncsForHook[i];
             EvalBoolFuncs[i] = OriginalEvalBoolFuncsForHook[i];
@@ -289,11 +291,11 @@ void ActivatePrintHooks(struct PrintHooks * hook)
 {
     Int i;
 
-    if(PrintHookActive) {
+    if (PrintHookActive) {
         return;
     }
     PrintHookActive = 1;
-    for (i = 0; i < sizeof(ExecStatFuncs) / sizeof(ExecStatFuncs[0]); i++) {
+    for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
         if (hook->printStatPassthrough) {
             PrintStatFuncs[i] = hook->printStatPassthrough;
         }
@@ -307,11 +309,11 @@ void DeactivatePrintHooks(struct PrintHooks * hook)
 {
     Int i;
 
-    if(!PrintHookActive) {
+    if (!PrintHookActive) {
         return;
     }
     PrintHookActive = 0;
-    for (i = 0; i < sizeof(ExecStatFuncs) / sizeof(ExecStatFuncs[0]); i++) {
+    for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
         PrintStatFuncs[i] = OriginalPrintStatFuncsForHook[i];
         PrintExprFuncs[i] = OriginalPrintExprFuncsForHook[i];
     }

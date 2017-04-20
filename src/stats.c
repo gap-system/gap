@@ -57,6 +57,9 @@
 
 #include <src/hookintrprtr.h>           /* visit statements for profiling */
 
+#include <src/util.h>
+
+
 /****************************************************************************
 **
 
@@ -1720,7 +1723,7 @@ UInt TakeInterrupt( void ) {
 void UnInterruptExecStat() {
   UInt i;
   assert(RealExecStatCopied);
-  for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+  for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
     ExecStatFuncs[i] = RealExecStatFuncs[i];
   }
   RealExecStatCopied = 0;
@@ -1791,7 +1794,7 @@ void InterruptExecStat ( void )
 
     /* remember the original entries from the table 'ExecStatFuncs'        */
     if ( ! RealExecStatCopied ) {
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+        for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
             RealExecStatFuncs[i] = ExecStatFuncs[i];
         }
         RealExecStatCopied = 1;
@@ -1804,7 +1807,7 @@ void InterruptExecStat ( void )
         ExecStatFuncs[i] = ExecIntrStat;
     }
     for ( i = T_RETURN_VOID;
-          i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]);
+          i < ARRAY_SIZE(ExecStatFuncs);
           i++ ) {
         ExecStatFuncs[i] = ExecIntrStat;
     }
@@ -2263,7 +2266,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "IsStandardIterator",   &STD_ITER );
 
     /* install executors for non-statements                                */
-    for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+    for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ ) {
         InstallExecStatFunc(i, ExecUnknownStat);
     }
 
@@ -2302,7 +2305,7 @@ static Int InitKernel (
     InstallExecStatFunc( T_ATOMIC         , ExecAtomic);
 
     /* install printers for non-statements                                */
-    for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
+    for ( i = 0; i < ARRAY_SIZE(PrintStatFuncs); i++ ) {
         InstallPrintStatFunc(i, PrintUnknownStat);
     }
     /* install printing functions for compound statements                  */

@@ -117,6 +117,8 @@
 #include <src/intfuncs.h>
 #include <src/iostream.h>
 
+#include <src/util.h>
+
 /****************************************************************************
 **
 
@@ -1375,14 +1377,12 @@ Obj FuncRESUME_TIMEOUT( Obj self, Obj state ) {
 ** by longjmping. This should be tracked with RegisterSyLongjmpObserver.
 */
 
-enum {signalBreakFuncListLen = 16 };
-
-static intfunc signalBreakFuncList[signalBreakFuncListLen];
+static intfunc signalBreakFuncList[16];
 
 Int RegisterBreakloopObserver(intfunc func)
 {
     Int i;
-    for (i = 0; i < signalBreakFuncListLen; ++i) {
+    for (i = 0; i < ARRAY_SIZE(signalBreakFuncList); ++i) {
         if (signalBreakFuncList[i] == 0) {
             signalBreakFuncList[i] = func;
             return 1;

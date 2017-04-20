@@ -25,7 +25,8 @@
 #include <src/gap.h>                    /* get UserHasQUIT */
 
 #include <src/sysfiles.h>               /* file input/output */
-#include <src/gasman.h>            
+#include <src/gasman.h>
+#include <src/util.h>
 
 #ifdef HPCGAP
 #include <src/hpc/misc.h>
@@ -1616,7 +1617,7 @@ static UInt ParseMemory( Char * s)
   maxmem = 4000000000UL;
 #endif
   
-  for (i = 0; i < sizeof(memoryUnits)/sizeof(memoryUnits[0]); i++) {
+  for (i = 0; i < ARRAY_SIZE(memoryUnits); i++) {
     if (symbol == memoryUnits[i].symbol) {
       UInt value = memoryUnits[i].value;
       if (size > maxmem/value)
@@ -1868,10 +1869,10 @@ void InitSystem (
     setbuf(stderr, (char *)0);
 #endif
 
-    for (i = 4; i < sizeof(syBuf)/sizeof(syBuf[0]); i++)
+    for (i = 4; i < ARRAY_SIZE(syBuf); i++)
       syBuf[i].fp = -1;
     
-    for (i = 0; i < sizeof(syBuffers)/sizeof(syBuffers[0]); i++)
+    for (i = 0; i < ARRAY_SIZE(syBuffers); i++)
           syBuffers[i].inuse = 0;
 
 #if HAVE_LIBREADLINE

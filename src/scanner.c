@@ -67,6 +67,8 @@
 
 #include <src/code.h>                   /* FilenameCache */
 
+#include <src/util.h>
+
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -296,7 +298,7 @@ UInt OpenInput (
     Int                 file;
 
     /* fail if we can not handle another open input file                   */
-    if ( STATE(Input)+1 == STATE(InputFiles)+(sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0])) )
+    if ( STATE(Input)+1 == STATE(InputFiles)+(ARRAY_SIZE(STATE(InputFiles))) )
         return 0;
 
     /* try to open the input file                                          */
@@ -347,7 +349,7 @@ UInt OpenInputStream (
     Obj                 stream )
 {
     /* fail if we can not handle another open input file                   */
-    if ( STATE(Input)+1 == STATE(InputFiles)+(sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0])) )
+    if ( STATE(Input)+1 == STATE(InputFiles)+(ARRAY_SIZE(STATE(InputFiles))) )
         return 0;
 
     assert(STATE(Input) != 0);
@@ -772,7 +774,7 @@ UInt OpenOutput (
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(sizeof(STATE(OutputFiles))/sizeof(STATE(OutputFiles)[0])) )
+    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
         return 0;
 
     /* try to open the file                                                */
@@ -813,7 +815,7 @@ UInt OpenOutputStream (
     Obj                 stream )
 {
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(sizeof(STATE(OutputFiles))/sizeof(STATE(OutputFiles)[0])) )
+    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
@@ -893,7 +895,7 @@ UInt OpenAppend (
     Int                 file;
 
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(sizeof(STATE(OutputFiles))/sizeof(STATE(OutputFiles)[0])) )
+    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
         return 0;
 
     /* try to open the file                                                */
@@ -2666,7 +2668,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
       /* check if q matches a keyword    */
       q = (Char*)arg1;
-      for ( i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++ ) {
+      for ( i = 0; i < ARRAY_SIZE(AllKeywords); i++ ) {
         if ( strcmp(q, AllKeywords[i].name) == 0 ) {
           found_keyword = 1;
           break;
@@ -2811,7 +2813,7 @@ Obj FuncALL_KEYWORDS(Obj self) {
   UInt i;
   l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
-  for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++) {
+  for (i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
     C_NEW_STRING_DYN(s,AllKeywords[i].name);
     ASS_LIST(l, i+1, s);
   }
@@ -2893,9 +2895,9 @@ static Int InitLibrary (
  *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
  */
 #if !defined(HPCGAP)
-static Char Cookie[sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0])][9];
-static Char MoreCookie[sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0])][9];
-static Char StillMoreCookie[sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0])][9];
+static Char Cookie[ARRAY_SIZE(STATE(InputFiles))][9];
+static Char MoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
+static Char StillMoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
 #endif
 
 static Int InitKernel (
@@ -2922,7 +2924,7 @@ static Int InitKernel (
     /* For HPC-GAP we don't need the cookies anymore, since the data got moved to thread-local
      * storage. */
     Int i;
-    for ( i = 0;  i < sizeof(STATE(InputFiles))/sizeof(STATE(InputFiles)[0]);  i++ ) {
+    for ( i = 0;  i < ARRAY_SIZE(STATE(InputFiles));  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
       Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
       Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
