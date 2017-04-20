@@ -873,7 +873,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
   if (sySetjmp(STATE(ReadJmpError))) {
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     TLS(currentRegion) = oldRegion;
-    syLongjmp(STATE(ReadJmpError), 1);
+    syLongjmp(&(STATE(ReadJmpError)), 1);
   }
   TLS(currentRegion) = region;
   CALL_0ARGS(func);

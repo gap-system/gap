@@ -1023,7 +1023,7 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
   if (sySetjmp(STATE(ReadJmpError))) {
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     RestoreSerializationState(&state);
-    syLongjmp(STATE(ReadJmpError), 1);
+    syLongjmp(&(STATE(ReadJmpError)), 1);
   }
   SerializeObj(obj);
   while (LEN_PLIST(STATE(SerializationStack)) > 0)
@@ -1047,7 +1047,7 @@ Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
   if (sySetjmp(STATE(ReadJmpError))) {
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     RestoreSerializationState(&state);
-    syLongjmp(STATE(ReadJmpError), 1);
+    syLongjmp(&(STATE(ReadJmpError)), 1);
   }
   InitNativeStringDeserializer(string);
   result = DeserializeObj();
