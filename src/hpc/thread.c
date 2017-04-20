@@ -858,7 +858,7 @@ static void TerminateCurrentThread(int locked) {
   PopRegionLocks(0);
   if (TLS(CurrentHashLock))
     HashUnlock(TLS(CurrentHashLock));
-  syLongjmp(TLS(threadExit), 1);
+  syLongjmp(&(TLS(threadExit)), 1);
 }
 
 static void PauseCurrentThread(int locked) {
