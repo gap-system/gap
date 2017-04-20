@@ -56,6 +56,9 @@
 #include <src/hookintrprtr.h>
 #include <src/profile.h>                /* visit statements for profiling */
 
+#include <src/util.h>
+
+
 /****************************************************************************
 **
 
@@ -1773,7 +1776,7 @@ void InitIntrExecStats ( void )
     for (i = T_SEQ_STAT; i < T_RETURN_VOID; i++)
       IntrExecStatFuncs[i] = ExecStatFuncs[i];
     for ( i = T_RETURN_VOID;
-          i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]);
+          i < ARRAY_SIZE(ExecStatFuncs);
           i++ ) {
         IntrExecStatFuncs[i] = ExecIntrStat;
     }
@@ -2229,7 +2232,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "IsStandardIterator",   &STD_ITER );
 
     /* install executors for non-statements                                */
-    for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+    for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ ) {
         InstallExecStatFunc(i, ExecUnknownStat);
     }
 
@@ -2268,7 +2271,7 @@ static Int InitKernel (
     InstallExecStatFunc( T_ATOMIC         , ExecAtomic);
 
     /* install printers for non-statements                                */
-    for ( i = 0; i < sizeof(PrintStatFuncs)/sizeof(PrintStatFuncs[0]); i++ ) {
+    for ( i = 0; i < ARRAY_SIZE(PrintStatFuncs); i++ ) {
         InstallPrintStatFunc(i, PrintUnknownStat);
     }
     /* install printing functions for compound statements                  */

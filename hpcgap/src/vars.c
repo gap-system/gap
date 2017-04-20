@@ -55,6 +55,7 @@
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
+#include <src/util.h>
 
 
 /****************************************************************************
@@ -119,7 +120,7 @@ Obj             ObjLVar (
 
 Bag NewLVarsBag(UInt slots) {
   Bag result;
-  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+  if (slots < ARRAY_SIZE(TLS(LVarsPool))) {
     result = TLS(LVarsPool)[slots];
     if (result) {
       TLS(LVarsPool)[slots] = ADDR_OBJ(result)[0];
@@ -131,7 +132,7 @@ Bag NewLVarsBag(UInt slots) {
 
 void FreeLVarsBag(Bag bag) {
   UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
-  if (slots < sizeof(TLS(LVarsPool))/(sizeof(TLS(LVarsPool)[0]))) {
+  if (slots < ARRAY_SIZE(TLS(LVarsPool))) {
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
     ADDR_OBJ(bag)[0] = TLS(LVarsPool)[slots];
     TLS(LVarsPool)[slots] = bag;

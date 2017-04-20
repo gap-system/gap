@@ -45,6 +45,7 @@
 
 #include <src/read.h>                   /* reader */
 
+#include <src/util.h>
 
 #include <assert.h>
 #include <fcntl.h>
@@ -759,11 +760,11 @@ Int SyFopen (
 
     HashLock(&syBuf);
     /* try to find an unused file identifier                               */
-    for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
+    for ( fid = 4; fid < ARRAY_SIZE(syBuf); ++fid )
         if ( syBuf[fid].fp == -1 )
           break;
     
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) ) {
+    if ( fid == ARRAY_SIZE(syBuf) ) {
         HashUnlock(&syBuf);
         return (Int)-1;
     }
@@ -842,10 +843,10 @@ UInt SySetBuffering( UInt fid )
 
   bufno = 0;
   HashLock(&syBuf);
-  while (bufno < sizeof(syBuffers)/sizeof(syBuffers[0]) &&
+  while (bufno < ARRAY_SIZE(syBuffers) &&
          syBuffers[bufno].inuse != 0)
     bufno++;
-  if (bufno >= sizeof(syBuffers)/sizeof(syBuffers[0])) {
+  if (bufno >= ARRAY_SIZE(syBuffers)) {
       HashUnlock(&syBuf);
       return 0;
   }
@@ -868,7 +869,7 @@ Int SyFclose (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         fputs("gap: panic 'SyFclose' asked to close illegal fid!\n",stderr);
         return -1;
     }
@@ -914,7 +915,7 @@ Int SyIsEndOfFile (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
     if ( syBuf[fid].fp == -1 ) {
@@ -1281,7 +1282,7 @@ Int SyEchoch (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
     if ( syBuf[fid].fp == -1 ) {
@@ -1380,7 +1381,7 @@ Int SyFtell (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
     if ( syBuf[fid].fp == -1 ) {
@@ -1408,7 +1409,7 @@ Int SyFseek (
     Int                 pos )
 {
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
     if ( syBuf[fid].fp == -1 ) {
@@ -1611,7 +1612,7 @@ Int SyGetch (
     Int                 ch;
 
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
         /* on the Mac, syBuf[fid].fp is -1 for stdin, stdout, errin, errout
@@ -1848,7 +1849,7 @@ Int HasAvailableBytes( UInt fid )
   Int ret;
 #endif
   UInt bufno;
-  if (fid > sizeof(syBuf)/sizeof(syBuf[0]) ||
+  if (fid > ARRAY_SIZE(syBuf) ||
       syBuf[fid].fp == -1)
     return -1;
 
@@ -2235,7 +2236,7 @@ Char * syFgets (
     Obj                 linestr, yankstr, args, res;
 
     /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return (Char*)0;
     }
     if ( syBuf[fid].fp == -1 ) {
@@ -3303,7 +3304,7 @@ Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSi
 {
     Int k;
 
-    for ( k = 0; k < sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]); k++ ) {
+    for ( k = 0; k < ARRAY_SIZE(SyGapRootPaths); k++ ) {
         if ( SyGapRootPaths[k][0] ) {
             if (strlcpy( buffer, SyGapRootPaths[k], bufferSize ) >= bufferSize)
                 continue;
