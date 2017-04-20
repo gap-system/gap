@@ -255,81 +255,45 @@ typedef UInt ExecStatus;
 // TL: extern UInt UserHasQUIT;
 extern UInt SystemErrorCode;
 
+
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * important filters  * * * * * * * * * * * * * * *
 */
 
-/****************************************************************************
-**
+enum {
+    /** filter number for `IsMutable' */
+    FN_IS_MUTABLE = 1,
 
-*V  FN_IS_MUTABLE . . . . . . . . . . . . . . . filter number for `IsMutable'
-*/
-#define FN_IS_MUTABLE           1
+    /** filter number for `IsEmpty' */
+    FN_IS_EMPTY,
 
+    /** filter number for `IsSSortedList' */
+    FN_IS_SSORT,
 
-/****************************************************************************
-**
-*V  FN_IS_EMPTY . . . . . . . . . . . . . . . . . filter number for `IsEmpty'
-*/
-#define FN_IS_EMPTY             2
+    /** filter number for `IsNSortedList' */
+    FN_IS_NSORT,
 
+    /** filter number for `IsDenseList' */
+    FN_IS_DENSE,
 
-/****************************************************************************
-**
-*V  FN_IS_SSORT . . . . . . . . . . . . . . filter number for `IsSSortedList'
-*/
-#define FN_IS_SSORT             3
+    /** filter number for `IsNDenseList' */
+    FN_IS_NDENSE,
 
+    /** filter number for `IsHomogeneousList' */
+    FN_IS_HOMOG,
 
-/****************************************************************************
-**
-*V  FN_IS_NSORT . . . . . . . . . . . . . . filter number for `IsNSortedList'
-*/
-#define FN_IS_NSORT             4
+    /** filter number for `IsNonHomogeneousList' */
+    FN_IS_NHOMOG,
 
+    /** filter number for `IsTable' */
+    FN_IS_TABLE,
 
-/****************************************************************************
-**
-*V  FN_IS_DENSE . . . . . . . . . . . . . . . filter number for `IsDenseList'
-*/
-#define FN_IS_DENSE             5
+    /** filter number for `IsRectangularTable' */
+    FN_IS_RECT,
 
-
-/****************************************************************************
-**
-*V  FN_IS_NDENSE  . . . . . . . . . . . . .  filter number for `IsNDenseList'
-*/
-#define FN_IS_NDENSE            6
-
-
-/****************************************************************************
-**
-*V  FN_IS_HOMOG . . . . . . . . . . . . filter number for `IsHomogeneousList'
-*/
-#define FN_IS_HOMOG             7
-
-
-/****************************************************************************
-**
-*V  FN_IS_NHOMOG  . . . . . . . . .  filter number for `IsNonHomogeneousList'
-*/
-#define FN_IS_NHOMOG            8
-
-
-/****************************************************************************
-**
-*V  FN_IS_TABLE . . . . . . . . . . . . . . . . . filter number for `IsTable'
-*/
-#define FN_IS_TABLE             9
-
-/****************************************************************************
-**
-*V  FN_IS_RECT . . . . . . . . . . . . filter number for `IsRectangularTable'
-*/
-#define FN_IS_RECT             10
-#define LAST_FN                 FN_IS_RECT
+    LAST_FN = FN_IS_RECT
+};
 
 
 /****************************************************************************
