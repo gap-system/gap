@@ -1452,8 +1452,11 @@ static Int PostRestore (
     /* create the global variable '~'                                      */
     Tilde = GVarName( "~" );
 
+#if !defined(HPCGAP)
     /* stop unauthorised changes to '~'                                    */
+    // FIXME: enabling this causes HPC-GAP to crash
     MakeReadOnlyGVar(Tilde);
+#endif
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
