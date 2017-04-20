@@ -791,27 +791,16 @@ extern void SyAbortBags (
 *F * * * * * * * * * * * * * loading of modules * * * * * * * * * * * * * * *
 */
 
+enum {
+    /** builtin module */
+    MODULE_BUILTIN = 1,
 
-/****************************************************************************
-**
-*F  MODULE_BUILTIN  . . . . . . . . . . . . . . . . . . . . .  builtin module
-*/
-#define MODULE_BUILTIN          1
+    /** statically loaded compiled module */
+    MODULE_STATIC  = 2,
 
-
-/****************************************************************************
-**
-*F  MODULE_STATIC . . . . . . . . . . . . . statically loaded compiled module
-*/
-#define MODULE_STATIC           2
-
-
-/****************************************************************************
-**
-*F  MODULE_DYNAMIC  . . . . . . . . . . .  dynamically loaded compiled module
-*/
-#define MODULE_DYNAMIC          3
-
+    /** dynamically loaded compiled module */
+    MODULE_DYNAMIC = 3,
+};
 
 
 /****************************************************************************
