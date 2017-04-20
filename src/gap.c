@@ -1643,25 +1643,15 @@ Obj Error;
 Obj ErrorInner;
 
  
-/****************************************************************************
-**
-
-*F * * * * * * * * * functions for creating the init file * * * * * * * * * *
-*/
-
-/* deleted 9/5/11 */
 
 /*************************************************************************
 **
-
 *F * * * * * * * * * functions for dynamical/static modules * * * * * * * * *
 */
 
 
-
 /****************************************************************************
 **
-
 *F  FuncGAP_CRC( <self>, <name> ) . . . . . . . create a crc value for a file
 */
 Obj FuncGAP_CRC (
