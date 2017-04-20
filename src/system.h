@@ -594,14 +594,6 @@ extern UInt SyTimeChildrenSys ( void );
 */
 #define IsSpace(ch)     (isspace((unsigned int)ch))
 
-/****************************************************************************
-**
-*F  SyIntString( <string> ) . . . . . . . . extract a C integer from a string
-**
-*/
-
-extern Int SyIntString( const Char *string );
-
 
 /****************************************************************************
 **

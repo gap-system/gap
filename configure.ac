@@ -541,7 +541,7 @@ dnl check for functions dealing with virtual memory
 AC_CHECK_FUNCS([vm_allocate sbrk madvise sysconf])
 
 dnl check for functions dealing with strings and integers
-AC_CHECK_FUNCS([atol strlcpy strlcmp strlcat])
+AC_CHECK_FUNCS([strlcpy strlcmp strlcat])
 
 dnl check for file access functions
 AC_HEADER_STAT
