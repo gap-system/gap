@@ -93,6 +93,7 @@
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/weakptr.h>                /* weak pointers */
 #include <src/profile.h>                /* profiling */
+#include <src/hookintrprtr.h>
 
 #include <src/gapstate.h>
 
@@ -1200,7 +1201,7 @@ Obj FuncCALL_WITH_TIMEOUT( Obj self, Obj seconds, Obj microseconds, Obj func, Ob
   Obj result;
   volatile Int recursionDepth;
   volatile Stat currStat;
-  UInt newJumpBuf = 1;
+  volatile UInt newJumpBuf = 1;
   volatile UInt mayNeedToRestore = 0;
   volatile Int iseconds, imicroseconds;
   volatile Int curr_seconds= 0, curr_microseconds=0, curr_nanoseconds=0;
@@ -1368,8 +1369,34 @@ Obj FuncRESUME_TIMEOUT( Obj self, Obj state ) {
   return True;
 }
 
- 
- 
+/****************************************************************************
+**
+*F RegisterBreakloopObserver( <func> )
+**
+** Register a function which will be called when the break loop is entered
+** and left. Function should take a single Int argument which will be 1 when
+** break loop is entered, 0 when leaving.
+**
+** Note that it is also possible to leave the break loop (or any GAP code)
+** by longjmping. This should be tracked with RegisterSyLongjmpObserver.
+*/
+
+enum {signalBreakFuncListLen = 16 };
+
+static intfunc signalBreakFuncList[signalBreakFuncListLen];
+
+Int RegisterBreakloopObserver(intfunc func)
+{
+    Int i;
+    for (i = 0; i < signalBreakFuncListLen; ++i) {
+        if (signalBreakFuncList[i] == 0) {
+            signalBreakFuncList[i] = func;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 /****************************************************************************
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
@@ -1388,6 +1415,7 @@ static Obj ErrorMessageToGAPString(
   return Message;
 }
 
+
 Obj CallErrorInner (
     const Char *        msg,
     Int                 arg1,
@@ -1401,6 +1429,8 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+  Int i;
+
 #ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
@@ -1416,10 +1446,15 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
+  // Signal functions about entering and leaving break loop
+  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
+      (signalBreakFuncList[i])(1);
   Obj res = CALL_2ARGS(ErrorInner,r,l);
 #ifdef HPCGAP
   TLS(currentRegion) = savedRegion;
 #endif
+  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
+      (signalBreakFuncList[i])(0);
   return res;
 }
 
@@ -3271,8 +3306,9 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* objects                                                             */
     InitInfoObjects,
 
-    /* profiling information */
+    /* profiling and interpreter hooking information */
     InitInfoProfile,
+    InitInfoHookIntrprtr,
 
     /* scanner, reader, interpreter, coder, caller, compiler               */
     InitInfoScanner,
