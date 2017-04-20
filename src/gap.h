@@ -67,7 +67,6 @@ extern UInt NumAlarmJumpBuffers;
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
 */
 extern UInt ViewObjGVar;
-extern UInt CustomViewGVar;
 
 extern void ViewObjHandler ( Obj obj );
 
@@ -77,15 +76,6 @@ extern void ViewObjHandler ( Obj obj );
 
 *F * * * * * * * * * * * * * * print and error  * * * * * * * * * * * * * * *
 */
-
-
-/****************************************************************************
-**
-*F  FuncPrint( <self>, <args> ) . . . . . . . . . . . . . . . .  print <args>
-*/
-extern Obj FuncPrint (
-    Obj                 self,
-    Obj                 args );
 
 
 /****************************************************************************
@@ -493,14 +483,6 @@ extern void ImportGVarFromLibrary(
 extern void ImportFuncFromLibrary(
             const Char *        name,
             Obj *               address );
-
-
-/****************************************************************************
-**
-
-*V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
-*/
-extern Obj Revisions;
 
 
 extern Obj Error;
