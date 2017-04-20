@@ -36,6 +36,8 @@ typedef struct GAPState {
     Bag   BottomLVars;
     Bag   CurrLVars;
     Obj * PtrLVars;
+
+    /* The length of this array must be synced with InitKernel in vars.c */
     Bag   LVarsPool[16];
 
     /* From read.c */
