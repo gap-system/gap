@@ -1082,7 +1082,7 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 /* syJmp_buf CatchBuffer; */
 /* TL: Obj ThrownObject = 0; */
 
-Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
+Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
 {
     volatile syJmp_buf readJmpError;
     volatile Obj res;
@@ -1381,7 +1381,8 @@ static intfunc signalBreakFuncList[signalBreakFuncListLen];
 
 Int RegisterBreakloopObserver(intfunc func)
 {
-    for (Int i = 0; i < signalBreakFuncListLen; ++i) {
+    Int i;
+    for (i = 0; i < signalBreakFuncListLen; ++i) {
         if (signalBreakFuncList[i] == 0) {
             signalBreakFuncList[i] = func;
             return 1;
@@ -1422,6 +1423,8 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+  Int i;
+
 #ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
@@ -1438,13 +1441,13 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
   // Signal functions about entering and leaving break loop
-  for (Int i = 0; i < 16 && signalBreakFuncList[i]; ++i)
+  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
       (signalBreakFuncList[i])(1);
   Obj res = CALL_2ARGS(ErrorInner,r,l);
 #ifdef HPCGAP
   TLS(currentRegion) = savedRegion;
 #endif
-  for (Int i = 0; i < 16 && signalBreakFuncList[i]; ++i)
+  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
       (signalBreakFuncList[i])(0);
   return res;
 }
