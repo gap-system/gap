@@ -153,7 +153,7 @@ typedef UInt * *        Bag;
 **
 **  'Obj' is the type of objects.
 */
-#define Obj             Bag
+typedef Bag Obj;
 
 
 /****************************************************************************
