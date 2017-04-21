@@ -4,14 +4,9 @@ coverage:
   range: "70...100"
 
   status:
-    project:
-      default:
-        target: auto
-        if_no_uploads: error
-
-    patch:
-      default:
-        if_no_uploads: error
+    project: no
+    patch: no
+    changes: no
 
 comment:
   layout: "header, diff, changes, tree"
