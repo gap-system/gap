@@ -857,7 +857,11 @@ extern  Bag                     MarkedBags;
 
 #else
 
-#define MARK_BAG(bag)
+/* MARK_BAG does nothing when using Boehm GC. We use sizeof(bag) to
+   prevent compiler warnings about unused variables (note that sizeof
+   "usually" does not evaluate its arguments, so this is safe.
+*/
+#define MARK_BAG(bag)   do { } while(0 == sizeof(bag));
 
 #endif
 
