@@ -5240,6 +5240,9 @@ void InstallMethodArgs (
             ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
         }
     }
+    // Note that ConvImmString may trigger a garbage collection in GASMAN,
+    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
+    name = ConvImmString(name);
     NAME_FUNC(oper) = name;
     CHANGED_BAG(oper);
 }
