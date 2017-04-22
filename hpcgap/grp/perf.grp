@@ -38,25 +38,7 @@ local p,sel,i,pos;
   fi;
   # get the file number
   p:=PositionSorted(PERFRec.covered,pos);
-  if SizeBlist(PERFSELECT)>50 then
-    # throw away old to free memory
-    sel:=Filtered([1..PERFRec.length],i->PERFSELECT[i]);
-    sel:=sel{[1..Length(sel)-25]};
-    for i in sel do
-      Unbind(PERFGRP[i]);
-      PERFSELECT[i]:=false;
-    od;
-  fi;
   ReadGrp(Concatenation("perf",String(p),".grp"));
-  # store loaded info
-  if p=1 then
-    p:=[0,PERFRec.covered[p]];
-  else
-    p:=PERFRec.covered{[p-1,p]};
-  fi;
-  for i in [p[1]+1..p[2]] do
-    PERFSELECT[i]:=true;
-  od;
   return pos;
  od;
 end );
@@ -94,7 +76,9 @@ end );
 ##
 InstallGlobalFunction( NumberPerfectGroups, function ( size )
 
-    if IsOddInt(size) then return 0;fi;
+    if size=1 then
+      return 1;
+    elif IsOddInt(size) then return 0;fi;
     PerfGrpLoad(0);
 
     # get the number and return it.
@@ -119,10 +103,12 @@ end );
 InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
 local sizenum;
 
-    if IsOddInt(size) then return 0;fi;
+    if size=1 then
+      return 1;
+    elif IsOddInt(size) then return 0;fi;
     # get the number and return it.
     sizenum := PerfGrpLoad( size );
-    if sizenum = fail or size in PERFRec.notAvailable or size = 1 then
+    if sizenum = fail or size in PERFRec.notAvailable then
         return 0;
     else
         return PERFRec.number[sizenum];
@@ -481,8 +467,6 @@ local func,sz,p;
     Error("Perfect groups of size ",sz[1]," not known");
   elif sz[1] in PERFRec.notAvailable then
     Error("Perfect groups of size ",sz[1]," not available");
-  elif sz[1]=1 then
-    Error("The trivial group is not considered to be part of this library");
   fi;
   p:=PerfGrpLoad(sz[1]);
   if p=fail or sz[2]>PERFRec.number[p] then
