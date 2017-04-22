@@ -10,7 +10,9 @@
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
 
-  PERFGRP[1]:=[];
+  PERFGRP[1]:=[# trivial
+  [[1,"a",function(a) return [[a],[]];end,[1]],
+  "Idgroup",[],-1,0,1]];
   PERFGRP[2]:=[# 60.1
   [[1,"ab",
   function(a,b)
