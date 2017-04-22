@@ -118,7 +118,7 @@ DeclareGlobalFunction("SimpleGroupsIterator");
 ##  <#/GAPDoc>
 DeclareGlobalFunction("ClassicalIsomorphismTypeFiniteSimpleGroup");
 
-DeclareAttribute("DataAboutSimpleGroup",IsGroup);
+DeclareAttribute("DataAboutSimpleGroup",IsGroup,"mutable");
 
 #############################################################################
 ##
