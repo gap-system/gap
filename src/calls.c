@@ -1167,6 +1167,10 @@ Obj NewFunctionT (
     }
 
     /* enter the arguments and the names                               */
+
+    // Note that ConvImmString may trigger a garbage collection in GASMAN,
+    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
+    name = ConvImmString(name);
     NAME_FUNC(func) = name;
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
@@ -1674,6 +1678,9 @@ Obj FuncSET_NAME_FUNC(
                           (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
+    // Note that ConvImmString may trigger a garbage collection in GASMAN,
+    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
+    name = ConvImmString(name);
     NAME_FUNC(func) = name;
     CHANGED_BAG(func);
   } else
@@ -1720,6 +1727,34 @@ Obj FuncNAMS_FUNC (
         return DoOperation1Args( self, func );
     }
 }
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
+**                                           atomic function
+*/
+Obj LOCKS_FUNC_Oper;
+
+Obj FuncLOCKS_FUNC (
+    Obj                 self,
+    Obj                 func )
+{
+  Obj locks;
+    if ( TNUM_OBJ(func) == T_FUNCTION ) {
+      locks = LCKS_FUNC(func);
+      if ( locks == (Obj)0) 
+	return Fail;
+      else
+	return locks;
+    }
+    else {
+        return DoOperation1Args( self, func );
+    }
+}
+
+#endif
 
 
 /****************************************************************************
@@ -1869,6 +1904,10 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
         Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
 #ifndef WARD_ENABLED
         if (fn) {
+#ifdef HPCGAP
+            if (IS_BAG_REF(fn))
+                MakeBagPublic(fn);
+#endif
             return fn;
         }
 #endif
@@ -2077,6 +2116,11 @@ static StructGVarOper GVarOpers [] = {
 
     { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
       FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
+
+#ifdef HPCGAP
+    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
+      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
+#endif
 
     { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
