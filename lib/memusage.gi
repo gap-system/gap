@@ -126,9 +126,11 @@ InstallMethod( MemoryUsage, "generic fallback method",
     elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
         # Since we are in the fallback method, clearly there is no
         # MemoryUsage method installed for the given object.
-        Info(InfoWarning, 1, "No MemoryUsage method installed for ",
-                             TNUM_OBJ(o)[2],
-                             ", reported usage may be too low" );
+        if not IsGF2VectorRep(o) and not Is8BitVectorRep(o) then
+            Info(InfoWarning, 1, "No MemoryUsage method installed for ",
+                                 TNUM_OBJ(o)[2],
+                                 ", reported usage may be too low" );
+        fi;
     fi;
     MU_Finalize();
     return mem;
