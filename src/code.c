@@ -101,11 +101,16 @@ static inline void PopOffsBody( void ) {
 }
 
 static void SetupOffsBodyStackAndLoopStack() {
+#ifdef HPCGAP
+  STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+  STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+#else
   // Careful: Malloc without free
 /* Since this mallocs we use a global variable at the moment
   STATE(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
   STATE(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 */
+#endif
 }
 
 static inline void PushLoopNesting( void ) {
@@ -3513,8 +3518,10 @@ static Int InitKernel (
     /* Allocate function bodies in the public data space */
     MakeBagTypePublic(T_BODY);
 
+#if !defined(HPCGAP)
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &STATE(CodeResult), "CodeResult" );
+#endif
 
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
@@ -3525,7 +3532,11 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+#ifdef HPCGAP
+    InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
+#else
     SetupOffsBodyStackAndLoopStack();
+#endif
 
     /* return success                                                      */
     return 0;
@@ -3544,13 +3555,21 @@ static Int InitLibrary (
     /* allocate the statements and expressions stacks                      */
     STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
+#ifdef HPCGAP
+    FilenameCache = NewAtomicList(0);
+#else
     FilenameCache = NEW_PLIST(T_PLIST, 0);
+#endif
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     
     gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
+#ifdef HPCGAP
+    cache = NewAtomicList(1);
+#else
     cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
     SET_LEN_PLIST(cache,0);
+#endif
     AssGVar(gv, cache);
 
     /* return success                                                      */
