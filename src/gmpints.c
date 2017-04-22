@@ -853,7 +853,7 @@ Int CLog2Int(Int a)
 **  
 **  Given to GAP-Level as "Log2Int".
 */
-Obj FuncLog2Int( Obj self, Obj integer)
+Obj FuncLog2Int( Obj self, Obj integer )
 {
   if ( IS_INTOBJ(integer) ) {
     return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
