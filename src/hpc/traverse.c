@@ -27,9 +27,6 @@
 # include <gc/gc.h>
 #endif
 
-#define LOG2_NUM_LOCKS 11
-#define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
-
 #ifndef WARD_ENABLED
 
 typedef struct TraversalState {
