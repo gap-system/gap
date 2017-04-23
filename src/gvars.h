@@ -48,6 +48,7 @@ extern  Obj *           PtrGVars;
 /****************************************************************************
 **
 *F  VAL_GVAR(<gvar>)  . . . . . . . . . . . . . . .  value of global variable
+*F  ValGVar(<gvar>)   . . . . . . . . . . . . . . .  value of global variable
 **
 **  'VAL_GVAR' returns the  value of the global  variable  <gvar>.  If <gvar>
 **  has no  assigned value, 'VAL_GVAR' returns 0.   In this case <gvar> might
@@ -56,6 +57,11 @@ extern  Obj *           PtrGVars;
 **  0 if <gvar> was not an automatic variable.
 */
 #define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+
+static inline Obj ValGVar(UInt gvar) {
+  Obj result = VAL_GVAR(gvar);
+  return result;
+}
 
 
 /****************************************************************************
@@ -117,6 +123,20 @@ extern  void            AssGVarUnsafe (
 */
 extern  Obj             ValAutoGVar (
             UInt                gvar );
+
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+#ifdef HPCGAP
+extern  Obj             ValGVarTL (
+            UInt                gvar );
+#else
+#define ValGVarTL(gvar)     ValGVar(gvar)
+#endif
 
 
 /****************************************************************************
