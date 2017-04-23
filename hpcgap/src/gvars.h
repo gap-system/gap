@@ -75,8 +75,6 @@ extern  Obj *           PtrGVars[GVAR_BUCKETS];
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-
-
 #define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
 				[GVAR_INDEX(gvar)-1])
 
@@ -143,8 +141,12 @@ extern  Obj             ValAutoGVar (
 **  'ValGVarTL' returns the value of the global or thread-local variable
 **  <gvar>.
 */
+#ifdef HPCGAP
 extern  Obj             ValGVarTL (
             UInt                gvar );
+#else
+#define ValGVarTL(gvar)     ValGVar(gvar)
+#endif
 
 
 /****************************************************************************
