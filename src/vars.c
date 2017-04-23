@@ -725,9 +725,9 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    if ( (val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
+    if ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
       && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-        while ( (val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
+        while ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
              && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
@@ -2137,8 +2137,16 @@ Obj             EvalIsbPosObj (
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
+        Bag *contents = PTR_BAG(list);
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
+#else
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
+#endif
     }
 #ifdef HPCGAP
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
@@ -2758,8 +2766,17 @@ void VarsAfterCollectBags ( void )
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
       STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
+#ifdef HPCGAP
+  int i;
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+    else
+      break;
+#else
   if (ValGVars)
     PtrGVars = PTR_BAG( ValGVars );
+#endif
 }
 
 /****************************************************************************
@@ -2890,6 +2907,12 @@ static Int InitKernel (
     InitMarkFuncBags( T_LVARS, MarkAllSubBags );
     InfoBags[ T_HVARS ].name = "high variables bag";
     InitMarkFuncBags( T_HVARS, MarkAllSubBags );
+
+#ifdef HPCGAP
+    /* Make T_LVARS bags public */
+    MakeBagTypePublic(T_LVARS);
+    MakeBagTypePublic(T_HVARS);
+#endif
 
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
