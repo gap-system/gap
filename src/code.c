@@ -125,13 +125,16 @@ static inline void PopLoopNesting( void ) {
 
 static inline void SetupGapname(TypInputFile* i)
 {
-  UInt len;
-  Obj pos;
   if(!i->gapname) {
     C_NEW_STRING_DYN(i->gapname, i->name);
-    pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
+#ifdef HPCGAP
+    i->gapnameid = AddAList(FilenameCache, i->gapname);
+    // TODO/FIXME: adjust this code to work more like the corresponding
+    // code below for GAP?!?
+#else
+    Obj pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
     if(pos == Fail) {
-        len = LEN_PLIST( FilenameCache );
+        UInt len = LEN_PLIST( FilenameCache );
         GROW_PLIST(      FilenameCache, len+1 );
         SET_LEN_PLIST(   FilenameCache, len+1 );
         SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
@@ -143,6 +146,7 @@ static inline void SetupGapname(TypInputFile* i)
         // Use string from FilenameCache as we know it will not get GCed
         i->gapname = ELM_LIST( FilenameCache, i->gapnameid );
     }
+#endif
   }
 }
 
@@ -789,6 +793,9 @@ void CodeFuncExprBegin (
     NARG_FUNC( fexp ) = narg;
     NLOC_FUNC( fexp ) = nloc;
     NAMS_FUNC( fexp ) = nams;
+#ifdef HPCGAP
+    if (nams) MakeBagPublic(nams);
+#endif
     CHANGED_BAG( fexp );
 
     /* give it a functions expressions list                                */
@@ -819,6 +826,12 @@ void CodeFuncExprBegin (
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
     (void) old; /* please picky compilers. */
+
+#ifdef HPCGAP
+    /* Make the function expression bag immutable and public               */
+    /* TODO: Check if that's actually correct. */
+    RetypeBag(fexs, T_PLIST + IMMUTABLE);
+#endif
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
@@ -1975,7 +1988,9 @@ void CodeStringExpr (
 static UInt GVAR_SAVED_FLOAT_INDEX;
 static UInt NextFloatExprNumber = 3;
 
+#if !defined(HPCGAP)
 static UInt NextEagerFloatLiteralNumber = 1;
+#endif
 
 static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
@@ -2064,16 +2079,24 @@ static void CodeEagerFloatExpr( Obj str, Char mark ) {
   Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
   Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
   assert(EAGER_FLOAT_LITERAL_CACHE);
+#ifdef HPCGAP
+  assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
+  UInt next = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
+  ADDR_EXPR(fl)[0] = next;
+#else
   assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
   GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
   SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
   CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
   SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
   ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+#endif
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
   memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
+#if !defined(HPCGAP)
   NextEagerFloatLiteralNumber++;
+#endif
   PushExpr(fl);
 }
 
@@ -3584,7 +3607,7 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
   GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
-  NextFloatExprNumber = INT_INTOBJ(VAL_GVAR(GVAR_SAVED_FLOAT_INDEX));
+  NextFloatExprNumber = INT_INTOBJ(ValGVar(GVAR_SAVED_FLOAT_INDEX));
   return 0;
 }
 
