@@ -1177,29 +1177,9 @@ void ListExpr2 (
                 SET_FILT_LIST(list, FN_IS_NDENSE);
                 posshole = 2;
               }
-
-            /* special case if subexpression is a list expression              */
-            if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
-              sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
-              SET_ELM_PLIST( list, i, sub );
-              CHANGED_BAG( list );
-              ListExpr2( sub, ADDR_EXPR(expr)[i-1] );
-            }
-            
-            /* special case if subexpression is a record expression            */
-            else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
-              sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
-              SET_ELM_PLIST( list, i, sub );
-              CHANGED_BAG( list );
-              RecExpr2( sub, ADDR_EXPR(expr)[i-1] );
-            }
-            
-            /* general case                                                    */
-            else {
-              sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
-              SET_ELM_PLIST( list, i, sub );
-              CHANGED_BAG( list );
-            }
+            sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
+            SET_ELM_PLIST( list, i, sub );
+            CHANGED_BAG( list );
           }
 
     }
@@ -1541,26 +1521,8 @@ void            RecExpr2 (
         if ( tmp == 0 ) {
             continue;
         }
-
-        /* special case if subexpression is a list expression             */
-        else if ( TNUM_EXPR( tmp ) == T_LIST_EXPR ) {
-            sub = ListExpr1( tmp );
-            AssPRec(rec,rnam,sub);
-            ListExpr2( sub, tmp );
-        }
-
-        /* special case if subexpression is a record expression            */
-        else if ( TNUM_EXPR( tmp ) == T_REC_EXPR ) {
-            sub = RecExpr1( tmp );
-            AssPRec(rec,rnam,sub);
-            RecExpr2( sub, tmp );
-        }
-
-        /* general case                                                    */
-        else {
-            sub = EVAL_EXPR( tmp );
-            AssPRec(rec,rnam,sub);
-        }
+        sub = EVAL_EXPR( tmp );
+        AssPRec(rec,rnam,sub);
     }
     SortPRecRNam(rec,0);
 
