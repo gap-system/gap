@@ -217,6 +217,26 @@ extern Int SyFclose (
 extern Int SyIsEndOfFile (
     Int                 fid );
 
+/****************************************************************************
+**
+*F  syStartraw( <fid> ) . . . . . . start raw mode on input file <fid>, local
+**
+**  'syStartraw' tries to put the file with the file  identifier  <fid>  into
+**  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
+**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
+**  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
+**
+**  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
+**  back into whatever mode the terminal had before 'syStartraw'.
+**
+*/
+
+extern UInt syStartraw (
+            Int                 fid );
+
+extern void syStopraw (
+            Int                 fid );
+
 
 /****************************************************************************
 **

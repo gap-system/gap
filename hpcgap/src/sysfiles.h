@@ -221,9 +221,6 @@ extern Int SyIsEndOfFile (
 **
 *F  syStartraw( <fid> ) . . . . . . start raw mode on input file <fid>, local
 **
-**  The  following four  functions are  the  actual system  dependent part of
-**  'SyFgets'.
-**
 **  'syStartraw' tries to put the file with the file  identifier  <fid>  into
 **  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
 **  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
@@ -232,12 +229,6 @@ extern Int SyIsEndOfFile (
 **  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
 **  back into whatever mode the terminal had before 'syStartraw'.
 **
-**  'syGetch' reads one character from the file <fid>, which must  have  been
-**  turned into raw mode before, and returns it.
-**
-**  'syEchoch' puts the character <ch> to the file opened by 'syStartraw' for
-**  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
-**  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
 */
 
 extern UInt syStartraw (
