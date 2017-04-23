@@ -804,11 +804,6 @@ typedef struct {
     Obj         stream;
 } TypOutputFile;
 
-/* TL: extern TypOutputFile   OutputFiles [16]; */
-/* TL: extern TypOutputFile * Output; */
-
-/* TL: extern TypOutputFile* IgnoreStdoutErrout; */
-
 /****************************************************************************
 **
 *F  GetCurrentOutput()  . . . . . . . . . . . get the current thread's output
