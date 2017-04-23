@@ -259,6 +259,11 @@ void Match (
 */
 
 
+TypOutputFile *GetCurrentOutput() {
+  return STATE(Output);
+}
+
+
 /****************************************************************************
 **
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
@@ -2763,7 +2768,7 @@ void Pr (
          Int                 arg1,
          Int                 arg2 )
 {
-  PrTo(STATE(Output), format, arg1, arg2);
+  PrTo(GetCurrentOutput(), format, arg1, arg2);
 }
 
 /* TL: static Char *theBuffer; */
