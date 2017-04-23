@@ -300,9 +300,9 @@ Obj Shell ( Obj context,
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
-        AssGVar( Last3, VAL_GVAR( Last2 ) );
+        AssGVar( Last3, ValGVarTL( Last2 ) );
       if (lastDepth >= 2)
-        AssGVar( Last2, VAL_GVAR( Last  ) );
+        AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
         AssGVar( Last,  STATE(ReadEvalResult)   );
 
@@ -2667,6 +2667,9 @@ Obj FuncExportToKernelFinished (
 
 Obj FuncSleep( Obj self, Obj secs )
 {
+#ifdef HPCGAP
+  extern UInt HaveInterrupt();
+#endif
   Int  s;
 
   while( ! IS_INTOBJ(secs) )
@@ -2678,7 +2681,11 @@ Obj FuncSleep( Obj self, Obj secs )
     SySleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
+#ifdef HPCGAP
+  if (HaveInterrupt())
+#else
   if (SyIsIntr())
+#endif
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in sleep", 0L, 0L,

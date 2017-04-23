@@ -2667,7 +2667,9 @@ Obj FuncExportToKernelFinished (
 
 Obj FuncSleep( Obj self, Obj secs )
 {
+#ifdef HPCGAP
   extern UInt HaveInterrupt();
+#endif
   Int  s;
 
   while( ! IS_INTOBJ(secs) )
@@ -2679,7 +2681,11 @@ Obj FuncSleep( Obj self, Obj secs )
     SySleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
+#ifdef HPCGAP
   if (HaveInterrupt())
+#else
+  if (SyIsIntr())
+#endif
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
