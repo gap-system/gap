@@ -2015,6 +2015,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
   return INTOBJ_INT(fdi);
 }
 
+#ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
   Int fd;
@@ -2033,6 +2034,7 @@ Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
   else
     return syStartraw(fdi) ? True : False;
 }
+#endif
 
 #if HAVE_SELECT
 Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
@@ -2404,8 +2406,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "FD_OF_FILE", 1L, "fid",
       FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
 
+#ifdef HPCGAP
     { "RAW_MODE_FILE", 2L, "fid, bool",
       FuncRAW_MODE_FILE, "src/streams.c:RAW_MODE_FILE" },
+#endif
 
 #ifdef HAVE_SELECT
     { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
