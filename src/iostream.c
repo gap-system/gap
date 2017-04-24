@@ -141,12 +141,10 @@ static void FreeStream( UInt stream)
 */
 static void SignalChild (UInt stream, UInt sig)
 {
-    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         kill( PtyIOStreams[stream].childPID, sig );
     }
-    HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -155,13 +153,11 @@ static void SignalChild (UInt stream, UInt sig)
 */
 static void KillChild (UInt stream)
 {
-    HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
     {
         close(PtyIOStreams[stream].ptyFD);
         SignalChild( stream, SIGKILL );
     }
-    HashUnlock(PtyIOStreams);
 }
 
 
@@ -535,9 +531,6 @@ static UInt WriteToPty ( UInt stream, Char *buf, Int len )
     return old;
 }
 
-
-
-
 Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
@@ -610,9 +603,10 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
     return Fail;
   }
   
-  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   KillChild( pty );
+
+  HashUnlock(PtyIOStreams);
   return 0;
 }
 
@@ -626,9 +620,10 @@ Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
     return Fail;
   }
   
-  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   SignalChild( pty, INT_INTOBJ(sig) );
+
+  HashUnlock(PtyIOStreams);
   return 0;
 }
 
