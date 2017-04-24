@@ -287,6 +287,14 @@ void ChildStatusChanged( int whichsig )
 #endif
 }
 
+#ifdef HPCGAP
+Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
+  extern void ChildStatusChanged(int signr);
+  ChildStatusChanged(SIGCHLD);
+  return (Obj) 0;
+}
+#endif
+
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 {
     int             slave;   /* pipe to child                   */
@@ -712,6 +720,11 @@ static StructGVarFunc GVarFuncs [] = {
     
     { "FD_OF_IOSTREAM", 1, "stream",
       FuncFD_OF_IOSTREAM, "src/iostream.c:FD_OF_IOSTREAM" },
+
+#ifdef HPCGAP
+    { "DEFAULT_SIGCHLD_HANDLER", 0, "",
+      FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
+#endif
 
       {0} };
   
