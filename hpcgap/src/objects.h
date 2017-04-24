@@ -374,6 +374,8 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
 
+#ifdef HPCGAP
+
 /* reserve space for package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
 #define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+31)
@@ -409,6 +411,16 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
 
+#else
+
+/* reserve space for package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+51)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
+#define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
+
+#endif
 
 
 #define FIRST_COPYING_TNUM      NEXT_EVEN_INT(LAST_REAL_TNUM)
@@ -419,6 +431,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #error LAST_COPYING_TNUM out of range
 #endif
 
+
+#ifdef HPCGAP
+
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
@@ -428,6 +443,15 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define TESTING (1 << 8)
 #define TESTED (1 << 9)
 #define FIXED_REGION (1 << 10)
+
+#else
+
+/* share the same numbers between `COPYING' and `TESTING' */
+#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
+#define TESTING                 COPYING
+#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
+
+#endif
 
 
 /****************************************************************************
@@ -875,7 +899,11 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
+#ifdef HPCGAP
 extern void SetTypeDatObj( Obj obj, Obj type );
+#else
+#define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
+#endif
 
 
 /****************************************************************************
