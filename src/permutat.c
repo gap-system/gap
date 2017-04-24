@@ -1175,18 +1175,6 @@ Obj             LQuoPerm44 (
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
 
-Obj FuncINV_PERM_SIMPLE( Obj self, Obj perm)
-{
-  UInt deg = DEG_PERM4(perm);
-  Obj inv = NEW_PERM4(deg);
-  UInt4 *ptP = ADDR_PERM4(perm);
-  UInt4 *ptI = ADDR_PERM4(inv);
-  UInt p;
-  for (p = 0; p < deg; p++)
-    ptI[ptP[p]] = p;
-  return inv;
-}
-
 Obj             PowPerm2Int (
     Obj                 opL,
     Obj                 opR )
