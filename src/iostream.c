@@ -530,9 +530,14 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
   ConvString(string);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+
+  HashUnlock(PtyIOStreams);
   HandleChildStatusChanges(pty);
   return INTOBJ_INT(WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
 }
@@ -543,9 +548,14 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
   Int ret;
   Obj string;
   string = NEW_STRING(INT_INTOBJ(len));
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
   if (ret == -1)
@@ -561,9 +571,14 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
   UInt pty = INT_INTOBJ(stream);
   Int ret;
   string = NEW_STRING(INT_INTOBJ(len));
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
   if (ret == -1)
@@ -576,9 +591,14 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   KillChild( pty );
   return 0;
@@ -587,9 +607,14 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 {
   UInt pty = INT_INTOBJ(stream);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   /* Don't check for child having changes status */
   SignalChild( pty, INT_INTOBJ(sig) );
   return 0;
@@ -601,12 +626,14 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   int status;
   int retcode;
 /*UInt count; */
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
-
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
   PtyIOStreams[pty].inuse = 0;
-  
+  HashUnlock(PtyIOStreams);
   /* Close down the child */
   retcode = close(PtyIOStreams[pty].ptyFD);
   if (retcode)
@@ -620,18 +647,28 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
 Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   return (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive) ? True : False;
 }
 
 Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
-  while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
-                                    "you can replace stream number <num> via 'return <num>;'"));
+  HashLock(PtyIOStreams);
+  if (!PtyIOStreams[pty].inuse) {
+    HashUnlock(PtyIOStreams);
+    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
+    return Fail;
+  }
+  
+  HashUnlock(PtyIOStreams);
   return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
 }
 
