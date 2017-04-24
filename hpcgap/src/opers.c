@@ -1647,6 +1647,7 @@ Obj CallHandleMethodNotFound( Obj oper,
   SET_LEN_PLIST(arglist,nargs);
   for (i = 0; i < nargs; i++)
     SET_ELM_PLIST( arglist, i+1, args[i]);
+  CHANGED_BAG(arglist);
   AssPRec(r,RNamArguments,arglist);
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
@@ -1757,6 +1758,8 @@ static inline Obj TYPE_OBJ_FEO (
     }
 }
 
+#ifdef HPCGAP
+
 static pthread_mutex_t CacheLock;
 static UInt CacheSize;
 
@@ -1771,6 +1774,8 @@ static void UnlockCache()
   if (!PreThreadCreation)
     pthread_mutex_unlock(&CacheLock);
 }
+
+#endif
 
 static inline Obj CacheOper (
     Obj                 oper,
@@ -4728,10 +4733,12 @@ Obj DoAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4775,10 +4782,12 @@ Obj DoVerboseAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4820,10 +4829,12 @@ Obj DoMutableAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4865,10 +4876,12 @@ Obj DoVerboseMutableAttribute (
     if ( ENABLED_ATTR( self ) == 1 ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -5091,29 +5104,30 @@ Obj DoSetProperty (
     /*N 1996/06/28 mschoene see hack below                                 */
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
-    case T_ACOMOBJ:
-    case T_APOSOBJ:
     case T_POSOBJ:
     case T_DATOBJ:
-      flags = (val == True ? self : TESTR_FILT(self));
-      CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-      break;
-    default:
-      if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+    case T_APOSOBJ:
+#endif
+        flags = (val == True ? self : TESTR_FILT(self));
+        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        return 0;
+    }
+
+    if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
            || IS_BLIST_REP(obj) )  {
         if ( val == True ) {
             FuncSET_FILTER_LIST( 0, obj, self );
         }
-      }
-      else {
-          ErrorReturnVoid(
-                        "Value cannot be set for internal objects",
-                        0L, 0L,
-                        "you can 'return;' without setting it" );
-      }
     }
-    
-    /* return the value                                                    */
+    else {
+        ErrorReturnVoid(
+            "Value cannot be set for internal objects",
+            0L, 0L,
+            "you can 'return;' without setting it" );
+    }
+
     return 0;
 }
 
@@ -5158,10 +5172,12 @@ Obj DoProperty (
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
@@ -5206,10 +5222,12 @@ Obj DoVerboseProperty (
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
-        case T_ACOMOBJ:
         case T_POSOBJ:
-        case T_APOSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
@@ -5739,10 +5757,12 @@ Obj FuncCHANGED_METHODS_OPERATION (
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
+#ifdef HPCGAP
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
         return 0;
     }
+#endif
     n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
     cache = ADDR_OBJ( cacheBag );
@@ -5865,8 +5885,10 @@ Obj DoGetterFunction (
     switch (TNUM_OBJ(obj)) {
       case T_COMOBJ:
         return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+#ifdef HPCGAP
       case T_ACOMOBJ:
         return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+#endif
       default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
@@ -6539,9 +6561,11 @@ static Int InitLibrary (
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
     SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hidden_imps_cache_length * 2);
-    
+
+#ifdef HPCGAP
     REGION(HIDDEN_IMPS) = NewRegion();
     REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
+#endif
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
