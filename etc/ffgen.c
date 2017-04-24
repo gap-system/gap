@@ -45,25 +45,23 @@ void emit_code(int header)
 {
     unsigned i, j;
     if (header) {
-        printf("#ifndef _GAP_FFDATA_H\n");
-        printf("#define _GAP_FFDATA_H\n");
+        printf("#ifndef GAP_FFDATA_H\n");
+        printf("#define GAP_FFDATA_H\n");
         printf("\n");
-        printf("#define NUM_SHORT_FINITE_FIELDS %d\n", num_ff);
+        printf("enum {\n");
+        printf("    NUM_SHORT_FINITE_FIELDS = %d\n", num_ff);
+        printf("};\n");
         printf("\n");
-        printf("extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n",
-               num_ff);
-        printf("extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n",
-               num_ff);
-        printf("extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n",
-               num_ff);
+        printf("extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        printf("extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        printf("extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         printf("\n");
         printf("#endif /* _GAP_FFDATA_H */\n");
     }
     else {
-        printf("#include \"ffdata.h\"\n");
+        printf("#include <src/ffdata.h>\n");
         printf("\n");
-        printf("/* Entries are ordered by value of p^d; can use binary "
-               "search\n");
+        printf("/* Entries are ordered by value of p^d; can use binary search\n");
         printf(" * to find them. Indices start at 1.\n");
         printf(" */\n");
         printf("\n");
