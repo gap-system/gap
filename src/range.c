@@ -42,7 +42,7 @@
 **
 **  The  second part  consists  of   the functions  'LenRange',   'ElmRange',
 **  'ElmsRange',   'AssRange',      'AsssRange',   'PosRange',  'PlainRange',
-**  'IsDenseRange',   'IsPossRange', 'PrintRange', 'EqRange', and  'LtRange'.
+**  'IsPossRange', 'PrintRange', 'EqRange', and  'LtRange'.
 **  They  are the  functions required by  the generic   lists package.  Using
 **  these functions the other parts of the {\GAP} kernel can access or modify
 **  ranges without actually being aware that they are dealing with a range.
@@ -81,6 +81,8 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
+
+#include <src/util.h>
 
 
 /****************************************************************************
@@ -765,49 +767,6 @@ void            AsssRangeImm (
         "Lists Assignments: <list> must be a mutable list",
         0L, 0L,
         "you can 'return;' and ignore the assignment" );
-}
-
-
-/****************************************************************************
-**
-*F  IsDenseRange(<list>)  . . . . . . . . dense list test function for ranges
-**
-**  'IsDenseRange' returns 1, since ranges are always dense.
-**
-**  'IsDenseRange' is the function in 'IsDenseListFuncs' for ranges.
-*/
-Int             IsDenseRange (
-    Obj                 list )
-{
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  IsHomogRange(<list>)
-*/
-Int             IsHomogRange (
-    Obj                 list )
-{
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortRange(<list>)
-*/
-Int             IsSSortRangeNot (
-    Obj                 list )
-{
-    return 0;
-}
-
-Int             IsSSortRangeYes (
-    Obj                 list )
-{
-    return 1;
 }
 
 
@@ -1722,18 +1681,18 @@ static Int InitKernel (
     AsssListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = AsssRangeImm;
     AsssListFuncs   [ T_RANGE_SSORT            ] = AsssRange;
     AsssListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = AsssRangeImm;
-    IsDenseListFuncs[ T_RANGE_NSORT            ] = IsDenseRange;
-    IsDenseListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = IsDenseRange;
-    IsDenseListFuncs[ T_RANGE_SSORT            ] = IsDenseRange;
-    IsDenseListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = IsDenseRange;
-    IsHomogListFuncs[ T_RANGE_NSORT            ] = IsHomogRange;
-    IsHomogListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = IsHomogRange;
-    IsHomogListFuncs[ T_RANGE_SSORT            ] = IsHomogRange;
-    IsHomogListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = IsHomogRange;
-    IsSSortListFuncs[ T_RANGE_NSORT            ] = IsSSortRangeNot;
-    IsSSortListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = IsSSortRangeNot;
-    IsSSortListFuncs[ T_RANGE_SSORT            ] = IsSSortRangeYes;
-    IsSSortListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = IsSSortRangeYes;
+    IsDenseListFuncs[ T_RANGE_NSORT            ] = AlwaysYes;
+    IsDenseListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
+    IsDenseListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
+    IsDenseListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
+    IsHomogListFuncs[ T_RANGE_NSORT            ] = AlwaysYes;
+    IsHomogListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
+    IsHomogListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
+    IsHomogListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
+    IsSSortListFuncs[ T_RANGE_NSORT            ] = AlwaysNo;
+    IsSSortListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysNo;
+    IsSSortListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
+    IsSSortListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
     IsPossListFuncs [ T_RANGE_NSORT            ] = IsPossRange;
     IsPossListFuncs [ T_RANGE_NSORT +IMMUTABLE ] = IsPossRange;
     IsPossListFuncs [ T_RANGE_SSORT            ] = IsPossRange;

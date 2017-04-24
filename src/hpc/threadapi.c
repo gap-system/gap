@@ -65,6 +65,9 @@
 
 #include <src/compiler.h>               /* compiler */
 
+#include <src/util.h>
+
+
 struct WaitList {
   struct WaitList *prev;
   struct WaitList *next;
@@ -1374,16 +1377,6 @@ Obj TypeRegion(Obj obj)
   return TYPE_REGION;
 }
 
-static Int AlwaysMutable( Obj obj)
-{
-  return 1;
-}
-
-static Int NeverMutable(Obj obj)
-{
-  return 0;
-}
-
 #ifndef BOEHM_GC
 static void MarkSemaphoreBag(Bag);
 static void MarkChannelBag(Bag);
@@ -1460,12 +1453,12 @@ static Int InitKernel (
     PrintObjFuncs[ T_SYNCVAR ] = PrintSyncVar;
     PrintObjFuncs[ T_REGION ] = PrintRegion;
     /* install mutability functions */
-    IsMutableObjFuncs [ T_THREAD ] = NeverMutable;
-    IsMutableObjFuncs [ T_SEMAPHORE ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_REGION ] = AlwaysMutable;
+    IsMutableObjFuncs [ T_THREAD ] = AlwaysNo;
+    IsMutableObjFuncs [ T_SEMAPHORE ] = AlwaysYes;
+    IsMutableObjFuncs [ T_CHANNEL ] = AlwaysYes;
+    IsMutableObjFuncs [ T_BARRIER ] = AlwaysYes;
+    IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysYes;
+    IsMutableObjFuncs [ T_REGION ] = AlwaysYes;
     MakeBagTypePublic(T_THREAD);
     MakeBagTypePublic(T_SEMAPHORE);
     MakeBagTypePublic(T_CHANNEL);

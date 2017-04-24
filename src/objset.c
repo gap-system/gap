@@ -32,16 +32,10 @@
 
 #include <src/hpc/tls.h>
 
+#include <src/util.h>
+
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;
-
-static Int AlwaysMutable(Obj obj) {
-  return 1;
-}
-
-static Int NeverMutable(Obj obj) {
-  return 0;
-}
 
 static Obj TypeObjSet(Obj obj) {
   return TYPE_OBJSET;
@@ -968,10 +962,10 @@ static Int InitKernel (
   PrintObjFuncs[ T_OBJMAP ] = PrintObjMap;
   PrintObjFuncs[ T_OBJMAP+IMMUTABLE ] = PrintObjMap;
   /* install mutability functions */
-  IsMutableObjFuncs [ T_OBJSET ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = NeverMutable;
-  IsMutableObjFuncs [ T_OBJMAP ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = NeverMutable;
+  IsMutableObjFuncs [ T_OBJSET ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
+  IsMutableObjFuncs [ T_OBJMAP ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
   /* return success                                                      */
   return 0;
 }

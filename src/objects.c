@@ -47,6 +47,8 @@
 //#include <src/hpc/traverse.h>            /* object traversal                */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
+#include <src/util.h>
+
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
@@ -155,12 +157,6 @@ Int IsMutableObjError (
     return 0;
 }
 
-Int IsMutableObjNot (
-    Obj                 obj )
-{
-    return 0L;
-}
-
 Int IsMutableObjObject (
     Obj                 obj )
 {
@@ -199,12 +195,6 @@ Int IsCopyableObjError (
     ErrorQuit(
         "Panic: tried to test copyability of unknown type '%d'",
         (Int)TNUM_OBJ(obj), 0L );
-    return 0L;
-}
-
-Int IsCopyableObjNot (
-    Obj                 obj )
-{
     return 0L;
 }
 
@@ -1719,7 +1709,7 @@ static Int InitKernel (
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjError;
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
-        IsMutableObjFuncs[ t ] = IsMutableObjNot;
+        IsMutableObjFuncs[ t ] = AlwaysNo;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjObject;
 
@@ -1727,7 +1717,7 @@ static Int InitKernel (
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
-        IsCopyableObjFuncs[ t ] = IsCopyableObjNot;
+        IsCopyableObjFuncs[ t ] = AlwaysNo;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjObject;
 
@@ -1852,7 +1842,6 @@ static Int InitLibrary (
 
     AssGVar(GVarName("LAST_IMM_MUT_TNUM"), INTOBJ_INT(LAST_IMM_MUT_TNUM));
     MakeReadOnlyGVar(GVarName("LAST_IMM_MUT_TNUM"));
-    
 
     /* return success                                                      */
     return 0;

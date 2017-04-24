@@ -43,6 +43,8 @@
 
 #include <src/hpc/systhread.h>          /* system thread primitives */
 
+#include <src/util.h>
+
 
 /****************************************************************************
 **
@@ -352,18 +354,6 @@ Obj             IsRecHandler (
     Obj                 obj )
 {
     return (IS_REC(obj) ? True : False);
-}
-
-Int             IsRecNot (
-    Obj                 obj )
-{
-    return 0L;
-}
-
-Int             IsRecYes (
-    Obj                 obj )
-{
-    return 1L;
 }
 
 Int             IsRecObject (
@@ -721,10 +711,10 @@ static Int InitKernel (
 
     /* make and install the 'IS_REC' filter                                */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsRecFuncs[ type ] = IsRecNot;
+        IsRecFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_RECORD_TNUM; type <= LAST_RECORD_TNUM; type++ ) {
-        IsRecFuncs[ type ] = IsRecYes;
+        IsRecFuncs[ type ] = AlwaysYes;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsRecFuncs[ type ] = IsRecObject;
