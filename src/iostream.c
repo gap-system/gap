@@ -528,15 +528,20 @@ static UInt WriteToPty ( UInt stream, Char *buf, Int len )
     return old;
 }
 
-Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
-{
+static UInt HashLockStreamIfAvailable(Obj stream) {
   UInt pty = INT_INTOBJ(stream);
   HashLock(PtyIOStreams);
   if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
+    return -1;
   }
+  return pty;
+}
+
+Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
+{
+  UInt pty = HashLockStreamIfAvailable(stream);
 
   HandleChildStatusChanges(pty);
   ConvString(string);
@@ -547,13 +552,7 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 
 Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   Obj string = NEW_STRING(INT_INTOBJ(len));
@@ -568,13 +567,7 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
 
 Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
   Obj string = NEW_STRING(INT_INTOBJ(len));
@@ -589,13 +582,7 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 
 Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   /* Don't check for child having changes status */
   KillChild( pty );
@@ -606,13 +593,7 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 
 Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   /* Don't check for child having changes status */
   SignalChild( pty, INT_INTOBJ(sig) );
@@ -623,13 +604,7 @@ Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 
 Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
 
   PtyIOStreams[pty].inuse = 0;
 
@@ -647,13 +622,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
 
 Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   int isBlocked = (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive);
   HashUnlock(PtyIOStreams);
@@ -662,13 +631,7 @@ Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 
 Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
 {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
-    HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return Fail;
-  }
+  UInt pty = HashLockStreamIfAvailable(stream);
   
   Obj result = INTOBJ_INT(PtyIOStreams[pty].ptyFD);
   HashUnlock(PtyIOStreams);
