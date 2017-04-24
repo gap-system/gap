@@ -374,6 +374,45 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
 
+#ifdef HPCGAP
+
+/* reserve space for package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+31)
+
+/* The next two TNUMs are BOTH external AND shared! This way, jump
+   tables get entries calling method selection for them. */
+#define FIRST_SHARED_TNUM       (LAST_PACKAGE_TNUM+1)
+#define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
+#define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
+#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
+
+/* Primitive types */
+#define T_THREAD                (FIRST_SHARED_TNUM+ 2)
+#define T_MUTEX                 (FIRST_SHARED_TNUM+ 3)
+#define T_CONDVAR               (FIRST_SHARED_TNUM+ 4)
+#define T_RWLOCK                (FIRST_SHARED_TNUM+ 5)
+#define T_MONITOR               (FIRST_SHARED_TNUM+ 6)
+#define T_REGION                (FIRST_SHARED_TNUM+ 7)
+
+/* User-programmable types */
+#define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
+#define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
+#define T_CHANNEL               (FIRST_SHARED_TNUM+ 10)
+#define T_BARRIER               (FIRST_SHARED_TNUM+ 11)
+#define T_SYNCVAR               (FIRST_SHARED_TNUM+ 12)
+#define T_FIXALIST              (FIRST_SHARED_TNUM+ 13)
+#define T_ALIST                 (FIRST_SHARED_TNUM+ 14)
+#define T_AREC                  (FIRST_SHARED_TNUM+ 15)
+#define T_AREC_INNER            (FIRST_SHARED_TNUM+ 16)
+#define T_TLREC                 (FIRST_SHARED_TNUM+ 17)
+#define T_TLREC_INNER           (FIRST_SHARED_TNUM+ 18)
+#define LAST_SHARED_TNUM        (T_TLREC_INNER)
+
+#define LAST_REAL_TNUM          LAST_SHARED_TNUM
+
+#else
+
 /* reserve space for package TNUMs */
 #define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
 #define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+51)
@@ -381,17 +420,37 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 
+#endif
+
+
 #define FIRST_COPYING_TNUM      NEXT_EVEN_INT(LAST_REAL_TNUM)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
+
+#if LAST_COPYING_TNUM > 254
+#error LAST_COPYING_TNUM out of range
+#endif
+
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+** Object flags for use with SET_OBJ_FLAG() etc.
+**
+*/
+
+#define TESTING (1 << 8)
+#define TESTED (1 << 9)
+#define FIXED_REGION (1 << 10)
+
+#else
 
 /* share the same numbers between `COPYING' and `TESTING' */
 #define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
 #define TESTING                 COPYING
 #define LAST_TESTING_TNUM       LAST_COPYING_TNUM
 
-#if LAST_COPYING_TNUM > 254
-#error LAST_COPYING_TNUM out of range
 #endif
 
 
@@ -806,7 +865,11 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
+#ifdef HPCGAP
+extern void SetTypeDatObj( Obj obj, Obj type );
+#else
 #define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
+#endif
 
 
 /****************************************************************************
