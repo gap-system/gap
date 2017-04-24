@@ -62,6 +62,9 @@
 
 #include <src/compiler.h>               /* compiler */
 
+#include <src/util.h>
+
+
 Obj TYPE_ALIST;
 Obj TYPE_AREC;
 Obj TYPE_TLREC;
@@ -149,11 +152,6 @@ void SetTypeARecord(Obj obj, Obj kind)
   MEMBAR_WRITE();
 }
 
-
-static Int AlwaysMutable( Obj obj)
-{
-  return 1;
-}
 
 static void ArgumentError(char *message)
 {
@@ -1348,26 +1346,6 @@ static Obj FuncSetTLConstructor(Obj self, Obj record, Obj name, Obj function)
   return (Obj) 0;
 }
 
-static Int IsListAList(Obj list)
-{
-  return 1;
-}
-
-static Int IsSmallListAList(Obj list)
-{
-  return 1;
-}
-
-static Int IsRecNot(Obj obj)
-{
-  return 0;
-}
-
-static Int IsRecYes(Obj obj)
-{
-  return 1;
-}
-
 static Int LenListAList(Obj list)
 {
   MEMBAR_READ();
@@ -2006,9 +1984,9 @@ static Int InitKernel (
   PrintObjFuncs[ T_AREC ] = PrintAtomicRecord;
   PrintObjFuncs[ T_TLREC ] = PrintTLRecord;
   /* install mutability functions */
-  IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_FIXALIST ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
+  IsMutableObjFuncs [ T_ALIST ] = AlwaysYes;
+  IsMutableObjFuncs [ T_FIXALIST ] = AlwaysYes;
+  IsMutableObjFuncs [ T_AREC ] = AlwaysYes;
   /* mutability for T_ACOMOBJ and T_APOSOBJ is set in objects.c */
   MakeBagTypePublic(T_ALIST);
   MakeBagTypePublic(T_FIXALIST);
@@ -2020,8 +1998,8 @@ static Int InitKernel (
   MakeBagTypePublic(T_TLREC_INNER);
   /* install list functions */
   /* install list functions */
-  IsListFuncs[T_FIXALIST] = IsListAList;
-  IsSmallListFuncs[T_FIXALIST] = IsSmallListAList;
+  IsListFuncs[T_FIXALIST] = AlwaysYes;
+  IsSmallListFuncs[T_FIXALIST] = AlwaysYes;
   LenListFuncs[T_FIXALIST] = LenListAList;
   LengthFuncs[T_FIXALIST] = LengthAList;
   Elm0ListFuncs[T_FIXALIST] = Elm0AList;
@@ -2034,8 +2012,8 @@ static Int InitKernel (
   IsbListFuncs[T_FIXALIST] = IsbAList;
   CopyObjFuncs[ T_FIXALIST ] = CopyAList;
   CleanObjFuncs[ T_FIXALIST ] = CleanAList;
-  IsListFuncs[T_ALIST] = IsListAList;
-  IsSmallListFuncs[T_ALIST] = IsSmallListAList;
+  IsListFuncs[T_ALIST] = AlwaysYes;
+  IsSmallListFuncs[T_ALIST] = AlwaysYes;
   LenListFuncs[T_ALIST] = LenListAList;
   LengthFuncs[T_ALIST] = LengthAList;
   Elm0ListFuncs[T_ALIST] = Elm0AList;
@@ -2058,15 +2036,15 @@ static Int InitKernel (
   CopyObjFuncs[ T_AREC ] = CopyARecord;
   ShallowCopyObjFuncs[ T_AREC ] = ShallowCopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
-  IsRecFuncs[ T_AREC ] = IsRecYes;
+  IsRecFuncs[ T_AREC ] = AlwaysYes;
   UnbRecFuncs[ T_AREC ] = UnbARecord;
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
-  IsRecFuncs[ T_ACOMOBJ ] = IsRecNot;
+  IsRecFuncs[ T_ACOMOBJ ] = AlwaysNo;
   ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
   AssRecFuncs[ T_TLREC ] = AssTLRecord;
-  IsRecFuncs[ T_TLREC ] = IsRecYes;
+  IsRecFuncs[ T_TLREC ] = AlwaysYes;
   UnbRecFuncs[ T_TLREC ] = UnbTLRecord;
   /* return success                                                      */
   return 0;

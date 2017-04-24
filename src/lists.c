@@ -54,6 +54,7 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
+#include <src/util.h>
 
 
 /****************************************************************************
@@ -77,18 +78,6 @@ Obj             FuncIS_LIST (
     Obj                 obj )
 {
     return (IS_LIST( obj ) ? True : False);
-}
-
-Int             IsListNot (
-    Obj                 obj )
-{
-    return 0L;
-}
-
-Int             IsListYes (
-    Obj                 obj )
-{
-    return 1L;
 }
 
 Int             IsListObject (
@@ -135,18 +124,6 @@ Obj             IsSmallListFilt;
 Obj             HasIsSmallListFilt;
 Obj             LengthAttr;
 Obj             SetIsSmallList;
-
-Int             IsSmallListNot (
-    Obj                 obj )
-{
-    return 0L;
-}
-
-Int             IsSmallListYes (
-    Obj                 obj )
-{
-    return 1L;
-}
 
 Int             IsSmallListObject (
     Obj                 obj )
@@ -1132,12 +1109,11 @@ Obj FuncASSS_LIST_DEFAULT (
 **
 *F  IS_DENSE_LIST(<list>) . . . . . . . . . . . . . . .  test for dense lists
 *V  IsDenseListFuncs[<type>]  . . . . . . table for dense list test functions
-*F  IsDenseListNot(<list>)  . . . . .  dense list test function for non lists
 **
 **  'IS_DENSE_LIST'  only     calls   the      function   pointed    to    by
 **  'IsDenseListFuncs[<type>]', passing <list> as argument.  If <type> is not
 **  the   type  of  a    list,  then  'IsDenseListFuncs[<type>]'  points   to
-**  'IsDenseListNot', which just returns 0.
+**  'AlwaysNo', which just returns 0.
 **
 **  'IS_DENSE_LIST'  is defined in the declaration  part  of this  package as
 **  follows
@@ -1154,18 +1130,6 @@ Obj             FuncIS_DENSE_LIST (
     Obj                 obj )
 {
     return (IS_DENSE_LIST( obj ) ? True : False);
-}
-
-Int             IsDenseListNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int             IsDenseListYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 Int             IsDenseListDefault (
@@ -1204,12 +1168,11 @@ Int             IsDenseListObject (
 **
 *F  IS_HOMOG_LIST(<list>) . . . . . . . . . . . .  test for homogeneous lists
 *V  IsHomogListFuncs[<type>]  . . . table for homogeneous list test functions
-*F  IsHomogListNot(<list>)  . .  homogeneous list test function for non lists
 **
 **  'IS_HOMOG_LIST' only calls the function pointed to by
 **  'IsHomogListFuncs[<type>]', passing <list> as argument.  If <type> is not
 **  the type of a list, then 'IsHomogListFuncs[<type>]' points to
-**  'IsHomogListNot', which just returns 0.
+**  'AlwaysNo', which just returns 0.
 **
 **  'IS_HOMOG_LIST' is defined in the declaration part  of  this  package  as
 **  follows
@@ -1226,18 +1189,6 @@ Obj             FuncIS_HOMOG_LIST (
     Obj                 obj )
 {
     return (IS_HOMOG_LIST( obj ) ? True : False);
-}
-
-Int             IsHomogListNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int             IsHomogListYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 Int             IsHomogListDefault (
@@ -1286,12 +1237,11 @@ Int             IsHomogListObject (
 **
 *F  IS_TABLE_LIST(<list>) . . . . . . . . . . . . . . .  test for table lists
 *V  IsTableListFuncs[<type>]  . . . . . . table for table list test functions
-*F  IsTableListNot(<list>)  . . . . .  table list test function for non lists
 **
 **  'IS_TABLE_LIST' only calls the function pointed to by
 **  'IsTableListFuncs[<type>]', passing <list> as argument.  If <type> is not
 **  the type of a list, then 'IsTableListFuncs[<type>]' points to
-**  'IsTableListNot', which just returns 0.
+**  'AlwaysNo', which just returns 0.
 **
 **  'IS_TABLE_LIST' is defined in the declaration part  of  this  package  as
 **  follows
@@ -1308,18 +1258,6 @@ Obj             Func_IS_TABLE_LIST (
     Obj                 obj )
 {
     return (IS_TABLE_LIST( obj ) ? True : False);
-}
-
-Int             IsTableListNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int             IsTableListYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 Int             IsTableListDefault (
@@ -1376,12 +1314,11 @@ Int             IsTableListObject (
 **
 *F  IS_SSORT_LIST( <list> ) . . . . . . . . .  test for strictly sorted lists
 *V  IsSSortListFuncs[<type>]  .  table of strictly sorted list test functions
-*F  IsSSortListNot( <list> ) strictly sorted list test function for non lists
 **
 **  'IS_SSORT_LIST' only calls the function pointed to by
 **  'IsSSortListFuncs[<type>]', passing <list> as argument.
 **  If <type> is not the type of a list, then 'IsSSortListFuncs[<type>]'
-**  points to 'IsSSortListNot', which just returns 0.
+**  points to 'AlwaysNo', which just returns 0.
 **
 **  'IS_SSORTED_LIST'  is defined in the  declaration part of this package as
 **  follows
@@ -1398,18 +1335,6 @@ Obj FuncIS_SSORT_LIST (
     Obj                 obj )
 {
     return (IS_SSORT_LIST( obj ) ? True : False);
-}
-
-Int IsSSortListNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int IsSSortListYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 Int IsSSortListDefault (
@@ -1483,7 +1408,6 @@ Obj FuncIS_NSORT_LIST (
 **
 *F  IS_POSS_LIST(<list>)  . . . . . . . . . . . . .  test for positions lists
 *V  IsPossListFuncs[<type>] . . . . . . table of positions list test function
-*F  IsPossListNot(<list>) . . . .  positions list test function for non lists
 **
 **  'IS_POSS_LIST'     only   calls    the     function  pointed      to   by
 **  'IsPossListFuncs[<type>]', passing <list> as  argument.  If <type> is not
@@ -1505,18 +1429,6 @@ Obj             FuncIS_POSS_LIST (
     Obj                 obj )
 {
     return (IS_POSS_LIST(obj) ? True : False);
-}
-
-Int             IsPossListNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int             IsPossListYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 Int             IsPossListDefault (
@@ -2084,47 +1996,6 @@ Obj             TYPES_LIST_FAM (
 
 /****************************************************************************
 **
-*F  IsMutableListYes(<list>)  . . . . . . . mutability test for mutable lists
-*F  IsMutableListNo(<list>) . . . . . . . mutability test for immutable lists
-**
-**  'IsMutableListYes' simply returns 1.  'IsMutableListNo' simply returns 0.
-**  Note that we can decide from the type number whether a list is mutable or
-**  immutable.
-**
-**  'IsMutableListYes' is  the function  in 'IsMutableObjFuncs'   for mutable
-**  lists.   'IsMutableListNo'  is  the function  in 'IsMutableObjFuncs'  for
-**  immutable lists.
-*/
-Int             IsMutableListNo (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int             IsMutableListYes (
-    Obj                 list )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
-*F  IsCopyableListYes(<list>) . . . . . . . . . .  copyability test for lists
-**
-**  'IsCopyableListYes' simply returns 1.  Note that all lists are copyable.
-**
-**  'IsCopyableListYes' is the function in 'IsCopyableObjFuncs' for lists.
-*/
-Int             IsCopyableListYes (
-    Obj                     list )
-{
-    return 1;
-}
-
-
-/****************************************************************************
-**
 *F  PrintListDefault(<list>)  . . . . . . . . . . . . . . . . .  print a list
 *F  PrintPathList(<list>,<indx>)  . . . . . . . . . . . . . print a list path
 **
@@ -2541,10 +2412,10 @@ static Int InitKernel (
 
     /* make and install the 'IS_LIST' filter                               */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsListFuncs[ type ] = IsListNot;
+        IsListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsListFuncs[ type ] = IsListYes;
+        IsListFuncs[ type ] = AlwaysYes;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsListFuncs[ type ] = IsListObject;
@@ -2553,11 +2424,11 @@ static Int InitKernel (
     /* make and install the 'IS_SMALL_LIST' filter                   */
     /* non-lists are not small lists */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsSmallListFuncs[ type ] = IsSmallListNot;
+        IsSmallListFuncs[ type ] = AlwaysNo;
     }
     /* internal lists ARE small lists */
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsSmallListFuncs[ type ] = IsSmallListYes;
+        IsSmallListFuncs[ type ] = AlwaysYes;
     }
     /* external lists need to be asked */
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -2669,7 +2540,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsDenseListFuncs[ type ] = IsDenseListNot;
+        IsDenseListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListDefault;
@@ -2681,7 +2552,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_HOMOG_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsHomogListFuncs[ type ] = IsHomogListNot;
+        IsHomogListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListDefault;
@@ -2693,7 +2564,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_TABLE_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsTableListFuncs[ type ] = IsTableListNot;
+        IsTableListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListDefault;
@@ -2705,7 +2576,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_SSORT_LIST' property                       */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsSSortListFuncs[ type ] = IsSSortListNot;
+        IsSSortListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListDefault;
@@ -2717,7 +2588,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_POSS_LIST' property                        */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        IsPossListFuncs[ type ] = IsPossListNot;
+        IsPossListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListDefault;
@@ -2747,10 +2618,10 @@ static Int InitKernel (
 
     /* install the generic mutability test function                        */
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
-        IsMutableObjFuncs[  type           ] = IsMutableListYes;
-        IsMutableObjFuncs[  type+IMMUTABLE ] = IsMutableListNo;
-        IsCopyableObjFuncs[ type           ] = IsCopyableListYes;
-        IsCopyableObjFuncs[ type+IMMUTABLE ] = IsCopyableListYes;
+        IsMutableObjFuncs[  type           ] = AlwaysYes;
+        IsMutableObjFuncs[  type+IMMUTABLE ] = AlwaysNo;
+        IsCopyableObjFuncs[ type           ] = AlwaysYes;
+        IsCopyableObjFuncs[ type+IMMUTABLE ] = AlwaysYes;
     }
 
     /* install the default printers                                        */

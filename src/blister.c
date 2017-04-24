@@ -54,7 +54,7 @@
 **
 **  The  second  part  consists  of  the  functions  'LenBlist',  'ElmBlist',
 **  'ElmsBlist',   'AssBlist',    'AsssBlist',   'PosBlist',    'PlainBlist',
-**  'IsDenseBlist',  'IsPossBlist', 'EqBlist', and  'LtBlist'.  They  are the
+**  'IsPossBlist', 'EqBlist', and  'LtBlist'.  They  are the
 **  functions required by the  generic lists  package.  Using these functions
 **  the other parts of  the {\GAP} kernel can access and modify boolean lists
 **  without actually being aware that they are dealing with a boolean list.
@@ -102,6 +102,8 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
+
+#include <src/util.h>
 
 
 /****************************************************************************
@@ -940,22 +942,6 @@ Int IsPossBlist (
 
 /****************************************************************************
 **
-
-*F  IsDenseBlist( <list> )  . . .  dense list test function for boolean lists
-**
-**  'IsDenseBlist' returns 1, since boolean lists are always dense.
-**
-**  'IsDenseBlist' is the function in 'IsDenseBlistFuncs' for boolean lists.
-*/
-Int IsDenseBlist (
-    Obj                 list )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
 *F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
 */
 Int IsHomogBlist (
@@ -986,28 +972,6 @@ Int IsSSortBlist (
     SET_FILT_LIST( list, (isSort ? FN_IS_SSORT : FN_IS_NSORT) );
 
     return isSort;
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortBlistNot( <list> ) . . . . . . . . . . . . . unsorted boolean list
-*/
-Int IsSSortBlistNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-
-/****************************************************************************
-**
-*F  IsSSortBlistYes( <list> ) . . . . . . . . . . . . . . sorted boolean list
-*/
-Int IsSSortBlistYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 
@@ -2272,7 +2236,9 @@ Obj FuncSUBTR_BLIST (
         *ptr1++ &= ~ *ptr2++; 
       }
 
-    /* return nothing, this function is a procedure */ return 0; }
+    /* return nothing, this function is a procedure */
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -2778,8 +2744,8 @@ static Int InitKernel (
         AssListFuncs    [ t1 +IMMUTABLE ] = AssBlistImm;
         AsssListFuncs   [ t1            ] = AsssListDefault;
         AsssListFuncs   [ t1 +IMMUTABLE ] = AsssBlistImm;
-        IsDenseListFuncs[ t1            ] = IsDenseBlist;
-        IsDenseListFuncs[ t1 +IMMUTABLE ] = IsDenseBlist;
+        IsDenseListFuncs[ t1            ] = AlwaysYes;
+        IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogBlist;
         IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogBlist;
         IsSSortListFuncs[ t1            ] = IsSSortBlist;
@@ -2792,10 +2758,10 @@ static Int InitKernel (
         PlainListFuncs  [ t1 +IMMUTABLE ] = PlainBlist;
         MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
     }
-    IsSSortListFuncs[ T_BLIST_NSORT            ] = IsSSortBlistNot;
-    IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;
-    IsSSortListFuncs[ T_BLIST_SSORT            ] = IsSSortBlistYes;
-    IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
+    IsSSortListFuncs[ T_BLIST_NSORT            ] = AlwaysNo;
+    IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = AlwaysNo;
+    IsSSortListFuncs[ T_BLIST_SSORT            ] = AlwaysYes;
+    IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = AlwaysYes;
 
     /* Import the types of blists: */
     ImportGVarFromLibrary( "TYPE_BLIST_MUT", &TYPE_BLIST_MUT );

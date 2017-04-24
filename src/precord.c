@@ -61,6 +61,8 @@
 #include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/aobjects.h>           /* thread-local storage */
 
+#include <src/util.h>
+
 
 /****************************************************************************
 **
@@ -95,46 +97,6 @@ Obj TypePRecImm (
     return TYPE_PREC_IMMUTABLE;
 }
 
-
-/****************************************************************************
-**
-*F  IsMutablePRecYes( <rec> ) . . . . . . mutability test for mutable records
-*F  IsMutablePRecNo( <rec> )  . . . . . mutability test for immutable records
-**
-**  'IsMutablePRecYes' simply returns 1.  'IsMutablePRecNo' simply returns 0.
-**  Note that we can decide from the type number whether  a record is mutable
-**  or immutable.
-**
-**  'IsMutablePRecYes'  is the function   in 'IsMutableObjFuncs'  for mutable
-**  records.   'IsMutablePRecNo' is  the function  in 'IsMutableObjFuncs' for
-**  immutable records.
-*/
-Int IsMutablePRecYes (
-    Obj                 rec )
-{
-    return 1;
-}
-
-Int IsMutablePRecNo (
-    Obj                 rec )
-{
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  IsCopyablePRecYes( <rec> )  . . . . . . . .  copyability test for records
-**
-**  'IsCopyablePRec' simply returns 1.  Note that all records are copyable.
-**
-**  'IsCopyablePRec' is the function in 'IsCopyableObjFuncs' for records.
-*/
-Int IsCopyablePRecYes (
-    Obj                 rec )
-{
-    return 1;
-}
 
 /****************************************************************************
 **
@@ -982,10 +944,10 @@ static Int InitKernel (
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
 
     /* install mutability test                                             */
-    IsMutableObjFuncs[  T_PREC            ] = IsMutablePRecYes;
-    IsMutableObjFuncs[  T_PREC +IMMUTABLE ] = IsMutablePRecNo;
-    IsCopyableObjFuncs[ T_PREC            ] = IsCopyablePRecYes;
-    IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = IsCopyablePRecYes;
+    IsMutableObjFuncs[  T_PREC            ] = AlwaysYes;
+    IsMutableObjFuncs[  T_PREC +IMMUTABLE ] = AlwaysNo;
+    IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
+    IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;

@@ -65,6 +65,8 @@
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
+#include <src/code.h>                   /* FilenameCache */
+
 #include <src/util.h>
 
 #include <assert.h>
@@ -2942,6 +2944,11 @@ Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   else
     (STATE(OutputFiles)[1])->format = 1;
   return val;
+}
+
+Obj FuncGET_FILENAME_CACHE(Obj self)
+{
+  return CopyObj(FilenameCache, 1);
 }
 
 

@@ -40,7 +40,7 @@
 **  use the detailed knowledge about the respresentation of strings.
 **  
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
-**  'ElmsStrings', 'AssString',  'AsssString', PlainString', 'IsDenseString',
+**  'ElmsStrings', 'AssString',  'AsssString', PlainString',
 **  and 'IsPossString'.  They are the functions requried by the generic lists
 **  package.  Using these functions the other  parts of the {\GAP} kernel can
 **  access and  modify strings  without actually  being aware  that they  are
@@ -80,6 +80,8 @@
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/hpc/tls.h>                /* thread-local storage */
+
+#include <src/util.h>
 
 #include <assert.h>
 
@@ -1181,21 +1183,6 @@ void AsssStringImm (
 
 /****************************************************************************
 **
-*F  IsDenseString(<list>) . . . . . . .  dense list test function for strings
-**
-**  'IsDenseString' returns 1, since every string is dense.
-**
-**  'IsDenseString' is the function in 'IsDenseListFuncs' for strings.
-*/
-Int IsDenseString (
-    Obj                 list )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
 *F  IsHomogString(<list>) . . . .  homogeneous list test function for strings
 **
 **  'IsHomogString' returns  1 if  the string  <list>  is homogeneous.  Every
@@ -1237,18 +1224,6 @@ Int IsSSortString (
     /* retype according to the outcome                                     */
     SET_FILT_LIST( list, (len <= i) ? FN_IS_SSORT : FN_IS_NSORT );
     return (len <= i);
-}
-
-Int IsSSortStringNot (
-    Obj                 list )
-{
-    return 0L;
-}
-
-Int IsSSortStringYes (
-    Obj                 list )
-{
-    return 1L;
 }
 
 
@@ -1365,18 +1340,6 @@ void PlainString (
 Int (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 Obj IsStringFilt;
-
-Int IsStringNot (
-    Obj                 obj )
-{
-    return 0;
-}
-
-Int IsStringYes (
-    Obj                 obj )
-{
-    return 1;
-}
 
 Int IsStringList (
     Obj                 list )
@@ -2709,8 +2672,8 @@ static Int InitKernel (
         AssListFuncs    [ t1 +IMMUTABLE ] = AssStringImm;
         AsssListFuncs   [ t1            ] = AsssString;
         AsssListFuncs   [ t1 +IMMUTABLE ] = AsssStringImm;
-        IsDenseListFuncs[ t1            ] = IsDenseString;
-        IsDenseListFuncs[ t1 +IMMUTABLE ] = IsDenseString;
+        IsDenseListFuncs[ t1            ] = AlwaysYes;
+        IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogString;
         IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogString;
         IsSSortListFuncs[ t1            ] = IsSSortString;
@@ -2722,15 +2685,15 @@ static Int InitKernel (
         PlainListFuncs  [ t1            ] = PlainString;
         PlainListFuncs  [ t1 +IMMUTABLE ] = PlainString;
     }
-    IsSSortListFuncs[ T_STRING_NSORT            ] = IsSSortStringNot;
-    IsSSortListFuncs[ T_STRING_NSORT +IMMUTABLE ] = IsSSortStringNot;
-    IsSSortListFuncs[ T_STRING_SSORT            ] = IsSSortStringYes;
-    IsSSortListFuncs[ T_STRING_SSORT +IMMUTABLE ] = IsSSortStringYes;
+    IsSSortListFuncs[ T_STRING_NSORT            ] = AlwaysNo;
+    IsSSortListFuncs[ T_STRING_NSORT +IMMUTABLE ] = AlwaysNo;
+    IsSSortListFuncs[ T_STRING_SSORT            ] = AlwaysYes;
+    IsSSortListFuncs[ T_STRING_SSORT +IMMUTABLE ] = AlwaysYes;
 
 
     /* install the `IsString' functions                                    */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
-        IsStringFuncs[ t1 ] = IsStringNot;
+        IsStringFuncs[ t1 ] = AlwaysNo;
     }
 
     for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
@@ -2738,7 +2701,7 @@ static Int InitKernel (
     }
 
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
-        IsStringFuncs[ t1 ] = IsStringYes;
+        IsStringFuncs[ t1 ] = AlwaysYes;
     }
 
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -2753,7 +2716,6 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_STRING       ] = MakeImmutableString;
     MakeImmutableObjFuncs[ T_STRING_SSORT ] = MakeImmutableString;
     MakeImmutableObjFuncs[ T_STRING_NSORT ] = MakeImmutableString;
-    
 
     /* return success                                                      */
     return 0;
