@@ -33,6 +33,7 @@ gap> permBig := List(permSml, g -> g^x);
 [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
 gap> IsSet(permBig);
 true
+gap> permAll := Concatenation(permSml, permBig);;
 
 #
 # PrintPerm
@@ -130,6 +131,118 @@ gap> List(permBig,x->List(permBig,y->x*y));
   [ (1,2,3), (1,3), (2,3), (1,3,2), (), (1,2) ], 
   [ (1,3,2), (1,2), (1,3), (), (1,2,3), (2,3) ], 
   [ (1,3), (1,2,3), (1,3,2), (2,3), (1,2), () ] ]
+
+#
+# QuoPerm
+#
+gap> SetX(permSml, permSml, {x,y} -> (x/y)*y = x);
+[ true ]
+gap> SetX(permSml, permBig, {x,y} -> (x/y)*y = x);
+[ true ]
+gap> SetX(permBig, permSml, {x,y} -> (x/y)*y = x);
+[ true ]
+gap> SetX(permBig, permBig, {x,y} -> (x/y)*y = x);
+[ true ]
+
+#
+# LQuoPerm
+#
+gap> SetX(permSml, permSml, {x,y} -> x*LeftQuotient(x,y) = y);
+[ true ]
+gap> SetX(permSml, permBig, {x,y} -> x*LeftQuotient(x,y) = y);
+[ true ]
+gap> SetX(permBig, permSml, {x,y} -> x*LeftQuotient(x,y) = y);
+[ true ]
+gap> SetX(permBig, permBig, {x,y} -> x*LeftQuotient(x,y) = y);
+[ true ]
+
+#
+# PowPermInt / InvPerm
+#
+
+#
+gap> ForAll(permAll, x -> IsOne(x^0));
+true
+gap> ForAll(permAll, x -> IsOne(x^6));
+true
+gap> ForAll(permAll, x -> IsOne(x^-6));
+true
+gap> ForAll(permAll, x -> IsOne(x^(30^31)));
+true
+gap> ForAll(permAll, x -> IsOne(x^(-30^31)));
+true
+
+#
+gap> ForAll(permAll, x -> x^-1 * x = ());
+true
+gap> ForAll(permAll, x -> x * x^-1 = ());
+true
+
+#
+gap> ForAll(permAll, x -> x^1 = x);
+true
+gap> ForAll(permAll, x -> x^31 = x);
+true
+gap> ForAll(permAll, x -> x^-29 = x);
+true
+
+#
+gap> List(permAll, x -> x^2);
+[ (), (), (), (1,3,2), (1,2,3), (), (), (), (), (1,3,2), (1,2,3), () ]
+gap> List(permAll, x -> x^3);
+[ (), (2,3), (1,2), (), (), (1,3), (), (2,3), (1,2), (), (), (1,3) ]
+gap> List(permAll, x -> x^-3);
+[ (), (2,3), (1,2), (), (), (1,3), (), (2,3), (1,2), (), (), (1,3) ]
+
+#
+# PowIntPerm
+#
+gap> List([1,2,3,4,1000,10^30],n->List(permSml, g->n^g));
+[ [ 1, 1, 2, 2, 3, 3 ], [ 2, 3, 1, 3, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ], 
+  [ 4, 4, 4, 4, 4, 4 ], [ 1000, 1000, 1000, 1000, 1000, 1000 ], 
+  [ 1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000 ] ]
+gap> List([1,2,3,4,1000,10^30],n->List(permBig, g->n^g));
+[ [ 1, 1, 2, 2, 3, 3 ], [ 2, 3, 1, 3, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ], 
+  [ 4, 4, 4, 4, 4, 4 ], [ 1000, 1000, 1000, 1000, 1000, 1000 ], 
+  [ 1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000 ] ]
+
+#
+# QuoIntPerm
+#
+gap> List([1,2,3,4,1000,10^30],n->List(permSml, g->n/g));
+[ [ 1, 1, 2, 3, 2, 3 ], [ 2, 3, 1, 1, 3, 2 ], [ 3, 2, 3, 2, 1, 1 ], 
+  [ 4, 4, 4, 4, 4, 4 ], [ 1000, 1000, 1000, 1000, 1000, 1000 ], 
+  [ 1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000 ] ]
+gap> List([1,2,3,4,1000,10^30],n->List(permBig, g->n/g));
+[ [ 1, 1, 2, 3, 2, 3 ], [ 2, 3, 1, 1, 3, 2 ], [ 3, 2, 3, 2, 1, 1 ], 
+  [ 4, 4, 4, 4, 4, 4 ], [ 1000, 1000, 1000, 1000, 1000, 1000 ], 
+  [ 1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000, 
+      1000000000000000000000000000000, 1000000000000000000000000000000 ] ]
+
+#
+# PowPerm
+#
+gap> SetX(permAll, permAll, {x,y} -> x^y = y^-1 * x * y);
+[ true ]
+
+#
+# CommPerm
+#
+gap> Comm(permSml[2], permSml[3]);
+(1,3,2)
+gap> Comm(permSml[2], permBig[3]);
+(1,3,2)
+gap> Comm(permBig[2], permSml[3]);
+(1,3,2)
+gap> Comm(permBig[2], permBig[3]);
+(1,3,2)
 
 #
 # PermList
