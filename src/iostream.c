@@ -114,7 +114,7 @@ static PtyIOStream PtyIOStreams[MAX_PTYS];
 // slots form a linked list.
 static Int FreePtyIOStreams;
 
-Int NewStream( void )
+static Int NewStream( void )
 {
   Int stream = -1;
   HashLock(PtyIOStreams);
@@ -127,7 +127,7 @@ Int NewStream( void )
   return stream;
 }
 
-void FreeStream( UInt stream)
+static void FreeStream( UInt stream)
 {
    HashLock(PtyIOStreams);
    PtyIOStreams[stream].childPID = FreePtyIOStreams;
@@ -139,7 +139,7 @@ void FreeStream( UInt stream)
 **
 *F  SignalChild(<stream>) . .. . . . . . . . . . .  interrupt the child process
 */
-void SignalChild (UInt stream, UInt sig)
+static void SignalChild (UInt stream, UInt sig)
 {
     HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
@@ -153,7 +153,7 @@ void SignalChild (UInt stream, UInt sig)
 **
 *F  KillChild(<stream>) . . . . . . . . . . . . . . . .  kill the child process
 */
-void KillChild (UInt stream)
+static void KillChild (UInt stream)
 {
     HashLock(PtyIOStreams);
     if ( PtyIOStreams[stream].childPID != -1 )
@@ -256,7 +256,7 @@ static UInt OpenPty( int *master, int *slave )
 **  returns the stream number of the IOStream that is connected to the new processs
 */
 
-void ChildStatusChanged( int whichsig )
+static void ChildStatusChanged( int whichsig )
 {
   UInt i;
   int status;
@@ -295,7 +295,7 @@ Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
 }
 #endif
 
-Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
+static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 {
     int             slave;   /* pipe to child                   */
     Int            stream;
