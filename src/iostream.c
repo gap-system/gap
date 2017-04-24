@@ -105,6 +105,11 @@ typedef struct {
 #define MAX_ARGS 1000
 
 static PtyIOStream PtyIOStreams[MAX_PTYS];
+
+// FreePtyIOStreams is the index of the first unused slot of the PtyIOStreams
+// array, or else -1 if there is none. The childPID field of each free slot in
+// turn is set to the position of the next free slot (or -1), so that the free
+// slots form a linked list.
 static Int FreePtyIOStreams;
 
 Int NewStream( void )
