@@ -525,6 +525,8 @@ static UInt WriteToPty ( UInt stream, Char *buf, Int len )
                 continue;
               }
             else
+              // FIXME: by returning errno, we make it impossible for the caller
+              // to detect errors.
               return errno;
         }
         len  -= res;
