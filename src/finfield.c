@@ -546,8 +546,29 @@ FF              FiniteField (
       return 0;
     if (ff > NUM_SHORT_FINITE_FIELDS)
         return 0;
+#ifdef HPCGAP
+    /* Important correctness concern here:
+     *
+     * The values of SuccFF, TypeFF, and TypeFF0 are set in that
+     * order, separated by write barriers. This can happen concurrently
+     * in a different thread.
+     *
+     * Thus, after observing that TypeFF0 has been set, we can be sure
+     * that the thread also sees the values of SuccFF and TypeFF.
+     * This is ensured by the read barrier in ATOMIC_ELM_PLIST().
+     *
+     * In the worst case, we may do the following calculations once per
+     * thread and throw them away for all but one thread. Correctness
+     * is still ensured through the use of ATOMIC_SET_ELM_PLIST_ONCE(),
+     * which results in all threads sharing the same types and successor
+     * tables.
+     */
+    if (ATOMIC_ELM_PLIST(TypeFF0, ff))
+      return ff;
+#else
     if (ELM_PLIST(TypeFF0, ff))
       return ff;
+#endif
 
     /* allocate a bag for the finite field and one for a temporary         */
     bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
@@ -602,6 +623,16 @@ FF              FiniteField (
     }
 
     /* enter the finite field in the tables                                */
+#ifdef HPCGAP
+    ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, bag2 );
+    CHANGED_BAG(SuccFF);
+    bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF, ff, bag1 );
+    CHANGED_BAG(TypeFF);
+    bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
+    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF0, ff, bag1 );
+    CHANGED_BAG(TypeFF0);
+#else
     ASS_LIST( SuccFF, ff, bag2 );
     CHANGED_BAG(SuccFF);
     bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
@@ -610,6 +641,7 @@ FF              FiniteField (
     bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
     ASS_LIST( TypeFF0, ff, bag1 );
     CHANGED_BAG(TypeFF0);
+#endif
 
     /* return the finite field                                             */
     return ff;
@@ -2086,7 +2118,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
-    HDLR_FUNC(VAL_GVAR(GVarName("Z")),2) = FuncZ2;
+    HDLR_FUNC(ValGVar(GVarName("Z")),2) = FuncZ2;
 
     /* return success                                                      */
     return 0;

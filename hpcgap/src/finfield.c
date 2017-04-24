@@ -85,8 +85,6 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/ffdata.h>                 /* pre-computed finite field data */
-
 
 /****************************************************************************
 **
@@ -548,6 +546,7 @@ FF              FiniteField (
       return 0;
     if (ff > NUM_SHORT_FINITE_FIELDS)
         return 0;
+#ifdef HPCGAP
     /* Important correctness concern here:
      *
      * The values of SuccFF, TypeFF, and TypeFF0 are set in that
@@ -566,6 +565,10 @@ FF              FiniteField (
      */
     if (ATOMIC_ELM_PLIST(TypeFF0, ff))
       return ff;
+#else
+    if (ELM_PLIST(TypeFF0, ff))
+      return ff;
+#endif
 
     /* allocate a bag for the finite field and one for a temporary         */
     bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
@@ -620,6 +623,7 @@ FF              FiniteField (
     }
 
     /* enter the finite field in the tables                                */
+#ifdef HPCGAP
     ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, bag2 );
     CHANGED_BAG(SuccFF);
     bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
@@ -628,6 +632,16 @@ FF              FiniteField (
     bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
     ATOMIC_SET_ELM_PLIST_ONCE( TypeFF0, ff, bag1 );
     CHANGED_BAG(TypeFF0);
+#else
+    ASS_LIST( SuccFF, ff, bag2 );
+    CHANGED_BAG(SuccFF);
+    bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF, ff, bag1 );
+    CHANGED_BAG(TypeFF);
+    bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF0, ff, bag1 );
+    CHANGED_BAG(TypeFF0);
+#endif
 
     /* return the finite field                                             */
     return ff;
