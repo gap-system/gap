@@ -515,8 +515,7 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
   UInt pty = INT_INTOBJ(stream);
   ConvString(string);
   HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -534,8 +533,7 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
   Obj string;
   string = NEW_STRING(INT_INTOBJ(len));
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -558,8 +556,7 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
   Int ret;
   string = NEW_STRING(INT_INTOBJ(len));
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -580,8 +577,7 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -597,8 +593,7 @@ Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 {
   UInt pty = INT_INTOBJ(stream);
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -617,8 +612,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   int retcode;
 /*UInt count; */
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -639,8 +633,7 @@ Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
@@ -654,8 +647,7 @@ Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
   HashLock(PtyIOStreams);
-  while (!PtyIOStreams[pty].inuse)
-  {
+  if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
