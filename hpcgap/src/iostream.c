@@ -81,9 +81,9 @@
 #endif
 
 
-/* LOCKING */
-/* Be sure to HashLock PtyIOStreams before accessing any of the IOStream related
- * variables, including FreeptyIOStreams */
+// LOCKING
+// In HPC-GAP, be sure to HashLock PtyIOStreams before accessing any of
+// the IOStream related variables, including FreeptyIOStreams
 
 typedef struct {
   int childPID;    /* Also used as a link to make a linked free list */
@@ -267,6 +267,17 @@ void ChildStatusChanged( int whichsig )
       }
   }
   HashUnlock(PtyIOStreams);
+
+#if !defined(HPCGAP)
+  /* Collect up any other zombie children */
+  do {
+      retcode = waitpid( -1, &status, WNOHANG);
+      if (retcode == -1 && errno != ECHILD)
+          Pr("#E Unexpected waitpid error %d\n",errno, 0);
+  } while (retcode != 0 && retcode != -1);
+
+  signal(SIGCHLD, ChildStatusChanged);
+#endif
 }
 
 Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
@@ -366,7 +377,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 }
 
 
-void HandleChildStatusChanges( UInt pty)
+static void HandleChildStatusChanges( UInt pty)
 {
   /* common error handling, when we are asked to read or write to a stopped
      or dead child */
@@ -430,9 +441,7 @@ Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
 }
 
 
-
-
-Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
+static Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
 {
   /* read at most maxlen bytes from stream, into buf.
     If block is non-zero then wait for at least one byte
@@ -476,17 +485,19 @@ Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
     }
   return nread;
 }
-  
-  
-UInt WriteToPty ( UInt stream, Char *buf, Int len )
+
+
+static UInt WriteToPty ( UInt stream, Char *buf, Int len )
 {
     Int         res;
     Int         old;
-/*  struct timeval tv; */
-/*  fd_set      writefds; */
-/*  int retval; */
-    if (len < 0)
+    if (len < 0) {
+      // FIXME: why allow 'len' to be negative here? To allow
+      // invoking a "raw" version of `write` perhaps? But we don't
+      // seem to use that anywhere. So perhaps get rid of it or
+      // even turn it into an error?!
       return  write( PtyIOStreams[stream].ptyFD, buf, -len );
+    }
     old = len;
     while ( 0 < len )
     {
@@ -571,7 +582,6 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
   ResizeBag(string, SIZEBAG_STRINGLEN(ret));
   return string;
 }
-     
 
 Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
@@ -618,7 +628,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
     return Fail;
   }
   PtyIOStreams[pty].inuse = 0;
-  HashUnlock(PtyIOStreams);  
+  HashUnlock(PtyIOStreams);
   /* Close down the child */
   retcode = close(PtyIOStreams[pty].ptyFD);
   if (retcode)
@@ -732,6 +742,11 @@ static Int InitKernel(
 
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
+
+#if !defined(HPCGAP)
+  /* Set up the trap to detect future dying children */
+  signal( SIGCHLD, ChildStatusChanged );
+#endif
 
   return 0;
 }
