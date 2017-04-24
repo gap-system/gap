@@ -391,11 +391,12 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 }
 
 
+// This function assumes that the caller invoked HashLock(PtyIOStreams).
+// It unlocks just before throwing any error.
 static void HandleChildStatusChanges( UInt pty)
 {
   /* common error handling, when we are asked to read or write to a stopped
      or dead child */
-  HashLock(PtyIOStreams);
   if (PtyIOStreams[pty].alive == 0)
   {
       PtyIOStreams[pty].changed = 0;
@@ -421,7 +422,6 @@ static void HandleChildStatusChanges( UInt pty)
                 cPID, status);
       return;
   }
-  HashUnlock(PtyIOStreams);
 }
 
 Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
@@ -537,7 +537,6 @@ static UInt WriteToPty ( UInt stream, Char *buf, Int len )
 Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
-  ConvString(string);
   HashLock(PtyIOStreams);
   if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
@@ -545,17 +544,16 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
     return Fail;
   }
 
-  HashUnlock(PtyIOStreams);
   HandleChildStatusChanges(pty);
-  return INTOBJ_INT(WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
+  ConvString(string);
+  UInt result = WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len));
+  HashUnlock(PtyIOStreams);
+  return INTOBJ_INT(result);
 }
 
 Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
 {
   UInt pty = INT_INTOBJ(stream);
-  Int ret;
-  Obj string;
-  string = NEW_STRING(INT_INTOBJ(len));
   HashLock(PtyIOStreams);
   if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
@@ -563,9 +561,10 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
     return Fail;
   }
   
-  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
-  ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
+  Obj string = NEW_STRING(INT_INTOBJ(len));
+  Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
+  HashUnlock(PtyIOStreams);
   if (ret == -1)
     return Fail;
   SET_LEN_STRING(string, ret);
@@ -575,10 +574,7 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
 
 Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 {
-  Obj string;
   UInt pty = INT_INTOBJ(stream);
-  Int ret;
-  string = NEW_STRING(INT_INTOBJ(len));
   HashLock(PtyIOStreams);
   if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
@@ -586,9 +582,10 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
     return Fail;
   }
   
-  HashUnlock(PtyIOStreams);
   /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
-  ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
+  Obj string = NEW_STRING(INT_INTOBJ(len));
+  Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
+  HashUnlock(PtyIOStreams);
   if (ret == -1)
     return Fail;
   SET_LEN_STRING(string, ret);
@@ -633,19 +630,18 @@ Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
 Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
-  int status;
-  int retcode;
-/*UInt count; */
   HashLock(PtyIOStreams);
   if (!PtyIOStreams[pty].inuse) {
     HashUnlock(PtyIOStreams);
     ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
     return Fail;
   }
+
   PtyIOStreams[pty].inuse = 0;
 
   /* Close down the child */
-  retcode = close(PtyIOStreams[pty].ptyFD);
+  int status;
+  int retcode = close(PtyIOStreams[pty].ptyFD);
   if (retcode)
     Pr("Strange close return code %d\n",retcode, 0);
   kill(PtyIOStreams[pty].childPID, SIGTERM);
@@ -665,8 +661,9 @@ Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
     return Fail;
   }
   
+  int isBlocked = (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive);
   HashUnlock(PtyIOStreams);
-  return (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive) ? True : False;
+  return isBlocked ? True : False;
 }
 
 Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
@@ -679,8 +676,9 @@ Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
     return Fail;
   }
   
+  Obj result = INTOBJ_INT(PtyIOStreams[pty].ptyFD);
   HashUnlock(PtyIOStreams);
-  return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
+  return result;
 }
 
 
