@@ -97,6 +97,19 @@ Obj TypePRecImm (
     return TYPE_PREC_IMMUTABLE;
 }
 
+/****************************************************************************
+**
+*F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
+**
+*/
+#ifdef HPCGAP
+void SetTypePRecToComObj( Obj rec, Obj kind )
+{
+  TYPE_COMOBJ(rec) = kind;
+  RetypeBag(rec, T_COMOBJ);
+  CHANGED_BAG(rec);
+}
+#endif
 
 /****************************************************************************
 **
@@ -682,14 +695,18 @@ Obj FuncREC_NAMES (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( ! IS_PREC_REP(rec) ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a record (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    switch (TNUM_OBJ(rec)) {
+      case T_PREC:
+      case T_PREC+IMMUTABLE:
+        return InnerRecNames(rec);
+#ifdef HPCGAP
+      case T_AREC:
+        return InnerRecNames(FromAtomicRecord(rec));
+#endif
     }
-
-    return InnerRecNames( rec );
+    ErrorMayQuit("RecNames: <rec> must be a record (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0L);
+    return Fail;
 }
 
 
@@ -703,13 +720,17 @@ Obj FuncREC_NAMES_COMOBJ (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rec) != T_COMOBJ ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a component object (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    switch (TNUM_OBJ(rec)) {
+      case T_COMOBJ:
+        return InnerRecNames(rec);
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        return InnerRecNames(FromAtomicRecord(rec));
+#endif
     }
-    return InnerRecNames( rec );
+    ErrorMayQuit("RecNames: <rec> must be a component object (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0L);
+    return Fail;
 }
 
 
@@ -921,8 +942,8 @@ static Int InitKernel (
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
 
-    /* Immutable records are public					   */
-    MakeBagTypePublic( T_PREC + IMMUTABLE );
+    /* Immutable records are public                                        */
+    MakeBagTypePublic( T_PREC +IMMUTABLE );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -971,6 +992,10 @@ static Int InitKernel (
 
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
+
+#ifdef HPCGAP
+    SetTypeObjFuncs [ T_PREC ] = SetTypePRecToComObj;
+#endif
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
