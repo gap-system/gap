@@ -413,6 +413,24 @@ docomp: #gap$(EXEEXT)
 
 
 ########################################################################
+# The "ffdata" target regenerates src/ffdata.{c,h} using etc/ffgen.c
+########################################################################
+
+ffgen: etc/ffgen.c
+	$(QUIET_CC)$(CC) -Wall -Wextra $< -o $@
+
+ffdata: ffgen
+	./ffgen -h > $(abs_top_srcdir)/src/ffdata.h
+	./ffgen -c > $(abs_top_srcdir)/src/ffdata.c
+
+clean: clean-ffdata
+clean-ffdata:
+	rm ffgen
+
+.PHONY: ffdata clean-ffffdata
+
+
+########################################################################
 # Rules for 'make clean'
 ########################################################################
 distclean: clean
