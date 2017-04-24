@@ -117,22 +117,18 @@ static Int FreePtyIOStreams;
 static Int NewStream( void )
 {
   Int stream = -1;
-  HashLock(PtyIOStreams);
   if ( FreePtyIOStreams != -1 )
   {
       stream = FreePtyIOStreams;
       FreePtyIOStreams = PtyIOStreams[stream].childPID;
   }
-  HashUnlock(PtyIOStreams);
   return stream;
 }
 
 static void FreeStream( UInt stream)
 {
-   HashLock(PtyIOStreams);
    PtyIOStreams[stream].childPID = FreePtyIOStreams;
    FreePtyIOStreams = stream;
-   HashUnlock(PtyIOStreams);
 }
 
 /****************************************************************************
@@ -298,16 +294,21 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 
     struct termios  tst;     /* old and new terminal state      */
 
+    HashLock(PtyIOStreams);
+
     /* Get a stream record */
     stream = NewStream();
-    if (stream == -1)
+    if (stream == -1) {
+        HashUnlock(PtyIOStreams);
         return -1;
+    }
     
     /* open pseudo terminal for communication with gap */
     if ( OpenPty(&PtyIOStreams[stream].ptyFD, &slave) )
     {
         Pr( "open pseudo tty failed (errno %d)\n", errno, 0);
         FreeStream(stream);
+        HashUnlock(PtyIOStreams);
         return -1;
     }
 
@@ -377,6 +378,7 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     close(slave);
     
     
+    HashUnlock(PtyIOStreams);
     return stream;
 
  cleanup:
@@ -384,6 +386,7 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     close(PtyIOStreams[stream].ptyFD);
     PtyIOStreams[stream].inuse = 0;
     FreeStream(stream);
+    HashUnlock(PtyIOStreams);
     return -1;
 }
 
@@ -640,7 +643,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
     return Fail;
   }
   PtyIOStreams[pty].inuse = 0;
-  HashUnlock(PtyIOStreams);
+
   /* Close down the child */
   retcode = close(PtyIOStreams[pty].ptyFD);
   if (retcode)
@@ -648,6 +651,7 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   kill(PtyIOStreams[pty].childPID, SIGTERM);
   retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
   FreeStream(pty);
+  HashUnlock(PtyIOStreams);
   return 0;
 }
 
