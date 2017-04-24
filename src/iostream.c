@@ -10,14 +10,14 @@
 **  This file will contains the functions for communicating with other
 **  processes via ptys and sockets
 **
-**  The eventual intent is that there will be InputOutputStreams at the GAP level
-**  with some API to be defined, and two ways of creating them. One is like Process
-**  except that the external process is left running, the other connects as client
-**  to a specified socket.
+**  The eventual intent is that there will be InputOutputStreams at the GAP
+**  level with some API to be defined, and two ways of creating them. One is
+**  like Process except that the external process is left running, the other
+**  connects as client to a specified socket.
 **
-**  At this level, we provide the two interfaces separately. For each we have an integer
-**  identifer for each open connection, and creation, read and write functions, and possibly
-**  some sort of probe function
+**  At this level, we provide the two interfaces separately. For each we have
+**  an integer identifer for each open connection, and creation, read and
+**  write functions, and possibly some sort of probe function.
 **
 */
 
@@ -98,11 +98,13 @@ typedef struct {
                      implying that the child has vanished under our noses */
 } PtyIOStream;
 
-/* maximal number of pseudo ttys we will allocate */
-#define MAX_PTYS 64
+enum {
+    /* maximal number of pseudo ttys we will allocate */
+    MAX_PTYS = 64,
 
-/* maximal length of argument string for CREATE_PTY_IOSTREAM */
-#define MAX_ARGS 1000
+    /* maximal length of argument string for CREATE_PTY_IOSTREAM */
+    MAX_ARGS = 1000
+};
 
 static PtyIOStream PtyIOStreams[MAX_PTYS];
 
