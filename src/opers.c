@@ -1724,11 +1724,9 @@ static inline Obj CacheOper (
     Obj                 oper,
     UInt                i )
 {
-    Obj                 cache;
-    UInt len;
-    cache = CACHE_OPER( oper, i );
+    Obj cache = CACHE_OPER( oper, i );
     if ( cache == 0 ) {
-        len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
+        UInt len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
         CACHE_OPER( oper, i ) = cache;
@@ -4609,6 +4607,10 @@ Obj DoAttribute (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4654,6 +4656,10 @@ Obj DoVerboseAttribute (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4697,6 +4703,10 @@ Obj DoMutableAttribute (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4740,6 +4750,10 @@ Obj DoVerboseMutableAttribute (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
@@ -4964,6 +4978,10 @@ Obj DoSetProperty (
     case T_COMOBJ:
     case T_POSOBJ:
     case T_DATOBJ:
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+    case T_APOSOBJ:
+#endif
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         return 0;
@@ -5028,6 +5046,10 @@ Obj DoProperty (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
@@ -5074,6 +5096,10 @@ Obj DoVerboseProperty (
         case T_COMOBJ:
         case T_POSOBJ:
         case T_DATOBJ:
+#ifdef HPCGAP
+        case T_ACOMOBJ:
+        case T_APOSOBJ:
+#endif
             flags = (val == True ? self : TESTR_FILT(self));
             CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
         }
@@ -5597,6 +5623,12 @@ Obj FuncCHANGED_METHODS_OPERATION (
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
         return 0;
     }
+#ifdef HPCGAP
+    if (!PreThreadCreation) {
+        ErrorQuit("Methods may only be changed before thread creation",0L,0L);
+        return 0;
+    }
+#endif
     n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
     cache = ADDR_OBJ( cacheBag );
@@ -5706,11 +5738,17 @@ Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
 {
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+      case T_COMOBJ:
+        return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
+#endif
+      default:
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
-    return ElmPRec( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
 }
 
 
@@ -6340,7 +6378,7 @@ static Int postRestore (
     StructInitInfo *    module )
 {
 
-  CountFlags = LEN_LIST(VAL_GVAR(GVarName("FILTERS")))+1;
+  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")))+1;
   return 0;
 }
 
@@ -6379,6 +6417,11 @@ static Int InitLibrary (
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
     SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hidden_imps_cache_length * 2);
+
+#ifdef HPCGAP
+    REGION(HIDDEN_IMPS) = NewRegion();
+    REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
+#endif
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
