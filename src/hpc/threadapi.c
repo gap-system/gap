@@ -968,7 +968,6 @@ Obj FuncCREATOR_OF(Obj self, Obj obj);
 Obj FuncDISABLE_GUARDS(Obj self, Obj flag);
 Obj FuncSIGWAIT(Obj self, Obj handlers);
 Obj FuncDEFAULT_SIGINT_HANDLER(Obj self);
-Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
@@ -1290,9 +1289,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DEFAULT_SIGINT_HANDLER", 0, "",
       FuncDEFAULT_SIGINT_HANDLER, "src/threadapi.c:DEFAULT_SIGINT_HANDLER" },
-
-    { "DEFAULT_SIGCHLD_HANDLER", 0, "",
-      FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
 
     { "DEFAULT_SIGVTALRM_HANDLER", 0, "",
       FuncDEFAULT_SIGVTALRM_HANDLER, "src/threadapi.c:DEFAULT_SIGVTALRM_HANDLER" },
@@ -3060,12 +3056,6 @@ UInt SigVTALRMCounter = 0;
 
 Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self) {
   SigVTALRMCounter++;
-  return (Obj) 0;
-}
-
-Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
-  extern void ChildStatusChanged(int signr);
-  ChildStatusChanged(SIGCHLD);
   return (Obj) 0;
 }
 
