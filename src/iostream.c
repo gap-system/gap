@@ -397,22 +397,17 @@ static void HandleChildStatusChanges( UInt pty)
 {
   /* common error handling, when we are asked to read or write to a stopped
      or dead child */
-  if (PtyIOStreams[pty].alive == 0)
-  {
+  if (PtyIOStreams[pty].alive == 0) {
       PtyIOStreams[pty].changed = 0;
       PtyIOStreams[pty].blocked = 0;
       HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is unexpectedly dead", (Int) 0L, (Int) 0L);
-      return;
   }
-  if (PtyIOStreams[pty].blocked)
-  {
+  else if (PtyIOStreams[pty].blocked) {
       HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process is still dead", (Int)0L,(Int)0L);
-      return;
   }
-  if (PtyIOStreams[pty].changed)
-  {
+  else if (PtyIOStreams[pty].changed) {
       PtyIOStreams[pty].blocked = 1;
       PtyIOStreams[pty].changed = 0;
       Int cPID = PtyIOStreams[pty].childPID;
@@ -420,7 +415,6 @@ static void HandleChildStatusChanges( UInt pty)
       HashUnlock(PtyIOStreams);
       ErrorQuit("Child Process %d has stopped or died, status %d",
                 cPID, status);
-      return;
   }
 }
 
