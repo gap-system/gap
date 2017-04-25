@@ -78,6 +78,16 @@ cd profiling
 ./autogen.sh
 ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
 make V=1
+cd ..
+
+# Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
+if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
+then
+    cd edim
+    ./configure $BUILDDIR
+    make
+    cd ..
+fi
 
 # return to base directory
 popd
