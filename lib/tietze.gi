@@ -108,6 +108,43 @@ InstallGlobalFunction( AddRelator, function ( T, word )
     fi;
 end );
 
+#############################################################################
+##
+#M  TzRelatorOldImages( <Tietze record>, <word> )  . . . . .  rewrite relator
+##
+##  adds the given relator, possibly in old generators, write it in the
+##  current generators.
+## to the given Tietze presentation.
+##
+InstallGlobalFunction( TzRelatorOldImages, function ( T, word )
+
+local flags, leng, lengths, numrels, rel, rels, tietze,l,imgs,i,j,a,fam;
+
+    # do we need to translate?
+    if IsBound(T!.imagesOldGens) then
+      imgs:=T!.imagesOldGens;
+      l:=word^0;
+      for i in LetterRepAssocWord(word) do
+        if i<0 then
+	  a:=-Reversed(imgs[-i]);
+	else
+	  a:=imgs[i];
+	fi;
+	for j in a do
+	  if j>0 then
+	    l:=l*T!.generators[j];
+	  else
+	    l:=l/T!.generators[-j];
+	  fi;
+	od;
+      od;
+
+      word:=l;
+
+    fi;
+    return word;
+end );
+
 
 #############################################################################
 ##

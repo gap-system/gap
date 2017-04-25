@@ -2270,6 +2270,8 @@ DeclareGlobalFunction("TzSubstituteWord");
 ##
 DeclareGlobalFunction("TzUpdateGeneratorImages");
 
+DeclareGlobalFunction("TzRelatorOldImages");
+
 
 #############################################################################
 ##
