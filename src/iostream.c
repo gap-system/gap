@@ -86,10 +86,11 @@
 // the IOStream related variables, including FreeptyIOStreams
 
 typedef struct {
-  int childPID;    /* Also used as a link to make a linked free list */
-  int ptyFD;       /* GAP reading from external prog */
-  UInt inuse;     /* we need to scan all the "live" structures when we have had SIGCHLD
-                     so, for now, we just walk the array for the ones marked in use */
+  int childPID;   /* Also used as a link to make a linked free list */
+  int ptyFD;      /* GAP reading from external prog */
+  UInt inuse;     /* we need to scan all the "live" structures when we have
+                     had SIGCHLD so, for now, we just walk the array for
+                     the ones marked in use */
   UInt changed;   /* set non-zero by the signal handler if our child has
                      done something -- stopped or exited */
   int status;     /* status from wait3 -- meaningful only if changed is 1 */
@@ -114,49 +115,44 @@ static PtyIOStream PtyIOStreams[MAX_PTYS];
 // slots form a linked list.
 static Int FreePtyIOStreams;
 
-static Int NewStream( void )
+static Int NewStream(void)
 {
-  Int stream = -1;
-  if ( FreePtyIOStreams != -1 )
-  {
-      stream = FreePtyIOStreams;
-      FreePtyIOStreams = PtyIOStreams[stream].childPID;
-  }
-  return stream;
+    Int stream = -1;
+    if (FreePtyIOStreams != -1) {
+        stream = FreePtyIOStreams;
+        FreePtyIOStreams = PtyIOStreams[stream].childPID;
+    }
+    return stream;
 }
 
-static void FreeStream( UInt stream)
+static void FreeStream(UInt stream)
 {
-   PtyIOStreams[stream].childPID = FreePtyIOStreams;
-   FreePtyIOStreams = stream;
+    PtyIOStreams[stream].childPID = FreePtyIOStreams;
+    FreePtyIOStreams = stream;
 }
 
 /****************************************************************************
 **
-*F  SignalChild(<stream>) . .. . . . . . . . . . .  interrupt the child process
+*F  SignalChild(<stream>) . .. . . . . . . . . .  interrupt the child process
 */
-static void SignalChild (UInt stream, UInt sig)
+static void SignalChild(UInt stream, UInt sig)
 {
-    if ( PtyIOStreams[stream].childPID != -1 )
-    {
-        kill( PtyIOStreams[stream].childPID, sig );
+    if (PtyIOStreams[stream].childPID != -1) {
+        kill(PtyIOStreams[stream].childPID, sig);
     }
 }
 
 /****************************************************************************
 **
-*F  KillChild(<stream>) . . . . . . . . . . . . . . . .  kill the child process
+*F  KillChild(<stream>) . . . . . . . . . . . . . . .  kill the child process
 */
-static void KillChild (UInt stream)
+static void KillChild(UInt stream)
 {
-    if ( PtyIOStreams[stream].childPID != -1 )
-    {
+    if (PtyIOStreams[stream].childPID != -1) {
         close(PtyIOStreams[stream].ptyFD);
-        SignalChild( stream, SIGKILL );
+        SignalChild(stream, SIGKILL);
     }
 }
-
-
 
 
 /****************************************************************************
@@ -166,7 +162,7 @@ static void KillChild (UInt stream)
 
 #if HAVE_OPENPTY
 
-static UInt OpenPty( int *master, int *slave )
+static UInt OpenPty(int * master, int * slave)
 {
     /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
        Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
@@ -177,7 +173,7 @@ static UInt OpenPty( int *master, int *slave )
 
 #elif HAVE_POSIX_OPENPT
 
-static UInt OpenPty( int *master, int *slave )
+static UInt OpenPty(int * master, int * slave)
 {
     /* Attempt to use POSIX 98 pseudo ttys. Opening a master tty is done
        via posix_openpt, which is available on virtually every current
@@ -202,26 +198,26 @@ static UInt OpenPty( int *master, int *slave )
          - Interix 3.5
          - BeOS
        */
-    *master = posix_openpt( O_RDWR | O_NOCTTY );
+    *master = posix_openpt(O_RDWR | O_NOCTTY);
     if (*master < 0) {
-        Pr( "OpenPty: posix_openpt failed\n", 0L, 0L );
+        Pr("OpenPty: posix_openpt failed\n", 0L, 0L);
         return 1;
     }
 
     if (grantpt(*master)) {
-        Pr( "OpenPty: grantpt failed\n", 0L, 0L );
+        Pr("OpenPty: grantpt failed\n", 0L, 0L);
         goto error;
     }
     if (unlockpt(*master)) {
         close(*master);
-        Pr( "OpenPty: unlockpt failed\n", 0L, 0L );
+        Pr("OpenPty: unlockpt failed\n", 0L, 0L);
         goto error;
     }
 
     ttyname = ;
-    *slave = open( ptsname(*master), O_RDWR, 0 );
-    if ( *slave < 0 ) {
-        Pr( "OpenPty: opening slave tty failed\n", 0L, 0L );
+    *slave = open(ptsname(*master), O_RDWR, 0);
+    if (*slave < 0) {
+        Pr("OpenPty: opening slave tty failed\n", 0L, 0L);
         goto error;
     }
     return 0;
@@ -233,9 +229,9 @@ error:
 
 #else
 
-static UInt OpenPty( int *master, int *slave )
+static UInt OpenPty(int * master, int * slave)
 {
-    Pr( "no pseudo tty support available\n", 0L, 0L );
+    Pr("no pseudo tty support available\n", 0L, 0L);
     return 1;
 }
 
@@ -244,55 +240,58 @@ static UInt OpenPty( int *master, int *slave )
 
 /****************************************************************************
 **
-*F  StartChildProcess( <dir>, <name>, <args> ) . . . . start a subprocess using ptys
-**  returns the stream number of the IOStream that is connected to the new processs
+*F  StartChildProcess( <dir>, <name>, <args> )
+**  Start a subprocess using ptys. Returns the stream number of the IOStream
+**  that is connected to the new processs
 */
-
-static void ChildStatusChanged( int whichsig )
+static void ChildStatusChanged(int whichsig)
 {
-  UInt i;
-  int status;
-  int retcode;
-  assert(whichsig == SIGCHLD);
-  HashLock(PtyIOStreams);
-  for (i = 0; i < MAX_PTYS; i++) {
-      if (PtyIOStreams[i].inuse) {
-          retcode = waitpid( PtyIOStreams[i].childPID, &status, WNOHANG | WUNTRACED );
-          if (retcode != -1 && retcode != 0 && (WIFEXITED(status) || WIFSIGNALED(status)) ) {
-              PtyIOStreams[i].changed = 1;
-              PtyIOStreams[i].status = status;
-              PtyIOStreams[i].blocked = 0;
-          }
-      }
-  }
-  HashUnlock(PtyIOStreams);
+    UInt i;
+    int  status;
+    int  retcode;
+    assert(whichsig == SIGCHLD);
+    HashLock(PtyIOStreams);
+    for (i = 0; i < MAX_PTYS; i++) {
+        if (PtyIOStreams[i].inuse) {
+            retcode = waitpid(PtyIOStreams[i].childPID, &status,
+                              WNOHANG | WUNTRACED);
+            if (retcode != -1 && retcode != 0 &&
+                (WIFEXITED(status) || WIFSIGNALED(status))) {
+                PtyIOStreams[i].changed = 1;
+                PtyIOStreams[i].status = status;
+                PtyIOStreams[i].blocked = 0;
+            }
+        }
+    }
+    HashUnlock(PtyIOStreams);
 
 #if !defined(HPCGAP)
-  /* Collect up any other zombie children */
-  do {
-      retcode = waitpid( -1, &status, WNOHANG);
-      if (retcode == -1 && errno != ECHILD)
-          Pr("#E Unexpected waitpid error %d\n",errno, 0);
-  } while (retcode != 0 && retcode != -1);
+    /* Collect up any other zombie children */
+    do {
+        retcode = waitpid(-1, &status, WNOHANG);
+        if (retcode == -1 && errno != ECHILD)
+            Pr("#E Unexpected waitpid error %d\n", errno, 0);
+    } while (retcode != 0 && retcode != -1);
 
-  signal(SIGCHLD, ChildStatusChanged);
+    signal(SIGCHLD, ChildStatusChanged);
 #endif
 }
 
 #ifdef HPCGAP
-Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
-  extern void ChildStatusChanged(int signr);
-  ChildStatusChanged(SIGCHLD);
-  return (Obj) 0;
+Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
+{
+    extern void ChildStatusChanged(int signr);
+    ChildStatusChanged(SIGCHLD);
+    return (Obj)0;
 }
 #endif
 
-static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
+static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
 {
-    int             slave;   /* pipe to child                   */
-    Int            stream;
+    int slave; /* pipe to child                   */
+    Int stream;
 
-    struct termios  tst;     /* old and new terminal state      */
+    struct termios tst; /* old and new terminal state      */
 
     HashLock(PtyIOStreams);
 
@@ -302,22 +301,19 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
         HashUnlock(PtyIOStreams);
         return -1;
     }
-    
+
     /* open pseudo terminal for communication with gap */
-    if ( OpenPty(&PtyIOStreams[stream].ptyFD, &slave) )
-    {
-        Pr( "open pseudo tty failed (errno %d)\n", errno, 0);
+    if (OpenPty(&PtyIOStreams[stream].ptyFD, &slave)) {
+        Pr("open pseudo tty failed (errno %d)\n", errno, 0);
         FreeStream(stream);
         HashUnlock(PtyIOStreams);
         return -1;
     }
 
     /* Now fiddle with the terminal sessions on the pty */
-    if ( tcgetattr( slave, &tst ) == -1 )
-    {
-        Pr( "tcgetattr on slave pty failed (errno %d)\n", errno, 0);
+    if (tcgetattr(slave, &tst) == -1) {
+        Pr("tcgetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
-
     }
     tst.c_cc[VINTR] = 0377;
     tst.c_cc[VQUIT] = 0377;
@@ -326,8 +322,7 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     tst.c_cc[VTIME] = 0;
     tst.c_lflag    &= ~(ECHO|ICANON);
     tst.c_oflag    &= ~(ONLCR);
-    if ( tcsetattr( slave, TCSANOW, &tst ) == -1 )
-    {
+    if (tcsetattr(slave, TCSANOW, &tst) == -1) {
         Pr("tcsetattr on slave pty failed (errno %d)\n", errno, 0);
         goto cleanup;
     }
@@ -341,27 +336,26 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     PtyIOStreams[stream].changed = 0;
     /* fork */
     PtyIOStreams[stream].childPID = fork();
-    if ( PtyIOStreams[stream].childPID == 0 )
-    {
+    if (PtyIOStreams[stream].childPID == 0) {
         /* Set up the child */
         close(PtyIOStreams[stream].ptyFD);
-        if ( dup2( slave, 0 ) == -1)
+        if (dup2(slave, 0) == -1)
             _exit(-1);
-        fcntl( 0, F_SETFD, 0 );
-        
-        if (dup2( slave, 1 ) == -1)
+        fcntl(0, F_SETFD, 0);
+
+        if (dup2(slave, 1) == -1)
             _exit(-1);
-        fcntl( 1, F_SETFD, 0 );
-        
-        if ( chdir(dir) == -1 ) {
+        fcntl(1, F_SETFD, 0);
+
+        if (chdir(dir) == -1) {
             _exit(-1);
         }
 
 #if HAVE_SETPGID
-        setpgid(0,0);
+        setpgid(0, 0);
 #endif
 
-        execv( prg, args );
+        execv(prg, args);
 
         /* This should never happen */
         close(slave);
@@ -370,18 +364,17 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 
     /* Now we're back in the master */
     /* check if the fork was successful */
-    if ( PtyIOStreams[stream].childPID == -1 )
-    {
-        Pr( "Panic: cannot fork to subprocess (errno %d).\n", errno, 0);
+    if (PtyIOStreams[stream].childPID == -1) {
+        Pr("Panic: cannot fork to subprocess (errno %d).\n", errno, 0);
         goto cleanup;
     }
     close(slave);
-    
-    
+
+
     HashUnlock(PtyIOStreams);
     return stream;
 
- cleanup:
+cleanup:
     close(slave);
     close(PtyIOStreams[stream].ptyFD);
     PtyIOStreams[stream].inuse = 0;
@@ -393,249 +386,247 @@ static Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 
 // This function assumes that the caller invoked HashLock(PtyIOStreams).
 // It unlocks just before throwing any error.
-static void HandleChildStatusChanges( UInt pty)
+static void HandleChildStatusChanges(UInt pty)
 {
-  /* common error handling, when we are asked to read or write to a stopped
-     or dead child */
-  if (PtyIOStreams[pty].alive == 0) {
-      PtyIOStreams[pty].changed = 0;
-      PtyIOStreams[pty].blocked = 0;
-      HashUnlock(PtyIOStreams);
-      ErrorQuit("Child Process is unexpectedly dead", (Int) 0L, (Int) 0L);
-  }
-  else if (PtyIOStreams[pty].blocked) {
-      HashUnlock(PtyIOStreams);
-      ErrorQuit("Child Process is still dead", (Int)0L,(Int)0L);
-  }
-  else if (PtyIOStreams[pty].changed) {
-      PtyIOStreams[pty].blocked = 1;
-      PtyIOStreams[pty].changed = 0;
-      Int cPID = PtyIOStreams[pty].childPID;
-      Int status = PtyIOStreams[pty].status;
-      HashUnlock(PtyIOStreams);
-      ErrorQuit("Child Process %d has stopped or died, status %d",
-                cPID, status);
-  }
+    /* common error handling, when we are asked to read or write to a stopped
+       or dead child */
+    if (PtyIOStreams[pty].alive == 0) {
+        PtyIOStreams[pty].changed = 0;
+        PtyIOStreams[pty].blocked = 0;
+        HashUnlock(PtyIOStreams);
+        ErrorQuit("Child Process is unexpectedly dead", (Int)0L, (Int)0L);
+    }
+    else if (PtyIOStreams[pty].blocked) {
+        HashUnlock(PtyIOStreams);
+        ErrorQuit("Child Process is still dead", (Int)0L, (Int)0L);
+    }
+    else if (PtyIOStreams[pty].changed) {
+        PtyIOStreams[pty].blocked = 1;
+        PtyIOStreams[pty].changed = 0;
+        Int cPID = PtyIOStreams[pty].childPID;
+        Int status = PtyIOStreams[pty].status;
+        HashUnlock(PtyIOStreams);
+        ErrorQuit("Child Process %d has stopped or died, status %d", cPID,
+                  status);
+    }
 }
 
-Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
+Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 {
-  Obj  allargs[MAX_ARGS+1];
-  Char *argv[MAX_ARGS+2];
-  UInt i,len;
-  Int pty;
-  len = LEN_LIST(args);
-  if (len > MAX_ARGS)
-    ErrorQuit("Too many arguments",0,0);
-  ConvString(dir);
-  ConvString(prog);
-  for (i = 1; i <=len; i++)
-    {
-      allargs[i] = ELM_LIST(args,i);
-      ConvString(allargs[i]);
+    Obj    allargs[MAX_ARGS + 1];
+    Char * argv[MAX_ARGS + 2];
+    UInt   i, len;
+    Int    pty;
+    len = LEN_LIST(args);
+    if (len > MAX_ARGS)
+        ErrorQuit("Too many arguments", 0, 0);
+    ConvString(dir);
+    ConvString(prog);
+    for (i = 1; i <= len; i++) {
+        allargs[i] = ELM_LIST(args, i);
+        ConvString(allargs[i]);
     }
-  /* From here we cannot afford to have a garbage collection */
-  argv[0] = CSTR_STRING(prog);
-  for (i = 1; i <=len; i++)
-    {
-      argv[i] = CSTR_STRING(allargs[i]);
+    /* From here we cannot afford to have a garbage collection */
+    argv[0] = CSTR_STRING(prog);
+    for (i = 1; i <= len; i++) {
+        argv[i] = CSTR_STRING(allargs[i]);
     }
-  argv[i] = (Char *)0;
-  pty = StartChildProcess( CSTR_STRING(dir) , CSTR_STRING(prog), argv );
-  if (pty < 0)
-    return Fail;
-  else
-    return INTOBJ_INT(pty);
+    argv[i] = (Char *)0;
+    pty = StartChildProcess(CSTR_STRING(dir), CSTR_STRING(prog), argv);
+    if (pty < 0)
+        return Fail;
+    else
+        return INTOBJ_INT(pty);
 }
 
 
-static Int ReadFromPty2( UInt stream, Char *buf, Int maxlen, UInt block)
+static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block)
 {
-  /* read at most maxlen bytes from stream, into buf.
-    If block is non-zero then wait for at least one byte
-    to be available. Otherwise don't. Return the number of
-    bytes read, or -1 for error. A blocking return having read zero bytes
-    definitely indicates an end of file */
+    /* read at most maxlen bytes from stream, into buf.
+      If block is non-zero then wait for at least one byte
+      to be available. Otherwise don't. Return the number of
+      bytes read, or -1 for error. A blocking return having read zero bytes
+      definitely indicates an end of file */
 
-  Int nread = 0;
-  int ret;
-  
-  while (maxlen > 0)
-    {
+    Int nread = 0;
+    int ret;
+
+    while (maxlen > 0) {
 #if HAVE_SELECT
-      if (!block || nread > 0)
-      {
-        fd_set set;
-        struct timeval tv;
+        if (!block || nread > 0) {
+            fd_set         set;
+            struct timeval tv;
+            do {
+                FD_ZERO(&set);
+                FD_SET(PtyIOStreams[stream].ptyFD, &set);
+                tv.tv_sec = 0;
+                tv.tv_usec = 0;
+                ret = select(PtyIOStreams[stream].ptyFD + 1, &set, NULL, NULL,
+                             &tv);
+            } while (ret == -1 && errno == EAGAIN);
+            if (ret == -1 && nread == 0)
+                return -1;
+            if (ret < 1)
+                return nread ? nread : -1;
+        }
+#endif
         do {
-          FD_ZERO( &set);
-          FD_SET( PtyIOStreams[stream].ptyFD, &set );
-          tv.tv_sec = 0;
-          tv.tv_usec = 0;
-          ret =  select( PtyIOStreams[stream].ptyFD + 1, &set, NULL, NULL, &tv);
+            ret = read(PtyIOStreams[stream].ptyFD, buf, maxlen);
         } while (ret == -1 && errno == EAGAIN);
         if (ret == -1 && nread == 0)
-          return -1;
+            return -1;
         if (ret < 1)
-          return nread ? nread : -1;
-      }
-#endif
-      do {
-        ret = read(PtyIOStreams[stream].ptyFD, buf, maxlen);
-      } while (ret == -1 && errno == EAGAIN);
-      if (ret == -1 && nread == 0)
-        return -1;
-      if (ret < 1)
-        return nread;
-      nread += ret;
-      buf += ret;
-      maxlen -= ret;
+            return nread;
+        nread += ret;
+        buf += ret;
+        maxlen -= ret;
     }
-  return nread;
+    return nread;
 }
 
 
-static UInt WriteToPty ( UInt stream, Char *buf, Int len )
+static UInt WriteToPty(UInt stream, Char * buf, Int len)
 {
-    Int         res;
-    Int         old;
+    Int res;
+    Int old;
     if (len < 0) {
-      // FIXME: why allow 'len' to be negative here? To allow
-      // invoking a "raw" version of `write` perhaps? But we don't
-      // seem to use that anywhere. So perhaps get rid of it or
-      // even turn it into an error?!
-      return  write( PtyIOStreams[stream].ptyFD, buf, -len );
+        // FIXME: why allow 'len' to be negative here? To allow
+        // invoking a "raw" version of `write` perhaps? But we don't
+        // seem to use that anywhere. So perhaps get rid of it or
+        // even turn it into an error?!
+        return write(PtyIOStreams[stream].ptyFD, buf, -len);
     }
     old = len;
-    while ( 0 < len )
-    {
-        res = write( PtyIOStreams[stream].ptyFD, buf, len );
-        if ( res < 0 )
-        {
-          HandleChildStatusChanges(stream);
-            if ( errno == EAGAIN )
-              {
+    while (0 < len) {
+        res = write(PtyIOStreams[stream].ptyFD, buf, len);
+        if (res < 0) {
+            HandleChildStatusChanges(stream);
+            if (errno == EAGAIN) {
                 continue;
-              }
+            }
             else
-              // FIXME: by returning errno, we make it impossible for the caller
-              // to detect errors.
-              return errno;
+                // FIXME: by returning errno, we make it impossible for the
+                // caller to detect errors.
+                return errno;
         }
-        len  -= res;
+        len -= res;
         buf += res;
     }
     return old;
 }
 
-static UInt HashLockStreamIfAvailable(Obj stream) {
-  UInt pty = INT_INTOBJ(stream);
-  HashLock(PtyIOStreams);
-  if (!PtyIOStreams[pty].inuse) {
+static UInt HashLockStreamIfAvailable(Obj stream)
+{
+    UInt pty = INT_INTOBJ(stream);
+    HashLock(PtyIOStreams);
+    if (!PtyIOStreams[pty].inuse) {
+        HashUnlock(PtyIOStreams);
+        ErrorMayQuit("IOSTREAM %d is not in use", pty, 0L);
+        return -1;
+    }
+    return pty;
+}
+
+Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
+{
+    UInt pty = HashLockStreamIfAvailable(stream);
+
+    HandleChildStatusChanges(pty);
+    ConvString(string);
+    UInt result = WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len));
     HashUnlock(PtyIOStreams);
-    ErrorMayQuit("IOSTREAM %d is not in use",pty,0L);
-    return -1;
-  }
-  return pty;
+    return INTOBJ_INT(result);
 }
 
-Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
+Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
+    UInt pty = HashLockStreamIfAvailable(stream);
 
-  HandleChildStatusChanges(pty);
-  ConvString(string);
-  UInt result = WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len));
-  HashUnlock(PtyIOStreams);
-  return INTOBJ_INT(result);
-}
-
-Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj len )
-{
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
-  Obj string = NEW_STRING(INT_INTOBJ(len));
-  Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
-  HashUnlock(PtyIOStreams);
-  if (ret == -1)
-    return Fail;
-  SET_LEN_STRING(string, ret);
-  ResizeBag(string, SIZEBAG_STRINGLEN(ret));
-  return string;
+    /* HandleChildStatusChanges(pty);   Omit this to allow picking up
+     * "trailing" bytes*/
+    Obj string = NEW_STRING(INT_INTOBJ(len));
+    Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
+    HashUnlock(PtyIOStreams);
+    if (ret == -1)
+        return Fail;
+    SET_LEN_STRING(string, ret);
+    ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    return string;
 }
 
 Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  /* HandleChildStatusChanges(pty);   Omit this to allow picking up "trailing" bytes*/
-  Obj string = NEW_STRING(INT_INTOBJ(len));
-  Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
-  HashUnlock(PtyIOStreams);
-  if (ret == -1)
-    return Fail;
-  SET_LEN_STRING(string, ret);
-  ResizeBag(string, SIZEBAG_STRINGLEN(ret));
-  return string;
+    UInt pty = HashLockStreamIfAvailable(stream);
+
+    /* HandleChildStatusChanges(pty);   Omit this to allow picking up
+     * "trailing" bytes*/
+    Obj string = NEW_STRING(INT_INTOBJ(len));
+    Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
+    HashUnlock(PtyIOStreams);
+    if (ret == -1)
+        return Fail;
+    SET_LEN_STRING(string, ret);
+    ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    return string;
 }
 
-Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
+Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  /* Don't check for child having changes status */
-  KillChild( pty );
+    UInt pty = HashLockStreamIfAvailable(stream);
 
-  HashUnlock(PtyIOStreams);
-  return 0;
+    /* Don't check for child having changes status */
+    KillChild(pty);
+
+    HashUnlock(PtyIOStreams);
+    return 0;
 }
 
-Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj sig)
+Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  /* Don't check for child having changes status */
-  SignalChild( pty, INT_INTOBJ(sig) );
+    UInt pty = HashLockStreamIfAvailable(stream);
 
-  HashUnlock(PtyIOStreams);
-  return 0;
+    /* Don't check for child having changes status */
+    SignalChild(pty, INT_INTOBJ(sig));
+
+    HashUnlock(PtyIOStreams);
+    return 0;
 }
 
-Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
+Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
+    UInt pty = HashLockStreamIfAvailable(stream);
 
-  PtyIOStreams[pty].inuse = 0;
+    PtyIOStreams[pty].inuse = 0;
 
-  /* Close down the child */
-  int status;
-  int retcode = close(PtyIOStreams[pty].ptyFD);
-  if (retcode)
-    Pr("Strange close return code %d\n",retcode, 0);
-  kill(PtyIOStreams[pty].childPID, SIGTERM);
-  retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
-  FreeStream(pty);
-  HashUnlock(PtyIOStreams);
-  return 0;
+    /* Close down the child */
+    int status;
+    int retcode = close(PtyIOStreams[pty].ptyFD);
+    if (retcode)
+        Pr("Strange close return code %d\n", retcode, 0);
+    kill(PtyIOStreams[pty].childPID, SIGTERM);
+    retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
+    FreeStream(pty);
+    HashUnlock(PtyIOStreams);
+    return 0;
 }
 
-Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
+Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  int isBlocked = (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive);
-  HashUnlock(PtyIOStreams);
-  return isBlocked ? True : False;
+    UInt pty = HashLockStreamIfAvailable(stream);
+
+    int isBlocked = (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed ||
+                     !PtyIOStreams[pty].alive);
+    HashUnlock(PtyIOStreams);
+    return isBlocked ? True : False;
 }
 
-Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
+Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 {
-  UInt pty = HashLockStreamIfAvailable(stream);
-  
-  Obj result = INTOBJ_INT(PtyIOStreams[pty].ptyFD);
-  HashUnlock(PtyIOStreams);
-  return result;
+    UInt pty = HashLockStreamIfAvailable(stream);
+
+    Obj result = INTOBJ_INT(PtyIOStreams[pty].ptyFD);
+    HashUnlock(PtyIOStreams);
+    return result;
 }
 
 
@@ -648,14 +639,14 @@ Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     { "CREATE_PTY_IOSTREAM", 3, "dir, prog, args",
       FuncCREATE_PTY_IOSTREAM, "src/iostream.c:CREATE_PTY_IOSTREAM" },
-    
+
     { "WRITE_IOSTREAM", 3, "stream, string, len",
       FuncWRITE_IOSTREAM, "src/iostream.c:WRITE_IOSTREAM" },
-    
+
     { "READ_IOSTREAM", 2, "stream, len",
       FuncREAD_IOSTREAM, "src/iostream.c:READ_IOSTREAM" },
 
@@ -670,10 +661,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SIGNAL_CHILD_IOSTREAM", 2, "stream, signal",
       FuncSIGNAL_CHILD_IOSTREAM, "src/iostream.c:SIGNAL_CHILD_IOSTREAM" },
-    
+
     { "IS_BLOCKED_IOSTREAM", 1, "stream",
       FuncIS_BLOCKED_IOSTREAM, "src/iostream.c:IS_BLOCKED_IOSTREAM" },
-    
+
     { "FD_OF_IOSTREAM", 1, "stream",
       FuncFD_OF_IOSTREAM, "src/iostream.c:FD_OF_IOSTREAM" },
 
@@ -682,18 +673,17 @@ static StructGVarFunc GVarFuncs [] = {
       FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
 #endif
 
-      {0} };
+    {0}
+};
   
-/* NB Should probably do some checks preSave for open files etc and refuse to save
-   if any are found */
+/* FIXME/TODO: should probably do some checks preSave for open files etc and
+   refuse to save if any are found */
 
 /****************************************************************************
 **
 *F  postResore( <module> ) . . . . . . .re-initialise library data structures
 */
-
-static Int postRestore (
-    StructInitInfo *    module )
+static Int postRestore(StructInitInfo * module)
 {
     /* return success                                                      */
     return 0;
@@ -703,28 +693,25 @@ static Int postRestore (
 **
 *F  InitKernel( <module> ) . . . . . . .  initialise kernel data structures
 */
-
-static Int InitKernel( 
-      StructInitInfo * module )
+static Int InitKernel(StructInitInfo * module)
 {
-  UInt i;
-  PtyIOStreams[0].childPID = -1;
-  for (i = 1; i < MAX_PTYS; i++)
-    {
-      PtyIOStreams[i].childPID = i-1;
-      PtyIOStreams[i].inuse = 0;
+    UInt i;
+    PtyIOStreams[0].childPID = -1;
+    for (i = 1; i < MAX_PTYS; i++) {
+        PtyIOStreams[i].childPID = i - 1;
+        PtyIOStreams[i].inuse = 0;
     }
-  FreePtyIOStreams = MAX_PTYS-1;
+    FreePtyIOStreams = MAX_PTYS - 1;
 
-  /* init filters and functions                                          */
-  InitHdlrFuncsFromTable( GVarFuncs );
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable(GVarFuncs);
 
 #if !defined(HPCGAP)
-  /* Set up the trap to detect future dying children */
-  signal( SIGCHLD, ChildStatusChanged );
+    /* Set up the trap to detect future dying children */
+    signal(SIGCHLD, ChildStatusChanged);
 #endif
 
-  return 0;
+    return 0;
 }
 
 /****************************************************************************
@@ -732,13 +719,12 @@ static Int InitKernel(
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 
-static Int InitLibrary( 
-      StructInitInfo * module )
+static Int InitLibrary(StructInitInfo * module)
 {
-      /* init filters and functions                                          */
-  InitGVarFuncsFromTable( GVarFuncs );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable(GVarFuncs);
 
-  return postRestore( module );
+    return postRestore(module);
 }
 
 /****************************************************************************
@@ -760,7 +746,7 @@ static StructInitInfo module = {
     postRestore                         /* postRestore                    */
 };
 
-StructInitInfo * InitInfoIOStream ( void )
+StructInitInfo * InitInfoIOStream(void)
 {
     return &module;
 }
