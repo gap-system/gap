@@ -74,15 +74,15 @@ CC="@CC@"
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="$libtool --mode=compile $CC"
-c_options="@CPPFLAGS@ @CFLAGS@"
+c_options="@DEFS@ @GMP_CPPFLAGS@ @CPPFLAGS@ @CFLAGS@"
 c_linker="$libtool --mode=link $CC"
-c_link_options="@LDFLAGS@"
+c_link_options="@ABI_CFLAGS@ @GMP_LDFLAGS@ @LDFLAGS@"
 c_libs="@LIBS@ @GMP_LIBS@"
 
 # These will need special care
-c_dyn_options="@CPPFLAGS@"
+c_dyn_options="@DEFS@ @GMP_CPPFLAGS@ @CPPFLAGS@ @CFLAGS@"
 c_dyn_linker="$libtool --mode=link $CC -module -avoid-version -rpath $libdir"
-c_dyn_link_options="@ABI_CFLAGS@"
+c_dyn_link_options="@ABI_CFLAGS@ @GMP_LDFLAGS@ @LDFLAGS@"
 c_dynlibs=""
 c_addlibs=""
 
