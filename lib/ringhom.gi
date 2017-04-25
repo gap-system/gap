@@ -581,7 +581,7 @@ function( R, I )
 	  Add(newmod,false);
 	else
 	  # the generator has a smaller order in the factor
-	  q:=moduli[i]/t; 
+	  q:=Gcd(moduli[i],t); 
 	  Add(newmod,q);
 	  Add(posi,i);
 	fi;
