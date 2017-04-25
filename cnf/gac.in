@@ -122,7 +122,7 @@ c_compile () {
 ##
 c_link_dyn () {
     echo ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs}
-    output_la=${1/%.so/.la}
+    output_la=${1%.so}.la
     output_dir=$(dirname $1)
     ${c_dyn_linker} ${c_dyn_link_options} -o "$output_la" $2 ${c_addlibs} || exit 1
     cp -r $output_dir/.libs/*.so $output_dir
