@@ -425,7 +425,7 @@ ffdata: ffgen
 
 clean: clean-ffdata
 clean-ffdata:
-	rm ffgen
+	rm -f ffgen
 
 .PHONY: ffdata clean-ffffdata
 
