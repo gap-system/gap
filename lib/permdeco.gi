@@ -51,8 +51,12 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
       i:=List(p,x->[(x-A)*(18-x),x]);
       Sort(i);
       p:=i[Length(i)][2]; # best split
-      depths:=Concatenation(Filtered(depths,x->x<=A),[p],
-	        Filtered(depths,x->x>A));
+      if not p in depths then
+        depths:=Concatenation(Filtered(depths,x->x<=A),[p],
+                  Filtered(depths,x->x>A));
+      else
+        good:=false;
+      fi;
     else
       good:=false;
     fi;
@@ -66,7 +70,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
     p:=ords[A];
     A:=[A..depths[Position(depths,A)+1]-1];
     pc:=InducedPcgsByPcSequence(pcgs,pcgs{[A[1]..Length(pcgs)]}) mod
-	InducedPcgsByPcSequence(pcgs,pcgs{[A[Length(A)]+1..Length(pcgs)]});
+        InducedPcgsByPcSequence(pcgs,pcgs{[A[Length(A)]+1..Length(pcgs)]});
     mo:=LinearActionLayer(G,pc);
     mo:=GModuleByMats(mo,GF(p));
     b:=MTX.BasesCompositionSeries(mo);
@@ -74,37 +78,37 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
       new:=[1];
       start:=1;
       for i in [2..Length(b)] do
-	if p^Length(b[i])/start>limit then
-	  if i-1 in new then
-	    Add(new,i);
-	    start:=p^Length(b[i]);
-	  else
-	    Add(new,i-1);
-	    start:=p^Length(b[i-1]);
-	  fi;
-	fi;
+        if p^Length(b[i])/start>limit then
+          if i-1 in new then
+            Add(new,i);
+            start:=p^Length(b[i]);
+          else
+            Add(new,i-1);
+            start:=p^Length(b[i-1]);
+          fi;
+        fi;
       od;
       if not Length(b) in new then
-	Add(new,Length(b));
+        Add(new,Length(b));
       fi;
 
       # now form pc elements
       np:=[];
       for i in [2..Length(new)] do
-	start:=BaseSteinitzVectors(b[new[i]],b[new[i-1]]).factorspace;
-	start:=List(start,x->PcElementByExponents(pc,List(x,Int)));
-	Add(np,start);
+        start:=BaseSteinitzVectors(b[new[i]],b[new[i-1]]).factorspace;
+        start:=List(start,x->PcElementByExponents(pc,List(x,Int)));
+        Add(np,start);
       od;
       np:=Reversed(np);
       b:=A[1];
       pc:=Concatenation(pcgs{[1..b-1]},
-	   Concatenation(np),
-	   pcgs{[A[Length(A)]+1..Length(pcgs)]});
+           Concatenation(np),
+           pcgs{[A[Length(A)]+1..Length(pcgs)]});
 
       pcgs:=PermgroupSuggestPcgs(G,pc);
       #depths:=Concatenation(Filtered(depths,x->x<=b),
-#	       List([1..Length(np)-1],x->b+Sum(List(np{[1..x]},Length))),
-#	       Filtered(depths,x->x>A[Length(A)]));
+#              List([1..Length(np)-1],x->b+Sum(List(np{[1..x]},Length))),
+#              Filtered(depths,x->x>A[Length(A)]));
       depths:=IndicesEANormalSteps(pcgs);
       ords:=RelativeOrders(pcgs);
     else
@@ -123,9 +127,9 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   SetIsBijective( iso, true );
   return rec(pcgs:=pcgs,
              depths:=depths,
-	     radical:=r,
-	     pcisom:=iso,
-	     factorhom:=hom);
+             radical:=r,
+             pcisom:=iso,
+             factorhom:=hom);
 
 end );
 
@@ -157,31 +161,31 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
      maps:=List(sel,x->InducedAutomorphism(rep,autos[x]));
      #for v in maps do SetIsBijective(v,true); od;
      if ForAll(maps,IsConjugatorAutomorphism) then
-	# the representation extends
-	v:=List( maps, ConjugatorOfConjugatorIsomorphism );
-	w:=ClosureGroup(Gi,v);
-	Info(InfoGroup,1,"all conjugator degree ",NrMovedPoints(w));
+        # the representation extends
+        v:=List( maps, ConjugatorOfConjugatorIsomorphism );
+        w:=ClosureGroup(Gi,v);
+        Info(InfoGroup,1,"all conjugator degree ",NrMovedPoints(w));
 
-	maps:=[];
-	maps{sel}:=v;
-	maps{selin}:=List(selin,x->
-	  Image(rep,
-	    ConjugatorOfConjugatorIsomorphism(autos[x])));
+        maps:=[];
+        maps{sel}:=v;
+        maps{selin}:=List(selin,x->
+          Image(rep,
+            ConjugatorOfConjugatorIsomorphism(autos[x])));
 
-	cen:=Centralizer(w,Gi);
-	if Size(cen)=1 then
-	  return [w,rep,maps];
-	else
-	  Info(InfoGroup,2,"but centre");
-	  hom:=NaturalHomomorphismByNormalSubgroupNC(w,cen);
-	  if IsPermGroup(Image(hom)) and
-	    NrMovedPoints(Image(hom))<=bound then
+        cen:=Centralizer(w,Gi);
+        if Size(cen)=1 then
+          return [w,rep,maps];
+        else
+          Info(InfoGroup,2,"but centre");
+          hom:=NaturalHomomorphismByNormalSubgroupNC(w,cen);
+          if IsPermGroup(Image(hom)) and
+            NrMovedPoints(Image(hom))<=bound then
 
-	    #Print("QQQ\n");
-	    return [Image(hom,w),rep*hom,List(maps,x->Image(hom,x))];
-	  fi;
+            #Print("QQQ\n");
+            return [Image(hom,w),rep*hom,List(maps,x->Image(hom,x))];
+          fi;
 
-	fi;
+        fi;
      else
        Info(InfoGroup,2,"Does not work");
      fi;
@@ -198,7 +202,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
     a:=tryrep(a,4*NrMovedPoints(Image(a)));
   elif not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
     a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"),
-	        4*NrMovedPoints(G));
+                4*NrMovedPoints(G));
   else
     a:=tryrep(IdentityMapping(G),4*NrMovedPoints(G));
     if a=fail and ForAll(autos,IsConjugatorAutomorphism) then
@@ -249,16 +253,16 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
       p:=0;
       found:=fail;
       while found=fail and p<Length(stabs) do
-	p:=p+1;
-	found:=RepresentativeAction(G,sub,stabs[p]);
-	#Print(j," maps ",i," to ",p,"\n");
+        p:=p+1;
+        found:=RepresentativeAction(G,sub,stabs[p]);
+        #Print(j," maps ",i," to ",p,"\n");
       od;
 
       if found=fail then
-	# new copy
-	Add(stabs,sub);
-	map:=outs[i]*autos[j];
-	Add(outs,map);
+        # new copy
+        Add(stabs,sub);
+        map:=outs[i]*autos[j];
+        Add(outs,map);
       fi;
 
     od;
@@ -322,10 +326,10 @@ local G,H,tg,th,hom, tga, Gemb, C, outs, auts, ar, Hemb;
     Error("nonisomorphic simple groups!");
   fi;
   tga:=List(GeneratorsOfGroup(H),
-	    i->GroupHomomorphismByImagesNC(tg,tg,
-	       GeneratorsOfGroup(tg),
-	       List(GeneratorsOfGroup(tg),
-		    j->Image(hom,PreImagesRepresentative(hom,j)^i))));
+            i->GroupHomomorphismByImagesNC(tg,tg,
+               GeneratorsOfGroup(tg),
+               List(GeneratorsOfGroup(tg),
+                    j->Image(hom,PreImagesRepresentative(hom,j)^i))));
 
   Gemb:=fail;
   if ForAll(tga,IsConjugatorAutomorphism) then
@@ -349,13 +353,13 @@ local G,H,tg,th,hom, tga, Gemb, C, outs, auts, ar, Hemb;
     auts:=AutomorphismGroup(tg);
     auts:=GeneratorsOfGroup(auts);
     ar:=AutomorphismRepresentingGroup(tg,Concatenation(
-	   auts,
-	   List(GeneratorsOfGroup(G),i->ConjugatorAutomorphism(tg,i)),
-	   tga));
+           auts,
+           List(GeneratorsOfGroup(G),i->ConjugatorAutomorphism(tg,i)),
+           tga));
 
     tga:=ar[3]{[Length(ar[3])-Length(tga)+1..Length(ar[3])]};
     Gemb:=GroupHomomorphismByImagesNC(G,ar[1],GeneratorsOfGroup(G),
-	  ar[3]{[Length(auts)+1..Length(auts)+Length(GeneratorsOfGroup(G))]});
+          ar[3]{[Length(auts)+1..Length(auts)+Length(GeneratorsOfGroup(G))]});
     G:=ar[1];
   else
     Gemb:=IdentityMapping(G);
@@ -402,9 +406,9 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
     # get the induced automorphism action of elements 
     ng:=SmallGeneratingSet(norm); 
     autos:=List(ng,i->GroupHomomorphismByImagesNC(T,T,
-			GeneratorsOfGroup(T),
-			List(GeneratorsOfGroup(T),
-			  j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
+                        GeneratorsOfGroup(T),
+                        List(GeneratorsOfGroup(T),
+                          j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
     a:=AutomorphismRepresentingGroup(T,autos);
     Thom:=GroupHomomorphismByImagesNC(norm,a[1],ng,a[3]);
     a:=a[1];
@@ -417,7 +421,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
 
   # define isomorphisms between the components
   reps:=List([1..n],i->
-	  PreImagesRepresentative(Qhom,RepresentativeAction(Q,1,i)));
+          PreImagesRepresentative(Qhom,RepresentativeAction(Q,1,i)));
 
   genimages:=[];
   for i in GeneratorsOfGroup(G) do
@@ -500,15 +504,15 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
     if m<>fail then
       p:=Image(m);
       ser:=InvariantElementaryAbelianSeries(p, List( GeneratorsOfGroup( G ),
-	      i -> GroupHomomorphismByImagesNC(p,p,GeneratorsOfGroup(p),
-	             List(GeneratorsOfGroup(p),
-		          j->Image(m,PreImagesRepresentative(m,j)^i)))),
-	      TrivialSubgroup(p),true);
+              i -> GroupHomomorphismByImagesNC(p,p,GeneratorsOfGroup(p),
+                     List(GeneratorsOfGroup(p),
+                          j->Image(m,PreImagesRepresentative(m,j)^i)))),
+              TrivialSubgroup(p),true);
       ser:=List(ser,i->PreImage(m,i));
     else
       ser:=InvariantElementaryAbelianSeries(r, List( GeneratorsOfGroup( G ),
-	      i -> ConjugatorAutomorphismNC( r, i ) ),
-	      TrivialSubgroup(G),true);
+              i -> ConjugatorAutomorphismNC( r, i ) ),
+              TrivialSubgroup(G),true);
     fi;
 
     # remember there is no universal parent pcgs
@@ -524,26 +528,26 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
     nser:=[ser[1]];
     for i in [2..Length(ser)] do
       if Size(ser[i-1])/Size(ser[i])>limit then
-	m:=ModuloPcgs(ser[i-1],ser[i]);
-	p:=RelativeOrders(m)[1];
-	l:=GModuleByMats(LinearActionLayer(G,m),GF(p));
-	l:=MTX.BasesCompositionSeries(l);
-	l2:=[[]];
-	good:=false;
-	for j in [1..Length(l)] do
-	  if p^(Length(l[j])-Length(l2[Length(l2)]))>limit then
-	    if Length(good)>0 then
-	      Add(l2,good);
-	    fi;
-	  fi;
-	  good:=l[j];
-	od;
-	l2:=List(l2,i->List(i,j->PcElementByExponentsNC(m,j)));
-	l2:=List(l2,j->ClosureGroup(ser[i],j));
-	pcgs:=false; # if there was a pcgs is it wrong now
-	Append(nser,Reversed(l2));
+        m:=ModuloPcgs(ser[i-1],ser[i]);
+        p:=RelativeOrders(m)[1];
+        l:=GModuleByMats(LinearActionLayer(G,m),GF(p));
+        l:=MTX.BasesCompositionSeries(l);
+        l2:=[[]];
+        good:=false;
+        for j in [1..Length(l)] do
+          if p^(Length(l[j])-Length(l2[Length(l2)]))>limit then
+            if Length(good)>0 then
+              Add(l2,good);
+            fi;
+          fi;
+          good:=l[j];
+        od;
+        l2:=List(l2,i->List(i,j->PcElementByExponentsNC(m,j)));
+        l2:=List(l2,j->ClosureGroup(ser[i],j));
+        pcgs:=false; # if there was a pcgs is it wrong now
+        Append(nser,Reversed(l2));
       else
-	Add(nser,ser[i]);
+        Add(nser,ser[i]);
       fi;
     od;
     if nser<>ser then
@@ -614,9 +618,9 @@ local au, agens, agau, a2, w2, ogens, ngens, oe, ne, emb, i, j;
     for j in GeneratorsOfGroup(Source(oe)) do
       Add(ogens,Image(oe,j));
       if i<=n then
-	Add(ngens,Image(ne,Image(agau,j)));
+        Add(ngens,Image(ne,Image(agau,j)));
       else
-	Add(ngens,Image(ne,j));
+        Add(ngens,Image(ne,j));
       fi;
     od;
   od;

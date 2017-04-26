@@ -2974,3 +2974,52 @@ local recog,m,len;
   return m;
 end);
 
+#############################################################################
+##
+#F  LowLayerSubgroups( <G>, <lim> [,<cond> [,<dosub>]] )
+##
+InstallGlobalFunction(LowLayerSubgroups,function(arg)
+local G,lim,cond,dosub,all,m,i,j,new,old;
+  G:=arg[1];
+  lim:=arg[2];
+  cond:=ReturnTrue;
+  dosub:=ReturnTrue;
+  if Length(arg)>2 then
+    cond:=arg[3];
+    if Length(arg)>3 then
+      dosub:=arg[4];
+    fi;
+  fi;
+
+  all:=[G];
+  m:=[G];
+  for i in [1..lim] do
+    Info(InfoLattice,1,"Layer ",i,": ",Length(m)," groups");
+    new:=[];
+    for j in m do
+      if dosub(j) then
+	m:=MaximalSubgroupClassReps(j);
+	Append(new,m);
+      fi;
+    od;
+    new:=Unique(new);
+    # discard?
+    j:=Length(new);
+    new:=Filtered(new,cond);
+    Info(InfoLattice,2,"Only ",Length(new)," subgroups of ",j);
+
+    # conjugate?
+    m:=[];
+    # any conjugate before?
+    for j in new do
+      old:=Filtered(all,x->Size(x)=Size(j));
+      if ForAll(old,x->RepresentativeAction(G,x,j)=fail) then
+        Add(m,j);
+      fi;
+    od;
+    m:=List(SubgroupsOrbitsAndNormalizers(G,m,false),x->x.representative);
+    Info(InfoLattice,1,"Layer ",i,": ",Length(m)," new");
+    Append(all,m);
+  od;
+  return all;
+end);

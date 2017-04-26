@@ -104,8 +104,45 @@ InstallGlobalFunction( AddRelator, function ( T, word )
         tietze[TZ_NUMRELS] := numrels;
         tietze[TZ_TOTAL] := tietze[TZ_TOTAL] + leng;
         tietze[TZ_MODIFIED] := true;
-	tietze[TZ_OCCUR]:=false;
+        tietze[TZ_OCCUR]:=false;
     fi;
+end );
+
+#############################################################################
+##
+#M  TzRelatorOldImages( <Tietze record>, <word> )  . . . . .  rewrite relator
+##
+##  adds the given relator, possibly in old generators, write it in the
+##  current generators.
+## to the given Tietze presentation.
+##
+InstallGlobalFunction( TzRelatorOldImages, function ( T, word )
+
+local flags, leng, lengths, numrels, rel, rels, tietze,l,imgs,i,j,a,fam;
+
+    # do we need to translate?
+    if IsBound(T!.imagesOldGens) then
+      imgs:=T!.imagesOldGens;
+      l:=word^0;
+      for i in LetterRepAssocWord(word) do
+        if i<0 then
+	  a:=-Reversed(imgs[-i]);
+	else
+	  a:=imgs[i];
+	fi;
+	for j in a do
+	  if j>0 then
+	    l:=l*T!.generators[j];
+	  else
+	    l:=l/T!.generators[-j];
+	  fi;
+	od;
+      od;
+
+      word:=l;
+
+    fi;
+    return word;
 end );
 
 
@@ -1293,6 +1330,57 @@ InstallGlobalFunction( TzEliminate, function ( arg )
     fi;
 end );
 
+# eliminate generators by removing first those that ocur rarely, up to
+# frequency lim
+BindGlobal("TzEliminateRareOcurrences",function(pres,lim)
+local prepare,gens,rels,sel,cnt,i,alde,freq;
+  prepare:=function()
+  local r,j,idx;
+    gens:=List(pres!.generators,x->LetterRepAssocWord(x)[1]);
+    rels:=pres!.tietze[TZ_RELATORS];
+    cnt:=List([1..Maximum(gens)],x->0);
+    for r in rels do
+      for j in r do
+        j:=AbsInt(j);
+        cnt[j]:=cnt[j]+1;
+      od;
+    od;
+    sel:=[];
+
+    repeat
+      idx:=Filtered([1..Length(cnt)],x->cnt[x]>0 and cnt[x]<=freq);
+      idx:=Difference(idx,alde);
+      idx:=Difference(idx,sel);
+      sel:=Concatenation(sel,idx);
+      if Length(sel)<20 and freq<lim then
+	freq:=freq+1;
+      fi;
+    until Length(sel)>=20 or freq=lim;
+
+    alde:=Union(alde,sel);
+  end;
+
+  alde:=[];
+  TzSearch(pres);
+  if Length(pres!.generators)=0 then return alde;fi;
+  freq:=1;
+  prepare();
+  while Length(sel)>0 do
+    sel:=pres!.generators{sel};
+    for i in sel do
+      #Print("elim ",i,"\n");
+      TzEliminateGen(pres,Position(pres!.generators,i));
+    od;
+    TzHandleLength1Or2Relators(pres);
+    TzSearchEqual(pres);
+    TzFindCyclicJoins(pres);
+    TzSearch(pres);
+    if Length(pres!.generators)=0 then return alde;fi;
+    prepare();
+  od;
+  return alde;
+end);
+
 
 #############################################################################
 ##
@@ -1443,7 +1531,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
         tietze[TZ_NUMRELS] := numrels;
         tietze[TZ_TOTAL] := tietze[TZ_TOTAL] + leng;
         tietze[TZ_MODIFIED] := true;
-	tietze[TZ_OCCUR]:=false;
+        tietze[TZ_OCCUR]:=false;
 
         # if the new relator has length at most 2, handle it by calling the
         # appropriate subroutine, and then return.
@@ -1498,7 +1586,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
         invs[numgens+1-num] := 0;
         tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
         tietze[TZ_MODIFIED] := true;
-	tietze[TZ_OCCUR]:=false;
+        tietze[TZ_OCCUR]:=false;
         trlast := trlast - 1;
         while trlast > primary and pointers[trlast] <= treelength do
             trlast := trlast - 1;
@@ -1598,7 +1686,7 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
             invs[numgens+1-num] := 0;
             tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
             tietze[TZ_MODIFIED] := true;
-	    tietze[TZ_OCCUR]:=false;
+            tietze[TZ_OCCUR]:=false;
         elif TzOptions(T).printLevel >= 1 then
             Print( "#I  replacement of generators stopped by length limit\n" );
         fi;
@@ -1710,8 +1798,8 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
             fi;
         fi;
         changed:=TzSubstituteGen( tietze, -gen, word );
-	#if Length(changed)>100 then Error("longchanged!!"); fi;
-	#if oldrels1<>oldrels then Error("differ!"); fi;
+        #if Length(changed)>100 then Error("longchanged!!"); fi;
+        #if oldrels1<>oldrels then Error("differ!"); fi;
 
         # update the generator images, if available.
         if IsBound( T!.imagesOldGens ) then
@@ -1723,107 +1811,107 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         invs[numgens+1-num] := 0;
         tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
 
-	#update occurrence numbers
-	gen:=AbsInt(gen);
-	Unbind(occRelNums[num]);
-	Unbind(occMultiplicities[num]);
-	occTotals[gen]:=0;
+        #update occurrence numbers
+        gen:=AbsInt(gen);
+        Unbind(occRelNums[num]);
+        Unbind(occMultiplicities[num]);
+        occTotals[gen]:=0;
 
-	# now check whether the data for the other generators is still OK
-	# and correct if necessary
-	rels:=tietze[TZ_RELATORS];
-	for i in [1..numgens] do
+        # now check whether the data for the other generators is still OK
+        # and correct if necessary
+        rels:=tietze[TZ_RELATORS];
+        for i in [1..numgens] do
 
-	  if IsBound(occRelNums[i]) then
-	    # verify that the relator we store for the shortest
-	    #length is still OK.
-	    num:=occMultiplicities[i];
-	    olen:=oldlen[occRelNums[i]];
+          if IsBound(occRelNums[i]) then
+            # verify that the relator we store for the shortest
+            #length is still OK.
+            num:=occMultiplicities[i];
+            olen:=oldlen[occRelNums[i]];
 
-	    #What can happen is two things:
-	    #a) A changed relator now is shorter and better. If so we take it
-	    #b) The best relator got changed and now is not best any more.
+            #What can happen is two things:
+            #a) A changed relator now is shorter and better. If so we take it
+            #b) The best relator got changed and now is not best any more.
 
-	    # first check the changed relators, whether they give any
-	    # improvement
-	    for j in changed do
-	      total:=0;
-	      for k in rels[j] do
-		if AbsInt(k)=i then total:=total+1;fi;
-	      od;
+            # first check the changed relators, whether they give any
+            # improvement
+            for j in changed do
+              total:=0;
+              for k in rels[j] do
+                if AbsInt(k)=i then total:=total+1;fi;
+              od;
     #if total>0 then Print(j,":",i,":",total,"\n");fi;
-	      if total>0 and 
-		(total<num or 
-		(total=num and Length(rels[j])<olen) or
-		(total=num and Length(rels[j])=olen and j<occRelNums[i])
-		) then
-		# found a better one
-		pos:=j;
-		num:=total;
-		olen:=Length(rels[j]);
-		occMultiplicities[i]:=false; # force change
-	      fi;
+              if total>0 and 
+                (total<num or 
+                (total=num and Length(rels[j])<olen) or
+                (total=num and Length(rels[j])=olen and j<occRelNums[i])
+                ) then
+                # found a better one
+                pos:=j;
+                num:=total;
+                olen:=Length(rels[j]);
+                occMultiplicities[i]:=false; # force change
+              fi;
 
-	      #update occurrence numbers
-	      # because of cancellation, we need to check with the changed
-	      # relators vs. their old selves
-	      for k in oldrels[j] do
-		if AbsInt(k)=i then total:=total-1;fi;
-	      od;
-	      occTotals[i]:=occTotals[i]+total;
+              #update occurrence numbers
+              # because of cancellation, we need to check with the changed
+              # relators vs. their old selves
+              for k in oldrels[j] do
+                if AbsInt(k)=i then total:=total-1;fi;
+              od;
+              occTotals[i]:=occTotals[i]+total;
 
-	    od;
+            od;
 
-	    if num<>occMultiplicities[i] or
-	       olen<>oldlen[occRelNums[i]] then
-	      occMultiplicities[i]:=num;
-	      occRelNums[i]:=pos;
-	    else
-	      # the changed relators did not give any improvement. We thus
-	      # need to check whether the best stored got worse
-	      if occRelNums[i] in changed then
-		total:=0;
-		for k in rels[occRelNums[i]] do
-		  if AbsInt(k)=i then total:=total+1;fi;
-		od;
-		if total=0 or total>num or
-		  Length(rels[occRelNums[i]])>oldlen[occRelNums[i]] then
-	    #Print("fixin' ",i,"\n");
-		  # the relator changed and might not be good anymore. We
-		  # need to find another one.
+            if num<>occMultiplicities[i] or
+               olen<>oldlen[occRelNums[i]] then
+              occMultiplicities[i]:=num;
+              occRelNums[i]:=pos;
+            else
+              # the changed relators did not give any improvement. We thus
+              # need to check whether the best stored got worse
+              if occRelNums[i] in changed then
+                total:=0;
+                for k in rels[occRelNums[i]] do
+                  if AbsInt(k)=i then total:=total+1;fi;
+                od;
+                if total=0 or total>num or
+                  Length(rels[occRelNums[i]])>oldlen[occRelNums[i]] then
+            #Print("fixin' ",i,"\n");
+                  # the relator changed and might not be good anymore. We
+                  # need to find another one.
 
-		  #TODO: Be more clever in checking the later relators first
-		  num:=infinity;
-		  olen:=infinity;
-		  pos:=fail;
-		  for j in [1..Length(rels)] do
-		    total:=0;
-		    for k in rels[j] do
-		      if AbsInt(k)=i then total:=total+1;fi;
-		    od;
-		    if total>0 and
-		      (total<num or (total=num and Length(rels[j])<olen)) then
-		      # found a better one
-		      pos:=j;
-		      num:=total;
-		      olen:=Length(rels[j]);
-		    fi;
-		  od;
+                  #TODO: Be more clever in checking the later relators first
+                  num:=infinity;
+                  olen:=infinity;
+                  pos:=fail;
+                  for j in [1..Length(rels)] do
+                    total:=0;
+                    for k in rels[j] do
+                      if AbsInt(k)=i then total:=total+1;fi;
+                    od;
+                    if total>0 and
+                      (total<num or (total=num and Length(rels[j])<olen)) then
+                      # found a better one
+                      pos:=j;
+                      num:=total;
+                      olen:=Length(rels[j]);
+                    fi;
+                  od;
   #Print("fixing ",i," from ",num,"\n");
-		  if pos=fail then
-		    Unbind(occRelNums[i]);
-		    Unbind(occMultiplicities[i]);
-		  else
-		    occRelNums[i]:=pos;
-		    occMultiplicities[i]:=num;
-		  fi;
+                  if pos=fail then
+                    Unbind(occRelNums[i]);
+                    Unbind(occMultiplicities[i]);
+                  else
+                    occRelNums[i]:=pos;
+                    occMultiplicities[i]:=num;
+                  fi;
 
-		fi;
-	      fi;
-	    fi;
+                fi;
+              fi;
+            fi;
 
-	  fi;
-	od;
+          fi;
+        od;
 
         modified := true;
       elif TzOptions(T).printLevel >= 1 then
@@ -2119,7 +2207,7 @@ InstallGlobalFunction( TzFindCyclicJoins, function ( T )
     od;
 
     if tietze[TZ_MODIFIED] then
-	tietze[TZ_OCCUR]:=false;
+        tietze[TZ_OCCUR]:=false;
         # handle relators of length 1 or 2.
         TzHandleLength1Or2Relators( T );
         # sort the relators and print the status line.
@@ -2182,7 +2270,7 @@ InstallGlobalFunction( TzGeneratorExponents, function ( T )
                     tietze[TZ_TOTAL] := tietze[TZ_TOTAL] - length + exp;
                     flags[i] := 1;
                     tietze[TZ_MODIFIED] := true;
-		    tietze[TZ_OCCUR]:=false;
+                    tietze[TZ_OCCUR]:=false;
                 elif num1 < 0 then
                     rels[i] := List( rel, num -> -num );
                 fi;
@@ -3532,7 +3620,7 @@ InstallGlobalFunction( TzSearchEqual, function ( T )
     od;
 
     if modified then
-	tietze[TZ_OCCUR]:=false;
+        tietze[TZ_OCCUR]:=false;
         if tietze[TZ_TOTAL] < oldtotal then
             tietze[TZ_MODIFIED] := true;
             # handle relators of length 1 or 2.
@@ -3934,43 +4022,43 @@ local i, image, invword, j, newim, num, oldnumgens,replace,mn,oldi;
 
     elif n > 0 then
 
-	mn:=-n;
+        mn:=-n;
         # update the images of the old generators:
         # run through all images and replace the n-th generator by word.
         invword := -1 * Reversed( word );
-	oldi:=T!.imagesOldGens;
+        oldi:=T!.imagesOldGens;
         oldnumgens := Length( oldi );
         for i in [ 1 .. oldnumgens ] do
             image := oldi[i];
-	    if Length(image)=1 then
-	      # the image is a single generator. This happens often.
-	      if image[1]=n then
-	        oldi[i]:=ReducedRrsWord(word);
-	      elif image[1]=mn then
-	        oldi[i]:=ReducedRrsWord(invword);
-	      fi;
-	    else
-	      replace:=false;
-	      j:=1;
-	      while replace=false and j<=Length(image) do
-		replace:=image[j]=n or image[j]=mn;
-		j:=j+1;
-	      od;
-	      if replace then
-		newim := [];
-		replace:=false;
-		for j in [ 1 .. Length( image ) ] do
-		    if image[j] = n then
-			Append( newim, word );
-		    elif image[j] = mn then
-			Append( newim, invword );
-		    else
-			Add( newim, image[j] );
-		    fi;
-		od;
-		oldi[i] := ReducedRrsWord( newim );
-	      fi;
-	    fi;
+            if Length(image)=1 then
+              # the image is a single generator. This happens often.
+              if image[1]=n then
+                oldi[i]:=ReducedRrsWord(word);
+              elif image[1]=mn then
+                oldi[i]:=ReducedRrsWord(invword);
+              fi;
+            else
+              replace:=false;
+              j:=1;
+              while replace=false and j<=Length(image) do
+                replace:=image[j]=n or image[j]=mn;
+                j:=j+1;
+              od;
+              if replace then
+                newim := [];
+                replace:=false;
+                for j in [ 1 .. Length( image ) ] do
+                    if image[j] = n then
+                        Append( newim, word );
+                    elif image[j] = mn then
+                        Append( newim, invword );
+                    else
+                        Add( newim, image[j] );
+                    fi;
+                od;
+                oldi[i] := ReducedRrsWord( newim );
+              fi;
+            fi;
         od;
 
     else

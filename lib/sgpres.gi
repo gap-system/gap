@@ -216,7 +216,7 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
     fi;
 
     return NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(G),
-	    RelatorsOfFpGroup(G),GeneratorsOfGroup(H),true);
+            RelatorsOfFpGroup(G),GeneratorsOfGroup(H),true);
 end );
 
 
@@ -367,7 +367,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                 count := count - 2;
 
                 # set up the deduction queue and run over it until it's empty
-		deductions:=[];
+                deductions:=[];
                 deductions[1] := [i,j];
                 nrdeds := 1;
                 ded := 1;
@@ -387,7 +387,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                             # the tables and to the deductions lists.
                             EnterDeduction( );
                             if count <= 0 then
-			      return;
+                              return;
                             fi;
                         fi;
                     od;
@@ -449,8 +449,8 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             negTable[2*i] := negTable[2*i-1];
             coFacTable[2*i] := coFacTable[2*i-1];
         else
-	    negTable[2*i] := List( cosTable[2*i], x -> -x );
-	    coFacTable[2*i] := ListWithIdenticalEntries( index, 0 );
+            negTable[2*i] := List( cosTable[2*i], x -> -x );
+            coFacTable[2*i] := ListWithIdenticalEntries( index, 0 );
         fi;
     od;
     count := index * ( numcols - 2 ) + 2;
@@ -530,7 +530,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     ded := 1;
     while ded <= nrdeds  do
       if ded mod 50=0 then
-	CompletionBar(InfoFpGroup,2,"Queue: ",ded/nrdeds);
+        CompletionBar(InfoFpGroup,2,"Queue: ",ded/nrdeds);
       fi;
 
         # apply all relators that start with this generator
@@ -1248,9 +1248,9 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
             StandardizeTable( StructuralCopy( table ) );
         fi;
 
-	# apply the Reduced Reidemeister-Schreier method to construct an
-	# augmented RRS coset table of H.
-	aug := AugmentedCosetTableRrs( G, table, 2, string );
+        # apply the Reduced Reidemeister-Schreier method to construct an
+        # augmented RRS coset table of H.
+        aug := AugmentedCosetTableRrs( G, table, 2, string );
 
     else
 
@@ -1369,7 +1369,7 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
-			     aug.groupRelators);
+                             aug.groupRelators);
 
     return aug.subgroupRelators;
 
@@ -1429,7 +1429,7 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
-			     aug.groupRelators);
+                             aug.groupRelators);
 
     return aug.subgroupRelators;
 
@@ -1504,10 +1504,10 @@ InstallGlobalFunction( RenumberTree, function ( aug )
 if i > 1 and IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) then
 Error( "there is a bug in RenumberTree" ); fi;
 # --------------
-	    column := coFacTable[i];
-	    for j in [1..index] do
-		column[j] := convert[null+column[j]];
-	    od;
+            column := coFacTable[i];
+            for j in [1..index] do
+                column[j] := convert[null+column[j]];
+            od;
         od;
 
     fi;
@@ -1575,41 +1575,41 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
-	i:=0;
+        i:=0;
 #        for si in [ 1 .. NrSyllables(grel) ]  do
-#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-#	  nneg:=ExponentSyllable(grel,si)>0;
-#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-#	    i:=i+1;
-#	    if nneg then
-#	      nums[2*i]   := p-1;
-#	      nums[2*i-1] := p;
-#	      cols[2*i]   := cosTable[p-1];
-#	      cols[2*i-1] := cosTable[p];
-#	    else
-#	      nums[2*i]   := p;
-#	      nums[2*i-1] := p-1;
-#	      cols[2*i]   := cosTable[p];
-#	      cols[2*i-1] := cosTable[p-1];
-#	    fi;
-#	  od;
-#	od;
-	word:=LetterRepAssocWord(grel);
-	for si in [1..Length(word)] do
-	  p:=2*Position(ggensi,AbsInt(word[si]));
-	  i:=i+1;
-	  if word[si]>0 then
-	    nums[2*i]:=p-1;
-	    nums[2*i-1]:=p;
-	    cols[2*i]:=cosTable[p-1];
-	    cols[2*i-1]:=cosTable[p];
-	  else
-	    nums[2*i]:=p;
-	    nums[2*i-1]:=p-1;
-	    cols[2*i]:=cosTable[p];
-	    cols[2*i-1]:=cosTable[p-1];
-	  fi;
-	od;
+#         p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#         nneg:=ExponentSyllable(grel,si)>0;
+#         for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#           i:=i+1;
+#           if nneg then
+#             nums[2*i]   := p-1;
+#             nums[2*i-1] := p;
+#             cols[2*i]   := cosTable[p-1];
+#             cols[2*i-1] := cosTable[p];
+#           else
+#             nums[2*i]   := p;
+#             nums[2*i-1] := p-1;
+#             cols[2*i]   := cosTable[p];
+#             cols[2*i-1] := cosTable[p-1];
+#           fi;
+#         od;
+#       od;
+        word:=LetterRepAssocWord(grel);
+        for si in [1..Length(word)] do
+          p:=2*Position(ggensi,AbsInt(word[si]));
+          i:=i+1;
+          if word[si]>0 then
+            nums[2*i]:=p-1;
+            nums[2*i-1]:=p;
+            cols[2*i]:=cosTable[p-1];
+            cols[2*i-1]:=cosTable[p];
+          else
+            nums[2*i]:=p;
+            nums[2*i-1]:=p-1;
+            cols[2*i]:=cosTable[p];
+            cols[2*i-1]:=cosTable[p-1];
+          fi;
+        od;
 
         # loop over all cosets and determine the subgroup relators which are
         # induced by the current group relator.
@@ -1651,41 +1651,41 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
-	i:=0;
+        i:=0;
 #        for si in [ 1 .. NrSyllables(grel) ]  do
-#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-#	  nneg:=ExponentSyllable(grel,si)>0;
-#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-#	    i:=i+1;
-#	    if nneg then
-#	      nums[2*i]   := p-1;
-#	      nums[2*i-1] := p;
-#	      cols[2*i]   := cosTable[p-1];
-#	      cols[2*i-1] := cosTable[p];
-#	    else
-#	      nums[2*i]   := p;
-#	      nums[2*i-1] := p-1;
-#	      cols[2*i]   := cosTable[p];
-#	      cols[2*i-1] := cosTable[p-1];
-#	    fi;
-#	  od;
+#         p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#         nneg:=ExponentSyllable(grel,si)>0;
+#         for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#           i:=i+1;
+#           if nneg then
+#             nums[2*i]   := p-1;
+#             nums[2*i-1] := p;
+#             cols[2*i]   := cosTable[p-1];
+#             cols[2*i-1] := cosTable[p];
+#           else
+#             nums[2*i]   := p;
+#             nums[2*i-1] := p-1;
+#             cols[2*i]   := cosTable[p];
+#             cols[2*i-1] := cosTable[p-1];
+#           fi;
+#         od;
 #        od;
-	word:=LetterRepAssocWord(grel);
-	for si in [1..Length(word)] do
-	  p:=2*Position(ggensi,AbsInt(word[si]));
-	  i:=i+1;
-	  if word[si]>0 then
-	    nums[2*i]:=p-1;
-	    nums[2*i-1]:=p;
-	    cols[2*i]:=cosTable[p-1];
-	    cols[2*i-1]:=cosTable[p];
-	  else
-	    nums[2*i]:=p;
-	    nums[2*i-1]:=p-1;
-	    cols[2*i]:=cosTable[p];
-	    cols[2*i-1]:=cosTable[p-1];
-	  fi;
-	od;
+        word:=LetterRepAssocWord(grel);
+        for si in [1..Length(word)] do
+          p:=2*Position(ggensi,AbsInt(word[si]));
+          i:=i+1;
+          if word[si]>0 then
+            nums[2*i]:=p-1;
+            nums[2*i-1]:=p;
+            cols[2*i]:=cosTable[p-1];
+            cols[2*i-1]:=cosTable[p];
+          else
+            nums[2*i]:=p;
+            nums[2*i-1]:=p-1;
+            cols[2*i]:=cosTable[p];
+            cols[2*i-1]:=cosTable[p-1];
+          fi;
+        od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its invers (!) in rel.
@@ -1735,22 +1735,24 @@ end );
 
 #############################################################################
 ##
-#M  RewriteSubgroupRelators( <aug>, <prels> ) rewrite subgroup relators from
-#M                                                   an augmented coset table
+#M  RewriteSubgroupRelators( <aug>, <prels> [,<indices>] )
 ##
 ##  'RewriteSubgroupRelators'  is a subroutine  of the  Reduced Reidemeister-
 ##  Schreier and the  Modified Todd-Coxeter  routines.  It computes  a set of
 ##  subgroup relators from the coset factor table of an augmented coset table
 ##  and the  relators <prels> of the  parent  group.  It assumes  that  <aug>
 ##  is an augmented coset table of type 2.
+##  If <indices> are given only those cosets are used
 ##
 InstallGlobalFunction( RewriteSubgroupRelators,
-    function ( aug, prels )
+function (arg)
 
     local app2, coFacTable, cols, convert, cosTable, factor, ggensi,
           greli,grel, i, index, j, last, length, nums, numgens, p, rel, rels,
-          treelength, type,si,nneg,ei,word;
+          treelength, type,si,nneg,ei,word,aug,prels,indices;
 
+    aug:=arg[1];
+    prels:=arg[2];
     # check the type.
     type := aug.type;
     if type <> 2 then  Error( "invalid type; it should be 2" );  fi;
@@ -1760,6 +1762,11 @@ InstallGlobalFunction( RewriteSubgroupRelators,
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
+    if Length(arg)=2 then
+      indices:=[1..index];
+    else
+      indices:=arg[3];
+    fi;
     rels := [ ];
 
     # initialize the structure that is passed to 'ApplyRel2'
@@ -1781,45 +1788,45 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
-	i:=0;
+        i:=0;
 #        for si in [ 1 .. NrSyllables(grel) ]  do
-#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-#	  nneg:=ExponentSyllable(grel,si)>0;
-#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-#	    i:=i+1;
-#	    if nneg then
-#	      nums[2*i]   := p-1;
-#	      nums[2*i-1] := p;
-#	      cols[2*i]   := cosTable[p-1];
-#	      cols[2*i-1] := cosTable[p];
-#	    else
-#	      nums[2*i]   := p;
-#	      nums[2*i-1] := p-1;
-#	      cols[2*i]   := cosTable[p];
-#	      cols[2*i-1] := cosTable[p-1];
-#	    fi;
-#	  od;
-#	od;
-	word:=LetterRepAssocWord(grel);
-	for si in [1..Length(word)] do
-	  p:=2*Position(ggensi,AbsInt(word[si]));
-	  i:=i+1;
-	  if word[si]>0 then
-	    nums[2*i]:=p-1;
-	    nums[2*i-1]:=p;
-	    cols[2*i]:=cosTable[p-1];
-	    cols[2*i-1]:=cosTable[p];
-	  else
-	    nums[2*i]:=p;
-	    nums[2*i-1]:=p-1;
-	    cols[2*i]:=cosTable[p];
-	    cols[2*i-1]:=cosTable[p-1];
-	  fi;
-	od;
+#         p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#         nneg:=ExponentSyllable(grel,si)>0;
+#         for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#           i:=i+1;
+#           if nneg then
+#             nums[2*i]   := p-1;
+#             nums[2*i-1] := p;
+#             cols[2*i]   := cosTable[p-1];
+#             cols[2*i-1] := cosTable[p];
+#           else
+#             nums[2*i]   := p;
+#             nums[2*i-1] := p-1;
+#             cols[2*i]   := cosTable[p];
+#             cols[2*i-1] := cosTable[p-1];
+#           fi;
+#         od;
+#       od;
+        word:=LetterRepAssocWord(grel);
+        for si in [1..Length(word)] do
+          p:=2*Position(ggensi,AbsInt(word[si]));
+          i:=i+1;
+          if word[si]>0 then
+            nums[2*i]:=p-1;
+            nums[2*i-1]:=p;
+            cols[2*i]:=cosTable[p-1];
+            cols[2*i-1]:=cosTable[p];
+          else
+            nums[2*i]:=p;
+            nums[2*i-1]:=p-1;
+            cols[2*i]:=cosTable[p];
+            cols[2*i-1]:=cosTable[p-1];
+          fi;
+        od;
 
         # loop over all cosets and determine the subgroup relators which are
         # induced by the current group relator.
-        for i in [ 1 .. index ] do
+        for i in indices do
 
             # scan the ith coset through the current group relator and
             # collect the factors of its inverse (!) in rel.
@@ -1835,7 +1842,7 @@ InstallGlobalFunction( RewriteSubgroupRelators,
             if last > 0 then
                 MakeCanonical( rel );
                 if Length( rel ) > 0 and not rel in rels then
-                    AddSet( rels, CopyRel( rel ) );
+                    AddSet( rels, Immutable(CopyRel( rel ) ));
                 fi;
             fi;
         od;
@@ -1858,41 +1865,41 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
-	i:=0;
+        i:=0;
 #        for si in [ 1 .. NrSyllables(grel) ]  do
-#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-#	  nneg:=ExponentSyllable(grel,si)>0;
-#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-#	    i:=i+1;
-#	    if nneg then
-#	      nums[2*i]   := p-1;
-#	      nums[2*i-1] := p;
-#	      cols[2*i]   := cosTable[p-1];
-#	      cols[2*i-1] := cosTable[p];
-#	    else
-#	      nums[2*i]   := p;
-#	      nums[2*i-1] := p-1;
-#	      cols[2*i]   := cosTable[p];
-#	      cols[2*i-1] := cosTable[p-1];
-#	    fi;
-#	  od;
+#         p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#         nneg:=ExponentSyllable(grel,si)>0;
+#         for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#           i:=i+1;
+#           if nneg then
+#             nums[2*i]   := p-1;
+#             nums[2*i-1] := p;
+#             cols[2*i]   := cosTable[p-1];
+#             cols[2*i-1] := cosTable[p];
+#           else
+#             nums[2*i]   := p;
+#             nums[2*i-1] := p-1;
+#             cols[2*i]   := cosTable[p];
+#             cols[2*i-1] := cosTable[p-1];
+#           fi;
+#         od;
 #        od;
-	word:=LetterRepAssocWord(grel);
-	for si in [1..Length(word)] do
-	  p:=2*Position(ggensi,AbsInt(word[si]));
-	  i:=i+1;
-	  if word[si]>0 then
-	    nums[2*i]:=p-1;
-	    nums[2*i-1]:=p;
-	    cols[2*i]:=cosTable[p-1];
-	    cols[2*i-1]:=cosTable[p];
-	  else
-	    nums[2*i]:=p;
-	    nums[2*i-1]:=p-1;
-	    cols[2*i]:=cosTable[p];
-	    cols[2*i-1]:=cosTable[p-1];
-	  fi;
-	od;
+        word:=LetterRepAssocWord(grel);
+        for si in [1..Length(word)] do
+          p:=2*Position(ggensi,AbsInt(word[si]));
+          i:=i+1;
+          if word[si]>0 then
+            nums[2*i]:=p-1;
+            nums[2*i-1]:=p;
+            cols[2*i]:=cosTable[p-1];
+            cols[2*i-1]:=cosTable[p];
+          else
+            nums[2*i]:=p;
+            nums[2*i-1]:=p-1;
+            cols[2*i]:=cosTable[p];
+            cols[2*i-1]:=cosTable[p-1];
+          fi;
+        od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its inverse (!) in rel.
@@ -1916,15 +1923,18 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         if last > 0 then
             MakeCanonical( rel );
             if Length( rel ) > 0 and not rel in rels then
-                AddSet( rels, CopyRel( rel ) );
+                AddSet( rels, Immutable(CopyRel(rel)));
             fi;
         fi;
       else
         # trivial generator
-	AddSet(rels,[j]);
+        AddSet(rels,[j]);
       fi;
     od;
     CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
+
+    # make mutable again to overwrite
+    rels:=List(rels,ShallowCopy);
 
     # renumber the generators in the relators, if necessary.
     numgens := Length( aug.subgroupGenerators );
@@ -2075,7 +2085,7 @@ local cft, ct, w,l,c,i,j,g,e,ind;
   #  for j in [1..e] do
   #    # apply the generator, collect cofactor
   #    if cft[ind][c]<>0 then
-#	Add(w,cft[ind][c]); #cofactor
+#       Add(w,cft[ind][c]); #cofactor
 #      fi;
 #      c:=ct[ind][c]; # new coset number
 #    od;
@@ -2153,8 +2163,8 @@ local tt,i,t1,t2,tn;
     tn:=aug.treeNumbers;
     if Length(tn)>0 then
       for i in [Length(tt)+1..Maximum(tn)] do
-	tt[i]:=tt[AbsInt(t1[i])]^SignInt(t1[i])
-	      *tt[AbsInt(t2[i])]^SignInt(t2[i]);
+        tt[i]:=tt[AbsInt(t1[i])]^SignInt(t1[i])
+              *tt[AbsInt(t2[i])]^SignInt(t2[i]);
       od;
     fi;
     aug.translationTable:=Immutable(tt);
@@ -2195,26 +2205,26 @@ local t,j;
       "index", "n", "offset", "primaryImages", "rels",
       "secondary", "secount", "secondaryImages", "subgens" ] do
       if IsBound(aug.(j)) then
-	t.(j):=aug.(j);
+        t.(j):=aug.(j);
       fi;
     od;
   else
     # old version
     t:=rec(
-	    isAugmentedCosetTable:=true,
-	    type:=aug.type,
-	    tableType:=aug.tableType,
-	    groupGenerators:=aug.groupGenerators,
-	    groupRelators:=aug.groupRelators,
-	    cosetTable:=aug.cosetTable,
-	    cosetFactorTable:=aug.cosetFactorTable,
-	    primaryGeneratorWords:=aug.primaryGeneratorWords,
-	    tree:=aug.tree,
-	    treeNumbers:=aug.treeNumbers,
-	    numberOfSubgroupGenerators:=aug.numberOfSubgroupGenerators,
-	    nameOfSubgroupGenerators:=aug.nameOfSubgroupGenerators,
-	    subgroupGenerators:=aug.subgroupGenerators
-	  );
+            isAugmentedCosetTable:=true,
+            type:=aug.type,
+            tableType:=aug.tableType,
+            groupGenerators:=aug.groupGenerators,
+            groupRelators:=aug.groupRelators,
+            cosetTable:=aug.cosetTable,
+            cosetFactorTable:=aug.cosetFactorTable,
+            primaryGeneratorWords:=aug.primaryGeneratorWords,
+            tree:=aug.tree,
+            treeNumbers:=aug.treeNumbers,
+            numberOfSubgroupGenerators:=aug.numberOfSubgroupGenerators,
+            nameOfSubgroupGenerators:=aug.nameOfSubgroupGenerators,
+            subgroupGenerators:=aug.subgroupGenerators
+          );
     if IsBound(aug.secondaryWords) then
       t.secondaryWords:=Immutable(aug.secondaryWords);
     fi;
@@ -2242,6 +2252,12 @@ end);
 # Holt (refered # to as "Handbook" from here on). Function names after the
 # NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.
 
+NEWTC_AddDeduction:=function(list,ded)
+  if not ded in list then
+    Add(list,ded);
+  fi;
+end;
+
 # the tables produced internally are indexed at rec.offset+k for generator
 # number k, that is in the form ...,-2,-1,empty,1,2,...
 # This avoids lots of even/od decisions and the cost of the empty list is
@@ -2265,37 +2281,37 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
       c:=c+1;
       to[a]:=c;
       if c<>a then
-	for x in DATA.A do
-	  if ct[x+offset][a]<>0 then;
-	    b:=ct[x+offset][a];
-	    if b=a then b:=c;fi;
-	    ct[x+offset][c]:=b;
-	    ct[-x+offset][b]:=c;
-	    if doa then
-	      # transfer augemented entry
-	      aug[x+offset][c]:=aug[x+offset][a];
-	    fi;
-	  else
-	    # clear out
-	    ct[x+offset][c]:=0;
-	    if doa then
-	      Unbind(aug[x+offset][c]);
-	    fi;
-	  fi;
-	od;
-	if dw then
-	  DATA.with[c]:=DATA.with[a];
-	  b:=DATA.from[a];
-	  while b<>to[b] do
-	    b:=to[b];
-	  od;
-	  DATA.from[c]:=b;
-	fi;
+        for x in DATA.A do
+          if ct[x+offset][a]<>0 then;
+            b:=ct[x+offset][a];
+            if b=a then b:=c;fi;
+            ct[x+offset][c]:=b;
+            ct[-x+offset][b]:=c;
+            if doa then
+              # transfer augemented entry
+              aug[x+offset][c]:=aug[x+offset][a];
+            fi;
+          else
+            # clear out
+            ct[x+offset][c]:=0;
+            if doa then
+              Unbind(aug[x+offset][c]);
+            fi;
+          fi;
+        od;
+        if dw then
+          DATA.with[c]:=DATA.with[a];
+          b:=DATA.from[a];
+          while b<>to[b] do
+            b:=to[b];
+          od;
+          DATA.from[c]:=b;
+        fi;
       fi;
     else
       b:=a;
       while p[b]<>b do
-	b:=p[b];
+        b:=p[b];
       od;
       to[a]:=b;
     fi;
@@ -2303,16 +2319,16 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
   if purge then
     for x in DATA.A do
       for a in [Length(ct[x+offset]),Length(ct[x+offset])-1..c+1] do
-	Unbind(ct[x+offset][a]);
-	if doa then
-	  Unbind(aug[x+offset][a]);
-	fi;
+        Unbind(ct[x+offset][a]);
+        if doa then
+          Unbind(aug[x+offset][a]);
+        fi;
       od;
     od;
     if dw then
       for a in [Length(DATA.with),Length(DATA.with)-1..c+1] do
-	Unbind(DATA.with[a]);
-	Unbind(DATA.from[a]);
+        Unbind(DATA.with[a]);
+        Unbind(DATA.from[a]);
       od;
     fi;
   fi;
@@ -2320,9 +2336,9 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
   if IsBound(DATA.ds) then
     for x in DATA.ds do
       a:=to[x[1]];
-	while x[1]<>a do
+        while x[1]<>a do
         x[1]:=a;
-	a:=to[a];
+        a:=to[a];
       od;
     od;
     Assert(2,Maximum(List(DATA.ds,x->x[1]))<=c);
@@ -2347,7 +2363,7 @@ local c,o,n,j,au;
   if n>DATA.limit then
     if ValueOption("quiet")=true then return fail;fi;
     Error( "the coset enumeration has defined more ",
-	    "than ", DATA.limit, " cosets\n");
+            "than ", DATA.limit, " cosets\n");
     DATA.limit:=DATA.limit*2;
     DATA.limtrigger:=Int(9/10*DATA.limit);
   fi;
@@ -2364,7 +2380,7 @@ local c,o,n,j,au;
     DATA.pp[n]:=DATA.one;
   fi;
 
-  Add(DATA.deductions,[i,a]);
+  NEWTC_AddDeduction(DATA.deductions,[i,a]);
   #if IsBound(DATA.ds) then Add(DATA.ds,[i,a]); fi;
   DATA.defcount:=DATA.defcount+1;
   if IsBound(DATA.with) then
@@ -2422,19 +2438,19 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
     #RemoveSet(DATA.omega,c);
     for x in DATA.A do
       if ct[x+offset][c]<>0 then
-	d:=ct[x+offset][c];
-	ct[-x+offset][d]:=0;
-	mu:=Rep(c);
-	nu:=Rep(d);
-	if ct[x+offset][mu]<>0 then
-	  Merge(nu,ct[x+offset][mu]);
-	elif ct[-x+offset][nu]<>0 then
-	  Merge(mu,ct[-x+offset][nu]);
-	else
-	  ct[x+offset][mu]:=nu;
-	  ct[-x+offset][nu]:=mu;
-	  Add(DATA.deductions,[mu,x]);
-	fi;
+        d:=ct[x+offset][c];
+        ct[-x+offset][d]:=0;
+        mu:=Rep(c);
+        nu:=Rep(d);
+        if ct[x+offset][mu]<>0 then
+          Merge(nu,ct[x+offset][mu]);
+        elif ct[-x+offset][nu]<>0 then
+          Merge(mu,ct[-x+offset][nu]);
+        else
+          ct[x+offset][mu]:=nu;
+          ct[-x+offset][nu]:=mu;
+	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
+        fi;
       fi;
     od;
   od;
@@ -2473,9 +2489,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
       rho:=s[mu];
       p[rho]:=lambda;
       if DATA.useAddition then
-	pp[rho]:=pp[rho]+pp[mu];
+        pp[rho]:=pp[rho]+pp[mu];
       else
-	pp[rho]:=Sekundant(WordProductLetterRep(pp[rho],pp[mu]));
+        pp[rho]:=Sekundant(WordProductLetterRep(pp[rho],pp[mu]));
       fi;
     od;
     return lambda;
@@ -2488,9 +2504,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
     if phi>psi then
       p[phi]:=psi;
       if DATA.useAddition then
-	pp[phi]:=-pp[k]+w+pp[a];
+        pp[phi]:=-pp[k]+w+pp[a];
       else
-	pp[phi]:=Sekundant(WordProductLetterRep(-Reversed(pp[k]),w,pp[a]));
+        pp[phi]:=Sekundant(WordProductLetterRep(-Reversed(pp[k]),w,pp[a]));
       fi;
       l:=l+1;
       q[l]:=phi;
@@ -2498,9 +2514,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
     elif psi>phi then
       p[psi]:=phi;
       if DATA.useAddition then
-	pp[psi]:=-pp[a]-w+pp[k];
+        pp[psi]:=-pp[a]-w+pp[k];
       else
-	pp[psi]:=Sekundant(WordProductLetterRep(-Reversed(pp[a]),-Reversed(w),pp[k]));
+        pp[psi]:=Sekundant(WordProductLetterRep(-Reversed(pp[a]),-Reversed(w),pp[k]));
       fi;
       l:=l+1;
       q[l]:=psi;
@@ -2553,7 +2569,7 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
 	    aug[x+offset][mu]:=v;
 	    aug[-x+offset][nu]:=-Reversed(v);
 	  fi;
-	  Add(DATA.deductions,[mu,x]);
+	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
 	fi;
       fi;
     od;
@@ -2621,7 +2637,7 @@ local c,offset,f,b,r,i,j,t;
     # deduction
     c[w[i]+offset][f]:=b;
     c[-w[i]+offset][b]:=f;
-    Add(DATA.deductions,[f,w[i]]);
+    NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
   fi;
   return;
 
@@ -2662,10 +2678,14 @@ end;
 
 NEWTC_ModifiedScan:=function(DATA,alpha,w,y)
 local c,offset,f,b,r,i,j,fp,bp,t;
+  #Info(InfoFpGroup,3,"MS",alpha,w,y,"\n");
   c:=DATA.ct;
   offset:=DATA.offset;
   t:=TC_QUICK_SCAN(c,offset,alpha,w,DATA.scandata);
-  if t=false then return; fi;
+  if t=false then 
+    return;
+  fi;
+
 
   f:=alpha;i:=1;
   fp:=DATA.one;
@@ -2683,13 +2703,14 @@ local c,offset,f,b,r,i,j,fp,bp,t;
   if i>r then
     if f<>alpha then
       if DATA.useAddition then
-	NEWTC_ModifiedCoincidence(DATA,f,alpha,-fp+y);
+        NEWTC_ModifiedCoincidence(DATA,f,alpha,-fp+y);
       else
-	NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+        NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
       fi;
     fi;
     return;
   fi;
+  #Info(InfoFpGroup,3,"MS2\n");
 
   #backward scan
   b:=alpha;j:=r;
@@ -2720,7 +2741,7 @@ local c,offset,f,b,r,i,j,fp,bp,t;
       DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
       DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
     fi;
-    Add(DATA.deductions,[f,w[i]]);
+    NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
   fi;
 end;
 
@@ -2739,7 +2760,7 @@ local c,offset,f,b,r,i,j;
     od;
     if i>r then
       if f<>alpha then
-	NEWTC_Coincidence(DATA,f,alpha);
+        NEWTC_Coincidence(DATA,f,alpha);
       fi;
       return;
     fi;
@@ -2756,7 +2777,7 @@ local c,offset,f,b,r,i,j;
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
-      Add(DATA.deductions,[f,w[i]]);
+      NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
       return;
     else
       NEWTC_Define(DATA,f,w[i]);
@@ -2777,16 +2798,16 @@ local c,offset,f,b,r,i,j,fp,bp;
     # forward scan
     while i<=r and c[w[i]+offset][f]<>0 do
       if DATA.useAddition then
-	fp:=fp+DATA.aug[w[i]+offset][f];
+        fp:=fp+DATA.aug[w[i]+offset][f];
       else
-	fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
+        fp:=WordProductLetterRep(fp,DATA.aug[w[i]+offset][f]);
       fi;
       f:=c[w[i]+offset][f];
       i:=i+1;
     od;
     if i>r then
       if f<>alpha then
-	NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+        NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
       fi;
       return;
     fi;
@@ -2794,31 +2815,31 @@ local c,offset,f,b,r,i,j,fp,bp;
     #backward scan
     while j>=i and c[-w[j]+offset][b]<>0 do
       if DATA.useAddition then
-	bp:=bp+DATA.aug[-w[j]+offset][b];
+        bp:=bp+DATA.aug[-w[j]+offset][b];
       else
-	bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
+        bp:=WordProductLetterRep(bp,DATA.aug[-w[j]+offset][b]);
       fi;
       b:=c[-w[j]+offset][b];
       j:=j-1;
     od;
     if j<i then 
       if DATA.useAddition then
-	NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
+        NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
       else
-	NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
+        NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
       fi;
     elif j=i then 
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
       if DATA.useAddition then
-	DATA.aug[w[i]+offset][f]:=-fp+bp;
-	DATA.aug[-w[i]+offset][b]:=-bp+fp;
+        DATA.aug[w[i]+offset][f]:=-fp+bp;
+        DATA.aug[-w[i]+offset][b]:=-bp+fp;
       else
-	DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
-	DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
+        DATA.aug[w[i]+offset][f]:=WordProductLetterRep(-Reversed(fp),bp);
+        DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
       fi;
-      Add(DATA.deductions,[f,w[i]]);
+      NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
       return;
     else
       NEWTC_Define(DATA,f,w[i]);
@@ -2838,29 +2859,29 @@ local ded,offset,pair,alpha,x,p,w;
     alpha:=pair[1];x:=pair[2];
     if p[alpha]=alpha then
       for w in DATA.ccr[x+offset] do
-	if DATA.augmented then
-	  NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
-	else
-	  NEWTC_Scan(DATA,alpha,w);
-	fi;
-	if p[alpha]<alpha then 
-	  break; # coset has been eliminated
-	fi;
+        if DATA.augmented then
+          NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
+        else
+          NEWTC_Scan(DATA,alpha,w);
+        fi;
+        if p[alpha]<alpha then 
+          break; # coset has been eliminated
+        fi;
       od;
     fi;
     if p[alpha]=alpha then
       alpha:=DATA.ct[x+offset][alpha]; # beta
       if p[alpha]=alpha then
-	for w in DATA.ccr[x+offset] do
-	  if DATA.augmented then
-	    NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
-	  else
-	    NEWTC_Scan(DATA,alpha,w);
-	  fi;
-	  if p[alpha]<alpha then 
-	    break; # coset has been eliminated
-	  fi;
-	od;
+        for w in DATA.ccr[x+offset] do
+          if DATA.augmented then
+            NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
+          else
+            NEWTC_Scan(DATA,alpha,w);
+          fi;
+          if p[alpha]<alpha then 
+            break; # coset has been eliminated
+          fi;
+        od;
       fi;
     fi;
   od;
@@ -2868,7 +2889,7 @@ end;
 
 NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap;
 
   PERCFACT:=100;
 
@@ -2905,11 +2926,11 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   collapse:=[];
   DATA:=rec(ct:=ct,p:=p,ccr:=ccr,rels:=List(rels,LetterRepAssocWord),
          subgens:=subgens,
-	 subgword:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
-	 n:=n,offset:=offset,A:=A,limit:=2^23,
-	 deductions:=[],dead:=0,defcount:=0,
-	 # a global list for the kernel scan function to return 4 variables
-	 scandata:=[0,0,0,0]);
+         subgword:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
+         n:=n,offset:=offset,A:=A,limit:=2^23,
+         deductions:=[],dead:=0,defcount:=0,
+         # a global list for the kernel scan function to return 4 variables
+         scandata:=[0,0,0,0]);
 
   i:=ValueOption("limit");
   if i<>fail and Int(i)<>fail then
@@ -2957,13 +2978,13 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   for w in [1..Length(subgens)] do
     if DATA.augmented then
       if DATA.isCyclicMtcTable then
-	NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
+        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
       elif DATA.isAbelianizedMtcTable then
-	i:=ShallowCopy(DATA.one);
-	i[w]:=1;
-	NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
+        i:=ShallowCopy(DATA.one);
+        i[w]:=1;
+        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
       else
-	NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
+        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
       fi;
     else
       NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
@@ -2978,18 +2999,24 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
     #trace:=Concatenation(trace,ri); #don't seem to help
     for w in trace do
       if IsList(w[1]) then
-	w:=w[1]; # get word from value
+        w:=w[1]; # get word from value
       fi;
-      i:=1;
-      for a in w do
-	if ct[a+offset][i]=0 then
-	  dr:=NEWTC_Define(DATA,i,a);
-	  if dr=fail then return fail;fi;
-	  NEWTC_ProcessDeductions(DATA);
-	  i:=p[i]; # in case there is a change
-	fi;
-	i:=ct[a+offset][i];
-      od;
+      repeat
+	i:=1;
+	ap:=1;
+	while ap<=Length(w) do
+	  a:=w[ap];
+	  if ct[a+offset][i]=0 then
+	    dr:=NEWTC_Define(DATA,i,a);
+	    if dr=fail then return fail;fi;
+	    NEWTC_ProcessDeductions(DATA);
+	    #i:=p[i]; # in case there is a change
+	    ap:=Length(w)+10;
+	  fi;
+	  i:=ct[a+offset][i];
+	  ap:=ap+1;
+	od;
+      until ap=Length(w)+1;
     od;
   fi;
 
@@ -2997,73 +3024,73 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   while i<=DATA.n do
     for a in A do
       if p[i]=i then
-	if ct[a+offset][i]=0 then
-	  dr:=NEWTC_Define(DATA,i,a);
-	  if dr=fail then return fail;fi;
-	  oldead:=DATA.dead;
-	  NEWTC_ProcessDeductions(DATA);
-	  if PERCFACT*(DATA.dead-oldead)>DATA.n then
-	    if DATA.n>1000 then
-	      Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
-	      "\t\t", DATA.n-DATA.dead, "\t\t", DATA.n );
-	    fi;
-	    if IsBound(DATA.with) then
-	      # collapse -- find collapse word
-	      # in two different ways (as they can differ after compression)
+        if ct[a+offset][i]=0 then
+          dr:=NEWTC_Define(DATA,i,a);
+          if dr=fail then return fail;fi;
+          oldead:=DATA.dead;
+          NEWTC_ProcessDeductions(DATA);
+          if PERCFACT*(DATA.dead-oldead)>DATA.n then
+            if DATA.n>1000 then
+              Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
+              "\t\t", DATA.n-DATA.dead, "\t\t", DATA.n );
+            fi;
+            if IsBound(DATA.with) then
+              # collapse -- find collapse word
+              # in two different ways (as they can differ after compression)
 
-	      # first trace through the coset table, this uses the prior
-	      # reductions
-	      j:=i;
-	      while j<>p[j] do
-		j:=p[j];
-	      od;
-	      w:=[a]; # last letter added
-	      while j<>1 do
-		Assert(2,j=p[j]);
-		Add(w,with[j]);
-		Assert(2,0<>ct[-with[j]+offset][j]);
-		j:=ct[-with[j]+offset][j]; # unapply this generator
-	      od;
+              # first trace through the coset table, this uses the prior
+              # reductions
+              j:=i;
+              while j<>p[j] do
+                j:=p[j];
+              od;
+              w:=[a]; # last letter added
+              while j<>1 do
+                Assert(2,j=p[j]);
+                Add(w,with[j]);
+                Assert(2,0<>ct[-with[j]+offset][j]);
+                j:=ct[-with[j]+offset][j]; # unapply this generator
+              od;
 
-	      # free reduce -- partial collapse can lead to not free cancellation
-	      # and fix order
-	      w:=Reversed(FreelyReducedLetterRepWord(w));
-	      #w1:=w;
+              # free reduce -- partial collapse can lead to not free cancellation
+              # and fix order
+              w:=Reversed(FreelyReducedLetterRepWord(w));
+              #w1:=w;
 
-	      j:=PositionProperty(collapse,x->x[1]=w);
-	      if j=fail then
-		Add(collapse,[w,DATA.dead-oldead]); # word that caused a collapse
-	      else
-		collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
-	      fi;
+              j:=PositionProperty(collapse,x->x[1]=w);
+              if j=fail then
+                Add(collapse,[w,DATA.dead-oldead]); # word that caused a collapse
+              else
+                collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
+              fi;
 
-	      # now use the `from' list (which does not collapse under
-	      # coincidences, only under compression) and not the coset table,
-	      #  as it # keeps the old definition order, not yet using coincidence
-	      j:=i;
-	      w:=[a]; # last letter added
-	      while j<>1 do
-		Add(w,with[j]);
-		j:=from[j];
-	      od;
+              # now use the `from' list (which does not collapse under
+              # coincidences, only under compression) and not the coset table,
+              #  as it # keeps the old definition order, not yet using coincidence
+              j:=i;
+              w:=[a]; # last letter added
+              while j<>1 do
+                Add(w,with[j]);
+                j:=from[j];
+              od;
 
-	      # free reduce -- partial collapse can lead to not free
-	      # cancellation and fix order
-	      w:=Reversed(FreelyReducedLetterRepWord(w));
+              # free reduce -- partial collapse can lead to not free
+              # cancellation and fix order
+              w:=Reversed(FreelyReducedLetterRepWord(w));
 
-	      j:=PositionProperty(collapse,x->x[1]=w);
-	      if j=fail then
-		Add(collapse,[w,DATA.dead-oldead]); # word caused collapse
-	      else
-		collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
-	      fi;
+              j:=PositionProperty(collapse,x->x[1]=w);
+              if j=fail then
+                Add(collapse,[w,DATA.dead-oldead]); # word caused collapse
+              else
+                collapse[j][2]:=Maximum(collapse[j][2],DATA.dead-oldead);
+              fi;
 
-	      Info(InfoFpGroup,3,"collapse ",DATA.dead-oldead);
+              Info(InfoFpGroup,3,"collapse ",DATA.dead-oldead);
 
-	    fi;
-	  fi;
+            fi;
+          fi;
 
-	fi;
+        fi;
       fi;
     od;
 
@@ -3080,10 +3107,10 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
       NEWTC_Compress(DATA,false);
       p:=DATA.p;
       if DATA.augmented then
-	pp:=DATA.pp;
+        pp:=DATA.pp;
       fi;
       if DATA.n>DATA.limtrigger then
-	DATA.limtrigger:=Maximum(DATA.limit-1,DATA.n+2);
+        DATA.limtrigger:=Maximum(DATA.limit-1,DATA.n+2);
       fi;
     fi;
 
@@ -3097,11 +3124,11 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
     Info(InfoFpGroup,3,DATA.defcount," definitions");
     # which collapses gave at least 1%
     collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n and not x in trace and
-	       # not prefix of any trace
-	       not ForAny(trace,y->y[1]{[1..Minimum(Length(x),Length(y[1]))]}=x
-	       # or proper prefix of another in collapse
-	       and not ForAny(collapse,y->Length(y)>Length(x) and
-		y{[1..Length(x)]}=x)));
+               # not prefix of any trace
+               not ForAny(trace,y->y[1]{[1..Minimum(Length(x),Length(y[1]))]}=x
+               # or proper prefix of another in collapse
+               and not ForAny(collapse,y->Length(y)>Length(x) and
+                y{[1..Length(x)]}=x)));
     if Length(collapse)>0 then
       # give list for improvement
       # type is c_ollapse
@@ -3159,26 +3186,26 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
       #up<=2 do
       ldc:=e.defcount;
       if first=true then
-	first:=e.defcount;
-	Info(InfoFpGroup,1,"optimize definition sequence");
+        first:=e.defcount;
+        Info(InfoFpGroup,1,"optimize definition sequence");
       fi;
-      Append(trace,e.collapse);
+      Append(trace,Filtered(e.collapse,x->x[2]>2));
       SortBy(trace,x->-x[2]);
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace:
-	  # that's what we had last time -- no need to whine
-	  limit:=e.limit);
+          # that's what we had last time -- no need to whine
+          limit:=e.limit);
       if e=fail then return fail;fi;
-      if e.defcount<bl then
+      if e.defcount/bl<98/100 then
 	bl:=e.defcount;
 	bw:=ShallowCopy(trace);
       fi;
 
       # 2% improvement threshold
       if 102/100*e.defcount<=ldc then
-	up:=0;
-	start:=timerFunc();
+        up:=0;
+        start:=timerFunc();
       else
-	up:=up+1;
+        up:=up+1;
       fi;
     od;
     if first<>true then
@@ -3187,8 +3214,8 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     if aug then 
       # finally do the augmented with best
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,true,bw:
-	  # that's what we had last time -- no need to whine
-	  limit:=e.limit);
+          # that's what we had last time -- no need to whine
+          limit:=e.limit);
       if e=fail then return fail;fi;
     fi;
   fi;
@@ -3205,23 +3232,23 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
   fi;
 
   aug:=rec(isNewAugmentedTable:=true,
-	   isCyclicMtcTable:=e.data.isCyclicMtcTable,
-	   isAbelianizedMtcTable:=e.data.isAbelianizedMtcTable,
+           isCyclicMtcTable:=e.data.isCyclicMtcTable,
+           isAbelianizedMtcTable:=e.data.isAbelianizedMtcTable,
            useAddition:=e.data.useAddition,
-	   n:=e.data.n,
-	   A:=e.data.A,
-	   index:=e.data.index,
-	   rels:=e.data.rels,
-	   ct:=e.data.ct,
-	   one:=e.data.one,
-	   aug:=e.data.aug,
-	   defcount:=e.data.defcount,
-	   secount:=e.data.secount,
-	   secondary:=e.data.secondary,
-	   subgens:=e.data.subgens,
+           n:=e.data.n,
+           A:=e.data.A,
+           index:=e.data.index,
+           rels:=e.data.rels,
+           ct:=e.data.ct,
+           one:=e.data.one,
+           aug:=e.data.aug,
+           defcount:=e.data.defcount,
+           secount:=e.data.secount,
+           secondary:=e.data.secondary,
+           subgens:=e.data.subgens,
            subgword:=e.data.subgword,
            offset:=e.data.offset
-	      );
+              );
   if IsBound(e.data.from) then
     aug.from:=e.data.from;
   fi;
@@ -3312,7 +3339,7 @@ local rels,r,i,w,subnum;
     for w in DATA.rels do
       r:=NEWTC_Rewrite(DATA,i,w);
       if not IsZero(r) and not r in rels and not -r in rels then
-	AddSet(rels,r);
+        AddSet(rels,r);
       fi;
     od;
   od;
@@ -3356,7 +3383,9 @@ end );
 
 # DATA, [parameter,string]
 # parameter is: 
+# 0: Full reduction
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
+# -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
 local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   subnum,bad,warn,parameter,str;
@@ -3386,61 +3415,68 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
   od;
 
   stack:=[];
-  for i in [1..DATA.n] do
-    CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
-    for w in DATA.rels do
-      r:=NEWTC_Rewrite(DATA,i,w);
-      MakeCanonical(r);
 
-      # reduce with others
-      for j in rels do
-	r:=NEWTC_ReplacedStringCyclic(r,j);
-	r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
+  if parameter<>-1 then
+
+    for i in [1..DATA.n] do
+      CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
+      for w in DATA.rels do
+        r:=NEWTC_Rewrite(DATA,i,w);
+        MakeCanonical(r);
+
+        ri:=Length(r);
+        # reduce with others
+        for j in rels do
+          r:=NEWTC_ReplacedStringCyclic(r,j);
+          r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
+        od;
+        Info(InfoFpGroup,3,"Relatorlen ",ri,"->",Length(r));
+
+        if Length(r)>0 then
+          Add(stack,r);
+          while Length(stack)>0 do
+            r:=stack[Length(stack)];
+            Unbind(stack[Length(stack)]);
+            ri:=-Reversed(r);
+            rset:=Set([r,ri]);
+            # reduce others
+            j:=1;
+            while j<=Length(rels) do
+              s:=rels[j];
+              for re in rset do;
+                s:=NEWTC_ReplacedStringCyclic(s,re);
+              od;
+              if not IsIdenticalObj(s,rels[j]) then
+                if Length(s)>0 then
+                  Add(stack,s);
+                fi;
+                rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
+              else
+                j:=j+1;
+              fi;
+            od;
+
+            Add(rels,r);
+            SortBy(rels,Length);
+
+            # does it occur in the augmented table?
+            for a in DATA.A do
+              for j in [1..DATA.n] do
+                s:=DATA.aug[a+offset][j];
+                if Length(s)>=Length(r) then
+                  for re in rset do
+                    s:=NEWTC_ReplacedStringCyclic(s,re);
+                  od;
+                  DATA.aug[a+offset][j]:=s;
+                fi;
+              od;
+            od;
+          od;
+        fi;
       od;
-      if Length(r)>0 then
-	Add(stack,r);
-	while Length(stack)>0 do
-	  r:=stack[Length(stack)];
-	  Unbind(stack[Length(stack)]);
-	  ri:=-Reversed(r);
-	  rset:=Set([r,ri]);
-	  # reduce others
-	  j:=1;
-	  while j<=Length(rels) do
-	    s:=rels[j];
-	    for re in rset do;
-	      s:=NEWTC_ReplacedStringCyclic(s,re);
-	    od;
-	    if not IsIdenticalObj(s,rels[j]) then
-	      if Length(s)>0 then
-		Add(stack,s);
-	      fi;
-	      rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
-	    else
-	      j:=j+1;
-	    fi;
-	  od;
-
-	  Add(rels,r);
-	  SortBy(rels,Length);
-
-	  # does it occur in the augmented table?
-	  for a in DATA.A do
-	    for j in [1..DATA.n] do
-	      s:=DATA.aug[a+offset][j];
-	      if Length(s)>=Length(r) then
-		for re in rset do
-		  s:=NEWTC_ReplacedStringCyclic(s,re);
-		od;
-		DATA.aug[a+offset][j]:=s;
-	      fi;
-	    od;
-	  od;
-	od;
-      fi;
     od;
-  od;
-  CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+    CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+  fi;
 
   # add definitions of secondary generators
   for i in [subnum+1..DATA.secount] do
@@ -3463,34 +3499,34 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
     warn:=true;
     # Help Tietze with elimination
     bad:=Reversed(List(GeneratorsOfPresentation(pres)
-	  {[subnum+1..Length(GeneratorsOfPresentation(pres))]},
-	  x->LetterRepAssocWord(x)[1]));
+          {[subnum+1..Length(GeneratorsOfPresentation(pres))]},
+          x->LetterRepAssocWord(x)[1]));
     for i in bad do
       r:=DATA.secondary[i];
       re:=true;
       while re do
-	s:=[];
-	re:=false;
-	for j in r do
-	  if AbsInt(j)>subnum then
-	    re:=true;
-	    if j>0 then
-	      Append(s,DATA.secondary[j]);
-	    else
-	      Append(s,-Reversed(DATA.secondary[-j]));
-	    fi;
-	  else
-	    Add(s,j);
-	  fi;
-	od;
-	Info(InfoFpGroup,2,"Length =",Length(s));
-	r:=s;
-	if warn and Length(s)>10*Sum(rels,Length) then
-	  warn:=false;
-	  Error(
-	    "Trying to eliminate all auxillary generators might cause the\n",
-	    "size of the presentation to explode. Proceed at risk!");
-	fi;
+        s:=[];
+        re:=false;
+        for j in r do
+          if AbsInt(j)>subnum then
+            re:=true;
+            if j>0 then
+              Append(s,DATA.secondary[j]);
+            else
+              Append(s,-Reversed(DATA.secondary[-j]));
+            fi;
+          else
+            Add(s,j);
+          fi;
+        od;
+        Info(InfoFpGroup,2,"Length =",Length(s));
+        r:=s;
+        if warn and Length(s)>10*Sum(rels,Length) then
+          warn:=false;
+          Error(
+            "Trying to eliminate all auxillary generators might cause the\n",
+            "size of the presentation to explode. Proceed at risk!");
+        fi;
       od;
       r:=AssocWordByLetterRep(fam,Concatenation(r,[-i]));
       AddRelator(pres,r);
@@ -3539,20 +3575,20 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
   # get the optional parameters.
   for i in [ 3 .. 4 ] do
       if Length( arg ) >= i then
-	  if IsInt( arg[i] ) then printlevel := arg[i];
-	  elif IsString( arg[i] ) then string := arg[i];
-	  else
-	      Error( "optional parameter must be a string or an integer" );
-	  fi;
+          if IsInt( arg[i] ) then printlevel := arg[i];
+          elif IsString( arg[i] ) then string := arg[i];
+          else
+              Error( "optional parameter must be a string or an integer" );
+          fi;
       fi;
   od;
 
   DATA:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(G),
-	  RelatorsOfFpGroup(G),
-	  List(GeneratorsOfGroup(H),UnderlyingElement),true,
+          RelatorsOfFpGroup(G),
+          List(GeneratorsOfGroup(H),UnderlyingElement),true,
 
-	  # for compatibility, do not try the optimization
-	  false);
+          # for compatibility, do not try the optimization
+          false);
 
   return NEWTC_PresentationMTC(DATA,0,string);
 end);

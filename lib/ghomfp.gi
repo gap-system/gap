@@ -91,14 +91,14 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
     for start in bas do
       p:=start;
       for i in l do
-	if i>0 then
-	  p:=p^gi[i];
-	else
-	  p:=p/gi[-i];
-	fi;
+        if i>0 then
+          p:=p^gi[i];
+        else
+          p:=p/gi[-i];
+        fi;
       od;
       if p<>start then
-	return false;
+        return false;
       fi;
     od;
   od;
@@ -113,7 +113,7 @@ end);
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
   "from fp/free group, std. gens., to perm group",
   true, [ IsFromFpGroupGeneralMapping
-	  and IsToPermGroupGeneralMappingByImages ],0,
+          and IsToPermGroupGeneralMappingByImages ],0,
 function(hom)
 local f,p,t,orbs,o,cor,u,frg;
 
@@ -164,13 +164,13 @@ local si,sw,i,ug,tt,p;
       # get the word representative for the secondary generator
       p:=Position(ug,UnderlyingElement(sw[i]));
       if p<>fail then
-	Add(si,aug.homgenims[p]);
+        Add(si,aug.homgenims[p]);
       else
-	# its not. We must map the image from the primary generators images.
-	# For this we use that their images must be given already in `si', as
-	# the primary generators come first.
-	Add(si,MappedWord(tt[i],aug.primarySubgroupGenerators,
-			  si{[1..Length(aug.primarySubgroupGenerators)]}));
+        # its not. We must map the image from the primary generators images.
+        # For this we use that their images must be given already in `si', as
+        # the primary generators come first.
+        Add(si,MappedWord(tt[i],aug.primarySubgroupGenerators,
+                          si{[1..Length(aug.primarySubgroupGenerators)]}));
       fi;
     od;
     aug.secondaryImages:=si;
@@ -207,9 +207,9 @@ local u,aug,hgu,mapi,w;
   # construct augmented coset table
   w:=FamilyObj(mapi[1])!.wholeGroup;
   aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
-	RelatorsOfFpGroup(w),
-	hgu,
-	true);
+        RelatorsOfFpGroup(w),
+        hgu,
+        true);
 
   aug.homgens:=mapi[1];
   aug.homgenims:=mapi[2];
@@ -254,14 +254,14 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
     local w,j;
       w:=One(si[1]);
       if not IsBound(si[i]) then
-	for j in aug.secondary[i] do
-	  if j<0 then
-	    w:=w/eval(-j);
-	  else
-	    w:=w*eval(j);
-	  fi;
-	od;
-	si[i]:=w;
+        for j in aug.secondary[i] do
+          if j<0 then
+            w:=w/eval(-j);
+          else
+            w:=w*eval(j);
+          fi;
+        od;
+        si[i]:=w;
       fi;
       return si[i];
     end;
@@ -297,20 +297,20 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
       g:=GeneratorSyllable(word,i);
       e:=ExponentSyllable(word,i);
       if e<0 then
-	ind:=2*aug.transtab[g];
-	e:=-e;
+        ind:=2*aug.transtab[g];
+        e:=-e;
       else
-	ind:=2*aug.transtab[g]-1;
+        ind:=2*aug.transtab[g]-1;
       fi;
       for j in [1..e] do
-	# apply the generator, collect cofactor
-	f:=cft[ind][c]; # cofactor
-	if f>0 then
-	  r:=r*DecodedTreeEntry(aug.tree,si,f);
-	elif f<0 then
-	  r:=r/DecodedTreeEntry(aug.tree,si,-f);
-	fi;
-	c:=ct[ind][c]; # new coset number
+        # apply the generator, collect cofactor
+        f:=cft[ind][c]; # cofactor
+        if f>0 then
+          r:=r*DecodedTreeEntry(aug.tree,si,f);
+        elif f<0 then
+          r:=r/DecodedTreeEntry(aug.tree,si,-f);
+        fi;
+        c:=ct[ind][c]; # new coset number
       od;
     od;
 
@@ -320,18 +320,18 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
     for i in [1..Length(word)] do
       g:=word[i];
       if g<0 then
-	g:=-g;
-	ind:=2*aug.transtab[g];
+        g:=-g;
+        ind:=2*aug.transtab[g];
       else
-	ind:=2*aug.transtab[g]-1;
+        ind:=2*aug.transtab[g]-1;
       fi;
 
       # apply the generator, collect cofactor
       f:=cft[ind][c]; # cofactor
       if f>0 then
-	r:=r*DecodedTreeEntry(aug.tree,si,f);
+        r:=r*DecodedTreeEntry(aug.tree,si,f);
       elif f<0 then
-	r:=r/DecodedTreeEntry(aug.tree,si,-f);
+        r:=r/DecodedTreeEntry(aug.tree,si,-f);
       fi;
       c:=ct[ind][c]; # new coset number
 
@@ -466,7 +466,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
       img:=o[i]^genims[g];
       if not img in o then
         Add(o,img);
-	Add(r,r[i]*gens[g]);
+        Add(r,r[i]*gens[g]);
       fi;
     od;
     i:=i+1;
@@ -496,7 +496,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
     l:=[];
     for i in [1..d] do
       l[i]:=ImagesRepresentative(pemb,
-		       ImagesRepresentative(alpha,r[i]*g/r[i^gi]));
+                       ImagesRepresentative(alpha,r[i]*g/r[i^gi]));
     od;
     Add(ugens,WreathElm(dtg,l,gi) );
   od;
@@ -602,20 +602,20 @@ local s,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
       # could the group be too expensive?
       if (not IsBound(s!.quot)) or
         (IsPermGroup(s!.quot)
-	  and Size(s!.quot)>10^50 and NrMovedPoints(s!.quot)>10000) then
-	t:=[];
-	max:=LargestMovedPoint(u);
-	for i in u do
-	  #Add(t,ListPerm(i));
-	  lp:=ListPerm(i);
-	  while Length(lp)<max do Add(lp,Length(lp)+1);od;
-	  Add(t,lp);
-	  #Add(t,ListPerm(i^-1));
-	  lp:=ListPerm(i^-1);
-	  while Length(lp)<max do Add(lp,Length(lp)+1);od;
-	  Add(t,lp);
-	od;
-	return SubgroupOfWholeGroupByCosetTable(FamilyObj(s),t);
+          and Size(s!.quot)>10^50 and NrMovedPoints(s!.quot)>10000) then
+        t:=[];
+        max:=LargestMovedPoint(u);
+        for i in u do
+          #Add(t,ListPerm(i));
+          lp:=ListPerm(i);
+          while Length(lp)<max do Add(lp,Length(lp)+1);od;
+          Add(t,lp);
+          #Add(t,ListPerm(i^-1));
+          lp:=ListPerm(i^-1);
+          while Length(lp)<max do Add(lp,Length(lp)+1);od;
+          Add(t,lp);
+        od;
+        return SubgroupOfWholeGroupByCosetTable(FamilyObj(s),t);
       fi;
       u:=GroupWithGenerators(u,());  # `u' arose from `KuKGenerators'
       # indicate wreath structure
@@ -702,7 +702,7 @@ local map,tab,tab2,i;
   map:=MappingGeneratorsImages(hom2);
   map:=GroupGeneralMappingByImagesNC( Source( hom2 ), Range( hom1 ),
          map[1], List( map[2], img ->
-	    ImagesRepresentative( hom1, img ) ) );
+            ImagesRepresentative( hom1, img ) ) );
   SetIsMapping(map,true);
   tab:=CosetTableFpHom(hom2);
   tab2:=CopiedAugmentedCosetTable(tab);
@@ -738,11 +738,11 @@ local mapi;
   mapi:=MappingGeneratorsImages(hom);
   # check, whether we map to the standard generators
   if not (HasIsWholeFamily(Range(hom)) and IsWholeFamily(Range(hom)) and
-	  Set(FreeGeneratorsOfFpGroup(Range(hom)))
-	    =Set(List(GeneratorsOfGroup(Range(hom)),UnderlyingElement)) and
-	  IsIdenticalObj(mapi[2],GeneratorsOfGroup(Range(hom))) and
-	  ForAll(List(mapi[2],i->LetterRepAssocWord(UnderlyingElement(i))),
-	  i->Length(i)=1 and i[1]>0) ) then
+          Set(FreeGeneratorsOfFpGroup(Range(hom)))
+            =Set(List(GeneratorsOfGroup(Range(hom)),UnderlyingElement)) and
+          IsIdenticalObj(mapi[2],GeneratorsOfGroup(Range(hom))) and
+          ForAll(List(mapi[2],i->LetterRepAssocWord(UnderlyingElement(i))),
+          i->Length(i)=1 and i[1]>0) ) then
     TryNextMethod();
   fi;
   if Length(mapi[2])=0 then 
@@ -787,7 +787,7 @@ local aug,w,p,pres,f,fam,opt;
   # rewriting.
   aug:=CopiedAugmentedCosetTable(aug);
   pres := PresentationAugmentedCosetTable( aug, "y",0# printlevel
-		    ,true) ;# do not run the stupid `1or2' routine!
+                    ,true) ;# intialize tracking before the `1or2' routine!
   opt:=TzOptions(pres);
   if ValueOption("expandLimit")<>fail then
     opt.expandLimit:=ValueOption("expandLimit");
@@ -804,8 +804,12 @@ local aug,w,p,pres,f,fam,opt;
   else
     opt.lengthLimit:=Int(3/2*pres!.tietze[TZ_TOTAL]); # not too big.
   fi;
+  if ValueOption("generatorsLimit")<>fail then
+    opt.lengthLimit:=ValueOption("generatorsLimit");
+  fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
+  TzEliminateRareOcurrences(pres,50);
   TzGoGo(pres); # cleanup
 
   # new free group
@@ -814,11 +818,11 @@ local aug,w,p,pres,f,fam,opt;
   # images for the old primary generators
   aug.primaryImages:=Immutable(List(
         TzImagesOldGens(pres){[1..Length(aug.primaryGeneratorWords)]},
-	i->MappedWord(i,GeneratorsOfPresentation(pres),GeneratorsOfGroup(f))));
+        i->MappedWord(i,GeneratorsOfPresentation(pres),GeneratorsOfGroup(f))));
   TrySecondaryImages(aug);
   # generator numbers of the new generators
   w:=List(TzPreImagesNewGens(pres),
-	  i->aug.treeNumbers[Position(OldGeneratorsOfPresentation(pres),i)]);
+          i->aug.treeNumbers[Position(OldGeneratorsOfPresentation(pres),i)]);
 
   # and the corresponding words in the original group
   w:=List(w,i->TreeRepresentedWord(aug.primaryGeneratorWords,aug.tree,i));
@@ -845,7 +849,10 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
   [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection,
    IsString],0,
 function(u,gens,nam)
-local aug,w,p,pres,f,fam,G;
+local aug,w,p,pres,f,fam,G,trace;
+
+  trace:=[];
+
   if HasIsWholeFamily(u) and IsWholeFamily(u) and
     IsIdenticalObj(gens,GeneratorsOfGroup(u)) then
       return IdentityMapping(u);
@@ -856,16 +863,16 @@ local aug,w,p,pres,f,fam,G;
   # use new MTC
   w:=FamilyObj(u)!.wholeGroup;
   aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
-	RelatorsOfFpGroup(w),
-	List(gens,UnderlyingElement),
-	true);
+        RelatorsOfFpGroup(w),
+        List(gens,UnderlyingElement),
+        true,trace);
 
   pres:=NEWTC_PresentationMTC(aug,1,nam);
   if Length(GeneratorsOfPresentation(pres))>Length(gens) then
     aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
 	  RelatorsOfFpGroup(w),
 	  List(gens,UnderlyingElement),
-	  true,false);
+	  true,trace);
 
     pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;
@@ -936,13 +943,13 @@ local H, pres,map,mapi,opt;
   H := FpGroupPresentation( pres );
   map:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
          List(TzImagesOldGens(pres),
-	   i->MappedWord(i,GeneratorsOfPresentation(pres),
-	                   GeneratorsOfGroup(H))));
+           i->MappedWord(i,GeneratorsOfPresentation(pres),
+                           GeneratorsOfGroup(H))));
 
   mapi:=GroupHomomorphismByImagesNC(H,G,GeneratorsOfGroup(H),
          List(TzPreImagesNewGens(pres),
-	   i->MappedWord(i,OldGeneratorsOfPresentation(pres),
-	                   GeneratorsOfGroup(G))));
+           i->MappedWord(i,OldGeneratorsOfPresentation(pres),
+                           GeneratorsOfGroup(G))));
   SetIsBijective(map,true);
   SetInverseGeneralMapping(map,mapi);
   SetInverseGeneralMapping(mapi,map);
@@ -981,7 +988,7 @@ local T,m;
       m:=CosetTableDefaultMaxLimit;
       repeat
         m:=m*1000;
-	T:=TryCosetTableInWholeGroup(N:silent:=true,max:=m);
+        T:=TryCosetTableInWholeGroup(N:silent:=true,max:=m);
       until T<>fail;
     fi;
 
@@ -1032,7 +1039,7 @@ end);
 ##
 ##
 InstallMethod(MaximalAbelianQuotient,"whole fp group",
-	true, [IsSubgroupFpGroup and IsWholeFamily], 0,
+        true, [IsSubgroupFpGroup and IsWholeFamily], 0,
 function(f)
 local m,s,g,i,j,rel,gen,img,fin,hom,gens;
 
@@ -1058,7 +1065,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     if Length(m[1])>s.rank then
       img:=[];
       for i in [1..s.rank] do  
-	Add(img,s.normal[i][i]);
+        Add(img,s.normal[i][i]);
         Add(rel,g.(i)^s.normal[i][i]);
       od;
       Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
@@ -1098,7 +1105,7 @@ end);
 
 InstallMethod(MaximalAbelianQuotient,
         "for subgroups of finitely presented groups",
-	true, [IsSubgroupFpGroup], 0,
+        true, [IsSubgroupFpGroup], 0,
 function(U)
 local phi,m;
   phi:=IsomorphismFpGroup(U);
@@ -1168,9 +1175,9 @@ local hom,pcgs,impcgs;
   impcgs:=FamilyPcgs(Image(hom,M));
   pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,IsModuloPcgsFpGroupRep,
           ElementsFamily(FamilyObj(M)),
-	  List(impcgs,i->PreImagesRepresentative(hom,i)),
-	  []
-	  );
+          List(impcgs,i->PreImagesRepresentative(hom,i)),
+          []
+          );
   pcgs!.hom:=hom;
   pcgs!.impcgs:=impcgs;
   pcgs!.groups:=[M,N];

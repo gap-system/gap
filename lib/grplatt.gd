@@ -423,5 +423,46 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 
 #############################################################################
 ##
+#F  LowLayerSubgroups( <G>, <lim> [,<cond> [,<dosub>]] )
+##
+##  <#GAPDoc Label="LowLayerSubgroups">
+##  <ManSection>
+##  <Func Name="LowLayerSubgroups" Arg='G, lim, cond, dosub'/>
+##
+##  <Description>
+##  This function computes representatives of the conjugacy classes of
+##  subgroups of the finite group <A>G</A> such that the subgroups can be
+##  obtained as <A>lim</A>-fold iterated maximal subgroups.
+##  
+##  If a function <A>cond</A> is given, only subgroups for which this
+##  function returns true (also for their intermediate overgroups) is
+##  returned. If also a function <A>dosub</A> is given, maximal subgroups
+##  are only attempted if this function returns true (this is separated for
+##  performance reasons).
+##  <P>
+##  In the example, the result would be the same with leaving out the
+##  fourth function, but calculation this way is slightly faster.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:=DirectProduct(SimpleGroup("J1"),PSL(2,113));;
+##  gap> l:=LowLayerSubgroups(g,2,
+##  > x->not IsSolvableGroup(x) and Index(g,x)<=30000,
+##  > x->Index(g,x)<=15000);;
+##  gap> Collected(List(l,x->Index(g,x)));
+##  [ [ 1, 1 ], [ 114, 1 ], [ 228, 1 ], [ 266, 1 ], [ 798, 1 ], [ 1045, 1 ],
+##    [ 1463, 1 ], [ 1540, 1 ], [ 1596, 1 ], [ 2926, 3 ], [ 3080, 1 ],
+##    [ 3135, 1 ], [ 3192, 1 ], [ 4180, 1 ], [ 4620, 1 ], [ 5852, 3 ],
+##    [ 6328, 1 ], [ 6441, 1 ], [ 7315, 1 ], [ 7980, 1 ], [ 8360, 1 ],
+##    [ 8778, 1 ], [ 12540, 1 ], [ 12656, 1 ], [ 12882, 3 ], [ 14630, 1 ],
+##    [ 17556, 1 ], [ 18984, 1 ], [ 29260, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("LowLayerSubgroups");
+
+#############################################################################
+##
 #E
 
