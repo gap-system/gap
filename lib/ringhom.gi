@@ -544,7 +544,8 @@ end);
 InstallMethod( NaturalHomomorphismByIdeal,"sc rings",IsIdenticalObj,
     [ IsSubringSCRing,IsSubringSCRing],
 function( R, I )
-  local hom, R2, nat, Rgens, std, moduli, newmod, posi, q, t, dec, x, i, j, k;
+  local hom, R2, nat, Rgens, std, moduli, newmod, posi, q, t, dec, x, i, j,
+  k,rels,genwords;
   if not IsIdeal(R,I) then
     Error("I is not an ideal!");
   fi;
@@ -555,63 +556,84 @@ function( R, I )
     nat:=NaturalHomomorphismByIdeal(R2,I);
     return RingHomomorphismByImages(R,Range(nat),GeneratorsOfRing(R),
              List(GeneratorsOfRing(R),x->Image(nat,Image(hom,i))));
-  else
-    if I=R then
-      # catch trivial case
-      q:=SmallRing(1,1);
-      return RingHomomorphismByImages(R,q,GeneratorsOfRing(R),
-        List(GeneratorsOfRing(R),x->Zero(q)));
+  fi;
+
+  if I=R then
+    # catch trivial case
+    q:=SmallRing(1,1);
+    return RingHomomorphismByImages(R,q,GeneratorsOfRing(R),
+      List(GeneratorsOfRing(R),x->Zero(q)));
+  fi;
+
+
+  # old relations -- standard form
+  moduli:=FamilyObj(Zero(R))!.moduli;
+  rels:=[];
+  for i in [1..Length(moduli)] do
+    q:=List(moduli,x->0);
+    q[i]:=moduli[i];
+    Add(rels,q);
+  od;
+
+  # extra kernel generators
+  std:=StandardGeneratorsSubringSCRing(I);
+  for i in std[1] do
+    Add(rels,ShallowCopy(i));
+  od;
+
+  # now rels is a relator matrix for the quotient. Use SNF to find
+  # structure
+  rels:=SmithNormalFormIntegerMatTransforms(rels);
+
+  # Let x,y be ring generators and M the original relator matrix. Then
+  # M*(x,y)^T=0 by definition of relators.
+  # SNF gives R*M*C=D, so $R^-1*D*C^-1*(x,y)^T=0$, implying that D are
+  # relations that hold amongst C^-1*(x,y). Thus:
+  # The rows of C^-1 express the new generators in terms of the old, i.e.
+  # are base chance new-> old as row vectors.
+  # the rows of C convert old->new
+  # Thus the rows of C give coefficients for images of old generators
+
+  Rgens:=GeneratorsOfRing(R);
+  genwords:=Inverse(rels.coltrans)*GeneratorsOfRing(R);
+  # nontrivial generators
+  newmod:=[];
+  posi:=[];
+  for i in [1..Length(moduli)] do
+    if rels.normal[i][i]>1 then
+      Add(newmod,rels.normal[i][i]);
+      Add(posi,i);
     fi;
-    # R is the full ring. We can read of the factor ring structures from the
-    # standard generators of R
-    Rgens:=GeneratorsOfRing(R);
-    std:=StandardGeneratorsSubringSCRing(I);
-    moduli:=FamilyObj(Zero(R))!.moduli;
-    newmod:=[];
-    posi:=[]; # generator positions
-    for i in [1..Length(moduli)] do
-      if not IsBound(std[2][i]) then
-        # the generator survives as it is
-	Add(newmod,moduli[i]);
-	Add(posi,i);
-      else
-        t:=std[1][std[2][i]][i]; 
-        if t=1 then
-	  # the generator vanishes in the factor
-	  Add(newmod,false);
-	else
-	  # the generator has a smaller order in the factor
-	  q:=Gcd(moduli[i],t); 
-	  Add(newmod,q);
-	  Add(posi,i);
-	fi;
+  od;
+
+
+  # now determine the multiplication
+  t:=EmptySCTable(Length(posi),0);
+  for i in [1..Length(posi)] do
+    for j in [1..Length(posi)] do
+      # product of generators
+      q:=genwords[posi[i]]*genwords[posi[j]];
+      q:=q![1]; # the coefficients
+      q:=ShallowCopy(q*rels.coltrans); # coefficients wrt factor basis
+      dec:=[];
+      for k in [1..Length(posi)] do
+        x:=q[posi[k]] mod newmod[k];
+        if x<>0 then
+          Add(dec,x);
+          Add(dec,k);
+        fi;
+      od;
+      if Length(dec)>0 then
+        SetEntrySCTable(t,i,j,dec);
       fi;
     od;
-    # now determine the multiplication
-    t:=EmptySCTable(Length(posi),0);
-    for i in [1..Length(posi)] do
-      for j in [1..Length(posi)] do
-	# product of generators
-        q:=Rgens[posi[i]]*Rgens[posi[j]];
-	q:=q![1]; # the coefficients
-	dec:=[];
-	for k in [1..Length(posi)] do
-	  x:=q[posi[k]] mod newmod[posi[k]];
-	  if x<>0 then
-	    Add(dec,x);
-	    Add(dec,k);
-	  fi;
-	od;
-	if Length(dec)>0 then
-	  SetEntrySCTable(t,i,j,dec);
-	fi;
-      od;
-    od;
-  fi;
-  q:=RingByStructureConstants(newmod{posi},t,"q");
+  od;
+
+  q:=RingByStructureConstants(newmod,t,"q");
   # image list: Generators are mapped to their images
-  x:=List(GeneratorsOfRing(R),x->Zero(q));
-  x{posi}:=GeneratorsOfRing(q);
+  # rows of coltrans give expressions in new basis, but only posi indices
+  # count.
+  x:=(rels.coltrans{[1..Length(rels.coltrans)]}{posi})*GeneratorsOfRing(q);
   hom:=RingHomomorphismByImages(R,q,GeneratorsOfRing(R),x);
   SetIsSurjective(hom,true);
   SetKernelOfAdditiveGeneralMapping(hom,I);

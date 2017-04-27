@@ -77,6 +77,28 @@ gap> I := Ideal(P, pols);;
 gap> pr := NaturalHomomorphismByIdeal(P, I);;
 gap> IsZero(Image(pr,x));
 false
+
+# example for structure constant rings, Martin Brandenburg on stackexchange
+gap> ExampleRing := function(n)
+> local T,O;
+> T := EmptySCTable(2,0);       # 2 generators e,x as Z-module
+> O := [2^n,2];                 # ord(e)=2^n and ord(x)=2
+> SetEntrySCTable(T,1,1,[1,1]); # e*e = 1*e
+> SetEntrySCTable(T,1,2,[1,2]); # e*x = 1*x
+> SetEntrySCTable(T,2,1,[1,2]); # x*e = 1*x
+> SetEntrySCTable(T,2,2,[]);    # x*x = 0
+> return RingByStructureConstants(O,T,["e","x"]);
+> end;;
+gap> R := ExampleRing(4);
+<ring with 2 generators>
+gap> id:=Ideal(R,[4*R.1-R.2]);
+<two-sided ideal in <ring with 2 generators>, (1 generators)>
+gap> Elements(id);
+[ 0*e, 4*e+x, 8*e, 12*e+x ]
+gap> Q:=R/id;
+<ring with 1 generators>
+gap> Elements(Q);
+[ 0*q1, q1, 2*q1, 3*q1, 4*q1, 5*q1, 6*q1, -q1 ]
 gap> STOP_TEST( "alghom.tst", 1);
 
 #############################################################################
