@@ -74,13 +74,17 @@ Obj TYPE_TLREC;
 #define CHANGE_ALIST_LEN(x, y) (((x) & 3) | ((y) << 2))
 #define CHANGE_ALIST_POL(x, y) (((x) & ~3) | y)
 
-#define ALIST_RW 0
-#define ALIST_W1 1
-#define ALIST_WX 2
+typedef enum  {
+    ALIST_RW = 0,
+    ALIST_W1 = 1,
+    ALIST_WX = 2,
+} AtomicListPolicy;
 
-#define AREC_RW 1
-#define AREC_W1 0
-#define AREC_WX (-1)
+typedef enum {
+    AREC_RW = 1,
+    AREC_W1 = 0,
+    AREC_WX = -1,
+} AtomicRecordPolicy;
 
 typedef union AtomicObj
 {
@@ -480,12 +484,13 @@ static void MarkAtomicList(Bag bag)
  * ADDR_OBJ(rec)[3] == update policy.
  * ADDR_OBJ(rec)[4..] == hash table of pairs of objects
  */
-
-#define AR_CAP 0
-#define AR_BITS 1
-#define AR_SIZE 2
-#define AR_POL 3
-#define AR_DATA 4
+enum {
+    AR_CAP  = 0,
+    AR_BITS = 1,
+    AR_SIZE = 2,
+    AR_POL  = 3,
+    AR_DATA = 4,
+};
 
 /* T_TLREC_INNER substructure:
  * ADDR_OBJ(rec)[0] == number of subrecords
@@ -493,11 +498,12 @@ static void MarkAtomicList(Bag bag)
  * ADDR_OBJ(rec)[2] == constructors
  * ADDR_OBJ(rec)[3..] == table of per-thread subrecords
  */
-
-#define TLR_SIZE 0
-#define TLR_DEFAULTS 1
-#define TLR_CONSTRUCTORS 2
-#define TLR_DATA 3
+enum {
+  TLR_SIZE         = 0,
+  TLR_DEFAULTS     = 1,
+  TLR_CONSTRUCTORS = 2,
+  TLR_DATA         = 3,
+};
 
 /*
 static void MarkTLRecordInner(Bag bag)
@@ -709,7 +715,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   AtomicObj *table, *data, *newtable, *newdata;
   Obj inner, result;
   UInt cap, bits, hash, i, n, size;
-  Int policy;
+  AtomicRecordPolicy policy;
   int have_room;
   HashLockShared(record);
   inner = ARecordObj(record);
@@ -729,11 +735,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     if (key == field)
     {
       MEMBAR_FULL(); /* memory barrier */
-      if (policy < 0) {
+      if (policy == AREC_WX) {
         HashUnlockShared(record);
 	return 0;
       }
-      if (policy) {
+      else if (policy == AREC_RW) {
         AtomicObj old;
 	AtomicObj new;
 	new.obj = obj;
@@ -744,7 +750,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	CHANGED_BAG(inner);
 	HashUnlockShared(record);
 	return obj;
-      } else {
+      } else { // AREC_W1
         Obj result;
 	do {
 	  result = data[hash*2+1].obj;
@@ -789,11 +795,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     for (;;) { /* CAS loop */
       old = data[hash*2+1];
       if (old.obj) {
-        if (policy < 0) {
+        if (policy == AREC_WX) {
 	  result = 0;
 	  break;
 	}
-	if (policy) {
+	else if (policy == AREC_RW) {
 	  AtomicObj new;
 	  new.obj = obj;
 	  if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
@@ -840,10 +846,10 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   n = ARecordFastInsert(newtable, field);
   if (newdata[2*n+1].obj)
   {
-    if (policy < 0)
+    if (policy == AREC_WX)
       result = (Obj) 0;
     else {
-      if (policy)
+      if (policy == AREC_RW)
         newdata[2*n+1].obj = result = obj;
       else
         result = newdata[2*n+1].obj;
@@ -910,7 +916,7 @@ Obj NewAtomicRecord(UInt capacity)
   table[AR_CAP].atom = capacity;
   table[AR_BITS].atom = bits;
   table[AR_SIZE].atom = 0;
-  table[AR_POL].atom = 1;
+  table[AR_POL].atom = AREC_RW;
   ADDR_OBJ(result)[1] = arec;
   CHANGED_BAG(arec);
   CHANGED_BAG(result);
@@ -937,13 +943,13 @@ static Obj NewAtomicRecordFrom(Obj precord)
   return result;
 }
 
-static void SetARecordUpdatePolicy(Obj record, UInt policy)
+static void SetARecordUpdatePolicy(Obj record, AtomicRecordPolicy policy)
 {
   AtomicObj *table = ARecordTable(record);
   table[AR_POL].atom = policy;
 }
 
-static UInt GetARecordUpdatePolicy(Obj record)
+static AtomicRecordPolicy GetARecordUpdatePolicy(Obj record)
 {
   AtomicObj *table = ARecordTable(record);
   return table[AR_POL].atom;
@@ -1224,7 +1230,7 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   if (!IsStringConv(field))
     ArgumentError("UNBIND_ATOMIC_RECORD: Second argument must be a string");
   fieldname = RNamName(CSTR_STRING(field));
-  if (GetARecordUpdatePolicy(record) <= 0)
+  if (GetARecordUpdatePolicy(record) != AREC_RW)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
       (UInt) CSTR_STRING(field), 0L);
   exists = GetARecordField(record, fieldname);
@@ -1238,11 +1244,11 @@ static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj policy)
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("ATOMIC_RECORD_REPLACEMENT: First argument must be an atomic record");
   if (policy == Fail)
-    SetARecordUpdatePolicy(record, -1);
+    SetARecordUpdatePolicy(record, AREC_WX);
   else if (policy == False)
-    SetARecordUpdatePolicy(record, 0);
+    SetARecordUpdatePolicy(record, AREC_W1);
   else if (policy == True)
-    SetARecordUpdatePolicy(record, 1);
+    SetARecordUpdatePolicy(record, AREC_RW);
   else
     ArgumentError("ATOMIC_RECORD_REPLACEMENT: Second argument must be true, false, or fail");
   return (Obj) 0;
