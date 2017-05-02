@@ -48,10 +48,7 @@ DeclareOperation( "SparseStructureOfList", [IsList]);
 ##  usually right
 ##
 
-DeclareFilter( "IsSparseList", IsList );
-atomic FILTER_REGION do
-    RANK_FILTERS[FLAG1_FILTER(IsSparseList)] := 20;
-od;
+DeclareFilter( "IsSparseList", IsList, 20 );
 
 #############################################################################
 ##
