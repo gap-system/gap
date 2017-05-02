@@ -71,13 +71,10 @@ end;
 
 ErrorNoReturn := Error;
 
-ErrorInner := function(arg)
+ErrorInner := function(options, message)
     local x;
     Print("Error before error-handling is initialized: ");
-    for x in [6..LENGTH(arg)] do
-      Print(arg[x]);
-    od;
-    Print("\n");
+    Print(message);
     if SHOULD_QUIT_ON_BREAK() then
         FORCE_QUIT_GAP(1);
     fi;
