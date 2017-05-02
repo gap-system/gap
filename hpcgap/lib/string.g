@@ -288,8 +288,7 @@ MakeReadOnlyObj( TYPES_STRING );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TNUM_EMPTY_STRING",
-    Immutable( [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] ) );
-
+    MakeImmutable( [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] ) );
 
 BIND_GLOBAL( "IsEmptyString",
     obj ->     IsString( obj )
