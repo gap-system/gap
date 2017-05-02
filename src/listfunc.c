@@ -617,31 +617,6 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
 *F  SortDensePlist( <list> ) . . . . . . . . . . . . . . . . . .  sort a list
 **
 **  'SORT_LIST' sorts the list <list> in increasing  order.
-**
-**  'Sort' uses Shell's diminishing increment sort, which extends bubblesort.
-**  The bubble sort works by  running  through  the  list  again  and  again,
-**  each time exchanging pairs of adjacent elements which are out  of  order.
-**  Thus large elements ``bubble'' to the top, hence the name of the  method.
-**  However elements need many moves to come close to their  final  position.
-**  In shellsort the first passes do not compare element j with its  neighbor
-**  but with the element j+h, where h is larger than one.  Thus elements that
-**  are not at their final position make large moves towards the destination.
-**  This increment h is diminished, until during the last  pass  it  is  one.
-**  A good sequence of incremements is given by Knuth:  (3^k-1)/2,... 13,4,1.
-**  For this sequence shellsort uses on average  approximatly  N^1.25  moves.
-**
-**  Shellsort is the method of choice to  sort  lists  for  various  reasons:
-**  Shellsort is quite easy to get right, much easier than,  say,  quicksort.
-**  It runs as fast as quicksort for lists with  less  than  ~5000  elements.
-**  It handles both  almost  sorted  and  reverse  sorted  lists  very  good.
-**  It works well  in  the  presence  of  duplicate  elements  in  the  list.
-**  Says Sedgewick: ``In short, if you have a sorting problem,  use the above
-**  program, then determine whether the extra effort required to  replace  it
-**  with a sophisticated method will be worthwile.''
-**
-**  Donald Knuth, The Art of Computer Programming, Vol.3, AddWes 1973, 84-95
-**  Donald Shell, CACM 2, July 1959, 30-32
-**  Robert Sedgewick, Algorithms 2nd ed., AddWes 1988, 107-123
 */
 
 // See sortbase.h for a description of these macros.
