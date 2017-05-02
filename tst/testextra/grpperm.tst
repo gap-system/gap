@@ -190,6 +190,10 @@ gap> SetInfoLevel(InfoPerformance,0);
 gap> s:=SymmetricGroup(56);;
 gap> List([1..7],x->Size(Normalizer(s,PrimitiveGroup(56,x))));
 [ 80640, 80640, 80640, 80640, 80640, 40320, 40320 ]
+gap> g:=SymmetricGroup(17);;s:=SylowSubgroup(g,NrMovedPoints(g));;
+gap> ac:=AscendingChain(g,s);;
+gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<10^11;
+true
 gap> STOP_TEST( "grpperm.tst", 1);
 
 #############################################################################
