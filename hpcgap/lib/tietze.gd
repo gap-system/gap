@@ -44,9 +44,9 @@ TR_TREELAST     :=  7;
 ##
 ##  List of option names
 ##
-TzOptionNames := `[ "protected", "eliminationsLimit", "expandLimit",
+TzOptionNames := MakeImmutable([ "protected", "eliminationsLimit", "expandLimit",
      "generatorsLimit", "lengthLimit", "loopLimit", "printLevel",
-     "saveLimit", "searchSimultaneous" ];
+     "saveLimit", "searchSimultaneous" ]);
 
 
 #############################################################################
@@ -2269,6 +2269,8 @@ DeclareGlobalFunction("TzSubstituteWord");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("TzUpdateGeneratorImages");
+
+DeclareGlobalFunction("TzRelatorOldImages");
 
 
 #############################################################################
