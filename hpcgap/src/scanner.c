@@ -2289,8 +2289,6 @@ void PutLine2(
  **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
  **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
  **
- **  Finally 'PutLineTo' checks whether the user has hit '<ctr>-C' to  interrupt
- **  the printing.
  */
 void PutLineTo ( KOutputStream stream, UInt len )
 {
@@ -2985,6 +2983,9 @@ static StructGVarFunc GVarFuncs [] = {
   { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
     FuncSET_PRINT_FORMATTING_STDOUT,
     "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
+
+  { "GET_FILENAME_CACHE", 0, "",
+     FuncGET_FILENAME_CACHE, "src/scanner.c:GET_FILENAME_CACHE" },
 
   { 0 }
 
