@@ -24,10 +24,10 @@ end);
 Unbind(OnQuit);         # OnQuit is called from the kernel so we take great
 BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
         function()
-    if not IsEmpty(ThreadVar.OptionsStack) then
+    if not IsEmpty(OptionsStack) then
       repeat
         PopOptions();
-      until IsEmpty(ThreadVar.OptionsStack);
+      until IsEmpty(OptionsStack);
       Info(InfoWarning,1,"Options stack has been reset");
     fi;
 end);
