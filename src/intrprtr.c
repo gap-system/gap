@@ -948,9 +948,9 @@ void            IntrWhileEnd ( void )
 /****************************************************************************
 **
 *F  IntrQualifiedExprBegin( UInt qual ) . . . . . . interpret expression guarded
-**                                       by readwrite or readonlu
+**                                       by readwrite or readonly
 *F  IntrQualifiedExprEnd( ) 
-**                                       by readwrite or readonlu
+**                                       by readwrite or readonly
 **
 */
 
