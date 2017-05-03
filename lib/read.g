@@ -6,15 +6,6 @@
 ReadOrComplete( "lib/read5.g" );
 ReadOrComplete( "lib/read6.g" );
 
-# The following code would belong to the file lib/tom.gi,
-# but it cannot be there because of the $@!*%& completion mechanism.
-if not IsBoundGlobal( "TableOfMarksFromLibrary" ) then
-  BindGlobal( "TableOfMarksFromLibrary", function( arg )
-      Error( "sorry, the GAP Tables Of Marks Library is not installed" );
-      end );
-fi;
-
-ReadLib( "ctbl.gi"     );  # because of the completion bug ...
 ReadOrComplete( "lib/read7.g" ); # character theory stuff
 ReadOrComplete( "lib/read8.g" ); # overloaded operations, compiler interface
 ReadLib( "colorprompt.g"  );

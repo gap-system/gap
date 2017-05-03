@@ -3,7 +3,7 @@
 ##
 #X  files dealing with character tables, class functions, tables of marks
 ##
-# ReadLib( "ctbl.gi"     );  # cannot be read here because of completion bug
+ReadLib( "ctbl.gi"     );
 ReadLib( "ctblfuns.gi" );
 ReadLib( "ctblmaps.gi" );
 ReadLib( "ctblauto.gi" );

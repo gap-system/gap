@@ -925,11 +925,11 @@ InstallMethod( TableOfMarks,
 ##  If the library of tables of marks is not available then we bind this
 ##  to a dummy function that signals an error.
 ##
-#if not IsBoundGlobal( "TableOfMarksFromLibrary" ) then
-#  BindGlobal( "TableOfMarksFromLibrary", function( arg )
-#      Error( "sorry, the GAP Tables Of Marks Library is not installed" );
-#      end );
-#fi;
+if not IsBoundGlobal( "TableOfMarksFromLibrary" ) then
+  BindGlobal( "TableOfMarksFromLibrary", function( arg )
+      Error( "sorry, the GAP Tables Of Marks Library is not installed" );
+      end );
+fi;
 
 
 #############################################################################
