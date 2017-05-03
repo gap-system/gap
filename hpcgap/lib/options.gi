@@ -33,9 +33,9 @@ InstallGlobalFunction( PushOptions,
     if not IsRecord(opts) then
         Error("Usage: PushOptions( <opts> )");
     fi;
-    len := Length(ThreadVar.OptionsStack);
+    len := Length(OptionsStack);
     if len > 0 then
-        merged := ShallowCopy(ThreadVar.OptionsStack[len]);
+        merged := ShallowCopy(OptionsStack[len]);
         for field in RecNames(opts) do
             merged.(field) := opts.(field);
         od;
@@ -43,7 +43,7 @@ InstallGlobalFunction( PushOptions,
         merged := ShallowCopy(opts);
     fi;
         
-    Add(ThreadVar.OptionsStack,merged);
+    Add(OptionsStack,merged);
     Info(InfoOptions,1, "Pushing ",opts);
 end);
 
@@ -55,10 +55,10 @@ end);
 ##
 InstallGlobalFunction( PopOptions,
         function()
-    if Length(ThreadVar.OptionsStack)=0 then
+    if Length(OptionsStack)=0 then
       Info(InfoWarning,1,"Options stack is already empty");
     else
-      Unbind(ThreadVar.OptionsStack[Length(ThreadVar.OptionsStack)]);
+      Unbind(OptionsStack[Length(OptionsStack)]);
       Info(InfoOptions, 1, "Popping");
     fi;
 end);
@@ -69,12 +69,12 @@ end);
 ##
 InstallGlobalFunction( ResetOptionsStack,
         function()
-    if Length(ThreadVar.OptionsStack)=0 then
+    if Length(OptionsStack)=0 then
       Info(InfoWarning,1,"Options stack is already empty");
     else
       repeat
         PopOptions();
-      until IsEmpty(ThreadVar.OptionsStack);
+      until IsEmpty(OptionsStack);
     fi;
 end);
 
@@ -89,13 +89,13 @@ end);
 InstallGlobalFunction( ValueOption, 
         function(tag)
     local top,len;
-    len := Length(ThreadVar.OptionsStack);
+    len := Length(OptionsStack);
     if len = 0 then
         Info(InfoOptions,1,
              "Seeking option ",tag," found nothing");
         return fail;
     else
-        top := ThreadVar.OptionsStack[len];
+        top := OptionsStack[len];
         if IsBound(top.(tag)) then
             Info(InfoOptions,2,
                  "Seeking option ",tag," found ",top.(tag));
@@ -117,4 +117,4 @@ end);
 ##
 
 InstallGlobalFunction( DisplayOptionsStack, function()
-    Print(ThreadVar.OptionsStack,"\n"); end);
+    Print(OptionsStack,"\n"); end);
