@@ -1561,10 +1561,27 @@ InstallMethod( DimensionsMat,
     fi;
     end );
 
-BindGlobal("DoDiagonalizeMat",function(R,M,transform,divide)
-local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
-      typ, ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout,
-      alldivide;
+BindGlobal("DoDiagonalizeMat",function(arg)
+local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
+      typ, ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout, alldivide,basmat,origtran;
+
+  R:=arg[1];
+  M:=arg[2];
+  transform:=arg[3];
+  divide:=arg[4];
+
+  l:=Length(M);
+  n:=Length(M[1]);
+
+  basmat:=fail;
+  if transform then
+    left:=IdentityMat(l,R);
+    right:=IdentityMat(n,R);
+    if Length(arg)>4 then
+      origtran:=arg[5];
+      basmat:=IdentityMat(l,R); # for RCF -- transpose of P' in D&F, sec. 12.2
+    fi;
+  fi;
 
   swaprow:=function(a,b)
   local r;
@@ -1575,6 +1592,11 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
       r:=left[a];
       left[a]:=left[b];
       left[b]:=r;
+      if basmat<>fail then
+	r:=basmat[a];
+	basmat[a]:=basmat[b];
+	basmat[b]:=r;
+      fi;
     fi;
   end;
 
@@ -1606,6 +1628,9 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     AddCoeffs(M[a],M[b],m);
     if transform then
       AddCoeffs(left[a],left[b],m);
+      if basmat<>fail then
+        basmat[b]:=basmat[b]-basmat[a]*Value(m,origtran);
+      fi;
     fi;
   end;
 
@@ -1625,6 +1650,9 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     MultRowVector(M[a],m);
     if transform then
       MultRowVector(left[a],m);
+      if basmat<>fail then
+	MultRowVector(basmat[a],1/m);
+      fi;
     fi;
   end;
 
@@ -1674,14 +1702,6 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     until ForAll([start+1..n],i->IsZero(M[start][i]));
   end;
 
-  l:=Length(M);
-  n:=Length(M[1]);
-
-  if transform then
-    left:=IdentityMat(l,R);
-    right:=IdentityMat(n,R);
-  fi;
-
   start:=1;
   while start<=Length(M) and start<=n do
 
@@ -1722,7 +1742,7 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
               if Quotient(M[i][j],M[start][start])=fail then
                 alldivide:=false;
                 # do gcd
-                addrow(start,i,1);
+                addrow(start,i,One(R));
                 cleanout();
               fi;
             od;
@@ -1740,7 +1760,11 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
   od;
 
   if transform then
-   return rec(rowtrans:=left,coltrans:=right,normal:=M);
+   M:=rec(rowtrans:=left,coltrans:=right,normal:=M);
+   if basmat<>fail then
+     M.basmat:=basmat;
+   fi;
+   return M;
   else
     return M;
   fi;
@@ -4290,6 +4314,31 @@ end);
 InstallMethod( \^,
     "for matrices, use char. poly. for large exponents",
     [ IsMatrix, IsPosInt ], POW_MAT_INT );
+
+InstallGlobalFunction(RationalCanonicalFormTransform,function(mat)
+local cr,R,x,com,nf,matt,p,i,j,di,d,v;
+  matt:=TransposedMat(mat);
+  cr:=DefaultFieldOfMatrix(mat);
+  R:=PolynomialRing(cr,1);
+  x:=IndeterminatesOfPolynomialRing(R)[1];
+  com:=x*mat^0-mat;
+  com:=List(com,ShallowCopy);
+  nf:=DoDiagonalizeMat(R,com,true,true,matt);
+  di:=DiagonalOfMat(nf.normal);
+  p:=[];
+  for i in [1..Length(di)] do
+    d:=DegreeOfUnivariateLaurentPolynomial(di[i]);
+    if d>0 then
+      v:=List(nf.basmat[i],x->Value(x,Zero(cr))); # move in base ring
+      Add(p,v);
+      for j in [1..d-1] do
+        v:=v*matt;
+	Add(p,v);
+      od;
+    fi;
+  od;
+  return TransposedMat(p);
+end);
 
 
 #############################################################################
