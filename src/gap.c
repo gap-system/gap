@@ -1391,7 +1391,7 @@ Int RegisterBreakloopObserver(intfunc func)
 
 /****************************************************************************
 **
-*F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
+*F  ErrorMessageToGAPString( <msg>, <arg1>, <arg2> )
 */
 
 static Obj ErrorMessageToGAPString( 
@@ -1439,14 +1439,14 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
   // Signal functions about entering and leaving break loop
-  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
+  for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i]; ++i)
       (signalBreakFuncList[i])(1);
   Obj res = CALL_2ARGS(ErrorInner,r,l);
+  for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i]; ++i)
+      (signalBreakFuncList[i])(0);
 #ifdef HPCGAP
   TLS(currentRegion) = savedRegion;
 #endif
-  for (i = 0; i < 16 && signalBreakFuncList[i]; ++i)
-      (signalBreakFuncList[i])(0);
   return res;
 }
 
