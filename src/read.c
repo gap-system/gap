@@ -1539,7 +1539,7 @@ void ReadFuncExpr (
 **
 **      <FunctionBody>      := '->' <Expr>
 */
-void ReadFuncExprBody (
+static void ReadFuncExprBody (
     TypSymbolSet        follow,
     Obj nams,
     UInt narg)
@@ -1632,7 +1632,7 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     STATE(CountNams)++;
     ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
-    C_NEW_STRING_DYN( name, STATE(Value) );
+    name = MakeImmString( STATE(Value) );
     ASS_LIST( nams, 1, name );
 
     ReadFuncExprBody(follow, nams, 1);
@@ -1648,7 +1648,7 @@ void ReadFuncExpr1 (
 **      <Function>      := '->' <Expr>
 */
 void ReadFuncExpr0 (
-    TypSymbolSet        follow)
+    TypSymbolSet        follow )
 {
     volatile Obj        nams;           /* list of local variables names   */
 
@@ -2064,9 +2064,9 @@ void ReadAnd (
 **  up to one contained in <follow>.
 **
 **  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
-** 
-** This is a placeholder for the HPC-GAP function. 
-** HPC-GAP specific code has been commented out. 
+**
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 void ReadQualifiedExpr (
     TypSymbolSet        follow,
@@ -2397,8 +2397,8 @@ void ReadWhile (
 **
 **  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
 **
-**
-** This is a placeholder for the HPC-GAP function. 
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 void ReadAtomic (
     TypSymbolSet        follow )
@@ -2407,11 +2407,16 @@ void ReadAtomic (
     volatile UInt       nexprs;         /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
     volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
+#ifdef HPCGAP
+    volatile int        lockSP;         /* lock stack */
+#endif
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
-    /* lockSP    = RegionLockSP(); */
+#ifdef HPCGAP
+    lockSP    = RegionLockSP();
+#endif
 
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
@@ -2420,13 +2425,22 @@ void ReadAtomic (
       return; }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
-    
+#ifdef HPCGAP
+    TRY_READ { IntrAtomicBegin(); }
+#endif
+
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (STATE(Symbol) == S_COMMA) {
       Match( S_COMMA, "comma", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
+#ifdef HPCGAP
+      if (nexprs > MAX_ATOMIC_OBJS) {
+        SyntaxError("atomic statement can have at most 256 objects to lock");
+        return;
+      }
+#endif
     }
 
     Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
@@ -2454,6 +2468,11 @@ void ReadAtomic (
             STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
+#ifdef HPCGAP
+    /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
+     * locks to where they were before. */
+    PopRegionLocks(lockSP);
+#endif
 }
 
 
@@ -2769,6 +2788,9 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     volatile Obj                 errorLVars;
     volatile Obj                 errorLVars0;
     syJmp_buf           readJmpError;
+#ifdef HPCGAP
+    int			lockSP;
+#endif
 
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
@@ -2806,6 +2828,9 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     errorLVars0 = STATE(ErrorLVars0);
     STATE(ErrorLVars) = context;
     STATE(ErrorLVars0) = STATE(ErrorLVars);
+#ifdef HPCGAP
+    lockSP = RegionLockSP();
+#endif
 
     IntrBegin( context );
 
@@ -2855,6 +2880,11 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     CATCH_READ_ERROR {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
+#ifdef HPCGAP
+        PopRegionLocks(lockSP);
+        if (TLS(CurrentHashLock))
+            HashUnlock(TLS(CurrentHashLock));
+#endif
     }
 
     /* switch back to the old reader context                               */
@@ -2898,6 +2928,9 @@ UInt ReadEvalFile ( void )
     volatile Obj        nams;
     volatile Int        nloc;
     volatile Int        i;
+#ifdef HPCGAP
+    volatile int	lockSP;
+#endif
 
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
@@ -2917,6 +2950,9 @@ UInt ReadEvalFile ( void )
     readTop     = STATE(ReadTop);
     readTilde   = STATE(ReadTilde);
     currLHSGVar = STATE(CurrLHSGVar);
+#ifdef HPCGAP
+    lockSP      = RegionLockSP();
+#endif
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
@@ -2989,6 +3025,11 @@ UInt ReadEvalFile ( void )
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+#ifdef HPCGAP
+    PopRegionLocks(lockSP);
+    if (TLS(CurrentHashLock))
+      HashUnlock(TLS(CurrentHashLock));
+#endif
     STATE(StackNams)   = stackNams;
     STATE(CountNams)   = countNams;
     STATE(ReadTop)     = readTop;
@@ -3172,8 +3213,10 @@ static Int InitKernel (
 {
     STATE(ErrorLVars) = (UInt **)0;
     STATE(CurrentGlobalForLoopDepth) = 0;
+#if !defined(HPCGAP)
     InitGlobalBag( &STATE(ReadEvalResult), "src/read.c:ReadEvalResult" );
     InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
+#endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;

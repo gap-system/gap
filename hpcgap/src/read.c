@@ -1467,28 +1467,21 @@ void ReadFuncExpr (
 
 /****************************************************************************
 **
-*F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
+*F  ReadFuncExprBody(<follow>) . . . . . . read the body function expression
 **
-**  'ReadFuncExpr1' reads  an abbreviated  function literal   expression.  In
-**  case of an error it skips all symbols up to one contained in <follow>.
+**  'ReadFuncExprBody reads an abbreviated  function literal expression after
+**  the variable declaration. In case of an error it skips all symbols up to
+**  one contained in <follow>.
 **
-**      <Function>      := <Var> '->' <Expr>
+**      <FunctionBody>      := '->' <Expr>
 */
-void ReadFuncExpr1 (
-    TypSymbolSet        follow )
+static void ReadFuncExprBody (
+    TypSymbolSet        follow,
+    Obj nams,
+    UInt narg)
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile Obj        name;           /* one local variable name         */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
     volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
-
-    /* make and push the new local variables list                          */
-    nams = NEW_PLIST( T_PLIST, 1 );
-    SET_LEN_PLIST( nams, 0 );
-    STATE(CountNams)++;
-    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
-    name = MakeImmString( STATE(Value) );
-    ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
     Match( S_MAPTO, "->", follow );
@@ -1499,7 +1492,7 @@ void ReadFuncExpr1 (
 
     /* begin interpreting the function expression (with 1 argument)        */
     TRY_READ {
-        IntrFuncExprBegin( 1L, 0L, nams, STATE(Input)->number );
+        IntrFuncExprBegin( narg, 0L, nams, STATE(Input)->number );
     }
 
     /* read the expression and turn it into a return-statement             */
@@ -1527,6 +1520,32 @@ void ReadFuncExpr1 (
 
 /****************************************************************************
 **
+*F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
+**
+**  'ReadFuncExpr1' reads  an abbreviated  function literal   expression.  In
+**  case of an error it skips all symbols up to one contained in <follow>.
+**
+**      <Function>      := <Var> '->' <Expr>
+*/
+void ReadFuncExpr1 (
+    TypSymbolSet        follow )
+{
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile Obj        name;           /* one local variable name         */
+
+    /* make and push the new local variables list                          */
+    nams = NEW_PLIST( T_PLIST, 1 );
+    SET_LEN_PLIST( nams, 0 );
+    STATE(CountNams)++;
+    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
+    name = MakeImmString( STATE(Value) );
+    ASS_LIST( nams, 1, name );
+
+    ReadFuncExprBody(follow, nams, 1);
+}
+
+/****************************************************************************
+**
 *F  ReadFuncExpr0(<follow>) . . . . . . . . . . .  read a function expression
 **
 **  'ReadFuncExpr0' reads  an abbreviated  function literal   expression.  In
@@ -1538,8 +1557,6 @@ void ReadFuncExpr0 (
     TypSymbolSet        follow )
 {
     volatile Obj        nams;           /* list of local variables names   */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 0 );
@@ -1547,38 +1564,7 @@ void ReadFuncExpr0 (
     STATE(CountNams)++;
     ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
 
-    /* match away the '->'                                                 */
-    Match( S_MAPTO, "->", follow );
-
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
-    nrError   = STATE(NrError);
-
-    /* begin interpreting the function expression (with 1 argument)        */
-    TRY_READ {
-        IntrFuncExprBegin( 0L, 0L, nams, STATE(Input)->number );
-    }
-
-    /* read the expression and turn it into a return-statement             */
-    ReadExpr( follow, 'r' );
-    TRY_READ { IntrReturnObj(); }
-
-    /* end interpreting the function expression (with 1 statement)         */
-    TRY_READ {
-        IntrFuncExprEnd( 1UL, 1UL );
-    }
-
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  && STATE(IntrCoding) ) {
-        CodeEnd(1);
-        STATE(IntrCoding)--;
-        STATE(CurrLVars) = currLVars;
-        STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-        STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-    }
-
-    /* pop the new local variables list                                    */
-    STATE(CountNams)--;
+    ReadFuncExprBody(follow, nams, 0);
 }
 
 /****************************************************************************
@@ -1980,6 +1966,9 @@ void ReadAnd (
 **  up to one contained in <follow>.
 **
 **  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
+**
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 void ReadQualifiedExpr (
     TypSymbolSet        follow,
@@ -2321,6 +2310,8 @@ void ReadWhile (
 **
 **  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
 **
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  they are simply placeholders.
 */
 void ReadAtomic (
     TypSymbolSet        follow )
@@ -2329,12 +2320,16 @@ void ReadAtomic (
     volatile UInt       nexprs;         /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
     volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
+#ifdef HPCGAP
     volatile int        lockSP;         /* lock stack */
+#endif
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
+#ifdef HPCGAP
     lockSP    = RegionLockSP();
+#endif
 
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
@@ -2343,7 +2338,9 @@ void ReadAtomic (
       return; }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
+#ifdef HPCGAP
     TRY_READ { IntrAtomicBegin(); }
+#endif
 
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
@@ -2351,10 +2348,12 @@ void ReadAtomic (
       Match( S_COMMA, "comma", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
+#ifdef HPCGAP
       if (nexprs > MAX_ATOMIC_OBJS) {
         SyntaxError("atomic statement can have at most 256 objects to lock");
         return;
       }
+#endif
     }
 
     Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
@@ -2382,9 +2381,11 @@ void ReadAtomic (
             STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
         }
     }
+#ifdef HPCGAP
     /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
      * locks to where they were before. */
     PopRegionLocks(lockSP);
+#endif
 }
 
 
@@ -2700,7 +2701,9 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     volatile Obj                 errorLVars;
     volatile Obj                 errorLVars0;
     syJmp_buf           readJmpError;
+#ifdef HPCGAP
     int			lockSP;
+#endif
 
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
@@ -2738,7 +2741,9 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     errorLVars0 = STATE(ErrorLVars0);
     STATE(ErrorLVars) = context;
     STATE(ErrorLVars0) = STATE(ErrorLVars);
+#ifdef HPCGAP
     lockSP = RegionLockSP();
+#endif
 
     IntrBegin( context );
 
@@ -2788,9 +2793,11 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     CATCH_READ_ERROR {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
+#ifdef HPCGAP
         PopRegionLocks(lockSP);
         if (TLS(CurrentHashLock))
             HashUnlock(TLS(CurrentHashLock));
+#endif
     }
 
     /* switch back to the old reader context                               */
@@ -2834,7 +2841,9 @@ UInt ReadEvalFile ( void )
     volatile Obj        nams;
     volatile Int        nloc;
     volatile Int        i;
+#ifdef HPCGAP
     volatile int	lockSP;
+#endif
 
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
@@ -2854,7 +2863,9 @@ UInt ReadEvalFile ( void )
     readTop     = STATE(ReadTop);
     readTilde   = STATE(ReadTilde);
     currLHSGVar = STATE(CurrLHSGVar);
+#ifdef HPCGAP
     lockSP      = RegionLockSP();
+#endif
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
@@ -2927,9 +2938,11 @@ UInt ReadEvalFile ( void )
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+#ifdef HPCGAP
     PopRegionLocks(lockSP);
     if (TLS(CurrentHashLock))
       HashUnlock(TLS(CurrentHashLock));
+#endif
     STATE(StackNams)   = stackNams;
     STATE(CountNams)   = countNams;
     STATE(ReadTop)     = readTop;
@@ -3113,8 +3126,10 @@ static Int InitKernel (
 {
     STATE(ErrorLVars) = (UInt **)0;
     STATE(CurrentGlobalForLoopDepth) = 0;
-    /* TL: InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" ); */
-    /* TL: InitGlobalBag( &StackNams,      "src/read.c:StackNams"      ); */
+#if !defined(HPCGAP)
+    InitGlobalBag( &STATE(ReadEvalResult), "src/read.c:ReadEvalResult" );
+    InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
+#endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;
