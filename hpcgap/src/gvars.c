@@ -59,6 +59,8 @@
 
 #include <src/hpc/systhread.h>          /* system thread primitives */
 
+#include <src/util.h>
+
 #include <stdio.h>
 
 
@@ -1197,15 +1199,26 @@ void UpdateCopyFopyInfo ( void )
 */
 void RemoveCopyFopyInfo( void )
 {
-    UInt        i, l;
+    UInt        i, k, l;
 
     LockGVars(1);
-    l = LEN_PLIST(CopiesGVars);
-    for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( CopiesGVars[GVAR_BUCKET(i)], GVAR_INDEX(i), 0 );
-    l = LEN_PLIST(FopiesGVars);
-    for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( FopiesGVars[GVAR_BUCKET(i)], GVAR_INDEX(i), 0 );
+
+    for (k = 0; k < ARRAY_SIZE(CopiesGVars); ++k) {
+        if (CopiesGVars[k] == 0)
+            continue;
+        l = LEN_PLIST(CopiesGVars[k]);
+        for ( i = 1; i <= l; i++ )
+            SET_ELM_PLIST( CopiesGVars[k], i, 0 );
+    }
+
+    for (k = 0; k < ARRAY_SIZE(FopiesGVars); ++k) {
+        if (FopiesGVars[k] == 0)
+            continue;
+        l = LEN_PLIST(FopiesGVars[k]);
+        for ( i = 1; i <= l; i++ )
+            SET_ELM_PLIST( FopiesGVars[k], i, 0 );
+    }
+
     NCopyAndFopyDone = 0;
     UnlockGVars();
     return;
