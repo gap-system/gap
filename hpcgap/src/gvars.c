@@ -164,6 +164,13 @@ Obj             FopiesGVars[GVAR_BUCKETS];
 UInt            CountGVars;
 
 
+#define ELM_GVAR_LIST( list, gvar ) \
+    ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar) )
+
+#define SET_ELM_GVAR_LIST( list, gvar, val ) \
+    SET_ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar), val )
+
+
 /****************************************************************************
 **
 *V  TableGVars  . . . . . . . . . . . . . .  hashed table of global variables
@@ -238,12 +245,10 @@ void            AssGVar (
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
     Obj                 onam;           /* object of <name>                */
-    UInt                gvar_bucket = GVAR_BUCKET(gvar);
-    UInt                gvar_index = GVAR_INDEX(gvar);
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-            (ELM_PLIST( WriteGVars[gvar_bucket], gvar_index )
+            (ELM_GVAR_LIST( WriteGVars, gvar )
               == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
@@ -253,7 +258,7 @@ void            AssGVar (
 
     /* assign the value to the global variable                             */
     if (!VAL_GVAR(gvar)) {
-        Obj expr = ELM_PLIST(ExprGVars[gvar_bucket], gvar_index);
+        Obj expr = ExprGVar(gvar);
         if (IS_INTOBJ(expr)) {
           AssTLRecord(TLVars, INT_INTOBJ(expr), val);
           return;
@@ -261,13 +266,13 @@ void            AssGVar (
     }
     MEMBAR_WRITE();
     VAL_GVAR(gvar) = val;
-    CHANGED_BAG( ValGVars[gvar_bucket] );
+    CHANGED_BAG( ValGVars[GVAR_BUCKET(gvar)] );
 
     /* if the global variable was automatic, convert it to normal          */
-    SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, 0 );
+    SET_ELM_GVAR_LIST( ExprGVars, gvar, 0 );
 
     /* assign the value to all the internal copies                         */
-    cops = ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index );
+    cops = ELM_GVAR_LIST( CopiesGVars, gvar );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
             copy  = (Obj*) ELM_PLIST(cops,i);
@@ -276,7 +281,7 @@ void            AssGVar (
     }
 
     /* if the value is a function, assign it to all the internal fopies    */
-    cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
+    cops = ELM_GVAR_LIST( FopiesGVars, gvar );
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
         if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
             for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
@@ -325,12 +330,10 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
+    Obj                 val;
     Obj                 expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
-    Obj                 val;
-    UInt                gvar_bucket = GVAR_BUCKET(gvar);
-    UInt                gvar_index  = GVAR_INDEX(gvar);
 
     /* if this is an automatic variable, make the function call            */
     val = ValGVar(gvar);
@@ -373,8 +376,6 @@ Obj             ValGVarTL (
 {
     Obj                 expr;
     Obj                 val;
-    UInt                gvar_bucket = GVAR_BUCKET(gvar);
-    UInt                gvar_index  = GVAR_INDEX(gvar);
 
     val = ValGVar(gvar);
     /* is this a thread-local variable? */
@@ -391,15 +392,12 @@ Obj             ValGVarTL (
 }
 
 Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
-  UInt gvar, gvar_bucket, gvar_index;
   if (!IsStringConv(name))
     ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
                  (Int)TNAM_OBJ(name), 0L);
 
-  gvar = GVarName(CSTR_STRING(name));
-  gvar_bucket = GVAR_BUCKET(gvar);
-  gvar_index = GVAR_INDEX(gvar);
-  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ELM_PLIST(ExprGVars[gvar_bucket], gvar_index))) ?
+  UInt gvar = GVarName(CSTR_STRING(name));
+  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
     True: False;
 }
 
@@ -413,10 +411,7 @@ Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
 Char *          NameGVar (
     UInt                gvar )
 {
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index  = GVAR_INDEX(gvar);
-
-    return CSTR_STRING( ELM_PLIST( NameGVars[gvar_bucket], gvar_index ) );
+    return CSTR_STRING( ELM_GVAR_LIST( NameGVars, gvar ) );
 }
 
 Obj NewGVarBucket() {
@@ -428,18 +423,12 @@ Obj NewGVarBucket() {
 
 Obj NameGVarObj ( UInt gvar )
 {
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index  = GVAR_INDEX(gvar);
-
-    return ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
+    return ELM_GVAR_LIST( NameGVars, gvar );
 }
 
 Obj ExprGVar ( UInt gvar )
 {
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index  = GVAR_INDEX(gvar);
-
-    return ELM_PLIST( ExprGVars[gvar_bucket], gvar_index );
+    return ELM_GVAR_LIST( ExprGVars, gvar );
 }
 
 #define NSCHAR '@'
@@ -519,11 +508,10 @@ UInt GVarName (
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
-        UInt gvar_bucket, gvar_index;
+        UInt gvar_bucket;
         pos = i;
         CountGVars++;
         gvar_bucket = GVAR_BUCKET(CountGVars);
-        gvar_index = GVAR_INDEX(CountGVars);
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         strlcpy(namx, name, sizeof(namx));
@@ -539,12 +527,12 @@ UInt GVarName (
            CopiesGVars[gvar_bucket] = NewGVarBucket();
            FopiesGVars[gvar_bucket] = NewGVarBucket();
         }
-        SET_ELM_PLIST(ValGVars[gvar_bucket], gvar_index, 0);
-        SET_ELM_PLIST(NameGVars[gvar_bucket], gvar_index, string);
-        SET_ELM_PLIST(WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1));
-        SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
-        SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
-        SET_ELM_PLIST(FopiesGVars[gvar_bucket], gvar_index, 0);
+        SET_ELM_GVAR_LIST(ValGVars, CountGVars, 0);
+        SET_ELM_GVAR_LIST(NameGVars, CountGVars, string);
+        SET_ELM_GVAR_LIST(WriteGVars, CountGVars, INTOBJ_INT(1));
+        SET_ELM_GVAR_LIST(ExprGVars, CountGVars, 0);
+        SET_ELM_GVAR_LIST(CopiesGVars, CountGVars, 0);
+        SET_ELM_GVAR_LIST(FopiesGVars, CountGVars, 0);
 
         /* if the table is too crowed, make a larger one, rehash the names     */
         if ( SizeGVars < 3 * CountGVars / 2 ) {
@@ -596,10 +584,8 @@ UInt Tilde;
 void MakeReadOnlyGVar (
     UInt                gvar )
 {       
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index = GVAR_INDEX(gvar);
-    SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars[gvar_bucket]);
+    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
+    CHANGED_BAG(WriteGVars[GVAR_BUCKET(gvar)]);
 }
 
 /****************************************************************************
@@ -610,14 +596,12 @@ void MakeThreadLocalVar (
     UInt                gvar,
     UInt                rnam )
 {       
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index = GVAR_INDEX(gvar);
     Obj value = ValGVar(gvar);
     VAL_GVAR(gvar) = (Obj) 0;
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
-    SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
-    CHANGED_BAG(ExprGVars[gvar_bucket]);
+    SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
+    CHANGED_BAG(ExprGVars[GVAR_BUCKET(gvar)]);
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
 }
@@ -661,10 +645,8 @@ Obj MakeReadOnlyGVarHandler (
 void MakeReadWriteGVar (
     UInt                gvar )
 {
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index = GVAR_INDEX(gvar);
-    SET_ELM_PLIST( WriteGVars[gvar_bucket], gvar_index, INTOBJ_INT(1) );
-    CHANGED_BAG(WriteGVars[gvar_bucket]);
+    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
+    CHANGED_BAG(WriteGVars[GVAR_BUCKET(gvar)]);
 }
 
 
@@ -705,9 +687,7 @@ Obj MakeReadWriteGVarHandler (
 Int IsReadOnlyGVar (
     UInt                gvar )
 {
-    UInt gvar_bucket = GVAR_BUCKET(gvar);
-    UInt gvar_index = GVAR_INDEX(gvar);
-    return !INT_INTOBJ(ELM_PLIST(WriteGVars[gvar_bucket], gvar_index));
+    return !INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar));
 }
 
 
@@ -761,7 +741,6 @@ Obj             AUTOHandler (
     Obj                 name;           /* one name (as a GAP string)      */
     UInt                gvar;           /* one global variable             */
     UInt                i;              /* loop variable                   */
-    UInt                gvar_bucket, gvar_index;
 
     /* check that there are enough arguments                               */
     if ( LEN_LIST(args) < 2 ) {
@@ -799,11 +778,9 @@ Obj             AUTOHandler (
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
-        gvar_bucket = GVAR_BUCKET(gvar);
-        gvar_index = GVAR_INDEX(gvar);
-        SET_ELM_PLIST( ValGVars[gvar_bucket],   gvar_index, 0    );
-        SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, list );
-        CHANGED_BAG(   ExprGVars[gvar_bucket] );
+        SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
+        SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
+        CHANGED_BAG(   ExprGVars[GVAR_BUCKET(gvar)] );
     }
 
     /* return void                                                         */
@@ -842,7 +819,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) ||  ExprGVar( i )) {
+        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -900,7 +877,7 @@ Obj FuncIDENTS_BOUND_GVARS (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
-        if ( VAL_GVAR( i ) || ExprGVar( i ) ) {
+        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
            SET_ELM_PLIST( copy, j, NameGVarObj(i) );
            j++;
         }
@@ -1128,7 +1105,6 @@ void UpdateCopyFopyInfo ( void )
     UInt                gvar;
     const Char *        name;           /* name of the variable            */
     Obj *               copy;           /* address of the copy             */
-    UInt                gvar_bucket, gvar_index;
 
     LockGVars(1);
     /* loop over new copies and fopies                                     */
@@ -1136,30 +1112,24 @@ void UpdateCopyFopyInfo ( void )
         name = CopyAndFopyGVars[NCopyAndFopyDone].name;
         copy = CopyAndFopyGVars[NCopyAndFopyDone].copy;
         gvar = GVarName(name);
-        gvar_bucket = GVAR_BUCKET(gvar);
-        gvar_index = GVAR_INDEX(gvar);
 
         /* get the copies list and its length                              */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index ) != 0 ) {
-                cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
-            }
-            else {
+            cops = ELM_GVAR_LIST( FopiesGVars, gvar );
+            if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
                 MakeBagPublic(cops);
-                SET_ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index, cops );
-                CHANGED_BAG(FopiesGVars[gvar_bucket]);
+                SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
+                CHANGED_BAG(FopiesGVars[GVAR_BUCKET(gvar)]);
             }
         }
         else {
-            if ( ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index ) != 0 ) {
-                cops = ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index );
-            }
-            else {
+            cops = ELM_GVAR_LIST( CopiesGVars, gvar );
+            if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
                 MakeBagPublic(cops);
-                SET_ELM_PLIST( CopiesGVars[gvar_bucket], gvar_index, cops );
-                CHANGED_BAG(CopiesGVars[gvar_bucket]);
+                SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
+                CHANGED_BAG(CopiesGVars[GVAR_BUCKET(gvar)]);
             }
         }
         ncop = LEN_PLIST(cops);
@@ -1171,8 +1141,8 @@ void UpdateCopyFopyInfo ( void )
         CHANGED_BAG(cops);
 
         /* now copy the value of <gvar> to <cvar>                          */
+        Obj val = ValGVar(gvar);
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            Obj val = ValGVar(gvar);
             if ( val != 0 && IS_FUNC(val) ) {
                 *copy = val;
             }
@@ -1184,7 +1154,7 @@ void UpdateCopyFopyInfo ( void )
             }
         }
         else {
-            *copy = ValGVar(gvar);
+            *copy = val;
         }
     }
     UnlockGVars();

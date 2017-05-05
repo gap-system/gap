@@ -109,6 +109,13 @@ Obj             FopiesGVars;
 UInt            CountGVars;
 
 
+#define ELM_GVAR_LIST( list, gvar ) \
+    ELM_PLIST( list, gvar )
+
+#define SET_ELM_GVAR_LIST( list, gvar, val ) \
+    SET_ELM_PLIST( list, gvar, val )
+
+
 /****************************************************************************
 **
 *V  TableGVars  . . . . . . . . . . . . . .  hashed table of global variables
@@ -209,7 +216,7 @@ void            AssGVar (
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-            (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
+            (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
             
         if(gvar == Tilde) {
                 ErrorMayQuit("'~' cannot be assigned",0L,0L);
@@ -227,10 +234,10 @@ void            AssGVar (
     CHANGED_BAG( ValGVars );
 
     /* if the global variable was automatic, convert it to normal          */
-    SET_ELM_PLIST( ExprGVars, gvar, 0 );
+    SET_ELM_GVAR_LIST( ExprGVars, gvar, 0 );
 
     /* assign the value to all the internal copies                         */
-    cops = ELM_PLIST( CopiesGVars, gvar );
+    cops = ELM_GVAR_LIST( CopiesGVars, gvar );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
             copy  = (Obj*) ELM_PLIST(cops,i);
@@ -239,7 +246,7 @@ void            AssGVar (
     }
 
     /* if the value is a function, assign it to all the internal fopies    */
-    cops = ELM_PLIST( FopiesGVars, gvar );
+    cops = ELM_GVAR_LIST( FopiesGVars, gvar );
     if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
             copy  = (Obj*) ELM_PLIST(cops,i);
@@ -319,17 +326,17 @@ Obj             ValAutoGVar (
 Char *          NameGVar (
     UInt                gvar )
 {
-    return CSTR_STRING( ELM_PLIST( NameGVars, gvar ) );
+    return CSTR_STRING( ELM_GVAR_LIST( NameGVars, gvar ) );
 }
 
 Obj NameGVarObj ( UInt gvar )
 {
-    return ELM_PLIST( NameGVars, gvar );
+    return ELM_GVAR_LIST( NameGVars, gvar );
 }
 
 Obj ExprGVar ( UInt gvar )
 {
-    return ELM_PLIST( ExprGVars, gvar );
+    return ELM_GVAR_LIST( ExprGVars, gvar );
 }
 
 #define NSCHAR '@'
@@ -470,7 +477,7 @@ UInt Tilde;
 void MakeReadOnlyGVar (
     UInt                gvar )
 {       
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
+    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
     CHANGED_BAG(WriteGVars)
 }
 
@@ -513,7 +520,7 @@ Obj MakeReadOnlyGVarHandler (
 void MakeReadWriteGVar (
     UInt                gvar )
 {
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(1) );
+    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
     CHANGED_BAG(WriteGVars)
 }
 
@@ -555,7 +562,7 @@ Obj MakeReadWriteGVarHandler (
 Int IsReadOnlyGVar (
     UInt                gvar )
 {
-  return !INT_INTOBJ(ELM_PLIST(WriteGVars, gvar));
+    return !INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar));
 }
 
 
@@ -646,8 +653,8 @@ Obj             AUTOHandler (
                 "you can return a string for <name>" );
         }
         gvar = GVarName( CSTR_STRING(name) );
-        SET_ELM_PLIST( ValGVars,   gvar, 0    );
-        SET_ELM_PLIST( ExprGVars, gvar, list );
+        SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
+        SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
         CHANGED_BAG(   ExprGVars );
     }
 
@@ -687,7 +694,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) || ExprGVar( i )) {
+        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -745,7 +752,7 @@ Obj FuncIDENTS_BOUND_GVARS (
     numGVars = LEN_PLIST(NameGVars);
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
-        if ( VAL_GVAR( i ) || ExprGVar( i ) ) {
+        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
            /* Copy the string here, because we do not want members of
             * NameGVars accessable to users, as these strings must not be
             * changed */
@@ -971,22 +978,18 @@ void UpdateCopyFopyInfo ( void )
 
         /* get the copies list and its length                              */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( ELM_PLIST( FopiesGVars, gvar ) != 0 ) {
-                cops = ELM_PLIST( FopiesGVars, gvar );
-            }
-            else {
+            cops = ELM_GVAR_LIST( FopiesGVars, gvar );
+            if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
-                SET_ELM_PLIST( FopiesGVars, gvar, cops );
+                SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
                 CHANGED_BAG(FopiesGVars);
             }
         }
         else {
-            if ( ELM_PLIST( CopiesGVars, gvar ) != 0 ) {
-                cops = ELM_PLIST( CopiesGVars, gvar );
-            }
-            else {
+            cops = ELM_GVAR_LIST( CopiesGVars, gvar );
+            if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
-                SET_ELM_PLIST( CopiesGVars, gvar, cops );
+                SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
                 CHANGED_BAG(CopiesGVars);
             }
         }
@@ -999,11 +1002,12 @@ void UpdateCopyFopyInfo ( void )
         CHANGED_BAG(cops);
 
         /* now copy the value of <gvar> to <cvar>                          */
+        Obj val = VAL_GVAR(gvar);
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( VAL_GVAR(gvar) != 0 && IS_FUNC(VAL_GVAR(gvar)) ) {
-                *copy = VAL_GVAR(gvar);
+            if ( val != 0 && IS_FUNC(val) ) {
+                *copy = val;
             }
-            else if ( VAL_GVAR(gvar) != 0 ) {
+            else if ( val != 0 ) {
                 *copy = ErrorMustEvalToFuncFunc;
             }
             else {
@@ -1011,7 +1015,7 @@ void UpdateCopyFopyInfo ( void )
             }
         }
         else {
-            *copy = VAL_GVAR(gvar);
+            *copy = val;
         }
     }
 }
@@ -1027,10 +1031,10 @@ void RemoveCopyFopyInfo( void )
 
     l = LEN_PLIST(CopiesGVars);
     for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( CopiesGVars, i, 0 );
+        SET_ELM_GVAR_LIST( CopiesGVars, i, 0 );
     l = LEN_PLIST(FopiesGVars);
     for ( i = 1; i <= l; i++ )
-        SET_ELM_PLIST( FopiesGVars, i, 0 );
+        SET_ELM_GVAR_LIST( FopiesGVars, i, 0 );
     NCopyAndFopyDone = 0;
     return;
 }
