@@ -1704,8 +1704,7 @@ void AssPlistCyc   (
     Obj                 val )
 {
   Int len;
-  
-  
+
   /* resize the list if necessary                                        */
   len = LEN_PLIST( list );
   if ( len < pos ) {
@@ -1719,23 +1718,23 @@ void AssPlistCyc   (
 
     /* try and maintain maximum information about the list                */
     if (pos > len + 1) {
-	CLEAR_FILTS_LIST(list);
-	SET_FILT_LIST( list, FN_IS_NDENSE );
-    } else {
-      if (!CheckReadAccess(val)) {
-	CLEAR_FILTS_LIST(list);
-	SET_FILT_LIST( list, FN_IS_DENSE );
-      } else {
-	if (TNUM_OBJ(val) > T_CYC) {
-	  CLEAR_FILTS_LIST(list);
-	  SET_FILT_LIST( list, FN_IS_DENSE );
-	} else {
-	  RESET_FILT_LIST( list, FN_IS_NSORT );
-	  RESET_FILT_LIST( list, FN_IS_SSORT );
-	}
-      }
+        CLEAR_FILTS_LIST(list);
+        SET_FILT_LIST( list, FN_IS_NDENSE );
     }
-	
+#ifdef HPCGAP
+    else if (!CheckReadAccess(val)) {
+        CLEAR_FILTS_LIST(list);
+        SET_FILT_LIST( list, FN_IS_DENSE );
+    }
+#endif
+    else if (TNUM_OBJ(val) > T_CYC) {
+        CLEAR_FILTS_LIST(list);
+        SET_FILT_LIST( list, FN_IS_DENSE );
+    }
+    else {
+        RESET_FILT_LIST( list, FN_IS_NSORT );
+        RESET_FILT_LIST( list, FN_IS_SSORT );
+    }
 }
 
 void AssPlistFfe   (
@@ -1870,9 +1869,11 @@ void AssPlistHomog (
 		SET_FILT_LIST( list, FN_IS_SSORT );
 	      }
 	  }
+#ifdef HPCGAP
 	else if (!CheckReadAccess(val)) {
 	  SET_FILT_LIST(list, FN_IS_NHOMOG);
 	}
+#endif
 	else if (!SyInitializing && !IS_MUTABLE_OBJ(val))
 	  {
 	    /* find the family of an original list element */
@@ -1935,11 +1936,15 @@ void AssPlistEmpty (
         AssListObject( list, pos, val );
       else
 	AssPlistXXX( list, pos, val );
-    } else if (!CheckReadAccess(val)) {
+    }
+#ifdef HPCGAP
+    else if (!CheckReadAccess(val)) {
         RetypeBag( list, T_PLIST );
         AssPlistXXX( list, pos, val );
-    } else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
+    }
+#endif
     /* catch constants                                                     */
+    else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         AssPlistXXX( list, pos, val );
 	/* fix up type */
 	SET_FILT_LIST(list, FN_IS_DENSE);
@@ -2198,8 +2203,10 @@ Int             IsSSortPlist (
     elm1    = ELM_PLIST( list, 1 );
     if (elm1 == 0)
       goto notDense;
+#ifdef HPCGAP
     if (!CheckReadAccess(elm1))
       return 0L;
+#endif
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
       {
@@ -2214,8 +2221,10 @@ Int             IsSSortPlist (
       elm2 = ELM_PLIST( list, i );
       if (elm2 == 0)
 	goto notDense;
+#ifdef HPCGAP
       if (!CheckReadAccess(elm2))
 	return 0L;
+#endif
       if ( ! LT( elm1, elm2 ) )
 	break;
       areMut = (areMut || IS_MUTABLE_OBJ( elm2 ));
@@ -2279,8 +2288,10 @@ Int             IsSSortPlistDense (
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
+#ifdef HPCGAP
     if (!CheckReadAccess(elm1))
       return 0L;
+#endif
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
       {
@@ -2293,8 +2304,10 @@ Int             IsSSortPlistDense (
     /* loop over the other elements                                        */
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
+#ifdef HPCGAP
       if (!CheckReadAccess(elm2))
         return 0L;
+#endif
       if ( ! LT( elm1, elm2 ) )
 	break;
       areMut = (areMut || IS_MUTABLE_OBJ( elm2 ));
@@ -2343,14 +2356,18 @@ Int             IsSSortPlistHom (
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
+#ifdef HPCGAP
     if (!CheckReadAccess(elm1))
       return 0L;
-    
+#endif 
+
     /* loop over the other elements                                        */
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
+#ifdef HPCGAP
       if (!CheckReadAccess(elm2))
 	return 0L;
+#endif 
       if ( ! LT( elm1, elm2 ) )
 	break;
       elm1 = elm2;
@@ -4526,10 +4543,11 @@ static Int InitKernel (
     TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSortImm;
     TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmptyMut;
     TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmptyImm;
+#ifdef HPCGAP
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
         SetTypeObjFuncs[ t1 ]             = SetTypePlistToPosObj;
     }
-
+#endif
     
     for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_RECT_SSORT; t1 += 2 ) {
         TypeObjFuncs[ t1            ] = TypePlistHom;
@@ -4867,13 +4885,11 @@ static Int InitKernel (
     /* mutable tables may have mutable rows */
       MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
     
-
-    /* mutable tables may have mutable rows */
-      MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
-
+#ifdef HPCGAP
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         MakeBagTypePublic(t1 +IMMUTABLE);
     }
+#endif
 
     /* return success                                                      */
     return 0;
