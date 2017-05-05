@@ -57,12 +57,12 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include <src/hpc/systhread.h>          /* system thread primitives */
-
 #include <src/util.h>
 
+#ifdef HPCGAP
+#include <src/hpc/systhread.h>          /* system thread primitives */
 #include <stdio.h>
-
+#endif
 
 /****************************************************************************
 **
@@ -82,6 +82,10 @@
 Obj   ValGVars[GVAR_BUCKETS];
 
 Obj * PtrGVars[GVAR_BUCKETS];
+
+
+
+#ifdef HPCGAP
 
 /****************************************************************************
 **
@@ -129,6 +133,8 @@ void UnlockGVars() {
   }
   pthread_rwlock_unlock(&GVarLock);
 }
+
+#endif
 
 /****************************************************************************
 **
@@ -1477,8 +1483,10 @@ static Int PostSave (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+#ifdef HPCGAP
     /* Init lock */
     pthread_rwlock_init(&GVarLock, NULL);
+#endif
 
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
@@ -1488,10 +1496,12 @@ static Int InitLibrary (
         "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
 
     /* make the list of global variables                                   */
-    SizeGVars  = 997;
+    SizeGVars  = 14033;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-    MakeBagPublic(TableGVars);
     SET_LEN_PLIST( TableGVars, SizeGVars );
+#ifdef HPCGAP
+    MakeBagPublic(TableGVars);
+#endif
 
     /* Create the current namespace: */
     STATE(CurrNamespace) = NEW_STRING(0);
