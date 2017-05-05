@@ -247,8 +247,7 @@ void            AssGVar (
 	      == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
-            (Int)CSTR_STRING( ELM_PLIST(NameGVars[gvar_bucket],
-	      gvar_index) ), 0L,
+            (Int)NameGVar(gvar), 0L,
             "you can 'return;' after making it writable" );
     }
 
@@ -335,8 +334,7 @@ Obj             ValAutoGVar (
 
     /* if this is an automatic variable, make the function call            */
     val = ValGVar(gvar);
-    if ( val == 0 &&
-         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
+    if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
 	if (IS_INTOBJ(expr)) {
 	  /* thread-local variable */
@@ -352,7 +350,7 @@ Obj             ValAutoGVar (
         while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
-            (Int)CSTR_STRING( ELM_PLIST(NameGVars[gvar_bucket],gvar_index)), 0L,
+            (Int)NameGVar(gvar), 0L,
             "you can 'return;' after assigning a value" );
 	    val = ValGVar(gvar);
         }
@@ -380,8 +378,7 @@ Obj             ValGVarTL (
 
     val = ValGVar(gvar);
     /* is this a thread-local variable? */
-    if ( val == 0 &&
-         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
+    if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
 	if (IS_INTOBJ(expr)) {
 	  /* thread-local variable */
@@ -435,6 +432,14 @@ Obj NameGVarObj ( UInt gvar )
     UInt gvar_index  = GVAR_INDEX(gvar);
 
     return ELM_PLIST( NameGVars[gvar_bucket], gvar_index );
+}
+
+Obj ExprGVar ( UInt gvar )
+{
+    UInt gvar_bucket = GVAR_BUCKET(gvar);
+    UInt gvar_index  = GVAR_INDEX(gvar);
+
+    return ELM_PLIST( ExprGVars[gvar_bucket], gvar_index );
 }
 
 #define NSCHAR '@'
@@ -609,7 +614,7 @@ void MakeThreadLocalVar (
     UInt gvar_index = GVAR_INDEX(gvar);
     Obj value = ValGVar(gvar);
     VAL_GVAR(gvar) = (Obj) 0;
-    if (IS_INTOBJ(ELM_PLIST( ExprGVars[gvar_bucket], gvar_index)))
+    if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
     CHANGED_BAG(ExprGVars[gvar_bucket]);
@@ -837,8 +842,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) ||
-	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
+        if ( VAL_GVAR( i ) ||  ExprGVar( i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -877,8 +881,7 @@ Obj FuncIDENTS_GVAR (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1;  i <= numGVars;  i++ ) {
-        SET_ELM_PLIST( copy, i,
-	  ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
+        SET_ELM_PLIST( copy, i, NameGVarObj(i) );
     }
     SET_LEN_PLIST( copy, numGVars );
     return copy;
@@ -897,10 +900,8 @@ Obj FuncIDENTS_BOUND_GVARS (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
-        if ( VAL_GVAR( i ) ||
-	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
-           SET_ELM_PLIST( copy, j,
-	     ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
+        if ( VAL_GVAR( i ) || ExprGVar( i ) ) {
+           SET_ELM_PLIST( copy, j, NameGVarObj(i) );
            j++;
         }
     }
@@ -951,7 +952,7 @@ Obj FuncISB_GVAR (
     gv = GVarName( CSTR_STRING(gvar) );
     if (VAL_GVAR(gv))
       return True;
-    expr = ELM_PLIST( ExprGVars[GVAR_BUCKET(gv)], GVAR_INDEX(gv) );
+    expr = ExprGVar(gv);
     if (expr && !IS_INTOBJ(expr)) /* auto gvar */
       return False;
     if (!expr || !TLVars)

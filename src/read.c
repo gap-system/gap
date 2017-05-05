@@ -177,9 +177,6 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-extern Obj ExprGVars;
-/* TL: extern Obj ErrorLVars; */
-/* TL: extern Obj BottomLVars; */
 
 /* This function reads the options part at the end of a function call
    The syntax is
@@ -509,7 +506,7 @@ void ReadCallVarAss (
       && var != STATE(CurrLHSGVar)
       && var != Tilde
       && VAL_GVAR(var) == 0
-      && ELM_PLIST(ExprGVars,var) == 0
+      && ExprGVar(var) == 0
       && ! STATE(IntrIgnoring)
       && ! GlobalComesFromEnclosingForLoop(var)
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||

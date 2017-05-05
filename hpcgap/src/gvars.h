@@ -172,6 +172,16 @@ extern  Obj            NameGVarObj (
 
 /****************************************************************************
 **
+*F  ExprGVar(<gvar>)  . . . . . .  expression of an automatic global variable
+**
+**  'ExprGVar' returns the expression of the automatic global variable <gvar>.
+*/
+extern  Obj            ExprGVar (
+            UInt                gvar );
+
+
+/****************************************************************************
+**
 *F  GVarName(<name>)  . . . . . . . . . . . . . .  global variable for a name
 **
 **  'GVarName' returns the global variable with the name <name>.

@@ -217,7 +217,7 @@ void            AssGVar (
         else {
             ErrorReturnVoid(
                 "Variable: '%s' is read only",
-                (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
+                (Int)NameGVar(gvar), 0L,
                 "you can 'return;' after making it writable" );
         }
     }
@@ -288,18 +288,18 @@ Obj             ValAutoGVar (
     Obj                 arg;            /* argument to pass for automatic  */
 
     /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 && ELM_PLIST( ExprGVars, gvar ) != 0 ) {
+    if ( VAL_GVAR(gvar) == 0 && ExprGVar( gvar ) != 0 ) {
 
         /* make the function call                                          */
-        func = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 1 );
-        arg  = ELM_PLIST( ELM_PLIST( ExprGVars, gvar ), 2 );
+        func = ELM_PLIST( ExprGVar( gvar ), 1 );
+        arg  = ELM_PLIST( ExprGVar( gvar ), 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
         while ( VAL_GVAR(gvar) == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
-                (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
+                (Int)NameGVar(gvar), 0L,
                 "you can 'return;' after assigning a value" );
         }
 
@@ -325,6 +325,11 @@ Char *          NameGVar (
 Obj NameGVarObj ( UInt gvar )
 {
     return ELM_PLIST( NameGVars, gvar );
+}
+
+Obj ExprGVar ( UInt gvar )
+{
+    return ELM_PLIST( ExprGVars, gvar );
 }
 
 #define NSCHAR '@'
@@ -682,7 +687,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+        if ( VAL_GVAR( i ) || ExprGVar( i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -721,7 +726,7 @@ Obj FuncIDENTS_GVAR (
     for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
          * accessable to users, as these strings must not be changed */
-        strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
+        strcopy = CopyToStringRep( NameGVarObj( i ) );
         SET_ELM_PLIST( copy, i, strcopy );
         CHANGED_BAG( copy );
     }
@@ -740,11 +745,11 @@ Obj FuncIDENTS_BOUND_GVARS (
     numGVars = LEN_PLIST(NameGVars);
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
-        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+        if ( VAL_GVAR( i ) || ExprGVar( i ) ) {
            /* Copy the string here, because we do not want members of
             * NameGVars accessable to users, as these strings must not be
             * changed */
-           strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
+           strcopy = CopyToStringRep( NameGVarObj( i ) );
            SET_ELM_PLIST( copy, j, strcopy );
            CHANGED_BAG( copy );
            j++;
@@ -794,8 +799,7 @@ Obj FuncISB_GVAR (
     }
 
     gv = GVarName( CSTR_STRING(gvar) );
-    return ( VAL_GVAR( gv ) ||
-             ELM_PLIST( ExprGVars, gv )) ? True : False;
+    return ( VAL_GVAR( gv ) || ExprGVar( gv )) ? True : False;
 }
 
 
