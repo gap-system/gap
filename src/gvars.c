@@ -57,6 +57,11 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
+#ifdef HPCGAP
+#include <src/hpc/systhread.h>          /* system thread primitives */
+#include <stdio.h>
+#endif
+
 /****************************************************************************
 **
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
@@ -75,6 +80,58 @@ Obj   ValGVars;
 
 Obj * PtrGVars;
 
+
+
+#ifdef HPCGAP
+
+/****************************************************************************
+**
+*V  TLVars  . . . . . . . . . . . . . . . . . . . . . thread-local variables
+*/
+
+static Obj TLVars;
+
+/****************************************************************************
+**
+*V  GVarLock  . . . . . . . . . . . . . . . . . .  lock for global variables
+**
+**  This lock is only needed for accessing global variables by name rather
+**  than index and to initialize copy/fopy information.
+*/
+
+pthread_rwlock_t GVarLock;
+void *GVarLockOwner;
+UInt GVarLockDepth;
+
+void LockGVars(int write) {
+  if (PreThreadCreation)
+    return;
+  if (GVarLockOwner == realTLS) {
+    GVarLockDepth++;
+    return;
+  }
+  if (write) {
+    pthread_rwlock_wrlock(&GVarLock);
+    GVarLockOwner = realTLS;
+    GVarLockDepth = 1;
+  }
+  else
+    pthread_rwlock_rdlock(&GVarLock);
+}
+
+void UnlockGVars() {
+  if (PreThreadCreation)
+    return;
+  if (GVarLockOwner == realTLS) {
+    GVarLockDepth--;
+    if (GVarLockDepth != 0)
+      return;
+    GVarLockOwner = NULL;
+  }
+  pthread_rwlock_unlock(&GVarLock);
+}
+
+#endif
 
 /****************************************************************************
 **
@@ -291,15 +348,16 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
+    Obj                 expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
 
     /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 && ExprGVar( gvar ) != 0 ) {
+    if ( VAL_GVAR(gvar) == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
         /* make the function call                                          */
-        func = ELM_PLIST( ExprGVar( gvar ), 1 );
-        arg  = ELM_PLIST( ExprGVar( gvar ), 2 );
+        func = ELM_PLIST( expr, 1 );
+        arg  = ELM_PLIST( expr, 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
@@ -1217,6 +1275,11 @@ static Int PostSave (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+#ifdef HPCGAP
+    /* Init lock */
+    pthread_rwlock_init(&GVarLock, NULL);
+#endif
+
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
         "ErrorMustEvalToFunc", -1,"args", ErrorMustEvalToFuncHandler );
@@ -1247,6 +1310,9 @@ static Int InitLibrary (
     SizeGVars  = 14033;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
     SET_LEN_PLIST( TableGVars, SizeGVars );
+#ifdef HPCGAP
+    MakeBagPublic(TableGVars);
+#endif
 
     /* Create the current namespace: */
     STATE(CurrNamespace) = NEW_STRING(0);
