@@ -790,7 +790,7 @@ Obj FuncIDENTS_GVAR (
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
-         * accessable to users, as these strings must not be changed */
+         * accessible to users, as these strings must not be changed */
         strcopy = CopyToStringRep( NameGVarObj( i ) );
         SET_ELM_PLIST( copy, i, strcopy );
         CHANGED_BAG( copy );
@@ -812,7 +812,7 @@ Obj FuncIDENTS_BOUND_GVARS (
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
            /* Copy the string here, because we do not want members of
-            * NameGVars accessable to users, as these strings must not be
+            * NameGVars accessible to users, as these strings must not be
             * changed */
            strcopy = CopyToStringRep( NameGVarObj( i ) );
            SET_ELM_PLIST( copy, j, strcopy );
