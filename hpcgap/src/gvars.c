@@ -143,7 +143,7 @@ void UnlockGVars() {
 **  'VAL_GVAR' is defined in the declaration part of this package as follows
 **
 #define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
-				[GVAR_INDEX(gvar)-1])
+                                [GVAR_INDEX(gvar)-1])
 */
 
 
@@ -238,13 +238,13 @@ void            AssGVar (
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
     Obj                 onam;           /* object of <name>                */
-    UInt		gvar_bucket = GVAR_BUCKET(gvar);
-    UInt		gvar_index = GVAR_INDEX(gvar);
+    UInt                gvar_bucket = GVAR_BUCKET(gvar);
+    UInt                gvar_index = GVAR_INDEX(gvar);
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
             (ELM_PLIST( WriteGVars[gvar_bucket], gvar_index )
-	      == INTOBJ_INT(0)) ) {
+              == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
             (Int)NameGVar(gvar), 0L,
@@ -254,10 +254,10 @@ void            AssGVar (
     /* assign the value to the global variable                             */
     if (!VAL_GVAR(gvar)) {
         Obj expr = ELM_PLIST(ExprGVars[gvar_bucket], gvar_index);
-	if (IS_INTOBJ(expr)) {
-	  AssTLRecord(TLVars, INT_INTOBJ(expr), val);
-	  return;
-	}
+        if (IS_INTOBJ(expr)) {
+          AssTLRecord(TLVars, INT_INTOBJ(expr), val);
+          return;
+        }
     }
     MEMBAR_WRITE();
     VAL_GVAR(gvar) = val;
@@ -278,12 +278,12 @@ void            AssGVar (
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
-	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
-	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-		copy  = (Obj*) ELM_PLIST(cops,i);
-		*copy = val;
-	    }
-	}
+        if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
+            for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
+                copy  = (Obj*) ELM_PLIST(cops,i);
+                *copy = val;
+            }
+        }
     }
 
     /* if the values is not a function, assign the error function          */
@@ -325,21 +325,21 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
-    Obj			expr;
+    Obj                 expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
-    Obj			val;
-    UInt		gvar_bucket = GVAR_BUCKET(gvar);
-    UInt		gvar_index  = GVAR_INDEX(gvar);
+    Obj                 val;
+    UInt                gvar_bucket = GVAR_BUCKET(gvar);
+    UInt                gvar_index  = GVAR_INDEX(gvar);
 
     /* if this is an automatic variable, make the function call            */
     val = ValGVar(gvar);
     if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
-	if (IS_INTOBJ(expr)) {
-	  /* thread-local variable */
-	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
-	}
+        if (IS_INTOBJ(expr)) {
+          /* thread-local variable */
+          return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+        }
         /* make the function call                                          */
         func = ELM_PLIST( expr, 1 );
         arg  = ELM_PLIST( expr, 2 );
@@ -352,7 +352,7 @@ Obj             ValAutoGVar (
        "Variable: automatic variable '%s' must get a value by function call",
             (Int)NameGVar(gvar), 0L,
             "you can 'return;' after assigning a value" );
-	    val = ValGVar(gvar);
+            val = ValGVar(gvar);
         }
 
     }
@@ -371,19 +371,19 @@ Obj             ValAutoGVar (
 Obj             ValGVarTL (
     UInt                gvar )
 {
-    Obj			expr;
-    Obj			val;
-    UInt		gvar_bucket = GVAR_BUCKET(gvar);
-    UInt		gvar_index  = GVAR_INDEX(gvar);
+    Obj                 expr;
+    Obj                 val;
+    UInt                gvar_bucket = GVAR_BUCKET(gvar);
+    UInt                gvar_index  = GVAR_INDEX(gvar);
 
     val = ValGVar(gvar);
     /* is this a thread-local variable? */
     if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
-	if (IS_INTOBJ(expr)) {
-	  /* thread-local variable */
-	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
-	}
+        if (IS_INTOBJ(expr)) {
+          /* thread-local variable */
+          return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+        }
     }
 
     /* return the value                                                    */
@@ -394,7 +394,7 @@ Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
   UInt gvar, gvar_bucket, gvar_index;
   if (!IsStringConv(name))
     ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
-		 (Int)TNAM_OBJ(name), 0L);
+                 (Int)TNAM_OBJ(name), 0L);
 
   gvar = GVarName(CSTR_STRING(name));
   gvar_bucket = GVAR_BUCKET(gvar);
@@ -505,15 +505,15 @@ UInt GVarName (
     }
     if (gvar == 0 && !PreThreadCreation) {
         /* upgrade to write lock and repeat search */
-	UnlockGVars();
-	LockGVars(1);
-	i = pos;
+        UnlockGVars();
+        LockGVars(1);
+        i = pos;
 
-	/* look through the table until we find a free slot or the global  */
-	while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
-	     && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
-	    i = (i % SizeGVars) + 1;
-	}
+        /* look through the table until we find a free slot or the global  */
+        while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
+             && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+            i = (i % SizeGVars) + 1;
+        }
     }
 
     /* if we did not find the global variable, make a new one and enter it */
@@ -761,7 +761,7 @@ Obj             AUTOHandler (
     Obj                 name;           /* one name (as a GAP string)      */
     UInt                gvar;           /* one global variable             */
     UInt                i;              /* loop variable                   */
-    UInt		gvar_bucket, gvar_index;
+    UInt                gvar_bucket, gvar_index;
 
     /* check that there are enough arguments                               */
     if ( LEN_LIST(args) < 2 ) {
@@ -1128,7 +1128,7 @@ void UpdateCopyFopyInfo ( void )
     UInt                gvar;
     const Char *        name;           /* name of the variable            */
     Obj *               copy;           /* address of the copy             */
-    UInt		gvar_bucket, gvar_index;
+    UInt                gvar_bucket, gvar_index;
 
     LockGVars(1);
     /* loop over new copies and fopies                                     */
