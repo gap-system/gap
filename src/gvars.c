@@ -711,33 +711,35 @@ UInt            completion_gvar (
 Obj FuncIDENTS_GVAR (
     Obj                 self )
 {
-    /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
+    UInt                numGVars;
     Obj                 strcopy;
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
-    for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
+    numGVars = LEN_PLIST(NameGVars);
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
          * accessable to users, as these strings must not be changed */
         strcopy = CopyToStringRep( ELM_PLIST( NameGVars, i ) );
         SET_ELM_PLIST( copy, i, strcopy );
         CHANGED_BAG( copy );
     }
-    SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
+    SET_LEN_PLIST( copy, numGVars );
     return copy;
 }
 
 Obj FuncIDENTS_BOUND_GVARS (
     Obj                 self )
 {
-    /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i, j;
+    UInt                numGVars;
     Obj                 strcopy;
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
-    for ( i = 1, j = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
+    numGVars = LEN_PLIST(NameGVars);
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
            /* Copy the string here, because we do not want members of
             * NameGVars accessable to users, as these strings must not be
