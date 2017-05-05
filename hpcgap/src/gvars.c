@@ -867,38 +867,36 @@ UInt            completion_gvar (
 Obj FuncIDENTS_GVAR (
     Obj                 self )
 {
-    /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i;
-    UInt		num_gvars;
+    UInt                numGVars;
 
     LockGVars(0);
-    num_gvars = CountGVars;
+    numGVars = CountGVars;
     UnlockGVars();
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, num_gvars );
-    for ( i = 1;  i <= num_gvars;  i++ ) {
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    for ( i = 1;  i <= numGVars;  i++ ) {
         SET_ELM_PLIST( copy, i,
 	  ELM_PLIST( NameGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) ) );
     }
-    SET_LEN_PLIST( copy, num_gvars );
+    SET_LEN_PLIST( copy, numGVars );
     return copy;
 }
 
 Obj FuncIDENTS_BOUND_GVARS (
     Obj                 self )
 {
-    /*QQ extern Obj          NameGVars;   */
     Obj                 copy;
     UInt                i, j;
-    UInt		num_gvars;
+    UInt                numGVars;
 
     LockGVars(0);
-    num_gvars = CountGVars;
+    numGVars = CountGVars;
     UnlockGVars();
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, num_gvars );
-    for ( i = 1, j = 1;  i <= num_gvars;  i++ ) {
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR( i ) ||
 	     ELM_PLIST( ExprGVars[GVAR_BUCKET(i)], GVAR_INDEX(i) )) {
            SET_ELM_PLIST( copy, j,
