@@ -1751,7 +1751,7 @@ struct optInfo options[] = {
   { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
   { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
   { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
-  { 0, "",0,0}};
+  { 0, "", 0, 0, 0}};
 
 
 Char ** SyOriginalArgv;
