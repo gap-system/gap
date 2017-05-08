@@ -2763,12 +2763,10 @@ void PrTo (
   STATE(TheStream) = savedStream;
 }
 
-void Pr (
-         const Char *      format,
-         Int                 arg1,
-         Int                 arg2 )
+/* Pr always prints to *stdout* */
+void Pr(const Char * format, Int arg1, Int arg2)
 {
-  PrTo(GetCurrentOutput(), format, arg1, arg2);
+    PrTo(&(STATE(OutputFiles)[0]), format, arg1, arg2);
 }
 
 /* TL: static Char *theBuffer; */
@@ -2826,12 +2824,15 @@ Obj FuncALL_KEYWORDS(Obj self) {
   return l;
 }
 
-Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
-  if (val == False)
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 0;
-  else
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 1;
-  return val;
+Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
+{
+    /* *stdout* is always OutputFiles[0] by convention */
+    if (val == False) {
+        STATE(OutputFiles)[0].format = 0;
+    } else {
+        STATE(OutputFiles)[0].format = 1;
+    }
+    return val;
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
