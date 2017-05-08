@@ -454,10 +454,22 @@ extern Obj ErrorInner;
 
 /****************************************************************************
 **
-
 *F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
 */
-extern StructInitInfo * Modules [];
+typedef struct {
+
+    // pointer to the actual StructInitInfo
+    StructInitInfo * info;
+
+    // filename relative to GAP_ROOT or absolute
+    Char *           filename;
+
+    // true if the filename is GAP_ROOT relative
+    Int              isGapRootRelative;
+
+} StructInitInfoExt;
+
+extern StructInitInfoExt Modules [];
 extern UInt NrModules;
 extern UInt NrBuiltinModules;
 
@@ -473,6 +485,7 @@ extern UInt NrBuiltinModules;
 */
 extern void RecordLoadedModule (
     StructInitInfo *        module,
+    Int                     isGapRootRelative,
     Char *                  filename );
 
 

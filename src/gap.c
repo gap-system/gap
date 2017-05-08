@@ -1732,7 +1732,6 @@ Obj FuncLOAD_DYN (
     }
 
     /* link and init me                                                    */
-    info->isGapRootRelative = 0;
     res = (info->initKernel)(info);
     UpdateCopyFopyInfo();
 
@@ -1744,7 +1743,7 @@ Obj FuncLOAD_DYN (
     if ( res ) {
         Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
     }
-    RecordLoadedModule(info, CSTR_STRING(filename));
+    RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
     return True;
 }
@@ -1812,7 +1811,6 @@ Obj FuncLOAD_STAT (
     }
 
     /* link and init me                                                    */
-    info->isGapRootRelative = 0;
     res = (info->initKernel)(info);
     UpdateCopyFopyInfo();
     /* Start a new executor to run the outer function of the module
@@ -1823,7 +1821,7 @@ Obj FuncLOAD_STAT (
     if ( res ) {
         Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
     }
-    RecordLoadedModule(info, CSTR_STRING(filename));
+    RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
     return True;
 }
@@ -1889,7 +1887,7 @@ Obj FuncLoadedModules (
     list = NEW_PLIST( T_PLIST, NrModules * 3 );
     SET_LEN_PLIST( list, NrModules * 3 );
     for ( i = 0;  i < NrModules;  i++ ) {
-        m = Modules[i];
+        m = Modules[i].info;
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
@@ -1903,7 +1901,7 @@ Obj FuncLoadedModules (
             C_NEW_STRING_DYN( str, m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, m->filename );
+            C_NEW_STRING_DYN( str, Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
@@ -1912,7 +1910,7 @@ Obj FuncLoadedModules (
             C_NEW_STRING_DYN( str, m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, m->filename );
+            C_NEW_STRING_DYN( str, Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
@@ -3401,7 +3399,7 @@ Char LoadedModuleFilenames[MAX_MODULE_FILENAMES];
 Char *NextLoadedModuleFilename = LoadedModuleFilenames;
 
 
-StructInitInfo * Modules [ MAX_MODULES ];
+StructInitInfoExt Modules [ MAX_MODULES ];
 UInt NrModules;
 UInt NrBuiltinModules;
 
@@ -3413,6 +3411,7 @@ UInt NrBuiltinModules;
 
 void RecordLoadedModule (
     StructInitInfo *        info,
+    Int                     isGapRootRelative,
     Char *filename )
 {
     UInt len;
@@ -3426,9 +3425,11 @@ void RecordLoadedModule (
     }
     *NextLoadedModuleFilename = '\0';
     memcpy(NextLoadedModuleFilename, filename, len+1);
-    info->filename = NextLoadedModuleFilename;
+    Modules[NrModules].info = info;
+    Modules[NrModules].filename = NextLoadedModuleFilename;
     NextLoadedModuleFilename += len +1;
-    Modules[NrModules++] = info;
+    Modules[NrModules].isGapRootRelative = isGapRootRelative;
+    NrModules++;
 }
 
 
@@ -3469,6 +3470,7 @@ void InitializeGap (
   /*    UInt                type; */
     UInt                i;
     Int                 ret;
+    StructInitInfo *    info;
 
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
@@ -3508,10 +3510,11 @@ void InitializeGap (
             FPUTS_TO_STDERR( "panic: too many builtin modules\n" );
             SyExit(1);
         }
-        Modules[NrModules++] = InitFuncsBuiltinModules[i]();
+        info = InitFuncsBuiltinModules[i]();
+        Modules[NrModules++].info = info;
 #       ifdef DEBUG_LOADING
             FPUTS_TO_STDERR( "#I  InitInfo(builtin " );
-            FPUTS_TO_STDERR( Modules[NrModules-1]->name );
+            FPUTS_TO_STDERR( info->name );
             FPUTS_TO_STDERR( ")\n" );
 #       endif
     }
@@ -3519,16 +3522,17 @@ void InitializeGap (
 
     /* call kernel initialisation                                          */
     for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-        if ( Modules[i]->initKernel ) {
+        info = Modules[i].info;
+        if ( info->initKernel ) {
 #           ifdef DEBUG_LOADING
                 FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
-                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ")\n" );
 #           endif
-            ret =Modules[i]->initKernel( Modules[i] );
+            ret =info->initKernel( info );
             if ( ret ) {
                 FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
-                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ") returned non-zero value\n" );
             }
         }
@@ -3579,16 +3583,17 @@ void InitializeGap (
     if ( SyRestoring ) {
        LoadWorkspace(SyRestoring);
         for ( i = 0;  i < NrModules;  i++ ) {
-            if ( Modules[i]->postRestore ) {
+            info = Modules[i].info;
+            if ( info->postRestore ) {
 #               ifdef DEBUG_LOADING
                     FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
-                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ")\n" );
 #               endif
-                ret = Modules[i]->postRestore( Modules[i] );
+                ret = info->postRestore( info );
                 if ( ret ) {
                     FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
-                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ") returned non-zero value\n" );
                 }
             }
@@ -3615,16 +3620,17 @@ void InitializeGap (
 
         SyInitializing = 1;    
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-            if ( Modules[i]->initLibrary ) {
+            info = Modules[i].info;
+            if ( info->initLibrary ) {
 #               ifdef DEBUG_LOADING
                     FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
-                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ")\n" );
 #               endif
-                ret = Modules[i]->initLibrary( Modules[i] );
+                ret = info->initLibrary( info );
                 if ( ret ) {
                     FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
-                    FPUTS_TO_STDERR( Modules[i]->name );
+                    FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ") returned non-zero value\n" );
                 }
             }
@@ -3634,16 +3640,17 @@ void InitializeGap (
 
     /* check initialisation                                                */
     for ( i = 0;  i < NrModules;  i++ ) {
-        if ( Modules[i]->checkInit ) {
+        info = Modules[i].info;
+        if ( info->checkInit ) {
 #           ifdef DEBUG_LOADING
                 FPUTS_TO_STDERR( "#I  CheckInit(builtin " );
-                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ")\n" );
 #           endif
-            ret = Modules[i]->checkInit( Modules[i] );
+            ret = info->checkInit( info );
             if ( ret ) {
                 FPUTS_TO_STDERR( "#I  CheckInit(builtin " );
-                FPUTS_TO_STDERR( Modules[i]->name );
+                FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ") returned non-zero value\n" );
             }
         }
