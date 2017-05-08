@@ -4284,8 +4284,6 @@ UInt RightMostNonZeroVec8Bit( Obj vec)
     }
     Pr("panic: this should never happen\n", 0, 0);
     SyExit(1);
-    /* please picky compiler */
-    return 0;
 }
 
 void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
