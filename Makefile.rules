@@ -147,7 +147,11 @@ GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
 # Enable warnings
-GAP_CPPFLAGS += -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-missing-field-initializers
+GAP_CPPFLAGS += -Wall -Wextra \
+	-Wno-unused-parameter \
+	-Wno-sign-compare \
+	-Wno-missing-field-initializers \
+	-Wno-implicit-fallthrough
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
