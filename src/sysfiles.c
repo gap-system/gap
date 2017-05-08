@@ -2987,7 +2987,7 @@ UInt SyExecuteProcess (
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
     sig_handler_t           *func;
-    sig_handler_t           *func2;
+    sig_handler_t           * volatile func2;
 
 
     /* turn off the SIGCHLD handling, so that we can be sure to collect this child
