@@ -1106,7 +1106,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
     currLVars = STATE(CurrLVars);
     currStat = STATE(CurrStat);
     recursionDepth = STATE(RecursionDepth);
-    tilde = VAL_GVAR(Tilde);
+    tilde = STATE(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
 #ifdef HPCGAP
     int lockSP = RegionLockSP();
@@ -1124,13 +1124,13 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
 #ifdef HPCGAP
-      AssGVar(Tilde, tilde);
+      STATE(Tilde) = tilde;
       PopRegionLocks(lockSP);
       TLS(currentRegion) = savedRegion;
       if (TLS(CurrentHashLock))
         HashUnlock(TLS(CurrentHashLock));
 #else
-      AssGVarUnsafe(Tilde, tilde);
+      STATE(Tilde) = tilde;
 #endif
     } else {
       Obj result = CallFuncList(func, args);

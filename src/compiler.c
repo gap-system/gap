@@ -2377,6 +2377,27 @@ CVar CompIntExpr (
     }
 }
 
+/****************************************************************************
+**
+*F  CompTildeExpr( <expr> )  . . . . . . . . . . . . . . . . . . T_TILDE_EXPR
+*/
+CVar CompTildeExpr (
+    Expr                expr )
+{
+    Emit( "if ( ! STATE(Tilde) ) {\n");
+    Emit( "    ErrorMayQuit(\"'~' does not have a value here\",0L,0L);\n" );
+    Emit( "}\n" );
+    CVar                val;            /* value, result                   */
+
+    /* allocate a new temporary for the 'true' value                       */
+    val = CVAR_TEMP( NewTemp( "val" ) );
+
+    /* emit the code                                                       */
+    Emit( "%c = STATE(Tilde);\n", val );
+
+    /* return '~'                                                       */
+    return val;
+}
 
 /****************************************************************************
 **
@@ -2546,19 +2567,19 @@ CVar CompListTildeExpr (
 
     /* remember the old value of '~'                                       */
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
-    Emit( "%c = VAL_GVAR( Tilde );\n", tilde );
+    Emit( "%c = STATE( Tilde );\n", tilde );
 
     /* create the list value                                               */
     list = CompListExpr1( expr );
 
     /* assign the list to '~'                                              */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", list );
+    Emit( "STATE(Tilde) = %c;\n", list );
 
     /* evaluate the subexpressions into the list value                     */
     CompListExpr2( list, expr );
 
     /* restore old value of '~'                                            */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", tilde );
+    Emit( "STATE(Tilde) = %c;\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
     /* return the list value                                               */
@@ -2764,19 +2785,19 @@ CVar CompRecTildeExpr (
 
     /* remember the old value of '~'                                       */
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
-    Emit( "%c = VAL_GVAR( Tilde );\n", tilde );
+    Emit( "%c = STATE( Tilde );\n", tilde );
 
     /* create the record value                                             */
     rec = CompRecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", rec );
+    Emit( "STATE( Tilde ) = %c;\n", rec );
 
     /* evaluate the subexpressions into the record value                   */
     CompRecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    Emit( "AssGVarUnsafe( Tilde, %c );\n", tilde );
+    Emit( "STATE( Tilde ) = %c;\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
     /* return the record value                                             */
@@ -5983,6 +6004,7 @@ static Int InitKernel (
     CompExprFuncs[ T_INT_EXPR        ] = CompIntExpr;
     CompExprFuncs[ T_TRUE_EXPR       ] = CompTrueExpr;
     CompExprFuncs[ T_FALSE_EXPR      ] = CompFalseExpr;
+    CompExprFuncs[ T_TILDE_EXPR      ] = CompTildeExpr;
     CompExprFuncs[ T_CHAR_EXPR       ] = CompCharExpr;
     CompExprFuncs[ T_PERM_EXPR       ] = CompPermExpr;
     CompExprFuncs[ T_PERM_CYCLE      ] = CompUnknownExpr;

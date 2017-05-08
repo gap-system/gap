@@ -360,6 +360,7 @@ enum EXPR_TNUM {
     T_INT_EXPR,
     T_TRUE_EXPR,
     T_FALSE_EXPR,
+    T_TILDE_EXPR,
     T_CHAR_EXPR,
     T_PERM_EXPR,
     T_PERM_CYCLE,
@@ -941,6 +942,14 @@ extern  void            CodeIntExpr (
             Char *              str );
 extern  void            CodeLongIntExpr (
             Obj                 string ); 
+
+/****************************************************************************
+**
+*F  CodeTildeExpr()  . . . . . . . . . . . . . .  code tilde expression
+**
+**  'CodeTildeExpr' is the action to code a tilde expression.
+*/
+extern  void            CodeTildeExpr ( void );
 
 /****************************************************************************
 **

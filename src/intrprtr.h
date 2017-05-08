@@ -584,6 +584,13 @@ extern  void            IntrTrueExpr ( void );
 */
 extern  void            IntrFalseExpr ( void );
 
+/****************************************************************************
+**
+*F  IntrTildeExpr() . . . . . . . . . . . . . . . interpret tilde expression
+**
+**  'IntrTildeExpr' is the action to interpret a tilde expression.
+*/
+extern  void            IntrTildeExpr ( void );
 
 /****************************************************************************
 **

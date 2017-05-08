@@ -571,20 +571,6 @@ UInt GVarName (
 
 /****************************************************************************
 **
-
-*V  Tilde . . . . . . . . . . . . . . . . . . . . . . . . global variable '~'
-**
-**  'Tilde' is  the global variable '~', the  one used in expressions such as
-**  '[ [ 1, 2 ], ~[1] ]'.
-**
-**  Actually  when such expressions  appear in functions, one should probably
-**  use a local variable.  But for now this is good enough.
-*/
-UInt Tilde;
-
-
-/****************************************************************************
-**
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
 */
 void MakeReadOnlyGVar (
@@ -1435,15 +1421,6 @@ static Int PostRestore (
     CountGVars = LEN_PLIST( ValGVars );
     PtrGVars   = ADDR_OBJ( ValGVars );
     SizeGVars  = LEN_PLIST( TableGVars );
-#endif
-
-    /* create the global variable '~'                                      */
-    Tilde = GVarName( "~" );
-
-#if !defined(HPCGAP)
-    /* stop unauthorised changes to '~'                                    */
-    // FIXME: enabling this causes HPC-GAP to crash
-    MakeReadOnlyGVar(Tilde);
 #endif
 
     /* update fopies and copies                                            */

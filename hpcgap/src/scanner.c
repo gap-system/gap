@@ -2206,8 +2206,7 @@ void GetSymbol ( void )
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;
   case '@':                                           GetIdent();  break;
-  case '~':   STATE(Value)[0] = '~';  STATE(Value)[1] = '\0';
-    STATE(Symbol) = S_IDENT;                       GET_CHAR();  break;
+  case '~':   STATE(Symbol) = S_TILDE;                GET_CHAR();  break;
 
   case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':

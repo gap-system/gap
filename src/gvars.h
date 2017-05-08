@@ -104,17 +104,6 @@ extern  void            AssGVar (
 
 /****************************************************************************
 **
-*F  AssGVarUnsafe(<gvar>,<val>) . . assign to a global variable with checks
-**
-**  'AssGVarUnsafe' assigns the value <val> to the global variable <gvar>
-**  without readonly checks or copie/fopie checking.
-*/
-extern  void            AssGVarUnsafe (
-            UInt                gvar,
-            Obj                 val );
-
-/****************************************************************************
-**
 *F  ValAutoGVar(<gvar>) . . . . . . . .  value of a automatic global variable
 **
 **  'ValAutoGVar' returns the value of the global variable <gvar>.  This will
@@ -178,19 +167,6 @@ extern  Obj            ExprGVar (
 */
 extern UInt GVarName (
             const Char *              name );
-
-
-/****************************************************************************
-**
-*V  Tilde . . . . . . . . . . . . . . . . . . . . . . . . global variable '~'
-**
-**  'Tilde' is the  identifier for the global variable  '~', the one  used in
-**  expressions such as '[ [ 1, 2 ], ~[1] ]'.
-**
-**  Actually  when such expressions  appear in functions, one should probably
-**  use a local variable.  But for now this is good enough.
-*/
-extern  UInt            Tilde;
 
 
 /****************************************************************************

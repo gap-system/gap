@@ -192,19 +192,6 @@ extern UInt GVarName (
 
 /****************************************************************************
 **
-*V  Tilde . . . . . . . . . . . . . . . . . . . . . . . . global variable '~'
-**
-**  'Tilde' is the  identifier for the global variable  '~', the one  used in
-**  expressions such as '[ [ 1, 2 ], ~[1] ]'.
-**
-**  Actually  when such expressions  appear in functions, one should probably
-**  use a local variable.  But for now this is good enough.
-*/
-extern  UInt            Tilde;
-
-
-/****************************************************************************
-**
 *F  iscomplete_gvar( <name>, <len> )  . . . . . . . . . . . . .  check <name>
 */
 extern UInt iscomplete_gvar (
