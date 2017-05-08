@@ -767,17 +767,7 @@ void LoadWorkspace( Char * fname )
            SyExit(1);
         }
   } else {
-     
-     /* try if it is an old workspace */
-
-#ifdef SYS_IS_64_BIT             
-     if (strcmp(buf,"GAP 4.0 beta 64 bit") != 0)
-#else 
-     if (strcmp(buf,"GAP 4.0 beta 32 bit") != 0)
-#endif
-        Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
-     else 
-        Pr("This workspace was created by an old version of GAP.\n", 0L, 0L);
+     Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
      SyExit(1);
   } 
   
