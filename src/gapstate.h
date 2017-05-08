@@ -28,6 +28,7 @@ typedef struct GAPState {
     Obj  IntrState;
     Obj  StackObj;
     Int  CountObj;
+    Obj  Tilde;
 
     /* From gvar.c */
     Obj CurrNamespace;

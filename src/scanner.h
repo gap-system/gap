@@ -91,6 +91,7 @@
 #define S_STRING        ((1UL<<11)+3)
 #define S_PARTIALSTRING ((1UL<<11)+4)
 #define S_PARTIALTRIPSTRING   ((1UL<<11)+5)
+#define S_TILDE         ((1UL<< 3)+6)
 
 #define S_REC           ((1UL<<12)+0)
 #define S_BACKQUOTE     ((1UL<<12)+1)
@@ -210,7 +211,7 @@ typedef UInt            TypSymbolSet;
 **
 **  'STATBEGIN' is the set of symbols that might start a stament.
 */
-#define EXPRBEGIN  (S_IDENT|S_ISBOUND|S_INT|S_TRUE|S_FALSE \
+#define EXPRBEGIN  (S_IDENT|S_ISBOUND|S_INT|S_TRUE|S_FALSE|S_TILDE \
                     |S_CHAR|S_STRING|S_LBRACK|S_REC|S_FUNCTION \
                     |S_PLUS|S_MINUS|S_NOT|S_LPAREN)
 

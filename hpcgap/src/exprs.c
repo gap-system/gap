@@ -883,6 +883,20 @@ Obj             EvalIntExpr (
     return val;
 }
 
+/****************************************************************************
+**
+*F  EvalTildeExpr(<expr>)  . . . . . . . . .  evaluate tilde expression
+**
+**  'EvalTrueExpr' evaluates the tilde expression and returns its value.
+*/
+Obj             EvalTildeExpr (
+    Expr                expr )
+{
+    if( ! (STATE(Tilde)) ) {
+        ErrorQuit("'~' does not have a value here",0L,0L);
+    }
+    return STATE(Tilde);
+}
 
 /****************************************************************************
 **
@@ -1082,19 +1096,19 @@ Obj             EvalListTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = ValAutoGVar( Tilde );
+    tilde = STATE( Tilde );
 
     /* create the list value                                               */
     list = ListExpr1( expr );
 
     /* assign the list to '~'                                              */
-    AssGVar( Tilde, list );
+    STATE( Tilde ) = list;
 
     /* evaluate the subexpressions into the list value                     */
     ListExpr2( list, expr );
 
     /* restore old value of '~'                                            */
-    AssGVar( Tilde, tilde );
+    STATE( Tilde ) = tilde;
 
     /* return the list value                                               */
     return list;
@@ -1437,19 +1451,19 @@ Obj             EvalRecTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = ValAutoGVar( Tilde );
+    tilde = STATE( Tilde );
 
     /* create the record value                                             */
     rec = RecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    AssGVar( Tilde, rec );
+    STATE( Tilde ) = rec;
 
     /* evaluate the subexpressions into the record value                   */
     RecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    AssGVar( Tilde, tilde );
+    STATE( Tilde ) = tilde;
 
     /* return the record value                                             */
     return rec;
@@ -1745,6 +1759,16 @@ void            PrintIntExpr (
 
 /****************************************************************************
 **
+*F  PrintTildeExpr(<expr>) . . . . . . . . . . . print tilde expression
+*/
+void            PrintTildeExpr (
+    Expr                expr )
+{
+    Pr( "~", 0L, 0L );
+}
+
+/****************************************************************************
+**
 *F  PrintTrueExpr(<expr>) . . . . . . . . . . . print literal true expression
 */
 void            PrintTrueExpr (
@@ -2037,6 +2061,7 @@ static Int InitKernel (
     InstallEvalExprFunc( T_INT_EXPR       , EvalIntExpr);
     InstallEvalExprFunc( T_TRUE_EXPR      , EvalTrueExpr);
     InstallEvalExprFunc( T_FALSE_EXPR     , EvalFalseExpr);
+    InstallEvalExprFunc( T_TILDE_EXPR     , EvalTildeExpr);
     InstallEvalExprFunc( T_CHAR_EXPR      , EvalCharExpr);
     InstallEvalExprFunc( T_PERM_EXPR      , EvalPermExpr);
 
@@ -2084,6 +2109,7 @@ static Int InitKernel (
     InstallPrintExprFunc( T_INT_EXPR       , PrintIntExpr);
     InstallPrintExprFunc( T_TRUE_EXPR      , PrintTrueExpr);
     InstallPrintExprFunc( T_FALSE_EXPR     , PrintFalseExpr);
+    InstallPrintExprFunc( T_TILDE_EXPR     , PrintTildeExpr);
     InstallPrintExprFunc( T_CHAR_EXPR      , PrintCharExpr);
     InstallPrintExprFunc( T_PERM_EXPR      , PrintPermExpr);
 

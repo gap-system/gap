@@ -504,7 +504,6 @@ void ReadCallVarAss (
     if ( type == 'g'
       && STATE(CountNams) != 0
       && var != STATE(CurrLHSGVar)
-      && var != Tilde
       && VAL_GVAR(var) == 0
       && ExprGVar(var) == 0
       && ! STATE(IntrIgnoring)
@@ -515,9 +514,6 @@ void ReadCallVarAss (
     {
         SyntaxWarning("Unbound global variable");
     }
-
-    /* check whether this is a reference to the global variable '~'        */
-    if ( type == 'g' && var == Tilde ) { STATE(ReadTilde) = 1; }
 
     /* followed by one or more selectors                                   */
     while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
@@ -1103,7 +1099,10 @@ void ReadListExpr (
     /* '['                                                                 */
     Match( S_LBRACK, "[", follow );
     STATE(ReadTop)++;
-    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    if ( STATE(ReadTop) == 1 ) {
+        STATE(ReadTilde) = 0;
+        STATE(Tilde) = 0;
+    }
     TRY_READ { IntrListExprBegin( (STATE(ReadTop) == 1) ); }
     pos   = 1;
     nr    = 0;
@@ -1159,7 +1158,10 @@ void ReadListExpr (
     TRY_READ {
         IntrListExprEnd( nr, range, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
     }
-    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    if ( STATE(ReadTop) == 1 ) {
+        STATE(ReadTilde) = 0;
+        STATE(Tilde) = 0;
+    }
     STATE(ReadTop)--;
 }
 
@@ -1183,7 +1185,10 @@ void ReadRecExpr (
     Match( S_REC, "rec", follow );
     Match( S_LPAREN, "(", follow|S_RPAREN|S_COMMA );
     STATE(ReadTop)++;
-    if ( STATE(ReadTop) == 1 ) { STATE(ReadTilde) = 0; }
+    if ( STATE(ReadTop) == 1 ) {
+        STATE(ReadTilde) = 0;
+        STATE(Tilde) = 0;
+    }
     TRY_READ { IntrRecExprBegin( (STATE(ReadTop) == 1) ); }
     nr = 0;
 
@@ -1226,7 +1231,10 @@ void ReadRecExpr (
     TRY_READ {
         IntrRecExprEnd( nr, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
     }
-    if ( STATE(ReadTop) == 1) { STATE(ReadTilde) = 0; }
+    if ( STATE(ReadTop) == 1) {
+        STATE(ReadTilde) = 0;
+        STATE(Tilde) = 0;
+    }
     STATE(ReadTop)--;
 }
 
@@ -1718,6 +1726,13 @@ void ReadLiteral (
         IntrFalseExpr();
         break;
 
+    /* '~'                                                                 */
+    case S_TILDE:
+        STATE(ReadTilde) = 1;
+        TRY_READ { IntrTildeExpr(); }
+        Match( S_TILDE, "~", follow );
+        break;
+
     /* <Char>                                                              */
     case S_CHAR:
         TRY_READ { IntrCharExpr( STATE(Value)[0] ); }
@@ -1815,7 +1830,7 @@ void ReadAtom (
     }
     /* otherwise read a literal expression                                 */
     else if (IS_IN(STATE(Symbol),S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION|
+                          S_TILDE|S_REC|S_FUNCTION|
 #ifdef HPCGAP
                           S_DO|
 #endif

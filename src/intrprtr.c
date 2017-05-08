@@ -2150,6 +2150,7 @@ void            IntrLongFloatExpr (
     PushObj(ConvertFloatLiteralEager(string));
 }
 
+
 /****************************************************************************
 **
 *F  IntrTrueExpr()  . . . . . . . . . . . . interpret literal true expression
@@ -2185,6 +2186,32 @@ void            IntrFalseExpr ( void )
 
     /* push the value                                                      */
     PushObj( False );
+}
+
+
+/****************************************************************************
+**
+*F  IntrTildeExpr()  . . . . . . . . . . . . interpret tilde expression
+**
+**  'IntrTildeExpr' is the action to interpret a tilde expression.
+**
+**  'Tilde' is the identifier for the operator '~', used in
+**  expressions such as '[ [ 1, 2 ], ~[ 1 ] ]'.
+**
+*/
+void            IntrTildeExpr ( void )
+{
+    /* ignore or code                                                      */
+    if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 0 ) { return; }
+    if ( STATE(IntrCoding)    > 0 ) { CodeTildeExpr(); return; }
+
+    if(! (STATE(Tilde)) ) {
+        ErrorQuit("'~' does not have a value here", 0L, 0L);
+    }
+
+    /* push the value                                                      */
+    PushObj( STATE(Tilde) );
 }
 
 
@@ -2374,10 +2401,10 @@ void            IntrListExprBegin (
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = STATE( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
-        AssGVarUnsafe( Tilde, list );
+        STATE(Tilde) = list;
     }
 
     /* push the list                                                       */
@@ -2450,7 +2477,7 @@ void            IntrListExprEnd (
     if ( top ) {
         list = PopObj();
         old = PopVoidObj();
-        AssGVarUnsafe( Tilde, old );
+        STATE(Tilde) = old;
         PushObj( list );
     }
 
@@ -2587,10 +2614,10 @@ void            IntrRecExprBegin (
     /* if this is an outmost record, save it for reference in '~'          */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = STATE( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
-        AssGVarUnsafe( Tilde, record );
+        STATE( Tilde ) = record;
     }
 
     /* push the record                                                     */
@@ -2673,7 +2700,7 @@ void            IntrRecExprEnd (
     if ( top ) {
         record = PopObj();
         old = PopVoidObj();
-        AssGVarUnsafe( Tilde, old );
+        STATE(Tilde) = old;
         PushObj( record );
     }
 }
@@ -4812,6 +4839,10 @@ static Int InitKernel (
     InitGlobalBag( &STATE(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &STATE(StackObj),   "src/intrprtr.c:StackObj"   );
 #endif
+
+    /* Ensure that the value in '~' does not get garbage collected         */
+    InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
+
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

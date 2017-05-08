@@ -239,29 +239,6 @@ Obj             ErrorMustHaveAssObjHandler (
 
 static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
-/****************************************************************************
-**
-** AssGVarUnsafe(<gvar>,<val>)
-**
-** Assign to a global variable with no safety checks
-** - Does not check if the variable is readonly
-** - Does not check if it is automatic, has internal copies or fopies
-**
-** The current main use of this function is to handle the `~` variable,
-** both for speed and because it is marked read-only to avoid users editing
-** it.
-*/
-
-void            AssGVarUnsafe (
-    UInt                gvar,
-    Obj                 val )
-{
-    /* assign the value to the global variable                             */
-    VAL_GVAR(gvar) = val;
-    CHANGED_BAG( ValGVars );
-
-}
-
 void            AssGVar (
     UInt                gvar,
     Obj                 val )
@@ -274,16 +251,10 @@ void            AssGVar (
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
             (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
-            
-        if(gvar == Tilde) {
-                ErrorMayQuit("'~' cannot be assigned",0L,0L);
-        }
-        else {
-            ErrorReturnVoid(
-                "Variable: '%s' is read only",
-                (Int)NameGVar(gvar), 0L,
-                "you can 'return;' after making it writable" );
-        }
+        ErrorReturnVoid(
+            "Variable: '%s' is read only",
+            (Int)NameGVar(gvar), 0L,
+            "you can 'return;' after making it writable" );
     }
 
     /* assign the value to the global variable                             */
@@ -513,20 +484,6 @@ UInt GVarName (
     /* return the global variable                                          */
     return INT_INTOBJ(gvar);
 }
-
-/****************************************************************************
-**
-
-*V  Tilde . . . . . . . . . . . . . . . . . . . . . . . . global variable '~'
-**
-**  'Tilde' is  the global variable '~', the  one used in expressions such as
-**  '[ [ 1, 2 ], ~[1] ]'.
-**
-**  Actually  when such expressions  appear in functions, one should probably
-**  use a local variable.  But for now this is good enough.
-*/
-UInt Tilde;
-
 
 /****************************************************************************
 **
@@ -1228,15 +1185,6 @@ static Int PostRestore (
     CountGVars = LEN_PLIST( ValGVars );
     PtrGVars   = ADDR_OBJ( ValGVars );
     SizeGVars  = LEN_PLIST( TableGVars );
-
-    /* create the global variable '~'                                      */
-    Tilde = GVarName( "~" );
-
-#if !defined(HPCGAP)
-    /* stop unauthorised changes to '~'                                    */
-    // FIXME: enabling this causes HPC-GAP to crash
-    MakeReadOnlyGVar(Tilde);
-#endif
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();

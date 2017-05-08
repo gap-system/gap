@@ -1789,6 +1789,17 @@ void CodeLongIntExpr (
 
 /****************************************************************************
 **
+*F  CodeTildeExpr()  . . . . . . . . . . . . . .  code tilde expression
+**
+**  'CodeTildeExpr' is the action to code a tilde expression.
+*/
+void CodeTildeExpr ( void )
+{
+    PushExpr( NewExpr( T_TILDE_EXPR, 0L ) );
+}
+
+/****************************************************************************
+**
 *F  CodeTrueExpr()  . . . . . . . . . . . . . .  code literal true expression
 **
 **  'CodeTrueExpr' is the action to code a literal true expression.
