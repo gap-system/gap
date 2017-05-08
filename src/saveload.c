@@ -639,9 +639,9 @@ static void WriteSaveHeader( void )
 
   for ( i = NrBuiltinModules; i < NrModules; i++)
     {
-      SaveUInt(Modules[i]->type);
-      SaveUInt(Modules[i]->isGapRootRelative);
-      SaveCStr(Modules[i]->filename);
+      SaveUInt(Modules[i].info->type);
+      SaveUInt(Modules[i].isGapRootRelative);
+      SaveCStr(Modules[i].filename);
     }
 
   SaveCStr("Kernel to WS refs");
@@ -661,22 +661,23 @@ Obj SaveWorkspace( Obj fname )
 
   Int i;
   Obj fullname;
+  StructInitInfo * info;
 
   if (!IsStringConv(fname))
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
   /* maybe expand fname starting with ~/...   */
   fullname = Call1ArgsInNewReader(userHomeExpand, fname);
   
-  for (i = 0; i < NrModules; i++)
-    if (Modules[i]->preSave != NULL &&
-        (*(Modules[i]->preSave))(Modules[i]))
-      {
+  for (i = 0; i < NrModules; i++) {
+    info = Modules[i].info;
+    if (info->preSave != NULL && info->preSave(info)) {
         Pr("Failed to save workspace -- problem reported in %s\n",
-           (Int)Modules[i]->name, 0L);
+           (Int)info->name, 0L);
         for ( i--; i >= 0; i--)
-          (*(Modules[i]->postSave))(Modules[i]);
+          info->postSave(info);
         return Fail;
-      }
+    }
+  }
 
   /* Do a full garbage collection */
   CollectBags( 0, 1);
@@ -699,9 +700,11 @@ Obj SaveWorkspace( Obj fname )
   CallbackForAllBags( RemoveSaveIndex );
   
   /* Restore situation by calling all post-save methods */
-  for (i = 0; i < NrModules; i++)
-    if (Modules[i]->postSave != NULL)
-      (*(Modules[i]->postSave))(Modules[i]);
+  for (i = 0; i < NrModules; i++) {
+    info = Modules[i].info;
+    if (info->postSave != NULL)
+      info->postSave(info);
+  }
 
   return True;
 }
@@ -730,7 +733,7 @@ Obj FuncSaveWorkspace(Obj self, Obj filename )
 
 void LoadWorkspace( Char * fname )
 {
-  UInt nMods, nGlobs, nBags, i, maxSize, isGapRootRelative;
+  UInt nMods, nGlobs, nBags, i, maxSize;
   UInt globalcount = 0;
   Char buf[256];
   Obj * glob;
@@ -801,7 +804,7 @@ void LoadWorkspace( Char * fname )
   for (i = 0; i < nMods; i++)
     {
       UInt type = LoadUInt();
-      isGapRootRelative = LoadUInt();
+      UInt isGapRootRelative = LoadUInt();
       LoadCStr(buf,256);
       if (isGapRootRelative)
         READ_GAP_ROOT( buf);
@@ -847,9 +850,8 @@ void LoadWorkspace( Char * fname )
 	       }
 	  }
 	/* link and init me                                                    */
-	info->isGapRootRelative = 0;
 	(info->initKernel)(info);
-	RecordLoadedModule(info, buf);
+	RecordLoadedModule(info, 0, buf);
       }
       
     }

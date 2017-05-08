@@ -842,12 +842,6 @@ typedef struct init_info {
     /* function to call after restoring workspace                          */
     Int              (* postRestore)(struct init_info *);
 
-    /* filename relative to GAP_ROOT or absolut                            */
-    Char *           filename;
-
-    /* true if the filename is GAP_ROOT relative                           */
-    Int              isGapRootRelative;
-
 } StructInitInfo;
 
 typedef StructInitInfo* (*InitInfoFunc)(void);

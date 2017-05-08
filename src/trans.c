@@ -5372,9 +5372,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0,                                  /* postRestore                    */
-    "src/trans.c",                      /* filename                       */
-    1                                   /* isGapRootRelative              */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoTrans ( void )

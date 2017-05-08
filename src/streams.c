@@ -454,8 +454,7 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
         }
         
-        info->isGapRootRelative = 1;
-        RecordLoadedModule(info, filename);
+        RecordLoadedModule(info, 1, filename);
         return 1;
     }
 
@@ -474,8 +473,7 @@ Int READ_GAP_ROOT ( Char * filename )
         if ( res ) {
             Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
         }
-        info->isGapRootRelative = 1;
-        RecordLoadedModule(info, filename);
+        RecordLoadedModule(info, 1, filename);
         return 1;
     }
 
