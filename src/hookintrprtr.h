@@ -102,7 +102,6 @@ Int DeactivateHooks(struct InterpreterHooks * hook);
 struct PrintHooks {
     void (*printStatPassthrough)(Stat stat);
     void (*printExprPassthrough)(Expr stat);
-    char * hookName;
 };
 
 void ActivatePrintHooks(struct PrintHooks * hook);
