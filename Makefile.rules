@@ -150,7 +150,6 @@ GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 GAP_CPPFLAGS += -Wall -Wextra \
 	-Wno-unused-parameter \
 	-Wno-sign-compare \
-	-Wno-missing-field-initializers \
 	-Wno-implicit-fallthrough
 
 # Finally add user provided flags
