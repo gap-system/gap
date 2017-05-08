@@ -2798,7 +2798,6 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
     return 0;
   }
   SyExit(SystemErrorCode);
-  return (Obj) 0; /* should never get here */
 }
 
 /****************************************************************************

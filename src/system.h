@@ -101,6 +101,17 @@ enum {
 
 /****************************************************************************
 **
+*T  Set NORETURN to suitable compiler attribute.
+**
+*/
+#if HAVE_FUNC_ATTRIBUTE_NORETURN
+#define NORETURN __attribute__((noreturn))
+#else
+#define NORETURN
+#endif
+
+/****************************************************************************
+**
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
 **  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
@@ -933,8 +944,7 @@ typedef struct {
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
 */
-extern void SyExit (
-    UInt                ret );
+extern void SyExit(UInt ret) NORETURN;
 
 
 /****************************************************************************
