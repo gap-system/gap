@@ -1346,6 +1346,10 @@ Obj             EvalFloatExprLazy (
     Obj cache= 0;
     Obj fl;
     
+    /* This code is safe for threads trying to create or update the
+     * cache concurrently in that it won't crash, but may occasionally
+     * result in evaluating a floating point literal twice.
+     */
     ix = ((UInt *)ADDR_EXPR(expr))[1];
     if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
@@ -1353,13 +1357,22 @@ Obj             EvalFloatExprLazy (
       cache = FLOAT_LITERAL_CACHE;
       if (!cache)
         {
+#ifdef HPCGAP
+          cache = NewAtomicList(ix);
+#else
           cache = NEW_PLIST(T_PLIST,ix);
+#endif
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
         }
       else
+#ifdef HPCGAP
+        assert(TNUM_OBJ(cache) == T_ALIST);
+      fl = Elm0AList(cache,ix);
+#else
         assert(IS_PLIST(cache));
       GROW_PLIST(cache,ix);
       fl = ELM_PLIST(cache,ix);
+#endif
       if (fl)
         return fl;
     }
@@ -1370,10 +1383,15 @@ Obj             EvalFloatExprLazy (
            len );
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
+#ifdef HPCGAP
+      AssAList(cache, ix, fl);
+      CHANGED_BAG(cache);
+#else
       SET_ELM_PLIST(cache, ix, fl);
       CHANGED_BAG(cache);
       if (LEN_PLIST(cache) < ix)
         SET_LEN_PLIST(cache, ix);
+#endif
     }
 
     return fl;
@@ -1397,8 +1415,13 @@ Obj             EvalFloatExprEager (
     
     ix = ((UInt *)ADDR_EXPR(expr))[0];
     cache = EAGER_FLOAT_LITERAL_CACHE;
+#ifdef HPCGAP
+    assert(TNUM_OBJ(cache) == T_ALIST);
+    fl = Elm0AList(cache,ix);
+#else
     assert(IS_PLIST(cache));
     fl = ELM_PLIST(cache,ix);
+#endif
     assert(fl);
     return fl;
 }
