@@ -1385,6 +1385,11 @@ ArgList ReadFuncArgList(
     }
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
 
+    // Special case for function(arg)
+    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) {
+        isvarg = 1;
+    }
+
     ArgList ret = {narg, nams, isvarg, locks};
     return ret;
 }
@@ -1493,22 +1498,12 @@ void ReadFuncExpr (
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
     }
 
-    /* 'function( a,b, p... )' takes a variable number of arguments           */
-    /* Also, we special case function(arg)                                   */
-    if (isvarg || ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) )
-      {
-        narg = -narg;
-      }
-      
-    /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
-           narg = -1; */
-
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
 
     /* now finally begin the function                                      */
-    TRY_READ { IntrFuncExprBegin( narg, nloc, nams, startLine ); }
+    TRY_READ { IntrFuncExprBegin( isvarg ? -narg : narg, nloc, nams, startLine ); }
 #ifdef HPCGAP
     if ( nrError == 0) LCKS_FUNC(CURR_FUNC) = locks;
 #endif
@@ -1555,7 +1550,7 @@ void ReadFuncExpr (
 static void ReadFuncExprBody (
     TypSymbolSet        follow,
     Obj nams,
-    UInt narg)
+    Int narg)
 {
     volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
     volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
@@ -1607,21 +1602,10 @@ static void ReadFuncExprBody (
 void ReadFuncExprLong (
     TypSymbolSet        follow )
 {
-    volatile Int        narg;           /* number of arguments             */
-    volatile Obj        nams;           /* list of local variables names   */
-
     Match( S_LBRACE, "{", follow );
 
     ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
-    narg = args.narg;
-    nams = args.nams;
-
-    /* 'function( a,b, p... )' takes a variable number of arguments           */
-    if (args.isvarg) {
-      narg = -narg;
-    }
-
-    ReadFuncExprBody(follow, nams, narg);
+    ReadFuncExprBody(follow, args.nams, args.isvarg ? -args.narg : args.narg);
 }
 
 /****************************************************************************
