@@ -79,9 +79,7 @@ int LockObjects(int count, Obj *objects, int *mode);
 int TryLockObjects(int count, Obj *objects, int *mode);
 void PushRegionLock(Region *region);
 void PopRegionLocks(int newSP);
-void PopRegionAutoLocks(int newSP);
 int RegionLockSP();
-int AutoLockObj(Obj obj);
 
 void HashLock(void *obj);
 void HashLockShared(void *obj);

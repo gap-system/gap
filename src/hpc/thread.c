@@ -769,26 +769,11 @@ void PopRegionLocks(int newSP) {
   {
     int p = TLS(lockStackPointer)--;
     Obj region_obj = ELM_PLIST(TLS(lockStack), p);
-    if (!region_obj) continue;
-    RegionUnlock(*(Region **)(ADDR_OBJ(region_obj)));
-    SET_ELM_PLIST(TLS(lockStack), p, (Obj) 0);
-  }
-}
-
-void PopRegionAutoLocks(int newSP) {
-  while (newSP < TLS(lockStackPointer))
-  {
-    int p = TLS(lockStackPointer);
-    Obj region_obj = ELM_PLIST(TLS(lockStack), p);
-    Region *region;
     if (!region_obj)
-      return;
-    region = *(Region **)(ADDR_OBJ(region_obj));
-    if (!region->autolock)
-      return;
+      continue;
+    Region *region = *(Region **)(ADDR_OBJ(region_obj));
     RegionUnlock(region);
     SET_ELM_PLIST(TLS(lockStack), p, (Obj) 0);
-    TLS(lockStackPointer)--;
   }
 }
 
@@ -1262,10 +1247,6 @@ void ReadGuardError(Obj o, const char *file, unsigned line,
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
-  if (REGION(o)->autolock) {
-    if (AutoLockObj(o))
-      return;
-  }
   if (TLS(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
@@ -1286,20 +1267,11 @@ void WriteGuardError(Obj o)
 void ReadGuardError(Obj o)
 {
   ImpliedReadGuard(o);
-  if (REGION(o)->autolock) {
-    if (AutoLockObj(o))
-      return;
-  }
   if (TLS(DisableGuards))
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));
 }
 #endif
-
-int AutoLockObj(Obj obj) {
-  LockObject(obj, 0);
-  return 1;
-}
 
 #endif
