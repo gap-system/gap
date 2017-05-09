@@ -46,6 +46,8 @@
 
 #include <src/stats.h>                  /* statements */
 
+#include <src/profile.h>                /* installing methods */
+
 #include <assert.h>
 
 #include <src/hpc/tls.h>
@@ -53,8 +55,7 @@
 
 #include <src/vars.h>                   /* variables */
 
-#include <src/hookintrprtr.h>
-#include <src/profile.h>                /* visit statements for profiling */
+#include <src/hookintrprtr.h>           /* visit statements for profiling */
 
 #include <src/util.h>
 
