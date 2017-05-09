@@ -262,33 +262,33 @@ SMTX.HasIsAbsolutelyIrreducible:=function(module)
   return IsBound(module.IsAbsolutelyIrreducible);
 end;
 
-SMTX.SetSmashRecord:=SMTX.Setter("dummy");
-SMTX.Subbasis:=SMTX.Getter("subbasis");
-SMTX.SetSubbasis:=SMTX.Setter("subbasis");
-SMTX.AlgEl:=SMTX.Getter("algebraElement");
-SMTX.SetAlgEl:=SMTX.Setter("algebraElement");
-SMTX.AlgElMat:=SMTX.Getter("algebraElementMatrix");
-SMTX.SetAlgElMat:=SMTX.Setter("algebraElementMatrix");
-SMTX.AlgElCharPol:=SMTX.Getter("characteristicPolynomial");
-SMTX.SetAlgElCharPol:=SMTX.Setter("characteristicPolynomial");
-SMTX.AlgElCharPolFac:=SMTX.Getter("charpolFactors");
-SMTX.SetAlgElCharPolFac:=SMTX.Setter("charpolFactors");
-SMTX.AlgElNullspaceVec:=SMTX.Getter("nullspaceVector");
-SMTX.SetAlgElNullspaceVec:=SMTX.Setter("nullspaceVector");
-SMTX.AlgElNullspaceDimension:=SMTX.Getter("ndimFlag");
-SMTX.SetAlgElNullspaceDimension:=SMTX.Setter("ndimFlag");
+SMTX.SetSmashRecord:=SMTX.Setter(MakeImm("dummy"));
+SMTX.Subbasis:=SMTX.Getter(MakeImm("subbasis"));
+SMTX.SetSubbasis:=SMTX.Setter(MakeImm("subbasis"));
+SMTX.AlgEl:=SMTX.Getter(MakeImm("algebraElement"));
+SMTX.SetAlgEl:=SMTX.Setter(MakeImm("algebraElement"));
+SMTX.AlgElMat:=SMTX.Getter(MakeImm("algebraElementMatrix"));
+SMTX.SetAlgElMat:=SMTX.Setter(MakeImm("algebraElementMatrix"));
+SMTX.AlgElCharPol:=SMTX.Getter(MakeImm("characteristicPolynomial"));
+SMTX.SetAlgElCharPol:=SMTX.Setter(MakeImm("characteristicPolynomial"));
+SMTX.AlgElCharPolFac:=SMTX.Getter(MakeImm("charpolFactors"));
+SMTX.SetAlgElCharPolFac:=SMTX.Setter(MakeImm("charpolFactors"));
+SMTX.AlgElNullspaceVec:=SMTX.Getter(MakeImm("nullspaceVector"));
+SMTX.SetAlgElNullspaceVec:=SMTX.Setter(MakeImm("nullspaceVector"));
+SMTX.AlgElNullspaceDimension:=SMTX.Getter(MakeImm("ndimFlag"));
+SMTX.SetAlgElNullspaceDimension:=SMTX.Setter(MakeImm("ndimFlag"));
 
-SMTX.CentMat:=SMTX.Getter("centMat");
-SMTX.SetCentMat:=SMTX.Setter("centMat");
-SMTX.CentMatMinPoly:=SMTX.Getter("centMatMinPoly");
-SMTX.SetCentMatMinPoly:=SMTX.Setter("centMatMinPoly");
+SMTX.CentMat:=SMTX.Getter(MakeImm("centMat"));
+SMTX.SetCentMat:=SMTX.Setter(MakeImm("centMat"));
+SMTX.CentMatMinPoly:=SMTX.Getter(MakeImm("centMatMinPoly"));
+SMTX.SetCentMatMinPoly:=SMTX.Setter(MakeImm("centMatMinPoly"));
 
-SMTX.FGCentMat:=SMTX.Getter("fieldGenCentMat");
-SMTX.SetFGCentMat:=SMTX.Setter("fieldGenCentMat");
-SMTX.FGCentMatMinPoly:=SMTX.Getter("fieldGenCentMatMinPoly");
-SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
+SMTX.FGCentMat:=SMTX.Getter(MakeImm("fieldGenCentMat"));
+SMTX.SetFGCentMat:=SMTX.Setter(MakeImm("fieldGenCentMat"));
+SMTX.FGCentMatMinPoly:=SMTX.Getter(MakeImm("fieldGenCentMatMinPoly"));
+SMTX.SetFGCentMatMinPoly:=SMTX.Setter(MakeImm("fieldGenCentMatMinPoly"));
 
-SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
+SMTX.SetDegreeFieldExt:=SMTX.Setter(MakeImm("degreeFieldExt"));
 
 
 #############################################################################
