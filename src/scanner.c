@@ -2818,7 +2818,7 @@ Obj FuncALL_KEYWORDS(Obj self) {
   l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
   for (i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
-    C_NEW_STRING_DYN(s,AllKeywords[i].name);
+    s = MakeImmString(AllKeywords[i].name);
     ASS_LIST(l, i+1, s);
   }
   MakeImmutable(l);
