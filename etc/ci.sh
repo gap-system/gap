@@ -145,13 +145,8 @@ GAPInput
         exit 1
     fi
 
-    if [[ $HPCGAP = yes ]]
-    then
-        # FIXME/HACK: some tests currently hang for HPC-GAP, so we skip them for now
-        echo "Skipping tests for HPC-GAP"
-    else
-        $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
-               <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
-               $SRCDIR/tst/${TEST_SUITE}.g
-    fi
+
+    $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
+            <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
+            $SRCDIR/tst/${TEST_SUITE}.g
 esac;
