@@ -1517,7 +1517,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_RANGE_REP", "obj", &IsRangeRepFilt,
       FuncIS_RANGE_REP, "src/range.c:IS_RANGE_REP" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -1530,8 +1530,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "INTER_RANGE", 2, "range1, range2",
       FuncINTER_RANGE, "src/range.c:INTER_RANGE" },
 
-
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

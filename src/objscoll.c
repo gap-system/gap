@@ -779,7 +779,7 @@ static StructGVarFunc GVarFuncs [] = {
       FuncSET_SCOBJ_MAX_STACK_SIZE,
       "src/objscoll.c:SET_SCOBJ_MAX_STACK_SIZE" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

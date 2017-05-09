@@ -1116,7 +1116,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "GET_NAMESPACE", 0L, "",
       FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

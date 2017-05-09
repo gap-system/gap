@@ -515,7 +515,7 @@ static StructGVarFunc GVarFuncs [] = {
   { "EQ_MACFLOAT", 2, "x, y",
     FuncEqMacfloat, "src/macfloat.c:FuncEqMacfloat" },
 
-  {0}
+  { 0, 0, 0, 0, 0 }
 };
 
 

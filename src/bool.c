@@ -373,7 +373,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_BOOL", "obj", &IsBoolFilt,
       IsBoolHandler, "src/bool.c:IS_BOOL" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

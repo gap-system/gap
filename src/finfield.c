@@ -1991,7 +1991,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_FFE", "obj", &IsFFEFilt,
       FuncIS_FFE, "src/finfield.c:IS_FFE" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2017,7 +2017,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "Z", 1, "q",
       FuncZ, "src/finfield.c:Z" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

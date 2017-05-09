@@ -2322,7 +2322,7 @@ static StructGVarFilt GVarFilts [] = {
   { "IS_INT", "obj", &IsIntFilt,
     FuncIS_INT, "src/gmpints.c:IS_INT" },
 
-  { 0 }
+  { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2383,9 +2383,8 @@ static StructGVarFunc GVarFuncs [] = {
   
   { "RandomIntegerMT", 2, "mtstr, nrbits",
     FuncRandomIntegerMT, "src/gmpints.c:RandomIntegerMT" },
-  
-  
-  { 0 }
+
+  { 0, 0, 0, 0, 0 }
 
 };
 

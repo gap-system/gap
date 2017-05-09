@@ -1332,7 +1332,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "THREAD_COUNTERS_RESET", 0, "",
       FuncTHREAD_COUNTERS_RESET, "src/threadapi.c:THREAD_COUNTERS_RESET" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2648,7 +2648,7 @@ Obj FuncWRITE_LOCK(Obj self, Obj obj)
 Obj FuncREAD_LOCK(Obj self, Obj obj)
 {
   int result;
-  static int modes[] = { 0 };
+  static int modes[] = { 0, 0, 0, 0, 0, 0 };
   result = LockObjects(1, &obj, modes);
   if (result >= 0)
     return INTOBJ_INT(result);

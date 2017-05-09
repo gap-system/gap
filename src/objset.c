@@ -925,7 +925,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "OBJ_MAP_KEYS", 1, "objmap",
       FuncOBJ_MAP_KEYS, "src/objset.c:OBJ_MAP_KEYS" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

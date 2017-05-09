@@ -637,7 +637,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "INT_STRING", 1, "string",
       FuncINT_STRING, "src/integer.c:INT_STRING" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

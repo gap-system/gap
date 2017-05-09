@@ -685,7 +685,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "32Bits_ExponentsOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
       Func32Bits_ExponentsOfPcElement, "src/objpcgel.c:32Bits_ExponentsOfPcElement" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

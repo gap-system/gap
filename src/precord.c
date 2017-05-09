@@ -921,7 +921,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "LT_PREC", 2, "left, right",
       FuncLT_PREC, "src/precord.c:LT_PREC" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

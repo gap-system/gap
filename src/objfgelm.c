@@ -3416,7 +3416,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MULT_BYT_LETTREP", 2, "string,string",
       FuncMultBytLettrep, "src/objfgelm.c:MULT_BYT_LETTREP" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -640,7 +640,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_REC", "obj", &IsRecFilt,
       IsRecHandler, "src/records.c:IS_REC" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -663,7 +663,7 @@ static StructGVarOper GVarOpers [] = {
     { "UNB_REC",  2, "obj, rnam", &UnbRecOper, 
       UnbRecHandler, "src/records.c:UNB_REC" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -683,7 +683,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "ALL_RNAMES", 0, "",
       FuncALL_RNAMES, "src/records.c:ALL_RNAMES" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -784,7 +784,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IsWPObj", "obj", &IsWPObjFilt,
       FuncIsWPObj, "src/weakptr.c:IsWPObj" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -813,7 +813,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "ElmWPObj", 2, "wp, pos",
       FuncElmWPObj, "src/weakptr.c:ElmWPObj" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -1006,7 +1006,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "BagStats", 1, "filename", 
       BagStats, "src/saveload.c:BagStats" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

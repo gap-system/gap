@@ -1762,7 +1762,7 @@ static StructGVarOper GVarOpers [] = {
     { "APPEND_LIST", 2, "list, val", &AppendListOper,
       FuncAPPEND_LIST, "src/listfunc.c:APPEND_LIST" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -1836,7 +1836,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "STRONGLY_CONNECTED_COMPONENTS_DIGRAPH", 1, "digraph",
       FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:STRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

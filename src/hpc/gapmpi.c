@@ -676,7 +676,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MPI_Probe" , -1, "args", MPIprobe, "src/gapmpi.c:MPI_Probe" },
     { "MPI_Iprobe" , -1, "args", MPIiprobe, "src/gapmpi.c:MPI_Iprobe" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 

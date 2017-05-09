@@ -1808,7 +1808,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "DT_evaluation", 1, "vector",
       FuncDT_evaluation, "src/dt.c:DT_evaluation" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

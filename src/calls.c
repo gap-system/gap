@@ -2085,7 +2085,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_FUNCTION", "obj", &IsFunctionFilt, 
       FuncIS_FUNCTION, "src/calls.c:IS_FUNCTION" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2126,7 +2126,7 @@ static StructGVarOper GVarOpers [] = {
       FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
 
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -2167,7 +2167,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "ENDLINE_FUNC", 1, "func", 
       FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

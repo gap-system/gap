@@ -1727,9 +1727,9 @@ static StructGVarFunc GVarFuncs [] = {
       FuncTzSearchC, "src/tietze.c:TzSearchC" },
 
     { "REDUCE_LETREP_WORDS_REW_SYS", 2, "tzwords, word",
-  FuncReduceLetterRepWordsRewSys,"src/tietze.c:REDUCE_LETREP_WORDS_REW_SYS" },
+      FuncReduceLetterRepWordsRewSys,"src/tietze.c:REDUCE_LETREP_WORDS_REW_SYS" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

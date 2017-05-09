@@ -6014,7 +6014,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_OPERATION", "obj", &IsOperationFilt,
       FuncIS_OPERATION, "src/opers.c:IS_OPERATION" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -6160,7 +6160,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "OPER_TO_MUTABLE_ATTRIBUTE", 1, "oper",
       FuncOPER_TO_MUTABLE_ATTRIBUTE, "src/opers.c:OPER_TO_MUTABLE_ATTRIBUTE" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

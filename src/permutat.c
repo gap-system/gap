@@ -4713,7 +4713,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_PERM", "obj", &IsPermFilt,
       IsPermHandler, "src/permutat.c:IS_PERM" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -4779,7 +4779,7 @@ static StructGVarFunc GVarFuncs [] = {
       FuncSCR_SIFT_HELPER, "src/permutat.c:SRC_SIFT_HELPER" },
     
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

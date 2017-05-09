@@ -1940,7 +1940,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SetRecursionTrapInterval", 1, "interval",
       FuncSetRecursionTrapInterval, "src/funcs.c:SetRecursionTrapInterval" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

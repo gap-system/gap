@@ -1137,7 +1137,7 @@ static StructGVarFunc GVarFuncs [] = {
   { "SMALLEST_FIELD_VECFFE", 1, "vec",
     FuncSMALLEST_FIELD_VECFFE, "src/vecffe.c: SMALLEST_FIELD_VECFFE" },
   
-    { 0 }
+  { 0, 0, 0, 0, 0 }
 
 };
 

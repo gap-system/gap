@@ -1044,7 +1044,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "DTConjugate", 3, "lword, rword, rws",
       FuncDTConjugate, "src/dteval.c:DTConjugate" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -6028,7 +6028,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "KRONECKERPRODUCT_MAT8BIT_MAT8BIT", 2, "mat8bit, mat8bit",
       FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT, "src/vec8bit.c:KRONECKERPRODUCT_MAT8BIT_MAT8BIT" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
