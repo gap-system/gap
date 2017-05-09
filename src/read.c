@@ -1240,15 +1240,14 @@ void ReadRecExpr (
 
 /****************************************************************************
 **
-**  ArgList representes the return value of ReadFuncArgList
+**  ArgList represents the return value of ReadFuncArgList
 */
-struct ArgList
-{
+typedef struct {
     Int        narg;           /* number of arguments             */
     Obj        nams;           /* list of local variables names   */
     UInt       isvarg;         /* does function have varargs?     */
-    Obj        locks;          /* lock flags for HPC-GAP          */
-};
+    Obj        locks;          /* locks of the function (HPC-GAP) */
+} ArgList;
 
 
 /****************************************************************************
@@ -1271,7 +1270,7 @@ struct ArgList
 **  responsible for reading the closing bracket.
 */
 
-struct ArgList ReadFuncArgList(
+ArgList ReadFuncArgList(
     TypSymbolSet        follow,
     Int is_atomic,
     UInt symbol,
@@ -1386,7 +1385,7 @@ struct ArgList ReadFuncArgList(
     }
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
 
-    struct ArgList ret = {narg, nams, isvarg, locks};
+    ArgList ret = {narg, nams, isvarg, locks};
     return ret;
 }
 
@@ -1445,7 +1444,7 @@ void ReadFuncExpr (
         }
         Match( S_FUNCTION, "function", follow );
         Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
-        struct ArgList args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
+        ArgList args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
         narg = args.narg;
         nams = args.nams;
         isvarg = args.isvarg;
@@ -1613,7 +1612,7 @@ void ReadFuncExprLong (
 
     Match( S_LBRACE, "{", follow );
 
-    struct ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
+    ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
     narg = args.narg;
     nams = args.nams;
 
