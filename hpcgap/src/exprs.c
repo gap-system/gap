@@ -1102,13 +1102,13 @@ Obj             EvalListTildeExpr (
     list = ListExpr1( expr );
 
     /* assign the list to '~'                                              */
-    STATE( Tilde ) = list;
+    STATE(Tilde) = list;
 
     /* evaluate the subexpressions into the list value                     */
     ListExpr2( list, expr );
 
     /* restore old value of '~'                                            */
-    STATE( Tilde ) = tilde;
+    STATE(Tilde) = tilde;
 
     /* return the list value                                               */
     return list;
@@ -1357,12 +1357,22 @@ Obj             EvalFloatExprLazy (
       cache = FLOAT_LITERAL_CACHE;
       if (!cache)
         {
+#ifdef HPCGAP
           cache = NewAtomicList(ix);
+#else
+          cache = NEW_PLIST(T_PLIST,ix);
+#endif
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
         }
       else
+#ifdef HPCGAP
         assert(TNUM_OBJ(cache) == T_ALIST);
       fl = Elm0AList(cache,ix);
+#else
+        assert(IS_PLIST(cache));
+      GROW_PLIST(cache,ix);
+      fl = ELM_PLIST(cache,ix);
+#endif
       if (fl)
         return fl;
     }
@@ -1373,8 +1383,15 @@ Obj             EvalFloatExprLazy (
            len );
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
+#ifdef HPCGAP
       AssAList(cache, ix, fl);
       CHANGED_BAG(cache);
+#else
+      SET_ELM_PLIST(cache, ix, fl);
+      CHANGED_BAG(cache);
+      if (LEN_PLIST(cache) < ix)
+        SET_LEN_PLIST(cache, ix);
+#endif
     }
 
     return fl;
@@ -1398,8 +1415,13 @@ Obj             EvalFloatExprEager (
     
     ix = ((UInt *)ADDR_EXPR(expr))[0];
     cache = EAGER_FLOAT_LITERAL_CACHE;
+#ifdef HPCGAP
     assert(TNUM_OBJ(cache) == T_ALIST);
     fl = Elm0AList(cache,ix);
+#else
+    assert(IS_PLIST(cache));
+    fl = ELM_PLIST(cache,ix);
+#endif
     assert(fl);
     return fl;
 }
@@ -1457,13 +1479,13 @@ Obj             EvalRecTildeExpr (
     rec = RecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    STATE( Tilde ) = rec;
+    STATE(Tilde) = rec;
 
     /* evaluate the subexpressions into the record value                   */
     RecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    STATE( Tilde ) = tilde;
+    STATE(Tilde) = tilde;
 
     /* return the record value                                             */
     return rec;
