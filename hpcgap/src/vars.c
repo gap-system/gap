@@ -2081,6 +2081,7 @@ Obj             EvalElmPosObj (
 
     /* special case for plain lists (use generic code to signal errors)    */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         Bag *contents = PTR_BAG(list);
         while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
@@ -2089,6 +2090,15 @@ Obj             EvalElmPosObj (
                 "you can 'return;' after assigning a value" );
         }
         elm = contents[p];
+#else
+        while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+            ErrorReturnVoid(
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
+                (Int)p, 0L,
+                "you can 'return;' after assigning a value" );
+        }
+        elm = ELM_PLIST( list, p );
+#endif
         while ( elm == 0 ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -2866,7 +2876,6 @@ static StructGVarFunc GVarFuncs [] = {
     FuncContentsLVars, "src/vars.c: ContentsLVars"},
 
   { 0, 0, 0, 0, 0 }
-
 };
 
 
