@@ -43,6 +43,8 @@ PQStatistics := rec(
                     ConsCountBAN := 0,
                     ConsCountCBA := 0 );
 
+MakeThreadLocal( "PQStatistics" );
+
 IncreaseCounter := function( string )
 
     PQStatistics.(string) := PQStatistics.(string) + 1;
