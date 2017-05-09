@@ -47,6 +47,12 @@
 #include <src/hpc/tls.h>                /* thread-local storage */
 
 
+#ifndef HPCGAP
+// HACK
+#define CheckedMakeImmutable(x) MakeImmutable(x)
+#endif
+
+
 /****************************************************************************
 **
 
