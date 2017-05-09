@@ -380,6 +380,10 @@ end);
 
 DeclareSynonym( "RemoveElmList", Remove);
 
+if IsBound(HPCGAP) then
+    MakeImmutable(SOLVABILITY_IMPLYING_FUNCTIONS);
+fi;
+
 #############################################################################
 ##
 #E

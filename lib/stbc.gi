@@ -318,6 +318,7 @@ InstallMethod( StabChainOptions, true, [ IsPermGroup ], 0,
 InstallValue( DefaultStabChainOptions,rec( reduced := true,
                                  random := 1000,
                                 tryPcgs := true ));
+MakeThreadLocal("DefaultStabChainOptions");
 
 #############################################################################
 ##
