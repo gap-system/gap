@@ -201,22 +201,55 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
-BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
-    local   hash,  cache,  cached,  type, ncache, ncl, t;
+BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
+    local   hash,  cache,  cached,  type, ncache, ncl, t, i, match;
 
     # maybe it is in the type cache
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
-    if IsBound( cache[hash] )  then
+    if IsBound( cache[hash] ) then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
+            flags := cached![2];
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
-                NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
-                return cached;
-            else
-                flags := cached![2];
+                # if there is no parent type, ensure that all non-standard entries
+                # of <cached> are not set; this is necessary because lots of types
+                # have LEN_POSOBJ(<type>) = 6, but entries 5 and 6 are unbound.
+                if IS_IDENTICAL_OBJ(parent, fail) then
+                    match := true;
+                    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ] do
+                        if IsBound( cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                    od;
+                    if match then
+                        NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                        return cached;
+                    fi;
+                fi;
+                # if there is a parent type, make sure the any extra data in it
+                # matches what is in the cache
+                if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
+                    match := true;
+                    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+                        if IsBound( parent![i] ) <> IsBound( cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                        if    IsBound( parent![i] ) and IsBound( cached![i] )
+                          and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                    od;
+                    if match then
+                        NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                        return cached;
+                    fi;
+                fi;
             fi;
         fi;
         NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1;
@@ -236,6 +269,14 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     type := [ family, flags ];
     type[POS_DATA_TYPE] := data;
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
+
+    if not IS_IDENTICAL_OBJ(parent, fail) then
+        for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+            if IsBound( parent![i] ) and not IsBound( type[i] ) then
+                type[i] := parent![i];
+            fi;
+        od;
+    fi;
 
     SET_TYPE_POSOBJ( type, typeOfTypes );
     
@@ -266,7 +307,7 @@ BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     false );
+                     fail, fail );
 end );
 
 
@@ -276,7 +317,7 @@ BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     data );
+                     data, fail );
 end );
 
 
@@ -318,36 +359,22 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ) ),
-                     type![ POS_DATA_TYPE ] );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     type![ POS_DATA_TYPE ], type );
 end );
 
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ) ),
-                     data );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     data, type );
 end );
 
 
@@ -381,36 +408,22 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "SupType2", function ( type, filter )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      SUB_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ),
-                     type![ POS_DATA_TYPE ] );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     type![ POS_DATA_TYPE ], type );
 end );
 
 
 BIND_GLOBAL( "SupType3", function ( type, filter, data )
-    local   new, i;
-    new := NEW_TYPE( TypeOfTypes,
+    return NEW_TYPE( TypeOfTypes,
                      type![1],
                      SUB_FLAGS(
                         type![2],
                         FLAGS_FILTER( filter ) ),
-                     data );
-    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
-            new![i] := type![i];
-        fi;
-    od;
-    return new;
+                     data, type );
 end );
 
 
@@ -951,7 +964,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
             Objectify( NEW_TYPE(TypeOfTypes, 
                     FamilyType(type), 
                     flags , 
-                    DataType(type)), obj);
+                    DataType(type), fail), obj);
         else
             Objectify( type, obj );
         fi;
