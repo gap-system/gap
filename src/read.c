@@ -1247,6 +1247,7 @@ struct ArgList
     Int        narg;           /* number of arguments             */
     Obj        nams;           /* list of local variables names   */
     UInt       isvarg;         /* does function have varargs?     */
+    Obj        locks;          /* lock flags for HPC-GAP          */
 };
 
 
@@ -1385,7 +1386,7 @@ struct ArgList ReadFuncArgList(
     }
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
 
-    struct ArgList ret = {narg, nams, isvarg};
+    struct ArgList ret = {narg, nams, isvarg, locks};
     return ret;
 }
 
@@ -1416,9 +1417,11 @@ void ReadFuncExpr (
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
     volatile Int        narg;           /* number of arguments             */
     volatile Obj        nams;           /* list of local variables names   */
-    volatile UInt       nloc;           /* number of locals                */
-    UInt                isvarg = 0;     /* is this function variadic?      */
-    nloc = 0;
+    volatile UInt       nloc = 0;       /* number of locals                */
+    volatile UInt       isvarg = 0;     /* is this function variadic?      */
+#ifdef HPCGAP
+    volatile Bag        locks = 0;      /* locks of the function */
+#endif
 
     /* begin the function               */
     startLine = STATE(Input)->number;
@@ -1446,6 +1449,9 @@ void ReadFuncExpr (
         narg = args.narg;
         nams = args.nams;
         isvarg = args.isvarg;
+#ifdef HPCGAP
+        locks = args.locks;
+#endif
     }
 
 
@@ -1504,6 +1510,9 @@ void ReadFuncExpr (
 
     /* now finally begin the function                                      */
     TRY_READ { IntrFuncExprBegin( narg, nloc, nams, startLine ); }
+#ifdef HPCGAP
+    if ( nrError == 0) LCKS_FUNC(CURR_FUNC) = locks;
+#endif
 
     /* <Statments>                                                         */
     nr = ReadStats( S_END|follow );
@@ -1609,7 +1618,6 @@ void ReadFuncExprLong (
     nams = args.nams;
 
     /* 'function( a,b, p... )' takes a variable number of arguments           */
-    /* Also, we special case function(arg)                                   */
     if (args.isvarg) {
       narg = -narg;
     }
@@ -2110,6 +2118,17 @@ void ReadQualifiedExpr (
 **  up to one contained in <follow>.
 **
 **  <Expr> := <And> { 'or' <And> }
+**
+**  The <mode> is either 'r' indicating that the expression should be 
+**  evaluated as usual, 'x' indicating that it may be the left-hand-side of an
+**  assignment or 'a' indicating that it is a function expression following
+**  an "atomic" keyword and that the function should be made atomic.
+**
+**  This last case exists because when reading "atomic function" in statement 
+**  context the atomic has been matched away before we can see that it is an
+**  atomic function literal, not an atomic statement.
+**
+**
 */
 void ReadExpr (
     TypSymbolSet        follow,
