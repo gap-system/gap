@@ -2896,7 +2896,7 @@ UInt ReadEvalFile ( void )
     ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        C_NEW_STRING_DYN( name, STATE(Value) );
+        name = MakeImmString( STATE(Value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2908,7 +2908,7 @@ UInt ReadEvalFile ( void )
                     SyntaxError("Name used for two locals");
                 }
             }
-            C_NEW_STRING_DYN( name, STATE(Value) );
+            name = MakeImmString( STATE(Value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
