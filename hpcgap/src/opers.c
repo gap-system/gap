@@ -5863,7 +5863,7 @@ Obj FuncSETTER_FUNCTION (
     WRAP_NAME(fname, name, "SetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
                          args, DoSetterFunction );
-    tmp = NEW_PLIST( T_PLIST, 2 );
+    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
