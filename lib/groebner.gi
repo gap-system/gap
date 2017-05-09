@@ -64,15 +64,15 @@ BindGlobal("InstallMonomialOrdering",function(ord,ordfun,idxord,
 	  # for each variable give its index position.
 	  return idxord(a,b,List([1..Maximum(idx)],i->Position(idx,i)));
 	end);
-      neword!.idxarrangement:=idx;
-      neword!.type:=type;
+      neword!.idxarrangement:=Immutable(idx);
+      neword!.type:=Immutable(type);
       SetOccuringVariableIndices(neword,ov);
       return neword;
     else
       nam:=Concatenation(ordname,"()");
       neword:=MakeMonomialOrdering(nam,ordfun);
-      neword!.idxarrangement:=idx;
-      neword!.type:=type;
+      neword!.idxarrangement:=Immutable(idx);
+      neword!.type:=Immutable(type);
       SetOccuringVariableIndices(neword,ov);
       return neword;
     fi;
@@ -226,7 +226,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
       min:=am; # will increase until no variable in a left
     until false;
   end,
-  "lp");
+  MakeImm("lp"));
 
 #############################################################################
 ##
@@ -371,7 +371,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
       min:=am; # will increase until no variable in a left
     until false;
   end,
-  "Dp");
+  MakeImm("Dp"));
 
 #############################################################################
 ##
@@ -432,7 +432,7 @@ InstallMonomialOrdering(MonomialGrevlexOrdering,
   function(a,b,idx)
     Error("indexed grevlex not yet implemented");
   end,
-  "dp");
+  MakeImm("dp"));
 
 #############################################################################
 ##
@@ -966,7 +966,7 @@ local li, lj, lcm, a, b, k;
   return false;
 end);
 
-BindGlobal("GAPGBASIS",rec(
+BindGlobal("GAPGBASIS",MakeImmutable(rec(
   name:="naive GAP version of Buchberger's algorithm",
   GroebnerBasis:=function(elms,order)
   local orderext, bas, baslte, fam, t, B, i, j, s;
@@ -1012,7 +1012,7 @@ BindGlobal("GAPGBASIS",rec(
     od;
     return bas;
   end)
-  );
+  ));
 
 #############################################################################
 ##
