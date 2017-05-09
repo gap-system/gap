@@ -938,7 +938,7 @@ end);
 ##  remaining ones.
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
-  local exact, match, em, b, x, topics, transatl, pair, newtopic;
+  local exact, match, em, b, x, topics, transatl, pair, newtopic, getsecnum;
 
   # First we try to produce some suggestions for possible different spellings
   # (see the global variable 'TRANSATL' for the list of spelling patterns).
@@ -978,6 +978,21 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   # Note: before GAP 4.5 this was only done in case of substring search.
   match := Concatenation(exact, match);
   exact := [];
+  # check if all matches point to the same subsection of the same book
+
+  # this function makes shure that nothing breaks if the help book handler
+  # has no support for SubsectionNumber
+  getsecnum := function(m)
+    if IsBound(HELP_BOOK_HANDLER.(m[1].handler).SubsectionNumber) then
+      return HELP_BOOK_HANDLER.(m[1].handler).SubsectionNumber(m[1], m[2]);
+    else
+      return m[2];
+    fi;
+  end;
+  if Length(match) > 1 and Length(Set(List(match, 
+                            m-> [m[1].bookname,getsecnum(m)]))) = 1 then
+    match := [match[1]];
+  fi;
 
   return [exact, match];
 end);

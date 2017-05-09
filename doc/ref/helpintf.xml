@@ -217,6 +217,11 @@ gap> stream := InputTextFile( file );;
   <A>type</A> which currently must be handled and the corresponding result format
   are described in the list below.
 </Item>
+<Mark><C>SubsectionNumber( <A>info</A>, <A>i</A> )</C> </Mark>
+<Item>
+  This returns some &GAP; object that identifies the position in the book
+  where the display of this entry is started.
+</Item>
 </List>
 <P/>
 The <C>HELP_BOOK_HANDLER.<A>myownformat</A>.HelpData</C> function must recognize the
