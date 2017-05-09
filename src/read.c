@@ -1317,7 +1317,7 @@ struct ArgList ReadFuncArgList(
         if ( strcmp("~", STATE(Value)) == 0 ) {
             SyntaxError("~ is not a valid name for an argument");
         }
-        C_NEW_STRING_DYN( name, STATE(Value) );
+        name = MakeImmString( STATE(Value) );
         narg += 1;
         ASS_LIST( nams, narg, name );
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1371,7 +1371,7 @@ struct ArgList ReadFuncArgList(
         if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for an argument");
         }
-        C_NEW_STRING_DYN( name, STATE(Value) );
+        name = MakeImmString( STATE(Value) );
         narg += 1;
         ASS_LIST( nams, narg, name );
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
@@ -2983,7 +2983,7 @@ UInt ReadEvalFile ( void )
     ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        C_NEW_STRING_DYN( name, STATE(Value) );
+        name = MakeImmString( STATE(Value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2995,7 +2995,7 @@ UInt ReadEvalFile ( void )
                     SyntaxError("Name used for two locals");
                 }
             }
-            C_NEW_STRING_DYN( name, STATE(Value) );
+            name = MakeImmString( STATE(Value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
