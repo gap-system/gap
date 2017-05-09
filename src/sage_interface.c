@@ -23,6 +23,7 @@
 #include <src/gap.h>
 #include <src/gasman.h>
 #include <src/scanner.h>
+#include <src/read.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -127,6 +128,19 @@ void libgap_finish_interaction()
   ClearError();
 }
 
+void libgap_eval(char *cmd, char *result, size_t rlen, char *err, size_t elen)
+{
+  libgap_start_interaction(cmd);
+
+  libgap_enter();
+  ReadEvalCommand(TLS(BottomLVars), 0);
+  ViewObjHandler(TLS(ReadEvalResult));
+  strncpy(result, libgap_get_output(), rlen);
+  strncpy(err, libgap_get_error(), elen);
+
+  libgap_exit();
+  libgap_finish_interaction();
+}
 
 
 
