@@ -702,3 +702,6 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
   return fail;
 end;
 
+HELP_BOOK_HANDLER.default.SubsectionNumber := function(info, entrynr)
+  return info.entries[entrynr]{[4,5]};
+end;
