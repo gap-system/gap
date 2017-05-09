@@ -218,12 +218,24 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
-                if IS_IDENTICAL_OBJ(parent, fail) and LEN_POSOBJ( cached ) = POS_FIRST_FREE_TYPE - 1 then
-                    NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
-                    UNLOCK(lock);
-                    return cached;
+                # if there is no parent type, ensure that all non-standard entries
+                # of <cached> are not set; this is necessary because lots of types
+                # have LEN_POSOBJ(<type>) = 6, but entries 5 and 6 are unbound.
+                if IS_IDENTICAL_OBJ(parent, fail) then
+                    match := true;
+                    for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ] do
+                        if IsBound( cached![i] ) then
+                            match := false;
+                            break;
+                        fi;
+                    od;
+                    if match then
+                        NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                        UNLOCK(lock);
+                        return cached;
+                    fi;
                 fi;
-                # so there is a parent type; make sure the any extra data in it
+                # if there is a parent type, make sure the any extra data in it
                 # matches what is in the cache
                 if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
                     match := true;
