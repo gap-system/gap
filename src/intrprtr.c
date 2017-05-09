@@ -3964,7 +3964,11 @@ void            IntrAsssPosObj ( void )
     list = PopObj();
 
     /* assign to several elements of the list                              */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ
+#ifdef HPCGAP
+    || TNUM_OBJ(list) == T_APOSOBJ
+#endif
+    ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
     else {
@@ -4124,12 +4128,27 @@ void            IntrElmPosObj ( void )
 
     /* get the element of the list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
+        Bag *contents = PTR_BAG(list);
+        MEMBAR_READ(); /* essential memory barrier */
+        if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
+            ErrorQuit(
+                "PosObj Element: <posobj>![%d] must have an assigned value",
+                (Int)p, 0L );
+        }
+        elm = contents[p];
+#else
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
         elm = ELM_PLIST( list, p );
+#endif
         if ( elm == 0 ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
@@ -4173,7 +4192,11 @@ void            IntrElmsPosObj ( void )
     list = PopObj();
 
     /* select several elements from the list                               */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ
+#ifdef HPCGAP
+    || TNUM_OBJ(list) == T_APOSOBJ
+#endif
+    ) {
         elms = 0;
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
@@ -4278,8 +4301,20 @@ void            IntrIsbPosObj ( void )
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
+        /* Because BindOnce() functions can reallocate the list even if they
+         * only have read-only access, we have to be careful when accessing
+         * positional objects.
+         */
+        Bag *contents = PTR_BAG(list);
+        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+          isb = False;
+        else
+          isb = contents[p] != 0 ? True : False;
+#else
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
+#endif
     }
 #ifdef HPCGAP
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
@@ -4838,10 +4873,10 @@ static Int InitKernel (
     InitGlobalBag( &STATE(IntrResult), "src/intrprtr.c:IntrResult" );
     InitGlobalBag( &STATE(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &STATE(StackObj),   "src/intrprtr.c:StackObj"   );
-#endif
 
     /* Ensure that the value in '~' does not get garbage collected         */
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
+#endif
 
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
