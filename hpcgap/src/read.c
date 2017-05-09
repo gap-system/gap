@@ -141,9 +141,9 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
   for (i = 0; i < STATE(CurrentGlobalForLoopDepth); i++)
     {
       if (i==100)
-	return 0;
+        return 0;
       if (STATE(CurrentGlobalForLoopVariables)[i] == var)
-	return 1;
+        return 1;
     }
   return 0;
 }
@@ -428,44 +428,44 @@ void ReadCallVarAss (
       lvars = lvars0;
       nest = 0;
       while ( type == ' ' && lvars != 0 && lvars != STATE(BottomLVars) ) {
-	nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
-	if (nams != (Obj) 0)
-	  {
-	    indx = LEN_LIST( nams );
-	    if (indx >= 1024)
-	      {
-		Pr("Warning; Ignoring local names after 1024th in search for %s\n",
-		   (Int) STATE(Value),
-		   0L);
-		indx = 1023;
-	      }
-	    for ( ; 1 <= indx; indx-- ) {
-	      if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
-		type = 'd';
+        nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
+        if (nams != (Obj) 0)
+          {
+            indx = LEN_LIST( nams );
+            if (indx >= 1024)
+              {
+                Pr("Warning; Ignoring local names after 1024th in search for %s\n",
+                   (Int) STATE(Value),
+                   0L);
+                indx = 1023;
+              }
+            for ( ; 1 <= indx; indx-- ) {
+              if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+                type = 'd';
 
-		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
-		var = ((UInt)nest << 16) + indx;
-		break;
-	      }
-	    }
+                /* Ultrix 4.2 cc get's confused if the UInt is missing     */
+                var = ((UInt)nest << 16) + indx;
+                break;
+              }
+            }
         }
         lvars = ENVI_FUNC( PTR_BAG( lvars )[0] );
         nest++;
-	if (nest >= 65536)
-	  {
-	    Pr("Warning: abandoning search for %s at 65536th higher frame\n",
-	       (Int)STATE(Value),0L);
-	    break;
-	  }
+        if (nest >= 65536)
+          {
+            Pr("Warning: abandoning search for %s at 65536th higher frame\n",
+               (Int)STATE(Value),0L);
+            break;
+          }
       }
       lvars0 = PARENT_LVARS( lvars0 );
       nest0++;
-	if (nest0 >= 65536)
-	  {
-	    Pr("Warning: abandoning search for %s 65536 frames up stack\n",
-	       (Int)STATE(Value),0L);
-	    break;
-	  }
+        if (nest0 >= 65536)
+          {
+            Pr("Warning: abandoning search for %s 65536 frames up stack\n",
+               (Int)STATE(Value),0L);
+            break;
+          }
     }
 
     /* get the variable as a global variable                               */
@@ -483,12 +483,12 @@ void ReadCallVarAss (
     /* then we are in the wrong function                                   */
     if ( STATE(Symbol) == S_MAPTO ) {
       if (mode == 'r' || mode == 'x')
-	{
-	  ReadFuncExpr1( follow );
-	  return;
-	}
+        {
+          ReadFuncExpr1( follow );
+          return;
+        }
       else
-	SyntaxError("Function literal in impossible context");
+        SyntaxError("Function literal in impossible context");
     }
 
     /* Now we know this isn't a lambda function, look up the name          */
@@ -537,18 +537,18 @@ void ReadCallVarAss (
         else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
         else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
         else if ( type == 'c' || type == 'C' )
-	  { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
+          { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
         } /* end TRY_READ */
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
-	    ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
-	    narg = 1;
-	    while ( STATE(Symbol) == S_COMMA) {
-	      Match(S_COMMA,",", follow|S_RBRACK);
-	      ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
-	      narg++;
-	    }
+            ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
+            narg = 1;
+            while ( STATE(Symbol) == S_COMMA) {
+              Match(S_COMMA,",", follow|S_RBRACK);
+              ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
+              narg++;
+            }
             Match( S_RBRACK, "]", follow );
             type = (level == 0 ? '[' : ']');
         }
@@ -631,16 +631,16 @@ void ReadCallVarAss (
                 ReadExpr( S_RPAREN|follow, 'r' );
                 narg++;
             }
-	    type = 'c';
-	    if (STATE(Symbol) == S_COLON ) {
-	      Match( S_COLON, ":", follow );
-	      if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
-		{
-		  ReadFuncCallOptions(S_RPAREN | follow);
-		  type = 'C';
-		}
-	    }
-	    Match( S_RPAREN, ")", follow );
+            type = 'c';
+            if (STATE(Symbol) == S_COLON ) {
+              Match( S_COLON, ":", follow );
+              if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
+                {
+                  ReadFuncCallOptions(S_RPAREN | follow);
+                  type = 'C';
+                }
+            }
+            Match( S_RPAREN, ")", follow );
         }
 
     }
@@ -684,10 +684,10 @@ void ReadCallVarAss (
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && IS_IN(STATE(Symbol), S_ASSIGN)) ) {
         if ( type != 'c' && type != 'C') {
-	    if (STATE(Symbol) != S_ASSIGN)
-	      Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
-	    else
-	      Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
+            if (STATE(Symbol) != S_ASSIGN)
+              Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
+            else
+              Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
             if ( STATE(CountNams) == 0 || !STATE(IntrCoding) ) { STATE(CurrLHSGVar) = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
@@ -709,14 +709,14 @@ void ReadCallVarAss (
         else if ( type == '!' ) { IntrAssComObjName( rnam );      }
         else if ( type == '|' ) { IntrAssComObjExpr();            }
         else if ( type == 'c' || type == 'C' )
-	  { IntrFuncCallEnd( 0UL, type == 'C', narg ); }
+          { IntrFuncCallEnd( 0UL, type == 'C', narg ); }
       } /* end TRY_READ */
     }
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
       if (STATE(Symbol) != S_RPAREN) {
-	SyntaxError("'Unbind': argument should be followed by ')'");
+        SyntaxError("'Unbind': argument should be followed by ')'");
       }
       TRY_READ {
              if ( type == 'l' ) { IntrUnbLVar( var );             }
@@ -863,185 +863,185 @@ void ReadLongNumber(
        /* Now there are just lots of cases */
        switch (status) {
        case S_PARTIALINT:
-	 switch (STATE(Symbol)) {
-	 case S_INT:
-	   len = appendToString(string, len);
-	   Match(S_INT, "integer", follow);
-	   IntrLongIntExpr(string);
-	   done = 1;
-	   break;
+         switch (STATE(Symbol)) {
+         case S_INT:
+           len = appendToString(string, len);
+           Match(S_INT, "integer", follow);
+           IntrLongIntExpr(string);
+           done = 1;
+           break;
 
-	 case S_PARTIALINT:
-	   len = appendToString(string, len);
-	   /*	   Match(S_PARTIALINT, "integer", follow);*/
-	   break;
+         case S_PARTIALINT:
+           len = appendToString(string, len);
+           /*      Match(S_PARTIALINT, "integer", follow);*/
+           break;
 
-	 case S_PARTIALFLOAT1:
-	   assert(0);
-	   Pr("Parsing error, this should never happen", 0L, 0L);
-	   SyExit(2);
+         case S_PARTIALFLOAT1:
+           assert(0);
+           Pr("Parsing error, this should never happen", 0L, 0L);
+           SyExit(2);
 
-	 case S_PARTIALFLOAT2:
-	 case S_PARTIALFLOAT3:
-	 case S_PARTIALFLOAT4:
-	   status = STATE(Symbol);
-	   len = appendToString(string, len);
-	   /* Match(STATE(Symbol), "float", follow); */
-	   break;
+         case S_PARTIALFLOAT2:
+         case S_PARTIALFLOAT3:
+         case S_PARTIALFLOAT4:
+           status = STATE(Symbol);
+           len = appendToString(string, len);
+           /* Match(STATE(Symbol), "float", follow); */
+           break;
 
-	 case S_FLOAT:
-	   len = appendToString(string, len);
-	   Match(S_FLOAT, "float", follow);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	   break;
+         case S_FLOAT:
+           len = appendToString(string, len);
+           Match(S_FLOAT, "float", follow);
+           IntrLongFloatExpr(string);
+           done = 1;
+           break;
 
-	 case S_IDENT:
-	   SyntaxError("Identifier over 1024 characters");
+         case S_IDENT:
+           SyntaxError("Identifier over 1024 characters");
 
-	 default:
-	   len = appendToString(string, len);
-	   IntrLongIntExpr(string);
-	   done = 1;
-	 }
-	 break;
+         default:
+           len = appendToString(string, len);
+           IntrLongIntExpr(string);
+           done = 1;
+         }
+         break;
 
        case S_PARTIALFLOAT1:
-	 switch (STATE(Symbol)) {
-	 case S_INT:
-	 case S_PARTIALINT:
-	 case S_PARTIALFLOAT1:
-	   assert(0);
-	   Pr("Parsing error, this should never happen", 0L, 0L);
-	   SyExit(2);
+         switch (STATE(Symbol)) {
+         case S_INT:
+         case S_PARTIALINT:
+         case S_PARTIALFLOAT1:
+           assert(0);
+           Pr("Parsing error, this should never happen", 0L, 0L);
+           SyExit(2);
 
 
-	 case S_PARTIALFLOAT2:
-	 case S_PARTIALFLOAT3:
-	 case S_PARTIALFLOAT4:
-	   status = STATE(Symbol);
-	   len = appendToString(string, len);
-	   /* Match(STATE(Symbol), "float", follow); */
-	   break;
+         case S_PARTIALFLOAT2:
+         case S_PARTIALFLOAT3:
+         case S_PARTIALFLOAT4:
+           status = STATE(Symbol);
+           len = appendToString(string, len);
+           /* Match(STATE(Symbol), "float", follow); */
+           break;
 
-	 case S_FLOAT:
-	   len = appendToString(string, len);
-	   Match(S_FLOAT, "float", follow);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	   break;
+         case S_FLOAT:
+           len = appendToString(string, len);
+           Match(S_FLOAT, "float", follow);
+           IntrLongFloatExpr(string);
+           done = 1;
+           break;
 
-	 default:
-	   SyntaxError("Badly Formed Number");
-	 }
-	 break;
+         default:
+           SyntaxError("Badly Formed Number");
+         }
+         break;
 
        case S_PARTIALFLOAT2:
-	 switch (STATE(Symbol)) {
-	 case S_INT:
-	 case S_PARTIALINT:
-	 case S_PARTIALFLOAT1:
-	   assert(0);
-	   Pr("Parsing error, this should never happen", 0L, 0L);
-	   SyExit(2);
+         switch (STATE(Symbol)) {
+         case S_INT:
+         case S_PARTIALINT:
+         case S_PARTIALFLOAT1:
+           assert(0);
+           Pr("Parsing error, this should never happen", 0L, 0L);
+           SyExit(2);
 
 
-	 case S_PARTIALFLOAT2:
-	 case S_PARTIALFLOAT3:
-	 case S_PARTIALFLOAT4:
-	   status = STATE(Symbol);
-	   len = appendToString(string, len);
-	   /* Match(STATE(Symbol), "float", follow); */
-	   break;
+         case S_PARTIALFLOAT2:
+         case S_PARTIALFLOAT3:
+         case S_PARTIALFLOAT4:
+           status = STATE(Symbol);
+           len = appendToString(string, len);
+           /* Match(STATE(Symbol), "float", follow); */
+           break;
 
-	 case S_FLOAT:
-	   len = appendToString(string, len);
-	   Match(S_FLOAT, "float", follow);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	   break;
+         case S_FLOAT:
+           len = appendToString(string, len);
+           Match(S_FLOAT, "float", follow);
+           IntrLongFloatExpr(string);
+           done = 1;
+           break;
 
 
-	 case S_IDENT:
-	   SyntaxError("Badly Formed Number");
+         case S_IDENT:
+           SyntaxError("Badly Formed Number");
 
-	 default:
-	   len = appendToString(string, len);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	 }
-	 break;
+         default:
+           len = appendToString(string, len);
+           IntrLongFloatExpr(string);
+           done = 1;
+         }
+         break;
 
        case S_PARTIALFLOAT3:
-	 switch (STATE(Symbol)) {
-	 case S_INT:
-	 case S_PARTIALINT:
-	 case S_PARTIALFLOAT1:
-	 case S_PARTIALFLOAT2:
-	 case S_PARTIALFLOAT3:
-	   assert(0);
-	   Pr("Parsing error, this should never happen", 0L, 0L);
-	   SyExit(2);
+         switch (STATE(Symbol)) {
+         case S_INT:
+         case S_PARTIALINT:
+         case S_PARTIALFLOAT1:
+         case S_PARTIALFLOAT2:
+         case S_PARTIALFLOAT3:
+           assert(0);
+           Pr("Parsing error, this should never happen", 0L, 0L);
+           SyExit(2);
 
 
-	 case S_PARTIALFLOAT4:
-	   status = STATE(Symbol);
-	   len = appendToString(string, len);
-	   /* Match(STATE(Symbol), "float", follow); */
-	   break;
+         case S_PARTIALFLOAT4:
+           status = STATE(Symbol);
+           len = appendToString(string, len);
+           /* Match(STATE(Symbol), "float", follow); */
+           break;
 
-	 case S_FLOAT:
-	   len = appendToString(string, len);
-	   Match(S_FLOAT, "float", follow);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	   break;
+         case S_FLOAT:
+           len = appendToString(string, len);
+           Match(S_FLOAT, "float", follow);
+           IntrLongFloatExpr(string);
+           done = 1;
+           break;
 
 
-	 default:
-	   SyntaxError("Badly Formed Number");
+         default:
+           SyntaxError("Badly Formed Number");
 
-	 }
-	 break;
+         }
+         break;
        case S_PARTIALFLOAT4:
-	 switch (STATE(Symbol)) {
-	 case S_INT:
-	 case S_PARTIALINT:
-	 case S_PARTIALFLOAT1:
-	 case S_PARTIALFLOAT2:
-	 case S_PARTIALFLOAT3:
-	   assert(0);
-	   Pr("Parsing error, this should never happen", 0L, 0L);
-	   SyExit(2);
+         switch (STATE(Symbol)) {
+         case S_INT:
+         case S_PARTIALINT:
+         case S_PARTIALFLOAT1:
+         case S_PARTIALFLOAT2:
+         case S_PARTIALFLOAT3:
+           assert(0);
+           Pr("Parsing error, this should never happen", 0L, 0L);
+           SyExit(2);
 
 
-	 case S_PARTIALFLOAT4:
-	   status = STATE(Symbol);
-	   len = appendToString(string, len);
-	   /* Match(STATE(Symbol), "float", follow); */
-	   break;
+         case S_PARTIALFLOAT4:
+           status = STATE(Symbol);
+           len = appendToString(string, len);
+           /* Match(STATE(Symbol), "float", follow); */
+           break;
 
-	 case S_FLOAT:
-	   len = appendToString(string, len);
-	   Match(S_FLOAT, "float", follow);
-	   IntrLongFloatExpr(string);
-	   done = 1;
-	   break;
+         case S_FLOAT:
+           len = appendToString(string, len);
+           Match(S_FLOAT, "float", follow);
+           IntrLongFloatExpr(string);
+           done = 1;
+           break;
 
-	 case S_IDENT:
-	   SyntaxError("Badly Formed Number");
+         case S_IDENT:
+           SyntaxError("Badly Formed Number");
 
-	 default:
-	   len = appendToString(string, len);
-	   IntrLongFloatExpr(string);
-	   done = 1;
+         default:
+           len = appendToString(string, len);
+           IntrLongFloatExpr(string);
+           done = 1;
 
-	 }
-	 break;
+         }
+         break;
        default:
-	 assert(0);
-	 Pr("Parsing error, this should never happen", 0L, 0L);
-	 SyExit(2);
+         assert(0);
+         Pr("Parsing error, this should never happen", 0L, 0L);
+         SyExit(2);
        }
      }
 }
@@ -1195,27 +1195,27 @@ void ReadRecExpr (
     /* [ <Ident> | '(' <Expr> ')' ':=' <Expr>                              */
     do {
       if (nr || STATE(Symbol) == S_COMMA) {
-	Match(S_COMMA, ",", follow);
+        Match(S_COMMA, ",", follow);
       }
       if ( STATE(Symbol) != S_RPAREN ) {
         if ( STATE(Symbol) == S_INT ) {
-	  rnam = RNamName( STATE(Value) );
-	  Match( S_INT, "integer", follow );
-	  TRY_READ { IntrRecExprBeginElmName( rnam ); }
+          rnam = RNamName( STATE(Value) );
+          Match( S_INT, "integer", follow );
+          TRY_READ { IntrRecExprBeginElmName( rnam ); }
         }
         else if ( STATE(Symbol) == S_IDENT ) {
-	  rnam = RNamName( STATE(Value) );
-	  Match( S_IDENT, "identifier", follow );
-	  TRY_READ { IntrRecExprBeginElmName( rnam ); }
+          rnam = RNamName( STATE(Value) );
+          Match( S_IDENT, "identifier", follow );
+          TRY_READ { IntrRecExprBeginElmName( rnam ); }
         }
         else if ( STATE(Symbol) == S_LPAREN ) {
-	  Match( S_LPAREN, "(", follow );
-	  ReadExpr( follow, 'r' );
-	  Match( S_RPAREN, ")", follow );
-	  TRY_READ { IntrRecExprBeginElmExpr(); }
+          Match( S_LPAREN, "(", follow );
+          ReadExpr( follow, 'r' );
+          Match( S_RPAREN, ")", follow );
+          TRY_READ { IntrRecExprBeginElmExpr(); }
         }
         else {
-	  SyntaxError("Identifier expected");
+          SyntaxError("Identifier expected");
         }
         Match( S_ASSIGN, ":=", follow );
         ReadExpr( S_RPAREN|follow, 'r' );
@@ -1273,22 +1273,22 @@ void ReadFuncExpr (
     /* begin the function               */
     startLine = STATE(Input)->number;
     if (STATE(Symbol) == S_DO) {
-	Match( S_DO, "do", follow );
+        Match( S_DO, "do", follow );
         is_block = 1;
     } else {
-	if (STATE(Symbol) == S_ATOMIC) {
-	    Match(S_ATOMIC, "atomic", follow);
-	    is_atomic = 1;
-	} else if (mode == 'a') { /* in this case the atomic keyword
-                                 was matched away by ReadAtomic before
-                                 we realised we were reading an atomic function */
-        is_atomic = 1;
-    }
-    if (is_atomic)
-        locks = NEW_STRING(4);
+        if (STATE(Symbol) == S_ATOMIC) {
+            Match(S_ATOMIC, "atomic", follow);
+            is_atomic = 1;
+        } else if (mode == 'a') { /* in this case the atomic keyword
+                                     was matched away by ReadAtomic before
+                                     we realised we were reading an atomic function */
+            is_atomic = 1;
+        }
+        if (is_atomic)
+            locks = NEW_STRING(4);
 
-    Match( S_FUNCTION, "function", follow );
-    Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
+        Match( S_FUNCTION, "function", follow );
+        Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
 
     /* make and push the new local variables list (args and locals)        */
@@ -1298,90 +1298,90 @@ void ReadFuncExpr (
     STATE(CountNams) += 1;
     ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
     if (!is_block) {
-	if ( STATE(Symbol) != S_RPAREN ) {
-	    lockmode = 0;
-	    switch (STATE(Symbol)) {
-	      case S_READWRITE:
-	        if (!is_atomic) {
-		  SyntaxError("'readwrite' argument of non-atomic function");
+        if ( STATE(Symbol) != S_RPAREN ) {
+            lockmode = 0;
+            switch (STATE(Symbol)) {
+              case S_READWRITE:
+                if (!is_atomic) {
+                  SyntaxError("'readwrite' argument of non-atomic function");
                   GetSymbol();
                   break;
                 }
-	        lockmode++;
-	      case S_READONLY:
-	        if (!is_atomic) {
-		  SyntaxError("'readonly' argument of non-atomic function");
+                lockmode++;
+              case S_READONLY:
+                if (!is_atomic) {
+                  SyntaxError("'readonly' argument of non-atomic function");
                   GetSymbol();
                   break;
                 }
-	        lockmode++;
-		CHARS_STRING(locks)[0] = lockmode;
-		SET_LEN_STRING(locks, 1);
+                lockmode++;
+                CHARS_STRING(locks)[0] = lockmode;
+                SET_LEN_STRING(locks, 1);
                 GetSymbol();
-	    }
-        name = MakeImmString( STATE(Value) );
-	    narg += 1;
-	    ASS_LIST( nams, narg+nloc, name );
-	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
-	}
+            }
+            name = MakeImmString( STATE(Value) );
+            narg += 1;
+            ASS_LIST( nams, narg+nloc, name );
+            Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+        }
 
-	if(STATE(Symbol) == S_DOTDOT) {
-	    SyntaxError("Three dots required for variadic argument list");
-	}
-	if(STATE(Symbol) == S_DOTDOTDOT) {
-	    isvarg = 1;
-	    GetSymbol();
-    }
+        if (STATE(Symbol) == S_DOTDOT) {
+            SyntaxError("Three dots required for variadic argument list");
+        }
+        if (STATE(Symbol) == S_DOTDOTDOT) {
+            isvarg = 1;
+            GetSymbol();
+        }
 
-	while ( STATE(Symbol) == S_COMMA ) {
-	    if (isvarg) {
-	        SyntaxError("Only final argument can be variadic");
-	    }
+        while ( STATE(Symbol) == S_COMMA ) {
+            if (isvarg) {
+                SyntaxError("Only final argument can be variadic");
+            }
 
-	    Match( S_COMMA, ",", follow );
-	    lockmode = 0;
-	    switch (STATE(Symbol)) {
-	      case S_READWRITE:
-	        if (!is_atomic) {
-		  SyntaxError("'readwrite' argument of non-atomic function");
+            Match( S_COMMA, ",", follow );
+            lockmode = 0;
+            switch (STATE(Symbol)) {
+              case S_READWRITE:
+                if (!is_atomic) {
+                  SyntaxError("'readwrite' argument of non-atomic function");
                   GetSymbol();
                   break;
                 }
-	        lockmode++;
-	      case S_READONLY:
-	        if (!is_atomic) {
-		  SyntaxError("'readonly' argument of non-atomic function");
+                lockmode++;
+              case S_READONLY:
+                if (!is_atomic) {
+                  SyntaxError("'readonly' argument of non-atomic function");
                   GetSymbol();
                   break;
                 }
-	        lockmode++;
-		GrowString(locks, narg+1);
-		SET_LEN_STRING(locks, narg+1);
-		CHARS_STRING(locks)[narg] = lockmode;
-	        GetSymbol();
-	    }
+                lockmode++;
+                GrowString(locks, narg+1);
+                SET_LEN_STRING(locks, narg+1);
+                CHARS_STRING(locks)[narg] = lockmode;
+                GetSymbol();
+            }
 
-	    if(STATE(Symbol) != S_IDENT) {
-	        SyntaxError("Expect identifier");
-	    }
+            if(STATE(Symbol) != S_IDENT) {
+                SyntaxError("Expect identifier");
+            }
 
-	    for ( i = 1; i <= narg; i++ ) {
-		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
-		    SyntaxError("Name used for two arguments");
-		}
-	    }
-        name = MakeImmString( STATE(Value) );
-	    narg += 1;
-	    ASS_LIST( nams, narg+nloc, name );
-	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
-	    if(STATE(Symbol) == S_DOTDOT) {
-	        SyntaxError("Three dots required for variadic argument list");
-	    }
-	    if(STATE(Symbol) == S_DOTDOTDOT) {
-	        isvarg = 1;
-	        GetSymbol();
-	    }
-	}
+            for ( i = 1; i <= narg; i++ ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
+                    SyntaxError("Name used for two arguments");
+                }
+            }
+            name = MakeImmString( STATE(Value) );
+            narg += 1;
+            ASS_LIST( nams, narg+nloc, name );
+            Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+            if(STATE(Symbol) == S_DOTDOT) {
+                SyntaxError("Three dots required for variadic argument list");
+            }
+            if(STATE(Symbol) == S_DOTDOTDOT) {
+                isvarg = 1;
+                GetSymbol();
+            }
+        }
         Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
     }
     if ( STATE(Symbol) == S_LOCAL ) {
@@ -1392,7 +1392,7 @@ void ReadFuncExpr (
             }
         }
         if ( strcmp("~", STATE(Value)) == 0 ) {
-                SyntaxError("~ is not a valid name for a local identifier");
+            SyntaxError("~ is not a valid name for a local identifier");
         }
         name = MakeImmString( STATE(Value) );
         nloc += 1;
@@ -1427,11 +1427,11 @@ void ReadFuncExpr (
     /* Also, we special case function(arg)                                   */
     if (isvarg || ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) )
       {
-	narg = -narg;
+        narg = -narg;
       }
       
     /*     if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
-	   narg = -1; */
+           narg = -1; */
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
@@ -1662,15 +1662,15 @@ void ReadLiteral (
         ReadRecExpr( follow );
         break;
 
-    /* `Literal								   */
+    /* `Literal                                                            */
     case S_BACKQUOTE:
         Match( S_BACKQUOTE, "`", follow );
-	TRY_READ {
-	  IntrRefGVar(GVarName("MakeLiteral"));
-	  IntrFuncCallBegin();
-	}
-	ReadAtom( follow, 'r' );
-	TRY_READ { IntrFuncCallEnd(1, 0, 1); }
+        TRY_READ {
+          IntrRefGVar(GVarName("MakeLiteral"));
+          IntrFuncCallBegin();
+        }
+        ReadAtom( follow, 'r' );
+        TRY_READ { IntrFuncCallEnd(1, 0, 1); }
         break;
 
     /* <Function>                                                          */
@@ -2135,8 +2135,8 @@ void ReadAssert (
       }
     else
       {
-	Match( S_RPAREN, ")", follow );
-	TRY_READ { IntrAssertEnd2Args(); }
+        Match( S_RPAREN, ")", follow );
+        TRY_READ { IntrAssertEnd2Args(); }
       }
 }
 
@@ -2631,10 +2631,10 @@ UInt ReadStats (
         else if ( STATE(Symbol) == S_CONTINUE) ReadContinue(     follow    );
         else if ( STATE(Symbol) == S_RETURN ) ReadReturn(    follow    );
         else if ( STATE(Symbol) == S_TRYNEXT) ReadTryNext(   follow    );
-	else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
-	else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
-	else                           ReadEmpty(     follow    );
-	nr++;
+        else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
+        else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
+        else                           ReadEmpty(     follow    );
+        nr++;
         Match( S_SEMICOLON, ";", follow );
 
     }
@@ -2680,11 +2680,11 @@ void RecreateStackNams( Obj context )
     {
       nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
       if (nams != (Obj) 0)
-	{
-	  GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-	  SET_ELM_PLIST( STATE(StackNams), STATE(CountNams), nams);
-	  SET_LEN_PLIST( STATE(StackNams), STATE(CountNams));
-	}
+        {
+          GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
+          SET_ELM_PLIST( STATE(StackNams), STATE(CountNams), nams);
+          SET_LEN_PLIST( STATE(StackNams), STATE(CountNams));
+        }
       lvars = ENVI_FUNC(PTR_BAG(lvars)[0]);
     }
 
@@ -2693,11 +2693,11 @@ void RecreateStackNams( Obj context )
     {
       nams = ELM_PLIST(STATE(StackNams), i);
       SET_ELM_PLIST( STATE(StackNams),
-		     i,
-		     ELM_PLIST(STATE(StackNams), STATE(CountNams) + 1 -i));
+                     i,
+                     ELM_PLIST(STATE(StackNams), STATE(CountNams) + 1 -i));
       SET_ELM_PLIST( STATE(StackNams),
-		     STATE(CountNams) + 1 -i,
-		     nams);
+                     STATE(CountNams) + 1 -i,
+                     nams);
     }
 }
 
@@ -2714,7 +2714,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     volatile Obj                 errorLVars0;
     syJmp_buf           readJmpError;
 #ifdef HPCGAP
-    int			lockSP;
+    int                 lockSP;
 #endif
 
     /* get the first symbol from the input                                 */
@@ -2854,7 +2854,7 @@ UInt ReadEvalFile ( void )
     volatile Int        nloc;
     volatile Int        i;
 #ifdef HPCGAP
-    volatile int	lockSP;
+    volatile int        lockSP;
 #endif
 
     /* get the first symbol from the input                                 */
