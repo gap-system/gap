@@ -786,7 +786,9 @@ void RecursionDepthTrap( void )
     }
 }
      
+#ifdef TRACEFRAMES
 Obj STEVES_TRACING;
+#endif
 
 #define CHECK_RECURSION_BEFORE \
             CheckRecursionBefore(); \
@@ -1969,8 +1971,10 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     RecursionTrapInterval = 5000;
+#ifdef TRACEFRAMES
     InitCopyGVar("STEVES_TRACING", &STEVES_TRACING);
-  
+#endif
+
 #if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &STATE(ExecState), "src/funcs.c:ExecState" );
