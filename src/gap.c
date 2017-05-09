@@ -651,7 +651,7 @@ Obj FuncNanosecondsSinceEpochInfo(Obj self)
   res = NEW_PREC(4);
   /* Note this has to be "DYN" since we're not passing a
      literal but a const char * */
-  C_NEW_STRING_DYN(tmp, SyNanosecondsSinceEpochMethod);
+  tmp = MakeImmString(SyNanosecondsSinceEpochMethod);
   AssPRec(res, RNamName("Method"), tmp);
   AssPRec(res, RNamName("Monotonic"),
                SyNanosecondsSinceEpochMonotonic ? True : False);
@@ -1858,7 +1858,7 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        C_NEW_STRING_DYN(name, info->name);
+        name = MakeImmString(info->name);
 
         SET_ELM_PLIST( modules, im, name );
 
@@ -1891,26 +1891,26 @@ Obj FuncLoadedModules (
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, m->name );
+            str = MakeImmString( m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
         else if ( m->type == MODULE_DYNAMIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, m->name );
+            str = MakeImmString( m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, Modules[i].filename );
+            str = MakeImmString( Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, m->name );
+            str = MakeImmString( m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING_DYN( str, Modules[i].filename );
+            str = MakeImmString( Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
@@ -2138,7 +2138,7 @@ Obj FuncTNUM_OBJ (
     /* set the type                                                        */
     SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
     cst = TNAM_OBJ(obj);
-    C_NEW_STRING_DYN(str, cst);
+    str = MakeImmString(cst);
     SET_ELM_PLIST( res, 2, str );
 
     /* and return                                                          */
@@ -2392,8 +2392,8 @@ void SetupFuncInfo(Obj func, const Char* cookie)
         Int len = 511<(pos-cookie)?511:pos-cookie;
         memcpy(buffer, cookie, len);
         buffer[len] = 0;
-        C_NEW_STRING_DYN(filename, buffer);
-        C_NEW_STRING_DYN(start, pos+1);
+        filename = MakeImmString(buffer);
+        start = MakeImmString(pos+1);
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, start);
         BODY_FUNC(func) = body_bag;
@@ -2825,21 +2825,17 @@ Obj FuncKERNEL_INFO(Obj self) {
   UInt i,j;
 
   /* GAP_ARCHITECTURE                                                    */
-  C_NEW_STRING_DYN( tmp, SyArchitecture );
-  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  tmp = MakeImmString( SyArchitecture );
   r = RNamName("GAP_ARCHITECTURE");
   AssPRec(res,r,tmp);
   /* KERNEL_VERSION */
-  C_NEW_STRING_DYN( tmp, SyKernelVersion );
-  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  tmp = MakeImmString( SyKernelVersion );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
-  C_NEW_STRING_DYN( tmp, SyBuildVersion );
-  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  tmp = MakeImmString( SyBuildVersion );
   r = RNamName("BUILD_VERSION");
   AssPRec(res,r,tmp);
-  C_NEW_STRING_DYN( tmp, SyBuildDateTime );
-  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  tmp = MakeImmString( SyBuildDateTime );
   r = RNamName("BUILD_DATETIME");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
@@ -2848,8 +2844,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
   for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
     if ( SyGapRootPaths[i][0] ) {
-      C_NEW_STRING_DYN( tmp, SyGapRootPaths[i] );
-      RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+      tmp = MakeImmString( SyGapRootPaths[i] );
       SET_ELM_PLIST( list, j, tmp );
       j++;
     }
@@ -2859,8 +2854,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res,r,list);
   /* And also the DotGapPath if available */
 #if HAVE_DOTGAPRC
-  C_NEW_STRING_DYN( tmp, DotGapPath );
-  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  tmp = MakeImmString( DotGapPath );
   r = RNamName("DOT_GAP_PATH");
   AssPRec(res,r,tmp);
 #endif
@@ -2870,7 +2864,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
   SET_LEN_PLIST( tmp, lenvec );
   for (i = 0; i<lenvec; i++) {
-    C_NEW_STRING_DYN( str, SyOriginalArgv[i] );
+    str = MakeImmString( SyOriginalArgv[i] );
     SET_ELM_PLIST(tmp, i+1, str);
     CHANGED_BAG(tmp);
   }
@@ -2900,7 +2894,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res,r, tmp);
 
   /* and also the CONFIGNAME of the running  GAP kernel  */
-  C_NEW_STRING_DYN( str, CONFIGNAME );
+  str = MakeImmString( CONFIGNAME );
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
 #ifdef HPCGAP
@@ -2917,8 +2911,7 @@ Obj FuncKERNEL_INFO(Obj self) {
     AssPRec(res, r, False);
 
   /* export GMP version  */
-  C_NEW_STRING_DYN( str, gmp_version );
-  RetypeBag( str, IMMUTABLE_TNUM(TNUM_OBJ(str)) );
+  str = MakeImmString( gmp_version );
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 

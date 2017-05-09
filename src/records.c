@@ -176,7 +176,7 @@ UInt            RNamName (
     rnam = INTOBJ_INT(CountRNam);
     SET_ELM_PLIST( HashRNam, pos, rnam );
     strlcpy( namx, name, sizeof(namx) );
-    C_NEW_STRING_DYN(string, namx);
+    string = MakeImmString(namx);
     GROW_PLIST(    NamesRNam,   CountRNam );
     SET_LEN_PLIST( NamesRNam,   CountRNam );
     SET_ELM_PLIST( NamesRNam,   CountRNam, string );

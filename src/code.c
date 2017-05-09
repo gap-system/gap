@@ -126,7 +126,7 @@ static inline void PopLoopNesting( void ) {
 static inline void SetupGapname(TypInputFile* i)
 {
   if(!i->gapname) {
-    C_NEW_STRING_DYN(i->gapname, i->name);
+    i->gapname = MakeImmString(i->name);
 #ifdef HPCGAP
     i->gapnameid = AddAList(FilenameCache, i->gapname);
     // TODO/FIXME: adjust this code to work more like the corresponding

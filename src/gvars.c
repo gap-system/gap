@@ -435,7 +435,7 @@ UInt GVarName (
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         strlcpy(namx, name, sizeof(namx));
-        C_NEW_STRING_DYN(string, namx);
+        string = MakeImmString(namx);
 
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
         GROW_PLIST(    ValGVars,    CountGVars );
