@@ -1103,8 +1103,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SUBTR_SET", 2, "set1, set2",
       FuncSUBTR_SET, "src/set.c:SUBTR_SET" },
 
-
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

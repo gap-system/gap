@@ -1843,7 +1843,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_INTERNALLY_MUTABLE_OBJ", "obj", &IsInternallyMutableObjFilt,
       IsInternallyMutableObjHandler, "src/objects.c:IS_INTERNALLY_MUTABLE_OBJ" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -1863,7 +1863,7 @@ static StructGVarOper GVarOpers [] = {
     { "VIEW_OBJ", 1, "obj", &ViewObjOper,
       FuncViewObj, "src/objects.c:VIEW_OBJ" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -1931,7 +1931,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeImmutable", 1, "obj",
       FuncMakeImmutable, "src/objects.c:MakeImmutable" },
     
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

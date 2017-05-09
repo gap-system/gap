@@ -2865,7 +2865,9 @@ static StructGVarFunc GVarFuncs [] = {
   { "ContentsLVars", 1, "lvars",
     FuncContentsLVars, "src/vars.c: ContentsLVars"},
 
-  { 0} };
+  { 0, 0, 0, 0, 0 }
+
+};
 
 
 /****************************************************************************

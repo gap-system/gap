@@ -2461,7 +2461,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_STRING_REP", "obj", &IsStringRepFilt,
       FuncIS_STRING_REP, "src/lists.c:IS_STRING_REP" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2537,7 +2537,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SMALLINT_STR", 1, "string",
       FuncSMALLINT_STR, "src/stringobj.c:SMALLINT_STR" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

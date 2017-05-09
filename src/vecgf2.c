@@ -4821,7 +4821,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "COPY_SECTION_GF2VECS", 5, "src, dest, from, to, howmany",
       FuncCOPY_SECTION_GF2VECS, "src/vecgf2.c:COPY_SECTION_GF2VECS"},
     
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

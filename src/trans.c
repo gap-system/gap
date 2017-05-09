@@ -5008,7 +5008,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_TRANS", "obj", &IsTransFilt,
       IsTransHandler, "src/trans.c:IS_TRANS" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -5238,7 +5238,7 @@ static StructGVarFunc GVarFuncs [] = {
     FuncOnPosIntSetsTrans,
     "src/trans.c:FuncOnPosIntSetsTrans" },
 
-  { 0 }
+  { 0, 0, 0, 0, 0 }
 
 };
 /******************************************************************************

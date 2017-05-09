@@ -2466,7 +2466,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "TC_QUICK_SCAN", 5, "table, offset, alpha, word, result",
       FuncTC_QUICK_SCAN, "src/costab.c:TC_QUICK_SCAN" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -4395,7 +4395,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_PLIST_REP", "obj", &IsPListFilt,
       FuncIS_PLIST_REP, "src/lists.c:IS_PLIST_REP" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -4421,7 +4421,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "ShrinkAllocationPlist", 1, "plist",
       FuncShrinkAllocationPlist, "src/lists.c:FuncShrinkAllocationPlist" },
     
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

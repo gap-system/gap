@@ -2079,7 +2079,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_CYC", "obj", &IsCycFilt,
       FuncIS_CYC, "src/cyclotom.c:IS_CYC" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2093,7 +2093,7 @@ static StructGVarAttr GVarAttrs [] = {
     { "CONDUCTOR", "cyc", &ConductorAttr,
       FuncCONDUCTOR, "src/cyclotom.c:CONDUCTOR" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2120,7 +2120,7 @@ static StructGVarOper GVarOpers [] = {
       FuncCycList, "src/cyclotom.c:CycList" },
 
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -2136,7 +2136,7 @@ static StructGVarFunc GVarFuncs [] = {
   { "GetCyclotomicsLimit", 0, "",
     FuncGetCyclotomicsLimit, "src/cyclotomics.c:GetCyclotomicsLimit" },
 
-  {0}
+  { 0, 0, 0, 0, 0 }
 };
 
 /****************************************************************************

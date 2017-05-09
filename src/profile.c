@@ -786,7 +786,7 @@ static StructGVarFunc GVarFuncs [] = {
       FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
     { "ACTIVATE_COLOR_PROFILING", 1, "bool",
         FuncACTIVATE_COLOR_PROFILING, "src/profile.c:ACTIVATE_COLOR_PROFILING" },
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 };
 
 

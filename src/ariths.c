@@ -1715,8 +1715,7 @@ Obj FuncMOD (
 */
 static StructGVarAttr GVarAttrs [] = {
 
-
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -1784,7 +1783,7 @@ static StructGVarOper GVarOpers [] = {
     { "INV_MUT", 1, "op", &InvMutOp,
       FuncINV_MUT, "src/ariths.c:INV_MUT" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -1811,7 +1810,7 @@ static StructGVarFunc GVarFuncs [] = {
       FuncDIFF_DEFAULT, "src/ariths.c:DIFF_DEFAULT" },
 
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

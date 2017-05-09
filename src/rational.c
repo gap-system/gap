@@ -921,7 +921,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_RAT", "obj", &IsRatFilt,
       IsRatHandler, "src/rational.c:IS_RAT" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -944,7 +944,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SIGN_RAT", 1, "rat",
       FuncSIGN_RAT, "src/rational.c:SIGN_RAT" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -2876,7 +2876,7 @@ static StructGVarFunc GVarFuncs [] = {
   { "GET_FILENAME_CACHE", 0, "",
      FuncGET_FILENAME_CACHE, "src/scanner.c:GET_FILENAME_CACHE" },
 
-  { 0 }
+  { 0, 0, 0, 0, 0 }
 
 };
 

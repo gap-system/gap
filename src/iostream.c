@@ -673,7 +673,7 @@ static StructGVarFunc GVarFuncs[] = {
       FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
 #endif
 
-    {0}
+    { 0, 0, 0, 0, 0 }
 };
   
 /* FIXME/TODO: should probably do some checks preSave for open files etc and

@@ -2343,7 +2343,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MONOM_PROD", 2, "monomial, monomial",
       FuncMONOM_PROD, "src/ratfun.c:FuncMONOM_PROD" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

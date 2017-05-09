@@ -1344,7 +1344,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "IsThreadLocalGVar", 1L, "name",
       FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

@@ -384,7 +384,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "SC_TABLE_PRODUCT", 3, "table, list1, list2",
       SCTableProductHandler, "src/sctable.c:SC_TABLE_PRODUCT" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

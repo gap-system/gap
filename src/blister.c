@@ -2592,7 +2592,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_BLIST_REP", "obj", &IsBlistRepFilt, 
       FuncIS_BLIST_REP, "src/blister.c:IS_BLIST_REP" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2642,7 +2642,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "PositionsTrueBlist", 1, "blist",
       FuncPositionsTrueBlist, "src/blister.c:PositionsTrueBlist" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

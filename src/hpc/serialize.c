@@ -1069,7 +1069,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "DESERIALIZE_NATIVE_STRING", 1, "string",
       FuncDESERIALIZE_NATIVE_STRING, "src/objset.c:DESERIALIZE_NATIVE_STRING" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

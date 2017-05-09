@@ -333,7 +333,7 @@ static StructGVarFunc GVarFuncs[] = {
     { "CLEAR_PROFILE_OVERFLOW_CHECKS", 0, "",
       FuncCLEAR_PROFILE_OVERFLOW_CHECKS,
       "src/profile.c:CLEAR_PROFILE_OVERFLOW_CHECKS" },
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 };
 
 

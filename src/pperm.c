@@ -5662,7 +5662,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_PPERM", "obj", &IsPPermFilt,
       IsPPermHandler, "src/pperm.c:IS_PPERM" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -5835,9 +5835,11 @@ static StructGVarFunc GVarFuncs [] = {
      PrintPPerm4, 
      "src/pperm.c:PrintPPerm4" },
 
-  { 0 }
+  { 0, 0, 0, 0, 0 }
 
 };
+
+
 /******************************************************************************
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */

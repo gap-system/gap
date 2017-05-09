@@ -1566,7 +1566,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
       IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -1586,7 +1586,7 @@ static StructGVarOper GVarOpers [] = {
     { "VIEW_OBJ", 1, "obj", &ViewObjOper,
       FuncViewObj, "src/objects.c:VIEW_OBJ" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -1651,7 +1651,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeImmutable", 1, "obj",
       FuncMakeImmutable, "src/objects.c:MakeImmutable" },
     
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

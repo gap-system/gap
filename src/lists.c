@@ -2273,7 +2273,7 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_TABLE_LIST", "obj", &IsTableListFilt,
       Func_IS_TABLE_LIST, "src/lists.c:IS_TABLE_LIST" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2287,7 +2287,7 @@ static StructGVarAttr GVarAttrs [] = {
     { "LENGTH", "list", &LengthAttr,
       FuncLENGTH, "src/lists.c:LENGTH" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2308,7 +2308,7 @@ static StructGVarProp GVarProps [] = {
       FuncIS_POSS_LIST, "src/lists.c:IS_POSS_LIST" },
 
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -2343,7 +2343,7 @@ static StructGVarOper GVarOpers [] = {
     { "ASSS_LIST", 3, "list, poss, objs", &AsssListOper, 
       FuncASSS_LIST, "src/lists.c:ASSS_LIST" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0, 0 }
 
 };
 
@@ -2378,7 +2378,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "RESET_FILTER_LIST", 2, "list, filter",
       FuncRESET_FILTER_LIST, "src/lists.c:RESET_FILTER_LIST" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

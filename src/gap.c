@@ -3153,7 +3153,7 @@ static StructGVarFunc GVarFuncs [] = {
       FuncExecutingStatementLocation,
       "src/gap.c:CURRENT_STATEMENT_LOCATION" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

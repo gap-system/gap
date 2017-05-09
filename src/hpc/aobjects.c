@@ -1929,7 +1929,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "TestBindOnceExpr", 3, "obj, index, func",
       FuncTestBindOnceExpr, "src/aobjects.c:TestBindOnceExpr" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

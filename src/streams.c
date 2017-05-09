@@ -2417,7 +2417,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "ExecuteProcess", 5L, "dir, prg, in, out, args",
       FuncExecuteProcess, "src/streams.c:ExecuteProcess" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 

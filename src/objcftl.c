@@ -346,7 +346,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "CollectPolycyclic", 3, "pcp, list, word",
       FuncCollectPolycyc, "src/objcftl.c:CollectPolycyclic" },
 
-    { 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
