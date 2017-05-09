@@ -2348,7 +2348,7 @@ static Int InitKernel (
 
 void InitStatState(GAPState * state)
 {
-  state->CurrExecStatFuncs = ExecStatFuncs;
+    state->CurrExecStatFuncs = ExecStatFuncs;
 }
 
 void DestroyStatState(GAPState * state)
