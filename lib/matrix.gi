@@ -240,7 +240,7 @@ end );
 DeclareRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 
 BindGlobal( "NullMapMatrix",
-    Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] ) );
+    Objectify( NewType( ListsFamily, IsNullMapMatrix ), MakeImmutable([  ]) ) );
 
 InstallMethod( Length,
     "for null map matrix",
