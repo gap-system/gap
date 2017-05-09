@@ -43,17 +43,6 @@ several arguments</Heading>
 
 </Section>
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Calling a function with a time limit">
-<Heading>Calling a function with a time limit</Heading>
-
-
-<#Include Label="CallWithTimeout">
-<#Include Label="GAPInfo.TimeoutsSupported">
-</Section>
-
-
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Functions that do nothing">

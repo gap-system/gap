@@ -89,7 +89,6 @@ SOURCES += src/streams.c
 SOURCES += src/stringobj.c
 SOURCES += src/sysfiles.c
 SOURCES += src/system.c
-SOURCES += src/systimers.c
 SOURCES += src/tietze.c
 SOURCES += src/trans.c
 SOURCES += src/vars.c

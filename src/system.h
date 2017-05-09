@@ -1034,8 +1034,6 @@ typedef void (*voidfunc)(void);
 
 Int RegisterSyLongjmpObserver(voidfunc);
 
-extern syJmp_buf AlarmJumpBuffer;
-
 
 
 /****************************************************************************

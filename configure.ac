@@ -535,10 +535,7 @@ AC_SEARCH_LIBS([dlopen], [dl],
 dnl check for timing functions
 AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_FUNCS([getrusage gettimeofday clock_gettime clock_getres])
-AC_CHECK_FUNCS([setitimer getitimer])
-AC_CHECK_LIB([rt], [timer_create])
-AC_CHECK_FUNCS([timer_settime timer_gettime timer_create])
-AC_CHECK_FUNCS([sys_timer_settime sys_timer_gettime sys_timer_create])
+AC_CHECK_FUNCS([setitimer])
 
 dnl check for functions dealing with virtual memory
 AC_CHECK_FUNCS([vm_allocate sbrk madvise sysconf])
