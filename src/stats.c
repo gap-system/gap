@@ -1676,20 +1676,6 @@ int volatile RealExecStatCopied;
 
 /****************************************************************************
 **
-*F  void CheckAndRespondToAlarm()
-**
-*/
-
-static void CheckAndRespondToAlarm(void) {
-  if ( SyAlarmHasGoneOff ) {
-    SyAlarmHasGoneOff = 0;
-    assert(NumAlarmJumpBuffers);
-    syLongjmp(&(AlarmJumpBuffers[--NumAlarmJumpBuffers]),1);
-  }
-}
-
-/****************************************************************************
-**
 *F  UInt TakeInterrupt() . . . . . . . . allow user interrupts
 **
 **  When you call this you promise that the heap is in a normal state, 
@@ -1705,7 +1691,6 @@ static void CheckAndRespondToAlarm(void) {
 UInt TakeInterrupt( void ) {
   if (HaveInterrupt()) {
     UnInterruptExecStat();
-    CheckAndRespondToAlarm();
     
     ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     return 1;
@@ -1750,11 +1735,6 @@ UInt ExecIntrStat (
       UnInterruptExecStat();
     }
     HaveInterrupt();
-
-
-    /* One reason we might be here is a timeout. If so longjump out to the 
-       CallWithTimeLimit where we started */
-    CheckAndRespondToAlarm();
 
     /* and now for something completely different                          */
     SET_BRK_CURR_STAT( stat );

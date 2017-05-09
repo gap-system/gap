@@ -247,8 +247,5 @@ ReadLib("gasman.gd");
 
 ReadLib("memusage.gd");
 
-# files dealing with function calling
-ReadLib("function.gd");
-
 # random sources
 ReadLib("random.gi");

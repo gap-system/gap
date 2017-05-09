@@ -65,7 +65,6 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/fpmon.gd",
     "../../lib/fpsemi.gd",
     "../../lib/function.g",
-    "../../lib/function.gd",
     "../../lib/galois.gd",
     "../../lib/gasman.gd",
     "../../lib/ghom.gd",

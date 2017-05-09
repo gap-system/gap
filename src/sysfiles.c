@@ -3603,8 +3603,6 @@ static Int postRestore (
 static Int InitKernel(
       StructInitInfo * module )
 {
-  SyInitAlarm();
-  
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
 
