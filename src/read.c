@@ -2883,9 +2883,6 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
        state to execute ReadLine on an input stream, leading to crashes */
     TRY_READ {
         type = IntrEnd( 0UL );
-#ifdef HPCGAP
-        PopRegionAutoLocks(lockSP); // FIXME: is this in the right place?
-#endif
 
         /* check for dual semicolon */
         if ( *STATE(In) == ';' ) {

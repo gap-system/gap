@@ -143,14 +143,6 @@ BIND_GLOBAL("NewKernelRegion", NewRegion);
 BIND_GLOBAL("NewInternalRegion", NewRegion);
 BIND_GLOBAL("NewSpecialRegion", NewRegion);
 
-BIND_GLOBAL("ShareAutoReadObj", ID_FUNC);
-
-BIND_GLOBAL("AutoReadLock", ID_FUNC);
-
-BIND_GLOBAL("NewAutoReadRegion", function(arg1)
-  return 0;
-end);
-
 BIND_GLOBAL("LockAndMigrateObj", RETURN_FIRST);
 
 BIND_GLOBAL("LockAndAdoptObj", ID_FUNC);

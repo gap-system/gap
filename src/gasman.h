@@ -1191,7 +1191,6 @@ typedef struct
     Bag name;         /* name of the region, or a null pointer */
     Int prec;         /* locking precedence */
     int fixed_owner;
-    int autolock;
     void *owner;      /* opaque thread descriptor */
     void *alt_owner;  /* for paused threads */
     int count_active; /* whether we counts number of (contended) locks */
