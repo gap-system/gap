@@ -25,6 +25,8 @@
 #include <src/gasman.h>
 #include <src/scanner.h>
 #include <src/read.h>
+#include <src/compiled.h>
+#include <src/objset.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -50,6 +52,9 @@ static size_t stderr_pos = 0;
 
 int libgap_in_enter_exit_block = 0; /* false */
 
+// This is a list of GAP objects that the library user wants to retain
+Obj libgap_GCPins;
+
 /*************************************************************************/
 /*** Initialize / Finalize ***********************************************/
 /*************************************************************************/
@@ -65,6 +70,9 @@ void libgap_initialize(int argc, char** argv)
     libgap_mark_stack_bottom();
     InitializeGap(&argc, argv, environ);
     SetJumpToCatchFunc(libgap_call_error_handler);
+
+    InitGlobalBag(&libgap_GCPins, "src/sage_interface.c:75");
+    libgap_GCPins = NewObjSet();
 }
 
 
@@ -134,12 +142,16 @@ Obj libgap_eval_string(char *cmd)
   libgap_start_interaction(cmd);
   libgap_enter();
   ReadEvalCommand(STATE(BottomLVars), 0);
+  // Note that this prevents
+  // any result of eval string from
+  // being garbage collected, unless
+  // its unpinned
+  libgap_GC_pin(STATE(ReadEvalResult));
   libgap_exit();
   libgap_finish_interaction();
 
   return STATE(ReadEvalResult);
 }
-
 
 
 /*************************************************************************/
@@ -208,7 +220,6 @@ void libgap_append_stderr(char ch)
     stderr_pos--;
 }
 
-
 void libgap_set_error(char* msg)
 {
   stderr_pos = 0;
@@ -216,3 +227,38 @@ void libgap_set_error(char* msg)
   for (i=0; i<strlen(msg); i++)
     libgap_append_stderr(msg[i]);
 }
+
+/*
+ * API
+ *
+ * These are the beginnings of an API for the GAP-as-a-library
+ */
+UInt8 libgap_TNumObj(Obj obj)      { return TNUM_OBJ(obj); }
+UInt8 libgap_IntObj_Int(UInt8 val) { return INTOBJ_INT(val); }
+UInt8 libgap_Int_IntObj(Obj obj)   { return INT_INTOBJ(obj); }
+
+UInt8 libgap_Length_StringObj(Obj str) { return GET_LEN_STRING(str); };
+/* Slightly dodgy, we could provide a function that copies the string
+ * to a buffer */
+char *libgap_String_StringObj(Obj str);
+
+UInt8 libgap_ValGVar(const char *name)
+{
+    UInt varnum = GVarName(name);
+    return VAL_GVAR(varnum);
+}
+
+Obj libgap_DoExecFunc0args(Obj func)
+{ return DoExecFunc0args(func); }
+
+Obj libgap_DoExecFunc1args(Obj func, Obj arg1)
+{ return DoExecFunc1args(func, arg1); }
+
+Obj libgap_CallFuncList(Obj func, Obj list)
+{ return CallFuncList(func,list); }
+
+void libgap_GC_pin(Obj obj)
+{ AddObjSet(libgap_GCPins, obj); }
+
+void libgap_GC_unpin(Obj obj)
+{ RemoveObjSet(libgap_GCPins, obj); }
