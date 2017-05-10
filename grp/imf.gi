@@ -351,7 +351,7 @@ InstallGlobalFunction( "ImfMatrixGroup", function ( arg )
     # construct the matrix group
     mats := IMFList[dim].matrices[n];
     gens := mats[2];
-    M := Group( gens, gens[1] * gens[1]^-1 );
+    M := Group( gens );
 
     # construct the group name
     if IMFRec.repsAreZReps[dim] then
@@ -524,7 +524,7 @@ end );
 ##
 InstallGlobalFunction( "IsomorphismPermGroupImfGroup", function ( arg )
 
-    local base, degrees, gens, id, imfM, imfP, M, n, orbit, P, perms, phi,
+    local base, degrees, gens, imfM, imfP, M, n, orbit, P, perms, phi,
           reps, vec;
 
     # check the given group for being an imf matrix group
@@ -558,8 +558,7 @@ InstallGlobalFunction( "IsomorphismPermGroupImfGroup", function ( arg )
     # construct the associated permutation group
     perms := List( gens, g -> PermList(
         List( orbit, vec -> PositionSorted( orbit, vec * g ) ) ) );
-    id := perms[1]^0;
-    P := Group( perms, id );
+    P := Group( perms );
 
     # define an approriate imf record
     imfP := rec( );
