@@ -219,14 +219,15 @@ InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
 if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
-  HideGlobalVariables("dir","fnam");
+  CallFuncList(function()
+  local dir, fnam;
   dir:= DirectoriesLibrary( "trans" );
   fnam:=Filename( dir, Concatenation("trans",String(TRANSDEGREES+1),".grp"));
   while fnam<>fail and IsReadableFile(fnam) do
     TRANSDEGREES:=TRANSDEGREES+1;
     fnam:=Filename( dir, Concatenation("trans",String(TRANSDEGREES+1),".grp"));
   od;
-  UnhideGlobalVariables("dir","fnam");
+  end,[]);
 fi;
 
 BIND_GLOBAL("TransGrpLoad",function(deg,nr)
