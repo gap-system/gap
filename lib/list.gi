@@ -511,7 +511,7 @@ InstallOtherMethod( IsSmallList,
 ##  constant time access lists: this method just  returns the argument. (This
 ##  cannot work for `ShallowCopy', because the argument could be immutable.)
 ##
-for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
+Perform( [ ConstantTimeAccessList, ShallowCopy ], function(op)
 
     InstallMethod( op,
         "for a list",
@@ -570,9 +570,7 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
         fi;
     end );
 
-od;
-
-Unbind( op );
+end);
 
 InstallMethod( ConstantTimeAccessList,
     "for a constant time access list",
