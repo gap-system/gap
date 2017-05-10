@@ -555,5 +555,14 @@ DeclareGlobalFunction( "USER_HOME_EXPAND" );
 
 #############################################################################
 ##
+#F  RecFields
+##
+##  This name stems from GAP 3 days.
+##
+## still used by Browse, ctbllib, gapdoc, genss, io, orb (05/2017)
+DeclareObsoleteSynonym( "RecFields", "RecNames", "4.0" );
+
+#############################################################################
+##
 #E
 

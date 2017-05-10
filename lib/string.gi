@@ -1007,7 +1007,7 @@ InstallGlobalFunction(PrintCSV,function(arg)
   else
     rf:=[];
     for i in l do
-      r:=RecFields(i);
+      r:=RecNames(i);
       for j in r do
 	if not j in rf then
 	  Add(rf,j);
@@ -1070,7 +1070,7 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
   color:=fail;
   # row 1 indicates which columns are relevant and their formatting
   cold:=ShallowCopy(l[1]);
-  f:=RecFields(cold);
+  f:=RecNames(cold);
   renum:=[];
   for i in ShallowCopy(f) do
 
