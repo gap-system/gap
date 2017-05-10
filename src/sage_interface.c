@@ -20,6 +20,7 @@
 #include <src/sage_interface.h>
 #include <src/sage_interface_internal.h>
 #include <src/system.h>
+#include <src/gapstate.h>
 #include <src/gap.h>
 #include <src/gasman.h>
 #include <src/scanner.h>
@@ -60,7 +61,7 @@ int libgap_in_enter_exit_block = 0; /* false */
 void libgap_initialize(int argc, char** argv)
 {
     /* Init interpreter state */
-    InitMainGlobalState();
+    InitMainGAPState();
     libgap_mark_stack_bottom();
     InitializeGap(&argc, argv, environ);
     SetJumpToCatchFunc(libgap_call_error_handler);
@@ -115,7 +116,7 @@ char* libgap_get_error()
 
 void libgap_finish_interaction()
 {
-  while (TLS(Symbol) != S_EOF)
+  while (STATE(Symbol) != S_EOF)
     GetSymbol();
   stdin_buffer = NULL;
 
@@ -133,8 +134,8 @@ void libgap_eval(char *cmd, char *result, size_t rlen, char *err, size_t elen)
   libgap_start_interaction(cmd);
 
   libgap_enter();
-  ReadEvalCommand(TLS(BottomLVars), 0);
-  ViewObjHandler(TLS(ReadEvalResult));
+  ReadEvalCommand(STATE(BottomLVars), 0);
+  ViewObjHandler(STATE(ReadEvalResult));
   strncpy(result, libgap_get_output(), rlen);
   strncpy(err, libgap_get_error(), elen);
 

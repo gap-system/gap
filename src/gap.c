@@ -1162,7 +1162,7 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
       (*JumpToCatchFunc)();
   }
   STATE(ThrownObject) = payload;
-  syLongjmp(TLS(ReadJmpError), 1);
+  syLongjmp(STATE(ReadJmpError), 1);
   return 0;
 }
 
