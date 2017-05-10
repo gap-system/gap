@@ -163,16 +163,10 @@ IMFRec.maximalQClasses := [
  [1..33],
  [1..4]];
 
+MakeImmutable( IMFRec );
 
-if IsBound( i ) then
-  IMFRec.i := i;
-fi;
 
-BindGlobal( "IMFList", [ ] );
-
-for i in [ 1 .. 31 ] do
-  IMFList[i] := rec( );
-od;
+BindGlobal( "IMFList", List([ 1 .. 31 ], i -> rec( ) ) );
 
 
 #############################################################################
@@ -2964,6 +2958,9 @@ IMFList[31].degrees := [ # Q-classes of dimension 31
 ##  the irreducible maximal finite integral matrix groups.
 ##
 
+CallFuncList(function()
+local i;
+
 i := IdentityMat( 1 );
 IMFList[1].orbitReps := [ # Z-classes of dimension 1
  i[1]];
@@ -3592,11 +3589,10 @@ for i in [ 1 .. 31 ] do
   MakeImmutable( IMFList[i].orbitReps );
 od;
 
-if IsBound( IMFRec.i ) then
-  i := IMFRec.i;
-  Unbind( IMFRec.i );
-else
-  Unbind( i );
+end,[]);
+
+if IsBound(HPCGAP) then
+  MakeReadOnly( IMFList );
 fi;
 
 #############################################################################
