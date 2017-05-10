@@ -246,9 +246,6 @@ atomic TRANSREGION do
     Error("transitive groups are known only of degree up to ",
 	  TRANSDEGREES);
   else
-    HideGlobalVariables("T","F");
-    BIND_GLOBAL("T",true);
-    BIND_GLOBAL("F",false);
     fname:=Concatenation("trans",String(deg));
     if deg>15 and not IsPrime(deg) then
       if not IsBound(TRANSGRP[deg]) then
@@ -258,7 +255,6 @@ atomic TRANSREGION do
         MigrateObj(TRANSSIZES[deg], TRANSREGION);
         MigrateObj(TRANSSELECT[deg], TRANSREGION);
         if nr=0 then 
-	  UnhideGlobalVariables("T","F");
 	  return;
 	fi;
       else
@@ -285,8 +281,6 @@ atomic TRANSREGION do
     MigrateObj(TRANSGRP[deg], TRANSREGION);
     MigrateObj(TRANSPROPERTIES[deg], TRANSREGION);
     
-    UnhideGlobalVariables("T","F");
-
     if deg>15 and not IsPrime(deg) then
       sel:=Difference(Filtered([1..Length(TRANSGRP[deg])],
 			 i->IsBound(TRANSGRP[deg][i])),TRANSSELECT[deg]);
