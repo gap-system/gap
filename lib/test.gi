@@ -93,7 +93,7 @@ InstallGlobalFunction(RunTests, function(arg)
   tests := arg[1];
   opts := rec( breakOnError := false, showProgress := "some" );
   if Length(arg) > 1 and IsRecord(arg[2]) then
-    for f in RecFields(arg[2]) do
+    for f in RecNames(arg[2]) do
       opts.(f) := arg[2].(f);
     od;
   fi;
@@ -372,7 +372,7 @@ InstallGlobalFunction("Test", function(arg)
            end,
            subsWindowsLineBreaks := true,
          );
-  for c in RecFields(nopts) do
+  for c in RecNames(nopts) do
     opts.(c) := nopts.(c);
   od;
   # check shortcuts
@@ -592,7 +592,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     exitGAP := false,
   );
   
-  for c in RecFields(nopts) do
+  for c in RecNames(nopts) do
     opts.(c) := nopts.(c);
   od;
   
