@@ -152,6 +152,11 @@ GAP_CPPFLAGS += -Wall -Wextra \
 	-Wno-sign-compare \
 	-Wno-implicit-fallthrough
 
+# ... and disable warnings about unknown warnings ...
+GAP_CPPFLAGS += \
+	-Wno-unknown-warning \
+	-Wno-unknown-warning-option
+
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
 
