@@ -55,6 +55,9 @@ int libgap_in_enter_exit_block = 0; /* false */
 // This is a list of GAP objects that the library user wants to retain
 Obj libgap_GCPins;
 
+void libgap_GC_pin(Obj obj);
+void libgap_GC_unpin(Obj obj);
+
 /*************************************************************************/
 /*** Initialize / Finalize ***********************************************/
 /*************************************************************************/
@@ -71,15 +74,16 @@ void libgap_initialize(int argc, char** argv)
     InitializeGap(&argc, argv, environ);
     SetJumpToCatchFunc(libgap_call_error_handler);
 
+    /*
+     * Pinned objects
+     */
     InitGlobalBag(&libgap_GCPins, "src/sage_interface.c:75");
     libgap_GCPins = NewObjSet();
 }
 
 
 void libgap_finalize()
-{
-  FinishBags();
-}
+{ FinishBags(); }
 
 
 /*************************************************************************/
@@ -240,7 +244,7 @@ UInt8 libgap_Int_IntObj(Obj obj)   { return INT_INTOBJ(obj); }
 UInt8 libgap_Length_StringObj(Obj str) { return GET_LEN_STRING(str); };
 /* Slightly dodgy, we could provide a function that copies the string
  * to a buffer */
-char *libgap_String_StringObj(Obj str);
+char *libgap_String_StringObj(Obj str) { return CSTR_STRING(str); };
 
 UInt8 libgap_ValGVar(const char *name)
 {
@@ -254,11 +258,20 @@ Obj libgap_DoExecFunc0args(Obj func)
 Obj libgap_DoExecFunc1args(Obj func, Obj arg1)
 { return DoExecFunc1args(func, arg1); }
 
+Obj libgap_DoOperation0args(Obj func)
+{ return DoOperation0Args(func); }
+
+Obj libgap_DoOperation1args(Obj func, Obj arg1)
+{ return DoOperation1Args(func, arg1); }
+
 Obj libgap_CallFuncList(Obj func, Obj list)
-{ return CallFuncList(func,list); }
+{ return CallFuncList(func, list); }
 
 void libgap_GC_pin(Obj obj)
 { AddObjSet(libgap_GCPins, obj); }
 
 void libgap_GC_unpin(Obj obj)
 { RemoveObjSet(libgap_GCPins, obj); }
+
+UInt libgap_CollectBags(UInt size, UInt full)
+{ return CollectBags(size, full); }
