@@ -124,23 +124,20 @@ void libgap_finish_interaction()
   stdout_pos = 0;
   free(stdout_buffer);
   stdout_buffer = NULL;
-  
+
   stderr_pos = 0;
   ClearError();
 }
 
-void libgap_eval(char *cmd, char *result, size_t rlen, char *err, size_t elen)
+Obj libgap_eval_string(char *cmd)
 {
   libgap_start_interaction(cmd);
-
   libgap_enter();
   ReadEvalCommand(STATE(BottomLVars), 0);
-  ViewObjHandler(STATE(ReadEvalResult));
-  strncpy(result, libgap_get_output(), rlen);
-  strncpy(err, libgap_get_error(), elen);
-
   libgap_exit();
   libgap_finish_interaction();
+
+  return STATE(ReadEvalResult);
 }
 
 
@@ -199,7 +196,7 @@ void libgap_append_stdout(char ch)
     stdout_buffer = (char*)malloc(stdout_bufsize);
     memcpy(stdout_buffer, old_stdout_buffer, old_stdout_bufsize);
     free(old_stdout_buffer);
-  }    
+  }
   stdout_buffer[stdout_pos++] = ch;
 }
 
