@@ -238,6 +238,9 @@ void libgap_set_error(char* msg)
  * These are the beginnings of an API for the GAP-as-a-library
  */
 UInt8 libgap_TNumObj(Obj obj)      { return TNUM_OBJ(obj); }
+
+/* We should really be able to extract/transfer BigInts as
+   GMP integers */
 UInt8 libgap_IntObj_Int(UInt8 val) { return INTOBJ_INT(val); }
 UInt8 libgap_Int_IntObj(Obj obj)   { return INT_INTOBJ(obj); }
 
@@ -245,6 +248,24 @@ UInt8 libgap_Length_StringObj(Obj str) { return GET_LEN_STRING(str); };
 /* Slightly dodgy, we could provide a function that copies the string
  * to a buffer */
 char *libgap_String_StringObj(Obj str) { return CSTR_STRING(str); };
+Obj libgap_StringObj_String(const char *str, size_t len)
+{
+    Obj res;
+    C_NEW_STRING(res, str, len);
+    return res;
+}
+
+/* Mhm. what should the API be here? */
+Obj libgap_NewPermutation()
+{  }
+
+/* Records */
+Obj libgap_NewPRec(UInt capacity)
+{ return NEW_PREC(capacity); }
+
+/* Lists */
+Obj libgap_NewPList(UInt capacity)
+{ return NewPlist( T_PLIST, 0, capacity); }
 
 UInt8 libgap_ValGVar(const char *name)
 {
