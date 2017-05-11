@@ -141,7 +141,7 @@ void libgap_finish_interaction()
   ClearError();
 }
 
-Obj libgap_eval_string(char *cmd)
+Obj libgap_eval_string(char *cmd, char *out, size_t outl, char *err, size_t errl)
 {
   libgap_start_interaction(cmd);
   libgap_enter();
@@ -151,6 +151,12 @@ Obj libgap_eval_string(char *cmd)
   // being garbage collected, unless
   // its unpinned
   libgap_GC_pin(STATE(ReadEvalResult));
+
+  libgap_append_stdout('\0');
+  strncpy(out, stdout_buffer, outl);
+  libgap_append_stderr('\0');
+  strncpy(err, stderr_buffer, errl);
+
   libgap_exit();
   libgap_finish_interaction();
 
@@ -260,12 +266,21 @@ Obj libgap_NewPermutation()
 {  }
 
 /* Records */
-Obj libgap_NewPRec(UInt capacity)
-{ return NEW_PREC(capacity); }
+Obj libgap_NewPRec(UInt cap)
+{ return NEW_PREC(cap); }
 
 /* Lists */
-Obj libgap_NewPList(UInt capacity)
-{ return NewPlist( T_PLIST, 0, capacity); }
+Obj libgap_NewPList(UInt cap)
+{ return NewPlist( T_PLIST, 0, cap); }
+
+UInt libgap_GrowPList(Obj list, UInt cap)
+{ return GROW_PLIST(list,  cap); }
+
+void libgap_ShrinkPList(Obj list, UInt cap)
+{ return SHRINK_PLIST(list, cap); }
+
+void libgap_SetLenPList(Obj list, UInt len)
+{ return SET_LEN_PLIST(list, len); }
 
 UInt8 libgap_ValGVar(const char *name)
 {
