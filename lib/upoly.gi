@@ -15,7 +15,10 @@
 #M  IrrFacsPol(<f>) . . . lists of irreducible factors of polynomial over
 ##                        ring, initialize default
 ##
-InstallMethod(IrrFacsPol,true,[IsPolynomial],0,f -> []);
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. When not running
+##  HPC-GAP, then HPCGAP_TLIrrFacsPol is defined to be equal to IrrFacsPol.
+##
+InstallMethod(HPCGAP_TLIrrFacsPol,true,[IsPolynomial],0,f -> []);
 
 #############################################################################
 ##

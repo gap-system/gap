@@ -44,7 +44,7 @@ DeclareAttribute("SplittingField",IsPolynomial);
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute("IrrFacsPol",IsPolynomial,"mutable");
+DeclareThreadLocalAttribute("IrrFacsPol",IsPolynomial,"mutable");
 
 #############################################################################
 ##
