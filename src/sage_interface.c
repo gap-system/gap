@@ -66,7 +66,7 @@ void libgap_GC_unpin(Obj obj);
 /*** Global Initialization ***********************************************/
 /*************************************************************************/
 
-void libgap_initialize(int argc, char** argv)
+void libgap_initialize(int argc, char** argv, char** environ)
 {
     /* Init interpreter state */
     InitMainGAPState();
