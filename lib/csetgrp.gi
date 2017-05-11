@@ -163,6 +163,9 @@ local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
         fi;
       fi;
     od;
+    if Length(rep)=0 then
+      return []; # cannot have any
+    fi;
     Add(cla,rep);
   od;
   r:=List(cla,x->-Maximum(List(x,Size)));
@@ -206,14 +209,20 @@ end);
 ##  the operation of G on the Right Cosets of U.
 ##
 InstallGlobalFunction( IntermediateGroup, function(G,U)
-local o,b,img,G1,c,m,hardlimit,gens,t,k;
+local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
 
   if U=G then
     return fail;
   fi;
 
+  intersize:=Size(G);
+  m:=ValueOption("intersize");
+  if IsInt(m) and m<=intersize then
+    return fail; # avoid infinite recursion
+  fi;
+
   # use maximals
-  m:=MaximalSubgroupClassReps(G:cheap);
+  m:=MaximalSubgroupClassReps(G:cheap,intersize:=intersize);
 
   m:=Filtered(m,x->Size(x) mod Size(U)=0 and Size(x)>Size(U));
   SortBy(m,x->Size(G)/Size(x));
@@ -230,7 +239,7 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k;
         fi;
       od;
     else
-      t:=DoConjugateInto(G,c,U,true);
+      t:=DoConjugateInto(G,c,U,true:intersize:=intersize);
       if t<>fail then 
 	Info(InfoCoset,2,"Found Size ",Size(c),"\n");
         return c^(Inverse(t));

@@ -21,6 +21,11 @@ gap> g:=SymmetricGroup(13);;s:=SylowSubgroup(g,NrMovedPoints(g));;
 gap> ac:=AscendingChain(g,s);;
 gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<600000;
 true
+gap> g:=SL(6,2);;
+gap> p:=Image(IsomorphismPermGroup(g));;
+gap> s:=SylowSubgroup(p,7);;
+gap> Length(IntermediateSubgroups(p,s).subgroups);
+71
 gap> STOP_TEST( "permgrp.tst", 1);
 
 #############################################################################
