@@ -1913,7 +1913,7 @@ InstallOtherMethod( IsConjugatorIsomorphism,
   1,
 function( hom )
   local s, genss, rep,dom,insn,stb,E,bpt,fix,pnt,idom,sliced,
-    o,oimgs,i,pi,sto,stbs,stbi, r, sym,doms,gn,mapi,pos;
+    o,oimgs,i,pi,sto,stbs,stbi, r, sym,doms,gn,mapi,pos,orb;
 
   s:= Source( hom );
   if not IsPermGroup( s ) then
@@ -2053,7 +2053,34 @@ function( hom )
         od;
         rep:=MappingPermListList( dom, idom );
       else
-        # we got 
+        # we got multiple orbits
+
+	# does it matter? (can we do per orbit?)
+	orb:=List(Orbits(s,dom),Set);
+	rep:=[];
+	i:=1;
+	while i<=Length(orb) do
+	  sym:=ActionHomomorphism(s,orb[i],"surjective");
+	  pi:=InducedAutomorphism(sym,hom);
+	  if IsConjugatorIsomorphism(pi) then
+	    rep[i]:=ConjugatorOfConjugatorIsomorphism(pi);
+	  else
+	    rep:=fail;
+	    i:=Length(orb);
+	  fi;
+	  i:=i+1;
+	od;
+	if rep<>fail then
+	  pi:=List([1..Length(orb)],x->MappingPermListList(Permuted(orb[x],rep[x]),orb[x]));
+	  rep:=Product(pi);
+          Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
+	  SetConjugatorOfConjugatorIsomorphism( hom, rep );
+	  return true;
+	fi;
+
+	if ValueOption("cheap")=true then
+	  return false;
+	fi;
         rep:=RepresentativeAction(OrbitStabilizingParentGroup(s),
               genss,
               List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
