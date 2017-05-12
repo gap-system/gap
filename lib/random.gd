@@ -286,9 +286,15 @@ DeclareCategory("IsGlobalRandomSource", IsRandomSource);
 DeclareCategory("IsGAPRandomSource", IsRandomSource);
 DeclareCategory("IsMersenneTwister", IsRandomSource);
 
-DeclareGlobalVariable( "GlobalRandomSource" );
-# this declaration is in coll.gi because it is needed for RandomList
-# DeclareGlobalVariable( "GlobalMersenneTwister" );
+if IsBound(HPCGAP) then
+    MakeThreadLocal( "GlobalRandomSource" );
+    # this declaration is in coll.gi because it is needed for RandomList
+    # MakeThreadLocal( "GlobalMersenneTwister" );
+else
+    DeclareGlobalVariable( "GlobalRandomSource" );
+    # this declaration is in coll.gi because it is needed for RandomList
+    # DeclareGlobalVariable( "GlobalMersenneTwister" );
+fi;
 
 #############################################################################
 ##  
