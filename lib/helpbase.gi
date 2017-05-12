@@ -978,9 +978,12 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   # Note: before GAP 4.5 this was only done in case of substring search.
   match := Concatenation(exact, match);
   exact := [];
-  # check if all matches point to the same subsection of the same book
+  
+  # check if all matches point to the same subsection of the same book,
+  # in that case we only keep the first match which then will be displayed
+  # immediately
 
-  # this function makes shure that nothing breaks if the help book handler
+  # this function makes sure that nothing breaks if the help book handler
   # has no support for SubsectionNumber
   getsecnum := function(m)
     if IsBound(HELP_BOOK_HANDLER.(m[1].handler).SubsectionNumber) then

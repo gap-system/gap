@@ -220,7 +220,8 @@ gap> stream := InputTextFile( file );;
 <Mark><C>SubsectionNumber( <A>info</A>, <A>i</A> )</C> </Mark>
 <Item>
   This returns some &GAP; object that identifies the position in the book
-  where the display of this entry is started.
+  where the display of this entry is started. This can be useful to detect
+  if several help book entries actually point to the same place.
 </Item>
 </List>
 <P/>
