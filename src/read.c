@@ -502,6 +502,7 @@ void ReadCallVarAss (
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
     if ( type == 'g'
+      && mode != 'i'
       && STATE(CountNams) != 0
       && var != STATE(CurrLHSGVar)
       && VAL_GVAR(var) == 0
