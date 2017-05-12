@@ -1644,8 +1644,11 @@ DeclareAttributeSuppCT( "Identifier", IsNearlyCharacterTable, [] );
 DeclareGlobalVariable( "LARGEST_IDENTIFIER_NUMBER",
     "list containing the largest identifier of an ordinary character table\
  in the current session" );
-InstallFlushableValue( LARGEST_IDENTIFIER_NUMBER, [ 0 ] );
-
+if IsBound(HPCGAP) then
+    InstallValue( LARGEST_IDENTIFIER_NUMBER, FixedAtomicList([ 0 ]) );
+else
+    InstallFlushableValue( LARGEST_IDENTIFIER_NUMBER, [ 0 ] );
+fi;
 
 #############################################################################
 ##
