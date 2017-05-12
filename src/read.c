@@ -501,17 +501,18 @@ void ReadCallVarAss (
     if (WarnOnUnboundGlobalsRNam == 0)
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
-    if ( type == 'g'
-      && mode != 'i'
-      && STATE(CountNams) != 0
-      && var != STATE(CurrLHSGVar)
-      && VAL_GVAR(var) == 0
-      && ExprGVar(var) == 0
-      && ! STATE(IntrIgnoring)
-      && ! GlobalComesFromEnclosingForLoop(var)
-      && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
-             ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
-      && ! SyCompilePlease )
+    if ( type == 'g'                // Reading a global variable
+      && mode != 'i'                // Not inside 'IsBound'
+      && STATE(CountNams) != 0      // Inside a function
+      && var != STATE(CurrLHSGVar)  // Not LHS of assignment
+      && VAL_GVAR(var) == 0         // Not an existing global var
+      && ExprGVar(var) == 0         // Or an auto var
+      && ! STATE(IntrIgnoring)      // Not currently ignoring parsed code
+      && ! GlobalComesFromEnclosingForLoop(var) // Not loop variable
+      && (GAPInfo == 0 || !IS_REC(GAPInfo)
+          || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) // Warning enabled
+          ||  ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
+      && ! SyCompilePlease )        // Not compiling
     {
         SyntaxWarning("Unbound global variable");
     }
