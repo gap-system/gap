@@ -239,6 +239,9 @@ BIND_GLOBAL( "TYPES_STRING",
           # T_STRING_SSORT +IMMUTABLE
           ]);
 
+if IsBound(HPCGAP) then
+    MakeReadOnlyObj( TYPES_STRING );
+fi;
 
 #############################################################################
 ##
