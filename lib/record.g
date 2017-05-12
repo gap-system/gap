@@ -131,10 +131,11 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##  <#GAPDoc Label="RecNames">
 ##  <ManSection>
 ##  <Attr Name="RecNames" Arg='record'/>
+##  <Attr Name="RecFields" Arg='record'/>
 ##
 ##  <Description>
-##  returns a list of strings corresponding to the names of the record
-##  components of the record <A>record</A>.
+##  These synonym attributes return a list of strings corresponding 
+##  to the names of the record components of the record <A>record</A>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> r := rec( a := 1, b := 2 );;
