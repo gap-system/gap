@@ -143,6 +143,9 @@ InstallTrueMethod( IsFinite,
 DeclareGlobalVariable( "Z_MOD_NZ",
     "list of lists, at position [1][i] is n s.t. [2][i] is ZmodnZ(n)" );
 InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
+if IsBound(HPCGAP) then
+    ShareSpecialObj( Z_MOD_NZ );
+fi;
 
 
 #############################################################################
