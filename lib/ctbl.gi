@@ -2514,10 +2514,15 @@ InstallMethod( Identifier,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( tbl )
-
+    local val;
     # Construct an identifier that is unique in the current session.
-    LARGEST_IDENTIFIER_NUMBER[1]:= LARGEST_IDENTIFIER_NUMBER[1] + 1;
-    tbl:= Concatenation( "CT", String( LARGEST_IDENTIFIER_NUMBER[1] ) );
+    if IsBound(HPCGAP) then
+        val := ATOMIC_ADDITION( LARGEST_IDENTIFIER_NUMBER, 1, 1 );
+    else
+        LARGEST_IDENTIFIER_NUMBER[1] := LARGEST_IDENTIFIER_NUMBER[1] + 1;
+        val := LARGEST_IDENTIFIER_NUMBER[1];
+    fi;
+    tbl:= Concatenation( "CT", String( val ) );
     ConvertToStringRep( tbl );
     return tbl;
     end );
@@ -5058,6 +5063,10 @@ InstallValue( CharacterTableDisplayDefaults, rec(
         StringEntryData := CharacterTableDisplayStringEntryDataDefault,
         Legend          := CharacterTableDisplayLegendDefault,
     ) ) );
+
+if IsBound(HPCGAP) then
+    MakeThreadLocal("CharacterTableDisplayDefaults");
+fi;
 
 #############################################################################
 ##
