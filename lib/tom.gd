@@ -2295,7 +2295,7 @@ DeclareOperation( "TableOfMarksFrobenius", [ IsPosInt, IsPosInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "TableOfMarksComponents", [
+BindGlobal( "TableOfMarksComponents", MakeImmutable([
       "Identifier",                 Identifier,
       "SubsTom",                    SubsTom,
       "MarksTom",                   MarksTom,
@@ -2308,7 +2308,7 @@ BindGlobal( "TableOfMarksComponents", [
       "GeneratorsSubgroupsTom",     GeneratorsSubgroupsTom,
       "PermutationTom",             PermutationTom,
       "ClassNamesTom",              ClassNamesTom,
-    ] );
+    ]) );
 
 
 #############################################################################
