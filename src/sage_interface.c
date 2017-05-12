@@ -27,6 +27,8 @@
 #include <src/read.h>
 #include <src/compiled.h>
 #include <src/objset.h>
+#include <src/funcs.h>
+#include <src/calls.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -247,7 +249,7 @@ UInt8 libgap_TNumObj(Obj obj)      { return TNUM_OBJ(obj); }
 
 /* We should really be able to extract/transfer BigInts as
    GMP integers */
-UInt8 libgap_IntObj_Int(UInt8 val) { return INTOBJ_INT(val); }
+Obj libgap_IntObj_Int(UInt8 val) { return INTOBJ_INT(val); }
 UInt8 libgap_Int_IntObj(Obj obj)   { return INT_INTOBJ(obj); }
 
 UInt8 libgap_Length_StringObj(Obj str) { return GET_LEN_STRING(str); };
@@ -257,7 +259,7 @@ char *libgap_String_StringObj(Obj str) { return CSTR_STRING(str); };
 Obj libgap_StringObj_String(const char *str, size_t len)
 {
     Obj res;
-    C_NEW_STRING(res, str, len);
+    C_NEW_STRING(res, len, str);
     return res;
 }
 
@@ -271,7 +273,14 @@ Obj libgap_NewPRec(UInt cap)
 
 /* Lists */
 Obj libgap_NewPList(UInt cap)
-{ return NewPlist( T_PLIST, 0, cap); }
+{
+    Obj list;
+
+    list = NEW_PLIST( T_PLIST, cap); 
+    SET_LEN_PLIST(list, 0);
+
+    return list;
+}
 
 UInt libgap_GrowPList(Obj list, UInt cap)
 { return GROW_PLIST(list,  cap); }
@@ -282,18 +291,31 @@ void libgap_ShrinkPList(Obj list, UInt cap)
 void libgap_SetLenPList(Obj list, UInt len)
 { return SET_LEN_PLIST(list, len); }
 
-UInt8 libgap_ValGVar(const char *name)
+void libgap_SetElmPList(Obj list, UInt pos, Obj val)
+{ SET_ELM_PLIST(list,pos,val); }
+
+Obj libgap_ElmPList(Obj list, UInt pos)
+{ return ELM_PLIST(list, pos); }
+
+Obj libgap_ValGVar(const char *name)
 {
     UInt varnum = GVarName(name);
     return VAL_GVAR(varnum);
 }
 
+/* Executing Functions */
+/* It's probably enough to have "CallFuncList" in the API, though
+   we might want to circumvent the "overhead" of that in places? */
+Obj DoExecFunc0args(Obj func);
+Obj DoExecFunc1args(Obj func, Obj arg1);
 Obj libgap_DoExecFunc0args(Obj func)
 { return DoExecFunc0args(func); }
 
 Obj libgap_DoExecFunc1args(Obj func, Obj arg1)
 { return DoExecFunc1args(func, arg1); }
 
+Obj DoOperation0Args(Obj func);
+Obj DoOperation1Args(Obj func, Obj arg1);
 Obj libgap_DoOperation0args(Obj func)
 { return DoOperation0Args(func); }
 
@@ -311,3 +333,27 @@ void libgap_GC_unpin(Obj obj)
 
 UInt libgap_CollectBags(UInt size, UInt full)
 { return CollectBags(size, full); }
+
+Obj libgap_EvalString(char *cmd, char *out, size_t outl, char *err, size_t errl)
+{
+    libgap_start_interaction(cmd);
+    libgap_enter();
+    ReadEvalCommand(STATE(BottomLVars), 0);
+    // Note that this prevents
+    // any result of eval string from
+    // being garbage collected, unless
+    // its unpinned
+    libgap_GC_pin(STATE(ReadEvalResult));
+
+    libgap_append_stdout('\0');
+    strncpy(out, stdout_buffer, outl);
+    libgap_append_stderr('\0');
+    strncpy(err, stderr_buffer, errl);
+
+    libgap_exit();
+    libgap_finish_interaction();
+
+    return STATE(ReadEvalResult);
+}
+
+
