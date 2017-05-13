@@ -2483,7 +2483,6 @@ void            IntrListExprEnd (
 
     /* if this was a range, convert the list to a range                    */
     if ( range ) {
-
         /* get the list                                                    */
         list = PopObj();
 
@@ -2565,7 +2564,10 @@ void            IntrListExprEnd (
     else {
         /* give back unneeded memory */
         list = PopObj( );
-        SHRINK_PLIST( list, LEN_PLIST(list) );
+        /* Might have transformed into another type of list */
+        if (IS_PLIST(list)) {
+            SHRINK_PLIST(list, LEN_PLIST(list));
+        }
         PushObj( list );
     }
 }
