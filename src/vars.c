@@ -2750,8 +2750,8 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
   AssPRec(contents, RNamName("func"), func);
   AssPRec(contents,RNamName("names"), nams);
   memcpy((void *)(1+ADDR_OBJ(values)), (void *)(3+ADDR_OBJ(lvars)), len*sizeof(Obj));
-  while (ELM_PLIST(values, len) == 0)
-    len--;
+  while (len > 0 && ELM_PLIST(values, len) == 0)
+      len--;
   SET_LEN_PLIST(values, len);
   AssPRec(contents, RNamName("values"), values);
   if (ENVI_FUNC(func) != STATE(BottomLVars))
