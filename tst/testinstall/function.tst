@@ -108,18 +108,10 @@ gap> Print(x->x, "\n");
 function ( x )
     return x;
 end
-gap> ->1;
-function(  ) ... end
-gap> (->1)();
-1
 gap> {}->1;
 function(  ) ... end
 gap> ({}->1)();
 1
-gap> Print(->1, "\n");
-function (  )
-    return 1;
-end
 gap> Print({}->1, "\n");
 function (  )
     return 1;
