@@ -207,7 +207,7 @@ dnl enable/disable C level assertions, etc.
 dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
-    [AC_DEFINE([DEBUG], [1], [define if building in debug mode])],
+    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])],
     [enable_debug=no]
     )
 AC_MSG_CHECKING([whether to enable debug mode])
