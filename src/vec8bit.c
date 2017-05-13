@@ -1103,6 +1103,8 @@ void PlainVec8Bit (
     Obj                 info;
     UInt1              *gettab;
     UInt                tnum;
+    Char *              startblank;
+    Char *              endblank;
 
     /* resize the list and retype it, in this order                        */
     if (True == DoFilter(IsLockedRepresentationVector, list)) {
@@ -1149,9 +1151,12 @@ void PlainVec8Bit (
             SET_ELM_PLIST(list, 2, second);
         SET_ELM_PLIST(list, 1, first);
     }
-    /* Null out any entries after the end of valid data */
-    for (i = len + 1; i < (SIZE_BAG(list) + sizeof(Obj) - 1) / sizeof(Obj); i++)
-        SET_ELM_PLIST(list, i, (Obj) 0);
+    // Null out any entries after the end of valid data
+    // As the size of the VEC8BIT might not evenly divide sizeof(Int), we
+    // cannot use PLIST methods to set the end of the list to zero
+    startblank = (Char *)(PTR_BAG(list) + (len + 1));
+    endblank = (Char *)PTR_BAG(list) + SIZE_BAG(list);
+    memset(startblank, 0, endblank - startblank);
 
     CHANGED_BAG(list);
 }
