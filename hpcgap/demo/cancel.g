@@ -1,6 +1,6 @@
 task := RunTask(function()
   while true do
-    OnTaskCancellation(->99);
+    OnTaskCancellation({}->99);
   od;
 end);
 
