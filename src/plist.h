@@ -26,20 +26,68 @@
 #ifndef GAP_PLIST_H
 #define GAP_PLIST_H
 
+#include <src/debug.h> /* for GAP_ASSERT */
 
 /****************************************************************************
 **
-
 *F  NEW_PLIST(<type>,<plen>)  . . . . . . . . . . . allocate a new plain list
 **
 **  'NEW_PLIST'  allocates    a new plain   list  of  type <type> ('T_PLIST',
 **  'T_SET', 'T_VECTOR') that has room for at least <plen> elements.
 **
-**  Note that 'NEW_PLIST' is a  macro, so do not call  it with arguments that
-**  have side effects.
 */
-#define NEW_PLIST(type,plen)            NewBag(type,((plen)+1)*sizeof(Obj))
+static inline Obj NEW_PLIST(UInt type, Int plen)
+{
+    GAP_ASSERT(plen >= 0);
+    return NewBag(type, (plen + 1) * sizeof(Obj));
+}
 
+/****************************************************************************
+**
+*F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
+*/
+static inline Int IS_PLIST(Obj list)
+{
+    return FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
+           TNUM_OBJ(list) <= LAST_PLIST_TNUM;
+}
+
+/****************************************************************************
+**
+*F  IS_PLIST_OR_POSOBJ( <list> )  . . . . . . .check type of <list>
+**
+**  Checks if this is 'PLIST'-like.
+**  This function is used in a GAP_ASSERT checking if calling functions like
+**  SET_ELM_PLIST is acceptable on an Obj.
+**  We also check is the 'COPYING' bit is set (which is not checked by
+**  normal IS_PLIST).
+*/
+
+static inline Int IS_PLIST_OR_POSOBJ(Obj list)
+{
+    Int tnum = TNUM_OBJ(list);
+    if (tnum > COPYING)
+        tnum -= COPYING;
+    return (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) ||
+           tnum == T_POSOBJ;
+}
+
+
+/****************************************************************************
+**
+*F  CAPACITY_PLIST(<list>)  . . . . . . . . . . . capacity of a plain list
+**
+**  'CAPACITY_PLIST' returns the maximum capacity of a PLIST.
+**
+*/
+static inline Int CAPACITY_PLIST(Obj list)
+{
+    return SIZE_OBJ(list) / sizeof(Obj) - 1;
+}
+
+extern  Int             GrowPlist (
+            Obj                 list,
+            UInt                need );
 
 /****************************************************************************
 **
@@ -48,15 +96,15 @@
 **  'GROW_PLIST' grows  the plain list <list>  if necessary to ensure that it
 **  has room for at least <plen> elements.
 **
-**  Note that 'GROW_PLIST' is a macro, so do not call it with arguments that
-**  have side effects.
 */
-#define GROW_PLIST(list,plen)   ((plen) < SIZE_OBJ(list)/sizeof(Obj) ? \
-                                 0L : GrowPlist(list,plen) )
-
-extern  Int             GrowPlist (
-            Obj                 list,
-            UInt                need );
+static inline void GROW_PLIST(Obj list, Int plen)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(plen >= 0);
+    if (plen > CAPACITY_PLIST(list)) {
+        GrowPlist(list, plen);
+    }
+}
 
 
 /****************************************************************************
@@ -66,10 +114,13 @@ extern  Int             GrowPlist (
 **  'SHRINK_PLIST' shrinks  the plain list <list>  if possible  so that it has
 **  still room for at least <plen> elements.
 **
-**  Note that 'SHRINK_PLIST' is a macro, so do not call it with arguments that
-**  have side effects.
 */
-#define SHRINK_PLIST(list,plen)         ResizeBag(list,((plen)+1)*sizeof(Obj))
+static inline void SHRINK_PLIST(Obj list, Int plen)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(plen <= CAPACITY_PLIST(list));
+    ResizeBag(list, (plen + 1) * sizeof(Obj));
+}
 
 
 /****************************************************************************
@@ -78,10 +129,14 @@ extern  Int             GrowPlist (
 **
 **  'SET_LEN_PLIST' sets the length of  the plain list  <list> to <len>.
 **
-**  Note  that 'SET_LEN_PLIST'  is a macro, so do not call it with  arguments
-**  that have side effects.
 */
-#define SET_LEN_PLIST(list,len)         (ADDR_OBJ(list)[0] = (Obj)(len))
+static inline void SET_LEN_PLIST(Obj list, Int len)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(len >= 0);
+    GAP_ASSERT(len <= CAPACITY_PLIST(list));
+    ADDR_OBJ(list)[0] = (Obj)len;
+}
 
 
 /****************************************************************************
@@ -90,10 +145,12 @@ extern  Int             GrowPlist (
 **
 **  'LEN_PLIST' returns the logical length of the list <list> as a C integer.
 **
-**  Note that 'LEN_PLIST' is a  macro, so do  not call it with arguments that
-**  have side effects.
 */
-#define LEN_PLIST(list)                 ((Int)(ADDR_OBJ(list)[0]))
+static inline Int LEN_PLIST(Obj list)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    return ((Int)(ADDR_OBJ(list)[0]));
+}
 
 
 /****************************************************************************
@@ -104,16 +161,14 @@ extern  Int             GrowPlist (
 **  position <pos>.  <pos> must be a  positive integer less  than or equal to
 **  the length of <list>.
 **
-**  Note that 'SET_ELM_PLIST' is a  macro, so do not  call it  with arguments
-**  that have side effects.
-**
-** old version that causes problems if val can trigger a garbage collection
-**
-#define SET_ELM_PLIST(list,pos,val)     (ADDR_OBJ(list)[pos] = (val))
-**
-** New version should be safe
 */
-#define SET_ELM_PLIST(list, pos, val) do { Obj sep_Obj = (val); ADDR_OBJ(list)[pos] = sep_Obj; } while (0)
+static inline void SET_ELM_PLIST(Obj list, Int pos, Obj val)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(pos >= 1);
+    GAP_ASSERT(pos <= CAPACITY_PLIST(list));
+    ADDR_OBJ(list)[pos] = val;
+}
 
 /****************************************************************************
 **
@@ -130,12 +185,6 @@ extern  Int             GrowPlist (
 #define ELM_PLIST(list,pos)             (ADDR_OBJ(list)[pos])
 
 
-/****************************************************************************
-**
-*F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
-*/
-#define IS_PLIST( list ) \
-  (FIRST_PLIST_TNUM <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
 
 
 /****************************************************************************
@@ -147,15 +196,21 @@ extern  Int             GrowPlist (
 ** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST 
 ** instead.                                                                   
 */
-#define IS_DENSE_PLIST( list ) \
-  (T_PLIST_DENSE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
+static inline Int IS_DENSE_PLIST(Obj list)
+{
+    return T_PLIST_DENSE <= TNUM_OBJ(list) &&
+           TNUM_OBJ(list) <= LAST_PLIST_TNUM;
+}
 
 
 /****************************************************************************
 **
 *F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-#define IS_MUTABLE_PLIST(list)  (!((TNUM_OBJ(list) - T_PLIST) % 2))
+static inline Int IS_MUTABLE_PLIST(Obj list)
+{
+    return !((TNUM_OBJ(list) - T_PLIST) % 2);
+}
 
 /****************************************************************************
 **
