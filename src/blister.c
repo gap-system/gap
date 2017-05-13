@@ -596,7 +596,7 @@ Obj ElmsBlist (
     else {
 
         /* get the length of <list>                                        */
-        lenList = LEN_PLIST( list );
+        lenList = LEN_BLIST( list );
 
         /* get the length of <positions>, the first elements, and the inc. */
         lenPoss = GET_LEN_RANGE( poss );
