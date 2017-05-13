@@ -613,7 +613,7 @@ BindGlobal("OnTaskCancellation", function(exit)
 end);
 
 BindGlobal("OnTaskCancellationReturn", function(value)
-  OnTaskCancellation(->value);
+  OnTaskCancellation({}->value);
 end);
 
 
