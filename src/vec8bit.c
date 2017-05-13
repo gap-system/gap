@@ -1103,6 +1103,7 @@ void PlainVec8Bit (
     Obj                 info;
     UInt1              *gettab;
     UInt                tnum;
+    Obj                 fieldobj;
     Char *              startblank;
     Char *              endblank;
 
@@ -1142,11 +1143,11 @@ void PlainVec8Bit (
 
         /* replace the bits by FF elts as the case may be        */
         /* this must of course be done from the end of the list backwards      */
-        for (i = len;  2 < i;  i--)
-            SET_ELM_PLIST(list, i,
-            FFE_FELT_FIELDINFO_8BIT(info)
-            [gettab[256 * ((i - 1) % elts) +
-            BYTES_VEC8BIT(list)[(i - 1) / elts]]]);
+        for (i = len; 2 < i; i--) {
+            fieldobj = FFE_FELT_FIELDINFO_8BIT(info)
+            [gettab[256 * ((i - 1) % elts) + BYTES_VEC8BIT(list)[(i - 1) / elts]]];
+            SET_ELM_PLIST(list, i, fieldobj);
+        }
         if (len > 1)
             SET_ELM_PLIST(list, 2, second);
         SET_ELM_PLIST(list, 1, first);
