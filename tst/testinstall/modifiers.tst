@@ -16,7 +16,7 @@ gap> x.2.3 := 5;
 5
 gap> x;
 rec( 2 := rec( 3 := 5 ) )
-gap> x.f := -> rec();
+gap> x.f := {} -> rec();
 function(  ) ... end
 gap> x;
 rec( 2 := rec( 3 := 5 ), f := function(  ) ... end )
@@ -28,7 +28,7 @@ gap> x := rec( a := 3 );
 rec( a := 3 )
 gap> 1 + x.a;
 4
-gap> x.f := -> [4];
+gap> x.f := {} -> [4];
 function(  ) ... end
 gap> 4 + x.f()[1];
 8
