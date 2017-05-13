@@ -1844,15 +1844,6 @@ gap> list;
 gap> f := {x,y...} -> y;;
 gap> f(1,2,3,4);
 [ 2, 3, 4 ]
-]]></Example>
-<P/>
-The <C>{</C> and <C>}</C> may be omitted for
-functions with one and zero arguments:
-<Example><![CDATA[
-gap> Sum( List( [1..100], {x} -> x^2 ) );
-338350
-gap> Sum( List( [1..100], x -> x^2 ) );
-338350
 gap> f := {} -> 2;
 function(  ) ... end
 gap> Print(f);
@@ -1861,14 +1852,15 @@ function (  )
 end
 gap> f();
 2
-gap> g := -> 2;
-function(  ) ... end
-gap> Print(g);
-function (  )
-    return 2;
-end
-gap> g();
-2
+]]></Example>
+<P/>
+The <C>{</C> and <C>}</C> may be omitted for
+functions with one argument:
+<Example><![CDATA[
+gap> Sum( List( [1..100], {x} -> x^2 ) );
+338350
+gap> Sum( List( [1..100], x -> x^2 ) );
+338350
 ]]></Example>
 
 <P/>
