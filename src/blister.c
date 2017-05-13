@@ -919,7 +919,7 @@ void PlainBlist (
     /* replace the bits by 'True' or 'False' as the case may be            */
     /* this must of course be done from the end of the list backwards      */
     for ( i = len; 0 < i; i-- )
-        SET_ELM_PLIST( list, i, ELM_BLIST( list, i ) );
+        SET_ELM_PLIST(list, i, ELM_BLIST_UNSAFE(list, i));
 
     /* 'CHANGED_BAG' not needed, 'True' and 'False' are safe           */
 }
@@ -1005,7 +1005,7 @@ void ConvBlist (
             block |= bit;
         bit = bit << 1;
         if ( bit == 0 || i == len ) {
-            BLOCK_ELM_BLIST(list,i) = block;
+            BLOCK_ELM_BLIST_UNSAFE(list, i) = block;
             block = 0;
             bit = 1;
         }
