@@ -473,15 +473,24 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
 */
-#define TNUM_OBJ(obj)   (IS_INTOBJ( obj ) ? T_INT : \
-                         (IS_FFE( obj ) ? T_FFE : TNUM_BAG( obj )))
+static inline Int TNUM_OBJ(Obj obj)
+{
+    if (IS_INTOBJ(obj))
+        return T_INT;
+    if (IS_FFE(obj))
+        return T_FFE;
+    return TNUM_BAG(obj);
+}
 
 
 /****************************************************************************
 **
 *F  TNAM_OBJ( <obj> ) . . . . . . . . . . . . . name of the type of an object
 */
-#define TNAM_OBJ(obj)   (InfoBags[TNUM_OBJ(obj)].name)
+static inline const Char * TNAM_OBJ(Obj obj)
+{
+    return InfoBags[TNUM_OBJ(obj)].name;
+}
 
 
 /****************************************************************************
