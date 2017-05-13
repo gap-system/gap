@@ -32,6 +32,32 @@
 */
 #define BIPEB   (sizeof(UInt) * 8L)
 
+/****************************************************************************
+**
+*F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
+*/
+static inline Int IS_BLIST_REP(Obj list)
+{
+    return T_BLIST <= TNUM_OBJ(list) &&
+           TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
+}
+
+/****************************************************************************
+**
+*F  IS_BLIST_REP_WITH_COPYING( <list> )  . . . . .check if <list> is a blist
+**
+**  This version of IS_PLIST also checks if 'COPYING' is set, which happens
+**  during copying of object. This is only used in assertion checks, as it is
+**  a (little) slower.
+*/
+
+static inline Int IS_BLIST_REP_WITH_COPYING(Obj list)
+{
+    Int tnum = TNUM_OBJ(list);
+    if (tnum > COPYING)
+        tnum -= COPYING;
+    return T_BLIST <= tnum && tnum <= T_BLIST_SSORT + IMMUTABLE;
+}
 
 /****************************************************************************
 **
@@ -42,11 +68,12 @@
 **  elements that could be stored  in a list) from the <size> (as reported by
 **  'SIZE') for a boolean list.
 **
-**  Note that 'PLEN_SIZE_BLIST' is a macro, so  do not call it with arguments
-**  that have side effects.
 */
-#define PLEN_SIZE_BLIST(size) \
-                        ((((size)-sizeof(Obj))/sizeof(UInt)) * BIPEB)
+static inline Int PLEN_SIZE_BLIST(Int size)
+{
+    GAP_ASSERT(size >= 0);
+    return ((size - sizeof(Obj)) / sizeof(UInt)) * BIPEB;
+}
 
 
 /****************************************************************************
@@ -56,12 +83,12 @@
 **  'SIZE_PLEN_BLIST' returns  the size  that a boolean list  with  room  for
 **  <plen> elements must at least have.
 **
-**  Note that 'SIZE_PLEN_BLIST' is a macro, so do not call it with  arguments
-**  that have side effects.
 */
-#define SIZE_PLEN_BLIST(plen) \
-                        (sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(UInt))
-
+static inline Int SIZE_PLEN_BLIST(Int plen)
+{
+    GAP_ASSERT(plen >= 0);
+    return sizeof(Obj) + (plen + BIPEB - 1) / BIPEB * sizeof(UInt);
+}
 
 /****************************************************************************
 **
@@ -70,10 +97,12 @@
 **  'LEN_BLIST' returns the logical length of the boolean list <list>, as a C
 **  integer.
 **
-**  Note that 'LEN_BLIST' is a macro, so do not call it  with  arguments that
-**  have side effects.
 */
-#define LEN_BLIST(list)         (INT_INTOBJ(ADDR_OBJ(list)[0]))
+static inline Int LEN_BLIST(Obj list)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
+    return INT_INTOBJ(ADDR_OBJ(list)[0]);
+}
 
 
 /***************************************************************************
@@ -81,7 +110,11 @@
 *F  NUMBER_BLOCKS_BLIST(<list>) . . . . . . . . number of UInt blocks in list
 **
 */
-#define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
+static inline Int NUMBER_BLOCKS_BLIST(Obj blist)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(blist));
+    return (LEN_BLIST(blist) + BIPEB - 1) / BIPEB;
+}
 
 
 /****************************************************************************
@@ -91,11 +124,13 @@
 **  'SET_LEN_BLIST' sets the  length of the boolean list  <list> to the value
 **  <len>, which must be a positive C integer.
 **
-**  Note that 'SET_LEN_BLIST' is a macro, so do  not  call it with  arguments
-**  that have side effects.
 */
-#define SET_LEN_BLIST(list,len) \
-                        (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
+static inline void SET_LEN_BLIST(Obj list, Int len)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
+    GAP_ASSERT(len >= 0);
+    ADDR_OBJ(list)[0] = INTOBJ_INT(len);
+}
 
 
 /****************************************************************************
@@ -105,7 +140,16 @@
 **  returns a pointer to the start of the data of the Boolean list
 **
 */
-#define BLOCKS_BLIST( list )  ((UInt*)(ADDR_OBJ(list)+1))
+static inline UInt * BLOCKS_BLIST_UNSAFE(Obj list)
+{
+    return ((UInt *)(ADDR_OBJ(list) + 1));
+}
+
+static inline UInt * BLOCKS_BLIST(Obj list)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
+    return BLOCKS_BLIST_UNSAFE(list);
+}
 
 
 /****************************************************************************
@@ -121,6 +165,8 @@
 **  that have side effects.
 */
 #define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
+#define BLOCK_ELM_BLIST_UNSAFE(list, pos)                                    \
+    (BLOCKS_BLIST_UNSAFE(list)[((pos)-1) / BIPEB])
 
 
 /****************************************************************************
@@ -150,6 +196,9 @@
 #define ELM_BLIST(list,pos) \
   ((BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos)) ?  True : False)
 
+#define ELM_BLIST_UNSAFE(list, pos)                                          \
+    ((BLOCK_ELM_BLIST_UNSAFE(list, pos) & MASK_POS_BLIST(pos)) ? True : False)
+
 
 /****************************************************************************
 **
@@ -166,14 +215,6 @@
  ((val) == True ? \
   (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
   (BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos)))
-
-
-/****************************************************************************
-**
-*F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
-*/
-#define IS_BLIST_REP(list)  \
-  ( T_BLIST <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_BLIST_SSORT+IMMUTABLE )
 
 
 /****************************************************************************
