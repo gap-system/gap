@@ -112,9 +112,6 @@ UInt            ReadStats (
 void            ReadFuncExpr1 (
     TypSymbolSet        follow );
 
-void            ReadFuncExpr0 (
-    TypSymbolSet        follow );
-
 void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
@@ -1638,29 +1635,6 @@ void ReadFuncExpr1 (
 
 /****************************************************************************
 **
-*F  ReadFuncExpr0(<follow>) . . . . . . . . . . .  read a function expression
-**
-**  'ReadFuncExpr0' reads  an abbreviated  function literal   expression.  In
-**  case of an error it skips all symbols up to one contained in <follow>.
-**
-**      <Function>      := '->' <Expr>
-*/
-void ReadFuncExpr0 (
-    TypSymbolSet        follow )
-{
-    volatile Obj        nams;           /* list of local variables names   */
-
-    /* make and push the new local variables list                          */
-    nams = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( nams, 0 );
-    STATE(CountNams)++;
-    ASS_LIST( STATE(StackNams), STATE(CountNams), nams );
-
-    ReadFuncExprBody(follow, nams, 0);
-}
-
-/****************************************************************************
-**
 *F  ReadLiteral( <follow>, <mode> ) . . . . . . . . . . . . . .  read an atom
 **
 **  'ReadLiteral' reads a  literal expression.  In  case of an error it skips
@@ -1779,10 +1753,6 @@ void ReadLiteral (
         STATE(Value)[0] = '.';
         STATE(Value)[1] = '\0';
         ReadLongNumber( follow );
-        break;
-
-    case S_MAPTO:
-        ReadFuncExpr0( follow );
         break;
 
     case S_LBRACE:
