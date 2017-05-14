@@ -17,6 +17,7 @@
 #ifndef GAP_OBJECTS_H
 #define GAP_OBJECTS_H
 
+#include <src/debug.h>
 
 /****************************************************************************
 **
@@ -38,8 +39,10 @@
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-#define IS_INTOBJ(o) \
-    ((Int)(o) & 0x01)
+static inline Int IS_INTOBJ(Obj o)
+{
+    return (Int)o & 0x01;
+}
 
 
 /****************************************************************************
@@ -49,8 +52,10 @@
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-#define IS_POS_INTOBJ(o) \
-    (((Int)(o) & 0x01) && ((Int)(o) > 0x01))
+static inline Int IS_POS_INTOBJ(Obj o)
+{
+    return ((Int)o & 0x01) && ((Int)o > 0x01);
+}
 
 
 /****************************************************************************
@@ -60,18 +65,10 @@
 **  'ARE_INTOBJS' returns 1 if the objects <o1> and <o2> are both (immediate)
 **  integer objects.
 */
-#define ARE_INTOBJS(o1,o2) \
-    ((Int)(o1) & (Int)(o2) & 0x01)
-
-
-/****************************************************************************
-**
-*F  INTOBJ_INT( <i> ) . . . . . . .  convert a C integer to an integer object
-**
-**  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
-*/
-#define INTOBJ_INT(i) \
-    ((Obj)(((UInt)(Int)(i) << 2) + 0x01))
+static inline Int ARE_INTOBJS(Obj o1, Obj o2)
+{
+    return (Int)o1 & (Int)o2 & 0x01;
+}
 
 
 /****************************************************************************
@@ -83,15 +80,30 @@
 /* Note that the C standard does not define what >> does here if the
  * value is negative. So we have to be careful if the C compiler
  * chooses to do a logical right shift. */
+static inline Int INT_INTOBJ(Obj o)
+{
+    GAP_ASSERT(IS_INTOBJ(o));
 #if HAVE_ARITHRIGHTSHIFT
-#define INT_INTOBJ(o) \
-    ((Int)(o) >> 2)
+    return (Int)o >> 2;
 #else
-#define INT_INTOBJ(o) \
-    (((Int)(o)-1) / 4)
+    return ((Int)o - 1) / 4;
 #endif
+}
 
 
+/****************************************************************************
+**
+*F  INTOBJ_INT( <i> ) . . . . . . .  convert a C integer to an integer object
+**
+**  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
+*/
+static inline Obj INTOBJ_INT(Int i)
+{
+    Obj o;
+    o = (Obj)(((UInt)i << 2) + 0x01);
+    GAP_ASSERT(INT_INTOBJ(o) == i);
+    return o;
+}
 
 /****************************************************************************
 **
