@@ -18,7 +18,7 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
-
+#include <src/plist.h>
 
 extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
 extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
@@ -33,17 +33,18 @@ extern  Obj             TYPE_LIST_HOM;
 **  'IS_LIST' returns a nonzero value if  the object <obj> is a list and zero
 **  otherwise.
 **
-**  Note that 'IS_LIST'  is a macro,  so do not  call it with arguments  that
-**  have side effects.
-**
 **  A package implementing  an ordinary list type <type>   must set the  flag
 **  'IsListFlag[<type>]'  for  this type to '1'.   A  package  implementing a
 **  vector type must set  it to '2'.  A  package implementing an matrix  type
 **  must set it to '3'.
 */
-#define IS_LIST(obj)    ((*IsListFuncs[ TNUM_OBJ( obj ) ])( obj ))
-
 extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+
+static inline Int IS_LIST(Obj obj)
+{
+    return (*IsListFuncs[TNUM_OBJ(obj)])(obj);
+}
+
 
 /****************************************************************************
 **
@@ -59,10 +60,12 @@ extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 **  instead it will check if the object HasIsSmallList and IsSmallList, or
 **  HasLength in which case Length will be checked
 */
+extern Int (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-#define IS_SMALL_LIST(obj)    ((*IsSmallListFuncs[ TNUM_OBJ( obj ) ])( obj ))
-
-extern  Int                (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+static inline Int IS_SMALL_LIST(Obj obj)
+{
+    return (*IsSmallListFuncs[TNUM_OBJ(obj)])(obj);
+}
 
 
 /****************************************************************************
@@ -70,18 +73,18 @@ extern  Int                (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 *F  LEN_LIST(<list>)  . . . . . . . . . . . . . . . . . . .  length of a list
 *V  LenListFuncs[<type>]  . . . . . . . . . . . . . table of length functions
 **
-**  'LEN_LIST' returns the logical length of the list <list>  as a C integer.
-**  An error is signalled if <list> is not a small list.
-**
 **  Note that  'LEN_LIST' is a  macro, so do  not call it with arguments that
 **  have side effects.
 **
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LenListFuncs[<type>]'.
 */
-#define LEN_LIST(list)  ((*LenListFuncs[ TNUM_OBJ(list) ])( list ))
-
 extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+
+static inline Int LEN_LIST(Obj list)
+{
+    return (*LenListFuncs[TNUM_OBJ(list)])(list);
+}
 
 
 /****************************************************************************
@@ -92,15 +95,15 @@ extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 **  'LENGTH' returns the logical length of the list <list>  as a GAP object
 **  An error is signalled if <list> is not a list.
 **
-**  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have side effects.
-**
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.
 */
-#define LENGTH(list)    ((*LengthFuncs[ TNUM_OBJ(list) ])( list ))
-
 extern  Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+
+static inline Obj LENGTH(Obj list)
+{
+    return (*LengthFuncs[TNUM_OBJ(list)])(list);
+}
 
 
 /****************************************************************************
