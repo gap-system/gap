@@ -2054,12 +2054,14 @@ int GAP_rl_func(int count, int key)
    if (len > n) {
       n++;
       m = ELM_LIST(res, n);
-      if IS_INTOBJ(m) rl_point = INT_INTOBJ(m)-1;
+      if (IS_INTOBJ(m))
+          rl_point = INT_INTOBJ(m) - 1;
    }
    if (len > n) {
       n++;
       m = ELM_LIST(res, n);
-      if IS_INTOBJ(m) rl_mark = INT_INTOBJ(m)-1;
+      if (IS_INTOBJ(m))
+          rl_mark = INT_INTOBJ(m) - 1;
    }
    return 0;
 }
