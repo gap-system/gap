@@ -4094,8 +4094,8 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
     Obj type;
     ll = LEN_MAT8BIT(ml);
     lr = LEN_MAT8BIT(mr);
-    wl = LEN_MAT8BIT(ELM_MAT8BIT(ml, 1));
-    wr = LEN_MAT8BIT(ELM_MAT8BIT(mr, 1));
+    wl = LEN_VEC8BIT(ELM_MAT8BIT(ml, 1));
+    wr = LEN_VEC8BIT(ELM_MAT8BIT(mr, 1));
 
     /* We have to track the cases where the result is not rectangular */
     if (((ll > lr) && (wr > wl)) ||
@@ -4173,8 +4173,8 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
 
     ll = LEN_MAT8BIT(ml);
     lr = LEN_MAT8BIT(mr);
-    wl = LEN_MAT8BIT(ELM_MAT8BIT(ml, 1));
-    wr = LEN_MAT8BIT(ELM_MAT8BIT(mr, 1));
+    wl = LEN_VEC8BIT(ELM_MAT8BIT(ml, 1));
+    wr = LEN_VEC8BIT(ELM_MAT8BIT(mr, 1));
 
     /* We have to track the cases where the result is not rectangular */
     if (((ll > lr) && (wr > wl)) ||
