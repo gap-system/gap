@@ -3450,10 +3450,30 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
 *F  * * * * * * *  special rep for matrices over these fields * * * * * * *
 */
 
-#define LEN_MAT8BIT(mat)                   INT_INTOBJ(ADDR_OBJ(mat)[1])
-#define SET_LEN_MAT8BIT(mat, l)            (ADDR_OBJ(mat)[1] = INTOBJ_INT(l))
-#define ELM_MAT8BIT(mat, i)                ADDR_OBJ(mat)[i+1]
-#define SET_ELM_MAT8BIT(mat, i, row)       (ADDR_OBJ(mat)[i+1] = row)
+static inline Int LEN_MAT8BIT(Obj mat)
+{
+    return INT_INTOBJ(ADDR_OBJ(mat)[1]);
+}
+static inline void SET_LEN_MAT8BIT(Obj mat, Int l)
+{
+    GAP_ASSERT(l >= 0);
+    GAP_ASSERT(l <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
+    ADDR_OBJ(mat)[1] = INTOBJ_INT(l);
+}
+
+static inline Obj ELM_MAT8BIT(Obj mat, Int i)
+{
+    GAP_ASSERT(i >= 1);
+    GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
+    return ADDR_OBJ(mat)[i + 1];
+}
+static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
+{
+    GAP_ASSERT(i >= 1);
+    GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
+    GAP_ASSERT(IS_LIST(row));
+    ADDR_OBJ(mat)[i + 1] = row;
+}
 
 /****************************************************************************
 **
