@@ -698,13 +698,15 @@ Obj             Cyclotomic (
                 /* is just the inverse transformation of 'ConvertToBase'   */
                 for ( i = 0; i < n; i += p ) {
                     cof = res[(i+n/p)%n];
-                    res[i] = INTOBJ_INT( - INT_INTOBJ(cof) );
                     if ( ! IS_INTOBJ(cof)
                       || (cof == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))) ) {
                         CHANGED_BAG( STATE(ResultCyc) );
                         cof = DIFF( INTOBJ_INT(0), cof );
                         res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
                         res[i] = cof;
+                    }
+                    else {
+                        res[i] = INTOBJ_INT( - INT_INTOBJ(cof) );
                     }
                     for ( k = i+n/p; k < i+n && eql; k += n/p )
                         res[k%n] = INTOBJ_INT(0);
@@ -975,7 +977,6 @@ Obj             AInvCyc (
     exs = EXPOS_CYC(op,len);
     exp = EXPOS_CYC(res,len);
     for ( i = 1; i < len; i++ ) {
-        prd = INTOBJ_INT( - INT_INTOBJ(cfs[i]) );
         if ( ! IS_INTOBJ( cfs[i] ) || 
                cfs[i] == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) ) {
             CHANGED_BAG( res );
@@ -984,6 +985,9 @@ Obj             AInvCyc (
             cfp = COEFS_CYC(res);
             exs = EXPOS_CYC(op,len);
             exp = EXPOS_CYC(res,len);
+        }
+        else {
+            prd = INTOBJ_INT( - INT_INTOBJ(cfs[i]) );
         }
         cfp[i] = prd;
         exp[i] = exs[i];
