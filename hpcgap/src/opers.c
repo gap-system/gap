@@ -491,6 +491,9 @@ static Obj UncheckedIS_SUBSET_FLAGS (
                 return False;
             }
         }
+        if ( len2 == 0 ) {
+            return True;
+        }
         if ( len2 < 3 ) {
 #ifdef COUNT_OPERS
             IsSubsetFlagsCalls2++;
