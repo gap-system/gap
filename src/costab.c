@@ -1473,8 +1473,11 @@ Obj FuncMakeCanonical (
                    (Int)TNAM_OBJ(rel), 0L );
         return 0;
     }
-    ptRel = &(ELM_PLIST(rel,1));
     leng  = LEN_PLIST(rel);
+    if (leng == 0) {
+        return 0;
+    }
+    ptRel = &(ELM_PLIST(rel, 1));
     leng1 = leng - 1;
 
     /*  cyclically reduce the relator, if necessary                        */
