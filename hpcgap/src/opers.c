@@ -678,10 +678,15 @@ Obj FuncAND_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
 
-    /* check the cache                                                     */
+    // check the cache
 #   ifdef AND_FLAGS_HASH_SIZE
         locked = (Obj) 0;
-        if ( INT_INTOBJ(flags1) < INT_INTOBJ(flags2) ) {
+        // We want to ensure if we calculate 'flags1 and flags2', then
+        // later do 'flags2 and flags1', we will get the value from the cache.
+        // Therefore we just compare the location of the Bag masterpointers
+        // for both flags (which doesn't change), and use the cache of the
+        // smaller.
+        if ( flags1 < flags2 ) {
             flagsX = flags2;
             if (!PreThreadCreation) {
               locked = flags1;
@@ -709,7 +714,7 @@ Obj FuncAND_FLAGS (
                 CHANGED_BAG(flags2);
             }
         }
-        hash = (UInt)INT_INTOBJ(flagsX);
+        hash = (UInt)flagsX;
         for ( i = 0;  i < 24;  i++ ) {
             hash2 = (hash + 97*i) % AND_FLAGS_HASH_SIZE;
             entry = ELM_PLIST( cache, 2*hash2+1 );
