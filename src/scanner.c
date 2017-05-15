@@ -1657,7 +1657,7 @@ static inline Char CharHexDigit( const Char ch ) {
     } else {
         return (ch - '0');
     }
-};
+}
 
 Char GetEscapedChar( void )
 {
