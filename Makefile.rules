@@ -147,15 +147,20 @@ GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
 # Enable warnings
-GAP_CPPFLAGS += -Wall -Wextra \
+GAP_CPPFLAGS += \
+	-Wall \
+	-Wextra \
+	-pedantic \
+	-Wshadow
+
+# ... disable some annoying warnings ...
+GAP_CPPFLAGS += \
 	-Wno-unused-parameter \
 	-Wno-sign-compare \
 	-Wno-implicit-fallthrough
 
-# ... and disable warnings about unknown warnings ...
-GAP_CPPFLAGS += \
-	-Wno-unknown-warning \
-	-Wno-unknown-warning-option
+# ... and disable warnings about unknown warnings for clang
+GAP_CPPFLAGS += -Wno-unknown-warning-option
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
