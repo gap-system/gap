@@ -1725,8 +1725,9 @@ static inline Obj CacheOper (
     UInt                i )
 {
     Obj cache = CACHE_OPER( oper, i );
+    UInt len;
     if ( cache == 0 ) {
-        UInt len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
+        len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
         CACHE_OPER( oper, i ) = cache;

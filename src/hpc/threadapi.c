@@ -2431,7 +2431,7 @@ static void PrintSemaphore(Obj obj)
   LockMonitor(ObjPtr(sem->monitor));
   count = sem->count;
   UnlockMonitor(ObjPtr(sem->monitor));
-  sprintf(buffer, "<semaphore %p: count = %ld>", sem, (long) count);
+  sprintf(buffer, "<semaphore %p: count = %ld>", (void *)sem, (long) count);
   Pr("%s", (Int) buffer, 0L);
 }
 
@@ -2441,7 +2441,7 @@ static void PrintChannel(Obj obj)
   Int size, waiting, capacity;
   char buffer[20];
   Pr("<channel ", 0L, 0L);
-  sprintf(buffer, "%p: ", channel);
+  sprintf(buffer, "%p: ", (void *)channel);
   Pr(buffer, 0L, 0L);
   LockChannel(channel);
   size = channel->size;
@@ -2466,7 +2466,7 @@ static void PrintBarrier(Obj obj)
   Int count, waiting;
   char buffer[20];
   Pr("<barrier ", 0L, 0L);
-  sprintf(buffer, "%p: ", barrier);
+  sprintf(buffer, "%p: ", (void *)barrier);
   Pr(buffer, 0L, 0L);
   LockBarrier(barrier);
   count = barrier->count;
@@ -2487,7 +2487,7 @@ static void PrintSyncVar(Obj obj)
     Pr("<initialized syncvar ", 0L, 0L);
   else
     Pr("<uninitialized syncvar ", 0L, 0L);
-  sprintf(buffer, "%p>", syncvar);
+  sprintf(buffer, "%p>", (void *)syncvar);
   Pr(buffer, 0L, 0L);
 }
 
@@ -2500,7 +2500,7 @@ static void PrintRegion(Obj obj)
   if (name) {
     Pr("<region: %s", (Int)(CSTR_STRING(name)), 0L);
   } else {
-    snprintf(buffer, 32, "<region %p", GetRegionOf(obj));
+    snprintf(buffer, 32, "<region %p", (void *)GetRegionOf(obj));
     Pr(buffer, 0L, 0L);
   }
   if (region && region->count_active) {

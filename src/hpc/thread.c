@@ -250,7 +250,7 @@ void RunThreadedMain(
   volatile int dummy[1];
   size_t amount;
   amount = ((uintptr_t) dummy) & ~TLS_MASK;
-  volatile void *p = alloca(((uintptr_t) dummy) &~TLS_MASK);
+  volatile char *p = alloca(((uintptr_t) dummy) &~TLS_MASK);
   volatile char *q;
   for (q = p + amount - 1; (void *)q >= (void *)p; q -= 1024) {
     /* touch memory */
