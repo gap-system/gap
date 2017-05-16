@@ -751,7 +751,6 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	HashUnlockShared(record);
 	return obj;
       } else { // AREC_W1
-        Obj result;
 	do {
 	  result = data[hash*2+1].obj;
 	} while (!result);

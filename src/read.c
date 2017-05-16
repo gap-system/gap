@@ -1808,6 +1808,14 @@ void ReadLiteral (
 **          |  <Literal>
 **          |  '(' <Expr> ')'
 */
+static const UInt LiteralExprStateMask =
+                          S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
+                          S_TILDE|S_REC|S_FUNCTION|
+#ifdef HPCGAP
+                          S_DO|
+#endif
+                          S_ATOMIC|S_FLOAT|S_DOT|S_MAPTO;
+
 void ReadAtom (
     TypSymbolSet        follow,
     Char                mode )
@@ -1822,13 +1830,7 @@ void ReadAtom (
         ReadIsBound( follow );
     }
     /* otherwise read a literal expression                                 */
-    else if (IS_IN(STATE(Symbol),S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_TILDE|S_REC|S_FUNCTION|
-#ifdef HPCGAP
-                          S_DO|
-#endif
-                          S_ATOMIC|S_FLOAT|S_DOT|S_MAPTO))
-    {
+    else if ( IS_IN(STATE(Symbol), LiteralExprStateMask) ) {
         ReadLiteral( follow, mode );
     }
 

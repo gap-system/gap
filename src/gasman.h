@@ -1196,7 +1196,7 @@ typedef struct
     int count_active; /* whether we counts number of (contended) locks */
     AtomicUInt locks_acquired;    /* number of times the lock was acquired successfully */
     AtomicUInt locks_contended;   /* number of failed attempts at acuiring the lock */
-    unsigned char readers[0];     /* this field extends with number of threads
+    unsigned char readers[];     /* this field extends with number of threads
                                      don't add any fields after it */
 } Region;
 

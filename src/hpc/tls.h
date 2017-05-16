@@ -227,7 +227,7 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
 static inline int IsMainThread()
 {
   return TLS(threadID) == 0;
-};
+}
 
 void InitializeTLS();
 

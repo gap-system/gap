@@ -944,7 +944,7 @@ void PrintInaccessibleObject(Obj obj)
   if (nameobj) {
     name = CSTR_STRING(nameobj);
   } else {
-    sprintf(buffer, "%p", region);
+    sprintf(buffer, "%p", (void *)region);
     name = buffer;
     Pr("<protected object in shared region %s (id: %d)>", (Int) name, (Int) obj);
     return;

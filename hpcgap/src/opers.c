@@ -1805,7 +1805,7 @@ static inline Obj CacheOper (
       cacheIndex = INT_INTOBJ(cache);
     if (cacheIndex > STATE(MethodCacheSize))
     {
-      UInt len = STATE(MethodCacheSize);
+      len = STATE(MethodCacheSize);
       while (cacheIndex > len)
         len *= 2;
       GROW_PLIST(STATE(MethodCache), len);
@@ -4902,15 +4902,15 @@ Obj DoVerboseMutableAttribute (
     do { \
         UInt name_len = GET_LEN_STRING(name); \
         UInt addon_len = sizeof(addon) - 1; \
-        char *tmp; \
+        char *ptr; \
         fname = NEW_STRING( name_len + addon_len + 2 ); \
         ImpliedWriteGuard(fname); \
-        tmp = CSTR_STRING(fname); \
-        memcpy( tmp, addon, addon_len ); tmp += addon_len; \
-        *tmp++ = '('; \
-        memcpy( tmp, CSTR_STRING(name), name_len ); tmp += name_len; \
-        *tmp++ = ')'; \
-        *tmp = 0; \
+        ptr = CSTR_STRING(fname); \
+        memcpy( ptr, addon, addon_len ); ptr += addon_len; \
+        *ptr++ = '('; \
+        memcpy( ptr, CSTR_STRING(name), name_len ); ptr += name_len; \
+        *ptr++ = ')'; \
+        *ptr = 0; \
         RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) ); \
     } while(0)
 
