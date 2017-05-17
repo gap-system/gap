@@ -555,5 +555,26 @@ DeclareGlobalFunction( "USER_HOME_EXPAND" );
 
 #############################################################################
 ##
+#O  FirstOp( <list>, <func> )
+#O  NumberOp( <C>, <func> )
+#O  ForAllOp( <C>, <func> )
+#O  ForAnyOp( <C>, <func> )
+#O  FilteredOp( <C>, <func> )
+##
+## Removed due to being unnecessary. Instead, First was turned into an
+## operation. If you are installing methods for this, install them for
+## First instead.
+##
+## Deprecated in GAP >= 4.9
+##
+DeclareSynonym( "FirstOp", First );
+DeclareSynonym( "NumberOp", Number );
+DeclareSynonym( "ForAllOp", ForAll );
+DeclareSynonym( "ForAnyOp", ForAny );
+DeclareSynonym( "FilteredOp", Filtered );
+
+
+#############################################################################
+##
 #E
 

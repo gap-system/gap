@@ -198,11 +198,11 @@ end);
 
 #############################################################################
 ##
-#M  NumberOp( <sl>, <func> )
+#M  Number( <sl>, <func> )
 ##
 
 
-InstallMethod(NumberOp, "sparse list", [IsSparseList, IsFunction],
+InstallMethod(Number, "sparse list", [IsSparseList, IsFunction],
         function(sl, func)
     local   ss,  n;
     ss := SparseStructureOfList(sl);
@@ -218,14 +218,14 @@ end);
 
 #############################################################################
 ##
-#M  ForAllOp( <sl>, <func> )
+#M  ForAll( <sl>, <func> )
 ##
 ##  This is a little more complicated than you might think, because the
 ##  default value may not actually appear anywhere in the list
 ##
 
 
-InstallMethod(ForAllOp, 
+InstallMethod(ForAll, 
         "sparse list", [IsSparseList, IsFunction],
         function(sl, func)
     local   ss;
@@ -236,13 +236,13 @@ end);
 
 #############################################################################
 ##
-#M  ForAnyOp( <sl>, <func> )
+#M  ForAny( <sl>, <func> )
 ##
 ##  This is a little more complicated than you might think, because the
 ##  default value may not actually appear anywhere in the list
 ##
 
-InstallMethod(ForAnyOp, 
+InstallMethod(ForAny, 
         "sparse list", [IsSparseList, IsFunction],
         function(sl, func)
     local   ss;

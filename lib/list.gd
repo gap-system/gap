@@ -1963,7 +1963,7 @@ DeclareGlobalFunction( "IteratorList" );
 ##
 ##  <#GAPDoc Label="First">
 ##  <ManSection>
-##  <Func Name="First" Arg='list, func'/>
+##  <Oper Name="First" Arg='list, func'/>
 ##
 ##  <Description>
 ##  <Ref Func="First"/> returns the first element of the list <A>list</A>
@@ -1993,23 +1993,7 @@ DeclareGlobalFunction( "IteratorList" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "First" );
-
-
-#############################################################################
-##
-#O  FirstOp( <list>, <func> )
-##
-##  <ManSection>
-##  <Oper Name="FirstOp" Arg='list, func'/>
-##
-##  <Description>
-##  <Ref Oper="FirstOp"/> is the operation called by <Ref Func="First"/>
-##  if <A>list</A> is not an internally represented list.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "First", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
