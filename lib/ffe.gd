@@ -323,7 +323,9 @@ DeclareGlobalFunction( "FFEFamily" );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
-
+if IsBound(HPCGAP) then
+    ShareSpecialObj( FAMS_FFE_LARGE );
+fi;
 
 #############################################################################
 ##
