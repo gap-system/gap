@@ -3189,11 +3189,6 @@ Obj NewOperation (
     ObjFunc             hdlr )
 {
     Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
 
     /* create the function                                                 */
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -3219,21 +3214,6 @@ Obj NewOperation (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
-    /* create caches and methods lists                                     */
-#ifdef  PREALLOCATE_TABLES
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-#ifdef HPCGAP
-        // FIXME: Is there a better solution for this?
-#else
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2)) );
-        CACHE_OPER( oper, i ) = cache;
-#endif
-        CHANGED_BAG(oper);
-    }
-#endif
-
     /* This isn't an attribute (yet) */
     SET_ENABLED_ATTR(oper, 0);
 
@@ -4664,11 +4644,6 @@ Obj NewConstructor (
     ObjFunc             hdlr )
 {
     Obj                 oper;
-#ifdef  PREALLOCATE_TABLES
-    Obj                 cache;
-    Obj                 methods;
-    UInt                i;
-#endif
 
     /* create the function                                                 */
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -4692,21 +4667,6 @@ Obj NewConstructor (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
-#ifdef  PREALLOCATE_TABLES
-    /* create caches and methods lists                                     */
-    for ( i = 0; i <= 7; i++ ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-#ifdef HPCGAP
-        // FIXME: Is there a better solution for this?
-#else
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? CACHE_SIZE * (i+1) : CACHE_SIZE * (1+1)) );
-        CACHE_OPER( oper, i ) = cache;
-#endif
-        CHANGED_BAG(oper);
-    }
-#endif
-
     /* return constructor                                                  */
     return oper;
 }
