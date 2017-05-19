@@ -2092,6 +2092,37 @@ DeclareOperation("BaseField",[IsObject]);
 ##
 DeclareGlobalFunction( "SimplexMethod" );
 
+#############################################################################
+##
+#O  RationalCanonicalFormTransform( <A> )
+##
+##  <#GAPDoc Label="Frobenius Normal Form">
+##  <ManSection>
+##  <Oper Name="RationalCanonicalFormTransform" Arg='A'/>
+##
+##  <Description>
+##  For a matrix <A>A</A> return a matrix <A>P</A> such that
+##  <M><A>A</A>^<A>P</A></M> is in rational canonical form (also called Frobenius normal form).
+##  The algorithm used is the basic textbook version and thus not of optimal complexity.
+##  <Example><![CDATA[
+##  gap> aa:=[ [ 0, -8, 12, 40, -36, 4, 0, 59, 15, -9 ], [ -2, -2, -2, 6, -11, 1, -1, 10, 1, 0 ],
+##  >   [ 1, 5, 0, -6, 12, -2, 0, -12, -4, 2 ], [ 0, 0, 0, 2, 0, 0, 0, 7, 0, 0 ],
+##  >   [ 0, 2, -3, -7, 8, -1, 0, -7, -3, 2 ], [ -5, -4, -6, 18, -30, 2, -2, 35, 5, -1 ],
+##  >   [ -1, -6, 6, 20, -28, 3, 0, 24, 10, -6 ], [ 0, 0, 0, -1, 0, 0, 0, -3, 0, 0 ],
+##  >   [ 0, 0, -1, -2, -2, 0, -1, -7, 0, 0 ], [ 0, -8, 9, 21, -36, 4, -2, 12, 12, -8 ] ];;
+##  gap> t:=RationalCanonicalFormTransform(aa);;
+##  gap> aa^t;
+##  [ [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ],
+##    [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ], [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ],
+##    [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 1 ], [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 1, 0, -1 ],
+##    [ 0, 0, 0, 0, 0, 0, 0, 0, 1, -1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "RationalCanonicalFormTransform" );
+
 
 #############################################################################
 ##

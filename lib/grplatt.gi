@@ -2184,7 +2184,7 @@ local G,	# group
 	until not c in C or Index(S,C)=cllen;
 
 	C:=ClosureGroup(C,c);
-	Info(InfoLattice,2,"New centralizing element of order ",o,
+	Info(InfoLattice,3,"New centralizing element of order ",o,
 			   ", Index=",Index(S,C));
 
       until Index(S,C)<=cllen;
@@ -2291,6 +2291,7 @@ end);
 ##
 #M  IntermediateSubgroups(<G>,<U>)
 ##
+# this should only be used for tiny index
 InstallMethod(IntermediateSubgroups,"blocks for coset operation",
   IsIdenticalObj, [IsGroup,IsGroup],0,
 function(G,U)
@@ -2359,30 +2360,38 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p;
     # find all maximals containing U
     m:=MaximalSubgroupClassReps(subs[i]);
     m:=Filtered(m,x->IndexNC(subs[i],U) mod IndexNC(subs[i],x)=0);
+
     Info(InfoLattice,1,"Subgroup ",i,", Order ",Size(subs[i]),": ",Length(m),
       " maxes");
     for j in m do
-      t:=RightTransversal(subs[i],Normalizer(subs[i],j)); # conjugates
+      Info(InfoLattice,2,"Max index ",Index(subs[i],j));
+      # maximals must be self-normalizing
+      if IsNormal(subs[i],j) then
+	t:=ContainingConjugates(subs[i],j,U:anormalizer:=subs[i]);
+      else
+	t:=ContainingConjugates(subs[i],j,U:anormalizer:=j);
+      fi;
+
       for k in t do
-        if ForAll(gens,x->k*x/k in j) then
-	  # U is contained in j^k
-	  c:=j^k;
-	  Assert(1,IsSubset(c,U));
-	  #is it U?
-	  if uind=IndexNC(G,c) then
-	    Add(incl,[0,i]);
+
+	# U is contained in the conjugate k[1]
+	c:=k[1];
+	Assert(1,IsSubset(c,U));
+	#is it U?
+	if uind=IndexNC(G,c) then
+	  Add(incl,[0,i]);
+	else
+	  # is it new?
+	  p:=PositionProperty(subs,x->IndexNC(G,x)=IndexNC(G,c) and
+	    ForAll(GeneratorsOfGroup(c),y->y in x));
+	  if p<>fail then 
+	    Add(incl,[p,i]);
 	  else
-	    # is it new?
-	    p:=PositionProperty(subs,x->IndexNC(G,x)=IndexNC(G,c) and
-	      ForAll(GeneratorsOfGroup(c),y->y in x));
-	    if p<>fail then 
-	      Add(incl,[p,i]);
-	    else
-	      Add(subs,c);
-	      Add(incl,[Length(subs),i]);
-	    fi;
+	    Add(subs,c);
+	    Add(incl,[Length(subs),i]);
 	  fi;
 	fi;
+
       od;
     od;
     i:=i+1;
@@ -2900,6 +2909,12 @@ InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
 local T,t,hom,inf,nam,i,aut;
+  # avoid the isomorphism test falling back
+  if ValueOption("cheap")=true and IsInt(ValueOption("intersize")) and
+  ValueOption("intersize")<=Size(G) then
+    return fail;
+  fi;
+
   T:=PerfectResiduum(G);
   inf:=DataAboutSimpleGroup(T);
   Info(InfoLattice,1,"Simple type: ",inf.idSimple.name);
@@ -2923,7 +2938,7 @@ local T,t,hom,inf,nam,i,aut;
       return fail;
     fi;
     Info(InfoLattice,3,"Trying Isomorphism");
-    hom:=IsomorphismGroups(G,UnderlyingGroup(t));
+    hom:=IsomorphismGroups(G,UnderlyingGroup(t):intersize:=Size(G));
     if hom=fail then
       Error("could not find isomorphism");
     fi;
@@ -2937,7 +2952,7 @@ local T,t,hom,inf,nam,i,aut;
     t:=TableOfMarks(Concatenation(nam,".",i[2]));
     if t<>fail and HasUnderlyingGroup(t) then
       Info(InfoLattice,3,"Trying Isomorphism");
-      hom:=IsomorphismGroups(G,UnderlyingGroup(t));
+      hom:=IsomorphismGroups(G,UnderlyingGroup(t):intersize:=Size(G));
       if hom<>fail then
 	Info(InfoLattice,1,"Found isomorphism ",Identifier(t));
 	return [hom,t];
@@ -3023,3 +3038,96 @@ local G,lim,cond,dosub,all,m,i,j,new,old;
   od;
   return all;
 end);
+
+#############################################################################
+##
+#F  ContainedConjugates( <G>, <A>, <B> )
+##
+InstallMethod(ContainedConjugates,"finite groups",IsFamFamFam,[IsGroup,IsGroup,IsGroup],0,
+function(G,A,B)
+local l,N,dc,gens,i;
+  if not IsFinite(G) and IsFinite(A) and IsFinite(B) then
+     TryNextMethod();
+  fi;
+  if not IsSubset(G,A) and IsSubset(G,B) then
+    Error("A and B must be subgroups of G");
+  fi;
+  if Size(A) mod Size(B)<>0 then
+    return []; # cannot be contained by order
+  fi;
+
+  l:=[];
+  N:=Normalizer(G,B);
+  if Index(G,N)<50000 then
+    dc:=DoubleCosetRepsAndSizes(G,N,A);
+    gens:=SmallGeneratingSet(B);
+    for i in dc do
+      if ForAll(gens,x->x^i[1] in A) then
+        Add(l,[B^i[1],i[1]]);
+      fi;
+    od;
+    return l;
+  else
+    l:=DoConjugateInto(G,A,B,false);
+    return List(l,x->[B^x,x]);
+  fi;
+end);
+
+#############################################################################
+##
+#F  ContainingConjugates( <G>, <A>, <B> )
+##
+InstallMethod(ContainingConjugates,"finite groups",IsFamFamFam,[IsGroup,IsGroup,IsGroup],0,
+function(G,A,B)
+local l,N,t,gens,i,c,o,rep,r,sub,gen;
+  if not IsFinite(G) and IsFinite(A) and IsFinite(B) then
+     TryNextMethod();
+  fi;
+  if not IsSubset(G,A) and IsSubset(G,B) then
+    Error("A and B must be subgroups of G");
+  fi;
+  if Size(A) mod Size(B)<>0 then
+    return []; # cannot be contained by order
+  fi;
+
+  l:=[];
+  N:=ValueOption("anormalizer");
+  if N=fail then
+    N:=Normalizer(G,A);
+  fi;
+  if Index(G,N)<50000 then
+    t:=RightTransversal(G,N);
+    gens:=SmallGeneratingSet(B);
+    for i in t do
+      if ForAll(gens,x->i*x/i in A) then
+        Add(l,[A^i,i]);
+      fi;
+    od;
+    return l;
+  else
+    r:=DoConjugateInto(G,A,B,false);
+    N:=Normalizer(G,B);
+    for i in r do
+      rep:=Inverse(i);
+      c:=A^rep;
+      Add(l,[c,rep]);
+      # N-orbit
+      o:=[c];
+      t:=[rep];
+      sub:=1;
+      while sub<=Length(o) do
+        for gen in SmallGeneratingSet(N) do
+	  c:=o[sub]^gen;
+	  if not c in o then
+	    Add(o,c);
+	    Add(t,t[sub]*gen);
+	    Add(l,[c,t[sub]*gen]);
+	  fi;
+	od;
+	sub:=sub+1;
+      od;
+    od;
+    return l;
+  fi;
+end);
+

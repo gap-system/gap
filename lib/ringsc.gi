@@ -476,8 +476,8 @@ local i, j, q;
 	  e:=e-q*l[j];
 	  e:=SCRingReducedModuli(moduli,e);
 	else
-	  # cannot eliminate
-	  if test=true then return false;fi;
+	  ## cannot eliminate
+	  #if test=true then return false;fi;
 	  e:=e-Int(q)*l[j];
 	  e:=SCRingReducedModuli(moduli,e);
 	  if test=0 and e[i]<>0 then
@@ -485,14 +485,15 @@ local i, j, q;
 	    return e;
 	  fi;
 	fi;
-      else
-	# no pivot -- not in
-	if test=true then 
-	  return false;
-	elif test=0 then
-	  # element will give new pivot
-	  return e;
-	fi;
+#      else
+#	# no pivot -- not in
+#	if test=true then 
+#          Error("GNU");
+#	  return false;
+#	elif test=0 then
+#	  # element will give new pivot
+#	  return e;
+#	fi;
       fi;
     fi;
     i:=i+1;
@@ -530,10 +531,10 @@ local i, j, q;
 	    return [e,ei];
 	  fi;
 	fi;
-      else
-	# no pivot -- not in
-	# element will give new pivot
-	return [e,ei];
+#      else
+#	# no pivot -- not in
+#	# element will give new pivot
+#	return [e,ei];
       fi;
     fi;
     i:=i+1;
@@ -554,8 +555,22 @@ local p, j, f, fj, g, q, gj, m, k, i;
       ei:=e[2];
       e:=e[1];
     fi;
-    p:=PositionNot(e,0);
-    if IsBound(pivots[p]) then
+
+    #p:=PositionNot(e,0);
+    # find the position of largest order
+    p:=-1;
+    f:=1;
+    for j in [1..Length(moduli)] do
+      if e[j]<>0 then
+        g:=moduli[j]/Gcd(moduli[j],e[j]); # local order
+        if g>f then
+          f:=g;
+          p:=j;
+        fi;
+      fi;
+    od;
+
+    if p>0 and IsBound(pivots[p]) then
       # reduction occured at pivot element -- need to reduce further
       j:=pivots[p];
       f:=l[j];
@@ -576,16 +591,8 @@ local p, j, f, fj, g, q, gj, m, k, i;
 	fi;
 	e:=SCRingReducedModuli(moduli,e);
       until e[p]=0;
-      # reduce modulo
-      if moduli[p]>0 then
-	m:=Gcdex(e[p],moduli[p]);
-	e:=e*m.coeff1;
-	e:=SCRingReducedModuli(moduli,e);
-	if imgs<>false then
-	  ei:=ei*m.coeff1;
-	fi;
-      fi;
-      #mjdify l
+
+      #modify l
       if f[p]<0 then f:=-f;fj:=-fj;fi;
       # clean out f
       for k in [p+1..Length(moduli)] do
@@ -617,6 +624,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
       od;
     fi;
   until IsZero(e) or not IsBound(pivots[p]);
+
   if not IsZero(e) then
     # reduce modulo:
     if moduli[p]>0 then
@@ -673,6 +681,7 @@ local fam, l, piv, m, new, i, j, p;
     m:=SCRHNFExtend(fam!.moduli,l,piv,ExtRepOfObj(i),false,false);
     l:=m[1];piv:=m[2];
   od;
+
   repeat
     new:=false;
     i:=1;
@@ -681,7 +690,7 @@ local fam, l, piv, m, new, i, j, p;
       while new=false and j<=Length(l) do
 	p:=ExtRepOfObj(ObjByExtRep(fam,l[i])*ObjByExtRep(fam,l[j]));
 	m:=SCRHNFExtend(fam!.moduli,l,piv,p,false,false);
-	new:=Length(m[1])>Length(l);
+	new:=Length(m[1])>Length(l) or m[1]<>l;
 	l:=m[1];piv:=m[2];
 
 	j:=j+1;
@@ -689,6 +698,21 @@ local fam, l, piv, m, new, i, j, p;
       i:=i+1;
     od;
   until new=false;
+
+  #RREF
+  if Length(l)>1 then
+    for i in [1..Length(piv)] do
+      if IsBound(piv[i]) then
+        for j in Difference([1..Length(l)],[piv[i]]) do
+	  p:=QuoInt(l[j][i],l[piv[i]][i]);
+	  if p>0 then
+	    l[j]:=l[j]-p*l[piv[i]];
+	  fi;
+	od;
+      fi;
+    od;
+  fi;
+
   return [l,piv,List(l,i->ObjByExtRep(fam,i))];
 end);
 
@@ -991,8 +1015,11 @@ end );
 InstallOtherMethod( IsTwoSidedIdealOp, "for rings and subrings",
     IsIdenticalObj, [ IsRing, IsRing ], 0,
 function( A, S )
-  return IsLeftIdeal( A, S ) and IsRightIdeal( A, S );
+local is;
   #T Check containment only once!
+  is:=IsLeftIdeal(A,S);
+  is:=is and IsRightIdeal(A,S);
+  return is;
 end );
 
 InstallMethod(Ideals,"for SC Rings",[IsSubringSCRing],

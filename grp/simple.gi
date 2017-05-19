@@ -1180,12 +1180,15 @@ local H,d,id,hom,field,C,dom,orbs;
      and Image(hom)=G then
     d:=IdentityMapping(G);
   else
+    # only force isomorphism if we really want it -- e.g. maximal subgroups
+    if ValueOption("classicepiuseiso")<>true then
+      return fail;
+    fi;
     # Image(hom) is the better group to search in, e.g. classes.
     d:=Image(hom);
     d!.actionHomomorphism:=hom;
-    return fail;
-    Error("QQQ");
-    d:=IsomorphismGroups(G,Image(hom));
+    # option to avoid infinite recursion
+    d:=IsomorphismGroups(G,Image(hom):classicepiuseiso:=false);
   fi;
   if d=fail then
     Error("inconsistent image 2");

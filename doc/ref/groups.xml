@@ -472,6 +472,10 @@ the series without destroying the properties of the series.
 <#Include Label="DotFileLatticeSubgroups">
 <#Include Label="MaximalSubgroupsLattice">
 <#Include Label="MinimalSupergroupsLattice">
+<#Include Label="LowLayerSubgroups">
+<#Include Label="ContainedConjugates">
+<#Include Label="ContainedConjugates">
+<#Include Label="ContainingConjugates">
 <#Include Label="RepresentativesPerfectSubgroups">
 <#Include Label="ConjugacyClassesPerfectSubgroups">
 <#Include Label="Zuppos">

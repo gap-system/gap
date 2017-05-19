@@ -589,7 +589,7 @@ end );
 #M  ActionHomomorphismConstructor( <xset>, <surj> )
 ##
 InstallGlobalFunction( ActionHomomorphismConstructor, function(arg)
-local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
+local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
 
     xset:=arg[1];surj:=arg[2];
     G := ActingDomain( xset );
@@ -605,6 +605,24 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     if IsPermGroup( G )  then
 	filter := filter and IsPermGroupGeneralMapping;
     fi;
+
+    blockacttest:=function()
+    local a,b,g,p;
+      D:=List(D,Immutable); # to store sorted
+      if not ForAll( D, IsList and IsSSortedList ) then
+        return false;
+      fi;
+      for b in D do
+	for g in GeneratorsOfGroup(G) do
+	  a:=b[1]^g;
+	  p:=PositionProperty(D,x->a in x);
+	  if OnSets(b,g)<>D[p] then
+	    return false;
+	  fi;
+	od;
+      od;
+      return true;
+    end;
 
     hom := rec(  );
     if Length(arg)>2 then
@@ -659,16 +677,16 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
 
 
     # test for action on disjoint sets of numbers, preserved by group -> blocks homomorphism
+
     elif not IsExternalSubset( xset )
          and IsPermGroup( G )
          and IsList( D )
-         and ForAll( D, IsList and IsSSortedList )
-	 and Length(D)>0 and Length(D[1])>0 and IsInt(D[1][1])
          and act = OnSets
-	 # disjointness test
-	 and Length(Set(Flat(D)))=Sum(List(D,Length))
+	 and Length(D)>0 and Length(D[1])>0 and IsInt(D[1][1])
+	 and Length(Set(List(D,Length)))=1 # all same length
+	 and Length(Set(Concatenation(D)))=Sum(List(D,Length)) # disjoint
 	 # preserved test
-	 and ForAll(D,b->ForAll(GeneratorsOfGroup(G),g->OnSets(b,g) in D))
+	 and blockacttest()
 	 then
         filter := IsBlocksHomomorphism;
         hom.reps := [  ];

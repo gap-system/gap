@@ -414,3 +414,6 @@ DeclareOperation("RightCosetsNC",[IsGroup,IsGroup]);
 ##
 DeclareGlobalFunction("IntermediateGroup");
 
+# forward declaration for recursive call.
+DeclareGlobalFunction("DoConjugateInto");
+

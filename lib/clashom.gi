@@ -177,6 +177,7 @@ local clT,	# classes T
       scj,	# size(centralizers[j])
       dsz,	# Divisors(scj);
       pper,
+      cbs,cbi,
       faillim,
       failcnt;
 
@@ -431,15 +432,31 @@ local clT,	# classes T
 
   Info(InfoHomClass,1,Length(reps)," classreps constructed");
 
+  # allow for faster sorting through color bars
+  cbs:=ShallowCopy(colourbar);
+  cbi:=[1..Length(cbs)];
+  SortParallel(cbs,cbi);
+
   # further fusion among bars
   newreps:=[];
   Info(InfoHomClass,2,"computing centralizers");
   k:=0;
   for bar in bars do
     k:=k+1;
+    #Info(InfoHomClass,4,"k-",k);
     CompletionBar(InfoHomClass,3,"Color Bars ",k/Length(bars));
     b1:=Immutable(bar[1]);
-    select:=Filtered([1..Length(reps)],i->colourbar[i]=b1);
+    select:=[];
+    i:=PositionSorted(cbs,b1);
+    if i<>fail and i<=Length(cbs) and cbs[i]=b1 then
+      AddSet(select,cbi[i]);
+      while i<Length(cbs) and cbs[i+1]=b1 do
+	i:=i+1;
+        AddSet(select,cbi[i]);
+      od;
+    fi;
+    #Assert(1,select=Filtered([1..Length(reps)],i->colourbar[i]=b1));
+
     if Length(select)>1 then
       Info(InfoHomClass,2,"test ",Length(select)," classes for fusion");
     fi;

@@ -575,7 +575,7 @@ local id,m,epi,cnt,h;
     elif id.idSimple.series="L" then
       m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
       if m<>fail then
-	epi:=EpimorphismFromClassical(G);
+	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true);
 	if epi<>fail then
 	  m:=List(m,x->SubgroupNC(Range(epi),
 	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));

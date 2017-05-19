@@ -160,7 +160,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
      Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
      maps:=List(sel,x->InducedAutomorphism(rep,autos[x]));
      #for v in maps do SetIsBijective(v,true); od;
-     if ForAll(maps,IsConjugatorAutomorphism) then
+     if ForAll(maps,x->IsConjugatorAutomorphism(x:cheap)) then
         # the representation extends
         v:=List( maps, ConjugatorOfConjugatorIsomorphism );
         w:=ClosureGroup(Gi,v);
@@ -205,7 +205,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
                 4*NrMovedPoints(G));
   else
     a:=tryrep(IdentityMapping(G),4*NrMovedPoints(G));
-    if a=fail and ForAll(autos,IsConjugatorAutomorphism) then
+    if a=fail and ForAll(autos,x->IsConjugatorAutomorphism(x:cheap)) then
       a:=tryrep(SmallerDegreePermutationRepresentation(G),4*NrMovedPoints(G));
     fi;
   fi;
