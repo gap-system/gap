@@ -204,8 +204,7 @@ Int             GrowPlist (
 **     its tnum BEFORE any element of it is examined.
 **
 **     
-**     All of this is horribly thread-unsafe!
-
+**     FIXME HPC-GAP: All of this is horribly thread-unsafe!
 **
 */
 
