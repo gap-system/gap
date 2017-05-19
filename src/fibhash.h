@@ -3,7 +3,7 @@
 
 #include <gen/config.h>
 
-#if !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
+#if !defined(SIZEOF_VOID_P)
 #error Require SIZEOF_VOID_P to be defined
 #endif
 

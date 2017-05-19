@@ -53,10 +53,7 @@
 
 #if SIZEOF_VOID_P == 8
 #define USE_NEWSHAPE
-#elif !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
-/* If SIZEOF_VOID_P has not been defined, and we are not currently
-   re-making the dependency list (via cnf/Makefile), then trigger
-   an error. */
+#elif !defined(SIZEOF_VOID_P)
 #error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
 #endif
 
