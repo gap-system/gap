@@ -552,6 +552,19 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
+
+/****************************************************************************
+**
+*F  SET_TYPE_OBJ( <obj>, <kind> ) . . . . . . . . . . . set kind of an object
+**
+**  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
+*/
+#define SET_TYPE_OBJ(obj, kind) \
+  ((*SetTypeObjFuncs[ TNUM_OBJ(obj) ])( obj, kind ))
+
+extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+
+
 /****************************************************************************
 **
 
@@ -857,11 +870,7 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-#ifdef HPCGAP
 extern void SetTypeDatObj( Obj obj, Obj type );
-#else
-#define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
-#endif
 
 
 /****************************************************************************

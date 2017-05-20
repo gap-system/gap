@@ -104,7 +104,6 @@ Obj FamilyObjHandler (
 
 /****************************************************************************
 **
-
 *F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TYPE_OBJ' returns the type of the object <obj>.
@@ -121,17 +120,49 @@ Obj TypeObjError (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  SET_TYPE_OBJ( <obj> )  . . . . . . . . . . . . . . set type of an object
+**
+**  'SET_TYPE_OBJ' sets the type of the object <obj>.
+*/
+
+void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj type );
+
+void SetTypeObjError ( Obj obj, Obj type )
+{
+    ErrorQuit( "Panic: cannot change type of object of type '%s'",
+               (Int)TNAM_OBJ(obj), 0L );
+    return;
+}
+
 
 /****************************************************************************
 **
 *F  TypeObjHandler( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
+#ifndef WARD_ENABLED
 Obj TypeObjHandler (
     Obj                 self,
     Obj                 obj )
 {
     return TYPE_OBJ( obj );
 }
+#endif
+
+/****************************************************************************
+**
+*F  SetTypeObjHandler( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
+*/
+Obj SetTypeObjHandler (
+    Obj                 self,
+    Obj                 obj,
+    Obj                 type )
+{
+    SET_TYPE_OBJ( obj, type );
+    return (Obj) 0;
+}
+
 
 
 /****************************************************************************
@@ -1109,11 +1140,23 @@ void PrintPathError (
 
 *F  TypeComObj( <obj> ) . . . . . . . . . . function version of 'TYPE_COMOBJ'
 */
+#ifndef WARD_ENABLED
 Obj             TypeComObj (
     Obj                 obj )
 {
-    return TYPE_COMOBJ( obj );
+    Obj result = TYPE_COMOBJ( obj );
+    MEMBAR_READ();
+    return result;
 }
+
+void SetTypeComObj( Obj obj, Obj type)
+{
+    ReadGuard(obj);
+    MEMBAR_WRITE();
+    TYPE_COMOBJ(obj) = type;
+    CHANGED_BAG(obj);
+}
+#endif
 
 
 /*****************************************************************************
@@ -1205,6 +1248,21 @@ Obj             TypeDatObj (
     Obj                 obj )
 {
     return TYPE_DATOBJ( obj );
+}
+
+void SetTypeDatObj( Obj obj, Obj type)
+{
+    TYPE_DATOBJ(obj) = type;
+#ifdef HPCGAP
+    if (TNUM_OBJ(obj) == T_DATOBJ &&
+        !IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
+      if (ReadOnlyDatObjs)
+        MakeBagReadOnly(obj);
+      else
+        MakeBagPublic(obj);
+    }
+#endif
+    CHANGED_BAG(obj);
 }
 
 
@@ -1603,6 +1661,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "TYPE_OBJ", 1, "obj",
       TypeObjHandler, "src/objects.c:TYPE_OBJ" },
 
+    { "SET_TYPE_OBJ", 2, "obj, type",
+      SetTypeObjHandler, "src/objects.c:SET_TYPE_OBJ" },
+
     { "FAMILY_OBJ", 1, "obj",
       FamilyObjHandler, "src/objects.c:FAMILY_OBJ" },
 
@@ -1682,11 +1743,16 @@ static Int InitKernel (
 
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         TypeObjFuncs[ t ] = TypeObjError;
+        SetTypeObjFuncs [ t] = SetTypeObjError;
     }
 
     TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
     TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
+
+    SetTypeObjFuncs [ T_COMOBJ ] = SetTypeComObj;
+    SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
+    SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
 
     /* SPARE TNUMs install placeholder entries for easier
        debugging. Packages that use these should overwrite the entries */
