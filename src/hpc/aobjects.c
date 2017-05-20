@@ -988,29 +988,6 @@ Obj ShallowCopyARecord(Obj obj)
 
 Obj CopyARecord(Obj obj, Int mutable)
 {
-#if 0
-  UInt i, len;
-  Obj result;
-  Obj copied = TLS(CopiedObjs);
-  if (copied)
-  {
-    len = LEN_PLIST(copied);
-    for (i=1; i<=len; i+=2) {
-      if (ELM_PLIST(copied, i) == obj)
-        return ELM_PLIST(copied, i+1);
-    }
-  }
-  else
-  {
-    len = 0;
-    TLS(CopiedObjs) = copied = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(copied, 2);
-  }
-  result = ShallowCopyARecord(obj);
-  SET_ELM_PLIST(copied, len+1, obj);
-  SET_ELM_PLIST(copied, len+2, result);
-  return result;
-#endif
   return obj;
 }
 
