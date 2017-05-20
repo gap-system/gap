@@ -593,6 +593,18 @@ extern void MakeImmutable( Obj obj );
 
 /****************************************************************************
 **
+*F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
+**
+**  Same effect as MakeImmutable( <obj> ), but checks first that all
+**  subobjects lie in a writable region.
+*/
+
+#ifdef HPCGAP
+extern void CheckedMakeImmutable( Obj obj );
+#endif
+
+/****************************************************************************
+**
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
@@ -602,6 +614,20 @@ extern void MakeImmutable( Obj obj );
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObj( <obj> ) . . . does an object have a mutable state
+**
+**  This function returns   1 if the object  <obj> has a mutable state, i.e.
+**  if its internal representation can change even though its outwardly
+**  visible properties do not, e.g. through code that transparently
+**  reorganizes its structure.
+*/
+
+#ifdef HPCGAP
+extern Int IsInternallyMutableObj(Obj obj);
+#endif
 
 /****************************************************************************
 **
