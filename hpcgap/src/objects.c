@@ -369,21 +369,19 @@ Obj CopyObj (
     Obj                 obj,
     Int                 mut )
 {
-#ifdef SINGLE_THREADED_COPY_OBJ
+#ifdef HPCGAP
+    return CopyReachableObjectsFrom(obj, 0, 0, !mut);
+#else
     Obj                 new;            /* copy of <obj>                   */
 
-    STATE(CopiedObjs) = NULL;
     /* make a copy                                                         */
     new = COPY_OBJ( obj, mut );
 
     /* clean up the marks                                                  */
     CLEAN_OBJ( obj );
-    STATE(CopiedObjs) = NULL;
 
     /* return the copy                                                     */
     return new;
-#else
-    return CopyReachableObjectsFrom(obj, 0, 0, !mut);
 #endif
 }
 
@@ -772,9 +770,6 @@ Obj ImmutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
-#ifdef SINGLE_THREADED_COPY_OBJ
-    WriteGuard(obj);
-#endif
     return CopyObj( obj, 0 );
 }
 
@@ -787,9 +782,6 @@ Obj MutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
-#ifdef SINGLE_THREADED_COPY_OBJ
-    WriteGuard(obj);
-#endif
     return CopyObj( obj, 1 );
 }
 
