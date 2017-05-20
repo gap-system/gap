@@ -150,7 +150,6 @@ GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 GAP_CPPFLAGS += \
 	-Wall \
 	-Wextra \
-	-pedantic \
 	-Wshadow
 
 # ... disable some annoying warnings ...
