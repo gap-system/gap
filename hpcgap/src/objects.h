@@ -899,11 +899,7 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-#ifdef HPCGAP
 extern void SetTypeDatObj( Obj obj, Obj type );
-#else
-#define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
-#endif
 
 
 /****************************************************************************

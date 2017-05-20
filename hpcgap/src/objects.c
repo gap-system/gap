@@ -107,7 +107,6 @@ Obj FamilyObjHandler (
 
 /****************************************************************************
 **
-
 *F  TYPE_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . type of an object
 **
 **  'TYPE_OBJ' returns the type of the object <obj>.
@@ -126,16 +125,16 @@ Obj TypeObjError (
 
 /****************************************************************************
 **
-*F  SET_TYPE_OBJ( <obj> )  . . . . . . . . . . . . . . set kind of an object
+*F  SET_TYPE_OBJ( <obj> )  . . . . . . . . . . . . . . set type of an object
 **
-**  'SET_TYPE_OBJ' sets the kind of the object <obj>.
+**  'SET_TYPE_OBJ' sets the type of the object <obj>.
 */
 
-void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj type );
 
-void SetTypeObjError ( Obj obj, Obj kind )
+void SetTypeObjError ( Obj obj, Obj type )
 {
-    ErrorQuit( "Panic: cannot change kind of object of type '%s'",
+    ErrorQuit( "Panic: cannot change type of object of type '%s'",
                (Int)TNAM_OBJ(obj), 0L );
     return;
 }
@@ -156,14 +155,14 @@ Obj TypeObjHandler (
 
 /****************************************************************************
 **
-*F  SetTypeObjHandler( <self>, <obj>, <kind> ) . . handler for 'SET_TYPE_OBJ'
+*F  SetTypeObjHandler( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
 */
 Obj SetTypeObjHandler (
     Obj                 self,
     Obj                 obj,
-    Obj                 kind )
+    Obj                 type )
 {
-    SET_TYPE_OBJ( obj, kind );
+    SET_TYPE_OBJ( obj, type );
     return (Obj) 0;
 }
 
@@ -1237,11 +1236,11 @@ Obj             TypeComObj (
     return result;
 }
 
-void SetTypeComObj( Obj obj, Obj kind)
+void SetTypeComObj( Obj obj, Obj type)
 {
     ReadGuard(obj);
     MEMBAR_WRITE();
-    TYPE_COMOBJ(obj) = kind;
+    TYPE_COMOBJ(obj) = type;
     CHANGED_BAG(obj);
 }
 #endif
@@ -1274,6 +1273,7 @@ Obj SET_TYPE_COMOBJ_Handler (
     Obj                 obj,
     Obj                 type )
 {
+#ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
         MEMBAR_WRITE();
@@ -1291,6 +1291,11 @@ Obj SET_TYPE_COMOBJ_Handler (
         CHANGED_BAG( obj );
         break;
     }
+#else
+    TYPE_COMOBJ( obj ) = type;
+    RetypeBag( obj, T_COMOBJ );
+    CHANGED_BAG( obj );
+#endif
     return obj;
 }
 
@@ -1309,16 +1314,14 @@ Obj TypePosObj (
     return result;
 }
 
-void SetTypePosObj( Obj obj, Obj kind)
+void SetTypePosObj( Obj obj, Obj type)
 {
     ReadGuard(obj);
     MEMBAR_WRITE();
-    TYPE_POSOBJ(obj) = kind;
+    TYPE_POSOBJ(obj) = type;
     CHANGED_BAG(obj);
 }
 #endif
-
-
 
 
 /****************************************************************************
@@ -1348,6 +1351,7 @@ Obj SET_TYPE_POSOBJ_Handler (
     Obj                 obj,
     Obj                 type )
 {
+#ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
       case T_APOSOBJ:
       case T_ALIST:
@@ -1366,6 +1370,11 @@ Obj SET_TYPE_POSOBJ_Handler (
         CHANGED_BAG( obj );
         break;
     }
+#else
+    TYPE_POSOBJ( obj ) = type;
+    RetypeBag( obj, T_POSOBJ );
+    CHANGED_BAG( obj );
+#endif
     return obj;
 }
 
@@ -1400,9 +1409,10 @@ Obj             TypeDatObj (
     return TYPE_DATOBJ( obj );
 }
 
-void SetTypeDatObj( Obj obj, Obj kind)
+void SetTypeDatObj( Obj obj, Obj type)
 {
-    TYPE_DATOBJ(obj) = kind;
+    TYPE_DATOBJ(obj) = type;
+#ifdef HPCGAP
     if (TNUM_OBJ(obj) == T_DATOBJ &&
         !IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
       if (ReadOnlyDatObjs)
@@ -1410,10 +1420,9 @@ void SetTypeDatObj( Obj obj, Obj kind)
       else
         MakeBagPublic(obj);
     }
+#endif
     CHANGED_BAG(obj);
 }
-
-
 
 
 /*****************************************************************************
@@ -1880,7 +1889,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "TYPE_OBJ", 1, "obj",
       TypeObjHandler, "src/objects.c:TYPE_OBJ" },
 
-    { "SET_TYPE_OBJ", 2, "obj, kind",
+    { "SET_TYPE_OBJ", 2, "obj, type",
       SetTypeObjHandler, "src/objects.c:SET_TYPE_OBJ" },
 
     { "FAMILY_OBJ", 1, "obj",

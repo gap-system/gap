@@ -796,14 +796,12 @@ Obj TypePlistFfe (
 *F  SetTypePlistToPosObj(<list>, <kind>) .  convert list to positional object
 **
 */
-
 void SetTypePlistToPosObj(Obj list, Obj kind)
 {
-  TYPE_POSOBJ(list) = kind;
-  RetypeBag(list, T_POSOBJ);
-  CHANGED_BAG(list);
+    TYPE_POSOBJ(list) = kind;
+    RetypeBag(list, T_POSOBJ);
+    CHANGED_BAG(list);
 }
-
 
 /****************************************************************************
 **
@@ -4543,11 +4541,10 @@ static Int InitKernel (
     TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSortImm;
     TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmptyMut;
     TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmptyImm;
-#ifdef HPCGAP
+
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
-        SetTypeObjFuncs[ t1 ]             = SetTypePlistToPosObj;
+        SetTypeObjFuncs[ t1 ] = SetTypePlistToPosObj;
     }
-#endif
     
     for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_RECT_SSORT; t1 += 2 ) {
         TypeObjFuncs[ t1            ] = TypePlistHom;
