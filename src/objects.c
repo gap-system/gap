@@ -44,7 +44,7 @@
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-//#include <src/hpc/traverse.h>            /* object traversal                */
+#include <src/hpc/traverse.h>           /* object traversal */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/util.h>
@@ -65,10 +65,17 @@ static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 */
 Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 {
+#ifdef HPCGAP
+    HashLock(0);
+#endif
+
     if (lastFreePackageTNUM > LAST_PACKAGE_TNUM)
         return -1;
 
     Int tnum = lastFreePackageTNUM++;
+#ifdef HPCGAP
+    HashUnlock(0);
+#endif
 
     InfoBags[tnum].name = name;
     TypeObjFuncs[tnum] = typeObjFunc;
@@ -191,6 +198,10 @@ Int IsMutableObjError (
 Int IsMutableObjObject (
     Obj                 obj )
 {
+#ifdef HPCGAP
+    if (RegionBag(obj) == ReadOnlyRegion)
+        return 0;
+#endif
     return (DoFilter( IsMutableObjFilt, obj ) == True);
 }
 
@@ -205,6 +216,32 @@ Obj IsMutableObjHandler (
 {
     return (IS_MUTABLE_OBJ( obj ) ? True : False);
 }
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObjHandler(<self>, <obj>)  -- 'IS_INTERNALLY_MUTABLE_OBJ'
+*/
+
+#ifdef HPCGAP
+
+Obj IsInternallyMutableObjFilt;
+
+Obj IsInternallyMutableObjHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True) ? True : False;
+}
+
+Int IsInternallyMutableObj(Obj obj) {
+    return TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True;
+}
+
+#endif
 
 
 /****************************************************************************
@@ -343,6 +380,9 @@ Obj CopyObj (
     Obj                 obj,
     Int                 mut )
 {
+#ifdef HPCGAP
+    return CopyReachableObjectsFrom(obj, 0, 0, !mut);
+#else
     Obj                 new;            /* copy of <obj>                   */
 
     /* make a copy                                                         */
@@ -353,6 +393,7 @@ Obj CopyObj (
 
     /* return the copy                                                     */
     return new;
+#endif
 }
 
 
@@ -777,6 +818,15 @@ void MakeImmutable( Obj obj )
     }
 }
 
+#ifdef HPCGAP
+void CheckedMakeImmutable( Obj obj )
+{
+  if (!PreMakeImmutableCheck(obj))
+    ErrorQuit("MakeImmutable: Argument has inaccessible subobjects", 0L, 0L);
+  MakeImmutable(obj);
+}
+#endif
+
 void MakeImmutableError( Obj obj)
 {
   ErrorQuit("No make immutable function installed for a %s",
@@ -812,14 +862,41 @@ void MakeImmutablePosObj( Obj obj)
   
 }
 
+#ifdef HPCGAP
+// HPCGAP-HACK:
+// There is a considerable amount of library code that currently
+// relies on being able to modify immutable data objects; in order
+// to not break all of that, MakeImmutableDatObj() makes immutable
+// data objects public, not read-only if they are not internally
+// mutable. Note that this is potentially unsafe if these objects
+// are shared between threads and then modified by kernel code.
+//
+// By setting the environment variable GAP_READONLY_DATOBJS, one
+// can restore the old behavior in order to find and debug the
+// offending code.
+static int ReadOnlyDatObjs = 0;
+#endif
+
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+#ifdef HPCGAP
+  if (!IsInternallyMutableObj(obj)) {
+    if (ReadOnlyDatObjs)
+      MakeBagReadOnly(obj);
+    else
+      MakeBagPublic(obj);
+  }
+#endif
 }
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
 {
+#ifdef HPCGAP
+  CheckedMakeImmutable(obj);
+#else
   MakeImmutable(obj);
+#endif
   return obj;
 }
 
@@ -874,6 +951,31 @@ static inline UInt IS_MARKED( Obj obj )
       return 1;
   return 0;
 }
+
+#ifdef HPCGAP
+static void PrintInaccessibleObject(Obj obj)
+{
+  Char buffer[20];
+  Char *name;
+  Region *region;
+  Obj nameobj;
+
+  region = REGION(obj);
+  if (!region)
+    nameobj = PublicRegionName; /* this should not happen, but let's be safe */
+  else
+    nameobj = GetRegionName(region);
+  if (nameobj) {
+    name = CSTR_STRING(nameobj);
+  } else {
+    sprintf(buffer, "%p", (void *)region);
+    name = buffer;
+    Pr("<protected object in shared region %s (id: %d)>", (Int) name, (Int) obj);
+    return;
+  }
+  Pr("<protected '%s' object (id: %d)>", (Int) name, (Int) obj);
+}
+#endif
      
 #define MARK(obj)     do {} while (0)
 #define UNMARK(obj)   do {} while (0)
@@ -887,20 +989,18 @@ static UInt LastPV = 0; /* This variable contains one of the values
 			   PrintObj or ViewObj still open (0), or the
 			   innermost such is Print (1) or View (2) */
 
+#ifdef HPCGAP
 /* On-demand creation of the PrintObj stack */
 void InitPrintObjStack()
 {
-    /* This is taken from HPC-GAP and does not work like this in GAP
-       since it tries to keep pointers into GASMAN bags
-    InitGlobalBag(&STATE(PrintObjThissObj), "objects.c:PrintObjThissObj");
-    InitGlobalBag(&STATE(PrintObjIndicesObj), "objects.c:PrintObjIndicesObj");
-
+  if (!STATE(PrintObjThiss)) {
     STATE(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
     STATE(PrintObjThiss) = ADDR_OBJ(STATE(PrintObjThissObj))+1;
     STATE(PrintObjIndicesObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
     STATE(PrintObjIndices) = (Int *)(ADDR_OBJ(STATE(PrintObjIndicesObj))+1);
-    */
+  }
 }
+#endif
     
 void            PrintObj (
     Obj                 obj )
@@ -921,6 +1021,13 @@ void            PrintObj (
         STATE(PrintObjDepth) = i;
     }
 
+#if defined(HPCGAP) && !defined(WARD_ENABLED)
+   if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
+     PrintInaccessibleObject(obj);
+     return;
+   }
+#endif
+
     /* First check if <obj> is actually the current object being Viewed
        Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
 
@@ -930,7 +1037,11 @@ void            PrintObj (
 
     /* if <obj> is a subobject, then mark and remember the superobject
        unless ViewObj has done that job already */
-    
+
+#ifdef HPCGAP
+    InitPrintObjStack();
+#endif
+
     if ( !fromview  && 0 < STATE(PrintObjDepth) ) {
         if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
         STATE(PrintObjThiss)[STATE(PrintObjDepth)-1]   = STATE(PrintObjThis);
@@ -1048,11 +1159,22 @@ void            ViewObj (
     /* No check for interrupts here, viewing should not take so long that
        it is necessary */
 
+#if defined(HPCGAP) && !defined(WARD_ENABLED)
+   if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
+     PrintInaccessibleObject(obj);
+     return;
+   }
+#endif
+
+
     lastPV = LastPV;
     LastPV = 2;
     
     /* if <obj> is a subobject, then mark and remember the superobject     */
 
+#ifdef HPCGAP
+    InitPrintObjStack();
+#endif
 
     if ( 0 < STATE(PrintObjDepth) ) {
         if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
@@ -1145,14 +1267,18 @@ Obj             TypeComObj (
     Obj                 obj )
 {
     Obj result = TYPE_COMOBJ( obj );
+#ifdef HPCGAP
     MEMBAR_READ();
+#endif
     return result;
 }
 
 void SetTypeComObj( Obj obj, Obj type)
 {
+#ifdef HPCGAP
     ReadGuard(obj);
     MEMBAR_WRITE();
+#endif
     TYPE_COMOBJ(obj) = type;
     CHANGED_BAG(obj);
 }
@@ -1161,13 +1287,23 @@ void SetTypeComObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_COMOBJ_Hander( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
+*F  IS_COMOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
 Obj             IS_COMOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef HPCGAP
+    switch (TNUM_OBJ(obj)) {
+      case T_COMOBJ:
+      case T_ACOMOBJ:
+        return True;
+      default:
+        return False;
+    }
+#else
     return (TNUM_OBJ(obj) == T_COMOBJ ? True : False);
+#endif
 }
 
 
@@ -1180,9 +1316,29 @@ Obj SET_TYPE_COMOBJ_Handler (
     Obj                 obj,
     Obj                 type )
 {
+#ifdef HPCGAP
+    switch (TNUM_OBJ(obj)) {
+      case T_PREC:
+        MEMBAR_WRITE();
+        TYPE_COMOBJ( obj ) = type;
+        RetypeBag( obj, T_COMOBJ );
+        CHANGED_BAG( obj );
+        break;
+      case T_COMOBJ:
+        SetTypeComObj(obj, type);
+        break;
+      case T_AREC:
+      case T_ACOMOBJ:
+        SET_TYPE_OBJ( obj, type );
+        RetypeBag( obj, T_ACOMOBJ );
+        CHANGED_BAG( obj );
+        break;
+    }
+#else
     TYPE_COMOBJ( obj ) = type;
     RetypeBag( obj, T_COMOBJ );
     CHANGED_BAG( obj );
+#endif
     return obj;
 }
 
@@ -1191,17 +1347,27 @@ Obj SET_TYPE_COMOBJ_Handler (
 **
 *F  TypePosObj( <obj> ) . . . . . . . . . . function version of 'TYPE_POSOBJ'
 */
+#ifndef WARD_ENABLED
 Obj TypePosObj (
     Obj                 obj )
 {
-    return TYPE_POSOBJ( obj );
+    Obj result = TYPE_POSOBJ( obj );
+#ifdef HPCGAP
+    MEMBAR_READ();
+#endif
+    return result;
 }
 
 void SetTypePosObj( Obj obj, Obj type)
 {
+#ifdef HPCGAP
+    ReadGuard(obj);
+    MEMBAR_WRITE();
+#endif
     TYPE_POSOBJ(obj) = type;
     CHANGED_BAG(obj);
 }
+#endif
 
 
 /****************************************************************************
@@ -1212,7 +1378,15 @@ Obj IS_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
-    return (TNUM_OBJ(obj) == T_POSOBJ ? True : False);
+   switch (TNUM_OBJ(obj)) {
+      case T_POSOBJ:
+#ifdef HPCGAP
+      case T_APOSOBJ:
+#endif
+        return True;
+      default:
+        return False;
+    }
 }
 
 
@@ -1225,9 +1399,30 @@ Obj SET_TYPE_POSOBJ_Handler (
     Obj                 obj,
     Obj                 type )
 {
+#ifdef HPCGAP
+    switch (TNUM_OBJ(obj)) {
+      case T_APOSOBJ:
+      case T_ALIST:
+      case T_FIXALIST:
+        SET_TYPE_OBJ( obj, type );
+        RetypeBag( obj, T_APOSOBJ );
+        CHANGED_BAG( obj );
+        break;
+      case T_POSOBJ:
+        SetTypePosObj( obj, type );
+        break;
+      default:
+        MEMBAR_WRITE();
+        TYPE_POSOBJ( obj ) = type;
+        RetypeBag( obj, T_POSOBJ );
+        CHANGED_BAG( obj );
+        break;
+    }
+#else
     TYPE_POSOBJ( obj ) = type;
     RetypeBag( obj, T_POSOBJ );
     CHANGED_BAG( obj );
+#endif
     return obj;
 }
 
@@ -1240,7 +1435,18 @@ Obj LEN_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef HPCGAP
+    switch (TNUM_OBJ(obj)) {
+    case T_APOSOBJ:
+    case T_ALIST:
+    case T_FIXALIST:
+      return INTOBJ_INT(ADDR_OBJ(obj)[0]);
+    default:
+      return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+    }
+#else
     return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+#endif
 }
 
 
@@ -1273,7 +1479,7 @@ void SetTypeDatObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_DATOBJ_Hander( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
+*F  IS_DATOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */
 Obj             IS_DATOBJ_Handler (
     Obj                 self,
@@ -1292,10 +1498,16 @@ Obj SET_TYPE_DATOBJ_Handler (
     Obj                 obj,
     Obj                 type )
 {
+#ifndef WARD_ENABLED
+    ReadGuard( obj );
     TYPE_DATOBJ( obj ) = type;
-    RetypeBag( obj, T_DATOBJ );
+#ifdef HPCGAP
+    if (TNUM_OBJ(obj) != T_DATOBJ)
+#endif
+      RetypeBag( obj, T_DATOBJ );
     CHANGED_BAG( obj );
     return obj;
+#endif
 }
 
 
@@ -1337,10 +1549,8 @@ void SaveObjError( Obj obj )
             "Panic: tried to save an object of unknown type '%d'",
             (Int)TNUM_OBJ(obj), 0L );
 }
-    
-                   
-     
-     
+
+
 /****************************************************************************
 **
 *V  LoadObjFuncs (<type>) . . . . . . . . . . . . . functions to load objects
@@ -1533,6 +1743,28 @@ Obj FuncCLONE_OBJ (
         return 0;
     }
 
+#ifdef HPCGAP
+    switch (TNUM_OBJ(src)) {
+        case T_AREC:
+        case T_ACOMOBJ:
+        case T_TLREC:
+          ErrorReturnVoid( "cannot clone %ss",
+                           (Int)(InfoBags[TNUM_OBJ(src)].name), 0,
+                           "you can 'return;' to skip the cloning" );
+          return 0;
+    }
+    if (!REGION(dst)) {
+        ErrorReturnVoid( "CLONE_OBJ() cannot overwrite public objects", 0, 0,
+                         "you can 'return;' to skip the cloning" );
+        return 0;
+    }
+    if (REGION(src) != REGION(dst) && REGION(src)) {
+        ErrorReturnVoid( "objects can only be cloned to replace objects within"
+                         "the same region or if the object is public", 0, 0,
+                         "you can 'return;' to skip the cloning" );
+        return 0;
+    }
+#endif
     /* check <dst>                                                         
     if ( (REREADING != True) &&
 	 (CALL_1ARGS( IsToBeDefinedObj, dst ) != True) ) {
@@ -1550,14 +1782,25 @@ Obj FuncCLONE_OBJ (
     }
 
     /* now shallow clone the object                                        */
+#ifdef HPCGAP
+    Obj tmp = NewBag(TNUM_OBJ(src), SIZE_OBJ(src));
+    pdst = ADDR_OBJ(tmp);
+#else
     ResizeBag( dst, SIZE_OBJ(src) );
     RetypeBag( dst, TNUM_OBJ(src) );
-    psrc = ADDR_OBJ(src);
     pdst = ADDR_OBJ(dst);
+#endif
+    psrc = ADDR_OBJ(src);
     for ( i = (SIZE_OBJ(src)+sizeof(Obj) - 1)/sizeof(Obj);  0 < i;  i-- ) {
         *pdst++ = *psrc++;
     }
     CHANGED_BAG(dst);
+#ifdef HPCGAP
+    REGION(dst) = REGION(src);
+    MEMBAR_WRITE();
+    /* The following is a no-op unless the region is public */
+    PTR_BAG(dst) = PTR_BAG(tmp);
+#endif
 
     return 0;
 }
@@ -1588,6 +1831,16 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     }
     ptr1 = PTR_BAG(obj1);
     ptr2 = PTR_BAG(obj2);
+#ifdef HPCGAP
+    Region *ds1 = REGION(obj1);
+    Region *ds2 = REGION(obj2);
+    if (!ds1 || ds1->owner != realTLS)
+        ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
+    if (!ds2 || ds2->owner != realTLS)
+        ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
+    REGION(obj2) = ds1;
+    REGION(obj1) = ds2;
+#endif
     PTR_BAG(obj2) = ptr1;
     PTR_BAG(obj1) = ptr2;
     CHANGED_BAG(obj1);
@@ -1598,15 +1851,49 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 
 /****************************************************************************
 **
-
 *F  FuncFORCE_SWITCH_OBJ( <self>, <obj1>, <obj2> ) .  switch <obj1> and <obj2>
+**
+**  `FORCE_SWITCH_OBJ' exchanges the objects referenced by its two arguments.
+**  It is not allowed to switch clone small integers or finite field
+**  elements.
 **
 **  In GAP, FORCE_SWITCH_OBJ does the same thing as SWITCH_OBJ. In HPC_GAP
 **  it allows public objects to be exchanged.
 */
 
 Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+#ifdef HPCGAP
+    Obj *ptr1, *ptr2;
+    Region *ds1, *ds2;
+
+    if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
+        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
+        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    ptr1 = PTR_BAG(obj1);
+    ptr2 = PTR_BAG(obj2);
+    ds1 = REGION(obj1);
+    ds2 = REGION(obj2);
+    if (ds1 && ds1->owner != realTLS)
+        ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
+    if (ds2 && ds2->owner != realTLS)
+        ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
+    REGION(obj2) = ds1;
+    PTR_BAG(obj2) = ptr1;
+    REGION(obj1) = ds2;
+    PTR_BAG(obj1) = ptr2;
+    CHANGED_BAG(obj1);
+    CHANGED_BAG(obj2);
+    return (Obj) 0;
+#else
     return FuncSWITCH_OBJ(self, obj1, obj2);
+#endif
 }
 
 /****************************************************************************
@@ -1628,6 +1915,11 @@ static StructGVarFilt GVarFilts [] = {
 
     { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
       IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
+
+#ifdef HPCGAP
+    { "IS_INTERNALLY_MUTABLE_OBJ", "obj", &IsInternallyMutableObjFilt,
+      IsInternallyMutableObjHandler, "src/objects.c:IS_INTERNALLY_MUTABLE_OBJ" },
+#endif
 
     { 0, 0, 0, 0, 0 }
 
@@ -1858,7 +2150,9 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
 
-    InitPrintObjStack();
+#ifdef HPCGAP
+    ReadOnlyDatObjs = (getenv("GAP_READONLY_DATOBJS") != 0);
+#endif
 
     /* return success                                                      */
     return 0;
