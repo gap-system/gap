@@ -857,17 +857,32 @@ void MakeImmutablePosObj( Obj obj)
   
 }
 
+#ifdef HPCGAP
+// HPCGAP-HACK:
+// There is a considerable amount of library code that currently
+// relies on being able to modify immutable data objects; in order
+// to not break all of that, MakeImmutableDatObj() makes immutable
+// data objects public, not read-only if they are not internally
+// mutable. Note that this is potentially unsafe if these objects
+// are shared between threads and then modified by kernel code.
+// 
+// By setting the environment variable GAP_READONLY_DATOBJS, one
+// can restore the old behavior in order to find and debug the
+// offending code.
 static int ReadOnlyDatObjs = 0;
+#endif
 
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+#ifdef HPCGAP
   if (!IsInternallyMutableObj(obj)) {
     if (ReadOnlyDatObjs)
       MakeBagReadOnly(obj);
     else
       MakeBagPublic(obj);
   }
+#endif
 }
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
