@@ -466,7 +466,6 @@ Int KTNumHomPlist (
     Int                 lenList;        /* length of list                  */
     Obj                 elm, x;         /* one element of <list>           */
     Int                 i;              /* loop variable                   */
-    Int                 testing;        /* to test or not to test type     */
     Int                 res;            /* result                          */
     Int                 isSSort;        /* list is (known to be) SSorted   */
     Int                 isNSort;        /* list is (known to be) non-sorted*/
@@ -476,9 +475,6 @@ Int KTNumHomPlist (
       return TNUM_OBJ(list);
     }
 #endif
-
-    /* if list has `TESTING' keep that                                     */
-    testing = TEST_OBJ_FLAG(list, TESTING);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
