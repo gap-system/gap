@@ -843,6 +843,7 @@ Obj FuncIDENTS_GVAR (
     Obj                 copy;
     UInt                i;
     UInt                numGVars;
+    Obj                 strcopy;
 
     LockGVars(0);
     numGVars = CountGVars;
@@ -850,7 +851,11 @@ Obj FuncIDENTS_GVAR (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1;  i <= numGVars;  i++ ) {
-        SET_ELM_PLIST( copy, i, NameGVarObj(i) );
+        /* Copy the string here, because we do not want members of NameGVars
+         * accessible to users, as these strings must not be changed */
+        strcopy = CopyToStringRep( NameGVarObj( i ) );
+        SET_ELM_PLIST( copy, i, strcopy );
+        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, numGVars );
     return copy;
@@ -862,6 +867,7 @@ Obj FuncIDENTS_BOUND_GVARS (
     Obj                 copy;
     UInt                i, j;
     UInt                numGVars;
+    Obj                 strcopy;
 
     LockGVars(0);
     numGVars = CountGVars;
@@ -870,7 +876,12 @@ Obj FuncIDENTS_BOUND_GVARS (
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
-           SET_ELM_PLIST( copy, j, NameGVarObj(i) );
+           /* Copy the string here, because we do not want members of
+            * NameGVars accessible to users, as these strings must not be
+            * changed */
+           strcopy = CopyToStringRep( NameGVarObj( i ) );
+           SET_ELM_PLIST( copy, j, strcopy );
+           CHANGED_BAG( copy );
            j++;
         }
     }
