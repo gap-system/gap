@@ -936,10 +936,11 @@ void InitHandlerRegistration( void )
 
 }
 
+#ifdef DEBUG_HANDLER_REGISTRATION
+
 static void CheckHandlersBag(
     Bag         bag )
 {
-#ifdef DEBUG_HANDLER_REGISTRATION
     UInt        i;
     UInt        j;
     ObjFunc     hdlr;
@@ -962,17 +963,15 @@ static void CheckHandlersBag(
             }
         }
     }
-#endif
-  return;
 }
 
 void CheckAllHandlers(
        void )
 {
   CallbackForAllBags( CheckHandlersBag);
-    return;
 }
 
+#endif
 
 static int IsLessHandlerInfo (
     TypeHandlerInfo *           h1, 
