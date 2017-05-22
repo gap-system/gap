@@ -194,6 +194,10 @@ gap> g:=SymmetricGroup(17);;s:=SylowSubgroup(g,NrMovedPoints(g));;
 gap> ac:=AscendingChain(g,s);;
 gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<10^11;
 true
+gap> g:=PSL(4,5);;
+gap> l:=LowLayerSubgroups(g,3,x->Index(g,x)<=10000);;
+gap> Sum(List(l,x->Index(g,x)));
+89655
 gap> STOP_TEST( "grpperm.tst", 1);
 
 #############################################################################
