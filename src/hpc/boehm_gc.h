@@ -483,8 +483,8 @@ UInt ResizeBag (
     UInt                new_size )
 {
     UInt                type;           /* type of the bag                 */
+    UInt                flags;
     UInt                old_size;       /* old size of the bag             */
-    Bag *               dst;            /* destination in copying          */
     Bag *               src;            /* source in copying               */
     UInt                alloc_size;
 
@@ -494,9 +494,12 @@ UInt ResizeBag (
     CollectBags(0,0);
 #endif
 
+    BagHeader * header = BAG_HEADER(bag);
+
     /* get type and old size of the bag                                    */
-    type     = TNUM_BAG(bag);
-    old_size = SIZE_BAG(bag);
+    type     = header->type;
+    flags    = header->flags;
+    old_size = header->size;
 
 #ifdef COUNT_BAGS
     /* update the statistics                                               */
@@ -506,7 +509,7 @@ UInt ResizeBag (
     SizeAllBags             += new_size - old_size;
 
 #ifndef DISABLE_GC
-    alloc_size = GC_size(PTR_BAG(bag)-BAG_HEADER_SIZE);
+    alloc_size = GC_size(header);
     /* An alternative implementation would be to compare
      * new_size <= alloc_size in the following test in order
      * to avoid reallocations for alternating contractions
@@ -527,42 +530,33 @@ UInt ResizeBag (
 #endif /* DISABLE_GC */
 
         /* change the size word                                            */
-#ifdef USE_NEWSHAPE
-        *(*bag-2) = (new_size << 16 | type);
-#else
-        *(*bag-2) = new_size;
-#endif
+        header->size = new_size;
     }
-
 
     /* if the bag is enlarged                                              */
     else {
         alloc_size = sizeof(BagHeader) + new_size;
         if (new_size == 0)
-                alloc_size++;
+            alloc_size++;
 #ifndef DISABLE_GC
-        dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
+        header = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
-        dst = calloc( 1, alloc_size );
+        header = calloc( 1, alloc_size );
 #endif
 
-        /* enter the new size-type word                                    */
-#ifdef USE_NEWSHAPE
-        *dst++ = (Bag)(new_size << 16 | type);
-#else
-        *dst++ = (Bag)type;
-        *dst++ = (Bag)new_size;
-#endif
+        header->type = type;
+        header->flags = flags;
+        header->size = new_size;
+        header->link = bag;
 
-        *dst++ = bag;
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
-        PTR_BAG(bag) = dst;
+        PTR_BAG(bag) = header->data;
 
-        if (dst != src) {
-            memcpy( dst, src, old_size < new_size ? old_size : new_size );
+        if (header->data != src) {
+            memcpy( header->data, src, old_size < new_size ? old_size : new_size );
         } else if (new_size < old_size) {
-            memset(dst+new_size, 0, old_size - new_size);
+            memset(header->data+new_size, 0, old_size - new_size);
         }
     }
     /* return success                                                      */
