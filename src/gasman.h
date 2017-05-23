@@ -187,9 +187,10 @@ static inline void CLEAR_OBJ_FLAG(Bag bag, uint8_t flag) {
 **  bytes.
 **
 **  Each bag has a  certain size.  The size  of a bag  is measured  in bytes.
-**  The  size must  be a   value between   0 and $2^{24}-1$.  The application
-**  specifies the size of a bag when it  allocates  it  with 'NewBag' and may
-**  later change it with 'ResizeBag' (see "NewBag" and "ResizeBag").
+**  The size must be a value between 0 and $2^{32}-1$ (on 32 bit systems)
+**  respectively $2^{48}-1$ (on 64 bit systems). The application specifies
+**  the size of a bag when it allocates it with 'NewBag' and may later change
+**  it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 */
 static inline UInt SIZE_BAG(Bag bag) {
     return BAG_HEADER(bag)->size;
@@ -378,9 +379,9 @@ extern void CHANGED_BAG_IMPL(Bag b);
 **  accidently use the same value for two different types.
 **
 **  <size> is the size of the new bag in bytes and must be a value  between 0
-**  and $2^{24}-1$.  The   application can find  the    size  of a   bag with
-**  'SIZE_BAG'    and  change   it  with  'ResizeBag'   (see   "SIZE_BAG" and
-**  "ResizeBag").
+**  and $2^{32}-1$ (on 32 bit systems)  resp. $2^{48}-1$ (on 64 bit systems).
+**  The application can find the size of a bag with 'SIZE_BAG' and change  it
+**  with 'ResizeBag' (see "SIZE_BAG" and "ResizeBag").
 **
 **  If the initialization flag <dirty> is 0, all entries of  the new bag will
 **  be initialized to 0; otherwise the  entries  of the  new bag will contain
