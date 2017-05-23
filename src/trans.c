@@ -4921,16 +4921,6 @@ Obj OnTuplesTrans (Obj tup, Obj f) {
 ** Save and load workspace, garbage collection, IS_TRANS
 *******************************************************************************/
 
-void MarkTransSubBags (Obj f) {
-  if (IMG_TRANS(f) != NULL) {
-    MARK_BAG(IMG_TRANS(f));
-    MARK_BAG(KER_TRANS(f));
-  }
-  if (EXT_TRANS(f) != NULL) {
-    MARK_BAG(EXT_TRANS(f));
-  }
-}
-
 // Save and load
 void SaveTrans2 (Obj f) {
   UInt2   *ptr;
@@ -5250,8 +5240,8 @@ static Int InitKernel ( StructInitInfo *module )
     /* install the marking functions                                       */
     InfoBags[ T_TRANS2 ].name = "transformation (small)";
     InfoBags[ T_TRANS4 ].name = "transformation (large)";
-    InitMarkFuncBags( T_TRANS2, MarkTransSubBags );
-    InitMarkFuncBags( T_TRANS4, MarkTransSubBags );
+    InitMarkFuncBags( T_TRANS2, MarkThreeSubBags );
+    InitMarkFuncBags( T_TRANS4, MarkThreeSubBags );
 
     MakeBagTypePublic( T_TRANS2);
     MakeBagTypePublic( T_TRANS4);
