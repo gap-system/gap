@@ -1477,27 +1477,27 @@ StructInitInfo * InitInfoThreadAPI ( void )
 static void MarkSemaphoreBag(Bag bag)
 {
   Semaphore *sem = (Semaphore *)(PTR_BAG(bag));
-  MARK_BAG(sem->monitor);
+  MarkBag(sem->monitor);
 }
 
 static void MarkChannelBag(Bag bag)
 {
   Channel *channel = (Channel *)(PTR_BAG(bag));
-  MARK_BAG(channel->queue);
-  MARK_BAG(channel->monitor);
+  MarkBag(channel->queue);
+  MarkBag(channel->monitor);
 }
 
 static void MarkBarrierBag(Bag bag)
 {
   Barrier *barrier = (Barrier *)(PTR_BAG(bag));
-  MARK_BAG(barrier->monitor);
+  MarkBag(barrier->monitor);
 }
 
 static void MarkSyncVarBag(Bag bag)
 {
   SyncVar *syncvar = (SyncVar *)(PTR_BAG(bag));
-  MARK_BAG(syncvar->queue);
-  MARK_BAG(syncvar->monitor);
+  MarkBag(syncvar->queue);
+  MarkBag(syncvar->monitor);
 }
 #endif
 
