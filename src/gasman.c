@@ -137,12 +137,12 @@
 **    +---------+
 **    |<masterp>|
 **    +---------+
-**          \____________
-**                       \
-**                        V
-**    +---------+---------+--------------------------------------------+----+
-**    |<sz>.<tp>|  <link> |         .         .         .         .    | pad|
-**    +---------+---------+--------------------------------------------+----+
+**          \________________________
+**                                   \
+**                                    V
+**    +------+-------+------+---------+--------------------------------+----+
+**    |<size>|<flags>|<type>|  <link> |         .         .         ...| pad|
+**    +------+-------+------+---------+--------------------------------+----+
 **
 **  A bag consists of a masterpointer, and a body.
 **
@@ -157,14 +157,12 @@
 **  masterpointer  of  the bag.   Thus   'PTR_BAG(<bag>)' is simply '\*<bag>'
 **  plus a cast.
 **
-**  The *body* of a  bag consists of  the size-type word,  the link word, the
-**  data area, and the padding.
+**  The *body* of a bag consists of a header, the data area, and the padding.
 **
-**  The *size-type word* contains the size of the bag in the upper  (at least
-**  24) bits, and the type (abbreviated as <tp> in the  above picture) in the
-**  lower 8  bits.  Thus 'SIZE_BAG'   simply extracts the size-type  word and
-**  shifts it 8 bits to the right, and 'TNUM_BAG' extracts the size-type word
-**  and masks out everything except the lower 8 bits.
+**  The header in turn consists of the *type byte*, *flags byte* and the
+**  *size field*, which is either 32 bits or 48 bits (on 32 resp. 64 bit systems),
+**  followed by a link word.  The 'BagHeader' struct describes the exact
+**  structure of the header.
 **
 **  The  *link word* usually   contains the identifier of  the  bag,  i.e., a
 **  pointer to the masterpointer of the bag.  Thus the garbage collection can
@@ -182,14 +180,14 @@
 **  returns the number  of words occupied  by the data  area and padding of a
 **  bag of size <size>.
 **
-**  A body in the workspace  whose  size-type word contains  the value 255 in
-**  the lower 8 bits is the remainder of a 'ResizeBag'.  That  is it consists
-**  either of the unused words after a bag has been shrunk or of the old body
-**  of the bag after the contents of the body have  been copied elsewhere for
-**  an extension.  The upper (at least 24) bits of the first word contain the
-**  number of bytes in this area excluding the first  word itself.  Note that
-**  such a body   has no link   word,  because  such  a  remainder  does  not
-**  correspond to a bag (see "Implementation of ResizeBag").
+**  A body in the workspace whose type byte contains the value 255 is the
+**  remainder of a 'ResizeBag'. That is it consists either of the unused words
+**  after a bag has been shrunk, or of the old body of the bag after the
+**  contents of the body have been copied elsewhere for an extension. The
+**  upper (at least 24) bits of the first word contain the number of bytes in
+**  this area excluding the first word itself. Note that such a body  has no
+**  link  word, because such a remainder does not correspond to a bag (see
+**  "Implementation of ResizeBag").
 **
 **  A masterpointer with a value  congruent to 1  mod 4 is   the relic of  an
 **  object  that was  weakly but not   strongly  marked in  a recent  garbage
