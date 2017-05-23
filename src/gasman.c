@@ -1286,21 +1286,14 @@ UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
 {
-    UInt                type;           /* type of the bag                 */
-    UInt                old_size;       /* old size of the bag             */
-    Bag *               dst;            /* destination in copying          */
-    Bag *               src;            /* source in copying               */
-    Bag *               end;            /* end in copying                  */
-
-    /* check the size                                                      */
-
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
 
-    /* get type and old size of the bag                                    */
-    type     = TNUM_BAG(bag);
-    old_size = SIZE_BAG(bag);
+    BagHeader * header = BAG_HEADER(bag);
+    UInt type     = header->type;
+    UInt flags    = header->flags;
+    UInt old_size = header->size;
 
 #ifdef  COUNT_BAGS
     /* update the statistics                                               */
@@ -1308,122 +1301,109 @@ UInt ResizeBag (
     InfoBags[type].sizeAll  += new_size - old_size;
 #endif
     SizeAllBags             += new_size - old_size;
+    
+    const Int diff = WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
-    /* if the real size of the bag doesn't change                          */
-    if ( WORDS_BAG(new_size) == WORDS_BAG(old_size) ) {
+    // if the real size of the bag doesn't change, not much needs to be done
+    if ( diff == 0 ) {
 
-        /* change the size word                                            */
-#ifdef USE_NEWSHAPE
-      *(*bag-2) = (new_size << 16 | type);
-#else
-      *(*bag-2) = new_size;
-#endif
+        header->size = new_size;
     }
 
-    /* if the bag is shrunk                                                */
-    /* we must not shrink the last bag by moving 'AllocBags',              */
-    /* since the remainder may not be zero filled                          */
-    else if ( WORDS_BAG(new_size) < WORDS_BAG(old_size) ) {
+    // if the bag is shrunk we insert a magic marker into the heap
+    // Note: if the bag is the the last bag, we could in theory also shrink it
+    // by moving 'AllocBags', however this is not correct as the "freed"
+    // memory may not be zero filled, and zeroing it out would cost us
+    else if ( diff < 0 ) {
 
-      /* leave magic size-type word for the sweeper, type must be 255    */
-        if ((WORDS_BAG(old_size)-WORDS_BAG(new_size) == 1))
-          *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 1 << 8 | 255;
-        else
-          {
-#ifdef USE_NEWSHAPE
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) =
-              (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag) << 16 | 255;
-#else
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size)) = 255;
-            *(UInt*)(PTR_BAG(bag) + WORDS_BAG(new_size) + 1) =
-              (WORDS_BAG(old_size)-WORDS_BAG(new_size)-1)*sizeof(Bag);
-#endif
-          }
+        // leave magic size-type word for the sweeper, type must be 255
+        BagHeader * freeHeader = (BagHeader *)(header->data + WORDS_BAG(new_size));
+        freeHeader->type = 255;
+        if ( diff == -1 ) {
+            // if there is only one free word, avoid setting the size in
+            // the header: there is no space for it on 32bit systems;
+            // instead set flags to 1 to inform the sweeper.
+            freeHeader->flags = 1;
+        }
+        else {
+            freeHeader->flags = 0;
+            freeHeader->size = (-diff-1)*sizeof(Bag);
+        }
 
-        /* change the size- word                                       */
-#ifdef USE_NEWSHAPE
-        *(*bag-2) = (new_size << 16 | type);
-#else
-        *(*bag-2) = new_size;
-#endif
-
-
+        header->size = new_size;
     }
 
-    /* if the last bag is to be enlarged                                   */
+    // if the last bag is enlarged ...
     else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
         CLEAR_CANARY();
-        /* check that enough storage for the new bag is available          */
+        // check that enough storage for the new bag is available
         if ( StopBags < PTR_BAG(bag)+WORDS_BAG(new_size)
-          && CollectBags( new_size-old_size, 0 ) == 0 ) {
+              && CollectBags( new_size-old_size, 0 ) == 0 ) {
             return 0;
         }
 
-        /* simply increase the free pointer                                */
+        // update header pointer in case bag moved
+        header = BAG_HEADER(bag);
+
+        // simply increase the free pointer
         if ( YoungBags == AllocBags )
-            YoungBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
-        AllocBags += WORDS_BAG(new_size) - WORDS_BAG(old_size);
+            YoungBags += diff;
+        AllocBags += diff;
 
         ADD_CANARY();
-        /* change the size-type word                                       */
-#ifdef USE_NEWSHAPE
-        *(*bag-2) = (new_size << 16 | type);
-#else
-        *(*bag-2) = new_size;
-#endif
+
+        header->size = new_size;
     }
 
-    /* if the bag is enlarged                                              */
+    // if the bag is enlarged ...
     else {
 
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  BAG_HEADER_SIZE+WORDS_BAG(new_size)
-          && CollectBags( new_size, 0 ) == 0 ) {
+              && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
         CLEAR_CANARY();
+
+        // update header pointer in case bag moved
+        header = BAG_HEADER(bag);
+
+        // leave magic size-type word  for the sweeper, type must be 255
+        header->type = 255;
+        header->flags = 0;
+        header->size = (BAG_HEADER_SIZE+WORDS_BAG(old_size) - 1) * sizeof(Bag);
+
         /* allocate the storage for the bag                                */
-        dst       = AllocBags;
-        AllocBags = dst + BAG_HEADER_SIZE + WORDS_BAG(new_size);
+        BagHeader * newHeader = (BagHeader *)AllocBags;
+        AllocBags = newHeader->data + WORDS_BAG(new_size);
         ADD_CANARY();
 
-        /* leave magic size-type word  for the sweeper, type must be 255   */
-#ifdef USE_NEWSHAPE
-        *(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
-#else
-        *(*bag-3) = 255;
-        *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
-#endif
-
-        /* enter the new size-type word                                    */
-#ifdef USE_NEWSHAPE
-        *dst++ = (Bag)(new_size << 16 | type);
-#else
-        *dst++ = (Bag)type;
-        *dst++ = (Bag)new_size;
-#endif
+        newHeader->type = type;
+        newHeader->flags = flags;
+        newHeader->size = new_size;
 
         CANARY_DISABLE_VALGRIND();
         /* if the bag is already on the changed bags list, keep it there   */
-        if ( LINK_BAG(bag) != bag ) {
-            *dst++ = LINK_BAG(bag);
+        if ( header->link != bag ) {
+             newHeader->link = header->link;
         }
-
 
         /* if the bag is old, put it onto the changed bags list            */
         else if ( PTR_BAG(bag) <= YoungBags ) {
-            *dst++ = ChangedBags;  ChangedBags = bag;
+             newHeader->link = ChangedBags;
+             ChangedBags = bag;
         }
 
         /* if the bag is young, enter the normal link word                 */
         else {
-            *dst++ = bag;
+            newHeader->link = bag;
         }
         CANARY_ENABLE_VALGRIND();
 
         /* set the masterpointer                                           */
-        src = PTR_BAG(bag);
-        end = src + WORDS_BAG(old_size);
+        Bag * src = header->data;
+        Bag * end = src + WORDS_BAG(old_size);
+        Bag * dst = newHeader->data;
         PTR_BAG(bag) = dst;
 
         /* copy the contents of the bag                                    */
