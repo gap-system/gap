@@ -2004,18 +2004,9 @@ Obj FuncCycList (
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
 */
-void            MarkCycSubBags (
-    Obj                 cyc )
+void MarkCycSubBags( Obj cyc )
 {
-    Obj *               cfs;            /* pointer to coeffs               */
-    UInt                i;              /* loop variable                   */
-
-    /* mark everything                                                     */
-    cfs = COEFS_CYC( cyc );
-    for ( i = SIZE_CYC(cyc); 0 < i; i-- ) {
-        MARK_BAG( cfs[i-1] );
-    }
-
+    MarkArrayOfBags( COEFS_CYC( cyc ), SIZE_CYC(cyc) );
 }
 
 
