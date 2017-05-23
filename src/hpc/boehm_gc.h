@@ -372,16 +372,11 @@ void            RetypeBag (
     Bag                 bag,
     UInt                new_type )
 {
-
-    UInt old_type = TNUM_BAG(bag);
+    BagHeader   *header = BAG_HEADER(bag);
+    UInt old_type = header->type;
 
     /* change the size-type word                                           */
-#ifdef USE_NEWSHAPE
-    *(*bag-BAG_HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
-    *(*bag-BAG_HEADER_SIZE) |= new_type;
-#else
-    *(*bag-BAG_HEADER_SIZE) = new_type;
-#endif
+    header->type = new_type;
     {
       int old_gctype, new_gctype;
       UInt size;
