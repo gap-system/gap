@@ -137,11 +137,12 @@ void BuildPrefixGCDescriptor(unsigned prefix_len) {
   if (prefix_len) {
     GC_word bits[1] = {0};
     unsigned i;
+    const UInt wordsInBagHeader = sizeof(BagHeader)/sizeof(Bag);
     for (i=0; i<prefix_len; i++)
-      GC_set_bit(bits, (i + BAG_HEADER_SIZE));
-    GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + BAG_HEADER_SIZE);
+      GC_set_bit(bits, (i + wordsInBagHeader));
+    GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + wordsInBagHeader);
     GC_set_bit(bits, 0);
-    GCMDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + BAG_HEADER_SIZE);
+    GCMDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + wordsInBagHeader);
   } else {
     GCDesc[prefix_len] = GC_DS_LENGTH;
     GCMDesc[prefix_len] = GC_DS_LENGTH | sizeof(void *);

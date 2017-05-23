@@ -95,9 +95,6 @@ typedef struct {
 } BagHeader;
 
 
-#define BAG_HEADER_SIZE     (sizeof(BagHeader)/sizeof(Bag))
-
-
 /****************************************************************************
 **
 *F  BAG_HEADER(<bag>) . . . . . . . . . . . . . . . . . . . . header of a bag
