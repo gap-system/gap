@@ -96,17 +96,35 @@ typedef struct {
     Bag data[];
 } BagHeader;
 
+
 #define BAG_HEADER_SIZE     (sizeof(BagHeader)/sizeof(Bag))
 
-#define BAG_HEADER_CONTENTS(data)   (((BagHeader *)data) - 1)
-#define BAG_HEADER(bag)             BAG_HEADER_CONTENTS(*(bag))
+
+/****************************************************************************
+**
+*F  BAG_HEADER(<bag>) . . . . . . . . . . . . . . . . . . . . header of a bag
+**
+**  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
+*/
+static inline BagHeader * BAG_HEADER(Bag bag) {
+    return (((BagHeader *)*bag) - 1);
+}
+
+
+/****************************************************************************
+**
+*F  BAG_HEADER_CONTENTS(<ptr>) . . . . . . . . . . . . . . .  header of a bag
+**
+**  'BAG_HEADER' returns the header of the bag whose contents start at <ptr>.
+*/
+static inline BagHeader * BAG_HEADER_CONTENTS(void *ptr) {
+    return (((BagHeader *)ptr) - 1);
+}
 
 
 /****************************************************************************
 **
 *F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
-**
-**  'TNUM_BAG( <bag> )'
 **
 **  'TNUM_BAG' returns the type of the bag with the identifier <bag>.
 **
@@ -119,11 +137,10 @@ typedef struct {
 **  {\Gasman} needs to know the type of a bag so that it knows which function
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
-**
-**  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
-**  have side effects.
 */
-#define TNUM_BAG(bag)  (BAG_HEADER(bag)->type)
+static inline UInt TNUM_BAG(Bag bag) {
+    return BAG_HEADER(bag)->type;
+}
 
 
 /****************************************************************************
@@ -152,9 +169,17 @@ typedef struct {
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */
-#define TEST_OBJ_FLAG(bag, flag)    (BAG_HEADER(bag)->flags & (flag))
-#define SET_OBJ_FLAG(bag, flag)     (BAG_HEADER(bag)->flags |= (flag))
-#define CLEAR_OBJ_FLAG(bag, flag)   (BAG_HEADER(bag)->flags &= ~(flag))
+static inline uint8_t TEST_OBJ_FLAG(Bag bag, uint8_t flag) {
+    return BAG_HEADER(bag)->flags & flag;
+}
+
+static inline void SET_OBJ_FLAG(Bag bag, uint8_t flag) {
+    BAG_HEADER(bag)->flags |= flag;
+}
+
+static inline void CLEAR_OBJ_FLAG(Bag bag, uint8_t flag) {
+    BAG_HEADER(bag)->flags &= ~flag;
+}
 
 
 /****************************************************************************
@@ -170,11 +195,10 @@ typedef struct {
 **  The  size must  be a   value between   0 and $2^{24}-1$.  The application
 **  specifies the size of a bag when it  allocates  it  with 'NewBag' and may
 **  later change it with 'ResizeBag' (see "NewBag" and "ResizeBag").
-**
-**  Note that  'SIZE_BAG' is  a macro,  so do not call it with arguments that
-**  have side effects.
 */
-#define SIZE_BAG(bag)   (BAG_HEADER(bag)->size)
+static inline UInt SIZE_BAG(Bag bag) {
+    return BAG_HEADER(bag)->size;
+}
 
 
 /****************************************************************************
@@ -186,15 +210,19 @@ typedef struct {
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-#define SIZE_BAG_CONTENTS(ptr)   (BAG_HEADER_CONTENTS(ptr)->size)
+static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
+    return BAG_HEADER_CONTENTS(ptr)->size;
+}
 
 
 /****************************************************************************
 **
-*F  LINK_BAG(<bag>) . . . . . . . . . . . . . . . . . . . link field of a bag
+*F  LINK_BAG(<bag>) . . . . . . . . . . . . . . . . . . link pointer of a bag
 **
-**  TODO: document this
+**  'LINK_BAG' returns the link pointer of the bag with the identifier <bag>.
 **
+**  Note that  'LINK_BAG' is  a macro,  so do not call it with arguments that
+**  have side effects.
 */
 #define LINK_BAG(bag)   (BAG_HEADER(bag)->link)
 
@@ -309,7 +337,8 @@ extern  Bag *                   YoungBags;
 
 extern  Bag                     ChangedBags;
 
-/*****
+/****************************************************************************
+**
 **  MEMORY_CANARY provides (basic) support for catching out-of-bounds memory
 **  problems in GAP. This is done through the excellent 'valgrind' program.
 **  valgrind is of limited use in GAP normally, because it doesn't understand
