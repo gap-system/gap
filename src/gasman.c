@@ -304,8 +304,8 @@ void CLEAR_CANARY() {
 
 void CHANGED_BAG_IMPL(Bag bag) {
     CANARY_DISABLE_VALGRIND();
-    if ( PTR_BAG(bag) <= YoungBags && PTR_BAG(bag)[-1] == (bag) ) {
-        PTR_BAG(bag)[-1] = ChangedBags;
+    if ( PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == (bag) ) {
+        LINK_BAG(bag) = ChangedBags;
         ChangedBags = (bag);
     }
     CANARY_ENABLE_VALGRIND();
@@ -1422,8 +1422,8 @@ UInt ResizeBag (
 
         CANARY_DISABLE_VALGRIND();
         /* if the bag is already on the changed bags list, keep it there   */
-        if ( PTR_BAG(bag)[-1] != bag ) {
-            *dst++ = PTR_BAG(bag)[-1];
+        if ( LINK_BAG(bag) != bag ) {
+            *dst++ = LINK_BAG(bag);
         }
 
 
@@ -1755,8 +1755,8 @@ again:
         /* empty the list of changed old bags                              */
         while ( ChangedBags != 0 ) {
             first = ChangedBags;
-            ChangedBags = PTR_BAG(first)[-1];
-            PTR_BAG(first)[-1] = first;
+            ChangedBags = LINK_BAG(first);
+            LINK_BAG(first) = first;
         }
 
         /* Also time to change the tag for dead children of weak
@@ -1800,8 +1800,8 @@ again:
     /* mark the subbags of the changed old bags                            */
     while ( ChangedBags != 0 ) {
         first = ChangedBags;
-        ChangedBags = PTR_BAG(first)[-1];
-        PTR_BAG(first)[-1] = first;
+        ChangedBags = LINK_BAG(first);
+        LINK_BAG(first) = first;
         if ( PTR_BAG(first) <= YoungBags )
             (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
@@ -1814,8 +1814,8 @@ again:
     sizeLiveBags = 0;
     while ( MarkedBags != 0 ) {
         first = MarkedBags;
-        MarkedBags = PTR_BAG(first)[-1];
-        PTR_BAG(first)[-1] = MARKED_ALIVE(first);
+        MarkedBags = LINK_BAG(first);
+        LINK_BAG(first) = MARKED_ALIVE(first);
         (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         nrLiveBags++;
         sizeLiveBags += SIZE_BAG(first);
@@ -2334,16 +2334,16 @@ void SwapMasterPoint (
     ptr2 = PTR_BAG(bag2);
 
     /* check and update the link field and changed bags                    */
-    if ( PTR_BAG(bag1)[-1] == bag1 && PTR_BAG(bag2)[-1] == bag2 ) {
-        PTR_BAG(bag1)[-1] = bag2;
-        PTR_BAG(bag2)[-1] = bag1;
+    if ( LINK_BAG(bag1) == bag1 && LINK_BAG(bag2) == bag2 ) {
+        LINK_BAG(bag1) = bag2;
+        LINK_BAG(bag2) = bag1;
     }
-    else if ( PTR_BAG(bag1)[-1] == bag1 ) {
-        PTR_BAG(bag1)[-1] = ChangedBags;
+    else if ( LINK_BAG(bag1) == bag1 ) {
+        LINK_BAG(bag1) = ChangedBags;
         ChangedBags = bag1;
     }
-    else if ( PTR_BAG(bag2)[-1] == bag2 ) {
-        PTR_BAG(bag2)[-1] = ChangedBags;
+    else if ( LINK_BAG(bag2) == bag2 ) {
+        LINK_BAG(bag2) = ChangedBags;
         ChangedBags = bag2;
     }
 
