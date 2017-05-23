@@ -612,34 +612,22 @@ void MarkFourSubBags( Bag bag )
     MarkBag( sub );
 }
 
+inline void MarkArrayOfBags( Bag array[], int count )
+{
+    int i;
+    for (i = 0; i < count; i++) {
+        MarkBag( array[i] );
+    }
+}
+
 void MarkAllSubBags( Bag bag )
 {
-    Bag *               ptr;            /* pointer into the bag            */
-    Bag                 sub;            /* one subbag identifier           */
-    UInt                i;              /* loop variable                   */
-
-    /* mark everything                                                     */
-    ptr = PTR_BAG( bag );
-    for ( i = SIZE_BAG(bag)/sizeof(Bag); 0 < i; i-- ) {
-        sub = ptr[i-1];
-        MarkBag( sub );
-    }
-
+    MarkArrayOfBags( PTR_BAG( bag ), SIZE_BAG(bag)/sizeof(Bag) );
 }
 
 void MarkAllSubBagsDefault( Bag bag )
 {
-    Bag *               ptr;            /* pointer into the bag            */
-    Bag                 sub;            /* one subbag identifier           */
-    UInt                i;              /* loop variable                   */
-
-    /* mark everything                                                     */
-    ptr = PTR_BAG( bag );
-    for ( i = SIZE_BAG(bag)/sizeof(Bag); 0 < i; i-- ) {
-        sub = ptr[i-1];
-        MarkBagIntern( sub );
-    }
-
+    MarkArrayOfBags( PTR_BAG( bag ), SIZE_BAG(bag)/sizeof(Bag) );
 }
 
 // We define MarkBag as a inline function here so that

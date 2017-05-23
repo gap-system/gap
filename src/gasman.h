@@ -837,6 +837,17 @@ static inline void MarkBag( Bag bag ) {}
 extern void MarkBagWeakly( Bag bag );
 
 
+/****************************************************************************
+**
+*F  MarkArrayOfBags(<array>,<count>) . . . . . . .  mark all bags in an array
+**
+**  'MarkArrayOfBags' iterates over <count> all bags in the given array,
+**  and marks each bag using MarkBag.
+*/
+extern void MarkArrayOfBags( Bag array[], int count );
+
+
+
 extern  Bag *                   MptrBags;
 extern  Bag *                   OldBags;
 extern  Bag *                   AllocBags;
