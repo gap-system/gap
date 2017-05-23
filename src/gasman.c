@@ -184,7 +184,7 @@
 **  remainder of a 'ResizeBag'. That is it consists either of the unused words
 **  after a bag has been shrunk, or of the old body of the bag after the
 **  contents of the body have been copied elsewhere for an extension. The
-**  upper (at least 24) bits of the first word contain the number of bytes in
+**  size field in the bag header contains the number of bytes in
 **  this area excluding the first word itself. Note that such a body  has no
 **  link  word, because such a remainder does not correspond to a bag (see
 **  "Implementation of ResizeBag").
@@ -1439,7 +1439,7 @@ UInt ResizeBag (
 **  bags anymore, there  can be no changed old  bags anymore.  So from now on
 **  we    can   assume that  'CollectBags'     is doing   a  partial  garbage
 **  collection.   In  addition,    the   values 'NewWeakDeadBagMarker'    and
-**  'OldWeakDeadBagMarker'  are exchanged, so  that bag idnetifiers that have
+**  'OldWeakDeadBagMarker'  are exchanged, so  that bag identifiers that have
 **  been  halfdead  since    before  this full    garbage  collection cab  be
 **  distinguished from those which have died on this pass.
 **
@@ -2094,7 +2094,7 @@ again:
         }
 
 
-        /* get the storage we absolutly need                               */
+        /* get the storage we absolutely need                              */
         while ( EndBags < StopBags
              && (*AllocFuncBags)(512,1) )
             EndBags += WORDS_BAG(512*1024L);
