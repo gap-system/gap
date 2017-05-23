@@ -1821,15 +1821,15 @@ again:
         /* run through the young generation                                */
         src = YoungBags;
         while ( src < AllocBags ) {
+            BagHeader * header = (BagHeader *)src;
 
             /* leftover of a resize of <n> bytes                           */
-            if ( (*(UInt*)src & 0xFFL) == 255 ) {
+            if ( header->type == 255 ) {
 
-                if ((*(UInt *)src >> 16) == 1)
+                if (header->flags == 1)
                   src++;
                 else
-                  src += WORDS_BAG(((UInt *)src)[1]);
-
+                  src += 1 + WORDS_BAG(header->size);
 
             }
 
@@ -1843,46 +1843,39 @@ again:
                Instead we look directly at the value in the link word
                and check its least significant bits */
 
-            else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 0 ||
-                      ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 2 )
-              {
+            else if ( ((UInt)header->link) % sizeof(Bag) == 0 ||
+                      ((UInt)header->link) % sizeof(Bag) == 2 ) {
 #ifdef DEBUG_MASTERPOINTERS
-                if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 &&
-                       PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+BAG_HEADER_SIZE)  ||
-                      (((UInt)(src[1])) % sizeof(Bag) == 2 &&
-                       PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+BAG_HEADER_SIZE))
+                if  ( (header->size % sizeof(Bag) == 0 &&
+                       PTR_BAG( UNMARKED_DEAD(header->link) ) != header->data)  ||
+                      (header->size % sizeof(Bag) == 2 &&
+                       PTR_BAG( UNMARKED_HALFDEAD(header->link)) != header->data))
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
 #endif
 
                 /* call freeing function                                   */
-                if ( TabFreeFuncBags[ *(UInt*)src & 0xFFL ] != 0 )
-                  (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[BAG_HEADER_SIZE-1] );
+                if ( TabFreeFuncBags[ header->type ] != 0 )
+                  (*TabFreeFuncBags[ header->type ])( header->link );
 
                 /* advance src                                             */
-                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
+                src = header->data + WORDS_BAG( header->size ) ;
 
-              }
+            }
 
 
             /* live bag                                                    */
-            else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 1 )
-              {
+            else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
 #ifdef DEBUG_MASTERPOINTERS
-                if  ( PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
+                if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != header->data )
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
 #endif
 
                 /* advance src                                             */
-#ifdef USE_NEWSHAPE
-                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[0] >>16  );
-#else
-                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
-#endif
-
+                src = header->data + WORDS_BAG( header->size );
 
             }
 
@@ -1903,172 +1896,117 @@ again:
     dst = YoungBags;
     src = YoungBags;
     while ( src < AllocBags ) {
+        BagHeader * header = (BagHeader *)src;
 
         /* leftover of a resize of <n> bytes                               */
-        if ( (*(UInt*)src & 0xFFL) == 255 ) {
+        if ( header->type == 255 ) {
 
             /* advance src                                                 */
-            if ((*(UInt *) src) >> 8 == 1)
+            if (header->flags == 1)
               src++;
             else
-#ifdef USE_NEWSHAPE
-              src += 1 + WORDS_BAG(((UInt *)src)[0] >> 16);
-#else
-              src += 1 + WORDS_BAG(((UInt *)src)[1]);
-#endif
+              src += 1 + WORDS_BAG(header->size);
 
         }
 
         /* dead bag                                                        */
 
-        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 0 )
-          {
+        else if ( ((UInt)(header->link)) % sizeof(Bag) == 0 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_DEAD(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
-              {
+            if ( PTR_BAG( UNMARKED_DEAD(header->link) ) != header->data ) {
                 (*AbortFuncBags)("incorrectly marked bag");
-              }
+            }
 #endif
 
 
             /* update count                                                */
-            if (TabFreeFuncBags[ *(UInt *)src & 0xFFL] != 0)
-              (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[BAG_HEADER_SIZE-1] );
+            if (TabFreeFuncBags[ header->type ] != 0) {
+              (*TabFreeFuncBags[ header->type ])( header->link );
+            }
             nrDeadBags += 1;
-#ifdef      USE_NEWSHAPE
-            sizeDeadBags +=  ((UInt *)src)[0] >> 16;
-#else
-            sizeDeadBags += ((UInt *)src)[1];
-#endif
+            sizeDeadBags += header->size;
 
 #ifdef  COUNT_BAGS
             /* update the statistics                                       */
-            InfoBags[*(UInt*)src & 0xFFL].nrLive -= 1;
-#ifdef USE_NEWSHAPE
-            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
-            ((UInt *)src)[0] >>16;
-#else
-            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
-            ((UInt *)src)[1];
-#endif
+            InfoBags[header->type].nrLive -= 1;
+            InfoBags[header->type].sizeLive -= header->size;
 #endif
 
             /* free the identifier                                         */
-            *(Bag*)(src[BAG_HEADER_SIZE-1]) = FreeMptrBags;
-            FreeMptrBags = src[BAG_HEADER_SIZE-1];
+            *(Bag*)(header->link) = FreeMptrBags;
+            FreeMptrBags = header->link;
 
             /* advance src                                                 */
-#ifdef USE_NEWSHAPE
-            src += BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
-#else
-            src += BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
-#endif
+            src = header->data + WORDS_BAG( header->size ) ;
 
         }
 
         /* half-dead bag                                                   */
-        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 2 )
-          {
+        else if ( ((UInt)(header->link)) % sizeof(Bag) == 2 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
-              {
+            if  ( PTR_BAG( UNMARKED_HALFDEAD(header->link) ) != header->data ) {
                 (*AbortFuncBags)("incorrectly marked bag");
-              }
+            }
 #endif
-
 
             /* update count                                                */
             nrDeadBags += 1;
-#ifdef USE_NEWSHAPE
-            sizeDeadBags += ((UInt *)src)[0] >> 16;
-#else
-            sizeDeadBags += ((UInt *)src)[1];
-#endif
+            sizeDeadBags += header->size;
 
 #ifdef  COUNT_BAGS
             /* update the statistics                                       */
-            InfoBags[*(UInt*)src & 0xFFL].nrLive -= 1;
-#ifdef USE_NEWSHAPE
-            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
-            ((UInt *)src)[0] >>16;
-#else
-            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
-            ((UInt *)src)[1];
-#endif
+            InfoBags[header->type].nrLive -= 1;
+            InfoBags[header->type].sizeLive -= header->size;
 #endif
 
             /* don't free the identifier                                   */
-            if (((UInt)UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1])) % 4 != 0)
+            if (((UInt)UNMARKED_HALFDEAD(header->link)) % 4 != 0)
               (*AbortFuncBags)("align error in halfdead bag");
 
-           *(Bag**)(UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1])) = NewWeakDeadBagMarker;
-           nrHalfDeadBags ++;
+            *(Bag**)(UNMARKED_HALFDEAD(header->link)) = NewWeakDeadBagMarker;
+            nrHalfDeadBags ++;
 
             /* advance src                                                 */
-#ifdef USE_NEWSHAPE
-            src += BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
-#else
-            src += BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
-#endif
+            src = header->data + WORDS_BAG( header->size );
 
         }
 
         /* live bag                                                        */
-        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 1 )
-          {
+        else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
-              {
+            if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != header->data ) {
                 (*AbortFuncBags)("incorrectly marked bag");
-              }
+            }
 #endif
 
+            BagHeader * dstHeader = (BagHeader *)dst;
 
             /* update identifier, copy size-type and link field            */
-            PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1])) = dst+BAG_HEADER_SIZE;
-#ifdef USE_NEWSHAPE
-            end = src + BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[0] >>16 ) ;
-#else
-            end = src + BAG_HEADER_SIZE +
-              WORDS_BAG( ((UInt*)src)[1] ) ;
-#endif
-            *dst++ = *src++;
-#ifndef USE_NEWSHAPE
-            *dst++ = *src++;
-#endif
+            PTR_BAG( UNMARKED_ALIVE(header->link)) = dstHeader->data;
+            end = header->data + WORDS_BAG( header->size );
+            dstHeader->type = header->type;
+            dstHeader->flags = header->flags;
+            dstHeader->size = header->size;
 
-            *dst++ = (Bag)UNMARKED_ALIVE(*src++);
+            dstHeader->link = (Bag)UNMARKED_ALIVE(header->link);
+            dst = dstHeader->data;
 
             /* copy data area                                */
-              if (TabSweepFuncBags[(UInt)(src[-BAG_HEADER_SIZE]) & 0xFFL] != 0)
-                {
-                  /* Call the installed sweeping function */
-                  (*(TabSweepFuncBags[(UInt)(src[-BAG_HEADER_SIZE]) & 0xFFL]))(src,dst,end-src);
-                  dst += end-src;
-                  src = end;
+            if (TabSweepFuncBags[header->type] != 0) {
+                /* Call the installed sweeping function */
+                (*(TabSweepFuncBags[header->type]))(header->data, dst, end - header->data);
+                dst += end - header->data;
+            }
 
-                }
-
-              /* Otherwise do the default thing */
-              else if ( dst != src ) {
-                memmove((void *)dst, (void *)src, (end - src)*sizeof(*src));
-                dst += (end-src);
-                src = end;
-
-                /*
-                while ( src < end )
-                  *dst++ = *src++;
-                */
-              }
-              else {
+            /* Otherwise do the default thing */
+            else if ( dst != header->data ) {
+                memmove((void *)dst, (void *)header->data, (end - header->data)*sizeof(Bag));
+                dst += end - header->data;
+            }
+            else {
                 dst = end;
-                src = end;
-              }
+            }
+            src = end;
         }
 
         /* oops                                                            */
