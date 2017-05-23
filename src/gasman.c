@@ -1120,7 +1120,6 @@ Bag NewBag (
     UInt                size )
 {
     Bag                 bag;            /* identifier of the new bag       */
-    Bag *               dst;            /* destination of the new bag      */
 
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
@@ -1148,24 +1147,20 @@ Bag NewBag (
     FreeMptrBags = *(Bag*)bag;
     CLEAR_CANARY();
     /* allocate the storage for the bag                                    */
-    dst       = AllocBags;
-    AllocBags = dst + BAG_HEADER_SIZE + WORDS_BAG(size);
+    BagHeader * header = (BagHeader *)AllocBags;
+    AllocBags = header->data + WORDS_BAG(size);
     ADD_CANARY();
 
     /* enter size-type words                                               */
-#ifdef USE_NEWSHAPE
-    *dst++ = (Bag)(size << 16 | type);
-#else
-    *dst++ = (Bag)(type);
-    *dst++ = (Bag)(size);
-#endif
-
+    header->type = type;
+    header->flags = 0;
+    header->size = size;
 
     /* enter link word                                                     */
-    *dst++ = bag;
+    header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = dst;
+    PTR_BAG(bag) = header->data;
 
     /* return the identifier of the new bag                                */
     return bag;
