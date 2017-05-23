@@ -424,13 +424,13 @@ Double LoadDouble( void )
 
 static void SaveBagData (Bag bag )
 {
-#ifndef USE_NEWSHAPE
-  SaveUInt((UInt)PTR_BAG(bag)[-3]);
-#endif
-  SaveUInt((UInt)PTR_BAG(bag)[-2]);
+  BagHeader * header = BAG_HEADER(bag);
+  SaveUInt1(header->type);
+  SaveUInt1(header->flags);
+  SaveUInt(header->size);
 
   /* dispatch */
-  (*(SaveObjFuncs[ TNUM_BAG( bag )]))(bag);
+  (*(SaveObjFuncs[ header->type]))(bag);
 
 }
 
@@ -439,18 +439,12 @@ static void SaveBagData (Bag bag )
 static void LoadBagData ( void )
 {
   Bag bag;
-  UInt size;
-  UInt type;
+  UInt type, flags, size;
   
   /* Recover the size & type */
-#ifdef USE_NEWSHAPE
+  type = LoadUInt1();
+  flags = LoadUInt1();
   size = LoadUInt();
-  type = size & 0xFFL;
-  size >>= 16;
-#else
-  type = LoadUInt();
-  size = LoadUInt();
-#endif
 
 #ifdef DEBUG_LOADING
   {
@@ -464,7 +458,7 @@ static void LoadBagData ( void )
 #endif  
 
   /* Get GASMAN to set up the bag for me */
-  bag = NextBagRestoring( size, type );
+  bag = NextBagRestoring( type, flags, size );
   
   /* despatch */
   (*(LoadObjFuncs[ type ]))(bag);

@@ -874,26 +874,22 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   return;
 }
 
-Bag NextBagRestoring( UInt size, UInt type)
+Bag NextBagRestoring( UInt type, UInt flags, UInt size )
 {
   Bag bag;
   UInt i;
-  *(Bag **)NextMptrRestoring = (AllocBags+BAG_HEADER_SIZE);
+  BagHeader * header = (BagHeader *)AllocBags;
+  *(Bag **)NextMptrRestoring = AllocBags = header->data;
   bag = NextMptrRestoring;
-#ifdef USE_NEWSHAPE
-  ((UInt *)AllocBags)[0] = (size << 16 | type);
-#else
-  ((UInt *)AllocBags)[0] = type;
-  ((UInt *)AllocBags)[1] = size;
-#endif
-
-  ((Bag *)AllocBags)[BAG_HEADER_SIZE-1] = NextMptrRestoring;
+  header->type = type;
+  header->flags = flags;
+  header->size = size;
+  header->link = NextMptrRestoring;
   NextMptrRestoring++;
 #ifdef DEBUG_LOADING
   if ((Bag *)NextMptrRestoring >= OldBags)
     (*AbortFuncBags)("Overran Masterpointer area");
 #endif
-  AllocBags += BAG_HEADER_SIZE;
 
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
