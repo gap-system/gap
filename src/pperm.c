@@ -15,8 +15,8 @@
 #define MAX(a,b)          (a<b?b:a)
 #define MIN(a,b)          (a<b?a:b)
 
-#define IMG_PPERM(f)      (*(Obj*)(ADDR_OBJ(f)))
-#define DOM_PPERM(f)      (*((Obj*)(ADDR_OBJ(f))+1))
+#define IMG_PPERM(f)      (ADDR_OBJ(f)[0])
+#define DOM_PPERM(f)      (ADDR_OBJ(f)[1])
 
 #define NEW_PPERM2(deg)   NewBag(T_PPERM2, (deg+1)*sizeof(UInt2)+2*sizeof(Obj))
 #define CODEG_PPERM2(f)   (*(UInt2*)((Obj*)(ADDR_OBJ(f))+2))
@@ -5579,14 +5579,6 @@ Obj FuncOnPosIntSetsPPerm (Obj self, Obj set, Obj f){
 
 /* other internal things */
 
-/* so that domain and image set are preserved during garbage collection */
-void MarkPPermSubBags( Obj f ){
-  if(IMG_PPERM(f)!=NULL){
-    MARK_BAG(IMG_PPERM(f));
-    MARK_BAG(DOM_PPERM(f));
-  }
-}
-
 /* Save and load */
 void SavePPerm2( Obj f){
   UInt2 *ptr;
@@ -5849,8 +5841,8 @@ static Int InitKernel ( StructInitInfo *module )
     /* install the marking function                                        */
     InfoBags[ T_PPERM2 ].name = "partial perm (small)";
     InfoBags[ T_PPERM4 ].name = "partial perm (large)";
-    InitMarkFuncBags( T_PPERM2, MarkPPermSubBags );
-    InitMarkFuncBags( T_PPERM4, MarkPPermSubBags );
+    InitMarkFuncBags( T_PPERM2, MarkTwoSubBags );
+    InitMarkFuncBags( T_PPERM4, MarkTwoSubBags );
     
     MakeBagTypePublic( T_PPERM2);
     MakeBagTypePublic( T_PPERM4);

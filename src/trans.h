@@ -45,9 +45,9 @@
 extern UInt INIT_TRANS2(Obj f);
 extern UInt INIT_TRANS4(Obj f);
 
-#define IMG_TRANS(f)      (*(Obj*)(ADDR_OBJ(f)))
-#define KER_TRANS(f)      (*((Obj*)(ADDR_OBJ(f))+1))
-#define EXT_TRANS(f)      (*((Obj*)(ADDR_OBJ(f))+2))
+#define IMG_TRANS(f)      (ADDR_OBJ(f)[0])
+#define KER_TRANS(f)      (ADDR_OBJ(f)[1])
+#define EXT_TRANS(f)      (ADDR_OBJ(f)[2])
 
 #define NEW_TRANS2(deg)   NewBag(T_TRANS2, deg*sizeof(UInt2)+3*sizeof(Obj))
 #define ADDR_TRANS2(f)    ((UInt2*)((Obj*)(ADDR_OBJ(f))+3))
