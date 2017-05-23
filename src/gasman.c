@@ -1126,7 +1126,7 @@ Bag NewBag (
 #endif
 
     /* check that a masterpointer and enough storage are available         */
-    if ( (FreeMptrBags == 0 || SizeAllocationArea < BAG_HEADER_SIZE+WORDS_BAG(size))
+    if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
         return 0;
@@ -1359,7 +1359,7 @@ UInt ResizeBag (
     else {
 
         /* check that enough storage for the new bag is available          */
-        if ( SizeAllocationArea <  BAG_HEADER_SIZE+WORDS_BAG(new_size)
+        if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
@@ -1371,7 +1371,7 @@ UInt ResizeBag (
         // leave magic size-type word  for the sweeper, type must be 255
         header->type = 255;
         header->flags = 0;
-        header->size = (BAG_HEADER_SIZE+WORDS_BAG(old_size) - 1) * sizeof(Bag);
+        header->size = sizeof(BagHeader) + (WORDS_BAG(old_size) - 1) * sizeof(Bag);
 
         /* allocate the storage for the bag                                */
         BagHeader * newHeader = (BagHeader *)AllocBags;
@@ -2023,7 +2023,7 @@ again:
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
 
     /* temporarily store in 'StopBags' where this allocation takes us      */
-    StopBags = AllocBags + BAG_HEADER_SIZE + WORDS_BAG(size);
+    StopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
 
 
 
