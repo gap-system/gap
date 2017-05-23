@@ -474,7 +474,7 @@ static void MarkAtomicList(Bag bag)
   len = ALIST_LEN((UInt)(ptr++->atom));
   ptrend = ptr + len + 1;
   while (ptr < ptrend)
-    MARK_BAG(ptr++->obj);
+    MarkBag(ptr++->obj);
 }
 
 /* T_AREC_INNER substructure:
@@ -505,22 +505,6 @@ enum {
   TLR_DATA         = 3,
 };
 
-/*
-static void MarkTLRecordInner(Bag bag)
-{
-  Bag *ptr, *ptrend;
-  UInt n;
-  ptr = PTR_BAG(bag);
-  n = (UInt) *ptr;
-  ptrend = ptr + n + TLR_DATA;
-  ptr++;
-  while (ptr < ptrend) {
-    MARK_BAG(*ptr);
-    ptr++;
-  }
-}
-*/
-
 static Obj GetTLInner(Obj obj)
 {
   Obj contents = ADDR_ATOM(obj)->obj;
@@ -530,13 +514,13 @@ static Obj GetTLInner(Obj obj)
 
 static void MarkTLRecord(Bag bag)
 {
-  MARK_BAG(GetTLInner(bag));
+  MarkBag(GetTLInner(bag));
 }
 
 
 static void MarkAtomicRecord(Bag bag)
 {
-  MARK_BAG(GetTLInner(bag));
+  MarkBag(GetTLInner(bag));
 }
 
 static void MarkAtomicRecord2(Bag bag)
@@ -545,7 +529,7 @@ static void MarkAtomicRecord2(Bag bag)
   UInt cap = p->atom;
   p += 5;
   while (cap) {
-    MARK_BAG(p->obj);
+    MarkBag(p->obj);
     p += 2;
     cap--;
   }
