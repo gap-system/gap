@@ -1182,6 +1182,7 @@ void            RetypeBag (
     Bag                 bag,
     UInt                new_type )
 {
+    BagHeader * header = BAG_HEADER(bag);
 
 #ifdef  COUNT_BAGS
     /* update the statistics      */
@@ -1189,8 +1190,8 @@ void            RetypeBag (
           UInt                old_type;       /* old type of the bag */
           UInt                size;
 
-          old_type = TNUM_BAG(bag);
-          size = SIZE_BAG(bag);
+          old_type = header->type;
+          size = header->size;
           InfoBags[old_type].nrLive   -= 1;
           InfoBags[new_type].nrLive   += 1;
           InfoBags[old_type].nrAll    -= 1;
@@ -1202,13 +1203,7 @@ void            RetypeBag (
     }
 #endif
 
-    /* change the size-type word                                           */
-#ifdef USE_NEWSHAPE
-    *(*bag-BAG_HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
-    *(*bag-BAG_HEADER_SIZE) |= new_type;
-#else
-    *(*bag-BAG_HEADER_SIZE) = new_type;
-#endif
+    header->type = new_type;
 }
 #endif
 
