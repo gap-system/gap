@@ -625,12 +625,10 @@ extern  TNumInfoBags            InfoBags [ 256 ];
 
 #ifdef HPCGAP
 void MakeBagTypePublic(int type);
-void MakeBagTypeProtected(int type);
 Bag MakeBagPublic(Bag bag);
 Bag MakeBagReadOnly(Bag bag);
 #else
 #define MakeBagTypePublic(type)     do { } while(0)
-#define MakeBagTypeProtected(type)  do { } while(0)
 #define MakeBagPublic(bag)          do { } while(0)
 #define MakeBagReadOnly(bag)        do { } while(0)
 #endif

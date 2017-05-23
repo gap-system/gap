@@ -52,7 +52,7 @@ void RegionReadUnlock(Region *region);
 void RegionUnlock(Region *region);
 Region *CurrentRegion();
 Region *GetRegionOf(Obj obj);
-extern Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
+extern Region *LimboRegion, *ReadOnlyRegion;
 extern Obj PublicRegion;
 extern Obj PublicRegionName;
 
@@ -67,10 +67,6 @@ void UnlockThreadControl(void);
 void GCThreadHandler();
 
 void InitMainThread();
-
-int IsSingleThreaded();
-void BeginSingleThreaded();
-void EndSingleThreaded();
 
 int IsLocked(Region *region);
 void GetLockStatus(int count, Obj *objects, int *status);

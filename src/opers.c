@@ -6352,7 +6352,7 @@ static Int InitKernel (
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
 
-    /* flags are protected objects by default */
+    /* flags are public objects by default */
     MakeBagTypePublic(T_FLAGS);
 
     /* import copy of REREADING */
