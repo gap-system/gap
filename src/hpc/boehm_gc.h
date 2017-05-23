@@ -96,7 +96,7 @@ void StandardFinalizer( void * bagContents, void * data )
 {
   Bag bag;
   void *bagContents2;
-  bagContents2 = ((char *) bagContents) + HEADER_SIZE * sizeof (Bag *);
+  bagContents2 = ((char *) bagContents) + BAG_HEADER_SIZE * sizeof (Bag *);
   bag = (Bag) &bagContents2;
   TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
 }
@@ -138,10 +138,10 @@ void BuildPrefixGCDescriptor(unsigned prefix_len) {
     GC_word bits[1] = {0};
     unsigned i;
     for (i=0; i<prefix_len; i++)
-      GC_set_bit(bits, (i + HEADER_SIZE));
-    GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+      GC_set_bit(bits, (i + BAG_HEADER_SIZE));
+    GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + BAG_HEADER_SIZE);
     GC_set_bit(bits, 0);
-    GCMDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+    GCMDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + BAG_HEADER_SIZE);
   } else {
     GCDesc[prefix_len] = GC_DS_LENGTH;
     GCMDesc[prefix_len] = GC_DS_LENGTH | sizeof(void *);
@@ -335,7 +335,7 @@ void            InitBags (
     GC_set_free_space_divisor(1);
     TLAllocatorInit();
     GC_register_displacement(0);
-    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
+    GC_register_displacement(BAG_HEADER_SIZE*sizeof(Bag));
     initial_size *= 1024;
     if (GC_get_heap_size() < initial_size)
       GC_expand_hp(initial_size - GC_get_heap_size());
@@ -347,7 +347,7 @@ void            InitBags (
       BuildPrefixGCDescriptor(i);
       /* This is necessary to initialize some internal structures
        * in the garbage collector: */
-      GC_generic_malloc((HEADER_SIZE + i) * sizeof(UInt), GCMKind[i]);
+      GC_generic_malloc((BAG_HEADER_SIZE + i) * sizeof(UInt), GCMKind[i]);
     }
 #endif /* DISABLE_GC */
 }
@@ -377,10 +377,10 @@ void            RetypeBag (
 
     /* change the size-type word                                           */
 #ifdef USE_NEWSHAPE
-    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
-    *(*bag-HEADER_SIZE) |= new_type;
+    *(*bag-BAG_HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
+    *(*bag-BAG_HEADER_SIZE) |= new_type;
 #else
-    *(*bag-HEADER_SIZE) = new_type;
+    *(*bag-BAG_HEADER_SIZE) = new_type;
 #endif
     {
       int old_gctype, new_gctype;
@@ -389,12 +389,12 @@ void            RetypeBag (
       old_gctype = TabMarkTypeBags[old_type];
       new_gctype = TabMarkTypeBags[new_type];
       if (old_gctype != new_gctype) {
-        size = SIZE_BAG(bag) + HEADER_SIZE * sizeof(Bag);
+        size = SIZE_BAG(bag) + BAG_HEADER_SIZE * sizeof(Bag);
         new_mem = AllocateBagMemory(new_gctype, new_type, size);
         old_mem = PTR_BAG(bag);
-        old_mem = ((char *) old_mem) - HEADER_SIZE * sizeof(Bag);
+        old_mem = ((char *) old_mem) - BAG_HEADER_SIZE * sizeof(Bag);
         memcpy(new_mem, old_mem, size);
-        PTR_BAG(bag) = (void *)(((char *)new_mem) + HEADER_SIZE * sizeof(Bag));
+        PTR_BAG(bag) = (void *)(((char *)new_mem) + BAG_HEADER_SIZE * sizeof(Bag));
       }
     }
     switch (DSInfoBags[new_type]) {
@@ -412,7 +412,7 @@ Bag NewBag (
     Bag *               dst;            /* destination of the new bag      */
     UInt                alloc_size;
 
-    alloc_size = HEADER_SIZE*sizeof(Bag) + size;
+    alloc_size = BAG_HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
 #ifndef TRACK_CREATOR
     bag = GC_malloc(2*sizeof(Bag *));
@@ -519,7 +519,7 @@ UInt ResizeBag (
     SizeAllBags             += new_size - old_size;
 
 #ifndef DISABLE_GC
-    alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
+    alloc_size = GC_size(PTR_BAG(bag)-BAG_HEADER_SIZE);
     /* An alternative implementation would be to compare
      * new_size <= alloc_size in the following test in order
      * to avoid reallocations for alternating contractions
@@ -534,7 +534,7 @@ UInt ResizeBag (
      * way.
      */
     if ( new_size <= old_size
-             && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
+             && BAG_HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
 #else
     if (new_size <= old_size) {
 #endif /* DISABLE_GC */
@@ -550,7 +550,7 @@ UInt ResizeBag (
 
     /* if the bag is enlarged                                              */
     else {
-        alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
+        alloc_size = BAG_HEADER_SIZE*sizeof(Bag) + new_size;
         if (new_size == 0)
                 alloc_size++;
 #ifndef DISABLE_GC

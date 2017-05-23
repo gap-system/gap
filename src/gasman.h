@@ -93,6 +93,12 @@
 typedef UInt * *        Bag;
 */
 
+#ifdef USE_NEWSHAPE
+#define BAG_HEADER_SIZE 2
+#else
+#define BAG_HEADER_SIZE 3
+#endif
+
 
 /****************************************************************************
 **
@@ -116,13 +122,7 @@ typedef UInt * *        Bag;
 **  have side effects.
 */
 
-#ifdef USE_NEWSHAPE
-#define BAG_TNUM_OFFSET (-2)
-#else
-#define BAG_TNUM_OFFSET (-3)
-#endif
-
-#define TNUM_BAG(bag)  (*(*(bag) + BAG_TNUM_OFFSET) & 0xFFL)
+#define TNUM_BAG(bag)  (*(*(bag) - BAG_HEADER_SIZE) & 0xFFL)
 
 
 /****************************************************************************
@@ -153,13 +153,13 @@ typedef UInt * *        Bag;
 */
 
 #define TEST_OBJ_FLAG(bag, flag) \
-	(*(*(bag) + BAG_TNUM_OFFSET) & (flag))
+	(*(*(bag) - BAG_HEADER_SIZE) & (flag))
 
 #define SET_OBJ_FLAG(bag, flag) \
-	(*(*(bag) + BAG_TNUM_OFFSET) |= (flag))
+	(*(*(bag) - BAG_HEADER_SIZE) |= (flag))
 
 #define CLEAR_OBJ_FLAG(bag, flag) \
-	(*(*(bag) + BAG_TNUM_OFFSET) &= ~(flag))
+	(*(*(bag) - BAG_HEADER_SIZE) &= ~(flag))
 
 
 /****************************************************************************

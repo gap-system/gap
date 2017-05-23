@@ -202,12 +202,6 @@
 #define SIZE_MPTR_BAGS  1
 #define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
-#ifdef USE_NEWSHAPE
-#define HEADER_SIZE 2
-#else
-#define HEADER_SIZE 3
-#endif
-
 /* This could be 65536, but would waste memory in various tables */
 
 #define NTYPES 256
@@ -887,7 +881,7 @@ Bag NextBagRestoring( UInt size, UInt type)
 {
   Bag bag;
   UInt i;
-  *(Bag **)NextMptrRestoring = (AllocBags+HEADER_SIZE);
+  *(Bag **)NextMptrRestoring = (AllocBags+BAG_HEADER_SIZE);
   bag = NextMptrRestoring;
 #ifdef USE_NEWSHAPE
   ((UInt *)AllocBags)[0] = (size << 16 | type);
@@ -896,13 +890,13 @@ Bag NextBagRestoring( UInt size, UInt type)
   ((UInt *)AllocBags)[1] = size;
 #endif
 
-  ((Bag *)AllocBags)[HEADER_SIZE-1] = NextMptrRestoring;
+  ((Bag *)AllocBags)[BAG_HEADER_SIZE-1] = NextMptrRestoring;
   NextMptrRestoring++;
 #ifdef DEBUG_LOADING
   if ((Bag *)NextMptrRestoring >= OldBags)
     (*AbortFuncBags)("Overran Masterpointer area");
 #endif
-  AllocBags += HEADER_SIZE;
+  AllocBags += BAG_HEADER_SIZE;
 
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
@@ -1134,7 +1128,7 @@ Bag NewBag (
 #endif
 
     /* check that a masterpointer and enough storage are available         */
-    if ( (FreeMptrBags == 0 || SizeAllocationArea < HEADER_SIZE+WORDS_BAG(size))
+    if ( (FreeMptrBags == 0 || SizeAllocationArea < BAG_HEADER_SIZE+WORDS_BAG(size))
       && CollectBags( size, 0 ) == 0 )
     {
         return 0;
@@ -1156,7 +1150,7 @@ Bag NewBag (
     CLEAR_CANARY();
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
-    AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
+    AllocBags = dst + BAG_HEADER_SIZE + WORDS_BAG(size);
     ADD_CANARY();
 
     /* enter size-type words                                               */
@@ -1216,10 +1210,10 @@ void            RetypeBag (
 
     /* change the size-type word                                           */
 #ifdef USE_NEWSHAPE
-    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
-    *(*bag-HEADER_SIZE) |= new_type;
+    *(*bag-BAG_HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
+    *(*bag-BAG_HEADER_SIZE) |= new_type;
 #else
-    *(*bag-HEADER_SIZE) = new_type;
+    *(*bag-BAG_HEADER_SIZE) = new_type;
 #endif
 }
 #endif
@@ -1394,14 +1388,14 @@ UInt ResizeBag (
     else {
 
         /* check that enough storage for the new bag is available          */
-        if ( SizeAllocationArea <  HEADER_SIZE+WORDS_BAG(new_size)
+        if ( SizeAllocationArea <  BAG_HEADER_SIZE+WORDS_BAG(new_size)
           && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
         CLEAR_CANARY();
         /* allocate the storage for the bag                                */
         dst       = AllocBags;
-        AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
+        AllocBags = dst + BAG_HEADER_SIZE + WORDS_BAG(new_size);
         ADD_CANARY();
 
         /* leave magic size-type word  for the sweeper, type must be 255   */
@@ -1860,14 +1854,14 @@ again:
                Instead we look directly at the value in the link word
                and check its least significant bits */
 
-            else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 0 ||
-                      ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 2 )
+            else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 0 ||
+                      ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 2 )
               {
 #ifdef DEBUG_MASTERPOINTERS
                 if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 &&
-                       PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+HEADER_SIZE)  ||
+                       PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+BAG_HEADER_SIZE)  ||
                       (((UInt)(src[1])) % sizeof(Bag) == 2 &&
-                       PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+HEADER_SIZE))
+                       PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+BAG_HEADER_SIZE))
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
@@ -1875,19 +1869,19 @@ again:
 
                 /* call freeing function                                   */
                 if ( TabFreeFuncBags[ *(UInt*)src & 0xFFL ] != 0 )
-                  (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
+                  (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[BAG_HEADER_SIZE-1] );
 
                 /* advance src                                             */
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
+                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1] ) ;
 
               }
 
 
             /* live bag                                                    */
-            else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 1 )
+            else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 1 )
               {
 #ifdef DEBUG_MASTERPOINTERS
-                if  ( PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1]) ) != src+HEADER_SIZE )
+                if  ( PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
@@ -1895,9 +1889,9 @@ again:
 
                 /* advance src                                             */
 #ifdef USE_NEWSHAPE
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[0] >>16  );
+                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[0] >>16  );
 #else
-                src += HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
+                src += BAG_HEADER_SIZE + WORDS_BAG( ((UInt*)src)[1]  );
 #endif
 
 
@@ -1938,10 +1932,10 @@ again:
 
         /* dead bag                                                        */
 
-        else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 0 )
+        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 0 )
           {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_DEAD(src[HEADER_SIZE-1]) ) != src+HEADER_SIZE )
+            if  ( PTR_BAG( UNMARKED_DEAD(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
               {
                 (*AbortFuncBags)("incorrectly marked bag");
               }
@@ -1950,7 +1944,7 @@ again:
 
             /* update count                                                */
             if (TabFreeFuncBags[ *(UInt *)src & 0xFFL] != 0)
-              (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
+              (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[BAG_HEADER_SIZE-1] );
             nrDeadBags += 1;
 #ifdef      USE_NEWSHAPE
             sizeDeadBags +=  ((UInt *)src)[0] >> 16;
@@ -1971,25 +1965,25 @@ again:
 #endif
 
             /* free the identifier                                         */
-            *(Bag*)(src[HEADER_SIZE-1]) = FreeMptrBags;
-            FreeMptrBags = src[HEADER_SIZE-1];
+            *(Bag*)(src[BAG_HEADER_SIZE-1]) = FreeMptrBags;
+            FreeMptrBags = src[BAG_HEADER_SIZE-1];
 
             /* advance src                                                 */
 #ifdef USE_NEWSHAPE
-            src += HEADER_SIZE +
+            src += BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
 #else
-            src += HEADER_SIZE +
+            src += BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[1] ) ;
 #endif
 
         }
 
         /* half-dead bag                                                   */
-        else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 2 )
+        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 2 )
           {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_HALFDEAD(src[HEADER_SIZE-1]) ) != src+HEADER_SIZE )
+            if  ( PTR_BAG( UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
               {
                 (*AbortFuncBags)("incorrectly marked bag");
               }
@@ -2017,28 +2011,28 @@ again:
 #endif
 
             /* don't free the identifier                                   */
-            if (((UInt)UNMARKED_HALFDEAD(src[HEADER_SIZE-1])) % 4 != 0)
+            if (((UInt)UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1])) % 4 != 0)
               (*AbortFuncBags)("align error in halfdead bag");
 
-           *(Bag**)(UNMARKED_HALFDEAD(src[HEADER_SIZE-1])) = NewWeakDeadBagMarker;
+           *(Bag**)(UNMARKED_HALFDEAD(src[BAG_HEADER_SIZE-1])) = NewWeakDeadBagMarker;
            nrHalfDeadBags ++;
 
             /* advance src                                                 */
 #ifdef USE_NEWSHAPE
-            src += HEADER_SIZE +
+            src += BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[0] >> 16 ) ;
 #else
-            src += HEADER_SIZE +
+            src += BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[1] ) ;
 #endif
 
         }
 
         /* live bag                                                        */
-        else if ( ((UInt)(src[HEADER_SIZE-1])) % sizeof(Bag) == 1 )
+        else if ( ((UInt)(src[BAG_HEADER_SIZE-1])) % sizeof(Bag) == 1 )
           {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1]) ) != src+HEADER_SIZE )
+            if  ( PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1]) ) != src+BAG_HEADER_SIZE )
               {
                 (*AbortFuncBags)("incorrectly marked bag");
               }
@@ -2046,12 +2040,12 @@ again:
 
 
             /* update identifier, copy size-type and link field            */
-            PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1])) = dst+HEADER_SIZE;
+            PTR_BAG( UNMARKED_ALIVE(src[BAG_HEADER_SIZE-1])) = dst+BAG_HEADER_SIZE;
 #ifdef USE_NEWSHAPE
-            end = src + HEADER_SIZE +
+            end = src + BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[0] >>16 ) ;
 #else
-            end = src + HEADER_SIZE +
+            end = src + BAG_HEADER_SIZE +
               WORDS_BAG( ((UInt*)src)[1] ) ;
 #endif
             *dst++ = *src++;
@@ -2062,10 +2056,10 @@ again:
             *dst++ = (Bag)UNMARKED_ALIVE(*src++);
 
             /* copy data area                                */
-              if (TabSweepFuncBags[(UInt)(src[-HEADER_SIZE]) & 0xFFL] != 0)
+              if (TabSweepFuncBags[(UInt)(src[-BAG_HEADER_SIZE]) & 0xFFL] != 0)
                 {
                   /* Call the installed sweeping function */
-                  (*(TabSweepFuncBags[(UInt)(src[-HEADER_SIZE]) & 0xFFL]))(src,dst,end-src);
+                  (*(TabSweepFuncBags[(UInt)(src[-BAG_HEADER_SIZE]) & 0xFFL]))(src,dst,end-src);
                   dst += end-src;
                   src = end;
 
@@ -2127,7 +2121,7 @@ again:
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
 
     /* temporarily store in 'StopBags' where this allocation takes us      */
-    StopBags = AllocBags + HEADER_SIZE + WORDS_BAG(size);
+    StopBags = AllocBags + BAG_HEADER_SIZE + WORDS_BAG(size);
 
 
 
