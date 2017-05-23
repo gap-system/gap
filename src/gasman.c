@@ -2023,12 +2023,7 @@ again:
 
     /* clear the new free area                                             */
     if (!DirtyBags)
-      memset((void *)dst, 0, ((Char  *)src)-((Char *)dst));
-
-    /*    if ( ! DirtyBags ) {
-        while ( dst < src )
-            *dst++ = 0;
-            } */
+      memset((void *)dst, 0, ((Char *)src)-((Char *)dst));
 
     /* information after the sweep phase                                   */
     NrDeadBags += nrDeadBags;
@@ -2319,19 +2314,19 @@ Bag BAG (
 UInt TNUM_BAG (
     Bag                 bag )
 {
-    return (*(*(bag)-3) & 0xFFL);
+    return BAG_HEADER(bag)->type;
 }
 
 const Char * TNAM_BAG (
     Bag                 bag )
 {
-    return InfoBags[ (*(*(bag)-3) & 0xFFL) ].name;
+    return InfoBags[ BAG_HEADER(bag)->type ].name;
 }
 
 UInt SIZE_BAG (
     Bag                 bag )
 {
-    return (*(*(bag)-2));
+    return BAG_HEADER(bag)->size;
 }
 
 Bag * PTR_BAG (
