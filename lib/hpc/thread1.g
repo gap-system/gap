@@ -24,12 +24,9 @@ BIND_GLOBAL("ThreadVar", rec());
 BIND_GLOBAL("MakeThreadLocal", ID_FUNC);
 BIND_GLOBAL("MakeReadOnly", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlyRaw", ID_FUNC);
-BIND_GLOBAL("MakeProtected", ID_FUNC);
-BIND_GLOBAL("MakeProjectedObj", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlyObj", ID_FUNC);
 
 BIND_GLOBAL("IsReadOnly", RETURN_FALSE);
-BIND_GLOBAL("IsProtected", RETURN_FALSE);
 
 BIND_GLOBAL("AtomicList", function(arg)
   local l, i;

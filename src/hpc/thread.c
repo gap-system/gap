@@ -51,7 +51,7 @@ typedef struct ThreadData {
   struct ThreadData *next;
 } ThreadData;
 
-Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
+Region *LimboRegion, *ReadOnlyRegion;
 Obj PublicRegion;
 Obj PublicRegionName;
 
@@ -64,19 +64,6 @@ static inline void IncThreadCounter() {
 
 static inline void DecThreadCounter() {
   ATOMIC_DEC(&ThreadCounter);
-}
-
-int IsSingleThreaded() {
-  return ThreadCounter == 1;
-}
-
-void BeginSingleThreaded() {
-  if (ThreadCounter == 1)
-    ProtectedRegion->owner = realTLS;
-}
-
-void EndSingleThreaded() {
-  ProtectedRegion->owner = NULL;
 }
 
 static ThreadData thread_data[MAX_THREADS];
@@ -317,15 +304,10 @@ void CreateMainRegion()
   LimboRegion->name = MakeImmString("limbo region");
   ReadOnlyRegion = NewRegion();
   ReadOnlyRegion->name = MakeImmString("read-only region");
-  ProtectedRegion = NewRegion();
-  ProtectedRegion->name = MakeImmString("protected region");
   ReadOnlyRegion->fixed_owner = 1;
-  ProtectedRegion->fixed_owner = 1;
   for (i=0; i<=MAX_THREADS; i++) {
     ReadOnlyRegion->readers[i] = 1;
-    ProtectedRegion->readers[i] = 1;
   }
-  BeginSingleThreaded();
 }
 
 void *DispatchThread(void *arg)
@@ -419,7 +401,6 @@ Obj RunThread(void (*start)(void *), void *arg)
 #endif
   UnlockThreadControl();
   /* fork the thread */
-  EndSingleThreaded();
   IncThreadCounter();
   if (pthread_create(&result->pthread_id, &thread_attr,
                      DispatchThread, result) < 0) {

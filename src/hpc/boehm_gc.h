@@ -51,16 +51,10 @@ static char DSInfoBags[NTYPES];
 
 #define DSI_TL 0
 #define DSI_PUBLIC 1
-#define DSI_PROTECTED 2
 
 void MakeBagTypePublic(int type)
 {
     DSInfoBags[type] = DSI_PUBLIC;
-}
-
-void MakeBagTypeProtected(int type)
-{
-    DSInfoBags[type] = DSI_PROTECTED;
 }
 
 Bag MakeBagPublic(Bag bag)
@@ -407,9 +401,6 @@ void            RetypeBag (
       case DSI_PUBLIC:
         REGION(bag) = NULL;
         break;
-      case DSI_PROTECTED:
-        REGION(bag) = ProtectedRegion;
-        break;
     }
 }
 
@@ -493,9 +484,6 @@ Bag NewBag (
       break;
     case DSI_PUBLIC:
       REGION(bag) = NULL;
-      break;
-    case DSI_PROTECTED:
-      REGION(bag) = ProtectedRegion;
       break;
     }
 

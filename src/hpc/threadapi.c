@@ -926,13 +926,8 @@ Obj FuncMakeThreadLocal(Obj self, Obj var);
 Obj FuncMakeReadOnly(Obj self, Obj obj);
 Obj FuncMakeReadOnlyRaw(Obj self, Obj obj);
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
-Obj FuncMakeProtected(Obj self, Obj obj);
-Obj FuncMakeProtectedObj(Obj self, Obj obj);
 Obj FuncIsReadOnly(Obj self, Obj obj);
-Obj FuncIsProtected(Obj self, Obj obj);
 Obj FuncENABLE_AUTO_RETYPING(Obj self);
-Obj FuncBEGIN_SINGLE_THREADED(Obj self);
-Obj FuncEND_SINGLE_THREADED(Obj self);
 Obj FuncORDERED_WRITE(Obj self, Obj obj);
 Obj FuncORDERED_READ(Obj self, Obj obj);
 Obj FuncCREATOR_OF(Obj self, Obj obj);
@@ -1219,26 +1214,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeReadOnlyObj", 1, "obj",
       FuncMakeReadOnlyObj, "src/threadapi.c:MakeReadOnlyObj" },
 
-    { "MakeProtected", 1, "obj",
-      FuncMakeProtected, "src/threadapi.c:MakeProtected" },
-
-    { "MakeProtectedObj", 1, "obj",
-      FuncMakeProtectedObj, "src/threadapi.c:MakeProtectedObj" },
-
     { "IsReadOnly", 1, "obj",
       FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
 
-    { "IsProtected", 1, "obj",
-      FuncIsProtected, "src/threadapi.c:IsProtected" },
-
     { "ENABLE_AUTO_RETYPING", 0, "",
       FuncENABLE_AUTO_RETYPING, "src/threadapi.c:ENABLE_AUTO_RETYPING" },
-
-    { "BEGIN_SINGLE_THREADED", 0, "",
-      FuncBEGIN_SINGLE_THREADED, "src/threadapi.c:BEGIN_SINGLE_THREADED" },
-
-    { "END_SINGLE_THREADED", 0, "",
-      FuncEND_SINGLE_THREADED, "src/threadapi.c:END_SINGLE_THREADED" },
 
     { "ORDERED_READ", 1, "obj",
       FuncORDERED_READ, "src/threadapi.c:ORDERED_READ" },
@@ -2700,7 +2680,7 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
       region = (Region *)(REGION(objects[i]));
       if (TEST_OBJ_FLAG(objects[i], FIXED_REGION))
         return 0;
-      if (!region || region->owner != realTLS || region == ProtectedRegion)
+      if (!region || region->owner != realTLS)
         return 0;
     }
   }
@@ -2943,60 +2923,15 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
   return obj;
 }
 
-Obj FuncMakeProtected(Obj self, Obj obj)
-{
-  Region *region = GetRegionOf(obj);
-  Obj reachable;
-  if (region == ProtectedRegion)
-    return obj;
-  reachable = ReachableObjectsFrom(obj);
-  if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, ProtectedRegion, 1))
-    return ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
-  return obj;
-}
-
-Obj FuncMakeProtectedObj(Obj self, Obj obj)
-{
-  Region *region = GetRegionOf(obj);
-  if (region == ProtectedRegion)
-    return obj;
-  if (!MigrateObjects(1, &obj, ProtectedRegion, 0))
-    return ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
-  return obj;
-}
-
 Obj FuncIsReadOnly(Obj self, Obj obj)
 {
   Region *region = GetRegionOf(obj);
   return (region == ReadOnlyRegion) ? True : False;
 }
 
-Obj FuncIsProtected(Obj self, Obj obj)
-{
-  Region *region = GetRegionOf(obj);
-  return (region == ProtectedRegion) ? True : False;
-}
-
 Obj FuncENABLE_AUTO_RETYPING(Obj self)
 {
   AutoRetyping = 1;
-  return (Obj) 0;
-}
-
-Obj FuncBEGIN_SINGLE_THREADED(Obj self)
-{
-  if (!IsSingleThreaded())
-    ErrorQuit("BEGIN_SINGLE_THREADED: Multiple threads are running", 0L, 0L);
-  BeginSingleThreaded();
-  return (Obj) 0;
-}
-
-Obj FuncEND_SINGLE_THREADED(Obj self)
-{
-  if (!IsSingleThreaded())
-    ErrorQuit("BEGIN_SINGLE_THREADED: Multiple threads are running", 0L, 0L);
-  EndSingleThreaded();
   return (Obj) 0;
 }
 
