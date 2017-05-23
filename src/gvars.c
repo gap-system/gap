@@ -73,8 +73,8 @@
 **  access global variables.
 **
 **  Since a   garbage  collection may move   this  bag around,    the pointer
-**  'PtrGVars' must be  revalculated afterwards.   This  should be done by  a
-**  function in this package, but is still done in 'VarsAfterCollectBags'.
+**  'PtrGVars' must be  revalculated afterwards.   This is done in function
+**  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
 Obj   ValGVars;
 
@@ -143,10 +143,14 @@ void UnlockGVars() {
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 **
-**  'VAL_GVAR' is defined in the declaration part of this package as follows
-**
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
 */
+#undef VAL_GVAR
+#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+
+inline Obj ValGVar(UInt gvar) {
+  Obj result = VAL_GVAR(gvar);
+  return result;
+}
 
 
 /****************************************************************************
@@ -1063,6 +1067,25 @@ void RestoreCopyFopyInfo( void )
 {
     NCopyAndFopyDone = 0;
     UpdateCopyFopyInfo();
+}
+
+
+/****************************************************************************
+**
+*/
+void GVarsAfterCollectBags ( void )
+{
+#ifdef HPCGAP
+  int i;
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+    else
+      break;
+#else
+  if (ValGVars)
+    PtrGVars = PTR_BAG( ValGVars );
+#endif
 }
 
 

@@ -64,6 +64,15 @@
 #include <stdio.h>
 #endif
 
+
+#define GVAR_BUCKETS 1024
+#define GVAR_BUCKET_SIZE 1024
+
+#define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
+#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
+
+
+
 /****************************************************************************
 **
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
@@ -76,8 +85,8 @@
 **  access global variables.
 **
 **  Since a   garbage  collection may move   this  bag around,    the pointer
-**  'PtrGVars' must be  revalculated afterwards.   This  should be done by  a
-**  function in this package, but is still done in 'VarsAfterCollectBags'.
+**  'PtrGVars' must be  revalculated afterwards.   This is done in function
+**  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
 Obj   ValGVars[GVAR_BUCKETS];
 
@@ -146,11 +155,16 @@ void UnlockGVars() {
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 **
-**  'VAL_GVAR' is defined in the declaration part of this package as follows
-**
-#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
-                                [GVAR_INDEX(gvar)-1])
 */
+#undef VAL_GVAR
+#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)-1])
+
+inline Obj ValGVar(UInt gvar) {
+  Obj result = VAL_GVAR(gvar);
+  MEMBAR_READ();
+  return result;
+}
 
 
 /****************************************************************************
@@ -1208,6 +1222,26 @@ void RestoreCopyFopyInfo( void )
     UnlockGVars();
     UpdateCopyFopyInfo();
 }
+
+
+/****************************************************************************
+**
+*/
+void GVarsAfterCollectBags ( void )
+{
+#ifdef HPCGAP
+  int i;
+  for (i=0; i<GVAR_BUCKETS; i++)
+    if (ValGVars[i])
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+    else
+      break;
+#else
+  if (ValGVars)
+    PtrGVars = PTR_BAG( ValGVars );
+#endif
+}
+
 
 GVarDescriptor *FirstDeclaredGVar;
 GVarDescriptor *LastDeclaredGVar;
