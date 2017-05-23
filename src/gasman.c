@@ -366,7 +366,7 @@ Bag FreeMptrBags;
 **  allocated since the last garbage  collection.  The application cooperates
 **  by informing {\Gasman} with 'CHANGED_BAG' which bags it has changed.  The
 **  list of changed old  bags is scanned by a  partial garbage collection and
-**  the young subbags of the old bags on this list are marked with 'MARK_BAG'
+**  the young subbags of the old bags on this list are marked with 'MarkBag'
 **  (see "MarkedBags").  Without this  list 'CollectBags' would have to  scan
 **  all old bags for references to young bags, which would take too much time
 **  (see "Implementation of CollectBags").
@@ -388,7 +388,7 @@ Bag                     ChangedBags;
 *V  MarkedBags  . . . . . . . . . . . . . . . . . . . . . list of marked bags
 **
 **  'MarkedBags' holds a list of bags that have already  been marked during a
-**  garbage collection by 'MARK_BAG'.  This list is only used  during garbage
+**  garbage collection by 'MarkBag'.  This list is only used  during garbage
 **  collections, so it is  always empty outside  of  garbage collections (see
 **  "Implementation of CollectBags").
 **
@@ -404,20 +404,20 @@ Bag                     ChangedBags;
 **  is not in a separate segment of the address space, and thus may grow into
 **  the workspace, causing disaster.
 **
-**  'MARK_BAG'   puts a  bag <bag>  onto  this list.    'MARK_BAG'  has to be
+**  'MarkBag'   puts a  bag <bag>  onto  this list.    'MarkBag'  has to be
 **  careful, because it can be called  with an argument that  is not really a
 **  bag identifier, and may  point  outside the programs  address space.   So
-**  'MARK_BAG' first checks that <bag> points  to a properly aligned location
-**  between 'MptrBags' and 'OldBags'.   Then 'MARK_BAG' checks that <bag>  is
+**  'MarkBag' first checks that <bag> points  to a properly aligned location
+**  between 'MptrBags' and 'OldBags'.   Then 'MarkBag' checks that <bag>  is
 **  the identifier  of a young bag by  checking that the masterpointer points
 **  to  a  location between  'YoungBags'  and  'AllocBags'  (if <bag>  is the
 **  identifier of an   old bag, the  masterpointer will  point to a  location
 **  between  'OldBags' and 'YoungBags',  and if <bag>   only appears to be an
 **  identifier, the masterpointer could be on the free list of masterpointers
 **  and   point   to a  location  between  'MptrBags'  and  'OldBags').  Then
-**  'MARK_BAG' checks  that <bag> is not  already marked by checking that the
+**  'MarkBag' checks  that <bag> is not  already marked by checking that the
 **  link  word of <bag>  contains the identifier of the   bag.  If any of the
-**  checks fails, 'MARK_BAG' does nothing.  If all checks succeed, 'MARK_BAG'
+**  checks fails, 'MarkBag' does nothing.  If all checks succeed, 'MarkBag'
 **  puts <bag> onto the  list of marked bags by  putting the current value of
 **  'ChangedBags' into the link word  of <bag>  and setting 'ChangedBags'  to
 **  <bag>.  Note that since bags are always placed  at the front of the list,
@@ -557,57 +557,62 @@ void InitMarkFuncBags (
 }
 #endif
 
-void MarkNoSubBags (
-    Bag                 bag )
+#define MARKED_DEAD(x)  (x)
+#define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
+#define MARKED_HALFDEAD(x) ((Bag)(((Char *)(x))+2))
+#define IS_MARKED_ALIVE(bag) ((LINK_BAG(bag)) == MARKED_ALIVE(bag))
+#define IS_MARKED_DEAD(bag) ((LINK_BAG(bag)) == MARKED_DEAD(bag))
+#define IS_MARKED_HALFDEAD(bag) ((LINK_BAG(bag)) == MARKED_HALFDEAD(bag))
+#define UNMARKED_DEAD(x)  (x)
+#define UNMARKED_ALIVE(x) ((Bag)(((Char *)(x))-1))
+#define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
+
+
+void MarkNoSubBags( Bag bag )
 {
 }
 
-void MarkOneSubBags (
-    Bag                 bag )
+void MarkOneSubBags( Bag bag )
 {
     Bag                 sub;            /* one subbag identifier           */
     sub = PTR_BAG(bag)[0];
-    MARK_BAG( sub );
+    MarkBag( sub );
 }
 
-void MarkTwoSubBags (
-    Bag                 bag )
+void MarkTwoSubBags( Bag bag )
 {
     Bag                 sub;            /* one subbag identifier           */
     sub = PTR_BAG(bag)[0];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[1];
-    MARK_BAG( sub );
+    MarkBag( sub );
 }
 
-void MarkThreeSubBags (
-    Bag                 bag )
+void MarkThreeSubBags( Bag bag )
 {
     Bag                 sub;            /* one subbag identifier           */
     sub = PTR_BAG(bag)[0];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[1];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[2];
-    MARK_BAG( sub );
+    MarkBag( sub );
 }
 
-void MarkFourSubBags (
-    Bag                 bag )
+void MarkFourSubBags( Bag bag )
 {
     Bag                 sub;            /* one subbag identifier           */
     sub = PTR_BAG(bag)[0];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[1];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[2];
-    MARK_BAG( sub );
+    MarkBag( sub );
     sub = PTR_BAG(bag)[3];
-    MARK_BAG( sub );
+    MarkBag( sub );
 }
 
-void MarkAllSubBags (
-    Bag                 bag )
+void MarkAllSubBags( Bag bag )
 {
     Bag *               ptr;            /* pointer into the bag            */
     Bag                 sub;            /* one subbag identifier           */
@@ -617,13 +622,12 @@ void MarkAllSubBags (
     ptr = PTR_BAG( bag );
     for ( i = SIZE_BAG(bag)/sizeof(Bag); 0 < i; i-- ) {
         sub = ptr[i-1];
-        MARK_BAG( sub );
+        MarkBag( sub );
     }
 
 }
 
-void MarkAllSubBagsDefault (
-    Bag                 bag )
+void MarkAllSubBagsDefault( Bag bag )
 {
     Bag *               ptr;            /* pointer into the bag            */
     Bag                 sub;            /* one subbag identifier           */
@@ -633,14 +637,32 @@ void MarkAllSubBagsDefault (
     ptr = PTR_BAG( bag );
     for ( i = SIZE_BAG(bag)/sizeof(Bag); 0 < i; i-- ) {
         sub = ptr[i-1];
-        MARK_BAG( sub );
+        MarkBagIntern( sub );
     }
 
 }
 
+// We define MarkBag as a inline function here so that
+// the compiler can optimize the marking functions using it in the
+// "current translation unit", i.e. inside gasman.c.
+// Other marking functions don't get to inline MarkBag calls anymore,
+// but luckily these are rare (and usually not performance critical
+// to start with).
+#ifndef BOEHM_GC
+inline void MarkBag( Bag bag )
+{
+    if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0
+         && (Bag)MptrBags <= (bag)      && (bag) < (Bag)OldBags
+         && YoungBags < PTR_BAG(bag)    && PTR_BAG(bag) <= AllocBags
+         && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
+    {
+        LINK_BAG(bag) = MarkedBags;
+        MarkedBags = (bag);
+    }
+}
+#endif
 
-void MarkBagWeakly(
-    Bag             bag )
+void MarkBagWeakly( Bag bag )
 {
   if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
        && (Bag)MptrBags <= bag              /* in plausible range */
@@ -653,7 +675,6 @@ void MarkBagWeakly(
                                                don't have to recurse */
     }
 }
-
 
 
 /****************************************************************************
@@ -1439,15 +1460,15 @@ UInt ResizeBag (
 **
 **  In the  *mark phase*, 'CollectBags' finds  all young bags that  are still
 **  live and builds a linked list of those bags (see "MarkedBags").  A bag is
-**  put on  this  list  of  marked bags   by   applying  'MARK_BAG' to    its
-**  identifier.  Note that 'MARK_BAG' checks that a bag is not already on the
+**  put on  this  list  of  marked bags   by   applying  'MarkBag' to    its
+**  identifier.  Note that 'MarkBag' checks that a bag is not already on the
 **  list of marked bags, before it puts it on the list, so  no bag can be put
 **  twice on this list.
 **
 **  First, 'CollectBags' marks  all  young bags that are  directly accessible
 **  through global   variables,  i.e.,  it   marks those young     bags whose
 **  identifiers  appear  in  global variables.   It    does this  by applying
-**  'MARK_BAG'  to the values at the  addresses  of global variables that may
+**  'MarkBag'  to the values at the  addresses  of global variables that may
 **  hold bag identifiers provided by 'InitGlobalBag' (see "InitGlobalBag").
 **
 **  Next,  'CollectBags' marks  all  young bags  that are directly accessible
@@ -1465,7 +1486,7 @@ UInt ResizeBag (
 **  conservative storage manager.
 **
 **  The generic stack marking function 'GenStackFuncBags', which is called if
-**  <stack-func> (see "InitBags") was 0, works by  applying 'MARK_BAG' to all
+**  <stack-func> (see "InitBags") was 0, works by  applying 'MarkBag' to all
 **  the values on the stack,  which is supposed to extend  from <stack-start>
 **  (see  "InitBags") to the address of  a local variable of   the  function.
 **  Note that some local variables may  not  be stored on the  stack, because
@@ -1487,7 +1508,7 @@ UInt ResizeBag (
 **
 **  Next 'CollectBags' marks all young bags that are directly accessible from
 **  old bags, i.e.,  it marks all young bags  whose identifiers appear in the
-**  data areas  of  old bags.  It  does  this by applying 'MARK_BAG'  to each
+**  data areas  of  old bags.  It  does  this by applying 'MarkBag'  to each
 **  identifier appearing in changed old bags, i.e., in those bags that appear
 **  on the list of changed old bags (see "ChangedBags").   To be more precise
 **  it calls the  marking function for the appropriate  type to  each changed
@@ -1504,7 +1525,7 @@ UInt ResizeBag (
 **  changed old bags.  Those bags  are old bags that  were extended since the
 **  last garbage  collection and therefore have their  body in the young bags
 **  area (see "Implementation of  ResizeBag").  When 'CollectBags' finds such
-**  a bag  on  the list of  changed  old bags  it  applies 'MARK_BAG'  to its
+**  a bag  on  the list of  changed  old bags  it  applies 'MarkBag'  to its
 **  identifier and thereby  ensures that this bag will  not be thrown away by
 **  this garbage collection.
 **
@@ -1513,7 +1534,7 @@ UInt ResizeBag (
 **  subbags  and  so on.  It  does  so by walking   along the list of already
 **  marked bags and applies  the marking function  of the appropriate type to
 **  each bag on this list (see  "InitMarkFuncBags").  Those marking functions
-**  then apply 'MARK_BAG' or 'MarkBagWeakly'  to each identifier appearing in
+**  then apply 'MarkBag' or 'MarkBagWeakly'  to each identifier appearing in
 **  the bag.
 **
 **  After  the marking function has  been  applied to a   bag on the list  of
@@ -1524,7 +1545,7 @@ UInt ResizeBag (
 **  ensure that bags are marked in a  depth first order, which should usually
 **  improve locality of   reference.  When a bag is   taken from the list  of
 **  marked bags it is *tagged*.  This tag serves two purposes.  A bag that is
-**  tagged is not put on the list  of marked bags  when 'MARK_BAG' is applied
+**  tagged is not put on the list  of marked bags  when 'MarkBag' is applied
 **  to its identifier.  This ensures that  no bag is put  more than once onto
 **  the list of marked bags, otherwise endless marking loops could happen for
 **  structures that contain circular  references.  Also the sweep phase later
@@ -1641,13 +1662,13 @@ void GenStackFuncBags ( void )
     if ( StackBottomBags < top ) {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
             for ( p = (Bag*)((char*)StackBottomBags + i); p < top; p++ )
-                MARK_BAG( *p );
+                MarkBag( *p );
         }
     }
     else {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
             for ( p = (Bag*)((char*)StackBottomBags - i); top < p; p-- )
-                MARK_BAG( *p );
+                MarkBag( *p );
         }
     }
 
@@ -1655,7 +1676,7 @@ void GenStackFuncBags ( void )
     for ( p = (Bag*)((void*)RegsBags);
           p < (Bag*)((void*)RegsBags)+sizeof(RegsBags)/sizeof(Bag);
           p++ )
-        MARK_BAG( *p );
+        MarkBag( *p );
 
 }
 
@@ -1745,7 +1766,7 @@ again:
 
     /* mark from the static area                                           */
     for ( i = 0; i < GlobalBags.nr; i++ )
-        MARK_BAG( *GlobalBags.addr[i] );
+        MarkBag( *GlobalBags.addr[i] );
 
 
     /* mark from the stack                                                 */
@@ -1768,7 +1789,7 @@ again:
         if ( PTR_BAG(first) <= YoungBags )
             (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
-            MARK_BAG(first);
+            MarkBag(first);
     }
 
 
@@ -1823,6 +1844,7 @@ again:
                Instead we look directly at the value in the link word
                and check its least significant bits */
 
+// FIXME: use macros...
             else if ( ((UInt)header->link) % sizeof(Bag) == 0 ||
                       ((UInt)header->link) % sizeof(Bag) == 2 ) {
 #ifdef DEBUG_MASTERPOINTERS
@@ -2275,8 +2297,7 @@ void SwapMasterPoint (
 #undef  SIZE_BAG
 #undef  PTR_BAG
 
-UInt BID (
-    Bag                 bag )
+UInt BID( Bag bag )
 {
     return (UInt) bag;
 }
@@ -2291,26 +2312,22 @@ Bag BAG (
         return (Bag) 0;
 }
 
-UInt TNUM_BAG (
-    Bag                 bag )
+UInt TNUM_BAG( Bag bag )
 {
     return BAG_HEADER(bag)->type;
 }
 
-const Char * TNAM_BAG (
-    Bag                 bag )
+const Char * TNAM_BAG( Bag bag )
 {
     return InfoBags[ BAG_HEADER(bag)->type ].name;
 }
 
-UInt SIZE_BAG (
-    Bag                 bag )
+UInt SIZE_BAG( Bag bag )
 {
     return BAG_HEADER(bag)->size;
 }
 
-Bag * PTR_BAG (
-    Bag                 bag )
+Bag * PTR_BAG( Bag bag )
 {
     return (*(Bag**)(bag));
 }

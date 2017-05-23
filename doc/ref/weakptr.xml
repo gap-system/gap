@@ -238,7 +238,7 @@ This document assumes familiarity with the rest of the operation of GASMAN.
 A kernel type (tnum) of bags which are intended to act as weak pointers to
 their subobjects must meet three conditions.
 Firstly, the marking function installed for that tnum must use
-<C>MarkBagWeakly</C> for those subbags, rather than <C>MARK_BAG</C>.
+<C>MarkBagWeakly</C> for those subbags, rather than <C>MarkBag</C>.
 Secondly, before any access to such a subbag, it must be checked with
 <C>IS_WEAK_DEAD_BAG</C>.
 If that returns <K>true</K>, then the subbag has evaporated in a recent garbage
