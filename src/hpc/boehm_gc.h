@@ -404,7 +404,6 @@ Bag NewBag (
     UInt                size )
 {
     Bag                 bag;            /* identifier of the new bag       */
-    Bag *               dst;            /* destination of the new bag      */
     UInt                alloc_size;
 
     alloc_size = sizeof(BagHeader) + size;
@@ -453,26 +452,19 @@ Bag NewBag (
      * them somewhat slower. Hence, we only use them for sufficiently
      * large objects.
      */
-    dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
+    BagHeader * header = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
     bag = malloc(2*sizeof(Bag *));
-    dst = calloc(1, alloc_size);
+    BagHeader * header = calloc(1, alloc_size);
 #endif /* DISABLE_GC */
 
-    /* enter size-type words                                               */
-#ifdef USE_NEWSHAPE
-    *dst++ = (Bag)(size << 16 | type);
-#else
-    *dst++ = (Bag)(type);
-    *dst++ = (Bag)(size);
-#endif
-
-
-    /* enter link word                                                     */
-    *dst++ = bag;
+    header->type = type;
+    header->flags = 0;
+    header->size = size;
+    header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = dst;
+    PTR_BAG(bag) = header->data;
     switch (DSInfoBags[type]) {
     case DSI_TL:
       REGION(bag) = CurrentRegion();
