@@ -85,10 +85,8 @@ typedef struct {
     uint8_t type : 8;
     uint8_t flags : 8;
 #if SIZEOF_VOID_P == 8
-#define USE_NEWSHAPE
     uint64_t size : 48;
 #elif SIZEOF_VOID_P == 4
-#undef USE_NEWSHAPE
     uint16_t reserved : 16;
     uint32_t size : 32;
 #endif
