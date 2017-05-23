@@ -36,31 +36,14 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-/* This definition switches to the bigger bag header, supporting bags up to
-   4GB in length (lists limited to 1GB for other reasons) */
-
-/* Experimental 16+48 bit type/size word for 64 bit systems */
-
-/****************************************************************************
-**
-*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
-*/
-#include <gen/config.h>
+#include <src/system.h>
 
 #include <src/hpc/atomic.h>
 
-/* on 64 bit systems use only two words for bag header */
-
-#if SIZEOF_VOID_P == 8
-#define USE_NEWSHAPE
-#elif !defined(SIZEOF_VOID_P)
-#error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
-#endif
 
 
 /****************************************************************************
 **
-
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 **
 **  'Bag'
@@ -93,11 +76,30 @@
 typedef UInt * *        Bag;
 */
 
-#ifdef USE_NEWSHAPE
-#define BAG_HEADER_SIZE 2
-#else
-#define BAG_HEADER_SIZE 3
+
+/****************************************************************************
+**
+**
+*/
+typedef struct {
+    uint8_t type : 8;
+    uint8_t flags : 8;
+#if SIZEOF_VOID_P == 8
+#define USE_NEWSHAPE
+    uint64_t size : 48;
+#elif SIZEOF_VOID_P == 4
+#undef USE_NEWSHAPE
+    uint16_t reserved : 16;
+    uint32_t size : 32;
 #endif
+    Bag link;
+    Bag data[];
+} BagHeader;
+
+#define BAG_HEADER_SIZE     (sizeof(BagHeader)/sizeof(Bag))
+
+#define BAG_HEADER_CONTENTS(data)   (((BagHeader *)data) - 1)
+#define BAG_HEADER(bag)             BAG_HEADER_CONTENTS(*(bag))
 
 
 /****************************************************************************
@@ -121,8 +123,7 @@ typedef UInt * *        Bag;
 **  Note  that 'TNUM_BAG' is a macro, so do not call  it with arguments  that
 **  have side effects.
 */
-
-#define TNUM_BAG(bag)  (*(*(bag) - BAG_HEADER_SIZE) & 0xFFL)
+#define TNUM_BAG(bag)  (BAG_HEADER(bag)->type)
 
 
 /****************************************************************************
@@ -148,18 +149,12 @@ typedef UInt * *        Bag;
 ** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
 **
 **  Each flag must be a an integer with exactly one bit set, e.g. a value
-**  of the form (1 << i). Currently, 'i' must be in the range from 8 to
-**  15 (inclusive).
+**  of the form (1 << i). Currently, 'i' must be in the range from 0 to
+**  7 (inclusive).
 */
-
-#define TEST_OBJ_FLAG(bag, flag) \
-	(*(*(bag) - BAG_HEADER_SIZE) & (flag))
-
-#define SET_OBJ_FLAG(bag, flag) \
-	(*(*(bag) - BAG_HEADER_SIZE) |= (flag))
-
-#define CLEAR_OBJ_FLAG(bag, flag) \
-	(*(*(bag) - BAG_HEADER_SIZE) &= ~(flag))
+#define TEST_OBJ_FLAG(bag, flag)    (BAG_HEADER(bag)->flags & (flag))
+#define SET_OBJ_FLAG(bag, flag)     (BAG_HEADER(bag)->flags |= (flag))
+#define CLEAR_OBJ_FLAG(bag, flag)   (BAG_HEADER(bag)->flags &= ~(flag))
 
 
 /****************************************************************************
@@ -179,11 +174,8 @@ typedef UInt * *        Bag;
 **  Note that  'SIZE_BAG' is  a macro,  so do not call it with arguments that
 **  have side effects.
 */
-#ifdef USE_NEWSHAPE
-#define SIZE_BAG(bag)   (*(*(bag)-2) >> 16)
-#else
-#define SIZE_BAG(bag)   (*(*(bag)-2))
-#endif
+#define SIZE_BAG(bag)   (BAG_HEADER(bag)->size)
+
 
 /****************************************************************************
 **
@@ -194,11 +186,7 @@ typedef UInt * *        Bag;
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-#ifdef USE_NEWSHAPE
-#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2) >> 16)
-#else
-#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2))
-#endif
+#define SIZE_BAG_CONTENTS(ptr)   (BAG_HEADER_CONTENTS(ptr)->size)
 
 
 /****************************************************************************
@@ -208,7 +196,7 @@ typedef UInt * *        Bag;
 **  TODO: document this
 **
 */
-#define LINK_BAG(bag)   (*(Bag *)(*(bag)-1))
+#define LINK_BAG(bag)   (BAG_HEADER(bag)->link)
 
 
 /****************************************************************************

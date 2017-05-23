@@ -440,9 +440,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **
 */
 
-#define TESTING (1 << 8)
-#define TESTED (1 << 9)
-#define FIXED_REGION (1 << 10)
+#define TESTING (1 << 0)
+#define TESTED (1 << 1)
+#define FIXED_REGION (1 << 2)
 
 #else
 
