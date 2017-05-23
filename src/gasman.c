@@ -114,14 +114,13 @@
 #include <src/system.h>                 /* Ints, UInts */
 #include <src/gapstate.h>
 
-
-
 #include <src/gasman.h>                 /* garbage collector */
 
 #include <src/objects.h>                /* objects */
 #include <src/scanner.h>                /* scanner */
 
 
+#include <stddef.h>
 
 
 /****************************************************************************
@@ -1038,6 +1037,12 @@ void            InitBags (
     StackFuncBags   = stack_func;
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
+
+    if ( sizeof(BagHeader) % sizeof(Bag) != 0 )
+        (*AbortFuncBags)("BagHeader size is not a multiple of word size.");
+
+    if ( sizeof(BagHeader) != offsetof(BagHeader, data) )
+        (*AbortFuncBags)("BagHeader's data member has invalid offset.");
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
