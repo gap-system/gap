@@ -999,7 +999,7 @@ extern Bag * GlobalByCookie(
 extern void StartRestoringBags( UInt nBags, UInt maxSize);
 
 
-extern Bag NextBagRestoring( UInt size,  UInt type);
+extern Bag NextBagRestoring( UInt type, UInt flags, UInt size );
 
 
 extern void FinishedRestoringBags( void );

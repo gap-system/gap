@@ -614,7 +614,7 @@ void CallbackForAllBags(
 void StartRestoringBags( UInt nBags, UInt maxSize)
 { }
 
-Bag NextBagRestoring( UInt size, UInt type)
+Bag NextBagRestoring( UInt type, UInt flags, UInt size )
 { return 0; }
 
 void FinishedRestoringBags( void )
