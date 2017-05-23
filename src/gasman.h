@@ -338,8 +338,8 @@ extern void CHANGED_BAG_IMPL(Bag b);
 #else
 #define CHANGED_BAG(bag)                                                    \
                 if (   PTR_BAG(bag) <= YoungBags                              \
-                  && PTR_BAG(bag)[-1] == (bag) ) {                          \
-                    PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
+                  && LINK_BAG(bag) == (bag) ) {                          \
+                    LINK_BAG(bag) = ChangedBags; ChangedBags = (bag);    }
 
 #endif // MEMORY_CANARY
 
@@ -832,9 +832,9 @@ extern  Bag                     MarkedBags;
 #define MARKED_DEAD(x)  (x)
 #define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
 #define MARKED_HALFDEAD(x) ((Bag)(((Char *)(x))+2))
-#define IS_MARKED_ALIVE(bag) ((PTR_BAG(bag)[-1]) == MARKED_ALIVE(bag))
-#define IS_MARKED_DEAD(bag) ((PTR_BAG(bag)[-1]) == MARKED_DEAD(bag))
-#define IS_MARKED_HALFDEAD(bag) ((PTR_BAG(bag)[-1]) == MARKED_HALFDEAD(bag))
+#define IS_MARKED_ALIVE(bag) ((LINK_BAG(bag)) == MARKED_ALIVE(bag))
+#define IS_MARKED_DEAD(bag) ((LINK_BAG(bag)) == MARKED_DEAD(bag))
+#define IS_MARKED_HALFDEAD(bag) ((LINK_BAG(bag)) == MARKED_HALFDEAD(bag))
 #define UNMARKED_DEAD(x)  (x)
 #define UNMARKED_ALIVE(x) ((Bag)(((Char *)(x))-1))
 #define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
@@ -848,7 +848,7 @@ extern  Bag                     MarkedBags;
                   && YoungBags < PTR_BAG(bag)  && PTR_BAG(bag) <= AllocBags \
                   && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
                   {                                                          \
-                    PTR_BAG(bag)[-1] = MarkedBags; MarkedBags = (bag);      }
+                    LINK_BAG(bag) = MarkedBags; MarkedBags = (bag);      }
 
 #else
 
