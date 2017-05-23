@@ -209,8 +209,6 @@ imposes certain rules on its users) memory manager.
 <P/>
 
 To get the type of the bag with the identifier <C>b</C>, call <C>TNUM_BAG(b)</C>.
-Note that since <C>TNUM_BAG</C> is a macro, it should not be called with arguments
-that have sideeffects.
 <P/>
 
 The application specifies the type of a bag when it allocates it with <C>NewBag</C>
@@ -305,20 +303,19 @@ as marking function for bags of type <C>type</C>. The application <E>must</E>
 install  a  marking function for a  type before it allocates  any  bag  of  that type. 
 <P/>
 A marking function returns nothing. It just takes a single argument of type <C>Bag</C> 
-and applies the macro <C>MARK_BAG</C> to each bag identifier that appears in the bag. 
+and applies the function <C>MarkBag</C> to each bag identifier that appears in the bag. 
 During garbage collection marking functions are applied to each marked bag (i.e. to
 all bags that are assumed to be still live), to also mark their subbags. The ability 
 to use the correct marking function is the only use that &GASMAN; has for types.
 <P/>
-<C>MARK_BAG(b)</C> marks the bag <C>b</C> as live so that it is not thrown away during
+<C>MarkBag(b)</C> marks the bag <C>b</C> as live so that it is not thrown away during
 a garbage collection. It tests if <C>bag</C> is a valid identifier of a bag  in the young
-bags  area.  If it is not,  then <C>MARK_BAG</C> does nothing, so there is no
+bags  area.  If it is not,  then <C>MarkBag</C> does nothing, so there is no
 harm in  calling it for  something   that is not actually  a  bag identifier.
-It is important that <C>MARK_BAG</C> should only be called from the marking
-functions installed with <C>InitMarkFuncBags</C>, and, since <C>MARK_BAG</C> is
-a macro, it should not be called with an argument that has sideeffects.
+It is important that <C>MarkBag</C> should only be called from the marking
+functions installed with <C>InitMarkFuncBags</C>.
 <P/>
-<C>MarkBagWeakly</C> is an alternative to <C>MARK_BAG</C>, intended to be used by the
+<C>MarkBagWeakly</C> is an alternative to <C>MarkBag</C>, intended to be used by the
 marking functions  of weak pointer objects.  A  bag which is  marked both
 weakly and strongly  is treated as strongly marked.   A bag which is only
 weakly marked will be recovered by garbage collection, but its identifier

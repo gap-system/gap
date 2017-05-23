@@ -719,13 +719,6 @@ extern  void            InitMsgsFuncBags (
 /****************************************************************************
 **
 *F  InitMarkFuncBags(<type>,<mark-func>)  . . . . .  install marking function
-*F  MarkNoSubBags(<bag>)  . . . . . . . . marking function that marks nothing
-*F  MarkOneSubBags(<bag>) . . . . . .  marking function that marks one subbag
-*F  MarkTwoSubBags(<bag>) . . . . . . marking function that marks two subbags
-*F  MarkAllSubBags(<bag>) . . . . . .  marking function that marks everything
-*F  MARK_BAG(<bag>) . . . . . . . . . . . . . . . . . . .  mark a bag as live
-**
-**  'InitMarkFuncBags( <type>, <mark-func> )'
 **
 **  'InitMarkFuncBags' installs the function <mark-func>  as marking function
 **  for bags  of  type <type>.   The  application  *must* install  a  marking
@@ -734,7 +727,7 @@ extern  void            InitMsgsFuncBags (
 **
 **  A marking function  is a function  that takes a  single  argument of type
 **  'Bag' and returns nothing, i.e., has return type 'void'.  Such a function
-**  must apply the  macro 'MARK_BAG' to each bag  identifier that  appears in
+**  must apply the function 'MarkBag' to each bag  identifier that  appears in
 **  the bag (see below).
 **
 **  Those functions are applied during the garbage  collection to each marked
@@ -742,55 +735,44 @@ extern  void            InitMsgsFuncBags (
 **  subbags.  The ability to use the correct marking function is the only use
 **  that {\Gasman} has for types.
 **
-**  'MARK_BAG( <bag> )'
+**  {\Gasman} already provides several marking functions, see below.
+*/
+typedef void (* TNumMarkFuncBags )( Bag bag );
+extern void InitMarkFuncBags( UInt type, TNumMarkFuncBags mark_func );
+
+
+/****************************************************************************
 **
-**  'MARK_BAG' marks the <bag> as live so that it is  not thrown away during
-**  a garbage collection.  'MARK_BAG' should only be called from the marking
-**  functions installed with 'InitMarkFuncBags'.
-**
-**  'MARK_BAG' tests  if <bag> is  a valid identifier of a  bag  in the young
-**  bags  area.  If it is not,  then 'MARK_BAG' does nothing,  so there is no
-**  harm in  calling 'MARK_BAG' for  something   that is not actually  a  bag
-**  identifier.
-**
-**  Note that 'MARK_BAG' is a macro, so do not call it with an argument that
-**  has side effects.
-**
-**  'MarkBagWeakly( <bag> )'
-**
-**  'MarkBagWeakly' is an alternative to MARK_BAG, intended to be used by the
-**  marking functions  of weak pointer objects.  A  bag which is  marked both
-**  weakly and strongly  is treated as strongly marked.   A bag which is only
-**  weakly marked will be recovered by garbage collection, but its identifier
-**  remains, marked      in   a    way    which   can     be   detected    by
-**  "IS_WEAK_DEAD_BAG". Which should  always be   checked before copying   or
-**  using such an identifier.
-**
-**
-**  {\Gasman} already provides the following marking functions.
-**
-**  'MarkNoSubBags( <bag> )'
+*F  MarkNoSubBags(<bag>)  . . . . . . . . marking function that marks nothing
 **
 **  'MarkNoSubBags'  is a marking function   for types whose  bags contain no
 **  identifier of other   bags.  It does nothing,  as  its name implies,  and
 **  simply returns.  For example   in  {\GAP} the  bags for   large  integers
 **  contain only the digits and no identifiers of bags.
+*/
+extern void MarkNoSubBags( Bag bag );
+
+
+/****************************************************************************
 **
-**  'MarkOneSubBags( <bag> )'
+*F  MarkOneSubBags(<bag>) . . . . . .  marking function that marks one subbag
+*F  MarkTwoSubBags(<bag>) . . . . . . marking function that marks two subbags
+*F  MarkThreeSubBags(<bag>) . . . . marking function that marks three subbags
+*F  MarkFourSubBags(<bag>) . . . . . marking function that marks four subbags
 **
-**  'MarkOneSubBags'  is  a  marking  function for types   whose bags contain
-**  exactly one identifier of another bag as  the first entry.  It marks this
-**  subbag and returns.  For example in {\GAP} bags for finite field elements
-**  contain exactly one  bag  identifier  for the  finite field   the element
-**  belongs to.
+**  These are marking functions for types whose bags contain exactly the
+**  the indicated number as bag identifiers as their initial entries.
+**  These functions mark those subbags and return.
+*/
+extern void MarkOneSubBags( Bag bag );
+extern void MarkTwoSubBags( Bag bag );
+extern void MarkThreeSubBags( Bag bag );
+extern void MarkFourSubBags( Bag bag );
+
+
+/****************************************************************************
 **
-**  'MarkTwoSubBags( <bag> )'
-**
-**  'MarkTwoSubBags' is  a  marking function   for types  whose bags  contain
-**  exactly two identifiers of other bags as  the first and second entry such
-**  as the binary operations bags.  It marks those  subbags and returns.  For
-**  example  in {\GAP}  bags for  rational   numbers contain exactly two  bag
-**  identifiers for the numerator and the denominator.
+*F  MarkAllSubBags(<bag>) . . . . . .  marking function that marks everything
 **
 **  'MarkAllSubBags( <bag> )'
 **
@@ -805,74 +787,59 @@ extern  void            InitMsgsFuncBags (
 **  down 'CollectBags'.  For example  in {\GAP} bags  for lists contain  only
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
-** */
+*/
+extern void MarkAllSubBags( Bag bag );
+
+extern void MarkAllSubBagsDefault ( Bag );
+
+/****************************************************************************
+**
+*F  MarkBag(<bag>) . . . . . . . . . . . . . . . . . . .  mark a bag as live
+**
+**  'MarkBag' marks the <bag> as live so that it is  not thrown away during
+**  a garbage collection.  'MarkBag' should only be called from the marking
+**  functions installed with 'InitMarkFuncBags'.
+**
+**  'MarkBag' tests  if <bag> is  a valid identifier of a  bag  in the young
+**  bags  area.  If it is not,  then 'MarkBag' does nothing,  so there is no
+**  harm in  calling 'MarkBag' for  something   that is not actually  a  bag
+**  identifier.
+
+*/
+#ifndef BOEHM_GC
+extern void MarkBag( Bag bag );
+#else
+static inline void MarkBag( Bag bag ) {}
+#endif
 
 
-typedef void            (* TNumMarkFuncBags ) (
-            Bag                 bag );
+/****************************************************************************
+**
+**  MARK_BAG is provided for backwards compatibility with existing code. New
+**  code should use MarkBag directly instead.
+**
+*/
+#define MARK_BAG(bag)   MarkBag(bag)
 
-extern  void            InitMarkFuncBags (
-            UInt                type,
-            TNumMarkFuncBags    mark_func );
 
-extern  void            MarkNoSubBags (
-            Bag                 bag );
+/****************************************************************************
+**
+*F  MarkBagWeakly(<bag>) . . . . . . . . . . . . .  mark a bag as weakly live
+**
+**  'MarkBagWeakly' is an alternative to MarkBag, intended to be used by the
+**  marking functions  of weak pointer objects.  A  bag which is  marked both
+**  weakly and strongly  is treated as strongly marked.   A bag which is only
+**  weakly marked will be recovered by garbage collection, but its identifier
+**  remains, marked      in   a    way    which   can     be   detected    by
+**  "IS_WEAK_DEAD_BAG". Which should  always be   checked before copying   or
+**  using such an identifier.
+*/
+extern void MarkBagWeakly( Bag bag );
 
-extern  void            MarkOneSubBags (
-            Bag                 bag );
-
-extern  void            MarkTwoSubBags (
-            Bag                 bag );
-
-extern  void            MarkThreeSubBags (
-            Bag                 bag );
-
-extern  void            MarkFourSubBags (
-            Bag                 bag );
-
-extern  void            MarkAllSubBags (
-            Bag                 bag );
-
-extern void             MarkBagWeakly (
-            Bag                 bag );
 
 extern  Bag *                   MptrBags;
 extern  Bag *                   OldBags;
 extern  Bag *                   AllocBags;
-extern  Bag                     MarkedBags;
-
-#define MARKED_DEAD(x)  (x)
-#define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
-#define MARKED_HALFDEAD(x) ((Bag)(((Char *)(x))+2))
-#define IS_MARKED_ALIVE(bag) ((LINK_BAG(bag)) == MARKED_ALIVE(bag))
-#define IS_MARKED_DEAD(bag) ((LINK_BAG(bag)) == MARKED_DEAD(bag))
-#define IS_MARKED_HALFDEAD(bag) ((LINK_BAG(bag)) == MARKED_HALFDEAD(bag))
-#define UNMARKED_DEAD(x)  (x)
-#define UNMARKED_ALIVE(x) ((Bag)(((Char *)(x))-1))
-#define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
-
-
-#ifndef BOEHM_GC
-
-#define MARK_BAG(bag)                                                       \
-                if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0                 \
-                  && (Bag)MptrBags <= (bag)    && (bag) < (Bag)OldBags      \
-                  && YoungBags < PTR_BAG(bag)  && PTR_BAG(bag) <= AllocBags \
-                  && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
-                  {                                                          \
-                    LINK_BAG(bag) = MarkedBags; MarkedBags = (bag);      }
-
-#else
-
-/* MARK_BAG does nothing when using Boehm GC. We use sizeof(bag) to
-   prevent compiler warnings about unused variables (note that sizeof
-   "usually" does not evaluate its arguments, so this is safe.
-*/
-#define MARK_BAG(bag)   do { } while(0 == sizeof(bag));
-
-#endif
-
-extern void MarkAllSubBagsDefault ( Bag );
 
 
 /****************************************************************************
@@ -1112,7 +1079,7 @@ extern void CheckMasterPointers( void );
 **  should allocate.  This   value is automatically rounded   up to the  next
 **  multiple of 1/2 MByte by 'InitBags'.
 **
-**  <stack-func>  must be   a    function    that  applies  'MARK_BAG'   (see
+**  <stack-func>  must be   a    function    that  applies  'MarkBag'   (see
 **  "InitMarkFuncBags") to each possible bag identifier on the application\'s
 **  stack, i.e., the stack where the applications local variables  are saved.
 **  This should be a function of no  arguments  and return type 'void'.  This

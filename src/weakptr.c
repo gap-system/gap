@@ -531,7 +531,7 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 *F  MarkWeakPointerObj( <wp> ) . . . . . . . . . . . . . . . Marking function
 *F  SweepWeakPointerObj( <src>, <dst>, <len> ) . . . . . . .Sweeping function
 **
-**  These functions are installed for GASMAN to use in garbage collection The
+**  These functions are installed for GASMAN to use in garbage collection. The
 **  sweeping function must  clean up any  dead  weak pointers encountered  so
 **  that, after a  full  GC, the  masterpointers  occupied by the  dead  weak
 **  pointers can be reclaimed.  
