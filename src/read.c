@@ -502,7 +502,7 @@ void ReadCallVarAss (
       && mode != 'i'                // Not inside 'IsBound'
       && STATE(CountNams) != 0      // Inside a function
       && var != STATE(CurrLHSGVar)  // Not LHS of assignment
-      && VAL_GVAR(var) == 0         // Not an existing global var
+      && ValGVar(var) == 0          // Not an existing global var
       && ExprGVar(var) == 0         // Or an auto var
       && ! STATE(IntrIgnoring)      // Not currently ignoring parsed code
       && ! GlobalComesFromEnclosingForLoop(var) // Not loop variable

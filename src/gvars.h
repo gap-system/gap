@@ -32,43 +32,17 @@
 
 /****************************************************************************
 **
-*V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
-*V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
-**
-**  'ValGVars' is the bag containing the values of the global variables.
-**
-**  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
-**  access global variables.
-*/
-extern  Obj             ValGVars;
-
-extern  Obj *           PtrGVars;
-
-
-/****************************************************************************
-**
-*F  VAL_GVAR(<gvar>)  . . . . . . . . . . . . . . .  value of global variable
 *F  ValGVar(<gvar>)   . . . . . . . . . . . . . . .  value of global variable
 **
-**  'VAL_GVAR' returns the  value of the global  variable  <gvar>.  If <gvar>
-**  has no  assigned value, 'VAL_GVAR' returns 0.   In this case <gvar> might
+**  'ValGVar' returns the  value of the global  variable  <gvar>.  If <gvar>
+**  has no  assigned value, 'ValGVar' returns 0.   In this case <gvar> might
 **  be an automatic global variable, and one should call 'ValAutoGVar', which
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+extern Obj ValGVar(UInt gvar);
 
-static inline Obj ValGVar(UInt gvar) {
-  Obj result = VAL_GVAR(gvar);
-  return result;
-}
-
-
-/****************************************************************************
-**
-*V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
-*/
-extern Obj WriteGVars;
+#define VAL_GVAR(gvar)      ValGVar(gvar)
 
 
 /****************************************************************************
@@ -198,6 +172,16 @@ extern void MakeReadOnlyGVar (
 extern void MakeReadWriteGVar (
     UInt                gvar );
 
+/****************************************************************************
+**
+*F  MakeThreadLocalVar( <gvar>, <rnam> ) . . . . make a variable thread-local
+*/
+#ifdef HPCGAP
+extern void MakeThreadLocalVar (
+    UInt                gvar,
+    UInt		rnam );
+#endif
+
 extern Int IsReadOnlyGVar (
     UInt                gvar );
 
@@ -272,6 +256,46 @@ extern void RemoveCopyFopyInfo( void );
 */
 extern void RestoreCopyFopyInfo( void );
 
+
+/****************************************************************************
+**
+*F  GVarsAfterCollectBags()
+*/
+extern void GVarsAfterCollectBags( void );
+
+
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunction(<gvar>) . . . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
+
+#ifdef HPCGAP
+
+
+/****************************************************************************
+**
+*T  GVarDescriptor  . . . . . . . . . . . .  descriptor for a global variable
+*/
+
+typedef struct GVarDescriptor {
+    Obj *ref;
+    char *name;
+    struct GVarDescriptor *next;
+} GVarDescriptor;
+
+
+extern void DeclareGVar(GVarDescriptor *gvar, char *name);
+extern Obj GVarValue(GVarDescriptor *gvar);
+extern Obj GVarObj(GVarDescriptor *gvar);
+extern Obj GVarFunction(GVarDescriptor *gvar);
+extern Obj GVarOptFunction(GVarDescriptor *gvar);
+extern void SetGVar(GVarDescriptor *gvar, Obj obj);
+#endif
 
 
 /****************************************************************************

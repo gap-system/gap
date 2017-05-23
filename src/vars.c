@@ -2529,17 +2529,7 @@ void VarsAfterCollectBags ( void )
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
       STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
-#ifdef HPCGAP
-  int i;
-  for (i=0; i<GVAR_BUCKETS; i++)
-    if (ValGVars[i])
-      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
-    else
-      break;
-#else
-  if (ValGVars)
-    PtrGVars = PTR_BAG( ValGVars );
-#endif
+  GVarsAfterCollectBags();
 }
 
 /****************************************************************************
