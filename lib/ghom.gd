@@ -80,7 +80,7 @@ DeclareOperation( "GroupGeneralMappingByImagesNC",
 ##  <P/>
 ##  If omitted, the arguments <A>gens</A> and <A>imgs</A> default to
 ##  the <Ref Func="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
-##  respectively. If <A>H</A> is not given the maopping is automatically
+##  respectively. If <A>H</A> is not given the mapping is automatically
 ##  considered as surjective.
 ##  <P/>
 ##  If <A>gens</A> does not generate <A>G</A> or if the mapping of the
