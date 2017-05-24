@@ -102,14 +102,12 @@ Obj TypePRecImm (
 *F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
 **
 */
-#ifdef HPCGAP
 void SetTypePRecToComObj( Obj rec, Obj kind )
 {
-  TYPE_COMOBJ(rec) = kind;
-  RetypeBag(rec, T_COMOBJ);
-  CHANGED_BAG(rec);
+    TYPE_COMOBJ(rec) = kind;
+    RetypeBag(rec, T_COMOBJ);
+    CHANGED_BAG(rec);
 }
-#endif
 
 /****************************************************************************
 **
@@ -993,9 +991,7 @@ static Int InitKernel (
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
 
-#ifdef HPCGAP
-    SetTypeObjFuncs [ T_PREC ] = SetTypePRecToComObj;
-#endif
+    SetTypeObjFuncs[ T_PREC ] = SetTypePRecToComObj;
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 

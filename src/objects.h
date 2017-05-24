@@ -432,8 +432,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #endif
 
 
-#ifdef HPCGAP
-
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
@@ -442,15 +440,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #define TESTING (1 << 8)
 #define TESTED (1 << 9)
+
+#ifdef HPCGAP
 #define FIXED_REGION (1 << 10)
-
-#else
-
-/* share the same numbers between `COPYING' and `TESTING' */
-#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
-#define TESTING                 COPYING
-#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
-
 #endif
 
 
@@ -560,6 +552,19 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
+
+/****************************************************************************
+**
+*F  SET_TYPE_OBJ( <obj>, <kind> ) . . . . . . . . . . . set kind of an object
+**
+**  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
+*/
+#define SET_TYPE_OBJ(obj, kind) \
+  ((*SetTypeObjFuncs[ TNUM_OBJ(obj) ])( obj, kind ))
+
+extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+
+
 /****************************************************************************
 **
 
@@ -588,6 +593,18 @@ extern void MakeImmutable( Obj obj );
 
 /****************************************************************************
 **
+*F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
+**
+**  Same effect as MakeImmutable( <obj> ), but checks first that all
+**  subobjects lie in a writable region.
+*/
+
+#ifdef HPCGAP
+extern void CheckedMakeImmutable( Obj obj );
+#endif
+
+/****************************************************************************
+**
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
@@ -597,6 +614,20 @@ extern void MakeImmutable( Obj obj );
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObj( <obj> ) . . . does an object have a mutable state
+**
+**  This function returns   1 if the object  <obj> has a mutable state, i.e.
+**  if its internal representation can change even though its outwardly
+**  visible properties do not, e.g. through code that transparently
+**  reorganizes its structure.
+*/
+
+#ifdef HPCGAP
+extern Int IsInternallyMutableObj(Obj obj);
+#endif
 
 /****************************************************************************
 **
@@ -865,11 +896,7 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-#ifdef HPCGAP
 extern void SetTypeDatObj( Obj obj, Obj type );
-#else
-#define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
-#endif
 
 
 /****************************************************************************

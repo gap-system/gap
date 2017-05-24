@@ -119,8 +119,6 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #define TLS(x) realTLS->x
 #define STATE(x) TLS(state).x
 
-#define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
-
 #ifdef VERBOSE_GUARDS
 
 #define ReadGuard(bag) ReadGuardFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
