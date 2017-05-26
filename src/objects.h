@@ -871,6 +871,8 @@ extern void SetTypeDatObj( Obj obj, Obj type );
 #define SetTypeDatObj(obj, type)  (ADDR_OBJ(obj)[0] = (type))
 #endif
 
+#define SET_TYPE_DATOBJ(obj, type)  SetTypeDatObj(obj, type)
+
 
 /****************************************************************************
 **
