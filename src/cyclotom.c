@@ -64,9 +64,9 @@
 **
 **  We represent a cyclotomic with <d>  terms, i.e., <d> nonzero coefficients
 **  in the linear  combination, by a bag  of type 'T_CYC'  with <d>+1 subbags
-**  and <d>+1 unsigned short integers.  All the bag identifiers are stored at
-**  the beginning of the  bag and all unsigned  short integers are stored  at
-**  the end of the bag.
+**  and <d>+1 unsigned integers.  All the bag identifiers are stored at the
+**  beginning of the  bag and all unsigned integers are stored  at the end of
+**  the bag.
 **
 **      +-------+-------+-------+-------+- - - -+----+----+----+----+- - -
 **      | order | coeff | coeff | coeff |       | un | exp| exp| exp|
@@ -76,17 +76,15 @@
 **  The first subbag is  the order  of  the primitive root of  the cyclotomic
 **  field in which the cyclotomic lies.  It is an immediate positive integer,
 **  therefore 'INT_INTOBJ( ADDR_OBJ(<cyc>)[ 0 ] )'  gives you the order.  The
-**  first unsigned short integer is unused (but reserved for future use :-).
+**  first unsigned integer is unused (but reserved for future use :-).
 **
-**  The other subbags and shorts are paired and each pair describes one term.
+**  The other subbags and exponents are paired and each pair describes one term.
 **  The subbag is the coefficient and the  unsigned short gives the exponent.
 **  The coefficient will usually be  an immediate integer,  but could as well
 **  be a large integer or even a rational.
 **
 **  The terms are sorted with respect to the exponent.  Note that none of the
 **  arithmetic functions need this, but it makes the equality test simpler.
-**
-**  Chnaged the exponent size from 2 to 4 bytes to avoid overflows SL, 2008
 */
 #include <src/system.h>                 /* Ints, UInts */
 #include <src/gapstate.h>
