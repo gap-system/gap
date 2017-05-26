@@ -227,6 +227,37 @@ gap> Print(RationalizedMat( gm.mat ),"\n");
 gap> a := -E(4)*2^(8*GAPInfo.BytesPerVariable-4);;
 gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) <> [ 0, "integer" ];
 true
+
+#
+# PowCyc
+#
+gap> E(1234)^1234;
+1
+gap> E(1234)^-1234;
+1
+gap> for n in [120,122,125,127,128] do
+>     x:=E(n);
+>     y:=1;
+>     z:=1;
+>     for i in [1..260] do
+>         y:=y*x; z:=z/x;
+>         Assert(0, x^i = y);
+>         Assert(0, x^-i = z);
+>     od;
+> od;
+gap> for n in [120,122,125,127,128] do
+>     x:=E(n);
+>     E(100);   # ensure special case in PowCyc does not trigger
+>     y:=1;
+>     z:=1;
+>     for i in [1..260] do
+>         y:=y*x; z:=z/x;
+>         Assert(0, x^i = y);
+>         Assert(0, x^-i = z);
+>     od;
+> od;
+
+#
 gap> STOP_TEST( "cyclotom.tst", 1);
 
 #############################################################################
