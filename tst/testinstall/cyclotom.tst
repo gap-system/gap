@@ -229,6 +229,20 @@ gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) <> [ 0, "integer" ];
 true
 
 #
+# IsIntegralCyclotomic
+#
+gap> IsIntegralCyclotomic(1);
+true
+gap> IsIntegralCyclotomic(1/2);
+false
+gap> IsIntegralCyclotomic(E(4));
+true
+gap> IsIntegralCyclotomic(E(4)/2);
+false
+gap> IsIntegralCyclotomic(false);
+false
+
+#
 # PowCyc
 #
 gap> E(1234)^1234;
@@ -256,6 +270,46 @@ gap> for n in [120,122,125,127,128] do
 >         Assert(0, x^-i = z);
 >     od;
 > od;
+
+#
+# CyclotomicsLimit
+#
+gap> GetCyclotomicsLimit();
+1000000
+gap> SetCyclotomicsLimit(1/2);
+Error, Cyclotomic Field size limit must be a small integer, not a rational 
+gap> SetCyclotomicsLimit(0);
+Error, Cyclotomic Field size limit must be positive
+gap> SetCyclotomicsLimit(100);
+Error, Cyclotomic Field size limit must not be less than old limit of 1000000
+gap> SetCyclotomicsLimit(1000000);
+
+#
+# test handling of invalid inputs
+#
+
+#
+gap> E(0);
+Error, E: <n> must be a positive integer (not a integer)
+
+#
+gap> IS_CYC('a');
+false
+
+#
+gap> IS_CYC_INT('a');
+false
+
+#
+gap> CONDUCTOR(fail);
+Error, Conductor: <cyc> must be a cyclotomic or a small list (not a boolean or\
+ fail)
+gap> CONDUCTOR([1,fail]);
+Error, Conductor: <list>[2] must be a cyclotomic (not a boolean or fail)
+
+#
+gap> COEFFS_CYC(false);
+Error, COEFFSCYC: <cyc> must be a cyclotomic (not a boolean or fail)
 
 #
 gap> CycList([1,fail]);
