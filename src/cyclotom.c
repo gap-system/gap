@@ -1414,8 +1414,7 @@ Obj             PowCyc (
 {
     Obj                 pow;            /* power (result)                  */
     Int                 exp;            /* exponent (right operand)        */
-    UInt                n;              /* order of the field              */
-    Obj *               res;            /* pointer into the result         */
+    Int                 n;              /* order of the field              */
     UInt                i;              /* exponent of left operand        */
 
     /* get the exponent                                                    */
@@ -1434,8 +1433,9 @@ Obj             PowCyc (
 
     /* for $e_n^exp$ just put a 1 at the <exp>th position and convert      */
     else if ( opL == STATE(LastECyc) ) {
-        exp = (exp % STATE(LastNCyc) + STATE(LastNCyc)) % STATE(LastNCyc);
-        SET_ELM_PLIST( STATE(ResultCyc), exp, INTOBJ_INT(1) );
+        n = STATE(LastNCyc);
+        exp = (exp % n + n) % n;
+        SET_ELM_PLIST( STATE(ResultCyc), exp + 1, INTOBJ_INT(1) );
         CHANGED_BAG( STATE(ResultCyc) );
         ConvertToBase( STATE(LastNCyc) );
         pow = Cyclotomic( STATE(LastNCyc), 1 );
@@ -1446,8 +1446,8 @@ Obj             PowCyc (
         n = INT_INTOBJ( NOF_CYC(opL) );
         pow = POW( COEFS_CYC(opL)[1], opR );
         i = EXPOS_CYC(opL,2)[1];
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
-        res[((exp*i)%n+n)%n] = pow;
+        exp = ((exp*(Int)i) % n + n) % n;
+        SET_ELM_PLIST( STATE(ResultCyc), exp + 1, pow );
         CHANGED_BAG( STATE(ResultCyc) );
         ConvertToBase( n );
         pow = Cyclotomic( n, 1 );
@@ -2222,6 +2222,7 @@ static Int InitKernel (
     ProdFuncs[ T_CYC    ][ T_INTPOS ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
+    PowFuncs[  T_CYC    ][ T_INT    ] = PowCyc;
 
     MakeBagTypePublic(T_CYC);
     /* return success                                                      */
