@@ -273,7 +273,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
     fi;
     if not IsBound( cachelist[n] ) then
 
-      Info( InfoWarning, 1,
+      Info( InfoWarning, 2,
             "computing Conway polynomial for p = ", p, " and n = ", n );
 
       F:= GF(p);
