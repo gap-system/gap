@@ -427,6 +427,17 @@ In the read-eval-print loop,
 </Description>
 </ManSection>
 
+<ManSection>
+<Func Name="Sleep" Arg='time'/>
+<Func Name="NanoSleep" Arg='time'/>
+
+<Description>
+These functions make GAP stop execution for a given period of time. The time
+to stop is given to <Ref Func="Sleep"/> in seconds and <Ref Func="NanoSleep"/>
+in nanoseconds.
+</Description>
+</ManSection>
+
 </Section>
 
 
