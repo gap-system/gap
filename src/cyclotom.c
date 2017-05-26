@@ -2236,14 +2236,8 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj *               res;            /* pointer into the result         */
-    UInt                i;              /* loop variable                   */
-
     /* create the result buffer                                            */
-    STATE(ResultCyc) = NEW_PLIST( T_PLIST, 1024 );
-    SET_LEN_PLIST( STATE(ResultCyc), 1024 );
-    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
-    for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
+    GrowResultCyc( 1024 );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
