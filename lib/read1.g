@@ -88,3 +88,5 @@ ReadLib( "macfloat.g"  );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
+
+ReadLib( "hpc/tasks.g" );
