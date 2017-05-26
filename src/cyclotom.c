@@ -1981,6 +1981,9 @@ Obj FuncCycList (
                  TNUM_OBJ(val) == T_RAT ||
                  TNUM_OBJ(val) == T_INTPOS ||
                  TNUM_OBJ(val) == T_INTNEG ) ) {
+            // reset ResultCyc, otherwise the next operation using it will see
+            // our left-over garbage data
+            SET_LEN_PLIST( STATE(ResultCyc), 0 );
             ErrorQuit( "CycList: each entry must be a rational (not a %s)",
                        (Int)TNAM_OBJ( val ), 0L );
         }
