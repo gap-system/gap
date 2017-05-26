@@ -258,6 +258,10 @@ gap> for n in [120,122,125,127,128] do
 > od;
 
 #
+gap> CycList([1,fail]);
+Error, CycList: each entry must be a rational (not a boolean or fail)
+
+#
 gap> STOP_TEST( "cyclotom.tst", 1);
 
 #############################################################################
