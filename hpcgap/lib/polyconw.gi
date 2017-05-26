@@ -318,7 +318,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
   
   if cachedata = fail then
 
-      Info( InfoWarning, 1,
+      Info( InfoWarning, 2,
             "computing Conway polynomial for p = ", p, " and n = ", n );
 
       F:= GF(p);
