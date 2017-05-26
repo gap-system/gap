@@ -2503,8 +2503,6 @@ Obj FuncSleep( Obj self, Obj secs )
 }
 
 
-#ifdef HPCGAP
-
 /****************************************************************************
 **
 *F  FuncMicroSleep( <self>, <secs> )
@@ -2525,7 +2523,11 @@ Obj FuncMicroSleep( Obj self, Obj msecs )
     SyUSleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
+#ifdef HPCGAP
   if (HaveInterrupt())
+#else
+  if (SyIsIntr())
+#endif
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in microsleep", 0L, 0L,
@@ -2534,8 +2536,6 @@ Obj FuncMicroSleep( Obj self, Obj msecs )
   
   return (Obj) 0;
 }
-
-#endif
 
 
 // Common code in the next 3 methods.
@@ -2889,10 +2889,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "WindowCmd", 1, "arg-list",
       FuncWindowCmd, "src/gap.c:WindowCmd" },
 
-#ifdef HPCGAP
     { "MicroSleep", 1, "msecs",
       FuncMicroSleep, "src/gap.c:MicroSleep" },
-#endif
 
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
