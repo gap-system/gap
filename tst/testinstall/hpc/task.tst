@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  access.tst                 GAP tests                   Alexander Konovalov
+#W  task.tst                 GAP tests                   Alexander Konovalov
 ##
 ##
 #Y  Copyright (C)  2012
 ##
-gap> START_TEST("access.tst");
+gap> START_TEST("task.tst");
 gap> CallAsTask := function(arg)
 > return TaskResult( RunTask( CallFuncList, arg[1], arg{[2..Length(arg)]} ) );
 > end;;
@@ -75,7 +75,7 @@ rec( B := [  ], basis := [  ], mue := [  ] )
 gap> CallAsTask(LLLReducedBasis,[ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
 rec( B := [  ], basis := [  ], mue := [  ], 
   relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
-gap> STOP_TEST( "access.tst", 1 );
+gap> STOP_TEST( "task.tst", 1 );
 #############################################################################
 ##
 #E
