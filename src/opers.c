@@ -49,11 +49,14 @@
 #include <src/listfunc.h>   
 #include <src/gmpints.h>   
 
+#ifdef HPCGAP
 #include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
+#include <src/hpc/systhread.h>          /* system thread primitives */
 #include <src/hpc/atomic.h>
+#endif
 
 /****************************************************************************
 **
@@ -662,9 +665,12 @@ Obj FuncAND_FLAGS (
     Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
+#ifdef HPCGAP
+    Obj                 locked = 0;
+#endif
     UInt                hash;
     UInt                hash2;
-    static UInt         next = 0;
+    static UInt         next = 0;   // FIXME HPC-GAP: is usage of this static thread-safe?
 #endif
 
     /* do some trivial checks                                              */
@@ -688,6 +694,12 @@ Obj FuncAND_FLAGS (
         // smaller.
         if ( flags1 < flags2 ) {
             flagsX = flags2;
+#           ifdef HPCGAP
+                if (!PreThreadCreation) {
+                    locked = flags1;
+                    HashLock(locked);
+                }
+#           endif
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
@@ -698,6 +710,12 @@ Obj FuncAND_FLAGS (
         }
         else {
             flagsX = flags1;
+#           ifdef HPCGAP
+                if (!PreThreadCreation) {
+                    locked = flags2;
+                    HashLock(locked);
+                }
+#           endif
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
@@ -716,6 +734,10 @@ Obj FuncAND_FLAGS (
             if ( entry == flagsX ) {
 #               ifdef COUNT_OPERS
                     AndFlagsCacheHit++;
+#               endif
+#               if defined(HPCGAP) && defined(AND_FLAGS_HASH_SIZE)
+                    if (locked)
+                        HashUnlock(locked);
 #               endif
                 return ELM_PLIST( cache, 2*hash2+2 );
             }
@@ -739,9 +761,17 @@ Obj FuncAND_FLAGS (
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
     if ( len1 == 0 ) {
+#       if defined(HPCGAP) && defined(AND_FLAGS_HASH_SIZE)
+            if (locked)
+                HashUnlock(locked);
+#       endif
         return flags2;
     }
     if ( len2 == 0 ) {
+#       if defined(HPCGAP) && defined(AND_FLAGS_HASH_SIZE)
+            if (locked)
+                HashUnlock(locked);
+#       endif
         return flags1;
     }
     if ( len1 < len2 ) {
@@ -777,6 +807,10 @@ Obj FuncAND_FLAGS (
         SET_ELM_PLIST( cache, 2*hash+1, flagsX );
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
+#       ifdef HPCGAP
+            if (locked)
+                HashUnlock(locked);
+#       endif
 #   endif
 
     /* and return the result                                               */
@@ -798,11 +832,17 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 {
     Obj imp = FuncFLAGS_FILTER(0, filter);
     Obj imps = FuncFLAGS_FILTER(0, filters);
+#ifdef HPCGAP
+    RegionWriteLock(REGION(HIDDEN_IMPS));
+#endif
     UInt len = LEN_PLIST(HIDDEN_IMPS);
     GROW_PLIST(HIDDEN_IMPS, len + 2);
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
     ELM_PLIST(HIDDEN_IMPS, len + 1) = imp;
     ELM_PLIST(HIDDEN_IMPS, len + 2) = imps;
+#ifdef HPCGAP
+    RegionWriteUnlock(REGION(HIDDEN_IMPS));
+#endif
     return 0;
 }
 
@@ -814,7 +854,9 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 {
   Int i;
   Obj flags = FuncFLAGS_FILTER(0, filter);
-  
+#ifdef HPCGAP
+  RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
   for(i = 1; i < hidden_imps_cache_length * 2 - 1; i += 2)
   {
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
@@ -825,6 +867,9 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
         CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
     }
   }
+#ifdef HPCGAP
+  RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
   return 0;
 }
 
@@ -851,12 +896,18 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
-    
+#ifdef HPCGAP
+    RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
       cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
       if(cacheval && cacheval == flags) {
-        return ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+        Obj ret = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+#ifdef HPCGAP
+        RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
+        return ret;
       }
       hash = (hash * 311 + 61) % hidden_imps_cache_length;
     }
@@ -903,7 +954,10 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       }
     }
     
-    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);    
+    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
+#ifdef HPCGAP
+    RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
     return with;
 }
 
@@ -1604,6 +1658,11 @@ Obj CallHandleMethodNotFound( Obj oper,
   Obj r;
   Obj arglist;
   UInt i;
+#ifdef HPCGAP
+  Region *savedRegion = TLS(currentRegion);
+  TLS(currentRegion) = TLS(threadRegion);
+#endif
+
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
@@ -1627,7 +1686,11 @@ Obj CallHandleMethodNotFound( Obj oper,
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
   AssPRec(r,RNamPrecedence,precedence);
   SortPRecRNam(r,0);
-  return CALL_1ARGS(HandleMethodNotFound, r);
+  r = CALL_1ARGS(HandleMethodNotFound, r);
+#ifdef HPCGAP
+  TLS(currentRegion) = savedRegion;
+#endif
+  return r;
 }
 
 /****************************************************************************
@@ -1716,6 +1779,10 @@ static inline Obj TYPE_OBJ_FEO (
                 Obj obj
         )
 {
+#ifdef HPCGAP
+    /* TODO: We need to be able to automatically derive this. */
+    ImpliedWriteGuard(obj);
+#endif
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
         return TYPE_COMOBJ(obj);
@@ -1728,24 +1795,95 @@ static inline Obj TYPE_OBJ_FEO (
     }
 }
 
+#ifdef HPCGAP
+
+static pthread_mutex_t CacheLock;
+static UInt CacheSize;
+
+static void LockCache()
+{
+    if (!PreThreadCreation)
+        pthread_mutex_lock(&CacheLock);
+}
+
+static void UnlockCache()
+{
+    if (!PreThreadCreation)
+        pthread_mutex_unlock(&CacheLock);
+}
+
+#endif
+
 static inline Obj CacheOper (
     Obj                 oper,
     UInt                i )
 {
     Obj cache = CACHE_OPER( oper, i );
     UInt len;
+
+#ifdef HPCGAP
+    UInt cacheIndex;
+
+    if ( cache == 0 ) {
+        /* This is a safe form of double-checked locking, because
+         * the cache value is not a reference. */
+        LockCache();
+        cache = CACHE_OPER( oper, i );
+        if (cache == 0 ) {
+            CacheSize++;
+            cacheIndex = CacheSize;
+            CACHE_OPER( oper, i ) = INTOBJ_INT(cacheIndex);
+        }
+        else
+            cacheIndex = INT_INTOBJ(cache);
+        UnlockCache();
+    }
+    else {
+        cacheIndex = INT_INTOBJ(cache);
+    }
+
+    if (cacheIndex > STATE(MethodCacheSize)) {
+        len = STATE(MethodCacheSize);
+        while (cacheIndex > len)
+            len *= 2;
+        GROW_PLIST(STATE(MethodCache), len);
+        SET_LEN_PLIST(STATE(MethodCache), len);
+        STATE(MethodCacheItems) = ADDR_OBJ(STATE(MethodCache));
+        STATE(MethodCacheSize) = len;
+    }
+
+    cache = ELM_PLIST(STATE(MethodCache), cacheIndex);
+#endif
+
     if ( cache == 0 ) {
         len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
         cache = NEW_PLIST( T_PLIST, len);
         SET_LEN_PLIST( cache, len ); 
-        CACHE_OPER( oper, i ) = cache;
-        CHANGED_BAG( oper );
+#       ifdef HPCGAP
+            SET_ELM_PLIST( STATE(MethodCache), cacheIndex, cache );
+            CHANGED_BAG( STATE(MethodCache) );
+#       else
+            CACHE_OPER( oper, i ) = cache;
+            CHANGED_BAG( oper );
+#       endif
     }
+
     return cache;
 }
 
+
+#ifdef HPCGAP
+
+#define GET_METHOD_CACHE( oper, i ) \
+  ( STATE(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
+
+#else
+
 #define GET_METHOD_CACHE( oper, i ) \
     CACHE_OPER( oper, i )
+
+#endif
+
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -1840,7 +1978,8 @@ Obj DoOperation1Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -1933,8 +2072,10 @@ Obj DoOperation2Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -2035,9 +2176,12 @@ Obj DoOperation3Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -2141,10 +2285,14 @@ Obj DoOperation4Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -2257,11 +2405,16 @@ Obj DoOperation5Args (
     Obj                 margs;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -2391,12 +2544,18 @@ Obj DoOperation6Args (
     Obj                 prec;
 
     /* get the types of the arguments                                      */
-    type1 = TYPE_OBJ_FEO( arg1 );  id1 = ID_TYPE( type1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
+    type1 = TYPE_OBJ_FEO( arg1 );
+    id1 = ID_TYPE( type1 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -3311,7 +3470,8 @@ Obj DoConstructor2Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -3416,8 +3576,10 @@ Obj DoConstructor3Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -3527,9 +3689,12 @@ Obj DoConstructor4Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
 
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -3647,10 +3812,14 @@ Obj DoConstructor5Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
     
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -3784,11 +3953,16 @@ Obj DoConstructor6Args (
                 "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     type1 = FLAGS_FILT( arg1 );
-    type2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( type2 );
-    type3 = TYPE_OBJ_FEO( arg3 );  id3 = ID_TYPE( type3 );
-    type4 = TYPE_OBJ_FEO( arg4 );  id4 = ID_TYPE( type4 );
-    type5 = TYPE_OBJ_FEO( arg5 );  id5 = ID_TYPE( type5 );
-    type6 = TYPE_OBJ_FEO( arg6 );  id6 = ID_TYPE( type6 );
+    type2 = TYPE_OBJ_FEO( arg2 );
+    id2 = ID_TYPE( type2 );
+    type3 = TYPE_OBJ_FEO( arg3 );
+    id3 = ID_TYPE( type3 );
+    type4 = TYPE_OBJ_FEO( arg4 );
+    id4 = ID_TYPE( type4 );
+    type5 = TYPE_OBJ_FEO( arg5 );
+    id5 = ID_TYPE( type5 );
+    type6 = TYPE_OBJ_FEO( arg6 );
+    id6 = ID_TYPE( type6 );
     
     /* try to find an applicable method in the cache                       */
     prec = INTOBJ_INT(-1);
@@ -4747,6 +4921,10 @@ Obj DoVerboseMutableAttribute (
 ** MakeSetter, MakeTester and SetupAttribute are support functions
 */
 
+#if !defined(HPCGAP)
+#define ImpliedWriteGuard(x)
+#endif
+
 #define WRAP_NAME(fname, name, addon) \
     do { \
         UInt name_len = GET_LEN_STRING(name); \
@@ -5273,8 +5451,13 @@ void SaveOperationExtras (
     SaveUInt(ENABLED_ATTR(oper));
     for (i = 0; i <= 7; i++)
         SaveSubObj(METHS_OPER(oper,i));
+#ifdef HPCGAP
+    // FIXME: We probably don't want to save/restore the cache?
+    // (and that would include "normal" GAP, too...)
+#else
     for (i = 0; i <= 7; i++)
         SaveSubObj(CACHE_OPER(oper,i));
+#endif
     return;
 }
 
@@ -5301,8 +5484,13 @@ void LoadOperationExtras (
     SET_ENABLED_ATTR(oper,i);
     for (i = 0; i <= 7; i++)
         METHS_OPER(oper,i) = LoadSubObj();
+#ifdef HPCGAP
+    // FIXME: We probably don't want to save/restore the cache?
+    // (and that would include "normal" GAP, too...)
+#else
     for (i = 0; i <= 7; i++)
         CACHE_OPER(oper,i) = LoadSubObj();
+#endif
     return;
 }
 
@@ -5573,7 +5761,9 @@ Obj FuncMETHODS_OPERATION (
     }
     n = INT_INTOBJ( narg );
     meth = MethsOper( oper, (UInt)n );
+#ifdef HPCGAP
     MEMBAR_READ();
+#endif
     return meth == 0 ? Fail : meth;
 }
 
@@ -5637,7 +5827,9 @@ Obj FuncSET_METHODS_OPERATION (
         return 0;
     }
     n = INT_INTOBJ( narg );
+#ifdef HPCGAP
     MEMBAR_WRITE();
+#endif
     METHS_OPER( oper, n ) = meths;
     return 0;
 }
@@ -5658,8 +5850,18 @@ Obj DoSetterFunction (
     Obj                 flags;
     UInt                flag2;
     Obj                 type;
+#ifdef HPCGAP
+    int                 atomic = 0;
+#endif
 
-    if ( TNUM_OBJ(obj) != T_COMOBJ ) {
+    switch (TNUM_OBJ(obj)) {
+#ifdef HPCGAP
+      case T_ACOMOBJ:
+        atomic = 1;
+#endif
+      case T_COMOBJ:
+        break;
+      default:
         ErrorQuit( "<obj> must be a component object", 0L, 0L );
         return 0L;
     }
@@ -5675,7 +5877,13 @@ Obj DoSetterFunction (
     }
 
     /* set the value                                                       */
-    AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+#ifdef HPCGAP
+    if (atomic)
+      SetARecordField( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)),
+        CopyObj(value,0) );
+    else
+#endif
+      AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
@@ -6445,10 +6653,12 @@ StructInitInfo * InitInfoOpers ( void )
 
 void InitOpersState(GAPState * state)
 {
+#ifdef HPCGAP
     state->MethodCache = NEW_PLIST(T_PLIST, 1);
     state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
     state->MethodCacheSize = 1;
     SET_LEN_PLIST(state->MethodCache, 1);
+#endif
 }
 
 void DestroyOpersState(GAPState * state)

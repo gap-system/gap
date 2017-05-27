@@ -117,9 +117,11 @@ typedef struct GAPState {
     Obj ExecState;
 
     /* From opers.c */
+#if defined(HPCGAP)
     Obj   MethodCache;
     Obj * MethodCacheItems;
     UInt  MethodCacheSize;
+#endif
     UInt  CacheIndex;
 
     /* From cyclotom.c */
