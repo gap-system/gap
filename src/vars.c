@@ -477,15 +477,11 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    if ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
-      && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-        while ( (val = ValGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0
-             && (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-            ErrorReturnVoid(
-                "Variable: '%s' must have an assigned value",
-                (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
-                "you can 'return;' after assigning a value" );
-        }
+    while ( (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
+        ErrorReturnVoid(
+            "Variable: '%s' must have an assigned value",
+            (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
+            "you can 'return;' after assigning a value" );
     }
 
     /* return the value                                                    */
