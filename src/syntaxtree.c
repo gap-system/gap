@@ -12,9 +12,11 @@
 #include "system.h"
 #include <stdarg.h>
 
+#include "code.h"
 #include "objects.h"
 
 #include "exprs.h"
+#include "gapstate.h"
 #include "stats.h"
 
 #include "compiled.h"
@@ -59,7 +61,7 @@ static const CompilerT ExprCompilers[];
 
 #define ARG(name, func) \
     { name, func }
-#define ARG_(name) ARG(name, SyntaxTreeCompiler);
+#define ARG_(name) ARG(name, SyntaxTreeCompiler)
 
 static inline Obj SyntaxTreeFunc(Obj result, Obj func);
 
@@ -99,11 +101,6 @@ static Obj SyntaxTreeCompiler(Expr expr)
     return result;
 }
 
-static ArgT[] = {
-    ARG_COMPILER("rnam", SyntaxTreeCompiler);
-}
-
-
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 {
     int       i;
@@ -123,7 +120,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     }
 
     for (i = 0; i < comp.arity; i++) {
-        AssPRec(result, RNamName(comp.argnames[i]),
+        AssPRec(result, RNamName(comp.args[i].argname),
                 SyntaxTreeCompiler(ADDR_EXPR(expr)[i]));
     }
     return result;
@@ -848,7 +845,8 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_REPEAT3, SyntaxTreeRepeat),
     COMPILER(T_BREAK, SyntaxTreeDefaultCompiler),
     COMPILER(T_CONTINUE, SyntaxTreeDefaultCompiler),
-    COMPILER(T_RETURN_OBJ, SyntaxTreeDefaultCompiler, ARG_COMPILER("obj", SyntaxTreeCompiler) ),
+    COMPILER(T_RETURN_OBJ, SyntaxTreeDefaultCompiler,
+             ARG("obj", SyntaxTreeDefaultCompiler) ),
     COMPILER(T_RETURN_VOID, SyntaxTreeDefaultCompiler),
 
     COMPILER(T_ASS_LVAR, SyntaxTreeAssLVar, "lvar", "rhs"),
@@ -921,7 +919,7 @@ static const CompilerT ExprCompilers[] = {
 
     COMPILER(T_FUNC_EXPR, SyntaxTreeFuncExpr),
 
-    COMPILER_(T_OR, ARG_("left"), DARG_("right")),
+    COMPILER_(T_OR, ARG_("left"), ARG_("right")),
     COMPILER_(T_AND, ARG_("left"), ARG_("right")),
     COMPILER_(T_NOT, ARG_("op")),
     COMPILER_(T_EQ, ARG_("left"), ARG_("right")),
@@ -944,6 +942,7 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_INT_EXPR, SyntaxTreeIntExpr),
     COMPILER_(T_TRUE_EXPR),
     COMPILER_(T_FALSE_EXPR),
+    COMPILER_(T_TILDE_EXPR),
     COMPILER(T_CHAR_EXPR, SyntaxTreeCharExpr),
     COMPILER(T_PERM_EXPR, SyntaxTreePermExpr),
     COMPILER_(T_PERM_CYCLE),
@@ -955,25 +954,6 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_REC_TILD_EXPR, SyntaxTreeRecExpr),
 
     COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
-
-    /* TODO: Are these, or were these, REFLVAR0-15? */
-    COMPILER_(128 + 41),
-    COMPILER_(128 + 42),
-    COMPILER_(128 + 43),
-    COMPILER_(128 + 44),
-    COMPILER_(128 + 45),
-    COMPILER_(128 + 46),
-    COMPILER_(128 + 47),
-    COMPILER_(128 + 48),
-    COMPILER_(128 + 49),
-    COMPILER_(128 + 50),
-    COMPILER_(128 + 51),
-    COMPILER_(128 + 52),
-    COMPILER_(128 + 53),
-    COMPILER_(128 + 54),
-    COMPILER_(128 + 55),
-    COMPILER_(128 + 56),
-    COMPILER_(128 + 57),
 
     COMPILER(T_ISB_LVAR, SyntaxTreeRefLVar, ARG_("var")),
     COMPILER(T_REF_HVAR, SyntaxTreeRefHVar, ARG_("var")),
