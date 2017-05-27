@@ -78,18 +78,6 @@ Region *RegionBag(Bag bag)
     return result;
 }
 
-/****************************************************************************
-**
-*F  InitFinalizerFuncBags(<type>,<finalizer-func>)  . . . . install finalizer
-*/
-
-FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
-
-void InitFinalizerFuncBags(UInt type, FinalizerFunction finalizer_func)
-{
-  TabFinalizerFuncBags[type] = finalizer_func;
-}
-
 #ifndef WARD_ENABLED
 
 void StandardFinalizer( void * bagContents, void * data )
@@ -98,7 +86,7 @@ void StandardFinalizer( void * bagContents, void * data )
   void *bagContents2;
   bagContents2 = ((char *) bagContents) + sizeof(BagHeader);
   bag = (Bag) &bagContents2;
-  TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
+  TabFreeFuncBags[TNUM_BAG(bag)](bag);
 }
 
 #endif
@@ -232,7 +220,7 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       else
         result = GC_malloc(size);
     }
-    if (TabFinalizerFuncBags[type])
+    if (TabFreeFuncBags[type])
       GC_register_finalizer_no_order(result, StandardFinalizer,
         NULL, NULL, NULL);
     return result;
