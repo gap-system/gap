@@ -57,9 +57,22 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
+#include <src/util.h>
+
 #ifdef HPCGAP
 #include <src/hpc/systhread.h>          /* system thread primitives */
 #include <stdio.h>
+#endif
+
+
+#ifdef HPCGAP
+
+#define GVAR_BUCKETS 1024
+#define GVAR_BUCKET_SIZE 1024
+
+#define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
+#define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
+
 #endif
 
 /****************************************************************************
@@ -76,10 +89,13 @@
 **  'PtrGVars' must be  revalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
+#ifdef HPCGAP
+Obj   ValGVars[GVAR_BUCKETS];
+Obj * PtrGVars[GVAR_BUCKETS];
+#else
 Obj   ValGVars;
-
 Obj * PtrGVars;
-
+#endif
 
 
 #ifdef HPCGAP
@@ -176,6 +192,9 @@ UInt            CountGVars;
 #define SET_ELM_GVAR_LIST( list, gvar, val ) \
     SET_ELM_PLIST( list, gvar, val )
 
+#define CHANGED_GVAR_LIST( list, gvar ) \
+    CHANGED_BAG( list );
+
 
 /****************************************************************************
 **
@@ -262,6 +281,16 @@ void            AssGVar (
     }
 
     /* assign the value to the global variable                             */
+#ifdef HPCGAP
+    if (!VAL_GVAR(gvar)) {
+        Obj expr = ExprGVar(gvar);
+        if (IS_INTOBJ(expr)) {
+          AssTLRecord(TLVars, INT_INTOBJ(expr), val);
+          return;
+        }
+    }
+    MEMBAR_WRITE();
+#endif
     VAL_GVAR(gvar) = val;
     CHANGED_BAG( ValGVars );
 
@@ -323,20 +352,29 @@ void            AssGVar (
 Obj             ValAutoGVar (
     UInt                gvar )
 {
+    Obj                 val;
     Obj                 expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
 
-    /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 && (expr = ExprGVar(gvar)) != 0 ) {
+    val = ValGVar(gvar);
 
+    /* if this is an automatic variable, make the function call            */
+    if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
+
+#ifdef HPCGAP
+        if (IS_INTOBJ(expr)) {
+          /* thread-local variable */
+          return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+        }
+#endif
         /* make the function call                                          */
         func = ELM_PLIST( expr, 1 );
         arg  = ELM_PLIST( expr, 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-        while ( VAL_GVAR(gvar) == 0 ) {
+        while ( (val = ValGVar(gvar)) == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
                 (Int)NameGVar(gvar), 0L,
@@ -346,8 +384,47 @@ Obj             ValAutoGVar (
     }
 
     /* return the value                                                    */
-    return VAL_GVAR(gvar);
+    return val;
 }
+
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+#ifdef HPCGAP
+Obj             ValGVarTL (
+    UInt                gvar )
+{
+    Obj                 expr;
+    Obj                 val;
+
+    val = ValGVar(gvar);
+    /* is this a thread-local variable? */
+    if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
+
+        if (IS_INTOBJ(expr)) {
+          /* thread-local variable */
+          return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+        }
+    }
+
+    /* return the value                                                    */
+    return val;
+}
+
+Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
+  if (!IsStringConv(name))
+    ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
+                 (Int)TNAM_OBJ(name), 0L);
+
+  UInt gvar = GVarName(CSTR_STRING(name));
+  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
+    True: False;
+}
+#endif
 
 
 /****************************************************************************
@@ -361,6 +438,15 @@ Char *          NameGVar (
 {
     return CSTR_STRING( ELM_GVAR_LIST( NameGVars, gvar ) );
 }
+
+#ifdef HPCGAP
+Obj NewGVarBucket() {
+    Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
+    SET_LEN_PLIST(result, GVAR_BUCKET_SIZE);
+    MakeBagPublic(result);
+    return result;
+}
+#endif
 
 Obj NameGVarObj ( UInt gvar )
 {
@@ -489,6 +575,7 @@ UInt GVarName (
     return INT_INTOBJ(gvar);
 }
 
+
 /****************************************************************************
 **
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
@@ -497,8 +584,29 @@ void MakeReadOnlyGVar (
     UInt                gvar )
 {       
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars)
+    CHANGED_GVAR_LIST( WriteGVars, gvar );
 }
+
+
+/****************************************************************************
+**
+*F  MakeThreadLocalVar( <gvar> )  . . . . . .  make a variable thread-local
+*/
+#ifdef HPCGAP
+void MakeThreadLocalVar (
+    UInt                gvar,
+    UInt                rnam )
+{       
+    Obj value = ValGVar(gvar);
+    VAL_GVAR(gvar) = (Obj) 0;
+    if (IS_INTOBJ(ExprGVar(gvar)))
+       value = (Obj) 0;
+    SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
+    CHANGED_GVAR_LIST( ExprGVars, gvar );
+    if (value && TLVars)
+        SetTLDefault(TLVars, rnam, value);
+}
+#endif
 
 
 /****************************************************************************
@@ -540,7 +648,7 @@ void MakeReadWriteGVar (
     UInt                gvar )
 {
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
-    CHANGED_BAG(WriteGVars)
+    CHANGED_GVAR_LIST( WriteGVars, gvar );
 }
 
 
@@ -674,7 +782,7 @@ Obj             AUTOHandler (
         gvar = GVarName( CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
-        CHANGED_BAG(   ExprGVars );
+        CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
     /* return void                                                         */
@@ -1001,7 +1109,7 @@ void UpdateCopyFopyInfo ( void )
             if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
-                CHANGED_BAG(FopiesGVars);
+                CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
         }
         else {
@@ -1009,7 +1117,7 @@ void UpdateCopyFopyInfo ( void )
             if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
-                CHANGED_BAG(CopiesGVars);
+                CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }
         ncop = LEN_PLIST(cops);
@@ -1021,7 +1129,7 @@ void UpdateCopyFopyInfo ( void )
         CHANGED_BAG(cops);
 
         /* now copy the value of <gvar> to <cvar>                          */
-        Obj val = VAL_GVAR(gvar);
+        Obj val = ValGVar(gvar);
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
             if ( val != 0 && IS_FUNC(val) ) {
                 *copy = val;
@@ -1089,6 +1197,100 @@ void GVarsAfterCollectBags ( void )
 }
 
 
+#ifdef HPCGAP
+
+GVarDescriptor *FirstDeclaredGVar;
+GVarDescriptor *LastDeclaredGVar;
+
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunction(<gvar>) . . return value of <gvar>, error if not a function
+*F  GVarOptFunction(<gvar>) return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
+
+void DeclareGVar(GVarDescriptor *gvar, char *name)
+{
+  gvar->ref = NULL;
+  gvar->name = name;
+  gvar->next = NULL;
+  if (LastDeclaredGVar) {
+    LastDeclaredGVar->next = gvar;
+    LastDeclaredGVar = gvar;
+  } else {
+    FirstDeclaredGVar = gvar;
+    LastDeclaredGVar = gvar;
+  }
+}
+
+void DeclareAllGVars( void )
+{
+  GVarDescriptor *gvar;
+  LockGVars(1);
+  for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
+    UInt index = GVarName(gvar->name);
+    gvar->ref = &(VAL_GVAR(index));
+  }
+  FirstDeclaredGVar = LastDeclaredGVar = 0;
+  UnlockGVars();
+}
+
+Obj GVarValue(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarObj(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarFunction(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  if (REGION(result))
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  MEMBAR_READ();
+  return result;
+}
+
+Obj GVarOptFunction(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    return (Obj) 0;
+  if (REGION(result))
+    return (Obj) 0;
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    return (Obj) 0;
+  MEMBAR_READ();
+  return result;
+}
+
+void SetGVar(GVarDescriptor *gvar, Obj obj)
+{
+  MEMBAR_WRITE();
+  *(gvar->ref) = obj;
+}
+
+#endif
+
+
 /****************************************************************************
 **
 
@@ -1138,6 +1340,11 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GET_NAMESPACE", 0L, "",
       FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
+
+#ifdef HPCGAP
+    { "IsThreadLocalGVar", 1L, "name",
+      FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
+#endif
 
     { 0, 0, 0, 0, 0 }
 

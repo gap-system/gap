@@ -65,13 +65,15 @@
 #endif
 
 
+#ifdef HPCGAP
+
 #define GVAR_BUCKETS 1024
 #define GVAR_BUCKET_SIZE 1024
 
 #define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
 #define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
 
-
+#endif
 
 /****************************************************************************
 **
@@ -88,10 +90,13 @@
 **  'PtrGVars' must be  revalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
+#ifdef HPCGAP
 Obj   ValGVars[GVAR_BUCKETS];
-
 Obj * PtrGVars[GVAR_BUCKETS];
-
+#else
+Obj   ValGVars;
+Obj * PtrGVars;
+#endif
 
 
 #ifdef HPCGAP
@@ -190,6 +195,8 @@ UInt            CountGVars;
 #define SET_ELM_GVAR_LIST( list, gvar, val ) \
     SET_ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar), val )
 
+#define CHANGED_GVAR_LIST( list, gvar ) \
+    CHANGED_BAG( list[GVAR_BUCKET(gvar)] );
 
 /****************************************************************************
 **
@@ -268,8 +275,7 @@ void            AssGVar (
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-            (ELM_GVAR_LIST( WriteGVars, gvar )
-              == INTOBJ_INT(0)) ) {
+            (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
             (Int)NameGVar(gvar), 0L,
@@ -277,6 +283,7 @@ void            AssGVar (
     }
 
     /* assign the value to the global variable                             */
+#ifdef HPCGAP
     if (!VAL_GVAR(gvar)) {
         Obj expr = ExprGVar(gvar);
         if (IS_INTOBJ(expr)) {
@@ -285,8 +292,9 @@ void            AssGVar (
         }
     }
     MEMBAR_WRITE();
+#endif
     VAL_GVAR(gvar) = val;
-    CHANGED_BAG( ValGVars[GVAR_BUCKET(gvar)] );
+    CHANGED_GVAR_LIST( ValGVars, gvar );
 
     /* if the global variable was automatic, convert it to normal          */
     SET_ELM_GVAR_LIST( ExprGVars, gvar, 0 );
@@ -355,27 +363,28 @@ Obj             ValAutoGVar (
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
 
-    /* if this is an automatic variable, make the function call            */
     val = ValGVar(gvar);
+
+    /* if this is an automatic variable, make the function call            */
     if ( val == 0 && (expr = ExprGVar(gvar)) != 0 ) {
 
+#ifdef HPCGAP
         if (IS_INTOBJ(expr)) {
           /* thread-local variable */
           return GetTLRecordField(TLVars, INT_INTOBJ(expr));
         }
+#endif
         /* make the function call                                          */
         func = ELM_PLIST( expr, 1 );
         arg  = ELM_PLIST( expr, 2 );
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-        val = ValGVar(gvar);
-        while ( val  == 0 ) {
+        while ( (val = ValGVar(gvar)) == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
-            (Int)NameGVar(gvar), 0L,
-            "you can 'return;' after assigning a value" );
-            val = ValGVar(gvar);
+                (Int)NameGVar(gvar), 0L,
+                "you can 'return;' after assigning a value" );
         }
 
     }
@@ -391,6 +400,7 @@ Obj             ValAutoGVar (
 **  'ValGVarTL' returns the value of the global or thread-local variable
 **  <gvar>.
 */
+#ifdef HPCGAP
 Obj             ValGVarTL (
     UInt                gvar )
 {
@@ -420,6 +430,7 @@ Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
   return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
     True: False;
 }
+#endif
 
 
 /****************************************************************************
@@ -434,12 +445,14 @@ Char *          NameGVar (
     return CSTR_STRING( ELM_GVAR_LIST( NameGVars, gvar ) );
 }
 
+#ifdef HPCGAP
 Obj NewGVarBucket() {
     Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
     SET_LEN_PLIST(result, GVAR_BUCKET_SIZE);
     MakeBagPublic(result);
     return result;
 }
+#endif
 
 Obj NameGVarObj ( UInt gvar )
 {
@@ -583,6 +596,7 @@ UInt GVarName (
     return INT_INTOBJ(gvar);
 }
 
+
 /****************************************************************************
 **
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
@@ -591,13 +605,15 @@ void MakeReadOnlyGVar (
     UInt                gvar )
 {       
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars[GVAR_BUCKET(gvar)]);
+    CHANGED_GVAR_LIST( WriteGVars, gvar );
 }
+
 
 /****************************************************************************
 **
 *F  MakeThreadLocalVar( <gvar> )  . . . . . .  make a variable thread-local
 */
+#ifdef HPCGAP
 void MakeThreadLocalVar (
     UInt                gvar,
     UInt                rnam )
@@ -607,10 +623,11 @@ void MakeThreadLocalVar (
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
-    CHANGED_BAG(ExprGVars[GVAR_BUCKET(gvar)]);
+    CHANGED_GVAR_LIST( ExprGVars, gvar );
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
 }
+#endif
 
 
 /****************************************************************************
@@ -652,7 +669,7 @@ void MakeReadWriteGVar (
     UInt                gvar )
 {
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
-    CHANGED_BAG(WriteGVars[GVAR_BUCKET(gvar)]);
+    CHANGED_GVAR_LIST( WriteGVars, gvar );
 }
 
 
@@ -786,7 +803,7 @@ Obj             AUTOHandler (
         gvar = GVarName( CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
-        CHANGED_BAG(   ExprGVars[GVAR_BUCKET(gvar)] );
+        CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
     /* return void                                                         */
@@ -1137,7 +1154,7 @@ void UpdateCopyFopyInfo ( void )
                 cops = NEW_PLIST( T_PLIST, 0 );
                 MakeBagPublic(cops);
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
-                CHANGED_BAG(FopiesGVars[GVAR_BUCKET(gvar)]);
+                CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
         }
         else {
@@ -1146,7 +1163,7 @@ void UpdateCopyFopyInfo ( void )
                 cops = NEW_PLIST( T_PLIST, 0 );
                 MakeBagPublic(cops);
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
-                CHANGED_BAG(CopiesGVars[GVAR_BUCKET(gvar)]);
+                CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }
         ncop = LEN_PLIST(cops);
@@ -1243,6 +1260,8 @@ void GVarsAfterCollectBags ( void )
 }
 
 
+#ifdef HPCGAP
+
 GVarDescriptor *FirstDeclaredGVar;
 GVarDescriptor *LastDeclaredGVar;
 
@@ -1332,8 +1351,7 @@ void SetGVar(GVarDescriptor *gvar, Obj obj)
   *(gvar->ref) = obj;
 }
 
-
-
+#endif
 
 
 /****************************************************************************
@@ -1386,8 +1404,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "GET_NAMESPACE", 0L, "",
       FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
 
+#ifdef HPCGAP
     { "IsThreadLocalGVar", 1L, "name",
       FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
+#endif
 
     { 0, 0, 0, 0, 0 }
 
