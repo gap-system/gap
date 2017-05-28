@@ -6103,22 +6103,6 @@ static Int InitKernel (
     CompStatFuncs[ T_RETURN_VOID     ] = CompReturnVoid;
 
     CompStatFuncs[ T_ASS_LVAR        ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_01     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_02     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_03     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_04     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_05     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_06     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_07     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_08     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_09     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_10     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_11     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_12     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_13     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_14     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_15     ] = CompAssLVar;
-    CompStatFuncs[ T_ASS_LVAR_16     ] = CompAssLVar;
     CompStatFuncs[ T_UNB_LVAR        ] = CompUnbLVar;
     CompStatFuncs[ T_ASS_HVAR        ] = CompAssHVar;
     CompStatFuncs[ T_UNB_HVAR        ] = CompUnbHVar;

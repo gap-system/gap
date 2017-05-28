@@ -2257,12 +2257,7 @@ void CodeAssLVar (
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    if ( lvar <= 16 ) {
-        ass = NewStat( T_ASS_LVAR + lvar, 2 * sizeof(Stat) );
-    }
-    else {
-        ass = NewStat( T_ASS_LVAR,        2 * sizeof(Stat) );
-    }
+    ass = NewStat( T_ASS_LVAR,        2 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
