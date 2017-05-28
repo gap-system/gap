@@ -140,6 +140,33 @@ GAPInput
 GAPInput
 
     ;;
+
+testpackages)
+    # For now, all we do is try and build all packages
+    # TODO:
+    # - run package tests for selected packages
+    # - try to load some / all packages
+    # - skip packages that are known to be broken (e.g. due to missing dependencies)
+    #   -> perhaps via an --exclude=PKGNAME option for BuildPackages.sh?
+    # - enhance BuildPackages.sh to exit with non-zero exit code in case of build
+    #   issues
+    pushd $SRCDIR/pkg
+    
+    # HACK to work around bug in anupq 3.1.4 build system
+    pushd anupq*
+    touch testPq
+    popd
+    
+    # HACK: carat extracts "qcatalog", which prints thousands
+    # of lines clogging up the build log -- so remove it
+    rm -rf carat
+    
+    # start the build
+    $SRCDIR/bin/BuildPackages.sh --with-gaproot=$BUILDDIR
+    
+    popd
+    ;;
+
 *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
