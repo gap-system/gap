@@ -3,25 +3,10 @@
 dist: trusty
 language: c
 
-# Note: We must run at least one test with NO_COVERAGE=1, as coverage
-# enables the ReproducibleBehaviour user option.
 env:
   global:
     - CFLAGS="-fprofile-arcs -ftest-coverage"
     - LDFLAGS="-fprofile-arcs"
-  matrix:
-  # - TEST_SUITE=testinstall ABI=32 # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
-    - TEST_SUITE=testinstall ABI=32 CONFIGFLAGS=--with-gmp=builtin
-    - TEST_SUITE=testinstall ABI=64
-      # out of tree builds
-    - TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
-    - TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build
-      # out of tree builds with --enable-hpcgap
-      # (note that in-tree builds do not currently work together with kernel extensions
-      # which are not adapted to the new build system, as we cannot get them to load
-      # headers from hpcgap/src before headers from src/
-    - TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
-    - TEST_SUITE=testinstall ABI=64 HPCGAP=yes BUILDDIR=build
 
 # TODO: boehm GC, HPC-GAP compatibility mode
 
@@ -35,36 +20,41 @@ addons:
 
 matrix:
   include:
-    # 64bit linux builds with GCC
-    - os: linux
-      env: TEST_SUITE=testerror
-      compiler: gcc
+    # run testerror first; this is by far the quickest job, so we get some feedback ASAP
+    - env: TEST_SUITE=testerror
 
-    - os: linux
-      env: TEST_SUITE=testtravis
-      compiler: gcc
+    # plain in-tree builds -- note that 32bit GMP is not yet available on trusty,
+    # so we only test 32bit builds with the builtin GMP
+    - env: TEST_SUITE=testinstall ABI=32 CONFIGFLAGS=--with-gmp=builtin
+    - env: TEST_SUITE=testinstall ABI=64
 
-    - os: linux
-      env: TEST_SUITE=testmanuals
-      compiler: gcc
+    # out of tree builds -- these are mainly done to verify that the build
+    # system work in this scenario. Since we don't expect the test results to
+    # vary compared to the in-tree builds, we turn off coverage reporting by
+    # setting NO_COVERAGE=1; this has the extra benefit of also running the
+    # tests at least once with the ReproducibleBehaviour option turned off.
+    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build
 
-    - os: linux
-      env: TEST_SUITE=testbugfix
-      compiler: gcc
+    # HPC-GAP builds (for efficiency, we don't build all combinations)
+    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+    - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes
 
     # OS X builds: since those are slow and limited on Travis,
-    # we only run testinstall for now
-    - os: osx
-      env: TEST_SUITE=testinstall
+    # we only run testinstall
+    - env: TEST_SUITE=testinstall
+      os: osx
       compiler: clang
 
+    # 64bit linux builds with GCC
+    - env: TEST_SUITE=testtravis
+    - env: TEST_SUITE=testmanuals
+    - env: TEST_SUITE=testbugfix
+
     # test creating the manual
-    - os: linux
-      env: TEST_SUITE=makemanuals
-      compiler: gcc
+    - env: TEST_SUITE=makemanuals
       addons:
         apt_packages:
-          - libgmp-dev
           - texlive-latex-base
           - texlive-latex-recommended
           - texlive-latex-extra
@@ -73,10 +63,8 @@ matrix:
           - texlive-fonts-extra
 
     # 32bit linux builds with GCC
-    - os: linux
-      env: TEST_SUITE=testtravis ABI=32
+    - env: TEST_SUITE=testtravis ABI=32
       dist: precise # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
-      compiler: gcc
       addons:
         apt_packages:
           - libgmp-dev:i386
