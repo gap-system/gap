@@ -130,7 +130,7 @@ GAPInput
         QUIT_GAP(0);
 GAPInput
 
-    # run gap compiler to verify the src/c_*.c files are up-todate,
+    # run gap compiler to verify the src/c_*.c files are up to date,
     # and also get coverage on the compiler
     make docomp
 
