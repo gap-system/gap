@@ -13,7 +13,7 @@
 
 
 InstallMethod( WeightOfVector, "generic method",
-  [IsRowVectorObj],
+  [IsVectorObj],
   function(v)
     local i,n;
     n := 0;
@@ -26,7 +26,7 @@ InstallMethod( WeightOfVector, "generic method",
   end );
 
 InstallMethod( DistanceOfVectors, "generic method",
-  [IsRowVectorObj, IsRowVectorObj],
+  [IsVectorObj, IsVectorObj],
   function( v, w)
     local i,n;
     if Length(v) <> Length(w) then
@@ -49,7 +49,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
         Error("Matrix: two-argument version not allowed with empty first arg");
         return;
     fi;
-    if not (IsList(l[1]) or IsRowVectorObj(l[1])) then
+    if not (IsList(l[1]) or IsVectorObj(l[1])) then
         Error("Matrix: flat data not supported in two-argument version");
         return;
     fi;
@@ -57,7 +57,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
   end );
 
 InstallMethod( Unfold, "for a matrix object, and a vector object",
-  [ IsMatrixObj, IsRowVectorObj ],
+  [ IsMatrixObj, IsVectorObj ],
   function( m, w )
     local v,i,l;
     if Length(m) = 0 then
@@ -73,7 +73,7 @@ InstallMethod( Unfold, "for a matrix object, and a vector object",
   end );
 
 InstallMethod( Fold, "for a vector, a positive int, and a matrix",
-  [ IsRowVectorObj, IsPosInt, IsMatrixObj ],
+  [ IsVectorObj, IsPosInt, IsMatrixObj ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := Matrix([],rl,t);
@@ -215,13 +215,13 @@ InstallGlobalFunction( MakeMatrix,
   end );
 
 InstallMethod( ExtractSubVector, "generic method",
-  [ IsRowVectorObj, IsList ],
+  [ IsVectorObj, IsList ],
   function( v, l )
     return v{l};
   end );
 
 InstallOtherMethod( ScalarProduct, "generic method",
-  [ IsRowVectorObj, IsRowVectorObj ],
+  [ IsVectorObj, IsVectorObj ],
   function( v, w )
     local bd,i,s;
     bd := BaseDomain(v);

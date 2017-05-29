@@ -21,14 +21,20 @@
 ############################################################################
 
 
-DeclareCategory( "IsRowVectorObj", IsVector and IsCopyable );
+DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
 # All the arithmetical filters come from IsVector.
-# RowVectors are no longer necessarily lists, since they do not promise all
+# Vectors are no longer necessarily lists, since they do not promise all
 # list operations. Of course, in specific implementations the objects
 # may still be lists. But beware: Some matrix representations might
 # rely on the fact that vectors cannot change their length!
-# The family of an object in IsRowVectorObj is the same as the family of
+# The family of an object in IsVectorObj is the same as the family of
 # the base domain.
+
+DeclareSynonym( "IsRowVectorObj", IsVectorObj );
+# FIXME: Declare IsRowVectorObj for backwards compatibility, so that existing
+# code which already used it keeps working (most notably, the cvec package).
+# We should eventually remove this synonym.
+
 
 # There are one main category for matrices and two disjoint sub-categories:
 
