@@ -2186,7 +2186,7 @@ BindGlobal( "PositionLastNonZeroFunc2",
   end );
 
 InstallMethod( PositionLastNonZero, "for a row vector obj",
-  [IsRowVectorObj], PositionLastNonZeroFunc );
+  [IsVectorObj], PositionLastNonZeroFunc );
 InstallMethod( PositionLastNonZero, "for a matrix obj",
   [IsMatrixObj], PositionLastNonZeroFunc );
 InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
@@ -2279,7 +2279,7 @@ InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   KRONECKERPRODUCT_GF2MAT_GF2MAT );
 
 InstallMethod( Fold, "for a gf2 vector, a positive int, and a gf2 matrix",
-  [ IsRowVectorObj and IsGF2VectorRep, IsPosInt, IsGF2MatrixRep ],
+  [ IsVectorObj and IsGF2VectorRep, IsPosInt, IsGF2MatrixRep ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := [];

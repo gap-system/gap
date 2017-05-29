@@ -25,7 +25,7 @@ BIND_GLOBAL("PRIMES_COMPACT_FIELDS",SSortedList(
 #R  Is8BitVectorRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
 DeclareRepresentation( "Is8BitVectorRep", 
-        IsDataObjectRep and IsRowVectorObj,[],
+        IsDataObjectRep and IsVectorObj,[],
         IsRowVector and IsSmallList );
 
 #############################################################################
