@@ -14,7 +14,7 @@
 
 
 DeclareRepresentation( "IsPlistVectorRep", 
-   IsRowVectorObj and IsPositionalObjectRep, [] );
+   IsVectorObj and IsPositionalObjectRep, [] );
 # 2 positions used:
 # ![1] : BaseDomain
 # ![2] : the elements as plain list

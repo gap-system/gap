@@ -67,7 +67,7 @@ InstallMethod( NewMatrix,
     m := 0*[1..Length(l)];
     e := NewRowVector(filter2, basedomain, []);
     for i in [1..Length(l)] do
-        if IsRowVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
+        if IsVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
             m[i] := ShallowCopy(l[i]);
         else
             m[i] := Vector( l[i], e );
@@ -805,7 +805,7 @@ InstallMethod( Matrix, "for a list and a plist matrix",
     local i,l,nrrows,res,t;
     t := m![EMPOS];
     if Length(rows) > 0 then
-        if IsRowVectorObj(rows[1]) and IsPlistVectorRep(rows[1]) then
+        if IsVectorObj(rows[1]) and IsPlistVectorRep(rows[1]) then
             nrrows := Length(rows);
             l := rows;
         elif IsList(rows[1]) then

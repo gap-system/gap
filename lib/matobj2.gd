@@ -117,12 +117,12 @@
 
 
 # The following are guaranteed to be always set or cheaply calculable:
-DeclareAttribute( "BaseDomain", IsRowVectorObj );
+DeclareAttribute( "BaseDomain", IsVectorObj );
 # Typically, the base domain will be a ring, it need not be commutative
 # nor associative. For non-associative base domains powering of matrices
 # is defined by the behaviour of POW_OBJ_INT.
 
-DeclareAttribute( "Length", IsRowVectorObj );    # can be zero
+DeclareAttribute( "Length", IsVectorObj );    # can be zero
 # We have to declare this since a row vector is not necessarily
 # a list! Correspondingly we have to use InstallOtherMethod
 # for those row vector types that are lists.
@@ -152,29 +152,29 @@ DeclareAttribute( "Length", IsRowVectorObj );    # can be zero
 # In the following sense vectors behave like lists:
 ############################################################################
 
-DeclareOperation( "[]", [IsRowVectorObj,IsPosInt] );
+DeclareOperation( "[]", [IsVectorObj,IsPosInt] );
 # This is only defined for positions in [1..Length(VECTOR)]. 
 
-DeclareOperation( "[]:=", [IsRowVectorObj,IsPosInt,IsObject] );
+DeclareOperation( "[]:=", [IsVectorObj,IsPosInt,IsObject] );
 # This is only guaranteed to work for the position in [1..Length(VECTOR)] 
 # and only for elements in the BaseDomain(VECTOR)! 
 # Behaviour otherwise is undefined (from "unpacking" to Error all is possible)
 
-DeclareOperation( "{}", [IsRowVectorObj,IsList] );
+DeclareOperation( "{}", [IsVectorObj,IsList] );
 # Of course the positions must all lie in [1..Length(VECTOR)].
 # Returns a vector in the same representation!
 
-DeclareOperation( "PositionNonZero", [IsRowVectorObj] );
+DeclareOperation( "PositionNonZero", [IsVectorObj] );
 
-DeclareOperation( "PositionLastNonZero", [IsRowVectorObj] );
+DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
-DeclareOperation( "ListOp", [IsRowVectorObj] );
-DeclareOperation( "ListOp", [IsRowVectorObj,IsFunction] );
+DeclareOperation( "ListOp", [IsVectorObj] );
+DeclareOperation( "ListOp", [IsVectorObj,IsFunction] );
 # This is an unpacking operation returning a mutable copy in form of a list.
 # It enables the "List" function to work.
 
 # The following unwraps a vector to a list:
-DeclareOperation( "Unpack", [IsRowVectorObj] );
+DeclareOperation( "Unpack", [IsVectorObj] );
 # It guarantees to copy, that is changing the returned object does
 # not change the original object.
 
@@ -195,7 +195,7 @@ DeclareOperation( "Unpack", [IsRowVectorObj] );
 # Thus we need:
 DeclareGlobalFunction( "ConcatenationOfVectors" );
 
-DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
+DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
 # Does the same as slicing v{l} but is here to be similar to
 # ExtractSubMatrix.
 
@@ -207,21 +207,21 @@ DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
 # to have a complete interface description in one place. Of course, vectors
 # have to implement those:
 
-# DeclareOperation( "ShallowCopy", [IsRowVectorObj] );
+# DeclareOperation( "ShallowCopy", [IsVectorObj] );
 
-# DeclareGlobalFunction( "StructuralCopy", [IsRowVectorObj] );
+# DeclareGlobalFunction( "StructuralCopy", [IsVectorObj] );
 
-# DeclareOperation( "ViewObj", [IsRowVectorObj] );
+# DeclareOperation( "ViewObj", [IsVectorObj] );
 
-# DeclareOperation( "PrintObj", [IsRowVectorObj] );
+# DeclareOperation( "PrintObj", [IsVectorObj] );
 # This must produce GAP readable input reproducing the representation!
 
-# DeclareAttribute( "String", IsRowVectorObj );
-# DeclareOperation( "String", [IsRowVectorObj,IsInt] );
+# DeclareAttribute( "String", IsVectorObj );
+# DeclareOperation( "String", [IsVectorObj,IsInt] );
 
-# DeclareOperation( "Display", [IsRowVectorObj] );
+# DeclareOperation( "Display", [IsVectorObj] );
 
-# DeclareOperation( "MakeImmutable", [IsRowVectorObj] );
+# DeclareOperation( "MakeImmutable", [IsVectorObj] );
 #  (this is a global function in the GAP library)
 
 
@@ -238,15 +238,15 @@ DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
 
 # The following "in place" operations exist with the same restrictions:
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable, IsRowVectorObj ] );
+  [ IsVectorObj and IsMutable, IsVectorObj ] );
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable, IsRowVectorObj, IsObject ] );
+  [ IsVectorObj and IsMutable, IsVectorObj, IsObject ] );
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable,IsRowVectorObj,IsObject,IsPosInt,IsPosInt ] );
+  [ IsVectorObj and IsMutable,IsVectorObj,IsObject,IsPosInt,IsPosInt ] );
 DeclareOperation( "MultRowVector",
-  [ IsRowVectorObj and IsMutable, IsObject ] );
+  [ IsVectorObj and IsMutable, IsObject ] );
 DeclareOperation( "MultRowVector",
-  [ IsRowVectorObj and IsMutable, IsList, IsRowVectorObj, IsList, IsObject ] );
+  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList, IsObject ] );
 
 # The following operations for scalars and vectors are possible of course
 # only for scalars in the BaseDomain:
@@ -257,7 +257,7 @@ DeclareOperation( "MultRowVector",
 #    AdditiveInverseSameMutability, ZeroImmutable, ZeroMutable, 
 #    ZeroSameMutability, IsZero, Characteristic
 
-DeclareOperation( "ScalarProduct", [ IsRowVectorObj, IsRowVectorObj ] );
+DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 # This is defined for two vectors of equal length, it returns the standard
 # scalar product.
 
@@ -265,7 +265,7 @@ DeclareOperation( "ScalarProduct", [ IsRowVectorObj, IsRowVectorObj ] );
 # The "representation-preserving" contructor methods:
 ############################################################################
 
-DeclareOperation( "ZeroVector", [IsInt,IsRowVectorObj] );
+DeclareOperation( "ZeroVector", [IsInt,IsVectorObj] );
 # Returns a new mutable zero vector in the same rep as the given one with
 # a possible different length.
 
@@ -273,7 +273,7 @@ DeclareOperation( "ZeroVector", [IsInt,IsMatrixObj] );
 # Returns a new mutable zero vector in a rep that is compatible with
 # the matrix but of possibly different length.
 
-DeclareOperation( "Vector", [IsList,IsRowVectorObj]);
+DeclareOperation( "Vector", [IsList,IsVectorObj]);
 # Creates a new vector in the same representation but with entries from list.
 # The length is given by the length of the first argument.
 # It is *not* guaranteed that the list is copied!
@@ -284,18 +284,18 @@ DeclareOperation( "Vector", [IsList,IsRowVectorObj]);
 ## the matrix but of possibly different length given by the first
 ## argument. It is *not* guaranteed that the list is copied!
 
-DeclareOperation( "ConstructingFilter", [IsRowVectorObj] );
+DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
-DeclareConstructor( "NewRowVector", [IsRowVectorObj,IsRing,IsList] );
+DeclareConstructor( "NewRowVector", [IsVectorObj,IsRing,IsList] );
 # A constructor. The first argument must be a filter indicating the
 # representation the vector will be in, the second is the base domain.
 # The last argument is guaranteed not to be changed!
 
-DeclareConstructor( "NewZeroVector", [IsRowVectorObj,IsRing,IsInt] );
+DeclareConstructor( "NewZeroVector", [IsVectorObj,IsRing,IsInt] );
 # A similar constructor to construct a zero vector, the last argument
 # is the base domain.
 
-DeclareOperation( "ChangedBaseDomain", [IsRowVectorObj,IsRing] );
+DeclareOperation( "ChangedBaseDomain", [IsVectorObj,IsRing] );
 # Changes the base domain. A copy of the row vector in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
@@ -310,12 +310,12 @@ DeclareGlobalFunction( "MakeVector" );
 # Some things that fit nowhere else:
 ############################################################################
 
-DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable] );
+DeclareOperation( "Randomize", [IsVectorObj and IsMutable] );
 # Changes the mutable argument in place, every entry is replaced
 # by a random element from BaseDomain.
 # The argument is also returned by the function.
 
-DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable,IsRandomSource] );
+DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 # The same, use the second argument to provide "randomness".
 # The vector argument is also returned by the function.
 
@@ -338,13 +338,13 @@ DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable,IsRandomSource] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "CopySubVector", 
-  [IsRowVectorObj,IsRowVectorObj and IsMutable, IsList,IsList] );
+  [IsVectorObj,IsVectorObj and IsMutable, IsList,IsList] );
 
-DeclareOperation( "WeightOfVector", [IsRowVectorObj] );
+DeclareOperation( "WeightOfVector", [IsVectorObj] );
 # This computes the Hamming weight of a vector, i.e. the number of
 # nonzero entries.
 
-DeclareOperation( "DistanceOfVectors", [IsRowVectorObj, IsRowVectorObj] );
+DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
 # This computes the Hamming distance of two vectors, i.e. the number
 # of positions, in which the vectors differ. The vectors must have the
 # same length.
@@ -400,12 +400,12 @@ DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
 DeclareOperation( "PositionLastNonZero", [IsMatrixObj] );
 DeclareOperation( "PositionLastNonZero", [IsMatrixObj, IsInt] );
 
-DeclareOperation( "Position", [IsMatrixObj, IsRowVectorObj] );
-DeclareOperation( "Position", [IsMatrixObj, IsRowVectorObj, IsInt] );
+DeclareOperation( "Position", [IsMatrixObj, IsVectorObj] );
+DeclareOperation( "Position", [IsMatrixObj, IsVectorObj, IsInt] );
 
 # This allows for usage of PositionSorted:
-DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsRowVectorObj] );
-DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsRowVectorObj,IsFunction]);
+DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj] );
+DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsVectorObj,IsFunction]);
 
 # I intentionally left out "PositionNot" here.
 
@@ -653,11 +653,11 @@ DeclareOperation( "IsLowerTriangularMat", [IsMatrixObj] );
 DeclareOperation( "KroneckerProduct", [IsMatrixObj,IsMatrixObj] );
 # The result is fully mutable.
 
-DeclareOperation( "Unfold", [IsMatrixObj, IsRowVectorObj] );
+DeclareOperation( "Unfold", [IsMatrixObj, IsVectorObj] );
 # Concatenates all rows of a matrix to one single vector in the same
 # representation as the given template vector. Usually this must
 # be compatible with the representation of the matrix given.
-DeclareOperation( "Fold", [IsRowVectorObj, IsPosInt, IsMatrixObj] );
+DeclareOperation( "Fold", [IsVectorObj, IsPosInt, IsMatrixObj] );
 # Cuts the row vector into pieces of length the second argument
 # and forms a matrix out of the pieces in the same representation 
 # as the third argument. The length of the vector must be a multiple
@@ -688,8 +688,8 @@ DeclareOperation( "[]:=", [IsRowListMatrix,IsPosInt,IsObject] );
 DeclareOperation( "{}", [IsRowListMatrix,IsList] );
 # Produces *not* a list of rows but a matrix in the same rep as the input!
 
-DeclareOperation( "Add", [IsRowListMatrix,IsRowVectorObj] );
-DeclareOperation( "Add", [IsRowListMatrix,IsRowVectorObj,IsPosInt] );
+DeclareOperation( "Add", [IsRowListMatrix,IsVectorObj] );
+DeclareOperation( "Add", [IsRowListMatrix,IsVectorObj,IsPosInt] );
 
 DeclareOperation( "Remove", [IsRowListMatrix] );
 DeclareOperation( "Remove", [IsRowListMatrix,IsPosInt] );
@@ -718,7 +718,7 @@ DeclareOperation( "ListOp", [IsRowListMatrix, IsFunction] );
 ############################################################################
 # Rule:
 # This all means that objects in IsRowListMatrix behave like lists that
-# insist on being dense and having only IsRowVectorObjs over the right
+# insist on being dense and having only IsVectorObjs over the right
 # BaseDomain and with the right length as entries. However, formally
 # they do not have to lie in the filter IsList.
 ############################################################################
@@ -761,9 +761,9 @@ DeclareOperation( "{}", [IsFlatMatrix,IsList] );
 # Arithmetic involving vectors and matrices:
 ############################################################################
 
-# DeclareOperation( "*", [IsRowVectorObj, IsMatrixObj] );
+# DeclareOperation( "*", [IsVectorObj, IsMatrixObj] );
 
-# DeclareOperation( "^", [IsRowVectorObj, IsMatrixObj] );
+# DeclareOperation( "^", [IsVectorObj, IsMatrixObj] );
 
 # Only in this direction since vectors are row vectors. The standard
 # list arithmetic rules apply only in this sense here which is the

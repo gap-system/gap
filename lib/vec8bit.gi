@@ -1121,7 +1121,7 @@ InstallOtherMethod( KroneckerProduct, "for two 8bit matrices",
   end );
 
 InstallMethod( Fold, "for an 8bit vector, a positive int, and an 8bit matrix",
-  [ IsRowVectorObj and Is8BitVectorRep, IsPosInt, Is8BitMatrixRep ],
+  [ IsVectorObj and Is8BitVectorRep, IsPosInt, Is8BitMatrixRep ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := [];
