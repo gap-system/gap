@@ -145,6 +145,18 @@ gap> -MakeFloat(1.0, infinity) = neginf;
 true
 gap> MakeFloat(1.0, -infinity) = neginf;
 true
+
+#
+gap> EqFloat(1.0, 1.1);
+false
+gap> EqFloat(1.0, 1.0);
+true
+gap> EqFloat(0.0/0.0,0.0/0.0);
+false
+gap> EqFloat(0.0,0.0/0.0);
+false
+
+#
 gap> STOP_TEST( "float.tst", 1);
 
 #############################################################################
