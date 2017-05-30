@@ -728,12 +728,6 @@ InstallMethod( CopySubVector, "for two plist vectors and two lists",
     b![ELSPOS]{pb} := a![ELSPOS]{pa};
   end );
 
-InstallMethod( CompatibleMatrix, "for a plist vector",
-  [ IsPlistVectorRep ],
-  function( v )
-    return NewMatrix(IsPlistMatrixRep,BaseDomain(v),Length(v),[v]);
-  end );
-
 
 ############################################################################
 ############################################################################

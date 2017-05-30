@@ -2469,15 +2469,6 @@ InstallMethod( CompatibleVector, "for a gf2 matrix",
     return ShallowCopy(m[1]);
   end );
 
-InstallMethod( CompatibleMatrix, "for a gf2 vector",
-  [ IsGF2VectorRep ],
-  function( v )
-    local m;
-    m := [ShallowCopy(v)];
-    ConvertToMatrixRep(m,2);
-    return m;
-  end );
-
 InstallMethod( WeightOfVector, "for a gf2 vector",
   [ IsGF2VectorRep ],
   function( v )
