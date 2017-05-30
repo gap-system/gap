@@ -499,12 +499,10 @@ DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # TODO: perhaps also have ExtractRow(mat, i) and ExtractColumn(mat, i)
 
 # TODO: provide a method so that mat[i,j] actually works, like this:
-#  InstallMethod( \[\],
-#  [ IsMatrix and IsMutable, IsList ],
-#  function( m, l )
-#    return m[l[1]][l[2]];
-#  end );
- 
+#  InstallMethod( \[\], [ IsMatrix and IsMutable, IsList ], {m,l} -> m[l[1]][l[2]] )
+
+
+
 # TODO: benchmark all of this stuff vs. existing matrices
 # TODO: provide a hotpath in kernel for m[i,j] notation which avoids creating
 #   the temporary list [i,j], and avoids methods selection if possible
@@ -736,6 +734,8 @@ DeclareOperation( "TraceMat", [IsMatrixObj] );
 ############################################################################
 
 DeclareOperation( "ZeroMatrix", [IsInt,IsInt,IsMatrixObj] );
+DeclareOperation( "ZeroMatrix", [IsSemiring, IsInt,IsInt] );  # warning: NullMat has ring arg last
+DeclareOperation( "ZeroMatrix", [IsOperation, IsSemiring, IsInt,IsInt] );
 # Returns a new fully mutable zero matrix in the same rep as the given one with
 # possibly different dimensions. First argument is number of rows, second
 # is number of columns.
@@ -747,6 +747,8 @@ DeclareConstructor( "NewZeroMatrix", [IsMatrixObj,IsSemiring,IsInt,IsInt]);
 # 2nd argument. The integers are the number of rows and columns.
 
 DeclareOperation( "IdentityMatrix", [IsInt,IsMatrixObj] );
+DeclareOperation( "IdentityMatrix", [IsSemiring, IsInt] );  # warning: IdentityMat has ring arg last
+DeclareOperation( "IdentityMatrix", [IsOperation, IsSemiring, IsInt] );
 # Returns a new mutable identity matrix in the same rep as the given one with
 # possibly different dimensions.
 
@@ -757,6 +759,10 @@ DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsSemiring,IsInt]);
 # TODO: perhaps imitate what we do for e.g. group constructors, and allow
 # user to omit the filter; in that case, try to choose a "good" default
 # representation ????
+
+# TODO: perhaps add DiagonalMatrix?
+
+# TODO: convert (New)IdentityMatrix and (New)ZeroMatrix to be more similar to Matrix()
 
 
 DeclareOperation( "CompanionMatrix", [IsUnivariatePolynomial,IsMatrixObj] );
@@ -784,7 +790,26 @@ DeclareConstructor( "NewCompanionMatrix",
 # Eventually here will be the right place to do this.
 
 
-DeclareOperation( "Matrix", [IsList,IsInt,IsMatrixObj]);
+
+# variant with new filter + base domain (dispatches to NewMatrix)
+DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsList, IsInt]);
+DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsList]);
+DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsMatrixObj]);
+
+# variant with new base domain -> "guesses" good rep, then dispatches to NewMatrix
+DeclareOperation( "Matrix", [IsSemiring,    IsList, IsInt]);
+DeclareOperation( "Matrix", [IsSemiring,    IsList]);
+DeclareOperation( "Matrix", [IsSemiring,    IsMatrixObj]);
+
+# the following two operations use DefaultFieldOfMatrix to "guess" the base domain
+DeclareOperation( "Matrix", [IsList, IsInt]);
+DeclareAttribute( "Matrix", IsList, "mutable"); # HACK: because there already is an attribute Matrix
+
+# variant with example object at end (input is first)
+DeclareOperation( "Matrix", [IsList, IsInt, IsMatrixObj]);
+DeclareOperation( "Matrix", [IsList,        IsMatrixObj]);  # <- no need to overload this one
+DeclareOperation( "Matrix", [IsMatrixObj,   IsMatrixObj]);
+
 # Creates a new matrix in the same representation as the fourth argument
 # but with entries from list, the second argument is the number of
 # columns. The first argument can be:
@@ -802,11 +827,12 @@ DeclareOperation( "Matrix", [IsList,IsInt,IsMatrixObj]);
 # argument and the number of columns is deduced from the length of the
 # element of the first argument (done with a generic method):
 # TODO: what does "flat" above mean???
-DeclareOperation( "Matrix", [IsList,IsMatrixObj] );
+
 
 # perhaps also (or instead?) have this:
 #DeclareOperation( "MatrixWithRows", [IsList (of vectors),IsMatrixObj]); ??
 #DeclareOperation( "MatrixWithColumns", [IsList (of vectors),IsMatrixObj]); ??
+
 
 
 # Note that it is not possible to generate a matrix via "Matrix" without
@@ -822,8 +848,15 @@ DeclareConstructor( "NewMatrix", [IsMatrixObj, IsSemiring, IsInt, IsList] );
 
 # TODO: so a flat list of scalars is not possible (compare to <Matrix>, where it is) ???
 #  it should be symmetric, either both support it or none...
+#
+#  Idea: require NewMatrix methods to support flat lists (as well as lists-of-lists aka row lists;
+#  but provide a helper function which turns a flat list into a row list:
+#     RowListFromFlatMat( cols, list )
+
 
 # FIXME: why is IsInt,IsList reversed compared to Matrix(), where it is IsList,IsInt
+
+
 
 
 # given a matrix <m>, produce a filter such that  NewMatrix called with this filter
@@ -847,7 +880,9 @@ DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );
 #  DeclareConstructor( "NewMatrix", [IsMatrixObj,IsSemiring,IsMatrixObj] );
 
 
-DeclareGlobalFunction( "MakeMatrix" );
+
+
+# usage: MakeVector( <list> [,<basedomain>] )
 # A convenience function for users to choose some appropriate representation
 # and guess the base domain if not supplied as second argument.
 # This is not guaranteed to be efficient and should never be used

@@ -42,19 +42,171 @@ InstallMethod( DistanceOfVectors, "generic method",
     return n;
   end );
 
+#
+# TODO: possibly rename the following
+#
+BindGlobal( "DefaultMatrixRepForBaseDomain",
+function( basedomain )
+    if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
+        return IsGF2MatrixRep;
+    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
+        return Is8BitMatrixRep;
+    fi;
+    return IsPlistMatrixRep;
+end);
+
+#
+#
+#
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsList, IsInt],
+  function( rep, basedomain, list, nrCols )
+    # TODO: adjust NewMatrix to use same arg order as Matrix (or vice-versa)
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsList],
+  function( rep, basedomain, list )
+    if Length(list) = 0 then Error("list must be not empty; to create empty matrices, please specify nrCols"); fi;
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsMatrixObj],
+  function( rep, basedomain, mat )
+    # TODO: can we do better? encourage MatrixObj implementors to overload this?
+    return NewMatrix( rep, basedomain, NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( Matrix,
+  [IsSemiring, IsList, IsInt],
+  function( basedomain, list, nrCols )
+    local rep;
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsSemiring, IsList],
+  function( basedomain, list )
+    local rep;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+InstallMethod( Matrix,
+  [IsSemiring, IsMatrixObj],
+  function( basedomain, mat )
+    # TODO: can we do better? encourage MatrixObj implementors to overload this?
+    return NewMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( Matrix,
+  [IsList, IsInt],
+  function( list, nrCols )
+    local basedomain, rep;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
+    basedomain := DefaultScalarDomainOfMatrixList([list]);
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsList],
+  function( list )
+    local rep, basedomain;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
+    basedomain := DefaultScalarDomainOfMatrixList([list]);
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+#
+# matrix constructors using example objects (as last argument)
+#
+InstallMethod( Matrix,
+  [IsList, IsInt, IsMatrixObj],
+  function( list, nrCols, example )
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), nrCols, list );
+  end );
+
 InstallMethod( Matrix, "generic convenience method with 2 args",
-  [IsList,IsMatrixObj],
-  function( l, m )
-    if Length(l) = 0 then
+  [IsList, IsMatrixObj],
+  function( list, example )
+    if Length(list) = 0 then
         Error("Matrix: two-argument version not allowed with empty first arg");
         return;
     fi;
-    if not IsList(l[1]) or IsVectorObj(l[1]) then
+    if not IsList(list[1]) or IsVectorObj(list[1]) then
         Error("Matrix: flat data not supported in two-argument version");
         return;
     fi;
-    return Matrix(l,Length(l[1]),m);
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), Length(list[1]), list );
   end );
+
+InstallMethod( Matrix,
+  [IsMatrixObj, IsMatrixObj],
+  function( mat, example )
+    # TODO: can we avoid using Unpack? resp. make this more efficient
+    # perhaps adjust NewMatrix to take an IsMatrixObj?
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( ZeroMatrix,
+  [IsInt, IsInt, IsMatrixObj],
+  function( rows, cols, example )
+    return ZeroMatrix( ConstructingFilter(example), BaseDomain(example), rows, cols );
+  end );
+
+InstallMethod( ZeroMatrix,
+  [IsSemiring, IsInt, IsInt],
+  function( basedomain, rows, cols )
+    return ZeroMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, rows, cols );
+  end );
+
+InstallMethod( ZeroMatrix,
+  [IsOperation, IsSemiring, IsInt, IsInt],
+  function( rep, basedomain, rows, cols )
+    # TODO: urge matrixobj implementors to overload this
+    return NewMatrix( rep, basedomain, cols, ListWithIdenticalEntries( rows * cols, Zero(basedomain) ) );
+  end );
+
+#
+#
+#
+InstallMethod( IdentityMatrix,
+  [IsInt, IsMatrixObj],
+  function( dim, example )
+    return IdentityMatrix( ConstructingFilter(example), BaseDomain(example), dim );
+  end );
+
+InstallMethod( IdentityMatrix,
+  [IsSemiring, IsInt],
+  function( basedomain, dim )
+    return IdentityMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, dim );
+  end );
+
+InstallMethod( IdentityMatrix,
+  [IsOperation, IsSemiring, IsInt],
+  function( rep, basedomain, dim )
+    # TODO: avoid using IdentityMat eventually
+    return NewMatrix( rep, basedomain, dim, IdentityMat( dim, basedomain ) );
+  end );
+
+
 
 InstallMethod( Unfold, "for a matrix object, and a vector object",
   [ IsMatrixObj, IsVectorObj ],
@@ -183,35 +335,6 @@ InstallGlobalFunction( MakeVector,
         ty := IsPlistVectorRep;
     fi;
     return NewVector(ty,bd,l);
-  end );
-
-InstallGlobalFunction( MakeMatrix,
-  function( arg )
-    local bd,l,len,rowlen,ty;
-    if Length(arg) = 1 then
-        l := arg[1];
-        bd := DefaultFieldOfMatrix(l);
-    elif Length(arg) <> 2 then
-        Error("usage: MakeVector( <list> [,<basedomain>] )");
-        return fail;
-    else
-        l := arg[1];
-        bd := arg[2];
-    fi;
-    len := Length(l);
-    if len = 0 then
-        Error("does not work for matrices with zero rows");
-        return fail;
-    fi;
-    rowlen := Length(l[1]);
-    if IsFinite(bd) and IsField(bd) and Size(bd) = 2 then
-        ty := IsGF2MatrixRep;
-    elif IsFinite(bd) and IsField(bd) and Size(bd) <= 256 then
-        ty := Is8BitMatrixRep;
-    else
-        ty := IsPlistMatrixRep;
-    fi;
-    return NewMatrix(ty,bd,rowlen,l);
   end );
 
 InstallMethod( ExtractSubVector, "generic method",
