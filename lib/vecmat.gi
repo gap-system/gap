@@ -2187,10 +2187,10 @@ BindGlobal( "PositionLastNonZeroFunc2",
 
 InstallMethod( PositionLastNonZero, "for a row vector obj",
   [IsVectorObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj",
-  [IsMatrixObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
-  [IsMatrixObj, IsPosInt], PositionLastNonZeroFunc2 );
+# InstallMethod( PositionLastNonZero, "for a matrix obj",
+#   [IsMatrixObj], PositionLastNonZeroFunc );
+# InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
+#   [IsMatrixObj, IsPosInt], PositionLastNonZeroFunc2 );
         
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],
@@ -2302,7 +2302,7 @@ InstallMethod( BaseField, "for a compressed gf2 matrix",
 InstallMethod( BaseField, "for a compressed gf2 vector",
   [IsGF2VectorRep], function(v) return GF(2); end );
 
-InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
+InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;

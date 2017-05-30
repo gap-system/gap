@@ -34,7 +34,7 @@ InstallGlobalFunction( MakePlistVectorType,
     return T;
   end);
 
-InstallMethod( NewRowVector, "for IsPlistVectorRep, a ring, and a list",
+InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
   [ IsPlistVectorRep and IsCheckingVector, IsRing, IsList ],
   function( filter, basedomain, l )
     local typ, v;
@@ -65,7 +65,7 @@ InstallMethod( NewMatrix,
         filter2 := IsPlistVectorRep and IsCheckingVector;
     fi;
     m := 0*[1..Length(l)];
-    e := NewRowVector(filter2, basedomain, []);
+    e := NewVector(filter2, basedomain, []);
     for i in [1..Length(l)] do
         if IsVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
             m[i] := ShallowCopy(l[i]);
@@ -95,7 +95,7 @@ InstallMethod( NewZeroMatrix,
         filter2 := IsPlistVectorRep and IsCheckingVector;
     fi;
     m := 0*[1..rows];
-    e := NewRowVector(filter2, basedomain, []);
+    e := NewVector(filter2, basedomain, []);
     for i in [1..rows] do
         m[i] := ZeroVector( cols, e );
     od;
@@ -116,7 +116,7 @@ InstallMethod( NewIdentityMatrix,
         filter2 := IsPlistVectorRep and IsCheckingVector;
     fi;
     m := 0*[1..rows];
-    e := NewRowVector(IsPlistVectorRep, basedomain, []);
+    e := NewVector(IsPlistVectorRep, basedomain, []);
     for i in [1..rows] do
         m[i] := ZeroVector( rows, e );
         m[i][i] := One(basedomain);
@@ -145,7 +145,7 @@ InstallMethod( ViewObj, "for a plist vector", [ IsPlistVectorRep ],
 
 InstallMethod( PrintObj, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    Print("NewRowVector(IsPlistVectorRep");
+    Print("NewVector(IsPlistVectorRep");
     if IsCheckingVector(v) then
         Print(" and IsCheckingVector");
     fi;
@@ -159,7 +159,7 @@ InstallMethod( PrintObj, "for a plist vector", [ IsPlistVectorRep ],
 InstallMethod( String, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
     local st;
-    st := "NewRowVector(IsPlistVectorRep";
+    st := "NewVector(IsPlistVectorRep";
     if IsCheckingVector(v) then
         Append(st," and IsCheckingVector");
     fi;
@@ -1036,99 +1036,99 @@ InstallMethod( Unpack, "for a plist matrix",
     return List(m![ROWSPOS],v->ShallowCopy(v![ELSPOS]));
   end );
 
-InstallMethod( PositionNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    if i > le+1 then
-        return le+1;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := le;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p-1;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    if i < 0 then
-        return 0;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
-  function( m, v, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    return POSITION_SORTED_LIST(m![ROWSPOS],v);
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
-  function( m, v, f )
-    return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
-  end );
+# InstallMethod( PositionNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     if i > le+1 then
+#         return le+1;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := le;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p-1;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     if i < 0 then
+#         return 0;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
+#   function( m, v, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     return POSITION_SORTED_LIST(m![ROWSPOS],v);
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
+#   function( m, v, f )
+#     return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
+#   end );
 
 InstallMethod( MutableCopyMat, "for a plist matrix",
   [ IsPlistMatrixRep ],
@@ -1815,13 +1815,13 @@ InstallMethod( ConstructingFilter, "for a plist matrix",
 InstallMethod( ChangedBaseDomain, "for a plist vector, and a domain",
   [ IsPlistVectorRep, IsRing ],
   function( v, r )
-    return NewRowVector( IsPlistVectorRep, r, v![ELSPOS] );
+    return NewVector( IsPlistVectorRep, r, v![ELSPOS] );
   end );
 
 InstallMethod( ChangedBaseDomain, "for a checking plist vector, and a domain",
   [ IsPlistVectorRep and IsCheckingVector, IsRing ],
   function( v, r )
-    return NewRowVector(IsPlistVectorRep and IsCheckingVector, r, v![ELSPOS]);
+    return NewVector(IsPlistVectorRep and IsCheckingVector, r, v![ELSPOS]);
   end );
 
 InstallMethod( ChangedBaseDomain, "for a plist matrix, and a domain",
@@ -1841,7 +1841,7 @@ InstallMethod( ChangedBaseDomain, "for a checking plist matrix, and a domain",
 InstallMethod( CompatibleVector, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( v )
-    return NewZeroVector(IsPlistVectorRep,BaseDomain(v),Length(v));
+    return NewZeroVector(IsPlistVectorRep,BaseDomain(v),NumberRows(v));
   end );
 
 InstallMethod( NewCompanionMatrix,

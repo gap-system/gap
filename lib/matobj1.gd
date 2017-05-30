@@ -51,10 +51,3 @@ DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 # Different matrices in this category can share rows and the same row can
 # occur more than once in a matrix. Row access just gives a reference
 # to the row object.
-
-DeclareCategory( "IsFlatMatrix", IsMatrixObj );
-# The category of "flatly" stored matrices. They behave as if all their rows
-# were in one single chunk of memory, such that rows are not individual
-# GAP objects. Writing row access and slicing always copies.
-# Note that read-accessing the i-th row of a flat matrix twice can
-# yield two non-identical objects!
