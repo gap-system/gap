@@ -94,6 +94,7 @@ Int EqMacfloat (
 }
 
 Obj FuncEqMacfloat (
+    Obj                 self,
     Obj                 macfloatL,
     Obj                 macfloatR )
 {
