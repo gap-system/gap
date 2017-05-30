@@ -286,8 +286,6 @@ DeclareOperation( "Vector", [IsList,IsRowVectorObj]);
 
 DeclareOperation( "ConstructingFilter", [IsRowVectorObj] );
 
-DeclareOperation( "CompatibleMatrix", [IsRowVectorObj] );
-
 DeclareConstructor( "NewRowVector", [IsRowVectorObj,IsRing,IsList] );
 # A constructor. The first argument must be a filter indicating the
 # representation the vector will be in, the second is the base domain.
