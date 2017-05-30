@@ -18,7 +18,7 @@ InstallMethod( WeightOfVector, "generic method",
     local i,n;
     n := 0;
     for i in [1..Length(v)] do
-        if not(IsZero(v[i])) then
+        if not IsZero(v[i]) then
             n := n + 1;
         fi;
     od;
@@ -90,7 +90,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
         Error("Matrix: two-argument version not allowed with empty first arg");
         return;
     fi;
-    if not(IsList(l[1]) or IsVectorObj(l[1])) then
+    if not IsList(l[1]) or IsVectorObj(l[1]) then
         Error("Matrix: flat data not supported in two-argument version");
         return;
     fi;
@@ -134,7 +134,7 @@ InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
@@ -176,7 +176,7 @@ InstallMethod( KroneckerProduct, "for two matrices",
       od;
     od;
 
-    if not(IsMutable(A)) and not(IsMutable(B)) then
+    if not IsMutable(A) and not IsMutable(B) then
         MakeImmutable(AxB);
     fi;
 

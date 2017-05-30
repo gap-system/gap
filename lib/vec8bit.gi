@@ -1032,7 +1032,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   [IsList, IsInt, Is8BitMatrixRep],
   function(l,rl,m)
     local q,i,li;
-    if not(IsList(l[1])) then
+    if not IsList(l[1]) then
         li := [];
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
@@ -1267,7 +1267,7 @@ InstallMethod( NewCompanionMatrix,
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
