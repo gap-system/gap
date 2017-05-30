@@ -2427,7 +2427,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
   [IsList, IsInt, IsGF2MatrixRep],
   function(l,rl,m)
     local i,li;
-    if not(IsList(l[1])) then
+    if not IsList(l[1]) then
         li := [];
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
@@ -2691,7 +2691,7 @@ InstallMethod( NewCompanionMatrix,
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
