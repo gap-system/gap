@@ -1290,15 +1290,6 @@ InstallMethod( CompatibleVector, "for an 8bit matrix",
     return ShallowCopy(m[1]);
   end );
 
-InstallMethod( CompatibleMatrix, "for an 8bit vector",
-  [ Is8BitVectorRep ],
-  function( v )
-    local m;
-    m := [ShallowCopy(v)];
-    ConvertToMatrixRep(m,Q_VEC8BIT(v));
-    return m;
-  end );
-
 InstallMethod( WeightOfVector, "for an 8bit vector",
   [ Is8BitVectorRep ],
   function( v )
