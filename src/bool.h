@@ -42,16 +42,6 @@ extern Obj Fail;
 
 /****************************************************************************
 **
-*V  SuPeRfail  . . . . . . . . . . . . . . . . . . . . . . .  superfail value
-**
-**  'SuPeRfail' is an ``superfail'' object which is used to indicate failure if
-**  `fail' itself is a sensible response. This is used when having GAP read
-**  a file line-by-line via a library function (demo.g)
-*/
-extern Obj SuPeRfail;
-
-/****************************************************************************
-**
 *V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
 **
 **  'Undefined' is a special object that is used in lieu of (Obj) 0 in places

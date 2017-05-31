@@ -208,17 +208,6 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     return result;
 }
 
-/*
- Deprecated alternative to READ_COMMAND_REAL, kept for now to maintain
- compatibility with the few packages that use it.
- */
-Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
-{
-    Obj result;
-    result = FuncREAD_COMMAND_REAL(self, stream, echo);
-    return (LEN_PLIST(result) == 2) ? ELM_PLIST(result, 2) : SuPeRfail;
-}
-
 /****************************************************************************
 **
 *F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
@@ -2214,7 +2203,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(READ_NORECOVERY, 1, "filename"),
     GVAR_FUNC(READ_ALL_COMMANDS, 2, "stream, echo"),
     GVAR_FUNC(READ_COMMAND_REAL, 2, "stream, echo"),
-    GVAR_FUNC(READ_COMMAND, 2, "stream, echo"),
     GVAR_FUNC(READ_STREAM, 1, "stream"),
     GVAR_FUNC(READ_STREAM_LOOP, 2, "stream, catchstderrout"),
     GVAR_FUNC(READ_AS_FUNC, 1, "filename"),

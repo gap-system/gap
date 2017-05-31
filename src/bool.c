@@ -66,16 +66,6 @@ Obj Fail;
 
 /****************************************************************************
 **
-*V  SuPeRfail  . . . . . . . . . . . . . . . . . . . . . . .  superfail value
-**
-**  'SuPeRfail' is an ``superfail'' object which is used to indicate failure if
-**  `fail' itself is a sensible response. This is used when having GAP read
-**  a file line-by-line via a library function (demo.g)
-*/
-Obj SuPeRfail;
-
-/****************************************************************************
-**
 *V  Undefined  . . . . . . . . . . . . . . . . . . . . . . . undefined value
 **
 **  'Undefined' is a special object that is used in lieu of (Obj) 0 in places
@@ -121,9 +111,6 @@ void PrintBool (
     }
     else if ( bool == Fail ) {
         Pr( "fail", 0L, 0L );
-    }
-    else if ( bool == SuPeRfail ) {
-        Pr( "SuPeRfail", 0L, 0L );
     }
     else if ( bool == Undefined ) {
         Pr( "Undefined", 0L, 0L );
@@ -405,7 +392,6 @@ static Int InitKernel (
     InitGlobalBag( &True,  "src/bool.c:TRUE"  );
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
-    InitGlobalBag( &SuPeRfail,  "src/bool.c:SUPERFAIL"  );
     InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
     /* install the saving functions                                       */
@@ -446,10 +432,6 @@ static Int InitLibrary (
 
     /* `fail' is a variable not a language construct                       */
     AssReadOnlyGVar( GVarName( "fail" ), Fail );
-
-    /* `SuPeRfail' ditto                       */
-    SuPeRfail  = NewBag( T_BOOL, 0L );
-    AssReadOnlyGVar( GVarName( "SuPeRfail" ), SuPeRfail );
 
     /* Undefined is an internal value */
     Undefined = NewBag( T_BOOL, 0 );
