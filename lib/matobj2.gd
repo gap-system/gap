@@ -170,9 +170,9 @@ DeclareOperation( "{}", [IsVectorObj,IsList] );
 ##  <#GAPDoc Label="MatObj_PositionNonZero">
 ##  <ManSection>
 ##    <Oper Arg="V" Name="PositionNonZero"/>
-##    <Returns>An integer or <C>fail</C></Returns>
+##    <Returns>An integer</Returns>
 ##    <Description>
-##     Returns the index of the first entry of the vector <A>V</A> which is not
+##     Returns the index of the first entry in the vector <A>V</A> which is not
 ##     zero. If all entries are zero, the function
 ##     returns <C>Length</C>(<A>V</A>) + 1.
 ##    </Description>
@@ -180,6 +180,17 @@ DeclareOperation( "{}", [IsVectorObj,IsList] );
 ##  <#/GAPDoc>
 DeclareOperation( "PositionNonZero", [IsVectorObj] );
 
+##  <#GAPDoc Label="MatObj_PositionLastNonZero">
+##  <ManSection>
+##    <Oper Arg="V" Name="PositionLastNonZero"/>
+##    <Returns>An integer</Returns>
+##    <Description>
+##     Returns the index of the last entry in the vector <A>V</A> which is not
+##     zero. If all entries are zero, the function
+##     returns 0.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
 DeclareOperation( "ListOp", [IsVectorObj] );
