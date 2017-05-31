@@ -434,9 +434,6 @@ void SerializeBool(Obj obj)
     else if (obj == Fail) {
         WriteByte(2);
     }
-    else if (obj == SuPeRfail) {
-        WriteByte(3);
-    }
     else
         ErrorQuit("Internal serialization error: Bad boolean value", 0L, 0L);
 }
@@ -451,8 +448,6 @@ Obj DeserializeBool(UInt tnum)
         return True;
     case 2:
         return Fail;
-    case 3:
-        return SuPeRfail;
     default:
         DeserializationError();
         return (Obj)0; /* flow control hint */
