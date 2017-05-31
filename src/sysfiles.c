@@ -1325,7 +1325,7 @@ void syEchos (
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
 UInt   syNrchar;                        /* nr of chars already on the line */
-Char   syPrompt [256];                  /* characters already on the line   */
+Char   syPrompt [MAXLENOUTPUTLINE];     /* characters already on the line  */
 
 
 
