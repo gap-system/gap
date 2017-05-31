@@ -38,6 +38,19 @@ vectors and matrices.
 
 <Section Label="Operations for Vector Objects">
     <Heading>Operations for Vector Objects</Heading>
+
+    <#Include Label="MatObj_PositionNonZero">
+    <#Include Label="MatObj_PositionLastNonZero">
+    <#Include Label="MatObj_ListOp">
+    <#Include Label="MatObj_UnpackVector">
+    <#Include Label="MatObj_ConcatenationOfVectors">
+    <#Include Label="MatObj_ExtractSubVector">
+    <#Include Label="MatObj_ZeroVector">
+    <#Include Label="MatObj_ConstructingFilter_Vector">
+    <#Include Label="MatObj_Randomize_Vectors">
+    <#Include Label="MatObj_WeightOfVector">
+    <#Include Label="MatObj_DistanceOfVectors">
+
 </Section>
 
 <Section Label="Operations for Row List Matrix Objects">
