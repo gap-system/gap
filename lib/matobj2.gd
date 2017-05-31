@@ -167,6 +167,17 @@ DeclareOperation( "{}", [IsVectorObj,IsList] );
 # Of course the positions must all lie in [1..Length(VECTOR)].
 # Returns a vector in the same representation!
 
+##  <#GAPDoc Label="MatObj_PositionNonZero">
+##  <ManSection>
+##    <Oper Arg="V" Name="PositionNonZero"/>
+##    <Returns>An integer or <C>fail</C></Returns>
+##    <Description>
+##     Returns the index of the first entry of the vector <A>V</A> which is not
+##     zero. If all entries are zero, the function
+##     returns <C>Length</C>(<A>V</A>) + 1.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "PositionNonZero", [IsVectorObj] );
 
 DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
