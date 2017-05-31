@@ -440,3 +440,25 @@ InstallMethod( TraceMat, "generic method",
     return s;
   end );
 
+
+InstallMethod(PositionNonZero,
+  "General method for a row vector",
+  true,[IsRowVector],0,
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i;fi;
+  od;
+  return Length(vec)+1;
+end);
+
+InstallMethod(PositionNonZero,
+  "General method for a row vector",
+  true,[IsVectorObj],0,
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i;fi;
+  od;
+  return Length(vec)+1;
+end);
