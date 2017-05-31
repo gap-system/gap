@@ -12,6 +12,15 @@
 ############################################################################
 
 
+# TEMPORARY HACK
+InstallOtherMethod( \[\], [ IsMatrix, IsList ], {m,l} -> m[l[1]][l[2]] );
+InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsList, IsObject ], function(m,l,o) m[l[1]][l[2]] := o; end);
+
+InstallOtherMethod( \[\], [ IsMatrixObj, IsList ], {m,l} -> MatElm(m,l[1],l[2]));
+InstallOtherMethod( \[\]\:\=, [ IsMatrixObj, IsList, IsObject ], function(m,l,o) SetMatElm(m, l[1], l[2], o); end);
+
+
+
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)
