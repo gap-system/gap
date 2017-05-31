@@ -499,8 +499,8 @@ DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # TODO: perhaps also have ExtractRow(mat, i) and ExtractColumn(mat, i)
 
 # TODO: provide a method so that mat[i,j] actually works, like this:
-#  InstallMethod( \[\], [ IsMatrix and IsMutable, IsList ], {m,l} -> m[l[1]][l[2]] )
-
+#  InstallMethod( \[\], [ IsMatrix and IsMutable, IsList ], {m,l} -> m[l[1]][l[2]] );
+#  InstallMethod( \[\]:=, [ IsMatrix and IsMutable, IsList ], function(m,l,o) m[l[1]][l[2]] := o; end);
 
 
 # TODO: benchmark all of this stuff vs. existing matrices
