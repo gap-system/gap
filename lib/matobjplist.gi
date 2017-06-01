@@ -58,10 +58,16 @@ InstallMethod( NewMatrix,
   "for IsPlistMatrixRep, a ring, an int, and a list",
   [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
-    local m,i,e,filter2;
+    local m,i,e,filter2, nd;
 
 # TODO: verify that rl actually matches the data in l, if not, show an error
-
+    # check if l is flat list
+    if Length(l) > 0 and not IsVectorObj(l[1]) then
+      nd := NestingDepthA(l);
+      if nd < 2 or nd mod 2 = 1 then
+        l := FoldList(l, rl);
+      fi;
+    fi;
     if IsIdenticalObj(IsPlistMatrixRep,filter) then
         filter2 := IsPlistVectorRep;
     else
