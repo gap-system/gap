@@ -193,6 +193,18 @@ DeclareOperation( "PositionNonZero", [IsVectorObj] );
 ##  <#/GAPDoc>
 DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
+##  <#GAPDoc Label="MatObj_ListOp">
+##  <ManSection>
+##    <Oper Arg="V" Name="ListOp" Label="for IsVectorObj"/>
+##    <Oper Arg="V,func" Name="ListOp" Label="for IsVectorObj,IsFunction"/>
+##    <Returns>A plain list</Returns>
+##    <Description>
+##     Applies <A>func</A> to each entry of the vector <A>V</A> and returns the results
+##     as a plain list. Necessary to call <Ref Func="List"/> on vectors.
+##     If the argument <A>func</A> is not provided, applies <Ref Func="IdFunc"> to all entries.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ListOp", [IsVectorObj] );
 DeclareOperation( "ListOp", [IsVectorObj,IsFunction] );
 # This is an unpacking operation returning a mutable copy in form of a list.
