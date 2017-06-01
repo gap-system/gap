@@ -247,6 +247,18 @@ DeclareOperation( "Unpack", [IsVectorObj] );
 # Note that since Concatenation is a function using Append, it will
 # not work for vectors and it cannot be overloaded!
 # Thus we need:
+
+##  <#GAPDoc Label="MatObj_ConcatenationOfVectors">
+##  <ManSection>
+##    <Func Arg="V1,V2,..." Name="ConcatenationOfVectors" Label="for IsVectorObj"/>
+##    <Func Arg="Vlist" Name="ConcatenationOfVectors" Label="for list of IsVectorObj"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector containing the entries of <A>V1</A>, <A>V2</A>, etc.
+##      As prototype <A>V1</A> is used.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareGlobalFunction( "ConcatenationOfVectors" );
 
 DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
