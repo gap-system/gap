@@ -20,7 +20,6 @@ InstallOtherMethod( \[\], [ IsMatrixObj, IsList ], {m,l} -> MatElm(m,l[1],l[2]))
 InstallOtherMethod( \[\]\:\=, [ IsMatrixObj, IsList, IsObject ], function(m,l,o) SetMatElm(m, l[1], l[2], o); end);
 
 
-
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)
@@ -496,3 +495,13 @@ InstallMethod( Unpack,
   true,[IsVectorObj],0,
   ListOp ); ## Potentially slower than a direct implemtation,
             ## but avoids code multiplication.
+
+
+InstallMethod( \{\},
+               [IsVectorObj,IsList],
+  function(vec,pos)
+    local vec_list;
+    vec_list := ListOp(vec);
+    vec_list := vec_list{[pos]};
+    return Vector(vec_list,vec);
+end );
