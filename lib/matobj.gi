@@ -54,6 +54,15 @@ InstallMethod( DistanceOfVectors, "generic method",
 #
 # TODO: possibly rename the following
 #
+BindGlobal( "DefaultVectorRepForBaseDomain",
+function( basedomain )
+    if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
+        return IsGF2VectorRep;
+    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
+        return Is8BitVectorRep;
+    fi;
+    return IsPlistVectorRep;
+end);
 BindGlobal( "DefaultMatrixRepForBaseDomain",
 function( basedomain )
     if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
@@ -64,6 +73,53 @@ function( basedomain )
     return IsPlistMatrixRep;
 end);
 
+
+
+# methods to create vectors
+
+InstallMethod( Vector,
+  [IsOperation, IsSemiring,  IsList],
+function(rep, base, l)
+  return NewVector(rep, base, l);
+end);
+
+InstallMethod( Vector,
+  [IsOperation, IsSemiring,  IsVectorObj],
+function(rep, base, v)
+  return NewVector(rep, base, Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsSemiring,  IsList],
+function(base, l)
+  return NewVector(DefaultVectorRepForBaseDomain(base), base, l);
+end);
+
+InstallMethod( Vector,
+  [IsSemiring,  IsVectorObj],
+function(base, v)
+  return NewVector(DefaultVectorRepForBaseDomain(base), base, Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsList, IsVectorObj],
+function(l, example)
+  return NewVector(ConstructingFilter(example), BaseDomain(example), l);
+end);
+
+InstallMethod( Vector,
+  [IsVectorObj, IsVectorObj],
+function(v, example)
+  return NewVector(ConstructingFilter(example), BaseDomain(example), Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsList],
+function(l)
+  local dom;
+  dom := DefaultScalarDomainOfMatrixList([[l]]);
+  return NewVector(DefaultVectorRepForBaseDomain(dom), dom, l);
+end);
 #
 #
 #

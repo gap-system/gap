@@ -326,7 +326,24 @@ DeclareOperation( "ZeroVector", [IsInt,IsMatrixObj] );
 # Returns a new mutable zero vector in a rep that is compatible with
 # the matrix but of possibly different length.
 
-DeclareOperation( "Vector", [IsList,IsVectorObj]);
+# Operation to create vector objects.
+# The first just delegate to NewVector:
+DeclareOperation( "Vector", [IsOperation, IsSemiring,  IsList]);
+DeclareOperation( "Vector", [IsOperation, IsSemiring,  IsVectorObj]);
+
+# Here we implement default choices for the representation, depending
+# in base domain:
+DeclareOperation( "Vector", [IsSemiring,  IsList]);
+DeclareOperation( "Vector", [IsSemiring,  IsVectorObj]);
+
+# And here are the variants with example object (as last argument):
+DeclareOperation( "Vector", [IsList, IsVectorObj]);
+DeclareOperation( "Vector", [IsVectorObj, IsVectorObj]);
+
+# And here guess everything:
+DeclareOperation( "Vector", [IsList]);
+
+
 # Creates a new vector in the same representation but with entries from list.
 # The length is given by the length of the first argument.
 # It is *not* guaranteed that the list is copied!
@@ -781,9 +798,9 @@ DeclareConstructor( "NewCompanionMatrix",
 # Eventually here will be the right place to do this.
 
 # variant with new filter + base domain (dispatches to NewMatrix)
-DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsList, IsInt]);
-DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsList]);
-DeclareOperation( "Matrix", [IsOperation,IsSemiring,  IsMatrixObj]);
+DeclareOperation( "Matrix", [IsOperation, IsSemiring,  IsList, IsInt]);
+DeclareOperation( "Matrix", [IsOperation, IsSemiring,  IsList]);
+DeclareOperation( "Matrix", [IsOperation, IsSemiring,  IsMatrixObj]);
 
 # variant with new base domain -> "guesses" good rep, then dispatches to NewMatrix
 DeclareOperation( "Matrix", [IsSemiring,    IsList, IsInt]);
