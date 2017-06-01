@@ -462,3 +462,31 @@ InstallMethod(PositionNonZero,
   od;
   return Length(vec)+1;
 end);
+
+InstallMethod( ListOp,
+  "General method for a vector",
+  true,[IsVectorObj],0,
+  function(vec)
+  local return_list, i, length_vector;
+  length_vector := Length(vec);
+  return_list := [];
+  return_list[length_vector] := vec[length_vector];
+  for i in [ 1 .. length_vector - 1 ] do
+    return_list[i] := vec[i];
+  od;
+  return return_list;
+end );
+
+InstallMethod( ListOp,
+  "General method for a vector and a function",
+  true,[IsVectorObj,IsFunction],0,
+  function(vec,func)
+  local return_list, i, length_vector;
+  length_vector := Length(vec);
+  return_list := [];
+  return_list[length_vector] := func(vec[length_vector]);
+  for i in [ 1 .. length_vector - 1 ] do
+    return_list[i] := func(vec[i]);
+  od;
+  return return_list;
+end );
