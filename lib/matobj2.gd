@@ -827,49 +827,29 @@ DeclareOperation( "Matrix", [IsList, IsInt, IsMatrixObj]);
 DeclareOperation( "Matrix", [IsList,        IsMatrixObj]);  # <- no need to overload this one
 DeclareOperation( "Matrix", [IsMatrixObj,   IsMatrixObj]);
 
-# Creates a new matrix in the same representation as the fourth argument
-# but with entries from list, the second argument is the number of
-# columns. The first argument can be:
-#  - a plain list of vectors of the correct row length in a representation 
-#          fitting to the matrix rep.
-#  - a plain list of plain lists where each sublist has the length of the rows
-#  - a plain list with length rows*cols with matrix entries given row-wise
-# If the first argument is empty, then the number of rows is zero.
-# Otherwise the first entry decides which case is given.
-# The outer list is guaranteed to be copied, however, the entries of that
-# list (the rows) need not be copied.
-# The following convenience versions exist:
-# With two arguments the first must not be empty and must not be a flat
-# list. Then the number of rows is deduced from the length of the first
-# argument and the number of columns is deduced from the length of the
-# element of the first argument (done with a generic method):
-# TODO: what does "flat" above mean???
-
-
 # perhaps also (or instead?) have this:
 #DeclareOperation( "MatrixWithRows", [IsList (of vectors),IsMatrixObj]); ??
 #DeclareOperation( "MatrixWithColumns", [IsList (of vectors),IsMatrixObj]); ??
 
 
 
-# Note that it is not possible to generate a matrix via "Matrix" without
-# a template matrix object. Use the constructor methods instead:
-
 DeclareConstructor( "NewMatrix", [IsMatrixObj, IsSemiring, IsInt, IsList] );
 # Constructs a new fully mutable matrix. The first argument has to be a filter
-# indicating the representation. The second the base domain, the third
-# the row length and the last a list containing either row vectors
-# of the right length or lists with base domain elements.
+# indicating the representation, the second the base domain, the third
+# the row length. The last argument can be:
+#  - a plain list of vector objects of correct length
+#  - a plain list of plain lists of correct length
+#  - a flat plain list with rows*cols entries in row major order
+#    (FoldList turns a flat list into a list of lists)
+# where the corresponding entries must be in or compatible with the base domain.
+# If the last argument already contains vector objects, they are copied.
 # The last argument is guaranteed not to be changed!
-# If the last argument already contains row vectors, they are copied.
 
-# TODO: so a flat list of scalars is not possible (compare to <Matrix>, where it is) ???
-#  it should be symmetric, either both support it or none...
-#
-#  Idea: require NewMatrix methods to support flat lists (as well as lists-of-lists aka row lists;
-#  but provide a helper function which turns a flat list into a row list:
-#     RowListFromFlatMat( cols, list )
-
+# TODO: what does "flat" above mean???
+# TODO: from an old comment on Matrix / NewMatrix, wrt to the last argument
+# The outer list is guaranteed to be copied, however, the entries of that
+# list (the rows) need not be copied.
+# TODO: Isn't it inconsistent to copy the rows if they are vector objects, but otherwise not? Also: matobjplist.gi uses NewVector, which copies its list-argument
 
 # FIXME: why is IsInt,IsList reversed compared to Matrix(), where it is IsList,IsInt
 
