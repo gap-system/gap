@@ -2089,6 +2089,26 @@ InstallMethod( Flat,
 
 #############################################################################
 ##
+#M  FoldList( <list>, <len> )  . . . . . . fold list to sublists of length len
+##
+InstallMethod( FoldList,
+    "for a list and posint",
+    [IsList, IsPosInt],
+    function( list, rlen )
+      local res, len, i;
+      res := [];
+      i := 0;
+      len := Length(list);
+      while i < len do
+        Add(res, list{[i+1..i+rlen]});
+        i := i + rlen;
+      od;
+      return res;
+    end);
+
+
+#############################################################################
+##
 #F  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
 ##
 ##  Note that the special case that <list> is a range is dealt with by the
