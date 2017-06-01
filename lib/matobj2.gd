@@ -384,6 +384,17 @@ DeclareOperation( "MultRowVector",
 # The "representation-preserving" contructor methods:
 ############################################################################
 
+##  <#GAPDoc Label="MatObj_ZeroVector">
+##  <ManSection>
+##    <Func Arg="l,V" Name="ZeroVector" Label="for IsInt,IsVectorObj"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector of length <A>l</A> in the same representation as <A>V</A> containing only
+##      zeros.
+##      at the positions in <A>l</A>.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ZeroVector", [IsInt,IsVectorObj] );
 # Returns a new mutable zero vector in the same rep as the given one with
 # a possible different length.

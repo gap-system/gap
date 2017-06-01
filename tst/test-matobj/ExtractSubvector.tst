@@ -11,4 +11,4 @@ gap> ExtractSubVector( v1, [1,2,4] );
 <plist vector over Rationals of length 3>
 gap> Unpack( last );
 [ 1, 2, 4 ]
-gap> END_TEST("ExtractSubVector.tst",1);
+gap> STOP_TEST("ExtractSubVector.tst",1);
