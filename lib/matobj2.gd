@@ -210,7 +210,17 @@ DeclareOperation( "ListOp", [IsVectorObj,IsFunction] );
 # This is an unpacking operation returning a mutable copy in form of a list.
 # It enables the "List" function to work.
 
-# The following unwraps a vector to a list:
+##  <#GAPDoc Label="MatObj_UnpackVector">
+##  <ManSection>
+##    <Oper Arg="V" Name="Unpack" Label="for IsVectorObj"/>
+##    <Returns>A plain list</Returns>
+##    <Description>
+##      Returns a new plain list containing the entries of <A>V</A>.
+##      Guarantees to return a new list which can be manipulated without
+##      changing <A>V</A>. The entries itself are not copied.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "Unpack", [IsVectorObj] ); 
 # It guarantees to copy, that is changing the returned object does
 # not change the original object.

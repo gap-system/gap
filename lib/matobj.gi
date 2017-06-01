@@ -490,3 +490,9 @@ InstallMethod( ListOp,
   od;
   return return_list;
 end );
+
+InstallMethod( Unpack,
+  "General method for a vector",
+  true,[IsVectorObj],0,
+  ListOp ); ## Potentially slower than a direct implemtation,
+            ## but avoids code multiplication.
