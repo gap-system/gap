@@ -261,6 +261,16 @@ DeclareOperation( "Unpack", [IsVectorObj] );
 ##  <#/GAPDoc>
 DeclareGlobalFunction( "ConcatenationOfVectors" );
 
+##  <#GAPDoc Label="MatObj_ExtractSubVector">
+##  <ManSection>
+##    <Func Arg="V,l" Name="ExtractSubVector" Label="for IsVectorObj,IsList"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector containing the entries of <A>V</A>
+##      at the positions in <A>l</A>.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
 # Does the same as slicing v{l} but is here to be similar to
 # ExtractSubMatrix.
