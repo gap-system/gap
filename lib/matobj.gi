@@ -527,3 +527,25 @@ InstallMethod( CopySubVector,
   function(src, dst, scols, dcols)
     CopySubVector(dst,dcols,src,scols);
 end );
+
+InstallMethod( Randomize,
+  "general method for vectors",
+  true, [ IsVectorObj and IsMutable ],0,
+  function(vec)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( basedomain );
+    od;
+end );
+
+InstallMethod( Randomize,
+  "general method for vectors",
+  true, [ IsVectorObj and IsMutable, IsRandomSource ],0,
+  function(vec, rs)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( rs, basedomain );
+    od;
+end );
