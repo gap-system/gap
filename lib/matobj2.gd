@@ -200,8 +200,8 @@ DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 ##    <Returns>A plain list</Returns>
 ##    <Description>
 ##     Applies <A>func</A> to each entry of the vector <A>V</A> and returns the results
-##     as a plain list. Necessary to call <Ref Func="List"/> on vectors.
-##     If the argument <A>func</A> is not provided, applies <Ref Func="IdFunc"> to all entries.
+##     as a plain list. Necessary to call <Ref Oper="List"/> on vectors.
+##     If the argument <A>func</A> is not provided, applies <Ref Func="IdFunc"/> to all entries.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -386,7 +386,7 @@ DeclareOperation( "MultRowVector",
 
 ##  <#GAPDoc Label="MatObj_ZeroVector">
 ##  <ManSection>
-##    <Func Arg="l,V" Name="ZeroVector" Label="for IsInt,IsVectorObj"/>
+##    <Oper Arg="l,V" Name="ZeroVector" Label="for IsInt,IsVectorObj"/>
 ##    <Returns>a vector object</Returns>
 ##    <Description>
 ##      Returns a new vector of length <A>l</A> in the same representation as <A>V</A> containing only
@@ -435,7 +435,7 @@ DeclareOperation( "Vector", [IsList]);
 # will produce vectors in the same representation as <v>
 ##  <#GAPDoc Label="MatObj_ConstructingFilter_Vector">
 ##  <ManSection>
-##    <Func Arg="V" Name="ConstructingFilter" Label="for IsVectorObj"/>
+##    <Oper Arg="V" Name="ConstructingFilter" Label="for IsVectorObj"/>
 ##    <Returns>a filter</Returns>
 ##    <Description>
 ##      Returns a filter <C>f</C> such that if <Ref Oper="NewVector"/> is
@@ -536,7 +536,7 @@ DeclareOperation( "CopySubVector",
 
 ##  <#GAPDoc Label="MatObj_WeightOfVector">
 ##  <ManSection>
-##    <Func Arg="V" Name="WeightOfVector" Label="for IsVectorObj"/>
+##    <Oper Arg="V" Name="WeightOfVector" Label="for IsVectorObj"/>
 ##    <Returns>an integer</Returns>
 ##    <Description>
 ##      Computes the Hamming weight of the vector <A>V</A>, i.e., the number of 
@@ -549,7 +549,7 @@ DeclareOperation( "WeightOfVector", [IsVectorObj] );
 
 ##  <#GAPDoc Label="MatObj_DistanceOfVectors">
 ##  <ManSection>
-##    <Func Arg="V1,V2" Name="DistanceOfVectors" Label="for IsVectorObj,IsVectorObj"/>
+##    <Oper Arg="V1,V2" Name="DistanceOfVectors" Label="for IsVectorObj,IsVectorObj"/>
 ##    <Returns>an integer</Returns>
 ##    <Description>
 ##      Computes the Hamming distance of the vectors <A>V1</A> and <A>V2</A>, i.e., the number of 
