@@ -87,7 +87,7 @@ InstallGlobalFunction(ParseTestFile, function(arg)
 end);
 
 InstallGlobalFunction(RunTests, function(arg)
-  local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, 
+  local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, nrlines,
         s, res, fres, t, f, i;
   # don't enter break loop in case of error during test
   tests := arg[1];
@@ -108,11 +108,15 @@ InstallGlobalFunction(RunTests, function(arg)
   cmp := [];
   times := [];
   ttime := Runtime();
+  nrlines := pos[Length(pos) - 1];
   for i in [1..Length(inp)] do
     if opts.showProgress = true then
       Print("# line ", pos[i], ", input:\n",inp[i]);
     elif opts.showProgress = "some" then
-      Print("\r# line ", pos[i], "\c");
+      Print("\r# line ", pos[i],
+            " of ", nrlines,
+            " (", Int(Round(Float(pos[i] / nrlines * 100))), "%)",
+            "\c");
     fi;
     s := InputTextString(inp[i]);
     res := "";
