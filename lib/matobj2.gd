@@ -483,6 +483,18 @@ DeclareGlobalFunction( "MakeVector" );
 # Some things that fit nowhere else:
 ############################################################################
 
+##  <#GAPDoc Label="MatObj_Randomize_Vectors">
+##  <ManSection>
+##    <Oper Arg="V" Name="Randomize" Label="for IsVectorObj"/>
+##    <Oper Arg="V,Rs" Name="Randomize" Label="for IsVectorObj,IsRandomSources"/>
+##    <Description>
+##      Replaces every entry in <A>V</A> with a random one from the base domain.
+##      If given, the random source <A>Rs</A> is used to compute the random elements.
+##      Note that in this case, the random function for the base domain must support
+##      the random source argument.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "Randomize", [IsVectorObj and IsMutable] );
 DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 # Changes the mutable argument in place, every entry is replaced
