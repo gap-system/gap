@@ -334,7 +334,7 @@ Obj LengthInternal (
 */
 Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             IsbListOper;
+static Obj             IsbListOper;
 
 Obj             FuncISB_LIST (
     Obj                 self,
@@ -433,7 +433,7 @@ Obj Elm0ListError (
 **  and `Fail'  means that there realy is  the object `Fail' at this position
 **  or if it is unbound in which case 0 is returned.
 */
-Obj Elm0ListOper;
+static Obj Elm0ListOper;
 
 Obj Elm0ListObject (
     Obj                 list,
@@ -538,26 +538,17 @@ Obj ElmListError (
 **  that <pos> is a positive integer.  The methods have to signal an error if
 **  <pos> is larger than the length of <list> or if the entry is not bound.
 */
-Obj ElmListOper;
+static Obj ElmListOper;
 
-Obj ElmListObject (
-    Obj                 list,
-    Int                 pos )
+Obj ElmListObject( Obj list, Int pos)
 {
-    Obj                 elm;
-
-    elm = DoOperation2Args( ElmListOper, list, INTOBJ_INT(pos) );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'" );
-    }
-    return elm;
+    return ELMB_LIST( list, INTOBJ_INT(pos) );
 }
 
 
-Obj ELMB_LIST(Obj list, Obj pos)     {
-   Obj                 elm;
+Obj ELMB_LIST(Obj list, Obj pos)
+{
+    Obj                 elm;
 
     elm = DoOperation2Args( ElmListOper, list, pos );
     while ( elm == 0 ) {
@@ -625,7 +616,7 @@ Obj ElmsListError (
 **
 **  `ElmsListObject' is the `ELMS_LIST' function for objects.
 */
-Obj ElmsListOper;
+static Obj ElmsListOper;
 
 Obj ElmsListObject (
     Obj                 list,
@@ -846,7 +837,7 @@ void ElmsListLevelCheck (
 */
 void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             UnbListOper;
+static Obj             UnbListOper;
 
 Obj             FuncUNB_LIST (
     Obj                 self,
@@ -911,7 +902,7 @@ void            UNBB_LIST (
 */
 void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-Obj AssListOper;
+static Obj AssListOper;
 
 Obj             FuncASS_LIST (
     Obj                 self,
@@ -990,7 +981,7 @@ void ASSB_LIST (
 */
 void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj objs );
 
-Obj             AsssListOper;
+static Obj             AsssListOper;
 
 Obj             FuncASSS_LIST (
     Obj                 self,
@@ -1486,7 +1477,7 @@ Obj FuncIS_POSS_LIST_DEFAULT (
 */
 Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start );
 
-Obj             PosListOper;
+static Obj             PosListOper;
 
 Obj             PosListHandler2 (
     Obj                 self,

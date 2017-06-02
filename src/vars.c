@@ -605,8 +605,8 @@ UInt            ExecAss2List (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
-    Obj                 pos1;            /* position, left operand          */
-    Obj                 pos2;            /* position, left operand          */
+    Obj                 pos1;           /* position, left operand          */
+    Obj                 pos2;           /* position, left operand          */
     Obj                 rhs;            /* right hand side, right operand  */
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
@@ -650,7 +650,7 @@ UInt            ExecAssXList (
     ixs = NEW_PLIST(T_PLIST,narg);
 
     for (i = 1; i <= narg; i++) {
-      /* evaluate the position                                               */
+      /* evaluate the position                                             */
       pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
       SET_ELM_PLIST(ixs,i,pos);
       CHANGED_BAG(ixs);
@@ -843,7 +843,7 @@ UInt            ExecUnbList (
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
       pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-      /* unbind the element                                                  */
+      /* unbind the element                                                */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
       } else {
@@ -927,18 +927,17 @@ Obj             EvalElm2List (
 {
     Obj                 elm;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
-    Obj                 pos1;            /* position, right operand         */
-    Obj                 pos2;            /* position, right operand         */
+    Obj                 pos1;           /* position, right operand         */
+    Obj                 pos2;           /* position, right operand         */
 
-    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
-    /* evaluate and check the positions                                     */
+    /* evaluate and check the positions                                    */
     pos1 = EVAL_EXPR( ADDR_EXPR(expr)[1] ); 
     pos2 = EVAL_EXPR( ADDR_EXPR(expr)[2] ); 
    
     elm = ELM2_LIST(list, pos1, pos2);
-
 
     /* return the element                                                  */
     return elm;
@@ -962,10 +961,10 @@ Obj             EvalElmXList (
     Int i;
      
 
-    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
-    /* evaluate and check the positions                                     */
+    /* evaluate and check the positions                                    */
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     ixs = NEW_PLIST(T_PLIST,narg);
     for (i = 1; i <= narg; i++) {
@@ -1125,7 +1124,7 @@ Obj             EvalIsbList (
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     if (narg == 1) {
-      /* evaluate and check the position                                     */
+      /* evaluate and check the position                                   */
       pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
       
       if (IS_POS_INTOBJ(pos))
@@ -2299,7 +2298,7 @@ Obj             EvalIsbComObjExpr (
     Obj                 record;         /* the record, left operand        */
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ISB_REC')                */
+    /* evaluate the record (checking is done by 'ISB_REC')                 */
     record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
     /* evaluate the name and convert it to a record name                   */

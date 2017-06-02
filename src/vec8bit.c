@@ -159,9 +159,8 @@ static Obj FieldInfo8Bit;
 *F  ELS_BYTE_FIELDINFO_8BIT( <obj> )
 *F  SETELT_FIELDINFO_8BIT( <obj> )
 *F  GETELT_FIELDINFO_8BIT( <obj> )
-*F  SCALMUL_FIELDINFO_8BIT( <obj> )
 *F  ADD_FIELDINFO_8BIT( <obj> )
-*F  SET_XXX_FIELDINFO_8BIOT( <obj>, <xxx> ) . . .setters needed by ANSI
+*F  SET_XXX_FIELDINFO_8BIT( <obj>, <xxx> ) . . .setters needed by ANSI
 **                                         needed for scalar but not pointers
 **
 **  For machines with alignment restrictions. it's important to put all
@@ -2869,9 +2868,9 @@ Obj FuncELM0_VEC8BIT (
 
 /****************************************************************************
 **
-*F  FuncELM_VEC8BIT( <self>, <list>, <pos> ) . . select an elm of a GF2 vector
+*F  FuncELM_VEC8BIT( <self>, <list>, <pos> ) . . select an elm of an 8bit vector
 **
-**  'ELM_VEC8BIT' returns the element at the position <pos>  of the GF2 vector
+**  'ELM_VEC8BIT' returns the element at the position <pos>  of the 8bit vector
 **  <list>.   An  error  is signalled  if  <pos>  is  not bound.    It is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
@@ -3066,9 +3065,9 @@ Obj FuncELMS_VEC8BIT_RANGE (
 
 /****************************************************************************
 **
-*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of a GF2 vector
+*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of an 8bit vector
 **
-**  'ASS_VEC8BIT' assigns the element  <elm> at the position  <pos> to the GF2
+**  'ASS_VEC8BIT' assigns the element  <elm> at the position  <pos> to the 8bit
 **  vector <list>.
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive,
@@ -5733,7 +5732,7 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
                         val = vals[0];
 
                     /* set entry */
-                    ptr = BYTES_VEC8BIT(ELM_GF2MAT(tra, nstart + j)) + imod;
+                    ptr = BYTES_VEC8BIT(ELM_MAT8BIT(tra, nstart + j)) + imod;
                     *ptr = val;
                 }
             }
@@ -5998,7 +5997,7 @@ static Int InitLibrary (
 
 /****************************************************************************
 **
-*F  InitInfoGF2Vec()  . . . . . . . . . . . . . . . . table of init functions
+*F  InitInfoVec8bit()  . . . . . . . . . . . . . . .  table of init functions
 */
 static StructInitInfo module = {
     MODULE_BUILTIN,                     /* type                           */
