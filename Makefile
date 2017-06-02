@@ -9,8 +9,12 @@
 #
 .DEFAULT:
 	@if test -f GNUmakefile ; then \
-	    echo "Please use GNU make to build GAP (try 'gmake' or 'gnumake')" ; \
+	    printf "Please use GNU make to build GAP (try 'gmake' or 'gnumake')" ; \
 	  else \
-	    echo "You need to run ./configure before make (please refer to INSTALL for details)" ; \
+		printf "You need to run "; \
+		if ! test -f configure ; then \
+			printf "./autogen.sh then "; \
+		fi; \
+		printf "./configure before make (please refer to INSTALL for details)\n" ; \
 	  fi
 all: .DEFAULT
