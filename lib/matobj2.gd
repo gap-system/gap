@@ -391,7 +391,6 @@ DeclareOperation( "MultRowVector",
 ##    <Description>
 ##      Returns a new vector of length <A>l</A> in the same representation as <A>V</A> containing only
 ##      zeros.
-##      at the positions in <A>l</A>.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -434,6 +433,17 @@ DeclareOperation( "Vector", [IsList]);
 
 # given a vector <v>, produce a filter such that  NewVector called with this filter
 # will produce vectors in the same representation as <v>
+##  <#GAPDoc Label="MatObj_ConstructingFilter_Vector">
+##  <ManSection>
+##    <Func Arg="V" Name="ConstructingFilter" Label="for IsVectorObj"/>
+##    <Returns>a filter</Returns>
+##    <Description>
+##      Returns a filter <C>f</C> such that if <Ref Oper="NewVector"/> is
+##      called with <C>f</C> a vector in the same representation as <A>V</A>
+##      is produced.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
 DeclareConstructor( "NewVector", [IsVectorObj,IsSemiring,IsList] );
