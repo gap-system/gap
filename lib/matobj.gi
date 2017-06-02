@@ -505,3 +505,25 @@ InstallMethod( \{\},
     vec_list := vec_list{[pos]};
     return Vector(vec_list,vec);
 end );
+
+InstallMethod( CopySubVector,
+  "General method for vectors",
+  true,[IsVectorObj and IsMutable, IsList, IsVectorObj, IsList],0,
+  function(dst, dcols, src, scols)
+    local i;
+    if not Length( dcols ) = Length( scols ) then
+      Error( "source and destination index lists must be of equal length" );
+      return;
+    fi;
+    for i in [ 1 .. Length( dcols ) ] do
+      dst[dcols[i]] := src[scols[i]];
+    od;
+end );
+
+## Backwards compatible version
+InstallMethod( CopySubVector,
+  "Fallback method for vectors",
+  true,[IsVectorObj,IsVectorObj and IsMutable, IsList, IsList],0,
+  function(src, dst, scols, dcols)
+    CopySubVector(dst,dcols,src,scols);
+end );

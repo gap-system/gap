@@ -498,12 +498,7 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ##
 ##  <#GAPDoc Label="CopySubVector">
 ##  <ManSection>
-##  <Oper Name="CopySubVector" Arg='src, dst, scols, dcols'/>
-## TODO: turn this into
 ##  <Oper Name="CopySubVector" Arg='dst, dcols, src, scols'/>
-## and provide an (undocumnented) method for backwards compatibility
-##  which converts from the old to the new convention (and remove that again the future???)
-##
 ##  <Description>
 ##  returns nothing. Does <C><A>dst</A>{<A>dcols</A>} := <A>src</A>{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus - at least in
@@ -521,6 +516,9 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ##
 ## TODO: Maybe also have a version of this as follows:
 ##    CopySubVector( dst, dst_from, dst_to,  src, src_form, src_to );
+DeclareOperation( "CopySubVector", 
+  [IsVectorObj and IsMutable, IsList, IsVectorObj, IsList] );
+## TODO: the following declaration is deprecated and only kept for compatibility
 DeclareOperation( "CopySubVector", 
   [IsVectorObj,IsVectorObj and IsMutable, IsList,IsList] );
 
