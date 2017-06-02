@@ -2861,7 +2861,7 @@ Obj             FuncCycleStructurePerm (
     }
 
     for (pnt=1; pnt<max;pnt++) {
-      if (ptList[pnt]!=0) { ptList[pnt]=INTOBJ_INT(ptList[pnt]);}
+      if (ptList[pnt]!=0) { ptList[pnt]=INTOBJ_INT((UInt)ptList[pnt]);}
     } 
 
     /* return the list                                                     */
