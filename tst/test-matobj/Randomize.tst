@@ -1,7 +1,4 @@
 gap> START_TEST("Randomize.tst");
-gap> Reset( GlobalMerseeneTwister, 0 );
-Error, Variable: 'GlobalMerseeneTwister' must have a value
-not in any function at *stdin*:2
 gap> ll := [1,2,3,4,5,6];
 [ 1, 2, 3, 4, 5, 6 ]
 gap> v1 := Vector(IsPlistVectorRep, Rationals, ll);
