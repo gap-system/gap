@@ -522,9 +522,17 @@ DeclareOperation( "CopySubVector",
 DeclareOperation( "CopySubVector", 
   [IsVectorObj,IsVectorObj and IsMutable, IsList,IsList] );
 
+##  <#GAPDoc Label="MatObj_WeightOfVector">
+##  <ManSection>
+##    <Func Arg="V" Name="WeightOfVector" Label="for IsVectorObj"/>
+##    <Returns>an integer</Returns>
+##    <Description>
+##      Computes the Hamming weight of the vector <A>V</A>, i.e., the number of 
+##      nonzero entries.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "WeightOfVector", [IsVectorObj] );
-# This computes the Hamming weight of a vector, i.e. the number of
-# nonzero entries.
 
 DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
 # This computes the Hamming distance of two vectors, i.e. the number
