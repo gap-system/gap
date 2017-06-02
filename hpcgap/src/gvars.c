@@ -161,12 +161,16 @@ void UnlockGVars() {
 **  0 if <gvar> was not an automatic variable.
 **
 */
-#undef VAL_GVAR
-#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+
+// FIXME/TODO: Do we still need the VAL_GVAR_INTERN macro, or can we replace
+// it by ValGVar everywhere? The difference is of course the memory barrier,
+// which might cause a performance penalty (OTOH, not using it right now might
+// or might not be a bug?!?)
+#define VAL_GVAR_INTERN(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
 				[GVAR_INDEX(gvar)-1])
 
 inline Obj ValGVar(UInt gvar) {
-  Obj result = VAL_GVAR(gvar);
+  Obj result = VAL_GVAR_INTERN(gvar);
   MEMBAR_READ();
   return result;
 }
@@ -284,7 +288,7 @@ void            AssGVar (
 
     /* assign the value to the global variable                             */
 #ifdef HPCGAP
-    if (!VAL_GVAR(gvar)) {
+    if (!VAL_GVAR_INTERN(gvar)) {
         Obj expr = ExprGVar(gvar);
         if (IS_INTOBJ(expr)) {
           AssTLRecord(TLVars, INT_INTOBJ(expr), val);
@@ -293,7 +297,7 @@ void            AssGVar (
     }
     MEMBAR_WRITE();
 #endif
-    VAL_GVAR(gvar) = val;
+    VAL_GVAR_INTERN(gvar) = val;
     CHANGED_GVAR_LIST( ValGVars, gvar );
 
     /* if the global variable was automatic, convert it to normal          */
@@ -427,7 +431,7 @@ Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
                  (Int)TNAM_OBJ(name), 0L);
 
   UInt gvar = GVarName(CSTR_STRING(name));
-  return (VAL_GVAR(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
+  return (VAL_GVAR_INTERN(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
     True: False;
 }
 #endif
@@ -619,7 +623,7 @@ void MakeThreadLocalVar (
     UInt                rnam )
 {       
     Obj value = ValGVar(gvar);
-    VAL_GVAR(gvar) = (Obj) 0;
+    VAL_GVAR_INTERN(gvar) = (Obj) 0;
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
@@ -842,7 +846,7 @@ UInt            completion_gvar (
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
-        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
+        if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
             curr = NameGVar( i );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -906,7 +910,7 @@ Obj FuncIDENTS_BOUND_GVARS (
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
-        if ( VAL_GVAR( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
+        if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
            /* Copy the string here, because we do not want members of
             * NameGVars accessible to users, as these strings must not be
             * changed */
@@ -961,7 +965,7 @@ Obj FuncISB_GVAR (
     }
 
     gv = GVarName( CSTR_STRING(gvar) );
-    if (VAL_GVAR(gv))
+    if (VAL_GVAR_INTERN(gv))
       return True;
     expr = ExprGVar(gv);
     if (expr && !IS_INTOBJ(expr)) /* auto gvar */
@@ -1295,7 +1299,7 @@ void DeclareAllGVars( void )
   LockGVars(1);
   for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
     UInt index = GVarName(gvar->name);
-    gvar->ref = &(VAL_GVAR(index));
+    gvar->ref = &(VAL_GVAR_INTERN(index));
   }
   FirstDeclaredGVar = LastDeclaredGVar = 0;
   UnlockGVars();
