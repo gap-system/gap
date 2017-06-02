@@ -21,7 +21,7 @@ extern void RewriteGF2Vec( Obj vec, UInt q);
 
 /****************************************************************************
 **
-*F  CopyVec8Bit( <list>, <mut> ) .copying function
+*F  CopyVec8Bit( <list>, <mut> ) . . . . . . . . . . . . . . copying function
 **
 */
 
@@ -48,7 +48,7 @@ extern void PlainVec8Bit ( Obj                 list );
 
 /****************************************************************************
 **
-*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of a GF2 vector
+*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of an 8bit vector
 **
 */
 extern Obj FuncASS_VEC8BIT (
