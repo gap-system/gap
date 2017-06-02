@@ -86,22 +86,6 @@ Int             IsListObject (
 }
 
 
-Obj Elm2List(Obj list, Obj pos1, Obj pos2) {
-  Obj ixs = NEW_PLIST(T_PLIST,2);
-  SET_ELM_PLIST(ixs,1,pos1);
-  SET_ELM_PLIST(ixs,2,pos2);
-  SET_LEN_PLIST(ixs,2);
-  return ELMB_LIST(list, ixs);
-}
-
-void Ass2List(Obj list, Obj pos1, Obj pos2, Obj obj) {
-  Obj ixs = NEW_PLIST(T_PLIST,2);
-  SET_ELM_PLIST(ixs,1,pos1);
-  SET_ELM_PLIST(ixs,2,pos2);
-  SET_LEN_PLIST(ixs,2);
-  ASSB_LIST(list, ixs, obj);
-}
-
 /****************************************************************************
 **
 *F  IS_SMALL_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
@@ -558,6 +542,17 @@ Obj ELMB_LIST(Obj list, Obj pos)
     return elm;
 }
 
+Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    Obj elm = DoOperation3Args( ElmListOper, list, pos1, pos2 );
+    while ( elm == 0 ) {
+        elm = ErrorReturnObj(
+            "List access method must return a value", 0L, 0L,
+            "you can supply a value <val> via 'return <val>;'" );
+    }
+    return elm;
+}
+
 
 /****************************************************************************
 **
@@ -957,6 +952,11 @@ void ASSB_LIST (
     Obj                 obj )
 {
     DoOperation3Args( AssListOper, list, pos, obj );
+}
+
+void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
+{
+    DoOperation4Args( AssListOper, list, pos1, pos2, obj );
 }
 
 
