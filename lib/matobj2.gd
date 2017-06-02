@@ -534,10 +534,19 @@ DeclareOperation( "CopySubVector",
 ##  <#/GAPDoc>
 DeclareOperation( "WeightOfVector", [IsVectorObj] );
 
+
+##  <#GAPDoc Label="MatObj_DistanceOfVectors">
+##  <ManSection>
+##    <Func Arg="V1,V2" Name="DistanceOfVectors" Label="for IsVectorObj,IsVectorObj"/>
+##    <Returns>an integer</Returns>
+##    <Description>
+##      Computes the Hamming distance of the vectors <A>V1</A> and <A>V2</A>, i.e., the number of 
+##      entries in which the vectors differ. The vectors must be of equal length.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
-# This computes the Hamming distance of two vectors, i.e. the number
-# of positions, in which the vectors differ. The vectors must have the
-# same length.
+
 
 
 ############################################################################
