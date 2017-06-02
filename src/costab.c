@@ -2200,8 +2200,8 @@ Obj FuncLOWINDEX_COSET_SCAN (
   sd=LEN_PLIST(s1);
   s1a=(UInt*)ADDR_OBJ(s1);
   s2a=(UInt*)ADDR_OBJ(s2);
-  s1a[1]=INT_INTOBJ(s1a[1]);
-  s2a[1]=INT_INTOBJ(s2a[1]);
+  s1a[1]=INT_INTOBJ((Obj)s1a[1]);
+  s2a[1]=INT_INTOBJ((Obj)s2a[1]);
   while ((ok==1) && (j>0)) {
     d=s1a[j];
     x=s2a[j];
@@ -2342,7 +2342,7 @@ Obj FuncLOWINDEX_PREPARE_RELS (
       l=LEN_PLIST(rel);
       rp=(UInt*)ADDR_OBJ(rel);
       for (k=1;k<=l;k++) 
-        rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
+        rp[k]=INT_INTOBJ((Obj)rp[k]); /* convert relator entries to C-integers */
       /* change type */
       TYPE_DATOBJ(rel) = TYPE_LOWINDEX_DATA;
       RetypeBag(rel,T_DATOBJ);

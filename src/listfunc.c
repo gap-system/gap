@@ -1494,7 +1494,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
           fptr[2] = 1;
           fptr[3] = (UInt)adj;
           while (level > 0 ) {
-            if (fptr[2] > LEN_PLIST(fptr[3]))
+            if (fptr[2] > LEN_PLIST((Obj)fptr[3]))
               {
                 if (fptr[1] == ((UInt *)ADDR_OBJ(val))[fptr[0]])
                   {
