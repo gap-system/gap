@@ -97,6 +97,8 @@
 
 #include <src/gapstate.h>
 
+#include <src/objset.h>
+
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
@@ -108,8 +110,6 @@
 #include <src/hpc/misc.h>
 #include <src/hpc/threadapi.h>
 #include <src/hpc/serialize.h>          /* object serialization */
-
-#include <src/objset.h>
 #endif
 
 #include <src/vars.h>                   /* variables */
@@ -3160,11 +3160,13 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* main module                                                         */
     InitInfoGap,
 
+    // objsets / objmaps
+    InitInfoObjSets,
+
 #ifdef HPCGAP
     /* threads                                                             */
     InitInfoThreadAPI,
     InitInfoAObjects,
-    InitInfoObjSets,
     InitInfoSerialize,
 #endif
 
