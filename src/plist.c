@@ -252,6 +252,11 @@ Int KTNumPlist (
 
     Obj                 loopTypeObj = 0; /* typeObj in loop               */
 
+#ifdef HPCGAP
+    if (!CheckWriteAccess(list)) {
+      return TNUM_OBJ(list);
+    }
+#endif
     /* if list has `TESTING' keep that                                     */
     testing = IS_TESTING_PLIST(list) ? TESTING : 0;
 
@@ -279,6 +284,13 @@ Int KTNumPlist (
     if ( elm == 0 ) {
         isDense = 0;
     }
+#ifdef HPCGAP
+    else if ( !CheckReadAccess(elm) ) {
+      isHom = 0;
+      areMut = 1;
+      isTable = 0;
+    }
+#endif
     else if ( IS_TESTING_PLIST(elm) ) {
         isHom   = 0;
         areMut  = IS_MUTABLE_PLIST(elm);
@@ -291,15 +303,14 @@ Int KTNumPlist (
 	    typeObj = TypePlistWithKTNum(elm, &ktnumFirst);
 	    family = FAMILY_TYPE( typeObj );
 	}
-	else
-	{
+	else {
 	    typeObj =  TYPE_OBJ(elm);
 	    family  = FAMILY_TYPE( typeObj );
 	    ktnumFirst = 0;
 	}
-	isHom   = 1;
-	areMut  = IS_MUTABLE_OBJ(elm);
-	if ( ktnumFirst >= T_PLIST_HOM ||
+        isHom   = 1;
+        areMut  = IS_MUTABLE_OBJ(elm);
+        if ( ktnumFirst >= T_PLIST_HOM ||
 	     ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
 	  /* entry is a homogenous list, so this miught be a table */
@@ -331,6 +342,14 @@ Int KTNumPlist (
         if ( elm == 0 ) {
             isDense = 0;
         }
+#ifdef HPCGAP
+	else if ( !CheckReadAccess(elm) ) {
+	    isHom = 0;
+	    areMut = 1;
+	    isTable = 0;
+	    isRect = 0;
+	}
+#endif
         else if ( IS_TESTING_PLIST(elm) ) {
             isHom   = 0;
             areMut  = (areMut || IS_MUTABLE_PLIST(elm));
@@ -338,7 +357,7 @@ Int KTNumPlist (
             isRect = 0;
         }
         else {
-            if(isHom) {
+            if (isHom) {
                 loopTypeObj = TYPE_OBJ(elm);
                 if ( loopTypeObj != typeObj && FAMILY_TYPE(loopTypeObj) != family ) {
                     isHom = 0;
@@ -351,8 +370,8 @@ Int KTNumPlist (
                         isTable = 0;
                         isRect = 0;
                     }
-                    if( isRect ) {
-                        if( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
+                    if ( isRect ) {
+                        if ( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
                             isRect = 0;
                         }
                     }
@@ -457,6 +476,12 @@ Int KTNumHomPlist (
     Int                 res;            /* result                          */
     Int                 isSSort;        /* list is (known to be) SSorted   */
     Int                 isNSort;        /* list is (known to be) non-sorted*/
+
+#ifdef HPCGAP
+    if (!CheckWriteAccess(list)) {
+      return TNUM_OBJ(list);
+    }
+#endif
 
     /* if list has `TESTING' keep that                                     */
     testing = IS_TESTING_PLIST(list) ? TESTING : 0;
@@ -728,6 +753,10 @@ Obj TypePlistHom (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
         ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -757,6 +786,10 @@ Obj TypePlistCyc (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_CYC+1) );
         ASS_LIST( types, tnum-T_PLIST_CYC+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_CYC+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -784,6 +817,10 @@ Obj TypePlistFfe (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_FFE+1) );
         ASS_LIST( types, tnum-T_PLIST_FFE+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_FFE+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -2412,9 +2449,13 @@ Int             IsPossPlist (
     /* loop over the entries of the list                                   */
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
-        if ( elm == 0)
+        if (elm == 0)
 	  return 0L;
-	if( IS_INTOBJ(elm))
+#ifdef HPCGAP
+        if ( !CheckReadAccess(elm) )
+	  return 0L;
+#endif
+	if (IS_INTOBJ(elm))
 	  {
 	    if (INT_INTOBJ(elm) <= 0 )
 	      return 0L;
