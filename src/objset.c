@@ -89,30 +89,40 @@ static Obj TypeObjMap(Obj obj) {
 
 static void PrintObjSet(Obj set) {
   UInt i, size = ADDR_WORD(set)[OBJSET_SIZE];
+  Int comma = 0;
   Pr("OBJ_SET([ ", 0L, 0L);
   for (i=0; i < size; i++) {
     Obj obj = ADDR_OBJ(set)[OBJSET_HDRSIZE + i ];
     if (obj && obj != Undefined) {
+      if (comma) {
+        Pr(", ", 0L, 0L);
+      } else {
+        comma = 1;
+      }
       PrintObj(obj);
-      Pr(", ", 0L, 0L);
     }
   }
-  Pr("])", 0L, 0L);
+  Pr(" ])", 0L, 0L);
 }
 
 static void PrintObjMap(Obj map) {
   UInt i, size = ADDR_WORD(map)[OBJSET_SIZE];
+  Int comma = 0;
   Pr("OBJ_MAP([ ", 0L, 0L);
   for (i=0; i < size; i++) {
     Obj obj = ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 ];
     if (obj && obj != Undefined) {
+      if (comma) {
+        Pr(", ", 0L, 0L);
+      } else {
+        comma = 1;
+      }
       PrintObj(obj);
       Pr(", ", 0L, 0L);
       PrintObj(ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 + 1]);
-      Pr(", ", 0L, 0L);
     }
   }
-  Pr("])", 0L, 0L);
+  Pr(" ])", 0L, 0L);
 }
 
 /**
@@ -198,6 +208,7 @@ static void CheckObjSetForCleanUp(Obj set, UInt expand) {
 Int FindObjSet(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
+  GAP_ASSERT(hash >= 0 && hash < size);
   for (;;) {
     Obj current;
     current = ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
@@ -223,6 +234,8 @@ Int FindObjSet(Obj set, Obj obj) {
 static void AddObjSetNew(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
+  GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
+  GAP_ASSERT(hash >= 0 && hash < size);
   for (;;) {
     Obj current;
     current = ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
@@ -236,6 +249,7 @@ static void AddObjSetNew(Obj set, Obj obj) {
       ADDR_OBJ(set)[OBJSET_HDRSIZE+hash] = obj;
       ADDR_WORD(set)[OBJSET_USED]++;
       ADDR_WORD(set)[OBJSET_DIRTY]--;
+      GAP_ASSERT(ADDR_WORD(set)[OBJSET_DIRTY] >= 0);
       CHANGED_BAG(set);
       return;
     }
@@ -285,11 +299,8 @@ void RemoveObjSet(Obj set, Obj obj) {
  */
 
 void ClearObjSet(Obj set) {
-  Obj *old = PTR_BAG(set);
   Obj new = NewObjSet();
-  PTR_BAG(set) = PTR_BAG(new);
-  PTR_BAG(new) = old;
-  CHANGED_BAG(new);
+  SwapMasterPoint(set, new);
   CHANGED_BAG(set);
 }
 
@@ -308,11 +319,12 @@ Obj ObjSetValues(Obj set) {
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
     Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + i];
-    if (el) {
+    if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
     }
   }
+  GAP_ASSERT(p == len + 1);
   CHANGED_BAG(result);
   return result;
 }
@@ -329,24 +341,22 @@ Obj ObjSetValues(Obj set) {
 
 static void ResizeObjSet(Obj set, UInt bits) {
   UInt i, new_size = (1 << bits);
-  Obj *old = PTR_BAG(set);
-  Obj new = NewBag(T_OBJSET,
-    (OBJSET_HDRSIZE+new_size)*sizeof(Bag));
+  Int size = ADDR_WORD(set)[OBJSET_SIZE];
+  Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag)*4);
+  GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
+  GAP_ASSERT(new_size >= size);
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
   ADDR_WORD(new)[OBJSET_BITS] = bits;
   ADDR_WORD(new)[OBJSET_USED] = 0;
   ADDR_WORD(new)[OBJSET_DIRTY] = 0;
-  for (i = OBJSET_HDRSIZE + ADDR_WORD(set)[OBJSET_SIZE] - 1;
-       i >=OBJSET_HDRSIZE; i--) {
+  for (i = OBJSET_HDRSIZE + size - 1; i >= OBJSET_HDRSIZE; i--) {
     Obj obj = ADDR_OBJ(set)[i];
     if (obj && obj != Undefined) {
       AddObjSetNew(new, obj);
     }
   }
-  PTR_BAG(set) = PTR_BAG(new);
-  PTR_BAG(new) = old;
+  SwapMasterPoint(set, new);
   CHANGED_BAG(set);
-  CHANGED_BAG(new);
 }
 
 /**
@@ -511,12 +521,8 @@ void RemoveObjMap(Obj map, Obj key) {
  */
 
 void ClearObjMap(Obj map) {
-  Obj *old = PTR_BAG(map);
   Obj new = NewObjMap();
-  PTR_BAG(map) = PTR_BAG(new);
-  PTR_BAG(new) = old;
-  CHANGED_BAG(new);
-  CHANGED_BAG(map);
+  SwapMasterPoint(map, new);
 }
 
 /**
@@ -534,11 +540,12 @@ Obj ObjMapValues(Obj set) {
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
     Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i+1];
-    if (el) {
+    if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
     }
   }
+  GAP_ASSERT(p == len + 1);
   CHANGED_BAG(result);
   return result;
 }
@@ -558,11 +565,12 @@ Obj ObjMapKeys(Obj set) {
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
     Obj el = ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i];
-    if (el) {
+    if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
     }
   }
+  GAP_ASSERT(p == len + 1);
   CHANGED_BAG(result);
   return result;
 }
@@ -581,7 +589,7 @@ Obj ObjMapKeys(Obj set) {
 static void ResizeObjMap(Obj map, UInt bits) {
   UInt i, new_size = (1 << bits);
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
-  Obj *old = PTR_BAG(map);
+  GAP_ASSERT(new_size >= size);
   Obj new = NewBag(T_OBJMAP,
     (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
@@ -595,8 +603,7 @@ static void ResizeObjMap(Obj map, UInt bits) {
         ADDR_OBJ(map)[OBJSET_HDRSIZE+i*2+1]);
     }
   }
-  PTR_BAG(map) = PTR_BAG(new);
-  PTR_BAG(new) = old;
+  SwapMasterPoint(map, new);
   CHANGED_BAG(map);
   CHANGED_BAG(new);
 }
@@ -629,6 +636,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
         if (obj)
           AddObjSet(result, obj);
       }
+      CHANGED_BAG(result);
       return result;
     default:
       ErrorQuit("OBJ_SET: Too many arguments", 0L, 0L);
@@ -953,6 +961,8 @@ static Int InitKernel (
   IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
   IsMutableObjFuncs [ T_OBJMAP ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
+  // init filters and functions
+  InitHdlrFuncsFromTable( GVarFuncs );
   /* return success                                                      */
   return 0;
 }
