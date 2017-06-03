@@ -27,7 +27,6 @@ For installation instructions see [here](https://www.gap-system.org/Download/ins
 You can compile the current development version of GAP from this repository.
 For this to work, the following dependencies need to be installed first:
 * GNU autoconf >= 2.69
-* GNU Multiple Precision Arithmetic Library (GMP)
 
 To build GAP, enter the following commands:
 ```
