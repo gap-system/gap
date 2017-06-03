@@ -2233,6 +2233,7 @@ void SwapMasterPoint (
 {
     Bag *               ptr1;
     Bag *               ptr2;
+    Bag swapbag;
 
     if ( bag1 == bag2 )
         return;
@@ -2246,13 +2247,23 @@ void SwapMasterPoint (
         LINK_BAG(bag1) = bag2;
         LINK_BAG(bag2) = bag1;
     }
-    else if ( LINK_BAG(bag1) == bag1 ) {
-        LINK_BAG(bag1) = ChangedBags;
-        ChangedBags = bag1;
-    }
-    else if ( LINK_BAG(bag2) == bag2 ) {
-        LINK_BAG(bag2) = ChangedBags;
-        ChangedBags = bag2;
+    else
+    {
+        // First make sure both bags are in change list
+        // We can't use CHANGED_BAG as it skips young bags
+        if ( LINK_BAG(bag1) == bag1 ) {
+            LINK_BAG(bag1) = ChangedBags;
+            ChangedBags = bag1;
+        }
+        if ( LINK_BAG(bag2) == bag2 ) {
+            LINK_BAG(bag2) = ChangedBags;
+            ChangedBags = bag2;
+        }
+        // Now swap links, so in the end the list will go
+        // through the bags in the same order.
+        swapbag = LINK_BAG(bag1);
+        LINK_BAG(bag1) = LINK_BAG(bag2);
+        LINK_BAG(bag2) = swapbag;
     }
 
     /* swap them                                                           */
