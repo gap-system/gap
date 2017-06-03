@@ -544,6 +544,22 @@ Obj ELMB_LIST(Obj list, Obj pos)
 
 Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
 {
+    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
+        Int p1 = INT_INTOBJ(pos1);
+        if ( p1 <= LEN_PLIST(list) ) {
+            Obj row = ELM_PLIST( list, p1 );
+            Int p2 = INT_INTOBJ(pos2);
+
+            if ( IS_PLIST(row) && p2 <= LEN_PLIST(row) ) {
+                return ELM_PLIST( row, p2 );
+            }
+
+            // fallback to generic list access code (also triggers error if
+            // row isn't a list)
+            return ELM_LIST( row, p2 );
+        }
+    }
+
     Obj elm = DoOperation3Args( ElmListOper, list, pos1, pos2 );
     while ( elm == 0 ) {
         elm = ErrorReturnObj(
@@ -956,6 +972,30 @@ void ASSB_LIST (
 
 void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
 {
+    if (!IS_MUTABLE_OBJ(list)) {
+        ErrorReturnVoid(
+            "Matrix Assignment: <mat> must be a mutable matrix",
+            0L, 0L,
+            "you can 'return;' and ignore the assignment" );
+    }
+    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
+        Int p1 = INT_INTOBJ(pos1);
+        if ( p1 <= LEN_PLIST(list) ) {
+            Obj row = ELM_PLIST( list, p1 );
+            Int p2 = INT_INTOBJ(pos2);
+
+            if ( IS_PLIST( row ) ) {
+                AssPlist( row, p2, obj );
+                return;
+            }
+
+            // fallback to generic list access code (also triggers error if
+            // row isn't a list)
+            ASS_LIST( row, p2, obj );
+            return;
+        }
+    }
+
     DoOperation4Args( AssListOper, list, pos1, pos2, obj );
 }
 
