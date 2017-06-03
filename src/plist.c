@@ -204,6 +204,7 @@ Int             GrowPlist (
 **     its tnum BEFORE any element of it is examined.
 **
 **     
+**     FIXME HPC-GAP: All of this is horribly thread-unsafe!
 **
 */
 
@@ -220,8 +221,7 @@ Obj TYPE_LIST_EMPTY_IMMUTABLE;
 Obj TYPE_LIST_HOM;
 
 #define IS_TESTING_PLIST(list) \
-    (FIRST_TESTING_TNUM <= TNUM_OBJ(list) \
-  && TNUM_OBJ(list) <= LAST_TESTING_TNUM)
+    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
 
 
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
@@ -258,22 +258,18 @@ Int KTNumPlist (
     }
 #endif
     /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+    testing = TEST_OBJ_FLAG(list, TESTING);
 
-    UNMARK_LIST(list, testing);
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
-    MARK_LIST(list, testing);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
 
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
-        UNMARK_LIST( list, testing );
         SET_FILT_LIST( list, FN_IS_EMPTY );
         res = TNUM_OBJ(list);
-        MARK_LIST( list, testing );
 	if (famfirst != (Obj *) 0)
 	  *famfirst = (Obj) 0;
         return res;
@@ -297,7 +293,11 @@ Int KTNumPlist (
         isTable = 0;
     }
     else {
-	if (!testing) MARK_LIST(list, TESTING);
+#ifdef HPCGAP
+	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
+#else
+	if (!testing) SET_OBJ_FLAG(list, TESTING);
+#endif
 
 	if (IS_PLIST(elm)) {
 	    typeObj = TypePlistWithKTNum(elm, &ktnumFirst);
@@ -324,7 +324,7 @@ Int KTNumPlist (
 	    }
 	  
         }
-	if (!testing) UNMARK_LIST(list, TESTING);
+	if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
     }
 
     i = 2;
@@ -394,7 +394,6 @@ Int KTNumPlist (
       }
 
     /* set the appropriate flags (not the hom. flag if elms are mutable)   */
-    UNMARK_LIST( list, testing );
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
@@ -458,7 +457,6 @@ Int KTNumPlist (
 	  *famfirst = (Obj) family;
       }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -484,7 +482,7 @@ Int KTNumHomPlist (
 #endif
 
     /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+    testing = TEST_OBJ_FLAG(list, TESTING);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
@@ -592,7 +590,6 @@ Int KTNumHomPlist (
     
  finish:
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -611,9 +608,9 @@ static Obj TypePlistWithKTNum (
     Obj                 types;          /* types list of <family>          */
 
     /* recursion is possible for this type of list                         */
-    MARK_LIST( list, TESTING );
+    SET_OBJ_FLAG( list, TESTING );
     tnum = KTNumPlist( list, &family);
-    UNMARK_LIST( list, TESTING );
+    CLEAR_OBJ_FLAG( list, TESTING );
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;
 

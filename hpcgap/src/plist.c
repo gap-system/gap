@@ -204,8 +204,7 @@ Int             GrowPlist (
 **     its tnum BEFORE any element of it is examined.
 **
 **     
-**     All of this is horribly thread-unsafe!
-
+**     FIXME HPC-GAP: All of this is horribly thread-unsafe!
 **
 */
 
@@ -294,7 +293,11 @@ Int KTNumPlist (
         isTable = 0;
     }
     else {
+#ifdef HPCGAP
 	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
+#else
+	if (!testing) SET_OBJ_FLAG(list, TESTING);
+#endif
 
 	if (IS_PLIST(elm)) {
 	    typeObj = TypePlistWithKTNum(elm, &ktnumFirst);
