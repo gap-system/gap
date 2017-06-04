@@ -529,7 +529,8 @@ FF              FiniteField (
 
     /* search through the finite field table                               */
     l = 1; n = NUM_SHORT_FINITE_FIELDS;
-    while (l <= n) {
+    ff = 0;
+    while (l <= n && SizeFF[l] <= q && q <= SizeFF[n]) {
       /* interpolation search */
       /* cuts iterations roughly in half compared to binary search at
        * the expense of additional divisions. */
@@ -542,10 +543,10 @@ FF              FiniteField (
       else
         n = ff-1;
     }
+    if (ff < 1 || ff > NUM_SHORT_FINITE_FIELDS)
+      return 0;
     if (SizeFF[ff] != q)
       return 0;
-    if (ff > NUM_SHORT_FINITE_FIELDS)
-        return 0;
 #ifdef HPCGAP
     /* Important correctness concern here:
      *
