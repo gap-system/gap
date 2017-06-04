@@ -481,9 +481,11 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
 ############################################################################
 
 DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
+DeclareOperation( "[]", [IsMatrixObj,IsPosInt,IsPosInt] );
 # second and third arguments are row and column index
 
 DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
+DeclareOperation( "[]:=", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 # second and third arguments are row and column index
 
 
