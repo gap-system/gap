@@ -170,7 +170,7 @@ InstallTrueMethod(HasLength,IsPlistRep);
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "IsBound[]",
-    [ IsList, IsObject ],
+    [ IsList, IS_INT ],
     ISB_LIST );
 
 
@@ -179,7 +179,7 @@ DeclareOperationKernel( "IsBound[]",
 #o  <list>[<pos>] . . . . . . . . . . . . . . . select an element from a list
 ##
 DeclareOperationKernel( "[]",
-    [ IsList, IsObject ],
+    [ IsList, IS_INT ],
     ELM_LIST );
 
 
@@ -243,7 +243,7 @@ DeclareOperationKernel( "Elm0List",
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "Unbind[]",
-    [ IsList and IsMutable, IsObject ],
+    [ IsList and IsMutable, IS_INT ],
     UNB_LIST );
 
 
@@ -252,7 +252,7 @@ DeclareOperationKernel( "Unbind[]",
 #o  <list>[<pos>] := <obj>
 ##
 DeclareOperationKernel( "[]:=",
-    [ IsList and IsMutable, IsObject, IsObject ],
+    [ IsList and IsMutable, IS_INT, IsObject ],
     ASS_LIST );
 
 
