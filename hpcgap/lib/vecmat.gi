@@ -581,6 +581,11 @@ InstallOtherMethod( \[\], "for GF2 matrix",
       IsPosInt ],
     ELM_GF2MAT );
 
+InstallMethod( \[\], "for GF2 matrix",
+    [ IsGF2MatrixRep,
+      IsPosInt, IsPosInt ],
+    MAT_ELM_GF2MAT );
+
 
 #############################################################################
 ##
@@ -599,6 +604,13 @@ InstallOtherMethod( \[\]\:\=,
       IsPosInt,
       IsObject ],
     ASS_GF2MAT );
+
+InstallMethod( \[\]\:\=,
+    "for GF2 matrix",
+    [ IsGF2MatrixRep,
+      IsPosInt, IsPosInt,
+      IsObject ],
+    SET_MAT_ELM_GF2MAT );
 
 
 #############################################################################

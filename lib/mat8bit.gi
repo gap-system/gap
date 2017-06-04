@@ -64,7 +64,7 @@ end);
 #M  Length( <mat> )
 ##
 
-InstallOtherMethod( Length, "For a compressed MatFFE", 
+InstallOtherMethod( Length, "For a compressed MatFFE",
         true, [IsList and Is8BitMatrixRep], 0, m->m![1]);
 
 #############################################################################
@@ -72,9 +72,19 @@ InstallOtherMethod( Length, "For a compressed MatFFE",
 #M  <mat> [ <pos> ]
 ##
 
-InstallOtherMethod( \[\],  "For a compressed MatFFE", 
+InstallOtherMethod( \[\],  "For a compressed MatFFE",
         [IsList and Is8BitMatrixRep, IsPosInt],
         ELM_MAT8BIT
+        );
+
+#############################################################################
+##
+#M  <mat> [ <pos1>, <pos2> ]
+##
+
+InstallMethod( \[\],  "For a compressed MatFFE",
+        [Is8BitMatrixRep, IsPosInt, IsPosInt],
+        MAT_ELM_MAT8BIT
         );
 
 #############################################################################
@@ -84,10 +94,20 @@ InstallOtherMethod( \[\],  "For a compressed MatFFE",
 ##  This may involve turning <mat> into a plain list, if <mat> does
 ##  not lie in the appropriate field.
 ##
-               
-InstallOtherMethod( \[\]\:\=,  "For a compressed MatFE", 
+
+InstallOtherMethod( \[\]\:\=,  "For a compressed MatFE",
         [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject],
         ASS_MAT8BIT
+        );
+
+#############################################################################
+##
+#M  <mat> [ <pos1>, <pos2> ] := <val>
+##
+
+InstallMethod( \[\]\:\=,  "For a compressed MatFE",
+        [IsMutable and Is8BitMatrixRep, IsPosInt, IsPosInt, IsObject],
+        SET_MAT_ELM_MAT8BIT
         );
 
 #############################################################################
