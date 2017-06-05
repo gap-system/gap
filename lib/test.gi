@@ -97,8 +97,6 @@ InstallGlobalFunction(RunTests, function(arg)
       opts.(f) := arg[2].(f);
     od;
   fi;
-  breakOnError := BreakOnError;
-  BreakOnError := opts.breakOnError;
 
   # we collect outputs and add them as 4th entry to 'tests'
   # also collect timings and add them as 5th entry to 'tests'
@@ -107,6 +105,16 @@ InstallGlobalFunction(RunTests, function(arg)
   pos := tests[3];
   cmp := [];
   times := [];
+  tests[4] := cmp;
+  tests[5] := times;
+
+  if Length(inp) = 0 then
+    return;
+  fi;
+
+  breakOnError := BreakOnError;
+  BreakOnError := opts.breakOnError;
+
   ttime := Runtime();
   nrlines := pos[Length(pos) - 1];
   for i in [1..Length(inp)] do
@@ -135,8 +143,6 @@ InstallGlobalFunction(RunTests, function(arg)
   fi;
   # add total time to 'times'
   Add(times, Runtime() - ttime);
-  tests[4] := cmp;
-  tests[5] := times;
   # reset
   BreakOnError := breakOnError;
 end);
