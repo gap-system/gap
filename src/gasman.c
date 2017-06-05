@@ -204,6 +204,12 @@
 #define NTYPES 256
 
 
+static inline Bag *DATA(BagHeader *bag)
+{
+    return (Bag *)(((char *)bag) + sizeof(BagHeader));
+}
+
+
 /* These variables are here so they can be accessed by
  * hpc_boehm_gc.h
  */
@@ -888,7 +894,7 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   Bag bag;
   UInt i;
   BagHeader * header = (BagHeader *)AllocBags;
-  *(Bag **)NextMptrRestoring = AllocBags = header->data;
+  *(Bag **)NextMptrRestoring = AllocBags = DATA(header);
   bag = NextMptrRestoring;
   header->type = type;
   header->flags = flags;
@@ -1044,9 +1050,6 @@ void            InitBags (
     if ( sizeof(BagHeader) % sizeof(Bag) != 0 )
         (*AbortFuncBags)("BagHeader size is not a multiple of word size.");
 
-    if ( sizeof(BagHeader) != offsetof(BagHeader, data) )
-        (*AbortFuncBags)("BagHeader's data member has invalid offset.");
-
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
     MptrBags = (*AllocFuncBags)( initial_size, 1 );
@@ -1157,7 +1160,7 @@ Bag NewBag (
     CLEAR_CANARY();
     /* allocate the storage for the bag                                    */
     BagHeader * header = (BagHeader *)AllocBags;
-    AllocBags = header->data + WORDS_BAG(size);
+    AllocBags = DATA(header) + WORDS_BAG(size);
     ADD_CANARY();
 
     /* enter size-type words                                               */
@@ -1169,7 +1172,7 @@ Bag NewBag (
     header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = header->data;
+    PTR_BAG(bag) = DATA(header);
 
     /* return the identifier of the new bag                                */
     return bag;
@@ -1326,7 +1329,7 @@ UInt ResizeBag (
     else if ( diff < 0 ) {
 
         // leave magic size-type word for the sweeper, type must be 255
-        BagHeader * freeHeader = (BagHeader *)(header->data + WORDS_BAG(new_size));
+        BagHeader * freeHeader = (BagHeader *)(DATA(header) + WORDS_BAG(new_size));
         freeHeader->type = 255;
         if ( diff == -1 ) {
             // if there is only one free word, avoid setting the size in
@@ -1384,7 +1387,7 @@ UInt ResizeBag (
 
         /* allocate the storage for the bag                                */
         BagHeader * newHeader = (BagHeader *)AllocBags;
-        AllocBags = newHeader->data + WORDS_BAG(new_size);
+        AllocBags = DATA(newHeader) + WORDS_BAG(new_size);
         ADD_CANARY();
 
         newHeader->type = type;
@@ -1410,9 +1413,9 @@ UInt ResizeBag (
         CANARY_ENABLE_VALGRIND();
 
         /* set the masterpointer                                           */
-        Bag * src = header->data;
+        Bag * src = DATA(header);
         Bag * end = src + WORDS_BAG(old_size);
-        Bag * dst = newHeader->data;
+        Bag * dst = DATA(newHeader);
         PTR_BAG(bag) = dst;
 
         /* copy the contents of the bag                                    */
@@ -1837,9 +1840,9 @@ again:
                       ((UInt)header->link) % sizeof(Bag) == 2 ) {
 #ifdef DEBUG_MASTERPOINTERS
                 if  ( (header->size % sizeof(Bag) == 0 &&
-                       PTR_BAG( UNMARKED_DEAD(header->link) ) != header->data)  ||
+                       PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header))  ||
                       (header->size % sizeof(Bag) == 2 &&
-                       PTR_BAG( UNMARKED_HALFDEAD(header->link)) != header->data))
+                       PTR_BAG( UNMARKED_HALFDEAD(header->link)) != DATA(header)))
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
@@ -1850,7 +1853,7 @@ again:
                   (*TabFreeFuncBags[ header->type ])( header->link );
 
                 /* advance src                                             */
-                src = header->data + WORDS_BAG( header->size ) ;
+                src = DATA(header) + WORDS_BAG( header->size ) ;
 
             }
 
@@ -1858,14 +1861,14 @@ again:
             /* live bag                                                    */
             else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
 #ifdef DEBUG_MASTERPOINTERS
-                if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != header->data )
+                if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) )
                   {
                     (*AbortFuncBags)("incorrectly marked bag");
                   }
 #endif
 
                 /* advance src                                             */
-                src = header->data + WORDS_BAG( header->size );
+                src = DATA(header) + WORDS_BAG( header->size );
 
             }
 
@@ -1903,7 +1906,7 @@ again:
 
         else if ( ((UInt)(header->link)) % sizeof(Bag) == 0 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if ( PTR_BAG( UNMARKED_DEAD(header->link) ) != header->data ) {
+            if ( PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
@@ -1927,14 +1930,14 @@ again:
             FreeMptrBags = header->link;
 
             /* advance src                                                 */
-            src = header->data + WORDS_BAG( header->size ) ;
+            src = DATA(header) + WORDS_BAG( header->size ) ;
 
         }
 
         /* half-dead bag                                                   */
         else if ( ((UInt)(header->link)) % sizeof(Bag) == 2 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_HALFDEAD(header->link) ) != header->data ) {
+            if  ( PTR_BAG( UNMARKED_HALFDEAD(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
@@ -1957,14 +1960,14 @@ again:
             nrHalfDeadBags ++;
 
             /* advance src                                                 */
-            src = header->data + WORDS_BAG( header->size );
+            src = DATA(header) + WORDS_BAG( header->size );
 
         }
 
         /* live bag                                                        */
         else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != header->data ) {
+            if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
@@ -1972,26 +1975,26 @@ again:
             BagHeader * dstHeader = (BagHeader *)dst;
 
             /* update identifier, copy size-type and link field            */
-            PTR_BAG( UNMARKED_ALIVE(header->link)) = dstHeader->data;
-            end = header->data + WORDS_BAG( header->size );
+            PTR_BAG( UNMARKED_ALIVE(header->link)) = DATA(dstHeader);
+            end = DATA(header) + WORDS_BAG( header->size );
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
             dstHeader->size = header->size;
 
             dstHeader->link = (Bag)UNMARKED_ALIVE(header->link);
-            dst = dstHeader->data;
+            dst = DATA(dstHeader);
 
             /* copy data area                                */
             if (TabSweepFuncBags[header->type] != 0) {
                 /* Call the installed sweeping function */
-                (*(TabSweepFuncBags[header->type]))(header->data, dst, end - header->data);
-                dst += end - header->data;
+                (*(TabSweepFuncBags[header->type]))(DATA(header), dst, end - DATA(header));
+                dst += end - DATA(header);
             }
 
             /* Otherwise do the default thing */
-            else if ( dst != header->data ) {
-                memmove((void *)dst, (void *)header->data, (end - header->data)*sizeof(Bag));
-                dst += end - header->data;
+            else if ( dst != DATA(header) ) {
+                memmove((void *)dst, (void *)DATA(header), (end - DATA(header))*sizeof(Bag));
+                dst += end - DATA(header);
             }
             else {
                 dst = end;
