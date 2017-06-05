@@ -101,7 +101,7 @@ typedef struct {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-static inline BagHeader * BAG_HEADER(Bag bag) {
+inline BagHeader * BAG_HEADER(Bag bag) {
     return (((BagHeader *)*bag) - 1);
 }
 
