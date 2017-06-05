@@ -91,7 +91,6 @@ typedef struct {
     uint32_t size : 32;
 #endif
     Bag link;
-    Bag data[];
 } BagHeader;
 
 

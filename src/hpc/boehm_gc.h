@@ -465,7 +465,7 @@ Bag NewBag (
     header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = header->data;
+    PTR_BAG(bag) = DATA(header);
     switch (DSInfoBags[type]) {
     case DSI_TL:
       REGION(bag) = CurrentRegion();
@@ -552,12 +552,12 @@ UInt ResizeBag (
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
-        PTR_BAG(bag) = header->data;
+        PTR_BAG(bag) = DATA(header);
 
-        if (header->data != src) {
-            memcpy( header->data, src, old_size < new_size ? old_size : new_size );
+        if (DATA(header) != src) {
+            memcpy( DATA(header), src, old_size < new_size ? old_size : new_size );
         } else if (new_size < old_size) {
-            memset(header->data+new_size, 0, old_size - new_size);
+            memset(DATA(header)+new_size, 0, old_size - new_size);
         }
     }
     /* return success                                                      */
