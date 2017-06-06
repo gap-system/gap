@@ -7,7 +7,7 @@ language: c
 # enables the ReproducibleBehaviour user option.
 env:
   global:
-    - CFLAGS="-fprofile-arcs -ftest-coverage"
+    - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
     - LDFLAGS="-fprofile-arcs"
   matrix:
   # - TEST_SUITE=testinstall ABI=32 # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
