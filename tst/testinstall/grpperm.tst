@@ -62,4 +62,13 @@ true
 gap> s:=SymmetricGroup([ 1, 5, 6, 7, 8, 9, 10 ]);;
 gap> RepresentativeAction(s,(9,10),(1,5)) in s;
 true
+gap> g:=SimpleGroup("M24");;
+gap> Length(MaximalSubgroupClassReps(g));
+9
+gap> g:=SimpleGroup("L4(3)");;
+gap> Length(MaximalSubgroupClassReps(g));
+8
+gap> g:=PSL(8,2);;
+gap> Length(MaximalSubgroupClassReps(g));
+10
 gap> STOP_TEST( "grpperm.tst", 1);
