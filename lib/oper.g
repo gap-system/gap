@@ -626,11 +626,54 @@ end );
 ##  Then the method with the <Q>most general</Q> filter <A>args-filts</A><M>[1]</M>
 ##  is chosen, since the rank is computed by taking <M>-1</M> times the ranks
 ##  of the involved filters.
+##  Thus, a constructor is chosen which returns an object in <A>filt</A> using
+##  as few extra filters as possible, which presumably is both more flexible
+##  to use and easier to construct.
 ##  <P/>
-##  Imagine wanting to construct a new IsMatrixObject without caring
-##  explicitly in which representation it is created.
-##  &GAP; then chooses a filter whis is <Q>as close</Q> to
-##  IsMatrixObject as possible.
+##  The following example showcases this behaviour.
+##  Note that the argument <A>filter</A> is only used for method dispatch.
+##  <Log><![CDATA[
+##  DeclareFilter( "IsMyObj" );
+##  DeclareFilter( "IsMyFilter" );
+##  DeclareFilter( "IsMyOtherFilter" );
+##  BindGlobal( "MyFamily", NewFamily( "MyFamily" ) );
+##  
+##  DeclareConstructor( "NewMyObj", [ IsMyObj ] );
+##  
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj ],
+##  function( filter )
+##      local type;
+##      Print("General constructor\n");
+##      type := NewType( MyFamily, IsMyObj );
+##      return Objectify( type, [] );
+##  end );
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj and IsMyFilter and IsMyOtherFilter ],
+##  function( filter )
+##      local type;
+##      Print("Special constructor\n");
+##      type := NewType( MyFamily, IsMyObj and IsMyFilter and IsMyOtherFilter );
+##      return Objectify( type, [] );
+##  end );
+##  ]]></Log>
+##  If only IsMyObj is given, both methods are applicable and the general
+##  constructor is called.
+##  If also IsMyFilter is given, only the special constructor is applicable.
+##  <Log><![CDATA[
+##  gap> a := NewMyObj( IsMyObj );;
+##  General constructor
+##  gap> IsMyOtherFilter(a);
+##  false
+##  gap> b := NewMyObj( IsMyObj and IsMyFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(b);
+##  true
+##  gap> c := NewMyObj( IsMyObj and IsMyFilter and IsMyOtherFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(c);
+##  true
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
