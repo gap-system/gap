@@ -544,7 +544,7 @@ end );
 ##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
 ##  lies in the filter <A>args-filts</A><M>[i]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
@@ -585,19 +585,52 @@ end );
 ##  <Ref Func="NewConstructor"/> returns a constructor <A>cons</A> with name
 ##  <A>name</A>.
 ##  The list <A>args-filts</A> describes requirements about the arguments
-##  of <A>constr</A>, namely the number of arguments must be equal to the length
-##  of <A>args-filts</A>, and the <M>i</M>-th argument must lie in the filter
-##  <A>args-filts</A><M>[i]</M>. Additionally a constructor expects the first
-##  argument to be a filter to then select a method to construct an object.
+##  of <A>cons</A>. Namely the number of arguments must be equal to the length
+##  of <A>args-filts</A>, and the <M>i</M>-th argument
+##  must lie in the filter <A>args-filts</A><M>[i]</M> for <M>i \neq 1</M>.
+##  A constructor expects the first argument to be a <E>filter</E> instead
+##  of an object and it must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
 ##  Each method that is installed for <A>cons</A> via
-##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
-##  lies in the filter <A>args-filts</A><M>[i]</M>.
+##  <Ref Func="InstallMethod"/> must require that
+##  the <M>i</M>-th argument lies in the filter <A>args-filts</A><M>[i]</M>
+##  for <M>i \neq 1</M>.
+##  Its first argument is a filter and must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
+##  <P/>
+##  Note that the method selection for constructors works slightly differently
+##  than for usual operations.
+##  As stated above, applicabilty to the first argument in an argument tuple
+##  is tested by determining whether the argument-filter is a <E>subset</E> of
+##  <A>args-filts</A><M>[1]</M>.
+##  <P/>
+##  The rank of a method installed for a constructor is determined solely by
+##  <A>args-filts</A><M>[1]</M> of the method.
+##  Instead of taking the sum of the ranks of filters involved in its
+##  <A>args-filts</A><M>[1]</M>, the sum of <M>-1</M> times these values
+##  is taken.
+##  The result is added to the number <A>val</A> used in the call of
+##  <Ref Func="InstallMethod"/>.
+##  <P/>
+##  This has the following effects on the method selection for constructors.
+##  If <A>cons</A> is called with an argument tuple whose first argument is
+##  the filter <A>filt</A>, any method whose first argument is
+##  <E>more</E> specific than <A>filt</A> is applicable
+##  (if its other <A>args-filts</A> also match).
+##  Then the method with the <Q>most general</Q> filter <A>args-filts</A><M>[1]</M>
+##  is chosen, since the rank is computed by taking <M>-1</M> times the ranks
+##  of the involved filters.
+##  <P/>
+##  Imagine wanting to construct a new IsMatrixObject without caring
+##  explicitly in which representation it is created.
+##  &GAP; then chooses a filter whis is <Q>as close</Q> to
+##  IsMatrixObject as possible.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
