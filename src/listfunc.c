@@ -1502,7 +1502,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
                     i = l;
                     do {
                       x = INT_INTOBJ(ELM_PLIST(stack, i));
-                      SET_ELM_PLIST(val, x, INTOBJ_INT(n+1));
+                      ((UInt *)ADDR_OBJ(val))[x] = n+1;
                       i--;
                     } while (x != fptr[0]);
                     comp = NEW_PLIST(T_PLIST_CYC, l-i);
