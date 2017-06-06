@@ -1182,6 +1182,7 @@ See also Section <Ref Sect="More About Global Variables"/>.
 <#Include Label="DeclareProperty">
 <#Include Label="DeclareFilter">
 <#Include Label="DeclareOperation">
+<#Include Label="DeclareConstructor">
 <#Include Label="DeclareGlobalFunction">
 <#Include Label="DeclareGlobalVariable">
 <#Include Label="InstallValue">

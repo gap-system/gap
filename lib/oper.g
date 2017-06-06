@@ -797,6 +797,10 @@ end );
 ##  <Description>
 ##  does the same as <Ref Func="NewConstructor"/> and
 ##  additionally makes the variable <A>name</A> read-only.
+##  <P/>
+##  Note that for operations which are constructors special rules with respect
+##  to applicability and rank of the corresponding methods apply
+##  (see section <Ref Func="NewConstructor"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
