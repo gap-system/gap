@@ -167,16 +167,60 @@ DeclareOperation( "{}", [IsVectorObj,IsList] );
 # Of course the positions must all lie in [1..Length(VECTOR)].
 # Returns a vector in the same representation!
 
+##  <#GAPDoc Label="MatObj_PositionNonZero">
+##  <ManSection>
+##    <Oper Arg="V" Name="PositionNonZero"/>
+##    <Returns>An integer</Returns>
+##    <Description>
+##     Returns the index of the first entry in the vector <A>V</A> which is not
+##     zero. If all entries are zero, the function
+##     returns <C>Length</C>(<A>V</A>) + 1.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "PositionNonZero", [IsVectorObj] );
 
+##  <#GAPDoc Label="MatObj_PositionLastNonZero">
+##  <ManSection>
+##    <Oper Arg="V" Name="PositionLastNonZero"/>
+##    <Returns>An integer</Returns>
+##    <Description>
+##     Returns the index of the last entry in the vector <A>V</A> which is not
+##     zero. If all entries are zero, the function
+##     returns 0.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
+##  <#GAPDoc Label="MatObj_ListOp">
+##  <ManSection>
+##    <Oper Arg="V" Name="ListOp" Label="for IsVectorObj"/>
+##    <Oper Arg="V,func" Name="ListOp" Label="for IsVectorObj,IsFunction"/>
+##    <Returns>A plain list</Returns>
+##    <Description>
+##     Applies <A>func</A> to each entry of the vector <A>V</A> and returns the results
+##     as a plain list. Necessary to call <Ref Oper="List"/> on vectors.
+##     If the argument <A>func</A> is not provided, applies <Ref Func="IdFunc"/> to all entries.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ListOp", [IsVectorObj] );
 DeclareOperation( "ListOp", [IsVectorObj,IsFunction] );
 # This is an unpacking operation returning a mutable copy in form of a list.
 # It enables the "List" function to work.
 
-# The following unwraps a vector to a list:
+##  <#GAPDoc Label="MatObj_UnpackVector">
+##  <ManSection>
+##    <Oper Arg="V" Name="Unpack" Label="for IsVectorObj"/>
+##    <Returns>A plain list</Returns>
+##    <Description>
+##      Returns a new plain list containing the entries of <A>V</A>.
+##      Guarantees to return a new list which can be manipulated without
+##      changing <A>V</A>. The entries itself are not copied.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "Unpack", [IsVectorObj] ); 
 # It guarantees to copy, that is changing the returned object does
 # not change the original object.
@@ -203,8 +247,30 @@ DeclareOperation( "Unpack", [IsVectorObj] );
 # Note that since Concatenation is a function using Append, it will
 # not work for vectors and it cannot be overloaded!
 # Thus we need:
+
+##  <#GAPDoc Label="MatObj_ConcatenationOfVectors">
+##  <ManSection>
+##    <Func Arg="V1,V2,..." Name="ConcatenationOfVectors" Label="for IsVectorObj"/>
+##    <Func Arg="Vlist" Name="ConcatenationOfVectors" Label="for list of IsVectorObj"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector containing the entries of <A>V1</A>, <A>V2</A>, etc.
+##      As prototype <A>V1</A> is used.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareGlobalFunction( "ConcatenationOfVectors" );
 
+##  <#GAPDoc Label="MatObj_ExtractSubVector">
+##  <ManSection>
+##    <Func Arg="V,l" Name="ExtractSubVector" Label="for IsVectorObj,IsList"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector containing the entries of <A>V</A>
+##      at the positions in <A>l</A>.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
 # Does the same as slicing v{l} but is here to be similar to
 # ExtractSubMatrix.
@@ -318,6 +384,16 @@ DeclareOperation( "MultRowVector",
 # The "representation-preserving" contructor methods:
 ############################################################################
 
+##  <#GAPDoc Label="MatObj_ZeroVector">
+##  <ManSection>
+##    <Oper Arg="l,V" Name="ZeroVector" Label="for IsInt,IsVectorObj"/>
+##    <Returns>a vector object</Returns>
+##    <Description>
+##      Returns a new vector of length <A>l</A> in the same representation as <A>V</A> containing only
+##      zeros.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ZeroVector", [IsInt,IsVectorObj] );
 # Returns a new mutable zero vector in the same rep as the given one with
 # a possible different length.
@@ -357,6 +433,17 @@ DeclareOperation( "Vector", [IsList]);
 
 # given a vector <v>, produce a filter such that  NewVector called with this filter
 # will produce vectors in the same representation as <v>
+##  <#GAPDoc Label="MatObj_ConstructingFilter_Vector">
+##  <ManSection>
+##    <Oper Arg="V" Name="ConstructingFilter" Label="for IsVectorObj"/>
+##    <Returns>a filter</Returns>
+##    <Description>
+##      Returns a filter <C>f</C> such that if <Ref Oper="NewVector"/> is
+##      called with <C>f</C> a vector in the same representation as <A>V</A>
+##      is produced.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
 DeclareConstructor( "NewVector", [IsVectorObj,IsSemiring,IsList] );
@@ -396,6 +483,18 @@ DeclareGlobalFunction( "MakeVector" );
 # Some things that fit nowhere else:
 ############################################################################
 
+##  <#GAPDoc Label="MatObj_Randomize_Vectors">
+##  <ManSection>
+##    <Oper Arg="V" Name="Randomize" Label="for IsVectorObj"/>
+##    <Oper Arg="V,Rs" Name="Randomize" Label="for IsVectorObj,IsRandomSources"/>
+##    <Description>
+##      Replaces every entry in <A>V</A> with a random one from the base domain.
+##      If given, the random source <A>Rs</A> is used to compute the random elements.
+##      Note that in this case, the random function for the base domain must support
+##      the random source argument.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "Randomize", [IsVectorObj and IsMutable] );
 DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 # Changes the mutable argument in place, every entry is replaced
@@ -411,12 +510,7 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ##
 ##  <#GAPDoc Label="CopySubVector">
 ##  <ManSection>
-##  <Oper Name="CopySubVector" Arg='src, dst, scols, dcols'/>
-## TODO: turn this into
 ##  <Oper Name="CopySubVector" Arg='dst, dcols, src, scols'/>
-## and provide an (undocumnented) method for backwards compatibility
-##  which converts from the old to the new convention (and remove that again the future???)
-##
 ##  <Description>
 ##  returns nothing. Does <C><A>dst</A>{<A>dcols</A>} := <A>src</A>{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus - at least in
@@ -435,16 +529,36 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ## TODO: Maybe also have a version of this as follows:
 ##    CopySubVector( dst, dst_from, dst_to,  src, src_form, src_to );
 DeclareOperation( "CopySubVector", 
+  [IsVectorObj and IsMutable, IsList, IsVectorObj, IsList] );
+## TODO: the following declaration is deprecated and only kept for compatibility
+DeclareOperation( "CopySubVector", 
   [IsVectorObj,IsVectorObj and IsMutable, IsList,IsList] );
 
+##  <#GAPDoc Label="MatObj_WeightOfVector">
+##  <ManSection>
+##    <Oper Arg="V" Name="WeightOfVector" Label="for IsVectorObj"/>
+##    <Returns>an integer</Returns>
+##    <Description>
+##      Computes the Hamming weight of the vector <A>V</A>, i.e., the number of 
+##      nonzero entries.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "WeightOfVector", [IsVectorObj] );
-# This computes the Hamming weight of a vector, i.e. the number of
-# nonzero entries.
 
+
+##  <#GAPDoc Label="MatObj_DistanceOfVectors">
+##  <ManSection>
+##    <Oper Arg="V1,V2" Name="DistanceOfVectors" Label="for IsVectorObj,IsVectorObj"/>
+##    <Returns>an integer</Returns>
+##    <Description>
+##      Computes the Hamming distance of the vectors <A>V1</A> and <A>V2</A>, i.e., the number of 
+##      entries in which the vectors differ. The vectors must be of equal length.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
-# This computes the Hamming distance of two vectors, i.e. the number
-# of positions, in which the vectors differ. The vectors must have the
-# same length.
+
 
 
 ############################################################################
