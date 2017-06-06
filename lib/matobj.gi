@@ -452,7 +452,7 @@ InstallMethod(PositionNonZero,
 end);
 
 InstallMethod(PositionNonZero,
-  "General method for a row vector",
+  "General method for a vector",
   true,[IsVectorObj],0,
   function(vec)
   local i;
@@ -493,7 +493,7 @@ end );
 InstallMethod( Unpack,
   "General method for a vector",
   true,[IsVectorObj],0,
-  ListOp ); ## Potentially slower than a direct implemtation,
+  ListOp ); ## Potentially slower than a direct implementation,
             ## but avoids code multiplication.
 
 

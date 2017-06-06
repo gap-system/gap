@@ -169,12 +169,12 @@ DeclareOperation( "{}", [IsVectorObj,IsList] );
 
 ##  <#GAPDoc Label="MatObj_PositionNonZero">
 ##  <ManSection>
-##    <Oper Arg="V" Name="PositionNonZero"/>
+##    <Oper Arg="V" Name="PositionNonZero" Label="for vectors"/>
 ##    <Returns>An integer</Returns>
 ##    <Description>
 ##     Returns the index of the first entry in the vector <A>V</A> which is not
 ##     zero. If all entries are zero, the function
-##     returns <C>Length</C>(<A>V</A>) + 1.
+##     returns <C>Length(<A>V</A>) + 1</C>.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -195,13 +195,15 @@ DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
 ##  <#GAPDoc Label="MatObj_ListOp">
 ##  <ManSection>
-##    <Oper Arg="V" Name="ListOp" Label="for IsVectorObj"/>
-##    <Oper Arg="V,func" Name="ListOp" Label="for IsVectorObj,IsFunction"/>
+##    <Oper Arg="V[, func]" Name="ListOp" 
+##                          Label="for IsVectorObj, IsFunction"/>
 ##    <Returns>A plain list</Returns>
 ##    <Description>
-##     Applies <A>func</A> to each entry of the vector <A>V</A> and returns the results
-##     as a plain list. Necessary to call <Ref Oper="List"/> on vectors.
-##     If the argument <A>func</A> is not provided, applies <Ref Func="IdFunc"/> to all entries.
+##     Applies <A>func</A> to each entry of the vector <A>V</A> and returns
+##     the results as a plain list. This allows for calling 
+##     <Ref Func="List" Label="for a collection"/> on vectors.
+##     If the argument <A>func</A> is not provided, applies 
+##     <Ref Func="IdFunc"/> to all entries.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -250,12 +252,14 @@ DeclareOperation( "Unpack", [IsVectorObj] );
 
 ##  <#GAPDoc Label="MatObj_ConcatenationOfVectors">
 ##  <ManSection>
-##    <Func Arg="V1,V2,..." Name="ConcatenationOfVectors" Label="for IsVectorObj"/>
-##    <Func Arg="Vlist" Name="ConcatenationOfVectors" Label="for list of IsVectorObj"/>
+##    <Func Arg="V1,V2,..." Name="ConcatenationOfVectors" 
+##                          Label="for IsVectorObj"/>
+##    <Func Arg="Vlist" Name="ConcatenationOfVectors" 
+##                      Label="for list of IsVectorObj"/>
 ##    <Returns>a vector object</Returns>
 ##    <Description>
-##      Returns a new vector containing the entries of <A>V1</A>, <A>V2</A>, etc.
-##      As prototype <A>V1</A> is used.
+##      Returns a new vector containing the entries of <A>V1</A>, 
+##      <A>V2</A>, etc. As prototype <A>V1</A> is used.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -389,8 +393,8 @@ DeclareOperation( "MultRowVector",
 ##    <Oper Arg="l,V" Name="ZeroVector" Label="for IsInt,IsVectorObj"/>
 ##    <Returns>a vector object</Returns>
 ##    <Description>
-##      Returns a new vector of length <A>l</A> in the same representation as <A>V</A> containing only
-##      zeros.
+##      Returns a new vector of length <A>l</A> in the same representation 
+##      as <A>V</A> containing only zeros.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -488,10 +492,10 @@ DeclareGlobalFunction( "MakeVector" );
 ##    <Oper Arg="V" Name="Randomize" Label="for IsVectorObj"/>
 ##    <Oper Arg="V,Rs" Name="Randomize" Label="for IsVectorObj,IsRandomSources"/>
 ##    <Description>
-##      Replaces every entry in <A>V</A> with a random one from the base domain.
-##      If given, the random source <A>Rs</A> is used to compute the random elements.
-##      Note that in this case, the random function for the base domain must support
-##      the random source argument.
+##      Replaces every entry in <A>V</A> with a random one from the base
+##      domain. If given, the random source <A>Rs</A> is used to compute the
+##      random elements. Note that in this case, the random function for the
+##      base domain must support the random source argument.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -512,7 +516,8 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ##  <ManSection>
 ##  <Oper Name="CopySubVector" Arg='dst, dcols, src, scols'/>
 ##  <Description>
-##  returns nothing. Does <C><A>dst</A>{<A>dcols</A>} := <A>src</A>{<A>scols</A>}</C>
+##  <Returns>nothing</Returns>
+##  Does <C><A>dst</A>{<A>dcols</A>} := <A>src</A>{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus - at least in
 ##  special cases - much more efficiently. For certain objects like
 ##  compressed vectors this might be significantly more efficient if 
@@ -549,11 +554,13 @@ DeclareOperation( "WeightOfVector", [IsVectorObj] );
 
 ##  <#GAPDoc Label="MatObj_DistanceOfVectors">
 ##  <ManSection>
-##    <Oper Arg="V1,V2" Name="DistanceOfVectors" Label="for IsVectorObj,IsVectorObj"/>
+##    <Oper Arg="V1,V2" Name="DistanceOfVectors" 
+##                      Label="for IsVectorObj,IsVectorObj"/>
 ##    <Returns>an integer</Returns>
 ##    <Description>
-##      Computes the Hamming distance of the vectors <A>V1</A> and <A>V2</A>, i.e., the number of 
-##      entries in which the vectors differ. The vectors must be of equal length.
+##      Computes the Hamming distance of the vectors <A>V1</A> and <A>V2</A>,
+##      i.e., the number of entries in which the vectors differ. The vectors
+##      must be of equal length.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -717,7 +724,9 @@ DeclareOperation( "MutableCopyMat", [IsMatrixObj] );
 ##  <Oper Name="CopySubMatrix" Arg='src, dst, srows, drows, scols, dcols'/>
 ##
 ##  <Description>
-##  returns nothing. Does <C><A>dst</A>{<A>drows</A>}{<A>dcols</A>} := <A>src</A>{<A>srows</A>}{<A>scols</A>}</C>
+##  <Returns>nothing</Returns>
+##  Does <C><A>dst</A>{<A>drows</A>}{<A>dcols</A>} := 
+##  <A>src</A>{<A>srows</A>}{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus - at least in
 ##  special cases - much more efficiently. For certain objects like
 ##  compressed vectors this might be significantly more efficient if 
