@@ -423,11 +423,11 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 
 #############################################################################
 ##
-#F  LowLayerSubgroups( <G>, <lim> [,<cond> [,<dosub>]] )
+#F  LowLayerSubgroups( [<act>,],<G>, <lim> [,<cond> [,<dosub>]] )
 ##
 ##  <#GAPDoc Label="LowLayerSubgroups">
 ##  <ManSection>
-##  <Func Name="LowLayerSubgroups" Arg='G, lim, cond, dosub'/>
+##  <Func Name="LowLayerSubgroups" Arg='act, G, lim, cond, dosub'/>
 ##
 ##  <Description>
 ##  This function computes representatives of the conjugacy classes of

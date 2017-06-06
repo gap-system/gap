@@ -3055,18 +3055,25 @@ end);
 
 #############################################################################
 ##
-#F  LowLayerSubgroups( <G>, <lim> [,<cond> [,<dosub>]] )
+#F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
 ##
 InstallGlobalFunction(LowLayerSubgroups,function(arg)
-local G,lim,cond,dosub,all,m,i,j,new,old;
-  G:=arg[1];
-  lim:=arg[2];
+local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
+  act:=arg[1];
+  if IsGroup(act) and IsGroup(arg[2]) then
+    offset:=2;
+  else
+    offset:=1;
+  fi;
+
+  G:=arg[offset];
+  lim:=arg[offset+1];
   cond:=ReturnTrue;
   dosub:=ReturnTrue;
-  if Length(arg)>2 then
-    cond:=arg[3];
-    if Length(arg)>3 then
-      dosub:=arg[4];
+  if Length(arg)>offset+1 then
+    cond:=arg[offset+2];
+    if Length(arg)>offset+2 then
+      dosub:=arg[offset+3];
     fi;
   fi;
 
@@ -3092,11 +3099,11 @@ local G,lim,cond,dosub,all,m,i,j,new,old;
     # any conjugate before?
     for j in new do
       old:=Filtered(all,x->Size(x)=Size(j));
-      if ForAll(old,x->RepresentativeAction(G,x,j)=fail) then
+      if ForAll(old,x->RepresentativeAction(act,x,j)=fail) then
         Add(m,j);
       fi;
     od;
-    m:=List(SubgroupsOrbitsAndNormalizers(G,m,false),x->x.representative);
+    m:=List(SubgroupsOrbitsAndNormalizers(act,m,false),x->x.representative);
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," new");
     Append(all,m);
   od;
