@@ -212,7 +212,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
         Error("Matrix: two-argument version not allowed with empty first arg");
         return;
     fi;
-    if not IsList(list[1]) or IsVectorObj(list[1]) then
+    if not (IsList(list[1]) or IsVectorObj(list[1])) then
         Error("Matrix: flat data not supported in two-argument version");
         return;
     fi;
