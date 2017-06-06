@@ -134,7 +134,11 @@ plus the number <A>val</A> used in the call of
 So the argument <A>val</A> can be used to raise the priority of a method
 relative to other methods for <A>opr</A>.
 <P/>
-Note that from the applicable methods,
+Note that for operations which are constructors special rules with respect
+to applicability and rank of the corresponding methods apply
+(see section <Ref Func="NewConstructor"/>).
+<P/>
+Note that from the applicable methods
 an efficient one shall be selected.
 This is a method that needs only little time and storage for the
 computations.
