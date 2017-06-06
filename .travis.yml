@@ -5,7 +5,7 @@ language: c
 
 env:
   global:
-    - CFLAGS="-fprofile-arcs -ftest-coverage"
+    - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
     - LDFLAGS="-fprofile-arcs"
 
 # TODO: boehm GC, HPC-GAP compatibility mode
