@@ -5,7 +5,7 @@ language: c
 
 env:
   global:
-    - CFLAGS="-fprofile-arcs -ftest-coverage"
+    - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
     - LDFLAGS="-fprofile-arcs"
 
 # TODO: boehm GC, HPC-GAP compatibility mode
@@ -37,7 +37,8 @@ matrix:
     - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin
+    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
+    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS=--with-gmp=builtin CFLAGS="-fprofile-arcs -ftest-coverage"
     - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes
 
     # OS X builds: since those are slow and limited on Travis,
