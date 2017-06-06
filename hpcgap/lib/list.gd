@@ -1398,6 +1398,31 @@ DeclareOperation( "DifferenceLists", [IsList, IsList] );
 ##
 DeclareOperation( "Flat", [ IsList ] );
 
+#############################################################################
+##
+#O  FoldList( <list>, <len> )  . . . . fold list to sublists of length len
+##
+##  <#GAPDoc Label="FoldList">
+##  <ManSection>
+##  <Oper Name="FoldList" Arg='list, len'/>
+##
+##  <Description>
+##  returns a list of sublists of <A>list</A> of length <A>len</A>. 
+##  More precisely, the i-th sublist in the result is
+##  <A>list</A><C>{[(i-1)<A>len</A>+1..i <A>len</A>]}</C>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> fl := FoldList([1,2,3,4,5,6], 3);
+##  [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
+##  gap> Flat(fl);
+##  [ 1, 2, 3, 4, 5, 6 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "FoldList", [ IsList, IS_INT ] );
+
 
 #############################################################################
 ##
