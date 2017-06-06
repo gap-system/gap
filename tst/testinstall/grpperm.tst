@@ -59,4 +59,7 @@ gap> G := SylowSubgroup(SymmetricGroup(2^7),2);;
 gap> N := Center(G);;
 gap> HasSolvableFactorGroup(G,N);
 true
+gap> s:=SymmetricGroup([ 1, 5, 6, 7, 8, 9, 10 ]);;
+gap> RepresentativeAction(s,(9,10),(1,5)) in s;
+true
 gap> STOP_TEST( "grpperm.tst", 1);
