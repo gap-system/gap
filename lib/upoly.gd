@@ -132,6 +132,9 @@ DeclareGlobalVariable( "CYCLOTOMICPOLYNOMIALS",
     "list, at position n the coefficient list of the n-th cycl. pol." );
 InstallFlushableValue( CYCLOTOMICPOLYNOMIALS, [] );
 
+if IsBound(HPCGAP) then
+    ShareSpecialObj(CYCLOTOMICPOLYNOMIALS);
+fi;
 
 #############################################################################
 ##
