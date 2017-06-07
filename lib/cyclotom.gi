@@ -2005,6 +2005,12 @@ BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
 	[ -1, 0, 1, 1/2, E(4), E(9) ], fail
 ] );
 
+if IsBound(HPCGAP) then
+    MakeReadOnlyObj(CompareCyclotomicCollectionHelper_Semirings);
+    MakeReadOnly(CompareCyclotomicCollectionHelper_Filters);
+    MakeImmutable(CompareCyclotomicCollectionHelper_Proxies);
+fi;
+
 
 BindGlobal("CompareCyclotomicCollectionHelper", function (A, B)
   local a, b;
