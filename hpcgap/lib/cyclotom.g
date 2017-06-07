@@ -473,8 +473,10 @@ UNBIND_GLOBAL( "infinity" );
 BIND_GLOBAL( "infinity",
     Objectify( NewType( CyclotomicsFamily, IsInfinity
                         and IsPositionalObjectRep ), [] ) );
-MakeReadOnly(infinity);
-                        
+if IsBound(HPCGAP) then
+    MakeReadOnly(infinity);
+fi;
+
 InstallMethod( PrintObj,
     "for infinity",
     [ IsInfinity ], function( obj ) Print( "infinity" ); end );
@@ -500,7 +502,10 @@ DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
 BIND_GLOBAL( "Ninfinity",
     Objectify( NewType( CyclotomicsFamily, IsNegInfinity
-                        and IsAtomicPositionalObjectRep ), [] ) );
+                        and IsPositionalObjectRep ), [] ) );
+if IsBound(HPCGAP) then
+    MakeReadOnly(Ninfinity);
+fi;
 
 InstallMethod( PrintObj,
     "for -infinity",
