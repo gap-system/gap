@@ -40,7 +40,9 @@
 ##  <#/GAPDoc>
 ##
 CosetTableDefaultLimit := 1000;
-MakeThreadLocal("CosetTableDefaultLimit");
+if IsBound(HPCGAP) then
+    MakeThreadLocal("CosetTableDefaultLimit");
+fi;
 
 
 #############################################################################
@@ -129,9 +131,10 @@ MakeThreadLocal("CosetTableDefaultLimit");
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
-CosetTableDefaultMaxLimit := 2^12*CosetTableDefaultLimit;
-MakeThreadLocal("CosetTableDefaultMaxLimit");
+CosetTableDefaultMaxLimit := 2^12*1000;
+if IsBound(HPCGAP) then
+    MakeThreadLocal("CosetTableDefaultMaxLimit");
+fi;
 
 
 #############################################################################
@@ -156,10 +159,13 @@ MakeThreadLocal("CosetTableDefaultMaxLimit");
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+if IsBound(HPCGAP) then
+    MakeThreadLocal("CosetTableStandard");
+    BindThreadLocal("CosetTableStandard", MakeImmutable("lenlex"));
+else
+    CosetTableStandard := MakeImmutable("lenlex");
+fi;
 
-MakeThreadLocal("CosetTableStandard");
-BindThreadLocal("CosetTableStandard",MakeImmutable("lenlex"));
-CosetTableStandard := MakeImmutable("lenlex");
 
 #############################################################################
 ##
