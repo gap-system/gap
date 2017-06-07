@@ -429,6 +429,10 @@ show := function(file)
 end
 );
 
+if IsBound(HPCGAP) then
+    MakeReadOnly(HELP_VIEWER_INFO);
+fi;
+
 #############################################################################
 ##
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help
