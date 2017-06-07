@@ -78,20 +78,189 @@ local c,i;
   fi;
 end );
 
+# Find element in G to conjugate B into A
+# call with G,A,B;
+InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
+local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
+  gens,conjugate;
+
+  conjugate:=function(act,asub,genl,nr)
+  local i,dc,j,z,r,r2,found;
+    found:=[];
+    Info(InfoCoset,2,"conjugate ",Size(act)," ",Size(asub)," ",nr);
+
+    z:=Centralizer(act,genl[nr]);
+    if Index(act,z)<Maximum(List(cla[nr],Size)) then
+      Info(InfoCoset,2,"!orbsize ",Index(act,z));
+      # asub orbits on the act-class of genl[nr]
+      dc:=DoubleCosetRepsAndSizes(act,z,asub);
+      for j in dc do
+        z:=genl[nr]^j[1];
+        if z in a then
+          r:=j[1];
+          if nr=Length(genl) then
+            Add(found,r);
+            if onlyone then return found; fi;
+          else
+            r2:=conjugate(Centralizer(act,z),Centralizer(asub,z),
+              List(genl,x->x^r),nr+1);
+            if Length(r2)>0 then
+              Append(found,r*r2);
+              if onlyone then return found; fi;
+            fi;
+          fi;
+        fi;
+      od;
+    else
+      for i in cla[nr] do
+        Info(InfoCoset,2,"!classize ",Size(i)," ",
+          Index(act,Centralizer(act,genl[nr]))," ",
+          QuoInt(Size(a),Size(Centralizer(i))*Size(asub)));
+
+        # split up a-classes to asub-classes
+        dc:=DoubleCosetRepsAndSizes(a,Centralizer(i),asub);
+        Info(InfoCoset,2,Length(dc)," double cosets");
+        for j in dc do
+          z:=Representative(i)^j[1];
+          r:=RepresentativeAction(act,genl[nr],z);
+          if r<>fail then
+            if nr=Length(genl) then
+              Add(found,r);
+              if onlyone then return found; fi;
+            else
+              r2:=conjugate(Centralizer(act,z),Centralizer(asub,z),
+                List(genl,x->x^r),nr+1);
+              if Length(r2)>0 then
+                Append(found,r*r2);
+                if onlyone then return found; fi;
+              fi;
+            fi;
+          fi;
+        od;
+      od;
+    fi;
+
+    return found;
+  end;
+
+  gens:=MorFindGeneratingSystem(b,MorMaxFusClasses(MorRatClasses(b)));
+  clb:=ConjugacyClasses(a);
+  cla:=[];
+  r:=[];
+  for i in gens do
+    b2:=Centralizer(g,i);
+    bd:=Size(Centralizer(b,i));
+    k:=Order(i);
+    rep:=[];
+    for j in [1..Length(clb)] do
+      if Order(Representative(clb[j]))=k 
+         and (Size(a)/Size(clb[j])) mod bd=0 then
+        if not IsBound(r[j]) then
+          r[j]:=Size(Centralizer(g,Representative(clb[j])));
+        fi;
+        if r[j]=Size(b2) then
+          Add(rep,clb[j]);
+        fi;
+      fi;
+    od;
+    if Length(rep)=0 then
+      return []; # cannot have any
+    fi;
+    Add(cla,rep);
+  od;
+  r:=List(cla,x->-Maximum(List(x,Size)));
+  r:=Sortex(r);
+  gens:=Permuted(gens,r);
+  cla:=Permuted(cla,r);
+
+  r:=conjugate(g,a,gens,1);
+
+  if onlyone then 
+    # get one
+    if Length(r)=0 then
+      return fail;
+    else
+      return r[1];
+    fi;
+  fi;
+
+  Info(InfoCoset,2,"Found ",Length(r)," reps");
+  # remove duplicate groups
+  rep:=[];
+  b2:=[];
+  for i in r do
+    bd:=b^i;
+    if ForAll(b2,x->RepresentativeAction(a,x,bd)=fail) then
+      Add(b2,bd);
+      Add(rep,i);
+    fi;
+  od;
+  return rep;
+end);
+
+
 #############################################################################
 ##
 ##  IntermediateGroup(<G>,<U>)  . . . . . . . . . subgroup of G containing U
 ##
 ##  This routine tries to find a subgroup E of G, such that G>E>U. If U is
-##  maximal, it returns fail. This is done by finding minimal blocks for
+##  maximal, it returns fail. This is done by using the maximal subgroups machinery or
+##  finding minimal blocks for
 ##  the operation of G on the Right Cosets of U.
 ##
 InstallGlobalFunction( IntermediateGroup, function(G,U)
-local o,b,img,G1;
+local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
 
   if U=G then
     return fail;
   fi;
+
+  intersize:=Size(G);
+  m:=ValueOption("intersize");
+  if IsInt(m) and m<=intersize then
+    return fail; # avoid infinite recursion
+  fi;
+
+  # use maximals
+  m:=MaximalSubgroupClassReps(G:cheap,intersize:=intersize);
+
+  m:=Filtered(m,x->Size(x) mod Size(U)=0 and Size(x)>Size(U));
+  SortBy(m,x->Size(G)/Size(x));
+  
+  gens:=SmallGeneratingSet(U);
+  for c in m do
+    if Index(G,c)<50000 then
+      t:=RightTransversal(G,c:noascendingchain); # conjugates
+      for k in t do
+        if ForAll(gens,x->k*x/k in c) then
+	  Info(InfoCoset,2,"Found Size ",Size(c),"\n");
+          # U is contained in c^k
+          return c^k;
+        fi;
+      od;
+    else
+      t:=DoConjugateInto(G,c,U,true:intersize:=intersize);
+      if t<>fail then 
+	Info(InfoCoset,2,"Found Size ",Size(c),"\n");
+        return c^(Inverse(t));
+      fi;
+    fi;
+  od;
+
+  Info(InfoCoset,2,"Found no intermediate subgroup ",Size(G)," ",Size(U));
+  return fail;
+
+  # old code -- obsolete
+
+  c:=ValueOption("refineChainActionLimit");
+  if IsInt(c) then
+    hardlimit:=c;
+  else
+    hardlimit:=100000;
+  fi;
+
+  if Index(G,U)>hardlimit then return fail;fi;
+
   if IsPermGroup(G) and Length(GeneratorsOfGroup(G))>3 then
     G1:=Group(SmallGeneratingSet(G));
     if HasSize(G) then
@@ -117,7 +286,7 @@ end );
 #F  RefinedChain(<G>,<c>) . . . . . . . . . . . . . . . .  refine chain links
 ##
 InstallGlobalFunction(RefinedChain,function(G,cc)
-local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap;
+local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap,olda;
   bound:=(10*LogInt(Size(G),10)+1)*Maximum(Factors(Size(G)));
   bound:=Minimum(bound,20000);
   cheap:=ValueOption("cheap")=true;
@@ -125,19 +294,15 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap;
   if IsInt(c) then
     bound:=c;
   fi;
-  c:=ValueOption("refineChainActionLimit");
-  if IsInt(c) then
-    hardlimit:=c;
-  else
-    hardlimit:=100000;
-  fi;
 
   c:=[];  
   for i in [2..Length(cc)] do  
     Add(c,cc[i-1]);
     if Index(cc[i],cc[i-1]) > bound then
       a:=AsSubgroup(Parent(cc[i]),cc[i-1]);
-      while Index(cc[i],a)>bound do
+      olda:=TrivialSubgroup(a);
+      while Index(cc[i],a)>bound and Size(a)>Size(olda) do
+	olda:=a;
 	# try extension via normalizer
 	b:=Normalizer(cc[i],a);
 	if Size(b)>Size(a) then
@@ -153,7 +318,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap;
 	  cnt:=8+2^(LogInt(Index(bb,a),9));
 	  if cheap then cnt:=Minimum(cnt,50);fi;
 	  repeat
-	    if Index(bb,a)<hardlimit and cnt<20 and not cheap then
+	    if cnt<20 and not cheap then
 	      # if random failed: do hard work
 	      b:=IntermediateGroup(bb,a);
 	      if b=fail then
@@ -190,10 +355,19 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap;
 	    fi;
 	  until Index(bb,a)<=bound or cnt<1;
 	fi;
+	if Index(b,a)>bound and Length(c)>1 then
+	  bb:=IntermediateGroup(b,c[Length(c)-1]);
+	  if bb<>fail and Size(bb)>Size(c[Length(c)]) then
+	    c:=Concatenation(c{[1..Length(c)-1]},[bb],Filtered(cc,x->Size(x)>=Size(b)));
+	    return RefinedChain(G,c);
+	  fi;
+	fi;
+
 	a:=b;
 	if a<>cc[i] then #not upper level
 	  Add(c,a);
 	fi;
+
       od;
     fi;
   od;
@@ -613,11 +787,15 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  G1:=act[1];
 	  a1:=act[2];
 	else
+	  #Print(maxidx(c),obj,Length(Orbit(G,obj,act))," ",
+	  #          Length(Orbit(a,obj,act)),"\n");
 	  G1:=Stabilizer(G,obj,act);
-	  a1:=Stabilizer(a,obj,act);
+	  if Index(G,G1)<maxidx(c) then
+	    a1:=Stabilizer(a,obj,act);
+	  fi;
 	fi;
-	if Index(G,a1)<maxidx(c) and (
-	  maxidx(c)>badlimit or Size(a1)>Size(c[1])) then
+	if Index(G,G1)<maxidx(c) and (
+	  maxidx(c)>10*actlimit or Size(a1)>Size(c[1])) then
 	  c1:=AscendingChain(G1,a1:refineChainActionLimit:=actlimit);
 	  if maxidx(c1)<maxidx(c) then
 	    c:=Concatenation(c1,[G]);
@@ -643,12 +821,12 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       tryfct(p,OnPoints); 
 	  
       for i in Orbits(Stabilizer(a,p),Difference(MovedPoints(a),[p])) do
-	tryfct([i[1],p],OnSets);
+	tryfct(Set([i[1],p]),OnSets);
       od;
 	  
     fi;
     
-    if maxidx(c)>badlimit then
+    if maxidx(c)>10*actlimit then
 
       r:=ShallowCopy(MaximalSubgroupClassReps(a:cheap));
       r:=Filtered(r,x->Index(a,x)<uplimit);
@@ -1031,7 +1209,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 
   fi;
 
-  if AssertionLevel()>1 then
+  if AssertionLevel()>2 then
     # test
     bsz:=Size(G);
     t:=[];
