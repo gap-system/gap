@@ -22,11 +22,11 @@ SetInfoLevel(InfoTempDirectories,1);
 
 #R  IsDirectoryRep  . . . . . . . . . . default representation of a directory
 ##
-DeclareRepresentation(
-    "IsDirectoryRep",
-    IsPositionalObjectRep,
-    [] );
-
+if IsBound(HPCGAP) then
+DeclareRepresentation( "IsDirectoryRep", IsReadOnlyPositionalObjectRep, [] );
+else
+DeclareRepresentation( "IsDirectoryRep", IsPositionalObjectRep, [] );
+fi;
 
 #############################################################################
 ##
@@ -194,6 +194,9 @@ end);
 #M  Read( <filename> )  . . . . . . . . . . . . . . . . . . .  read in a file
 ##
 READ_INDENT := "";
+if IsBound(HPCGAP) then
+    MakeThreadLocal("READ_INDENT");
+fi;
 
 InstallMethod( Read,
     "string",
