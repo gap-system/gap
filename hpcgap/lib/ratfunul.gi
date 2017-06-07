@@ -501,18 +501,44 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
   fi;
 end );
 
+# test whether family b occurs anywhere as a coefficients family of a.
+BindGlobal("CoefficientsFamilyEmbedded",function(a,b)
+  while HasCoefficientsFamily(a) do
+    a:=CoefficientsFamily(a);
+    if a=b then
+      return true;
+    fi;
+  od;
+  return false;
+end);
+
 InstallMethod( \+, "coeff(embed) + laurent", true,
     [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
 function(c,l)
-  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  if IsRat(c) #natural map from rationals into arbitrary rings
+    or # Adding elements of a smaller coefficient ring that is naturally embedded
+     CoefficientsFamilyEmbedded(FamilyObj(l),FamilyObj(c))
+    then
+    return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  else
+    TryNextMethod();
+  fi;
 end);
 
 InstallMethod( \+, "laurent + coeff(embed)", true,
     [ IsUnivariateRationalFunction and IsLaurentPolynomial, IsRingElement ], 0,
 function(l,c)
-  return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  if IsRat(c) #natural map from rationals into arbitrary rings
+    or # Adding elements of a smaller coefficient ring that is naturally embedded
+     CoefficientsFamilyEmbedded(CoefficientsFamily(FamilyObj(l)),FamilyObj(c))
+    then
+    return SumCoeffLaurpol(c*FamilyObj(l)!.oneCoefficient,l);
+  else
+    TryNextMethod();
+  fi;
 end);
 
+# these should be ranked higher than the previous two
 InstallMethod( \+, "coeff + laurent", IsCoeffsElms,
     [ IsRingElement, IsUnivariateRationalFunction and IsLaurentPolynomial ], 0,
     SumCoeffLaurpol);
@@ -1526,10 +1552,15 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfUnivariateRationalFunction(univ);
-  # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ 
-  # will be called from coef*tmp[1] and will try to modify tmp
-  return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
-           IndeterminateNumberOfUnivariateRationalFunction(univ));
+  if Length(tmp[1])=0 then
+    return UnivariateRationalFunctionByExtRepNC(fam,[], tmp[2],tmp[3],
+	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+  else
+    # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ 
+    # will be called from coef*tmp[1] and will try to modify tmp
+    return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
+	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+  fi;
 end );
 
 InstallMethod( \*, "coeff * univariate", IsCoeffsElms,
