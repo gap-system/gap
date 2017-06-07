@@ -79,7 +79,7 @@ InstallMethod( Random,
 InstallMethod( Units,
     "for a finite field",
     [ IsField and IsFinite ],
-    F -> `GroupByGenerators( [ PrimitiveRoot( F ) ] ) );
+    F -> GroupByGenerators( [ PrimitiveRoot( F ) ] ) );
 
 
 #############################################################################
