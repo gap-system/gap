@@ -1282,7 +1282,10 @@ end);
 
 GAPTCENUM.CosetTableFromGensAndRels := GTC_CosetTableFromGensAndRels;
 
-MakeReadOnly( GAPTCENUM );
+if IsBound(HPCGAP) then
+    MakeReadOnly( GAPTCENUM );
+fi;
+
 
 #############################################################################
 ##
