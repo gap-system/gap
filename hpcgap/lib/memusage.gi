@@ -20,6 +20,8 @@
 ##  but probably of independent interest.
 ##  
 
+if IsBound(HPCGAP) then
+
 InstallGlobalFunction(NewObjectMarker, function()
   return OBJ_SET([]);
 end);
@@ -36,12 +38,68 @@ InstallGlobalFunction(UnmarkObject, REMOVE_OBJ_SET);
 
 InstallGlobalFunction(ClearObjectMarker, CLEAR_OBJ_SET);
 
+else # HPCGAP
+
+InstallGlobalFunction( NewObjectMarker, function()
+  local marks, len;
+  marks := rec();
+  len := 2 * MASTER_POINTER_NUMBER(2^100);
+  marks.marks := BlistList([1..len], []);
+  marks.ids := [];
+  # If this is set to some higher values the clearing of the entries
+  # takes more time than creating .marks from scratch.
+  marks.maxids := QuoInt(Length(marks.marks), 30);
+  return marks;
+end);
+
+InstallGlobalFunction( MarkObject, function(marks, obj)
+  local id, res;
+  id := MASTER_POINTER_NUMBER(obj);
+  if id > Length(marks.marks) then
+    marks.marks :=  BlistList( [ 1 .. 2 * id ],
+                                    PositionsTrueBlist(marks.marks));
+  fi;
+  if marks.maxids > Length(marks.ids) then
+    Add(marks.ids, id);
+  fi;
+  res := marks.marks[id];
+  marks.marks[id] := true;
+  return res;
+end);
+
+InstallGlobalFunction( UnmarkObject, function(marks, obj)
+  local id;
+  id := MASTER_POINTER_NUMBER(obj);
+  if id > Length(marks.marks) or not marks.marks[id] then
+    return false;
+  else
+    marks.marks[id] := false;
+    return true;
+  fi;
+end);
+
+InstallGlobalFunction( ClearObjectMarker, function(marks)
+  if Length(marks.ids) < marks.maxids then
+    marks.marks{marks.ids} := BlistList([1..Length(marks.ids)], []);
+  else
+    marks.marks := BlistList([1..Length(marks.marks)], []);
+  fi;
+  marks.ids := [];
+end);
+
+fi;
+
 #############################################################################
 ##
 #M  MemoryUsage( <obj> ) . . . . . . . . . . . . .return fail in general
-##  
-BindThreadLocalConstructor( "MEMUSAGECACHE", NewObjectMarker );
-BindThreadLocal("MEMUSAGECACHE_DEPTH", 0);
+##
+if IsBound(HPCGAP) then
+    BindThreadLocalConstructor( "MEMUSAGECACHE", NewObjectMarker );
+    BindThreadLocal("MEMUSAGECACHE_DEPTH", 0);
+else
+    BIND_GLOBAL( "MEMUSAGECACHE", NewObjectMarker( ) );
+    MEMUSAGECACHE_DEPTH := 0;
+fi;
 
 InstallGlobalFunction( MU_AddToCache, function ( obj )
   return MarkObject(MEMUSAGECACHE, obj);
@@ -58,27 +116,50 @@ InstallGlobalFunction( MU_Finalize, function (  )
   fi;
 end );
 
-InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
+InstallMethod( MemoryUsage, "generic fallback method",
   [ IsObject ],
   function( o )
-    local mem;
-    mem := SHALLOW_SIZE(o);
-    if mem = 0 then 
+    local mem,known,i,s;
+
+    if SHALLOW_SIZE(o) = 0 then
         return MU_MemPointer;
-    else
-        # a proper object, thus we have to add it to the database
-        # to not count it again!
-        if not(MU_AddToCache(o)) then
-            mem := mem + MU_MemBagHeader + MU_MemPointer;
-            # This is for the bag, the header, and the master pointer
-        else 
-            mem := 0;   # already counted
-        fi;
-        if MEMUSAGECACHE_DEPTH = 0 then   
-            # we were the first to be called, thus we have to do the cleanup
-            ClearObjectMarker( MEMUSAGECACHE );
+    fi;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
+    fi;
+
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+
+    # Count the bag, the header, and the master pointer
+    mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+    if IS_POSOBJ(o) then
+        # Again the bag, its header, and the master pointer
+        for i in [1..LEN_POSOBJ(o)] do
+            if IsBound(o![i]) then
+                if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
+                    mem := mem + MemoryUsage(o![i]);
+                fi;
+            fi;
+        od;
+    elif IS_COMOBJ(o) then
+        # Again the bag, its header, and the master pointer
+        for i in NamesOfComponents(o) do
+            s := o!.(i);
+            if SHALLOW_SIZE(s) > 0 then    # a subobject!
+                mem := mem + MemoryUsage(s);
+            fi;
+        od;
+    elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
+        # Since we are in the fallback method, clearly there is no
+        # MemoryUsage method installed for the given object.
+        if not IsGF2VectorRep(o) and not Is8BitVectorRep(o) then
+            Info(InfoWarning, 1, "No MemoryUsage method installed for ",
+                                 TNUM_OBJ(o)[2],
+                                 ", reported usage may be too low" );
         fi;
     fi;
+    MU_Finalize();
     return mem;
   end );
 
@@ -115,49 +196,6 @@ InstallMethod( MemoryUsage, "for a record",
         # Again the bag, its header, and the master pointer
         for i in RecFields(o) do
             s := o.(i);
-            if SHALLOW_SIZE(s) > 0 then    # a subobject!
-                mem := mem + MemoryUsage(s);
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
-    fi;
-    return 0;    # already counted
-  end );
-
-InstallMethod( MemoryUsage, "for a positional object",
-  [ IsPositionalObjectRep ],
-  function( o )
-    local mem,known,i;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
-        for i in [1..(SHALLOW_SIZE(o)/MU_MemPointer)-1] do
-            if IsBound(o![i]) then
-                if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
-                    mem := mem + MemoryUsage(o![i]);
-                fi;
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
-    fi;
-    return 0;    # already counted
-  end );
-
-InstallMethod( MemoryUsage, "for a component object",
-  [ IsComponentObjectRep ],
-  function( o )
-    local mem,known,i,s;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
-        for i in NamesOfComponents(o) do
-            s := o!.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
                 mem := mem + MemoryUsage(s);
             fi;

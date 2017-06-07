@@ -20,6 +20,26 @@
 ##  but probably of independent interest.
 ##  
 
+if IsBound(HPCGAP) then
+
+InstallGlobalFunction(NewObjectMarker, function()
+  return OBJ_SET([]);
+end);
+
+InstallGlobalFunction(MarkObject, function(marks, obj)
+  local result;
+  result := FIND_OBJ_SET(marks, obj);
+  ADD_OBJ_SET(marks, obj);
+  return result;
+end);
+
+
+InstallGlobalFunction(UnmarkObject, REMOVE_OBJ_SET);
+
+InstallGlobalFunction(ClearObjectMarker, CLEAR_OBJ_SET);
+
+else # HPCGAP
+
 InstallGlobalFunction( NewObjectMarker, function()
   local marks, len;
   marks := rec();
@@ -67,12 +87,19 @@ InstallGlobalFunction( ClearObjectMarker, function(marks)
   marks.ids := [];
 end);
 
+fi;
+
 #############################################################################
 ##
 #M  MemoryUsage( <obj> ) . . . . . . . . . . . . .return fail in general
-##  
-BIND_GLOBAL( "MEMUSAGECACHE", NewObjectMarker( ) );
-MEMUSAGECACHE_DEPTH := 0;
+##
+if IsBound(HPCGAP) then
+    BindThreadLocalConstructor( "MEMUSAGECACHE", NewObjectMarker );
+    BindThreadLocal("MEMUSAGECACHE_DEPTH", 0);
+else
+    BIND_GLOBAL( "MEMUSAGECACHE", NewObjectMarker( ) );
+    MEMUSAGECACHE_DEPTH := 0;
+fi;
 
 InstallGlobalFunction( MU_AddToCache, function ( obj )
   return MarkObject(MEMUSAGECACHE, obj);
