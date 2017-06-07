@@ -254,7 +254,11 @@ InstallGlobalFunction( TemporaryGlobalVarName,
 end );
 
 
-BindThreadLocal("HIDDEN_GVARS",[]);
+if IsBound(HPCGAP) then
+    BindThreadLocal("HIDDEN_GVARS",[]);
+else
+    HIDDEN_GVARS:=[];
+fi;
 
 InstallGlobalFunction(HideGlobalVariables,function(arg)
 local p,i;
