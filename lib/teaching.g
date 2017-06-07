@@ -274,7 +274,7 @@ local cl;
     "takes lots of memory and time. Use `ConjugacyClassesSubgroups' to get\n",
     "classes up to conjugaction action, this will be more efficient!");
   fi;
-  return Concatenation(List(cl,Elements));
+  return Concatenation(List(cl,AsSSortedList));
 end);
 
 #############################################################################
@@ -752,8 +752,15 @@ return function(o,n)
 end;
 end);
 
-NAMEDOBJECTS:=[];
-EXECUTEOBJECTS:=[];
+if IsBound(HPCGAP) then
+    MakeThreadLocal("NAMEDOBJECTS");
+    MakeThreadLocal("EXECUTEOBJECTS");
+    BindThreadLocal("NAMEDOBJECTS", []);
+    BindThreadLocal("EXECUTEOBJECTS", []);
+else
+    NAMEDOBJECTS:=[];
+    EXECUTEOBJECTS:=[];
+fi;
 
 InstallGlobalFunction(SetNameObject,SpecialViewSetupFunction(NAMEDOBJECTS));
 InstallGlobalFunction(SetExecutionObject,
