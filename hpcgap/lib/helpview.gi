@@ -69,19 +69,18 @@ if ARCH_IS_WINDOWS() then
   HELP_VIEWER_INFO.browser := rec(
   type := "url",
   show := function( filename )
-    local pos;
+    local pos, winfilename;
     if not filename{[1..9]}="/cygdrive" then
-      Error( "corrupted name of the help file ", filename );
+      Error( "the name of the help file ", filename , " must start with /cygdrive" );
+    else
+      winfilename:=MakeExternalFilename( SplitString( filename, "#" )[1] );
     fi;
-    Print( "Opening help page in default windows browser ... \c" );
-    Process( DirectoryCurrent(),
-             Filename( DirectoriesLibrary( "bin" ), "cygstart.exe" ),
-             InputTextNone(),
-             OutputTextNone(),
-             [ SplitString( filename, "#" )[1] ] );
+    Print( "Opening help page ", winfilename, " in default windows browser ... \c" );
+    Exec( Concatenation("start ", winfilename ) );
     Print( "done! \n" );         
   end
   );
+
 
 elif ARCH_IS_MAC_OS_X() then
   # html version using Mac OS X default browser
@@ -219,7 +218,7 @@ else # UNIX but not Mac OS X
   HELP_VIEWER_INFO.firefox := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("firefox -remote \"openURL(file:", url, ")\""));
+    Exec(Concatenation("firefox \"file://", url,"\" >/dev/null 2>1 &"));
   end
   );
 
@@ -430,7 +429,9 @@ show := function(file)
 end
 );
 
-MakeReadOnly(HELP_VIEWER_INFO);
+if IsBound(HPCGAP) then
+    MakeReadOnly(HELP_VIEWER_INFO);
+fi;
 
 #############################################################################
 ##
