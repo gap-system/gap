@@ -72,7 +72,7 @@ end);
 #M  MemoryUsage( <obj> ) . . . . . . . . . . . . .return fail in general
 ##  
 BIND_GLOBAL( "MEMUSAGECACHE", NewObjectMarker( ) );
-MEMUSAGECACHE.depth := 0;
+MEMUSAGECACHE_DEPTH := 0;
 
 InstallGlobalFunction( MU_AddToCache, function ( obj )
   return MarkObject(MEMUSAGECACHE, obj);
@@ -80,11 +80,11 @@ end );
 
 InstallGlobalFunction( MU_Finalize, function (  )
   local mks, i;
-  if MEMUSAGECACHE.depth <= 0  then
+  if MEMUSAGECACHE_DEPTH <= 0  then
       Error( "MemoryUsage depth has gone below zero!" );
   fi;
-  MEMUSAGECACHE.depth := MEMUSAGECACHE.depth - 1;
-  if MEMUSAGECACHE.depth = 0  then
+  MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH - 1;
+  if MEMUSAGECACHE_DEPTH = 0  then
     ClearObjectMarker(MEMUSAGECACHE);
   fi;
 end );
@@ -102,7 +102,7 @@ InstallMethod( MemoryUsage, "generic fallback method",
         return 0;    # already counted
     fi;
 
-    MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
 
     # Count the bag, the header, and the master pointer
     mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
@@ -142,7 +142,7 @@ InstallMethod( MemoryUsage, "for a plist",
     local mem,known,i;
     known := MU_AddToCache( o );
     if known = false then    # not yet known
-        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
         # Again the bag, its header, and the master pointer
         for i in [1..Length(o)] do
@@ -164,7 +164,7 @@ InstallMethod( MemoryUsage, "for a record",
     local mem,known,i,s;
     known := MU_AddToCache( o );
     if known = false then    # not yet known
-        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
         # Again the bag, its header, and the master pointer
         for i in RecFields(o) do
