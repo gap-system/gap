@@ -506,14 +506,14 @@ InstallTrueMethod( IsSortedList, IsSSortedList );
 InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 
 
- #############################################################################
- ##
- #p  IsNSortedList( <list> )
- ##
- ##  returns `true' if the list <list> is not sorted (see~"IsSortedList").
- ##
- DeclarePropertyKernel( "IsNSortedList", IsDenseList, IS_NSORT_LIST );
-
+#############################################################################
+##
+#p  IsNSortedList( <list> )
+##
+##  returns `true' if the list <list> is not sorted (see~"IsSortedList").
+##
+DeclarePropertyKernel( "IsNSortedList", IsDenseList, IS_NSORT_LIST );
+#T (is currently not really supported, but we declare it anyway so that FILTERS is dense
 
 
 #############################################################################
