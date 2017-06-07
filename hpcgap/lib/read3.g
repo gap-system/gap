@@ -245,6 +245,8 @@ ReadLib("proto.gd");
 
 ReadLib("gasman.gd");
 
+ReadLib("memusage.gd");
+
 # files dealing with function calling
 ReadLib("function.gd");
 
