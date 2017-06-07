@@ -57,7 +57,9 @@ if not IsBound(InfoData) then
     InfoData.ClassNames := [];
     InfoData.Handler := [];
     InfoData.Output := [];
-    ShareInternalObj(InfoData);
+    if IsBound(HPCGAP) then
+        ShareInternalObj(InfoData);
+    fi;
 fi;
 
 InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
@@ -69,31 +71,31 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
 end);
 
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-    local cl, out, fun, s;
-    atomic readonly InfoData do
-    cl := InfoData.LastClass![1];
-    if IsBound(InfoData.Output[cl]) then
-        out := InfoData.Output[cl];
-    else
-        out := DefaultInfoOutput;
-    fi;
-    od;
+  local cl, out, fun, s;
+  atomic readonly InfoData do
+  cl := InfoData.LastClass![1];
+  if IsBound(InfoData.Output[cl]) then
+    out := InfoData.Output[cl];
+  else
+    out := DefaultInfoOutput;
+  fi;
+  od;
 
-    if out = "*Print*" then
-        if IsBoundGlobal( "PrintFormattedString" ) then
-            fun := function(s)
-                if (IsString(s) and Length(s) > 0) or IsStringRep(s) and
-            #XXX this is a temporary hack, we would need a 
-            # IsInstalledGlobal instead of IsBoundGlobal here
-                   NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
-                    ValueGlobal( "PrintFormattedString" )(s); 
-                else
-                    Print(s);
-                fi;
-            end;
+  if out = "*Print*" then
+    if IsBoundGlobal( "PrintFormattedString" ) then
+      fun := function(s)
+        if (IsString(s) and Length(s) > 0) or IsStringRep(s) and
+          #XXX this is a temporary hack, we would need a
+          # IsInstalledGlobal instead of IsBoundGlobal here
+                 NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
+          ValueGlobal( "PrintFormattedString" )(s);
         else
-            fun := Print;
+          Print(s);
         fi;
+      end;
+    else
+      fun := Print;
+    fi;
     fun("#I  ");
     for s in list do
       fun(s);
@@ -107,7 +109,6 @@ InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
     AppendTo(out, "\n");
   fi;
 end);
-
 
 
 #############################################################################
@@ -172,17 +173,6 @@ InstallGlobalFunction( DeclareInfoClass, function( name )
     fi;
 end );
 
-#F  SetInfoOutput( <class>, <handler> )
-##
-InstallGlobalFunction( SetInfoOutput, function(class, out)
-    atomic readwrite InfoData do
-    InfoData.Output[class![1]] := out;
-od;
-
-end);
-
-#############################################################################
-##
 #############################################################################
 ##
 #F  SetInfoHandler( <class>, <handler> )
@@ -190,6 +180,16 @@ end);
 InstallGlobalFunction( SetInfoHandler, function(class, handler)
     atomic readwrite InfoData do
       InfoData.Handler[class![1]] := handler;
+    od;
+end);
+
+#############################################################################
+##
+#F  SetInfoOutput( <class>, <handler> )
+##
+InstallGlobalFunction( SetInfoOutput, function(class, out)
+    atomic readwrite InfoData do
+    InfoData.Output[class![1]] := out;
     od;
 end);
 
@@ -506,9 +506,9 @@ local out,w,w0,i;
     PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then
-	PrintTo(out,"#");
+        PrintTo(out,"#");
       else
-	PrintTo(out," ");
+        PrintTo(out," ");
       fi;
       v:=v-1;
     od;

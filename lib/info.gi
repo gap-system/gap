@@ -57,6 +57,9 @@ if not IsBound(InfoData) then
     InfoData.ClassNames := [];
     InfoData.Handler := [];
     InfoData.Output := [];
+    if IsBound(HPCGAP) then
+        ShareInternalObj(InfoData);
+    fi;
 fi;
 
 InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
