@@ -3241,6 +3241,12 @@ static Int InitLibrary (
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
 
+#ifdef HPCGAP
+    UInt var = GVarName( "HPCGAP" );
+    AssGVar( var, True );
+    MakeReadOnlyGVar( var );
+#endif
+
     /* return success                                                      */
     return PostRestore( module );
 }
