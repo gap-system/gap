@@ -59,10 +59,12 @@ static inline Int IS_PLIST(Obj list)
 **  Checks if this is 'PLIST'-like.
 **  This function is used in a GAP_ASSERT checking if calling functions like
 **  SET_ELM_PLIST is acceptable on an Obj.
-**  We also check is the 'COPYING' bit is set (which is not checked by
-**  normal IS_PLIST).
+**
+**  Unlike IS_PLIST, this function also accepts plists which are being copied
+**  (and hence have the COPYING flag set), as well as positional objects
+**  (which have the same memory layout as plists), as the plist APIs using it
+**  for assertion checks are in practice invoked on such objects, too.
 */
-
 static inline Int IS_PLIST_OR_POSOBJ(Obj list)
 {
     Int tnum = TNUM_OBJ(list);
