@@ -413,8 +413,8 @@ end );
 ##  <Ref Oper="ImmutableMatrix"/> for the same <A>field</A> are compatible
 ##  for fast arithmetic without need for field conversion.
 ##  <P/>
-##  The input matrix <A>matrix</A> or its rows might change the
-##  representation,
+##  The input matrix <A>matrix</A> or its rows might change their
+##  representation as a side effect of this function,
 ##  however the result of <Ref Oper="ImmutableMatrix"/> is not necessarily
 ##  <E>identical</E> to <A>matrix</A> if a conversion is not possible.
 ##  <P/>
@@ -426,6 +426,35 @@ end );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "ImmutableMatrix",[IsObject,IsMatrix]);
+
+
+#############################################################################
+##
+#F  ImmutableVector( <field>, <vector>[, <change>] ) . convert into "best" representation
+##
+##  <#GAPDoc Label="ImmutableVector">
+##  <ManSection>
+##  <Oper Name="ImmutableVector" Arg='field, vector[, change]'/>
+##
+##  <Description>
+##  returns an immutable vector equal to <A>vector</A> which is in the optimal
+##  (concerning space and runtime) representation for vectors defined over
+##  <A>field</A>. This means that vectors obtained by several calls of
+##  <Ref Oper="ImmutableVector"/> for the same <A>field</A> are compatible
+##  for fast arithmetic without need for field conversion.
+##  <P/>
+##  The input vector <A>vector</A> might change its representation
+##  as a side effect of this function,
+##  however the result of <Ref Oper="ImmutableVector"/> is not necessarily
+##  <E>identical</E> to <A>vector</A> if a conversion is not possible.
+##  <P/>
+##  If <A>change</A> is <K>true</K>, then <A>vector</A> may be changed to
+##  become immutable; otherwise it is copied first.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ImmutableVector",[IsObject,IsRowVector]);
 
 
 #############################################################################
