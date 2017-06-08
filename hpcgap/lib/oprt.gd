@@ -41,14 +41,17 @@ DeclareSynonym( "InfoOperation",InfoAction );
 ##
 DeclareCategory( "IsExternalSet", IsDomain );
 
-OrbitishReq  := `[ IsGroup, IsListOrCollection, IsObject,
-                   IsList,
-                   IsList,
-                   IsFunction ];
-OrbitsishReq := `[ IsGroup, IsListOrCollection,
-                   IsList,
-                   IsList,
-                   IsFunction ];
+OrbitishReq  := [ IsGroup, IsListOrCollection, IsObject,
+                  IsList,
+                  IsList,
+                  IsFunction ];
+MakeImmutable(OrbitishReq);
+
+OrbitsishReq := [ IsGroup, IsListOrCollection,
+                  IsList,
+                  IsList,
+                  IsFunction ];
+MakeImmutable(OrbitsishReq);
 
 #############################################################################
 ##
