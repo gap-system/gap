@@ -139,7 +139,7 @@ InstallGlobalFunction(RunTests, function(arg)
     Add(times, Runtime()-t);
   od;
   if opts.showProgress = "some" then
-    Print("\r                      \c\r"); # clear the line
+    Print("\r                                    \c\r"); # clear the line
   fi;
   # add total time to 'times'
   Add(times, Runtime() - ttime);
