@@ -599,7 +599,7 @@ end;
 ##
 PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
-            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v, tmpvec;
+            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
 
     # The situtation is as follows:
     #
@@ -643,15 +643,8 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     b  := TriangulizedGeneratorsByMatrix( ns, l, gf );
     nb := b[1];
     b  := b[2];
-    if Size(gf) <= 256 then
-      for i in [1..Length(b)] do
-        tmpvec := CopyToVectorRep(b[i], Size(gf));
-        if tmpvec <> fail then
-          b[i] := tmpvec;
-        fi;
-      od;
-    fi;
-    
+    b  := ImmutableMatrix(gf, b);
+
     # trivial coboundaries, use ordinary orbit
     if IsEmpty(b)  then
         Info( InfoPcNormalizer, 4, "coboundaries are trivial" );
@@ -697,9 +690,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     	    Append( v, ExponentsOfPcElement( ns, ui[i]*w[i] ) );
     	od;
     	v := v * One(gf);
-    	if Size(gf) <= 256 then
-    	    v := CopyToVectorRepNC( v, Size(gf) );
-	    fi;
+    	v := ImmutableVector(gf, v);
     	for i  in [ 1 .. Length(heads) ]  do
             v := v - v[heads[i]] * b[i];
     	od;
