@@ -40,6 +40,7 @@ InstallValue( TYPE_LIST_GF2VEC_IMM,
            and IsCopyable and IsGF2VectorRep )
 );
 
+
 #############################################################################
 ##
 #V  TYPE_LIST_GF2VEC_IMM_LOCKED  . . . . type of immutable locked GF2 vectors
@@ -49,6 +50,7 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
           IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
+
 
 #############################################################################
 ##
@@ -1409,7 +1411,7 @@ local sf, rep, ind, ind2, row, i,big,l;
   else
     if not IsField(field) then
       # not a field
-      return matrix;
+      return Immutable(matrix);
     fi;
     sf:=Size(field);
   fi;
@@ -2177,7 +2179,10 @@ InstallMethod( RowLength, "for a gf2 matrix",
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
-    local r; r := ShallowCopy(l); ConvertToVectorRep(r,2); return r;
+    local r;
+    r := ShallowCopy(l);
+    ConvertToVectorRep(r,2);
+    return r;
   end );
 InstallMethod( Randomize, "for a mutable gf2 vector",
   [ IsGF2VectorRep and IsMutable ],

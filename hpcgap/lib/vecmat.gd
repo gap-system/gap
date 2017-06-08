@@ -421,7 +421,7 @@ end );
 ##  <P/>
 ##  If <A>change</A> is <K>true</K>, the rows of <A>matrix</A>
 ##  (or <A>matrix</A> itself) may be changed to become immutable;
-##  otherwise they are copied first).
+##  otherwise they are copied first.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
