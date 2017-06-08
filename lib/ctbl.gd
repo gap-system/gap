@@ -1526,7 +1526,7 @@ DeclareAttributeSuppCT( "CharacterNames", IsNearlyCharacterTable,
 #F  ColumnCharacterTable( <tbl>,<nr> )
 ##
 ##  <ManSection>
-##  <Func Name="GroupString" Arg='T, n'/>
+##  <Func Name="ColumnCharacterTable" Arg='tbl, nr'/>
 ##  <Description>
 ##  returns a column vector that is the <A>nr</A>-th column of the character
 ##  table <A>tbl</A>.
