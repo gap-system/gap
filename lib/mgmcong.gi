@@ -492,7 +492,7 @@ BindGlobal("MagmaCongruencePartition",
         ## 
         if partialcond(cong,forest) then
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := ShallowCopy(C); 
+            cong!.C := MakeImmutable(C); 
             return;
         fi;
 
@@ -678,7 +678,7 @@ BindGlobal("MagmaCongruencePartition",
         ##
         elif partialcond(cong,forest) then
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := ShallowCopy(C); 
+            cong!.C := MakeImmutable(C); 
         elif checklimit() then
             Info(InfoWarning,1,
                 "The congruence has either over 64,000 blocks or a \n",
@@ -687,7 +687,7 @@ BindGlobal("MagmaCongruencePartition",
                 "#I this partition using the 'PartialClosureOfCongruence'\n",
                 "#I attribute"); 
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := ShallowCopy(C); 
+            cong!.C := MakeImmutable(C); 
         else 
             Error("error, internal error in mgmcong.gi");
         fi;
