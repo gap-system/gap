@@ -105,7 +105,9 @@ MakeImmutable(CompositeSPP2);
 ##
 ##############################################################################
 InstallFlushableValue(PrimesProofs,[]);
-ShareSpecialObj(PrimesProofs);
+if IsBound(HPCGAP) then
+    ShareSpecialObj(PrimesProofs);
+fi;
 
 ##############################################################################
 ## 
@@ -124,18 +126,16 @@ InstallValue(CCANT_1_7_3_q63,List([1..63],i->0));
 InstallValue(CCANT_1_7_3_q64,List([1..64],i->0));
 InstallValue(CCANT_1_7_3_q65,List([1..65],i->0));
 
-for t in [0..32] do
+Perform([0..32], function(t)
     CCANT_1_7_3_q11[(t^2 mod 11)+1]:=1;
     CCANT_1_7_3_q63[(t^2 mod 63)+1]:=1;
     CCANT_1_7_3_q64[(t^2 mod 64)+1]:=1;
     CCANT_1_7_3_q65[(t^2 mod 65)+1]:=1;
-od;
+end);
 MakeImmutable(CCANT_1_7_3_q11);
 MakeImmutable(CCANT_1_7_3_q63);
 MakeImmutable(CCANT_1_7_3_q64);
 MakeImmutable(CCANT_1_7_3_q65);
-
-Unbind(t);
 
 BindGlobal("CCANT_1_7_3",
 function(n)
@@ -145,7 +145,7 @@ local t,r,q;
   if(CCANT_1_7_3_q64[t+1]=0) then return false; fi;
   r:= n mod 45045;
     if(CCANT_1_7_3_q63[(r mod 63)+1]=0) then return false;
- elif(CCANT_1_7_3_q65[(r mod 65)+1]=0) then return false;
+  elif(CCANT_1_7_3_q65[(r mod 65)+1]=0) then return false;
   elif(CCANT_1_7_3_q11[(r mod 11)+1]=0) then return false;
   else q:=RootInt(n);
     return n=q^2;
