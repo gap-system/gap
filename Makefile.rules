@@ -36,7 +36,6 @@ SOURCES += src/bool.c
 SOURCES += src/c_filter1.c
 SOURCES += src/c_methsel1.c
 SOURCES += src/c_oper1.c
-SOURCES += src/c_random.c
 SOURCES += src/c_type1.c
 SOURCES += src/calls.c
 SOURCES += src/code.c
@@ -417,7 +416,7 @@ else
 DOCOMP_PREFIX=$(abs_top_srcdir)
 endif
 docomp: #gap$(EXEEXT)
-	@for file in filter1 methsel1 oper1 random type1 ; do \
+	@for file in filter1 methsel1 oper1 type1 ; do \
 	  "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
 	done
 
