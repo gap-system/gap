@@ -203,6 +203,14 @@
 ##  <#/GAPDoc>
 ##
 
+## Shared region for storing results of FamiliesOfGeneralMappingsAndRanges
+## This has to have higher precedence than TRANSREGION, because
+## while doing TransitiveIdentification we hold a lock on TRANSREGION
+## and want a lock for GENERAL_MAPPING_REGION
+if IsBound(HPCGAP) then
+BindGlobal("GENERAL_MAPPING_REGION",
+        NewInternalRegion("FamiliesOfGeneralMappingsAndRanges region"));
+fi;
 
 #############################################################################
 ##
