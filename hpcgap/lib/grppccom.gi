@@ -83,12 +83,9 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
       Add(v,0);
     od;
     v:=v*one;
-    w:=ShallowCopy( v );
-    v:=Concatenation(v,[one]);
-    if p <= 256 then
-      w := CopyToVectorRepNC(w,p);
-      v := CopyToVectorRepNC(v,p);
-    fi;  
+    w:=ImmutableVector(p,v);
+    Add(v, one);
+    v:=ImmutableVector(p,v);
     O:=OrbitStabilizer( S,v, Sgens,mats);
     for v  in O.orbit  do
         n:=1;
