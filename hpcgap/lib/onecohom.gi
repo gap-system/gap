@@ -262,10 +262,7 @@ local i,base;
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap:=function(x)
                        x:=ExponentsOfPcElement(ocr.modulePcgs,x)* ocr.one;
-               if Size( ocr.field ) <= 256 then       
-		          x := CopyToVectorRep(x,Size(ocr.field));
-		       fi;   
-		       return x;
+                       return ImmutableVector(ocr.field,x);
 		     end;
     ocr.matrices:=LinearOperationLayer(ocr.generators,ocr.modulePcgs);
     ocr.identityMatrix:=ImmutableMatrix(ocr.field,
@@ -341,10 +338,8 @@ local   base, dim, gens;
     	    	Append(c,ocr.moduleMap(n));
     	    od;
     	    #IsRowVector(c);
-    	    if Size(ocr.field) <= 256 then
-	            c := CopyToVectorRep(c,Size(ocr.field));
-	        fi;  
-    	    return c;
+	    ConvertToVectorRep(c,ocr.field);
+    	    return ImmutableVector(ocr.field,c);
         end;
     fi;
 
@@ -1218,16 +1213,11 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     # Initialize system.
     tmp:=ocr.moduleMap(ocr.identity);
     L0 :=Concatenation(List([1 .. len],x->tmp));
-    if Size(ocr.field)<=256 then
-      L0 := CopyToVectorRep(L0,Size(ocr.field));
-    fi;
+    L0:=ImmutableVector(ocr.field,L0);
     S:=List([1 .. len*dim],x->L0);
     #R:=List([1 .. len*dim],x->Zero(ocr.field));
     R:=ListWithIdenticalEntries(len*dim,Zero(ocr.field));
-    if Size(ocr.field)<=256 then
-      R := CopyToVectorRep(R,Size(ocr.field));
-    fi;
-    
+
     # Get  the  linear  system  for one relation and append it to the already
     # triangulized system.
     Info(InfoCoh,2,"OCOneCocycles: constructing linear equations: ");
@@ -1269,7 +1259,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 while RS[j][k] = ocr.zero do
     	    	    k:=k+1;
     	    	od;
-          if S[k][k]<>ocr.zero  then
+                if S[k][k]<>ocr.zero  then
                     RR[j]:=RR[j] - RS[j][k]*R[k];
                     RS[j]:=RS[j] - RS[j][k]*S[k];
                 else
@@ -1378,10 +1368,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 fi;
             od;
     	    #IsRowVector(row);
-    	    if Size(ocr.field)<=256 then
-	            row := CopyToVectorRep(row,Size(ocr.field));
-	        fi;    
-            cocycles[j]:=row;
+            cocycles[j]:=ImmutableVector(ocr.field,row);
         od;
         Append(cocycles,cobounds);
         if cocycles<>[]  then

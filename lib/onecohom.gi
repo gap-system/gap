@@ -262,8 +262,7 @@ local i,base;
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap:=function(x)
                        x:=ExponentsOfPcElement(ocr.modulePcgs,x)* ocr.one;
-		       ConvertToVectorRep(x,ocr.field);
-		       return x;
+                       return ImmutableVector(ocr.field,x);
 		     end;
     ocr.matrices:=LinearOperationLayer(ocr.generators,ocr.modulePcgs);
     ocr.identityMatrix:=ImmutableMatrix(ocr.field,
@@ -340,7 +339,7 @@ local   base, dim, gens;
     	    od;
     	    #IsRowVector(c);
 	    ConvertToVectorRep(c,ocr.field);
-    	    return c;
+    	    return ImmutableVector(ocr.field,c);
         end;
     fi;
 
@@ -1214,11 +1213,10 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     # Initialize system.
     tmp:=ocr.moduleMap(ocr.identity);
     L0 :=Concatenation(List([1 .. len],x->tmp));
-    ConvertToVectorRep(L0,ocr.field);
+    L0:=ImmutableVector(ocr.field,L0);
     S:=List([1 .. len*dim],x->L0);
     #R:=List([1 .. len*dim],x->Zero(ocr.field));
     R:=ListWithIdenticalEntries(len*dim,Zero(ocr.field));
-    ConvertToVectorRep(R,ocr.field);
 
     # Get  the  linear  system  for one relation and append it to the already
     # triangulized system.
@@ -1261,7 +1259,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 while RS[j][k] = ocr.zero do
     	    	    k:=k+1;
     	    	od;
-          if S[k][k]<>ocr.zero  then
+                if S[k][k]<>ocr.zero  then
                     RR[j]:=RR[j] - RS[j][k]*R[k];
                     RS[j]:=RS[j] - RS[j][k]*S[k];
                 else
@@ -1370,8 +1368,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 fi;
             od;
     	    #IsRowVector(row);
-	    ConvertToVectorRep(row,ocr.field);
-            cocycles[j]:=row;
+            cocycles[j]:=ImmutableVector(ocr.field,row);
         od;
         Append(cocycles,cobounds);
         if cocycles<>[]  then
