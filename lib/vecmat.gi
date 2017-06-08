@@ -1537,6 +1537,65 @@ function(f,m)
   return Immutable(m);
 end);
 
+
+#############################################################################
+##
+#F  ImmutableVector( <field>, <vector>
+##
+InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
+function(f,v)
+  ConvertToVectorRepNC(v,f);
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
+function(f,v,change)
+  ConvertToVectorRepNC(v,f);
+  if change then
+    MakeImmutable(v);
+    return v;
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"field,8bit",[IsField,Is8BitVectorRep],0,
+function(f,v)
+  if Q_VEC8BIT(v)<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"field,gf2",[IsField,IsGF2VectorRep],0,
+function(f,v)
+  if 2<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"fieldsize,8bit",[IsPosInt,Is8BitVectorRep],0,
+function(f,v)
+  if Q_VEC8BIT(v)<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"fieldsize,gf2",[IsPosInt,IsGF2VectorRep],0,
+function(f,v)
+  if 2<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"empty",[IsObject,IsEmpty],0,
+function(f,v)
+  return Immutable(v);
+end);
+
+
 #############################################################################
 ##
 #M  PlainListCopyOp( <v> )
