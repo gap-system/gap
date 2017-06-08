@@ -758,10 +758,7 @@ BindGlobal("HasFullColumnRankIntMatDestructive",function( mat )
   next:=7;
   primes:=[2,7,251];
   for p in primes do
-    mp:=[];
-    for i in mat do
-      Add( mp, CopyToVectorRepNC(i*Z(p)^0,p) );
-    od;
+    mp:=ImmutableMatrix(p,mat*Z(p)^0);
     r:=RankMat(mp);
     if rb>0 and r<>rb and next<250 then
       next:=NextPrimeInt(next);
