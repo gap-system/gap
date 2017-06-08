@@ -30,9 +30,7 @@ local f, d1, d2, e, z, g1, g2, r, b, n, a, gp, i, j, k;
   d2:=m2.dimension;
   e:=[];
   z:=ListWithIdenticalEntries(d1*d2,Zero(f));
-  if Size(f)<=256 then
-    z := CopyToVectorRepNC(z,Size(f));
-  fi;
+  z:=ImmutableVector(f,z);
   for gp in [1..Length(m1.generators)] do
     g1:=m1.generators[gp];
     g2:=m2.generators[gp];
@@ -284,9 +282,7 @@ local mat, m, n, zero, one, empty, i, k, nullspace, row,mi;
 
   # insert empty rows to bring the leading term of each row on the diagonal
   empty := ListWithIdenticalEntries(n,zero);
-  if Size(e.field) <= 256 then
-    empty := CopyToVectorRepNC(empty,Size(e.field));
-  fi;
+  empty := ImmutableVector(e.field,empty);
   i := 1;
   while i <= Length(mat)  do
     if i < n  and mat[i][i] = zero  then
@@ -578,9 +574,7 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
     pos:=Difference([1..nv], echu)[1];
     v0:=ListWithIdenticalEntries(nv,zero);
     v0[pos]:=One(F);
-    if Size(F)<=256 then
-      v0 := CopyToVectorRepNC(v0,Size(F));
-    fi;
+    v0:=ImmutableVector(F,v0);
   fi;
   return [v0, M];
 
@@ -685,9 +679,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   zero:=Zero(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
-  if Size(F)<=256 then
-    zeroW := CopyToVectorRepNC(zeroW,Size(F));
-  fi;
+  zeroW:=ImmutableVector(F,zeroW);
 
   # group generating sets acting on each module
   gV:=V.generators;
@@ -807,9 +799,6 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 	  # storing the coefficients in <c>
 	  #
 	  c:=ListWithIdenticalEntries(Length(v),zero);
-	  if Size(F) <= 256 then
-	    c := CopyToVectorRepNC(c,Size(F));
-	  fi;
 	  for l in [1..Length(v)] do
 	    z:=x[echv[l]];
 	    if z <> zero then
@@ -821,6 +810,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 	      uu:=uu - z * u[l];
 	    fi;
 	  od;
+      c:=ImmutableVector(F,c);
 
 	  # Note: at this point, <x> has been reduced modulo the
 	  # semi-ech basis <U> union <v>, and that
@@ -1696,5 +1686,3 @@ SMTX.BasisEndomorphismsRadical:=SMTX.Getter(MakeImm("basisEndoRad"));
 
 SMTX.SetEndAlgResidue:=SMTX.Setter(MakeImm("endAlgResidue"));
 SMTX.EndAlgResidue:=SMTX.Getter(MakeImm("endAlgResidue"));
-
-
