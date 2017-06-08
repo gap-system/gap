@@ -996,7 +996,10 @@ InstallMethod( RowLength, "for an 8bit matrix",
 InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",
   [ IsList and IsFFECollection, Is8BitVectorRep ],
   function( l, v )
-    local r; r := ShallowCopy(l); ConvertToVectorRep(r,Q_VEC8BIT(v)); return r;
+    local r;
+    r := ShallowCopy(l);
+    ConvertToVectorRep(r,Q_VEC8BIT(v));
+    return r;
   end );
 InstallMethod( Randomize, "for a mutable 8bit vector",
   [ Is8BitVectorRep and IsMutable ],
