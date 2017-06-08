@@ -32,7 +32,11 @@ FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT_PSEUDOFIELD := fail;
 FLOAT := fail; # holds the constants
-BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
+if IsBound(HPCGAP) then
+    BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", AtomicRecord());
+else
+    BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
+fi;
 
 InstallGlobalFunction(SetFloats, function(arg)
     local i, r, prec, install;
