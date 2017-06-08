@@ -69,7 +69,6 @@ InstallValue( TYPE_LIST_GF2VEC_LOCKED,
           IsLockedRepresentationVector and IsMutable)
 );
 
-
 InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
   SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
 
@@ -1600,7 +1599,7 @@ local sf, rep, ind, ind2, row, i,big,l;
   else
     if not IsField(field) then
       # not a field
-      return matrix;
+      return Immutable(matrix);
     fi;
     sf:=Size(field);
   fi;
@@ -2376,9 +2375,9 @@ InstallMethod( RowLength, "for a gf2 matrix",
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
-    local r; 
-    r := ShallowCopy(l); 
-    ConvertToVectorRep(r,2); 
+    local r;
+    r := ShallowCopy(l);
+    ConvertToVectorRep(r,2);
     return r;
   end );
 InstallMethod( Randomize, "for a mutable gf2 vector",
