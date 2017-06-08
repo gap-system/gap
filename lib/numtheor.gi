@@ -18,6 +18,10 @@
 BindGlobal( "PrimeResiduesCache",
     List( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]], Immutable ));
 
+if IsBound(HPCGAP) then
+    MakeImmutable(PrimeResiduesCache);
+fi;
+
 InstallGlobalFunction( PrimeResidues, function ( m )
     local  residues, p, i;
 
