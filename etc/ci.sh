@@ -98,6 +98,15 @@ popd
 COVDIR=coverage
 mkdir -p $COVDIR
 
+
+# run gap compiler to verify the src/c_*.c files are up to date,
+# and also get coverage on the compiler
+make docomp
+
+# detect if there are any diffs
+git diff --exit-code
+
+
 case ${TEST_SUITE} in
 testmanuals)
     $GAP $SRCDIR/tst/extractmanuals.g
@@ -129,13 +138,6 @@ GAPInput
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
 GAPInput
-
-    # run gap compiler to verify the src/c_*.c files are up to date,
-    # and also get coverage on the compiler
-    make docomp
-
-    # detect if there are any diffs
-    git diff --exit-code
 
     ;;
 *)
