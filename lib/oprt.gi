@@ -3382,9 +3382,7 @@ local p,n,f,o,v,ran,exp,H,phi,alpha;
 
   alpha:=GroupToAdditiveGroupHomomorphismByFunction(M,v,function(e)
     e:=ExponentsOfPcElement(p,e)*o;
-    MakeImmutable(e);
-    ConvertToVectorRep(e,f);
-    return e;
+    return ImmutableVector(f,e,true);
   end,
   function(r)
   local i,l;
