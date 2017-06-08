@@ -78,7 +78,7 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsL )
 
     pt := List( pcgsL, x -> Zero( f ) );
     Add( pt, One( f ) );
-    ConvertToVectorRep(pt,f);
+    pt := ImmutableVector(f, pt);
 
     # was: return Pcgs( Stabilizer( U, pt, A, matA, OnRight ) );
     # we cannot simply return this pcgs here, as we cannot guarantee that
