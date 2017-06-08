@@ -417,7 +417,11 @@ end );
 BIND_GLOBAL( "DirectoriesSystemPrograms", function()
     if GAPInfo.DirectoriesPrograms = false  then
         GAPInfo.DirectoriesPrograms :=
-            AtomicList( List( GAPInfo.DirectoriesSystemPrograms, Directory ) );
+            List( GAPInfo.DirectoriesSystemPrograms, Directory );
+        if IsBound(HPCGAP) then
+            GAPInfo.DirectoriesPrograms :=
+                AtomicList( GAPInfo.DirectoriesPrograms );
+        fi;
     fi;
     return GAPInfo.DirectoriesPrograms;
 end );
