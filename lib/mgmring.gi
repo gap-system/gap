@@ -68,9 +68,13 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+if IsBound(HPCGAP) then
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep, 
+    [ 1, 2 ] );
+else
 DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
     [ 1, 2 ] );
-
+fi;
 
 #############################################################################
 ##
@@ -84,7 +88,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
     "for a family of elements in a *free* magma ring, and a list",
     [ IsElementOfFreeMagmaRingFamily, IsList ],
     function( Fam, descr )
-    return descr;
+    return Immutable(descr);
     end );
 
 
@@ -635,7 +639,7 @@ InstallMethod( OneOp,
       return fail;
     fi;
     z:= ZeroCoefficient( elm );
-    return Objectify( F!.defaultType, [ z, [ F!.oneMagma, One( z ) ] ] );
+    return Objectify( F!.defaultType, MakeImm([ z, [ F!.oneMagma, One( z ) ] ]) );
     end );
 
 
@@ -914,6 +918,7 @@ InstallMethod( CanonicalBasis,
           List( EnumeratorSorted( UnderlyingMagma( RM ) ),
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
       B!.zerovector:= List( BasisVectors( B ), x -> zero );
+      MakeImmutable( B!.zerovector );
     fi;
 
     return B;
@@ -1448,6 +1453,7 @@ InstallHandlingByNiceBasis( "IsSpaceOfElementsOfMagmaRing", rec(
         info.zerovector := ListWithIdenticalEntries( Length( monomials ),
                                                      zero );
       fi;
+      MakeImmutable( info.zerovector );
 
       return info;
       end,
@@ -1599,11 +1605,11 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
       if descr[2][i] = zeromagma then
         descr:= [ descr[1], Concatenation( descr[2]{ [ 1 .. i-1 ] },
                                            descr[2]{ [ i+2 .. len ] } ) ];
-        MakeImmutable( descr );
         break;
       fi;
     od;
 
+    MakeImmutable( descr );
     return descr;
     end );
 
