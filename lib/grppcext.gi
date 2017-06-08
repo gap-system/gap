@@ -1079,7 +1079,6 @@ MatrixOperationOfCPGroup := function( cc, gens  )
 	      od;
             fi;
             tails := Image( cc.cohom, tails );
-	    ConvertToVectorRepNC(tails,field);
             Add( mats[l], tails );
         od;
     od;

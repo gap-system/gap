@@ -1076,22 +1076,19 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                     od;
                 od;
             else
-	            tails := List( [1..Length(fprels)], x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
-			    if Size(field)<=256 then  
+                tails := List( [1..Length(fprels)], x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
+                if Size(field)<=256 then  
                    for i in tails do
                        i := CopyToVectorRepNC(i,Size(field));
-		               Append(tails,i);
-	               od;
-	            else
+                       Append(tails,i);
+                   od;
+                else
                    for i in tails do
-		               Append(tails,i);
-	               od;	            
-	            fi;
+                       Append(tails,i);
+                   od;              
+                fi;
             fi;
             tails := Image( cc.cohom, tails );
-            if Size(field)<=256 then
-	            tails := CopyToVectorRepNC(tails,Size(field));
-	        fi;    
             Add( mats[l], tails );
         od;
     od;
