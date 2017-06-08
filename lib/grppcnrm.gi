@@ -643,9 +643,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     b  := TriangulizedGeneratorsByMatrix( ns, l, gf );
     nb := b[1];
     b  := b[2];
-    for i in b do
-      ConvertToVectorRep(i,gf);
-    od;
+    b  := ImmutableMatrix(gf, b);
 
     # trivial coboundaries, use ordinary orbit
     if IsEmpty(b)  then
@@ -692,7 +690,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     	    Append( v, ExponentsOfPcElement( ns, ui[i]*w[i] ) );
     	od;
     	v := v * One(gf);
-	ConvertToVectorRep(v,gf);
+    	v := ImmutableVector(gf, v);
     	for i  in [ 1 .. Length(heads) ]  do
             v := v - v[heads[i]] * b[i];
     	od;
