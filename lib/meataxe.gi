@@ -389,10 +389,10 @@ SMTX_SpinnedBasis:=function( arg  )
    fi;
    zero:=Zero(matrices[1][1][1]);
    ans:=ShallowCopy(Basis(VectorSpace(F,v)));
-   for v in ans do ConvertToVectorRep(v,F); od;
    if Length(ans)=0 then
      return ans;
    fi;
+   ans:=List(ans, v -> ImmutableVector(F,v));
    dim:=Length(ans[1]);
    subdim:=Length(ans);
    leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
@@ -2898,8 +2898,8 @@ mats:=m.generators;
   SMTX.SetSmashRecord(m,0);
   F:=SMTX.Field(m);
   one:=One(F);
-  b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
-  ConvertToMatrixRep(b);
+  b:=IdentityMat(SMTX.Dimension(m),F);
+  b:=ImmutableMatrix(F,b);
   # denombasis: basis of the kernel
   m.smashMeataxe.denombasis:=[];
   # fakbasis: Urbilder der Basis, bzgl. derer csbasis angegeben wird
@@ -2914,9 +2914,10 @@ mats:=m.generators;
       mo:=m;
       Info(InfoMeatAxe,3,SMTX.Dimension(m)," ",
                          Length(m.smashMeataxe.denombasis));
-      m:=List(Concatenation(m.smashMeataxe.denombasis,
-                      m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]}),
-                      ShallowCopy);
+      m:=Concatenation(
+        m.smashMeataxe.denombasis,
+        m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]});
+      m:=List(m,ShallowCopy);
       TriangulizeMat(m);
       m:=ImmutableMatrix(F,m);
       Add(ser,m);
@@ -2930,15 +2931,13 @@ mats:=m.generators;
       SMTX.SetSmashRecord(q,0);
       Info(InfoMeatAxe,1,"chopped ",SMTX.Dimension(s),"\\", SMTX.Dimension(q));
       s.smashMeataxe.denombasis:=m.smashMeataxe.denombasis;
-
       s.smashMeataxe.fakbasis:=b*m.smashMeataxe.fakbasis;
 
       q.smashMeataxe.denombasis:=Concatenation(
         m.smashMeataxe.denombasis,
         s.smashMeataxe.fakbasis{[1..s.dimension]});
-      q.smashMeataxe.fakbasis:=List([SMTX.Dimension(s)+1..Length(b)],
-                       i->b[i] * m.smashMeataxe.fakbasis);
-      ConvertToMatrixRep(q.smashMeataxe.fakbasis);
+      q.smashMeataxe.fakbasis:=
+        s.smashMeataxe.fakbasis{[s.dimension+1..Length(b)]};
 
       Add(queue,s);
       Add(queue,q);
@@ -2951,12 +2950,13 @@ SMTX.BasesCompositionSeries:=SMTX_BasesCompositionSeries;
 
 # composition series with small steps
 SMTX_BasesCSSmallDimUp:=function(m)
-local cf,dim,b,den,sub,i,s,q,found,qb;
+local cf,F,dim,b,den,sub,i,s,q,found,qb;
   cf:=List(SMTX.CollectedFactors(m),x->[x[1],x[2]]); # so we can overwrite
   SortBy(cf,x->x[1].dimension);
-  dim:=m.dimension;
-  b:= IdentityMat(SMTX.Dimension(m),SMTX.Field(m) );
-  ConvertToMatrixRep(b);
+  dim:=SMTX.Dimension(m);
+  F:=SMTX.Field(m);
+  b:=IdentityMat(dim,F);
+  b:=ImmutableMatrix(F,b);
   den:=0;
   sub:=[[]];
   q:=m;
@@ -3579,3 +3579,7 @@ SMTX_OrthogonalSign:=function(gm)
 end;
 
 SMTX.OrthogonalSign:=SMTX_OrthogonalSign;
+
+if IsBound(HPCGAP) then
+    MakeReadOnly(SMTX);
+fi;
