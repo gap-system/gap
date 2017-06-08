@@ -649,8 +649,7 @@ InstallMethod( SemiEchelonBasis,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := Immutable(gens);
-    ConvertToMatrixRep(gensi, LeftActingDomain(V));
+    gensi := ImmutableMatrix(LeftActingDomain(V), gens);
     SetBasisVectors( B, gensi );
 
     B!.heads:= heads;
@@ -685,8 +684,7 @@ InstallMethod( SemiEchelonBasisNC,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := Immutable(gens);
-    ConvertToMatrixRep(gensi, LeftActingDomain(V));
+    gensi := ImmutableMatrix(LeftActingDomain(V), gens);
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.
@@ -1828,8 +1826,7 @@ BindGlobal( "ElementNumber_NormedRowVectors", function( T, num )
         v[ i ] := f[ num mod q + 1 ];
         num := QuoInt( num, q );
     od;
-    ConvertToVectorRepNC(v,q);
-    return Immutable( v );
+    return ImmutableVector( q, v );
 end );
 
 BindGlobal( "NumberElement_NormedRowVectors", function( T, elm )
