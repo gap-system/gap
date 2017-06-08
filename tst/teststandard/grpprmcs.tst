@@ -9,11 +9,19 @@
 ##
 gap> START_TEST("grpprmcs.tst");
 
-# we don't want `GroupString' to display the number of generators as this
-# may differ. We get the sizes anyhow from the composition factors. Thus
-# install a dummy method
-gap> InstallMethod(GroupString, "for a group", true, [ IsGroup,IsString ], 0,
-> function( G,nam )return "Group";end);
+# we don't want `DisplayCompositionSeries' to display the number of
+# generators as this may differ, so we provide our own version of it.
+gap> CustomDisplayCompositionSeries := function( S )
+>   local   f,  i;
+>   S := CompositionSeries( S );
+>   Perform( S, Size );
+>   Print( "Group\n" );
+>   for i  in [2..Length(S)]  do
+>     f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
+>     Print( " | ",IsomorphismTypeInfoFiniteSimpleGroup(f).name,"\n");
+>     Print( "Group\n" );;
+>   od;
+> end;;
 
 # missing (?):
 # bbox
@@ -21,7 +29,6 @@ gap> InstallMethod(GroupString, "for a group", true, [ IsGroup,IsString ], 0,
 # fi23.grp
 # gl83.gen
 # proba
-
 # agl10.2
 gap> g:=
 > Group( (   1,   2)(   3,   4)(   5,   6)(   7,   8)(   9,  10)
@@ -267,8 +274,7 @@ gap> g:=
 > ( 500,1012)( 501,1013)( 502,1014)( 503,1015)( 504,1016)( 505,1017)
 > ( 506,1018)( 507,1019)( 508,1020)( 509,1021)( 510,1022)( 511,1023)
 > ( 512,1024) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | A(9,2) = L(10,2) 
 Group
@@ -299,8 +305,7 @@ gap> List( ChiefSeriesOfGroup( g ), Size );
 gap> perm1:= PermList( Concatenation( [ 2 .. 1103 ], [ 1 ] ) );;
 gap> perm2:= PermList( List( [1 .. 1103 ], x -> (5*x mod 1103) +1 ) );;
 gap> g:= Group( perm1, perm2 );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Z(2)
 Group
@@ -672,8 +677,7 @@ gap> g:=
 > (1516,1802,1870,2014,1982,2005,2050,2073,1721,2100,2188,2174,1539,1746,
 >  1736)(1620,1809,2062,2285,2085,1943,1975,1964,1897,1898,2220,1888,
 >  1889,1991,1808) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Co(2)
 Group
@@ -746,8 +750,7 @@ gap> g:= Group(
 > (227,264)(230,260)(232,243)(234,267)(237,256)(238,262)(240,261)(244,252)
 > (246,270)(247,273)(248,271)(251,266)(255,259)(263,269)(268,276)(272,274)
 > );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Co(3)
 Group
@@ -762,8 +765,7 @@ gap> g := Group(
 >   (15,17,32,30)(16,23,31,22)(3,43,35,14)(5,45,37,21)(8,48,40,29),
 >   (33,35,40,38)(34,37,39,36)(24,27,30,43)(25,28,31,42)(26,29,32,41),
 >   (41,43,48,46)(42,45,47,44)(1,24,40,17)(2,18,39,23)(3,9,38,32) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Z(2)
 Group
@@ -970,8 +972,7 @@ gap> g:=
 > ( 497,1009)( 498,1010)( 499,1011)( 500,1012)( 501,1013)( 502,1014)
 > ( 503,1015)( 504,1016)( 505,1017)( 506,1018)( 507,1019)( 508,1020)
 > ( 509,1021)( 510,1022)( 511,1023)( 512,1024) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | A(9,2) = L(10,2) 
 Group
@@ -995,8 +996,7 @@ gap> g:= Group( (2,3,4,5,6,7,8)(9,10,11,12,13,14,15)
 > (22,65)(23,53)(24,52)(25,51)(26,57)(27,56)(28,55)(29,54)(37,91)(38,90)
 > (39,89)(40,88)(41,87)(42,86)(43,92)(44,99)(45,98)(46,97)(47,96)(48,95)
 > (49,94)(50,93)(58,85)(59,84)(60,83)(61,82)(62,81)(63,80)(64,79) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | HJ = J(2) = F(5-)
 Group
@@ -1052,8 +1052,7 @@ gap> g:=
 > (137,179,161)(138,148,149)(141,226,142)(143,153,173)(150,152,186)
 > (151,163,234)(164,175,177)(165,213,183)(168,218,176)(171,188,224)
 > (172,236,200)(192,212,223)(193,198,240)(202,221,230)(206,217,216) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | A(2,4) = L(3,4)
 Group
@@ -1071,8 +1070,7 @@ gap> gens:= Concatenation( List( GeneratorsOfGroup( g ),
 >                   PermList( List( [ 1 .. 7920 ],
 >                       i -> Position( elms, x^-1 * elms[i] ) ) ) ] ) );;
 gap> reg:= Group( gens );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | M(11)
 Group
@@ -1105,8 +1103,7 @@ gap> for j in [ 1 .. 4 ] do
 >      od;
 >    od;
 gap> g:= Group( List( gens, PermList ), () );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Z(2)
 Group
@@ -1241,8 +1238,7 @@ gap> g:=
 > (290,300,622,709,480,427)(313,744,407,358,504,704)(324,487,700,658,551,
 >  548,544,474,409,687,436,767)(330,635,523,357,637,662)(333,761,626,536,
 >  603,664)(403,414,677,502,465,640) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Z(2)
 Group
@@ -1573,8 +1569,7 @@ gap> g:=
 >  1301)( 653, 895,1709, 791, 764,1541,1579)( 706,1055, 861,1504,1641,
 >  1508,1481)( 810,1296, 970,1698,1523,1215, 869)(1097,1456,1383,1461,
 >  1467,1748,1153)(1222,1674,1384,1729,1707,1452,1417) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | Suz
 Group
@@ -1786,8 +1781,7 @@ gap> g:=
 > (584,640,724,780,668,612,752,696)(585,641,725,781,669,613,753,697)
 > (586,642,726,782,670,614,754,698)(587,643,727,783,671,615,755,699)
 > (588,644,728,784,672,616,756,700) );;
-gap> SetName( g, "g" );
-gap> DisplayCompositionSeries( g );
+gap> CustomDisplayCompositionSeries( g );
 Group
  | 2A(2,3) = U(3,3)
 Group
