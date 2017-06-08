@@ -331,7 +331,6 @@ make_compstat () {
     echo     "extern StructInitInfo * Init__type1 ( void );"     >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__filter1 ( void );"   >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__oper1( void );"      >> ${gactmp}/$$compstat.c
-    echo     "extern StructInitInfo * Init__random( void );"     >> ${gactmp}/$$compstat.c
     echo     "#endif"                                            >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
@@ -345,7 +344,6 @@ make_compstat () {
     echo     "    Init__type1,"                          >> ${gactmp}/$$compstat.c
     echo     "    Init__oper1,"                          >> ${gactmp}/$$compstat.c
     echo     "    Init__filter1,"                        >> ${gactmp}/$$compstat.c
-    echo     "    Init__random,"                         >> ${gactmp}/$$compstat.c
     echo     "#endif"                                    >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
