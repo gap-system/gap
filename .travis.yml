@@ -20,38 +20,18 @@ addons:
 
 matrix:
   include:
-    # run testerror first; this is by far the quickest job, so we get some feedback ASAP
-    - env: TEST_SUITE=testerror CONFIGFLAGS="--enable-debug"
+    # general test suite (subsumes testinstall tests, too)
+    - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITE=testtravis ABI=32 CONFIGFLAGS="--enable-debug"
+      sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
+      before_install:
+        - sudo apt-get -qq update
+        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
 
-    # plain in-tree builds -- note that 32bit GMP is not yet available on trusty,
-    # so we only test 32bit builds with the builtin GMP
-    - env: TEST_SUITE=testinstall ABI=32 CONFIGFLAGS="--enable-debug --with-gmp=builtin"
-    - env: TEST_SUITE=testinstall ABI=64 CONFIGFLAGS="--enable-debug"
-
-    # out of tree builds -- these are mainly done to verify that the build
-    # system work in this scenario. Since we don't expect the test results to
-    # vary compared to the in-tree builds, we turn off coverage reporting by
-    # setting NO_COVERAGE=1; this has the extra benefit of also running the
-    # tests at least once with the ReproducibleBehaviour option turned off.
-    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-debug --with-gmp=builtin"
-    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
-
-    # HPC-GAP builds (for efficiency, we don't build all combinations)
-    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
-    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--enable-debug --with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
-    - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
-
-    # OS X builds: since those are slow and limited on Travis,
-    # we only run testinstall
-    # Also, we don't pass --enable-debug, both for speed and to check GAP works without debugging
+    # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
       os: osx
       compiler: clang
-
-    # 64bit linux builds with GCC
-    - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testmanuals CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
 
     # test creating the manual
     - env: TEST_SUITE=makemanuals CONFIGFLAGS="--enable-debug"
@@ -64,14 +44,31 @@ matrix:
           - texlive-fonts-recommended
           - texlive-fonts-extra
 
-    # 32bit linux builds with GCC
-    - env: TEST_SUITE=testtravis ABI=32 CONFIGFLAGS="--enable-debug"
-      dist: precise # trusty is missing 32bit gmp, see https://github.com/travis-ci/apt-package-whitelist/pull/4018
-      addons:
-        apt_packages:
-          - libgmp-dev:i386
-          - gcc-multilib
-          - g++-multilib
+    # run tests contained in the manual
+    - env: TEST_SUITE=testmanuals CONFIGFLAGS="--enable-debug"
+
+    # HPC-GAP builds (for efficiency, we don't build all combinations)
+    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
+    - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--enable-debug --with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
+
+    # out of tree builds -- these are mainly done to verify that the build
+    # system work in this scenario. Since we don't expect the test results to
+    # vary compared to the in-tree builds, we turn off coverage reporting by
+    # setting NO_COVERAGE=1; this has the extra benefit of also running the
+    # tests at least once with the ReproducibleBehaviour option turned off.
+    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-debug"
+      sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
+      before_install:
+        - sudo apt-get -qq update
+        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
+
+    # run bugfix regression tests
+    - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
+
+    # test error reporting (quickest job in this test suite)
+    - env: TEST_SUITE=testerror CONFIGFLAGS="--enable-debug"
 
 script:
   - bash etc/ci-prepare.sh
