@@ -104,7 +104,7 @@ mkdir -p $COVDIR
 make docomp
 
 # detect if there are any diffs
-git diff --exit-code
+git diff --exit-code -- src hpcgap/src
 
 
 case ${TEST_SUITE} in
