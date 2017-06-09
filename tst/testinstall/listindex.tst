@@ -132,6 +132,34 @@ gap> s;
 gap> s := [];; Add(s, 0, -1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Add' on 3 arguments
+gap> l := [];; Append(l, [1]); l;
+[ 1 ]
+gap> l := [];; Append(l, "cheese"); l;
+"cheese"
+gap> l := [true];; Append(l, "cheese"); l;
+[ true, 'c', 'h', 'e', 'e', 's', 'e' ]
+gap> l := [true];; Append(l, [true]); l;
+[ true, true ]
+gap> l := [true];; Append(l, [1,2,3]); l;
+[ true, 1, 2, 3 ]
+gap> l := [true];; Append(l, []); l;
+[ true ]
+gap> l := [true];; Append(l, "cheese"); l;
+[ true, 'c', 'h', 'e', 'e', 's', 'e' ]
+gap> l := "cheese";; Append(l, [1,2,3]); l;
+[ 'c', 'h', 'e', 'e', 's', 'e', 1, 2, 3 ]
+gap> l := "cheese";; Append(l, "core"); l;
+"cheesecore"
+gap> l := "cheese";; Append(l, [true]); l;
+[ 'c', 'h', 'e', 'e', 's', 'e', true ]
+gap> l := "cheese";; Append(l, []); l;
+"cheese"
+gap> Append(Immutable([1,2,3]), [1,2,3]);
+Error, Append: <list1> must be a mutable list
+gap> Append([1,2,3], () );
+Error, AppendList: <list2> must be a small list (not a permutation (small))
+gap> Append( () , [1,2,3] );
+Error, Append: <list1> must be a mutable list
 gap> s;
 [  ]
 gap> s := [1,2,3];; l := [4,5,6];;
