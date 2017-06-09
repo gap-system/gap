@@ -77,4 +77,12 @@ false
 gap> Unbind(w[2]);
 gap> Print(w,"\n");
 WeakPointerObj( [ 1, , E(5), 311, , fail ] )
+gap> Immutable(w);
+[ 1,, E(5), 311,, fail ]
+gap> w;
+WeakPointerObj( [ 1, , E(5), 311, , fail ] )
+gap> MakeImmutable(w);
+[ 1,, E(5), 311,, fail ]
+gap> w;
+[ 1,, E(5), 311,, fail ]
 gap> STOP_TEST( "weakptr.tst", 1);
