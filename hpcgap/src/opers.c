@@ -5861,7 +5861,7 @@ Obj DoGetterFunction (
         return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
 #endif
       default:
-        ErrorQuit( "<obj> must be an component object", 0L, 0L );
+        ErrorQuit( "<obj> must be a component object", 0L, 0L );
         return 0L;
     }
 }
