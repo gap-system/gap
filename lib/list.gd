@@ -1877,7 +1877,7 @@ DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 ##  That means that the first element <A>tup1</A> of <A>cart</A> contains
 ##  the first element from <A>list1</A>, from <A>list2</A> and so on.
 ##  The second element <A>tup2</A> of <A>cart</A> contains the first element
-##  from <A>list1</A>, the first from <A>list2</A>, an so on,
+##  from <A>list1</A>, the first from <A>list2</A>, and so on,
 ##  but the last element of <A>tup2</A> is the second element of the last
 ##  argument list.
 ##  This implies that <A>cart</A> is a proper set if and only if all argument

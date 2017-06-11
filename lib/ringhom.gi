@@ -96,7 +96,7 @@ end );
 ##
 #M  ViewObj( <map> )  . . . . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
-InstallMethod( ViewObj, "for an ring g.m.b.i", true,
+InstallMethod( ViewObj, "for a ring g.m.b.i", true,
     [ IsGeneralMapping and IsRingGeneralMappingByImagesDefaultRep ], 0,
 function( map )
 local mapi;
@@ -111,7 +111,7 @@ end );
 ##
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
-InstallMethod( PrintObj, "for an ring hom. b.i.", true,
+InstallMethod( PrintObj, "for a ring hom. b.i.", true,
     [     IsMapping
       and IsRingGeneralMappingByImagesDefaultRep ], 0,
 function( map )
@@ -122,7 +122,7 @@ local mapi;
 	  mapi[1], ", ", mapi[2], " )" );
 end );
 
-InstallMethod( PrintObj, "for an ring g.m.b.i", true,
+InstallMethod( PrintObj, "for a ring g.m.b.i", true,
     [     IsGeneralMapping
       and IsRingGeneralMappingByImagesDefaultRep ], 0,
 function( map )
@@ -224,7 +224,7 @@ end);
 #M  ImagesSource( <map> ) . . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
 InstallMethod( ImagesSource,
-    "for an ring g.m.b.i.",
+    "for a ring g.m.b.i.",
     [ IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep ],
 function( map )
   return Subring(Range(map),MappingGeneratorsImages(map)[2]);
@@ -235,7 +235,7 @@ end );
 #M  PreImagesRange( <map> ) . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
 InstallMethod( PreImagesRange,
-    "for an ring g.m.b.i.",
+    "for a ring g.m.b.i.",
     [ IsGeneralMapping and IsRingGeneralMappingByImagesDefaultRep ],
 function( map )
   return Subring(Source(map),MappingGeneratorsImages(map)[1]);
@@ -246,7 +246,7 @@ end );
 #M  InverseGeneralMapping( <map> ) . . . . . . . . . . . .  for ring g.m.b.i.
 ##
 InstallMethod( InverseGeneralMapping,
-    "for an ring g.m.b.i.",
+    "for a ring g.m.b.i.",
     [ IsGeneralMapping and IsRingGeneralMappingByImagesDefaultRep ],
 function( map )
 local mapi;

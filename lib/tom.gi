@@ -2072,7 +2072,7 @@ InstallMethod( DerivedSubgroupTom,
       # for each such intersection the derived subgroup must be
       # contained in one of the possible intersections returned by
       # `IntersectionsTom'.
-      # Additionally there must be an chain of
+      # Additionally there must be a chain of
       # normal extensions connecting the derived subgroup and the groupext;
       result:=Filtered(subs[normalsubs[1]], x-> x in ext);
       for i in [1..Length(normalsubs)] do

@@ -244,7 +244,7 @@ DeclareGlobalFunction("SchuMu");
 ##
 ##  <Description>
 ##  evaluate corestriction mapping.
-##  <A>FH</A> is an homomorphism from a finitely presented group onto a finite
+##  <A>FH</A> is a homomorphism from a finitely presented group onto a finite
 ##  group <A>G</A>. <A>s</A> an epimorphism onto a p-Sylow subgroup of <A>G</A> as obtained
 ##  from <C>SchuMu</C>.
 ##  This function evaluates the relators of the source of <A>FH</A> in the

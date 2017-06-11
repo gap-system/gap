@@ -1036,7 +1036,7 @@ InstallOtherMethod( ElementaryAbelianSeries,
 
     local i, A, f;
 
-    # if <G> is a list compute a elementary series through a given normal one
+    # if <G> is a list compute an elementary series through a given normal one
     if not IsSolvableGroup( G[1] )  then
       Error( "<G> must be solvable" );
     fi;

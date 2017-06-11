@@ -35,7 +35,7 @@ extern  Obj             TYPE_LIST_HOM;
 **
 **  A package implementing  an ordinary list type <type>   must set the  flag
 **  'IsListFlag[<type>]'  for  this type to '1'.   A  package  implementing a
-**  vector type must set  it to '2'.  A  package implementing an matrix  type
+**  vector type must set  it to '2'.  A  package implementing a matrix  type
 **  must set it to '3'.
 */
 extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );

@@ -87,7 +87,7 @@ finitely presented monoid). Conversely elements of the finitely presented
 semigroup (resp. finitely presented monoid) are not words of the free
 semigroup (resp. free monoid).
 <P/>
-Calculations comparing elements of an finitely presented semigroup
+Calculations comparing elements of a finitely presented semigroup
 may run into problems: there are finitely presented semigroups for 
 which no algorithm exists (it is known that no such algorithm can exist) 
 that will tell for two arbitrary words in the generators whether the 

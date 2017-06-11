@@ -884,7 +884,7 @@ RedispatchOnCondition( CanonicalPcgs, true,
 ##
 #M  CanonicalPcgs( <cgs> )
 ##
-InstallOtherMethod( CanonicalPcgs,"of an canonical pcgs",
+InstallOtherMethod( CanonicalPcgs,"of a canonical pcgs",
     true, [ IsCanonicalPcgs ],
     SUM_FLAGS, # the best we can do
     x -> x );

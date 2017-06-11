@@ -16,7 +16,7 @@
 ##  InfoSelector, and classes and selectors may be built up with \+
 #N  I wanted to use \or, but this isn't at operation
 ##  
-##  An message is associated with a selector and a level and is
+##  A message is associated with a selector and a level and is
 ##  printed when the desired level for any of the classes in the selector
 ##  equals or exceeds  the level of the message
 ##
@@ -330,7 +330,7 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
         fi;
     fi;
    
-    # store the class an level
+    # store the class and level
     atomic InfoData do
 	if IsInfoClass(selectors) then
 	  InfoData.LastClass := selectors;

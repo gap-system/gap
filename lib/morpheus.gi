@@ -1165,7 +1165,7 @@ end);
 
 #############################################################################
 ##
-#F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with an few 
+#F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with as few 
 ##                      as possible generators from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
