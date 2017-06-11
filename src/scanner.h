@@ -371,7 +371,7 @@ extern  void            SyntaxWarning (
 **  This is used if the parser knows that the current  symbol is correct, for
 **  example in 'RdReturn'  the   first symbol must be 'S_RETURN',   otherwise
 **  'RdReturn' would not have been  called.  Called this  way 'Match' will of
-**  course never raise an syntax error,  therefore <msg>  and <skipto> are of
+**  course never raise a syntax error,  therefore <msg>  and <skipto> are of
 **  no concern, they are passed nevertheless  to please  lint.  The effect of
 **  this call is merely to read the next symbol from input.
 **

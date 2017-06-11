@@ -183,7 +183,7 @@ end;
 
 #############################################################################
 ##
-#F  RowEchelonFormLTM . . . .  row echelon form of an lower triangular matrix
+#F  RowEchelonFormLTM . . . .  row echelon form of a lower triangular matrix
 ##
 RowEchelonFormLTM := function( LTM )
     local   i,  j;

@@ -432,7 +432,7 @@ DeclareOperation("OCAddComplement",
 ##  <Func Name="OCOneCocycles" Arg='ocr, onlySplit'/>
 ##
 ##  <Description>
-##  is the more technical function to compute 1-cocycles. It takes an record
+##  is the more technical function to compute 1-cocycles. It takes a record
 ##  <A>ocr</A> as first argument which must contain at least the components
 ##  <C>group</C> for the group and <C>modulePcgs</C> for a (modulo) pcgs of
 ##  the module. This record

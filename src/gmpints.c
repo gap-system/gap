@@ -228,7 +228,7 @@ Obj TypeIntLargeNeg ( Obj val )
 **
 **  'IsInt( <val> )'
 **
-**  'IsInt'  returns 'true'  if the  value  <val>  is an small integer or a
+**  'IsInt'  returns 'true'  if the  value  <val>  is a small integer or a
 **  large int, and 'false' otherwise.
 */
 Obj FuncIS_INT ( Obj self, Obj val )

@@ -98,7 +98,7 @@
 *F  SET_DT_POS(tree, index, obj) . . . assign the position of(<tree>, index)
 **
 **  'SET_DT_POS sets pos(<a>) to the object <obj>, where <a> is the subtree
-**  of <tree>,  rooted at (<tree>, index).  <index> has to be an positive
+**  of <tree>,  rooted at (<tree>, index).  <index> has to be a positive
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_POS(tree, index, obj) \
@@ -122,7 +122,7 @@
 *F  SET_DT_GEN(tree, index, obj) . . . assign the generator of(<tree>, index)
 **
 **  'SET_DT_GEN sets num(<a>) to the object <obj>, where <a> is the subtree
-**  of <tree>,  rooted at (<tree>, index).  <index> has to be an positive
+**  of <tree>,  rooted at (<tree>, index).  <index> has to be a positive
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_GEN(tree, index, obj) \

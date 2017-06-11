@@ -7,7 +7,7 @@ semantics of global variables that are only accessed by a single thread remain u
   <Section Label="Global variables">
     <Heading>Global variables</Heading>
 
-Global variables in HPC-GAP an be accessed by all threads concurrently without explicit synchronization. Concurrent
+Global variables in HPC-GAP can be accessed by all threads concurrently without explicit synchronization. Concurrent
 access is safe, but it is not deterministic. If multiple threads attempt to modify the same global variable
 simultaneously, the resulting value of the variable is random; it will be one of the values assigned by a thread, but it
 is impossible to predict with certainty which specific one will be assigned.

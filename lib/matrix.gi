@@ -1269,7 +1269,7 @@ InstallMethod( DeterminantMatDestructive,
     for k  in [1..m]  do
 
         # find a nonzero entry in this column
-        #N  26-Oct-91 martin if <mat> is an rational matrix look for a pivot
+        #N  26-Oct-91 martin if <mat> is a rational matrix look for a pivot
         j := i + 1;
         while j <= m and mat[j][k] = zero  do j := j+1;  od;
 

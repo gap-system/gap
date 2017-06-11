@@ -210,7 +210,7 @@ UInt4 nextrandMT_int32(UInt4* mt)
 **
 **  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
 **
-**  takes an non-immediate object and a small integer <seed> and computes a
+**  takes a non-immediate object and a small integer <seed> and computes a
 **  hash value for the contents of the bag from these. (For this to be
 **  usable in algorithms, we need that objects of this kind are stored uniquely
 **  internally.

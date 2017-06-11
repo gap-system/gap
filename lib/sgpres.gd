@@ -178,7 +178,7 @@ AbelianInvariantsSubgroupFpGroup := AbelianInvariantsSubgroupFpGroupRrs;
 ##  <P/>
 ##  It is mutable so we are permitted to add further entries. However
 ##  existing entries may not be changed. Any entries added however should
-##  correspond to the subgroup only and not to an homomorphism.
+##  correspond to the subgroup only and not to a homomorphism.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -205,7 +205,7 @@ BindGlobal("TABLE_TYPE_MTC",2);
 ##  <P/>
 ##  It is mutable so we are permitted to add further entries, however
 ##  existing entries may not be changed. Any entries added however should
-##  correspond to the subgroup only and not to an homomorphism.
+##  correspond to the subgroup only and not to a homomorphism.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -226,7 +226,7 @@ DeclareAttribute("AugmentedCosetTableMtcInWholeGroup",IsGroup,"mutable");
 ##  <P/>
 ##  It is mutable so we are permitted to add further entries, however
 ##  existing entries may not be changed. Any entries added however should
-##  correspond to the subgroup only and not to an homomorphism.
+##  correspond to the subgroup only and not to a homomorphism.
 ##  </Description>
 ##  </ManSection>
 ##

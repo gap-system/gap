@@ -52,7 +52,7 @@
 
 /****************************************************************************
 **
-*F  SumFFEVecFFE(<elmL>,<vecR>) . . . .  sum of an fin field elm and a vector
+*F  SumFFEVecFFE(<elmL>,<vecR>) . . . .  sum of a finite field elm and a vector
 **
 **  'SumFFEVecFFE' returns the sum of the fin field elm <elmL> and the vector
 **  <vecR>.  The sum is a  list, where each element is  the sum of <elmL> and
