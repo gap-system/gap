@@ -384,6 +384,7 @@ BASECC=`basename ${CC}`
 GAPARCH="$host-$BASECC-${CONFIGNAME}"
 AC_DEFINE_UNQUOTED([CONFIGNAME], ["$CONFIGNAME"], [for backwards compatibility])
 AC_DEFINE_UNQUOTED([SYS_ARCH], ["$GAPARCH"], [for backwards compatibility])
+AC_SUBST([CONFIGNAME])
 AC_SUBST([GAPARCH])
 
 AC_ARG_ENABLE([compat-mode],
@@ -398,7 +399,7 @@ AC_SUBST([COMPAT_MODE], [$enable_compat_mode])
 AS_IF([test "x$enable_compat_mode" = xyes],
     [
     AC_CONFIG_FILES([bin/gap.sh:cnf/compat/gap.sh.in], [chmod +x bin/gap.sh])
-    AC_CONFIG_FILES([sysinfo.gap:cnf/compat/sysinfo.gap.in], [ln -s sysinfo.gap sysinfo.gap-$CONFIGNAME], [CONFIGNAME='$CONFIGNAME'])
+    AC_CONFIG_FILES([sysinfo.gap:cnf/compat/sysinfo.gap.in], [rm -f sysinfo.gap-$CONFIGNAME && ln -s sysinfo.gap sysinfo.gap-$CONFIGNAME], [CONFIGNAME='$CONFIGNAME'])
     AC_CONFIG_LINKS([bin/$GAPARCH/config.h:gen/config.h])
     AS_IF([test x$BUILD_GMP = xyes],[
       AC_CONFIG_FILES([bin/$GAPARCH/extern/gmp/include/gmp.h:cnf/compat/gmp.h.in])

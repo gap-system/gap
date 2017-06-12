@@ -55,9 +55,8 @@ fi
 
 if [[ $HPCGAP = yes ]]
 then
-  # Add flags so that Boehm GC and libatomic headers are found, as well as HPC-GAP headers
+  # Add flags so that Boehm GC and libatomic headers are found
   CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
-  CPPFLAGS="-I$SRCDIR/hpcgap -I$SRCDIR $CPPFLAGS"
   export CPPFLAGS
 fi
 
@@ -80,11 +79,12 @@ cd profiling
 make V=1
 cd ..
 
-# Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
-if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
+# Compile edim to test gac (but not on Cygwin, where gac is known to be broken)
+if [[ $OSTYPE != Cygwin* ]]
 then
+    source $BUILDDIR/sysinfo.gap
     cd edim
-    ./configure $BUILDDIR
+    ./configure $BUILDDIR CONFIGNAME=$CONFIGNAME
     make
     cd ..
 fi
