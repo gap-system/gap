@@ -606,10 +606,22 @@ static Obj TypePlistWithKTNum (
     Obj                 family;         /* family of elements              */
     Obj                 types;          /* types list of <family>          */
 
+#ifdef HPCGAP
+    if (CheckWriteAccess(list)) {
+      /* recursion is possible for this type of list                         */
+      SET_OBJ_FLAG( list, TESTING|TESTED );
+      tnum = KTNumPlist( list, &family);
+      CLEAR_OBJ_FLAG( list, TESTING );
+    } else {
+      tnum = TNUM_OBJ(list);
+      family = 0;
+    }
+#else
     /* recursion is possible for this type of list                         */
     SET_OBJ_FLAG( list, TESTING );
     tnum = KTNumPlist( list, &family);
     CLEAR_OBJ_FLAG( list, TESTING );
+#endif
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;
 
@@ -640,31 +652,51 @@ static Obj TypePlistWithKTNum (
     }
 
     /* handle homogeneous list                                             */
-    if ( HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
+    if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
 
         /* get the list types of the elements family */
         types  = TYPES_LIST_FAM( family );
 
-        /* if the type is not yet known, compute it                        */
-        type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
-        if ( type == 0 ) {
-            type = CALL_2ARGS( TYPE_LIST_HOM,
-                family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
-            ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+#ifdef HPCGAP
+	if (CheckWriteAccess(types)) {
+#endif
+            /* if the type is not yet known, compute it                        */
+            type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+            if ( type == 0 ) {
+                type = CALL_2ARGS( TYPE_LIST_HOM,
+                    family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
+                ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+            }
+
+            /* return the type                                                 */
+            return type;
+#ifdef HPCGAP
         }
-
-        /* return the type                                                 */
-        return type;
+#endif
     }
 
+#ifdef HPCGAP
+    UInt len = LEN_LIST(list);
+    UInt i;
+    for (i = 1; i <= len; i++) {
+      if (ELM_LIST(list, i) == (Obj) 0) {
+	if (IS_MUTABLE_OBJ(list))
+	  return TYPE_LIST_NDENSE_MUTABLE;
+	else
+	  return TYPE_LIST_NDENSE_IMMUTABLE;
+      }
+    }
+
+    if (IS_MUTABLE_OBJ(list))
+      return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+      return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+#else
     /* whats going on here?                                                */
-    else {
-        ErrorQuit(
-            "Panic: strange type tnum '%s' ('%d')",
-            (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
-        return 0;
-    }
-
+    ErrorQuit( "Panic: strange type tnum '%s' ('%d')",
+               (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
+    return 0;
+#endif
 }
 
 Obj TypePlistNDenseMut (
