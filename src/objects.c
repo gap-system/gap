@@ -1440,13 +1440,10 @@ Obj LEN_POSOBJ_Handler (
     case T_APOSOBJ:
     case T_ALIST:
     case T_FIXALIST:
-      return INTOBJ_INT(ADDR_OBJ(obj)[0]);
-    default:
-      return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+      return LengthAList( obj );
     }
-#else
-    return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
 #endif
+    return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
 }
 
 
