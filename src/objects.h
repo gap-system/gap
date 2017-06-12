@@ -442,8 +442,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #endif
 
 
-#ifdef HPCGAP
-
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
@@ -451,15 +449,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 */
 
 #define TESTING (1 << 0)
+
+#ifdef HPCGAP
 #define TESTED (1 << 1)
-
-#else
-
-/* share the same numbers between `COPYING' and `TESTING' */
-#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
-#define TESTING                 COPYING
-#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
-
 #endif
 
 
