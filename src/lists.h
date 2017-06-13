@@ -109,39 +109,24 @@ static inline Obj LENGTH(Obj list)
 /****************************************************************************
 **
 *F  ISB_LIST(<list>,<pos>)  . . . . . . . . . .  test for element from a list
-*F  ISBV_LIST(<list>,<pos>) . . . . . . . . . .  test for element from a list
 *V  IsbListFuncs[<type>]  . . . . . . . . . . . . . . table of test functions
-*V  IsbvListFuncs[<type>] . . . . . . . . . . . . . . table of test functions
 **
 **  'ISB_LIST' returns 1  if the list <list>  has an entry at  position <pos>
 **  and 0 otherwise.  An error is signalled  if <list> is not  a list.  It is
 **  the  responsibility of  the  caller to  ensure that  <pos> is a  positive
 **  integer.
 **
-**  'ISBV_LIST'  does the same as  'ISB_LIST', but the caller also guarantees
-**  that <list> ist a list and that <pos> is less than or equal to the length
-**  of <list>.
-**
-**  Note that 'ISB_LIST' and 'ISBV_LIST are macros, so  do not call them with
-**  arguments that have side effects.
+**  Note that 'ISB_LIST' is a macro, so do not call it with arguments that
+**  have side effects.
 **
 **  A  package implementing a  list type <type>  must  provide a function for
 **  'ISB_LIST' and install it in 'IsbListFuncs[<type>]'.
 **
-**  A package  implementing  a list type  <type> must  provide a function for
-**  'ISBV_LIST' and  install  it in 'IsbvListFuncs[<type>]'.   This  function
-**  need not  test whether  <pos> is less  than   or equal to the   length of
-**  <list>.
 */
 #define ISB_LIST(list,pos) \
                         ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
 
-#define ISBV_LIST(list,pos) \
-                        ((*IsbvListFuncs[TNUM_OBJ(list)])(list,pos))
-
 extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
-
-extern  Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 extern Int ISBB_LIST( Obj list, Obj pos );
 

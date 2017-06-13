@@ -1123,15 +1123,10 @@ Int             LenPlistEmpty (
 /****************************************************************************
 **
 *F  IsbPlist(<list>,<pos>)  . . . . . . test for an element from a plain list
-*F  IsbvPlist(<list>,<pos>) . . . . . . test for an element from a plain list
 **
 **  'IsbPlist' returns 1 if the list <list> has an entry  at  position  <pos>
 **  and 0 otherwise.  It is the responsibility of the caller to  ensure  that
 **  <pos> is a positive integer.
-**
-**  'IsbvPlist' does the  same thing than  'IsbList', but need not check that
-**  <pos>  is less  than or  equal  to the  length of   <list>,  this is  the
-**  responsibility of the caller.
 */
 Int             IsbPlist (
     Obj                 list,
@@ -1145,20 +1140,6 @@ Int             IsbPlistDense (
     Int                 pos )
 {
     return (pos <= LEN_PLIST( list ));
-}
-
-Int             IsbvPlist (
-    Obj                 list,
-    Int                 pos )
-{
-    return (ELM_PLIST( list, pos ) != 0);
-}
-
-Int             IsbvPlistDense (
-    Obj                 list,
-    Int                 pos )
-{
-    return (1L);
 }
 
 
@@ -4615,14 +4596,6 @@ static Int InitKernel (
     for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         IsbListFuncs  [ t1            ] = IsbPlistDense;
         IsbListFuncs  [ t1 +IMMUTABLE ] = IsbPlistDense;
-    }
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
-        IsbvListFuncs [ t1            ] = IsbvPlist;
-        IsbvListFuncs [ t1 +IMMUTABLE ] = IsbvPlist;
-    }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
-        IsbvListFuncs [ t1            ] = IsbvPlistDense;
-        IsbvListFuncs [ t1 +IMMUTABLE ] = IsbvPlistDense;
     }
 
 

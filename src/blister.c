@@ -425,18 +425,6 @@ Int IsbBlist (
 
 /****************************************************************************
 **
-*F  IsbvBlist( <list>, <pos> )  . . . . test for an element of a boolean list
-*/
-Int IsbvBlist (
-    Obj                 list,
-    Int                 pos )
-{
-    return 1L;
-}
-
-
-/****************************************************************************
-**
 
 *F  Elm0Blist( <list>, <pos> )  . . . . . select an element of a boolean list
 **
@@ -2726,8 +2714,6 @@ static Int InitKernel (
         LenListFuncs    [ t1 +IMMUTABLE ] = LenBlist;
         IsbListFuncs    [ t1            ] = IsbBlist;
         IsbListFuncs    [ t1 +IMMUTABLE ] = IsbBlist;
-        IsbvListFuncs   [ t1            ] = IsbvBlist;
-        IsbvListFuncs   [ t1 +IMMUTABLE ] = IsbvBlist;
         Elm0ListFuncs   [ t1            ] = Elm0Blist;
         Elm0ListFuncs   [ t1 +IMMUTABLE ] = Elm0Blist;
         Elm0vListFuncs  [ t1            ] = Elm0vBlist;
