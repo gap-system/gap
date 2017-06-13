@@ -116,12 +116,6 @@ Obj TypeARecord(Obj obj)
   return result != NULL ? result : TYPE_AREC;
 }
 
-int IsTypedARecord(Obj obj)
-{
-  MEMBAR_READ();
-  return TNUM_OBJ(obj) == T_AREC && ADDR_OBJ(obj)[0] != NULL;
-}
-
 Obj TypeTLRecord(Obj obj)
 {
   return TYPE_TLREC;
