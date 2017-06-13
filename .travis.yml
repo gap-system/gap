@@ -28,6 +28,9 @@ matrix:
         - sudo apt-get -qq update
         - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
 
+    # test building packages
+    - env: TEST_SUITE=testpackages
+
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
       os: osx

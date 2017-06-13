@@ -153,8 +153,6 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##
 DeclareAttribute( "RecNames", IsRecord );
 
-DeclareSynonym( "RecFields", RecNames );
-
 
 #############################################################################
 ##

@@ -655,7 +655,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     fi;
 
     # ensure that all components of the augmented coset table are immutable.
-    for field in RecFields( aug ) do
+    for field in RecNames( aug ) do
       MakeImmutable( aug.(field) );
     od;
 

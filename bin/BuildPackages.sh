@@ -33,6 +33,7 @@ fi
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
 COLORS=yes
+EXIT_ON_ERR=no
 PACKAGES=()
 
 # If output does not go into a terminal (but rather into a log file),
@@ -45,6 +46,7 @@ while [[ "$#" -ge 1 ]]; do
     --with-gaproot)   GAPROOT="$1"; shift ;;
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
     --no-color)       COLORS=no ;;
+    --exit-on-error)  EXIT_ON_ERR=yes ;;
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES+=("$option") ;;
   esac
@@ -63,7 +65,7 @@ then
 fi
 
 # Some helper functions for printing user messages
-if [[ "x$COLORS" = xyes ]]
+if [[ $COLORS == yes ]]
 then
   # print notices in green, warnings in yellow, errors in read
   notice()    { printf "\033[32m%s\033[0m\n" "$@" ; }
@@ -170,6 +172,10 @@ build_fail() {
   echo ""
   warning "Failed to build $PKG"
   echo "$PKG" >> "$LOGDIR/fail.log"
+  if [[ $EXIT_ON_ERR = yes ]]
+  then
+    exit 1
+  fi
 }
 
 run_configure_and_make() {

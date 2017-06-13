@@ -204,6 +204,7 @@ Int             GrowPlist (
 **     its tnum BEFORE any element of it is examined.
 **
 **     
+**     FIXME HPC-GAP: All of this is horribly thread-unsafe!
 **
 */
 
@@ -220,8 +221,7 @@ Obj TYPE_LIST_EMPTY_IMMUTABLE;
 Obj TYPE_LIST_HOM;
 
 #define IS_TESTING_PLIST(list) \
-    (FIRST_TESTING_TNUM <= TNUM_OBJ(list) \
-  && TNUM_OBJ(list) <= LAST_TESTING_TNUM)
+    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
 
 
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
@@ -252,23 +252,24 @@ Int KTNumPlist (
 
     Obj                 loopTypeObj = 0; /* typeObj in loop               */
 
+#ifdef HPCGAP
+    if (!CheckWriteAccess(list)) {
+      return TNUM_OBJ(list);
+    }
+#endif
     /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+    testing = TEST_OBJ_FLAG(list, TESTING);
 
-    UNMARK_LIST(list, testing);
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
-    MARK_LIST(list, testing);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
 
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
-        UNMARK_LIST( list, testing );
         SET_FILT_LIST( list, FN_IS_EMPTY );
         res = TNUM_OBJ(list);
-        MARK_LIST( list, testing );
 	if (famfirst != (Obj *) 0)
 	  *famfirst = (Obj) 0;
         return res;
@@ -279,27 +280,37 @@ Int KTNumPlist (
     if ( elm == 0 ) {
         isDense = 0;
     }
+#ifdef HPCGAP
+    else if ( !CheckReadAccess(elm) ) {
+      isHom = 0;
+      areMut = 1;
+      isTable = 0;
+    }
+#endif
     else if ( IS_TESTING_PLIST(elm) ) {
         isHom   = 0;
         areMut  = IS_MUTABLE_PLIST(elm);
         isTable = 0;
     }
     else {
-	if (!testing) MARK_LIST(list, TESTING);
+#ifdef HPCGAP
+	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
+#else
+	if (!testing) SET_OBJ_FLAG(list, TESTING);
+#endif
 
 	if (IS_PLIST(elm)) {
 	    typeObj = TypePlistWithKTNum(elm, &ktnumFirst);
 	    family = FAMILY_TYPE( typeObj );
 	}
-	else
-	{
+	else {
 	    typeObj =  TYPE_OBJ(elm);
 	    family  = FAMILY_TYPE( typeObj );
 	    ktnumFirst = 0;
 	}
-	isHom   = 1;
-	areMut  = IS_MUTABLE_OBJ(elm);
-	if ( ktnumFirst >= T_PLIST_HOM ||
+        isHom   = 1;
+        areMut  = IS_MUTABLE_OBJ(elm);
+        if ( ktnumFirst >= T_PLIST_HOM ||
 	     ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
 	  /* entry is a homogenous list, so this miught be a table */
@@ -313,7 +324,7 @@ Int KTNumPlist (
 	    }
 	  
         }
-	if (!testing) UNMARK_LIST(list, TESTING);
+	if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
     }
 
     i = 2;
@@ -331,6 +342,14 @@ Int KTNumPlist (
         if ( elm == 0 ) {
             isDense = 0;
         }
+#ifdef HPCGAP
+	else if ( !CheckReadAccess(elm) ) {
+	    isHom = 0;
+	    areMut = 1;
+	    isTable = 0;
+	    isRect = 0;
+	}
+#endif
         else if ( IS_TESTING_PLIST(elm) ) {
             isHom   = 0;
             areMut  = (areMut || IS_MUTABLE_PLIST(elm));
@@ -338,7 +357,7 @@ Int KTNumPlist (
             isRect = 0;
         }
         else {
-            if(isHom) {
+            if (isHom) {
                 loopTypeObj = TYPE_OBJ(elm);
                 if ( loopTypeObj != typeObj && FAMILY_TYPE(loopTypeObj) != family ) {
                     isHom = 0;
@@ -351,8 +370,8 @@ Int KTNumPlist (
                         isTable = 0;
                         isRect = 0;
                     }
-                    if( isRect ) {
-                        if( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
+                    if ( isRect ) {
+                        if ( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
                             isRect = 0;
                         }
                     }
@@ -375,7 +394,6 @@ Int KTNumPlist (
       }
 
     /* set the appropriate flags (not the hom. flag if elms are mutable)   */
-    UNMARK_LIST( list, testing );
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
@@ -439,7 +457,6 @@ Int KTNumPlist (
 	  *famfirst = (Obj) family;
       }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -453,13 +470,15 @@ Int KTNumHomPlist (
     Int                 lenList;        /* length of list                  */
     Obj                 elm, x;         /* one element of <list>           */
     Int                 i;              /* loop variable                   */
-    Int                 testing;        /* to test or not to test type     */
     Int                 res;            /* result                          */
     Int                 isSSort;        /* list is (known to be) SSorted   */
     Int                 isNSort;        /* list is (known to be) non-sorted*/
 
-    /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+#ifdef HPCGAP
+    if (!CheckWriteAccess(list)) {
+      return TNUM_OBJ(list);
+    }
+#endif
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
@@ -567,7 +586,6 @@ Int KTNumHomPlist (
     
  finish:
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -585,10 +603,22 @@ static Obj TypePlistWithKTNum (
     Obj                 family;         /* family of elements              */
     Obj                 types;          /* types list of <family>          */
 
+#ifdef HPCGAP
+    if (CheckWriteAccess(list)) {
+      /* recursion is possible for this type of list                         */
+      SET_OBJ_FLAG( list, TESTING|TESTED );
+      tnum = KTNumPlist( list, &family);
+      CLEAR_OBJ_FLAG( list, TESTING );
+    } else {
+      tnum = TNUM_OBJ(list);
+      family = 0;
+    }
+#else
     /* recursion is possible for this type of list                         */
-    MARK_LIST( list, TESTING );
+    SET_OBJ_FLAG( list, TESTING );
     tnum = KTNumPlist( list, &family);
-    UNMARK_LIST( list, TESTING );
+    CLEAR_OBJ_FLAG( list, TESTING );
+#endif
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;
 
@@ -619,31 +649,51 @@ static Obj TypePlistWithKTNum (
     }
 
     /* handle homogeneous list                                             */
-    if ( HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
+    if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
 
         /* get the list types of the elements family */
         types  = TYPES_LIST_FAM( family );
 
-        /* if the type is not yet known, compute it                        */
-        type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
-        if ( type == 0 ) {
-            type = CALL_2ARGS( TYPE_LIST_HOM,
-                family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
-            ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+#ifdef HPCGAP
+	if (CheckWriteAccess(types)) {
+#endif
+            /* if the type is not yet known, compute it                        */
+            type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+            if ( type == 0 ) {
+                type = CALL_2ARGS( TYPE_LIST_HOM,
+                    family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
+                ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+            }
+
+            /* return the type                                                 */
+            return type;
+#ifdef HPCGAP
         }
-
-        /* return the type                                                 */
-        return type;
+#endif
     }
 
+#ifdef HPCGAP
+    UInt len = LEN_LIST(list);
+    UInt i;
+    for (i = 1; i <= len; i++) {
+      if (ELM_LIST(list, i) == (Obj) 0) {
+	if (IS_MUTABLE_OBJ(list))
+	  return TYPE_LIST_NDENSE_MUTABLE;
+	else
+	  return TYPE_LIST_NDENSE_IMMUTABLE;
+      }
+    }
+
+    if (IS_MUTABLE_OBJ(list))
+      return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+      return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+#else
     /* whats going on here?                                                */
-    else {
-        ErrorQuit(
-            "Panic: strange type tnum '%s' ('%d')",
-            (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
-        return 0;
-    }
-
+    ErrorQuit( "Panic: strange type tnum '%s' ('%d')",
+               (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
+    return 0;
+#endif
 }
 
 Obj TypePlistNDenseMut (
@@ -728,6 +778,10 @@ Obj TypePlistHom (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
         ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -757,6 +811,10 @@ Obj TypePlistCyc (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_CYC+1) );
         ASS_LIST( types, tnum-T_PLIST_CYC+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_CYC+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -784,6 +842,10 @@ Obj TypePlistFfe (
         type = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(tnum-T_PLIST_FFE+1) );
         ASS_LIST( types, tnum-T_PLIST_FFE+1, type );
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+	type = ELM0_LIST( types, tnum-T_PLIST_FFE+1 );
+#endif
     }
 
     /* return the type                                                     */
@@ -2412,9 +2474,13 @@ Int             IsPossPlist (
     /* loop over the entries of the list                                   */
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
-        if ( elm == 0)
+        if (elm == 0)
 	  return 0L;
-	if( IS_INTOBJ(elm))
+#ifdef HPCGAP
+        if ( !CheckReadAccess(elm) )
+	  return 0L;
+#endif
+	if (IS_INTOBJ(elm))
 	  {
 	    if (INT_INTOBJ(elm) <= 0 )
 	      return 0L;

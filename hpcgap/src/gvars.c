@@ -1134,7 +1134,7 @@ void InitFopyGVar (
 */
 static Int NCopyAndFopyDone;
 
-void DeclareAllGVars( void );
+static void DeclareAllGVars( void );
 
 void UpdateCopyFopyInfo ( void )
 {
@@ -1195,8 +1195,8 @@ void UpdateCopyFopyInfo ( void )
             *copy = val;
         }
     }
-    UnlockGVars();
     DeclareAllGVars();
+    UnlockGVars();
 }
 
 
@@ -1293,16 +1293,14 @@ void DeclareGVar(GVarDescriptor *gvar, char *name)
   }
 }
 
-void DeclareAllGVars( void )
+static void DeclareAllGVars( void )
 {
   GVarDescriptor *gvar;
-  LockGVars(1);
   for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
     UInt index = GVarName(gvar->name);
     gvar->ref = &(VAL_GVAR_INTERN(index));
   }
   FirstDeclaredGVar = LastDeclaredGVar = 0;
-  UnlockGVars();
 }
 
 Obj GVarValue(GVarDescriptor *gvar)

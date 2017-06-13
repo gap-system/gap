@@ -55,9 +55,8 @@ fi
 
 if [[ $HPCGAP = yes ]]
 then
-  # Add flags so that Boehm GC and libatomic headers are found, as well as HPC-GAP headers
+  # Add flags so that Boehm GC and libatomic headers are found
   CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
-  CPPFLAGS="-I$SRCDIR/hpcgap -I$SRCDIR $CPPFLAGS"
   export CPPFLAGS
 fi
 
@@ -80,11 +79,12 @@ cd profiling
 make V=1
 cd ..
 
-# Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
-if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
+# Compile edim to test gac (but not on Cygwin, where gac is known to be broken)
+if [[ $OSTYPE != Cygwin* ]]
 then
+    source $BUILDDIR/sysinfo.gap
     cd edim
-    ./configure $BUILDDIR
+    ./configure $BUILDDIR CONFIGNAME=$CONFIGNAME
     make
     cd ..
 fi
@@ -140,6 +140,33 @@ GAPInput
 GAPInput
 
     ;;
+
+testpackages)
+    # For now, all we do is try and build all packages
+    # TODO:
+    # - run package tests for selected packages
+    # - try to load some / all packages
+    # - skip packages that are known to be broken (e.g. due to missing dependencies)
+    #   -> perhaps via an --exclude=PKGNAME option for BuildPackages.sh?
+    # - enhance BuildPackages.sh to exit with non-zero exit code in case of build
+    #   issues
+    pushd $SRCDIR/pkg
+    
+    # HACK to work around bug in anupq 3.1.4 build system
+    pushd anupq*
+    touch testPq
+    popd
+    
+    # HACK: carat extracts "qcatalog", which prints thousands
+    # of lines clogging up the build log -- so remove it
+    rm -rf carat
+    
+    # start the build
+    $SRCDIR/bin/BuildPackages.sh --with-gaproot=$BUILDDIR
+    
+    popd
+    ;;
+
 *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
