@@ -440,15 +440,17 @@ void            IntrFuncCallEnd (
     /* get and check the function from the stack                           */
     func = PopObj();
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
-      args = NEW_PLIST( T_PLIST_DENSE, nr );
-      SET_LEN_PLIST( args, nr );
-      switch(nr) {
-      case 6: SET_ELM_PLIST(args,6,a6);
-      case 5: SET_ELM_PLIST(args,5,a5);
-      case 4: SET_ELM_PLIST(args,4,a4);
-      case 3: SET_ELM_PLIST(args,3,a3);
-      case 2: SET_ELM_PLIST(args,2,a2);
-      case 1: SET_ELM_PLIST(args,1,a1);
+      if ( nr <= 6 ) {
+        args = NEW_PLIST( T_PLIST_DENSE, nr );
+        SET_LEN_PLIST( args, nr );
+        switch(nr) {
+        case 6: SET_ELM_PLIST(args,6,a6);
+        case 5: SET_ELM_PLIST(args,5,a5);
+        case 4: SET_ELM_PLIST(args,4,a4);
+        case 3: SET_ELM_PLIST(args,3,a3);
+        case 2: SET_ELM_PLIST(args,2,a2);
+        case 1: SET_ELM_PLIST(args,1,a1);
+        }
       }
       val = DoOperation2Args(CallFuncListOper, func, args);
     } else {
