@@ -123,6 +123,23 @@ DeclareSynonymAttr( "GeneratorsOfGroup", GeneratorsOfMagmaWithInverses );
 
 #############################################################################
 ##
+#P  IsGeneratorsOfGroup( <gens> )
+##
+##  <ManSection>
+##  <Prop Name="IsGeneratorsOfGroup" Arg='gens'/>
+##
+##  <Description>
+##  <Ref Func="IsGeneratorsOfGroup"/> returns <K>true</K> if the
+##  elements in the list or collection <A>gens</A> generate a group,
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsGeneratorsOfGroup", IsListOrCollection );
+
+
+#############################################################################
+##
 #O  GroupString( <G>, <name> )
 ##
 ##  <ManSection>

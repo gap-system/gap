@@ -57,6 +57,7 @@ DeclareCategory( "IsDirectProductElement",
         IsDenseList
     and IsCopyable
     and IsMultiplicativeElementWithInverse
+    and IsAssociativeElement
     and IsAdditiveElementWithInverse );
 
 

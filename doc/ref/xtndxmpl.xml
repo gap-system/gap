@@ -213,7 +213,7 @@ elements of all rings <M>&ZZ; / n&ZZ;</M> lie.
 This is done as follows.
 <P/>
 <Example><![CDATA[
-gap> DeclareCategory( "IsMyZmodnZObj", IsScalar );
+gap> DeclareCategory( "IsMyZmodnZObj", IsScalar and IsAssociativeElement );
 gap> cat:= CategoryCollections( IsMyZmodnZObj );;
 gap> cat:= CategoryCollections( cat );;
 gap> cat:= CategoryCollections( cat );;

@@ -690,7 +690,7 @@ InstallMethod( AsGroup,
       return fail;
     fi;
     gens:= GeneratorsOfMagma( M );
-    if IsEmpty( gens ) or not IsGeneratorsOfMagmaWithInverses( gens ) then
+    if IsEmpty( gens ) or not IsGeneratorsOfGroup( gens ) then
       return fail;
     fi;
 
@@ -4244,7 +4244,7 @@ InstallMethod( GroupWithGenerators,
 
 InstallMethod( GroupWithGenerators,
     "generic method for collection and identity element",
-    IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ],
+    IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse and IsAssociativeElement ],
     function( gens, id )
     local G,fam,typ;
 
@@ -4275,7 +4275,7 @@ end );
 
 InstallMethod( GroupWithGenerators,
     "method for empty list and element",
-    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse and IsAssociativeElement ],
     function( empty, id )
     local G,fam,typ;
 
@@ -4310,12 +4310,12 @@ InstallMethod( GroupByGenerators,
 InstallMethod( GroupByGenerators,
     "delegate to `GroupWithGenerators'",
     IsCollsElms,
-    [ IsCollection, IsMultiplicativeElementWithInverse ],
+    [ IsCollection, IsMultiplicativeElementWithInverse and IsAssociativeElement ],
     GroupWithGenerators );
 
 InstallMethod( GroupByGenerators,
     "delegate to `GroupWithGenerators'",
-    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse and IsAssociativeElement ],
     GroupWithGenerators );
 
 
@@ -4331,42 +4331,14 @@ InstallMethod( IsCommutative,
 
 #############################################################################
 ##
-#M  IsGeneratorsOfMagmaWithinverses( <emptylist> )
+#M  IsGeneratorsOfGroup( <gens> )
 ##
-InstallMethod( IsGeneratorsOfMagmaWithInverses,
-    "for an empty list",
-    [ IsList ],
-    function( list )
-    if IsEmpty( list ) then
-      return true;
-    else
-      TryNextMethod();
-    fi;
-    end );
-
-
-#############################################################################
 ##
-#M  IsGeneratorsOfMagmaWithInverses( <gens> )
-##
-##  Eventually this default method should not be allowed to return `true'
-##  since for each admissible generating set,
-##  a specific method should be responsible.
-##
-InstallMethod( IsGeneratorsOfMagmaWithInverses,
+InstallMethod( IsGeneratorsOfGroup,
     "for a list or collection",
     [ IsListOrCollection ],
-    function( gens )
-    if IsCollection( gens ) and
-       ForAll( gens, x -> IsMultiplicativeElementWithInverse( x ) and
-                          Inverse( x ) <> fail ) then
-      Info( InfoWarning, 1,
-            "default `IsGeneratorsOfMagmaWithInverses' method returns ",
-            "`true' for ", gens );
-      return true;
-    fi;
-    return false;
-    end );
+    gens -> IsGeneratorsOfMagmaWithInverses( gens ) and
+       ForAll( gens, x -> IsAssociativeElement( x ) ) );
 
 
 #############################################################################
@@ -4383,26 +4355,26 @@ InstallGlobalFunction( Group, function( arg )
 
     # special case for matrices, because they may look like lists
     elif Length( arg ) = 1 and IsMatrix( arg[1] )
-                           and IsGeneratorsOfMagmaWithInverses( arg ) then
+                           and IsGeneratorsOfGroup( arg ) then
       return GroupByGenerators( arg );
 
     # special case for matrices, because they may look like lists
     elif Length( arg ) = 2 and IsMatrix( arg[1] )
-                           and IsGeneratorsOfMagmaWithInverses( arg ) then
+                           and IsGeneratorsOfGroup( arg ) then
       return GroupByGenerators( arg );
 
     # list of generators
     elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1] )
-                           and IsGeneratorsOfMagmaWithInverses( arg[1] ) then
+                           and IsGeneratorsOfGroup( arg[1] ) then
       return GroupByGenerators( arg[1] );
 
     # list of generators plus identity
     elif Length( arg ) = 2 and IsList( arg[1] )
-                           and IsGeneratorsOfMagmaWithInverses( arg[1] )
+                           and IsGeneratorsOfGroup( arg[1] )
                            and IsOne( arg[2] ) then
       return GroupByGenerators( arg[1], arg[2] );
 
-    elif 0 < Length( arg ) and IsGeneratorsOfMagmaWithInverses( arg ) then
+    elif 0 < Length( arg ) and IsGeneratorsOfGroup( arg ) then
       return GroupByGenerators( arg );
     fi;
 
