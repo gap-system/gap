@@ -869,17 +869,12 @@ Int LenString (
 /****************************************************************************
 **
 *F  IsbString(<list>,<pos>) . . . . . . . . . test for an element of a string
-*F  IsbvString(<list>,<pos>)  . . . . . . . . test for an element of a string
 **
 **  'IsbString' returns 1 if the string <list> contains
 **  a character at the position <pos> and 0 otherwise.
 **  It can rely on <pos> being a positive integer.
 **
-**  'IsbvString' does the same thing as 'IsbString', but it can 
-**  also rely on <pos> not being larger than the length of <list>.
-**
 **  'IsbString'  is the function in 'IsbListFuncs'  for strings.
-**  'IsbvString' is the function in 'IsbvListFuncs' for strings.
 */
 Int IsbString (
     Obj                 list,
@@ -887,14 +882,6 @@ Int IsbString (
 {
     /* since strings are dense, this must only test for the length         */
     return (pos <= GET_LEN_STRING(list));
-}
-
-Int IsbvString (
-    Obj                 list,
-    Int                 pos )
-{
-    /* since strings are dense, this can only return 1                     */
-    return 1L;
 }
 
 
@@ -2654,8 +2641,6 @@ static Int InitKernel (
         LenListFuncs    [ t1 +IMMUTABLE ] = LenString;
         IsbListFuncs    [ t1            ] = IsbString;
         IsbListFuncs    [ t1 +IMMUTABLE ] = IsbString;
-        IsbvListFuncs   [ t1            ] = IsbvString;
-        IsbvListFuncs   [ t1 +IMMUTABLE ] = IsbvString;
         Elm0ListFuncs   [ t1            ] = Elm0String;
         Elm0ListFuncs   [ t1 +IMMUTABLE ] = Elm0String;
         Elm0vListFuncs  [ t1            ] = Elm0vString;

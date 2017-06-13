@@ -319,27 +319,20 @@ Obj LengthInternal (
 /****************************************************************************
 **
 *F  ISB_LIST(<list>,<pos>)  . . . . . . . . . .  test for element from a list
-*F  ISBV_LIST(<list>,<pos>) . . . . . . . . . .  test for element from a list
 *V  IsbListFuncs[<type>]  . . . . . . . . . . . . . . table of test functions
-*V  IsbvListFuncs[<type>] . . . . . . . . . . . . . . table of test functions
 **
 **  'ISB_LIST' only calls the function pointed to by  'IsbListFuncs[<type>]',
 **  passing <list> and <pos> as arguments.  If <type> is not the  type  of  a
 **  list, then 'IsbListFuncs[<type>]' points to 'IsbListError', which signals
 **  the error.
 **
-**  'ISB_LIST' and 'ISBV_LIST'  are defined in  the declaration  part of this
+**  'ISB_LIST' is defined in  the declaration  part of this
 **  package as follows
 **
 #define ISB_LIST(list,pos) \
                         ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
-
-#define ISBV_LIST(list,pos) \
-                        ((*IsbvListFuncs[TNUM_OBJ(list)])(list,pos))
 */
 Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
-
-Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 Obj             IsbListOper;
 
@@ -2459,11 +2452,9 @@ static Int InitKernel (
     /* make and install the 'ISB_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsbListFuncs[  type ] = IsbListError;
-        IsbvListFuncs[ type ] = IsbListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsbListFuncs[  type ] = IsbListObject;
-        IsbvListFuncs[ type ] = IsbListObject;
     }
 
     /* make and install the 'ELM0_LIST' operation                          */

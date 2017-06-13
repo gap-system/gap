@@ -498,13 +498,6 @@ Int             IsbRange (
     return (pos <= GET_LEN_RANGE(list));
 }
 
-Int             IsbvRange (
-    Obj                 list,
-    Int                 pos )
-{
-    return 1L;
-}
-
 
 /****************************************************************************
 **
@@ -1644,10 +1637,6 @@ static Int InitKernel (
     IsbListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = IsbRange;
     IsbListFuncs    [ T_RANGE_SSORT            ] = IsbRange;
     IsbListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = IsbRange;
-    IsbvListFuncs   [ T_RANGE_NSORT            ] = IsbvRange;
-    IsbvListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = IsbvRange;
-    IsbvListFuncs   [ T_RANGE_SSORT            ] = IsbvRange;
-    IsbvListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = IsbvRange;
     Elm0ListFuncs   [ T_RANGE_NSORT            ] = Elm0Range;
     Elm0ListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = Elm0Range;
     Elm0ListFuncs   [ T_RANGE_SSORT            ] = Elm0Range;
