@@ -795,7 +795,7 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
       RetypeBagIfWritable( list, new ); \
      else { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       }  \
   } while (0)
 
@@ -832,7 +832,7 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
       RetypeBag( list, new ); \
     else  { \
       Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       }  \
   } while (0)
 
@@ -877,7 +877,7 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
       RetypeBag( list, new ); \
 /*    else if ( new < 0 ) { \
       Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       } */ \
   } while (0)
 
