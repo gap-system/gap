@@ -440,6 +440,9 @@ Int READ_GAP_ROOT ( Char * filename )
 
     /* dynamically or statically linked                                    */
     else if ( res == 1 || res == 2 ) {
+        // This code section covers loading of GAC compiled code; in contrast
+        // to FuncLOAD_STAT and FuncLOAD_DYN, which are typically used by
+        // kernel extensions to load C/C++ code.
         if ( SyDebugLoading ) {
             const char *s = (res == 1) ? "dynamically" : "statically";
             Pr( "#I  READ_GAP_ROOT: loading '%s' %s\n", (Int)filename, (Int)s );
