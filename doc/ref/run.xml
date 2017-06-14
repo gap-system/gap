@@ -384,13 +384,6 @@ suppresses the usual break loop behaviour of  &GAP;.  With  this  option
 This is intended for automated testing of &GAP;. This option may be 
 repeated to toggle this behavior on and off.
 </Item>
-<Mark><Index Key="-X"><C>-X</C></Index>
-<C>-X</C></Mark>
-<Item>
-tells &GAP; to do a consistency  check  of  the  library  file  and  the
-corresponding compiled module when loading the compiled module. This
-option may be repeated to toggle this behavior on and off.
-</Item>
 <Mark><Index Key="-x"><C>-x</C></Index>
 <C>-x </C><A>length</A></Mark>
 <Item>

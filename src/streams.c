@@ -431,7 +431,7 @@ Int READ_GAP_ROOT ( Char * filename )
     StructInitInfo *    info;
 
     /* try to find the file                                                */
-    res = SyFindOrLinkGapRootFile( filename, 0L, &result );
+    res = SyFindOrLinkGapRootFile( filename, &result );
 
     /* not found                                                           */
     if ( res == 0 ) {
@@ -460,7 +460,7 @@ Int READ_GAP_ROOT ( Char * filename )
     /* special handling for the other cases, if we are trying to load compiled
        modules needed for a saved workspace ErrorQuit is not available */
     else if (SyRestoring) {
-        if (res == 3 || res == 4) {
+        if ( res == 3 ) {
             Pr("Can't find compiled module '%s' needed by saved workspace\n",
                (Int) filename, 0L);
             return 0;
@@ -470,7 +470,7 @@ Int READ_GAP_ROOT ( Char * filename )
     }
     
     /* ordinary gap file                                                   */
-    else if ( res == 3 || res == 4  ) {
+    else if ( res == 3 ) {
         if ( SyDebugLoading ) {
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
