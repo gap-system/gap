@@ -101,8 +101,6 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
 */
 
