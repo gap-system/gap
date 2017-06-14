@@ -205,11 +205,6 @@ extern Int IsReadOnlyGVar (
 **  This is OK for garbage collection, but  a real problem  for saving in any
 **  event, this information  does not really want to  be saved  because it is
 **  kernel centred rather than workspace centred.
-**
-**  Accordingly we     provide  two    functions    `RemoveCopyFopyInfo'  and
-**  `RestoreCopyFopyInfo' to  remove  or restore   the  information from  the
-**  workspace.  The  Restore  function is  also   intended to  be used  after
-**  loading a saved workspace
 */
 extern void InitCopyGVar (
     const Char *        name ,
@@ -239,20 +234,6 @@ extern void InitFopyGVar (
 *F  UpdateCopyFopyInfo()  . . . . . . . . . .  convert kernel info into plist
 */
 extern void UpdateCopyFopyInfo ( void );
-
-
-/****************************************************************************
-**
-*F  RemoveCopyFopyInfo()  . . . remove the info about copies of gvars from ws
-*/
-extern void RemoveCopyFopyInfo( void );
-
-
-/****************************************************************************
-**
-*F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
-*/
-extern void RestoreCopyFopyInfo( void );
 
 
 /****************************************************************************
