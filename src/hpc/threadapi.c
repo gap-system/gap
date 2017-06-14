@@ -905,7 +905,6 @@ Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncREFINE_TYPE(Obj self, Obj obj);
-Obj FuncFIX_OBJ_REGION(Obj self, Obj obj);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec);
 Obj FuncNEW_REGION(Obj self, Obj name, Obj prec);
 Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj);
@@ -1150,9 +1149,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "REFINE_TYPE", 1, "obj",
       FuncREFINE_TYPE, "src/threadapi.c:REFINE_TYPE" },
-
-    { "FIX_OBJ_REGION", 1, "obj",
-      FuncFIX_OBJ_REGION, "src/threadapi.c:FIX_OBJ_REGION" },
 
     { "SHARE_NORECURSE", 3, "obj, string, integer",
       FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
@@ -2678,8 +2674,6 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
     Region *region;
     if (IS_BAG_REF(objects[i])) {
       region = (Region *)(REGION(objects[i]));
-      if (TEST_OBJ_FLAG(objects[i], FIXED_REGION))
-        return 0;
       if (!region || region->owner != realTLS)
         return 0;
     }
@@ -2708,17 +2702,6 @@ Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
   if (!IS_BAG_REF(obj))
     return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a short integer or finite-field element");
   MakeBagPublic(obj);
-  return obj;
-}
-
-
-Obj FuncFIX_OBJ_REGION(Obj self, Obj obj)
-{
-  if (!IS_BAG_REF(obj))
-    return ArgumentError("FIX_OBJ_REGION: Argument must not be a short integer or finite field element");
-  if (!CheckExclusiveWriteAccess(obj))
-    return ArgumentError("FIX_OBJ_REGION: Thread does not have exclusive access to object");
-  SET_OBJ_FLAG(obj, FIXED_REGION);
   return obj;
 }
 
