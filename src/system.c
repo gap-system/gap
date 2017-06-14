@@ -128,13 +128,6 @@ UInt SyCTRD;
 
 /****************************************************************************
 **
-*V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
-*/
-Int SyCheckCRCCompiledModule;
-
-
-/****************************************************************************
-**
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
 Char SyCompileInput[GAP_PATH_MAX];
@@ -1727,7 +1720,6 @@ struct optInfo options[] = {
   { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
   { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
   { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { 'X', "", toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
   { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
@@ -1770,7 +1762,6 @@ void InitSystem (
     /* Initialize global and static variables. Do it here rather than
        with initializers to allow for restart */
     SyCTRD = 1;             
-    SyCheckCRCCompiledModule = 0;
     SyCompilePlease = 0;
     SyDebugLoading = 0;
     SyHasUserHome = 0;

@@ -212,13 +212,6 @@ extern UInt SyCTRD;
 
 
 /****************************************************************************
- **
- *V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
- */
-extern Int SyCheckCRCCompiledModule;
-
-
-/****************************************************************************
 **
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
 */
