@@ -969,7 +969,7 @@ Obj FuncISB_GVAR (
       return True;
     expr = ExprGVar(gv);
     if (expr && !IS_INTOBJ(expr)) /* auto gvar */
-      return False;
+      return True;
     if (!expr || !TLVars)
       return False;
     return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;
@@ -995,7 +995,7 @@ Obj FuncVAL_GVAR (
     }
 
     /* get the value */
-    val = ValGVarTL( GVarName( CSTR_STRING(gvar) ) );
+    val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
