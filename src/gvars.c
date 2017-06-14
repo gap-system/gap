@@ -1029,11 +1029,6 @@ static Int NCopyAndFopyGVars;
 **  This is OK for garbage collection, but  a real problem  for saving in any
 **  event, this information  does not really want to  be saved  because it is
 **  kernel centred rather than workspace centred.
-**
-**  Accordingly we     provide  two    functions    `RemoveCopyFopyInfo'  and
-**  `RestoreCopyFopyInfo' to  remove  or restore   the  information from  the
-**  workspace.  The  Restore  function is  also   intended to  be used  after
-**  loading a saved workspace
 */
 void InitCopyGVar (
     const Char *        name ,
@@ -1161,17 +1156,6 @@ void RemoveCopyFopyInfo( void )
         SET_ELM_GVAR_LIST( FopiesGVars, i, 0 );
     NCopyAndFopyDone = 0;
     return;
-}
-
-
-/****************************************************************************
-**
-*F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
-*/
-void RestoreCopyFopyInfo( void )
-{
-    NCopyAndFopyDone = 0;
-    UpdateCopyFopyInfo();
 }
 
 
