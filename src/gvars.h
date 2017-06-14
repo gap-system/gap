@@ -187,14 +187,12 @@ extern Int IsReadOnlyGVar (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * copies and fopies  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitCopyGVar( <name>, <copy> )  . .  declare C variable as copy of global
 **
 **  'InitCopyGVar' makes  the C variable <cvar>  at address  <copy> a copy of
@@ -300,14 +298,12 @@ extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoGVars() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoGVars ( void );
@@ -317,6 +313,5 @@ StructInitInfo * InitInfoGVars ( void );
 
 /****************************************************************************
 **
-
 *E  gvars.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
