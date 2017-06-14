@@ -438,31 +438,11 @@ Int READ_GAP_ROOT ( Char * filename )
         return 0;
     }
 
-    /* dynamically linked                                                  */
-    else if ( res == 1 ) {
+    /* dynamically or statically linked                                    */
+    else if ( res == 1 || res == 2 ) {
         if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
-                (Int)filename, 0L );
-        }
-        info = result.module_info;
-        res  = info->initKernel(info);
-        if (!SyRestoring) {
-          UpdateCopyFopyInfo();
-          res  = res || info->initLibrary(info);
-        }
-        if ( res ) {
-            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
-        }
-        
-        RecordLoadedModule(info, 1, filename);
-        return 1;
-    }
-
-    /* statically linked                                                   */
-    else if ( res == 2 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
-                (Int)filename, 0L );
+            const char *s = (res == 1) ? "dynamically" : "statically";
+            Pr( "#I  READ_GAP_ROOT: loading '%s' %s\n", (Int)filename, (Int)s );
         }
         info = result.module_info;
         res  = info->initKernel(info);
@@ -479,18 +459,15 @@ Int READ_GAP_ROOT ( Char * filename )
 
     /* special handling for the other cases, if we are trying to load compiled
        modules needed for a saved workspace ErrorQuit is not available */
-    else if (SyRestoring)
-      {
-        if (res == 3 || res == 4)
-          {
+    else if (SyRestoring) {
+        if (res == 3 || res == 4) {
             Pr("Can't find compiled module '%s' needed by saved workspace\n",
                (Int) filename, 0L);
             return 0;
-          }
-        else
-          Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
+        }
+        Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
         SyExit(1);
-      }
+    }
     
     /* ordinary gap file                                                   */
     else if ( res == 3 || res == 4  ) {
