@@ -1484,10 +1484,10 @@ Obj FuncLOAD_DYN (
     Obj                 filename,
     Obj                 crc )
 {
-    InitInfoFunc        init;
     StructInitInfo *    info;
     Obj                 crc1;
     Int                 res;
+    InitInfoFunc        init;
 
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
@@ -1496,7 +1496,7 @@ Obj FuncLOAD_DYN (
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
-    while ( ! IS_INTOBJ(crc) && crc!=False ) {
+    while ( ! IS_INTOBJ(crc) && crc != False ) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
@@ -1569,8 +1569,8 @@ Obj FuncLOAD_STAT (
 {
     StructInitInfo *    info = 0;
     Obj                 crc1;
-    Int                 k;
     Int                 res;
+    Int                 k;
 
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
@@ -1579,7 +1579,7 @@ Obj FuncLOAD_STAT (
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
-    while ( !IS_INTOBJ(crc) && crc!=False ) {
+    while ( ! IS_INTOBJ(crc) && crc != False ) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
@@ -1589,10 +1589,7 @@ Obj FuncLOAD_STAT (
     /* try to find the module                                              */
     for ( k = 0;  CompInitFuncs[k];  k++ ) {
         info = (*(CompInitFuncs[k]))();
-        if ( info == 0 ) {
-            continue;
-        }
-        if ( ! strcmp( CSTR_STRING(filename), info->name ) ) {
+        if ( info && ! strcmp( CSTR_STRING(filename), info->name ) ) {
             break;
         }
     }
@@ -1622,6 +1619,7 @@ Obj FuncLOAD_STAT (
     /* link and init me                                                    */
     res = (info->initKernel)(info);
     UpdateCopyFopyInfo();
+
     /* Start a new executor to run the outer function of the module
        in global context */
     ExecBegin( STATE(BottomLVars) );
