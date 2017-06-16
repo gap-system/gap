@@ -193,7 +193,7 @@ DeclareSynonymAttr( "GeneratorsOfSemigroup", GeneratorsOfMagma );
 ##  <Prop Name="IsGeneratorsOfSemigroup" Arg='C'/>
 ##
 ##  <Description>
-##  This property reflects wheter the list or collection <A>C</A> generates
+##  This property reflects whether the list or collection <A>C</A> generates
 ##  a semigroup.
 ##  <Ref Prop="IsAssociativeElementCollection"/> implies 
 ##  &nbsp;<Ref Prop="IsGeneratorsOfSemigroup"/>,
@@ -299,7 +299,8 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  <free semigroup on the generators [ gen1, gen2 ]>
 ##  ]]></Example>
 ##  <P/>
-##  Also see Chapter&nbsp;<Ref Chap="Semigroups"/>.
+##  For more on associative words see 
+##  Chapter&nbsp;<Ref Chap="Associative Words"/>.
 ##  <P/>
 ##  Each free object defines a unique alphabet (and a unique family of words).
 ##  Its generators are the letters of this alphabet,
