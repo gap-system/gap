@@ -164,6 +164,9 @@ void UnlockGVars() {
 
 inline Obj ValGVar(UInt gvar) {
   Obj result = VAL_GVAR_INTERN(gvar);
+#ifdef HPCGAP
+  MEMBAR_READ();
+#endif
   return result;
 }
 
@@ -177,13 +180,31 @@ inline Obj ValGVar(UInt gvar) {
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 *V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */
+#ifdef HPCGAP
+Obj             NameGVars[GVAR_BUCKETS];
+Obj             WriteGVars[GVAR_BUCKETS];
+Obj             ExprGVars[GVAR_BUCKETS];
+Obj             CopiesGVars[GVAR_BUCKETS];
+Obj             FopiesGVars[GVAR_BUCKETS];
+UInt            CountGVars;
+
+#define ELM_GVAR_LIST( list, gvar ) \
+    ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar) )
+
+#define SET_ELM_GVAR_LIST( list, gvar, val ) \
+    SET_ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar), val )
+
+#define CHANGED_GVAR_LIST( list, gvar ) \
+    CHANGED_BAG( list[GVAR_BUCKET(gvar)] );
+
+#else   // HPCGAP
+
 Obj             NameGVars;
 Obj             WriteGVars;
 Obj             ExprGVars;
 Obj             CopiesGVars;
 Obj             FopiesGVars;
 UInt            CountGVars;
-
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list, gvar )
@@ -193,6 +214,8 @@ UInt            CountGVars;
 
 #define CHANGED_GVAR_LIST( list, gvar ) \
     CHANGED_BAG( list );
+
+#endif
 
 
 /****************************************************************************
@@ -291,7 +314,7 @@ void            AssGVar (
     MEMBAR_WRITE();
 #endif
     VAL_GVAR_INTERN(gvar) = val;
-    CHANGED_BAG( ValGVars );
+    CHANGED_GVAR_LIST( ValGVars, gvar );
 
     /* if the global variable was automatic, convert it to normal          */
     SET_ELM_GVAR_LIST( ExprGVars, gvar, 0 );
@@ -307,12 +330,18 @@ void            AssGVar (
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_GVAR_LIST( FopiesGVars, gvar );
+#ifdef HPCGAP
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
+#endif
     if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
             copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = val;
         }
     }
+#ifdef HPCGAP
+    }
+#endif
 
     /* if the values is not a function, assign the error function          */
     else if ( cops != 0 && val != 0 /* && TNUM_OBJ(val) != T_FUNCTION */ ) {
@@ -331,12 +360,18 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
+#ifdef HPCGAP
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
+#endif
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVarObj(gvar));
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
     }
+#ifdef HPCGAP
+    }
+#endif
 }
 
 
@@ -494,7 +529,7 @@ UInt GVarName (
     Int                 len;            /* length of name                  */
 
     /* First see whether it could be namespace-local: */
-    cns = CSTR_STRING(STATE(CurrNamespace));
+    cns = STATE(CurrNamespace) ? CSTR_STRING(STATE(CurrNamespace)) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
@@ -547,28 +582,35 @@ UInt GVarName (
         SET_LEN_PLIST( FopiesGVars, CountGVars );
         SET_ELM_PLIST( FopiesGVars, CountGVars, 0 );
         PtrGVars = ADDR_OBJ( ValGVars );
-    }
 
-    /* if the table is too crowed, make a larger one, rehash the names     */
-    if ( SizeGVars < 3 * CountGVars / 2 ) {
-        table = TableGVars;
-        SizeGVars = 2 * SizeGVars + 1;
-        TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-        SET_LEN_PLIST( TableGVars, SizeGVars );
-        for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
-            gvar2 = ELM_PLIST( table, i );
-            if ( gvar2 == 0 )  continue;
-            pos = 0;
-            for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
-                pos = 65599 * pos + *p;
-            }
-            pos = (pos % SizeGVars) + 1;
-            while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
+        /* if the table is too crowded, make a larger one, rehash the names     */
+        if ( SizeGVars < 3 * CountGVars / 2 ) {
+            table = TableGVars;
+            SizeGVars = 2 * SizeGVars + 1;
+            TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+#ifdef HPCGAP
+            MakeBagPublic(TableGVars);
+#endif
+            SET_LEN_PLIST( TableGVars, SizeGVars );
+            for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
+                gvar2 = ELM_PLIST( table, i );
+                if ( gvar2 == 0 )  continue;
+                pos = 0;
+                for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
+                    pos = 65599 * pos + *p;
+                }
                 pos = (pos % SizeGVars) + 1;
+                while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
+                    pos = (pos % SizeGVars) + 1;
+                }
+                SET_ELM_PLIST( TableGVars, pos, gvar2 );
             }
-            SET_ELM_PLIST( TableGVars, pos, gvar2 );
         }
     }
+
+#ifdef HPCGAP
+    UnlockGVars();
+#endif
 
     /* return the global variable                                          */
     return INT_INTOBJ(gvar);
@@ -854,7 +896,14 @@ Obj FuncIDENTS_GVAR (
     UInt                numGVars;
     Obj                 strcopy;
 
+#ifdef HPCGAP
+    LockGVars(0);
+    numGVars = CountGVars;
+    UnlockGVars();
+#else
     numGVars = LEN_PLIST(NameGVars);
+#endif
+
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
@@ -875,7 +924,14 @@ Obj FuncIDENTS_BOUND_GVARS (
     UInt                numGVars;
     Obj                 strcopy;
 
+#ifdef HPCGAP
+    LockGVars(0);
+    numGVars = CountGVars;
+    UnlockGVars();
+#else
     numGVars = LEN_PLIST(NameGVars);
+#endif
+
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
@@ -922,7 +978,6 @@ Obj FuncISB_GVAR (
     Obj                 self,
     Obj                 gvar )
 {
-  UInt gv;
     /* check the argument                                                  */
     while ( ! IsStringConv( gvar ) ) {
         gvar = ErrorReturnObj(
@@ -931,8 +986,19 @@ Obj FuncISB_GVAR (
             "you can return a string for <gvar>" );
     }
 
-    gv = GVarName( CSTR_STRING(gvar) );
-    return ( VAL_GVAR_INTERN( gv ) || ExprGVar( gv )) ? True : False;
+    UInt gv = GVarName( CSTR_STRING(gvar) );
+    if (VAL_GVAR_INTERN(gv))
+      return True;
+    Obj expr = ExprGVar(gv);
+#ifdef HPCGAP
+    if (expr && !IS_INTOBJ(expr)) /* auto gvar */
+      return False;
+    if (!expr || !TLVars)
+      return False;
+    return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;
+#else
+    return expr ? True : False;
+#endif
 }
 
 
@@ -1014,7 +1080,7 @@ typedef struct  {
 #endif
 
 static StructCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
-static Int NCopyAndFopyGVars;
+static Int NCopyAndFopyGVars = 0;
 
 
 /****************************************************************************
@@ -1037,7 +1103,13 @@ void InitCopyGVar (
     Obj *               copy )
 {
     /* make a record in the kernel for saving and loading                  */
+#ifdef HPCGAP
+    LockGVars(1);
+#endif
     if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+#ifdef HPCGAP
+        UnlockGVars();
+#endif
         Pr( "Panic, no room to record CopyGVar\n", 0L, 0L );
         SyExit(1);
     }
@@ -1045,6 +1117,9 @@ void InitCopyGVar (
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
+#ifdef HPCGAP
+    UnlockGVars();
+#endif
 }
 
 
@@ -1066,7 +1141,13 @@ void InitFopyGVar (
     Obj *               copy )
 {
     /* make a record in the kernel for saving and loading                  */
+#ifdef HPCGAP
+    LockGVars(1);
+#endif
     if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+#ifdef HPCGAP
+        UnlockGVars();
+#endif
         Pr( "Panic, no room to record FopyGVar\n", 0L, 0L );
         SyExit(1);
     }
@@ -1074,6 +1155,9 @@ void InitFopyGVar (
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
+#ifdef HPCGAP
+    UnlockGVars();
+#endif
 }
 
 
@@ -1081,7 +1165,11 @@ void InitFopyGVar (
 **
 *F  UpdateCopyFopyInfo()  . . . . . . . . . .  convert kernel info into plist
 */
-static Int NCopyAndFopyDone;
+static Int NCopyAndFopyDone = 0;
+
+#ifdef HPCGAP
+static void DeclareAllGVars( void );
+#endif
 
 void UpdateCopyFopyInfo ( void )
 {
@@ -1091,6 +1179,9 @@ void UpdateCopyFopyInfo ( void )
     const Char *        name;           /* name of the variable            */
     Obj *               copy;           /* address of the copy             */
 
+#ifdef HPCGAP
+    LockGVars(1);
+#endif
     /* loop over new copies and fopies                                     */
     for ( ; NCopyAndFopyDone < NCopyAndFopyGVars; NCopyAndFopyDone++ ) {
         name = CopyAndFopyGVars[NCopyAndFopyDone].name;
@@ -1102,6 +1193,9 @@ void UpdateCopyFopyInfo ( void )
             cops = ELM_GVAR_LIST( FopiesGVars, gvar );
             if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
+#ifdef HPCGAP
+                MakeBagPublic(cops);
+#endif
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
                 CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
@@ -1110,6 +1204,9 @@ void UpdateCopyFopyInfo ( void )
             cops = ELM_GVAR_LIST( CopiesGVars, gvar );
             if ( cops == 0 ) {
                 cops = NEW_PLIST( T_PLIST, 0 );
+#ifdef HPCGAP
+                MakeBagPublic(cops);
+#endif
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
                 CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
@@ -1139,6 +1236,10 @@ void UpdateCopyFopyInfo ( void )
             *copy = val;
         }
     }
+#ifdef HPCGAP
+    DeclareAllGVars();
+    UnlockGVars();
+#endif
 }
 
 
@@ -1146,8 +1247,33 @@ void UpdateCopyFopyInfo ( void )
 **
 *F  RemoveCopyFopyInfo()  . . . remove the info about copies of gvars from ws
 */
-void RemoveCopyFopyInfo( void )
+static void RemoveCopyFopyInfo( void )
 {
+#ifdef HPCGAP
+    UInt        i, k, l;
+
+    LockGVars(1);
+
+    for (k = 0; k < ARRAY_SIZE(CopiesGVars); ++k) {
+        if (CopiesGVars[k] == 0)
+            continue;
+        l = LEN_PLIST(CopiesGVars[k]);
+        for ( i = 1; i <= l; i++ )
+            SET_ELM_PLIST( CopiesGVars[k], i, 0 );
+    }
+
+    for (k = 0; k < ARRAY_SIZE(FopiesGVars); ++k) {
+        if (FopiesGVars[k] == 0)
+            continue;
+        l = LEN_PLIST(FopiesGVars[k]);
+        for ( i = 1; i <= l; i++ )
+            SET_ELM_PLIST( FopiesGVars[k], i, 0 );
+    }
+
+    NCopyAndFopyDone = 0;
+    UnlockGVars();
+
+#else
     UInt        i, l;
 
     l = LEN_PLIST(CopiesGVars);
@@ -1157,7 +1283,8 @@ void RemoveCopyFopyInfo( void )
     for ( i = 1; i <= l; i++ )
         SET_ELM_GVAR_LIST( FopiesGVars, i, 0 );
     NCopyAndFopyDone = 0;
-    return;
+
+#endif
 }
 
 
@@ -1209,16 +1336,14 @@ void DeclareGVar(GVarDescriptor *gvar, char *name)
   }
 }
 
-void DeclareAllGVars( void )
+static void DeclareAllGVars( void )
 {
   GVarDescriptor *gvar;
-  LockGVars(1);
   for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
     UInt index = GVarName(gvar->name);
     gvar->ref = &(VAL_GVAR_INTERN(index));
   }
   FirstDeclaredGVar = LastDeclaredGVar = 0;
-  UnlockGVars();
 }
 
 Obj GVarValue(GVarDescriptor *gvar)
@@ -1342,16 +1467,32 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  ValGVars = (Obj) 0;
-  NCopyAndFopyGVars = 0;
-  NCopyAndFopyDone = 0;
-  InitHandlerRegistration();
-  
+    InitHandlerRegistration();
+
     /* init global bags and handler                                        */
     InitGlobalBag( &ErrorMustEvalToFuncFunc,
                    "src/gvars.c:ErrorMustEvalToFuncFunc" );
     InitGlobalBag( &ErrorMustHaveAssObjFunc,
                    "src/gvars.c:ErrorMustHaveAssObjFunc" );
+#ifdef HPCGAP
+    int i;
+    static char cookies[6][GVAR_BUCKETS][10];
+
+    for (i=0; i<GVAR_BUCKETS; i++) {
+      sprintf((cookies[0][i]), "Vgv%d", i);
+      sprintf((cookies[1][i]), "Ngv%d", i);
+      sprintf((cookies[2][i]), "Wgv%d", i);
+      sprintf((cookies[3][i]), "Egv%d", i);
+      sprintf((cookies[4][i]), "Cgv%d", i);
+      sprintf((cookies[5][i]), "Fgv%d", i);
+      InitGlobalBag( ValGVars+i, (cookies[0][i]) );
+      InitGlobalBag( NameGVars+i, (cookies[1][i]) );
+      InitGlobalBag( WriteGVars+i, (cookies[2][i]) );
+      InitGlobalBag( ExprGVars+i, (cookies[3][i]) );
+      InitGlobalBag( CopiesGVars+i, (cookies[4][i]) );
+      InitGlobalBag( FopiesGVars+i, (cookies[5][i])  );
+    }
+#else
     InitGlobalBag( &ValGVars,
                    "src/gvars.c:ValGVars" );
     InitGlobalBag( &NameGVars,
@@ -1364,10 +1505,13 @@ static Int InitKernel (
                    "src/gvars.c:CopiesGVars" );
     InitGlobalBag( &FopiesGVars,
                    "src/gvars.c:FopiesGVars"  );
-    InitGlobalBag( &TableGVars,
-                   "src/gvars.c:TableGVars" );
+
     InitGlobalBag( &STATE(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
+
+#endif
+    InitGlobalBag( &TableGVars,
+                   "src/gvars.c:TableGVars" );
 
     InitHandlerFunc( ErrorMustEvalToFuncHandler,
                      "src/gvars.c:ErrorMustEvalToFuncHandler" );
@@ -1376,6 +1520,11 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+#ifdef HPCGAP
+    /* For thread-local variables */
+    InitCopyGVar("ThreadVar", &TLVars);
+#endif
 
     /* Get a copy of REREADING                                             */
     ImportGVarFromLibrary("REREADING", &REREADING);
@@ -1395,9 +1544,13 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     /* make the lists for global variables                                 */
+#ifdef HPCGAP
+    /* TODO: Implement with buckets. */
+#else
     CountGVars = LEN_PLIST( ValGVars );
     PtrGVars   = ADDR_OBJ( ValGVars );
     SizeGVars  = LEN_PLIST( TableGVars );
+#endif
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
@@ -1448,6 +1601,7 @@ static Int InitLibrary (
     ErrorMustHaveAssObjFunc = NewFunctionC(
         "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
 
+#if !defined(HPCGAP)
     /* make the lists for global variables                                 */
     ValGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( ValGVars, 0 );
@@ -1466,6 +1620,7 @@ static Int InitLibrary (
 
     FopiesGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( FopiesGVars, 0 );
+#endif
 
     /* make the list of global variables                                   */
     SizeGVars  = 14033;
