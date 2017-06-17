@@ -3198,15 +3198,7 @@ void            IntrAssList ( Int narg )
       ASS2_LIST(list, pos1, pos2, rhs);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST, narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      ASSB_LIST(list, ixs, rhs);
+      SyntaxError("[]:= only supports 1 or 2 indices");
     }
 
     /* push the right hand side again                                      */
@@ -3362,15 +3354,7 @@ void            IntrUnbList ( Int narg )
       UNB2_LIST(list, pos1, pos2);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      UNBB_LIST(list, ixs);
+      SyntaxError("Unbind[] only supports 1 or 2 indices");
     }
 
     /* push void                                                           */
@@ -3422,15 +3406,8 @@ void            IntrElmList ( Int narg )
       elm = ELM2_LIST(list, pos1, pos2);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      elm = ELMB_LIST(list, ixs);
+      SyntaxError("[] only supports 1 or 2 indices");
+      return;
     }
 
     /* push the element                                                    */
@@ -3572,15 +3549,8 @@ void            IntrIsbList ( Int narg )
       isb = ISB2_LIST(list, pos1, pos2) ? True : False;
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      isb = ISBB_LIST(list, ixs) ? True: False;
+      SyntaxError("IsBound[] only supports 1 or 2 indices");
+      isb = Fail;
     }
 
     /* push the result                                                     */
