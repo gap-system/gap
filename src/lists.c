@@ -355,6 +355,11 @@ Int             ISBB_LIST (
     return DoOperation2Args( IsbListOper, list, pos ) == True;
 }
 
+Int ISB2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    return DoOperation3Args( IsbListOper, list, pos1, pos2 ) == True;
+}
+
 
 /****************************************************************************
 **
@@ -892,6 +897,11 @@ void            UNBB_LIST (
     Obj                 pos )
 {
     DoOperation2Args( UnbListOper, list, pos );
+}
+
+void UNB2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    DoOperation3Args( UnbListOper, list, pos1, pos2 );
 }
 
 /****************************************************************************
