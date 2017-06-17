@@ -14,6 +14,7 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **
