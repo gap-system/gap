@@ -3354,6 +3354,13 @@ void            IntrUnbList ( Int narg )
         UNBB_LIST(list, pos);
       }
     }
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
+      list = PopObj();
+
+      UNB2_LIST(list, pos1, pos2);
+    }
     else {
       Obj ixs = NEW_PLIST(T_PLIST,narg);
       for (Int i = narg; i > 0; i--) {
@@ -3556,6 +3563,13 @@ void            IntrIsbList ( Int narg )
       } else {
         isb = ISBB_LIST( list, pos ) ? True : False;
       }
+    }
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
+      list = PopObj();
+
+      isb = ISB2_LIST(list, pos1, pos2) ? True : False;
     }
     else {
       Obj ixs = NEW_PLIST(T_PLIST,narg);

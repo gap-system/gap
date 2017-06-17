@@ -203,6 +203,8 @@ static inline Int ISB_LIST(Obj list, Int pos)
 
 extern Int ISBB_LIST( Obj list, Obj pos );
 
+extern Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
+
 
 /****************************************************************************
 **
@@ -459,6 +461,8 @@ static inline void UNB_LIST(Obj list, Int pos)
     GAP_ASSERT(pos > 0);
     return (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
+
+extern void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
