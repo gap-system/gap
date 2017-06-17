@@ -875,21 +875,6 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
       } */ \
   } while (0)
 
-/****************************************************************************
-**
-*F  MARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . . . mark list
-*/
-#define MARK_LIST( list, what ) \
-    RetypeBag( list, TNUM_OBJ(list) + what );
-
-
-/****************************************************************************
-**
-*F  UNMARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . unmark list
-*/
-#define UNMARK_LIST( list, what ) \
-    RetypeBag( list, TNUM_OBJ(list) - what );
-
 
 /****************************************************************************
 **

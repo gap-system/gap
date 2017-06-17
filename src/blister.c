@@ -337,7 +337,7 @@ void CleanBlistCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    UNMARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
