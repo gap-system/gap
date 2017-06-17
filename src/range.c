@@ -87,7 +87,6 @@
 
 /****************************************************************************
 **
-
 *F  NEW_RANGE() . . . . . . . . . . . . . . . . . . . . . .  make a new range
 **
 **  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
@@ -239,7 +238,6 @@
 
 /****************************************************************************
 **
-
 *F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . type of a range
 **
 **  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
@@ -301,7 +299,6 @@ Obj TypeRangeSSortMutable (
     
 /****************************************************************************
 **
-
 *F  CopyRange( <list>, <mut> )  . . . . . . . . . . . . . . . .  copy a range
 **
 **  'CopyRange' returns a structural (deep) copy of the range <list>, i.e., a
@@ -394,7 +391,6 @@ void CleanRangeCopy (
 
 /****************************************************************************
 **
-
 *F  PrintRange(<list>)  . . . . . . . . . . . . . . . . . . . . print a range
 **
 **  'PrintRange' prints the range <list>.
@@ -1147,14 +1143,11 @@ Obj Range3Check (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  FuncIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
 Obj IsRangeRepFilt;
@@ -1285,14 +1278,12 @@ a := [-9,-5..3];; INTER_RANGE(a,[-21,-18..6]); a;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
@@ -1530,7 +1521,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1748,6 +1738,5 @@ StructInitInfo * InitInfoRange ( void )
 
 /****************************************************************************
 **
-
 *E  range.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

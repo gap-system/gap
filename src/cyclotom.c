@@ -133,7 +133,6 @@
 
 /****************************************************************************
 **
-
 *V  ResultCyc . . . . . . . . . . . .  temporary buffer for the result, local
 **
 **  'ResultCyc' is used  by all the arithmetic functions  as a buffer for the
@@ -2013,7 +2012,6 @@ void MarkCycSubBags( Obj cyc )
 
 /****************************************************************************
 **
-
 *F  SaveCyc() . . . . . . . . . . . . . . . . . . . . . .  save a cyclotyomic
 **
 **  We do not save the XXX_CYC field, since it is not used.
@@ -2060,14 +2058,12 @@ void  LoadCyc ( Obj cyc )
 /****************************************************************************
 **
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2137,7 +2133,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2279,6 +2274,5 @@ StructInitInfo * InitInfoCyc ( void )
 
 /****************************************************************************
 **
-
 *E  cyclotom.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

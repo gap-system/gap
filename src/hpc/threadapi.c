@@ -1341,7 +1341,6 @@ static UInt RNAM_SIGWINCH;
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (

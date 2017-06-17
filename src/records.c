@@ -626,13 +626,11 @@ Obj FuncALL_RNAMES (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -690,7 +688,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -835,6 +832,5 @@ StructInitInfo * InitInfoRecords ( void )
 
 /****************************************************************************
 **
-
 *E  records.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

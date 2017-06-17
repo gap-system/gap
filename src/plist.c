@@ -77,7 +77,6 @@
 
 /****************************************************************************
 **
-
 *F  GROW_PLIST(<list>,<plen>) . . . .  make sure a plain list is large enough
 **
 */
@@ -880,7 +879,6 @@ Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 
 /****************************************************************************
 **
-
 *F  FuncIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
 Obj IsPListFilt;
@@ -895,7 +893,6 @@ Obj FuncIS_PLIST_REP (
 
 /****************************************************************************
 **
-
 *F  CopyPlist( <list>, <mut> )  . . . . . . . . . . . . . . copy a plain list
 **
 **  'CopyPlist' returns a  structural (deep) copy  of the plain  list <list>,
@@ -1005,7 +1002,6 @@ void CleanPlistCopy (
 
 /****************************************************************************
 **
-
 *F  EqPlist(<left>,<right>) . . . . . . . . test if two plain lists are equal
 **
 **  'EqList'  returns 'true' if  the two plain lists   <left> and <right> are
@@ -2719,7 +2715,6 @@ Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
 
 /****************************************************************************
 **
-
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
@@ -4908,6 +4903,5 @@ StructInitInfo * InitInfoPlist ( void )
 
 /****************************************************************************
 **
-
 *E  plist.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -121,7 +121,6 @@
 
 /****************************************************************************
 **
-
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
 **
 **  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
@@ -925,7 +924,6 @@ Obj FuncWindowCmd (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * error functions * * * * * * * * * * * * * * *
 */
 
@@ -1727,14 +1725,11 @@ Obj FuncLoadedModules (
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * * debug functions  * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncGASMAN( <self>, <args> )  . . . . . . . . .  expert function 'GASMAN'
 **
 **  'FuncGASMAN' implements the internal function 'GASMAN'
@@ -2945,7 +2940,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -3071,7 +3065,6 @@ StructInitInfo * InitInfoGap ( void )
 
 /****************************************************************************
 **
-
 *V  InitFuncsBuiltinModules . . . . .  list of builtin modules init functions
 */
 static InitInfoFunc InitFuncsBuiltinModules[] = {

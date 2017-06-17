@@ -65,7 +65,6 @@ extern Obj FuncASS_VEC8BIT (
 
 /****************************************************************************
 **
-
 *F  InitInfoVec8bit()  . . . . . . . . . . . . . . . . table of init functions
 */
 extern StructInitInfo * InitInfoVec8bit ( void );
@@ -75,6 +74,5 @@ extern StructInitInfo * InitInfoVec8bit ( void );
 
 /****************************************************************************
 **
-
 *E  vecgf2.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

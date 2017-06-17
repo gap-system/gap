@@ -16,7 +16,6 @@
 
 /****************************************************************************
 **
-
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
 **
 **  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
@@ -52,7 +51,6 @@ extern UInt Time;
 
 /****************************************************************************
 **
-
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
 */
 extern UInt ViewObjGVar;
@@ -62,7 +60,6 @@ extern void ViewObjHandler ( Obj obj );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * print and error  * * * * * * * * * * * * * * *
 */
 
@@ -287,7 +284,6 @@ enum {
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -482,7 +478,6 @@ extern void RecordLoadedModule (
 
 /****************************************************************************
 **
-
 *F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
 */
 extern void InitializeGap (
@@ -495,6 +490,5 @@ extern void InitializeGap (
 
 /****************************************************************************
 **
-
 *E  gap.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

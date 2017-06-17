@@ -1958,7 +1958,6 @@ static Int InitLibrary (
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2081,6 +2080,5 @@ StructInitInfo * InitInfoFuncs ( void )
 
 /****************************************************************************
 **
-
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

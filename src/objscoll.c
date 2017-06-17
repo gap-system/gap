@@ -171,7 +171,6 @@ FinPowConjCol C32Bits_SingleCollector = {
 
 /****************************************************************************
 **
-
 *V  C8Bits_CombiCollector
 */
 FinPowConjCol C8Bits_CombiCollector = {
@@ -183,7 +182,6 @@ FinPowConjCol C8Bits_CombiCollector = {
 
 /****************************************************************************
 **
-
 *V  C16Bits_CombiCollector
 */
 FinPowConjCol C16Bits_CombiCollector = {
@@ -195,7 +193,6 @@ FinPowConjCol C16Bits_CombiCollector = {
 
 /****************************************************************************
 **
-
 *V  C32Bits_CombiCollector
 */
 FinPowConjCol C32Bits_CombiCollector = {
@@ -207,7 +204,6 @@ FinPowConjCol C32Bits_CombiCollector = {
 
 /****************************************************************************
 **
-
 *V  FinPowConjCollectors
 */
 FinPowConjCol * FinPowConjCollectors [6] =
@@ -228,13 +224,11 @@ FinPowConjCol * FinPowConjCollectors [6] =
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * reduce something functions * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  CollectWordOrFail( <fc>, <sc>, <vv>, <w> )
 */
 Obj CollectWordOrFail ( 
@@ -642,13 +636,11 @@ Obj ReducedQuotient (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * exported GAP functions * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncFinPowConjCol_CollectWordOrFail( <self>, <sc>, <vv>, <w> )
 */
 Obj FuncFinPowConjCol_CollectWordOrFail ( Obj self, Obj sc, Obj vv, Obj w )
@@ -931,6 +923,5 @@ StructInitInfo * InitInfoSingleCollector ( void )
 
 /****************************************************************************
 **
-
 *E  objscoll.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

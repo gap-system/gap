@@ -398,14 +398,12 @@ extern  Obj             TypeFFE (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoFinfield()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoFinfield ( void );
@@ -415,6 +413,5 @@ StructInitInfo * InitInfoFinfield ( void );
 
 /****************************************************************************
 **
-
 *E  finfield.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

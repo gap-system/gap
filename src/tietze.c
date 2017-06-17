@@ -42,7 +42,6 @@
 
 /****************************************************************************
 **
-
 *V  TZ_SOMETHING  . . . . . . defining some constants for the Tietze routines
 */
 #define TZ_NUMGENS               1
@@ -59,7 +58,6 @@
 
 /****************************************************************************
 **
-
 *F  CheckTietzeStack( <tietze>, <ptTietze> )
 */
 void CheckTietzeStack (
@@ -196,7 +194,6 @@ void CheckTietzeRelLengths (
 
 /****************************************************************************
 **
-
 *F  FuncTzSortC( <self>, <stack> )  . . . . . . . sort the relators by length
 */
 Obj FuncTzSortC (
@@ -1694,13 +1691,11 @@ Obj  FuncReduceLetterRepWordsRewSys (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1736,7 +1731,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1792,6 +1786,5 @@ StructInitInfo * InitInfoTietze ( void )
 
 /****************************************************************************
 **
-
 *E  tietze.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -17,7 +17,6 @@
 
 /***************************************************************************
 **
-
 *F  SaveWorkspace( <fname> ) . . . . . .save the workspace to the named file
 **
 **  'SaveWorkspace' is the entry point to the workspace saving. It is not
@@ -62,14 +61,12 @@ extern ObjFunc LoadHandler();
 
 /***************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoSaveLoad()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoSaveLoad ( void );
@@ -79,6 +76,5 @@ StructInitInfo * InitInfoSaveLoad ( void );
 
 /****************************************************************************
 **
-
 *E  saveload.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

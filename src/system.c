@@ -91,13 +91,11 @@ const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
@@ -407,7 +405,6 @@ UInt SyWindow;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
 
@@ -463,7 +460,6 @@ UInt SyTimeChildrenSys ( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
 
@@ -620,7 +616,6 @@ size_t strxncat (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
 */
 
@@ -1248,14 +1243,12 @@ void SyUSleep ( UInt msecs )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
 **  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.

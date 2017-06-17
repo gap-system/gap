@@ -61,7 +61,6 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
@@ -221,7 +220,6 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
 
 /****************************************************************************
 **
-
 *F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
 **
 **  Read the current input and close the input stream.
@@ -512,7 +510,6 @@ Int READ_GAP_ROOT ( Char * filename )
 
 /****************************************************************************
 **
-
 *F  FuncCLOSE_LOG_TO()  . . . . . . . . . . . . . . . . . . . .  stop logging
 **
 **  'FuncCLOSE_LOG_TO' implements a method for 'LogTo'.
@@ -1175,7 +1172,6 @@ Obj FuncREAD_GAP_ROOT (
 
 /****************************************************************************
 **
-
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
 Obj FuncTmpName (
@@ -1294,14 +1290,12 @@ Obj FuncIsDir (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * file access test functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncLastSystemError( <self> ) .  . . . . . .  return the last system error
 */
 UInt ErrorMessageRNam;
@@ -1509,13 +1503,11 @@ Obj FuncSTRING_LIST_DIR (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * text stream functions  * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncCLOSE_FILE( <self>, <fid> ) . . . . . . . . . . . . .  close a stream
 */
 Obj FuncCLOSE_FILE (
@@ -2123,14 +2115,12 @@ Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * execution functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
 */
 static Obj    ExecArgs  [ 1024 ];
@@ -2216,14 +2206,11 @@ Obj FuncExecuteProcess (
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2404,7 +2391,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2480,6 +2466,5 @@ StructInitInfo * InitInfoStreams ( void )
 
 /****************************************************************************
 **
-
 *E  streams.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

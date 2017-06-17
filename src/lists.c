@@ -375,14 +375,12 @@ Int             ISBB_LIST (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * list access functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  Elm0ListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  'ELM0_LIST' returns the element at the position <pos> in the list <list>,
@@ -589,7 +587,6 @@ Obj FuncELM_LIST (
 
 /****************************************************************************
 **
-
 *V  ElmsListFuncs[<type>] . . . . . . . . . . .  table of selection functions
 **
 **  'ELMS_LIST' returns a  new list containing the  elements at the positions
@@ -840,7 +837,6 @@ void ElmsListLevelCheck (
 
 /****************************************************************************
 **
-
 *F  UNB_LIST(<list>,<pos>)  . . . . . . . . . . .  unbind element from a list
 *V  UnbListFuncs[<type>]  . . . . . . . . . . . . . table of unbind functions
 *F  UnbListError(<list>,<pos>)  . . . . . . . . . . . . error unbind function
@@ -2028,7 +2024,6 @@ void            PrintPathList (
 
 /****************************************************************************
 **
-
 *V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
 **
 **  If a list  with type number <tnum>  gains  the filter  with filter number
@@ -2154,14 +2149,12 @@ Obj FuncRESET_FILTER_LIST (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
 void AsssListCheck (
@@ -2242,14 +2235,12 @@ void AsssListLevelCheck (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2378,7 +2369,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2949,6 +2939,5 @@ StructInitInfo * InitInfoLists ( void )
 
 /****************************************************************************
 **
-
 *E  lists.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -60,7 +60,6 @@
 
 /****************************************************************************
 **
-
 *V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
 **
 **  'CurrLVars'  is the bag containing the  values  of the local variables of
@@ -100,7 +99,6 @@
 
 /****************************************************************************
 **
-
 *F  ObjLVar(<lvar>) . . . . . . . . . . . . . . . . value of a local variable
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
@@ -2592,7 +2590,6 @@ Int EqLVarsX (Obj x, Obj y)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * Initialize Package * * * * * * * * * * * * * * *
 */
 
@@ -2619,7 +2616,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2878,6 +2874,5 @@ StructInitInfo * InitInfoVars ( void )
 
 /****************************************************************************
 **
-
 *E  vars.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -16,7 +16,6 @@
 
 /****************************************************************************
 **
-
 *F  AddList(<list>,<obj>) . . . . . . . .  add an object to the end of a list
 **
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
@@ -118,14 +117,12 @@ extern  UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoListFunc()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoListFunc ( void );
@@ -135,6 +132,5 @@ StructInitInfo * InitInfoListFunc ( void );
 
 /****************************************************************************
 **
-
 *E  listfunc.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

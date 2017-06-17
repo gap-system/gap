@@ -73,13 +73,11 @@
 
 /****************************************************************************
 **
-
 *F * * * * wrapper for functions with variable number of arguments  * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  DoWrap0args( <self> ) . . . . . . . . . . . wrap up 0 arguments in a list
 **
 **  'DoWrap<i>args' accepts the  <i>  arguments  <arg1>, <arg2>, and   so on,
@@ -269,13 +267,11 @@ Obj DoWrap6args (
 
 /****************************************************************************
 **
-
 *F * * wrapper for functions with do not support the number of arguments  * *
 */
 
 /****************************************************************************
 **
-
 *F  DoFail0args( <self> )  . . . . . .  fail a function call with 0 arguments
 **
 **  'DoFail<i>args' accepts the <i> arguments <arg1>, <arg2>,  and so on, and
@@ -429,13 +425,11 @@ Obj DoFailXargs (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * *  wrapper for profiling * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  TimeDone  . . . . . .   amount of time spent for completed function calls
 **
 **  'TimeDone' is  the amount of time spent  for all function calls that have
@@ -868,13 +862,11 @@ Obj DoProfXargs (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
 **
 **  Every handler should  be registered (once) before  it is installed in any
@@ -1081,7 +1073,6 @@ ObjFunc HandlerOfCookie(
 
 /****************************************************************************
 **
-
 *F  NewFunction( <name>, <narg>, <nams>, <hdlr> ) . . . . make a new function
 **
 **  'NewFunction' creates and returns a new function.  <name> must be  a  GAP
@@ -1263,13 +1254,11 @@ Obj ArgStringToList(const Char *nams_c) {
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * type and print function  * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  TypeFunction( <func> )  . . . . . . . . . . . . . . .  type of a function
 **
 **  'TypeFunction' returns the type of the function <func>.
@@ -1636,7 +1625,6 @@ Obj FuncCALL_FUNC_LIST_WRAP (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * utility functions  * * * * * * * * * * * * *
 */
 
@@ -1784,7 +1772,6 @@ Obj FuncPROF_FUNC (
 
 /****************************************************************************
 **
-
 *F  FuncCLEAR_PROFILE_FUNC( <self>, <func> )  . . . . . . . . . clear profile
 */
 Obj FuncCLEAR_PROFILE_FUNC(
@@ -2024,7 +2011,6 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
 
 /****************************************************************************
 **
-
 *F  SaveFunction( <func> )  . . . . . . . . . . . . . . . . . save a function
 **
 */
@@ -2070,13 +2056,11 @@ void LoadFunction ( Obj func )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2173,7 +2157,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2279,6 +2262,5 @@ StructInitInfo * InitInfoCalls ( void )
 
 /****************************************************************************
 **
-
 *E  calls.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

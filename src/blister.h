@@ -23,7 +23,6 @@
 
 /****************************************************************************
 **
-
 *V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
 **
 **  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
@@ -61,7 +60,6 @@ static inline Int IS_BLIST_REP_WITH_COPYING(Obj list)
 
 /****************************************************************************
 **
-
 *F  PLEN_SIZE_BLIST( <size> ) .  physical length from size for a boolean list
 **
 **  'PLEN_SIZE_BLIST'  computes  the  physical  length  (e.g.  the  number of
@@ -246,14 +244,11 @@ static inline UInt * BLOCKS_BLIST(Obj list)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
 **
 **  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
@@ -289,13 +284,11 @@ extern void ConvBlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoBlist() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoBlist ( void );
@@ -305,6 +298,5 @@ StructInitInfo * InitInfoBlist ( void );
 
 /****************************************************************************
 **
-
 *E  blister.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

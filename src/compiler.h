@@ -29,13 +29,11 @@ extern Int CompileFunc (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoCompiler() . . . . . . . . . . . . . . .  table of init functions
 */
 StructInitInfo * InitInfoCompiler ( void );
@@ -45,6 +43,5 @@ StructInitInfo * InitInfoCompiler ( void );
 
 /****************************************************************************
 **
-
 *E  compiler.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

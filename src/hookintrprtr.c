@@ -321,7 +321,6 @@ void DeactivatePrintHooks(struct PrintHooks * hook)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 

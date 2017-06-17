@@ -57,7 +57,6 @@
 
 /****************************************************************************
 **
-
 *V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
 **
 **  'PtrBody' is a pointer to the current body.
@@ -66,7 +65,6 @@
 
 /****************************************************************************
 **
-
 *V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
 **
 **  'FilenameCache' is a list of previously opened filenames.
@@ -542,7 +540,6 @@ void PushBinaryOp (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * *  coder functions * * * * * * * * * * * * * * * *
 */
 
@@ -613,7 +610,6 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 
 /****************************************************************************
 **
-
 *F  CodeBegin() . . . . . . . . . . . . . . . . . . . . . . . start the coder
 *F  CodeEnd( <error> )  . . . . . . . . . . . . . . . . . . .  stop the coder
 **

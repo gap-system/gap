@@ -463,14 +463,12 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  IS_SEP( <C> ) . . . . . . . . . . . . . . . . . . . .  is <C> a separator
 */
 #define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
@@ -499,7 +497,6 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 
 /****************************************************************************
 **
-
 *F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
 **
 **  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
@@ -656,14 +653,12 @@ Char * SyWinCmd (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * open/close * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
 **  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
@@ -1045,7 +1040,6 @@ void syStopraw (
 
 /****************************************************************************
 **
-
 *F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
 **
 **  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
@@ -1224,14 +1218,12 @@ void getwindowsize( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * output * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  syEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
 
@@ -1351,14 +1343,12 @@ void SyFputs (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * input  * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
 Int SyFtell (
@@ -2786,14 +2776,12 @@ Char *SyFgetsSemiBlock (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
 */
 Int SyLastErrorNo;
@@ -2840,8 +2828,6 @@ void SySetErrorNo ( void )
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
@@ -3079,7 +3065,6 @@ UInt SyExecuteProcess (
 
 /****************************************************************************
 **
-
 *F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
 **
 **  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
@@ -3308,14 +3293,12 @@ Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSi
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * directories  * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
 **
 **  'SyTmpname' creates and returns  a new temporary name.  Subsequent  calls
@@ -3647,6 +3630,5 @@ StructInitInfo * InitInfoSysFiles ( void )
 
 /****************************************************************************
 **
-
 *E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

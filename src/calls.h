@@ -48,7 +48,6 @@
 
 /****************************************************************************
 **
-
 *T  ObjFunc . . . . . . . . . . . . . . . . type of function returning object
 **
 **  'ObjFunc' is the type of a function returning an object.
@@ -153,7 +152,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-
 *F  CALL_0ARGS(<func>)  . . . . . . . . . call a function with 0    arguments
 *F  CALL_1ARGS(<func>,<arg1>) . . . . . . call a function with 1    arguments
 *F  CALL_2ARGS(<func>,<arg1>...)  . . . . call a function with 2    arguments
@@ -188,7 +186,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-
 *F  CALL_0ARGS_PROF( <func>, <arg1> ) . . . . .  call a prof func with 0 args
 *F  CALL_1ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 1 args
 *F  CALL_2ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 2 args
@@ -229,7 +226,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-
 *F  COUNT_PROF( <prof> )  . . . . . . . . number of invocations of a function
 *F  TIME_WITH_PROF( <prof> )  . . . . . . time with    children in a function
 *F  TIME_WOUT_PROF( <prof> )  . . . . . . time without children in a function
@@ -276,7 +272,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-
 *F  FuncFILENAME_FUNC(Obj self, Obj func) . . . . . . .  filename of function
 *F  FuncSTARTLINE_FUNC(Obj self, Obj func)  . . . . .  start line of function
 *F  FuncENDLINE_FUNC(Obj self, Obj func)  . . . . . . .  end line of function
@@ -289,13 +284,11 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
 **
 **  Every handler should  be registered (once) before  it is installed in any
@@ -384,13 +377,11 @@ extern Obj ArgStringToList(const Char *nams_c);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * type and print function  * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
 **
 **  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
@@ -428,13 +419,11 @@ extern Obj CallFuncListOper;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoCalls() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoCalls ( void );
@@ -444,6 +433,5 @@ StructInitInfo * InitInfoCalls ( void );
 
 /****************************************************************************
 **
-
 *E  calls.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

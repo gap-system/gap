@@ -17,7 +17,6 @@
 
 /****************************************************************************
 **
-
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
 */
 extern Obj TRY_NEXT_METHOD;
@@ -25,7 +24,6 @@ extern Obj TRY_NEXT_METHOD;
 
 /****************************************************************************
 **
-
 *F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
 #define IS_OPERATION(func) \
@@ -104,14 +102,12 @@ extern Obj TRY_NEXT_METHOD;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  NEW_FLAGS( <flags>, <size> )  . . . . . . . . . . . . . .  new flags list
 */
 #define NEW_FLAGS( flags, size ) \
@@ -268,14 +264,12 @@ extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );
      
 /****************************************************************************
 **
-
 *F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
 */
 extern Int CountFlags;
@@ -298,7 +292,6 @@ extern Obj RESET_FILTER_OBJ;
 
 /****************************************************************************
 **
-
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
 extern Obj SetterFilter (
@@ -385,7 +378,6 @@ extern Obj NewAndFilter (
 
 /****************************************************************************
 **
-
 *V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
 */
 extern Obj ReturnTrueFilter;
@@ -393,14 +385,12 @@ extern Obj ReturnTrueFilter;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * *  internal operation functions  * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  NewOperation( <name> )  . . . . . . . . . . . . . .  make a new operation
 */
 extern Obj DoOperation0Args (
@@ -536,7 +526,6 @@ extern Obj NewProperty (
 
 /****************************************************************************
 **
-
 *F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
 **
 **  There is a problem  with uncompleted functions: if  they are  cloned then
@@ -550,7 +539,6 @@ extern void InstallMethodArgs (
 
 /****************************************************************************
 **
-
 *F  ChangeDoOperations( <oper>, <verb> )
 */
 extern void ChangeDoOperations (
@@ -584,14 +572,12 @@ extern void LoadOperationExtras( Obj oper );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoOpers() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoOpers ( void );
@@ -601,6 +587,5 @@ StructInitInfo * InitInfoOpers ( void );
 
 /****************************************************************************
 **
-
 *E  opers.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

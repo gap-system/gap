@@ -43,13 +43,11 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * *  boxed objects * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncLessBoxedObj( <self>, <left>, <right> )
 */
 Obj FuncLessBoxedObj ( Obj self, Obj left, Obj right )
@@ -70,13 +68,11 @@ Obj FuncEqualBoxedObj ( Obj self, Obj left, Obj right )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * pc word aspect * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncNBitsPcWord_Comm( <self>, <left>, <right> )
 */
 Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
@@ -145,13 +141,11 @@ Obj FuncNBitsPcWord_Quotient ( Obj self, Obj left, Obj right )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * free word aspect * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  Func8Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
 Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
@@ -305,7 +299,6 @@ Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 
 /****************************************************************************
 **
-
 *F  Func16Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
 Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
@@ -612,15 +605,12 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -692,7 +682,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -758,6 +747,5 @@ StructInitInfo * InitInfoPcElements ( void )
 
 /****************************************************************************
 **
-
 *E  objpcgel.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -12,7 +12,6 @@
 
 /****************************************************************************
 **
-
 *D  SCP_SOMETHING . . . . . . . . . . . . . . .  for combinatorial collectors
 **
 **  Definitions which are needed by the combinatorial collectors in addition
@@ -24,7 +23,6 @@
 
 /****************************************************************************
 **
-
 *D  SC_SOMETHING( <sc> )  . . . . . . . . . . .  for combinatorial collectors
 **
 */
@@ -52,14 +50,12 @@ Int C32Bits_CombiCollectWord ( Obj, Obj, Obj );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoCombiCollector()  . . . . . . . . . . . . table of init functions
 */
 
@@ -70,6 +66,5 @@ StructInitInfo * InitInfoCombiCollector ( void );
 
 /****************************************************************************
 **
-
 *E  objccoll.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

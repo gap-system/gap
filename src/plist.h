@@ -225,7 +225,6 @@ extern void            AssPlist (
 
 /****************************************************************************
 **
-
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 *F  UnbPlistImm( <list>, <pos> ) . . . . . unbind an element from a plain list
 */
@@ -249,14 +248,12 @@ void            UnbPlistImm (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoPlist() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoPlist ( void );
@@ -266,6 +263,5 @@ StructInitInfo * InitInfoPlist ( void );
 
 /****************************************************************************
 **
-
 *E  plist.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

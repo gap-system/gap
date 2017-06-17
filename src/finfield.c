@@ -88,7 +88,6 @@
 
 /****************************************************************************
 **
-
 *T  FF  . . . . . . . . . . . . . . . . . . . . . type of small finite fields
 **
 **  'FF' is the type used to represent small finite fields.
@@ -1977,14 +1976,12 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2025,7 +2022,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2153,6 +2149,5 @@ StructInitInfo * InitInfoFinfield ( void )
 
 /****************************************************************************
 **
-
 *E  finfield.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

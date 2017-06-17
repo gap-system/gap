@@ -21,7 +21,6 @@
 
 /****************************************************************************
 **
-
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
 **
 **  'Obj' is the type of objects.
@@ -266,7 +265,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
 *S  FIRST_RECORD_TNUM,   LAST_RECORD_TNUM . . . . . range of record     types
@@ -525,7 +523,6 @@ static inline const Char * TNAM_OBJ(Obj obj)
 
 /****************************************************************************
 **
-
 *F  FAMILY_TYPE( <type> ) . . . . . . . . . . . . . . . . .  family of a type
 **
 **  'FAMILY_TYPE' returns the family of the type <type>.
@@ -595,7 +592,6 @@ extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
 
 /****************************************************************************
 **
-
 *F  MUTABLE_TNUM( <type> )  . . . . . . . . . . mutable type of internal type
 */
 #define MUTABLE_TNUM(type) \
@@ -711,7 +707,6 @@ extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 /****************************************************************************
 **
-
 *F  SHALLOW_COPY_OBJ( <obj> ) . . . . . . .  make a shallow copy of an object
 **
 **  'SHALLOW_COPY_OBJ' makes a shallow copy of the object <obj>.
@@ -729,7 +724,6 @@ extern Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 /****************************************************************************
 **
-
 *F  CopyObj( <obj> )  . . . . . . . . . . make a structural copy of an object
 **
 **  'CopyObj' returns a  structural (deep) copy  of the object <obj>, i.e., a
@@ -862,7 +856,6 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 
 /****************************************************************************
 **
-
 *F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
 */
 #define IS_COMOBJ(obj)            (TNUM_OBJ(obj) == T_COMOBJ)
@@ -884,7 +877,6 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 
 /****************************************************************************
 **
-
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
 #define IS_POSOBJ(obj)            (TNUM_OBJ(obj) == T_POSOBJ)
@@ -931,14 +923,12 @@ extern void SetTypeDatObj( Obj obj, Obj type );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoObjects() . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoObjects ( void );
@@ -948,6 +938,5 @@ StructInitInfo * InitInfoObjects ( void );
 
 /****************************************************************************
 **
-
 *E  objects.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -1501,14 +1501,12 @@ UInt TriangulizeListGF2Vecs( Obj mat, UInt clearup)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * *  conversion functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  PlainGF2Vec( <list> ) . . .  . convert a GF2 vector into an ordinary list
 **
 **  'PlainGF2Vec' converts the GF2 vector <list> to a plain list.
@@ -1987,7 +1985,6 @@ Obj FuncLEN_GF2VEC (
 
 /****************************************************************************
 **
-
 *F  FuncELM0_GF2VEC( <self>, <list>, <pos> )  . select an elm of a GF2 vector
 **
 **  'ELM0_GF2VEC'  returns the element at the  position  <pos> of the boolean
@@ -2303,7 +2300,6 @@ Obj FuncASS_GF2MAT (
 
 /****************************************************************************
 **
-
 *F  FuncUNB_GF2VEC( <self>, <list>, <pos> ) . unbind position of a GF2 vector
 **
 **  'UNB_GF2VEC' unbind  the element at  the position  <pos> in  a GF2 vector
@@ -2406,14 +2402,12 @@ Obj FuncUNB_GF2MAT (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncZERO_GF2VEC( <self>, <mat> )  . . . . . . . . . . . . zero GF2 vector
 **
 **  return the zero vector over GF2 of the same length as <mat>.
@@ -4629,7 +4623,6 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -4828,7 +4821,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -4905,6 +4897,5 @@ StructInitInfo * InitInfoGF2Vec ( void )
 
 /****************************************************************************
 **
-
 *E  vecgf2.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

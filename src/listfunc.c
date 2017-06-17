@@ -56,7 +56,6 @@
 
 /****************************************************************************
 **
-
 *F  AddList(<list>,<obj>) . . . . . . . .  add an object to the end of a list
 **
 **  'AddList' adds the object <obj> to the end  of  the  list  <list>,  i.e.,
@@ -1738,14 +1737,12 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
 static StructGVarOper GVarOpers [] = {
@@ -1843,7 +1840,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1912,6 +1908,5 @@ StructInitInfo * InitInfoListFunc ( void )
 
 /****************************************************************************
 **
-
 *E  listfunc.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

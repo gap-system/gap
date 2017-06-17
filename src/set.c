@@ -418,14 +418,11 @@ Obj             FuncIS_SUBSET_SET (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  FuncADD_SET( <self>, <set>, <obj> ) . . . . . . . add an element to a set
 **
 **  'FuncADD_SET' implements the internal function 'AddSet'.
@@ -1068,13 +1065,11 @@ Obj FuncSUBTR_SET (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1110,7 +1105,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1173,6 +1167,5 @@ StructInitInfo * InitInfoSet ( void )
 
 /****************************************************************************
 **
-
 *E  set.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

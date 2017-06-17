@@ -133,14 +133,12 @@ extern Int ISBB_LIST( Obj list, Obj pos );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * list access functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  Elm0ListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package  implementing a  list type <type>  must provide  a function for
@@ -293,7 +291,6 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 /****************************************************************************
 **
-
 *V  ElmsListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package implementing a list  type <type> must  provide such a  function
@@ -358,7 +355,6 @@ extern void ElmsListLevelCheck (
 
 /****************************************************************************
 **
-
 *F  UNB_LIST(<list>,<pos>)  . . . . . . . . . . .  unbind element from a list
 *V  UnbListFuncs[<type>]  . . . . . . . . . . . . . table of unbind functions
 **
@@ -455,7 +451,6 @@ extern void AssListObject (
 
 /****************************************************************************
 **
-
 *F  IS_DENSE_LIST(<list>) . . . . . . . . . . . . . . .  test for dense lists
 *V  IsDenseListFuncs[<type>]  . . . . . .  table of dense list test functions
 **
@@ -769,7 +764,6 @@ extern  Obj             TYPES_LIST_FAM (
 
 /****************************************************************************
 **
-
 *V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
 **
 **  If a list  with type number <tnum>  gains  the filter  with filter number
@@ -899,14 +893,12 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
 extern void AsssListCheck (
@@ -938,14 +930,12 @@ extern void AsssListLevelCheck (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoLists() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoLists ( void );
@@ -955,6 +945,5 @@ StructInitInfo * InitInfoLists ( void );
 
 /****************************************************************************
 **
-
 *E  lists.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

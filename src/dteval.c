@@ -64,7 +64,6 @@ extern Obj             ShallowCopyPlist( Obj  list );
 
 /****************************************************************************
 **
-
 *F  MultGen( <xk>, <gen>, <power>, <dtpols> )
 **
 **  MultGen multiplies the word given by the exponent vector <xk> with
@@ -1011,14 +1010,12 @@ Obj       FuncDTQuotient( Obj      self,
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1051,7 +1048,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1122,7 +1118,6 @@ StructInitInfo * InitInfoDTEvaluation ( void )
 
 /****************************************************************************
 **
-
 *E  dteval.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 **
 */

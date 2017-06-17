@@ -78,7 +78,6 @@
 
 /****************************************************************************
 **
-
 *F  NEW_PERM2(<deg>)  . . . . . . . . . . . .  make a new (small) permutation
 *F  DEG_PERM2(<perm>) . . . . . . . . . . . . . degree of (small) permutation
 *F  ADDR_PERM2(<perm>)  . . . . . . . absolute address of (small) permutation
@@ -125,7 +124,6 @@
 
 /****************************************************************************
 **
-
 *V  IdentityPerm  . . . . . . . . . . . . . . . . . . .  identity permutation
 **
 **  'IdentityPerm' is an identity permutation.
@@ -4699,13 +4697,11 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -4786,7 +4782,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 
@@ -4943,7 +4938,6 @@ StructInitInfo * InitInfoPermutat ( void )
 
 /****************************************************************************
 **
-
 *E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
   

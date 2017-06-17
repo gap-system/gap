@@ -62,7 +62,6 @@
 
 /****************************************************************************
 **
-
 *F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement
 **
 **  'EXEC_STAT' executes the statement <stat>.
@@ -121,7 +120,6 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-
 *F  ExecUnknownStat(<stat>) . . . . . executor for statements of unknown type
 **
 **  'ExecUnknownStat' is the executor that is called if an attempt is made to
@@ -1728,7 +1726,6 @@ UInt ExecIntrStat (
 
 /****************************************************************************
 **
-
 *F  InterruptExecStat() . . . . . . . . interrupt the execution of statements
 **
 **  'InterruptExecStat'  interrupts the execution of   statements at the next
@@ -2172,7 +2169,6 @@ void            PrintReturnVoid (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -2339,6 +2335,5 @@ StructInitInfo * InitInfoStats ( void )
 
 /****************************************************************************
 **
-
 *E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

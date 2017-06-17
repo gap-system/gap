@@ -16,7 +16,6 @@
 
 /****************************************************************************
 **
-
 *T  CompaMethod . . . . . . . . . . type of methods for comparison operations
 **
 **  'CompaMethod'  is the type of methods  for comparison operations, i.e., a
@@ -49,7 +48,6 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * *  unary arithmetic operations * * * * * * * * * * * *
 */
 
@@ -104,7 +102,6 @@ extern void InstallZeroMutObject ( Int );
 
 /****************************************************************************
 **
-
 *F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
 **
 **  'AINV' returns the additive inverse of the object <op>.
@@ -278,13 +275,11 @@ extern void InstallInvMutObject ( Int );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * comparison operations  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  EQ( <opL>, <opR> )  . . . . . . . . . . . . . . comparison of two objects
 **
 **  'EQ' returns a nonzero value  if the object <opL>  is equal to the object
@@ -313,7 +308,6 @@ extern void InstallEqObject ( Int );
 
 /****************************************************************************
 **
-
 *F  LT( <opL>, <opR> )  . . . . . . . . . . . . . . comparison of two objects
 **
 **  'LT' returns a nonzero value if the object <opL> is  less than the object
@@ -342,7 +336,6 @@ extern void InstallLtObject ( Int );
 
 /****************************************************************************
 **
-
 *F  IN( <opL>, <opR> )  . . . . . . . . . . .  membership test of two objects
 **
 **  'IN' returns a nonzero   value if the object  <opL>  is a member  of  the
@@ -369,13 +362,11 @@ extern void InstallInObject ( Int );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * binary arithmetic operations * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  SUM( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  sum of two objects
 **
 **  'SUM' returns the sum of the two objects <opL> and <opR>.
@@ -435,7 +426,6 @@ extern void InstallSumObject ( Int );
 
 /****************************************************************************
 **
-
 *F  DIFF( <opL>, <opR> )  . . . . . . . . . . . . . difference of two objects
 **
 **  'DIFF' returns the difference of the two objects <opL> and <opR>.
@@ -495,7 +485,6 @@ extern void InstallDiffObject ( Int );
 
 /****************************************************************************
 **
-
 *F  PROD( <opL>, <opR> )  . . . . . . . . . . . . . .  product of two objects
 **
 **  'PROD' returns the product of the two objects <opL> and <opR>.
@@ -555,7 +544,6 @@ extern void InstallProdObject ( Int );
 
 /****************************************************************************
 **
-
 *F  QUO( <opL>, <opR> ) . . . . . . . . . . . . . . . quotient of two objects
 **
 **  'QUO' returns the quotient of the object <opL> by the object <opR>.
@@ -581,7 +569,6 @@ extern void InstallQuoObject ( Int );
 
 /****************************************************************************
 **
-
 *F  LQUO( <opL>, <opR> )  . . . . . . . . . . .  left quotient of two operand
 **
 **  'LQUO' returns the left quotient of the object <opL> by the object <opR>.
@@ -607,7 +594,6 @@ extern void InstallLQuoObject ( Int );
 
 /****************************************************************************
 **
-
 *F  POW( <opL>, <opR> ) . . . . . . . . . . . . . . . .  power of two objects
 **
 **  'POW' returns the power of the object <opL> by the object <opL>.
@@ -635,7 +621,6 @@ extern void InstallPowObject ( Int );
 
 /****************************************************************************
 **
-
 *F  COMM( <opL>, <opR> )  . . . . . . . . . . . . . commutator of two objects
 **
 **  'COMM' returns the commutator of the two objects <opL> and <opR>.
@@ -661,7 +646,6 @@ extern void InstallCommObject ( Int );
 
 /****************************************************************************
 **
-
 *F  MOD( <opL>, <opR> ) . . . . . . . . . . . . . .  remainder of two objects
 **
 **  'MOD' returns the remainder of the object <opL> by the object <opR>.
@@ -687,13 +671,11 @@ extern void InstallModObject ( Int );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoAriths()  . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoAriths ( void );
@@ -703,6 +685,5 @@ StructInitInfo * InitInfoAriths ( void );
 
 /****************************************************************************
 **
-
 *E  ariths.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

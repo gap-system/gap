@@ -206,7 +206,6 @@ Obj IsBoolHandler (
 
 /****************************************************************************
 **
-
 *F  ReturnTrue1( <val1> ) . . . . . . . . . . . . . . . . . .  return  'True'
 **
 **  'ReturnTrue?'  simply return  'True'  independent of  the values of   the
@@ -334,7 +333,6 @@ Obj ReturnFail3 (
 
 /****************************************************************************
 **
-
 *F  SaveBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean 
 **
 **  Actually, there is nothing to do
@@ -359,13 +357,11 @@ void LoadBool( Obj obj )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -380,7 +376,6 @@ static StructGVarFilt GVarFilts [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -523,6 +518,5 @@ StructInitInfo * InitInfoBool ( void )
 
 /****************************************************************************
 **
-
 *E  bool.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -990,14 +990,12 @@ Obj FuncUNB_GVAR (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * copies and fopies  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  CopyAndFopyGVars  . . . . . .  kernel table of kernel copies and "fopies"
 **
 **  This needs to be kept inside the kernel so that the copies can be updated
@@ -1292,14 +1290,12 @@ void SetGVar(GVarDescriptor *gvar, Obj obj)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1352,7 +1348,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1552,6 +1547,5 @@ StructInitInfo * InitInfoGVars ( void )
 
 /****************************************************************************
 **
-
 *E  gvars.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -5003,7 +5003,6 @@ Obj IsTransHandler (Obj self, Obj val) {
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {

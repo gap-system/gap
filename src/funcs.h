@@ -24,7 +24,6 @@
 
 /****************************************************************************
 **
-
 *F  MakeFunction(<fexp>)  . . . . . . . . . . . . . . . . . . make a function
 **
 **  'MakeFunction' makes a function from the function expression bag <fexp>.
@@ -67,7 +66,6 @@ static inline void CheckRecursionBefore( void )
 
 /****************************************************************************
 **
-
 *F  InitInfoFuncs() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoFuncs ( void );
@@ -77,6 +75,5 @@ StructInitInfo * InitInfoFuncs ( void );
 
 /****************************************************************************
 **
-
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

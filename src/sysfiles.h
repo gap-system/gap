@@ -338,7 +338,6 @@ extern UInt SyIsIntr ( void );
 
 /****************************************************************************
 **
-
 *F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
 extern Int SyEchoch (
@@ -354,7 +353,6 @@ extern Int SyEchoch (
 
 /****************************************************************************
 **
-
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
 extern Int SyFtell (
@@ -623,7 +621,6 @@ extern Obj SyReadStringFileGeneric(Int fid);
 
 /****************************************************************************
 **
-
 *F  InitInfoSysFiles()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoSysFiles ( void );

@@ -108,7 +108,6 @@
 
 /****************************************************************************
 **
-
 *F  TypeBlist( <list> )  . . . . . . . . . . . . . . . type of a boolean list
 **
 **  'TypeBlist' returns the type of a boolean list.
@@ -238,14 +237,11 @@ void LoadBlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * copy functions * * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  CopyBlist( <list>, <mut> )  . . . . . . . . . . . . . copy a boolean list
 **
 **  'CopyBlist' returns a structural (deep) copy  of the boolean list <list>,
@@ -347,14 +343,11 @@ void CleanBlistCopy (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  EqBlist( <listL>, <listR> ) . . . . . test if two boolean lists are equal
 **
 **  'EqBlist' returns 'true' if the two boolean lists <listL> and <listR> are
@@ -425,7 +418,6 @@ Int IsbBlist (
 
 /****************************************************************************
 **
-
 *F  Elm0Blist( <list>, <pos> )  . . . . . select an element of a boolean list
 **
 **  'Elm0Blist' returns the element at the position <pos> of the boolean list
@@ -639,7 +631,6 @@ Obj ElmsBlist (
 
 /****************************************************************************
 **
-
 *F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
 **
 **  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
@@ -772,7 +763,6 @@ void AsssBlistImm (
 
 /****************************************************************************
 **
-
 *F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
 **  'PosBlist' returns the   position of  the first  occurrence  of the  value
@@ -965,7 +955,6 @@ Int IsSSortBlist (
 
 /****************************************************************************
 **
-
 *F  ConvBlist( <list> ) . . . . . . . . .  convert a list into a boolean list
 **
 **  `ConvBlist' changes the representation of boolean  lists into the compact
@@ -1166,14 +1155,11 @@ UInt SizeBlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  FuncIS_BLIST( <self>, <val> ) . . . . . test if a value is a boolean list
 **
 **  'FuncIS_BLIST' handles the internal function 'IsBlist'.
@@ -1255,7 +1241,6 @@ Obj FuncIS_BLIST_REP (
 
 /****************************************************************************
 **
-
 *F  FuncSIZE_BLIST( <self>, <blist> ) . . number of 'true' entries in <blist>
 **
 **  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
@@ -1612,7 +1597,6 @@ Obj FuncLIST_BLIST (
 
 /****************************************************************************
 **
-
 *F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
 **
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
@@ -2303,7 +2287,6 @@ void MakeImmutableBlist( Obj blist )
 
 /****************************************************************************
 **
-
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
@@ -2637,7 +2620,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2807,6 +2789,5 @@ StructInitInfo * InitInfoBlist ( void )
 
 /****************************************************************************
 **
-
 *E  blister.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -75,7 +75,6 @@
 
 /****************************************************************************
 **
-
 *F  FuncFinPowConjCol_CollectWordOrFail( <self>, <sc>, <vv>, <w> )
 */
 extern Obj FuncFinPowConjCol_CollectWordOrFail ( Obj, Obj, Obj, Obj );
@@ -125,14 +124,12 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoSingleCollector() . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoSingleCollector ( void );
@@ -142,6 +139,5 @@ StructInitInfo * InitInfoSingleCollector ( void );
 
 /****************************************************************************
 **
-
 *E  objscoll.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

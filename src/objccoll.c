@@ -107,6 +107,5 @@ StructInitInfo * InitInfoCombiCollector ( void )
 
 /****************************************************************************
 **
-
 *E  objccoll.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

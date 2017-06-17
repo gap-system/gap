@@ -66,14 +66,12 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * standard functions for plain records * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  TypePRec( <rec> ) . . . . . . . . . . . . . . . .  type of a plain record
 **
 **  'TypePRec' returns the type of the plain record <rec>.
@@ -638,7 +636,6 @@ void SortPRecRNam (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * default functions for records  * * * * * * * * * * *
 */
 
@@ -883,13 +880,11 @@ void LoadPRec( Obj prec )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
@@ -926,7 +921,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1042,6 +1036,5 @@ StructInitInfo * InitInfoPRecord ( void )
 
 /****************************************************************************
 **
-
 *E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

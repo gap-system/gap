@@ -65,7 +65,6 @@
 
 /****************************************************************************
 **
-
 *V  IntrResult  . . . . . . . . . . . . . . . . . result value of interpreter
 **
 **  'IntrResult'  is the result value of  the interpreter, i.e., the value of
@@ -115,7 +114,6 @@
 
 /****************************************************************************
 **
-
 *F  StackObj  . . . . . . . . . . . . . . . . . . . . . . . . .  values stack
 *F  CountObj  . . . . . . . . . . . . . . . . . number of values on the stack
 *F  PushObj(<val>)  . . . . . . . . . . . . . . . . push value onto the stack
@@ -251,7 +249,6 @@ Obj             PopVoidObj ( void )
 
 /****************************************************************************
 **
-
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd( <error> )  . . . . . . . . . . . . . . . . . stop an interpreter
 **
@@ -4860,14 +4857,12 @@ void             IntrAssertEnd3Args ( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -4943,6 +4938,5 @@ StructInitInfo * InitInfoIntrprtr ( void )
 
 /****************************************************************************
 **
-
 *E  intrprtr.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
