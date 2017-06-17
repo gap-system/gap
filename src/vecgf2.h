@@ -11,6 +11,8 @@
 #ifndef GAP_VECGF2_H
 #define GAP_VECGF2_H
 
+#include <src/system.h>
+
 /****************************************************************************
 **
 *F  IS_GF2VEC_REP( <obj> )  . . . . . . check that <obj> is in GF2 vector rep

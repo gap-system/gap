@@ -166,6 +166,19 @@ typedef Bag Obj;
 
 /****************************************************************************
 **
+*V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
+**
+**  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
+**  which must be the same size as a bag identifier.
+**
+*/
+enum {
+    BIPEB =  sizeof(UInt) * 8L
+};
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
 

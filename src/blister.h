@@ -20,16 +20,7 @@
 #ifndef GAP_BLISTER_H
 #define GAP_BLISTER_H
 
-
-/****************************************************************************
-**
-*V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
-**
-**  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
-**  which must be the same size as a bag identifier.
-**
-*/
-#define BIPEB   (sizeof(UInt) * 8L)
+#include <src/system.h>
 
 /****************************************************************************
 **
