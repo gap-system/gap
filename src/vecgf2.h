@@ -27,6 +27,7 @@
     do { \
         vec = NewBag( T_DATOBJ, SIZE_PLEN_GF2VEC(len) ); \
         SetTypeDatObj(vec, type); \
+        SET_LEN_GF2VEC(vec, len); \
     } while (0)
 
 

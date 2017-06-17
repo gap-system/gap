@@ -610,7 +610,6 @@ Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
     col = LEN_GF2VEC( row1 );
     NEW_GF2VEC( prod, (IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(row1)) ? 
 		TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM, col );
-    SET_LEN_GF2VEC( prod, col );
     
     /* get the start and end block                                         */
     start = BLOCKS_GF2VEC(prod);
@@ -684,7 +683,6 @@ Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
     /* make the result vector                                              */
     NEW_GF2VEC( prod, (IS_MUTABLE_OBJ(ELM_GF2MAT(ml,1)) || IS_MUTABLE_OBJ(vr)) ? 
 		TYPE_LIST_GF2VEC :TYPE_LIST_GF2VEC_IMM, ln2 );
-    SET_LEN_GF2VEC( prod, ln2 );
 
     /* loop over the entries and multiply                                  */
     nrb = len/BIPEB;
@@ -907,7 +905,6 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   for (i = 1; i <= len; i++)
     {
       NEW_GF2VEC(row, rtype, rlen);
-      SET_LEN_GF2VEC(row, rlen);
       SET_ELM_GF2MAT(prod,i,row);
       CHANGED_BAG(prod);
     }
@@ -1093,7 +1090,6 @@ Obj FuncProdGF2VecAnyMat ( Obj self, Obj vec, Obj mat )
   NEW_GF2VEC( res,
 	      (IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1)) ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM,
 	      len1);
-  SET_LEN_GF2VEC(res,len1);
 
   /* Finally, we start work */
   for (i = 1; i <= len; i++)
@@ -1140,7 +1136,6 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
     tmp = NEW_PLIST( T_PLIST, len );
     for ( i = len;  0 < i;  i-- ) {
       NEW_GF2VEC( row, TYPE_LIST_GF2VEC, len );
-      SET_LEN_GF2VEC( row, len );
       BLOCK_ELM_GF2VEC(row,i) |= MASK_POS_GF2VEC(i);
       SET_ELM_PLIST( tmp, i, row );
       CHANGED_BAG(tmp);
@@ -1247,7 +1242,6 @@ Obj InverseGF2Mat (
     for ( i = len;  0 < i;  i-- ) {
         old = ELM_GF2MAT( mat, i );
         NEW_GF2VEC( row, TYPE_LIST_GF2VEC_IMM, len );
-        SET_LEN_GF2VEC( row, len );
         ptQ = BLOCKS_GF2VEC(old);
         ptP = BLOCKS_GF2VEC(row);
         end = ptP + ((len+BIPEB-1)/BIPEB);
@@ -1294,7 +1288,6 @@ Obj ShallowCopyVecGF2( Obj vec )
   UInt *ptrD;
   len = LEN_GF2VEC(vec);
   NEW_GF2VEC( copy, TYPE_LIST_GF2VEC, len);
-  SET_LEN_GF2VEC(copy,len);
   ptrS = BLOCKS_GF2VEC(vec);
   ptrD = BLOCKS_GF2VEC(copy);
   memcpy((void *) ptrD, (void *) ptrS, NUMBER_BLOCKS_GF2VEC(vec)*sizeof(UInt));
@@ -1353,7 +1346,6 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
       if (TransformationsNeeded)
 	{
 	  NEW_GF2VEC(coeffrow, TYPE_LIST_GF2VEC, nrows);
-	  SET_LEN_GF2VEC(coeffrow, nrows);
 	  BLOCK_ELM_GF2VEC( coeffrow, i) |= MASK_POS_GF2VEC(i);
 	}
       
@@ -1701,7 +1693,6 @@ Obj NewGF2Vec (
     
     len = LEN_PLIST(list);
     NEW_GF2VEC( res, TYPE_LIST_GF2VEC, len );
-    SET_LEN_GF2VEC( res, len );
     
     /* Otherwise make it a plain list so that we will know where it keeps
        its data -- could do much better in the case of GF(2^n) vectors that actually
@@ -2078,7 +2069,6 @@ Obj FuncELMS_GF2VEC (
 
         /* make the result vector                                          */
         NEW_GF2VEC( elms, TYPE_LIST_GF2VEC, lenPoss );
-        SET_LEN_GF2VEC( elms, lenPoss );
 
         /* loop over the entries of <positions> and select                 */
         for ( i = 1;  i <= lenPoss;  i++ ) {
@@ -2126,7 +2116,6 @@ Obj FuncELMS_GF2VEC (
 
         /* make the result vector                                          */
         NEW_GF2VEC( elms, TYPE_LIST_GF2VEC, lenPoss );
-        SET_LEN_GF2VEC( elms, lenPoss );
 	
 	/* increment 1 ranges is a block copy */
 	if (inc == 1)
@@ -2422,7 +2411,6 @@ Obj FuncZERO_GF2VEC (
     /* create a new GF2 vector                                             */
     len = LEN_GF2VEC(mat);
     NEW_GF2VEC( zero, TYPE_LIST_GF2VEC, len );
-    SET_LEN_GF2VEC( zero, len );
     return zero;
 }
 
@@ -2444,7 +2432,6 @@ Obj FuncZERO_GF2VEC_2 (
 		(Int)TNAM_OBJ(len),0L);
     
     NEW_GF2VEC( zero, TYPE_LIST_GF2VEC, INT_INTOBJ(len) );
-    SET_LEN_GF2VEC( zero, INT_INTOBJ(len) );
     return zero;
 }
 
@@ -3148,7 +3135,6 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
   /* create new matrix */
   for (i = 1; i <= w; i++) {
     NEW_GF2VEC( row,  typ, l );
-    SET_LEN_GF2VEC(row,l);
 
     ptr=BLOCKS_GF2VEC(row);
     for (n=1;n<=nrb;n++){*ptr=0;}
@@ -3484,7 +3470,6 @@ Obj FuncDistVecClosVec(
 
   /* get space for sum vector */
   NEW_GF2VEC( sum, TYPE_LIST_GF2VEC, len );
-  SET_LEN_GF2VEC( sum, len );
 
   /* do the recursive work */
   DistVecClosVec(veclis,vec,d,sum,1,LEN_PLIST(veclis),len);
@@ -3608,11 +3593,7 @@ Obj FuncAClosVec(
 
   /* get space for sum vector and zero out */
   NEW_GF2VEC( sum, TYPE_LIST_GF2VEC, len );
-  SET_LEN_GF2VEC( sum, len );
-
   NEW_GF2VEC( best, TYPE_LIST_GF2VEC, len );
-  SET_LEN_GF2VEC( best, len );
-
 
   /* do the recursive work */
   AClosVec(veclis,vec,sum,1, LEN_PLIST(veclis),len,
@@ -3647,10 +3628,7 @@ Obj FuncAClosVecCoords(
 
   /* get space for sum vector and zero out */
   NEW_GF2VEC( sum, TYPE_LIST_GF2VEC, len );
-  SET_LEN_GF2VEC( sum, len );
-
   NEW_GF2VEC( best, TYPE_LIST_GF2VEC, len );
-  SET_LEN_GF2VEC( best, len );
 
   coords = NEW_PLIST(  T_PLIST_CYC, len2 );
   SET_LEN_PLIST( coords, len2 );
@@ -3719,7 +3697,6 @@ UInt CosetLeadersInnerGF2( Obj veclis,
 	  if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
 	    {
 	      NEW_GF2VEC(vc, TYPE_LIST_GF2VEC_IMM, len);
-	      SET_LEN_GF2VEC(vc, len);
 	      for (j = 0; j < NUMBER_BLOCKS_GF2VEC(v); j++)
 		BLOCKS_GF2VEC(vc)[j] = BLOCKS_GF2VEC(v)[j];
 	      SET_ELM_PLIST(leaders,sy+1,vc);
@@ -3766,10 +3743,8 @@ Obj FuncCOSET_LEADERS_INNER_GF2( Obj self, Obj veclis, Obj weight, Obj tofind, O
   
   lenv = LEN_PLIST(veclis);
   NEW_GF2VEC(v, TYPE_LIST_GF2VEC, lenv);
-  SET_LEN_GF2VEC(v, lenv);
   lenw = LEN_GF2VEC(ELM_PLIST(ELM_PLIST(veclis,1),1));
-  NEW_GF2VEC(w, TYPE_LIST_GF2VEC,lenw );
-  SET_LEN_GF2VEC(w,lenw);
+  NEW_GF2VEC(w, TYPE_LIST_GF2VEC, lenw);
   if (lenw > BIPEB-4)
     ErrorMayQuit("COSET_LEADERS_INNER_GF2: too many cosets to return the leaders in a plain list",0,0);
   return INTOBJ_INT(CosetLeadersInnerGF2( veclis, v, w, INT_INTOBJ(weight), 1, leaders, INT_INTOBJ(tofind)));
@@ -4142,7 +4117,6 @@ Obj ProductCoeffsGF2Vec( Obj vec1, UInt len1, Obj vec2, UInt len2)
   else
     len = len1 + len2 -1;
   NEW_GF2VEC(prod, TYPE_LIST_GF2VEC, len);
-  SET_LEN_GF2VEC(prod, len);
 
   /* better to do the longer loop on the inside */
   if (len2 < len1)
@@ -4327,12 +4301,10 @@ Obj FuncQUOTREM_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
      }
 
      NEW_GF2VEC(remv, TYPE_LIST_GF2VEC, len1a);
-     SET_LEN_GF2VEC(remv, len1a);
      memcpy((void *)BLOCKS_GF2VEC(remv), (void *)BLOCKS_GF2VEC(vec1),
 	    ((len1a + BIPEB-1)/BIPEB)*sizeof(UInt));
      
      NEW_GF2VEC(quotv, TYPE_LIST_GF2VEC, len1a-len2a+1);
-     SET_LEN_GF2VEC(quotv, len1a-len2a+1);
      ReduceCoeffsGF2Vec( remv, vec2, len2a, quotv);
      
      ret = NEW_PLIST(T_PLIST_TAB, 2);
@@ -4556,7 +4528,6 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 
   for (i = 1; i <= nrowp; i++) {
     NEW_GF2VEC(row, type, ncolp);
-    SET_LEN_GF2VEC(row, ncolp);
     SET_ELM_GF2MAT(mat,i,row);
     CHANGED_BAG(mat);
   }
