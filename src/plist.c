@@ -1000,7 +1000,7 @@ Obj CopyPlist (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    MARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     for ( i = 1; i <= LEN_PLIST(copy); i++ ) {
@@ -1051,7 +1051,7 @@ void CleanPlistCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    UNMARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 
     /* clean the subvalues                                                 */
     for ( i = 1; i <= LEN_PLIST(list); i++ ) {

@@ -618,7 +618,7 @@ Obj CopyString (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    MARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     memcpy((void*)(ADDR_OBJ(copy)+1), (void*)(ADDR_OBJ(list)+1), 
@@ -661,7 +661,7 @@ void CleanStringCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    UNMARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
