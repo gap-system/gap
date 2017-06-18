@@ -177,7 +177,7 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
     T := NullMat(n,m);
     for j in [1..m] do
       for i in [1..Minimum(r,j)] do
-        T[i][j]:=R[i][piv[j]];
+        T[i,j]:=R[i,piv[j]];
       od;
     od;
   fi;
@@ -188,13 +188,13 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
   for k in [1..m] do
     Info(InfoMatInt,2,"SNFofREF - working on column ",k);
     if k<=r then
-      d := d*AbsInt(T[k][k]);
+      d := d*AbsInt(T[k,k]);
       Apply(T[k],x->x mod (2*d));
     fi;
 
     t := Minimum(k,r);
     for i in [t-1,t-2..si] do
-      t := MATINTmgcdex(A[i],T[i][k],[T[i+1][k]])[1];
+      t := MATINTmgcdex(A[i],T[i,k],[T[i+1,k]])[1];
       if t<>0 then
         AddRowVector(T[i],T[i+1],t);
         Apply(T[i],x->x mod A[i]);
@@ -202,21 +202,21 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
     od;
 
     for i in [si..Minimum(k-1,r)] do
-      g := Gcdex(A[i],T[i][k]);
-      T[i][k] := 0;
+      g := Gcdex(A[i],T[i,k]);
+      T[i,k] := 0;
       if g.gcd<>A[i] then
         b := QuoInt(A[i],g.gcd);
         A[i] := g.gcd;
         for ii in [i+1..Minimum(k-1,r)] do
-          AddRowVector(T[ii],T[i],-g.coeff2*QuoInt(T[ii][k],A[i]) mod A[ii]);
-          T[ii][k] := b*T[ii][k];
+          AddRowVector(T[ii],T[i],-g.coeff2*QuoInt(T[ii,k],A[i]) mod A[ii]);
+          T[ii,k] := b*T[ii,k];
 
           Apply(T[ii],x->x mod A[ii]);
         od;
         if k<=r then
-          t := g.coeff2*QuoInt(T[k][k],g.gcd);
+          t := g.coeff2*QuoInt(T[k,k],g.gcd);
           AddRowVector(T[k],T[i],-t);
-          T[k][k]:=b*T[k][k];
+          T[k,k]:=b*T[k,k];
         fi;
         Apply(T[i],x->x mod A[i]);
         if A[i]=1 then si := i+1; fi;
@@ -224,13 +224,13 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
     od;
 
     if k<=r then
-      A[k] := AbsInt(T[k][k]);
+      A[k] := AbsInt(T[k,k]);
       Apply(T[k],x->x mod A[k]);
     fi;
 
   od;
 
-  for i in [1..r] do T[i][i] := A[i]; od;
+  for i in [1..r] do T[i,i] := A[i]; od;
 
   return T;
 
@@ -313,7 +313,7 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
 
   #Embed arg[1] in 2 larger "id" matrix
   n := Length(arg[1])+2;
-  m := Length(arg[1][1])+2;
+  m := Length(arg[1,1])+2;
   k:=ListWithIdenticalEntries(m,0);
   if opt[5] then
     # change the matrix
@@ -326,21 +326,21 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     A := [];
     for i in [2..n-1] do
       #A[i] := [0];
-      #Append(A[i],arg[1][i-1]);
-      #A[i][m] := 0;
+      #Append(A[i],arg[1,i-1]);
+      #A[i,m] := 0;
       A[i]:=ShallowCopy(k);
-      A[i]{[2..m-1]}:=arg[1][i-1];
+      A[i]{[2..m-1]}:=arg[1,i-1];
     od;
   fi;
   A[1]:=ShallowCopy(k);
   A[n]:=k;
-  A[1][1] := 1;
-  A[n][m] := 1;
+  A[1,1] := 1;
+  A[n,m] := 1;
 
   if opt[3] then
     C := IdentityMat(n);
     Q := NullMat(n,n);
-    Q[1][1] := 1;
+    Q[1,1] := 1;
   fi;
 
   if opt[1] and opt[4] then
@@ -356,12 +356,12 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     r := r+1;
     c1 := c2;
     rp[r] := c1;
-    if opt[3] then Q[r+1][r+1] := 1; fi;
+    if opt[3] then Q[r+1,r+1] := 1; fi;
 
     j := c1+1;
     while j<=m do
       k := r+1;
-      while k<=n and A[r][c1]*A[k][j]=A[k][c1]*A[r][j] do k := k+1; od;
+      while k<=n and A[r,c1]*A[k,j]=A[k,c1]*A[r,j] do k := k+1; od;
       if k<=n then c2 := j; j := m; fi;
       j := j+1;
     od;
@@ -373,75 +373,75 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       Add(L,c2);
       for j in L do
         if j=c2 then
-          b:=A[r][c2];a:=A[r][c1];
+          b:=A[r,c2];a:=A[r,c1];
           for i in [r+1..n] do
             if b<>1 then
-              g:=Gcdex(b,A[i][c2]);
+              g:=Gcdex(b,A[i,c2]);
               b:=g.gcd;
-              a:=g.coeff1*a+g.coeff2*A[i][c1];
+              a:=g.coeff1*a+g.coeff2*A[i,c1];
             fi;
           od;
           N:=0;
           for i in [r..n] do
-            if N<>1 then N:=GcdInt(N,A[i][c1]-QuoInt(A[i][c2],b)*a);fi;
+            if N<>1 then N:=GcdInt(N,A[i,c1]-QuoInt(A[i,c2],b)*a);fi;
           od;
         else
-          c := MATINTmgcdex(N,A[r][j],A{[r+1..n]}[j]);
-          b := A[r][j]+c*A{[r+1..n]}[j];
-          a := A[r][c1]+c*A{[r+1..n]}[c1];
+          c := MATINTmgcdex(N,A[r,j],A{[r+1..n]}[j]);
+          b := A[r,j]+c*A{[r+1..n]}[j];
+          a := A[r,c1]+c*A{[r+1..n]}[c1];
         fi;
         t := MATINTmgcdex(N,a,[b])[1];
-        tmp := A[r][c1]+t*A[r][j];
-        while tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] do
+        tmp := A[r,c1]+t*A[r,j];
+        while tmp=0 or tmp*A[k,c2]=(A[k,c1]+t*A[k,j])*A[r,c2] do
           t := t+1+MATINTmgcdex(N,a+t*b+b,[b])[1];
-          tmp := A[r][c1]+t*A[r][j];
+          tmp := A[r,c1]+t*A[r,j];
         od;
         if t>0 then
-          for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
-          if opt[4] then B[j][c1] := B[j][c1]+t; fi;
+          for i in [1..n] do A[i,c1] := A[i,c1]+t*A[i,j]; od;
+          if opt[4] then B[j,c1] := B[j,c1]+t; fi;
         fi;
       od;
-      if A[r][c1]*A[k][c1+1]=A[k][c1]*A[r][c1+1] then
-        for i in [1..n] do A[i][c1+1] := A[i][c1+1]+A[i][c2]; od;
-        if opt[4] then B[c2][c1+1] := 1; fi;
+      if A[r,c1]*A[k,c1+1]=A[k,c1]*A[r,c1+1] then
+        for i in [1..n] do A[i,c1+1] := A[i,c1+1]+A[i,c2]; od;
+        if opt[4] then B[c2,c1+1] := 1; fi;
       fi;
       c2 := c1+1;
     fi;
 
-    c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
+    c := MATINTmgcdex(AbsInt(A[r,c1]),A[r+1,c1],A{[r+2..n]}[c1]);
     for i in [r+2..n] do
       if c[i-r-1]<>0 then
         AddRowVector(A[r+1],A[i],c[i-r-1]);
         if opt[3] then
-          C[r+1][i] := c[i-r-1];
+          C[r+1,i] := c[i-r-1];
           AddRowVector(Q[r+1],Q[i],c[i-r-1]);
         fi;
       fi;
     od;
 
     i := r+1;
-    while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do i := i+1; od;
+    while A[r,c1]*A[i,c2]=A[i,c1]*A[r,c2] do i := i+1; od;
     if i>r+1 then
-      c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
+      c := MATINTmgcdex(AbsInt(A[r,c1]),A[r+1,c1]+A[i,c1],[A[i,c1]])[1]+1;;
       AddRowVector(A[r+1],A[i],c);
       if opt[3] then
-        C[r+1][i] := C[r+1][i]+c;
+        C[r+1,i] := C[r+1,i]+c;
         AddRowVector(Q[r+1],Q[i],c);
       fi;
     fi;
 
-    g := MATINTbezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
-    sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
+    g := MATINTbezout(A[r,c1],A[r,c2],A[r+1,c1],A[r+1,c2]);
+    sig:=sig*SignInt(A[r,c1]*A[r+1,c2]-A[r,c2]*A[r+1,c1]);
     A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
     if opt[3] then
       Q{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*Q{[r,r+1]};
     fi;
 
     for i in [r+2..n] do
-      q := QuoInt(A[i][c1],A[r][c1]);
+      q := QuoInt(A[i,c1],A[r,c1]);
       AddRowVector(A[i],A[r],-q);
       if opt[3] then AddRowVector(Q[i],Q[r],-q); fi;
-      q := QuoInt(A[i][c2],A[r+1][c2]);
+      q := QuoInt(A[i,c2],A[r+1,c2]);
       AddRowVector(A[i],A[r+1],-q);
       if opt[3] then AddRowVector(Q[i],Q[r+1],-q); fi;
     od;
@@ -469,15 +469,15 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     for i in [r, r-1 .. 1] do
       Info(InfoMatInt,2,"DoNFIM - reducing row ",i);
       for j in [i+1 .. r+1] do
-        q := QuoInt(A[i][rp[j]]-(A[i][rp[j]] mod A[j][rp[j]]),A[j][rp[j]]);
+        q := QuoInt(A[i,rp[j]]-(A[i,rp[j]] mod A[j,rp[j]]),A[j,rp[j]]);
         AddRowVector(A[i],A[j],-q);
         if opt[3] then AddRowVector(Q[i],Q[j],-q); fi;
       od;
       if opt[1] and i<r then
         for j in [i+1..m] do
-          q := QuoInt(A[i][j],A[i][i]);
-          for k in [1..i] do A[k][j] := A[k][j]-q*A[k][i]; od;
-          if opt[4] then P[i][j] := -q; fi;
+          q := QuoInt(A[i,j],A[i,i]);
+          for k in [1..i] do A[k,j] := A[k,j]-q*A[k,i]; od;
+          if opt[4] then P[i,j] := -q; fi;
         od;
       fi;
     od;
@@ -486,47 +486,47 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   #Smith w/ row but not col transforms
   if opt[1] and opt[3] and not opt[4] then
     for i in [1..r-1] do
-      t := A[i][i];
+      t := A[i,i];
       A[i] := List([1..m],x->0);
-      A[i][i] := t;
+      A[i,i] := t;
     od;
     for j in [r+1..m-1] do
-      A[r][r] := GcdInt(A[r][r],A[r][j]);
-      A[r][j] := 0;
+      A[r,r] := GcdInt(A[r,r],A[r,j]);
+      A[r,j] := 0;
     od;
   fi;
 
   #smith w/ col transforms
   if opt[1] and opt[4] and r<m-1 then
-    c := MATINTmgcdex(A[r][r],A[r][r+1],A[r]{[r+2..m-1]});
+    c := MATINTmgcdex(A[r,r],A[r,r+1],A[r]{[r+2..m-1]});
     for j in [r+2..m-1] do
-      A[r][r+1] := A[r][r+1]+c[j-r-1]*A[r][j];
-      B[j][r+1] := c[j-r-1];
-      for i in [1..r] do P[i][r+1] := P[i][r+1]+c[j-r-1]*P[i][j]; od;
+      A[r,r+1] := A[r,r+1]+c[j-r-1]*A[r,j];
+      B[j,r+1] := c[j-r-1];
+      for i in [1..r] do P[i,r+1] := P[i,r+1]+c[j-r-1]*P[i,j]; od;
     od;
     P[r+1] := List([1..m],x->0);
-    P[r+1][r+1] := 1;
-    g := Gcdex(A[r][r],A[r][r+1]);
-    A[r][r] := g.gcd;
-    A[r][r+1] := 0;
+    P[r+1,r+1] := 1;
+    g := Gcdex(A[r,r],A[r,r+1]);
+    A[r,r] := g.gcd;
+    A[r,r+1] := 0;
     for i in [1..r+1] do
-      t := P[i][r];
-      P[i][r] := P[i][r]*g.coeff1+P[i][r+1]*g.coeff2;
-      P[i][r+1] := t*g.coeff3+P[i][r+1]*g.coeff4;
+      t := P[i,r];
+      P[i,r] := P[i,r]*g.coeff1+P[i,r+1]*g.coeff2;
+      P[i,r+1] := t*g.coeff3+P[i,r+1]*g.coeff4;
     od;
     for j in [r+2..m-1] do
-      q := QuoInt(A[r][j],A[r][r]);
-      for i in [1..r+1] do P[i][j] := P[i][j]-q*P[i][r]; od;
-      A[r][j] := 0;
+      q := QuoInt(A[r,j],A[r,r]);
+      for i in [1..r+1] do P[i,j] := P[i,j]-q*P[i,r]; od;
+      A[r,j] := 0;
     od;
     for i in [r+2..m-1] do
       P[i] := List([1..m],x->0);
-      P[i][i] := 1;
+      P[i,i] := 1;
     od;
   fi;
 
   #row transforms finisher
-  if opt[3] then for i in [r+2..n] do Q[i][i]:= 1; od; fi;
+  if opt[3] then for i in [r+2..n] do Q[i,i]:= 1; od; fi;
 
   for i in [2..n-1] do
     A[i-1]:=A[i]{[2..m-1]};
@@ -807,7 +807,7 @@ local F, S, M, r, T, R;
   M := r.coltrans^-1 * F;
   R := rec( complement := BaseIntMat( M{[1+r.rank..Length(M)]} ),
             sub := r.rowtrans * T * F,
-            moduli := List( [1..r.rank], i -> r.normal[i][i] ) );
+            moduli := List( [1..r.rank], i -> r.normal[i,i] ) );
   return R;
 end);
 
@@ -852,7 +852,7 @@ local norm, rs, t, M, r;
   M := Concatenation( rs, [v] );
   r := NormalFormIntMat( M, 4 );
   if r.rank = Length(r.normal) or
-     r.rowtrans[Length(M)][Length(M)] <> 1 then
+     r.rowtrans[Length(M),Length(M)] <> 1 then
     return fail;
   fi;
   return -r.rowtrans[Length(M)]{[1..r.rank]} * t{[1..r.rank]};
@@ -888,7 +888,7 @@ local norm, rs, t, M, r, kern, len;
   M := Concatenation( rs, [v] );
   r := NormalFormIntMat( M, 4 );
   if r.rank = Length(r.normal) or
-     r.rowtrans[Length(M)][Length(M)] <> 1 then
+     r.rowtrans[Length(M),Length(M)] <> 1 then
     return [fail,kern];
   fi;
   return [-r.rowtrans[Length(M)]{[1..r.rank]} * t{[1..r.rank]}, kern];
@@ -918,10 +918,10 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
   for i in [2..n-1] do
     A[i] := [0];
     Append(A[i],mat[i-1]);
-    A[i][m] := 0;
+    A[i,m] := 0;
   od;
   A[n] := List([1..m],x->0);
-  A[1][1] := 1;      A[n][m] := 1;
+  A[1,1] := 1;      A[n,m] := 1;
 
   r := 0;    c2 := 1;
   while m>c2 do
@@ -932,12 +932,12 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
     j := c1+1;
     while j<=m do
       k := r+1;
-      while k<=n and A[r][c1]*A[k][j]=A[k][c1]*A[r][j] do k := k+1; od;
+      while k<=n and A[r,c1]*A[k,j]=A[k,c1]*A[r,j] do k := k+1; od;
       if k<=n then c2 := j; j := m; fi;
       j := j+1;
     od;
 
-    c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
+    c := MATINTmgcdex(AbsInt(A[r,c1]),A[r+1,c1],A{[r+2..n]}[c1]);
     for i in [r+2..n] do
       if c[i-r-1]<>0 then
         AddRowVector(A[r+1],A[i],c[i-r-1]);
@@ -945,30 +945,30 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
     od;
 
     i := r+1;
-    while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do
+    while A[r,c1]*A[i,c2]=A[i,c1]*A[r,c2] do
       i := i+1;
     od;
 
     if i>r+1 then
-      c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
+      c := MATINTmgcdex(AbsInt(A[r,c1]),A[r+1,c1]+A[i,c1],[A[i,c1]])[1]+1;;
       AddRowVector(A[r+1],A[i],c);
     fi;
 
-    g := MATINTbezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
-    sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
+    g := MATINTbezout(A[r,c1],A[r,c2],A[r+1,c1],A[r+1,c2]);
+    sig:=sig*SignInt(A[r,c1]*A[r+1,c2]-A[r,c2]*A[r+1,c1]);
     if sig=0 then return 0;fi;
     A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
 
     for i in [r+2..n] do
-      q := QuoInt(A[i][c1],A[r][c1]);
+      q := QuoInt(A[i,c1],A[r,c1]);
       AddRowVector(A[i],A[r],-q);
-      q := QuoInt(A[i][c2],A[r+1][c2]);
+      q := QuoInt(A[i,c2],A[r+1,c2]);
       AddRowVector(A[i],A[r+1],-q);
     od;
   od;
 
   for i in [2..r+1] do
-    sig:=sig*A[i][i];
+    sig:=sig*A[i,i];
   od;
 
   return sig;
