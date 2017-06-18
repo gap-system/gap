@@ -23,6 +23,15 @@ InstallMethod(Zero,
         [IsRectangularTable and IsAdditiveElementWithZeroCollColl and IsInternalRep],
         ZERO_ATTR_MAT);
 
+# Fallback methods for matrix entry access. We lower the rank
+# so that these are only used as a last resort.
+InstallOtherMethod( \[\], [ IsMatrix, IsPosInt, IsPosInt ],
+    -RankFilter(IsMatrix),
+    function (m,i,j) return m[i][j]; end );
+InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsPosInt, IsPosInt, IsObject ],
+    -RankFilter(IsMatrix),
+    function (m,i,j,o) m[i][j]:=o; end );
+
 #############################################################################
 ##
 #F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
