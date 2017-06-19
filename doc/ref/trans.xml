@@ -701,7 +701,7 @@ gap> PermLeftQuoTransformation( g, f );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Func Name="IsInjectiveListTrans" Arg="obj, list"/>
+    <Func Name="IsInjectiveListTrans" Arg="list, obj"/>
     <Returns><K>true</K> or <K>false</K>.</Returns>
     <Description>
       The argument <A>obj</A> should be a transformation or the list of

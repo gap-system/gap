@@ -750,6 +750,26 @@ gap> IsInjectiveListTrans([1 .. 65536], ImageListOfTransformation(f));
 false
 gap> IsInjectiveListTrans([65536], ImageListOfTransformation(f));
 true
+gap> IsInjectiveListTrans(1, f);
+Error, the first argument must be a list (not a integer)
+gap> IsInjectiveListTrans([1], 1);
+Error, the second argument must be a transformation or a list (not a integer)
+gap> IsInjectiveListTrans([1, 2], "def");
+Error, the second argument must consist of positive integers (not a character)
+gap> IsInjectiveListTrans(ID_TRANS4, "def");
+Error, the first argument must be a list (not a transformation (large))
+gap> IsInjectiveListTrans([1, 2], [2,3]);
+Error, the second argument must consist of positive integers in the range [1 .\
+. 2]
+gap> IsInjectiveListTrans([1, []], f);
+Error, the entries of the first argument must be positive integers (not a list\
+ (plain,empty))
+gap> IsInjectiveListTrans([1, []], [1, 2, 3]);
+Error, the entries of the first argument must be positive integers (not a list\
+ (plain,empty))
+gap> IsInjectiveListTrans([1, []], ID_TRANS4);
+Error, the entries of the first argument must be positive integers (not a list\
+ (plain,empty))
 
 # Test PermLeftQuoTransformationNC
 gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
