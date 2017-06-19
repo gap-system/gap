@@ -2085,6 +2085,10 @@ Obj FuncSET_FILTER_LIST (
     Int             new;
     Obj             flags;
 
+    if ( ! IS_OPERATION(filter) ) {
+        ErrorQuit("<oper> must be an operation",0L,0L);
+        return 0;
+    }
     /* this could be done by a table lookup                                */
     flags = FLAGS_FILT(filter);
     if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsSSortListProp))==True) {
