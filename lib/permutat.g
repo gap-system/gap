@@ -510,7 +510,7 @@ end );
 ##  gap> PermList([1,2,4,5,3]);
 ##  (3,4,5)
 ##  gap> MappingPermListList([2,5,1,6],[7,12,8,2]);
-##  (1,8,5,12,11,10,9,6,2,7,4,3)
+##  (1,8,5,12,6,2,7)
 ##  gap> RestrictedPerm((1,2)(3,4),[3..5]);
 ##  (3,4)
 ##  ]]></Example>
@@ -560,10 +560,11 @@ end);
 ##  <Ref Func="MappingPermListList"/> returns the permutation <C>p</C> from the
 ##  previous sentence, i.e.  <A>src</A><C>[</C><M>i</M><C>]^</C><M>p =</M>
 ##  <A>dst</A><C>[</C><M>i</M><C>]</C>.
-##  The permutation <M>\pi</M> fixes all points larger than the maximum of
-##  the entries in <A>src</A> and <A>dst</A>.
+##  The permutation <M>\pi</M> fixes any point which is not in <A>src</A> or
+##  <A>dst</A>.
 ##  If there are several such permutations, it is not specified which of them
-##  <Ref Func="MappingPermListList"/> returns.
+##  <Ref Func="MappingPermListList"/> returns. If there is no such
+##  permutation, then <Ref Func="MappingPermListList"/> returns <K>fail</K>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

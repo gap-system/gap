@@ -4441,22 +4441,35 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     Obj out;
     Obj tabdst, tabsrc;
     Int x;
+    Obj obj;
     Int mytabs[DEGREELIMITONSTACK+1];
     Int mytabd[DEGREELIMITONSTACK+1];
 
+    if (!IS_LIST(src) ) {
+        ErrorMayQuit("first argument must be a list (not a %s)", (Int)TNAM_OBJ(src), 0L);
+    }
+    if (!IS_LIST(dst) ) {
+        ErrorMayQuit("second argument must be a list (not a %s)", (Int)TNAM_OBJ(dst), 0L);
+    }
     l = LEN_LIST(src);
     if (l != LEN_LIST(dst)) {
-        ErrorReturnVoid( "both arguments must be lists of equal length", 
-                     0L, 0L, "type 'return;' or 'quit;' to exit break loop" );
-        return 0L;
+        ErrorMayQuit( "arguments must be lists of equal length", 0L, 0L);
     }
     d = 0;
     for (i = 1;i <= l;i++) {
-        x = INT_INTOBJ(ELM_LIST(src,i));
+        obj = ELM_LIST(src, i);
+        if (!IS_POS_INTOBJ(obj)) {
+            ErrorMayQuit("first argument must be a list of positive integers", 0L, 0L);
+        }
+        x = INT_INTOBJ(obj);
         if (x > d) d = x;
     }
     for (i = 1;i <= l;i++) {
-        x = INT_INTOBJ(ELM_LIST(dst,i));
+        obj = ELM_LIST(dst, i);
+        if (!IS_POS_INTOBJ(obj)) {
+            ErrorMayQuit("second argument must be a list of positive integers", 0L, 0L);
+        }
+        x = INT_INTOBJ(obj);
         if (x > d) d = x;
     }
     if (d <= DEGREELIMITONSTACK) {
@@ -4464,11 +4477,27 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
         memset(&mytabs,0,sizeof(mytabs));
         memset(&mytabd,0,sizeof(mytabd));
         for (i = 1;i <= l;i++) {
-            mytabs[INT_INTOBJ(ELM_LIST(src,i))] = i;
+            Int val = INT_INTOBJ(ELM_LIST(src, i));
+            if (mytabs[val]) {
+                // Already read where this value maps, check it is the same
+                if (ELM_LIST(dst, mytabs[val]) != ELM_LIST(dst, i)) {
+                    return Fail;
+                }
+            }
+            mytabs[val] = i;
         }
         for (i = 1;i <= l;i++) {
-            mytabd[INT_INTOBJ(ELM_LIST(dst,i))] = i;
+            Int val = INT_INTOBJ(ELM_LIST(dst, i));
+            if (mytabd[val]) {
+                // Already read where this value is mapped from, check it is
+                // the same
+                if (ELM_LIST(src, mytabd[val]) != ELM_LIST(src, i)) {
+                    return Fail;
+                }
+            }
+            mytabd[val] = i;
         }
+
         out = NEW_PLIST(T_PLIST_CYC,d);
         SET_LEN_PLIST(out,d);
         /* No garbage collection from here ... */
@@ -4477,28 +4506,52 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
             if (mytabs[i]) {   /* if i is in src */
                 SET_ELM_PLIST(out,i, ELM_LIST(dst,mytabs[i]));
             } else {
-                /* Skip things in dst: */
-                while (mytabd[next]) next++;
-                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
-                next++;
+                if (mytabd[i]) {
+                    // Skip things in dst:
+                    while (mytabd[next] ||
+                           (mytabs[next] == 0 && mytabd[next] == 0))
+                        next++;
+                    SET_ELM_PLIST(out, i, INTOBJ_INT(next));
+                    next++;
+                }
+                else {    // map elements in neither list to themselves
+                    SET_ELM_PLIST(out, i, INTOBJ_INT(i));
+                }
             }
         }
         /* ... to here! No CHANGED_BAG needed since this is a new object! */
     } else {
         /* Version with intermediate objects: */
-
         tabsrc = NEW_PLIST(T_PLIST,d);
         SET_LEN_PLIST(tabsrc,0);
         /* No garbage collection from here ... */
         for (i = 1;i <= l;i++) {
-            SET_ELM_PLIST(tabsrc,INT_INTOBJ(ELM_LIST(src,i)),INTOBJ_INT(i));
+            Int val = INT_INTOBJ(ELM_LIST(src, i));
+            if (ELM_PLIST(tabsrc, val)) {
+                if (ELM_LIST(dst, INT_INTOBJ(ELM_PLIST(tabsrc, val))) !=
+                    ELM_LIST(dst, i)) {
+                    return Fail;
+                }
+            }
+            else {
+                SET_ELM_PLIST(tabsrc, val, INTOBJ_INT(i));
+            }
         }
         /* ... to here! No CHANGED_BAG needed since this is a new object! */
         tabdst = NEW_PLIST(T_PLIST,d);
         SET_LEN_PLIST(tabdst,0);
         /* No garbage collection from here ... */
         for (i = 1;i <= l;i++) {
-            SET_ELM_PLIST(tabdst,INT_INTOBJ(ELM_LIST(dst,i)),INTOBJ_INT(i));
+            int val = INT_INTOBJ(ELM_LIST(dst, i));
+            if (ELM_PLIST(tabdst, val)) {
+                if (ELM_LIST(src, INT_INTOBJ(ELM_PLIST(tabdst, val))) !=
+                    ELM_LIST(src, i)) {
+                    return Fail;
+                }
+            }
+            else {
+                SET_ELM_PLIST(tabdst, val, INTOBJ_INT(i));
+            }
         }
         /* ... to here! No CHANGED_BAG needed since this is a new object! */
         out = NEW_PLIST(T_PLIST_CYC,d);
@@ -4510,10 +4563,19 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 SET_ELM_PLIST(out,i,
                     ELM_LIST(dst,INT_INTOBJ(ELM_PLIST(tabsrc,i))));
             } else {
-                /* Skip things in dst: */
-                while (ELM_PLIST(tabdst,next)) next++;
-                SET_ELM_PLIST(out,i,INTOBJ_INT(next));
-                next++;
+                if (ELM_PLIST(tabdst, i)) {
+                    // Skip things in dst:
+                    while (ELM_PLIST(tabdst, next) ||
+                           (ELM_PLIST(tabdst, next) == 0 &&
+                            ELM_PLIST(tabsrc, next) == 0)) {
+                        next++;
+                    }
+                    SET_ELM_PLIST(out, i, INTOBJ_INT(next));
+                    next++;
+                }
+                else {
+                    SET_ELM_PLIST(out, i, INTOBJ_INT(i));
+                }
             }
         }
         /* ... to here! No CHANGED_BAG needed since this is a new object! */
