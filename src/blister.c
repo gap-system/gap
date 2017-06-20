@@ -1568,7 +1568,7 @@ Obj FuncLIST_BLIST (
     while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must have the same length as <list> (%d)",
-            LEN_PLIST( list ), 0L,
+            LEN_LIST( list ), 0L,
             "you can replace <blist> via 'return <blist>;'" );
     }
 
