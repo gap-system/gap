@@ -474,7 +474,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
 */
-static inline Int TNUM_OBJ(Obj obj)
+static inline UInt TNUM_OBJ(Obj obj)
 {
     if (IS_INTOBJ(obj))
         return T_INT;
