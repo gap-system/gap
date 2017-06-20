@@ -101,7 +101,7 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       ce:=ShallowCopy(Cycles(e,[1..max]));
       Sort(cd,sortfun);
       Sort(ce,sortfun);
-      rep:=MappingPermListList(Concatenation(cd),Concatenation(ce));
+      rep:=MAPPINGPERMLISTLIST_NEW(Concatenation(cd),Concatenation(ce));
       if SignPerm(rep)=-1 then
         dom2:=Difference(dom,Union(Concatenation(cd),Concatenation(ce)));
 	if Length(dom2)>1 then
@@ -145,7 +145,7 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       return fail;
     fi;
     if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
-      rep:=MappingPermListList(d,e);
+      rep:=MAPPINGPERMLISTLIST_NEW(d,e);
       if SignPerm(rep)=-1 then
 	cd:=Difference(dom,e);
 	if Length(cd)>1 then
@@ -1509,14 +1509,14 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       ce:=ShallowCopy(Cycles(e,[1..max]));
       Sort(cd,sortfun);
       Sort(ce,sortfun);
-      return MappingPermListList(Concatenation(cd),Concatenation(ce));
+      return MAPPINGPERMLISTLIST_NEW(Concatenation(cd),Concatenation(ce));
     elif IsPermGroup(d) and IsPermGroup(e) 
       #and IsTransitive(d,dom) and IsTransitive(e,dom) 
       and IsSubset(G,d) and IsSubset(G,e) then
 
       if dom<>[1..n] then
 	# translate
-	p1:=MappingPermListList(dom,[1..n]);
+	p1:=MAPPINGPERMLISTLIST_NEW(dom,[1..n]);
 	p2:=SubgpConjSymmgp(G^p1,d^p1,e^p1);
 	if p2=false then
 	    TryNextMethod();
@@ -1538,7 +1538,7 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       return fail;
     fi;
     if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
-      return MappingPermListList(d,e);
+      return MAPPINGPERMLISTLIST_NEW(d,e);
     fi;
   fi;
   TryNextMethod(); 

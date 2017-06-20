@@ -583,6 +583,34 @@ BIND_GLOBAL( "MappingPermListList", function( src, dst )
 end );
 
 
+# This is a variant of MappingPermListList which only moves points contained
+# in one of src or dst. In GAP 4.9 and higher this method replaces
+# MappingPermListList. In GAP 4.8 it is kept seperate to avoid changing
+# behaviour in a minor release update.
+BIND_GLOBAL( "MAPPINGPERMLISTLIST_NEW", function( src, dst )
+    local merged;
+    if not IsList(src) or not IsList(dst) or Length(src) <> Length(dst)  then
+       Error("usage: MappingPermListList( <lst1>, <lst2> )");
+    fi;
+
+    if IsEmpty( src )  then
+        return ();
+    fi;
+
+    merged := Union(src, dst);
+    src := Concatenation( src, Difference( merged, src ) );
+    dst := Concatenation( dst, Difference( merged, dst ) );
+    src := Concatenation( src, Difference([1..Maximum(merged)], src));
+    dst := Concatenation( dst, Difference([1..Maximum(merged)], dst));
+    src := PermList(src);
+    if src = fail then return fail; fi;
+    dst := PermList(dst);
+    if dst = fail then return fail; fi;
+
+    return LeftQuotient( src, dst );
+end );
+
+
 #############################################################################
 ##
 #m  SmallestMovedPoint( <perm> )  . . . . . . . . . . .  for permutations
