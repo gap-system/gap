@@ -256,34 +256,21 @@ InstallTrueMethod( IsBuiltFromMagmaWithInverses, IsBuiltFromGroup );
 #############################################################################
 ##
 #A  SemigroupOfRewritingSystem( <rws> )
+#A  MonoidOfRewritingSystem( <rws> )
 ##
 ##  <#GAPDoc Label="SemigroupOfRewritingSystem">
 ##  <ManSection>
 ##  <Attr Name="SemigroupOfRewritingSystem" Arg='rws'/>
+##  <Attr Name="MonoidOfRewritingSystem" Arg='rws'/>
 ##
 ##  <Description>
-##  returns the semigroup over which <A>rws</A> is
-##  a rewriting system
+##  returns the semigroup or monoid over which <A>rws</A> is
+##  a rewriting system. 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("SemigroupOfRewritingSystem",IsRewritingSystem);
-
-#############################################################################
-##
-#A  MonoidOfRewritingSystem( <rws> )
-##
-##  <#GAPDoc Label="MonoidOfRewritingSystem">
-##  <ManSection>
-##  <Attr Name="MonoidOfRewritingSystem" Arg='rws'/>
-##
-##  <Description>
-##  returns the monoid over which <A>rws</A> is a rewriting system
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
 DeclareAttribute("MonoidOfRewritingSystem",IsRewritingSystem);
 
 

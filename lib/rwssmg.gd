@@ -10,7 +10,6 @@
 ##  This file contains the declarations for semigroups defined by rws.
 ##
 
-
 ############################################################################
 ##
 #A  ReducedConfluentRewritingSystem( <S>[, <ordering>] )
@@ -37,23 +36,35 @@
 ##  not want to allow it to change (as it was most probably very time 
 ##  consuming to get it in the first place). Furthermore, this is also
 ##  an attribute storing object (see <Ref Sect="Representation"/>).
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f := FreeSemigroup( "a" , "b" );;
-##  gap> a := GeneratorsOfSemigroup( f )[ 1 ];;
-##  gap> b := GeneratorsOfSemigroup( f )[ 2 ];;
-##  gap> g := f /  [ [ a^2 , a*b ] , [ a^4 , b] ];;
-##  gap> rws := ReducedConfluentRewritingSystem(g);
+##  gap> a := GeneratorsOfSemigroup(f)[1];;
+##  gap> b := GeneratorsOfSemigroup(f)[2];;
+##  gap> s := f/[ [a*b*a,b], [b*a*b,a] ];;
+##  gap> rws := ReducedConfluentRewritingSystem(s);
 ##  Rewriting System for Semigroup( [ a, b ] ) with rules 
-##  [ [ a*b, a^2 ], [ a^4, b ], [ b*a, a^2 ], [ b^2, a^2 ] ]
+##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ], [ a^3*b, b*a ], 
+##    [ a^5, a ] ]
+##  gap> c := GeneratorsOfSemigroup(s)[1];;
+##  gap> d := GeneratorsOfSemigroup(s)[2];;
+##  gap> e := (c*d^2)^3;
+##  (a*b^2)^3
+##  gap> ## ReducedForm( rws, e );  gives an error! 
+##  gap> w := UnderlyingElement(e);
+##  (a*b^2)^3
+##  gap> ReducedForm( rws, w );
+##  a
 ##  ]]></Example>
 ##  <P/>
 ##  The creation of a reduced confluent rewriting system for a semigroup
 ##  or for a monoid, in &GAP;, uses the Knuth-Bendix procedure for strings,
-##  which manipulates a rewriting system of the semigroup or monoid and attempts
-##  to make it confluent (See <Ref Chap="Rewriting Systems"/>.
-##  See also Sims <Cite Key="Sims94"/>).
+##  which manipulates a rewriting system of the semigroup or monoid and 
+##  attempts to make it confluent, 
+##  (see Chapter <Ref Chap="Rewriting Systems"/> 
+##  and also Sims <Cite Key="Sims94"/>).
 ##  (Since the word problem for semigroups/monoids is not solvable in general,
-##  Knuth-Bendix procedure cannot always terminate).
+##  the Knuth-Bendix procedure cannot always terminate).
 ##  <P/>
 ##  In order to apply this procedure we will build a rewriting system
 ##  for the semigroup or monoid, which we will call a  <E>Knuth-Bendix Rewriting
@@ -83,15 +94,18 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 
 #############################################################################
 ##
+#A  FreeSemigroupOfRewritingSystem(<rws>)
 #A  FreeMonoidOfRewritingSystem(<rws>)
 ##
-##  <#GAPDoc Label="FreeMonoidOfRewritingSystem">
+##  <#GAPDoc Label="FreeSemigroupOfRewritingSystem">
 ##  <ManSection>
+##  <Attr Name="FreeSemigroupOfRewritingSystem" Arg='rws'/>
 ##  <Attr Name="FreeMonoidOfRewritingSystem" Arg='rws'/>
 ##
 ##  <Description>
-##  returns the free monoid over which <A>rws</A> is
-##  a rewriting system
+##  returns the free semigroup or monoid over which <A>rws</A> is
+##  a rewriting system. 
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f1 := FreeSemigroupOfRewritingSystem(rws);
 ##  <free semigroup on the generators [ a, b ]>
@@ -123,8 +137,8 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute("FreeMonoidOfRewritingSystem",
-  IsRewritingSystem);
+DeclareAttribute("FreeSemigroupOfRewritingSystem", IsRewritingSystem);
+DeclareAttribute("FreeMonoidOfRewritingSystem", IsRewritingSystem);
 
 #############################################################################
 ##
@@ -139,27 +153,8 @@ DeclareAttribute("FreeMonoidOfRewritingSystem",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute("FamilyForRewritingSystem",
-  IsRewritingSystem);
+DeclareAttribute("FamilyForRewritingSystem", IsRewritingSystem);
 
-
-#############################################################################
-##
-#A  FreeSemigroupOfRewritingSystem(<rws>)
-##
-##  <#GAPDoc Label="FreeSemigroupOfRewritingSystem">
-##  <ManSection>
-##  <Attr Name="FreeSemigroupOfRewritingSystem" Arg='rws'/>
-##
-##  <Description>
-##  returns the free semigroup over which <A>rws</A> is
-##  a rewriting system
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareAttribute("FreeSemigroupOfRewritingSystem",
-  IsRewritingSystem);
 
 #############################################################################
 ##
@@ -169,12 +164,13 @@ DeclareAttribute("FreeSemigroupOfRewritingSystem",
 ##  <Func Name="ReduceLetterRepWordsRewSys" Arg='tzrules,w'/>
 ##
 ##  <Description>
-##  Here <A>w</A> is  a  word  of  a  free  monoid  or  a  free  semigroup  in  tz
-##  represenattion, and  <A>tzrules</A>  are  rules  in  tz  representation.  This
-##  function returns the reduced word in tz representation.
+##  Here <A>w</A> is a word of a free monoid or a free semigroup in tz
+##  representation, and <A>tzrules</A> are rules in tz representation. 
+##  This function returns the reduced word in tz representation.
 ##  <P/>
-##  All lists in <A>tzrules</A> as well as <A>w</A> must be plain lists, the entries
-##  must be small integers. (The behaviour otherwise is unpredictable.)
+##  All lists in <A>tzrules</A> as well as <A>w</A> must be plain lists, 
+##  the entries must be small integers. 
+##  (The behaviour otherwise is unpredictable.)
 ##  </Description>
 ##  </ManSection>
 ##
