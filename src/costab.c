@@ -45,7 +45,6 @@
 
 /****************************************************************************
 **
-
 *V  declaration of static variables
 */
 static Obj      objRel;                 /* handle of a relator             */
@@ -102,7 +101,6 @@ static void CleanOut( void )
 
 /****************************************************************************
 **
-
 *F  FuncApplyRel( <self>, <app>, <rel> )   apply a relator to a coset in a TC
 **
 **  'FuncApplyRel' implements the internal function 'ApplyRel'.
@@ -2416,13 +2414,11 @@ Obj FuncTC_QUICK_SCAN (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2476,7 +2472,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2549,6 +2544,5 @@ StructInitInfo * InitInfoCosetTable ( void )
 
 /****************************************************************************
 **
-
 *E  costab.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

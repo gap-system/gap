@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  fpmon.gd           GAP library        										Isabel Araújo
+#W  fpmon.gd                GAP library      			Isabel Araújo
 ##
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany

@@ -16,7 +16,6 @@
 
 /****************************************************************************
 **
-
 *V  CompInitFuncs . . . . . . . . . .  list of compiled module init functions
 **
 **  This a dummy list in case no module is statically linked.
@@ -41,6 +40,5 @@ InitInfoFunc CompInitFuncs [] = {
 
 /****************************************************************************
 **
-
 *E  compstat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

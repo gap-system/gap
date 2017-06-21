@@ -423,7 +423,7 @@ should be treated as an estimate.
 
 <Description>
 In the read-eval-print loop,
-<Ref Var="time"/> stores the time the last command took.
+<Ref Var="time"/> stores the number of milliseconds the last command took.
 </Description>
 </ManSection>
 

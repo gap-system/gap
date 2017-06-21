@@ -31,7 +31,6 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-
 *F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement
 **
 **  'EXEC_STAT' executes the statement <stat>.
@@ -173,14 +172,12 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoStats ( void );
@@ -190,6 +187,5 @@ StructInitInfo * InitInfoStats ( void );
 
 /****************************************************************************
 **
-
 *E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

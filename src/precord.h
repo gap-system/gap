@@ -16,14 +16,12 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * standard macros for plain records  * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  NEW_PREC( <len> ) . . . . . . . . . . . . . . . . make a new plain record
 **
 **  'NEW_PREC' returns a new plain record with room for <len> components.
@@ -192,13 +190,11 @@ extern  void            SortPRecRNam (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoPRecord() . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoPRecord ( void );
@@ -208,6 +204,5 @@ StructInitInfo * InitInfoPRecord ( void );
 
 /****************************************************************************
 **
-
 *E  precord.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

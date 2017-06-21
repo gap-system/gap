@@ -13,7 +13,6 @@
 
 /****************************************************************************
 **
-
 *F  IS_GF2VEC_REP( <obj> )  . . . . . . check that <obj> is in GF2 vector rep
 */
 #define IS_GF2VEC_REP(obj) \
@@ -232,14 +231,12 @@ extern Obj ShallowCopyVecGF2( Obj vec );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoGF2Vec()  . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoGF2Vec ( void );
@@ -249,6 +246,5 @@ StructInitInfo * InitInfoGF2Vec ( void );
 
 /****************************************************************************
 **
-
 *E  vecgf2.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

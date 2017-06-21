@@ -86,7 +86,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 
 /****************************************************************************
 **
-
 *F  FamilyTypeHandler( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
 */
 Obj FamilyTypeHandler (
@@ -174,7 +173,6 @@ Obj SetTypeObjHandler (
 
 /****************************************************************************
 **
-
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
@@ -287,7 +285,6 @@ Obj IsCopyableObjHandler (
 
 /****************************************************************************
 **
-
 *V  ShallowCopyObjFuncs[<type>] . . . . . . . . . .  shallow copier functions
 */
 Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
@@ -774,7 +771,6 @@ void CleanObjDatObjCopy (
 
 /****************************************************************************
 **
-
 *F  ImmutableCopyObjHandler( <self>, <obj> )  . . . . immutable copy of <obj>
 */
 Obj ImmutableCopyObjHandler (
@@ -1259,7 +1255,6 @@ void PrintPathError (
 
 /****************************************************************************
 **
-
 *F  TypeComObj( <obj> ) . . . . . . . . . . function version of 'TYPE_COMOBJ'
 */
 #ifndef WARD_ENABLED
@@ -1449,7 +1444,6 @@ Obj LEN_POSOBJ_Handler (
 
 /****************************************************************************
 **
-
 *F  TypeDatObj( <obj> ) . . . . . . . . . . function version of 'TYPE_DATOBJ'
 */
 Obj             TypeDatObj (
@@ -1510,7 +1504,6 @@ Obj SET_TYPE_DATOBJ_Handler (
 
 /****************************************************************************
 **
-
 *F  IsIdenticalHandler( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
 **
 **  'IsIdenticalHandler' implements 'IsIdentical'
@@ -1695,14 +1688,12 @@ void LoadDatObj( Obj datobj)
 
 /****************************************************************************
 **
-
 *F * * * * * * * *  GAP functions for "to be defined" objects * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncCLONE_OBJ( <self>, <dst>, <src> ) . . . . . . .  clone <src> to <dst>
 **
 **  `CLONE_OBJ' clones  the source  <src> into  <dst>.  It  is not allowed to
@@ -1804,7 +1795,6 @@ Obj FuncCLONE_OBJ (
 
 /****************************************************************************
 **
-
 *F  FuncSWITCH_OBJ( <self>, <obj1>, <obj2> ) . . .  switch <obj1> and <obj2>
 **
 **  `SWITCH_OBJ' exchanges the objects referenced by its two arguments.  It
@@ -1895,14 +1885,12 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2013,7 +2001,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2237,6 +2224,5 @@ StructInitInfo * InitInfoObjects ( void )
 
 /****************************************************************************
 **
-
 *E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

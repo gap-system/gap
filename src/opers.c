@@ -70,14 +70,12 @@ Obj TRY_NEXT_METHOD;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  PrintFlags( <flags> ) . . . . . . . . . . . . . . . .  print a flags list
 */
 void PrintFlags (
@@ -149,14 +147,12 @@ void LoadFlags(
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * *  GAP flags functions * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncLEN_FLAGS( <self>, <flags> )  . . . . . . . .  length of a flags list
 **
 */
@@ -392,7 +388,6 @@ Obj FuncSIZE_FLAGS (
 
 /****************************************************************************
 **
-
 *F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
 */
 Obj FuncIS_EQUAL_FLAGS (
@@ -574,7 +569,6 @@ Obj FuncIS_SUBSET_FLAGS (
 
 /****************************************************************************
 **
-
 *F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . .  substract a flags list
 */
 Obj FuncSUB_FLAGS (
@@ -963,14 +957,12 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  Countlags  . . . . . . . . . . . . . . . . . . . . next free flag number
 */
 Int CountFlags;
@@ -978,7 +970,6 @@ Int CountFlags;
 
 /****************************************************************************
 **
-
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
 Obj SetterFilter (
@@ -1316,7 +1307,6 @@ Obj FuncIS_AND_FILTER( Obj self, Obj filt )
 
 /****************************************************************************
 **
-
 *V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
 */
 Obj ReturnTrueFilter;
@@ -1405,14 +1395,12 @@ Obj NewReturnTrueFilter ( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * GAP filter functions * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncNEW_FILTER( <self>, <name> )  . . . . . . . . . . . . .  new filter
 */
 Obj FuncNEW_FILTER (
@@ -1432,7 +1420,6 @@ Obj FuncNEW_FILTER (
 
 /****************************************************************************
 **
-
 *F  FuncFLAG1_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG1_FILT'
 */
 Obj FuncFLAG1_FILTER (
@@ -1550,7 +1537,6 @@ Obj FuncSET_FLAGS_FILTER (
 
 /****************************************************************************
 **
-
 *F  FuncSETTER_FILTER( <self>, <oper> ) . . . . . . . . .  setter of a filter
 */
 Obj FuncSETTER_FILTER (
@@ -1630,7 +1616,6 @@ Obj FuncSET_TESTER_FILTER (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * *  internal operation functions  * * * * * * * * * * * *
 */
 
@@ -5054,7 +5039,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
 
 /****************************************************************************
 **
-
 *F  DoProperty( <name> )  . . . . . . . . . . . . . . . . make a new property
 */
 Obj SET_FILTER_OBJ;
@@ -5331,7 +5315,6 @@ Obj NewProperty (
 
 /****************************************************************************
 **
-
 *F  DoOperationArgs( <name> ) . . . . . . . . . . . make a new operation args
 */
 
@@ -5431,7 +5414,6 @@ void InstallMethodArgs (
 
 /****************************************************************************
 **
-
 *F  SaveOperationExtras( <oper> ) . . . additional saving for functions which
 **
 **  This is called by SaveFunction when the function bag is too large to be
@@ -5498,14 +5480,12 @@ void LoadOperationExtras (
 /****************************************************************************
 **
 **
-
 *F * * * * * * * * * * * * GAP operation functions  * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncNEW_OPERATION( <self>, <name> ) . . . . . . . . . . . . new operation
 */
 Obj FuncNEW_OPERATION (
@@ -5703,7 +5683,6 @@ Obj FuncINSTALL_METHOD_ARGS (
 
 /****************************************************************************
 **
-
 *F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
 Obj IsOperationFilt;
@@ -5837,7 +5816,6 @@ Obj FuncSET_METHODS_OPERATION (
 
 /****************************************************************************
 **
-
 *F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut setter
 */
 Obj DoSetterFunction (
@@ -5961,7 +5939,6 @@ Obj FuncGETTER_FUNCTION (
 
 /****************************************************************************
 **
-
 *F  FuncOPERS_CACHE_INFO( <self> )  . . . . . . .  return cache stats as list
 */
 Obj FuncOPERS_CACHE_INFO (
@@ -6017,7 +5994,6 @@ Obj FuncCLEAR_CACHE_INFO (
 
 /****************************************************************************
 **
-
 *F  ChangeDoOperations( <oper>, <verb> )  . . .  verbose or silent operations
 */
 static ObjFunc TabSilentVerboseOperations[] =
@@ -6184,14 +6160,12 @@ Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -6352,7 +6326,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (

@@ -67,7 +67,6 @@
 
 /****************************************************************************
 **
-
 *F  SCTableEntry( <table>, <i>, <j>, <k> )  . . . .  entry of structure table
 **
 **  'SCTableEntry' returns the coefficient $c_{i,j}^{k}$ from the structure
@@ -367,13 +366,11 @@ Obj SCTableProductHandler (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -391,7 +388,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -447,7 +443,6 @@ StructInitInfo * InitInfoSCTable ( void )
 
 /****************************************************************************
 **
-
 *E  sctable.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

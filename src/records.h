@@ -169,13 +169,11 @@ extern UInt completion_rnam (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoRecords() . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoRecords ( void );
@@ -185,6 +183,5 @@ StructInitInfo * InitInfoRecords ( void );
 
 /****************************************************************************
 **
-
 *E  records.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

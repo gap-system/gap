@@ -469,7 +469,6 @@ static void LoadBagData ( void )
 
 /***************************************************************************
 **
-
 *F  WriteSaveHeader() . . . . .  and utility functions, and loading functions
 **
 */
@@ -976,14 +975,12 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1007,7 +1004,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1072,6 +1068,5 @@ StructInitInfo * InitInfoSaveLoad ( void )
 
 /****************************************************************************
 **
-
 *E  saveload.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

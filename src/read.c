@@ -153,7 +153,6 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 
 /****************************************************************************
 **
-
 *F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
 **
 **  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
@@ -2709,14 +2708,12 @@ UInt ReadStats (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * read and evaluate symbols  * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  ReadEvalResult  . . . . . . . . result of reading one command immediately
 */
 /* TL: Obj ReadEvalResult; */
@@ -3189,7 +3186,6 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -3239,6 +3235,5 @@ StructInitInfo * InitInfoRead ( void )
 
 /****************************************************************************
 **
-
 *E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

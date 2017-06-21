@@ -55,15 +55,12 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * compilation flags  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
-
 *V  CompFastIntArith  . . option to emit code that handles small ints. faster
 */
 Int CompFastIntArith;
@@ -137,14 +134,12 @@ Int CompPass;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * temp, C, local functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  compilerMagic1  . . . . . . . . . . . . . . . . . . . . .  current magic1
 */
 static Int compilerMagic1;
@@ -828,15 +823,12 @@ void            Emit (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * compile checks * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
-
 *F  CompCheckBound( <obj>, <name> ) emit code to check that <obj> has a value
 */
 void CompCheckBound (
@@ -951,14 +943,12 @@ void CompCheckFunc (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * *  compile expressions * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  CompExpr( <expr> )  . . . . . . . . . . . . . . . . compile an expression
 **
 **  'CompExpr' compiles the expression <expr> and returns the C variable that
@@ -3761,14 +3751,12 @@ CVar CompIsbComObjExpr (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * compile statements * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  CompStat( <stat> )  . . . . . . . . . . . . . . . . . compile a statement
 **
 **  'CompStat' compiles the statement <stat>.
@@ -5420,14 +5408,12 @@ void CompAssert3 (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * start compiling  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  CompFunc( <func> )  . . . . . . . . . . . . . . . . .  compile a function
 **
 **  'CompFunc' compiles the function <func>, i.e., it emits  the code for the
@@ -5920,13 +5906,11 @@ Obj FuncCOMPILE_FUNC (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -5941,7 +5925,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -6198,7 +6181,6 @@ StructInitInfo * InitInfoCompiler ( void )
 
 /****************************************************************************
 **
-
 *E  compiler.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

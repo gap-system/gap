@@ -14,7 +14,6 @@
 
 /****************************************************************************
 **
-
 *D  AWP_SOMETHING
 */
 #define AWP_FIRST_ENTRY          5
@@ -29,7 +28,6 @@
 
 /****************************************************************************
 **
-
 *F  BITS_WORDTYPE( <type> )
 */
 #define BITS_WORDTYPE( type ) \
@@ -62,7 +60,6 @@
 
 /****************************************************************************
 **
-
 *F  BITS_WORD( <word> )
 */
 #define BITS_WORD( word ) \
@@ -116,7 +113,6 @@
 
 /****************************************************************************
 **
-
 *F  NEW_WORD( <word>, <type>, <npairs> )
 **
 **  'NEW_WORD' creates  a new object which has  the given <type> and room for
@@ -159,13 +155,11 @@ static inline Obj RESIZE_WORD( Obj word, UInt npairs )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoFreeGroupElements() . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoFreeGroupElements ( void );
@@ -175,6 +169,5 @@ StructInitInfo * InitInfoFreeGroupElements ( void );
 
 /****************************************************************************
 **
-
 *E  objfgelm.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -20,7 +20,6 @@
 
 /****************************************************************************
 **
-
 *F  SetList(<list>) . . . . . . . . . . . . . . . . .  make a set from a list
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
@@ -55,13 +54,11 @@ extern  Int             IsSet (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoSet() . . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoSet ( void );
@@ -71,6 +68,5 @@ StructInitInfo * InitInfoSet ( void );
 
 /****************************************************************************
 **
-
 *E  set.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

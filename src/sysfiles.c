@@ -101,15 +101,13 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res> ) . . . .  load or link
+*F  SyFindOrLinkGapRootFile( <filename>, <result> ) . . . . . .  load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
 **  check  if   there is a corresponding    statically  or dynamically linked
@@ -122,17 +120,14 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 **  1: if a dynamically linked module was found
 **  2: if a statically linked module was found
 **  3: a GAP file was found
-**  4: a GAP file was found and the CRC value didn't match
 */
 #include <src/compstat.h>               /* statically linked modules */
 
 
 Int SyFindOrLinkGapRootFile (
     const Char *        filename,
-    Int4                crc_gap,
     TypGRF_Data *       result )
 {
-    UInt4               crc_sta = 0;
     Int                 found_gap = 0;
     Int                 found_sta = 0;
     Char                module[GAP_PATH_MAX];
@@ -152,7 +147,6 @@ Int SyFindOrLinkGapRootFile (
 
     /* try to find any statically link module                              */
     strxcpy( module, "GAPROOT/", sizeof(module) );
-
     strxcat( module, filename, sizeof(module) );
     for ( k = 0;  CompInitFuncs[k];  k++ ) {
         info_sta = (*(CompInitFuncs[k]))();
@@ -160,27 +154,17 @@ Int SyFindOrLinkGapRootFile (
             continue;
         }
         if ( ! strcmp( module, info_sta->name ) ) {
-            crc_sta   = info_sta->crc;
             found_sta = 1;
             break;
         }
     }
 
-    /* check if we have to compute the crc                                 */
-    if ( found_gap && ( found_sta ) ) {
-        if ( crc_gap == 0 ) {
-            crc_gap = SyGAPCRC(result->pathname);
-        } else if ( SyCheckCRCCompiledModule ) {
-            if ( crc_gap != SyGAPCRC(result->pathname) ) {
-                return 4;
-            }
+    /* if there is both a GAP and a statically linked module, check CRC    */
+    if ( found_gap && found_sta ) {
+        if ( info_sta->crc != SyGAPCRC(result->pathname) ) {
+            Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int)filename, 0);
+            found_sta = 0;
         }
-    }
-
-    /* now decide what to do                                               */
-    if ( found_gap && found_sta && crc_gap != crc_sta ) {
-        Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
-        found_sta = 0;
     }
     if ( found_gap && found_sta ) {
         result->module_info = info_sta;
@@ -206,7 +190,7 @@ Int SyFindOrLinkGapRootFile (
 **
 **  This function *never* returns a 0 unless an error occurred.
 */
-static UInt4 syCcitt32[ 256 ] =
+static const UInt4 syCcitt32[ 256 ] =
 {
 0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
 0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L, 0xe0d5e91eL,
@@ -479,14 +463,12 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  IS_SEP( <C> ) . . . . . . . . . . . . . . . . . . . .  is <C> a separator
 */
 #define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
@@ -515,7 +497,6 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 
 /****************************************************************************
 **
-
 *F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
 **
 **  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
@@ -672,14 +653,12 @@ Char * SyWinCmd (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * open/close * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
 **  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
@@ -1061,7 +1040,6 @@ void syStopraw (
 
 /****************************************************************************
 **
-
 *F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
 **
 **  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
@@ -1240,14 +1218,12 @@ void getwindowsize( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * output * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  syEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
 
@@ -1367,14 +1343,12 @@ void SyFputs (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * input  * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
 Int SyFtell (
@@ -2802,14 +2776,12 @@ Char *SyFgetsSemiBlock (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
 */
 Int SyLastErrorNo;
@@ -2856,8 +2828,6 @@ void SySetErrorNo ( void )
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
@@ -3095,7 +3065,6 @@ UInt SyExecuteProcess (
 
 /****************************************************************************
 **
-
 *F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
 **
 **  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
@@ -3324,14 +3293,12 @@ Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSi
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * directories  * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
 **
 **  'SyTmpname' creates and returns  a new temporary name.  Subsequent  calls
@@ -3663,6 +3630,5 @@ StructInitInfo * InitInfoSysFiles ( void )
 
 /****************************************************************************
 **
-
 *E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

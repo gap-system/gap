@@ -28,7 +28,6 @@
 
 /****************************************************************************
 **
-
 *F  NEW_RANGE() . . . . . . . . . . . . . . . . . . . . . .  make a new range
 **
 **  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
@@ -196,14 +195,12 @@ extern Obj Range3Check (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoRange() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoRange ( void );
@@ -213,6 +210,5 @@ StructInitInfo * InitInfoRange ( void );
 
 /****************************************************************************
 **
-
 *E  range.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

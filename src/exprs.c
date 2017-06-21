@@ -59,7 +59,6 @@
 
 /****************************************************************************
 **
-
 *F  OBJ_REFLVAR(<expr>) . . . . . . . . . . . value of a reference to a local
 **
 **  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
@@ -2014,14 +2013,12 @@ void            PrintRecExpr (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2193,6 +2190,5 @@ StructInitInfo * InitInfoExprs ( void )
 
 /****************************************************************************
 **
-
 *E  exprs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

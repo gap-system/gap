@@ -1500,16 +1500,24 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
   UInt    deg, i, j, rank, len;
   Obj     out;
 
-  if (INT_INTOBJ(ELM_LIST(ker, LEN_LIST(ker))) == 0) {
+  assert(IS_LIST(ker));
+  assert(IS_INTOBJ(n));
+
+  len = LEN_LIST(ker);
+  if (len == 1 && INT_INTOBJ(ELM_LIST(ker, 1)) == 0) {
     return FuncFLAT_KERNEL_TRANS_INT(self, f, n);
   }
 
-  len = LEN_LIST(ker);
   rank = 1;
 
   if (TNUM_OBJ(f) == T_TRANS2) {
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     if (len >= deg) {
+      if (len == 0) {
+        out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        SET_LEN_PLIST(out, 0);
+        return out;
+      }
       out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
       pttmp = ResizeInitTmpTrans(len);
@@ -1539,6 +1547,11 @@ Obj FuncON_KERNEL_ANTI_ACTION (Obj self, Obj ker, Obj f, Obj n) {
   } else if (TNUM_OBJ(f) == T_TRANS4) {
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     if (len >= deg) {
+      if (len == 0) {
+        out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        SET_LEN_PLIST(out, 0);
+        return out;
+      }
       out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
       SET_LEN_PLIST(out, len);
       pttmp = ResizeInitTmpTrans(len);
@@ -4990,7 +5003,6 @@ Obj IsTransHandler (Obj self, Obj val) {
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {

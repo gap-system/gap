@@ -127,11 +127,6 @@ ifneq ($(top_builddir),$(srcdir))
   GAP_CPPFLAGS += -I$(top_builddir)
 endif
 
-ifeq ($(HPCGAP),yes)
-  # Prefer headers from hpcgap/src/ over those in src/
-  GAP_CPPFLAGS += -I$(srcdir)/hpcgap
-endif
-
 # Finally look into srcdir
 GAP_CPPFLAGS += -I$(srcdir)
 
@@ -473,7 +468,6 @@ install-headers:
 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/hpcgap/src/*.h $(DESTDIR)$(includedir)/gap
 	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/*.h
 	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/hpc/*.h
 	# TODO: take care of config.h
@@ -629,15 +623,10 @@ bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 	$(SHELL) ./config.status $@
 
 # regenerate bin/$(GAPARCH)/src symlink if necessary
-ifeq ($(HPCGAP),yes)
-compat_src_symlink=$(abs_top_srcdir)/hpcgap/src
-else
-compat_src_symlink=$(abs_top_srcdir)/src
-endif
 all: bin/$(GAPARCH)/src
 bin/$(GAPARCH)/src: config.status
 	@$(MKDIR_P) bin/$(GAPARCH)
-	@ln -sf $(compat_src_symlink) $(@D)
+	@ln -sf $(abs_top_srcdir)/src $(@D)
 
 all: bin/$(GAPARCH)/gac
 bin/$(GAPARCH)/gac:

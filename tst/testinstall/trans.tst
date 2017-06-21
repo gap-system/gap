@@ -1176,6 +1176,17 @@ gap> ON_KERNEL_ANTI_ACTION([1 .. 5], IdentityTransformation, 0);
 gap> ON_KERNEL_ANTI_ACTION([1 .. 5], (), 0);
 Error, ON_KERNEL_ANTI_ACTION: the argument must be a transformation (not a per\
 mutation (small))
+gap> ON_KERNEL_ANTI_ACTION([], IdentityTransformation, 10);
+[  ]
+gap> ON_KERNEL_ANTI_ACTION([], IdentityTransformation, 10);
+[  ]
+gap> f := ID_TRANS4;;
+gap> IsTrans4Rep(f);
+true
+gap> ON_KERNEL_ANTI_ACTION([], f, 10);
+[  ]
+gap> ON_KERNEL_ANTI_ACTION([], f, 10);
+[  ]
 
 # INV_KER_TRANS
 gap> f := Transformation([9, 5, 3, 5, 10, 3, 1, 9, 6, 7]);;

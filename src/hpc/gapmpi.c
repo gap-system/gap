@@ -624,7 +624,6 @@ void Init_MPIvars( void ) {
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -683,7 +682,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -746,6 +744,5 @@ StructInitInfo * InitInfoPargapmpi ( void )
 
 /****************************************************************************
 **
-
 *E  gapmpi.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

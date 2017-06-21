@@ -55,7 +55,6 @@
 
 /****************************************************************************
 **
-
 *F  EqListList(<listL>,<listR>) . . . . . . . . . test if two lists are equal
 **
 **  'EqListList' returns  'true' if  the  two lists <listL> and  <listR>  are
@@ -2224,7 +2223,6 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2521,6 +2519,5 @@ StructInitInfo * InitInfoListOper ( void )
 
 /****************************************************************************
 **
-
 *E  listoper.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

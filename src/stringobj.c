@@ -88,14 +88,11 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * character functions  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *V  ObjsChar[<chr>] . . . . . . . . . . . . . . . . table of character values
 **
 **  'ObjsChar' contains all the character values.  That way we do not need to
@@ -211,7 +208,6 @@ void LoadChar( Obj c )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
@@ -502,7 +498,6 @@ Obj FuncREVNEG_STRING (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
 
@@ -575,7 +570,6 @@ Obj TypeString (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * copy functions * * * * * * * * * * * * * * * *
 */
 
@@ -624,7 +618,7 @@ Obj CopyString (
     CHANGED_BAG( list );
 
     /* now it is copied                                                    */
-    MARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
     memcpy((void*)(ADDR_OBJ(copy)+1), (void*)(ADDR_OBJ(list)+1), 
@@ -667,20 +661,17 @@ void CleanStringCopy (
     ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
-    UNMARK_LIST( list, COPYING );
+    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  PrintString(<list>) . . . . . . . . . . . . . . . . . . .  print a string
 **
 **  'PrintString' prints the string with the handle <list>.
@@ -1318,7 +1309,6 @@ void PlainString (
 
 /****************************************************************************
 **
-
 *F  IS_STRING( <obj> )  . . . . . . . . . . . . test if an object is a string
 **
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
@@ -1547,14 +1537,11 @@ Obj ConvImmString(Obj str)
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
-
 *F  FuncIS_STRING( <self>, <obj> )  . . . . . . . . .  test value is a string
 */
 Obj FuncIS_STRING (
@@ -2147,12 +2134,10 @@ void UnbString (
   
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * * */
 
 /****************************************************************************
 **
-
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
@@ -2759,6 +2744,5 @@ StructInitInfo * InitInfoString ( void )
 
 /****************************************************************************
 **
-
 *E  stringobj.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

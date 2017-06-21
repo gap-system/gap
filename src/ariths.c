@@ -42,7 +42,6 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * *  unary arithmetic operations * * * * * * * * * * * *
 */
 
@@ -330,7 +329,6 @@ Obj FuncAINV_MUT (
 
 /****************************************************************************
 **
-
 *V  OneFuncs[ <type> ]  . . . . . . . . . . . . . . . .  table of one methods
 */
 ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
@@ -401,7 +399,6 @@ Obj FuncONE (
 
 /****************************************************************************
 **
-
 *V  OneMutFuncs[ <type> ]  . . . . .table of mutability retaining one methods
 */
 ArithMethod1 OneMutFuncs [LAST_REAL_TNUM+1];
@@ -473,7 +470,6 @@ Obj FuncONE_MUT (
 
 /****************************************************************************
 **
-
 *V  InvFuncs[ <type> ]  . . . . . . . . . . . . .  table of inverse functions
 */
 ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
@@ -616,13 +612,11 @@ Obj FuncINV_MUT (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * comparison operations  * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  EqFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
 */
 CompaMethod EqFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -715,7 +709,6 @@ Obj FuncEQ (
 
 /****************************************************************************
 **
-
 *V  LtFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of comparison methods
 */
 CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -789,7 +782,6 @@ Obj FuncLT (
 
 /****************************************************************************
 **
-
 *V  InFuncs[ <typeL> ][ <typeR> ] . . . . . . . . table of membership methods
 */
 CompaMethod InFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -877,13 +869,11 @@ Obj FuncIN (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * binary arithmetic operations * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  SumFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . . .  table of sum methods
 */
 ArithMethod2    SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -967,7 +957,6 @@ Obj FuncSUM (
 
 /****************************************************************************
 **
-
 *V  DiffFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of difference methods
 */
 ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1081,7 +1070,6 @@ Obj FuncDIFF (
 
 /****************************************************************************
 **
-
 *V  ProdFuncs[ <typeL> ][ <typeR> ] . . . . . . . .  table of product methods
 */
 ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1165,7 +1153,6 @@ Obj FuncPROD (
 
 /****************************************************************************
 **
-
 *V  QuoFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . table of quotient methods
 */
 ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1278,7 +1265,6 @@ Obj FuncQUO (
 
 /****************************************************************************
 **
-
 *V  LQuoFuncs[ <typeL> ][ <typeR> ] . . . . .  table of left quotient methods
 */
 ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1390,7 +1376,6 @@ Obj FuncLQUO (
 
 /****************************************************************************
 **
-
 *V  PowFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . .  table of power methods
 */
 ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1504,7 +1489,6 @@ Obj FuncPOW (
 
 /****************************************************************************
 **
-
 *V  CommFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of commutator methods
 */
 ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1619,7 +1603,6 @@ Obj FuncCOMM (
 
 /****************************************************************************
 **
-
 *V  ModFuncs[ <typeL> ][ <typeR> ]  . . . . . . .  table of remainder methods
 */
 ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
@@ -1704,13 +1687,11 @@ Obj FuncMOD (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
 */
 static StructGVarAttr GVarAttrs [] = {
@@ -1817,7 +1798,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2017,7 +1997,6 @@ StructInitInfo * InitInfoAriths ( void )
 
 /****************************************************************************
 **
-
 *E  ariths.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

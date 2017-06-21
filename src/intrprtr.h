@@ -983,14 +983,12 @@ extern void            PushVoidObj ( void );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoIntrprtr()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoIntrprtr ( void );
@@ -1000,6 +998,5 @@ StructInitInfo * InitInfoIntrprtr ( void );
 
 /****************************************************************************
 **
-
 *E  intrprtr.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

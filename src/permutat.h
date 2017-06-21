@@ -84,13 +84,11 @@ extern Obj Array2Perm (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoPermutat()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoPermutat ( void );
@@ -100,6 +98,5 @@ StructInitInfo * InitInfoPermutat ( void );
 
 /****************************************************************************
 **
-
 *E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

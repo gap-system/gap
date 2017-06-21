@@ -22,15 +22,13 @@
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res> ) . . . .  load or link
+*F  SyFindOrLinkGapRootFile( <filename>, <result> ) . . . . . .  load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
 **  check  if   there is a corresponding    statically  or dynamically linked
@@ -43,7 +41,6 @@
 **  1: if a dynamically linked module was found
 **  2: if a statically linked module was found
 **  3: a GAP file was found
-**  4: a GAP file was found and the CRC value didn't match
 */
 
 typedef union {
@@ -53,7 +50,6 @@ typedef union {
 
 extern Int SyFindOrLinkGapRootFile (
             const Char *    filename,
-            Int4            crc_gap,
             TypGRF_Data *   result );
 
 
@@ -82,7 +78,6 @@ extern Int SyLoadModule( const Char * name, InitInfoFunc * func );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
 
@@ -119,8 +114,6 @@ extern Char * SyWinCmd (
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * * * * open/close * * * * * * * * * * * * * * * *
 */
 
@@ -339,14 +332,12 @@ extern UInt SyIsIntr ( void );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * output * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
 extern Int SyEchoch (
@@ -356,14 +347,12 @@ extern Int SyEchoch (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * * input  * * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
 extern Int SyFtell (
@@ -392,7 +381,6 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
 
@@ -427,7 +415,6 @@ extern void SySetErrorNo ( void );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
@@ -548,7 +535,6 @@ extern Char *SyFindGapRootFile(const Char *filename, Char *buffer, size_t buffer
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * directories  * * * * * * * * * * * * * * * *
 */
 
@@ -630,13 +616,11 @@ extern Obj SyReadStringFileGeneric(Int fid);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoSysFiles()  . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoSysFiles ( void );
@@ -646,6 +630,5 @@ StructInitInfo * InitInfoSysFiles ( void );
 
 /****************************************************************************
 **
-
 *E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

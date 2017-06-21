@@ -769,14 +769,12 @@ void LoadWPObj( Obj wpobj )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -820,7 +818,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -912,6 +909,5 @@ StructInitInfo * InitInfoWeakPtr ( void )
 
 /****************************************************************************
 **
-
 *E  weakptr.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

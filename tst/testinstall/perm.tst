@@ -309,10 +309,50 @@ gap> List(permBig, SignPerm);
 #
 # MappingPermListList
 #
+gap> MappingPermListList([],[]);
+()
 gap> MappingPermListList([1,1], [2,2]);
 (1,2)
 gap> MappingPermListList([1,2], [2,1]);
 (1,2)
+gap> MappingPermListList([1,2], [3,4]);
+(1,3)(2,4)
+gap> MappingPermListList([2,4,6], [1,2,3]);
+(1,4,2)(3,6)
+gap> MappingPermListList([1,1], [1,2]);
+fail
+gap> MappingPermListList([1,2], [1,1]);
+fail
+gap> MappingPermListList([1,1000], [1,1000]);
+()
+gap> MappingPermListList([1,1000], [1,1001]);
+(1000,1001)
+gap> MappingPermListList([1002,1000], [1,1001]);
+(1,1000,1001,1002)
+gap> MappingPermListList([1,1], [1000,1000]);
+(1,1000)
+gap> MappingPermListList([1,1], [1000,1001]);
+fail
+gap> MappingPermListList([1,2], [1000,1000]);
+fail
+gap> MappingPermListList((), []);
+Error, first argument must be a list (not a permutation (small))
+gap> MappingPermListList([], ());
+Error, second argument must be a list (not a permutation (small))
+gap> MappingPermListList("cheese", "cake");
+Error, arguments must be lists of equal length
+gap> MappingPermListList("cheese", "cakeba");
+Error, first argument must be a list of positive integers
+gap> MappingPermListList([1,2], [3,[]]);
+Error, second argument must be a list of positive integers
+gap> MappingPermListList([1,[]], [3,4]);
+Error, first argument must be a list of positive integers
+gap> MappingPermListList([1,2], [3,0]);
+Error, second argument must be a list of positive integers
+gap> MappingPermListList([1,0], [3,4]);
+Error, first argument must be a list of positive integers
+gap> MappingPermListList([1,-1], [3,4]);
+Error, first argument must be a list of positive integers
 gap> MappingPermListList([1,2], [3,4]);
 (1,3)(2,4)
 gap> (1,128000) = ();

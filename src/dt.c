@@ -82,7 +82,6 @@
 
 /****************************************************************************
 **
-
 *F  DT_POS(tree, index) . . . . . . . . . . . . . position of (<tree>, index)
 **
 **  'DT_POS' returns pos(<a>) where <a> is the subtree of <tree> rooted at
@@ -1781,14 +1780,12 @@ Obj    FuncDT_evaluation(Obj      self,
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -1815,7 +1812,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -1873,7 +1869,6 @@ StructInitInfo * InitInfoDeepThought ( void )
 
 /****************************************************************************
 **
-
 *E  dt.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 **
 */

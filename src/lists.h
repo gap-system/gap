@@ -133,14 +133,12 @@ extern Int ISBB_LIST( Obj list, Obj pos );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * list access functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *V  Elm0ListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package  implementing a  list type <type>  must provide  a function for
@@ -293,7 +291,6 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 /****************************************************************************
 **
-
 *V  ElmsListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package implementing a list  type <type> must  provide such a  function
@@ -358,7 +355,6 @@ extern void ElmsListLevelCheck (
 
 /****************************************************************************
 **
-
 *F  UNB_LIST(<list>,<pos>)  . . . . . . . . . . .  unbind element from a list
 *V  UnbListFuncs[<type>]  . . . . . . . . . . . . . table of unbind functions
 **
@@ -455,7 +451,6 @@ extern void AssListObject (
 
 /****************************************************************************
 **
-
 *F  IS_DENSE_LIST(<list>) . . . . . . . . . . . . . . .  test for dense lists
 *V  IsDenseListFuncs[<type>]  . . . . . .  table of dense list test functions
 **
@@ -769,7 +764,6 @@ extern  Obj             TYPES_LIST_FAM (
 
 /****************************************************************************
 **
-
 *V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
 **
 **  If a list  with type number <tnum>  gains  the filter  with filter number
@@ -795,7 +789,7 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
       RetypeBagIfWritable( list, new ); \
      else { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       }  \
   } while (0)
 
@@ -832,7 +826,7 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
       RetypeBag( list, new ); \
     else  { \
       Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       }  \
   } while (0)
 
@@ -877,36 +871,19 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
       RetypeBag( list, new ); \
 /*    else if ( new < 0 ) { \
       Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
-      Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \
+      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       } */ \
   } while (0)
 
-/****************************************************************************
-**
-*F  MARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . . . mark list
-*/
-#define MARK_LIST( list, what ) \
-    RetypeBag( list, TNUM_OBJ(list) + what );
-
 
 /****************************************************************************
 **
-*F  UNMARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . unmark list
-*/
-#define UNMARK_LIST( list, what ) \
-    RetypeBag( list, TNUM_OBJ(list) - what );
-
-
-/****************************************************************************
-**
-
 *F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
 extern void AsssListCheck (
@@ -938,14 +915,12 @@ extern void AsssListLevelCheck (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  InitInfoLists() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoLists ( void );
@@ -955,6 +930,5 @@ StructInitInfo * InitInfoLists ( void );
 
 /****************************************************************************
 **
-
 *E  lists.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

@@ -291,12 +291,6 @@ UInt            ExecProccall5args (
     /* evaluate the function                                               */
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "Function Calls: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
 
     /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
@@ -552,7 +546,7 @@ Obj             EvalFunccall3args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
+      return DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
     /* call the function and return the result                             */
@@ -1964,7 +1958,6 @@ static Int InitLibrary (
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2087,6 +2080,5 @@ StructInitInfo * InitInfoFuncs ( void )
 
 /****************************************************************************
 **
-
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

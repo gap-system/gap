@@ -125,7 +125,6 @@
 
 /****************************************************************************
 **
-
 *F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size
 **
 **  The structure of a bag is a follows{\:}
@@ -2265,7 +2264,6 @@ void SwapMasterPoint (
 
 /****************************************************************************
 **
-
 *F  BID(<bag>)  . . . . . . . . . . . .  bag identifier (as unsigned integer)
 *F  IS_BAG(<bid>) . . . . . .  test whether a bag identifier identifies a bag
 *F  BAG(<bid>)  . . . . . . . . . . . . . . . . . . bag (from bag identifier)

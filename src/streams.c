@@ -61,7 +61,6 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
@@ -221,7 +220,6 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo )
 
 /****************************************************************************
 **
-
 *F  READ()  . . . . . . . . . . . . . . . . . . . . . . .  read current input
 **
 **  Read the current input and close the input stream.
@@ -431,38 +429,21 @@ Int READ_GAP_ROOT ( Char * filename )
     StructInitInfo *    info;
 
     /* try to find the file                                                */
-    res = SyFindOrLinkGapRootFile( filename, 0L, &result );
+    res = SyFindOrLinkGapRootFile( filename, &result );
 
     /* not found                                                           */
     if ( res == 0 ) {
         return 0;
     }
 
-    /* dynamically linked                                                  */
-    else if ( res == 1 ) {
+    /* dynamically or statically linked                                    */
+    else if ( res == 1 || res == 2 ) {
+        // This code section covers loading of GAC compiled code; in contrast
+        // to FuncLOAD_STAT and FuncLOAD_DYN, which are typically used by
+        // kernel extensions to load C/C++ code.
         if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
-                (Int)filename, 0L );
-        }
-        info = result.module_info;
-        res  = info->initKernel(info);
-        if (!SyRestoring) {
-          UpdateCopyFopyInfo();
-          res  = res || info->initLibrary(info);
-        }
-        if ( res ) {
-            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
-        }
-        
-        RecordLoadedModule(info, 1, filename);
-        return 1;
-    }
-
-    /* statically linked                                                   */
-    else if ( res == 2 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
-                (Int)filename, 0L );
+            const char *s = (res == 1) ? "dynamically" : "statically";
+            Pr( "#I  READ_GAP_ROOT: loading '%s' %s\n", (Int)filename, (Int)s );
         }
         info = result.module_info;
         res  = info->initKernel(info);
@@ -479,21 +460,18 @@ Int READ_GAP_ROOT ( Char * filename )
 
     /* special handling for the other cases, if we are trying to load compiled
        modules needed for a saved workspace ErrorQuit is not available */
-    else if (SyRestoring)
-      {
-        if (res == 3 || res == 4)
-          {
+    else if (SyRestoring) {
+        if ( res == 3 ) {
             Pr("Can't find compiled module '%s' needed by saved workspace\n",
                (Int) filename, 0L);
             return 0;
-          }
-        else
-          Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
+        }
+        Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
         SyExit(1);
-      }
+    }
     
     /* ordinary gap file                                                   */
-    else if ( res == 3 || res == 4  ) {
+    else if ( res == 3 ) {
         if ( SyDebugLoading ) {
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
@@ -532,7 +510,6 @@ Int READ_GAP_ROOT ( Char * filename )
 
 /****************************************************************************
 **
-
 *F  FuncCLOSE_LOG_TO()  . . . . . . . . . . . . . . . . . . . .  stop logging
 **
 **  'FuncCLOSE_LOG_TO' implements a method for 'LogTo'.
@@ -1195,7 +1172,6 @@ Obj FuncREAD_GAP_ROOT (
 
 /****************************************************************************
 **
-
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
 Obj FuncTmpName (
@@ -1314,14 +1290,12 @@ Obj FuncIsDir (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * file access test functions * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncLastSystemError( <self> ) .  . . . . . .  return the last system error
 */
 UInt ErrorMessageRNam;
@@ -1529,13 +1503,11 @@ Obj FuncSTRING_LIST_DIR (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * text stream functions  * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  FuncCLOSE_FILE( <self>, <fid> ) . . . . . . . . . . . . .  close a stream
 */
 Obj FuncCLOSE_FILE (
@@ -2143,14 +2115,12 @@ Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * execution functions  * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
 */
 static Obj    ExecArgs  [ 1024 ];
@@ -2236,14 +2206,11 @@ Obj FuncExecuteProcess (
 
 /****************************************************************************
 **
-
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2424,7 +2391,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -2500,6 +2466,5 @@ StructInitInfo * InitInfoStreams ( void )
 
 /****************************************************************************
 **
-
 *E  streams.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

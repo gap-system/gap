@@ -91,13 +91,11 @@ const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
@@ -124,13 +122,6 @@ const Char * SyArchitecture = SYS_ARCH;
 *V  SyCTRD  . . . . . . . . . . . . . . . . . . .  true if '<ctr>-D' is <eof>
 */
 UInt SyCTRD;
-
-
-/****************************************************************************
-**
-*V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
-*/
-Int SyCheckCRCCompiledModule;
 
 
 /****************************************************************************
@@ -414,7 +405,6 @@ UInt SyWindow;
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
 
@@ -470,7 +460,6 @@ UInt SyTimeChildrenSys ( void )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
 
@@ -627,7 +616,6 @@ size_t strxncat (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
 */
 
@@ -1255,14 +1243,12 @@ void SyUSleep ( UInt msecs )
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
 **  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
@@ -1727,7 +1713,6 @@ struct optInfo options[] = {
   { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
   { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
   { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { 'X', "", toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
   { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
@@ -1770,7 +1755,6 @@ void InitSystem (
     /* Initialize global and static variables. Do it here rather than
        with initializers to allow for restart */
     SyCTRD = 1;             
-    SyCheckCRCCompiledModule = 0;
     SyCompilePlease = 0;
     SyDebugLoading = 0;
     SyHasUserHome = 0;

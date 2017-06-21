@@ -20,7 +20,6 @@
 
 /****************************************************************************
 **
-
 *F  InitInfoFloat()  . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoIOStream ( void );

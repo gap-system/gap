@@ -30,14 +30,12 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * character functions  * * * * * * * * * * * * *
 */
 
+
 /****************************************************************************
 **
-
-
 *V  ObjsChar[<chr>] . . . . . . . . . . . . . . . . table of character values
 **
 **  'ObjsChar' contains all the character values.  That way we do not need to
@@ -48,7 +46,6 @@ extern Obj ObjsChar [256];
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
 
@@ -199,7 +196,6 @@ extern void PrintString1 (
 
 /****************************************************************************
 **
-
 *F  IS_STRING( <obj> )  . . . . . . . . . . . . test if an object is a string
 **
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
@@ -332,13 +328,11 @@ Obj ConvImmString(Obj str);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoString()  . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoString ( void );
@@ -348,6 +342,5 @@ StructInitInfo * InitInfoString ( void );
 
 /****************************************************************************
 **
-
 *E  string.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

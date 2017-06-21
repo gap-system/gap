@@ -46,7 +46,6 @@ extern Obj NEW_MACFLOAT( Double val);
 
 /****************************************************************************
 **
-
 *F  InitInfoMacfloat()  . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoMacfloat ( void );

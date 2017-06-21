@@ -14,7 +14,6 @@
 
 /****************************************************************************
 **
-
 *V  PCWP_FIRST_ENTRY  . . . . . . . . . . . . . . first entry in subrep of AW
 */
 #define PCWP_FIRST_ENTRY        AWP_FIRST_FREE
@@ -51,15 +50,12 @@
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
-
 *F  InitInfoPcElements()  . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoPcElements ( void );
@@ -69,6 +65,5 @@ StructInitInfo * InitInfoPcElements ( void );
 
 /****************************************************************************
 **
-
 *E  objpcgel.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

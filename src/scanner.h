@@ -32,7 +32,6 @@
 
 /****************************************************************************
 **
-
 *V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
 **
 **  The  variable 'Symbol' contains the current  symbol read from  the input.
@@ -424,14 +423,12 @@ extern Int BreakLoopPending( void );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
-
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
 **
 **  'OpenInput' opens  the file with  the name <filename>  as  current input.
@@ -899,13 +896,11 @@ extern void FlushRestOfInputLine( void );
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
 **
-
 *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoScanner ( void );
@@ -915,6 +910,5 @@ StructInitInfo * InitInfoScanner ( void );
 
 /****************************************************************************
 **
-
 *E  scanner.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
