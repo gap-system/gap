@@ -36,9 +36,9 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#include <src/system.h>
+#include "system.h"
 
-#include <src/hpc/atomic.h>
+#include "hpc/atomic.h"
 
 
 

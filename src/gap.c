@@ -12,112 +12,111 @@
 */
 #include <stdio.h>
 #include <assert.h>
-#include <string.h>                     /* memcpy */
+#include <string.h>                 /* memcpy */
 #include <stdlib.h>
 
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <unistd.h>                     /* move this and wrap execvp later */
+#include <unistd.h>                 /* move this and wrap execvp later */
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
+#include "gap.h"                    /* error handling, initialisation */
+#include "read.h"                   /* reader */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "gvars.h"                  /* global variables */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/gmpints.h>                /* integers */
-#include <src/rational.h>               /* rationals */
-#include <src/cyclotom.h>               /* cyclotomics */
-#include <src/finfield.h>               /* finite fields and ff elements */
+#include "gmpints.h"                /* integers */
+#include "rational.h"               /* rationals */
+#include "cyclotom.h"               /* cyclotomics */
+#include "finfield.h"               /* finite fields and ff elements */
 
-#include <src/bool.h>                   /* booleans */
-#include <src/macfloat.h>               /* machine doubles */
-#include <src/permutat.h>               /* permutations */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
+#include "bool.h"                   /* booleans */
+#include "macfloat.h"               /* machine doubles */
+#include "permutat.h"               /* permutations */
+#include "trans.h"                  /* transformations */
+#include "pperm.h"                  /* partial perms */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/set.h>                    /* plain sets */
-#include <src/vector.h>                 /* functions for plain vectors */
-#include <src/vecffe.h>                 /* functions for fin field vectors */
-#include <src/blister.h>                /* boolean lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
-#include <src/vecgf2.h>                 /* functions for GF2 vectors */
-#include <src/vec8bit.h>             /* functions for other compressed
-                                           GF(q) vectors                   */
-#include <src/objfgelm.h>               /* objects of free groups */
-#include <src/objpcgel.h>               /* objects of polycyclic groups */
-#include <src/objscoll.h>               /* single collector */
-#include <src/objccoll.h>               /* combinatorial collector */
-#include <src/objcftl.h>                /* from the left collect */
+#include "lists.h"                  /* generic lists */
+#include "listoper.h"               /* operations for generic lists */
+#include "listfunc.h"               /* functions for generic lists */
+#include "plist.h"                  /* plain lists */
+#include "set.h"                    /* plain sets */
+#include "vector.h"                 /* functions for plain vectors */
+#include "vecffe.h"                 /* functions for fin field vectors */
+#include "blister.h"                /* boolean lists */
+#include "range.h"                  /* ranges */
+#include "stringobj.h"              /* strings */
+#include "vecgf2.h"                 /* functions for GF2 vectors */
+#include "vec8bit.h"                /* functions for other compressed GF(q) vectors */
+#include "objfgelm.h"               /* objects of free groups */
+#include "objpcgel.h"               /* objects of polycyclic groups */
+#include "objscoll.h"               /* single collector */
+#include "objccoll.h"               /* combinatorial collector */
+#include "objcftl.h"                /* from the left collect */
 
-#include <src/dt.h>                     /* deep thought */
-#include <src/dteval.h>                 /* deep thought evaluation */
+#include "dt.h"                     /* deep thought */
+#include "dteval.h"                 /* deep thought evaluation */
 
-#include <src/sctable.h>                /* structure constant table */
-#include <src/costab.h>                 /* coset table */
-#include <src/tietze.h>                 /* tietze helper functions */
+#include "sctable.h"                /* structure constant table */
+#include "costab.h"                 /* coset table */
+#include "tietze.h"                 /* tietze helper functions */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-#include <src/funcs.h>                  /* functions */
+#include "exprs.h"                  /* expressions */
+#include "stats.h"                  /* statements */
+#include "funcs.h"                  /* functions */
 
-#include <src/intrprtr.h>               /* interpreter */
+#include "intrprtr.h"               /* interpreter */
 
-#include <src/compiler.h>               /* compiler */
+#include "compiler.h"               /* compiler */
 
-#include <src/compstat.h>               /* statically linked modules */
+#include "compstat.h"               /* statically linked modules */
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/streams.h>                /* streams package */
-#include <src/sysfiles.h>               /* file input/output */
-#include <src/weakptr.h>                /* weak pointers */
-#include <src/profile.h>                /* profiling */
-#include <src/hookintrprtr.h>
+#include "streams.h"                /* streams package */
+#include "sysfiles.h"               /* file input/output */
+#include "weakptr.h"                /* weak pointers */
+#include "profile.h"                /* profiling */
+#include "hookintrprtr.h"
 
-#include <src/gapstate.h>
+#include "gapstate.h"
 
-#include <src/objset.h>
+#include "objset.h"
 
 #ifdef GAPMPI
-#include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
+#include "hpc/gapmpi.h"             /* ParGAP/MPI */
 #endif
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
-#include <src/hpc/aobjects.h>
-#include <src/hpc/misc.h>
-#include <src/hpc/threadapi.h>
-#include <src/hpc/serialize.h>          /* object serialization */
+#include "hpc/thread.h"
+#include "hpc/tls.h"
+#include "hpc/aobjects.h"
+#include "hpc/misc.h"
+#include "hpc/threadapi.h"
+#include "hpc/serialize.h"          /* object serialization */
 #endif
 
-#include <src/vars.h>                   /* variables */
+#include "vars.h"                   /* variables */
 
-#include <src/intfuncs.h>
-#include <src/iostream.h>
+#include "intfuncs.h"
+#include "iostream.h"
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 /****************************************************************************
 **

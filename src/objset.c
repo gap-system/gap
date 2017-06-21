@@ -12,27 +12,27 @@
 #include <string.h>                     /* memcpy */
 #include <stdlib.h>
 
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
 
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/bool.h>                   /* booleans */
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
+#include "gap.h"                    /* error handling, initialisation */
+#include "gvars.h"                  /* global variables */
+#include "bool.h"                   /* booleans */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
 
-#include <src/fibhash.h>
+#include "fibhash.h"
 
-#include <src/objset.h>
+#include "objset.h"
 
-#include <src/scanner.h>
+#include "scanner.h"
 
-#include <src/hpc/tls.h>
+#include "hpc/tls.h"
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;

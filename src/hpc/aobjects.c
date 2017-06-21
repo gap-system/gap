@@ -13,56 +13,56 @@
 #include <string.h>                     /* memcpy */
 #include <stdlib.h>
 
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/read.h>                   /* reader */
-#include <src/gvars.h>                  /* global variables */
+#include "read.h"                   /* reader */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/gmpints.h>                /* integers */
-#include <src/bool.h>                   /* booleans */
+#include "gmpints.h"                /* integers */
+#include "bool.h"                   /* booleans */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
+#include "lists.h"                  /* generic lists */
+#include "listoper.h"               /* operations for generic lists */
+#include "listfunc.h"               /* functions for generic lists */
+#include "plist.h"                  /* plain lists */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-#include <src/funcs.h>                  /* functions */
+#include "exprs.h"                  /* expressions */
+#include "stats.h"                  /* statements */
+#include "funcs.h"                  /* functions */
 
-#include <src/fibhash.h>
+#include "fibhash.h"
 
-#include <src/stringobj.h>
+#include "stringobj.h"
 
-#include <src/hpc/thread.h>
-#include <src/hpc/traverse.h>
-#include <src/hpc/tls.h>
-#include <src/vars.h>                   /* variables */
+#include "hpc/thread.h"
+#include "hpc/traverse.h"
+#include "hpc/tls.h"
+#include "vars.h"                   /* variables */
 
-#include <src/hpc/aobjects.h>
+#include "hpc/aobjects.h"
 
 
-#include <src/intrprtr.h>               /* interpreter */
+#include "intrprtr.h"               /* interpreter */
 
-#include <src/compiler.h>               /* compiler */
+#include "compiler.h"               /* compiler */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 
 Obj TYPE_ALIST;

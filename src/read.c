@@ -10,39 +10,39 @@
 **  This module contains the functions to read expressions and statements.
 */
 #include <string.h>                     /* memcpy */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/stringobj.h>              /* strings */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/code.h>                   /* coder */
+#include "gvars.h"                  /* global variables */
+#include "stringobj.h"              /* strings */
+#include "calls.h"                  /* generic call mechanism */
+#include "code.h"                   /* coder */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
 
 
-#include <src/intrprtr.h>               /* interpreter */
+#include "intrprtr.h"               /* interpreter */
 
-#include <src/read.h>                   /* reader */
+#include "read.h"                   /* reader */
 
-#include <src/hpc/tls.h>
-#include <src/hpc/thread.h>
+#include "hpc/tls.h"
+#include "hpc/thread.h"
 
-#include <src/vars.h>                   /* variables */
+#include "vars.h"                   /* variables */
 
-#include <src/bool.h>
+#include "bool.h"
 
 #include <assert.h>
 

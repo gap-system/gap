@@ -18,44 +18,44 @@
 #include <stdio.h>               /* on SunOS, assert.h uses stderr
                                            but does not include stdio.h    */
 #include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
-#include <src/bool.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
+#include "bool.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/stringobj.h>              /* strings */
-#include <src/calls.h>                  /* generic call mechanism */
+#include "stringobj.h"              /* strings */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/code.h>                   /* coder */
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
+#include "code.h"                   /* coder */
+#include "exprs.h"                  /* expressions */
+#include "stats.h"                  /* statements */
 
-#include <src/funcs.h>                  /* functions */
+#include "funcs.h"                  /* functions */
 
-#include <src/read.h>                   /* read expressions */
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "read.h"                   /* read expressions */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
 
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/opers.h>                  /* generic operations */
-#include <src/gvars.h>
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "opers.h"                  /* generic operations */
+#include "gvars.h"
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/vars.h>                   /* variables */
+#include "vars.h"                   /* variables */
 
-#include <src/hookintrprtr.h>
+#include "hookintrprtr.h"
 
 /****************************************************************************
 **

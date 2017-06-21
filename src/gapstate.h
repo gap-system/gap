@@ -12,10 +12,10 @@
 
 #include <stdint.h>
 
-#include <src/code.h>
-#include <src/gasman.h>
-#include <src/scanner.h>
-#include <src/system.h>
+#include "code.h"
+#include "gasman.h"
+#include "scanner.h"
+#include "system.h"
 
 #define MAXPRINTDEPTH 1024L
 
@@ -191,7 +191,7 @@ typedef struct GAPState {
 
 #if defined(HPCGAP)
 
-#include <src/hpc/tls.h>
+#include "hpc/tls.h"
 
 #else
 

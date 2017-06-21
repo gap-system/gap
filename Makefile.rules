@@ -126,15 +126,12 @@ GAP_CPPFLAGS =
 
 # First add include paths
 
-# If this is an out-of-tree build, then first add the builddir to the list of
-# include directories, so that the correct gen/config.h is picked up (even if
-# the user also has an active in-tree build)
-ifneq ($(top_builddir),$(srcdir))
-  GAP_CPPFLAGS += -I$(top_builddir)
-endif
+# The "gen" directory contains generated files and thus is placed into
+# the build directory.
+GAP_CPPFLAGS += -I$(top_builddir)/gen
 
-# Finally look into srcdir
-GAP_CPPFLAGS += -I$(srcdir)
+# The other source files are relative to the srcdir
+GAP_CPPFLAGS += -I$(srcdir)/src
 
 # Add DEFS (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(DEFS)
@@ -462,8 +459,6 @@ install-headers:
 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/*.h
-	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/hpc/*.h
 	# TODO: take care of config.h
 
 install-libgap: libgap.la

@@ -24,7 +24,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <gen/config.h>
+#include "config.h"
 
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>

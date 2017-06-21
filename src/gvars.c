@@ -26,41 +26,41 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
 
-#include <src/scanner.h>                /* scanner */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
+#include "lists.h"                  /* generic lists */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#include "hpc/tls.h"                /* thread-local storage */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/aobjects.h"           /* atomic objects */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 #ifdef HPCGAP
-#include <src/hpc/systhread.h>          /* system thread primitives */
+#include "hpc/systhread.h"          /* system thread primitives */
 #endif
 
 #include <stdio.h>

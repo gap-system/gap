@@ -19,35 +19,35 @@
 #include <time.h>                       /* time */
 #include <stdlib.h>                     /* exit */
 #include <stdio.h>                      /* NULL, fprintf */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gvars.h>                  /* global variables */
+#include "gap.h"                    /* error handling, initialisation */
+#include "read.h"                   /* reader */
+#include "calls.h"                  /* generic call mechanism */
+#include "gvars.h"                  /* global variables */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/sysfiles.h>               /* file input/output */
+#include "sysfiles.h"               /* file input/output */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/tls.h>                /* thread local storage (needed for hpcgap) */
-#include <src/vars.h>                   /* variables */
-#include <src/stats.h>                  /* statements (XXX_BRK_CURR_STAT) */
+#include "code.h"                   /* coder */
+#include "hpc/tls.h"                /* thread local storage (needed for hpcgap) */
+#include "vars.h"                   /* variables */
+#include "stats.h"                  /* statements (XXX_BRK_CURR_STAT) */
 
-#include <src/hpc/gapmpi.h>             /* MPI functions and UNIX utils */
+#include "hpc/gapmpi.h"             /* MPI functions and UNIX utils */
 #include <mpi.h>                        /* provided with MPI distribution */
 
 #include <unistd.h>                     /* definition of 'chdir' */

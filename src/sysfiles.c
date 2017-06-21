@@ -15,39 +15,39 @@
 **  various  labels determine which operating  system is  actually used, they
 **  are described in "system.c".
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
-#include <src/sysfiles.h>               /* file input/output */
+#include "sysfiles.h"               /* file input/output */
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
+#include "gvars.h"                  /* global variables */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
+#include "lists.h"                  /* generic lists */
+#include "listfunc.h"               /* functions for generic lists */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/records.h>                /* generic records */
-#include <src/bool.h>                   /* Global True and False */
+#include "records.h"                /* generic records */
+#include "bool.h"                   /* Global True and False */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/read.h>                   /* reader */
+#include "read.h"                   /* reader */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
-#include <src/stats.h>
+#include "stats.h"
 
 #include <assert.h>
 #include <fcntl.h>
@@ -119,7 +119,7 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 **  2: if a statically linked module was found
 **  3: a GAP file was found
 */
-#include <src/compstat.h>               /* statically linked modules */
+#include "compstat.h"               /* statically linked modules */
 
 
 Int SyFindOrLinkGapRootFile (

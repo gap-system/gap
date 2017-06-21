@@ -12,45 +12,45 @@
 **  This file contains the GAP to C compiler.
 */
 #include <stdarg.h>                     /* variable argument list macros */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/gmpints.h>
+#include "ariths.h"                 /* basic arithmetic */
+#include "gmpints.h"
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
-#include <src/lists.h>                  /* generic lists */
+#include "lists.h"                  /* generic lists */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/plist.h>                  /* plain lists */
+#include "plist.h"                  /* plain lists */
 
-#include <src/stringobj.h>              /* strings */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
+#include "exprs.h"                  /* expressions */
+#include "stats.h"                  /* statements */
 
-#include <src/compiler.h>               /* compiler */
+#include "compiler.h"               /* compiler */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/vars.h>                   /* variables */
+#include "vars.h"                   /* variables */
 
 
 /****************************************************************************
@@ -5633,7 +5633,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include <src/compiled.h>\n" );
+    Emit( "#include \"compiled.h\"\n" );
 
     /* emit code for global variables                                      */
     Emit( "\n/* global variables used in handlers */\n" );

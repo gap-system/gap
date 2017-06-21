@@ -13,49 +13,49 @@
 */
 #include <assert.h>
 
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/opers.h>                  /* generic operations */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/lists.h>                  /* generic lists */
+#include "ariths.h"                 /* basic arithmetic */
+#include "lists.h"                  /* generic lists */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/blister.h>                /* boolean lists */
-#include <src/stringobj.h>              /* strings */
-#include <src/range.h>                  /* ranges */
+#include "plist.h"                  /* plain lists */
+#include "blister.h"                /* boolean lists */
+#include "stringobj.h"              /* strings */
+#include "range.h"                  /* ranges */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/listfunc.h>   
-#include <src/gmpints.h>   
+#include "listfunc.h"   
+#include "gmpints.h"   
 
 #ifdef HPCGAP
-#include <src/hpc/tls.h>                /* thread-local storage */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#include "hpc/tls.h"                /* thread-local storage */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/aobjects.h"           /* atomic objects */
 
-#include <src/hpc/systhread.h>          /* system thread primitives */
-#include <src/hpc/atomic.h>
+#include "hpc/systhread.h"          /* system thread primitives */
+#include "hpc/atomic.h"
 #endif
 
 /****************************************************************************

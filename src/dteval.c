@@ -23,38 +23,38 @@
 **  and f_{ij} = x_j (j<>i),  then <dtpols>[i] is either 1 or 0. <dtpols>[i]
 **  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
 */
-#include <src/system.h>
-#include <src/gapstate.h>
+#include "system.h"
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-#include <src/bool.h>                   /* booleans */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/precord.h>                /* plain records */
-#include <src/records.h>                /* generic records */
-#include <src/gmpints.h>                /* integers */
-#include <src/dt.h>                     /* deep thought */
-#include <src/objcftl.h>                /* from the left collect */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
+#include "bool.h"                   /* booleans */
+#include "calls.h"                  /* generic call mechanism */
+#include "gap.h"                    /* error handling, initialisation */
+#include "gvars.h"                  /* global variables */
+#include "precord.h"                /* plain records */
+#include "records.h"                /* generic records */
+#include "gmpints.h"                /* integers */
+#include "dt.h"                     /* deep thought */
+#include "objcftl.h"                /* from the left collect */
 
-#include <src/dteval.h>                 /* deep though evaluation */
+#include "dteval.h"                 /* deep though evaluation */
 
 #define   CELM(list, pos)      (  INT_INTOBJ( ELM_PLIST(list, pos) ) )
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "listfunc.h"               /* functions for generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
 
 static int             evlist, evlistvec;

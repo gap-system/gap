@@ -18,7 +18,7 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
-#include <src/plist.h>
+#include "plist.h"
 
 extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
 extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;

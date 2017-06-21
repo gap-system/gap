@@ -9,47 +9,47 @@
 **
 */
 
-#include <src/system.h>
-#include <src/gapstate.h>
-#include <src/sysfiles.h>
+#include "system.h"
+#include "gapstate.h"
+#include "sysfiles.h"
 
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/scanner.h>
+#include "gasman.h"
+#include "objects.h"
+#include "scanner.h"
 
-#include <src/gap.h>
+#include "gap.h"
 
-#include <src/gvars.h>
+#include "gvars.h"
 
-#include <src/calls.h>
+#include "calls.h"
 
-#include <src/precord.h>
-#include <src/records.h>
+#include "precord.h"
+#include "records.h"
 
-#include <src/lists.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "lists.h"
+#include "plist.h"
+#include "stringobj.h"
 
-#include <src/bool.h>
+#include "bool.h"
 
-#include <src/code.h>
-#include <src/exprs.h>
-#include <src/vars.h>
+#include "code.h"
+#include "exprs.h"
+#include "vars.h"
 
-#include <src/intrprtr.h>
+#include "intrprtr.h"
 
-#include <src/ariths.h>
+#include "ariths.h"
 
-#include <src/stats.h>
+#include "stats.h"
 
 #include <assert.h>
 
-#include <src/hookintrprtr.h>
+#include "hookintrprtr.h"
 
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
+#include "hpc/thread.h"
+#include "hpc/tls.h"
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 /* List of active hooks */
 struct InterpreterHooks * activeHooks[HookCount];
