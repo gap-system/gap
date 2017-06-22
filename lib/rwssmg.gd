@@ -38,7 +38,7 @@
 ##  an attribute storing object (see <Ref Sect="Representation"/>).
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f := FreeSemigroup( "a" , "b" );;
+##  gap> f := FreeSemigroup( "a", "b" );;
 ##  gap> a := GeneratorsOfSemigroup(f)[1];;
 ##  gap> b := GeneratorsOfSemigroup(f)[2];;
 ##  gap> s := f/[ [a*b*a,b], [b*a*b,a] ];;
@@ -111,9 +111,9 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##  <free semigroup on the generators [ a, b ]>
 ##  gap> f1=f;
 ##  true
-##  gap> g1 := SemigroupOfRewritingSystem(rws);
+##  gap> s1 := SemigroupOfRewritingSystem(rws);
 ##  <fp semigroup on the generators [ a, b ]>
-##  gap> g1=g;
+##  gap> s1=s;
 ##  true
 ##  ]]></Example>
 ##  <P/>
@@ -122,16 +122,12 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##  presented semigroup (or finitely presented monoid).
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> a := GeneratorsOfSemigroup( g )[ 1 ];
-##  a
-##  gap> b := GeneratorsOfSemigroup( g )[ 2 ];
-##  b
-##  gap> a*b*a=a^3;
+##  gap> d^6 = c^2;
 ##  true
-##  gap> ReducedForm(rws,UnderlyingElement(a*b*a));
-##  a^3
-##  gap> ReducedForm(rws,UnderlyingElement(a^3));
-##  a^3
+##  gap> ReducedForm( rws, UnderlyingElement(d^6) );
+##  a^2
+##  gap> ReducedForm( rws, UnderlyingElement(c^2) );
+##  a^2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
