@@ -908,11 +908,9 @@ Obj             ShallowCopyPlist (
 Obj    FuncEmptyPlist( Obj self, Obj len )
 {
     Obj                 new;
-    while ( ! IS_INTOBJ(len) ) {
-        len = ErrorReturnObj(
-            "<len> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(len), 0L,
-            "you can replace <len> via 'return <len>;'" );
+
+    if (!IS_INTOBJ(len) || INT_INTOBJ(len) < 0) {
+        ErrorMayQuit("<len> must be a non-negative small integer", 0L, 0L);
     }
 
     new = NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
