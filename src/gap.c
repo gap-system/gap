@@ -2017,17 +2017,28 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
-/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0 for all 
-immediate objects (small integers or ffes) and (b) returns reasonably small results
-(roughly in teh range from 1 to the max number of objects that have existed in this session */
+/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0
+for all immediate objects (small integers or ffes) and (b) returns reasonably
+small results (roughly in the range from 1 to the max number of objects that
+have existed in this session. In HPCGAP it just returns the same value as
+HANDLE_OBJ for non-immediate objects */
 
 Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
+#ifdef HPCGAP
+    if (IS_INTOBJ(o) || IS_FFE(o)) {
+        return INTOBJ_INT(0);
+    }
+    else {
+        return FuncHANDLE_OBJ(self, o);
+    }
+#else
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
         return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
     } else {
         return INTOBJ_INT( 0 );
     }
+#endif
 }
 
 /* Returns a measure of the size of a GAP function */
