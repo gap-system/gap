@@ -3357,13 +3357,13 @@ Obj             FuncRESTRICTED_PERM (
 	ptDom  = ADDR_OBJ(dom);
 	len = LEN_LIST(dom);
 	for (i=1;i<=len;i++) {
-	  p=INT_INTOBJ(ptDom[i]);
-	  if ( IS_INTOBJ(ptDom[i]) && p>0 ) {
-	    if (p<=deg) {
-	      p-=1;
-	      ptRest2[p]=ptPerm2[p];
-	    }
-	  }
+            if (IS_POS_INTOBJ(ptDom[i])) {
+                p = INT_INTOBJ(ptDom[i]);
+                if (p <= deg) {
+                    p -= 1;
+                    ptRest2[p] = ptPerm2[p];
+                }
+          }
 	  else{
 	    return Fail;
 	  }
@@ -3431,18 +3431,18 @@ Obj             FuncRESTRICTED_PERM (
 	ptRest4  = ADDR_PERM4(rest);
 	ptDom  = ADDR_OBJ(dom);
 	len = LEN_LIST(dom);
-	for (i=1;i<=len;i++) {
-	  p=INT_INTOBJ(ptDom[i]);
-	  if ( IS_INTOBJ(ptDom[i]) && p>0 ) {
-	    if (p<=deg) {
-	      p-=1;
-	      ptRest4[p]=ptPerm4[p];
-	    }
-	  }
-	  else{
-	    return Fail;
-	  }
-	}
+        for (i = 1; i <= len; i++) {
+            if (IS_POS_INTOBJ(ptDom[i])) {
+                p = INT_INTOBJ(ptDom[i]);
+                if (p <= deg) {
+                    p -= 1;
+                    ptRest4[p] = ptPerm4[p];
+                }
+            }
+            else {
+                return Fail;
+            }
+        }
       }
       else {
 	len = GET_LEN_RANGE(dom);
