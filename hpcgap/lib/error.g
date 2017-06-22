@@ -112,7 +112,7 @@ BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
             x,  prompt,  res, errorLVars, justQuit, printThisStatement,
-            location;
+            location, lastErrorStream;
 
 	context := arg[1].context;
     if not IsLVarsBag(context) then
@@ -196,9 +196,11 @@ BIND_GLOBAL("ErrorInner",
           PrintTo("*errout*","\n");
         fi;
         LastErrorMessage := "";
+        lastErrorStream := OutputTextString(LastErrorMessage, true);
         for x in earlyMessage do
-          Append(LastErrorMessage, x);
+          PrintTo(lastErrorStream, x);
         od;
+        CloseStream(lastErrorStream);
         MakeImmutable(LastErrorMessage);
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
