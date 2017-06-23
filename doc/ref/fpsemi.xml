@@ -69,10 +69,8 @@ gap> x:=GeneratorsOfSemigroup(f);;
 gap> s:=f/[ [x[1]*x[2],x[2]*x[1]] ];;
 gap> a;
 Error, Variable: 'a' must have a value
-gap> a:=GeneratorsOfSemigroup(s)[1];
+gap> a := s.1;
 a
-gap> b:=GeneratorsOfSemigroup(s)[2];
-b
 gap> a in f;
 false
 gap> a in s;

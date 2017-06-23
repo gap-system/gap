@@ -306,16 +306,15 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##  <A>elm</A> belongs
 ##  <Example><![CDATA[
 ##  gap> f := FreeSemigroup("a","b");;
-##  gap> a := GeneratorsOfSemigroup( f )[ 1 ];;
-##  gap> b := GeneratorsOfSemigroup( f )[ 2 ];;
+##  gap> a := f.1;;  b := f.2;;
 ##  gap> s := f / [ [ a^2 , a*b ] ];;
 ##  gap> IsFpSemigroup( s );
 ##  true
-##  gap> t := Semigroup( [ GeneratorsOfSemigroup( s )[ 1 ] ]);
+##  gap> t := Semigroup( [ s.1 ]);
 ##  <commutative semigroup with 1 generator>
 ##  gap> IsSubsemigroupFpSemigroup( t );
 ##  true
-##  gap> IsElementOfFpSemigroup( GeneratorsOfSemigroup( t )[ 1 ] );
+##  gap> IsElementOfFpSemigroup( t.1 );
 ##  true
 ##  ]]></Example>
 ##  </Description>

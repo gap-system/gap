@@ -49,7 +49,6 @@ DeclareCategoryCollections("IsElementOfFpMonoid");
 ##
 #A  IsSubmonoidFpMonoid( <t> )
 ##
-##  <#GAPDoc Label="IsSubmonoidFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsSubmonoidFpMonoid" Arg='t'/>
 ##
@@ -63,7 +62,6 @@ DeclareCategoryCollections("IsElementOfFpMonoid");
 ##  A submonoid of a monoid has the same identity as the monoid.
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsSubmonoidFpMonoid", 
 	IsMonoid and IsElementOfFpMonoidCollection );
