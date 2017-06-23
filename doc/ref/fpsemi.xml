@@ -21,9 +21,9 @@ by a set of relations (a generating set for the congruence), i.e., a set of
 pairs of words in the free semigroup.
 <P/>
 <Example><![CDATA[
-gap> f:=FreeSemigroup("a","b");;
-gap> x:=GeneratorsOfSemigroup(f);;
-gap> s:=f/[ [x[1]*x[2],x[2]*x[1]] ];
+gap> f := FreeSemigroup( "a", "b" );;
+gap> x := GeneratorsOfSemigroup(f);;
+gap> s := f/[ [x[1]*x[2], x[2]*x[1]] ];
 <fp semigroup on the generators [ a, b ]>
 gap> GeneratorsOfSemigroup(s);
 [ a, b ]
@@ -35,12 +35,12 @@ Finitely presented monoids are obtained by factoring a free monoid by
 a set of relations, i.e. a set of pairs of words in the free monoid. 
 <P/>
 <Example><![CDATA[
-gap> f:=FreeMonoid("a","b");;
-gap> x:=GeneratorsOfMonoid(f);
+gap> f := FreeMonoid( "a", "b" );;
+gap> x := GeneratorsOfMonoid(f);
 [ a, b ]
-gap> e:=Identity(f);
+gap> e := Identity(f);
 <identity ...>
-gap> m:=f/[ [x[1]*x[2],e] ];
+gap> m := f/[ [x[1]*x[2],e] ];
 <fp monoid on the generators [ a, b ]>
 gap> RelationsOfFpMonoid(m);
 [ [ a*b, <identity ...> ] ]
@@ -100,9 +100,9 @@ bounded a priori. The same can be said for monoids.
 <P/>
 <Example><![CDATA[
 gap> b := s.2;; 
-gap> a*b=a^5;
+gap> a*b = a^5;
 false
-gap> a^5*b^2*a=a^6*b^2;
+gap> a^5*b^2*a = a^6*b^2;
 true
 ]]></Example>
 <P/>
