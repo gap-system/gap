@@ -1221,6 +1221,17 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
   AppendTo(file,"\\end{tabular}\n");
 end);
 
+
+#############################################################################
+##
+#F  Concatenate strings.
+##
+##  Note that this is inefficient when concatenating many strings. In that
+##  case it is better to us Concatenation(a,b,c,...) or Append(...).
+##
+InstallOtherMethod(\+, [IsString,IsString], Concatenation);
+
+
 #############################################################################
 ##
 #E
