@@ -16,10 +16,13 @@ echo "--------------------"
 echo "Building GAP manuals"
 echo "--------------------"
 
-cd "$abs_top_srcdir"
-"$GAP" $GAPARGS <<EOF
-SaveWorkspace( "$WSP" );
-EOF
+if [[ "x@HPCGAP@" != "xyes" ]]
+then
+    cd "$abs_top_srcdir"
+    echo "SaveWorkspace( \"$WSP\" );" | "$GAP"
+    ls -al "$WSP"
+    GAPARGS="$GAPARGS -L $WSP"
+fi
 
 books="ref tut changes hpc"
 
@@ -32,7 +35,7 @@ do
     echo "Building GAP manual '$book' at $PWD"
     echo "Run $run of 2"
     echo "----------------------------"
-    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A -L "$WSP" | tee make_manuals.out
+    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A | tee make_manuals.out
   done
 done
 
