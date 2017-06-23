@@ -14,7 +14,6 @@
 ##
 #C  IsElementOfFpMonoid(<elm>)
 ##
-##  <#GAPDoc Label="IsElementOfFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsElementOfFpMonoid" Arg='elm' Type='Category'/>
 ##
@@ -22,7 +21,6 @@
 ##  returns true if <A>elm</A> is an element of a finitely presented monoid. 
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareCategory( "IsElementOfFpMonoid",
     IsMultiplicativeElementWithOne and IsAssociativeElement);
@@ -132,7 +130,6 @@ DeclareOperation( "FpMonoidOfElementOfFpMonoid",[IsElementOfFpMonoid]);
 ##
 #P  IsFpMonoid(<m>)
 ##
-##  <#GAPDoc Label="IsFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsFpMonoid" Arg='m'/>
 ##
@@ -142,7 +139,6 @@ DeclareOperation( "FpMonoidOfElementOfFpMonoid",[IsElementOfFpMonoid]);
 ##  of a finitely presented monoid is not necessarily finitely presented).
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsFpMonoid",IsSubmonoidFpMonoid and IsWholeFamily);
 

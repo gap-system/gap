@@ -18,9 +18,30 @@
 ##  <#GAPDoc Label="IsElementOfFpSemigroup">
 ##  <ManSection>
 ##  <Filt Name="IsElementOfFpSemigroup" Arg='elm' Type='Category'/>
+##  <Filt Name="IsElementOfFpMonoid" Arg='elm' Type='Category'/>
 ##
 ##  <Description>
-##  returns true if <A>elm</A> is an element of a finitely presented semigroup. 
+##  returns true if <A>elm</A> is an element of a finitely presented 
+##  semigroup or monoid. 
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f := FreeSemigroup( "a", "b" );;
+##  gap> IsFpSemigroup( f );
+##  false
+##  gap> s := f / [ [ f.1^2, f.2^2 ] ];;
+##  gap> IsFpSemigroup( s );
+##  true
+##  gap> t := Semigroup( [ s.1^2 ] );
+##  <commutative semigroup with 1 generator>
+##  gap> IsSubsemigroupFpSemigroup( t );
+##  true
+##  gap> IsSubsemigroupFpSemigroup( s );
+##  true
+##  gap> IsSubsemigroupFpSemigroup( f );
+##  false
+##  gap> IsElementOfFpSemigroup( t.1^3 );
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -67,13 +88,18 @@ DeclareCategoryCollections("IsElementOfFpSemigroup");
 ##  <#GAPDoc Label="IsSubsemigroupFpSemigroup">
 ##  <ManSection>
 ##  <Filt Name="IsSubsemigroupFpSemigroup" Arg='t'/>
+##  <Filt Name="IsSubmonoidFpMonoid" Arg='t'/>
 ##
 ##  <Description>
-##  true if <A>t</A> is a finitely presented semigroup or a 
-##  subsemigroup of a finitely presented semigroup
-##  (generally speaking, such a subsemigroup can be constructed
-##  with <C>Semigroup(<A>gens</A>)</C>, where <A>gens</A> is a list of elements
-##  of a finitely presented semigroup).
+##  The first function returns true if <A>t</A> is a finitely presented 
+##  semigroup or a subsemigroup of a finitely presented semigroup. 
+##  The second function does the equivalent thing for monoids. 
+##  (Generally speaking, such a subsemigroup or monoid can be constructed
+##  with <C>Semigroup(<A>gens</A>)</C> or <C>Monoid(<A>gens</A>)</C>, 
+##  where <A>gens</A> is a list of elements
+##  of a finitely presented semigroup or monoid.)
+##  <P/>
+##  A submonoid of a monoid has the same identity as the monoid.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -174,11 +200,16 @@ DeclareOperation( "ElementOfFpSemigroup",
 ##  <#GAPDoc Label="IsFpSemigroup">
 ##  <ManSection>
 ##  <Filt Name="IsFpSemigroup" Arg='s'/>
+##  <Filt Name="IsFpMonoid" Arg='m'/>
 ##
 ##  <Description>
-##  is a synonym for <C>IsSubsemigroupFpSemigroup(<A>s</A>)</C> and 
+##  The first function is a synonym for 
+##  <C>IsSubsemigroupFpSemigroup(<A>s</A>)</C> and 
 ##  <C>IsWholeFamily(<A>s</A>)</C> (this is because a subsemigroup
-##  of a finitely presented semigroup is not necessarily finitely presented).
+##  of a finitely presented semigroup is not necessarily finitely presented). 
+##  <P/>
+##  Similarly, the second function is a synonym for 
+##  <C>IsSubmonoidFpMonoid(<A>m</A>)</C> and <C>IsWholeFamily(<A>m</A>)</C>. 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -303,18 +334,17 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##
 ##  <Description>
 ##  returns the finitely presented group, monoid or semigroup to which 
-##  <A>elm</A> belongs
+##  <A>elm</A> belongs. 
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> f := FreeSemigroup("a","b");;
-##  gap> a := f.1;;  b := f.2;;
-##  gap> s := f / [ [ a^2 , a*b ] ];;
-##  gap> IsFpSemigroup( s );
+##  gap> s = FpGrpMonSmgOfFpGrpMonSmgElement( s.1 );
 ##  true
-##  gap> t := Semigroup( [ s.1 ]);
-##  <commutative semigroup with 1 generator>
-##  gap> IsSubsemigroupFpSemigroup( t );
+##  gap> s = FpGrpMonSmgOfFpGrpMonSmgElement( t.1 );
 ##  true
-##  gap> IsElementOfFpSemigroup( t.1 );
+##  gap> f := FreeMonoid(2);;
+##  gap> m := f / [ [ f.1^2, f.2^2 ] ];
+##  <fp monoid on the generators [ m1, m2 ]>
+##  gap> m = FpGrpMonSmgOfFpGrpMonSmgElement( m.1*m.2 );
 ##  true
 ##  ]]></Example>
 ##  </Description>

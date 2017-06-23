@@ -122,11 +122,8 @@ a^6*b^2
 <Heading>IsSubsemigroupFpSemigroup (Filter)</Heading>
 
 <#Include Label="IsSubsemigroupFpSemigroup">
-<#Include Label="IsSubmonoidFpMonoid">
 <#Include Label="IsFpSemigroup">
-<#Include Label="IsFpMonoid">
 <#Include Label="IsElementOfFpSemigroup">
-<#Include Label="IsElementOfFpMonoid">
 <#Include Label="FpGrpMonSmgOfFpGrpMonSmgElement">
 
 </Section>
