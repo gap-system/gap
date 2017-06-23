@@ -64,9 +64,8 @@ introduce the respective variables and to assign the generators to them.
 <P/>
 <Example><![CDATA[
 gap> Unbind(a);
-gap> f:=FreeSemigroup("a","b");;
-gap> x:=GeneratorsOfSemigroup(f);;
-gap> s:=f/[ [x[1]*x[2],x[2]*x[1]] ];;
+gap> f := FreeSemigroup( "a", "b" );;
+gap> s := f/[ [f.1*f.2, f.2*f.1] ];;
 gap> a;
 Error, Variable: 'a' must have a value
 gap> a := s.1;
@@ -100,6 +99,7 @@ bounded a priori. The same can be said for monoids.
 (See <Ref Sect="Rewriting Systems and the Knuth-Bendix Procedure"/>.)
 <P/>
 <Example><![CDATA[
+gap> b := s.2;; 
 gap> a*b=a^5;
 false
 gap> a^5*b^2*a=a^6*b^2;
