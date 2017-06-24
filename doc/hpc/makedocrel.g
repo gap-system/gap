@@ -39,7 +39,6 @@ GAPDocManualLabFromSixFile( "hpc", "manual.six" );;
 
 CopyHTMLStyleFiles(".");
 
-
 #############################################################################
 ##
 #E
