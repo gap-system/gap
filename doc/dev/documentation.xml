@@ -37,10 +37,6 @@ in the &GAP; root directory. This will compile each of the three main &GAP;
 manuals twice to ensure that cross-references are resolved. 
 <P/>
 
-After that, each of the directories <F>ref</F>, <F>tut</F> and <F>changes</F>
-will contain a build log in the file <F>make_manuals.out</F>.
-<P/>
-
 If you need to compile a single manual book, call
 <Verb><![CDATA[
 gap makedocrel.g

@@ -33,7 +33,7 @@ do
     echo "Building GAP manual '$book' at $PWD"
     echo "Run $run of 2"
     echo "----------------------------"
-    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A -L "$WSP" | tee make_manuals.out
+    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A -L "$WSP"
   done
 done
 

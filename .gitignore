@@ -33,7 +33,6 @@
 /doc/*/*.pnr
 /doc/*/*.tex
 /doc/*/*.toc
-/doc/*/make_manuals.out
 /doc/*/manual*.pdf
 /doc/*/manual.lab
 /doc/*/manual.pdf
@@ -82,7 +81,6 @@
 */doc/*/*.out
 */doc/*/*.pnr
 */doc/*/*.tex
-*/doc/*/make_manuals.out
 */doc/*/manual.lab
 */doc/*/manual.six
 */doc/gapmacrodoc.example-1.tst
