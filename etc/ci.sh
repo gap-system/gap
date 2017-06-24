@@ -37,7 +37,6 @@ fi
 if [[ "${TEST_SUITE}" == makemanuals ]]
 then
     make doc
-    cat  $SRCDIR/doc/*/make_manuals.out
     exit 0
 fi
 

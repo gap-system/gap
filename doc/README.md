@@ -22,9 +22,7 @@ steps:
 * build manuals by calling `make doc`
 
 This will build all three manuals. Each of them will be built twice to ensure that 
-cross-references between manuals are resolved. The build log will be saved in 
-`make_manuals.out` files in each of the three directories `changes`, `ref` and `tut`. 
-You may check it for further warnings, for example, about unresolved references. 
+cross-references between manuals are resolved.
 
 Each of these three directories contains a file `makedocrel.g`. You may read it into 
 GAP if you want to build faster just one manual to see how your changes look like, 
