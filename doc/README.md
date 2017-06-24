@@ -19,7 +19,7 @@ steps:
 * ensure that the GAPDoc package is present in the `pkg` subdirectory (for example, 
   by creating a symlink `pkg` pointing to the `pkg` directory of the installation of 
   the latest GAP release).
-* build manuals by calling `make manuals`
+* build manuals by calling `make doc`
 
 This will build all three manuals. Each of them will be built twice to ensure that 
 cross-references between manuals are resolved. The build log will be saved in 
@@ -29,6 +29,4 @@ You may check it for further warnings, for example, about unresolved references.
 Each of these three directories contains a file `makedocrel.g`. You may read it into 
 GAP if you want to build faster just one manual to see how your changes look like, 
 or if GAPDoc reports an error in the XML code that you want to debug. Then you may 
-call `make manuals` as a final check at a later stage.
-
-
+call `make doc` as a final check at a later stage.

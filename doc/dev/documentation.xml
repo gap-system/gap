@@ -30,7 +30,7 @@ are run in a fresh  &GAP; in default configuration with
 To compile the &GAP; manuals from sources, call
 
 <Verb><![CDATA[
-make manuals
+make doc
 ]]></Verb>
 
 in the &GAP; root directory. This will compile each of the three main &GAP;

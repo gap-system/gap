@@ -257,7 +257,7 @@ you should make sure that the system is up to date, in particular,
     compile package executables where applicable,
   </Item>
   <Item>
-    call <C>make manuals</C> in the root directory,
+    call <C>make doc</C> in the root directory,
     in order to process the main documentation,
   </Item>
 </List>
