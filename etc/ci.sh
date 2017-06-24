@@ -34,12 +34,6 @@ then
     exit 0
 fi
 
-if [[ "${TEST_SUITE}" == makemanuals ]]
-then
-    make doc
-    exit 0
-fi
-
 if [[ "${TEST_SUITE}" == testerror ]]
 then
     cd $SRCDIR/tst/test-error
@@ -106,6 +100,10 @@ git diff --exit-code -- src hpcgap/src
 
 
 case ${TEST_SUITE} in
+makemanuals)
+    make doc
+    ;;
+
 testmanuals)
     $GAP $SRCDIR/tst/extractmanuals.g
 

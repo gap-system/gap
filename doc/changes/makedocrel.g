@@ -30,8 +30,6 @@ GAPDocManualLabFromSixFile( "changes", "manual.six" );;
 
 CopyHTMLStyleFiles(".");
 
-QUIT;
-
 #############################################################################
 ##
 #E
