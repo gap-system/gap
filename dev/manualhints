@@ -34,7 +34,7 @@ How to Proceed with the Reference Manual
   (How to access the two manuals in question:
   The current GAPDoc format version is the one in the development version
   of GAP,
-  which can be compiled by calling `make manuals' in the GAP root directory.
+  which can be compiled by calling `make doc' in the GAP root directory.
   The latest version based on `gapmacro.tex' can be obtained as that
   of January 30th, 2007.
   Perhaps the easiest way is to compare the manual in the development version
