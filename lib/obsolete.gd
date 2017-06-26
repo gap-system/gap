@@ -165,10 +165,10 @@ BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
 # 01/2016: still used in fplsa, itc
 BindGlobal( "DeclarePackageDocumentation", Ignore );
 # 01/2016: still used in qaos
-BindGlobal( "ReadPkg", ReadPackage );
+DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 # 01/2016: still used in automgrp, ctbllib, fplsa, fwtree, grpconst, guava,
 # Hap (HapCocyclic), itc, modisom, pargap, qaos, xgap
-BindGlobal( "RequirePackage", LoadPackage );
+DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
 # 01/2016: still used (sometimes in examples or documentation) in ace,
 # autpgrp, edim, fwtree, hecke, itc, liepring, polycyclic, qaos, repsn,
 # sglppow, singular, tomlib, toric, unipot, xgap
@@ -527,7 +527,7 @@ end);
 ## Deprecated in GAP >= 4.8
 ##
 ## still used by GAPDoc (01/2016)
-DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
+DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
 
 #############################################################################
 ##
@@ -551,7 +551,7 @@ end);
 ##  This got a nicer name before is became documented.
 ##
 ## still used by Browse, ctbllib, profiling, resclasses (01/2016)
-DeclareGlobalFunction( "USER_HOME_EXPAND" );
+DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 
 #############################################################################
 ##
