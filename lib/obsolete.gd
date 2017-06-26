@@ -91,9 +91,9 @@ BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current )
                 "\n#I  Use ", name_current, " instead.");
             # TODO: This will error out if orig_value is a function which returns nothing.
             #return CallFuncList(orig_value, arg);
-            res := CALL_WITH_CATCH(orig_value, arg);
-            if Length(res) = 2 then
-                return res[2];
+            res := CallFuncListWrap(orig_value, arg);
+            if Length(res) = 1 then
+                return res[1];
             fi; 
         end;
     fi;
