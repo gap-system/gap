@@ -29,8 +29,6 @@ InstallValue( TYPE_LIST_GF2VEC,
            and IsMutable and IsCopyable and IsGF2VectorRep )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -42,8 +40,6 @@ InstallValue( TYPE_LIST_GF2VEC_IMM,
            and IsCopyable and IsGF2VectorRep )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
 
 #############################################################################
 ##
@@ -55,8 +51,6 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
 
 #############################################################################
 ##
@@ -69,8 +63,6 @@ InstallValue( TYPE_LIST_GF2VEC_LOCKED,
           IsLockedRepresentationVector and IsMutable)
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
 
 #############################################################################
 ##
@@ -84,8 +76,6 @@ InstallValue( TYPE_LIST_GF2MAT,
           HasIsRectangularTable and IsRectangularTable )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
-  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -98,6 +88,25 @@ InstallValue( TYPE_LIST_GF2MAT_IMM,
           and IsSmallList and IsFFECollColl and
           HasIsRectangularTable and IsRectangularTable)
 );
+
+#############################################################################
+##
+## HPC-GAP serialization
+##
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
+  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
 
 InstallTypeSerializationTag(TYPE_LIST_GF2MAT_IMM,
   SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 2);
