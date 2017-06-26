@@ -745,7 +745,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
     return new;
   end;
 
-  #dom:=NormedVectors(DefaultFieldOfMatrixGroup(G)^Length(One(G)));
+  #dom:=NormedRowVectors(DefaultFieldOfMatrixGroup(G)^Length(One(G)));
   #act:=ActionHomomorphism(G,dom,OnLines,"surjective");
   PG:=Image(act); # this will be PSL etc.
 
