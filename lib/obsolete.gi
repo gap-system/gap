@@ -879,18 +879,6 @@ end );
 
 #############################################################################
 ##
-#F  USER_HOME_EXPAND
-##
-##  This got a nicer name before is became documented.
-InstallGlobalFunction( USER_HOME_EXPAND, function(str)
-  Info( InfoObsolete, 1,
-        "use the documented 'UserHomeExpand' instead of the obsolete ",
-        "'USER_HOME_EXPAND'" );
-  return UserHomeExpand(str);
-end);
-
-#############################################################################
-##
 #F  SetUserPreferences
 ##
 ##  Set the defaults of `GAPInfo.UserPreferences'.
