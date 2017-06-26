@@ -271,28 +271,6 @@ DeclareGlobalFunction("ConvertToMatrixRep",ConvertToMatrixRepNC);
 
 #############################################################################
 ##
-#F  ImmutableGF2VectorRep( <vector> ) . . . . . . . .  convert representation
-##
-##  <ManSection>
-##  <Func Name="ImmutableGF2VectorRep" Arg='vector'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ImmutableGF2VectorRep", function( vector )
-    if ForAny( vector, x -> x <> GF2Zero and x <> GF2One )  then
-        return fail;
-    fi;
-    vector := ShallowCopy(vector);
-    CONV_GF2VEC(vector);
-    SET_TYPE_DATOBJ( vector, TYPE_LIST_GF2VEC_IMM );
-    return vector;
-end );
-
-
-#############################################################################
-##
 #R  IsGF2MatrixRep( <obj> ) . . . . . . . . . . . . . . . . . matrix over GF2
 ##
 DeclareRepresentation(
@@ -365,38 +343,6 @@ DeclareGlobalVariable(
 
 DeclareSynonym( "ConvertToGF2MatrixRep", CONV_GF2MAT);
 
-
-#############################################################################
-##
-#F  ImmutableGF2MatrixRep( <matrix> ) . . . . . . . .  convert representation
-##
-##  <ManSection>
-##  <Func Name="ImmutableGF2MatrixRep" Arg='matrix'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ImmutableGF2MatrixRep", function(matrix)
-    local   new,  i,  row;
-
-    # put length at position 1
-    new := [ Length(matrix) ];
-    for i  in matrix  do
-        row := ImmutableGF2VectorRep(i);
-        if row = fail  then
-            return fail;
-        fi;
-        Add( new, row );
-    od;
-
-    # convert
-    Objectify( TYPE_LIST_GF2MAT_IMM, new );
-
-    # and return new matrix
-    return new;
-
-end );
 
 #############################################################################
 ##
