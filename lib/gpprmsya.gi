@@ -1476,7 +1476,9 @@ InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
   # the objects might be group elements: rank up	
   2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
-local dom,n,sortfun,max,cd,ce,p1,p2;
+    local  dom, n, sortfun, max, cd, ce, p1, p2;
+
+
   # test for internal rep
   if HasGeneratorsOfGroup(G) and 
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -1533,12 +1535,18 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       fi;
     fi;
   elif (opr=OnSets or opr=OnTuples) and (IsDuplicateFreeList(d) and
-    IsDuplicateFreeList(e)) then
-    if Length(d)<>Length(e) then
-      return fail;
-    fi;
-    if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
-      return MappingPermListList(d,e);
+          IsDuplicateFreeList(e)) then
+      if Length(d)<>Length(e) then
+          return fail;
+      fi;
+      if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
+          if dom <> [1..n] then
+              p1 := MappingPermListList(dom,[1..n]);
+              return p1*MappingPermListList(OnTuples(d,p1),OnTuples(e,p1))/p1;
+          else
+              return MappingPermListList(d,e);
+          fi;
+          
     fi;
   fi;
   TryNextMethod(); 
