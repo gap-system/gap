@@ -8,7 +8,7 @@ abs_top_srcdir=@abs_top_srcdir@
 HPCGAP=@HPCGAP@
 
 GAP=$abs_top_builddir/bin/gap.sh
-GAPARGS="-b -m 100m -o 1g -q -x 80 -r"
+GAPARGS="-b -m 100m -o 1g -q -x 80 -r --quitonbreak"
 
 WSP=$abs_top_builddir/doc/wsp.g
 
@@ -16,11 +16,13 @@ echo "--------------------"
 echo "Building GAP manuals"
 echo "--------------------"
 
-cd "$abs_top_srcdir"
-"$GAP" $GAPARGS <<EOF
-OnBreak:=function() Print("FATAL ERROR\n"); FORCE_QUIT_GAP(1); end;;
-SaveWorkspace( "$WSP" );
-EOF
+if [[ "x@HPCGAP@" != "xyes" ]]
+then
+    cd "$abs_top_srcdir"
+    echo "SaveWorkspace( \"$WSP\" );" | "$GAP"
+    ls -al "$WSP"
+    GAPARGS="$GAPARGS -L $WSP"
+fi
 
 books="ref tut changes hpc"
 
@@ -33,7 +35,7 @@ do
     echo "Building GAP manual '$book' at $PWD"
     echo "Run $run of 2"
     echo "----------------------------"
-    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A -L "$WSP" | tee make_manuals.out
+    echo 'Read( "makedocrel.g" );' | "$GAP" $GAPARGS -A | tee make_manuals.out
   done
 done
 
