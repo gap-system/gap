@@ -396,7 +396,7 @@ UInt OpenInput (
 
     /* enter the file identifier and the file name                         */
 #ifdef HPCGAP
-    int sp = STATE(InputFilesSP)++;
+    const int sp = STATE(InputFilesSP)++;
     if (!STATE(InputFiles)[sp]) {
       STATE(InputFiles)[sp] = NewInput();
     }
@@ -451,7 +451,7 @@ UInt OpenInputStream (
 
     /* enter the file identifier and the file name                         */
 #ifdef HPCGAP
-    int sp = STATE(InputFilesSP)++;
+    const int sp = STATE(InputFilesSP)++;
     if (!STATE(InputFiles)[sp]) {
       STATE(InputFiles)[sp] = NewInput();
     }
@@ -517,7 +517,8 @@ UInt CloseInput ( void )
 
     /* revert to last file                                                 */
 #ifdef HPCGAP
-    STATE(Input)  = STATE(InputFiles)[--STATE(InputFilesSP)-1];
+    const int sp  = --STATE(InputFilesSP);
+    STATE(Input)  = STATE(InputFiles)[sp-1];
 #else
     STATE(Input)--;
 #endif
@@ -896,7 +897,7 @@ UInt OpenOutput (
 
     /* put the file on the stack, start at position 0 on an empty line     */
 #ifdef HPCGAP
-    int sp = STATE(OutputFilesSP)++;
+    const int sp = STATE(OutputFilesSP)++;
     if (!STATE(OutputFiles)[sp]) {
       STATE(OutputFiles)[sp] = NewOutput();
     }
@@ -940,7 +941,7 @@ UInt OpenOutputStream (
 
     /* put the file on the stack, start at position 0 on an empty line     */
 #ifdef HPCGAP
-    int sp = STATE(OutputFilesSP)++;
+    const int sp = STATE(OutputFilesSP)++;
     if (!STATE(OutputFiles)[sp]) {
       STATE(OutputFiles)[sp] = NewOutput();
     }
@@ -1008,11 +1009,8 @@ UInt CloseOutput ( void )
 
     /* revert to previous output file and indicate success                 */
 #ifdef HPCGAP
-    --STATE(OutputFilesSP);
-    if (STATE(OutputFilesSP))
-      STATE(Output) = STATE(OutputFiles)[STATE(OutputFilesSP)-1];
-    else
-      STATE(Output) = 0;
+    const int sp  = --STATE(OutputFilesSP);
+    STATE(Output) = sp ? STATE(OutputFiles)[sp-1] : 0;
 #else
     STATE(Output)--;
 #endif
@@ -1052,7 +1050,7 @@ UInt OpenAppend (
 
     /* put the file on the stack, start at position 0 on an empty line     */
 #ifdef HPCGAP
-    int sp = STATE(OutputFilesSP)++;
+    const int sp = STATE(OutputFilesSP)++;
     if (!STATE(OutputFiles)[sp]) {
       STATE(OutputFiles)[sp] = NewOutput();
     }
@@ -2989,15 +2987,9 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
 #ifdef HPCGAP
-  if (val == False)
-    (STATE(OutputFiles)[1])->format = 0;
-  else
-    (STATE(OutputFiles)[1])->format = 1;
+  STATE(OutputFiles)[1]->format = (val != False);
 #else
-  if (val == False)
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 0;
-  else
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 1;
+  STATE(OutputFiles)[1].format = (val != False);
 #endif
   return val;
 }
