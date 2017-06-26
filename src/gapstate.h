@@ -63,12 +63,12 @@ typedef struct GAPState {
 #if defined(HPCGAP)
     TypInputFile *  InputFiles[16];
     TypOutputFile * OutputFiles[16];
+    int             InputFilesSP;
+    int             OutputFilesSP;
 #else
     TypInputFile  InputFiles[16];
     TypOutputFile OutputFiles[16];
 #endif
-    int             InputFilesSP;
-    int             OutputFilesSP;
     TypInputFile *  Input;
     Char *          In;
     TypOutputFile * Output;
