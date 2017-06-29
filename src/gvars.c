@@ -89,8 +89,8 @@
 **  'PtrGVars' is a pointer  to the 'ValGVars' bag+1. This makes it faster to
 **  access global variables.
 */
-Obj   ValGVars[GVAR_BUCKETS];
-Obj * PtrGVars[GVAR_BUCKETS];
+static Obj   ValGVars[GVAR_BUCKETS];
+static Obj * PtrGVars[GVAR_BUCKETS];
 #else
 /*
 **  'ValGVars' is the bag containing the values of the global variables.
@@ -102,8 +102,8 @@ Obj * PtrGVars[GVAR_BUCKETS];
 **  'PtrGVars' must be  revalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
-Obj   ValGVars;
-Obj * PtrGVars;
+static Obj   ValGVars;
+static Obj * PtrGVars;
 #endif
 
 
@@ -124,11 +124,11 @@ static Obj TLVars;
 **  than index and to initialize copy/fopy information.
 */
 
-pthread_rwlock_t GVarLock;
-void *GVarLockOwner;
-UInt GVarLockDepth;
+static pthread_rwlock_t GVarLock;
+static void *GVarLockOwner;
+static UInt GVarLockDepth;
 
-void LockGVars(int write) {
+static void LockGVars(int write) {
   if (PreThreadCreation)
     return;
   if (GVarLockOwner == realTLS) {
@@ -144,7 +144,7 @@ void LockGVars(int write) {
     pthread_rwlock_rdlock(&GVarLock);
 }
 
-void UnlockGVars() {
+static void UnlockGVars() {
   if (PreThreadCreation)
     return;
   if (GVarLockOwner == realTLS) {
@@ -205,12 +205,12 @@ inline Obj ValGVar(UInt gvar) {
 *V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */
 #ifdef HPCGAP
-Obj             NameGVars[GVAR_BUCKETS];
-Obj             WriteGVars[GVAR_BUCKETS];
-Obj             ExprGVars[GVAR_BUCKETS];
-Obj             CopiesGVars[GVAR_BUCKETS];
-Obj             FopiesGVars[GVAR_BUCKETS];
-UInt            CountGVars;
+static Obj             NameGVars[GVAR_BUCKETS];
+static Obj             WriteGVars[GVAR_BUCKETS];
+static Obj             ExprGVars[GVAR_BUCKETS];
+static Obj             CopiesGVars[GVAR_BUCKETS];
+static Obj             FopiesGVars[GVAR_BUCKETS];
+static UInt            CountGVars;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar) )
@@ -223,12 +223,12 @@ UInt            CountGVars;
 
 #else   // HPCGAP
 
-Obj             NameGVars;
-Obj             WriteGVars;
-Obj             ExprGVars;
-Obj             CopiesGVars;
-Obj             FopiesGVars;
-UInt            CountGVars;
+static Obj             NameGVars;
+static Obj             WriteGVars;
+static Obj             ExprGVars;
+static Obj             CopiesGVars;
+static Obj             FopiesGVars;
+static UInt            CountGVars;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list, gvar )
@@ -247,8 +247,8 @@ UInt            CountGVars;
 *V  TableGVars  . . . . . . . . . . . . . .  hashed table of global variables
 *V  SizeGVars . . . . . . .  current size of hashed table of global variables
 */
-Obj             TableGVars;
-UInt            SizeGVars;
+static Obj             TableGVars;
+static UInt            SizeGVars;
 
 
 /****************************************************************************
