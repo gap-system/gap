@@ -621,34 +621,28 @@ UInt GVarName (
            CopiesGVars[gvar_bucket] = NewGVarBucket();
            FopiesGVars[gvar_bucket] = NewGVarBucket();
         }
+#else
+        GROW_PLIST(    ValGVars,    CountGVars );
+        SET_LEN_PLIST( ValGVars,    CountGVars );
+        GROW_PLIST(    NameGVars,   CountGVars );
+        SET_LEN_PLIST( NameGVars,   CountGVars );
+        GROW_PLIST(    WriteGVars,  CountGVars );
+        SET_LEN_PLIST( WriteGVars,  CountGVars );
+        GROW_PLIST(    ExprGVars,   CountGVars );
+        SET_LEN_PLIST( ExprGVars,   CountGVars );
+        GROW_PLIST(    CopiesGVars, CountGVars );
+        SET_LEN_PLIST( CopiesGVars, CountGVars );
+        GROW_PLIST(    FopiesGVars, CountGVars );
+        SET_LEN_PLIST( FopiesGVars, CountGVars );
+        PtrGVars = ADDR_OBJ( ValGVars );
+#endif
         SET_ELM_GVAR_LIST( ValGVars,    CountGVars, 0 );
         SET_ELM_GVAR_LIST( NameGVars,   CountGVars, string );
+        CHANGED_GVAR_LIST( NameGVars,   CountGVars );
         SET_ELM_GVAR_LIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
         SET_ELM_GVAR_LIST( ExprGVars,   CountGVars, 0 );
         SET_ELM_GVAR_LIST( CopiesGVars, CountGVars, 0 );
         SET_ELM_GVAR_LIST( FopiesGVars, CountGVars, 0 );
-#else
-        GROW_PLIST(    ValGVars,    CountGVars );
-        SET_LEN_PLIST( ValGVars,    CountGVars );
-        SET_ELM_PLIST( ValGVars,    CountGVars, 0 );
-        GROW_PLIST(    NameGVars,   CountGVars );
-        SET_LEN_PLIST( NameGVars,   CountGVars );
-        SET_ELM_PLIST( NameGVars,   CountGVars, string );
-        CHANGED_BAG(   NameGVars );
-        GROW_PLIST(    WriteGVars,  CountGVars );
-        SET_LEN_PLIST( WriteGVars,  CountGVars );
-        SET_ELM_PLIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
-        GROW_PLIST(    ExprGVars,   CountGVars );
-        SET_LEN_PLIST( ExprGVars,   CountGVars );
-        SET_ELM_PLIST( ExprGVars,   CountGVars, 0 );
-        GROW_PLIST(    CopiesGVars, CountGVars );
-        SET_LEN_PLIST( CopiesGVars, CountGVars );
-        SET_ELM_PLIST( CopiesGVars, CountGVars, 0 );
-        GROW_PLIST(    FopiesGVars, CountGVars );
-        SET_LEN_PLIST( FopiesGVars, CountGVars );
-        SET_ELM_PLIST( FopiesGVars, CountGVars, 0 );
-        PtrGVars = ADDR_OBJ( ValGVars );
-#endif
 
         /* if the table is too crowded, make a larger one, rehash the names     */
         if ( SizeGVars < 3 * CountGVars / 2 ) {
