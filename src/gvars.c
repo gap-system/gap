@@ -838,8 +838,6 @@ static Obj FuncIsReadOnlyGVar (
 **  cause the execution  of an assignment to  that global variable, otherwise
 **  an error is signalled.
 */
-Obj             AUTOFunc;
-
 Obj             AUTOHandler (
     Obj                 self,
     Obj                 args )
@@ -1139,9 +1137,9 @@ typedef struct  {
     const Char *        name;
 } StructCopyGVar;
 
-#ifndef MAX_COPY_AND_FOPY_GVARS
-#define MAX_COPY_AND_FOPY_GVARS         30000
-#endif
+enum {
+    MAX_COPY_AND_FOPY_GVARS = 30000
+};
 
 static StructCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
 static Int NCopyAndFopyGVars = 0;
