@@ -13,5 +13,5 @@ gap makedocrelx.g
 in this directory. This will build HTML, PDF and text versions.
 
 Please note that this manual is not a part of the GAP distribution,
-so it will not be built by calling `make manuals`.
+so it will not be built by calling `make doc`.
 

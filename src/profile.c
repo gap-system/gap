@@ -592,8 +592,6 @@ Obj FuncACTIVATE_PROFILING (
       return Fail;
     }
 
-    ActivateHooks(&profileHooks);
-
     profileState_Active = 1;
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
@@ -611,6 +609,9 @@ Obj FuncACTIVATE_PROFILING (
     outputVersionInfo();
     HashUnlock(&profileState);
 
+    // This must be after the hash unlock, as it also takes a lock
+    ActivateHooks(&profileHooks);
+
     return True;
 }
 
@@ -625,11 +626,11 @@ Obj FuncDEACTIVATE_PROFILING (
   }
 
   fcloseMaybeCompressed(&profileState);
-
-  DeactivateHooks(&profileHooks);
   profileState_Active = 0;
-
   HashUnlock(&profileState);
+
+  // This must be after the hash unlock, as it also takes a lock
+  DeactivateHooks(&profileHooks);
 
   return True;
 }

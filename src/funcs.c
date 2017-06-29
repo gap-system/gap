@@ -1912,13 +1912,13 @@ void            ExecEnd (
 
 Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 {
-  while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) < 0)
-    interval = ErrorReturnObj( "SetRecursionTrapInterval( <interval> ): "
-                               "<interval> must be a non-negative small integer",
-                               0L, 0L, 
-                               "you can replace <interval> via 'return <interval>;'");
-  RecursionTrapInterval = INT_INTOBJ( interval);
-  return 0;
+    while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
+        interval = ErrorReturnObj(
+            "SetRecursionTrapInterval( <interval> ): "
+            "<interval> must be a small integer greater than 5",
+            0L, 0L, "you can replace <interval> via 'return <interval>;'");
+    RecursionTrapInterval = INT_INTOBJ(interval);
+    return 0;
 }
 
 

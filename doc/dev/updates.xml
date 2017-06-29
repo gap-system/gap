@@ -414,11 +414,6 @@ authors in case they deliberately use non-standard settings.
 builds the main &GAP; manuals (the packages archives were unpacked on the 
 previous step to ensure that cross-references to package manuals will be
 resolved).
-<P/>
-This writes three log files <F>doc/*/make_manuals.out</F> for each of the
-main manual books. You should check them, and if any problems show up, 
-correct errors, commit changes and start wrapping the release from the very
-beginning.
 </Item>
 
 <Mark><F>./addmanualfiles</F></Mark>

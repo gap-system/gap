@@ -67,7 +67,7 @@ static inline Int IS_PLIST(Obj list)
 */
 static inline Int IS_PLIST_OR_POSOBJ(Obj list)
 {
-    Int tnum = TNUM_OBJ(list);
+    UInt tnum = TNUM_OBJ(list);
     if (tnum > COPYING)
         tnum -= COPYING;
     return (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) ||

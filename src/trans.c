@@ -1369,28 +1369,34 @@ Obj FuncSMALLEST_IDEM_POW_TRANS (Obj self, Obj f) {
 *******************************************************************************/
 
 // Returns True if the transformation or list <t> is injective on the list <l>.
-// This has the minimal checks on arguments for performance reasons.
-
-// FIXME this should have more checks, since the GAP functions that call this
-// don't have checks.
-// TODO and then rename this IsInjectiveListTrans and remove the functions of
-// this name in lib/trans.gi
 
 Obj FuncIsInjectiveListTrans (Obj self, Obj l, Obj t) {
   UInt    n, i, j;
   UInt2   *ptt2;
   UInt4   *pttmp = 0L;
   UInt4   *ptt4;
+  Obj     val;
 
+  if (!IS_LIST(l)) {
+      ErrorQuit("the first argument must be a list (not a %s)",
+                (Int)TNAM_OBJ(l), 0L);
+  } else if (!IS_TRANS(t) && !IS_LIST(t)) {
+      ErrorQuit("the second argument must be a transformation or a list "
+                "(not a %s)", (Int)TNAM_OBJ(t), 0L);
+  }
   // init buffer
   n = (IS_TRANS(t) ? DEG_TRANS(t) : LEN_LIST(t));
   pttmp = ResizeInitTmpTrans(n);
 
   if (TNUM_OBJ(t) == T_TRANS2) {
-    // and LEN_LIST(l), deg(f) <= 65536
     ptt2 = ADDR_TRANS2(t);
     for (i = LEN_LIST(l); i >= 1; i--) {
-      j = (UInt) INT_INTOBJ(ELM_LIST(l, i));
+      val = ELM_LIST(l, i);
+      if (!IS_POS_INTOBJ(val)) {
+          ErrorQuit("the entries of the first argument must be positive "
+                    "integers (not a %s)", (Int)TNAM_OBJ(val), 0L);
+      }
+      j = INT_INTOBJ(val);
       if (j <= n) {
         if (pttmp[ptt2[j - 1]] != 0) {
           return False;
@@ -1401,7 +1407,12 @@ Obj FuncIsInjectiveListTrans (Obj self, Obj l, Obj t) {
   } else if (TNUM_OBJ(t) == T_TRANS4) {
     ptt4 = ADDR_TRANS4(t);
     for (i = LEN_LIST(l); i >= 1; i--) {
-      j = (UInt) INT_INTOBJ(ELM_LIST(l, i));
+      val = ELM_LIST(l, i);
+      if (!IS_POS_INTOBJ(val)) {
+          ErrorQuit("the entries of the first argument must be positive "
+                    "integers (not a %s)", (Int)TNAM_OBJ(val), 0L);
+      }
+      j = INT_INTOBJ(val);
       if (j <= n) {
         if (pttmp[ptt4[j - 1]] != 0) {
           return False;
@@ -1409,21 +1420,27 @@ Obj FuncIsInjectiveListTrans (Obj self, Obj l, Obj t) {
         pttmp[ptt4[j - 1]] = 1;
       }
     }
-  } else if (n <= 65536) {
-    // t is a list
-    for (i = LEN_LIST(l); i >= 1; i--) {
-      j = INT_INTOBJ(ELM_LIST(l, i));
-      if (j <= n) {
-        if (pttmp[INT_INTOBJ(ELM_LIST(t, j)) - 1] != 0) {
-          return False;
-        }
-        pttmp[INT_INTOBJ(ELM_LIST(t, j)) - 1] = 1;
+  } else {
+    // t is a list, first we check it describes a transformation
+    for (i = 1; i <= n; i++) {
+      val = ELM_LIST(t, i);
+      if (!IS_POS_INTOBJ(val)) {
+          ErrorQuit("the second argument must consist of positive integers "
+                    "(not a %s)",
+                    (Int)TNAM_OBJ(val), 0L);
+      } else if (INT_INTOBJ(val) > n) {
+          ErrorQuit("the second argument must consist of positive integers "
+                    "in the range [1 .. %d]",
+                    (Int)n, 0L);
       }
     }
-  } else {
-    // t is a list
     for (i = LEN_LIST(l); i >= 1; i--) {
-      j = INT_INTOBJ(ELM_LIST(l, i));
+      val = ELM_LIST(l, i);
+      if (!IS_POS_INTOBJ(val)) {
+          ErrorQuit("the entries of the first argument must be positive "
+                    "integers (not a %s)", (Int)TNAM_OBJ(val), 0L);
+      }
+      j = INT_INTOBJ(val);
       if (j <= n) {
         if (pttmp[INT_INTOBJ(ELM_LIST(t, j)) - 1] != 0) {
           return False;

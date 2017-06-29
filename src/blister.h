@@ -52,7 +52,7 @@ static inline Int IS_BLIST_REP(Obj list)
 
 static inline Int IS_BLIST_REP_WITH_COPYING(Obj list)
 {
-    Int tnum = TNUM_OBJ(list);
+    UInt tnum = TNUM_OBJ(list);
     if (tnum > COPYING)
         tnum -= COPYING;
     return T_BLIST <= tnum && tnum <= T_BLIST_SSORT + IMMUTABLE;

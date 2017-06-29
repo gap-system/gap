@@ -80,6 +80,19 @@
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **
+*/
+#ifdef HPCGAP
+/*
+**  'ValGVars' references the bags containing the values of the global
+**  variables.
+**
+**  'PtrGVars' is a pointer  to the 'ValGVars' bag+1. This makes it faster to
+**  access global variables.
+*/
+Obj   ValGVars[GVAR_BUCKETS];
+Obj * PtrGVars[GVAR_BUCKETS];
+#else
+/*
 **  'ValGVars' is the bag containing the values of the global variables.
 **
 **  'PtrGVars' is a pointer  to the 'ValGVars'  bag.  This makes it faster to
@@ -89,10 +102,6 @@
 **  'PtrGVars' must be  revalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
-#ifdef HPCGAP
-Obj   ValGVars[GVAR_BUCKETS];
-Obj * PtrGVars[GVAR_BUCKETS];
-#else
 Obj   ValGVars;
 Obj * PtrGVars;
 #endif
@@ -160,7 +169,22 @@ void UnlockGVars() {
 **  0 if <gvar> was not an automatic variable.
 **
 */
+
+#ifdef HPCGAP
+
+// FIXME/TODO: Do we still need the VAL_GVAR_INTERN macro, or can we replace
+// it by ValGVar everywhere? The difference is of course the memory barrier,
+// which might cause a performance penalty (OTOH, not using it right now might
+// or might not be a bug?!?)
+#define VAL_GVAR_INTERN(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)-1])
+
+#else
+
 #define VAL_GVAR_INTERN(gvar)          PtrGVars[ (gvar) ]
+
+#endif
+
 
 inline Obj ValGVar(UInt gvar) {
   Obj result = VAL_GVAR_INTERN(gvar);
@@ -544,13 +568,32 @@ UInt GVarName (
     for ( p = name; *p != '\0'; p++ ) {
         pos = 65599 * pos + *p;
     }
+#ifdef HPCGAP
+    LockGVars(0);
+#endif
     pos = (pos % SizeGVars) + 1;
 
     /* look through the table until we find a free slot or the global      */
+    UInt oldPos = pos;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
          && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
         pos = (pos % SizeGVars) + 1;
     }
+
+#ifdef HPCGAP
+    if (gvar == 0 && !PreThreadCreation) {
+        /* upgrade to write lock and repeat search */
+        UnlockGVars();
+        LockGVars(1);
+
+        /* look through the table until we find a free slot or the global  */
+        pos = oldPos;
+        while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
+             && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+            pos = (pos % SizeGVars) + 1;
+        }
+    }
+#endif
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
@@ -562,6 +605,24 @@ UInt GVarName (
         string = MakeImmString(namx);
 
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
+#ifdef HPCGAP
+        UInt gvar_bucket = GVAR_BUCKET(CountGVars);
+        if (!ValGVars[gvar_bucket]) {
+           ValGVars[gvar_bucket] = NewGVarBucket();
+           PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
+           NameGVars[gvar_bucket] = NewGVarBucket();
+           WriteGVars[gvar_bucket] = NewGVarBucket();
+           ExprGVars[gvar_bucket] = NewGVarBucket();
+           CopiesGVars[gvar_bucket] = NewGVarBucket();
+           FopiesGVars[gvar_bucket] = NewGVarBucket();
+        }
+        SET_ELM_GVAR_LIST( ValGVars,    CountGVars, 0 );
+        SET_ELM_GVAR_LIST( NameGVars,   CountGVars, string );
+        SET_ELM_GVAR_LIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
+        SET_ELM_GVAR_LIST( ExprGVars,   CountGVars, 0 );
+        SET_ELM_GVAR_LIST( CopiesGVars, CountGVars, 0 );
+        SET_ELM_GVAR_LIST( FopiesGVars, CountGVars, 0 );
+#else
         GROW_PLIST(    ValGVars,    CountGVars );
         SET_LEN_PLIST( ValGVars,    CountGVars );
         SET_ELM_PLIST( ValGVars,    CountGVars, 0 );
@@ -582,6 +643,7 @@ UInt GVarName (
         SET_LEN_PLIST( FopiesGVars, CountGVars );
         SET_ELM_PLIST( FopiesGVars, CountGVars, 0 );
         PtrGVars = ADDR_OBJ( ValGVars );
+#endif
 
         /* if the table is too crowded, make a larger one, rehash the names     */
         if ( SizeGVars < 3 * CountGVars / 2 ) {
@@ -992,7 +1054,7 @@ Obj FuncISB_GVAR (
     Obj expr = ExprGVar(gv);
 #ifdef HPCGAP
     if (expr && !IS_INTOBJ(expr)) /* auto gvar */
-      return False;
+      return True;
     if (!expr || !TLVars)
       return False;
     return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;

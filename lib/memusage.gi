@@ -194,7 +194,7 @@ InstallMethod( MemoryUsage, "for a record",
         MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
         # Again the bag, its header, and the master pointer
-        for i in RecFields(o) do
+        for i in RecNames(o) do
             s := o.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
                 mem := mem + MemoryUsage(s);

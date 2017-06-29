@@ -1007,7 +1007,7 @@ InstallGlobalFunction(PrintCSV,function(arg)
   else
     rf:=[];
     for i in l do
-      r:=RecFields(i);
+      r:=RecNames(i);
       for j in r do
 	if not j in rf then
 	  Add(rf,j);
@@ -1070,7 +1070,7 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
   color:=fail;
   # row 1 indicates which columns are relevant and their formatting
   cold:=ShallowCopy(l[1]);
-  f:=RecFields(cold);
+  f:=RecNames(cold);
   renum:=[];
   for i in ShallowCopy(f) do
 
@@ -1220,6 +1220,23 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
 
   AppendTo(file,"\\end{tabular}\n");
 end);
+
+
+#############################################################################
+##
+#F  Convenience method to inform users how to concatenate strings.
+##
+##  Note that we could also have this method do the following
+##     return Concatenation(a,b);
+##  instead of raising an error. But this leads to inefficient code when
+##  concatenating many strings. So in order to not encourage such bad code,
+##  we instead tell the user the proper way to do this.
+##
+InstallOtherMethod(\+, [IsString,IsString],
+function(a,b)
+    Error("concatenating strings via + is not supported, use Concatenation(<a>,<b>) instead");
+end);
+
 
 #############################################################################
 ##
