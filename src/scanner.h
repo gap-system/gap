@@ -404,22 +404,6 @@ extern void Match (
 */
 extern void ClearError ( void );
 
-/****************************************************************************
-**
-*F  BreakLoopPending()  . . . . . .report whether a break loop is pending due
-**                               to Ctrl-C, memory overflow, or similar cause
-**
-**  return  values 0 -- no break loop
-**                 BLP_CTRLC -- break loop due to ctrl-C
-**                 BLP_MEMORY -- due to -o 
-**
-*/
-
-
-extern Int BreakLoopPending( void );
-#define BLP_CTRLC 1
-#define BLP_MEMORY 2
-
 
 /****************************************************************************
 **
