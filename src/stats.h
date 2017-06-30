@@ -143,7 +143,6 @@ extern UInt TakeInterrupt();
 **  those systems the executors test 'SyIsIntr' at regular intervals.
 */
 extern  void            InterruptExecStat ( );
-extern  void            UnInterruptExecStat ( );
 
 
 /****************************************************************************
