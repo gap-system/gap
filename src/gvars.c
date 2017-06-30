@@ -562,7 +562,6 @@ UInt GVarName (
     Char                gvarbuf[1024];  /* temporary copy for namespace    */
     Char *              cns;            /* Pointer to current namespace    */
     UInt                pos;            /* hash position                   */
-    Char                namx [1024];    /* temporary copy of <name>        */
     Obj                 string;         /* temporary string value <name>   */
     Obj                 table;          /* temporary copy of <TableGVars>  */
     Obj                 gvar2;          /* one element of <table>          */
@@ -614,8 +613,9 @@ UInt GVarName (
         CountGVars++;
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-        strlcpy(namx, name, sizeof(namx));
-        string = MakeImmString(namx);
+        if (name != gvarbuf)
+            strlcpy(gvarbuf, name, sizeof(gvarbuf));
+        string = MakeImmString(gvarbuf);
 
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
 #ifdef USE_GVAR_BUCKETS
