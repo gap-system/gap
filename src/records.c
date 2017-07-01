@@ -105,6 +105,15 @@ static inline void HPC_UnlockNames() {}
 #endif
 
 
+static inline UInt HashString( const Char * name )
+{
+    UInt hash = 0;
+    while ( *name ) {
+        hash = 65599 * hash + *name++;
+    }
+    return hash;
+}
+
 /****************************************************************************
 **
 *F  RNamName(<name>)  . . . . . . . . . . . . convert a name to a record name
@@ -121,31 +130,25 @@ UInt            RNamName (
 {
     Obj                 rnam;           /* record name (as imm intobj)     */
     UInt                pos;            /* hash position                   */
-    UInt                len;            /* length of name                  */
     Char                namx [1024];    /* temporary copy of <name>        */
     Obj                 string;         /* temporary string object <name>  */
     Obj                 table;          /* temporary copy of <HashRNam>    */
     Obj                 rnam2;          /* one element of <table>          */
-    const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
-    /* start looking in the table at the following hash position           */
-    pos = 0;
-    len = 0;
-    for ( p = name; *p != '\0'; p++ ) {
-        pos = 65599 * pos + *p;
-        len++;
-    }
-    pos = (pos % SizeRNam) + 1;
-
-    HPC_LockNames(0); /* try a read lock first */
-    if (len >= 1023) {
+    if (strlen(name) >= 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
-        HPC_UnlockNames();
         ErrorQuit("Record names must consist of less than 1023 characters", 0, 0);
         return 0;
     }
+
+    /* start looking in the table at the following hash position           */
+    const UInt hash = HashString( name );
+
+    HPC_LockNames(0); /* try a read lock first */
+
     /* look through the table until we find a free slot or the global      */
+    pos = (hash % SizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
          && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
         pos = (pos % SizeRNam) + 1;
@@ -159,9 +162,10 @@ UInt            RNamName (
       HPC_UnlockNames(); /* switch to a write lock */
       HPC_LockNames(1);
       /* look through the table until we find a free slot or the global      */
+      pos = (hash % SizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-	   && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
-	  pos = (pos % SizeRNam) + 1;
+           && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+          pos = (pos % SizeRNam) + 1;
       }
     }
     if (rnam != 0) {
@@ -182,7 +186,7 @@ UInt            RNamName (
     SET_ELM_PLIST( NamesRNam,   CountRNam, string );
     CHANGED_BAG(   NamesRNam );
 
-    /* if the table is too crowed, make a larger one, rehash the names     */
+    /* if the table is too crowded, make a larger one, rehash the names     */
     if ( SizeRNam < 3 * CountRNam / 2 ) {
         table = HashRNam;
         SizeRNam = 2 * SizeRNam + 1;
@@ -197,10 +201,7 @@ UInt            RNamName (
         for ( i = 1; i <= (SizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
-            pos = 0;
-            for ( p = NAME_RNAM( INT_INTOBJ(rnam2) ); *p != '\0'; p++ ) {
-                pos = 65599 * pos + *p;
-            }
+            pos = HashString( NAME_RNAM( INT_INTOBJ(rnam2) ) );
             pos = (pos % SizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
                 pos = (pos % SizeRNam) + 1;
