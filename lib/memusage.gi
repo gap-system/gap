@@ -231,6 +231,20 @@ InstallMethod( MemoryUsage, "for a function",
     fi;
   end );
 
+InstallMethod( MemoryUsage, "for an object set",
+  [ IsObjSet ],
+  function( o )
+    # TODO: implement this
+    Info(InfoWarning, 1, "MemororyUsage does not yet support object sets");
+  end );
+
+InstallMethod( MemoryUsage, "for an object map",
+  [ IsObjMap ],
+  function( o )
+    # TODO: implement this
+    Info(InfoWarning, 1, "MemororyUsage does not yet support object maps");
+  end );
+
 # Intentionally ignore families and types:
 
 InstallMethod( MemoryUsage, "for a family",
