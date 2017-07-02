@@ -1740,10 +1740,6 @@ Obj FuncGASMAN (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 cmd;            /* argument                        */
-    UInt                i,  k;          /* loop variables                  */
-    Char                buf[41];
-
     /* check the argument                                                  */
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         ErrorMayQuit(
@@ -1752,10 +1748,10 @@ Obj FuncGASMAN (
     }
 
     /* loop over the arguments                                             */
-    for ( i = 1; i <= LEN_LIST(args); i++ ) {
+    for ( UInt i = 1; i <= LEN_LIST(args); i++ ) {
 
         /* evaluate and check the command                                  */
-        cmd = ELM_PLIST( args, i );
+        Obj cmd = ELM_PLIST( args, i );
 again:
         while ( ! IsStringConv(cmd) ) {
            cmd = ErrorReturnObj(
@@ -1766,11 +1762,13 @@ again:
 
         /* if request display the statistics                               */
         if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+#ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
+                    Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
@@ -1780,19 +1778,22 @@ again:
                                    (Int)(InfoBags[k].sizeAll/1024));
                 }
             }
+#endif
         }
 
         /* if request give a short display of the statistics                */
         else if ( strcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+#ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 && 
                      (InfoBags[k].nrLive != 0 ||
                       InfoBags[k].sizeLive != 0 ||
                       InfoBags[k].nrAll != 0 ||
                       InfoBags[k].sizeAll != 0) ) {
+                    Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
@@ -1802,11 +1803,13 @@ again:
                                    (Int)(InfoBags[k].sizeAll/1024));
                 }
             }
+#endif
         }
 
         /* if request display the statistics                               */
         else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
-            for ( k = 0; k < 256; k++ ) {
+#ifdef COUNT_BAGS
+            for ( UInt k = 0; k < 256; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
                 InfoBags[k].nrAll    = InfoBags[k].nrLive;
                 InfoBags[k].sizeAll  = InfoBags[k].sizeLive;
@@ -1815,6 +1818,7 @@ again:
                 InfoBags[k].sizeAll  = 0;
 #endif
             }
+#endif
         }
 
         /* or collect the garbage                                          */
@@ -3317,7 +3321,7 @@ void InitializeGap (
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
-    /* you should set 'COUNT_BAGS' as well                                 */
+#ifdef COUNT_BAGS
 #   ifdef DEBUG_LOADING
         if ( SyRestoring ) {
             Pr( "#W  after setup\n", 0L, 0L );
@@ -3339,6 +3343,7 @@ void InitializeGap (
             }
         }
 #   endif
+#endif
 
 #ifndef BOEHM_GC
     /* and now for a special hack                                          */

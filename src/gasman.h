@@ -634,10 +634,12 @@ extern  UInt                    NrHalfDeadBags;
 */
 typedef struct  {
     const Char *            name;
+#ifdef COUNT_BAGS
     UInt                    nrLive;
     UInt                    nrAll;
     UInt                    sizeLive;
     UInt                    sizeAll;
+#endif
 } TNumInfoBags;
 
 extern  TNumInfoBags            InfoBags [ 256 ];
