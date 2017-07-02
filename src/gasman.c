@@ -1829,10 +1829,12 @@ again:
 #endif
 
 
-            /* update count                                                */
+            /* call freeing function                                       */
             if (TabFreeFuncBags[ header->type ] != 0) {
               (*TabFreeFuncBags[ header->type ])( header->link );
             }
+
+            /* update count                                                */
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
