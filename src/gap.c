@@ -1760,6 +1760,19 @@ again:
                "you can replace <cmd> via 'return <cmd>;'" );
        }
 
+#ifdef BOEHM_GC
+        if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+            CollectBags(0,1);
+        }
+        else {
+            cmd = ErrorReturnObj(
+                "GASMAN: <cmd> must be \"collect\"", 0L, 0L,
+                "you can replace <cmd> via 'return <cmd>;'" );
+            goto again;
+        }
+
+#else // BOEHM_GC
+
         /* if request display the statistics                               */
         if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
 #ifdef COUNT_BAGS
@@ -1855,6 +1868,7 @@ again:
                 "you can replace <cmd> via 'return <cmd>;'" );
             goto again;
         }
+#endif // ! BOEHM_GC
     }
 
     /* return nothing, this function is a procedure                        */
