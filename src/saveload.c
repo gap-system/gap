@@ -47,10 +47,13 @@
 
 
 static Int SaveFile;
+static Int LoadFile = -1;
 static UInt1 LoadBuffer[100000];
 static UInt1* LBPointer;
 static UInt1* LBEnd;
 static Obj userHomeExpand;
+
+#if !defined(BOEHM_GC)
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -86,8 +89,7 @@ static void CloseAfterSave( void )
   SaveFile = -1;
 }
 
-Int LoadFile = -1;
-
+#endif
 
 static void OpenForLoad( Char *fname ) 
 {
@@ -336,6 +338,10 @@ void LoadString ( Obj string )
 
 void SaveSubObj( Obj subobj )
 {
+#ifdef BOEHM_GC
+  // FIXME: HACK
+  assert(0);
+#else
   if (!subobj)
     SaveUInt(0);
   else if (IS_INTOBJ(subobj))
@@ -352,11 +358,15 @@ void SaveSubObj( Obj subobj )
     }
   else
     SaveUInt(((UInt)((PTR_BAG(subobj))[-1])) << 2);
-
+#endif
 }
 
 Obj LoadSubObj( void )
 {
+#ifdef BOEHM_GC
+  // FIXME: HACK
+  assert(0);
+#else
   UInt word = LoadUInt();
   if (word == 0)
     return (Obj) 0;
@@ -364,6 +374,7 @@ Obj LoadSubObj( void )
     return (Obj) word;
   else
     return (Obj)(MptrBags + (word >> 2)-1);
+#endif
 }
 
 void SaveHandler( ObjFunc hdlr )
@@ -420,7 +431,7 @@ Double LoadDouble( void )
 **  Bag level saving routines
 */
 
-
+#if !defined(BOEHM_GC)
 
 static void SaveBagData (Bag bag )
 {
@@ -466,12 +477,15 @@ static void LoadBagData ( void )
   return;
 }
 
+#endif
 
 /***************************************************************************
 **
 *F  WriteSaveHeader() . . . . .  and utility functions, and loading functions
 **
 */
+
+#if !defined(BOEHM_GC)
 
 static void WriteEndiannessMarker( void )
 {
@@ -492,6 +506,9 @@ static void WriteEndiannessMarker( void )
   SAVE_BYTE(((UInt1 *)&x)[7]);
 #endif
 }
+
+#endif
+
 
 static void CheckEndiannessMarker( void )
 {
@@ -583,6 +600,8 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
 **  The return value is either True or Fail
 */
 
+#if !defined(BOEHM_GC)
+
 static UInt NextSaveIndex = 1;
 
 static void AddSaveIndex( Bag bag)
@@ -647,11 +666,15 @@ static void WriteSaveHeader( void )
 	}
     }
 }
-
+#endif
 
 Obj SaveWorkspace( Obj fname )
 {
+#ifdef BOEHM_GC
+  Pr("SaveWorkspace is not currently supported when Boehm GC is in use",0,0);
+  return Fail;
 
+#else
   Int i;
   Obj fullname;
   StructInitInfo * info;
@@ -700,6 +723,7 @@ Obj SaveWorkspace( Obj fname )
   }
 
   return True;
+#endif
 }
 
 
@@ -726,6 +750,11 @@ Obj FuncSaveWorkspace(Obj self, Obj filename )
 
 void LoadWorkspace( Char * fname )
 {
+#ifdef BOEHM_GC
+  Pr("LoadWorkspace is not currently supported when Boehm GC is in use",0,0);
+  return;
+
+#else
   UInt nMods, nGlobs, nBags, i, maxSize;
   UInt globalcount = 0;
   Char buf[256];
@@ -903,6 +932,7 @@ void LoadWorkspace( Char * fname )
   /* Post restore methods are called elsewhere */
   
   CloseAfterLoad();
+#endif
 }
 
 #include <src/finfield.h>               /* finite fields and ff elements */
