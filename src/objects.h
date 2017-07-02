@@ -386,16 +386,16 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #ifdef HPCGAP
 
-/* reserve space for package TNUMs */
-#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+31)
+#define T_APOSOBJ               (FIRST_EXTERNAL_TNUM+ 4)
+#define T_ACOMOBJ               (FIRST_EXTERNAL_TNUM+ 5)
 
-/* The next two TNUMs are BOTH external AND shared! This way, jump
-   tables get entries calling method selection for them. */
-#define FIRST_SHARED_TNUM       (LAST_PACKAGE_TNUM+1)
-#define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
-#define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
-#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
+/* reserve space for package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 6)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+32)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
+
+#define FIRST_SHARED_TNUM       (LAST_EXTERNAL_TNUM+1)
 
 /* Primitive types */
 #define T_THREAD                (FIRST_SHARED_TNUM+ 2)
