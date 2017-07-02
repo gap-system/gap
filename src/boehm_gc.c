@@ -122,14 +122,10 @@ void StandardFinalizer( void * bagContents, void * data )
 #endif
 
 
-#ifdef BOEHM_GC
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCKind[MAX_GC_PREFIX_DESC+1];
 static GC_descr GCMDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCMKind[MAX_GC_PREFIX_DESC+1];
-#endif
-
-#ifdef BOEHM_GC
 
 /*
  * Build memory layout information for Boehm GC.
@@ -171,13 +167,9 @@ void BuildPrefixGCDescriptor(unsigned prefix_len) {
     0, 0);
 }
 
-#endif
 
-#ifdef BOEHM_GC
 static void TLAllocatorInit(void);
-#endif
 
-#ifdef BOEHM_GC
 
 #define GRANULE_SIZE (2 * sizeof(UInt))
 
@@ -255,7 +247,6 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
         NULL, NULL, NULL);
     return result;
 }
-#endif
 
 void LockFinalizer(void *lock, void *data)
 {
