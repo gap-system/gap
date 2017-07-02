@@ -1137,7 +1137,7 @@ Bag NewBag (
         return 0;
     }
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics                                               */
     NrAllBags               += 1;
     InfoBags[type].nrLive   += 1;
@@ -1189,7 +1189,7 @@ void            RetypeBag (
 {
     BagHeader * header = BAG_HEADER(bag);
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics      */
     {
           UInt                old_type;       /* old type of the bag */
@@ -1300,7 +1300,7 @@ UInt ResizeBag (
     UInt flags    = header->flags;
     UInt old_size = header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics                                               */
     InfoBags[type].sizeLive += new_size - old_size;
     InfoBags[type].sizeAll  += new_size - old_size;
@@ -1838,7 +1838,7 @@ again:
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
@@ -1865,7 +1865,7 @@ again:
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
