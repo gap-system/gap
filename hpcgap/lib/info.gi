@@ -320,35 +320,39 @@ end);
 ##
 
 BIND_GLOBAL( "InfoDecision", function(selectors, level)
-    local usage;
-    usage := "Usage : InfoDecision(<selectors>, <level>)";
+    local usage, ret;
+    usage := "usage : Info(<selectors>, <level>, ...)";
     if not IsInt(level) or level <= 0 then
         if level = 0 then
-            Error("Level 0 info messages are not allowed");
+            Error("level 0 Info messages are not allowed");
         else
             Error(usage);
         fi;
     fi;
-   
-    # store the class and level
-    atomic InfoData do
-	if IsInfoClass(selectors) then
-	  InfoData.LastClass := selectors;
-	else
-	  InfoData.LastClass := selectors[1];
-	fi;
-        InfoData.LastLevel := level;
-    od;
 
     if IsInfoClass(selectors) then
-        return InfoLevel(selectors) >= level;
+        ret := InfoLevel(selectors) >= level;
     elif IsInfoSelector(selectors)  then
 
         # note that we 'or' the classes together
-        return ForAny(selectors, ic -> InfoLevel(ic) >= level);
+        ret := ForAny(selectors, ic -> InfoLevel(ic) >= level);
     else
         Error(usage);
     fi;
+
+    if ret then
+        # store the class and level
+        atomic InfoData do
+            if IsInfoClass(selectors) then
+                InfoData.LastClass := selectors;
+            else
+                InfoData.LastClass := selectors[1];
+            fi;
+            InfoData.LastLevel := level;
+        od;
+    fi;
+
+    return ret;
 end );
     
 #############################################################################
