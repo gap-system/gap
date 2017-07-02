@@ -537,7 +537,9 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 **  pointers can be reclaimed.  
 */
 
-void MarkWeakPointerObj( Obj wp) 
+#if !defined(BOEHM_GC)
+
+static void MarkWeakPointerObj( Obj wp) 
 {
   Int i;
   /* can't use the stored length here, in case we
@@ -546,7 +548,7 @@ void MarkWeakPointerObj( Obj wp)
     MarkBagWeakly(ELM_WPOBJ(wp,i));
 }
 
-void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
+static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 {
   Bag elm;
   while (len --)
@@ -555,6 +557,8 @@ void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
       *dst ++ = IS_WEAK_DEAD_BAG(elm) ? (Bag) 0 : elm;
     }
 }
+
+#endif
 
 
 /****************************************************************************
@@ -827,7 +831,11 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 
-#ifndef BOEHM_GC
+#ifdef BOEHM_GC
+    /* force atomic allocation of these pointers */
+    InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
+#else
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
@@ -836,10 +844,6 @@ static Int InitKernel (
     InitFinalizerFuncBags( T_WPOBJ, FinalizeWeakPointerObj );
     InitFinalizerFuncBags( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
   #endif
-#else
-    /* force atomic allocation of these pointers */
-    InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
 #endif
 
     /* typing method                                                       */
