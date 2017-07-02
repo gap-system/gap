@@ -1,24 +1,28 @@
-
 /****************************************************************************
 **
-*W  boehm_gc.h
+*W  boehm_gc.c
 **
 **  This file stores code only required by the boehm garbage collector
 **
-**  It should NOT be generally included, it is only for use in gasman.c
-**
-**  The definitions of methods in this file can be found in gasman.c,
+**  The definitions of methods in this file can be found in gasman.h,
 **  where the non-boehm versions of these methods live.
 **/
 
+#include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
+
+#include <src/gasman.h>                 /* garbage collector */
+
+#include <src/objects.h>                /* objects */
+
 
 #ifndef BOEHM_GC
-#error hpc_boehm_gc.h can only be used with the boehm GC collector
+#error This file can only be used when the Boehm GC collector is enabled
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h>
+#include <string.h>
 
 #define LARGE_GC_SIZE (8192 * sizeof(UInt))
 #define TL_GC_SIZE (256 * sizeof(UInt))
@@ -41,6 +45,20 @@
 #include <src/calls.h>                  /* calls */
 #include <src/vars.h>                   /* variables */
 #endif
+
+
+enum {
+    NTYPES = 256
+};
+
+TNumInfoBags            InfoBags [ NTYPES ];
+
+
+static inline Bag *DATA(BagHeader *bag)
+{
+    return (Bag *)(((char *)bag) + sizeof(BagHeader));
+}
+
 
 /****************************************************************************
 **
@@ -307,7 +325,6 @@ void            InitBags (
 
     /* install the marking functions                                       */
     for ( i = 0; i < 255; i++ ) {
-        TabMarkFuncBags[i] = MarkAllSubBagsDefault;
         TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC
@@ -566,8 +583,8 @@ UInt ResizeBag (
 
 
 /*****************************************************************************
-** The following functions are not required by boehm, so empty implementations
-** are provided
+** The following functions are not required respectively supported, so empty
+** implementations are provided
 **
 */
 
@@ -606,3 +623,48 @@ void            InitCollectFuncBags (
     TNumCollectFuncBags before_func,
     TNumCollectFuncBags after_func )
 { }
+
+void SwapMasterPoint( Bag bag1, Bag bag2 )
+{
+    Obj *ptr1 = PTR_BAG(bag1);
+    Obj *ptr2 = PTR_BAG(bag2);
+    PTR_BAG(bag1) = ptr2;
+    PTR_BAG(bag2) = ptr1;
+}
+
+void MarkNoSubBags( Bag bag )
+{
+}
+
+void MarkOneSubBags( Bag bag )
+{
+}
+
+void MarkTwoSubBags( Bag bag )
+{
+}
+
+void MarkThreeSubBags( Bag bag )
+{
+}
+
+void MarkFourSubBags( Bag bag )
+{
+}
+
+void MarkAllSubBags( Bag bag )
+{
+}
+
+void MarkArrayOfBags( Bag array[], int count )
+{
+}
+
+// The following globals are not used by Boehm GC, but some other
+// code in GAP currently expects them to be defined.
+UInt            SizeAllBags;
+Bag *           MptrBags;
+Bag *           OldBags;
+Bag *           AllocBags;
+TNumGlobalBags  GlobalBags;
+Int             WarnInitGlobalBag = 0;

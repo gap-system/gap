@@ -209,20 +209,6 @@ static inline Bag *DATA(BagHeader *bag)
 }
 
 
-/* These variables are here so they can be accessed by
- * hpc_boehm_gc.h
- */
-
-TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
-
-
-/* Several functions in this file are guarded by #ifndef BOEHM_GC.
- * hpc_boehm_gc.h contains replacements of those functions for when
- * gasman is not in use */
-#ifdef BOEHM_GC
-#include <src/hpc/boehm_gc.h>           /* boehm-specific code */
-#endif
-
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
@@ -280,7 +266,7 @@ UInt                    AllocSizeBags;
 Bag *                   StopBags;
 Bag *                   EndBags;
 
-#if defined(MEMORY_CANARY) && !defined(BOEHM_GC)
+#if defined(MEMORY_CANARY)
 
 #include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>
@@ -462,7 +448,6 @@ TNumInfoBags            InfoBags [ NTYPES ];
 **
 *F  IS_BAG -- check if a value looks like a masterpointer reference.
 */
-#ifndef BOEHM_GC
 static inline UInt IS_BAG (
     UInt                bid )
 {
@@ -470,7 +455,6 @@ static inline UInt IS_BAG (
          && (bid < (UInt)OldBags)
          && (bid & (sizeof(Bag)-1)) == 0);
 }
-#endif
 
 /****************************************************************************
 **
@@ -479,7 +463,6 @@ static inline UInt IS_BAG (
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
 **  variable.
 */
-#ifndef BOEHM_GC
 TNumMsgsFuncBags        MsgsFuncBags;
 
 void            InitMsgsFuncBags (
@@ -518,8 +501,6 @@ void InitSweepFuncBags (
     TabSweepFuncBags[type] = sweep_func;
 }
 
-#endif
-
 
 /****************************************************************************
 **
@@ -538,8 +519,8 @@ void InitSweepFuncBags (
 **  by GASMAN as default.  This will allow to catch type clashes.
 */
 
+TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 
-#ifndef BOEHM_GC
 void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
@@ -560,7 +541,6 @@ void InitMarkFuncBags (
 #endif
     TabMarkFuncBags[type] = mark_func;
 }
-#endif
 
 #define MARKED_DEAD(x)  (x)
 #define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
@@ -641,7 +621,6 @@ void MarkAllSubBagsDefault( Bag bag )
 // Other marking functions don't get to inline MarkBag calls anymore,
 // but luckily these are rare (and usually not performance critical
 // to start with).
-#ifndef BOEHM_GC
 inline void MarkBag( Bag bag )
 {
   if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
@@ -655,7 +634,6 @@ inline void MarkBag( Bag bag )
         MarkedBags = bag;
     }
 }
-#endif
 
 void MarkBagWeakly( Bag bag )
 {
@@ -680,7 +658,6 @@ void MarkBagWeakly( Bag bag )
 **  walking the masterpointer area. Not terribly safe.
 **
 */
-#ifndef BOEHM_GC
 void CallbackForAllBags(
      void (*func)(Bag) )
 {
@@ -691,7 +668,6 @@ void CallbackForAllBags(
         (*func)(ptr);
       }
 }
-#endif
 
 
 /****************************************************************************
@@ -711,7 +687,6 @@ TNumGlobalBags GlobalBags;
 */
 Int WarnInitGlobalBag;
 
-#ifndef BOEHM_GC
 static UInt GlobalSortingStatus;
 extern TNumAbortFuncBags   AbortFuncBags;
 
@@ -1078,7 +1053,6 @@ void            InitBags (
     ChangedBags = 0;
 
 }
-#endif
 
 
 /****************************************************************************
@@ -1119,7 +1093,6 @@ void            InitBags (
 **  local  variables  of the function.  To  enable  statistics only {\Gasman}
 **  needs to be recompiled.
 */
-#ifndef BOEHM_GC
 Bag NewBag (
     UInt                type,
     UInt                size )
@@ -1210,7 +1183,6 @@ void            RetypeBag (
 
     header->type = new_type;
 }
-#endif
 
 
 /****************************************************************************
@@ -1286,7 +1258,6 @@ void            RetypeBag (
 **  If {\Gasman}  was compiled with the  option 'COUNT_BAGS' then 'ResizeBag'
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
-#ifndef BOEHM_GC
 UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
@@ -2140,7 +2111,6 @@ void CheckMasterPointers( void )
         (*AbortFuncBags)("Bad master pointer detected in check");
     }
 }
-#endif
 
 
 /****************************************************************************
