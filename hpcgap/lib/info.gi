@@ -71,15 +71,8 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
 end);
 
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-  local cl, out, fun, s;
-  atomic readonly InfoData do
-  cl := InfoData.LastClass![1];
-  if IsBound(InfoData.Output[cl]) then
-    out := InfoData.Output[cl];
-  else
-    out := DefaultInfoOutput;
-  fi;
-  od;
+  local out, fun, s;
+  out := InfoOutput(infoclass);
 
   if out = "*Print*" then
     if IsBoundGlobal( "PrintFormattedString" ) then
@@ -191,6 +184,22 @@ InstallGlobalFunction( SetInfoOutput, function(class, out)
     atomic readwrite InfoData do
     InfoData.Output[class![1]] := out;
     od;
+end);
+
+InstallGlobalFunction( UnbindInfoOutput, function(class)
+  atomic readwrite InfoData do
+  Unbind(InfoData.Output[class![1]]);
+  od;
+end);
+
+InstallGlobalFunction( InfoOutput, function(class)
+  atomic readwrite InfoData do
+  if IsBound(InfoData.Output[class![1]]) then
+    return InfoData.Output[class![1]];
+  else
+    return DefaultInfoOutput;
+  fi;
+  od;
 end);
 
 #############################################################################
