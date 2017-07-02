@@ -134,7 +134,6 @@ InstallMethod( MemoryUsage, "generic fallback method",
     # Count the bag, the header, and the master pointer
     mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
     if IS_POSOBJ(o) then
-        # Again the bag, its header, and the master pointer
         for i in [1..LEN_POSOBJ(o)] do
             if IsBound(o![i]) then
                 if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
@@ -143,7 +142,6 @@ InstallMethod( MemoryUsage, "generic fallback method",
             fi;
         od;
     elif IS_COMOBJ(o) then
-        # Again the bag, its header, and the master pointer
         for i in NamesOfComponents(o) do
             s := o!.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
@@ -171,8 +169,8 @@ InstallMethod( MemoryUsage, "for a plist",
     known := MU_AddToCache( o );
     if known = false then    # not yet known
         MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+        # Count the bag, the header, and the master pointer
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
         for i in [1..Length(o)] do
             if IsBound(o[i]) then
                 if SHALLOW_SIZE(o[i]) > 0 then    # a subobject!
@@ -193,8 +191,8 @@ InstallMethod( MemoryUsage, "for a record",
     known := MU_AddToCache( o );
     if known = false then    # not yet known
         MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+        # Count the bag, the header, and the master pointer
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
         for i in RecNames(o) do
             s := o.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
