@@ -954,18 +954,10 @@ void FinishedRestoringBags( void )
 */
 TNumFreeFuncBags        TabFreeFuncBags [ 256 ];
 
-UInt                    NrTabFreeFuncBags;
-
 void            InitFreeFuncBag (
     UInt                type,
     TNumFreeFuncBags    free_func )
 {
-    if ( free_func != 0 ) {
-        NrTabFreeFuncBags = NrTabFreeFuncBags + 1;
-    }
-    else {
-        NrTabFreeFuncBags = NrTabFreeFuncBags - 1;
-    }
     TabFreeFuncBags[type] = free_func;
 }
 
@@ -1807,82 +1799,6 @@ again:
 
     /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
 
-#if 0
-    /* call freeing function for all dead bags                             */
-    if ( NrTabFreeFuncBags ) {
-
-        /* run through the young generation                                */
-        src = YoungBags;
-        while ( src < AllocBags ) {
-            BagHeader * header = (BagHeader *)src;
-
-            /* leftover of a resize of <n> bytes                           */
-            if ( header->type == 255 ) {
-
-                if (header->flags == 1)
-                  src++;
-                else
-                  src += 1 + WORDS_BAG(header->size);
-
-            }
-
-            /* dead or half-dead (only weakly pointed to bag               */
-            /* here the usual check using UNMARKED_DEAD etc. is not
-               safe, because we are looking at the bag body rather
-               than its identifier, and a wrong guess for the bag
-               status can involve following a misaligned pointer. It
-               may cause bus errors or actual mistakes.
-
-               Instead we look directly at the value in the link word
-               and check its least significant bits */
-
-// FIXME: use macros...
-            else if ( ((UInt)header->link) % sizeof(Bag) == 0 ||
-                      ((UInt)header->link) % sizeof(Bag) == 2 ) {
-#ifdef DEBUG_MASTERPOINTERS
-                if  ( (header->size % sizeof(Bag) == 0 &&
-                       PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header))  ||
-                      (header->size % sizeof(Bag) == 2 &&
-                       PTR_BAG( UNMARKED_HALFDEAD(header->link)) != DATA(header)))
-                  {
-                    (*AbortFuncBags)("incorrectly marked bag");
-                  }
-#endif
-
-                /* call freeing function                                   */
-                if ( TabFreeFuncBags[ header->type ] != 0 )
-                  (*TabFreeFuncBags[ header->type ])( header->link );
-
-                /* advance src                                             */
-                src = DATA(header) + WORDS_BAG( header->size ) ;
-
-            }
-
-
-            /* live bag                                                    */
-            else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
-#ifdef DEBUG_MASTERPOINTERS
-                if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) )
-                  {
-                    (*AbortFuncBags)("incorrectly marked bag");
-                  }
-#endif
-
-                /* advance src                                             */
-                src = DATA(header) + WORDS_BAG( header->size );
-
-            }
-
-            /* oops                                                        */
-            else {
-                (*AbortFuncBags)(
-                  "Panic: Gasman found a bogus header (looking for dead bags)");
-            }
-
-        }
-
-    }
-#endif
     /* sweep through the young generation                                  */
     nrDeadBags = 0;
     nrHalfDeadBags = 0;
