@@ -4682,7 +4682,22 @@ void            IntrInfoBegin( void )
 
 }
 
-Obj             InfoDecision;
+static Obj InfoDecision;
+static Obj InfoDecisionFast;
+static Obj IsInfoClassListRep;
+
+Obj InfoCheckLevel(Obj selectors, Obj level)
+{
+    if (IS_POS_INTOBJ(level) &&
+        CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
+        Obj index = ELM_PLIST(selectors, 1);
+        return CALL_3ARGS(InfoDecisionFast, index, selectors, level);
+    }
+    else {
+        return CALL_2ARGS(InfoDecision, selectors, level);
+    }
+}
+
 
 void            IntrInfoMiddle( void )
 {
@@ -4700,7 +4715,9 @@ void            IntrInfoMiddle( void )
 
     level = PopObj();
     selectors = PopObj();
-    selected = CALL_2ARGS( InfoDecision, selectors, level);
+
+    selected = InfoCheckLevel(selectors, level);
+
     if (selected == False)
       STATE(IntrIgnoring) = 1;
     return;
@@ -4882,7 +4899,9 @@ static Int InitKernel (
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
+    ImportFuncFromLibrary("InfoDecisionFast", &InfoDecisionFast);
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
+    ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
 
     /* The work of handling Options is also delegated*/
     ImportFuncFromLibrary( "PushOptions", &PushOptions );

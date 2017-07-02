@@ -1494,7 +1494,7 @@ UInt ExecInfo (
     SET_BRK_CALL_TO( stat );
     SET_BRK_CURR_STAT( stat );
 
-    selected = CALL_2ARGS(InfoDecision, selectors, level);
+    selected = InfoCheckLevel(selectors, level);
     if (selected == True) {
 
         /* Get the number of arguments to be printed                       */
