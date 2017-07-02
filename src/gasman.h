@@ -845,7 +845,9 @@ static inline void MarkBag( Bag bag ) {}
 **  "IS_WEAK_DEAD_BAG". Which should  always be   checked before copying   or
 **  using such an identifier.
 */
+#if !defined(BOEHM_GC)
 extern void MarkBagWeakly( Bag bag );
+#endif
 
 
 /****************************************************************************
