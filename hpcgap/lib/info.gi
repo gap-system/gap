@@ -314,10 +314,26 @@ end);
 
 #############################################################################
 ##
+#F  InfoDecisionFast( <index>, <selector>, <level>)
 #F  InfoDecision( <selector>, <level>) .  decide whether a message is printed
 ##
-##  This is called by the kernel
+##  These are called by the kernel. InfoDecisionFast is used when
+##  <selectors> is a single object of type 'IsInfoClassListRep' and
+##  <level> is a positive small integer. In that case, <index> is
+##  <selectors![1]>.
 ##
+
+BIND_GLOBAL( "InfoDecisionFast", function(index, selector, level)
+    atomic InfoData do
+        if InfoData.CurrentLevels[index] >= level then
+            InfoData.LastClass := selector;
+            InfoData.LastLevel := level;
+            return true;
+        else
+            return false;
+        fi;
+    od;
+end);
 
 BIND_GLOBAL( "InfoDecision", function(selectors, level)
     local usage, ret;
