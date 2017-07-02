@@ -53,6 +53,7 @@ enum {
 
 TNumInfoBags            InfoBags [ NTYPES ];
 
+UInt            SizeAllBags;
 
 static inline Bag *DATA(BagHeader *bag)
 {
@@ -429,6 +430,9 @@ Bag NewBag (
       }
     }
 #endif
+
+    SizeAllBags             += size;
+
     /* If the size of an object is zero (such as an empty permutation),
      * and the header size is a multiple of twice the word size of the
      * architecture, then the master pointer will actually point past
@@ -653,7 +657,6 @@ void MarkArrayOfBags( Bag array[], int count )
 
 // The following globals are not used by Boehm GC, but some other
 // code in GAP currently expects them to be defined.
-UInt            SizeAllBags;
 Bag *           MptrBags;
 Bag *           OldBags;
 Bag *           AllocBags;
