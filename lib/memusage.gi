@@ -150,14 +150,15 @@ InstallMethod( MemoryUsage, "generic fallback method",
                 mem := mem + MemoryUsage(s);
             fi;
         od;
+    elif IS_DATOBJ(o) then
+        # a DATOBJ cannot reference any subobjects (other than its type,
+        # which we ignore for all kinds of objects)
     elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
         # Since we are in the fallback method, clearly there is no
         # MemoryUsage method installed for the given object.
-        if not IsGF2VectorRep(o) and not Is8BitVectorRep(o) then
-            Info(InfoWarning, 1, "No MemoryUsage method installed for ",
-                                 TNUM_OBJ(o)[2],
-                                 ", reported usage may be too low" );
-        fi;
+        Info(InfoWarning, 1, "No MemoryUsage method installed for ",
+                             TNUM_OBJ(o)[2],
+                             ", reported usage may be too low" );
     fi;
     MU_Finalize();
     return mem;
