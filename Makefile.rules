@@ -51,7 +51,6 @@ SOURCES += src/finfield.c
 SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
-SOURCES += src/gasman.c
 SOURCES += src/gapstate.c
 SOURCES += src/gmpints.c
 SOURCES += src/gvars.c
@@ -97,6 +96,13 @@ SOURCES += src/vecffe.c
 SOURCES += src/vecgf2.c
 SOURCES += src/vector.c
 SOURCES += src/weakptr.c
+
+# TODO: Change the following to check for a new USE_BOEHM flag
+ifeq ($(HPCGAP),yes)
+  SOURCES += src/boehm_gc.c
+else
+  SOURCES += src/gasman.c
+endif
 
 ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/aobjects.c
