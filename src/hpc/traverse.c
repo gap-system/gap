@@ -211,10 +211,8 @@ void CopyObjMap(Obj copy, Obj original)
 void InitTraversalModule()
 {
   int i;
-  for (i=FIRST_CONSTANT_TNUM; i<=LAST_CONSTANT_TNUM; i++)
+  for (i=FIRST_REAL_TNUM; i<=LAST_REAL_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
-  TraversalMask[T_LVARS] = TRAVERSE_NONE;
-  TraversalMask[T_HVARS] = TRAVERSE_NONE;
   TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
   TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_PREC] = TraversePRecord;
@@ -231,10 +229,6 @@ void InitTraversalModule()
   TraversalMask[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
   TraversalMask[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
   TraversalMask[T_PLIST_FFE] = TRAVERSE_NONE;
-  for (i=LAST_PLIST_TNUM+1; i<=LAST_LIST_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
-  for (i=FIRST_EXTERNAL_TNUM; i<=LAST_EXTERNAL_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
   TraversalMask[T_POSOBJ] = TRAVERSE_ALL_BUT(1);
   TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_COMOBJ] = TraversePRecord;
@@ -248,8 +242,6 @@ void InitTraversalModule()
   TraversalMask[T_OBJMAP] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_OBJMAP] = TraverseObjMap;
   TraversalCopyFunc[T_OBJMAP] = CopyObjMap;
-  for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
 }
 
 static void BeginTraversal(TraversalState *traversal)
