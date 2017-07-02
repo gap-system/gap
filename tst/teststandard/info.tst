@@ -45,6 +45,28 @@ gap> Info(InfoTest1 + InfoTest2, 0);
 Error, level 0 Info messages are not allowed
 gap> Info(InfoTest1 + InfoTest2, "apple");
 Error, usage : Info(<selectors>, <level>, ...)
+gap> str := "";;
+gap> str2 := "";;
+gap> SetDefaultInfoOutput(OutputTextString(str, false));
+gap> SetInfoOutput(InfoTest1, OutputTextString(str2, false));
+gap> Info(InfoTest1, 2, "No");
+gap> Info(InfoTest1, 1, "One");
+gap> Info(InfoTest2, 2, "Two");
+gap> Info(InfoTest1 + InfoTest2, 2, "OneTwo");
+gap> Info(InfoTest2 + InfoTest1, 2, "TwoOne");
+gap> IsOutputTextStringRep(InfoOutput(InfoTest2));
+true
+gap> IsOutputTextStringRep(InfoOutput(InfoTest1));
+true
+gap> UnbindInfoOutput(InfoTest1);
+gap> Info(InfoTest1, 1, "NormalOut");
+gap> str;
+"#I  Two\n#I  NormalOut\n"
+gap> str2;
+"#I  One\n#I  OneTwo\n#I  TwoOne\n"
+gap> SetDefaultInfoOutput(MakeImmutable("*Print*"));
+gap> Info(InfoTest2, 1, "NormalOut");
+#I  NormalOut
 gap> STOP_TEST("info.tst", 1);
 
 #############################################################################
