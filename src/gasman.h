@@ -920,15 +920,6 @@ extern  void            InitSweepFuncBags (
             TNumSweepFuncBags    sweep_func );
  
 
-#ifdef BOEHM_GC
-typedef void 		(* FinalizerFunction) (
-	    Bag bag );
-
-extern void		InitFinalizerFuncBags (
-	    UInt		tnum,
-	    FinalizerFunction finalizer_func );
-#endif
-
 /****************************************************************************
 **
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
