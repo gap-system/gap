@@ -644,13 +644,15 @@ void MarkAllSubBagsDefault( Bag bag )
 #ifndef BOEHM_GC
 inline void MarkBag( Bag bag )
 {
-    if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0
-         && (Bag)MptrBags <= (bag)      && (bag) < (Bag)OldBags
-         && YoungBags < PTR_BAG(bag)    && PTR_BAG(bag) <= AllocBags
-         && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
+  if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
+       && (Bag)MptrBags <= bag              /* in plausible range */
+       && bag < (Bag)OldBags                /*  "    "       "    */
+       && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
+       && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
+       && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
     {
         LINK_BAG(bag) = MarkedBags;
-        MarkedBags = (bag);
+        MarkedBags = bag;
     }
 }
 #endif
