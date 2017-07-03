@@ -720,6 +720,7 @@ Bag MakeBagReadOnly(Bag bag);
 **  34+3016 is the  number  of bags allocated  between  the last two  garbage
 **  collections, using 978 KByte and the other two numbers are as above.
 */
+#if !defined(BOEHM_GC)
 typedef void            (* TNumMsgsFuncBags) (
             UInt                full,
             UInt                phase,
@@ -727,7 +728,7 @@ typedef void            (* TNumMsgsFuncBags) (
 
 extern  void            InitMsgsFuncBags (
             TNumMsgsFuncBags    msgs_func );
-
+#endif
 
 /****************************************************************************
 **
@@ -970,11 +971,13 @@ extern TNumGlobalBags GlobalBags;
 **  after a save and load
 */
 
-extern Int WarnInitGlobalBag;
-
 extern void InitGlobalBag (
             Bag *               addr,
             const Char *        cookie );
+
+#if !defined(BOEHM_GC)
+
+extern Int WarnInitGlobalBag;
 
 extern void SortGlobals( UInt byWhat );
 
@@ -990,6 +993,7 @@ extern Bag NextBagRestoring( UInt type, UInt flags, UInt size );
 
 extern void FinishedRestoringBags( void );
 
+#endif
 
 
 /****************************************************************************
