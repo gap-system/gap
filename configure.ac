@@ -24,12 +24,6 @@ AC_LANG([C])
 
 
 dnl
-dnl Use _GNU_SOURCE enable extensions like exp10 in glibc
-dnl
-AC_DEFINE([_GNU_SOURCE], [], [Enable GNU extensions in glibc])
-
-
-dnl
 dnl ABI settings
 dnl
 AC_ARG_VAR(ABI, [Set this equal to 32 or 64 to build GAP (and GMP provided you
