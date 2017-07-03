@@ -9,7 +9,6 @@
 ##
 ##  This file contains the declarations for finitely 
 ##  presented semigroups. 
-##
 
 #############################################################################
 ##
