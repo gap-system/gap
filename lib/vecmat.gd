@@ -207,6 +207,13 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 DeclareGlobalFunction( "ConvertToVectorRepNC");
 DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
+# TODO: The following two functions only exist in HPC-GAP, but we always
+# declare them so that other code can access them conditionally, inside
+# an "if IsBound(HPCGAP)", without triggering syntax warnings about
+# unbound global variables.
+DeclareGlobalFunction( "CopyToVectorRep");
+DeclareGlobalFunction( "CopyToVectorRepNC");
+
 
 #############################################################################
 ##
@@ -265,30 +272,8 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "ConvertToMatrixRepNC");
-DeclareGlobalFunction("ConvertToMatrixRep",ConvertToMatrixRepNC);
-
-
-#############################################################################
-##
-#F  ImmutableGF2VectorRep( <vector> ) . . . . . . . .  convert representation
-##
-##  <ManSection>
-##  <Func Name="ImmutableGF2VectorRep" Arg='vector'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ImmutableGF2VectorRep", function( vector )
-    if ForAny( vector, x -> x <> GF2Zero and x <> GF2One )  then
-        return fail;
-    fi;
-    vector := ShallowCopy(vector);
-    CONV_GF2VEC(vector);
-    SET_TYPE_DATOBJ( vector, TYPE_LIST_GF2VEC_IMM );
-    return vector;
-end );
+DeclareGlobalFunction( "ConvertToMatrixRepNC" );
+DeclareGlobalFunction( "ConvertToMatrixRep" );
 
 
 #############################################################################
@@ -368,38 +353,6 @@ DeclareSynonym( "ConvertToGF2MatrixRep", CONV_GF2MAT);
 
 #############################################################################
 ##
-#F  ImmutableGF2MatrixRep( <matrix> ) . . . . . . . .  convert representation
-##
-##  <ManSection>
-##  <Func Name="ImmutableGF2MatrixRep" Arg='matrix'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ImmutableGF2MatrixRep", function(matrix)
-    local   new,  i,  row;
-
-    # put length at position 1
-    new := [ Length(matrix) ];
-    for i  in matrix  do
-        row := ImmutableGF2VectorRep(i);
-        if row = fail  then
-            return fail;
-        fi;
-        Add( new, row );
-    od;
-
-    # convert
-    Objectify( TYPE_LIST_GF2MAT_IMM, new );
-
-    # and return new matrix
-    return new;
-
-end );
-
-#############################################################################
-##
 #F  ImmutableMatrix( <field>, <matrix>[, <change>] ) . convert into "best" representation
 ##
 ##  <#GAPDoc Label="ImmutableMatrix">
@@ -413,19 +366,48 @@ end );
 ##  <Ref Oper="ImmutableMatrix"/> for the same <A>field</A> are compatible
 ##  for fast arithmetic without need for field conversion.
 ##  <P/>
-##  The input matrix <A>matrix</A> or its rows might change the
-##  representation,
+##  The input matrix <A>matrix</A> or its rows might change their
+##  representation as a side effect of this function,
 ##  however the result of <Ref Oper="ImmutableMatrix"/> is not necessarily
 ##  <E>identical</E> to <A>matrix</A> if a conversion is not possible.
 ##  <P/>
 ##  If <A>change</A> is <K>true</K>, the rows of <A>matrix</A>
 ##  (or <A>matrix</A> itself) may be changed to become immutable;
-##  otherwise they are copied first).
+##  otherwise they are copied first.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "ImmutableMatrix",[IsObject,IsMatrix]);
+
+
+#############################################################################
+##
+#F  ImmutableVector( <field>, <vector>[, <change>] ) . convert into "best" representation
+##
+##  <#GAPDoc Label="ImmutableVector">
+##  <ManSection>
+##  <Oper Name="ImmutableVector" Arg='field, vector[, change]'/>
+##
+##  <Description>
+##  returns an immutable vector equal to <A>vector</A> which is in the optimal
+##  (concerning space and runtime) representation for vectors defined over
+##  <A>field</A>. This means that vectors obtained by several calls of
+##  <Ref Oper="ImmutableVector"/> for the same <A>field</A> are compatible
+##  for fast arithmetic without need for field conversion.
+##  <P/>
+##  The input vector <A>vector</A> might change its representation
+##  as a side effect of this function,
+##  however the result of <Ref Oper="ImmutableVector"/> is not necessarily
+##  <E>identical</E> to <A>vector</A> if a conversion is not possible.
+##  <P/>
+##  If <A>change</A> is <K>true</K>, then <A>vector</A> may be changed to
+##  become immutable; otherwise it is copied first.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ImmutableVector",[IsObject,IsRowVector]);
 
 
 #############################################################################

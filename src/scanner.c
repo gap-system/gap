@@ -100,6 +100,13 @@ Obj             EndLineHook = 0;
 /* TL: TypOutputFile * OutputLog; */
 
 
+#ifdef HPCGAP
+#define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
+#else
+#define STACK_SIZE(sp)   (STATE(sp) ? (STATE(sp) - STATE(sp ## Files) + 1 ) : 0)
+#endif
+
+
 /****************************************************************************
 **
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
@@ -257,8 +264,71 @@ void Match (
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
+#ifdef HPCGAP
+TypOutputFile *NewOutput()
+{
+  TypOutputFile *result;
+  result = AllocateMemoryBlock(sizeof(TypOutputFile));
+  if (!result)
+    abort();
+  return result;
+}
+
+TypInputFile *NewInput()
+{
+  TypInputFile *result;
+  result = AllocateMemoryBlock(sizeof(TypInputFile));
+  if (!result)
+    abort();
+  return result;
+}
+
+GVarDescriptor DEFAULT_INPUT_STREAM;
+GVarDescriptor DEFAULT_OUTPUT_STREAM;
+
+UInt OpenDefaultInput( void )
+{
+  Obj func, stream;
+  stream = TLS(DefaultInput);
+  if (stream)
+    return OpenInputStream(stream);
+  func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
+  if (!func)
+    return OpenInput("*stdin*");
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenInput(CSTR_STRING(stream));
+  TLS(DefaultInput) = stream;
+  return OpenInputStream(stream);
+}
+
+UInt OpenDefaultOutput( void )
+{
+  Obj func, stream;
+  stream = TLS(DefaultOutput);
+  if (stream)
+    return OpenOutputStream(stream);
+  func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
+  if (!func)
+    return OpenOutput("*stdout*");
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenOutput(CSTR_STRING(stream));
+  TLS(DefaultOutput) = stream;
+  return OpenOutputStream(stream);
+}
+#endif
 
 TypOutputFile *GetCurrentOutput() {
+#ifdef HPCGAP
+  if (!STATE(Output)) {
+    OpenDefaultOutput();
+  }
+#endif
   return STATE(Output);
 }
 
@@ -302,8 +372,16 @@ UInt OpenInput (
     Int                 file;
 
     /* fail if we can not handle another open input file                   */
-    if ( STATE(Input)+1 == STATE(InputFiles)+(ARRAY_SIZE(STATE(InputFiles))) )
+    if ( STACK_SIZE(Input) == ARRAY_SIZE(STATE(InputFiles)) )
         return 0;
+
+#ifdef HPCGAP
+    /* Handle *defin*; redirect *errin* to *defin* if the default
+     * channel is already open. */
+    if (! strcmp(filename, "*defin*") ||
+        (! strcmp(filename, "*errin*") && TLS(DefaultInput)) )
+        return OpenDefaultInput();
+#endif
 
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -311,18 +389,27 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if (STATE(Input) != 0) {
+    if ( STACK_SIZE(Input) > 0 ) {
         STATE(Input)->ptr    = STATE(In);
         STATE(Input)->symbol = STATE(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
+#ifdef HPCGAP
+    const int sp = STATE(InputFilesSP)++;
+    if (!STATE(InputFiles)[sp]) {
+      STATE(InputFiles)[sp] = NewInput();
+    }
+    STATE(Input) = STATE(InputFiles)[sp];
+#else
     if (STATE(Input) == 0)
         STATE(Input) = STATE(InputFiles);
     else
         STATE(Input)++;
+#endif
     STATE(Input)->isstream = 0;
     STATE(Input)->file = file;
+    STATE(Input)->name[0] = '\0';
     if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
       STATE(Input)->echo = 0;
     else
@@ -353,17 +440,26 @@ UInt OpenInputStream (
     Obj                 stream )
 {
     /* fail if we can not handle another open input file                   */
-    if ( STATE(Input)+1 == STATE(InputFiles)+(ARRAY_SIZE(STATE(InputFiles))) )
+    if ( STACK_SIZE(Input) == ARRAY_SIZE(STATE(InputFiles)) )
         return 0;
 
-    assert(STATE(Input) != 0);
-
     /* remember the current position in the current file                   */
-    STATE(Input)->ptr    = STATE(In);
-    STATE(Input)->symbol = STATE(Symbol);
+    if ( STACK_SIZE(Input) > 0 ) {
+        STATE(Input)->ptr    = STATE(In);
+        STATE(Input)->symbol = STATE(Symbol);
+    }
 
     /* enter the file identifier and the file name                         */
+#ifdef HPCGAP
+    const int sp = STATE(InputFilesSP)++;
+    if (!STATE(InputFiles)[sp]) {
+      STATE(InputFiles)[sp] = NewInput();
+    }
+    STATE(Input) = STATE(InputFiles)[sp];
+#else
+    assert(STATE(Input) != 0);
     STATE(Input)++;
+#endif
     STATE(Input)->isstream = 1;
     STATE(Input)->stream = stream;
     STATE(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -407,7 +503,7 @@ UInt OpenInputStream (
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( STATE(Input) == STATE(InputFiles) )
+    if ( STACK_SIZE(Input) <= 1 )
         return 0;
 
     /* close the input file                                                */
@@ -420,7 +516,12 @@ UInt CloseInput ( void )
     STATE(Input)->sline = 0;
 
     /* revert to last file                                                 */
+#ifdef HPCGAP
+    const int sp  = --STATE(InputFilesSP);
+    STATE(Input)  = STATE(InputFiles)[sp-1];
+#else
     STATE(Input)--;
+#endif
     STATE(In)     = STATE(Input)->ptr;
     STATE(Symbol) = STATE(Input)->symbol;
 
@@ -778,8 +879,16 @@ UInt OpenOutput (
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
+    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
         return 0;
+
+#ifdef HPCGAP
+    /* Handle *defout* specially; also, redirect *errout* if we already
+     * have a default channel open. */
+    if ( ! strcmp( filename, "*defout*" ) ||
+         (! strcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
+        return OpenDefaultOutput();
+#endif
 
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
@@ -787,10 +896,18 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+#ifdef HPCGAP
+    const int sp = STATE(OutputFilesSP)++;
+    if (!STATE(OutputFiles)[sp]) {
+      STATE(OutputFiles)[sp] = NewOutput();
+    }
+    STATE(Output) = STATE(OutputFiles)[sp];
+#else
     if (STATE(Output) == 0)
         STATE(Output) = STATE(OutputFiles);
     else
         STATE(Output)++;
+#endif
     STATE(Output)->file     = file;
     STATE(Output)->line[0]  = '\0';
     STATE(Output)->pos      = 0;
@@ -819,12 +936,20 @@ UInt OpenOutputStream (
     Obj                 stream )
 {
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
+    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+#ifdef HPCGAP
+    const int sp = STATE(OutputFilesSP)++;
+    if (!STATE(OutputFiles)[sp]) {
+      STATE(OutputFiles)[sp] = NewOutput();
+    }
+    STATE(Output) = STATE(OutputFiles)[sp];
+#else
     assert(STATE(Output) != 0);
     STATE(Output)++;
+#endif
     STATE(Output)->stream   = stream;
     STATE(Output)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     STATE(Output)->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
@@ -867,8 +992,14 @@ UInt CloseOutput ( void )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( STATE(Output) == STATE(OutputFiles) )
+#ifdef HPCGAP
+    if ( STACK_SIZE(Output) <= 1 && STATE(Output)->isstream
+         && TLS(DefaultOutput) == STATE(Output)->stream)
         return 0;
+#else
+    if ( STACK_SIZE(Output) <= 1 )
+        return 0;
+#endif
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
@@ -877,7 +1008,12 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
+#ifdef HPCGAP
+    const int sp  = --STATE(OutputFilesSP);
+    STATE(Output) = sp ? STATE(OutputFiles)[sp-1] : 0;
+#else
     STATE(Output)--;
+#endif
     return 1;
 }
 
@@ -899,8 +1035,13 @@ UInt OpenAppend (
     Int                 file;
 
     /* fail if we can not handle another open output file                  */
-    if ( STATE(Output)+1==STATE(OutputFiles)+(ARRAY_SIZE(STATE(OutputFiles))) )
+    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
         return 0;
+
+#ifdef HPCGAP
+    if ( ! strcmp( filename, "*defout*") )
+        return OpenDefaultOutput();
+#endif
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );
@@ -908,8 +1049,16 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+#ifdef HPCGAP
+    const int sp = STATE(OutputFilesSP)++;
+    if (!STATE(OutputFiles)[sp]) {
+      STATE(OutputFiles)[sp] = NewOutput();
+    }
+    STATE(Output) = STATE(OutputFiles)[sp];
+#else
     assert(STATE(Output) != 0);
     STATE(Output)++;
+#endif
     STATE(Output)->file     = file;
     STATE(Output)->line[0]  = '\0';
     STATE(Output)->pos      = 0;
@@ -946,6 +1095,13 @@ static Int GetLine2 (
     Char *                  buffer,
     UInt                    length )
 {
+#ifdef HPCGAP
+    if ( ! input ) {
+      input = STATE(Input);
+      if ( ! input ) OpenDefaultInput();
+      input = STATE(Input);
+    }
+#endif
 
     if ( input->isstream ) {
         if ( input->sline == 0
@@ -2324,7 +2480,13 @@ void PutChrTo (
   }
 
   /* normal character, room on the current line                          */
+#ifdef HPCGAP
+  /* TODO: For threads other than the main thread, reserve some extra
+     space for the thread id indicator. See issue #136. */
+  else if ( stream->pos < SyNrCols-2-6*(TLS(threadID) != 0)-STATE(NoSplitLine) ) {
+#else
   else if ( stream->pos < SyNrCols-2-STATE(NoSplitLine) ) {
+#endif
 
     /* put the character on this line                                  */
     stream->line[ stream->pos++ ] = ch;
@@ -2439,6 +2601,7 @@ Obj FuncCPROMPT( Obj self)
  **  uses the content of <prompt> as `Prompt' (at most 80 characters).
  **  (important is the flush character without resetting the cursor column)
  */
+/* TODO: Eliminate race condition in HPC-GAP */
 Char promptBuf[81];
 
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
@@ -2823,10 +2986,11 @@ Obj FuncALL_KEYWORDS(Obj self) {
 }
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
-  if (val == False)
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 0;
-  else
-      ((TypOutputFile *)(STATE(OutputFiles)+1))->format = 1;
+#ifdef HPCGAP
+  STATE(OutputFiles)[1]->format = (val != False);
+#else
+  STATE(OutputFiles)[1].format = (val != False);
+#endif
   return val;
 }
 

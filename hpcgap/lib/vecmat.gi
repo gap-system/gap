@@ -29,8 +29,6 @@ InstallValue( TYPE_LIST_GF2VEC,
            and IsMutable and IsCopyable and IsGF2VectorRep )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -42,8 +40,6 @@ InstallValue( TYPE_LIST_GF2VEC_IMM,
            and IsCopyable and IsGF2VectorRep )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
 
 #############################################################################
 ##
@@ -55,8 +51,6 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
 
 #############################################################################
 ##
@@ -70,9 +64,6 @@ InstallValue( TYPE_LIST_GF2VEC_LOCKED,
 );
 
 
-InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
-  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
-
 #############################################################################
 ##
 #V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . .  type of mutable GF2 matrices
@@ -85,8 +76,6 @@ InstallValue( TYPE_LIST_GF2MAT,
           HasIsRectangularTable and IsRectangularTable )
 );
 
-InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
-  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
 
 #############################################################################
 ##
@@ -99,6 +88,25 @@ InstallValue( TYPE_LIST_GF2MAT_IMM,
           and IsSmallList and IsFFECollColl and
           HasIsRectangularTable and IsRectangularTable)
 );
+
+#############################################################################
+##
+## HPC-GAP serialization
+##
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
+  SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
+
+InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
+  SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
 
 InstallTypeSerializationTag(TYPE_LIST_GF2MAT_IMM,
   SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 2);
@@ -1600,7 +1608,7 @@ local sf, rep, ind, ind2, row, i,big,l;
   else
     if not IsField(field) then
       # not a field
-      return matrix;
+      return Immutable(matrix);
     fi;
     sf:=Size(field);
   fi;
@@ -1729,6 +1737,71 @@ function(f,m)
   fi;
   return Immutable(m);
 end);
+
+
+#############################################################################
+##
+#F  ImmutableVector( <field>, <vector>
+##
+InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
+function(f,v)
+  local v2;
+  if not IsInt(f) then f := Size(f); fi;
+  if f <= 256 then
+    v2 := CopyToVectorRep(v,f);
+    if v2 <> fail then v := v2; fi;
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
+function(f,v,change)
+  local v2;
+  if not IsInt(f) then f := Size(f); fi;
+  if f <= 256 then
+    v2 := CopyToVectorRep(v,f);
+    if v2 <> fail then v := v2; fi;
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"field,8bit",[IsField,Is8BitVectorRep],0,
+function(f,v)
+  if Q_VEC8BIT(v)<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"field,gf2",[IsField,IsGF2VectorRep],0,
+function(f,v)
+  if 2<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"fieldsize,8bit",[IsPosInt,Is8BitVectorRep],0,
+function(f,v)
+  if Q_VEC8BIT(v)<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"fieldsize,gf2",[IsPosInt,IsGF2VectorRep],0,
+function(f,v)
+  if 2<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"empty",[IsObject,IsEmpty],0,
+function(f,v)
+  return Immutable(v);
+end);
+
 
 #############################################################################
 ##
@@ -2311,9 +2384,9 @@ InstallMethod( RowLength, "for a gf2 matrix",
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
-    local r; 
-    r := ShallowCopy(l); 
-    ConvertToVectorRep(r,2); 
+    local r;
+    r := ShallowCopy(l);
+    ConvertToVectorRep(r,2);
     return r;
   end );
 InstallMethod( Randomize, "for a mutable gf2 vector",

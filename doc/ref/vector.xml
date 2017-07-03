@@ -177,6 +177,7 @@ collection happens to have all of its entries over a smaller field
 than the <Q>natural</Q> field of the problem.
 
 <#Include Label="ConvertToVectorRep">
+<#Include Label="ImmutableVector">
 <#Include Label="NumberFFVector">
 
 </Section>

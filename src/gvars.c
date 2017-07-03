@@ -531,6 +531,16 @@ Obj FuncGET_NAMESPACE(Obj self)
     return STATE(CurrNamespace);
 }
 
+
+static inline UInt HashString( const Char * name )
+{
+    UInt hash = 0;
+    while ( *name ) {
+        hash = 65599 * hash + *name++;
+    }
+    return hash;
+}
+
 /****************************************************************************
 **
 *F  GVarName(<name>)  . . . . . . . . . . . . . .  global variable for a name
@@ -548,7 +558,6 @@ UInt GVarName (
     Obj                 string;         /* temporary string value <name>   */
     Obj                 table;          /* temporary copy of <TableGVars>  */
     Obj                 gvar2;          /* one element of <table>          */
-    const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
     Int                 len;            /* length of name                  */
 
@@ -564,17 +573,13 @@ UInt GVarName (
     }
 
     /* start looking in the table at the following hash position           */
-    pos = 0;
-    for ( p = name; *p != '\0'; p++ ) {
-        pos = 65599 * pos + *p;
-    }
+    const UInt hash = HashString( name );
 #ifdef HPCGAP
     LockGVars(0);
 #endif
-    pos = (pos % SizeGVars) + 1;
 
     /* look through the table until we find a free slot or the global      */
-    UInt oldPos = pos;
+    pos = (hash % SizeGVars) + 1;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
          && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
         pos = (pos % SizeGVars) + 1;
@@ -587,7 +592,7 @@ UInt GVarName (
         LockGVars(1);
 
         /* look through the table until we find a free slot or the global  */
-        pos = oldPos;
+        pos = (hash % SizeGVars) + 1;
         while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
              && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
             pos = (pos % SizeGVars) + 1;
@@ -657,10 +662,7 @@ UInt GVarName (
             for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
                 gvar2 = ELM_PLIST( table, i );
                 if ( gvar2 == 0 )  continue;
-                pos = 0;
-                for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
-                    pos = 65599 * pos + *p;
-                }
+                pos = HashString( NameGVar( INT_INTOBJ(gvar2) ) );
                 pos = (pos % SizeGVars) + 1;
                 while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
                     pos = (pos % SizeGVars) + 1;

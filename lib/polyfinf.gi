@@ -104,8 +104,7 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
   #px  := LaurentPolynomialByExtRepNC(
   #	      FamilyObj(f), [One(br)],1, ind );
   #  pow := px;
-  px:=[Zero(br),-One(br)];
-  ConvertToVectorRep(px,br);
+  px:=ImmutableVector(br, [Zero(br),-One(br)]);
   powc:=-px;
   fc:=CoefficientsOfLaurentPolynomial(f)[1];
   fam:=FamilyObj(One(br));
