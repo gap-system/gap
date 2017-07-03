@@ -583,35 +583,13 @@ UInt ResizeBag (
 **
 */
 
-void            InitMsgsFuncBags (
-    TNumMsgsFuncBags    msgs_func )
-{ }
-
 void InitGlobalBag (
     Bag *               addr,
     const Char *        cookie )
 { }
 
-void SortGlobals( UInt byWhat )
-{ }
-
-Bag * GlobalByCookie(
-       const Char * cookie )
-{
-    return (Bag *) 0;
-}
-
 void CallbackForAllBags(
      void (*func)(Bag) )
-{ }
-
-void StartRestoringBags( UInt nBags, UInt maxSize)
-{ }
-
-Bag NextBagRestoring( UInt type, UInt flags, UInt size )
-{ return 0; }
-
-void FinishedRestoringBags( void )
 { }
 
 void            InitCollectFuncBags (
@@ -654,7 +632,3 @@ void MarkAllSubBags( Bag bag )
 void MarkArrayOfBags( Bag array[], int count )
 {
 }
-
-// The following globals are not used by Boehm GC, but some other
-// code in GAP currently expects them to be defined.
-Int             WarnInitGlobalBag = 0;

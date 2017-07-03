@@ -3271,7 +3271,9 @@ void InitializeGap (
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
               0, SyAbortBags );
-              InitMsgsFuncBags( SyMsgsBags ); 
+#if !defined(BOEHM_GC)
+    InitMsgsFuncBags( SyMsgsBags );
+#endif
 
     STATE(StackNams)    = NEW_PLIST( T_PLIST, 16 );
     STATE(CountNams)    = 0;
@@ -3401,7 +3403,9 @@ void InitializeGap (
 
     /* otherwise call library initialisation                               */
     else {
-        WarnInitGlobalBag = 1;
+#       if !defined(BOEHM_GC)
+            WarnInitGlobalBag = 1;
+#       endif
 #       ifdef DEBUG_HANDLER_REGISTRATION
             CheckAllHandlers();
 #       endif
@@ -3423,7 +3427,9 @@ void InitializeGap (
                 }
             }
         }
-        WarnInitGlobalBag = 0;
+#if     !defined(BOEHM_GC)
+            WarnInitGlobalBag = 0;
+#       endif
     }
 
     /* check initialisation                                                */
