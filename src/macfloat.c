@@ -11,6 +11,17 @@
 **
 ** macfloats are stored as bags containing a 64 bit value
 */
+
+
+// glibc only declares exp10 in its headers if we define _GNU_SOURCE
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <math.h>
+
+
+
 #include <src/system.h>                 /* system dependent part */
 #include <src/gapstate.h>
 
@@ -42,7 +53,6 @@ extern Double LoadDouble( void);
 extern void SaveDouble( Double d);
 
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 
 #define SIZE_MACFLOAT   sizeof(Double)
