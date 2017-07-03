@@ -40,8 +40,8 @@
 ##  <Example><![CDATA[
 ##  gap> f := FreeSemigroup( "a", "b" );;
 ##  gap> a := f.1;;  b := f.2;;
-##  gap> s := f/[ [a*b*a,b], [b*a*b,a] ];;
-##  gap> rws := ReducedConfluentRewritingSystem(s);
+##  gap> s := f / [ [ a*b*a, b ], [ b*a*b, a ] ];;
+##  gap> rws := ReducedConfluentRewritingSystem( s );
 ##  Rewriting System for Semigroup( [ a, b ] ) with rules 
 ##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ], [ a^3*b, b*a ], 
 ##    [ a^5, a ] ]
@@ -49,7 +49,7 @@
 ##  gap> e := (c*d^2)^3;
 ##  (a*b^2)^3
 ##  gap> ## ReducedForm( rws, e );  gives an error! 
-##  gap> w := UnderlyingElement(e);
+##  gap> w := UnderlyingElement( e );
 ##  (a*b^2)^3
 ##  gap> ReducedForm( rws, w );
 ##  a
@@ -105,13 +105,13 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##  a rewriting system. 
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f1 := FreeSemigroupOfRewritingSystem(rws);
+##  gap> f1 := FreeSemigroupOfRewritingSystem( rws );
 ##  <free semigroup on the generators [ a, b ]>
-##  gap> f1=f;
+##  gap> f1 = f;
 ##  true
-##  gap> s1 := SemigroupOfRewritingSystem(rws);
+##  gap> s1 := SemigroupOfRewritingSystem( rws );
 ##  <fp semigroup on the generators [ a, b ]>
-##  gap> s1=s;
+##  gap> s1 = s;
 ##  true
 ##  ]]></Example>
 ##  <P/>
@@ -122,9 +122,9 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##  <Example><![CDATA[
 ##  gap> d^6 = c^2;
 ##  true
-##  gap> ReducedForm( rws, UnderlyingElement(d^6) );
+##  gap> ReducedForm( rws, UnderlyingElement( d^6 ) );
 ##  a^2
-##  gap> ReducedForm( rws, UnderlyingElement(c^2) );
+##  gap> ReducedForm( rws, UnderlyingElement( c^2 ) );
 ##  a^2
 ##  ]]></Example>
 ##  </Description>

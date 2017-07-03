@@ -63,7 +63,7 @@ So, if one wants to access the generators by their names, one first has to
 introduce the respective variables and to assign the generators to them.
 <P/>
 <Example><![CDATA[
-gap> Unbind(a);
+gap> Unbind( a );
 gap> f := FreeSemigroup( "a", "b" );;
 gap> s := f / [ [ f.1 * f.2, f.2 * f.1 ] ];;
 gap> a;

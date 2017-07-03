@@ -146,7 +146,7 @@ DeclareCategoryFamily( "IsElementOfFpSemigroup" );
 ##  gap> fm := FreeMonoid( 3 );;
 ##  gap> y := GeneratorsOfMonoid( fm );;
 ##  gap> m := FactorFreeMonoidByRelations( fm, 
-##  >           [ [y[1] * y[2] * y[1], y[1] ],[ y[2]^4, y[1] ] ] );
+##  >           [ [ y[1] * y[2] * y[1], y[1] ],[ y[2]^4, y[1] ] ] );
 ##  <fp monoid on the generators [ m1, m2, m3 ]>
 ##  ]]></Example>
 ##  </Description>
@@ -344,7 +344,7 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##  gap> f := FreeMonoid( 2 );;
 ##  gap> m := f / [ [ f.1^2, f.2^2 ] ];
 ##  <fp monoid on the generators [ m1, m2 ]>
-##  gap> m = FpGrpMonSmgOfFpGrpMonSmgElement( m.1*m.2 );
+##  gap> m = FpGrpMonSmgOfFpGrpMonSmgElement( m.1 * m.2 );
 ##  true
 ##  ]]></Example>
 ##  </Description>
