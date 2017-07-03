@@ -657,8 +657,4 @@ void MarkArrayOfBags( Bag array[], int count )
 
 // The following globals are not used by Boehm GC, but some other
 // code in GAP currently expects them to be defined.
-Bag *           MptrBags;
-Bag *           OldBags;
-Bag *           AllocBags;
-TNumGlobalBags  GlobalBags;
 Int             WarnInitGlobalBag = 0;

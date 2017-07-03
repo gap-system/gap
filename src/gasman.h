@@ -819,7 +819,7 @@ extern void MarkAllSubBagsDefault ( Bag );
 **  identifier.
 
 */
-#ifndef BOEHM_GC
+#if !defined(BOEHM_GC)
 extern void MarkBag( Bag bag );
 #else
 static inline void MarkBag( Bag bag ) {}
@@ -863,27 +863,31 @@ extern void MarkArrayOfBags( Bag array[], int count );
 
 
 
-extern  Bag *                   MptrBags;
-extern  Bag *                   OldBags;
-extern  Bag *                   AllocBags;
-
 
 /****************************************************************************
 **
 *F
 */
 
-#ifndef BOEHM_GC
+#if !defined(BOEHM_GC)
+
+extern  Bag *                   MptrBags;
+extern  Bag *                   OldBags;
+extern  Bag *                   AllocBags;
+
 #define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
                                 (Bag)MptrBags <= (bag)    &&          \
                                 (bag) < (Bag)OldBags  &&              \
                                 (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
+
 #else
+
 #define IS_WEAK_DEAD_BAG(bag) (!(bag))
 #define REGISTER_WP(loc, obj) \
 	GC_general_register_disappearing_link((void **)(loc), (obj))
 #define FORGET_WP(loc) \
 	GC_unregister_disappearing_link((void **)(loc))
+
 #endif
              
 /****************************************************************************
@@ -924,6 +928,8 @@ extern  void            InitSweepFuncBags (
 **
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
 */
+#if !defined(BOEHM_GC)
+
 #ifndef NR_GLOBAL_BAGS
 #define NR_GLOBAL_BAGS  20000L
 #endif
@@ -937,6 +943,7 @@ typedef struct {
 
 extern TNumGlobalBags GlobalBags;
 
+#endif
 
 /****************************************************************************
 **
