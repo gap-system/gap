@@ -71,6 +71,7 @@ matrix:
     - env: TEST_SUITE=testerror CONFIGFLAGS="--enable-debug"
 
 script:
+  - gcov --version
   - bash etc/ci-prepare.sh
   - bash etc/ci.sh
 
