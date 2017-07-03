@@ -183,7 +183,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
   for (i = 1; i <= len ; i++) 
     { 
 #ifdef BOEHM_GC
-      Obj tmp = ELM0_LIST(list, i);
+      Obj tmp = ELM0_LIST(list2, i);
       ELM_WPOBJ(wp,i) = tmp;
       if (IS_BAG_REF(tmp))
         REGISTER_WP(&ELM_WPOBJ(wp, i), tmp);
@@ -309,11 +309,11 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
   MEMBAR_READ();
   if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
     FORGET_WP(&ELM_WPOBJ(wp, ipos));
-#endif
+  ELM_WPOBJ(wp,ipos) = val2;
+  if (IS_BAG_REF(val2))
+    REGISTER_WP(&ELM_WPOBJ(wp, ipos), val2);
+#else
   ELM_WPOBJ(wp,ipos) = val;
-#ifdef BOEHM_GC
-  if (IS_BAG_REF(val))
-    REGISTER_WP(&ELM_WPOBJ(wp, ipos), val);
 #endif
   CHANGED_BAG(wp);
   return 0;
