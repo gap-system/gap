@@ -102,10 +102,10 @@ DeclareGlobalFunction("FactorFreeMonoidByRelations");
 ##  <Oper Name="ElementOfFpMonoid" Arg='fam, word'/>
 ##
 ##  <Description>
-##  If <A>fam</A> is the elements family of a finitely presented monoid and <A>word</A>
-##  is a word in the free generators underlying this finitely presented
-##  monoid, this operation creates the element with the representative <A>word</A>
-##  in the free monoid.
+##  If <A>fam</A> is the elements family of a finitely presented monoid 
+##  and <A>word</A> is a word in the free generators underlying this 
+##  finitely presented monoid, this operation creates the element 
+##  with the representative <A>word</A> in the free monoid.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -253,4 +253,3 @@ DeclareGlobalFunction("IsomorphismFpMonoidGeneratorsFirst");
 #############################################################################
 ##
 #E
-

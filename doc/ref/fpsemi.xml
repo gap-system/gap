@@ -22,12 +22,12 @@ pairs of words in the free semigroup.
 <P/>
 <Example><![CDATA[
 gap> f := FreeSemigroup( "a", "b" );;
-gap> x := GeneratorsOfSemigroup(f);;
-gap> s := f/[ [x[1]*x[2], x[2]*x[1]] ];
+gap> x := GeneratorsOfSemigroup( f );;
+gap> s := f / [ [ x[1] * x[2], x[2] * x[1] ] ];
 <fp semigroup on the generators [ a, b ]>
-gap> GeneratorsOfSemigroup(s);
+gap> GeneratorsOfSemigroup( s );
 [ a, b ]
-gap> RelationsOfFpSemigroup(s);
+gap> RelationsOfFpSemigroup( s );
 [ [ a*b, b*a ] ]
 ]]></Example>
 <P/>
@@ -36,13 +36,13 @@ a set of relations, i.e. a set of pairs of words in the free monoid.
 <P/>
 <Example><![CDATA[
 gap> f := FreeMonoid( "a", "b" );;
-gap> x := GeneratorsOfMonoid(f);
+gap> x := GeneratorsOfMonoid( f );
 [ a, b ]
-gap> e := Identity(f);
+gap> e := Identity( f );
 <identity ...>
-gap> m := f/[ [x[1]*x[2],e] ];
+gap> m := f / [ [ x[1] * x[2], e ] ];
 <fp monoid on the generators [ a, b ]>
-gap> RelationsOfFpMonoid(m);
+gap> RelationsOfFpMonoid( m );
 [ [ a*b, <identity ...> ] ]
 ]]></Example>
 <P/>
@@ -65,7 +65,7 @@ introduce the respective variables and to assign the generators to them.
 <Example><![CDATA[
 gap> Unbind(a);
 gap> f := FreeSemigroup( "a", "b" );;
-gap> s := f/[ [f.1*f.2, f.2*f.1] ];;
+gap> s := f / [ [ f.1 * f.2, f.2 * f.1 ] ];;
 gap> a;
 Error, Variable: 'a' must have a value
 gap> a := s.1;
@@ -102,7 +102,7 @@ bounded a priori. The same can be said for monoids.
 gap> b := s.2;; 
 gap> a*b = a^5;
 false
-gap> a^5*b^2*a = a^6*b^2;
+gap> a^5 * b^2 * a = a^6 * b^2;
 true
 ]]></Example>
 <P/>
@@ -110,9 +110,9 @@ Note that elements of a finitely presented semigroup (or monoid) are not
 printed in a unique way:
 <P/>
 <Example><![CDATA[
-gap> a^5*b^2*a;
+gap> a^5 * b^2 * a;
 a^5*b^2*a
-gap> a^6*b^2;
+gap> a^6 * b^2;
 a^6*b^2
 ]]></Example>
 
@@ -150,9 +150,9 @@ The same result is obtained with the infix operator <C>/</C>,
 i.e. as <A>F</A> <C>/</C> <A>rels</A>.
 <P/>
 <Example><![CDATA[
-gap> fs := FreeSemigroup(3);;
-gap> x := GeneratorsOfSemigroup(fs);;
-gap> s := fs/[ [x[1]*x[2]*x[1],x[1]], [x[2]^4,x[1]] ];
+gap> fs := FreeSemigroup( 3 );;
+gap> x := GeneratorsOfSemigroup( fs );;
+gap> s := fs / [ [ x[1] * x[2] * x[1], x[1] ], [ x[2]^4, x[1] ] ];
 <fp semigroup on the generators [ s1, s2, s3 ]>
 ]]></Example>
 </Description>
@@ -205,14 +205,14 @@ Returns the word from the free semigroup or free monoid that is used as a
 representative for <A>elm</A>.
 <P/>
 <Example><![CDATA[
-gap> genm := GeneratorsOfMonoid(m);;
+gap> genm := GeneratorsOfMonoid( m );;
 gap> e := genm[2]^4;
 m2^4
-gap> IsWord(e);
+gap> IsWord( e );
 false
-gap> ue := UnderlyingElement(e);
+gap> ue := UnderlyingElement( e );
 m2^4
-gap> IsWord(ue);
+gap> IsWord( ue );
 true
 ]]></Example>
 </Description>
@@ -286,8 +286,6 @@ one does not explicitly call this procedure but uses
 </Section>
 </Chapter>
 
-
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

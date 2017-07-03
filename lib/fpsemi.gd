@@ -144,9 +144,10 @@ DeclareCategoryFamily( "IsElementOfFpSemigroup" );
 ##  and so are liable to be removed in due course. 
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> fm := FreeMonoid(3);;
-##  gap> y := GeneratorsOfMonoid(fm);;
-##  gap> m := FactorFreeMonoidByRelations(fm,[[y[1]*y[2]*y[1],y[1]],[y[2]^4,y[1]]]);
+##  gap> fm := FreeMonoid( 3 );;
+##  gap> y := GeneratorsOfMonoid( fm );;
+##  gap> m := FactorFreeMonoidByRelations( fm, 
+##  >           [ [y[1] * y[2] * y[1], y[1] ],[ y[2]^4, y[1] ] ] );
 ##  <fp monoid on the generators [ m1, m2, m3 ]>
 ##  ]]></Example>
 ##  </Description>
@@ -175,15 +176,15 @@ DeclareGlobalFunction("FactorFreeSemigroupByRelations");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> fam := FamilyObj( genm[1] );;
-##  gap> w := y[1]^3*y[2]^4*y[3]^5;
+##  gap> w := y[1]^3 * y[2]^4 * y[3]^5;
 ##  m1^3*m2^4*m3^5
-##  gap> ew := ElementOfFpMonoid(fam,w);
+##  gap> ew := ElementOfFpMonoid( fam, w );
 ##  m1^3*m2^4*m3^5
 ##  gap> ew in fm;
 ##  false
 ##  gap> ew in m;
 ##  true
-##  gap> w = UnderlyingElement(ew);
+##  gap> w = UnderlyingElement( ew );
 ##  true
 ##  ]]></Example>
 ##  </Description>
@@ -276,9 +277,9 @@ DeclareAttribute("FreeSemigroupOfFpSemigroup", IsFpSemigroup);
 ##  <C>FreeGeneratorsOfFpMonoid(<A>m</A>)</C>. 
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> fs = FreeSemigroupOfFpSemigroup(s);
+##  gap> fs = FreeSemigroupOfFpSemigroup( s );
 ##  true
-##  gap> FreeGeneratorsOfFpMonoid(m);
+##  gap> FreeGeneratorsOfFpMonoid( m );
 ##  [ m1, m2, m3 ]
 ##  gap> RelationsOfFpSemigroup( s );
 ##  [ [ s1*s2*s1, s1 ], [ s2^4, s1 ] ]
@@ -306,14 +307,14 @@ DeclareAttribute("RelationsOfFpSemigroup",IsFpSemigroup);
 ##  to a finitely presented semigroup or monoid. 
 ##  <P/> 
 ##  <Example><![CDATA[
-##  gap> phis := IsomorphismFpSemigroup(m);
+##  gap> phis := IsomorphismFpSemigroup( m );
 ##  MappingByFunction( <fp monoid on the generators 
 ##  [ m1, m2, m3 ]>, <fp semigroup on the generators [ <identity ...>, m1, m2, m3 
 ##   ]>, function( x ) ... end, function( x ) ... end )
-##  gap> fg := FreeGroup(2);;
-##  gap> g := fg/[ fg.1^4, fg.2^5 ];
+##  gap> fg := FreeGroup( 2 );;
+##  gap> g := fg / [ fg.1^4, fg.2^5 ];
 ##  <fp group on the generators [ f1, f2 ]>
-##  gap> phim := IsomorphismFpMonoid(g);   
+##  gap> phim := IsomorphismFpMonoid( g );   
 ##  MappingByFunction( <fp group on the generators 
 ##  [ f1, f2 ]>, <fp monoid on the generators [ f1, f1^-1, f2, f2^-1 
 ##   ]>, function( x ) ... end, function( x ) ... end )
@@ -341,7 +342,7 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##  true
 ##  gap> s = FpGrpMonSmgOfFpGrpMonSmgElement( t.1 );
 ##  true
-##  gap> f := FreeMonoid(2);;
+##  gap> f := FreeMonoid( 2 );;
 ##  gap> m := f / [ [ f.1^2, f.2^2 ] ];
 ##  <fp monoid on the generators [ m1, m2 ]>
 ##  gap> m = FpGrpMonSmgOfFpGrpMonSmgElement( m.1*m.2 );
