@@ -11,11 +11,15 @@
 /obj/
 
 /build/
+/extern/build/
+/extern/install/
 
 /gac
 /gap
 /sysinfo.gap
+/sysinfo.gap-*
 
+/doc/make_doc
 /doc/manualbib.xml.bib
 /doc/*/*.html
 /doc/*/*.txt
