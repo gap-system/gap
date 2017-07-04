@@ -352,9 +352,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 #define T_PLIST_TAB             (FIRST_LIST_TNUM+20)
 #define T_PLIST_TAB_NSORT       (FIRST_LIST_TNUM+22)
 #define T_PLIST_TAB_SSORT       (FIRST_LIST_TNUM+24)
-#define T_PLIST_TAB_RECT             (FIRST_LIST_TNUM+26)
-#define T_PLIST_TAB_RECT_NSORT       (FIRST_LIST_TNUM+28)
-#define T_PLIST_TAB_RECT_SSORT       (FIRST_LIST_TNUM+30)
+#define T_PLIST_TAB_RECT        (FIRST_LIST_TNUM+26)
+#define T_PLIST_TAB_RECT_NSORT  (FIRST_LIST_TNUM+28)
+#define T_PLIST_TAB_RECT_SSORT  (FIRST_LIST_TNUM+30)
 #define T_PLIST_CYC             (FIRST_LIST_TNUM+32)
 #define T_PLIST_CYC_NSORT       (FIRST_LIST_TNUM+34)
 #define T_PLIST_CYC_SSORT       (FIRST_LIST_TNUM+36)
@@ -386,16 +386,16 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #ifdef HPCGAP
 
-/* reserve space for package TNUMs */
-#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+31)
+#define T_APOSOBJ               (FIRST_EXTERNAL_TNUM+ 4)
+#define T_ACOMOBJ               (FIRST_EXTERNAL_TNUM+ 5)
 
-/* The next two TNUMs are BOTH external AND shared! This way, jump
-   tables get entries calling method selection for them. */
-#define FIRST_SHARED_TNUM       (LAST_PACKAGE_TNUM+1)
-#define T_APOSOBJ               (FIRST_SHARED_TNUM+ 0)
-#define T_ACOMOBJ               (FIRST_SHARED_TNUM+ 1)
-#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
+/* reserve space for package TNUMs */
+#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 6)
+#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+32)
+
+#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
+
+#define FIRST_SHARED_TNUM       (LAST_EXTERNAL_TNUM+1)
 
 /* Primitive types */
 #define T_THREAD                (FIRST_SHARED_TNUM+ 2)
@@ -408,15 +408,15 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 /* User-programmable types */
 #define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
 #define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
-#define T_CHANNEL               (FIRST_SHARED_TNUM+ 10)
-#define T_BARRIER               (FIRST_SHARED_TNUM+ 11)
-#define T_SYNCVAR               (FIRST_SHARED_TNUM+ 12)
-#define T_FIXALIST              (FIRST_SHARED_TNUM+ 13)
-#define T_ALIST                 (FIRST_SHARED_TNUM+ 14)
-#define T_AREC                  (FIRST_SHARED_TNUM+ 15)
-#define T_AREC_INNER            (FIRST_SHARED_TNUM+ 16)
-#define T_TLREC                 (FIRST_SHARED_TNUM+ 17)
-#define T_TLREC_INNER           (FIRST_SHARED_TNUM+ 18)
+#define T_CHANNEL               (FIRST_SHARED_TNUM+10)
+#define T_BARRIER               (FIRST_SHARED_TNUM+11)
+#define T_SYNCVAR               (FIRST_SHARED_TNUM+12)
+#define T_FIXALIST              (FIRST_SHARED_TNUM+13)
+#define T_ALIST                 (FIRST_SHARED_TNUM+14)
+#define T_AREC                  (FIRST_SHARED_TNUM+15)
+#define T_AREC_INNER            (FIRST_SHARED_TNUM+16)
+#define T_TLREC                 (FIRST_SHARED_TNUM+17)
+#define T_TLREC_INNER           (FIRST_SHARED_TNUM+18)
 #define LAST_SHARED_TNUM        (T_TLREC_INNER)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
