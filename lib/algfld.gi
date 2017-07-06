@@ -65,10 +65,8 @@ InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial],0,
 function(f,p)
 local fam,i,cof,red,rchar,impattr,deg;
-  if not
-  IsIrreducibleRingElement(PolynomialRing(f,
-             [IndeterminateNumberOfLaurentPolynomial(p)]),p) then
-    Error("<p> must be irreducible over f");
+  if not ForAll(CoefficientsOfUnivariatePolynomial(p), c-> c in f) then
+    Error("<p> must be an irreducible polynomial with coefficients in <f>");
   fi;
   fam:=AlgebraicElementsFamilies(p);
   i:=PositionProperty(fam,i->i[1]=f);
