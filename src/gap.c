@@ -2053,31 +2053,6 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 
 /****************************************************************************
 **
-*F  FuncSWAP_MPTR( <self>, <obj1>, <obj2> ) . . . . . . . swap master pointer
-**
-**  Never use this function unless you are debugging.
-*/
-Obj FuncSWAP_MPTR (
-    Obj                 self,
-    Obj                 obj1,
-    Obj                 obj2 )
-{
-    if ( IS_INTOBJ(obj1) || IS_FFE(obj1) ) {
-        ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
-        return 0;
-    }
-    if ( IS_INTOBJ(obj2) || IS_FFE(obj2) ) {
-        ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
-        return 0;
-    }
-        
-    SwapMasterPoint( obj1, obj2 );
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -2883,9 +2858,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HANDLE_OBJ", 1, "object",
       FuncHANDLE_OBJ, "src/gap.c:HANDLE_OBJ" },
-
-    { "SWAP_MPTR", 2, "obj1, obj2",
-      FuncSWAP_MPTR, "src/gap.c:SWAP_MPTR" },
 
     { "LoadedModules", 0, "",
       FuncLoadedModules, "src/gap.c:LoadedModules" },
