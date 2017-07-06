@@ -1399,7 +1399,7 @@ end);
 ##
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
-DoImmutableMatrix:=function(field,matrix,change)
+BindGlobal("DoImmutableMatrix", function(field,matrix,change)
 local sf, rep, ind, ind2, row, i,big,l;
   if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
@@ -1411,12 +1411,12 @@ local sf, rep, ind, ind2, row, i,big,l;
   else
     if not IsField(field) then
       # not a field
-      return Immutable(matrix);
+      return matrix;
     fi;
     sf:=Size(field);
   fi;
 
-  big:=sf>256 or sf=0;
+  big:=sf>256 or sf=0 or (sf <= 256 and not field=GF(sf));
 
   # the representation we want the rows to be in
   if sf=2 then
@@ -1473,18 +1473,20 @@ local sf, rep, ind, ind2, row, i,big,l;
   fi;
 
   # this can only happen if not big
-  for i in ind do
-    ConvertToVectorRepNC(matrix[i],sf);
-  od;
+  if not big then
+    for i in ind do
+      ConvertToVectorRepNC(matrix[i],sf);
+    od;
+  fi;
 
   MakeImmutable(matrix);
-  if sf=2 and not IsGF2MatrixRep(matrix) then
+  if not big and sf=2 and not IsGF2MatrixRep(matrix) then
     CONV_GF2MAT(matrix);
-  elif sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
+  elif not big and sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
     CONV_MAT8BIT(matrix,sf);
   fi;
   return matrix;
-end;
+end);
 
 InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
 function(f,m)
