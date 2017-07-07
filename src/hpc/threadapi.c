@@ -1380,7 +1380,7 @@ static Int InitKernel (
 #endif
     InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
     InitMarkFuncBags(T_REGION, MarkAllSubBags);
-    InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
+    InitFreeFuncBag(T_MONITOR, FinalizeMonitor);
     /* install print functions */
     PrintObjFuncs[ T_THREAD ] = PrintThread;
     PrintObjFuncs[ T_SEMAPHORE ] = PrintSemaphore;

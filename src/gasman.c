@@ -213,7 +213,10 @@ static inline Bag *DATA(BagHeader *bag)
  * hpc_boehm_gc.h
  */
 
-TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
+TNumMarkFuncBags TabMarkFuncBags[ NTYPES ];
+
+TNumFreeFuncBags TabFreeFuncBags[ NTYPES ];
+
 
 
 /* Several functions in this file are guarded by #ifndef BOEHM_GC.
@@ -943,6 +946,7 @@ void FinishedRestoringBags( void )
   ChangedBags = 0;
 }
 
+#endif
 
 /****************************************************************************
 **
@@ -950,8 +954,6 @@ void FinishedRestoringBags( void )
 **
 **  'InitFreeFuncBag' is really too simple for an explanation.
 */
-TNumFreeFuncBags        TabFreeFuncBags [ 256 ];
-
 UInt                    NrTabFreeFuncBags;
 
 void            InitFreeFuncBag (
@@ -967,6 +969,8 @@ void            InitFreeFuncBag (
     TabFreeFuncBags[type] = free_func;
 }
 
+
+#ifndef BOEHM_GC
 
 /****************************************************************************
 **
