@@ -77,14 +77,14 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 /****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . hard coded kernel version
-** do not edit the following line. Occurences of `4.dev' and `today'
+** do not edit the following line. Occurrences of `4.dev' and `today'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
-** do not edit the following line. Occurences of `gap4dev'
+** do not edit the following line. Occurrences of `gap4dev'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
@@ -100,7 +100,7 @@ const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
 **  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  must be  divisible by 'SyStackAlign'.  So if it  is 1, identifiers may be
 **  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
 **  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
 **  from a macro passed from the makefile, because it is machine dependent.
@@ -178,7 +178,7 @@ Int SyDebugLoading;
 **  It  is copied into the GAP  variable  called 'GAP_ROOT_PATHS' and used by
 **  'SyFindGapRootFile'.
 **
-**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
+**  Each entry must end  with the pathname separator, eg.  if 'init.g' is the
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 **
@@ -231,7 +231,7 @@ UInt SyUseReadline;
 **
 *V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
 **
-**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
+**  'SyMsgsFlagBags' determines whether garbage collections are reported  or
 **  not.
 **
 **  Per default it is false, i.e. Gasman is silent about garbage collections.
@@ -316,8 +316,8 @@ Char * SyRestoring;
 **
 *V  SyInitializing                               set to 1 during library init
 **
-**  `SyInitializing' is set to 1 during the library intialization phase of
-**  startup. It supresses some ebhaviours that may not be possible so early
+**  `SyInitializing' is set to 1 during the library initialization phase of
+**  startup. It suppresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */
 
@@ -335,7 +335,7 @@ UInt SyInitializing;
 **  is often a reasonable value. It is usually changed with the '-o'
 **  option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -353,7 +353,7 @@ Int SyStorOverrun;
 **  This is per default disabled (i.e. = 0).
 **  Can be changed with the '-K' option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -761,7 +761,7 @@ void SyMsgsBags (
 **  'SyAllocBags' can either accept this reduction and  return 1  and  return
 **  the storage to the operating system or refuse the reduction and return 0.
 **
-**  If the operating system does not support dynamic memory managment, simply
+**  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
 
@@ -1144,9 +1144,9 @@ UInt * * * SyAllocBags (
             SyExit(1);
         }
 
-        /* check that we don't try to shrink uninialized memory                */
+        /* check that we don't try to shrink uninitialized memory                */
         else if ( size <= 0 && syBase == 0 ) {
-            fputs( "gap: trying to shrink uninialized vm memory\n", stderr );
+            fputs( "gap: trying to shrink uninitialized vm memory\n", stderr );
             SyExit(1);
         }
 
@@ -1251,15 +1251,15 @@ void SyUSleep ( UInt msecs )
 **
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
-**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
-**  The function 'SyExit' must perform all the neccessary cleanup operations.
-**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
-**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+**  'SyExit' is the official way  to exit GAP, bus errors are the unofficial.
+**  The function 'SyExit' must perform all the necessary cleanup operations.
+**  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
+**  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 **
 **  If the user calls 'QUIT_GAP' with a value, then the global variable
 **  'UserHasQUIT' will be set, and their requested return value will be
 **  in 'SystemErrorCode'. If the return value would be 0, we check
-**  this calue and use it instead.
+**  this value and use it instead.
 */
 void SyExit (
     UInt                ret )
