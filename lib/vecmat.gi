@@ -1411,12 +1411,12 @@ local sf, rep, ind, ind2, row, i,big,l;
   else
     if not IsField(field) then
       # not a field
-      return matrix;
+      return Immutable(matrix);
     fi;
     sf:=Size(field);
   fi;
 
-  big:=sf>256 or sf=0 or (sf <= 256 and not field=GF(sf));
+  big:=sf>256 or sf=0 or not IsFFECollection(field);
 
   # the representation we want the rows to be in
   if sf=2 then
