@@ -90,7 +90,9 @@ typedef struct {
     uint16_t reserved : 16;
     uint32_t size : 32;
 #endif
+#if !defined(BOEHM_GC)
     Bag link;
+#endif
 } BagHeader;
 
 

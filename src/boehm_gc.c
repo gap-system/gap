@@ -474,7 +474,6 @@ Bag NewBag (
     header->type = type;
     header->flags = 0;
     header->size = size;
-    header->link = bag;
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = DATA(header);
@@ -560,7 +559,6 @@ UInt ResizeBag (
         header->type = type;
         header->flags = flags;
         header->size = new_size;
-        header->link = bag;
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
