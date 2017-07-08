@@ -748,17 +748,6 @@ end );
 
 #############################################################################
 ##
-##  ParGAP/MPI slave hook
-##
-##  A ParGAP slave redefines this as a function if the GAP package ParGAP
-##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
-##  process i.e. at the end of this file.
-##
-PAR_GAP_SLAVE_START := fail;
-
-
-#############################################################################
-##
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
@@ -1035,16 +1024,6 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
-
-
-#############################################################################
-##
-##  ParGAP loading and switching into the slave mode hook
-##
-if IsBoundGlobal("MPI_Initialized") then
-  LoadPackage("pargap");
-fi;
-if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 
 #############################################################################
