@@ -208,7 +208,7 @@ static void CheckObjSetForCleanUp(Obj set, UInt expand) {
 Int FindObjSet(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
-  GAP_ASSERT(hash >= 0 && hash < size);
+  GAP_ASSERT(hash < size);
   for (;;) {
     Obj current;
     current = ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
@@ -235,7 +235,7 @@ static void AddObjSetNew(Obj set, Obj obj) {
   UInt size = ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
-  GAP_ASSERT(hash >= 0 && hash < size);
+  GAP_ASSERT(hash < size);
   for (;;) {
     Obj current;
     current = ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
@@ -248,8 +248,8 @@ static void AddObjSetNew(Obj set, Obj obj) {
     if (current == Undefined) {
       ADDR_OBJ(set)[OBJSET_HDRSIZE+hash] = obj;
       ADDR_WORD(set)[OBJSET_USED]++;
+      GAP_ASSERT(ADDR_WORD(set)[OBJSET_DIRTY] >= 1);
       ADDR_WORD(set)[OBJSET_DIRTY]--;
-      GAP_ASSERT(ADDR_WORD(set)[OBJSET_DIRTY] >= 0);
       CHANGED_BAG(set);
       return;
     }
