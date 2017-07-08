@@ -59,7 +59,6 @@
   <#Include SYSTEM "syncvars.xml">
   <#Include SYSTEM "serialize.xml">
   <#Include SYSTEM "lowlevel.xml">
-  <#Include SYSTEM "mpi.xml">
 </Body>
 
 <!--

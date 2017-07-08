@@ -99,10 +99,6 @@
 
 #include <src/objset.h>
 
-#ifdef GAPMPI
-#include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
-#endif
-
 #ifdef HPCGAP
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
@@ -3100,11 +3096,6 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoSerialize,
 #endif
 
-#ifdef GAPMPI
-    /* ParGAP/MPI module                                                   */
-    InitInfoGapmpi,
-#endif
-
     0
 };
 
@@ -3200,11 +3191,6 @@ void InitializeGap (
     StructInitInfo *    info;
 
     /* initialize the basic system and gasman                              */
-#ifdef GAPMPI
-    /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
-    InitGapmpi( pargc, &argv );
-#endif
-
     InitSystem( *pargc, argv );
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
