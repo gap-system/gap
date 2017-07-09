@@ -769,7 +769,7 @@ Obj FuncPrint (
 
 static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 {
-    const char          *funcname = append ? "AppendTo" : "PrintTo";
+    const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
@@ -835,7 +835,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 
 static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 {
-    const char          *funcname = append ? "AppendTo" : "PrintTo";
+    const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
