@@ -14,9 +14,9 @@
 #define MAX_TLS_HANDLERS (TLS_NUM_EXTRA * 2)
 
 static TLSHandler TLSHandlers[MAX_TLS_HANDLERS];
-static Int TLSHandlerCount = 0;
+static Int        TLSHandlerCount = 0;
 
-ThreadLocalStorage *MainThreadTLS;
+ThreadLocalStorage * MainThreadTLS;
 
 #ifdef HAVE_NATIVE_TLS
 
@@ -26,57 +26,56 @@ __thread ThreadLocalStorage TLSInstance;
 
 void InitializeTLS()
 {
-  memset((void *)(realTLS), 0, sizeof(ThreadLocalStorage));
+    memset((void *)(realTLS), 0, sizeof(ThreadLocalStorage));
 }
 
-void InstallTLSHandler(
-	void (*constructor)(),
-	void (*destructor)() )
+void InstallTLSHandler(void (*constructor)(), void (*destructor)())
 {
-  TLSHandler *handler;
-  if (!constructor && !destructor)
-    return;
-  if (TLSHandlerCount >= MAX_TLS_HANDLERS)
-    abort();
-  handler = TLSHandlers + TLSHandlerCount++;
-  handler->constructor = constructor;
-  handler->destructor = destructor;
+    TLSHandler * handler;
+    if (!constructor && !destructor)
+        return;
+    if (TLSHandlerCount >= MAX_TLS_HANDLERS)
+        abort();
+    handler = TLSHandlers + TLSHandlerCount++;
+    handler->constructor = constructor;
+    handler->destructor = destructor;
 }
 
 void RunTLSConstructors()
 {
-  Int i;
-  for (i = 0; i < TLSHandlerCount; i++) {
-    TLSHandler *handler = TLSHandlers + i;
-    if (handler->constructor)
-      handler->constructor();
-  }
+    Int i;
+    for (i = 0; i < TLSHandlerCount; i++) {
+        TLSHandler * handler = TLSHandlers + i;
+        if (handler->constructor)
+            handler->constructor();
+    }
 }
 
 void RunTLSDestructors()
 {
-  Int i;
-  for (i = 0; i < TLSHandlerCount; i++) {
-    TLSHandler *handler = TLSHandlers + i;
-    if (handler->destructor)
-      handler->destructor();
-  }
+    Int i;
+    for (i = 0; i < TLSHandlerCount; i++) {
+        TLSHandler * handler = TLSHandlers + i;
+        if (handler->destructor)
+            handler->destructor();
+    }
 }
 
 static Int ExtraTLSSlot = 0;
 
-Int AllocateExtraTLSSlot() {
-  Int result;
-  HashLock(0);
-  result = ExtraTLSSlot;
-  if (result < TLS_NUM_EXTRA) {
-    ExtraTLSSlot++;
-  }
-  HashUnlock(0);
-  if (result < ExtraTLSSlot)
-    return result;
-  else
-    return -1;
+Int AllocateExtraTLSSlot()
+{
+    Int result;
+    HashLock(0);
+    result = ExtraTLSSlot;
+    if (result < TLS_NUM_EXTRA) {
+        ExtraTLSSlot++;
+    }
+    HashUnlock(0);
+    if (result < ExtraTLSSlot)
+        return result;
+    else
+        return -1;
 }
 
 void InitTLS()
