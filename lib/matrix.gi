@@ -3103,7 +3103,9 @@ InstallGlobalFunction( BlownUpMat, function ( B, mat )
       for b in vectors do
         resrow:= [];
         for entry in row do
-          Append( resrow, Coefficients( B, entry * b ) );
+          entry := Coefficients( B, entry * b );
+          if entry = fail then return fail; fi;
+          Append( resrow, entry );
         od;
         ConvertToVectorRepNC( resrow );
         Add( result, resrow );
