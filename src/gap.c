@@ -974,15 +974,15 @@ Obj FuncDownEnv (
   }
   else {
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
 
   DownEnvInner( depth);
-  return 0;
+  return (Obj)0;
 }
 
 Obj FuncUpEnv (
@@ -998,15 +998,15 @@ Obj FuncUpEnv (
   }
   else {
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
 
   DownEnvInner(-depth);
-  return 0;
+  return (Obj)0;
 }
 
 Obj FuncExecutingStatementLocation(Obj self, Obj context)
@@ -2577,7 +2577,7 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   STATE(UserHasQUIT) = 1;
   ReadEvalError();
@@ -2599,7 +2599,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   SyExit(SystemErrorCode);
 }
