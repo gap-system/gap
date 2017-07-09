@@ -301,6 +301,11 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
         WaitThreadSignal();
     monitor = TLS(acquiredMonitor);
     UnlockThread(realTLS);
+
+    // The following loops will initialize <result>, but the compiler
+    // cannot know this; to avoid warnings, we set result to an
+    // initial nonsense value.
+    result = -1;
     for (i = 0; i < count; i++) {
         LockMonitor(monitors[i]);
         if (monitors[i] == monitor) {
