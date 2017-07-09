@@ -853,6 +853,9 @@ Obj DeserializeTypedObj(UInt tnum)
             if (TNUM_OBJ(result) != T_COMOBJ)
                 DeserializationError();
             break;
+        default:
+            DeserializationError();
+            return (Obj)0; /* flow control hint */
         }
         SET_TYPE_OBJ(result, type);
         return result;
