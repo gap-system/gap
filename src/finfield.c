@@ -2145,9 +2145,3 @@ StructInitInfo * InitInfoFinfield ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  finfield.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

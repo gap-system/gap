@@ -2540,9 +2540,3 @@ StructInitInfo * InitInfoCosetTable ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  costab.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

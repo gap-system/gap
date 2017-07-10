@@ -26,8 +26,3 @@ StructInitInfo * InitInfoIOStream ( void );
 
 
 #endif // GAP_IOSTREAM_H
-
-/****************************************************************************
-**
-*E  float.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

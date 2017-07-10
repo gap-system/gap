@@ -166,8 +166,3 @@ StructInitInfo * InitInfoFreeGroupElements ( void );
 
 
 #endif // GAP_OBJFGELM_H
-
-/****************************************************************************
-**
-*E  objfgelm.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

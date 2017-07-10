@@ -1900,9 +1900,3 @@ StructInitInfo * InitInfoListFunc ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  listfunc.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

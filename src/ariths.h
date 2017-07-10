@@ -682,8 +682,3 @@ StructInitInfo * InitInfoAriths ( void );
 
 
 #endif // GAP_ARITHS_H
-
-/****************************************************************************
-**
-*E  ariths.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

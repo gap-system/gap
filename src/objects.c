@@ -2208,9 +2208,3 @@ StructInitInfo * InitInfoObjects ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

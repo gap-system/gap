@@ -30,8 +30,3 @@ StructInitInfo * InitInfoCosetTable ( void );
 
 
 #endif // GAP_COSTAB_H
-
-/****************************************************************************
-**
-*E  costab.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

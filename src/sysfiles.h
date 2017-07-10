@@ -610,8 +610,3 @@ StructInitInfo * InitInfoSysFiles ( void );
 
 
 #endif // GAP_SYSFILES_H
-
-/****************************************************************************
-**
-*E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

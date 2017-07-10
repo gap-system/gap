@@ -829,9 +829,3 @@ StructInitInfo * InitInfoRecords ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  records.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

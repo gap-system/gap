@@ -736,13 +736,8 @@ StructInitInfo * InitInfoGapmpi ( void ) /* For backward compatibility */
 {
     return &module;
 }
+
 StructInitInfo * InitInfoPargapmpi ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  gapmpi.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

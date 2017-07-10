@@ -48,8 +48,3 @@ StructInitInfo * InitInfoIntFuncs ( void );
 
 
 #endif // GAP_INTFUNCS_H
-
-/****************************************************************************
-**
-*E  integer.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -114,4 +114,3 @@ void SetInterruptHandler(int handler, Obj func);
 #endif // HPCGAP
 
 #endif // GAP_THREAD_H
-

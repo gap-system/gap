@@ -909,9 +909,3 @@ StructInitInfo * InitInfoWeakPtr ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  weakptr.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

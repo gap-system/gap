@@ -3605,9 +3605,3 @@ StructInitInfo * InitInfoSysFiles ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

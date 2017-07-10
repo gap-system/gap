@@ -919,9 +919,3 @@ StructInitInfo * InitInfoSingleCollector ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objscoll.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -26,8 +26,3 @@ StructInitInfo * InitInfoVecFFE ( void );
 
 
 #endif // GAP_VECFFE_H
-
-/****************************************************************************
-**
-*E  vecffe.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

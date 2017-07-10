@@ -458,8 +458,3 @@ static inline Obj C_NORMALIZE_64BIT( Obj o) {
 #endif
     
 #endif // GAP_COMPILED_H
-
-/****************************************************************************
-**
-*E  compiled.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

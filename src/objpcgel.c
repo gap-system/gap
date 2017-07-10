@@ -743,9 +743,3 @@ StructInitInfo * InitInfoPcElements ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objpcgel.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

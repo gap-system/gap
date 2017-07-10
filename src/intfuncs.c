@@ -692,9 +692,3 @@ StructInitInfo * InitInfoIntFuncs ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  intfuncs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

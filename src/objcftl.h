@@ -48,8 +48,3 @@ StructInitInfo * InitInfoPcc ( void );
 
 
 #endif // GAP_OBJCFTL_H
-
-/****************************************************************************
-**
-*E  objcftl.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

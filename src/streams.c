@@ -2462,9 +2462,3 @@ StructInitInfo * InitInfoStreams ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  streams.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -2716,9 +2716,3 @@ StructInitInfo * InitInfoString ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  stringobj.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

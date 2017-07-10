@@ -40,8 +40,3 @@ StructInitInfo * InitInfoCompiler ( void );
 
 
 #endif // GAP_COMPILER_H
-
-/****************************************************************************
-**
-*E  compiler.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

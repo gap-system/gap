@@ -201,8 +201,3 @@ StructInitInfo * InitInfoPRecord ( void );
 
 
 #endif // GAP_PRECORD_H
-
-/****************************************************************************
-**
-*E  precord.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -158,8 +158,3 @@ StructInitInfo * InitInfoListOper ( void );
 
 
 #endif // GAP_LISTOPER_H
-
-/****************************************************************************
-**
-*E  listoper.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -63,8 +63,3 @@ StructInitInfo * InitInfoCombiCollector ( void );
 
 
 #endif // GAP_OBJCCOLL_H
-
-/****************************************************************************
-**
-*E  objccoll.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

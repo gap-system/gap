@@ -62,8 +62,3 @@ StructInitInfo * InitInfoPcElements ( void );
 
 
 #endif // GAP_OBJPCGEL_H
-
-/****************************************************************************
-**
-*E  objpcgel.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

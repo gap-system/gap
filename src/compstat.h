@@ -21,8 +21,3 @@ extern InitInfoFunc CompInitFuncs [];
 
 
 #endif // GAP_COMPSTAT_H
-
-/****************************************************************************
-**
-*E  compstat.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
