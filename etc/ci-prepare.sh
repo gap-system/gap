@@ -27,7 +27,7 @@ then
 fi
 
 # configure and make GAP
-"$SRCDIR/configure" $CONFIGFLAGS
+"$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
 make V=1 -j4
 
 # check that GAP is at least apple to start
