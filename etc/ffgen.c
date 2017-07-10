@@ -56,7 +56,7 @@ void emit_code(int header)
         printf("extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         printf("extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         printf("\n");
-        printf("#endif /* _GAP_FFDATA_H */\n");
+        printf("#endif // GAP_FFDATA_H\n");
     }
     else {
         printf("#include <src/ffdata.h>\n");
