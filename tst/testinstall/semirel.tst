@@ -114,6 +114,27 @@ gap> ForAll(GreensHClasses(t4),
 > and KernelOfTransformation(j,4) = KernelOfTransformation(Representative(i),4)
 > ));
 true
+
+# Issue 395 (recursion depth trap in DClassOfLClass)
+gap> S := Semigroup(Transformation([2, 4, 3, 4]), 
+>                   Transformation([3, 3, 2, 3]));
+<transformation semigroup of degree 4 with 2 generators>
+gap> L := GreensLClassOfElement(S, S.1);
+<Green's L-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> DClassOfLClass(L);
+<Green's D-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> R := GreensRClassOfElement(S, S.1);
+<Green's R-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> DClassOfRClass(R);
+<Green's D-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> H := GreensHClassOfElement(S, S.1);
+<Green's H-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> DClassOfHClass(H);
+<Green's D-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> LClassOfHClass(H);
+<Green's L-class: Transformation( [ 2, 4, 3, 4 ] )>
+gap> RClassOfHClass(H);
+<Green's R-class: Transformation( [ 2, 4, 3, 4 ] )>
 gap> STOP_TEST( "semirel.tst", 1);
 
 #############################################################################
