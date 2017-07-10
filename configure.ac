@@ -196,9 +196,6 @@ AS_IF([test "x$enable_hpcgap" = xyes],
 dnl
 dnl User setting: Debug mode (off by default)
 dnl
-dnl TODO: make this actually do something, e.g. disable or reduce optimizations,
-dnl enable/disable C level assertions, etc.
-dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
     [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])],
@@ -206,6 +203,33 @@ AC_ARG_ENABLE([debug],
     )
 AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
+
+dnl
+dnl User setting: Enable -Werror (off by default)
+dnl
+
+# Enable warnings
+WARNING_CPPFLAGS="-Wall -Wextra -Wshadow"
+
+# ... disable some annoying warnings ...
+WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-unused-parameter"
+WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-sign-compare"
+WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-implicit-fallthrough"
+
+# ... and disable warnings about unknown warnings for clang
+WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-unknown-warning-option"
+
+# TODO: detect which warnings are supported by the compiler
+
+AC_ARG_ENABLE([Werror],
+    AS_HELP_STRING([--enable-Werror], [treat compiler warnings as errors]))
+
+AS_IF([test "x$enable_Werror" != "xno"], [
+  WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Werror"
+])
+AC_MSG_CHECKING([whether to treat compiler warnings as errors])
+AC_MSG_RESULT([$enable_Werror])
+AC_SUBST([WARNING_CPPFLAGS])
 
 dnl
 dnl External dependencies
