@@ -54,6 +54,7 @@
 #include <src/read.h>
 
 #include <src/intrprtr.h>               /* interpreter */
+#include <src/intfuncs.h>
 
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>

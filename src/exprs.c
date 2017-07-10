@@ -44,6 +44,7 @@
 #include <src/code.h>                   /* coder */
 #include <src/calls.h>
 #include <src/stats.h>
+#include <src/opers.h>
 
 
 #include <src/exprs.h>                  /* expressions */

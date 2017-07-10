@@ -46,6 +46,7 @@
 #include <src/set.h>                    /* plain sets */
 #include <src/range.h>                  /* ranges */
 #include <src/code.h>
+#include <src/gmpints.h>
 
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
