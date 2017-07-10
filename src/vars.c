@@ -55,7 +55,7 @@
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************

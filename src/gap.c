@@ -117,7 +117,7 @@
 #include <src/intfuncs.h>
 #include <src/iostream.h>
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 /****************************************************************************
 **

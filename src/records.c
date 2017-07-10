@@ -43,7 +43,7 @@
 
 #include <src/hpc/systhread.h>          /* system thread primitives */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************

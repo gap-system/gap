@@ -67,7 +67,7 @@
 
 #include <src/code.h>                   /* FilenameCache */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 #include <limits.h>

@@ -70,7 +70,7 @@
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 

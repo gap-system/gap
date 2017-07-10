@@ -65,7 +65,7 @@
 
 #include <src/compiler.h>               /* compiler */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 struct WaitList {

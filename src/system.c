@@ -26,7 +26,7 @@
 
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/gasman.h>
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #ifdef HPCGAP
 #include <src/hpc/misc.h>

@@ -32,7 +32,7 @@
 
 #include <src/hpc/tls.h>
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;

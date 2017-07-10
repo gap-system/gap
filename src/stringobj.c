@@ -81,7 +81,7 @@
 #include <src/saveload.h>               /* saving and loading */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 
