@@ -55,8 +55,3 @@ StructInitInfo * InitInfoStreams ( void );
 
 
 #endif // GAP_STREAMS_H
-
-/****************************************************************************
-**
-*E  streams.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

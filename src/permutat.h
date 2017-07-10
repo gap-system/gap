@@ -95,8 +95,3 @@ StructInitInfo * InitInfoPermutat ( void );
 
 
 #endif // GAP_PERMUTAT_H
-
-/****************************************************************************
-**
-*E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -6177,12 +6177,3 @@ StructInitInfo * InitInfoCompiler ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  compiler.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
-
-
-

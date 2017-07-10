@@ -103,9 +103,3 @@ StructInitInfo * InitInfoCombiCollector ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objccoll.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

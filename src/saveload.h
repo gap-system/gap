@@ -73,8 +73,3 @@ StructInitInfo * InitInfoSaveLoad ( void );
 
 
 #endif // GAP_SAVELOAD_H
-
-/****************************************************************************
-**
-*E  saveload.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

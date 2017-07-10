@@ -1032,9 +1032,3 @@ StructInitInfo * InitInfoPRecord ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

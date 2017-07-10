@@ -891,8 +891,3 @@ StructInitInfo * InitInfoScanner ( void );
 
 
 #endif // GAP_SCANNER_H
-
-/****************************************************************************
-**
-*E  scanner.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

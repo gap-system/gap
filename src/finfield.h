@@ -410,8 +410,3 @@ StructInitInfo * InitInfoFinfield ( void );
 
 
 #endif // GAP_FINFIELD_H
-
-/****************************************************************************
-**
-*E  finfield.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

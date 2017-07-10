@@ -383,9 +383,3 @@ StructInitInfo * InitInfoHookIntrprtr(void)
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  hookintrprtr.c . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

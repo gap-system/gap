@@ -639,9 +639,3 @@ StructInitInfo * InitInfoMacfloat ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  macfloat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

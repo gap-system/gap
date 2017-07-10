@@ -927,8 +927,3 @@ StructInitInfo * InitInfoObjects ( void );
 
 
 #endif // GAP_OBJECTS_H
-
-/****************************************************************************
-**
-*E  objects.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

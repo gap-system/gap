@@ -1094,9 +1094,3 @@ StructInitInfo * InitInfoSaveLoad ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  saveload.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

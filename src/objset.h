@@ -26,6 +26,4 @@ Obj ObjMapKeys(Obj map);
 
 StructInitInfo *InitInfoObjSets( void );
 
-
-
 #endif // GAP_OBJSET_H

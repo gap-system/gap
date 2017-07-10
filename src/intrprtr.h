@@ -995,8 +995,3 @@ StructInitInfo * InitInfoIntrprtr ( void );
 
 
 #endif // GAP_INTRPRTR_H
-
-/****************************************************************************
-**
-*E  intrprtr.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

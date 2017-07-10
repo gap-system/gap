@@ -4949,9 +4949,3 @@ StructInitInfo * InitInfoIntrprtr ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  intrprtr.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

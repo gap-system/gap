@@ -39,8 +39,3 @@ void UnregisterWeakReference(Bag *bag);
 
 
 #endif // GAP_WEAKPTR_H
-
-/****************************************************************************
-**
-*E  weakptr.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -749,9 +749,3 @@ StructInitInfo * InitInfoIOStream(void)
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  iostream.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

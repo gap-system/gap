@@ -3483,9 +3483,3 @@ StructInitInfo * InitInfoFreeGroupElements ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objfgelm.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

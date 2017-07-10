@@ -295,8 +295,3 @@ StructInitInfo * InitInfoBlist ( void );
 
 
 #endif // GAP_BLISTER_H
-
-/****************************************************************************
-**
-*E  blister.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

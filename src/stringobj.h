@@ -338,9 +338,4 @@ Obj ConvImmString(Obj str);
 StructInitInfo * InitInfoString ( void );
 
 
-#endif // GAP_STRING_H
-
-/****************************************************************************
-**
-*E  string.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
+#endif // GAP_STRINGOBJ_H

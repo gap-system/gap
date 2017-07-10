@@ -180,8 +180,3 @@ StructInitInfo * InitInfoRecords ( void );
 
 
 #endif // GAP_RECORDS_H
-
-/****************************************************************************
-**
-*E  records.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

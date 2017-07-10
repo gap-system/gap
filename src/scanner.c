@@ -3160,9 +3160,3 @@ void InitScannerState(GAPState * state)
 void DestroyScannerState(GAPState * state)
 {
 }
-
-
-/****************************************************************************
- **
- *E  scanner.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
- */

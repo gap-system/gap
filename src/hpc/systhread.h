@@ -6,4 +6,4 @@
 #include <pthread.h>
 #endif
 
-#endif // GAP_GLOBAL_H
+#endif // GAP_SYSTHREAD_H

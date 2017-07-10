@@ -1230,8 +1230,3 @@ void *AllocateMemoryBlock(UInt size);
 #endif
 
 #endif // GAP_GASMAN_H
-
-/****************************************************************************
-**
-*E  gasman.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
