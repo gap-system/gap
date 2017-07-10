@@ -18,6 +18,8 @@
 
 #include <src/code.h>
 
+#include <src/gapstate.h>
+
 /****************************************************************************
 **
 *V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>

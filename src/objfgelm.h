@@ -11,6 +11,7 @@
 #ifndef GAP_OBJFGELM_H
 #define GAP_OBJFGELM_H
 
+#include <src/hpc/tls.h>
 
 /****************************************************************************
 **

@@ -17,6 +17,8 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
+#include <src/gapstate.h>
+
 #ifdef HPCGAP
 /* HACK: need to include this for STATE() below in CheckRecursionBefore */
 #include "src/hpc/tls.h"
