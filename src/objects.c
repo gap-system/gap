@@ -47,7 +47,7 @@
 #include <src/hpc/traverse.h>           /* object traversal */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;

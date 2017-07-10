@@ -45,7 +45,7 @@
 
 #include <src/read.h>                   /* reader */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 #include <fcntl.h>

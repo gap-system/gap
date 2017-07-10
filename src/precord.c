@@ -61,7 +61,7 @@
 #include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/aobjects.h>           /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************

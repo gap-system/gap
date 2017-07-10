@@ -57,7 +57,7 @@
 
 #include <src/hookintrprtr.h>           /* visit statements for profiling */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************

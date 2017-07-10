@@ -57,7 +57,7 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #ifdef HPCGAP
 #include <src/hpc/systhread.h>          /* system thread primitives */
