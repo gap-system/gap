@@ -987,7 +987,7 @@ static UInt LastPV = 0; /* This variable contains one of the values
 
 #ifdef HPCGAP
 /* On-demand creation of the PrintObj stack */
-void InitPrintObjStack()
+void InitPrintObjStack(void)
 {
   if (!STATE(PrintObjThiss)) {
     STATE(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));

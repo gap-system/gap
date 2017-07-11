@@ -301,7 +301,7 @@ static inline UInt getFilenameId(Stat stat)
   return id;
 }
 
-static inline Int8 CPUmicroseconds()
+static inline Int8 CPUmicroseconds(void)
 {
 #ifdef HAVE_GETRUSAGE
   struct rusage buf;
@@ -426,7 +426,7 @@ void visitStat(Stat stat)
 ** Activating and deacivating profiling, either at startup or by user request
 */
 
-void outputVersionInfo()
+void outputVersionInfo(void)
 {
     fprintf(profileState.Stream, 
             "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
@@ -655,7 +655,7 @@ Obj FuncIS_PROFILE_ACTIVE (
 
 Int CurrentColour = 0;
 
-static void setColour()
+static void setColour(void)
 {
   if(CurrentColour == 0) {
     Pr("\x1b[0m",0L,0L);

@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void BacktraceHandler(int sig) {
+static void BacktraceHandler(int sig) NORETURN;
+
+static void BacktraceHandler(int sig) {
   void *trace[32];
   size_t size;
   const char *sigtext = "Unknown signal";
@@ -31,7 +33,7 @@ void BacktraceHandler(int sig) {
   exit(1);
 }
 
-void InstallBacktraceHandlers() {
+void InstallBacktraceHandlers(void) {
   signal(SIGSEGV, BacktraceHandler);
   signal(SIGBUS, BacktraceHandler);
   signal(SIGINT, BacktraceHandler);

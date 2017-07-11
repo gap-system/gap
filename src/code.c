@@ -98,7 +98,7 @@ static inline void PopOffsBody( void ) {
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
-static void SetupOffsBodyStackAndLoopStack() {
+static void SetupOffsBodyStackAndLoopStack( void ) {
 #ifdef HPCGAP
   STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
   STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
@@ -1229,7 +1229,7 @@ void CodeQualifiedExprBegin(UInt qual)
   PushExpr(INTEXPR_INT(qual));
 }
 
-void CodeQualifiedExprEnd() 
+void CodeQualifiedExprEnd(void) 
 {
 }
 

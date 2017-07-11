@@ -70,17 +70,17 @@ extern ThreadLocalStorage *MainThreadTLS;
 
 typedef struct TLSHandler
 {
-  void (*constructor)();
-  void (*destructor)();
+  void (*constructor)(void);
+  void (*destructor)(void);
 } TLSHandler;
 
 void InstallTLSHandler(
-	void (*constructor)(),
-	void (*destructor)()
+	void (*constructor)(void),
+	void (*destructor)(void)
 );
 
-void RunTLSConstructors();
-void RunTLSDestructors();
+void RunTLSConstructors(void);
+void RunTLSDestructors(void);
 
 #if defined(__GNUC__)
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
@@ -97,9 +97,9 @@ extern __thread ThreadLocalStorage TLSInstance;
 #else
 
 #if defined(VERBOSE_GUARDS)
-static inline ThreadLocalStorage *GetTLS()
+static inline ThreadLocalStorage *GetTLS(void)
 #else
-static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
+static ALWAYS_INLINE ThreadLocalStorage *GetTLS(void)
 #endif
 {
   void *stack;
@@ -222,17 +222,17 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
     || TLS(DisableGuards) >= 2;
 }
 
-static inline int IsMainThread()
+static inline int IsMainThread(void)
 {
   return TLS(threadID) == 0;
 }
 
-void InitializeTLS();
+void InitializeTLS(void);
 
-Int AllocateExtraTLSSlot();
+Int AllocateExtraTLSSlot(void);
 
-void InitTLS();
-void DestroyTLS();
+void InitTLS(void);
+void DestroyTLS(void);
 
 #endif // HPCGAP
 

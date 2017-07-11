@@ -44,7 +44,7 @@ SerializationFunction   SerializationFuncByTNum[256];
 DeserializationFunction DeserializationFuncByTNum[256];
 
 
-static void DeserializationError()
+static void DeserializationError(void)
 {
     ErrorQuit("Bad deserialization input", 0L, 0L);
 }
@@ -159,21 +159,21 @@ static void ReadBytesNativeString(void * addr, UInt size)
     STATE(SerializationIndex) += size;
 }
 
-static UInt ReadTNumNativeString()
+static UInt ReadTNumNativeString(void)
 {
     UChar buf[1];
     ReadBytesNativeString(buf, 1);
     return buf[0];
 }
 
-static UChar ReadByteNativeString()
+static UChar ReadByteNativeString(void)
 {
     UChar buf[1];
     ReadBytesNativeString(buf, 1);
     return buf[0];
 }
 
-static UInt ReadByteBlockLengthNativeString()
+static UInt ReadByteBlockLengthNativeString(void)
 {
     UInt len;
     ReadBytesNativeString(&len, sizeof(len));
@@ -190,7 +190,7 @@ static void ReadByteBlockDataNativeString(Obj obj, UInt offset, UInt len)
     ReadBytesNativeString(ADDR_BYTE(obj) + offset, len);
 }
 
-static Obj ReadImmediateObjNativeString()
+static Obj ReadImmediateObjNativeString(void)
 {
     Obj obj;
     ReadBytesNativeString(&obj, sizeof(obj));
@@ -332,7 +332,7 @@ void RegisterSerializerFunctions(UInt                    tnum,
     DeserializationFuncByTNum[tnum] = dfun;
 }
 
-void SerializeUnbound()
+void SerializeUnbound(void)
 {
     WriteTNum(T_BACKREF);
     WriteImmediateObj(INTOBJ_INT(0));
@@ -348,7 +348,7 @@ void SerializeObj(Obj obj)
     SerializationFuncByTNum[TNUM_OBJ(obj)](obj);
 }
 
-Obj DeserializeObj()
+Obj DeserializeObj(void)
 {
     UInt tnum = ReadTNum();
     return DeserializationFuncByTNum[tnum](tnum);
@@ -739,7 +739,7 @@ static GVarDescriptor DESERIALIZATION_TAG_STRING_GVar;
 static GVarDescriptor SERIALIZATION_UPDATE_TAGS_GVar;
 static GVarDescriptor SERIALIZATION_TAGS_NEED_UPDATE_GVar;
 
-static void SerRepError()
+static void SerRepError(void)
 {
     ErrorQuit("SerializableRepresentation must return a list prefixed by a "
               "string or integer and string",

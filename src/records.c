@@ -91,7 +91,7 @@ static void HPC_LockNames(int write)
     pthread_rwlock_rdlock(&RNameLock);
 }
 
-static void HPC_UnlockNames()
+static void HPC_UnlockNames(void)
 {
   if (!PreThreadCreation)
     pthread_rwlock_unlock(&RNameLock);
@@ -100,7 +100,7 @@ static void HPC_UnlockNames()
 #else
 
 static inline void HPC_LockNames(int write) {}
-static inline void HPC_UnlockNames() {}
+static inline void HPC_UnlockNames(void) {}
 
 #endif
 

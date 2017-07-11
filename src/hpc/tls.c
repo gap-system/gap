@@ -24,12 +24,12 @@ __thread ThreadLocalStorage TLSInstance;
 
 #endif
 
-void InitializeTLS()
+void InitializeTLS(void)
 {
     memset((void *)(realTLS), 0, sizeof(ThreadLocalStorage));
 }
 
-void InstallTLSHandler(void (*constructor)(), void (*destructor)())
+void InstallTLSHandler(void (*constructor)(void), void (*destructor)(void))
 {
     TLSHandler * handler;
     if (!constructor && !destructor)
@@ -41,7 +41,7 @@ void InstallTLSHandler(void (*constructor)(), void (*destructor)())
     handler->destructor = destructor;
 }
 
-void RunTLSConstructors()
+void RunTLSConstructors(void)
 {
     Int i;
     for (i = 0; i < TLSHandlerCount; i++) {
@@ -51,7 +51,7 @@ void RunTLSConstructors()
     }
 }
 
-void RunTLSDestructors()
+void RunTLSDestructors(void)
 {
     Int i;
     for (i = 0; i < TLSHandlerCount; i++) {
@@ -63,7 +63,7 @@ void RunTLSDestructors()
 
 static Int ExtraTLSSlot = 0;
 
-Int AllocateExtraTLSSlot()
+Int AllocateExtraTLSSlot(void)
 {
     Int result;
     HashLock(0);
@@ -78,7 +78,7 @@ Int AllocateExtraTLSSlot()
         return -1;
 }
 
-void InitTLS()
+void InitTLS(void)
 {
     InitGAPState(&TLS(state));
     InitThreadAPIState();
@@ -88,7 +88,7 @@ void InitTLS()
     TLS(CountActive) = 1;
 }
 
-void DestroyTLS()
+void DestroyTLS(void)
 {
     DestroyGAPState(&TLS(state));
     DestroyThreadAPIState();

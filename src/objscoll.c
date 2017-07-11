@@ -791,7 +791,7 @@ static inline Obj NewPlist( UInt tnum, UInt len, UInt reserved )
 /*
  * Setup the collector stacks etc.
  */
-static void SetupCollectorStacks()
+static void SetupCollectorStacks(void)
 {
     const UInt maxStackSize = 256;
     STATE(SC_NW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );

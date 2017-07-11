@@ -23,13 +23,13 @@
 extern int PreThreadCreation;
 
 #ifndef HAVE_NATIVE_TLS
-void *AllocateTLS();
+void *AllocateTLS(void);
 void FreeTLS(void *address);
 #endif
 
 
-void AddGCRoots();
-void RemoveGCroots();
+void AddGCRoots(void);
+void RemoveGCroots(void);
 
 void RunThreadedMain(
 	int (*mainFunction)(int, char **, char **),
@@ -37,7 +37,7 @@ void RunThreadedMain(
 	char **argv,
 	char **environ );
 
-void CreateMainRegion();
+void CreateMainRegion(void);
 Obj RunThread(void (*start)(void *), void *arg);
 int JoinThread(int id);
 Int ThreadID(Obj thread);
@@ -50,7 +50,7 @@ void RegionReadLock(Region *region);
 int RegionTryReadLock(Region *region);
 void RegionReadUnlock(Region *region);
 void RegionUnlock(Region *region);
-Region *CurrentRegion();
+Region *CurrentRegion(void);
 Region *GetRegionOf(Obj obj);
 extern Region *LimboRegion, *ReadOnlyRegion;
 extern Obj PublicRegion;
@@ -64,9 +64,9 @@ void ResetRegionLockCounters(Region *region);
 void LockThreadControl(int modify);
 void UnlockThreadControl(void);
 
-void GCThreadHandler();
+void GCThreadHandler(void);
 
-void InitMainThread();
+void InitMainThread(void);
 
 int IsLocked(Region *region);
 void GetLockStatus(int count, Obj *objects, int *status);
@@ -75,7 +75,7 @@ int LockObjects(int count, Obj *objects, int *mode);
 int TryLockObjects(int count, Obj *objects, int *mode);
 void PushRegionLock(Region *region);
 void PopRegionLocks(int newSP);
-int RegionLockSP();
+int RegionLockSP(void);
 
 void HashLock(void *obj);
 void HashLockShared(void *obj);
@@ -105,8 +105,8 @@ void PauseThread(int threadID);
 void InterruptThread(int threadID, int handler);
 void ResumeThread(int threadID);
 void HandleInterrupts(int locked, Stat stat);
-int PauseAllThreads();
-void ResumeAllThreads();
+int PauseAllThreads(void);
+void ResumeAllThreads(void);
 void SetInterruptHandler(int handler, Obj func);
 
 #define MAX_INTERRUPT 100
