@@ -527,10 +527,13 @@ int realmain( int argc, char * argv[], char * environ[] )
 
 #if !defined(COMPILECYGWINDLL)
 
+#ifdef PRINT_BACKTRACE
+extern void InstallBacktraceHandlers();
+#endif
+
 int main ( int argc, char * argv[], char * environ[] )
 {
 #ifdef PRINT_BACKTRACE
-  void InstallBacktraceHandlers();
   InstallBacktraceHandlers();
 #endif
 
@@ -2462,11 +2465,12 @@ Obj FuncExportToKernelFinished (
 **
 */
 
-Obj FuncSleep( Obj self, Obj secs )
-{
 #ifdef HPCGAP
   extern UInt HaveInterrupt();
 #endif
+
+Obj FuncSleep( Obj self, Obj secs )
+{
   Int  s;
 
   while( ! IS_INTOBJ(secs) )
@@ -2501,7 +2505,6 @@ Obj FuncSleep( Obj self, Obj secs )
 
 Obj FuncMicroSleep( Obj self, Obj msecs )
 {
-  extern UInt HaveInterrupt();
   Int  s;
 
   while( ! IS_INTOBJ(msecs) )
@@ -2697,7 +2700,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
 #ifdef HPCGAP
-  extern UInt SyNumProcessors;
   r = RNamName("NUM_CPUS");
   AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
 #endif
@@ -2731,7 +2733,6 @@ Obj FuncKERNEL_INFO(Obj self) {
 
 Obj FuncTHREAD_UI(Obj self)
 {
-  extern UInt ThreadUI;
   return ThreadUI ? True : False;
 }
 
