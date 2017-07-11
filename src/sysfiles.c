@@ -560,7 +560,7 @@ void syWinPut (
 */
 Char WinCmdBuffer [8000];
 
-Char * SyWinCmd (
+const Char * SyWinCmd (
     const Char *        str,
     UInt                len )
 {

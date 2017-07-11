@@ -107,7 +107,7 @@ extern void syWinPut (
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-extern Char * SyWinCmd (
+extern const Char * SyWinCmd (
             const Char *    str,
             UInt                len );
 

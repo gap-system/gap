@@ -263,12 +263,12 @@ extern void GVarsAfterCollectBags( void );
 
 typedef struct GVarDescriptor {
     Obj *ref;
-    char *name;
+    const char *name;
     struct GVarDescriptor *next;
 } GVarDescriptor;
 
 
-extern void DeclareGVar(GVarDescriptor *gvar, char *name);
+extern void DeclareGVar(GVarDescriptor *gvar, const char *name);
 extern Obj GVarValue(GVarDescriptor *gvar);
 extern Obj GVarObj(GVarDescriptor *gvar);
 extern Obj GVarFunction(GVarDescriptor *gvar);

@@ -560,7 +560,7 @@ UInt GVarName (
 {
     Obj                 gvar;           /* global variable (as imm intval) */
     Char                gvarbuf[1024];  /* temporary copy for namespace    */
-    Char *              cns;            /* Pointer to current namespace    */
+    const Char *        cns;            /* Pointer to current namespace    */
     UInt                pos;            /* hash position                   */
     Obj                 string;         /* temporary string value <name>   */
     Obj                 table;          /* temporary copy of <TableGVars>  */
@@ -1387,7 +1387,7 @@ GVarDescriptor *LastDeclaredGVar;
 *F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
 */
 
-void DeclareGVar(GVarDescriptor *gvar, char *name)
+void DeclareGVar(GVarDescriptor *gvar, const char *name)
 {
   gvar->ref = NULL;
   gvar->name = name;

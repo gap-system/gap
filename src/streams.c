@@ -421,7 +421,7 @@ static void READ_LOOP ( void )
 */
 
 
-Int READ_GAP_ROOT ( Char * filename )
+Int READ_GAP_ROOT ( const Char * filename )
 {
     TypGRF_Data         result;
     Int                 res;

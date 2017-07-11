@@ -39,7 +39,7 @@ extern Obj READ_AS_FUNC ( void );
 **  search all   directories given   in 'SyGapRootPaths',  check  dynamically
 **  loadable modules and statically linked modules.
 */
-extern Int READ_GAP_ROOT ( Char * filename );
+extern Int READ_GAP_ROOT ( const Char * filename );
 
 
 /****************************************************************************

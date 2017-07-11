@@ -471,7 +471,7 @@ extern UInt NrBuiltinModules;
 extern void RecordLoadedModule (
     StructInitInfo *        module,
     Int                     isGapRootRelative,
-    Char *                  filename );
+    const Char *            filename );
 
 
 

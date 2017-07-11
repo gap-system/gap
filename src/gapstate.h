@@ -59,7 +59,7 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;
-    Char * Prompt;
+    const Char * Prompt;
 #if defined(HPCGAP)
     TypInputFile *  InputFiles[16];
     TypOutputFile * OutputFiles[16];
