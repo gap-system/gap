@@ -332,17 +332,12 @@ void RegisterSerializerFunctions(UInt                    tnum,
     DeserializationFuncByTNum[tnum] = dfun;
 }
 
-void SerializeUnbound(void)
-{
-    WriteTNum(T_BACKREF);
-    WriteImmediateObj(INTOBJ_INT(0));
-}
-
 void SerializeObj(Obj obj)
 {
     if (!obj) {
         /* Handle unbound list elements correctly */
-        SerializeUnbound();
+        WriteTNum(T_BACKREF);
+        WriteImmediateObj(INTOBJ_INT(0));
         return;
     }
     SerializationFuncByTNum[TNUM_OBJ(obj)](obj);
