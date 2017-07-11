@@ -361,21 +361,8 @@ Obj FuncCrcString( Obj self, Obj str ) {
 *F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
 */
 
-/* some compiles define symbols beginning with an underscore               */
-/* but dlopen() on Mac OS X adds one in for free!                              */
-#if C_UNDERSCORE_SYMBOLS
-#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#else
-#if defined(SYS_IS_CYGWIN32) && SYS_IS_CYGWIN32
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#else
-# define SYS_INIT_DYNAMIC       "_Init__Dynamic"
-#endif
-#endif
-#else
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#endif
+#define SYS_INIT_DYNAMIC       "Init__Dynamic"
+
 
 /****************************************************************************
 **
