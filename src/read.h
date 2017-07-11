@@ -104,7 +104,7 @@ extern UInt ReadEvalFile ( void );
 **
 *F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
 */
-extern void ReadEvalError ( void );
+extern void ReadEvalError ( void ) NORETURN;
 
 /* extern ExecStatus ReadEvalDebug ( void ); */
 

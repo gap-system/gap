@@ -764,8 +764,7 @@ extern UInt * * * SyAllocBags (
 **
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
 */
-extern void SyAbortBags (
-            const Char *        msg );
+extern void SyAbortBags(const Char * msg) NORETURN;
 
 
 /****************************************************************************
@@ -1009,7 +1008,7 @@ extern Char *getOptionArg(Char key, UInt which);
 #endif
 #endif
 
-void syLongjmp(syJmp_buf* buf, int val);
+void syLongjmp(syJmp_buf* buf, int val) NORETURN;
 
 /****************************************************************************
 **
