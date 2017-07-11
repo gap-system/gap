@@ -28,6 +28,8 @@
 #include <src/gasman.h>
 #include <src/gaputils.h>
 
+#include <src/stats.h>
+
 #ifdef HPCGAP
 #include <src/hpc/misc.h>
 #endif

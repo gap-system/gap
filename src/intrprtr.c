@@ -1552,10 +1552,6 @@ void            IntrAndL ( void )
     }
 }
 
-extern  Obj             NewAndFilter (
-            Obj                     oper1,
-            Obj                     oper2 );
-
 void            IntrAnd ( void )
 {
     Obj                 opL;            /* value of left  operand          */
