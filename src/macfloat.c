@@ -534,11 +534,11 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
+extern Int EqObject (Obj,Obj);
+
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int EqObject (Obj,Obj);
-
     /* install the marking functions for macfloatean values                    */
     InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );

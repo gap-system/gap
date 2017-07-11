@@ -253,16 +253,16 @@ void RunThreadedMain(int (*mainFunction)(int, char **, char **),
     RunThreadedMain2(mainFunction, argc, argv, environ);
 }
 
+extern void InitTraversalModule();
+
 static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
                              int     argc,
                              char ** argv,
                              char ** environ)
 {
-    void                   InitTraversal();
     int                    i;
     static pthread_mutex_t main_thread_mutex;
     static pthread_cond_t  main_thread_cond;
-    void                   InitTraversalModule();
     SetupTLS();
     for (i = 1; i < MAX_THREADS - 1; i++)
         thread_data[i].next = thread_data + i + 1;
@@ -871,11 +871,12 @@ static void PauseCurrentThread(int locked)
         pthread_mutex_unlock(thread->lock);
 }
 
+extern Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
+
 static void InterruptCurrentThread(int locked, Stat stat)
 {
     ThreadData * thread = thread_data + TLS(threadID);
     int          state;
-    Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
     Obj handler = (Obj)0;
     if (stat == T_NO_STAT)
         return;
