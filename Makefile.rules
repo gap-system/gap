@@ -983,12 +983,10 @@ gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
 # and in parts on an example in the autoconf manual.
 ########################################################################
 
-ACLOCAL_M4 =
-#ACLOCAL_M4 = $(top_srcdir)/cnf/aclocal.m4
-aclocal_m4_deps = $(top_srcdir)/configure.ac
-configure_deps = $(top_srcdir)/configure.ac $(CONFIGURE_DEPENDENCIES) $(ACLOCAL_M4)
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4 $(wildcard $(top_srcdir)/cnf/m4/*.m4)
+configure_deps = $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 
-config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+config.status: $(top_srcdir)/configure
 	$(SHELL) ./config.status --recheck
 
 $(top_srcdir)/configure: $(configure_deps)
