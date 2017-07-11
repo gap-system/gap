@@ -288,7 +288,7 @@ extern void syStopraw (
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
 extern Obj OnCharReadHookActive;  /* if bound the hook is active */
 extern Obj OnCharReadHookInFds;   /* a list of UNIX file descriptors */
 extern Obj OnCharReadHookInFuncs; /* a list of GAP functions */

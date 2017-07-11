@@ -1785,7 +1785,7 @@ Obj FuncREAD_ALL_FILE (
 	SET_LEN_STRING(str, len);
 	syBuffers[bufno].bufstart += lstr;
       }
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1826,7 +1826,7 @@ Obj FuncREAD_ALL_FILE (
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     /* line end hackery */
     {
       UInt i = 0,j = 0;
@@ -2006,7 +2006,7 @@ Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 }
 #endif
 
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
 Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
                    Obj timeoutsec, Obj timeoutusec)
 {

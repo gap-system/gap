@@ -805,11 +805,11 @@ Obj FuncIntHexString( Obj self,  Obj str )
 
 static Int CLog2UInt(UInt a)
 {
-#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_CLZ
+#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_CLZ)
   return GMP_LIMB_BITS - 1 - __builtin_clz(a);
-#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_CLZL
+#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_CLZL)
   return GMP_LIMB_BITS - 1 - __builtin_clzl(a);
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_CLZLL
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_CLZLL)
   return GMP_LIMB_BITS - 1 - __builtin_clzll(a);
 #else
     static const char LogTable256[256] = {

@@ -82,7 +82,7 @@ static inline Int ARE_INTOBJS(Obj o1, Obj o2)
 static inline Int INT_INTOBJ(Obj o)
 {
     GAP_ASSERT(IS_INTOBJ(o));
-#if HAVE_ARITHRIGHTSHIFT
+#ifdef HAVE_ARITHRIGHTSHIFT
     return (Int)o >> 2;
 #else
     return ((Int)o - 1) / 4;
@@ -164,7 +164,7 @@ static inline Obj INTOBJ_INT(Int i)
 */
 
 
-#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_SMUL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_SMUL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(int l, int r)
 {
   int prod;
@@ -172,7 +172,7 @@ static inline Obj prod_intobjs(int l, int r)
     return (Obj) 0;
   return (Obj) ((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_SMULL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_SMULL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(long l, long r)
 {
   long prod;
@@ -180,7 +180,7 @@ static inline Obj prod_intobjs(long l, long r)
     return (Obj) 0;
   return (Obj) ((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_SMULLL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_SMULLL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(long long l, long long r)
 {
   long long prod;
@@ -214,7 +214,7 @@ static inline Obj prod_intobjs(Int l, Int r)
       (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
-#if HAVE_ARITHRIGHTSHIFT
+#ifdef HAVE_ARITHRIGHTSHIFT
   if ((prod -1) / (l >> 2) == r-1)
     return (Obj) prod;
 #else

@@ -101,7 +101,7 @@ enum {
 *T  Set NORETURN to suitable compiler attribute.
 **
 */
-#if HAVE_FUNC_ATTRIBUTE_NORETURN
+#ifdef HAVE_FUNC_ATTRIBUTE_NORETURN
 #define NORETURN __attribute__((noreturn))
 #else
 #define NORETURN
@@ -122,7 +122,7 @@ enum {
 */
 
 
-#if HAVE_STDINT_H
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
 
@@ -275,7 +275,7 @@ enum {
     MAX_GAP_DIRS = 128
 };
 extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
 extern Char DotGapPath[GAP_PATH_MAX];
 #endif
 
@@ -992,12 +992,11 @@ extern Char *getOptionArg(Char key, UInt which);
 #include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 
 
-#if HAVE_SIGSETJMP
+#if defined(HAVE_SIGSETJMP)
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))
 #define syLongjmpInternal siglongjmp
 #define syJmp_buf sigjmp_buf
-#else
-#if HAVE__SETJMP
+#elif defined(HAVE__SETJMP)
 #define sySetjmp _setjmp
 #define syLongjmpInternal _longjmp
 #define syJmp_buf jmp_buf
@@ -1005,7 +1004,6 @@ extern Char *getOptionArg(Char key, UInt which);
 #define sySetjmp setjmp
 #define syLongjmpInternal longjmp
 #define syJmp_buf jmp_buf
-#endif
 #endif
 
 void syLongjmp(syJmp_buf* buf, int val) NORETURN;
