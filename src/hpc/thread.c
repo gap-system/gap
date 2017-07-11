@@ -58,12 +58,12 @@ Obj     PublicRegionName;
 static int        GlobalPauseInProgress;
 static AtomicUInt ThreadCounter = 1;
 
-static inline void IncThreadCounter()
+static inline void IncThreadCounter(void)
 {
     ATOMIC_INC(&ThreadCounter);
 }
 
-static inline void DecThreadCounter()
+static inline void DecThreadCounter(void)
 {
     ATOMIC_DEC(&ThreadCounter);
 }
@@ -98,7 +98,7 @@ void UnlockThreadControl(void)
 
 #ifndef HAVE_NATIVE_TLS
 
-void * AllocateTLS()
+void * AllocateTLS(void)
 {
     void * addr;
     void * result;
@@ -133,13 +133,13 @@ void FreeTLS(void * address)
 #endif /* HAVE_NATIVE_TLS */
 
 #ifndef DISABLE_GC
-void AddGCRoots()
+void AddGCRoots(void)
 {
     void * p = realTLS;
     GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
 }
 
-void RemoveGCRoots()
+void RemoveGCRoots(void)
 {
     void * p = realTLS;
 #if defined(__CYGWIN__) || defined(__CYGWIN32__)
@@ -151,8 +151,8 @@ void RemoveGCRoots()
 #endif /* DISABLE_GC */
 
 #ifdef __GNUC__
-static void SetupTLS() __attribute__((noinline));
-static void GrowStack() __attribute__((noinline));
+static void SetupTLS(void) __attribute__((noinline));
+static void GrowStack(void) __attribute__((noinline));
 #endif
 
 #ifndef HAVE_NATIVE_TLS
@@ -172,7 +172,7 @@ static void GrowStack() __attribute__((noinline));
  * allocated in private memory-mapped storage.
  */
 
-static void GrowStack()
+static void GrowStack(void)
 {
     char * tls = (char *)realTLS;
     size_t pagesize = getpagesize();
@@ -187,7 +187,7 @@ static void GrowStack()
 }
 #endif
 
-static void SetupTLS()
+static void SetupTLS(void)
 {
 #ifndef HAVE_NATIVE_TLS
     GrowStack();
@@ -206,7 +206,7 @@ Obj NewThreadObject(UInt id)
     return result;
 }
 
-void InitMainThread()
+void InitMainThread(void)
 {
     TLS(threadObject) = NewThreadObject(0);
 }
@@ -294,7 +294,7 @@ static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
     exit((*mainFunction)(argc, argv, environ));
 }
 
-void CreateMainRegion()
+void CreateMainRegion(void)
 {
     int i;
     TLS(currentRegion) = NewRegion();
@@ -772,7 +772,7 @@ void PopRegionLocks(int newSP)
     }
 }
 
-int RegionLockSP()
+int RegionLockSP(void)
 {
     return TLS(lockStackPointer);
 }
@@ -1006,7 +1006,7 @@ void ResumeThread(int threadID)
     }
 }
 
-int PauseAllThreads()
+int PauseAllThreads(void)
 {
     int i, n;
     LockThreadControl(1);
@@ -1033,7 +1033,7 @@ int PauseAllThreads()
     return 1;
 }
 
-void ResumeAllThreads()
+void ResumeAllThreads(void)
 {
     int i, n;
     n = num_paused_threads;
@@ -1057,7 +1057,7 @@ void ResumeAllThreads()
  *  embedded in a total ordering.
  */
 
-static Int CurrentRegionPrecedence()
+static Int CurrentRegionPrecedence(void)
 {
     Int sp;
     if (!DeadlockCheck || !TLS(lockStack))
@@ -1226,7 +1226,7 @@ int TryLockObjects(int count, Obj * objects, int * mode)
     return result;
 }
 
-Region * CurrentRegion()
+Region * CurrentRegion(void)
 {
     return TLS(currentRegion);
 }

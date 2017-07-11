@@ -33,12 +33,12 @@
 **  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
 **  low value, and the increment before you can use the range.
 */
-static inline Obj NEW_RANGE_NSORT()
+static inline Obj NEW_RANGE_NSORT(void)
 {
     return NewBag(T_RANGE_NSORT, 3 * sizeof(Obj));
 }
 
-static inline Obj NEW_RANGE_SSORT()
+static inline Obj NEW_RANGE_SSORT(void)
 {
     return NewBag(T_RANGE_SSORT, 3 * sizeof(Obj));
 }

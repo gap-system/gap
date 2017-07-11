@@ -150,7 +150,7 @@ static void LockGVars(int write) {
     pthread_rwlock_rdlock(&GVarLock);
 }
 
-static void UnlockGVars() {
+static void UnlockGVars(void) {
   if (PreThreadCreation)
     return;
   if (GVarLockOwner == realTLS) {
@@ -504,7 +504,7 @@ Char *          NameGVar (
 }
 
 #ifdef USE_GVAR_BUCKETS
-Obj NewGVarBucket() {
+Obj NewGVarBucket(void) {
     Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
     SET_LEN_PLIST(result, GVAR_BUCKET_SIZE);
 #ifdef HPCGAP

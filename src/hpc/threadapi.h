@@ -18,7 +18,7 @@ static inline Monitor *MonitorPtr(Obj obj)
   assert(TNUM_OBJ(obj) == T_MONITOR);
   return (Monitor *)(PTR_BAG(obj));
 }
-Obj NewMonitor();
+Obj NewMonitor(void);
 void LockMonitor(Monitor *monitor);
 int TryLockMonitor(Monitor *monitor);
 void UnlockMonitor(Monitor *monitor);
@@ -29,9 +29,9 @@ void SortMonitors(UInt count, Monitor **monitors);
 void LockMonitors(UInt count, Monitor **monitors);
 void UnlockMonitors(UInt count, Monitor **monitors);
 
-void InitSignals();
+void InitSignals(void);
 
-void InitThreadAPIState();
-void DestroyThreadAPIState();
+void InitThreadAPIState(void);
+void DestroyThreadAPIState(void);
 
 #endif // GAP_THREADAPI_H

@@ -1693,7 +1693,7 @@ int volatile RealExecStatCopied = 0;
 */
 
 #if !defined(HPCGAP)
-static void UnInterruptExecStat() {
+static void UnInterruptExecStat(void) {
   UInt i;
   assert(RealExecStatCopied);
   for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {

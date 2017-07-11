@@ -163,7 +163,7 @@ static inline UInt ObjHash(Obj set, Obj obj) {
  *  Create and return a new object set.
  */
 
-Obj NewObjSet() {
+Obj NewObjSet(void) {
   Obj result = NewBag(T_OBJSET,
     (OBJSET_HDRSIZE+DEFAULT_OBJSET_SIZE)*sizeof(Bag));
   ADDR_WORD(result)[OBJSET_SIZE] = DEFAULT_OBJSET_SIZE;
@@ -366,7 +366,7 @@ static void ResizeObjSet(Obj set, UInt bits) {
  *  Create a new object map.
  */
 
-Obj NewObjMap() {
+Obj NewObjMap(void) {
   Obj result = NewBag(T_OBJMAP, (4+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
   ADDR_WORD(result)[OBJSET_SIZE] = DEFAULT_OBJSET_SIZE;
   ADDR_WORD(result)[OBJSET_BITS] = DEFAULT_OBJSET_BITS;

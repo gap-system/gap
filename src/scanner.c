@@ -265,7 +265,7 @@ void Match (
 */
 
 #ifdef HPCGAP
-TypOutputFile *NewOutput()
+TypOutputFile *NewOutput(void)
 {
   TypOutputFile *result;
   result = AllocateMemoryBlock(sizeof(TypOutputFile));
@@ -274,7 +274,7 @@ TypOutputFile *NewOutput()
   return result;
 }
 
-TypInputFile *NewInput()
+TypInputFile *NewInput(void)
 {
   TypInputFile *result;
   result = AllocateMemoryBlock(sizeof(TypInputFile));
@@ -323,7 +323,7 @@ UInt OpenDefaultOutput( void )
 }
 #endif
 
-TypOutputFile *GetCurrentOutput() {
+TypOutputFile *GetCurrentOutput(void) {
 #ifdef HPCGAP
   if (!STATE(Output)) {
     OpenDefaultOutput();

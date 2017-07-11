@@ -45,7 +45,7 @@ typedef struct TraversalState {
     int (*traversalCheck)(Bag bag);
 } TraversalState;
 
-static inline TraversalState * currentTraversal()
+static inline TraversalState * currentTraversal(void)
 {
     return TLS(traversalState);
 }
@@ -207,7 +207,7 @@ void CopyObjMap(Obj copy, Obj original)
     }
 }
 
-void InitTraversalModule()
+void InitTraversalModule(void)
 {
     int i;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
@@ -256,7 +256,7 @@ static void BeginTraversal(TraversalState * traversal)
     TLS(traversalState) = traversal;
 }
 
-static void EndTraversal()
+static void EndTraversal(void)
 {
     TLS(traversalState) = currentTraversal()->previousTraversal;
 }

@@ -1785,13 +1785,13 @@ static inline Obj TYPE_OBJ_FEO (
 static pthread_mutex_t CacheLock;
 static UInt CacheSize;
 
-static void LockCache()
+static void LockCache(void)
 {
     if (!PreThreadCreation)
         pthread_mutex_lock(&CacheLock);
 }
 
-static void UnlockCache()
+static void UnlockCache(void)
 {
     if (!PreThreadCreation)
         pthread_mutex_unlock(&CacheLock);

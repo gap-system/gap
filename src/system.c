@@ -805,7 +805,7 @@ static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
 static void *SyMMapAdvised;        /* We have already advised about non-usage
                                       up to here. */
 
-void SyMAdviseFree() {
+void SyMAdviseFree(void) {
     size_t size;
     void *from;
     if (!SyMMapStart) 
@@ -1289,7 +1289,7 @@ void SyExit (
 **  Returns -1 to represent failure
 **
 */
-Int8 SyNanosecondsSinceEpoch()
+Int8 SyNanosecondsSinceEpoch(void)
 {
   Int8 res;
 
@@ -1371,7 +1371,7 @@ Int8 SyNanosecondsSinceEpoch()
 **
 **  A result of 0 signifies inability to obtain any sensible value.
 */
-Int8 SyNanosecondsSinceEpochResolution()
+Int8 SyNanosecondsSinceEpochResolution(void)
 {
   Int8 res;
 

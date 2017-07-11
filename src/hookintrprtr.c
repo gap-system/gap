@@ -61,7 +61,7 @@ static Int HookActiveCount;
 static Int PrintHookActive;
 
 /* Forward declaration */
-void CheckPrintOverflowWarnings();
+void CheckPrintOverflowWarnings(void);
 
 /****************************************************************************
 **
@@ -251,7 +251,7 @@ Obj FuncCLEAR_PROFILE_OVERFLOW_CHECKS(Obj self)
     return 0;
 }
 
-void CheckPrintOverflowWarnings()
+void CheckPrintOverflowWarnings(void)
 {
     if (!HaveReportedLineProfileOverflow && ShouldReportLineProfileOverflow) {
         HaveReportedLineProfileOverflow = 1;
@@ -270,7 +270,7 @@ void CheckPrintOverflowWarnings()
     }
 }
 
-void ReportLineNumberOverflowOccured()
+void ReportLineNumberOverflowOccured(void)
 {
     ShouldReportLineProfileOverflow = 1;
     if (HookActiveCount) {
@@ -278,7 +278,7 @@ void ReportLineNumberOverflowOccured()
     }
 }
 
-void ReportFileNumberOverflowOccured()
+void ReportFileNumberOverflowOccured(void)
 {
     ShouldReportFileProfileOverflow = 1;
     if (HookActiveCount) {
