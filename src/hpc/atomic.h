@@ -13,7 +13,14 @@
 #else
 
 #ifndef WARD_ENABLED
+
+// disable -Wundef temporarily, to avoid warnings about AO_AO_TS_T
+// inside of libatomic_ops' header files.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
 #include <atomic_ops.h>
+#pragma GCC diagnostic pop
+
 #else
 typedef size_t AO_t;
 #endif
