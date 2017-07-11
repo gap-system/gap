@@ -655,7 +655,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
  *  must be the mutable version.
  */
 
-static void CheckArgument(char *func, Obj obj, Int t1, Int t2) {
+static void CheckArgument(const char *func, Obj obj, Int t1, Int t2) {
   Int tnum = TNUM_OBJ(obj);
   if (t2 < 0 && tnum == t1+IMMUTABLE) {
     ErrorQuit("%s: First argument must be a mutable %s",

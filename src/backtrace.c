@@ -10,7 +10,7 @@
 void BacktraceHandler(int sig) {
   void *trace[32];
   size_t size;
-  char *sigtext = "Unknown signal";
+  const char *sigtext = "Unknown signal";
   size = backtrace(trace, 32);
   switch (sig) {
     case SIGSEGV:

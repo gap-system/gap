@@ -791,6 +791,7 @@ Obj FuncWindowCmd (
   Int             n,  m;
   Int             i;
   Char *          ptr;
+  const Char *    inptr;
   Char *          qtr;
 
   /* check arguments                                                     */
@@ -872,35 +873,35 @@ Obj FuncWindowCmd (
 
   /* now call the window front end with the argument string              */
   qtr = CSTR_STRING(WindowCmdString);
-  ptr = SyWinCmd( qtr, strlen(qtr) );
-  len = strlen(ptr);
+  inptr = SyWinCmd( qtr, strlen(qtr) );
+  len = strlen(inptr);
 
   /* now convert result back into a list                                 */
   list = NEW_PLIST( T_PLIST, 11 );
   SET_LEN_PLIST( list, 0 );
   i = 1;
   while ( 0 < len ) {
-    if ( *ptr == 'I' ) {
-      ptr++;
-      for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-        n += (*ptr-'0') * m;
-      if ( *ptr++ == '-' )
+    if ( *inptr == 'I' ) {
+      inptr++;
+      for ( n=0,m=1; '0' <= *inptr && *inptr <= '9'; inptr++,m *= 10,len-- )
+        n += (*inptr-'0') * m;
+      if ( *inptr++ == '-' )
         n *= -1;
       len -= 2;
       AssPlist( list, i, INTOBJ_INT(n) );
     }
-    else if ( *ptr == 'S' ) {
-      ptr++;
-      for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
-        n += (*ptr-'0') * m;
-      ptr++; /* ignore the '+' */
-      C_NEW_STRING(tmp, n, ptr);
-      ptr += n;
+    else if ( *inptr == 'S' ) {
+      inptr++;
+      for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
+        n += (*inptr-'0') * m;
+      inptr++; /* ignore the '+' */
+      C_NEW_STRING(tmp, n, inptr);
+      inptr += n;
       len -= n+2;
       AssPlist( list, i, tmp );
     }
     else {
-      ErrorQuit( "unknown return value '%s'", (Int)ptr, 0 );
+      ErrorQuit( "unknown return value '%s'", (Int)inptr, 0 );
       return 0;
     }
     i++;
@@ -3199,7 +3200,7 @@ UInt NrBuiltinModules;
 void RecordLoadedModule (
     StructInitInfo *        info,
     Int                     isGapRootRelative,
-    Char *filename )
+    const Char *            filename )
 {
     UInt len;
     if ( NrModules == MAX_MODULES ) {

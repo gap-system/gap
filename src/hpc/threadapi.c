@@ -354,7 +354,7 @@ void SignalMonitor(Monitor * monitor)
     }
 }
 
-static Obj ArgumentError(char * message)
+static Obj ArgumentError(const char * message)
 {
     ErrorQuit(message, 0, 0);
     return 0;
@@ -442,9 +442,9 @@ Obj FuncCreateThread(Obj self, Obj funcargs)
 
 Obj FuncWaitThread(Obj self, Obj thread)
 {
-    UInt   thread_num;
-    UInt   thread_status;
-    char * error = NULL;
+    UInt         thread_num;
+    UInt         thread_status;
+    const char * error = NULL;
     if (TNUM_OBJ(thread) != T_THREAD)
         return ArgumentError("WaitThread: Argument must be a thread object");
     LockThreadControl(1);
@@ -2391,10 +2391,10 @@ Obj FuncSyncIsBound(Obj self, Obj var)
 
 static void PrintThread(Obj obj)
 {
-    char   buf[100];
-    char * status_message;
-    Int    status;
-    Int    id;
+    char         buf[100];
+    const char * status_message;
+    Int          status;
+    Int          id;
     LockThreadControl(0);
     id = *(UInt *)(ADDR_OBJ(obj) + 1);
     status = *(UInt *)(ADDR_OBJ(obj) + 2);

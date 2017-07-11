@@ -151,7 +151,7 @@ void SetTypeARecord(Obj obj, Obj kind)
 }
 
 
-static void ArgumentError(char *message)
+static void ArgumentError(const char *message)
 {
   ErrorQuit(message, 0, 0);
 }
