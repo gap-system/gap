@@ -1023,12 +1023,8 @@ Obj FuncExecutingStatementLocation(Obj self, Obj context)
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
   if (
-#if T_PROCCALL_0ARGS
         ( FIRST_STAT_TNUM <= TNUM_STAT(call)
                 && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-#else
-        ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-#endif
         ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
               && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
     line = LINE_STAT(call);
@@ -1054,12 +1050,8 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
   if ( call == 0 ) {
     Pr( "<compiled or corrupted statement> ", 0L, 0L );
   }
-#if T_PROCCALL_0ARGS
     else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
               && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
-#else
-     else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
-#endif
       PrintStat( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
