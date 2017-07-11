@@ -73,8 +73,8 @@
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)STATE(PtrLVars))+(expr)+5) != 0 ? \
-                         *(Obj*)(((char*)STATE(PtrLVars))+(expr)+5) : \
+                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
+                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */

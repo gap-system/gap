@@ -27,21 +27,14 @@
 #ifdef  NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
                         OBJ_LVAR( LVAR_REFLVAR( (expr) ) )
-#endif
-#ifndef NO_LVAR_CHECKS
-
-#ifdef SYS_IS_64_BIT
-#define OFFSET_REFLVAR(expr)  (((expr)*2)+10)
 #else
-#define OFFSET_REFLVAR(expr)  ((expr) + 5)
-#endif
 
 #define OBJ_REFLVAR(expr)       \
-                        (*(Obj*)(((char*)STATE(PtrLVars))+OFFSET_REFLVAR(expr)) != 0 ? \
-                         *(Obj*)(((char*)STATE(PtrLVars))+OFFSET_REFLVAR(expr)) : \
+                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
+                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
-#endif
 
+#endif
 
 /****************************************************************************
 **
