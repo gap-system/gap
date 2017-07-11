@@ -136,7 +136,7 @@ static inline void * ObjPtr(Obj obj)
     return PTR_BAG(obj);
 }
 
-Obj NewMonitor()
+Obj NewMonitor(void)
 {
     Bag       monitorBag;
     Monitor * monitor;
@@ -162,7 +162,7 @@ void SignalThread(ThreadLocalStorage * thread)
     pthread_cond_signal(thread->threadSignal);
 }
 
-void WaitThreadSignal()
+void WaitThreadSignal(void)
 {
     int id = TLS(threadID);
     if (!UpdateThreadState(id, TSTATE_RUNNING, TSTATE_BLOCKED))
@@ -412,11 +412,12 @@ void StopKeepAlive(Obj node)
 ** is a unique identifier for the thread.
 */
 
+extern void ThreadedInterpreter(void *);
+
 Obj FuncCreateThread(Obj self, Obj funcargs)
 {
     Int  i, n;
     Obj  thread;
-    void ThreadedInterpreter(void *);
     Obj  templist;
     n = LEN_PLIST(funcargs);
     if (n == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
@@ -896,405 +897,6 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
 }
 
 
-Obj FuncCreateChannel(Obj self, Obj args);
-Obj FuncDestroyChannel(Obj self, Obj channel);
-Obj FuncTallyChannel(Obj self, Obj channel);
-Obj FuncSendChannel(Obj self, Obj channel, Obj obj);
-Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj);
-Obj FuncReceiveChannel(Obj self, Obj channel);
-Obj FuncReceiveAnyChannel(Obj self, Obj args);
-Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args);
-Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count);
-Obj FuncInspectChannel(Obj self, Obj channel);
-Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list);
-Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list);
-Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj);
-Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list);
-Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list);
-Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj);
-Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj defaultobj);
-Obj FuncCreateSemaphore(Obj self, Obj args);
-Obj FuncSignalSemaphore(Obj self, Obj sem);
-Obj FuncWaitSemaphore(Obj self, Obj sem);
-Obj FuncTryWaitSemaphore(Obj self, Obj sem);
-Obj FuncCreateThread(Obj self, Obj funcargs);
-Obj FuncCurrentThread(Obj self);
-Obj FuncThreadID(Obj self, Obj thread);
-Obj FuncKillThread(Obj self, Obj thread);
-Obj FuncInterruptThread(Obj self, Obj thread, Obj handler);
-Obj FuncPauseThread(Obj self, Obj thread);
-Obj FuncResumeThread(Obj self, Obj thread);
-Obj FuncWaitThread(Obj self, Obj id);
-Obj FuncCreateBarrier(Obj self);
-Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
-Obj FuncWaitBarrier(Obj self, Obj barrier);
-Obj FuncCreateSyncVar(Obj self);
-Obj FuncSyncWrite(Obj self, Obj var, Obj value);
-Obj FuncSyncTryWrite(Obj self, Obj var, Obj value);
-Obj FuncSyncRead(Obj self, Obj var);
-Obj FuncSyncIsBound(Obj self, Obj var);
-Obj FuncWriteLock(Obj self, Obj args);
-Obj FuncReadLock(Obj self, Obj args);
-Obj FuncIS_LOCKED(Obj self, Obj obj);
-Obj FuncLOCK(Obj self, Obj args);
-Obj FuncDO_LOCK(Obj self, Obj args);
-Obj FuncWRITE_LOCK(Obj self, Obj args);
-Obj FuncREAD_LOCK(Obj self, Obj args);
-Obj FuncTRYLOCK(Obj self, Obj args);
-Obj FuncUNLOCK(Obj self, Obj args);
-Obj FuncCURRENT_LOCKS(Obj self);
-Obj FuncREFINE_TYPE(Obj self, Obj obj);
-Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec);
-Obj FuncNEW_REGION(Obj self, Obj name, Obj prec);
-Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj);
-Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
-Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj);
-Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
-Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
-Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec);
-Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec);
-Obj FuncMAKE_PUBLIC(Obj self, Obj obj);
-Obj FuncADOPT(Obj self, Obj obj);
-Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
-Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target);
-Obj FuncREACHABLE(Obj self, Obj obj);
-Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
-Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
-Obj FuncMakeThreadLocal(Obj self, Obj var);
-Obj FuncMakeReadOnly(Obj self, Obj obj);
-Obj FuncMakeReadOnlyRaw(Obj self, Obj obj);
-Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
-Obj FuncIsReadOnly(Obj self, Obj obj);
-Obj FuncENABLE_AUTO_RETYPING(Obj self);
-Obj FuncORDERED_WRITE(Obj self, Obj obj);
-Obj FuncORDERED_READ(Obj self, Obj obj);
-Obj FuncCREATOR_OF(Obj self, Obj obj);
-Obj FuncDISABLE_GUARDS(Obj self, Obj flag);
-Obj FuncSIGWAIT(Obj self, Obj handlers);
-Obj FuncDEFAULT_SIGINT_HANDLER(Obj self);
-Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
-Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
-Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
-Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj);
-Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj);
-Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj);
-Obj FuncREGION_COUNTERS_GET(Obj self, Obj regobj);
-Obj FuncREGION_COUNTERS_RESET(Obj self, Obj regobj);
-Obj FuncTHREAD_COUNTERS_ENABLE(Obj self);
-Obj FuncTHREAD_COUNTERS_DISABLE(Obj self);
-Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self);
-Obj FuncTHREAD_COUNTERS_GET(Obj self);
-Obj FuncTHREAD_COUNTERS_RESET(Obj self);
-
-
-/****************************************************************************
-**
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-*/
-static StructGVarFunc GVarFuncs[] = {
-
-    { "CreateThread", -1, "function", FuncCreateThread,
-      "src/threadapi.c:CreateThread" },
-
-    { "CurrentThread", 0, "", FuncCurrentThread,
-      "src/threadapi.c:CurrentThread" },
-
-    { "ThreadID", 1, "thread", FuncThreadID, "src/threadapi.c:ThreadID" },
-
-    { "WaitThread", 1, "thread", FuncWaitThread,
-      "src/threadapi.c:WaitThread" },
-
-    { "KillThread", 1, "thread", FuncKillThread,
-      "src/threadapi.c:KillThread" },
-
-    { "InterruptThread", 2, "thread, handler", FuncInterruptThread,
-      "src/threadapi.c:InterruptThread" },
-
-    { "SetInterruptHandler", 2, "handler, function", FuncSetInterruptHandler,
-      "src/threadapi.c:SetInterruptHandler" },
-
-    { "PauseThread", 1, "thread", FuncPauseThread,
-      "src/threadapi.c:PauseThread" },
-
-    { "ResumeThread", 1, "thread", FuncResumeThread,
-      "src/threadapi.c:ResumeThread" },
-
-    { "HASH_LOCK", 1, "object", FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
-
-    { "HASH_LOCK_SHARED", 1, "object", FuncHASH_LOCK_SHARED,
-      "src/threadapi.c:HASH_LOCK_SHARED" },
-
-    { "HASH_UNLOCK", 1, "object", FuncHASH_UNLOCK,
-      "src/threadapi.c:HASH_UNLOCK" },
-
-    { "HASH_UNLOCK_SHARED", 1, "object", FuncHASH_UNLOCK_SHARED,
-      "src/threadapi.c:HASH_UNLOCK_SHARED" },
-
-    { "HASH_SYNCHRONIZED", 2, "object, function", FuncHASH_SYNCHRONIZED,
-      "src/threadapi.c:HASH_SYNCHRONIZED" },
-
-    { "SynchronizedShared", 2, "object, function",
-      FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
-
-    { "RegionOf", 1, "object", FuncRegionOf, "src/threadapi.c:RegionOf" },
-
-    { "SetRegionName", 2, "obj, name", FuncSetRegionName,
-      "src/threadapi.c:SetRegionName" },
-
-    { "ClearRegionName", 1, "obj", FuncClearRegionName,
-      "src/threadapi.c:ClearRegionName" },
-
-    { "RegionName", 1, "obj", FuncRegionName, "src/threadapi.c:RegionName" },
-
-    { "WITH_TARGET_REGION", 2, "region, function", FuncWITH_TARGET_REGION,
-      "src/threadapi.c:WITH_TARGET_REGION" },
-
-    { "IsShared", 1, "object", FuncIsShared, "src/threadapi.c:IsShared" },
-
-    { "IsPublic", 1, "object", FuncIsPublic, "src/threadapi.c:IsPublic" },
-
-    { "IsThreadLocal", 1, "object", FuncIsThreadLocal,
-      "src/threadapi.c:IsThreadLocal" },
-
-    { "HaveWriteAccess", 1, "object", FuncHaveWriteAccess,
-      "src/threadapi.c:HaveWriteAccess" },
-
-    { "HaveReadAccess", 1, "object", FuncHaveReadAccess,
-      "src/threadapi.c:HaveReadAccess" },
-
-    { "CreateSemaphore", -1, "[count]", FuncCreateSemaphore,
-      "src/threadapi.c:CreateSemaphore" },
-
-    { "SignalSemaphore", 1, "semaphore", FuncSignalSemaphore,
-      "src/threadapi.c:SignalSemaphore" },
-
-    { "WaitSemaphore", 1, "semaphore", FuncWaitSemaphore,
-      "src/threadapi.c:WaitSemaphore" },
-
-    { "TryWaitSemaphore", 1, "semaphore", FuncTryWaitSemaphore,
-      "src/threadapi.c:TryWaitSemaphore" },
-
-    { "CreateChannel", -1, "[size]", FuncCreateChannel,
-      "src/threadapi.c:CreateChannel" },
-
-    { "DestroyChannel", 1, "channel", FuncDestroyChannel,
-      "src/threadapi.c:DestroyChannel" },
-
-    { "TallyChannel", 1, "channel", FuncTallyChannel,
-      "src/threadapi.c:TallyChannel" },
-
-    { "SendChannel", 2, "channel, obj", FuncSendChannel,
-      "src/threadapi.c:SendChannel" },
-
-    { "TransmitChannel", 2, "channel, obj", FuncTransmitChannel,
-      "src/threadapi.c:TransmitChannel" },
-
-    { "ReceiveChannel", 1, "channel", FuncReceiveChannel,
-      "src/threadapi:ReceiveChannel" },
-
-    { "ReceiveAnyChannel", -1, "channel list", FuncReceiveAnyChannel,
-      "src/threadapi:ReceiveAnyChannel" },
-
-    { "ReceiveAnyChannelWithIndex", -1, "channel list",
-      FuncReceiveAnyChannelWithIndex,
-      "src/threadapi:ReceiveAnyChannelWithIndex" },
-
-    { "MultiReceiveChannel", 2, "channel, count", FuncMultiReceiveChannel,
-      "src/threadapi:MultiReceiveChannel" },
-
-    { "TryReceiveChannel", 2, "channel, obj", FuncTryReceiveChannel,
-      "src/threadapi.c:TryReceiveChannel" },
-
-    { "MultiSendChannel", 2, "channel, list", FuncMultiSendChannel,
-      "src/threadapi:MultiSendChannel" },
-
-    { "TryMultiSendChannel", 2, "channel, list", FuncTryMultiSendChannel,
-      "src/threadapi:TryMultiSendChannel" },
-
-    { "TrySendChannel", 2, "channel, obj", FuncTrySendChannel,
-      "src/threadapi.c:TrySendChannel" },
-
-    { "MultiTransmitChannel", 2, "channel, list", FuncMultiTransmitChannel,
-      "src/threadapi:MultiTransmitChannel" },
-
-    { "TryMultiTransmitChannel", 2, "channel, list",
-      FuncTryMultiTransmitChannel, "src/threadapi:TryMultiTransmitChannel" },
-
-    { "TryTransmitChannel", 2, "channel, obj", FuncTryTransmitChannel,
-      "src/threadapi.c:TryTransmitChannel" },
-
-    { "InspectChannel", 1, "channel, obj", FuncInspectChannel,
-      "src/threadapi.c:InspectChannel" },
-
-    { "CreateBarrier", 0, "", FuncCreateBarrier,
-      "src/threadapi.c:CreateBarrier" },
-
-    { "StartBarrier", 2, "barrier, count", FuncStartBarrier,
-      "src/threadapi.c:StartBarrier" },
-
-    { "WaitBarrier", 1, "barrier", FuncWaitBarrier,
-      "src/threadapi.c:WaitBarrier" },
-
-    { "CreateSyncVar", 0, "", FuncCreateSyncVar,
-      "src/threadapi.c:CreateSyncVar" },
-
-    { "SyncWrite", 2, "syncvar, obj", FuncSyncWrite,
-      "src/threadapi.c:SyncWrite" },
-
-    { "SyncTryWrite", 2, "syncvar, obj", FuncSyncTryWrite,
-      "src/threadapi.c:SyncTryWrite" },
-
-    { "SyncRead", 1, "syncvar", FuncSyncRead, "src/threadapi.c:SyncRead" },
-
-    { "SyncIsBound", 1, "syncvar", FuncSyncIsBound,
-      "src/threadapi.c:SyncIsBound" },
-
-    { "IS_LOCKED", 1, "obj", FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
-
-    { "WriteLock", -1, "obj, ...", FuncWriteLock,
-      "src/threadapi.c:WriteLock" },
-
-    { "ReadLock", -1, "obj, ...", FuncReadLock, "src/threadapi.c:ReadLock" },
-
-    { "LOCK", -1, "obj, ...", FuncLOCK, "src/threadapi.c:LOCK" },
-
-    { "DO_LOCK", -1, "obj, ...", FuncDO_LOCK, "src/threadapi.c:DO_LOCK" },
-
-    { "WRITE_LOCK", 1, "obj", FuncWRITE_LOCK, "src/threadapi.c:WRITE_LOCK" },
-
-    { "READ_LOCK", 1, "obj", FuncREAD_LOCK, "src/threadapi.c:READ_LOCK" },
-
-    { "TRYLOCK", -1, "obj, ...", FuncTRYLOCK, "src/threadapi.c:TRYLOCK" },
-
-    { "UNLOCK", 1, "obj, newsp", FuncUNLOCK, "src/threadapi.c:LOCK" },
-
-    { "CURRENT_LOCKS", 0, "", FuncCURRENT_LOCKS,
-      "src/threadapi.c:FuncCURRENT_LOCKS" },
-
-    { "REFINE_TYPE", 1, "obj", FuncREFINE_TYPE,
-      "src/threadapi.c:REFINE_TYPE" },
-
-    { "SHARE_NORECURSE", 3, "obj, string, integer", FuncSHARE_NORECURSE,
-      "src/threadapi.c:SHARE_NORECURSE" },
-
-    { "ADOPT_NORECURSE", 1, "obj", FuncADOPT_NORECURSE,
-      "src/threadapi.c:ADOPT_NORECURSE" },
-
-    { "MIGRATE_NORECURSE", 2, "obj, target", FuncMIGRATE_NORECURSE,
-      "src/threadapi.c:MIGRATE_NORECURSE" },
-
-    { "NEW_REGION", 2, "string, integer", FuncNEW_REGION,
-      "src/threadapi.c:NEW_REGION" },
-
-    { "REGION_PRECEDENCE", 1, "obj", FuncREGION_PRECEDENCE,
-      "src/threadapi.c:REGION_PRECEDENCE" },
-
-    { "SHARE", 3, "obj, string, integer", FuncSHARE,
-      "src/threadapi.c:SHARE" },
-
-    { "SHARE_RAW", 3, "obj, string, integer", FuncSHARE_RAW,
-      "src/threadapi.c:SHARE_RAW" },
-
-    { "ADOPT", 1, "obj", FuncADOPT, "src/threadapi.c:ADOPT" },
-
-    { "MIGRATE", 2, "obj, target", FuncMIGRATE, "src/threadapi.c:MIGRATE" },
-
-    { "MIGRATE_RAW", 2, "obj, target", FuncMIGRATE_RAW,
-      "src/threadapi.c:MIGRATE_RAW" },
-
-    { "MAKE_PUBLIC_NORECURSE", 1, "obj", FuncMAKE_PUBLIC_NORECURSE,
-      "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
-
-    { "MAKE_PUBLIC", 1, "obj", FuncMAKE_PUBLIC,
-      "src/threadapi.c:MAKE_PUBLIC" },
-
-    { "FORCE_MAKE_PUBLIC", 1, "obj", FuncFORCE_MAKE_PUBLIC,
-      "src/threadapi.c:FORCE_MAKE_PUBLIC" },
-
-    { "REACHABLE", 1, "obj", FuncREACHABLE, "src/threadapi.c:REACHABLE" },
-
-    { "CLONE_REACHABLE", 1, "obj", FuncCLONE_REACHABLE,
-      "src/threadapi.c:CLONE_REACHABLE" },
-
-    { "CLONE_DELIMITED", 1, "obj", FuncCLONE_DELIMITED,
-      "src/threadapi.c:CLONE_DELIMITED" },
-
-    { "MakeThreadLocal", 1, "variable name", FuncMakeThreadLocal,
-      "src/threadapi.c:MakeThreadLocal" },
-
-    { "MakeReadOnly", 1, "obj", FuncMakeReadOnly,
-      "src/threadapi.c:MakeReadOnly" },
-
-    { "MakeReadOnlyRaw", 1, "obj", FuncMakeReadOnlyRaw,
-      "src/threadapi.c:MakeReadOnlyRaw" },
-
-    { "MakeReadOnlyObj", 1, "obj", FuncMakeReadOnlyObj,
-      "src/threadapi.c:MakeReadOnlyObj" },
-
-    { "IsReadOnly", 1, "obj", FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
-
-    { "ENABLE_AUTO_RETYPING", 0, "", FuncENABLE_AUTO_RETYPING,
-      "src/threadapi.c:ENABLE_AUTO_RETYPING" },
-
-    { "ORDERED_READ", 1, "obj", FuncORDERED_READ,
-      "src/threadapi.c:ORDERED_READ" },
-
-    { "ORDERED_WRITE", 1, "obj", FuncORDERED_WRITE,
-      "src/threadapi.c:ORDERED_WRITE" },
-
-    { "CREATOR_OF", 1, "obj", FuncCREATOR_OF, "src/threadapi.c:CREATOR_OF" },
-
-    { "DISABLE_GUARDS", 1, "flag", FuncDISABLE_GUARDS,
-      "src/threadapi.c:DISABLE_GUARDS" },
-
-    { "DEFAULT_SIGINT_HANDLER", 0, "", FuncDEFAULT_SIGINT_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGINT_HANDLER" },
-
-    { "DEFAULT_SIGVTALRM_HANDLER", 0, "", FuncDEFAULT_SIGVTALRM_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGVTALRM_HANDLER" },
-
-    { "DEFAULT_SIGWINCH_HANDLER", 0, "", FuncDEFAULT_SIGWINCH_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGWINCH_HANDLER" },
-
-    { "SIGWAIT", 1, "record", FuncSIGWAIT, "src/threadapi.c:SIGWAIT" },
-
-    { "PERIODIC_CHECK", 2, "count, function", FuncPERIODIC_CHECK,
-      "src/threadapi.c:PERIODIC_CHECK" },
-
-    { "REGION_COUNTERS_ENABLE", 1, "region", FuncREGION_COUNTERS_ENABLE,
-      "src/threadapi.c:REGION_COUNTERS_ENABLE" },
-
-    { "REGION_COUNTERS_DISABLE", 1, "region", FuncREGION_COUNTERS_DISABLE,
-      "src/threadapi.c:REGION_COUNTERS_DISABLE" },
-
-    { "REGION_COUNTERS_GET_STATE", 1, "region", FuncREGION_COUNTERS_GET_STATE,
-      "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
-
-    { "REGION_COUNTERS_GET", 1, "region", FuncREGION_COUNTERS_GET,
-      "src/threadapi.c:REGION_COUNTERS_GET" },
-
-    { "REGION_COUNTERS_RESET", 1, "region", FuncREGION_COUNTERS_RESET,
-      "src/threadapi.c:REGION_COUNTERS_RESET" },
-
-    { "THREAD_COUNTERS_ENABLE", 0, "", FuncTHREAD_COUNTERS_ENABLE,
-      "src/threadapi.c:THREAD_COUNTERS_ENABLE" },
-
-    { "THREAD_COUNTERS_DISABLE", 0, "", FuncTHREAD_COUNTERS_DISABLE,
-      "src/threadapi.c:THREAD_COUNTERS_DISABLE" },
-
-    { "THREAD_COUNTERS_GET_STATE", 0, "", FuncTHREAD_COUNTERS_GET_STATE,
-      "src/threadapi.c:THREAD_COUNTERS_GET_STATE" },
-
-    { "THREAD_COUNTERS_GET", 0, "", FuncTHREAD_COUNTERS_GET,
-      "src/threadapi.c:THREAD_COUNTERS_GET" },
-
-    { "THREAD_COUNTERS_RESET", 0, "", FuncTHREAD_COUNTERS_RESET,
-      "src/threadapi.c:THREAD_COUNTERS_RESET" },
-
-    { 0, 0, 0, 0, 0 }
-
-};
-
 Obj TYPE_THREAD;
 Obj TYPE_SEMAPHORE;
 Obj TYPE_CHANNEL;
@@ -1357,131 +959,12 @@ static UInt RNAM_SIGWINCH;
 #endif
 
 
-/****************************************************************************
-**
-*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
-*/
-static Int InitKernel(StructInitInfo * module)
-{
-    /* install info string */
-    InfoBags[T_THREAD].name = "thread";
-    InfoBags[T_SEMAPHORE].name = "channel";
-    InfoBags[T_CHANNEL].name = "channel";
-    InfoBags[T_BARRIER].name = "barrier";
-    InfoBags[T_SYNCVAR].name = "syncvar";
-    InfoBags[T_REGION].name = "region";
-
-    /* install the kind methods */
-    TypeObjFuncs[T_THREAD] = TypeThread;
-    TypeObjFuncs[T_SEMAPHORE] = TypeSemaphore;
-    TypeObjFuncs[T_CHANNEL] = TypeChannel;
-    TypeObjFuncs[T_BARRIER] = TypeBarrier;
-    TypeObjFuncs[T_SYNCVAR] = TypeSyncVar;
-    TypeObjFuncs[T_REGION] = TypeRegion;
-    /* install global variables */
-    InitCopyGVar("TYPE_THREAD", &TYPE_THREAD);
-    InitCopyGVar("TYPE_SEMAPHORE", &TYPE_SEMAPHORE);
-    InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
-    InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
-    InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
-    InitCopyGVar("TYPE_REGION", &TYPE_REGION);
-    DeclareGVar(&LastInaccessibleGVar, "LastInaccessible");
-    DeclareGVar(&MAX_INTERRUPTGVar, "MAX_INTERRUPT");
-    /* install mark functions */
-    InitMarkFuncBags(T_THREAD, MarkNoSubBags);
-#ifndef BOEHM_GC
-    InitMarkFuncBags(T_SEMAPHORE, MarkSemaphoreBag);
-    InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
-    InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
-    InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
-#endif
-    InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
-    InitMarkFuncBags(T_REGION, MarkAllSubBags);
-    InitFreeFuncBag(T_MONITOR, FinalizeMonitor);
-    /* install print functions */
-    PrintObjFuncs[T_THREAD] = PrintThread;
-    PrintObjFuncs[T_SEMAPHORE] = PrintSemaphore;
-    PrintObjFuncs[T_CHANNEL] = PrintChannel;
-    PrintObjFuncs[T_BARRIER] = PrintBarrier;
-    PrintObjFuncs[T_SYNCVAR] = PrintSyncVar;
-    PrintObjFuncs[T_REGION] = PrintRegion;
-    /* install mutability functions */
-    IsMutableObjFuncs[T_THREAD] = AlwaysNo;
-    IsMutableObjFuncs[T_SEMAPHORE] = AlwaysYes;
-    IsMutableObjFuncs[T_CHANNEL] = AlwaysYes;
-    IsMutableObjFuncs[T_BARRIER] = AlwaysYes;
-    IsMutableObjFuncs[T_SYNCVAR] = AlwaysYes;
-    IsMutableObjFuncs[T_REGION] = AlwaysYes;
-    MakeBagTypePublic(T_THREAD);
-    MakeBagTypePublic(T_SEMAPHORE);
-    MakeBagTypePublic(T_CHANNEL);
-    MakeBagTypePublic(T_REGION);
-    MakeBagTypePublic(T_SYNCVAR);
-    MakeBagTypePublic(T_BARRIER);
-    PublicRegion = NewBag(T_REGION, sizeof(Region *));
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-*/
-static Int InitLibrary(StructInitInfo * module)
-{
-    extern pthread_mutex_t KeepAliveLock;
-
-    /* init filters and functions                                          */
-    InitGVarFuncsFromTable(GVarFuncs);
-    SetGVar(&MAX_INTERRUPTGVar, INTOBJ_INT(MAX_INTERRUPT));
-    MakeReadOnlyGVar(GVarName("MAX_INTERRUPT"));
-    /* define signal handler values */
-    RNAM_SIGINT = RNamName("SIGINT");
-    RNAM_SIGCHLD = RNamName("SIGCHLD");
-    RNAM_SIGVTALRM = RNamName("SIGVTALRM");
-#ifdef SIGWINCH
-    RNAM_SIGWINCH = RNamName("SIGWINCH");
-#endif
-
-    /* synchronization */
-    pthread_mutex_init(&KeepAliveLock, NULL);
-
-    /* return success                                                      */
-    return 0;
-}
-
-void InitThreadAPIState()
+void InitThreadAPIState(void)
 {
 }
 
-void DestroyThreadAPIState()
+void DestroyThreadAPIState(void)
 {
-}
-
-
-/****************************************************************************
-**
-*F  InitInfoThreadAPI() . . . . . . . . . . . . . . . table of init functions
-*/
-static StructInitInfo module = {
-    MODULE_BUILTIN, /* type                           */
-    "threadapi",    /* name                           */
-    0,              /* revision entry of c file       */
-    0,              /* revision entry of h file       */
-    0,              /* version                        */
-    0,              /* crc                            */
-    InitKernel,     /* initKernel                     */
-    InitLibrary,    /* initLibrary                    */
-    0,              /* checkInit                      */
-    0,              /* preSave                        */
-    0,              /* postSave                       */
-    0               /* postRestore                    */
-};
-
-StructInitInfo * InitInfoThreadAPI(void)
-{
-    return &module;
 }
 
 #ifndef BOEHM_GC
@@ -2215,7 +1698,7 @@ void SignalBarrier(Barrier * barrier)
         SignalMonitor(ObjPtr(barrier->monitor));
 }
 
-Obj CreateBarrier()
+Obj CreateBarrier(void)
 {
     Bag       barrierBag;
     Barrier * barrier;
@@ -2315,7 +1798,7 @@ int SyncTryWrite(SyncVar * var, Obj value)
     return 1;
 }
 
-Obj CreateSyncVar()
+Obj CreateSyncVar(void)
 {
     Bag       syncvarBag;
     SyncVar * syncvar;
@@ -2990,10 +2473,13 @@ Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self)
     return (Obj)0;
 }
 
+#ifdef SIGWINCH
+    extern void syWindowChangeIntr(int signr);
+#endif
+
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self)
 {
 #ifdef SIGWINCH
-    extern void syWindowChangeIntr(int signr);
     syWindowChangeIntr(SIGWINCH);
 #endif
     return (Obj)0;
@@ -3035,7 +2521,7 @@ Obj FuncSIGWAIT(Obj self, Obj handlers)
     return (Obj)0;
 }
 
-void InitSignals()
+void InitSignals(void)
 {
     struct itimerval timer;
     sigemptyset(&GAPSignals);
@@ -3182,4 +2668,431 @@ Obj FuncTHREAD_COUNTERS_GET(Obj self)
     SET_ELM_PLIST(result, 2, INTOBJ_INT(TLS(LocksContended)));
 
     return result;
+}
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs[] = {
+
+    { "CreateThread", -1, "function", FuncCreateThread,
+      "src/threadapi.c:CreateThread" },
+
+    { "CurrentThread", 0, "", FuncCurrentThread,
+      "src/threadapi.c:CurrentThread" },
+
+    { "ThreadID", 1, "thread", FuncThreadID, "src/threadapi.c:ThreadID" },
+
+    { "WaitThread", 1, "thread", FuncWaitThread,
+      "src/threadapi.c:WaitThread" },
+
+    { "KillThread", 1, "thread", FuncKillThread,
+      "src/threadapi.c:KillThread" },
+
+    { "InterruptThread", 2, "thread, handler", FuncInterruptThread,
+      "src/threadapi.c:InterruptThread" },
+
+    { "SetInterruptHandler", 2, "handler, function", FuncSetInterruptHandler,
+      "src/threadapi.c:SetInterruptHandler" },
+
+    { "PauseThread", 1, "thread", FuncPauseThread,
+      "src/threadapi.c:PauseThread" },
+
+    { "ResumeThread", 1, "thread", FuncResumeThread,
+      "src/threadapi.c:ResumeThread" },
+
+    { "HASH_LOCK", 1, "object", FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
+
+    { "HASH_LOCK_SHARED", 1, "object", FuncHASH_LOCK_SHARED,
+      "src/threadapi.c:HASH_LOCK_SHARED" },
+
+    { "HASH_UNLOCK", 1, "object", FuncHASH_UNLOCK,
+      "src/threadapi.c:HASH_UNLOCK" },
+
+    { "HASH_UNLOCK_SHARED", 1, "object", FuncHASH_UNLOCK_SHARED,
+      "src/threadapi.c:HASH_UNLOCK_SHARED" },
+
+    { "HASH_SYNCHRONIZED", 2, "object, function", FuncHASH_SYNCHRONIZED,
+      "src/threadapi.c:HASH_SYNCHRONIZED" },
+
+    { "SynchronizedShared", 2, "object, function",
+      FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
+
+    { "RegionOf", 1, "object", FuncRegionOf, "src/threadapi.c:RegionOf" },
+
+    { "SetRegionName", 2, "obj, name", FuncSetRegionName,
+      "src/threadapi.c:SetRegionName" },
+
+    { "ClearRegionName", 1, "obj", FuncClearRegionName,
+      "src/threadapi.c:ClearRegionName" },
+
+    { "RegionName", 1, "obj", FuncRegionName, "src/threadapi.c:RegionName" },
+
+    { "WITH_TARGET_REGION", 2, "region, function", FuncWITH_TARGET_REGION,
+      "src/threadapi.c:WITH_TARGET_REGION" },
+
+    { "IsShared", 1, "object", FuncIsShared, "src/threadapi.c:IsShared" },
+
+    { "IsPublic", 1, "object", FuncIsPublic, "src/threadapi.c:IsPublic" },
+
+    { "IsThreadLocal", 1, "object", FuncIsThreadLocal,
+      "src/threadapi.c:IsThreadLocal" },
+
+    { "HaveWriteAccess", 1, "object", FuncHaveWriteAccess,
+      "src/threadapi.c:HaveWriteAccess" },
+
+    { "HaveReadAccess", 1, "object", FuncHaveReadAccess,
+      "src/threadapi.c:HaveReadAccess" },
+
+    { "CreateSemaphore", -1, "[count]", FuncCreateSemaphore,
+      "src/threadapi.c:CreateSemaphore" },
+
+    { "SignalSemaphore", 1, "semaphore", FuncSignalSemaphore,
+      "src/threadapi.c:SignalSemaphore" },
+
+    { "WaitSemaphore", 1, "semaphore", FuncWaitSemaphore,
+      "src/threadapi.c:WaitSemaphore" },
+
+    { "TryWaitSemaphore", 1, "semaphore", FuncTryWaitSemaphore,
+      "src/threadapi.c:TryWaitSemaphore" },
+
+    { "CreateChannel", -1, "[size]", FuncCreateChannel,
+      "src/threadapi.c:CreateChannel" },
+
+    { "DestroyChannel", 1, "channel", FuncDestroyChannel,
+      "src/threadapi.c:DestroyChannel" },
+
+    { "TallyChannel", 1, "channel", FuncTallyChannel,
+      "src/threadapi.c:TallyChannel" },
+
+    { "SendChannel", 2, "channel, obj", FuncSendChannel,
+      "src/threadapi.c:SendChannel" },
+
+    { "TransmitChannel", 2, "channel, obj", FuncTransmitChannel,
+      "src/threadapi.c:TransmitChannel" },
+
+    { "ReceiveChannel", 1, "channel", FuncReceiveChannel,
+      "src/threadapi:ReceiveChannel" },
+
+    { "ReceiveAnyChannel", -1, "channel list", FuncReceiveAnyChannel,
+      "src/threadapi:ReceiveAnyChannel" },
+
+    { "ReceiveAnyChannelWithIndex", -1, "channel list",
+      FuncReceiveAnyChannelWithIndex,
+      "src/threadapi:ReceiveAnyChannelWithIndex" },
+
+    { "MultiReceiveChannel", 2, "channel, count", FuncMultiReceiveChannel,
+      "src/threadapi:MultiReceiveChannel" },
+
+    { "TryReceiveChannel", 2, "channel, obj", FuncTryReceiveChannel,
+      "src/threadapi.c:TryReceiveChannel" },
+
+    { "MultiSendChannel", 2, "channel, list", FuncMultiSendChannel,
+      "src/threadapi:MultiSendChannel" },
+
+    { "TryMultiSendChannel", 2, "channel, list", FuncTryMultiSendChannel,
+      "src/threadapi:TryMultiSendChannel" },
+
+    { "TrySendChannel", 2, "channel, obj", FuncTrySendChannel,
+      "src/threadapi.c:TrySendChannel" },
+
+    { "MultiTransmitChannel", 2, "channel, list", FuncMultiTransmitChannel,
+      "src/threadapi:MultiTransmitChannel" },
+
+    { "TryMultiTransmitChannel", 2, "channel, list",
+      FuncTryMultiTransmitChannel, "src/threadapi:TryMultiTransmitChannel" },
+
+    { "TryTransmitChannel", 2, "channel, obj", FuncTryTransmitChannel,
+      "src/threadapi.c:TryTransmitChannel" },
+
+    { "InspectChannel", 1, "channel, obj", FuncInspectChannel,
+      "src/threadapi.c:InspectChannel" },
+
+    { "CreateBarrier", 0, "", FuncCreateBarrier,
+      "src/threadapi.c:CreateBarrier" },
+
+    { "StartBarrier", 2, "barrier, count", FuncStartBarrier,
+      "src/threadapi.c:StartBarrier" },
+
+    { "WaitBarrier", 1, "barrier", FuncWaitBarrier,
+      "src/threadapi.c:WaitBarrier" },
+
+    { "CreateSyncVar", 0, "", FuncCreateSyncVar,
+      "src/threadapi.c:CreateSyncVar" },
+
+    { "SyncWrite", 2, "syncvar, obj", FuncSyncWrite,
+      "src/threadapi.c:SyncWrite" },
+
+    { "SyncTryWrite", 2, "syncvar, obj", FuncSyncTryWrite,
+      "src/threadapi.c:SyncTryWrite" },
+
+    { "SyncRead", 1, "syncvar", FuncSyncRead, "src/threadapi.c:SyncRead" },
+
+    { "SyncIsBound", 1, "syncvar", FuncSyncIsBound,
+      "src/threadapi.c:SyncIsBound" },
+
+    { "IS_LOCKED", 1, "obj", FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
+
+    { "WriteLock", -1, "obj, ...", FuncWriteLock,
+      "src/threadapi.c:WriteLock" },
+
+    { "ReadLock", -1, "obj, ...", FuncReadLock, "src/threadapi.c:ReadLock" },
+
+    { "LOCK", -1, "obj, ...", FuncLOCK, "src/threadapi.c:LOCK" },
+
+    { "DO_LOCK", -1, "obj, ...", FuncDO_LOCK, "src/threadapi.c:DO_LOCK" },
+
+    { "WRITE_LOCK", 1, "obj", FuncWRITE_LOCK, "src/threadapi.c:WRITE_LOCK" },
+
+    { "READ_LOCK", 1, "obj", FuncREAD_LOCK, "src/threadapi.c:READ_LOCK" },
+
+    { "TRYLOCK", -1, "obj, ...", FuncTRYLOCK, "src/threadapi.c:TRYLOCK" },
+
+    { "UNLOCK", 1, "obj, newsp", FuncUNLOCK, "src/threadapi.c:LOCK" },
+
+    { "CURRENT_LOCKS", 0, "", FuncCURRENT_LOCKS,
+      "src/threadapi.c:FuncCURRENT_LOCKS" },
+
+    { "REFINE_TYPE", 1, "obj", FuncREFINE_TYPE,
+      "src/threadapi.c:REFINE_TYPE" },
+
+    { "SHARE_NORECURSE", 3, "obj, string, integer", FuncSHARE_NORECURSE,
+      "src/threadapi.c:SHARE_NORECURSE" },
+
+    { "ADOPT_NORECURSE", 1, "obj", FuncADOPT_NORECURSE,
+      "src/threadapi.c:ADOPT_NORECURSE" },
+
+    { "MIGRATE_NORECURSE", 2, "obj, target", FuncMIGRATE_NORECURSE,
+      "src/threadapi.c:MIGRATE_NORECURSE" },
+
+    { "NEW_REGION", 2, "string, integer", FuncNEW_REGION,
+      "src/threadapi.c:NEW_REGION" },
+
+    { "REGION_PRECEDENCE", 1, "obj", FuncREGION_PRECEDENCE,
+      "src/threadapi.c:REGION_PRECEDENCE" },
+
+    { "SHARE", 3, "obj, string, integer", FuncSHARE,
+      "src/threadapi.c:SHARE" },
+
+    { "SHARE_RAW", 3, "obj, string, integer", FuncSHARE_RAW,
+      "src/threadapi.c:SHARE_RAW" },
+
+    { "ADOPT", 1, "obj", FuncADOPT, "src/threadapi.c:ADOPT" },
+
+    { "MIGRATE", 2, "obj, target", FuncMIGRATE, "src/threadapi.c:MIGRATE" },
+
+    { "MIGRATE_RAW", 2, "obj, target", FuncMIGRATE_RAW,
+      "src/threadapi.c:MIGRATE_RAW" },
+
+    { "MAKE_PUBLIC_NORECURSE", 1, "obj", FuncMAKE_PUBLIC_NORECURSE,
+      "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
+
+    { "MAKE_PUBLIC", 1, "obj", FuncMAKE_PUBLIC,
+      "src/threadapi.c:MAKE_PUBLIC" },
+
+    { "FORCE_MAKE_PUBLIC", 1, "obj", FuncFORCE_MAKE_PUBLIC,
+      "src/threadapi.c:FORCE_MAKE_PUBLIC" },
+
+    { "REACHABLE", 1, "obj", FuncREACHABLE, "src/threadapi.c:REACHABLE" },
+
+    { "CLONE_REACHABLE", 1, "obj", FuncCLONE_REACHABLE,
+      "src/threadapi.c:CLONE_REACHABLE" },
+
+    { "CLONE_DELIMITED", 1, "obj", FuncCLONE_DELIMITED,
+      "src/threadapi.c:CLONE_DELIMITED" },
+
+    { "MakeThreadLocal", 1, "variable name", FuncMakeThreadLocal,
+      "src/threadapi.c:MakeThreadLocal" },
+
+    { "MakeReadOnly", 1, "obj", FuncMakeReadOnly,
+      "src/threadapi.c:MakeReadOnly" },
+
+    { "MakeReadOnlyRaw", 1, "obj", FuncMakeReadOnlyRaw,
+      "src/threadapi.c:MakeReadOnlyRaw" },
+
+    { "MakeReadOnlyObj", 1, "obj", FuncMakeReadOnlyObj,
+      "src/threadapi.c:MakeReadOnlyObj" },
+
+    { "IsReadOnly", 1, "obj", FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
+
+    { "ENABLE_AUTO_RETYPING", 0, "", FuncENABLE_AUTO_RETYPING,
+      "src/threadapi.c:ENABLE_AUTO_RETYPING" },
+
+    { "ORDERED_READ", 1, "obj", FuncORDERED_READ,
+      "src/threadapi.c:ORDERED_READ" },
+
+    { "ORDERED_WRITE", 1, "obj", FuncORDERED_WRITE,
+      "src/threadapi.c:ORDERED_WRITE" },
+
+    { "CREATOR_OF", 1, "obj", FuncCREATOR_OF, "src/threadapi.c:CREATOR_OF" },
+
+    { "DISABLE_GUARDS", 1, "flag", FuncDISABLE_GUARDS,
+      "src/threadapi.c:DISABLE_GUARDS" },
+
+    { "DEFAULT_SIGINT_HANDLER", 0, "", FuncDEFAULT_SIGINT_HANDLER,
+      "src/threadapi.c:DEFAULT_SIGINT_HANDLER" },
+
+    { "DEFAULT_SIGVTALRM_HANDLER", 0, "", FuncDEFAULT_SIGVTALRM_HANDLER,
+      "src/threadapi.c:DEFAULT_SIGVTALRM_HANDLER" },
+
+    { "DEFAULT_SIGWINCH_HANDLER", 0, "", FuncDEFAULT_SIGWINCH_HANDLER,
+      "src/threadapi.c:DEFAULT_SIGWINCH_HANDLER" },
+
+    { "SIGWAIT", 1, "record", FuncSIGWAIT, "src/threadapi.c:SIGWAIT" },
+
+    { "PERIODIC_CHECK", 2, "count, function", FuncPERIODIC_CHECK,
+      "src/threadapi.c:PERIODIC_CHECK" },
+
+    { "REGION_COUNTERS_ENABLE", 1, "region", FuncREGION_COUNTERS_ENABLE,
+      "src/threadapi.c:REGION_COUNTERS_ENABLE" },
+
+    { "REGION_COUNTERS_DISABLE", 1, "region", FuncREGION_COUNTERS_DISABLE,
+      "src/threadapi.c:REGION_COUNTERS_DISABLE" },
+
+    { "REGION_COUNTERS_GET_STATE", 1, "region", FuncREGION_COUNTERS_GET_STATE,
+      "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
+
+    { "REGION_COUNTERS_GET", 1, "region", FuncREGION_COUNTERS_GET,
+      "src/threadapi.c:REGION_COUNTERS_GET" },
+
+    { "REGION_COUNTERS_RESET", 1, "region", FuncREGION_COUNTERS_RESET,
+      "src/threadapi.c:REGION_COUNTERS_RESET" },
+
+    { "THREAD_COUNTERS_ENABLE", 0, "", FuncTHREAD_COUNTERS_ENABLE,
+      "src/threadapi.c:THREAD_COUNTERS_ENABLE" },
+
+    { "THREAD_COUNTERS_DISABLE", 0, "", FuncTHREAD_COUNTERS_DISABLE,
+      "src/threadapi.c:THREAD_COUNTERS_DISABLE" },
+
+    { "THREAD_COUNTERS_GET_STATE", 0, "", FuncTHREAD_COUNTERS_GET_STATE,
+      "src/threadapi.c:THREAD_COUNTERS_GET_STATE" },
+
+    { "THREAD_COUNTERS_GET", 0, "", FuncTHREAD_COUNTERS_GET,
+      "src/threadapi.c:THREAD_COUNTERS_GET" },
+
+    { "THREAD_COUNTERS_RESET", 0, "", FuncTHREAD_COUNTERS_RESET,
+      "src/threadapi.c:THREAD_COUNTERS_RESET" },
+
+    { 0, 0, 0, 0, 0 }
+
+};
+
+
+/****************************************************************************
+**
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel(StructInitInfo * module)
+{
+    /* install info string */
+    InfoBags[T_THREAD].name = "thread";
+    InfoBags[T_SEMAPHORE].name = "channel";
+    InfoBags[T_CHANNEL].name = "channel";
+    InfoBags[T_BARRIER].name = "barrier";
+    InfoBags[T_SYNCVAR].name = "syncvar";
+    InfoBags[T_REGION].name = "region";
+
+    /* install the kind methods */
+    TypeObjFuncs[T_THREAD] = TypeThread;
+    TypeObjFuncs[T_SEMAPHORE] = TypeSemaphore;
+    TypeObjFuncs[T_CHANNEL] = TypeChannel;
+    TypeObjFuncs[T_BARRIER] = TypeBarrier;
+    TypeObjFuncs[T_SYNCVAR] = TypeSyncVar;
+    TypeObjFuncs[T_REGION] = TypeRegion;
+    /* install global variables */
+    InitCopyGVar("TYPE_THREAD", &TYPE_THREAD);
+    InitCopyGVar("TYPE_SEMAPHORE", &TYPE_SEMAPHORE);
+    InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
+    InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
+    InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
+    InitCopyGVar("TYPE_REGION", &TYPE_REGION);
+    DeclareGVar(&LastInaccessibleGVar, "LastInaccessible");
+    DeclareGVar(&MAX_INTERRUPTGVar, "MAX_INTERRUPT");
+    /* install mark functions */
+    InitMarkFuncBags(T_THREAD, MarkNoSubBags);
+#ifndef BOEHM_GC
+    InitMarkFuncBags(T_SEMAPHORE, MarkSemaphoreBag);
+    InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
+    InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
+    InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
+#endif
+    InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
+    InitMarkFuncBags(T_REGION, MarkAllSubBags);
+    InitFreeFuncBag(T_MONITOR, FinalizeMonitor);
+    /* install print functions */
+    PrintObjFuncs[T_THREAD] = PrintThread;
+    PrintObjFuncs[T_SEMAPHORE] = PrintSemaphore;
+    PrintObjFuncs[T_CHANNEL] = PrintChannel;
+    PrintObjFuncs[T_BARRIER] = PrintBarrier;
+    PrintObjFuncs[T_SYNCVAR] = PrintSyncVar;
+    PrintObjFuncs[T_REGION] = PrintRegion;
+    /* install mutability functions */
+    IsMutableObjFuncs[T_THREAD] = AlwaysNo;
+    IsMutableObjFuncs[T_SEMAPHORE] = AlwaysYes;
+    IsMutableObjFuncs[T_CHANNEL] = AlwaysYes;
+    IsMutableObjFuncs[T_BARRIER] = AlwaysYes;
+    IsMutableObjFuncs[T_SYNCVAR] = AlwaysYes;
+    IsMutableObjFuncs[T_REGION] = AlwaysYes;
+    MakeBagTypePublic(T_THREAD);
+    MakeBagTypePublic(T_SEMAPHORE);
+    MakeBagTypePublic(T_CHANNEL);
+    MakeBagTypePublic(T_REGION);
+    MakeBagTypePublic(T_SYNCVAR);
+    MakeBagTypePublic(T_BARRIER);
+    PublicRegion = NewBag(T_REGION, sizeof(Region *));
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary(StructInitInfo * module)
+{
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable(GVarFuncs);
+    SetGVar(&MAX_INTERRUPTGVar, INTOBJ_INT(MAX_INTERRUPT));
+    MakeReadOnlyGVar(GVarName("MAX_INTERRUPT"));
+    /* define signal handler values */
+    RNAM_SIGINT = RNamName("SIGINT");
+    RNAM_SIGCHLD = RNamName("SIGCHLD");
+    RNAM_SIGVTALRM = RNamName("SIGVTALRM");
+#ifdef SIGWINCH
+    RNAM_SIGWINCH = RNamName("SIGWINCH");
+#endif
+
+    /* synchronization */
+    pthread_mutex_init(&KeepAliveLock, NULL);
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoThreadAPI() . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN, /* type                           */
+    "threadapi",    /* name                           */
+    0,              /* revision entry of c file       */
+    0,              /* revision entry of h file       */
+    0,              /* version                        */
+    0,              /* crc                            */
+    InitKernel,     /* initKernel                     */
+    InitLibrary,    /* initLibrary                    */
+    0,              /* checkInit                      */
+    0,              /* preSave                        */
+    0,              /* postSave                       */
+    0               /* postRestore                    */
+};
+
+StructInitInfo * InitInfoThreadAPI(void)
+{
+    return &module;
 }
