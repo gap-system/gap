@@ -208,27 +208,20 @@ dnl
 dnl User setting: Enable -Werror (off by default)
 dnl
 
-# Enable warnings
-WARNING_CPPFLAGS="-Wall -Wextra -Wshadow"
-
-# ... disable some annoying warnings ...
-WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-unused-parameter"
-WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-sign-compare"
-WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-implicit-fallthrough"
-
-# ... and disable warnings about unknown warnings for clang
-WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Wno-unknown-warning-option"
-
-# TODO: detect which warnings are supported by the compiler
-
 AC_ARG_ENABLE([Werror],
-    AS_HELP_STRING([--enable-Werror], [treat compiler warnings as errors]))
-
-AS_IF([test "x$enable_Werror" != "xno"], [
-  WARNING_CPPFLAGS="$WARNING_CPPFLAGS -Werror"
-])
-AC_MSG_CHECKING([whether to treat compiler warnings as errors])
+    AS_HELP_STRING([--enable-Werror], [treat compiler warnings as errors]),
+    [],
+    [enable_Werror=no])
+AC_MSG_CHECKING([whether to treat C compiler warnings as errors])
 AC_MSG_RESULT([$enable_Werror])
+
+
+AS_IF([test "x$enable_Werror" != "xno"],
+  [ax_enable_compile_warnings=error],
+  [ax_enable_compile_warnings=yes])
+
+#WARNING_CPPFLAGS=""
+AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
 AC_SUBST([WARNING_CPPFLAGS])
 
 dnl
@@ -476,8 +469,6 @@ case "$host_os" in
     ;;
 esac
 
-dnl Note: AC_DEFINE defines conditionals to be put in config.h, while
-dnl AM_CONDITIONAL defines conditionals for use in in Makefile.am
 AC_SUBST([SYS_IS_CYGWIN32], [$CYGWIN])
 SYS_IS_DARWIN=$DARWIN
 AC_SUBST([SYS_IS_DARWIN])
