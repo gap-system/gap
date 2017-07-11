@@ -474,7 +474,7 @@ void * ThreadTLS(Obj thread)
 
 static UInt LockID(void * object)
 {
-#if CUSTOM_OBJECT_HASH
+#ifdef CUSTOM_OBJECT_HASH
     UInt p = (UInt)object;
     if (sizeof(void *) == 4)
         return ((p >> 2) ^ (p >> (2 + LOG2_NUM_LOCKS)) ^
