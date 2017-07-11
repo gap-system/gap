@@ -2652,7 +2652,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
   /* And also the DotGapPath if available */
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
   tmp = MakeImmString( DotGapPath );
   r = RNamName("DOT_GAP_PATH");
   AssPRec(res,r,tmp);
@@ -2962,7 +2962,7 @@ static Int InitKernel (
     DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
 #endif
 
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
     InitCopyGVar("OnCharReadHookInFds",&OnCharReadHookInFds);
     InitCopyGVar("OnCharReadHookInFuncs",&OnCharReadHookInFuncs);

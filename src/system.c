@@ -46,7 +46,7 @@
 #include <unistd.h>                     /* definition of 'R_OK' */
 
 
-#if HAVE_LIBREADLINE
+#ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>          /* readline for interactive input */
 #endif
 
@@ -54,15 +54,15 @@
 
 #include <sys/time.h>                   /* definition of 'struct timeval' */
 
-#if HAVE_SYS_RESOURCE_H
+#ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
 
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
 #include <sys/mman.h>
 #endif
 
-#if SYS_IS_DARWIN
+#ifdef SYS_IS_DARWIN
 #include <mach/mach_time.h>
 #endif
 
@@ -190,7 +190,7 @@ Int SyDebugLoading;
 #define MAX_GAP_DIRS 128
 */
 Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
 Char DotGapPath[GAP_PATH_MAX];
 #endif
 
@@ -795,7 +795,7 @@ UInt * * * syWorkspace = NULL;
 UInt       syWorksize = 0;
 
 
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -842,7 +842,7 @@ void SyMAdviseFree() {
      * by users...
      */
 #ifndef NO_DIRTY_OSX_MMAP_TRICK
-#if SYS_IS_DARWIN
+#ifdef SYS_IS_DARWIN
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
         fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
@@ -920,7 +920,7 @@ int halvingsdone = 0;
 
 void SyInitialAllocPool( void )
 {
-#if HAVE_SYSCONF
+#ifdef HAVE_SYSCONF
 #ifdef _SC_PAGESIZE
    pagesize = sysconf(_SC_PAGESIZE);
 #endif
@@ -930,7 +930,7 @@ void SyInitialAllocPool( void )
    do {
        /* Always round up to pagesize: */
        SyAllocPool = SyRoundUpToPagesize(SyAllocPool);
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
        POOL = SyAnonMMap(SyAllocPool+pagesize);   /* For alignment */
 #else
        POOL = calloc(SyAllocPool+pagesize,1);   /* For alignment */
@@ -975,7 +975,7 @@ UInt ***SyAllocBagsFromPool(Int size, UInt need)
     return (UInt***)-1;
 }
 
-#if HAVE_SBRK && ! HAVE_VM_ALLOCATE /* prefer `vm_allocate' over `sbrk' */
+#if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
 
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1104,7 +1104,7 @@ UInt * * * SyAllocBags (
 **
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
-#if HAVE_VM_ALLOCATE
+#ifdef HAVE_VM_ALLOCATE
 
 #include <mach/mach.h>
 
@@ -1487,7 +1487,7 @@ static void SySetGapRootPath( const Char * string )
         while ( *p && *p != ';' ) {
             *q = *p++;
 
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
             /* fix up for DOS */
             if (*q == '\\')
               *q = '/';
@@ -1776,7 +1776,7 @@ void InitSystem (
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
     SyStorMax = 1024*1024L;          /* This is in kB! */
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     SyAllocPool = 0;                 /* works better on cygwin */
 #else
     SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
@@ -1795,10 +1795,10 @@ void InitSystem (
       }
     }
 
-#if HAVE_VM_ALLOCATE
+#ifdef HAVE_VM_ALLOCATE
     syBase = 0;
     syWorksize = 0;
-#elif HAVE_SBRK
+#elif defined(HAVE_SBRK)
     syWorkspace = (UInt ***)0;
 #endif
     /*  nopts = 0;
@@ -1809,7 +1809,7 @@ void InitSystem (
     preAllocAmount = 4*1024*1024;
     
     /* open the standard files                                             */
-#if HAVE_TTYNAME
+#ifdef HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
     syBuf[0].bufno = -1;
     if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL ) {
@@ -1851,13 +1851,13 @@ void InitSystem (
     for (i = 0; i < ARRAY_SIZE(syBuffers); i++)
           syBuffers[i].inuse = 0;
 
-#if HAVE_LIBREADLINE
+#ifdef HAVE_LIBREADLINE
     rl_initialize ();
 #endif
     
     SyInstallAnswerIntr();
 
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
 #elif defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
@@ -1925,7 +1925,7 @@ void InitSystem (
           
       }
     /* adjust SyUseReadline if no readline support available or for XGAP  */
-#if !HAVE_LIBREADLINE
+#if !defined(HAVE_LIBREADLINE)
     SyUseReadline = 0;
 #endif
     if (SyWindow) SyUseReadline = 0;
@@ -1990,7 +1990,7 @@ void InitSystem (
     }
     */
 
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
         strxcpy(SyUserHome, getenv("HOME"), sizeof(SyUserHome));

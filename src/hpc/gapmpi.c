@@ -246,7 +246,7 @@ SYS_SIG_T ParGAPAnswerIntr( int signr ) {
   */
     ReadEvalError(); /* throw to MPI_READ_ERROR() */
   /*NOTREACHED*/
-#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
+#if defined(SYS_HAS_SIG_T) && !defined(HAVE_SIGNAL_VOID)
   return 0;                           /* is ignored                      */
 #endif
 }
