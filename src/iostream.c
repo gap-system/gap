@@ -280,7 +280,6 @@ static void ChildStatusChanged(int whichsig)
 #ifdef HPCGAP
 Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 {
-    extern void ChildStatusChanged(int signr);
     ChildStatusChanged(SIGCHLD);
     return (Obj)0;
 }

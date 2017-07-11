@@ -179,7 +179,6 @@ static inline void MakeHighVars( Bag bag ) {
 */
 
 extern Obj STEVES_TRACING;
-extern Obj True;
 
 #include <stdio.h>
 

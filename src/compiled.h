@@ -91,12 +91,6 @@ extern "C" {
 
 #include <src/hpc/aobjects.h>           /* atomic variables */
 extern Obj InfoDecision;
-extern Obj InfoDoPrint;
-extern Obj CurrentAssertionLevel;
-
-extern Obj NewAndFilter (
-    Obj                 oper1,
-    Obj                 oper2 );
 
 
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
@@ -297,14 +291,6 @@ typedef UInt    RNam;
 
 #define C_UNB_LIST( list, pos) \
    if (IS_POS_INTOBJ(pos)) UNB_LIST(list, INT_INTOBJ(pos)); else UNBB_LIST(list, pos);
-
-extern  void            AddList (
-            Obj                 list,
-            Obj                 obj );
-
-extern  void            AddPlist (
-            Obj                 list,
-            Obj                 obj );
 
 #define C_ADD_LIST(list,obj) \
  AddList( list, obj );

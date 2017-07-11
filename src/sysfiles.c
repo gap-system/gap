@@ -47,6 +47,8 @@
 
 #include <src/gaputils.h>
 
+#include <src/stats.h>
+
 #include <assert.h>
 #include <fcntl.h>
 
@@ -913,12 +915,6 @@ Int SyIsEndOfFile (
 **  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
 **  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
 */
-
-extern UInt syStartraw (
-            Int                 fid );
-
-extern void syStopraw (
-            Int                 fid );
 
 /****************************************************************************
 **  For UNIX System V, input/output redirection and typeahead are  supported.

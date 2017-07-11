@@ -1193,8 +1193,6 @@ Obj FuncIS_BLIST (
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-Obj IsBlistFilt;
-
 Obj FuncIS_BLIST_CONV (
     Obj                 self,
     Obj                 val )

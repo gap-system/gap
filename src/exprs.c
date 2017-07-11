@@ -265,10 +265,6 @@ Obj             EvalOr (
 **
 **      if (index <= max) and (list[index] = 0)  then ... fi;
 */
-extern  Obj             NewAndFilter (
-            Obj                     oper1,
-            Obj                     oper2 );
-
 Obj             EvalAnd (
     Expr                expr )
 {
