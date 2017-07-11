@@ -372,7 +372,7 @@ void SerializeInt(Obj obj)
     }
 }
 
-Obj DeserializeInt()
+Obj DeserializeInt(UInt tnum)
 {
     Int n = ReadByte();
     switch (n & 3) {
@@ -403,7 +403,7 @@ void SerializeFFE(Obj obj)
     WriteByte(ffe & 0xff);
 }
 
-Obj DeserializeFFE()
+Obj DeserializeFFE(UInt tnum)
 {
     UInt ffe = 0;
     ffe = ReadByte();
@@ -827,7 +827,7 @@ Obj DeserializeTypedObj(UInt tnum)
     case T_STRING:
     case T_STRING + IMMUTABLE:
         if (tagtnum == T_INT) {
-            tag = DeserializeInt();
+            tag = DeserializeInt(T_INT);
             type = LookupIntTag(tag);
         }
         else {
