@@ -1142,7 +1142,7 @@ static Obj  HdlrFunc11 (
            t_1 = (Obj)(((UInt)t_1)+4) ) {
       l_i = t_1;
       
-      /* if IsBound( cached![i]) then */
+      /* if IsBound( cached![i] ) then */
       CHECK_INT_SMALL_POS( l_i )
       if ( TNUM_OBJ(l_cached) == T_POSOBJ ) {
        t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(l_cached)/sizeof(Obj)-1
@@ -1223,7 +1223,7 @@ static Obj  HdlrFunc11 (
            t_1 = (Obj)(((UInt)t_1)+4) ) {
       l_i = t_1;
       
-      /* if IsBound( parent![i]) <> IsBound( cached![i]) then */
+      /* if IsBound( parent![i] ) <> IsBound( cached![i] ) then */
       CHECK_INT_SMALL_POS( l_i )
       if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
        t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
@@ -1260,7 +1260,7 @@ static Obj  HdlrFunc11 (
       }
       /* fi */
       
-      /* if IsBound( parent![i]) and IsBound( cached![i]) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
+      /* if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
       if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
        t_7 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
           && ELM_PLIST(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False);
@@ -1438,7 +1438,7 @@ static Obj  HdlrFunc11 (
         t_1 = (Obj)(((UInt)t_1)+4) ) {
    l_i = t_1;
    
-   /* if IsBound( parent![i]) and not IsBound( type[i] ) then */
+   /* if IsBound( parent![i] ) and not IsBound( type[i] ) then */
    CHECK_INT_SMALL_POS( l_i )
    if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
     t_6 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
@@ -4135,7 +4135,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
-      if mutflag  then
+      if mutflag then
           InstallOtherMethod( setter, "system mutable setter", true, [ IsAttributeStoringRep, IS_OBJECT ], 0, function ( obj, val )
                 obj!.(name) := val;
                 SetFilterObj( obj, tester );
@@ -4170,12 +4170,12 @@ static Obj  HdlrFunc1 (
  AssGVar( G_DS__TYPE__CACHE, t_1 );
  
  /* BIND_GLOBAL( "NEW_FAMILY", function ( typeOfFamilies, name, req_filter, imp_filter )
-      local  lock, type, pair, family;
+      local lock, type, pair, family;
       imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
       type := Subtype( typeOfFamilies, IsAttributeStoringRep );
       lock := READ_LOCK( CATEGORIES_FAMILY );
-      for pair  in CATEGORIES_FAMILY  do
-          if IS_SUBSET_FLAGS( imp_filter, pair[1] )  then
+      for pair in CATEGORIES_FAMILY do
+          if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then
               type := Subtype( type, pair[2] );
           fi;
       od;
@@ -4266,13 +4266,13 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily", function ( arg... )
-      if LEN_LIST( arg ) = 1  then
+      if LEN_LIST( arg ) = 1 then
           return NewFamily2( TypeOfFamilies, arg[1] );
-      elif LEN_LIST( arg ) = 2  then
+      elif LEN_LIST( arg ) = 2 then
           return NewFamily3( TypeOfFamilies, arg[1], arg[2] );
-      elif LEN_LIST( arg ) = 3  then
+      elif LEN_LIST( arg ) = 3 then
           return NewFamily4( TypeOfFamilies, arg[1], arg[2], arg[3] );
-      elif LEN_LIST( arg ) = 4  then
+      elif LEN_LIST( arg ) = 4 then
           return NewFamily5( TypeOfFamilies, arg[1], arg[2], arg[3], arg[4] );
       else
           Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
@@ -4298,42 +4298,42 @@ static Obj  HdlrFunc1 (
  AssGVar( G_NEW__TYPE__CACHE__HIT, INTOBJ_INT(0) );
  
  /* BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
-      local  lock, hash, cache, cached, type, ncache, ncl, t, i, match;
+      local lock, hash, cache, cached, type, ncache, ncl, t, i, match;
       lock := WRITE_LOCK( DS_TYPE_CACHE );
       cache := family!.TYPES;
       hash := HASH_FLAGS( flags ) mod family!.HASH_SIZE + 1;
-      if IsBound( cache[hash] )  then
+      if IsBound( cache[hash] ) then
           cached := cache[hash];
-          if IS_EQUAL_FLAGS( flags, cached![2] )  then
+          if IS_EQUAL_FLAGS( flags, cached![2] ) then
               flags := cached![2];
-              if IS_IDENTICAL_OBJ( data, cached![POS_DATA_TYPE] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) )  then
-                  if IS_IDENTICAL_OBJ( parent, fail )  then
+              if IS_IDENTICAL_OBJ( data, cached![POS_DATA_TYPE] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then
+                  if IS_IDENTICAL_OBJ( parent, fail ) then
                       match := true;
-                      for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ]  do
-                          if IsBound( cached![i])  then
+                      for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ] do
+                          if IsBound( cached![i] ) then
                               match := false;
                               break;
                           fi;
                       od;
-                      if match  then
+                      if match then
                           NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
                           UNLOCK( lock );
                           return cached;
                       fi;
                   fi;
-                  if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached )  then
+                  if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
                       match := true;
-                      for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ]  do
-                          if IsBound( parent![i]) <> IsBound( cached![i])  then
+                      for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+                          if IsBound( parent![i] ) <> IsBound( cached![i] ) then
                               match := false;
                               break;
                           fi;
-                          if IsBound( parent![i]) and IsBound( cached![i]) and not IS_IDENTICAL_OBJ( parent![i], cached![i] )  then
+                          if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then
                               match := false;
                               break;
                           fi;
                       od;
-                      if match  then
+                      if match then
                           NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
                           UNLOCK( lock );
                           return cached;
@@ -4344,7 +4344,7 @@ static Obj  HdlrFunc1 (
           NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1;
       fi;
       NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1;
-      if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT  then
+      if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then
           GASMAN( "collect" );
           FLUSH_ALL_METHOD_CACHES(  );
           NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS(  );
@@ -4352,18 +4352,18 @@ static Obj  HdlrFunc1 (
       type := [ family, flags ];
       type[POS_DATA_TYPE] := MakeReadOnly( data );
       type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
-      if not IS_IDENTICAL_OBJ( parent, fail )  then
-          for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ]  do
-              if IsBound( parent![i]) and not IsBound( type[i] )  then
+      if not IS_IDENTICAL_OBJ( parent, fail ) then
+          for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+              if IsBound( parent![i] ) and not IsBound( type[i] ) then
                   type[i] := parent![i];
               fi;
           od;
       fi;
       SET_TYPE_POSOBJ( type, typeOfTypes );
-      if 3 * family!.nTYPES > family!.HASH_SIZE  then
+      if 3 * family!.nTYPES > family!.HASH_SIZE then
           ncache := MIGRATE_RAW( [  ], DS_TYPE_CACHE );
           ncl := 3 * family!.HASH_SIZE + 1;
-          for t  in cache  do
+          for t in cache do
               ncache[HASH_FLAGS( t![2] ) mod ncl + 1] := t;
           od;
           family!.HASH_SIZE := ncl;
@@ -4420,13 +4420,13 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewType", function ( arg... )
-      local  type;
-      if not IsFamily( arg[1] )  then
+      local type;
+      if not IsFamily( arg[1] ) then
           Error( "<family> must be a family" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           type := NewType3( TypeOfTypes, arg[1], arg[2] );
-      elif LEN_LIST( arg ) = 3  then
+      elif LEN_LIST( arg ) = 3 then
           type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
       else
           Error( "usage: NewType( <family>, <filter> [, <data> ] )" );
@@ -4479,12 +4479,12 @@ static Obj  HdlrFunc1 (
  AssGVar( G_Subtype, 0 );
  
  /* BIND_GLOBAL( "Subtype", function ( arg... )
-      local  p;
+      local p;
       p := READ_LOCK( arg );
-      if not IsType( arg[1] )  then
+      if not IsType( arg[1] ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           return Subtype2( arg[1], arg[2] );
       else
           return Subtype3( arg[1], arg[2], arg[3] );
@@ -4535,10 +4535,10 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SupType", function ( arg... )
-      if not IsType( arg[1] )  then
+      if not IsType( arg[1] ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           return SupType2( arg[1], arg[2] );
       else
           return SupType3( arg[1], arg[2], arg[3] );
@@ -4663,15 +4663,15 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetTypeObj", function ( type, obj )
-      if not IsType( type )  then
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if IS_LIST( obj )  then
+      if IS_LIST( obj ) then
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_REC( obj )  then
+      elif IS_REC( obj ) then
           SET_TYPE_COMOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
       return obj;
@@ -4719,30 +4719,30 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "Objectify", function ( type, obj )
-      local  flags;
-      if not IsType( type )  then
+      local flags;
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
       flags := FlagsType( type );
-      if IS_LIST( obj )  then
-          if IS_SUBSET_FLAGS( flags, IsAtomicPositionalObjectRepFlags )  then
+      if IS_LIST( obj ) then
+          if IS_SUBSET_FLAGS( flags, IsAtomicPositionalObjectRepFlags ) then
               FORCE_SWITCH_OBJ( obj, FixedAtomicList( obj ) );
           fi;
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_REC( obj )  then
-          if IS_ATOMIC_RECORD( obj )  then
-              if IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags )  then
+      elif IS_REC( obj ) then
+          if IS_ATOMIC_RECORD( obj ) then
+              if IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags ) then
                   FORCE_SWITCH_OBJ( obj, FromAtomicRecord( obj ) );
               fi;
-          elif not IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags )  then
+          elif not IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags ) then
               FORCE_SWITCH_OBJ( obj, AtomicRecord( obj ) );
           fi;
           SET_TYPE_COMOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
-      if IsReadOnlyPositionalObjectRep( obj )  then
+      if IsReadOnlyPositionalObjectRep( obj ) then
           MakeReadOnlyObj( obj );
       fi;
       return obj;
@@ -4760,17 +4760,17 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
-      if not IsType( type )  then
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if IS_POSOBJ( obj )  then
+      if IS_POSOBJ( obj ) then
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           SET_TYPE_COMOBJ( obj, type );
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           SET_TYPE_DATOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
       return obj;
@@ -4798,35 +4798,35 @@ static Obj  HdlrFunc1 (
  AssGVar( G_SetFilterObj, 0 );
  
  /* BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
-      local  type, newtype;
-      if IS_POSOBJ( obj )  then
+      local type, newtype;
+      if IS_POSOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_POSOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_COMOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_DATOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_PLIST_REP( obj )  then
+      elif IS_PLIST_REP( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj )  then
+      elif IS_STRING_REP( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj )  then
+      elif IS_BLIST( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj )  then
+      elif IS_RANGE( obj ) then
           SET_FILTER_LIST( obj, filter );
       else
           Error( "cannot set filter for internal object" );
@@ -4853,22 +4853,22 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
-      if IS_AND_FILTER( filter )  then
+      if IS_AND_FILTER( filter ) then
           Error( "You can't reset an \"and-filter\". Reset components individually." );
       fi;
-      if IS_POSOBJ( obj )  then
+      if IS_POSOBJ( obj ) then
           SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_PLIST_REP( obj )  then
+      elif IS_PLIST_REP( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj )  then
+      elif IS_STRING_REP( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj )  then
+      elif IS_BLIST( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj )  then
+      elif IS_RANGE( obj ) then
           RESET_FILTER_LIST( obj, filter );
       else
           Error( "cannot reset filter for internal object" );
@@ -4895,7 +4895,7 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
-      if val  then
+      if val then
           SetFilterObj( obj, filter );
       else
           ResetFilterObj( obj, filter );
@@ -4915,23 +4915,23 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetMultipleAttributes", function ( arg... )
-      local  obj, type, flags, attr, val, i, extra, nfilt, nflags;
+      local obj, type, flags, attr, val, i, extra, nfilt, nflags;
       obj := arg[1];
-      if IsAttributeStoringRep( obj )  then
+      if IsAttributeStoringRep( obj ) then
           extra := [  ];
           type := TypeObj( obj );
           flags := FlagsType( type );
           nfilt := IS_OBJECT;
-          for i  in [ 2, 4 .. LEN_LIST( arg ) - 1 ]  do
+          for i in [ 2, 4 .. LEN_LIST( arg ) - 1 ] do
               attr := arg[i];
               val := arg[i + 1];
-              if 0 <> FLAG1_FILTER( attr )  then
-                  if val  then
+              if 0 <> FLAG1_FILTER( attr ) then
+                  if val then
                       nfilt := nfilt and attr;
                   else
                       nfilt := nfilt and Tester( attr );
                   fi;
-              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12  then
+              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12 then
                   ADD_LIST( extra, attr );
                   ADD_LIST( extra, val );
               else
@@ -4940,16 +4940,16 @@ static Obj  HdlrFunc1 (
               fi;
           od;
           nflags := FLAGS_FILTER( nfilt );
-          if not IS_SUBSET_FLAGS( flags, nflags )  then
+          if not IS_SUBSET_FLAGS( flags, nflags ) then
               flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
               ChangeTypeObj( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ) ), obj );
           fi;
-          for i  in [ 2, 4 .. LEN_LIST( extra ) ]  do
+          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
               Setter( extra[i - 1] )( obj, extra[i] );
           od;
       else
           extra := arg;
-          for i  in [ 2, 4 .. LEN_LIST( extra ) ]  do
+          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
               Setter( extra[i] )( obj, extra[i + 1] );
           od;
       fi;
@@ -4990,27 +4990,27 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg... )
-      local  obj, type, flags, attr, val, i, extra, nflags;
+      local obj, type, flags, attr, val, i, extra, nflags;
       obj := arg[1];
       type := arg[2];
       flags := FlagsType( type );
       extra := [  ];
-      if not IS_SUBSET_FLAGS( flags, IsAttributeStoringRepFlags )  then
+      if not IS_SUBSET_FLAGS( flags, IsAttributeStoringRepFlags ) then
           extra := arg{[ 3 .. LEN_LIST( arg ) ]};
           INFO_OWA( "#W ObjectifyWithAttributes called ", "for non-attribute storing rep\n" );
           Objectify( type, obj );
       else
           nflags := EMPTY_FLAGS;
-          for i  in [ 3, 5 .. LEN_LIST( arg ) - 1 ]  do
+          for i in [ 3, 5 .. LEN_LIST( arg ) - 1 ] do
               attr := arg[i];
               val := arg[i + 1];
-              if 0 <> FLAG1_FILTER( attr )  then
-                  if val  then
+              if 0 <> FLAG1_FILTER( attr ) then
+                  if val then
                       nflags := AND_FLAGS( nflags, FLAGS_FILTER( attr ) );
                   else
                       nflags := AND_FLAGS( nflags, FLAGS_FILTER( Tester( attr ) ) );
                   fi;
-              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> LENGTH_SETTER_METHODS_2  then
+              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> LENGTH_SETTER_METHODS_2 then
                   ADD_LIST( extra, attr );
                   ADD_LIST( extra, val );
               else
@@ -5018,15 +5018,15 @@ static Obj  HdlrFunc1 (
                   nflags := AND_FLAGS( nflags, FLAGS_FILTER( Tester( attr ) ) );
               fi;
           od;
-          if not IS_SUBSET_FLAGS( flags, nflags )  then
+          if not IS_SUBSET_FLAGS( flags, nflags ) then
               flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
               Objectify( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ), fail ), obj );
           else
               Objectify( type, obj );
           fi;
       fi;
-      for i  in [ 1, 3 .. LEN_LIST( extra ) - 1 ]  do
-          if Tester( extra[i] )( obj )  then
+      for i in [ 1, 3 .. LEN_LIST( extra ) - 1 ] do
+          if Tester( extra[i] )( obj ) then
               INFO_OWA( "#W  Supplied type has tester of ", NAME_FUNC( extra[i] ), "with non-standard setter\n" );
               ResetFilterObj( obj, Tester( extra[i] ) );
           fi;

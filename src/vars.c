@@ -228,7 +228,7 @@ void            PrintIsbLVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -425,7 +425,7 @@ void            PrintIsbHVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -540,7 +540,7 @@ void            PrintIsbGVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -1984,7 +1984,7 @@ void            PrintIsbPosObj (
     Pr("%<![",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[1] );
     Pr("%<]",0L,0L);
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 

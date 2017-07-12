@@ -28,7 +28,7 @@ gap> f(1);
 2
 gap> Print(f,"\n");
 function ( x )
-    atomic L  do
+    atomic L do
         return x + 1;
     od;
     return;
@@ -36,7 +36,7 @@ end
 gap> g := function(x) atomic readwrite L do return x+1; od; end;;
 gap> Print(g,"\n");
 function ( x )
-    atomic readwrite L  do
+    atomic readwrite L do
         return x + 1;
     od;
     return;
@@ -44,7 +44,7 @@ end
 gap> h := function(x) atomic readonly L do return x+1; od; end;;
 gap> Print(h,"\n");
 function ( x )
-    atomic readonly L  do
+    atomic readonly L do
         return x + 1;
     od;
     return;
@@ -52,7 +52,7 @@ end
 gap> h2 := function(x) atomic readonly L,M do return x+1; od; end;;
 gap> Print(h2,"\n");
 function ( x )
-    atomic readonly L, M  do
+    atomic readonly L, M do
         return x + 1;
     od;
     return;
