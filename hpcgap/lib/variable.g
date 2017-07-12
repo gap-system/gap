@@ -170,8 +170,6 @@ end );
 
 BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
 
-BIND_GLOBAL("UNCLONEABLE_TNUMS",MakeImmutable([0,5,8]));
-
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     local tmp;
     if (not IsBound(REREADING) or REREADING = false) and not
@@ -183,7 +181,9 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
     fi;
-    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+    if TNUM_OBJ_INT(value) <= LAST_CONSTANT_TNUM
+        and (TNUM_OBJ_INT(value) = TNUM_OBJ_INT(0)
+             or IS_FFE(value) or IS_BOOL(value)) then
        Error("InstallValue: value cannot be immediate, boolean or character");
     fi;
     if IsPublic(value) then
