@@ -8,13 +8,11 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented monoids. 
-##
 
 #############################################################################
 ##
 #C  IsElementOfFpMonoid(<elm>)
 ##
-##  <#GAPDoc Label="IsElementOfFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsElementOfFpMonoid" Arg='elm' Type='Category'/>
 ##
@@ -22,7 +20,6 @@
 ##  returns true if <A>elm</A> is an element of a finitely presented monoid. 
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareCategory( "IsElementOfFpMonoid",
     IsMultiplicativeElementWithOne and IsAssociativeElement);
@@ -49,7 +46,6 @@ DeclareCategoryCollections("IsElementOfFpMonoid");
 ##
 #A  IsSubmonoidFpMonoid( <t> )
 ##
-##  <#GAPDoc Label="IsSubmonoidFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsSubmonoidFpMonoid" Arg='t'/>
 ##
@@ -63,7 +59,6 @@ DeclareCategoryCollections("IsElementOfFpMonoid");
 ##  A submonoid of a monoid has the same identity as the monoid.
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsSubmonoidFpMonoid", 
 	IsMonoid and IsElementOfFpMonoidCollection );
@@ -106,10 +101,10 @@ DeclareGlobalFunction("FactorFreeMonoidByRelations");
 ##  <Oper Name="ElementOfFpMonoid" Arg='fam, word'/>
 ##
 ##  <Description>
-##  If <A>fam</A> is the elements family of a finitely presented monoid and <A>word</A>
-##  is a word in the free generators underlying this finitely presented
-##  monoid, this operation creates the element with the representative <A>word</A>
-##  in the free monoid.
+##  If <A>fam</A> is the elements family of a finitely presented monoid 
+##  and <A>word</A> is a word in the free generators underlying this 
+##  finitely presented monoid, this operation creates the element 
+##  with the representative <A>word</A> in the free monoid.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -134,7 +129,6 @@ DeclareOperation( "FpMonoidOfElementOfFpMonoid",[IsElementOfFpMonoid]);
 ##
 #P  IsFpMonoid(<m>)
 ##
-##  <#GAPDoc Label="IsFpMonoid">
 ##  <ManSection>
 ##  <Filt Name="IsFpMonoid" Arg='m'/>
 ##
@@ -144,7 +138,6 @@ DeclareOperation( "FpMonoidOfElementOfFpMonoid",[IsElementOfFpMonoid]);
 ##  of a finitely presented monoid is not necessarily finitely presented).
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsFpMonoid",IsSubmonoidFpMonoid and IsWholeFamily);
 
@@ -259,4 +252,3 @@ DeclareGlobalFunction("IsomorphismFpMonoidGeneratorsFirst");
 #############################################################################
 ##
 #E
-
