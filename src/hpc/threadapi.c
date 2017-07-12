@@ -2988,8 +2988,9 @@ static Int InitKernel(StructInitInfo * module)
 {
     // install info string
     InfoBags[T_THREAD].name = "thread";
+    InfoBags[T_MONITOR].name = "monitor";
     InfoBags[T_REGION].name = "region";
-    InfoBags[T_SEMAPHORE].name = "channel";
+    InfoBags[T_SEMAPHORE].name = "semaphore";
     InfoBags[T_CHANNEL].name = "channel";
     InfoBags[T_BARRIER].name = "barrier";
     InfoBags[T_SYNCVAR].name = "syncvar";
