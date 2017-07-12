@@ -323,13 +323,7 @@ enum {
         T_MACFLOAT,
         T_LVARS,
         T_HVARS,
-        T_SINGULAR,
-        T_POLYMAKE,
-        T_SPARE1,
-        T_SPARE2,
-        T_SPARE3,
-        T_SPARE4,
-    LAST_CONSTANT_TNUM      = T_SPARE4,
+    LAST_CONSTANT_TNUM      = T_HVARS,
 
     IMMUTABLE               = 1,    // IMMUTABLE is not a TNUM, but rather a bitmask
 
@@ -405,9 +399,9 @@ enum {
         // the value for LAST_PACKAGE_TNUM indirectly
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 39,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 42,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 47,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
 #endif
 
     LAST_EXTERNAL_TNUM      = LAST_PACKAGE_TNUM,
