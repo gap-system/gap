@@ -417,6 +417,7 @@ enum {
         T_CHANNEL,
         T_BARRIER,
         T_SYNCVAR,
+        // atomic lists and records, thread local records
         T_FIXALIST,
         T_ALIST,
         T_AREC,
