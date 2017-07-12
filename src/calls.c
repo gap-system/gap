@@ -1351,7 +1351,7 @@ void PrintFunction (
         /* print the locals                                                */
         nloc = NLOC_FUNC(func);
         if ( nloc >= 1 ) {
-            Pr("%>local  ",0L,0L);
+            Pr("%>local ",0L,0L);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
                     Pr( "%I", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );

@@ -2485,17 +2485,17 @@ static Obj  HdlrFunc7 (
   if ( t_1 ) {
    
    /* InstallOtherMethod( getter, "default method requiring categories and checking properties", true, [ cats ], rank, function ( obj )
-      local  found, prop;
+      local found, prop;
       found := false;
-      for prop  in props  do
-          if not Tester( prop )( obj )  then
+      for prop in props do
+          if not Tester( prop )( obj ) then
               found := true;
-              if not (prop( obj ) and Tester( prop )( obj ))  then
+              if not (prop( obj ) and Tester( prop )( obj )) then
                   TryNextMethod();
               fi;
           fi;
       od;
-      if found  then
+      if found then
           return getter( obj );
       else
           TryNextMethod();
@@ -3098,7 +3098,7 @@ static Obj  HdlrFunc11 (
  if ( t_1 ) {
   
   /* keytest := function ( key )
-      if not IsPrimeInt( key )  then
+      if not IsPrimeInt( key ) then
           Error( name, ": <p> must be a prime" );
       fi;
       return;
@@ -3229,14 +3229,14 @@ static Obj  HdlrFunc11 (
  CALL_1ARGS( t_1, l_lk );
  
  /* InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
-      local  known, i, erg;
+      local known, i, erg;
       keytest( key );
       known := attr( D );
       i := PositionSortedOddPositions( known, key );
-      if LEN_LIST( known ) < i or known[i] <> key  then
+      if LEN_LIST( known ) < i or known[i] <> key then
           erg := oper( D, key );
           i := PositionSortedOddPositions( known, key );
-          if LEN_LIST( known ) < i or known[i] <> key  then
+          if LEN_LIST( known ) < i or known[i] <> key then
               known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
               known[i] := IMMUTABLE_COPY_OBJ( key );
               known[i + 1] := IMMUTABLE_COPY_OBJ( erg );
@@ -3289,7 +3289,7 @@ static Obj  HdlrFunc11 (
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* InstallOtherMethod( VALUE_GLOBAL( str ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
-      local  known, i;
+      local known, i;
       keytest( key );
       known := attr( D );
       i := PositionSortedOddPositions( known, key );
@@ -3342,11 +3342,11 @@ static Obj  HdlrFunc11 (
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* InstallOtherMethod( VALUE_GLOBAL( str ), "default method", true, [ domreq, keyreq, IS_OBJECT ], 0, function ( D, key, obj )
-      local  known, i;
+      local known, i;
       keytest( key );
       known := attr( D );
       i := PositionSortedOddPositions( known, key );
-      if LEN_LIST( known ) < i or known[i] <> key  then
+      if LEN_LIST( known ) < i or known[i] <> key then
           known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
           known[i] := IMMUTABLE_COPY_OBJ( key );
           known[i + 1] := IMMUTABLE_COPY_OBJ( obj );
@@ -3733,10 +3733,10 @@ static Obj  HdlrFunc17 (
  
  /* InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
       re := false;
-      for i  in [ 1 .. LEN_LIST( reqs ) ]  do
+      for i in [ 1 .. LEN_LIST( reqs ) ] do
           re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
       od;
-      if re  then
+      if re then
           return CallFuncList( oper, arg );
       else
           TryNextMethod();
@@ -3796,11 +3796,11 @@ static Obj  HdlrFunc1 (
  AssGVar( G_RUN__IMMEDIATE__METHODS__HITS, INTOBJ_INT(0) );
  
  /* BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
-      local  flagspos, tried, type, j, imm, i, res, newflags;
-      if IGNORE_IMMEDIATE_METHODS  then
+      local flagspos, tried, type, j, imm, i, res, newflags;
+      if IGNORE_IMMEDIATE_METHODS then
           return;
       fi;
-      if IS_SUBSET_FLAGS( IMM_FLAGS, flags )  then
+      if IS_SUBSET_FLAGS( IMM_FLAGS, flags ) then
           return;
       fi;
       flags := SUB_FLAGS( flags, IMM_FLAGS );
@@ -3808,27 +3808,27 @@ static Obj  HdlrFunc1 (
       tried := [  ];
       type := TYPE_OBJ( obj );
       flags := type![2];
-      for j  in flagspos  do
-          if IsBound( IMMEDIATES[j] )  then
+      for j in flagspos do
+          if IsBound( IMMEDIATES[j] ) then
               imm := IMMEDIATES[j];
-              for i  in [ 0, 7 .. LEN_LIST( imm ) - 7 ]  do
-                  if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried  then
+              for i in [ 0, 7 .. LEN_LIST( imm ) - 7 ] do
+                  if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried then
                       res := IMMEDIATE_METHODS[imm[i + 6]]( obj );
                       ADD_LIST( tried, imm[i + 6] );
                       RUN_IMMEDIATE_METHODS_CHECKS := RUN_IMMEDIATE_METHODS_CHECKS + 1;
-                      if TRACE_IMMEDIATE_METHODS  then
-                          if imm[i + 7] = false  then
+                      if TRACE_IMMEDIATE_METHODS then
+                          if imm[i + 7] = false then
                               Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), "\n" );
                           else
                               Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), ": ", imm[i + 7], "\n" );
                           fi;
                       fi;
-                      if res <> TRY_NEXT_METHOD  then
+                      if res <> TRY_NEXT_METHOD then
                           IGNORE_IMMEDIATE_METHODS := true;
                           imm[i + 2]( obj, res );
                           IGNORE_IMMEDIATE_METHODS := false;
                           RUN_IMMEDIATE_METHODS_HITS := RUN_IMMEDIATE_METHODS_HITS + 1;
-                          if not IS_IDENTICAL_OBJ( TYPE_OBJ( obj ), type )  then
+                          if not IS_IDENTICAL_OBJ( TYPE_OBJ( obj ), type ) then
                               type := TYPE_OBJ( obj );
                               newflags := SUB_FLAGS( type![2], IMM_FLAGS );
                               newflags := SUB_FLAGS( newflags, flags );
@@ -3864,21 +3864,21 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD_FLAGS", function ( opr, info, rel, flags, rank, method )
-      local  methods, narg, i, k, tmp, replace, match, j, lk;
+      local methods, narg, i, k, tmp, replace, match, j, lk;
       lk := WRITE_LOCK( METHODS_OPERATION_REGION );
-      if IS_CONSTRUCTOR( opr )  then
-          if 0 < LEN_LIST( flags )  then
+      if IS_CONSTRUCTOR( opr ) then
+          if 0 < LEN_LIST( flags ) then
               rank := rank - RankFilter( flags[1] );
           fi;
       else
-          for i  in flags  do
+          for i in flags do
               rank := rank + RankFilter( i );
           od;
       fi;
       narg := LEN_LIST( flags );
       methods := METHODS_OPERATION( opr, narg );
       methods := methods{[ 1 .. LEN_LIST( methods ) ]};
-      if info = false  then
+      if info = false then
           info := NAME_FUNC( opr );
       else
           k := SHALLOW_COPY_OBJ( NAME_FUNC( opr ) );
@@ -3888,19 +3888,19 @@ static Obj  HdlrFunc1 (
           CONV_STRING( info );
       fi;
       i := 0;
-      while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)]  do
+      while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)] do
           i := i + (narg + 4);
       od;
       replace := false;
-      if REREADING  then
+      if REREADING then
           k := i;
-          while k < LEN_LIST( methods ) and rank = methods[k + narg + 3]  do
-              if info = methods[k + narg + 4]  then
+          while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] do
+              if info = methods[k + narg + 4] then
                   match := false;
-                  for j  in [ 1 .. narg ]  do
+                  for j in [ 1 .. narg ] do
                       match := match and methods[k + j + 1] = flags[j];
                   od;
-                  if match  then
+                  if match then
                       replace := true;
                       i := k;
                       break;
@@ -3909,17 +3909,17 @@ static Obj  HdlrFunc1 (
               k := k + narg + 4;
           od;
       fi;
-      if not REREADING or not replace  then
+      if not REREADING or not replace then
           methods{[ narg + 4 + i + 1 .. narg + 4 + LEN_LIST( methods ) ]} := methods{[ i + 1 .. LEN_LIST( methods ) ]};
       fi;
-      if rel = true  then
+      if rel = true then
           methods[i + 1] := RETURN_TRUE;
-      elif rel = false  then
+      elif rel = false then
           methods[i + 1] := RETURN_FALSE;
-      elif IS_FUNCTION( rel )  then
-          if CHECK_INSTALL_METHOD  then
+      elif IS_FUNCTION( rel ) then
+          if CHECK_INSTALL_METHOD then
               tmp := NARG_FUNC( rel );
-              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg  then
+              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then
                   Error( NAME_FUNC( opr ), ": <famrel> must accept ", narg, " arguments" );
               fi;
           fi;
@@ -3927,17 +3927,17 @@ static Obj  HdlrFunc1 (
       else
           Error( NAME_FUNC( opr ), ": <famrel> must be a function, `true', or `false'" );
       fi;
-      for k  in [ 1 .. narg ]  do
+      for k in [ 1 .. narg ] do
           methods[i + k + 1] := flags[k];
       od;
-      if method = true  then
+      if method = true then
           methods[i + (narg + 2)] := RETURN_TRUE;
-      elif method = false  then
+      elif method = false then
           methods[i + (narg + 2)] := RETURN_FALSE;
-      elif IS_FUNCTION( method )  then
-          if CHECK_INSTALL_METHOD and not IS_OPERATION( method )  then
+      elif IS_FUNCTION( method ) then
+          if CHECK_INSTALL_METHOD and not IS_OPERATION( method ) then
               tmp := NARG_FUNC( method );
-              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg  then
+              if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then
                   Error( NAME_FUNC( opr ), ": <method> must accept ", narg, " arguments" );
               fi;
           fi;
@@ -4004,45 +4004,45 @@ static Obj  HdlrFunc1 (
  AssGVar( G_INSTALL__METHOD, 0 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD", function ( arglist, check )
-      local  len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch, lk;
+      local len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch, lk;
       lk := READ_LOCK( OPERATIONS_REGION );
       len := LEN_LIST( arglist );
-      if len < 3  then
+      if len < 3 then
           Error( "too few arguments given in <arglist>" );
       fi;
       opr := arglist[1];
-      if not IS_OPERATION( opr )  then
+      if not IS_OPERATION( opr ) then
           Error( "<opr> is not an operation" );
       fi;
-      if IS_STRING_REP( arglist[2] )  then
+      if IS_STRING_REP( arglist[2] ) then
           info := arglist[2];
           pos := 3;
       else
           info := false;
           pos := 2;
       fi;
-      if arglist[pos] = true or IS_FUNCTION( arglist[pos] )  then
+      if arglist[pos] = true or IS_FUNCTION( arglist[pos] ) then
           rel := arglist[pos];
           pos := pos + 1;
       else
           rel := true;
       fi;
-      if not IsBound( arglist[pos] ) or not IS_LIST( arglist[pos] )  then
+      if not IsBound( arglist[pos] ) or not IS_LIST( arglist[pos] ) then
           Error( "<arglist>[", pos, "] must be a list of filters" );
       fi;
       filters := arglist[pos];
-      if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters )  then
+      if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
           Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod, " arguments" );
       fi;
-      if 0 < LEN_LIST( filters )  then
+      if 0 < LEN_LIST( filters ) then
           info1 := "[ ";
           isstr := true;
-          for i  in [ 1 .. LEN_LIST( filters ) ]  do
-              if IS_STRING_REP( filters[i] )  then
+          for i in [ 1 .. LEN_LIST( filters ) ] do
+              if IS_STRING_REP( filters[i] ) then
                   APPEND_LIST_INTR( info1, filters[i] );
                   APPEND_LIST_INTR( info1, ", " );
                   filters[i] := EvalString( filters[i] );
-                  if not IS_FUNCTION( filters[i] )  then
+                  if not IS_FUNCTION( filters[i] ) then
                       Error( "string does not evaluate to a function" );
                   fi;
               else
@@ -4050,7 +4050,7 @@ static Obj  HdlrFunc1 (
                   break;
               fi;
           od;
-          if isstr and info = false  then
+          if isstr and info = false then
               info1[LEN_LIST( info1 ) - 1] := ' ';
               info1[LEN_LIST( info1 )] := ']';
               info := info1;
@@ -4058,81 +4058,81 @@ static Obj  HdlrFunc1 (
       fi;
       pos := pos + 1;
       flags := [  ];
-      for i  in filters  do
+      for i in filters do
           ADD_LIST( flags, FLAGS_FILTER( i ) );
       od;
-      if not IsBound( arglist[pos] )  then
+      if not IsBound( arglist[pos] ) then
           Error( "the method is missing in <arglist>" );
-      elif IS_INT( arglist[pos] )  then
+      elif IS_INT( arglist[pos] ) then
           rank := arglist[pos];
           pos := pos + 1;
       else
           rank := 0;
       fi;
-      if not IsBound( arglist[pos] )  then
+      if not IsBound( arglist[pos] ) then
           Error( "the method is missing in <arglist>" );
       fi;
       method := arglist[pos];
-      if FLAG1_FILTER( opr ) <> 0 and (rel = true or rel = RETURN_TRUE) and LEN_LIST( filters ) = 1 and (method = true or method = RETURN_TRUE)  then
+      if FLAG1_FILTER( opr ) <> 0 and (rel = true or rel = RETURN_TRUE) and LEN_LIST( filters ) = 1 and (method = true or method = RETURN_TRUE) then
           Error( NAME_FUNC( opr ), ": use `InstallTrueMethod' for <opr>" );
       fi;
-      if CHECK_INSTALL_METHOD and check  then
-          if opr in WRAPPER_OPERATIONS  then
+      if CHECK_INSTALL_METHOD and check then
+          if opr in WRAPPER_OPERATIONS then
               INFO_DEBUG( 1, "a method is installed for the wrapper operation ", NAME_FUNC( opr ), "\n", "#I  probably it should be installed for (one of) its\n", "#I  underlying operation(s)" );
           fi;
           req := false;
-          for i  in [ 1, 3 .. LEN_LIST( OPERATIONS ) - 1 ]  do
-              if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
+          for i in [ 1, 3 .. LEN_LIST( OPERATIONS ) - 1 ] do
+              if IS_IDENTICAL_OBJ( OPERATIONS[i], opr ) then
                   req := OPERATIONS[i + 1];
                   break;
               fi;
           od;
-          if req = false  then
+          if req = false then
               Error( "unknown operation ", NAME_FUNC( opr ) );
           fi;
           imp := [  ];
-          for i  in flags  do
+          for i in flags do
               ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
           od;
           j := 0;
           match := false;
           notmatch := 0;
-          while j < LEN_LIST( req ) and not match  do
+          while j < LEN_LIST( req ) and not match do
               j := j + 1;
               reqs := req[j];
-              if LEN_LIST( reqs ) = LEN_LIST( imp )  then
+              if LEN_LIST( reqs ) = LEN_LIST( imp ) then
                   match := true;
-                  for i  in [ 1 .. LEN_LIST( reqs ) ]  do
-                      if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
+                  for i in [ 1 .. LEN_LIST( reqs ) ] do
+                      if not IS_SUBSET_FLAGS( imp[i], reqs[i] ) then
                           match := false;
                           notmatch := i;
                           break;
                       fi;
                   od;
-                  if match  then
+                  if match then
                       break;
                   fi;
               fi;
           od;
-          if not match  then
-              if notmatch = 0  then
+          if not match then
+              if notmatch = 0 then
                   Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) );
               else
                   Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) );
               fi;
           else
               oreqs := reqs;
-              for k  in [ j + 1 .. LEN_LIST( req ) ]  do
+              for k in [ j + 1 .. LEN_LIST( req ) ] do
                   reqs := req[k];
-                  if LEN_LIST( reqs ) = LEN_LIST( imp )  then
+                  if LEN_LIST( reqs ) = LEN_LIST( imp ) then
                       match := true;
-                      for i  in [ 1 .. LEN_LIST( reqs ) ]  do
-                          if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
+                      for i in [ 1 .. LEN_LIST( reqs ) ] do
+                          if not IS_SUBSET_FLAGS( imp[i], reqs[i] ) then
                               match := false;
                               break;
                           fi;
                       od;
-                      if match and reqs <> oreqs  then
+                      if match and reqs <> oreqs then
                           INFO_DEBUG( 1, "method installed for ", NAME_FUNC( opr ), " matches more than one declaration" );
                       fi;
                   fi;
@@ -4162,38 +4162,38 @@ static Obj  HdlrFunc1 (
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
-      local  flags, rank, cats, props, i, lk;
-      if not IS_IDENTICAL_OBJ( filter, IS_OBJECT )  then
+      local flags, rank, cats, props, i, lk;
+      if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
           flags := FLAGS_FILTER( filter );
           rank := 0;
           cats := IS_OBJECT;
           props := [  ];
           lk := DO_LOCK( FILTER_REGION, false, CATS_AND_REPS );
-          for i  in [ 1 .. LEN_FLAGS( flags ) ]  do
-              if ELM_FLAGS( flags, i )  then
-                  if i in CATS_AND_REPS  then
+          for i in [ 1 .. LEN_FLAGS( flags ) ] do
+              if ELM_FLAGS( flags, i ) then
+                  if i in CATS_AND_REPS then
                       cats := cats and FILTERS[i];
                       rank := rank - RankFilter( FILTERS[i] );
-                  elif i in NUMBERS_PROPERTY_GETTERS  then
+                  elif i in NUMBERS_PROPERTY_GETTERS then
                       ADD_LIST( props, FILTERS[i] );
                   fi;
               fi;
           od;
           UNLOCK( lk );
           MakeImmutable( props );
-          if 0 < LEN_LIST( props )  then
+          if 0 < LEN_LIST( props ) then
               InstallOtherMethod( getter, "default method requiring categories and checking properties", true, [ cats ], rank, function ( obj )
-                    local  found, prop;
+                    local found, prop;
                     found := false;
-                    for prop  in props  do
-                        if not Tester( prop )( obj )  then
+                    for prop in props do
+                        if not Tester( prop )( obj ) then
                             found := true;
-                            if not (prop( obj ) and Tester( prop )( obj ))  then
+                            if not (prop( obj ) and Tester( prop )( obj )) then
                                 TryNextMethod();
                             fi;
                         fi;
                     od;
-                    if found  then
+                    if found then
                         return getter( obj );
                     else
                         TryNextMethod();
@@ -4231,15 +4231,15 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "PositionSortedOddPositions", function ( list, elm )
-      local  i, j, k;
+      local i, j, k;
       k := LEN_LIST( list ) + 1;
-      if k mod 2 = 0  then
+      if k mod 2 = 0 then
           k := k + 1;
       fi;
       i := -1;
-      while i + 2 < k  do
+      while i + 2 < k do
           j := 2 * QUO_INT( (i + k + 2), 4 ) - 1;
-          if list[j] < elm  then
+          if list[j] < elm then
               i := j;
           else
               k := j;
@@ -4264,10 +4264,10 @@ static Obj  HdlrFunc1 (
  AssGVar( G_IsPrimeInt, t_1 );
  
  /* BIND_GLOBAL( "KeyDependentOperation", function ( name, domreq, keyreq, keytest )
-      local  str, oper, attr, lk;
-      if keytest = "prime"  then
+      local str, oper, attr, lk;
+      if keytest = "prime" then
           keytest := function ( key )
-                if not IsPrimeInt( key )  then
+                if not IsPrimeInt( key ) then
                     Error( name, ": <p> must be a prime" );
                 fi;
                 return;
@@ -4290,14 +4290,14 @@ static Obj  HdlrFunc1 (
       ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
       UNLOCK( lk );
       InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
-            local  known, i, erg;
+            local known, i, erg;
             keytest( key );
             known := attr( D );
             i := PositionSortedOddPositions( known, key );
-            if LEN_LIST( known ) < i or known[i] <> key  then
+            if LEN_LIST( known ) < i or known[i] <> key then
                 erg := oper( D, key );
                 i := PositionSortedOddPositions( known, key );
-                if LEN_LIST( known ) < i or known[i] <> key  then
+                if LEN_LIST( known ) < i or known[i] <> key then
                     known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
                     known[i] := IMMUTABLE_COPY_OBJ( key );
                     known[i + 1] := IMMUTABLE_COPY_OBJ( erg );
@@ -4309,7 +4309,7 @@ static Obj  HdlrFunc1 (
       APPEND_LIST_INTR( str, name );
       DeclareOperation( str, [ domreq, keyreq ] );
       InstallOtherMethod( VALUE_GLOBAL( str ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
-            local  known, i;
+            local known, i;
             keytest( key );
             known := attr( D );
             i := PositionSortedOddPositions( known, key );
@@ -4319,11 +4319,11 @@ static Obj  HdlrFunc1 (
       APPEND_LIST_INTR( str, name );
       DeclareOperation( str, [ domreq, keyreq, IS_OBJECT ] );
       InstallOtherMethod( VALUE_GLOBAL( str ), "default method", true, [ domreq, keyreq, IS_OBJECT ], 0, function ( D, key, obj )
-            local  known, i;
+            local known, i;
             keytest( key );
             known := attr( D );
             i := PositionSortedOddPositions( known, key );
-            if LEN_LIST( known ) < i or known[i] <> key  then
+            if LEN_LIST( known ) < i or known[i] <> key then
                 known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]};
                 known[i] := IMMUTABLE_COPY_OBJ( key );
                 known[i + 1] := IMMUTABLE_COPY_OBJ( obj );
@@ -4349,15 +4349,15 @@ static Obj  HdlrFunc1 (
  AssGVar( G_CallFuncList, t_1 );
  
  /* BIND_GLOBAL( "RedispatchOnCondition", function ( arg... )
-      local  oper, info, fampred, reqs, cond, val, re, i;
-      if LEN_LIST( arg ) = 5  then
+      local oper, info, fampred, reqs, cond, val, re, i;
+      if LEN_LIST( arg ) = 5 then
           oper := arg[1];
           info := " fallback method to test conditions";
           fampred := arg[2];
           reqs := arg[3];
           cond := arg[4];
           val := arg[5];
-      elif LEN_LIST( arg ) = 6  then
+      elif LEN_LIST( arg ) = 6 then
           oper := arg[1];
           info := arg[2];
           fampred := arg[3];
@@ -4367,15 +4367,15 @@ static Obj  HdlrFunc1 (
       else
           Error( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
       fi;
-      for i  in reqs  do
+      for i in reqs do
           val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) );
       od;
       InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
             re := false;
-            for i  in [ 1 .. LEN_LIST( reqs ) ]  do
+            for i in [ 1 .. LEN_LIST( reqs ) ] do
                 re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
             od;
-            if re  then
+            if re then
                 return CallFuncList( oper, arg );
             else
                 TryNextMethod();

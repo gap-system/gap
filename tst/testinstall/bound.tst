@@ -38,4 +38,14 @@ f := ({} -> IsBound(BADVARNAME[BADLISTNAME]) );;
                                           ^
 gap> f();
 Error, Variable: 'BADVARNAME' must have an assigned value
+
+# Printing IsBound statements
+gap> Display(function(l,n) return IsBound(l[n]);end);
+function ( l, n )
+    return IsBound( l[n] );
+end
+gap> Display(function(l,n) return IsBound(l.(n));end);
+function ( l, n )
+    return IsBound( l.(n) );
+end
 gap> STOP_TEST("bound.tst", 1);

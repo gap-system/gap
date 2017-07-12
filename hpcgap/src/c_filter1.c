@@ -556,7 +556,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_CLEAR__IMP__CACHE, 0 );
  
  /* BIND_GLOBAL( "CLEAR_IMP_CACHE", function (  )
-      local  lock;
+      local lock;
       lock := WRITE_LOCK( IMPLICATIONS );
       WITH_IMPS_FLAGS_CACHE := MigrateObj( [  ], IMPLICATIONS );
       UNLOCK( lock );
@@ -575,13 +575,13 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
-      local  with, changed, imp, hash, hash2, i, lock;
+      local with, changed, imp, hash, hash2, i, lock;
       hash := HASH_FLAGS( flags ) mod 11001;
       lock := WRITE_LOCK( IMPLICATIONS );
-      for i  in [ 0 .. 3 ]  do
+      for i in [ 0 .. 3 ] do
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
-          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] )  then
-              if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags )  then
+          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] ) then
+              if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags ) then
                   WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
                   with := WITH_IMPS_FLAGS_CACHE[hash2 + 1];
                   UNLOCK( lock );
@@ -591,7 +591,7 @@ static Obj  HdlrFunc1 (
               break;
           fi;
       od;
-      if i = 3  then
+      if i = 3 then
           WITH_IMPS_FLAGS_COUNT := (WITH_IMPS_FLAGS_COUNT + 1) mod 4;
           i := WITH_IMPS_FLAGS_COUNT;
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
@@ -599,10 +599,10 @@ static Obj  HdlrFunc1 (
       WITH_IMPS_FLAGS_CACHE_MISS := WITH_IMPS_FLAGS_CACHE_MISS + 1;
       with := flags;
       changed := true;
-      while changed  do
+      while changed do
           changed := false;
-          for imp  in IMPLICATIONS  do
-              if IS_SUBSET_FLAGS( with, imp[2] ) and not IS_SUBSET_FLAGS( with, imp[1] )  then
+          for imp in IMPLICATIONS do
+              if IS_SUBSET_FLAGS( with, imp[2] ) and not IS_SUBSET_FLAGS( with, imp[1] ) then
                   with := AND_FLAGS( with, imp[1] );
                   changed := true;
               fi;
@@ -626,16 +626,16 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "RankFilter", function ( filter )
-      local  rank, flags, i, lock;
+      local rank, flags, i, lock;
       rank := 0;
-      if IS_FUNCTION( filter )  then
+      if IS_FUNCTION( filter ) then
           flags := FLAGS_FILTER( filter );
       else
           flags := filter;
       fi;
       lock := WRITE_LOCK( FILTER_REGION );
-      for i  in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) )  do
-          if IsBound( RANK_FILTERS[i] )  then
+      for i in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) ) do
+          if IsBound( RANK_FILTERS[i] ) then
               rank := rank + RANK_FILTERS[i];
           else
               rank := rank + 1;
