@@ -2986,63 +2986,73 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    /* install info string */
+    // install info string
     InfoBags[T_THREAD].name = "thread";
+    InfoBags[T_REGION].name = "region";
     InfoBags[T_SEMAPHORE].name = "channel";
     InfoBags[T_CHANNEL].name = "channel";
     InfoBags[T_BARRIER].name = "barrier";
     InfoBags[T_SYNCVAR].name = "syncvar";
-    InfoBags[T_REGION].name = "region";
 
-    /* install the kind methods */
+    // install the type methods
     TypeObjFuncs[T_THREAD] = TypeThread;
+    TypeObjFuncs[T_REGION] = TypeRegion;
     TypeObjFuncs[T_SEMAPHORE] = TypeSemaphore;
     TypeObjFuncs[T_CHANNEL] = TypeChannel;
     TypeObjFuncs[T_BARRIER] = TypeBarrier;
     TypeObjFuncs[T_SYNCVAR] = TypeSyncVar;
-    TypeObjFuncs[T_REGION] = TypeRegion;
-    /* install global variables */
+
+    // install global variables
     InitCopyGVar("TYPE_THREAD", &TYPE_THREAD);
+    InitCopyGVar("TYPE_REGION", &TYPE_REGION);
     InitCopyGVar("TYPE_SEMAPHORE", &TYPE_SEMAPHORE);
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
-    InitCopyGVar("TYPE_REGION", &TYPE_REGION);
+
     DeclareGVar(&LastInaccessibleGVar, "LastInaccessible");
     DeclareGVar(&MAX_INTERRUPTGVar, "MAX_INTERRUPT");
-    /* install mark functions */
+
+    // install mark functions
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);
+    InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
+    InitMarkFuncBags(T_REGION, MarkAllSubBags);
 #ifndef BOEHM_GC
     InitMarkFuncBags(T_SEMAPHORE, MarkSemaphoreBag);
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
 #endif
-    InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
-    InitMarkFuncBags(T_REGION, MarkAllSubBags);
+
+    // install finalizer functions
     InitFreeFuncBag(T_MONITOR, FinalizeMonitor);
-    /* install print functions */
+
+    // install print functions
     PrintObjFuncs[T_THREAD] = PrintThread;
+    PrintObjFuncs[T_REGION] = PrintRegion;
     PrintObjFuncs[T_SEMAPHORE] = PrintSemaphore;
     PrintObjFuncs[T_CHANNEL] = PrintChannel;
     PrintObjFuncs[T_BARRIER] = PrintBarrier;
     PrintObjFuncs[T_SYNCVAR] = PrintSyncVar;
-    PrintObjFuncs[T_REGION] = PrintRegion;
-    /* install mutability functions */
+
+    // install mutability functions
     IsMutableObjFuncs[T_THREAD] = AlwaysNo;
+    IsMutableObjFuncs[T_REGION] = AlwaysYes;
     IsMutableObjFuncs[T_SEMAPHORE] = AlwaysYes;
     IsMutableObjFuncs[T_CHANNEL] = AlwaysYes;
     IsMutableObjFuncs[T_BARRIER] = AlwaysYes;
     IsMutableObjFuncs[T_SYNCVAR] = AlwaysYes;
-    IsMutableObjFuncs[T_REGION] = AlwaysYes;
+
+    // make bag types public
     MakeBagTypePublic(T_THREAD);
+    MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SEMAPHORE);
     MakeBagTypePublic(T_CHANNEL);
-    MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SYNCVAR);
     MakeBagTypePublic(T_BARRIER);
+
     PublicRegion = NewBag(T_REGION, sizeof(Region *));
-    /* return success                                                      */
+
     return 0;
 }
 
