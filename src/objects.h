@@ -405,7 +405,7 @@ enum {
         // the value for LAST_PACKAGE_TNUM indirectly
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 37,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 39,
 #else
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 47,
 #endif
@@ -416,13 +416,9 @@ enum {
     FIRST_SHARED_TNUM       = LAST_EXTERNAL_TNUM+1,
         // primitive types
         T_THREAD            = FIRST_SHARED_TNUM,
-        T_MUTEX,
-        T_CONDVAR,
-        T_RWLOCK,
         T_MONITOR,
         T_REGION,
         // user-programmable types
-        T_LOCK,
         T_SEMAPHORE,
         T_CHANNEL,
         T_BARRIER,
