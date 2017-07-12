@@ -2693,7 +2693,7 @@ Obj FuncASS_PLIST_DEFAULT (
 **
 **  This is the function for Plists that might have mutable subobjects
 **  which is currently exactly those that are not known to be homogenous
-**  (or immutable, but MakeImmutable will have caught that case before we get h**  ere)
+**  (or immutable, but MakeImmutable will have caught that case before we get here)
 */
 
 void MakeImmutablePlistInHom( Obj list )
