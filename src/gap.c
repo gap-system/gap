@@ -495,6 +495,10 @@ int realmain( int argc, char * argv[], char * environ[] )
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
+  // verify our TNUM enum does not overflow; note that TNUM 254 is T_BODY,
+  // and 255 is reserved for internal use by GASMAN.
+  assert(LAST_COPYING_TNUM <= 253);
+
 #if !defined(HPCGAP)
   InitMainGAPState();
 #endif
