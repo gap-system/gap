@@ -617,7 +617,7 @@ all: bin/gap.sh
 bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 	$(SHELL) ./config.status $@
 
-# regenerate bin/$(GAPARCH)/src symlink if necessary
+# regenerate symlinks if necessary
 all: bin/$(GAPARCH)/src
 bin/$(GAPARCH)/src: config.status
 	@$(MKDIR_P) bin/$(GAPARCH)
@@ -627,6 +627,11 @@ all: bin/$(GAPARCH)/gac
 bin/$(GAPARCH)/gac:
 	@$(MKDIR_P) bin/$(GAPARCH)
 	ln -sf ../../gac $(@D)
+
+all: bin/$(GAPARCH)/gap
+bin/$(GAPARCH)/gap:
+	@$(MKDIR_P) bin/$(GAPARCH)
+	ln -sf ../../gap $(@D)
 
 endif
 
