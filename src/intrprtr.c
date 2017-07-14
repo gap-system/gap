@@ -2525,13 +2525,13 @@ void            IntrListExprEnd (
 
         /* if <low> is larger than <high> the range is empty               */
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-            list = NEW_PLIST( T_PLIST, 0 );
+            list = NEW_PLIST( T_PLIST_EMPTY, 0 );
             SET_LEN_PLIST( list, 0 );
         }
 
         /* if <low> is equal to <high> the range is a singleton list       */
         else if ( low == high ) {
-            list = NEW_PLIST( T_PLIST, 1 );
+            list = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
             SET_LEN_PLIST( list, 1 );
             SET_ELM_PLIST( list, 1, INTOBJ_INT(low) );
         }
