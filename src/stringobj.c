@@ -2642,8 +2642,16 @@ static Int InitKernel (
         IsStringFuncs[ t1 ] = AlwaysNo;
     }
 
-    for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
-        IsStringFuncs[ t1 ] = IsStringList;
+    IsStringFuncs[ T_PLIST                 ] = IsStringList;
+    IsStringFuncs[ T_PLIST      +IMMUTABLE ] = IsStringList;
+    IsStringFuncs[ T_PLIST_DENSE           ] = IsStringList;
+    IsStringFuncs[ T_PLIST_DENSE+IMMUTABLE ] = IsStringList;
+    IsStringFuncs[ T_PLIST_EMPTY           ] = AlwaysYes;
+    IsStringFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = AlwaysYes;
+
+    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_HOM_SSORT; t1 += 2 ) {
+        IsStringFuncs[ t1            ] = IsStringListHom;
+        IsStringFuncs[ t1 +IMMUTABLE ] = IsStringListHom;
     }
 
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
