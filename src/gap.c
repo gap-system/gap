@@ -1715,7 +1715,7 @@ Obj FuncLoadedModules (
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
-    return CopyObj( list, 0 );
+    return list;
 }
 
 
