@@ -1562,38 +1562,6 @@ end);
 
 #############################################################################
 ##
-#F  ConvertToMatrixRep(<v>)
-##
-#InstallGlobalFunction(ConvertToMatrixRep,function(arg)
-#    local m;
-#    m:=arg[1];
-#    if IsGF2MatrixRep(m) then
-#        return true;
-#    fi;
-#    if not IsMatrix(m) or Length(m)=0 then
-#        return fail;
-#    fi;
-#    
-#    # enforce to run `ConvertToVectorRep' over all vectors to make them
-#    # compressed.
-#    if Length(arg)=1 then
-#        if ForAny(List(m,i->ConvertToVectorRep(i)),i->i<>2) then
-#            return fail;
-#        fi;
-#    else
-#        if ForAny(List(m,i->ConvertToVectorRep(i,arg[2])),i->i<>2) then
-#            return fail;
-#        fi;
-#    fi;
-#    if IsMutable(m) and ForAny(m, IsMutable) then
-#        return fail;
-#    fi;
-#    CONV_GF2MAT(m);
-#    return true;
-#end);
-
-#############################################################################
-##
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
 BindGlobal("DoImmutableMatrix", function(field,matrix,change)
