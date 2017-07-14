@@ -44,7 +44,7 @@
 #include <src/hpc/tls.h>
 
 
-#define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 
+#define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))
 
 #define GET_COMMUTE( g )  INT_INTOBJ(ELM_PLIST(commute,(g))) 
 
