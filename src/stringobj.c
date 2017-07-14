@@ -360,15 +360,13 @@ Obj FuncSINT_CHAR (
 **
 *F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
 */
-Obj SINTCHARS[256];
-Obj INTCHARS[256];
 Obj FuncINTLIST_STRING (
     Obj             self,
     Obj             val,
     Obj             sign )
 {
   UInt l,i;
-  Obj n, *addr, *ints;
+  Obj n, *addr;
   UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
@@ -379,26 +377,21 @@ Obj FuncINTLIST_STRING (
          "you can replace <val> via 'return <val>;'" );
   }
 
-  /* initialize before first use */
-  if ( SINTCHARS[0] == (Obj) 0 )
-     for (i=0; i<256; i++) {
-       SINTCHARS[i] = INTOBJ_INT(SINT_CHAR(i));
-       INTCHARS[i] = INTOBJ_INT((UInt1)i);
-     }
-       
-
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
   SET_LEN_PLIST(n,l);
   p=CHARS_STRING(val);
   addr=ADDR_OBJ(n);
   /* signed or unsigned ? */
-  if (sign == INTOBJ_INT(1L)) 
-    ints = INTCHARS;
-  else
-    ints = SINTCHARS;
-  for (i=1; i<=l; i++) {
-    addr[i] = ints[p[i-1]];
+  if (sign == INTOBJ_INT(1L)) {
+    for (i=1; i<=l; i++) {
+      addr[i] = INTOBJ_INT((UInt1)p[i-1]);
+    }
+  }
+  else {
+    for (i=1; i<=l; i++) {
+      addr[i] = INTOBJ_INT(SINT_CHAR(p[i-1]));
+    }
   }
 
   CHANGED_BAG(n);
