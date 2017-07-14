@@ -1266,13 +1266,13 @@ Obj             EvalRangeExpr (
 
     /* if <low> is larger than <high> the range is empty                   */
     if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-        range = NEW_PLIST( T_PLIST, 0 );
+        range = NEW_PLIST( T_PLIST_EMPTY, 0 );
         SET_LEN_PLIST( range, 0 );
     }
 
     /* if <low> is equal to <high> the range is a singleton list           */
     else if ( low == high ) {
-        range = NEW_PLIST( T_PLIST, 1 );
+        range = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
         SET_LEN_PLIST( range, 1 );
         SET_ELM_PLIST( range, 1, INTOBJ_INT(low) );
     }
