@@ -429,7 +429,7 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
   if (prec > 40) /* too much anyways, and would risk buffer overrun */
     prec = 40;
   snprintf(buf, sizeof(buf), "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
-  C_NEW_STRING_DYN(str, buf);
+  str = MakeString(buf);
   return str;
 }
 

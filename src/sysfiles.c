@@ -1909,7 +1909,7 @@ int GAP_rl_func(int count, int key)
    Int   len, n, hook, dlen, max, i;
 
    /* we shift indices 0-based on C-level and 1-based on GAP level */
-   C_NEW_STRING_DYN(linestr, rl_line_buffer);
+   linestr = MakeString(rl_line_buffer);
    okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
    GAPMacroNumber = 0;
    rldata = NEW_PLIST(T_PLIST, 6);
@@ -2299,8 +2299,8 @@ Char * syFgets (
                    [linestr, ppos, yankstr]
                or an integer, interpreted as number of Esc('N')
                calls for the next lines.                                  */
-            C_NEW_STRING_DYN(linestr,line);
-            C_NEW_STRING_DYN(yankstr,yank);
+            linestr = MakeString(line);
+            yankstr = MakeString(yank);
             args = NEW_PLIST(T_PLIST, 5);
             SET_LEN_PLIST(args, 5);
             SET_ELM_PLIST(args,1,linestr);
@@ -2703,15 +2703,15 @@ Char * syFgets (
     if (line[1] != '\0') {
       /* Now we put the new string into the history,
          we use key handler with key 0 to update the command line history */
-        C_NEW_STRING_DYN(linestr,line);
-        args = NEW_PLIST(T_PLIST, 5);
-        SET_LEN_PLIST(args, 5);
-        SET_ELM_PLIST(args,1,linestr);
-        SET_ELM_PLIST(args,2,INTOBJ_INT(0));
-        SET_ELM_PLIST(args,3,INTOBJ_INT(1));
-        SET_ELM_PLIST(args,4,INTOBJ_INT(length));
-        SET_ELM_PLIST(args,5,linestr);
-        Call1ArgsInNewReader(LineEditKeyHandler, args);
+      linestr = MakeString(line);
+      args = NEW_PLIST(T_PLIST, 5);
+      SET_LEN_PLIST(args, 5);
+      SET_ELM_PLIST(args, 1, linestr);
+      SET_ELM_PLIST(args, 2, INTOBJ_INT(0));
+      SET_ELM_PLIST(args, 3, INTOBJ_INT(1));
+      SET_ELM_PLIST(args, 4, INTOBJ_INT(length));
+      SET_ELM_PLIST(args, 5, linestr);
+      Call1ArgsInNewReader(LineEditKeyHandler, args);
     }
 
     /* send the whole line (unclipped) to the window handler               */
