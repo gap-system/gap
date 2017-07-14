@@ -1568,20 +1568,19 @@ BindGlobal("DoImmutableMatrix", function(field,matrix,change)
 local sf, rep, ind, ind2, row, i,big,l;
   if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
-    # if empty of not list based, simply return `Immutable'.
+    # if empty or not list based, simply return `Immutable'.
     return Immutable(matrix);
   fi;
   if IsInt(field) then
     sf:=field;
-  else
-    if not IsField(field) then
-      # not a field
-      return Immutable(matrix);
-    fi;
+  elif IsField(field) then
     sf:=Size(field);
+  else
+    # not a field
+    return Immutable(matrix);
   fi;
 
-  big:=sf>256 or sf=0 or not IsFFECollection(field);
+  big:=sf>256 or sf=0 or not IsFFECollColl(matrix);
 
   # the representation we want the rows to be in
   if sf=2 then
@@ -1598,11 +1597,11 @@ local sf, rep, ind, ind2, row, i,big,l;
   for i in [1..Length(matrix)] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
-	or (IsMutable(matrix[i]) and not change) then
+        or (IsMutable(matrix[i]) and not change) then
         Add(ind2,i);
       else
-	# wrong rep, but can be converted
-	Add(ind,i);
+        # wrong rep, but can be converted
+        Add(ind,i);
       fi;
     elif (IsMutable(matrix[i]) and not change) then
       # right rep but wrong mutability
@@ -1637,10 +1636,6 @@ local sf, rep, ind, ind2, row, i,big,l;
         matrix[i] := row;
       fi;
     od;
-  fi;
-
-  # this can only happen if not big
-  if not big then
     for i in ind do
       matrix[i]:=CopyToVectorRep(matrix[i],sf);
     od;
