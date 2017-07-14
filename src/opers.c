@@ -6028,25 +6028,25 @@ void ChangeDoOperations (
     Int                 i;
     Int                 j;
 
+    /* catch infix operations                                          */
+    if ( oper == EqOper   )  { InstallEqObject(verb);   }
+    if ( oper == LtOper   )  { InstallLtObject(verb);   }
+    if ( oper == InOper   )  { InstallInObject(verb);   }
+    if ( oper == SumOper  )  { InstallSumObject(verb);  }
+    if ( oper == DiffOper )  { InstallDiffObject(verb); }
+    if ( oper == ProdOper )  { InstallProdObject(verb); }
+    if ( oper == QuoOper  )  { InstallQuoObject(verb);  }
+    if ( oper == LQuoOper )  { InstallLQuoObject(verb); }
+    if ( oper == PowOper  )  { InstallPowObject(verb);  }
+    if ( oper == CommOper )  { InstallCommObject(verb); }
+    if ( oper == ModOper  )  { InstallModObject(verb);  }
+    if ( oper == InvOp  )  { InstallInvObject(verb);  }
+    if ( oper == OneOp  )  { InstallOneObject(verb);  }
+    if ( oper == AInvOp )  { InstallAinvObject(verb); }
+    if ( oper == ZeroOp )  { InstallZeroObject(verb); }
+
     /* be verbose                                                          */
     if ( verb ) {
-
-        /* catch infix operations                                          */
-        if ( oper == EqOper   )  { InstallEqObject(1);   }
-        if ( oper == LtOper   )  { InstallLtObject(1);   }
-        if ( oper == InOper   )  { InstallInObject(1);   }
-        if ( oper == SumOper  )  { InstallSumObject(1);  }
-        if ( oper == DiffOper )  { InstallDiffObject(1); }
-        if ( oper == ProdOper )  { InstallProdObject(1); }
-        if ( oper == QuoOper  )  { InstallQuoObject(1);  }
-        if ( oper == LQuoOper )  { InstallLQuoObject(1); }
-        if ( oper == PowOper  )  { InstallPowObject(1);  }
-        if ( oper == CommOper )  { InstallCommObject(1); }
-        if ( oper == ModOper  )  { InstallModObject(1);  }
-        if ( oper == InvOp  )  { InstallInvObject(1);  }
-        if ( oper == OneOp  )  { InstallOneObject(1);  }
-        if ( oper == AInvOp )  { InstallAinvObject(1); } 
-        if ( oper == ZeroOp )  { InstallZeroObject(1); }
 
         /* switch do with do verbose                                       */
         for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
@@ -6060,23 +6060,6 @@ void ChangeDoOperations (
 
     /* be silent                                                           */
     else {
-
-        /* catch infix operations                                          */
-        if ( oper == EqOper   )  { InstallEqObject(0);   }
-        if ( oper == LtOper   )  { InstallLtObject(0);   }
-        if ( oper == InOper   )  { InstallInObject(0);   }
-        if ( oper == SumOper  )  { InstallSumObject(0);  }
-        if ( oper == DiffOper )  { InstallDiffObject(0); }
-        if ( oper == ProdOper )  { InstallProdObject(0); }
-        if ( oper == QuoOper  )  { InstallQuoObject(0);  }
-        if ( oper == LQuoOper )  { InstallLQuoObject(0); }
-        if ( oper == PowOper  )  { InstallPowObject(0);  }
-        if ( oper == CommOper )  { InstallCommObject(0); }
-        if ( oper == ModOper  )  { InstallModObject(0); }
-        if ( oper == InvOp  )  { InstallInvObject(0);  }
-        if ( oper == OneOp  )  { InstallOneObject(0);  }
-        if ( oper == AInvOp )  { InstallAinvObject(0); }
-        if ( oper == ZeroOp )  { InstallZeroObject(0); }
 
         /* switch do verbose with do                                       */
         for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
