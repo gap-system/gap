@@ -1462,14 +1462,6 @@ void MakeImmutableString( Obj str )
     RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
 }
 
-
-Obj MakeString(const Char *cstr)
-{
-  Obj result;
-  C_NEW_STRING(result, strlen(cstr), cstr);
-  return result;
-}
-
 Obj MakeString2(const Char *cstr1, const Char *cstr2)
 {
   Obj result;
@@ -1488,13 +1480,6 @@ Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
   memcpy(CSTR_STRING(result), cstr1, len1);
   memcpy(CSTR_STRING(result)+len1, cstr2, len2);
   memcpy(CSTR_STRING(result)+len1+len2, cstr3, len3);
-  return result;
-}
-
-Obj MakeImmString(const Char *cstr)
-{
-  Obj result = MakeString(cstr);
-  MakeImmutableString(result);
   return result;
 }
 
@@ -1923,7 +1908,7 @@ Obj FuncSplitString (
         part = NEW_STRING(l);
         /* in case of garbage collection we need update */
         s = CHARS_STRING(string);
-        COPY_CHARS(part, s+a, l);
+        COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
         pos++;
         AssPlist(res, pos, part);
@@ -1939,7 +1924,7 @@ Obj FuncSplitString (
         l = z-a;
         part = NEW_STRING(l);
         s = CHARS_STRING(string);
-        COPY_CHARS(part, s+a, l);
+        COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
         pos++;
         AssPlist(res, pos, part);
@@ -1955,7 +1940,7 @@ Obj FuncSplitString (
     l = z-a;
     part = NEW_STRING(l);
     s = CHARS_STRING(string);
-    COPY_CHARS(part, s+a, l);
+    COPY_CHARS(part, s + a, l);
     CHARS_STRING(part)[l] = 0;
     pos++;
     AssPlist(res, pos, part);
