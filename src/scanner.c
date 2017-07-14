@@ -1104,9 +1104,9 @@ static Int GetLine2 (
 #endif
 
     if ( input->isstream ) {
-        if ( input->sline == 0
-          || GET_LEN_STRING(input->sline) <= input->spos )
-        {
+        if (input->sline == 0 ||
+            (IS_STRING(input->sline) &&
+             GET_LEN_STRING(input->sline) <= input->spos)) {
             input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
             input->spos  = 0;
         }
