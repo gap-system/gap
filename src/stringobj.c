@@ -1754,7 +1754,7 @@ Obj FuncRemoveCharacters (
 {
   UInt1  *s;
   Int i, j, len;
-  UInt1 REMCHARLIST[257] = {0};
+  UInt1 REMCHARLIST[256] = {0};
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1777,7 +1777,6 @@ Obj FuncRemoveCharacters (
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(rem);
   s = CHARS_STRING(rem);
-  REMCHARLIST[256] = 1;
   for(i=0; i<len; i++) REMCHARLIST[s[i]] = 1;
   
   /* now change string in place */
