@@ -832,8 +832,8 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     UInt len = LEN_PLIST(HIDDEN_IMPS);
     GROW_PLIST(HIDDEN_IMPS, len + 2);
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
-    ELM_PLIST(HIDDEN_IMPS, len + 1) = imp;
-    ELM_PLIST(HIDDEN_IMPS, len + 2) = imps;
+    SET_ELM_PLIST(HIDDEN_IMPS, len + 1, imp);
+    SET_ELM_PLIST(HIDDEN_IMPS, len + 2, imps);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
@@ -856,8 +856,8 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
        FuncIS_SUBSET_FLAGS(0, ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags) == True)
     {
-        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) = 0;
-        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1) = 0;
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i, 0);
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i + 1, 0);
         CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
     }
   }
@@ -936,10 +936,10 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
         old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
         old_moving = 1;
       }
-      
-      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1) = new_flags;
-      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2) = new_with;
-      
+
+      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
+      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
+
       if(old_moving)
       {
         new_flags = old_flags;
@@ -1691,7 +1691,7 @@ static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
        (DoFilter(IsType, b ) == True ))
     {
-      ID_TYPE(b) = INTOBJ_INT(NextTypeID);
+      SET_ID_TYPE(b, INTOBJ_INT(NextTypeID));
       NextTypeID++;
     } 
 }

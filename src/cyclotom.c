@@ -149,12 +149,12 @@ void GrowResultCyc(UInt size) {
     UInt i;
     if (STATE(ResultCyc) == 0) {
         STATE(ResultCyc) = NEW_PLIST( T_PLIST, size );
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
     } else if ( LEN_PLIST(STATE(ResultCyc)) < size ) {
         GROW_PLIST( STATE(ResultCyc), size );
         SET_LEN_PLIST( STATE(ResultCyc), size );
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 0; i < size; i++ ) { res[i] = INTOBJ_INT(0); }
     }
 }
@@ -456,7 +456,7 @@ void            ConvertToBase (
     Obj                 sum;            /* sum of two coefficients         */
 
     /* get a pointer to the cyclotomic and a copy of n to factor           */
-    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+    res = BASE_PTR_PLIST(STATE(ResultCyc));
     nn  = n;
 
     /* first handle 2                                                      */
@@ -475,7 +475,7 @@ void            ConvertToBase (
                       || ! DIFF_INTOBJS( sum, res[l], res[k] ) ) {
                         CHANGED_BAG( STATE(ResultCyc) );
                         sum = DIFF( res[l], res[k] );
-                        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                        res = BASE_PTR_PLIST(STATE(ResultCyc));
                     }
                     res[l] = sum;
                     res[k] = INTOBJ_INT(0);
@@ -490,7 +490,7 @@ void            ConvertToBase (
                       || ! DIFF_INTOBJS( sum, res[l], res[k] ) ) {
                         CHANGED_BAG( STATE(ResultCyc) );
                         sum = DIFF( res[l], res[k] );
-                        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                        res = BASE_PTR_PLIST(STATE(ResultCyc));
                     }
                     res[l] = sum;
                     res[k] = INTOBJ_INT(0);
@@ -522,7 +522,7 @@ void            ConvertToBase (
                           || ! DIFF_INTOBJS( sum, res[l%n], res[k] ) ) {
                             CHANGED_BAG( STATE(ResultCyc) );
                             sum = DIFF( res[l%n], res[k] );
-                            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                            res = BASE_PTR_PLIST(STATE(ResultCyc));
                         }
                         res[l%n] = sum;
                     }
@@ -538,7 +538,7 @@ void            ConvertToBase (
                           || ! DIFF_INTOBJS( sum, res[l%n], res[k] ) ) {
                             CHANGED_BAG( STATE(ResultCyc) );
                             sum = DIFF( res[l%n], res[k] );
-                            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                            res = BASE_PTR_PLIST(STATE(ResultCyc));
                         }
                         res[l%n] = sum;
                     }
@@ -606,7 +606,7 @@ Obj             Cyclotomic (
     static UInt         nrp;            /* number of its prime factors     */
 
     /* get a pointer to the cyclotomic and a copy of n to factor           */
-    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+    res = BASE_PTR_PLIST(STATE(ResultCyc));
 
     /* count the terms and compute the gcd of the exponents with n         */
     len = 0;
@@ -699,7 +699,7 @@ Obj             Cyclotomic (
                       || (cof == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))) ) {
                         CHANGED_BAG( STATE(ResultCyc) );
                         cof = DIFF( INTOBJ_INT(0), cof );
-                        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                        res = BASE_PTR_PLIST(STATE(ResultCyc));
                         res[i] = cof;
                     }
                     else {
@@ -738,7 +738,7 @@ Obj             Cyclotomic (
         cfs[0] = INTOBJ_INT(n);
         exs[0] = 0;
         k = 1;
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 0; i < n; i++ ) {
             if ( res[i] != INTOBJ_INT(0) ) {
                 cfs[k] = res[i];
@@ -881,7 +881,7 @@ Obj             SumCyc (
  
     /* Copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         res[0] = opL;
         CHANGED_BAG( STATE(ResultCyc) );
     }
@@ -889,7 +889,7 @@ Obj             SumCyc (
         len = SIZE_CYC(opL);
         cfs = COEFS_CYC(opL);
         exs = EXPOS_CYC(opL,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
                 res[exs[i]] = cfs[i];
@@ -903,9 +903,9 @@ Obj             SumCyc (
 
     /* add the right operand to the result                                 */
     if ( TNUM_OBJ(opR) != T_CYC ) {
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         sum = SUM( res[0], opR );
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         res[0] = sum;
         CHANGED_BAG( STATE(ResultCyc) );
     }
@@ -913,7 +913,7 @@ Obj             SumCyc (
         len = SIZE_CYC(opR);
         cfs = COEFS_CYC(opR);
         exs = EXPOS_CYC(opR,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! SUM_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
@@ -921,7 +921,7 @@ Obj             SumCyc (
                 sum = SUM( res[exs[i]*mr], cfs[i] );
                 cfs = COEFS_CYC(opR);
                 exs = EXPOS_CYC(opR,len);
-                res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*mr] = sum;
         }
@@ -1027,7 +1027,7 @@ Obj             DiffCyc (
 
     /* copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         res[0] = opL;
         CHANGED_BAG( STATE(ResultCyc) );
     }
@@ -1035,7 +1035,7 @@ Obj             DiffCyc (
         len = SIZE_CYC(opL);
         cfs = COEFS_CYC(opL);
         exs = EXPOS_CYC(opL,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
                 res[exs[i]] = cfs[i];
@@ -1049,9 +1049,9 @@ Obj             DiffCyc (
 
     /* subtract the right operand from the result                          */
     if ( TNUM_OBJ(opR) != T_CYC ) {
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         sum = DIFF( res[0], opR );
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         res[0] = sum;
         CHANGED_BAG( STATE(ResultCyc) );
     }
@@ -1059,7 +1059,7 @@ Obj             DiffCyc (
         len = SIZE_CYC(opR);
         cfs = COEFS_CYC(opR);
         exs = EXPOS_CYC(opR,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! DIFF_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
@@ -1067,7 +1067,7 @@ Obj             DiffCyc (
                 sum = DIFF( res[exs[i]*mr], cfs[i] );
                 cfs = COEFS_CYC(opR);
                 exs = EXPOS_CYC(opR,len);
-                res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*mr] = sum;
         }
@@ -1233,7 +1233,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+            res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! SUM_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
@@ -1241,7 +1241,7 @@ Obj             ProdCyc (
                     sum = SUM( res[(e+exs[i]*ml)%n], cfs[i] );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                    res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1253,7 +1253,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+            res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! DIFF_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
@@ -1261,7 +1261,7 @@ Obj             ProdCyc (
                     sum = DIFF( res[(e+exs[i]*ml)%n], cfs[i] );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                    res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1273,7 +1273,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+            res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( cfs[i], res[(e+exs[i]*ml)%n] )
                   || ! PROD_INTOBJS( prd, cfs[i], c )
@@ -1281,11 +1281,11 @@ Obj             ProdCyc (
                     CHANGED_BAG( STATE(ResultCyc) );
                     prd = PROD( cfs[i], c );
                     exs = EXPOS_CYC(opL,len);
-                    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                    res = BASE_PTR_PLIST(STATE(ResultCyc));
                     sum = SUM( res[(e+exs[i]*ml)%n], prd );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                    res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1300,10 +1300,10 @@ Obj             ProdCyc (
                 cfs = COEFS_CYC(opL);
                 prd = PROD( cfs[i], c );
                 exs = EXPOS_CYC(opL,len);
-                res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                res = BASE_PTR_PLIST(STATE(ResultCyc));
                 sum = SUM( res[(e+exs[i]*ml)%n], prd );
                 exs = EXPOS_CYC(opL,len);
-                res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                res = BASE_PTR_PLIST(STATE(ResultCyc));
                 res[(e+exs[i]*ml)%n] = sum;
             }
             CHANGED_BAG( STATE(ResultCyc) );
@@ -1375,7 +1375,7 @@ Obj             InvCyc (
             /* permute the terms                                           */
             cfs = COEFS_CYC(op);
             exs = EXPOS_CYC(op,len);
-            res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+            res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( k = 1; k < len; k++ )
                 res[(i*exs[k])%n] = cfs[k];
             CHANGED_BAG( STATE(ResultCyc) );
@@ -1516,7 +1516,7 @@ Obj FuncE (
     if ( STATE(LastNCyc) != INT_INTOBJ(n) ) {
         STATE(LastNCyc) = INT_INTOBJ(n);
         GrowResultCyc(STATE(LastNCyc));
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         res[1] = INTOBJ_INT(1);
         CHANGED_BAG( STATE(ResultCyc) );
         ConvertToBase( STATE(LastNCyc) );
@@ -1883,7 +1883,7 @@ Obj FuncGALOIS_CYC (
         len = SIZE_CYC(cyc);
         cfs = COEFS_CYC(cyc);
         exs = EXPOS_CYC(cyc,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             res[(UInt8)exs[i]*(UInt8)o%(UInt8)n] = cfs[i];
         }
@@ -1907,7 +1907,7 @@ Obj FuncGALOIS_CYC (
         len = SIZE_CYC(cyc);
         cfs = COEFS_CYC(cyc);
         exs = EXPOS_CYC(cyc,len);
-        res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+        res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] )
               || ! SUM_INTOBJS( sum, res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] ) ) {
@@ -1915,7 +1915,7 @@ Obj FuncGALOIS_CYC (
                 sum = SUM( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] );
                 cfs = COEFS_CYC(cyc);
                 exs = EXPOS_CYC(cyc,len);
-                res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+                res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*o%n] = sum;
         }
@@ -1975,7 +1975,7 @@ Obj FuncCycList (
     GrowResultCyc(n);
 
     /* transfer the coefficients into the buffer                           */
-    res = &(ELM_PLIST( STATE(ResultCyc), 1 ));
+    res = BASE_PTR_PLIST(STATE(ResultCyc));
     for ( i = 0; i < n; i++ ) {
         val = ELM_PLIST( list, i+1 );
         if ( ! ( IS_INTOBJ(val) ||
