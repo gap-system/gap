@@ -1867,8 +1867,6 @@ Obj FuncTranslateString (
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */ 
-UInt1 SPLITSTRINGSEPS[257];
-UInt1 SPLITSTRINGWSPACE[257];
 Obj FuncSplitString (
 			      Obj     self,
 			      Obj     string,
@@ -1878,6 +1876,8 @@ Obj FuncSplitString (
   UInt1  *s;
   Int i, a, z, l, pos, len;
   Obj res, part;
+  UInt1 SPLITSTRINGSEPS[256] = { 0 };
+  UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1906,26 +1906,14 @@ Obj FuncSplitString (
     return FuncSplitString( self, string, seps, wspace );
   }
   
-  /* reset SPLITSTRINGSEPS (in case of previous error) */
-  if (SPLITSTRINGSEPS[256] != 0) {
-    for(i=0; i<257; i++) SPLITSTRINGSEPS[i] = 0;
-  }
-  
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);
   s = CHARS_STRING(seps);
-  SPLITSTRINGSEPS[256] = 1;
   for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 1;
-  
-  /* reset SPLITSTRINGWSPACE (in case of previous error) */
-  if (SPLITSTRINGWSPACE[256] != 0) {
-    for(i=0; i<257; i++) SPLITSTRINGWSPACE[i] = 0;
-  }
   
   /* set SPLITSTRINGWSPACE by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(wspace);
   s = CHARS_STRING(wspace);
-  SPLITSTRINGWSPACE[256] = 1;
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
  
   /* create the result (list of strings) */
@@ -1980,18 +1968,6 @@ Obj FuncSplitString (
     pos++;
     AssPlist(res, pos, part);
   }
-
-  /* unset SPLITSTRINGSEPS  */
-  len = GET_LEN_STRING(seps);
-  s = CHARS_STRING(seps);
-  for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 0;
-  SPLITSTRINGSEPS[256] = 0;
-
-  /* unset SPLITSTRINGWSPACE  */
-  len = GET_LEN_STRING(wspace);
-  s = CHARS_STRING(wspace);
-  for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 0;
-  SPLITSTRINGWSPACE[256] = 0;
 
   return res;
 }
