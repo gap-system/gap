@@ -850,7 +850,7 @@ void ReadLongNumber(
 
      /* string in which to accumulate number */
      len = strlen(STATE(Value));
-     C_NEW_STRING( string, len, (void *)STATE(Value));
+     string = MakeString(STATE(Value));
      done = 0;
 
      while (!done) {

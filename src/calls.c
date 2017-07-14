@@ -1995,7 +1995,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  C_NEW_STRING_DYN(cookieStr, cookie);
+  cookieStr = MakeString(cookie);
   return cookieStr;
 }
 

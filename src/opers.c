@@ -5634,7 +5634,7 @@ Obj FuncNEW_OPERATION_ARGS (
     }
 
     /* make the new operation                                              */
-    C_NEW_STRING_CONST( args, "args" )
+    args = MakeString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
@@ -6533,23 +6533,23 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
+    StringFilterSetter = MakeString("<<filter-setter>>");
     RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
 
     ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
     SET_LEN_PLIST( ArglistObj, 1 );
-    C_NEW_STRING_CONST( str, "obj" );
+    str = MakeString("obj");
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObj, 1, str );
     CHANGED_BAG( ArglistObj );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
-    C_NEW_STRING_CONST( str, "obj" );
+    str = MakeString("obj");
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 1, str );
     CHANGED_BAG( ArglistObjVal );
-    C_NEW_STRING_CONST( str, "val" );
+    str = MakeString("val");
     RESET_FILT_LIST( str, FN_IS_MUTABLE );
     SET_ELM_PLIST( ArglistObjVal, 2, str );
     CHANGED_BAG( ArglistObjVal );
@@ -6570,7 +6570,7 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
+    TRY_NEXT_METHOD = MakeString("TRY_NEXT_METHOD");
     RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 

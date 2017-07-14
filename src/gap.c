@@ -916,10 +916,10 @@ Obj FuncWindowCmd (
 
   /* if the first entry is one signal an error */
   if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
-    C_NEW_STRING_CONST(tmp, "window system: ");
-    SET_ELM_PLIST( list, 1, tmp );
-    SET_LEN_PLIST( list, i-1 );
-    return CALL_XARGS(Error,list);
+      tmp = MakeString("window system: ");
+      SET_ELM_PLIST(list, 1, tmp);
+      SET_LEN_PLIST(list, i - 1);
+      return CALL_XARGS(Error, list);
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
@@ -1210,7 +1210,7 @@ static Obj ErrorMessageToGAPString(
   Obj Message;
   SPrTo(message, sizeof(message), msg, arg1, arg2);
   message[sizeof(message)-1] = '\0';
-  C_NEW_STRING_DYN(Message, message);
+  Message = MakeString(message);
   return Message;
 }
 
@@ -1407,7 +1407,7 @@ Obj ErrorReturnObj (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING_DYN(LateMsg, msg2);
+  LateMsg = MakeString(msg2);
   return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
@@ -1423,7 +1423,7 @@ void ErrorReturnVoid (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING_DYN(LateMsg, msg2);
+  LateMsg = MakeString(msg2);
   CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
   /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
