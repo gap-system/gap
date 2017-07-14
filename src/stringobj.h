@@ -51,47 +51,78 @@ extern Obj ObjsChar [256];
 
 /****************************************************************************
 **
-*F  SIZEBAG_STRINGLEN( <len> ) . . . . size of Bag for string of length <len>
-**  
+*F  IS_STRING_REP( <list> ) . . . . . . . .  check if <list> is in string rep
 */
-#define SIZEBAG_STRINGLEN(len)         ((len) + 1 + sizeof(UInt))
+static inline Int IS_STRING_REP(Obj list)
+{
+    return (T_STRING <= TNUM_OBJ(list) &&
+            TNUM_OBJ(list) <= T_STRING_SSORT + IMMUTABLE);
+}
+
+
+/****************************************************************************
+**
+*F  SIZEBAG_STRINGLEN( <len> ) . . . . size of Bag for string of length <len>
+**
+*/
+static inline UInt SIZEBAG_STRINGLEN(UInt len)
+{
+    return len + 1 + sizeof(UInt);
+}
 
 /****************************************************************************
 **
 *F  CSTR_STRING( <list> ) . . . . . . . . . . . . . . .  C string of a string
-*F  CHARS_STRING( <list> ) . . . . . . . . . . . . . .   same pointer 
+*F  CHARS_STRING( <list> ) . . . . . . . . . . . . . .   same pointer
 **
 **  'CSTR_STRING'  returns the (address  of the)  C  character string of  the
-**  string <list>. Note that the string as C string is truncated before the
-**  first null character. Try to avoid this and use CHARS_STRING.
+**  string <list>. 'CHARS_STRING' is the same, but returns a pointer to an
+**  unsigned char.
 **
-**  Note that 'CSTR_STRING' is a macro, so do not call it with arguments that
-**  have side effects.
+**  Remember that GAP strings can contain embedded NULLs, so do not assume
+**  the string stops at the first null character, instead use
+**  GET_LEN_STRING.
 */
-#define CSTR_STRING(list)            ((Char*)ADDR_OBJ(list) + sizeof(UInt))
-#define CHARS_STRING(list)           ((UChar*)ADDR_OBJ(list) + sizeof(UInt))
+
+static inline Char * CSTR_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    return (Char *)ADDR_OBJ(list) + sizeof(UInt);
+}
+
+static inline UChar * CHARS_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    return (UChar *)ADDR_OBJ(list) + sizeof(UInt);
+}
 
 /****************************************************************************
 **
 *F  GET_LEN_STRING( <list> )  . . . . . . . . . . . . . .  length of a string
 **
 **  'GET_LEN_STRING' returns the length of the string <list>, as a C integer.
-**
-**  Note that  'GET_LEN_STRING' is a macro, so  do not call it with arguments
-**  that have side effects.
 */
-#define GET_LEN_STRING(list)            (*((UInt*)ADDR_OBJ(list)))
+
+static inline UInt GET_LEN_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    return *((UInt *)ADDR_OBJ(list));
+}
 
 /****************************************************************************
 **
 *F  SET_LEN_STRING( <list>, <len> ) . . . . . . . . . set length of a string
 **
 **  'SET_LEN_STRING' sets length of the string <list> to C integer <len>.
-**
-**  Note that  'SET_LEN_STRING' is a macro, so  do not call it with arguments
-**  that have side effects.
 */
-#define SET_LEN_STRING(list,len)     (*((UInt*)ADDR_OBJ(list)) = (UInt)(len))
+
+static inline void SET_LEN_STRING(Obj list, Int len)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(len >= 0);
+    GAP_ASSERT(SIZEBAG_STRINGLEN(len) <= SIZE_OBJ(list));
+    (*((UInt *)ADDR_OBJ(list)) = (UInt)(len));
+}
 
 /****************************************************************************
 **
@@ -110,15 +141,20 @@ extern Obj NEW_STRING(Int len);
 **  'GROW_STRING' grows  the string <list>  if necessary to ensure that it
 **  has room for at least <len> elements.
 **
-**  Note that 'GROW_STRING' is a macro, so do not call it with arguments that
-**  have side effects.
 */
-#define GROW_STRING(list,len)   ( ((len) + sizeof(UInt) < SIZE_OBJ(list)) ? \
-                                 0L : GrowString(list,len) )
 
 extern  Int             GrowString (
             Obj                 list,
             UInt                need );
+
+static inline void GROW_STRING(Obj list, Int len)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(len >= 0);
+    if (SIZEBAG_STRINGLEN(len) > SIZE_OBJ(list)) {
+        GrowString(list, len);
+    }
+}
 
 /****************************************************************************
 **
@@ -129,8 +165,11 @@ extern  Int             GrowString (
 **  Note that 'SHRINK_STRING' is a macro, so do not call it with arguments that
 **  have side effects.
 */
-#define SHRINK_STRING(list)   ResizeBag((list),\
-                            (SIZEBAG_STRINGLEN(GET_LEN_STRING((list)))));
+static inline void SHRINK_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    ResizeBag(list, SIZEBAG_STRINGLEN(GET_LEN_STRING((list))));
+}
 
 /****************************************************************************
 **
@@ -139,12 +178,15 @@ extern  Int             GrowString (
 **  'GET_ELM_STRING'  returns the  <pos>-th  element  of  the string  <list>.
 **  <pos> must be  a positive integer  less than  or  equal to  the length of
 **  <list>.
-**
-**  Note that 'GET_ELM_STRING' is a  macro, so do not  call it with arguments
-**  that have side effects.
 */
-#define GET_ELM_STRING(list,pos)        (ObjsChar[ \
-                         (((UInt1*)ADDR_OBJ(list))[(pos) + sizeof(UInt) - 1])])
+static inline Obj GET_ELM_STRING(Obj list, Int pos)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(pos > 0);
+    GAP_ASSERT(pos <= GET_LEN_STRING(list));
+    UChar c = CHARS_STRING(list)[pos - 1];
+    return ObjsChar[c];
+}
 
 /****************************************************************************
 **
@@ -152,24 +194,32 @@ extern  Int             GrowString (
 **
 **  'SET_ELM_STRING'  sets the  <pos>-th  character  of  the string  <list>.
 **  <val> must be a character and <list> stay a string after the assignment.
-**
-**  Note that 'SET_ELM_STRING' is a  macro, so do not  call it with arguments
-**  that have side effects.
 */
-#define SET_ELM_STRING(list,pos,val)      (((UInt1*)ADDR_OBJ(list))\
-[(pos) + sizeof(UInt) - 1] = *((UInt1*)ADDR_OBJ(val)))
+static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(pos > 0);
+    GAP_ASSERT(pos <= GET_LEN_STRING(list));
+    GAP_ASSERT(TNUM_OBJ(val) == T_CHAR);
+    UChar * ptr = CHARS_STRING(list) + (pos - 1);
+    *ptr = *(UChar *)ADDR_OBJ(val);
+}
 
 /****************************************************************************
 **
 *F  COPY_CHARS( <str>, <charpnt>, <n> ) . . . copies <n> chars, starting
 **  from character pointer <charpnt>, to beginning of string
-**  
-**  This is a   macro. It assumes  that the  data  area in  <str> is  large
-**  enough. It does not add a terminating null character and not change the
-**  length of the string.
 **
+**  It assumes that the data area in <str> is large enough. It does not add
+**  a terminating null character and not change the length of the string.
 */
-#define COPY_CHARS(str,pnt,n)         (memcpy(CHARS_STRING(str), pnt, n));
+static inline void COPY_CHARS(Obj str, UChar * pnt, Int n)
+{
+    GAP_ASSERT(IS_STRING_REP(str));
+    GAP_ASSERT(n >= 0);
+    GAP_ASSERT(SIZEBAG_STRINGLEN(n) <= SIZE_OBJ(str));
+    memcpy(CHARS_STRING(str), pnt, n);
+}
 
 /****************************************************************************
 **
@@ -200,21 +250,13 @@ extern void PrintString1 (
 **
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
 **  It does not change the representation of <obj>.
-**
-**  Note that 'IS_STRING' is a  macro, so do not call  it with arguments that
-**  have side effects.
 */
-#define IS_STRING(obj)  ((*IsStringFuncs[ TNUM_OBJ( obj ) ])( obj ))
-
 extern  Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-
-/****************************************************************************
-**
-*F  IS_STRING_REP( <list> ) . . . . . . . .  check if <list> is in string rep
-*/
-#define IS_STRING_REP(list)  \
-  (T_STRING <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_STRING_SSORT+IMMUTABLE)
+static inline Int IS_STRING(Obj obj)
+{
+    return (*IsStringFuncs[TNUM_OBJ(obj)])(obj);
+}
 
 
 /****************************************************************************
@@ -281,10 +323,28 @@ extern Int IsStringConv (
 void MakeImmutableString(Obj str);
 
 
-Obj MakeString(const Char *cstr);
+// Functions to create mutable and immutable GAP strings from C strings.
+// MakeString and MakeImmString are inlineable so 'strlen' can be optimised
+// away for constant strings.
+
+static inline Obj MakeString(const Char * cstr)
+{
+    Obj result;
+    C_NEW_STRING(result, strlen(cstr), cstr);
+    return result;
+}
+
+static inline Obj MakeImmString(const Char * cstr)
+{
+    Obj result = MakeString(cstr);
+    RetypeBag(result, IMMUTABLE_TNUM(T_STRING));
+    return result;
+}
+
+
 Obj MakeString2(const Char *cstr1, const Char *cstr2);
 Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
-Obj MakeImmString(const Char *cstr);
+
 Obj MakeImmString2(const Char *cstr1, const Char *cstr2);
 Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
 Obj ConvImmString(Obj str);
@@ -296,19 +356,12 @@ Obj ConvImmString(Obj str);
 **
 ** The cstring is assumed to be allocated on the heap, hence its length
 ** is dynamic and must be computed during runtime using strlen.
+**
+** This macro is provided for backwards compatibility of packages.
+** MakeString and MakeImmString are as efficient and should be used instead.
 */
 #define C_NEW_STRING_DYN(string,cstr) \
   C_NEW_STRING(string, strlen(cstr), cstr)
-
-/****************************************************************************
-**
-*F  C_NEW_STRING_CONST( <string>, <cstring> ) . . . . . . . . create GAP string
-**
-** The cstring is assumed to be a literal constant (like this: "string").
-** Hence its length is constant and can be computed during compilation.
-*/
-#define C_NEW_STRING_CONST(string,cstr) \
-  C_NEW_STRING(string, sizeof(cstr)-1, cstr)
 
 /****************************************************************************
 **
