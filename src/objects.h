@@ -543,7 +543,8 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **  will renumber all IDs.  Therefore the  corresponding routine must excatly
 **  know where such numbers are stored.
 */
-#define ID_TYPE(type)           ELM_PLIST( type, 4 )
+#define ID_TYPE(type) ELM_PLIST(type, 4)
+#define SET_ID_TYPE(type, val) SET_ELM_PLIST(type, 4, val)
 
 
 /****************************************************************************

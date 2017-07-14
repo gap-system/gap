@@ -208,7 +208,7 @@ static void CompressDeductionList ( void )
     }
 
     /* run through the lists and compress them                             */
-    ptTable = &(ELM_PLIST(objTable,1)) - 1;
+    ptTable = BASE_PTR_PLIST(objTable) - 1;
     j = 0;
     for ( i = dedfst; i < dedlst; i++ ) {
         if ( INT_INTOBJ(ELM_PLIST(ptTable[dedgen[i]],dedcos[i])) > 0
@@ -262,9 +262,9 @@ static void HandleCoinc (
     if ( cos1 == cos2 )  return;
 
     /* get some pointers                                                   */
-    ptTable = &(ELM_PLIST(objTable,1)) - 1;
-    ptNext  = &(ELM_PLIST(objNext,1)) - 1;
-    ptPrev  = &(ELM_PLIST(objPrev,1)) - 1;
+    ptTable = BASE_PTR_PLIST(objTable) - 1;
+    ptNext = BASE_PTR_PLIST(objNext) - 1;
+    ptPrev = BASE_PTR_PLIST(objPrev) - 1;
 
     /* take the smaller one as new representative                          */
     if ( cos2 < cos1 ) { c3 = cos1;  cos1 = cos2;  cos2 = c3;  }
@@ -294,9 +294,9 @@ static void HandleCoinc (
         /* replace <firstCoinc> by its representative in the table         */
         cos1 = INT_INTOBJ( ptPrev[firstCoinc] );  cos2 = firstCoinc;
         for ( i = 1; i <= LEN_PLIST(objTable); i++ ) {
-            gen = &(ELM_PLIST(ptTable[i],1)) - 1;
+            gen = BASE_PTR_PLIST(ptTable[i]) - 1;
             /* inv = ADDR_OBJ(ptTable[ ((i-1)^1)+1 ] ); */
-            inv = &(ELM_PLIST( ptTable[ i + 2*(i % 2) - 1 ], 1 ) ) - 1;
+            inv = BASE_PTR_PLIST(ptTable[i + 2 * (i % 2) - 1]) - 1;
 
             /* replace <cos2> by <cos1> in the column of <gen>^-1          */
             c2 = INT_INTOBJ( gen[cos2] );
@@ -458,9 +458,9 @@ Obj FuncMakeConsequences (
         for ( i = LEN_LIST( hdSubs ); 1 <= i; i-- ) {
           if ( ELM_PLIST( hdSubs, i ) != 0 ) {
             objNums = ELM_PLIST( ELM_PLIST( hdSubs, i ), 1 );
-            ptNums  = &(ELM_PLIST(objNums,1)) - 1;
+            ptNums = BASE_PTR_PLIST(objNums) - 1;
             objRel  = ELM_PLIST( ELM_PLIST( hdSubs, i ), 2 );
-            ptRel   = &(ELM_PLIST(objRel,1)) - 1;
+            ptRel = BASE_PTR_PLIST(objRel) - 1;
 
             lp = 2;
             lc = 1;
@@ -519,9 +519,9 @@ Obj FuncMakeConsequences (
         objRels = ELM_PLIST( ELM_PLIST( list, 4 ), dedgen[dedfst] );
         for ( i = 1; i <= LEN_LIST( objRels ); i++ ) {
             objNums = ELM_PLIST( ELM_PLIST(objRels,i), 1 );
-            ptNums  = &(ELM_PLIST(objNums,1)) - 1;
+            ptNums = BASE_PTR_PLIST(objNums) - 1;
             objRel  = ELM_PLIST( ELM_PLIST(objRels,i), 2 );
-            ptRel   = &(ELM_PLIST(objRel,1)) - 1;
+            ptRel = BASE_PTR_PLIST(objRel) - 1;
 
             lp = INT_INTOBJ( ELM_PLIST( ELM_PLIST(objRels,i), 3 ) );
             lc = dedcos[ dedfst ];
@@ -640,9 +640,9 @@ Obj FuncMakeConsequencesPres (
         objRels = ELM_PLIST( ELM_PLIST( list, 6 ), gen );
         for ( i = 1; i <= LEN_LIST( objRels ); i++ ) {
             objNums = ELM_PLIST( ELM_PLIST(objRels,i), 1 );
-            ptNums  = &(ELM_PLIST(objNums,1)) - 1;
+            ptNums = BASE_PTR_PLIST(objNums) - 1;
             objRel  = ELM_PLIST( ELM_PLIST(objRels,i), 2 );
-            ptRel   = &(ELM_PLIST(objRel,1)) - 1;
+            ptRel = BASE_PTR_PLIST(objRel) - 1;
 
             lp = INT_INTOBJ( ELM_PLIST( ELM_PLIST(objRels,i), 3 ) );
             lc = coset;
@@ -727,7 +727,7 @@ Obj FuncStandardizeTableC (
                    (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
-    ptTable  = &(ELM_PLIST(objTable,1)) - 1;
+    ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen    = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
         if ( ! IS_PLIST(ptTable[j]) ) {
@@ -755,7 +755,7 @@ Obj FuncStandardizeTableC (
         /* scan through all columns of acos                                */
         for ( j = 1;  j <= nloop;  j++ ) {
             k = ( nloop == nrgen ) ? 2*j - 1 : j;
-            g = &(ELM_PLIST(ptTable[k],1)) - 1;
+            g = BASE_PTR_PLIST(ptTable[k]) - 1;
 
             /* if we haven't seen this coset yet                           */
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
@@ -764,8 +764,8 @@ Obj FuncStandardizeTableC (
                 lcos = lcos + 1;
                 mcos = INT_INTOBJ( g[acos] );
                 for ( k = 1;  k <= nrgen;  k++ ) {
-                    h = &(ELM_PLIST(ptTable[2*k-1],1)) - 1;
-                    i = &(ELM_PLIST(ptTable[2*k],1)) - 1;
+                    h = BASE_PTR_PLIST(ptTable[2 * k - 1]) - 1;
+                    i = BASE_PTR_PLIST(ptTable[2 * k]) - 1;
                     c1 = INT_INTOBJ( h[lcos] );
                     c2 = INT_INTOBJ( h[mcos] );
                     if ( c1 != 0 )  i[c1] = INTOBJ_INT( mcos );
@@ -832,7 +832,7 @@ static void InitializeCosetFactorWord ( void )
 
     /* handle the abelianized case                                         */
     else if ( treeType == 0 ) {
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( i = 1;  i <= treeWordLength;  i++ ) {
             ptWord[i] = INTOBJ_INT(0);
         }
@@ -880,15 +880,15 @@ static Int TreeEntryC ( void )
     Int                 uabs, vabs;     /* generator values                */
 
     /*  Get the tree components                                            */
-    ptTree1  = &(ELM_PLIST(objTree1,1)) - 1;
-    ptTree2  = &(ELM_PLIST(objTree2,1)) - 1;
+    ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
+    ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
     treesize = LEN_PLIST(objTree1);
     numgens  = INT_INTOBJ( ELM_PLIST( objTree, 3 ) );
 
     /* handle the abelianized case                                         */
     if ( treeType == 0 )
     {
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
             if ( ptWord[leng] != INTOBJ_INT(0) )  {
                 break;
@@ -912,7 +912,7 @@ static Int TreeEntryC ( void )
             }
         }
         for ( k = 1; k <= numgens; k++ ) {
-            ptFac = &(ELM_PLIST(ptTree1[k],1)) - 1;
+            ptFac = BASE_PTR_PLIST(ptTree1[k]) - 1;
             if ( LEN_PLIST(ptTree1[k]) == leng ) {
                 for ( i = 1;  i <= leng;  i++ ) {
                     if ( ptFac[i] != ptWord[i] )  {
@@ -942,8 +942,8 @@ static Int TreeEntryC ( void )
         CHANGED_BAG(objTree1);
 
         /* copy the word to the new bag                                    */
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
-        ptNew  = &(ELM_PLIST(objNew,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
+        ptNew = BASE_PTR_PLIST(objNew) - 1;
         while ( leng > 0 ) {
             ptNew[leng] = ptWord[leng];
             leng--;
@@ -1032,8 +1032,8 @@ static Int TreeEntryC ( void )
                     treesize = 2 * treesize;
                     GROW_PLIST( objTree1, treesize );
                     GROW_PLIST( objTree2, treesize );
-                    ptTree1 = &(ELM_PLIST(objTree1,1)) - 1;
-                    ptTree2 = &(ELM_PLIST(objTree2,1)) - 1;
+                    ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
+                    ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
                     SET_LEN_PLIST( objTree1, treesize );
                     SET_LEN_PLIST( objTree2, treesize );
                     CHANGED_BAG(objTree);
@@ -1075,10 +1075,10 @@ static void AddCosetFactor2 (
 
     /* handle the abelianized case                                         */
     if ( treeType == 0 ) {
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
         if ( factor > 0 ) {
             tmp   = ELM_PLIST( objTree1, factor );
-            ptFac = &(ELM_PLIST(tmp,1)) - 1;
+            ptFac = BASE_PTR_PLIST(tmp) - 1;
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! SUM_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
@@ -1093,7 +1093,7 @@ static void AddCosetFactor2 (
         else
         {
             tmp   = ELM_PLIST( objTree1, -factor );
-            ptFac = &(ELM_PLIST(tmp,1)) - 1;
+            ptFac = BASE_PTR_PLIST(tmp) - 1;
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! DIFF_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
@@ -1175,7 +1175,7 @@ Obj FuncApplyRel2 (
                    (Int) LEN_PLIST(app), 0L );
         return 0;
     }
-    ptApp = &(ELM_PLIST(app,1)) - 1;
+    ptApp = BASE_PTR_PLIST(app) - 1;
 
     /* get the components of the proper application list                   */
     lp = INT_INTOBJ( ptApp[1] );
@@ -1266,7 +1266,7 @@ Obj FuncApplyRel2 (
             objTree  = ptApp[8];
             objTree1 = ELM_PLIST( objTree, 1 );
             objTree2 = ELM_PLIST( objTree, 2 );
-            ptTree   = &(ELM_PLIST(objTree,1)) - 1;
+            ptTree = BASE_PTR_PLIST(objTree) - 1;
             treeWordLength = INT_INTOBJ( ptTree[4] );
             if ( LEN_PLIST(objTree2) != treeWordLength ) {
                 ErrorQuit( "ApplyRel2: illegal word length", 0L, 0L );
@@ -1307,8 +1307,8 @@ Obj FuncApplyRel2 (
             }
 
             /* initialize some local variables                             */
-            ptWord  = &(ELM_PLIST(word,1)) - 1;
-            ptTree2 = &(ELM_PLIST(objTree2,1)) - 1;
+            ptWord = BASE_PTR_PLIST(word) - 1;
+            ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
 
             /* copy the result to its destination, if necessary            */
             if ( ptWord != ptTree2 ) {
@@ -1336,10 +1336,10 @@ Obj FuncApplyRel2 (
             }
 
             /* initialize some local variables                             */
-            ptRel   = &(ELM_PLIST(objRel,1)) - 1;
-            ptNums  = &(ELM_PLIST(objNums,1)) - 1;
-            ptTabl2 = &(ELM_PLIST(objTable2,1)) - 1;
-            ptWord  = &(ELM_PLIST(word,1)) - 1;
+            ptRel = BASE_PTR_PLIST(objRel) - 1;
+            ptNums = BASE_PTR_PLIST(objNums) - 1;
+            ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
+            ptWord = BASE_PTR_PLIST(word) - 1;
             last    = 0;
 
             /* scan as long as possible from the left to the right         */
@@ -1432,8 +1432,8 @@ Obj FuncCopyRel (
     /*  Allocate a bag for the copy                                        */
     copy   = NEW_PLIST( T_PLIST, leng );
     SET_LEN_PLIST( copy, leng );
-    ptRel  = &(ELM_PLIST(rel,1));
-    ptCopy = &(ELM_PLIST(copy,1));
+    ptRel = BASE_PTR_PLIST(rel);
+    ptCopy = BASE_PTR_PLIST(copy);
 
     /*  Copy the relator to the new bag                                    */
     while ( leng > 0 ) {
@@ -1475,7 +1475,7 @@ Obj FuncMakeCanonical (
     if (leng == 0) {
         return 0;
     }
-    ptRel = &(ELM_PLIST(rel, 1));
+    ptRel = BASE_PTR_PLIST(rel);
     leng1 = leng - 1;
 
     /*  cyclically reduce the relator, if necessary                        */
@@ -1654,8 +1654,8 @@ Obj FuncTreeEntry(
         ErrorQuit( "invalid <tree>[2]", 0L, 0L );
         return 0;
     }
-    ptTree1  = &(ELM_PLIST(objTree1,1)) - 1;
-    ptTree2  = &(ELM_PLIST(objTree2,1)) - 1;
+    ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
+    ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
     treesize = LEN_PLIST(objTree1);
     numgens  = INT_INTOBJ( ELM_PLIST( objTree, 3 ) );
     treeWordLength = INT_INTOBJ( ELM_PLIST( objTree, 4 ) );
@@ -1668,13 +1668,13 @@ Obj FuncTreeEntry(
     }
 
     /* handle the abelianized case                                         */
-    ptWord = &(ELM_PLIST(word,1)) - 1;
+    ptWord = BASE_PTR_PLIST(word) - 1;
     if ( treeType == 0 ) {
         if ( LEN_PLIST(word) != treeWordLength ) {
             ErrorQuit( "inconsistent <word> length", 0L, 0L );
             return 0;
         }
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
             if ( ptWord[leng] != INTOBJ_INT(0) ) {
                 break;
@@ -1700,7 +1700,7 @@ Obj FuncTreeEntry(
         }
 
         for ( k = 1;  k <= numgens;  k++ ) {
-            ptFac = &(ELM_PLIST(ptTree1[k],1)) - 1;
+            ptFac = BASE_PTR_PLIST(ptTree1[k]) - 1;
             if ( LEN_PLIST(ptTree1[k]) == leng ) {
                 for ( i = 1;  i <= leng;  i++ ) {
                     if ( ptFac[i] != ptWord[i] ) {
@@ -1729,8 +1729,8 @@ Obj FuncTreeEntry(
         CHANGED_BAG(objTree1);
 
         /* copy the word to the new bag                                    */
-        ptWord = &(ELM_PLIST(objTree2,1)) - 1;
-        ptNew  = &(ELM_PLIST(new,1)) - 1;
+        ptWord = BASE_PTR_PLIST(objTree2) - 1;
+        ptNew = BASE_PTR_PLIST(new) - 1;
         while ( leng > 0 ) {
             ptNew[leng] = ptWord[leng];
             leng--;
@@ -1854,8 +1854,8 @@ Obj FuncTreeEntry(
                     GROW_PLIST( objTree2, treesize );
                     SET_LEN_PLIST( objTree1, treesize );
                     SET_LEN_PLIST( objTree2, treesize );
-                    ptTree1 = &(ELM_PLIST(objTree1,1)) - 1;
-                    ptTree2 = &(ELM_PLIST(objTree2,1)) - 1;
+                    ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
+                    ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
                     CHANGED_BAG(objTree);
                 }
                 ptTree1[numgens] = INTOBJ_INT( t1 );
@@ -1912,7 +1912,7 @@ Obj FuncStandardizeTable2C (
                    (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
-    ptTable = &(ELM_PLIST(objTable,1)) - 1;
+    ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen   = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
         if ( ! IS_PLIST(ptTable[j]) ) {
@@ -1929,7 +1929,7 @@ Obj FuncStandardizeTable2C (
                    (Int)TNAM_OBJ(objTable), 0L );
         return 0;
     }
-    ptTabl2 = &(ELM_PLIST(objTable2,1)) - 1;
+    ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
     if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
        /* use semilenlex standard                                          */
        nloop = nrgen;
@@ -1947,7 +1947,7 @@ Obj FuncStandardizeTable2C (
         /* scan through all columns of acos                                */
         for ( j = 1;  j <= nloop;  j++ ) {
             k = ( nloop == nrgen ) ? 2*j - 1 : j;
-            g = &(ELM_PLIST(ptTable[k],1)) - 1;
+            g = BASE_PTR_PLIST(ptTable[k]) - 1;
 
             /* if we haven't seen this coset yet                           */
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
@@ -1956,10 +1956,10 @@ Obj FuncStandardizeTable2C (
                 lcos = lcos + 1;
                 mcos = INT_INTOBJ( g[acos] );
                 for ( k = 1;  k <= nrgen;  k++ ) {
-                    h  = &(ELM_PLIST(ptTable[2*k-1],1)) - 1;
-                    i  = &(ELM_PLIST(ptTable[2*k],1)) - 1;
-                    h2 = &(ELM_PLIST(ptTabl2[2*k-1],1)) - 1;
-                    i2 = &(ELM_PLIST(ptTabl2[2*k],1)) - 1;
+                    h = BASE_PTR_PLIST(ptTable[2 * k - 1]) - 1;
+                    i = BASE_PTR_PLIST(ptTable[2 * k]) - 1;
+                    h2 = BASE_PTR_PLIST(ptTabl2[2 * k - 1]) - 1;
+                    i2 = BASE_PTR_PLIST(ptTabl2[2 * k]) - 1;
                     c1 = INT_INTOBJ( h[lcos] );
                     c2 = INT_INTOBJ( h[mcos] );
                     if ( c1 != 0 )  i[c1] = INTOBJ_INT( mcos );
@@ -2034,7 +2034,7 @@ Obj FuncAddAbelianRelator (
             (Int)TNAM_OBJ(rels), 0L );
         return 0;
     }
-    ptRels = &(ELM_PLIST(rels,1)) - 1;
+    ptRels = BASE_PTR_PLIST(rels) - 1;
     if ( !IS_INTOBJ(number) ) {
         ErrorQuit( "<number> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(number), 0L );
@@ -2052,7 +2052,7 @@ Obj FuncAddAbelianRelator (
         ErrorQuit( "inconsistent relator number", 0L, 0L );
         return 0;
     }
-    pt2 = &(ELM_PLIST(tmp,1)) - 1;
+    pt2 = BASE_PTR_PLIST(tmp) - 1;
 
     /* get the length of the exponent vectors (the number of generators)   */
     numcols = LEN_PLIST(tmp);
@@ -2076,7 +2076,7 @@ Obj FuncAddAbelianRelator (
 
     /* if the last relator occurs twice, remove one of its occurrences     */
     for ( i = 1;  i < numrows;  i++ ) {
-        pt1 = &(ELM_PLIST(ptRels[i],1)) - 1;
+        pt1 = BASE_PTR_PLIST(ptRels[i]) - 1;
         for ( j = 1;  j <= numcols;  j++ ) {
             if ( pt1[j] != pt2[j] ) {
                 break;
