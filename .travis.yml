@@ -26,7 +26,7 @@ matrix:
       sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
       before_install:
         - sudo apt-get -qq update
-        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
+        - sudo apt-get install gcc-multilib g++-multilib # libgmp-dev:i386 is currently broken
 
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
@@ -62,7 +62,7 @@ matrix:
       sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
       before_install:
         - sudo apt-get -qq update
-        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
+        - sudo apt-get install gcc-multilib g++-multilib # libgmp-dev:i386 is currently broken
 
     # run bugfix regression tests
     - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
