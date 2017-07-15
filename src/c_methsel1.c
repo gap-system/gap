@@ -1096,7 +1096,7 @@ static Obj  HdlrFunc9 (
  
  /* Error( "not supported yet" ); */
  t_1 = GF_Error;
- C_NEW_STRING( t_2, 17, "not supported yet" );
+ t_2 = MakeString( "not supported yet" );
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */
@@ -2265,7 +2265,7 @@ static Obj  HdlrFunc17 (
  
  /* Error( "not supported yet" ); */
  t_1 = GF_Error;
- C_NEW_STRING( t_2, 17, "not supported yet" );
+ t_2 = MakeString( "not supported yet" );
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */
@@ -2461,7 +2461,7 @@ static Obj  HdlrFunc18 (
  
  /* Error( "No applicable method found for attribute" ); */
  t_1 = GF_Error;
- C_NEW_STRING( t_2, 40, "No applicable method found for attribute" );
+ t_2 = MakeString( "No applicable method found for attribute" );
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */
@@ -3460,7 +3460,7 @@ static Obj  HdlrFunc26 (
  
  /* Error( "not supported yet" ); */
  t_1 = GF_Error;
- C_NEW_STRING( t_2, 17, "not supported yet" );
+ t_2 = MakeString( "not supported yet" );
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */
@@ -4616,7 +4616,7 @@ static Obj  HdlrFunc34 (
  
  /* Error( "not supported yet" ); */
  t_1 = GF_Error;
- C_NEW_STRING( t_2, 17, "not supported yet" );
+ t_2 = MakeString( "not supported yet" );
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */
@@ -5534,8 +5534,8 @@ static Int InitLibrary ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 22, "GAPROOT/lib/methsel1.g" );
+ DefaultName = MakeString( "local function" );
+ FileName = MakeString( "GAPROOT/lib/methsel1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
