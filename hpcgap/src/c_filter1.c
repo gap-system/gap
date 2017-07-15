@@ -565,7 +565,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 15, "CLEAR_IMP_CACHE" );
+ t_2 = MakeString( "CLEAR_IMP_CACHE" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -616,7 +616,7 @@ static Obj  HdlrFunc1 (
       return with;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 15, "WITH_IMPS_FLAGS" );
+ t_2 = MakeString( "WITH_IMPS_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -647,7 +647,7 @@ static Obj  HdlrFunc1 (
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 10, "RankFilter" );
+ t_2 = MakeString( "RankFilter" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = STATE(CurrLVars);
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
@@ -752,8 +752,8 @@ static Int InitLibrary ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 21, "GAPROOT/lib/filter1.g" );
+ DefaultName = MakeString( "local function" );
+ FileName = MakeString( "GAPROOT/lib/filter1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;

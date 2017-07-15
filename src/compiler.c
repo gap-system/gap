@@ -2730,12 +2730,10 @@ CVar CompStringExpr (
     string = CVAR_TEMP( NewTemp( "string" ) );
 
     /* create the string and copy the stuff                                */
-    Emit( "C_NEW_STRING( %c, %d, \"%C\" );\n",
-
+    Emit( "%c = MakeString( \"%C\" );\n",
           /* the sizeof(UInt) offset is to get past the length of the string
              which is now stored in the front of the literal */
-          string, SIZE_EXPR(expr)-1-sizeof(UInt),
-          sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
+          string, sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
 
     /* we know that the result is a list                                   */
     SetInfoCVar( string, W_LIST );
@@ -5726,13 +5724,12 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" );\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" );\n", strlen(magic2), magic2 );
+    Emit( "DefaultName = MakeString( \"local function\" );\n" );
+    Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" );\n",
-                  i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
+            Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
         }
         else {
             Emit( "NameFunc[%d] = DefaultName;\n", i );
