@@ -286,10 +286,16 @@ DeclareOperation( "Vector", [IsList,IsVectorObj]);
 
 DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
-DeclareConstructor( "NewRowVector", [IsVectorObj,IsRing,IsList] );
+DeclareConstructor( "NewVector", [IsVectorObj,IsRing,IsList] );
 # A constructor. The first argument must be a filter indicating the
 # representation the vector will be in, the second is the base domain.
 # The last argument is guaranteed not to be changed!
+
+DeclareSynonym( "NewRowVector", NewVector );
+# FIXME: Declare NewRowVector for backwards compatibility, so that existing
+# code which already used it keeps working (most notably, the cvec and fining
+# packages). We should eventually remove this synonym.
+
 
 DeclareConstructor( "NewZeroVector", [IsVectorObj,IsRing,IsInt] );
 # A similar constructor to construct a zero vector, the last argument

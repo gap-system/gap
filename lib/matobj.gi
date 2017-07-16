@@ -182,7 +182,7 @@ InstallGlobalFunction( MakeVector,
     else
         ty := IsPlistVectorRep;
     fi;
-    return NewRowVector(ty,bd,l);
+    return NewVector(ty,bd,l);
   end );
 
 InstallGlobalFunction( MakeMatrix,
