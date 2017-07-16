@@ -19,7 +19,7 @@
 # Overview:
 #
 # <#GAPDoc Label="MatObj_Overview">
-# The whole idea of this interface is that (row-) vectors and matrices must
+# The whole idea of this interface is that vectors and matrices must
 # be proper objects with a stored type (i.e. created by Objectify allowing
 # inheritance) to benefit from method selection. We therefore refer
 # to the new style vectors and matrices as <Q>vector objects</Q> and
@@ -771,15 +771,6 @@ DeclareOperation( "{}", [IsFlatMatrix,IsList] );
 
 # DeclareOperation( "^", [IsVectorObj, IsMatrixObj] );
 
-# Only in this direction since vectors are row vectors. The standard
-# list arithmetic rules apply only in this sense here which is the
-# standard mathematical vector matrix multiplication.
-
-
-############################################################################
-# Rule:
-# Note that vectors are by convention row vectors.
-############################################################################
 
 
 ############################################################################
