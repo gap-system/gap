@@ -389,13 +389,13 @@ DeclareOperation( "RankMatDestructive", [ IsMatrixObj ] );
 # In the following sense matrices behave like lists:
 ############################################################################
 
-DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );
+DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # This is guaranteed to return a vector object that has the property
-# that changing it changes the matrix!
-# A flat matrix has to create an intermediate object that refers to some
+# that changing it changes <pos>th row (?) of the matrix <mat>!
+# A matrix which is not a row-lists internally has to create an intermediate object that refers to some
 # row within it to allow the old GAP syntax M[i][j] for read and write
 # access to work. Note that this will never be particularly efficient
-# for flat matrices. Efficient code will have to use MatElm and
+# for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
 # These should probably only be defined for RowListMatrices???
@@ -473,7 +473,7 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
                                     IsList,IsList,IsList,IsList] );
 
 ############################################################################
-# New element access for matrices (especially necessary for flat mats:
+# New element access for matrices
 ############################################################################
 
 DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
@@ -729,38 +729,6 @@ DeclareOperation( "ListOp", [IsRowListMatrix, IsFunction] );
 # they do not have to lie in the filter IsList.
 ############################################################################
 
-
-############################################################################
-############################################################################
-# Operations for flat matrices:
-############################################################################
-############################################################################
-
-
-############################################################################
-# List operations with some modifications:
-############################################################################
-
-DeclareOperation( "[]:=", [IsFlatMatrix,IsPosInt,IsObject] );
-# Only guaranteed to work for the position in [1..Length(VECTOR)] and only
-# for elements in a suitable vector type.
-# Here this is always a copying operation!
-# Behaviour otherwise is undefined (from "unpacking" to Error all is possible)
-
-DeclareOperation( "{}", [IsFlatMatrix,IsList] );
-# Again this is defined to be a copying operation!
-
-# The following list operations are not supported for flat matrices:
-# Add, Remove, IsBound[], Unbind[], {}:=, Append
-
-# ShallowCopy is in fact a structural copy here:
-# DeclareOperation( "ShallowCopy", [IsFlatMatrix] );
-
-
-############################################################################
-# Rule:
-# Objects in IsFlatMatrix are not lists and do not behave like them.
-############################################################################
 
 
 ############################################################################
