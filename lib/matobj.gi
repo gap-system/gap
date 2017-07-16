@@ -438,64 +438,65 @@ InstallMethod( TraceMat, "generic method",
 
 
 InstallMethod(PositionNonZero,
-  "General method for a row vector",
-  true,[IsRowVector],0,
+  "generic method for a row vector",
+  [IsRowVector],
   function(vec)
   local i;
   for i in [1..Length(vec)] do
-    if not IsZero(vec[i]) then return i;fi;
+    if not IsZero(vec[i]) then return i; fi;
   od;
-  return Length(vec)+1;
+  return i+1;
 end);
 
 InstallMethod(PositionNonZero,
-  "General method for a vector",
-  true,[IsVectorObj],0,
+  "generic method for a vector object",
+  [ IsVectorObj ],
   function(vec)
   local i;
   for i in [1..Length(vec)] do
-    if not IsZero(vec[i]) then return i;fi;
+    if not IsZero(vec[i]) then return i; fi;
   od;
-  return Length(vec)+1;
+  return i+1;
 end);
 
 InstallMethod( ListOp,
-  "General method for a vector",
-  true,[IsVectorObj],0,
+  "generic method for a vector object",
+  [ IsVectorObj ],
   function(vec)
-  local return_list, i, length_vector;
-  length_vector := Length(vec);
-  return_list := [];
-  return_list[length_vector] := vec[length_vector];
-  for i in [ 1 .. length_vector - 1 ] do
-    return_list[i] := vec[i];
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := vec[len];
+  for i in [ 1 .. len - 1 ] do
+    result[i] := vec[i];
   od;
-  return return_list;
+  return result;
 end );
 
 InstallMethod( ListOp,
-  "General method for a vector and a function",
-  true,[IsVectorObj,IsFunction],0,
+  "generic method for a vector object and a function",
+  [ IsVectorObj, IsFunction ],
   function(vec,func)
-  local return_list, i, length_vector;
-  length_vector := Length(vec);
-  return_list := [];
-  return_list[length_vector] := func(vec[length_vector]);
-  for i in [ 1 .. length_vector - 1 ] do
-    return_list[i] := func(vec[i]);
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := func(vec[len]);
+  for i in [ 1 .. len - 1 ] do
+    result[i] := func(vec[i]);
   od;
-  return return_list;
+  return result;
 end );
 
 InstallMethod( Unpack,
-  "General method for a vector",
-  true,[IsVectorObj],0,
+  "generic method for a vector object",
+  [ IsVectorObj ],
   ListOp ); ## Potentially slower than a direct implementation,
-            ## but avoids code multiplication.
+            ## but avoids code duplication.
 
 
 InstallMethod( \{\},
-               [IsVectorObj,IsList],
+  "generic method for a vector object and a list",
+  [ IsVectorObj, IsList ],
   function(vec,pos)
     local vec_list;
     vec_list := ListOp(vec);
@@ -504,8 +505,8 @@ InstallMethod( \{\},
 end );
 
 InstallMethod( CopySubVector,
-  "General method for vectors",
-  true,[IsVectorObj and IsMutable, IsList, IsVectorObj, IsList],0,
+  "generic method for vectors",
+  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ],
   function(dst, dcols, src, scols)
     local i;
     if not Length( dcols ) = Length( scols ) then
@@ -519,15 +520,15 @@ end );
 
 ## Backwards compatible version
 InstallMethod( CopySubVector,
-  "Fallback method for vectors",
-  true,[IsVectorObj,IsVectorObj and IsMutable, IsList, IsList],0,
+  "generic method for vectors",
+  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
   function(src, dst, scols, dcols)
     CopySubVector(dst,dcols,src,scols);
 end );
 
 InstallMethod( Randomize,
-  "general method for vectors",
-  true, [ IsVectorObj and IsMutable ],0,
+  "generic method for a vector",
+  [ IsVectorObj and IsMutable ],
   function(vec)
     local basedomain, i;
     basedomain := BaseDomain( vec );
@@ -537,8 +538,8 @@ InstallMethod( Randomize,
 end );
 
 InstallMethod( Randomize,
-  "general method for vectors",
-  true, [ IsVectorObj and IsMutable, IsRandomSource ],0,
+  "generic method for a vector and a random source",
+  [ IsVectorObj and IsMutable, IsRandomSource ],
   function(vec, rs)
     local basedomain, i;
     basedomain := BaseDomain( vec );
