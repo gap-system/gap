@@ -1005,99 +1005,99 @@ InstallMethod( Unpack, "for a plist matrix",
     return List(m![ROWSPOS],v->ShallowCopy(v![ELSPOS]));
   end );
 
-InstallMethod( PositionNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    if i > le+1 then
-        return le+1;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := le;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p-1;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    if i < 0 then
-        return 0;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
-  function( m, v, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    return POSITION_SORTED_LIST(m![ROWSPOS],v);
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
-  function( m, v, f )
-    return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
-  end );
+# InstallMethod( PositionNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     if i > le+1 then
+#         return le+1;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := le;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p-1;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     if i < 0 then
+#         return 0;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
+#   function( m, v, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     return POSITION_SORTED_LIST(m![ROWSPOS],v);
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
+#   function( m, v, f )
+#     return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
+#   end );
 
 InstallMethod( MutableCopyMat, "for a plist matrix",
   [ IsPlistMatrixRep ],
