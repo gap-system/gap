@@ -3581,6 +3581,10 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
     # start with the identity matrix
     mat := IdentityMat( m );
 
+    if m = 1 then
+        return Random( [ 1, -1 ] ) * mat;
+    fi;
+
     for c  in [1..m]  do
 
         # multiply two random rows with a random? unimodular 2x2 matrix
