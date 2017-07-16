@@ -286,7 +286,7 @@ DeclareOperation( "Vector", [IsList,IsVectorObj]);
 
 DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
-DeclareConstructor( "NewVector", [IsVectorObj,IsRing,IsList] );
+DeclareConstructor( "NewVector", [IsVectorObj,IsSemiring,IsList] );
 # A constructor. The first argument must be a filter indicating the
 # representation the vector will be in, the second is the base domain.
 # The last argument is guaranteed not to be changed!
@@ -297,11 +297,11 @@ DeclareSynonym( "NewRowVector", NewVector );
 # packages). We should eventually remove this synonym.
 
 
-DeclareConstructor( "NewZeroVector", [IsVectorObj,IsRing,IsInt] );
+DeclareConstructor( "NewZeroVector", [IsVectorObj,IsSemiring,IsInt] );
 # A similar constructor to construct a zero vector, the last argument
 # is the base domain.
 
-DeclareOperation( "ChangedBaseDomain", [IsVectorObj,IsRing] );
+DeclareOperation( "ChangedBaseDomain", [IsVectorObj,IsSemiring] );
 # Changes the base domain. A copy of the row vector in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
@@ -571,7 +571,7 @@ DeclareOperation( "ZeroMatrix", [IsInt,IsInt,IsMatrixObj] );
 # possibly different dimensions. First argument is number of rows, second
 # is number of columns.
 
-DeclareConstructor( "NewZeroMatrix", [IsMatrixObj,IsRing,IsInt,IsInt]);
+DeclareConstructor( "NewZeroMatrix", [IsMatrixObj,IsSemiring,IsInt,IsInt]);
 # Returns a new fully mutable zero matrix over the base domain in the
 # 2nd argument. The integers are the number of rows and columns.
 
@@ -579,7 +579,7 @@ DeclareOperation( "IdentityMatrix", [IsInt,IsMatrixObj] );
 # Returns a new mutable identity matrix in the same rep as the given one with
 # possibly different dimensions.
 
-DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsRing,IsInt]);
+DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsSemiring,IsInt]);
 # Returns a new fully mutable identity matrix over the base domain in the
 # 2nd argument. The integer is the number of rows and columns.
 
@@ -589,7 +589,7 @@ DeclareOperation( "CompanionMatrix", [IsUnivariatePolynomial,IsMatrixObj] );
 # monic and its coefficients must lie in the BaseDomain of the matrix.
 
 DeclareConstructor( "NewCompanionMatrix", 
-  [IsMatrixObj, IsUnivariatePolynomial, IsRing] );
+  [IsMatrixObj, IsUnivariatePolynomial, IsSemiring] );
 # The constructor variant of <Ref Oper="CompanionMatrix"/>.
 
 # The following are already declared in the library:
@@ -617,7 +617,7 @@ DeclareOperation( "Matrix", [IsList,IsMatrixObj] );
 # Note that it is not possible to generate a matrix via "Matrix" without
 # a template matrix object. Use the constructor methods instead:
 
-DeclareConstructor( "NewMatrix", [IsMatrixObj, IsRing, IsInt, IsList] );
+DeclareConstructor( "NewMatrix", [IsMatrixObj, IsSemiring, IsInt, IsList] );
 # Constructs a new fully mutable matrix. The first argument has to be a filter
 # indicating the representation. The second the base domain, the third
 # the row length and the last a list containing either row vectors
@@ -629,7 +629,7 @@ DeclareOperation( "ConstructingFilter", [IsMatrixObj] );
 
 DeclareOperation( "CompatibleVector", [IsMatrixObj] );
 
-DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsRing] );
+DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );
 # Changes the base domain. A copy of the matrix in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
