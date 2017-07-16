@@ -119,8 +119,8 @@
 # The following are guaranteed to be always set or cheaply calculable:
 DeclareAttribute( "BaseDomain", IsVectorObj );
 # Typically, the base domain will be a ring, it need not be commutative
-# nor associative. For non-associative base domains powering of matrices
-# is defined by the behaviour of POW_OBJ_INT.
+# nor associative. For non-associative base domains, the behavior of
+# powering matrices is undefined.
 
 DeclareAttribute( "Length", IsVectorObj );    # can be zero
 # We have to declare this since a row vector is not necessarily
@@ -370,8 +370,8 @@ DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
 # The following are guaranteed to be always set or cheaply calculable:
 DeclareAttribute( "BaseDomain", IsMatrixObj );
 # Typically, the base domain will be a ring, it need not be commutative
-# nor associative. For non-associative base domains powering of matrices
-# is defined by the behaviour of POW_OBJ_INT in the kernel.
+# nor associative. For non-associative base domains, the behavior of
+# powering matrices is undefined.
 
 DeclareAttribute( "Length", IsMatrixObj );
 # We have to declare this since matrix objects need not be lists.
@@ -525,6 +525,9 @@ DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 
 # For non-empty square matrices we have:
 #    ^ integer
+# (this is only well-defined over associative base domains, 
+#  do not use it over non-associative base domains.
+# // The behavior of ^ on non-associative base domains is undefined.
 
 # The following unary arithmetical operations are possible for matrices:
 #    AdditiveInverseImmutable, AdditiveInverseMutable, 
