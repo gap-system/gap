@@ -1144,7 +1144,7 @@ InstallMethod( BaseField, "for a compressed 8bit matrix",
 InstallMethod( BaseField, "for a compressed 8bit vector",
   [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
 
-InstallMethod( NewRowVector, "for Is8BitVectorRep, GF(q), and a list",
+InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;
