@@ -397,21 +397,20 @@ DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # access to work. Note that this will never be particularly efficient
 # for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
-
+# FIXME: Actually, we should probably not defined these for matrices, only for vectors
 # These should probably only be defined for RowListMatrices???
-
-DeclareOperation( "PositionNonZero", [IsMatrixObj] );
-DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
-
-DeclareOperation( "PositionLastNonZero", [IsMatrixObj] );
-DeclareOperation( "PositionLastNonZero", [IsMatrixObj, IsInt] );
-
-DeclareOperation( "Position", [IsMatrixObj, IsVectorObj] );
-DeclareOperation( "Position", [IsMatrixObj, IsVectorObj, IsInt] );
-
-# This allows for usage of PositionSorted:
-DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj] );
-DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsVectorObj,IsFunction]);
+#DeclareOperation( "PositionNonZero", [IsMatrixObj] );
+#DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
+#
+#DeclareOperation( "PositionLastNonZero", [IsMatrixObj] );
+#DeclareOperation( "PositionLastNonZero", [IsMatrixObj, IsInt] );
+#
+#DeclareOperation( "Position", [IsMatrixObj, IsVectorObj] );
+#DeclareOperation( "Position", [IsMatrixObj, IsVectorObj, IsInt] );
+#
+## This allows for usage of PositionSorted:
+#DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj] );
+#DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj,IsFunction]);
 
 # I intentionally left out "PositionNot" here.
 
