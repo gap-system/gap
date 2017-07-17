@@ -1508,14 +1508,15 @@ static void SySetGapRootPath( const Char * string )
             *q   = '\0';
         }
         if ( *p ) {
-            p++;  n++;
+            p++;
         }
+        n++;
 #ifdef HPCGAP
         // or each root <ROOT> we also add <ROOT/hpcgap> as a root (and first)
         if( n < MAX_GAP_DIRS ) {
-            strlcpy( SyGapRootPaths[n+1], SyGapRootPaths[n], sizeof(SyGapRootPaths[n]) );
+            strlcpy( SyGapRootPaths[n], SyGapRootPaths[n-1], sizeof(SyGapRootPaths[n]) );
         }
-        strxcat( SyGapRootPaths[n], "hpcgap/", sizeof(SyGapRootPaths[n]) );
+        strxcat( SyGapRootPaths[n-1], "hpcgap/", sizeof(SyGapRootPaths[n-1]) );
         n++;
 #endif
     }
