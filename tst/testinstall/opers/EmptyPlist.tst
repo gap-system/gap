@@ -1,3 +1,6 @@
+gap> START_TEST("EmptyPlist.tst");
+
+#
 gap> EmptyPlist(-1);
 Error, <len> must be a non-negative small integer
 gap> EmptyPlist(-(2^100));
@@ -20,3 +23,6 @@ gap> l;
 gap> l[12] := 2;;
 gap> l;
 [ ,,,, 5,,,,,,, 2 ]
+
+#
+gap> STOP_TEST("EmptyPlist.tst", 1);
