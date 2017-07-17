@@ -3577,6 +3577,10 @@ end );
 ##
 InstallGlobalFunction( RandomUnimodularMat, function ( m )
     local  mat, c, i, j, k, l, a, b, v, w, gcd;
+    
+    if not IsPosInt( m ) then
+        Error("<m> must be a positive integer");
+    fi;
 
     # start with the identity matrix
     mat := IdentityMat( m );
@@ -3613,7 +3617,6 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
             v := mat[i][k];  w := mat[i][l];
             mat[i][k] := gcd.coeff1 * v + gcd.coeff2 * w;
             mat[i][l] := gcd.coeff3 * v + gcd.coeff4 * w;
-            ConvertToVectorRepNC( mat[i] );
         od;
 
     od;
