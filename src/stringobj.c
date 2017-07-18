@@ -586,16 +586,19 @@ Obj TypeString (
 **
 **  'CleanString' is the function in 'CleanObjFuncs' for strings.
 */
+Obj CopyStringImm(Obj list, Int mut)
+{
+    GAP_ASSERT(!IS_MUTABLE_OBJ(list));
+    return list;
+}
+
 Obj CopyString (
     Obj                 list,
     Int                 mut )
 {
     Obj                 copy;           /* handle of the copy, result      */
 
-    /* just return immutable objects                                       */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make object for  copy                                               */
     if ( mut ) {
@@ -2565,7 +2568,7 @@ static Int InitKernel (
     /* install the copy method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
         CopyObjFuncs [ t1                     ] = CopyString;
-        CopyObjFuncs [ t1          +IMMUTABLE ] = CopyString;
+        CopyObjFuncs [ t1          +IMMUTABLE ] = CopyStringImm;
         CleanObjFuncs[ t1                     ] = CleanString;
         CleanObjFuncs[ t1          +IMMUTABLE ] = CleanString;
         CopyObjFuncs [ t1 +COPYING            ] = CopyStringCopy;
