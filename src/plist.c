@@ -971,18 +971,19 @@ Obj FuncIS_PLIST_REP (
 **
 **  'CleanPlist' is the function in 'CleanObjFuncs' for plain lists.
 */
-Obj CopyPlist (
-    Obj                 list,
-    Int                 mut )
+Obj CopyPlistImm(Obj list, Int mut)
+{
+    GAP_ASSERT(!IS_MUTABLE_OBJ(list));
+    return list;
+}
+
+Obj CopyPlist(Obj list, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
     UInt                i;              /* loop variable                   */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make a copy                                                         */
     if ( mut ) {
@@ -4619,7 +4620,7 @@ static Int InitKernel (
     /* install the copy list methods                                       */
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyPlist;
-        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyPlist;
+        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyPlistImm;
         CopyObjFuncs [ t1            +COPYING ] = CopyPlistCopy;
         CopyObjFuncs [ t1 +IMMUTABLE +COPYING ] = CopyPlistCopy;
         CleanObjFuncs[ t1                     ] = CleanPlist;
