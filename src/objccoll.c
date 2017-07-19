@@ -13,39 +13,39 @@
 **  interface to the corresponding single collector function.
 **
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "gvars.h"                  /* global variables */
+#include "gap.h"                    /* error handling, initialisation */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
+#include "records.h"                /* generic records */
+#include "lists.h"                  /* generic lists */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/precord.h>                /* plain records */
+#include "precord.h"                /* plain records */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/objfgelm.h>               /* objects of free groups */
+#include "objfgelm.h"               /* objects of free groups */
 
-#include <src/objscoll.h>               /* single collector */
+#include "objscoll.h"               /* single collector */
 
-#include <src/objccoll.h>               /* combinatorial collector */
+#include "objccoll.h"               /* combinatorial collector */
 
 
 #define AddWordIntoExpVec   C8Bits_AddWordIntoExpVec
@@ -53,21 +53,21 @@
 #define AddPartIntoExpVec   C8Bits_AddPartIntoExpVec
 #define CombiCollectWord    C8Bits_CombiCollectWord
 #define UIntN       UInt1
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 #define AddWordIntoExpVec   C16Bits_AddWordIntoExpVec
 #define AddCommIntoExpVec   C16Bits_AddCommIntoExpVec
 #define AddPartIntoExpVec   C16Bits_AddPartIntoExpVec
 #define CombiCollectWord    C16Bits_CombiCollectWord
 #define UIntN       UInt2
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 #define AddWordIntoExpVec   C32Bits_AddWordIntoExpVec
 #define AddCommIntoExpVec   C32Bits_AddCommIntoExpVec
 #define AddPartIntoExpVec   C32Bits_AddPartIntoExpVec
 #define CombiCollectWord    C32Bits_CombiCollectWord
 #define UIntN       UInt4
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 
 /****************************************************************************

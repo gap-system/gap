@@ -49,41 +49,41 @@
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/gmpints.h>                /* integers */
+#include "gmpints.h"                /* integers */
 
-#include <src/finfield.h>               /* finite fields and ff elements */
+#include "finfield.h"               /* finite fields and ff elements */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/hpc/aobjects.h>           /* atomic access to plists */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "hpc/aobjects.h"           /* atomic access to plists */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
 
 /****************************************************************************

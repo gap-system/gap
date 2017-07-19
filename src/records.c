@@ -12,38 +12,38 @@
 **  This package  provides a uniform  interface to  the functions that access
 **  records and the elements for the other packages in the GAP kernel.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "gvars.h"                  /* global variables */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/records.h>                /* generic records */
+#include "records.h"                /* generic records */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/hpc/systhread.h>          /* system thread primitives */
+#include "hpc/systhread.h"          /* system thread primitives */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 
 /****************************************************************************

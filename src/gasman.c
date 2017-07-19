@@ -111,13 +111,13 @@
 **  already dead.
 */
 #include <string.h>
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
-#include <src/gasman.h>                 /* garbage collector */
+#include "gasman.h"                 /* garbage collector */
 
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
 
 #include <stddef.h>

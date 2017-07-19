@@ -12,7 +12,7 @@
 #ifndef GAP_DEBUG_H
 #define GAP_DEBUG_H
 
-#include <src/system.h> /* system dependent part */
+#include "system.h" /* system dependent part */
 #include <assert.h>     /* for assert            */
 
 /* GAP_ASSERT is a version of 'assert' which is enabled by the

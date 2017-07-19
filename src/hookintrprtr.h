@@ -12,8 +12,8 @@
 #ifndef GAP_HOOKINTRPRTR_H
 #define GAP_HOOKINTRPRTR_H
 
-#include <src/exprs.h>
-#include <src/gapstate.h>
+#include "exprs.h"
+#include "gapstate.h"
 
 void InstallEvalBoolFunc(Int, Obj (*)(Expr));
 void InstallEvalExprFunc(Int, Obj (*)(Expr));

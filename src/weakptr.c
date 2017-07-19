@@ -15,32 +15,32 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/weakptr.h>                /* weak pointers */
+#include "weakptr.h"                /* weak pointers */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/saveload.h>               /* saving and loading */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "saveload.h"               /* saving and loading */
+#include "opers.h"                  /* generic operations */
 
-#include <src/scanner.h>                /* scanner */
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "scanner.h"                /* scanner */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

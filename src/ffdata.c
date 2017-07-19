@@ -1,4 +1,4 @@
-#include <src/ffdata.h>
+#include "ffdata.h"
 
 /* Entries are ordered by value of p^d; can use binary search
  * to find them. Indices start at 1.

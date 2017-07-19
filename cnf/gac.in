@@ -109,10 +109,10 @@ gap_compile () {
 c_compile () {
 # FIXME: set correct -I flags (also for HPC-GAP, where
 # we may need different ones
-    echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2
-    ${c_compiler} $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2 || exit 1
+    echo ${c_compiler}  $3 -o $1 -I${gap_dir} -I${gap_dir}/src \
+         -I${gap_bin}/gen -DCONFIG_H -c $2
+    ${c_compiler} $3 -o $1 -I${gap_dir} -I${gap_dir}/src \
+         -I${gap_bin}/gen -DCONFIG_H -c $2 || exit 1
 }
 
 

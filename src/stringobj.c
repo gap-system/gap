@@ -50,38 +50,38 @@
 **  by 'FunPrint', and 'IsString', which test whether an arbitrary list  is a
 ** string, and if so converts it into the above format.  
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-#include <src/code.h>                   /* coder */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
+#include "code.h"                   /* coder */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "gvars.h"                  /* global variables */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
+#include "range.h"                  /* ranges */
 
-#include <src/stringobj.h>              /* strings */
+#include "stringobj.h"              /* strings */
 
-#include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "saveload.h"               /* saving and loading */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 #include <assert.h>
 

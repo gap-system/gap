@@ -16,46 +16,46 @@
 **  locals), higher variables (i.e., local variables of enclosing functions),
 **  global variables, list elements, and record elements.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
+#include "system.h"                 /* system dependent part */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/ariths.h>                 /* equality */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "ariths.h"                 /* equality */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
+#include "records.h"                /* generic records */
+#include "lists.h"                  /* generic lists */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/precord.h>                /* plain records */
+#include "precord.h"                /* plain records */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
+#include "code.h"                   /* coder */
 
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
+#include "exprs.h"                  /* expressions */
+#include "stats.h"                  /* statements */
 
-#include <src/vars.h>                   /* variables */
-#include <src/saveload.h>               /* saving and loading */
+#include "vars.h"                   /* variables */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/hpc/aobjects.h>           /* atomic objects */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "hpc/aobjects.h"           /* atomic objects */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/hookintrprtr.h>           /* installing methods */
+#include "hookintrprtr.h"           /* installing methods */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 
 /****************************************************************************

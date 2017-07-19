@@ -11,43 +11,43 @@
 */
 #include <stdlib.h>
 
-#include <src/system.h>                 /* Ints, UInts, SyIsIntr */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts, SyIsIntr */
+#include "gapstate.h"
 
 
-#include <src/sysfiles.h>               /* file input/output */
+#include "sysfiles.h"               /* file input/output */
 
-#include <src/gasman.h>                 /* garbage collector */
+#include "gasman.h"                 /* garbage collector */
 
-#include <src/objects.h>                /* objects */
+#include "objects.h"                /* objects */
 
-#include <src/scanner.h>                /* scanner */
+#include "scanner.h"                /* scanner */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/hpc/aobjects.h>           /* atomic objects */
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/traverse.h>           /* object traversal */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "hpc/aobjects.h"           /* atomic objects */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/traverse.h"           /* object traversal */
+#include "hpc/tls.h"                /* thread-local storage */
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;

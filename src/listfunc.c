@@ -9,47 +9,47 @@
 **
 **  This file contains the functions for generic lists.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/permutat.h>               /* permutations */
-#include <src/finfield.h>               /* finite fields */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
+#include "permutat.h"               /* permutations */
+#include "finfield.h"               /* finite fields */
+#include "trans.h"                  /* transformations */
+#include "pperm.h"                  /* partial perms */
 
-#include <src/listfunc.h>               /* functions for generic lists */
+#include "listfunc.h"               /* functions for generic lists */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/set.h>                    /* plain sets */
-#include <src/range.h>                  /* ranges */
-#include <src/code.h>
+#include "plist.h"                  /* plain lists */
+#include "set.h"                    /* plain sets */
+#include "range.h"                  /* ranges */
+#include "code.h"
 
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#include "hpc/thread.h"
+#include "hpc/tls.h"
+#include "hpc/aobjects.h"           /* atomic objects */
 
 #include <string.h>
 #include <stdlib.h> 
@@ -641,7 +641,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
   if(IS_PLIST(list)) \
     RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 #define SORT_FUNC_NAME SortDensePlist
 #define SORT_FUNC_ARGS Obj list
@@ -656,7 +656,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 /****************************************************************************
 **
@@ -679,7 +679,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 #define SORT_FUNC_NAME SortDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj func
@@ -696,7 +696,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 /****************************************************************************
 **
@@ -751,7 +751,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
   RESET_FILT_LIST(shadow, FN_IS_SSORT); \
   RESET_FILT_LIST(shadow, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 #define SORT_FUNC_NAME SortParaDensePlist
 #define SORT_FUNC_ARGS Obj list, Obj shadow
@@ -774,7 +774,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
   RESET_FILT_LIST(shadow, FN_IS_SSORT); \
   RESET_FILT_LIST(shadow, FN_IS_NSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 #define SORT_FUNC_NAME SORT_PARA_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
@@ -795,7 +795,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
     RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
   
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
@@ -818,7 +818,7 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
     RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
-#include <src/sortbase.h>
+#include "sortbase.h"
 
 
 

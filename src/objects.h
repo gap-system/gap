@@ -17,7 +17,7 @@
 #ifndef GAP_OBJECTS_H
 #define GAP_OBJECTS_H
 
-#include <src/debug.h>
+#include "debug.h"
 
 /****************************************************************************
 **

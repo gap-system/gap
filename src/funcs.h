@@ -19,7 +19,7 @@
 
 #ifdef HPCGAP
 /* HACK: need to include this for STATE() below in CheckRecursionBefore */
-#include "src/hpc/tls.h"
+#include "hpc/tls.h"
 #endif
 
 /****************************************************************************

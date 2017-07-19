@@ -16,52 +16,52 @@
 **  coder.
 */
 #include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
+#include "gap.h"                    /* error handling, initialisation */
+#include "read.h"                   /* reader */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
+#include "ariths.h"                 /* basic arithmetic */
+#include "records.h"                /* generic records */
+#include "lists.h"                  /* generic lists */
 
-#include <src/bool.h>                   /* booleans */
-#include <src/gmpints.h>                /* integers */
+#include "bool.h"                   /* booleans */
+#include "gmpints.h"                /* integers */
 
-#include <src/permutat.h>               /* permutations */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
+#include "permutat.h"               /* permutations */
+#include "trans.h"                  /* transformations */
+#include "pperm.h"                  /* partial perms */
 
-#include <src/precord.h>                /* plain records */
+#include "precord.h"                /* plain records */
 
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
+#include "plist.h"                  /* plain lists */
+#include "range.h"                  /* ranges */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
-#include <src/funcs.h>                  /* functions */
-#include <src/read.h>
+#include "code.h"                   /* coder */
+#include "funcs.h"                  /* functions */
+#include "read.h"
 
-#include <src/intrprtr.h>               /* interpreter */
+#include "intrprtr.h"               /* interpreter */
 
-#include <src/hpc/tls.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#include "hpc/tls.h"
+#include "hpc/thread.h"
+#include "hpc/aobjects.h"           /* atomic objects */
 
-#include <src/vars.h>                   /* variables */
+#include "vars.h"                   /* variables */
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
 /****************************************************************************
 **

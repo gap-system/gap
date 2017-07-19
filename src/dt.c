@@ -51,33 +51,33 @@
 **  entry contains num( <a> ) and the last entry finally gives a boundary
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
-#include <src/system.h>
-#include <src/gapstate.h>
+#include "system.h"
+#include "gapstate.h"
 
 
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-#include <src/bool.h>                   /* booleans */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/gmpints.h>                /* integers */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
+#include "bool.h"                   /* booleans */
+#include "calls.h"                  /* generic call mechanism */
+#include "gap.h"                    /* error handling, initialisation */
+#include "gvars.h"                  /* global variables */
+#include "gmpints.h"                /* integers */
 
-#include <src/dt.h>                     /* deep thought */
+#include "dt.h"                     /* deep thought */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "listfunc.h"               /* functions for generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "code.h"                   /* coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
 
 /****************************************************************************

@@ -26,7 +26,7 @@
 #ifndef GAP_PLIST_H
 #define GAP_PLIST_H
 
-#include <src/debug.h> /* for GAP_ASSERT */
+#include "debug.h" /* for GAP_ASSERT */
 
 /****************************************************************************
 **

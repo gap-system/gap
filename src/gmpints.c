@@ -65,35 +65,35 @@
 **  that they eventually return normalized and reduced values. The function
 **  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
+#include "calls.h"                  /* generic call mechanism */
+#include "opers.h"                  /* generic operations */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/code.h>                   /* needed by stats.h */
-#include <src/stats.h>                  /* for TakeInterrupt */
+#include "gap.h"                    /* error handling, initialisation */
+#include "code.h"                   /* needed by stats.h */
+#include "stats.h"                  /* for TakeInterrupt */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
+#include "lists.h"                  /* generic lists */
+#include "stringobj.h"              /* strings */
 
-#include <src/saveload.h>               /* saving and loading */
+#include "saveload.h"               /* saving and loading */
 
-#include <src/intfuncs.h>
+#include "intfuncs.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -116,7 +116,7 @@
 extern "C" {
 #endif
 
-#include <src/gmpints.h>                /* GMP integers */
+#include "gmpints.h"                /* GMP integers */
 
 #ifdef SYS_IS_64_BIT
 #define SaveLimb SaveUInt8

@@ -10,41 +10,41 @@
 **  This file contains  the functions of the  package with the operations for
 **  generic lists.
 */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
+#include "system.h"                 /* Ints, UInts */
+#include "gapstate.h"
 
 
-#include <src/sysfiles.h>               /* file input/output */
+#include "sysfiles.h"               /* file input/output */
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include "gasman.h"                 /* garbage collector */
+#include "objects.h"                /* objects */
+#include "scanner.h"                /* scanner */
 
-#include <src/gap.h>                    /* error handling, initialisation */
+#include "gap.h"                    /* error handling, initialisation */
 
-#include <src/gvars.h>                  /* global variables */
+#include "gvars.h"                  /* global variables */
 
-#include <src/calls.h>                  /* generic call mechanism */
+#include "calls.h"                  /* generic call mechanism */
 
-#include <src/ariths.h>                 /* basic arithmetic */
+#include "ariths.h"                 /* basic arithmetic */
 
-#include <src/bool.h>                   /* booleans */
+#include "bool.h"                   /* booleans */
 
-#include <src/gmpints.h>                /* integers */
+#include "gmpints.h"                /* integers */
 
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
+#include "records.h"                /* generic records */
+#include "precord.h"                /* plain records */
 
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-#include <src/opers.h>                  /* TRY_NEXT_METHOD */
-#include <src/range.h>                  /* Ranges */
-#include <src/code.h>                   /* Coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include "lists.h"                  /* generic lists */
+#include "listoper.h"               /* operations for generic lists */
+#include "listfunc.h"               /* functions for generic lists */
+#include "plist.h"                  /* plain lists */
+#include "stringobj.h"              /* strings */
+#include "opers.h"                  /* TRY_NEXT_METHOD */
+#include "range.h"                  /* Ranges */
+#include "code.h"                   /* Coder */
+#include "hpc/thread.h"             /* threads */
+#include "hpc/tls.h"                /* thread-local storage */
 
 
 #ifndef HPCGAP

@@ -16,6 +16,6 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#include <src/gmpints.h>
+#include "gmpints.h"
 
 #endif

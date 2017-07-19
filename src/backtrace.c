@@ -1,5 +1,5 @@
-#include <src/system.h>
-#include <src/gapstate.h>
+#include "system.h"
+#include "gapstate.h"
 
 #ifdef PRINT_BACKTRACE
 #include <execinfo.h>

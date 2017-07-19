@@ -1,13 +1,13 @@
-#include <src/system.h>
-#include <src/gapstate.h>
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/scanner.h>
-#include <src/code.h>
-#include <src/hpc/tls.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/threadapi.h>
-#include <src/hpc/aobjects.h>
+#include "system.h"
+#include "gapstate.h"
+#include "gasman.h"
+#include "objects.h"
+#include "scanner.h"
+#include "code.h"
+#include "hpc/tls.h"
+#include "hpc/thread.h"
+#include "hpc/threadapi.h"
+#include "hpc/aobjects.h"
 
 #include <string.h>
 

@@ -7,7 +7,7 @@
 **  This file contains the GAP build version
 */
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **
