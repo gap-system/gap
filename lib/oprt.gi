@@ -3173,8 +3173,12 @@ InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
 function( hom, elm )
   local   V,  base,  mat,  b,xset,lab,f,dim,start,time,sol,i;
   
-  # is this method applicable? Test whether the domain contains a vector
+  # is this method applicable? Test whether field
+  # finite, that the domain contains a vector
   # space basis (respectively just get this basis).
+  if not IsFFECollection(DefaultFieldOfMatrixGroup(ActingDomain(UnderlyingExternalSet(hom)))) then
+    TryNextMethod();
+  fi;
   lab:=LinearActionBasis(hom);
   if lab=fail then
     TryNextMethod();
