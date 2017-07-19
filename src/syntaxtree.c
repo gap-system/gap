@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #include "code.h"
+#include "gasman.h"
 #include "objects.h"
 
 #include "exprs.h"
@@ -671,38 +672,6 @@ static const CompilerT StatCompilers[] = {
     COMPILER_(T_RETURN_VOID),
 
     COMPILER_(T_ASS_LVAR,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_01,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_02,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_03,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_04,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_05,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_06,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_07,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_08,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_09,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_10,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_11,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_12,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_13,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_14,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_15,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_ASS_LVAR_16,
              ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
     COMPILER_(T_UNB_LVAR,
              ARG("lvar", SyntaxTreeLVar)),
