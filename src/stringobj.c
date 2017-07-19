@@ -2566,7 +2566,7 @@ static Int InitKernel (
     }
 
     /* install the copy method                                             */
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1+=2 ) {
         CopyObjFuncs [ t1                     ] = CopyString;
         CopyObjFuncs [ t1          +IMMUTABLE ] = CopyStringImm;
         CleanObjFuncs[ t1                     ] = CleanString;
