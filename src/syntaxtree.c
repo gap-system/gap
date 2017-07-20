@@ -99,6 +99,9 @@ static Obj SyntaxTreeCompiler(Expr expr)
     else {
         // error
     }
+
+    fprintf(stderr, "compiling %s\n", comp.name);
+
     result = NewSyntaxTreeNode(comp.name);
 
     comp.compile(result, expr);
@@ -380,10 +383,7 @@ Obj SyntaxTreeHVar(Expr expr)
 
 Obj SyntaxTreeGVar(Expr expr)
 {
-    GVar gvar;
-
-    gvar = (GVar)(ADDR_EXPR(expr)[0]);
-    return NameGVarObj(gvar);
+    return NameGVarObj((GVar)expr);
 }
 
 Obj SyntaxTreeRefLVar(Obj result, Expr expr)
@@ -408,7 +408,7 @@ Obj SyntaxTreeRNam(Expr expr)
 {
     Obj rnam;
 
-    rnam = NAME_OBJ_RNAM(ADDR_EXPR(expr)[1]);
+    rnam = NAME_OBJ_RNAM(expr);
     return rnam;
 }
 
@@ -757,10 +757,10 @@ static const CompilerT ExprCompilers[] = {
     COMPILER_(T_LE, ARG_("left"), ARG_("right")),
     COMPILER_(T_IN, ARG_("left"), ARG_("right")),
     COMPILER_(T_SUM, ARG_("left"), ARG_("right")),
-    COMPILER_(T_AINV, ARG_("left"), ARG_("right")),
+    COMPILER_(T_AINV, ARG_("op")),
     COMPILER_(T_DIFF, ARG_("left"), ARG_("right")),
     COMPILER_(T_PROD, ARG_("left"), ARG_("right")),
-    COMPILER_(T_INV, ARG_("left"), ARG_("right")),
+    COMPILER_(T_INV, ARG_("op")),
     COMPILER_(T_QUO, ARG_("left"), ARG_("right")),
     COMPILER_(T_MOD, ARG_("left"), ARG_("right")),
     COMPILER_(T_POW, ARG_("left"), ARG_("right")),
@@ -780,7 +780,7 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
     COMPILER_(T_REC_TILD_EXPR),
 
-    COMPILER(T_REFLVAR, SyntaxTreeRefLVar), 
+    COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
     COMPILER(T_ISB_LVAR, SyntaxTreeRefLVar),
     COMPILER(T_REF_HVAR, SyntaxTreeRefHVar),
     COMPILER(T_ISB_HVAR, SyntaxTreeRefHVar),
