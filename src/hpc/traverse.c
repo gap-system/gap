@@ -210,8 +210,10 @@ void CopyObjMap(Obj copy, Obj original)
 void InitTraversalModule(void)
 {
     int i;
-    for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
+    for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++) {
+        assert(TraversalMask[i] == 0);
         TraversalMask[i] = TRAVERSE_NONE;
+    }
     TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
     TraversalMask[T_PREC + IMMUTABLE] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[T_PREC] = TraversePRecord;
