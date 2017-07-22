@@ -410,27 +410,6 @@ Obj DeserializeChar(UInt tnum)
     return ObjsChar[ch];
 }
 
-/* Defines from rational.c: */
-#define NUM_RAT(rat) ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat) ADDR_OBJ(rat)[1]
-
-void SerializeRat(Obj obj)
-{
-    WriteTNum(T_RAT);
-    SerializeObj(NUM_RAT(obj));
-    SerializeObj(DEN_RAT(obj));
-}
-
-Obj DeserializeRat(UInt tnum)
-{
-    Obj num = DeserializeObj();
-    Obj den = DeserializeObj();
-    Obj result = NewBag(tnum, 2 * sizeof(Obj));
-    NUM_RAT(result) = num;
-    DEN_RAT(result) = den;
-    return result;
-}
-
 /* Defines from cyclotom.c: */
 #define SIZE_CYC(cyc) (SIZE_OBJ(cyc) / (sizeof(Obj) + sizeof(UInt4)))
 #define COEFS_CYC(cyc) (ADDR_OBJ(cyc))
