@@ -6,7 +6,7 @@ Bench := function(title, f)
   f();
   tend := NanosecondsSinceEpoch();
   Print(title);
-  Display(tend-tstart);
+  Display((tend-tstart)*1.E-6);
 end;
 
 # Populate RNam table
