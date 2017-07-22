@@ -1128,12 +1128,12 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel(StructInitInfo * module)
 {
     UInt                 i;
-    static unsigned char binary_serializable_tnums[] = {
+    static const unsigned char binary_serializable_tnums[] = {
         T_INTPOS, T_INTNEG, T_RAT, T_PERM2, T_PERM4, T_MACFLOAT
     };
-    static unsigned char typed_serializable_tnums[] = { T_DATOBJ, T_POSOBJ,
-                                                        T_COMOBJ, T_APOSOBJ,
-                                                        T_ACOMOBJ };
+    static const unsigned char typed_serializable_tnums[] = {
+        T_DATOBJ, T_POSOBJ, T_COMOBJ, T_APOSOBJ, T_ACOMOBJ
+    };
     for (i = 0; i <= T_BACKREF; i++) {
         RegisterSerializerFunctions(i, SerializeError, DeserializeError);
     }
