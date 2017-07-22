@@ -13,7 +13,6 @@
 PERFRec := rec();
 ShareSpecialObj(PERFRec);
 BindThreadLocal("PERFLoaded", false);
-BindThreadLocal("PERFSELECT", []);
 BindThreadLocal("PERFGRP", []);
 
 
