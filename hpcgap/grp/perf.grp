@@ -24,7 +24,6 @@ local p,sel,i,pos;
     od;
     # Previously in perf0.grp
     PERFGRP:=[];
-    PERFSELECT:=BlistList([1..PERFRec.length],[]); # what have we loaded
     PERFLoaded:=true;
   fi;
  atomic readonly PERFRec do
@@ -33,7 +32,7 @@ local p,sel,i,pos;
   if pos=fail then
     return fail;
   fi;
-  if PERFSELECT[pos] then
+  if IsBound(PERFGRP[pos]) then
     return pos;
   fi;
   # get the file number
