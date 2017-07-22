@@ -64,21 +64,6 @@ void RestoreSerializationState(volatile SerializationState * state)
 
 /* Native string serialization */
 
-static void ReserveBytesNativeString(UInt count)
-{
-    Obj  target = STATE(Serialization).obj;
-    UInt size = GET_LEN_STRING(target);
-    GROW_STRING(target, size + count + 1);
-}
-
-static void WriteBytesNativeStringDirect(void * addr, UInt count)
-{
-    Obj  target = STATE(Serialization).obj;
-    UInt size = GET_LEN_STRING(target);
-    memcpy(CSTR_STRING(target) + size, addr, count);
-    SET_LEN_STRING(target, size + count);
-}
-
 static void WriteBytesNativeString(void * addr, UInt count)
 {
     Obj  target = STATE(Serialization).obj;
@@ -107,8 +92,7 @@ static void WriteByteNativeString(UChar byte)
 static void WriteByteBlockNativeString(Obj obj, UInt offset, UInt len)
 {
     WriteBytesNativeString(&len, sizeof(len));
-    ReserveBytesNativeString(len);
-    WriteBytesNativeStringDirect(ADDR_BYTE(obj) + offset, len);
+    WriteBytesNativeString(ADDR_BYTE(obj) + offset, len);
 }
 
 static void WriteImmediateObjNativeString(Obj obj)
