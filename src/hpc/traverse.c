@@ -61,16 +61,18 @@ static Obj NewList(UInt size)
 
 void QueueForTraversal(Obj obj);
 
-#define TRAVERSE_NONE (1)
-#define TRAVERSE_ALL (~0U)
-#define TRAVERSE_ALL_BUT(n) (1 | ((~0U) << (1 + (n))))
-#define TRAVERSE_BY_FUNCTION (0)
+typedef enum {
+    TRAVERSE_BY_FUNCTION,
+    TRAVERSE_NONE,
+    TRAVERSE_ALL,
+    TRAVERSE_ALL_BUT_FIRST,
+} TraversalMethodEnum;
 
 typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
 
 TraversalFunction     TraversalFunc[LAST_REAL_TNUM + 1];
 TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM + 1];
-int                   TraversalMask[LAST_REAL_TNUM + 1];
+TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
 
 void TraversePList(Obj obj)
 {
@@ -211,35 +213,41 @@ void InitTraversalModule(void)
 {
     int i;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++) {
-        assert(TraversalMask[i] == 0);
-        TraversalMask[i] = TRAVERSE_NONE;
+        assert(TraversalMethod[i] == 0);
+        TraversalMethod[i] = TRAVERSE_NONE;
     }
-    TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
-    TraversalMask[T_PREC + IMMUTABLE] = TRAVERSE_BY_FUNCTION;
+    TraversalMethod[T_PREC] = TRAVERSE_BY_FUNCTION;
+    TraversalMethod[T_PREC + IMMUTABLE] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[T_PREC] = TraversePRecord;
     TraversalCopyFunc[T_PREC] = CopyPRecord;
     TraversalFunc[T_PREC + IMMUTABLE] = TraversePRecord;
     TraversalCopyFunc[T_PREC + IMMUTABLE] = CopyPRecord;
     for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
-        TraversalMask[i] = TRAVERSE_BY_FUNCTION;
+        TraversalMethod[i] = TRAVERSE_BY_FUNCTION;
         TraversalFunc[i] = TraversePList;
         TraversalCopyFunc[i] = CopyPList;
     }
-    TraversalMask[T_PLIST_CYC] = TRAVERSE_NONE;
-    TraversalMask[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
-    TraversalMask[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
-    TraversalMask[T_PLIST_FFE] = TRAVERSE_NONE;
-    TraversalMask[T_POSOBJ] = TRAVERSE_ALL_BUT(1);
-    TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
+    TraversalMethod[T_PLIST_CYC] = TRAVERSE_NONE;
+    TraversalMethod[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
+    TraversalMethod[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
+    TraversalMethod[T_PLIST_FFE] = TRAVERSE_NONE;
+
+    TraversalMethod[T_POSOBJ] = TRAVERSE_ALL_BUT_FIRST;
+
+    TraversalMethod[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[T_COMOBJ] = TraversePRecord;
     TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
+
     TraversalFunc[T_WPOBJ] = TraverseWPObj;
     TraversalCopyFunc[T_WPOBJ] = CopyWPObj;
-    TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
-    TraversalMask[T_OBJSET] = TRAVERSE_BY_FUNCTION;
+
+    TraversalMethod[T_DATOBJ] = TRAVERSE_NONE;
+
+    TraversalMethod[T_OBJSET] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[T_OBJSET] = TraverseObjSet;
     TraversalCopyFunc[T_OBJSET] = CopyObjSet;
-    TraversalMask[T_OBJMAP] = TRAVERSE_BY_FUNCTION;
+
+    TraversalMethod[T_OBJMAP] = TRAVERSE_BY_FUNCTION;
     TraversalFunc[T_OBJMAP] = TraverseObjMap;
     TraversalCopyFunc[T_OBJMAP] = CopyObjMap;
 }
@@ -370,20 +378,29 @@ void TraverseRegionFrom(TraversalState * traversal,
     while (traversal->listCurrent < traversal->listSize) {
         Obj current = ADDR_OBJ(traversal->list)[++traversal->listCurrent];
         int tnum = TNUM_BAG(current);
-        int mask = TraversalMask[TNUM_BAG(current)];
-        if (!mask)
+        const TraversalMethodEnum method = TraversalMethod[TNUM_BAG(current)];
+        int                       size;
+        Obj *                     ptr;
+        switch (method) {
+        case TRAVERSE_BY_FUNCTION:
             TraversalFunc[tnum](current);
-        else {
-            int   size = SIZE_BAG(current) / sizeof(Obj);
-            Obj * ptr = PTR_BAG(current);
-            mask >>= 1;
-            while (mask && size) {
-                if (mask & 1)
-                    QueueForTraversal(*ptr);
+            break;
+        case TRAVERSE_NONE:
+            break;
+        case TRAVERSE_ALL:
+        case TRAVERSE_ALL_BUT_FIRST:
+            size = SIZE_BAG(current) / sizeof(Obj);
+            ptr = PTR_BAG(current);
+            if (size && method == TRAVERSE_ALL_BUT_FIRST) {
                 ptr++;
                 size--;
-                mask >>= 1;
             }
+            while (size) {
+                QueueForTraversal(*ptr);
+                ptr++;
+                size--;
+            }
+            break;
         }
     }
     SET_LEN_PLIST(traversal->list, traversal->listSize);
@@ -427,24 +444,31 @@ Obj ReachableObjectsFrom(Obj obj)
 
 static Obj CopyBag(Obj copy, Obj original)
 {
-    UInt size = SIZE_BAG(original);
-    UInt type = TNUM_BAG(original);
-    int  mask = TraversalMask[type];
-    memcpy(ADDR_OBJ(copy), ADDR_OBJ(original), size);
-    if (mask) {
-        Obj * ptr = ADDR_OBJ(copy);
+    UInt                      size = SIZE_BAG(original);
+    UInt                      type = TNUM_BAG(original);
+    const TraversalMethodEnum method = TraversalMethod[type];
+    Obj *                     ptr = ADDR_OBJ(copy);
+    memcpy(ptr, ADDR_OBJ(original), size);
+
+    switch (method) {
+    case TRAVERSE_BY_FUNCTION:
+        TraversalCopyFunc[type](copy, original);
+        break;
+    case TRAVERSE_NONE:
+        break;
+    case TRAVERSE_ALL:
+    case TRAVERSE_ALL_BUT_FIRST:
         size = size / sizeof(Obj);
-        mask >>= 1;
-        while (size && mask) {
-            if (mask & 1)
-                *ptr = ReplaceByCopy(*ptr);
+        if (size && method == TRAVERSE_ALL_BUT_FIRST) {
+            ptr++;
+            size--;
+        }
+        while (size) {
+            *ptr = ReplaceByCopy(*ptr);
             ptr++;
             size -= 1;
-            mask >>= 1;
         }
-    }
-    else {
-        TraversalCopyFunc[type](copy, original);
+        break;
     }
     return copy;
 }
