@@ -103,11 +103,10 @@ static void SetupOffsBodyStackAndLoopStack( void ) {
   STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
   STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 #else
-  // Careful: Malloc without free
-/* Since this mallocs we use a global variable at the moment
-  STATE(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  STATE(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
-*/
+  static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
+  static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
+  STATE(OffsBodyStack) = MainOffsBodyStack;
+  STATE(LoopStack) = MainLoopStack;
 #endif
 }
 
