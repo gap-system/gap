@@ -238,6 +238,7 @@ void InitTraversalModule(void)
     TraversalFunc[T_COMOBJ] = TraversePRecord;
     TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
 
+    // FIXME: no TraversalMethod for T_WPOBJ ?!
     TraversalFunc[T_WPOBJ] = TraverseWPObj;
     TraversalCopyFunc[T_WPOBJ] = CopyWPObj;
 
