@@ -21,10 +21,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#define SERIALIZER ((SerializerInterface *)(STATE(SerializationDispatcher)))
+#define SERIALIZER ((SerializerInterface *)(STATE(Serialization).dispatcher))
 
 #define DESERIALIZER                                                         \
-    ((DeserializerInterface *)(STATE(SerializationDispatcher)))
+    ((DeserializerInterface *)(STATE(Serialization).dispatcher))
 
 /**
  *  `POS_NUMB_TYPE`
@@ -51,30 +51,14 @@ static void DeserializationError(void)
 
 /* Manage serialization state */
 
-typedef struct SerializationState {
-    Obj    SerializationObj;
-    UInt   SerializationIndex;
-    void * SerializationDispatcher;
-    Obj    SerializationRegistry;
-    Obj    SerializationStack;
-} SerializationState;
-
 void SaveSerializationState(volatile SerializationState * state)
 {
-    state->SerializationObj = STATE(SerializationObj);
-    state->SerializationIndex = STATE(SerializationIndex);
-    state->SerializationDispatcher = STATE(SerializationDispatcher);
-    state->SerializationRegistry = STATE(SerializationRegistry);
-    state->SerializationStack = STATE(SerializationStack);
+    *state = STATE(Serialization);
 }
 
 void RestoreSerializationState(volatile SerializationState * state)
 {
-    STATE(SerializationObj) = state->SerializationObj;
-    STATE(SerializationIndex) = state->SerializationIndex;
-    STATE(SerializationDispatcher) = state->SerializationDispatcher;
-    STATE(SerializationRegistry) = state->SerializationRegistry;
-    STATE(SerializationStack) = state->SerializationStack;
+    STATE(Serialization) = *state;
 }
 
 
@@ -82,14 +66,14 @@ void RestoreSerializationState(volatile SerializationState * state)
 
 static void ReserveBytesNativeString(UInt count)
 {
-    Obj  target = STATE(SerializationObj);
+    Obj  target = STATE(Serialization).obj;
     UInt size = GET_LEN_STRING(target);
     GROW_STRING(target, size + count + 1);
 }
 
 static void WriteBytesNativeStringDirect(void * addr, UInt count)
 {
-    Obj  target = STATE(SerializationObj);
+    Obj  target = STATE(Serialization).obj;
     UInt size = GET_LEN_STRING(target);
     memcpy(CSTR_STRING(target) + size, addr, count);
     SET_LEN_STRING(target, size + count);
@@ -97,7 +81,7 @@ static void WriteBytesNativeStringDirect(void * addr, UInt count)
 
 static void WriteBytesNativeString(void * addr, UInt count)
 {
-    Obj  target = STATE(SerializationObj);
+    Obj  target = STATE(Serialization).obj;
     UInt size = GET_LEN_STRING(target);
     GROW_STRING(target, size + count + 1);
     memcpy(CSTR_STRING(target) + size, addr, count);
@@ -133,30 +117,32 @@ static void WriteImmediateObjNativeString(Obj obj)
 }
 
 static SerializerInterface NativeStringSerializer = {
-    WriteTNumNativeString, WriteByteNativeString, WriteByteBlockNativeString,
+    WriteTNumNativeString,
+    WriteByteNativeString,
+    WriteByteBlockNativeString,
     WriteImmediateObjNativeString,
 };
 
 static void InitNativeStringSerializer(Obj string)
 {
-    STATE(SerializationStack) = NEW_PLIST(T_PLIST, 0);
-    STATE(SerializationRegistry) = NewObjMap();
-    STATE(SerializationDispatcher) = &NativeStringSerializer;
-    STATE(SerializationObj) = string;
-    STATE(SerializationIndex) = 0;
+    STATE(Serialization).stack = NEW_PLIST(T_PLIST, 0);
+    STATE(Serialization).registry = NewObjMap();
+    STATE(Serialization).dispatcher = &NativeStringSerializer;
+    STATE(Serialization).obj = string;
+    STATE(Serialization).index = 0;
 }
 
 /* Native string deserialization */
 
 static void ReadBytesNativeString(void * addr, UInt size)
 {
-    Obj  str = STATE(SerializationObj);
+    Obj  str = STATE(Serialization).obj;
     UInt max = GET_LEN_STRING(str);
-    UInt off = STATE(SerializationIndex);
+    UInt off = STATE(Serialization).index;
     if (off + size > max)
         DeserializationError();
     memcpy(addr, CSTR_STRING(str) + off, size);
-    STATE(SerializationIndex) += size;
+    STATE(Serialization).index += size;
 }
 
 static UInt ReadTNumNativeString(void)
@@ -179,8 +165,8 @@ static UInt ReadByteBlockLengthNativeString(void)
     ReadBytesNativeString(&len, sizeof(len));
     /* The following is to prevent out-of-memory errors on malformed input,
      * where incorrect values can result in huge length values: */
-    if (len + STATE(SerializationIndex) >
-        GET_LEN_STRING(STATE(SerializationObj)))
+    if (len + STATE(Serialization).index >
+        GET_LEN_STRING(STATE(Serialization).obj))
         DeserializationError();
     return len;
 }
@@ -207,10 +193,10 @@ static DeserializerInterface NativeStringDeserializer = {
 
 static void InitNativeStringDeserializer(Obj string)
 {
-    STATE(SerializationStack) = NEW_PLIST(T_PLIST, 0);
-    STATE(SerializationDispatcher) = &NativeStringDeserializer;
-    STATE(SerializationObj) = string;
-    STATE(SerializationIndex) = 0;
+    STATE(Serialization).stack = NEW_PLIST(T_PLIST, 0);
+    STATE(Serialization).dispatcher = &NativeStringDeserializer;
+    STATE(Serialization).obj = string;
+    STATE(Serialization).index = 0;
 }
 
 /* Dispatch functions */
@@ -283,7 +269,7 @@ static inline int IsBasicObj(Obj obj)
 
 static inline void PushObj(Obj obj)
 {
-    Obj  stack = STATE(SerializationStack);
+    Obj  stack = STATE(Serialization).stack;
     UInt len = LEN_PLIST(stack);
     len++;
     GROW_PLIST(stack, len);
@@ -293,7 +279,7 @@ static inline void PushObj(Obj obj)
 
 static inline Obj PopObj(void)
 {
-    Obj  stack = STATE(SerializationStack);
+    Obj  stack = STATE(Serialization).stack;
     UInt len = LEN_PLIST(stack);
     Obj  result = ELM_PLIST(stack, len);
     SET_ELM_PLIST(stack, len, (Obj)0);
@@ -308,16 +294,16 @@ static inline Obj PopObj(void)
 
 int SerializedAlready(Obj obj)
 {
-    Obj ref = LookupObjMap(STATE(SerializationRegistry), obj);
+    Obj ref = LookupObjMap(STATE(Serialization).registry, obj);
     if (ref) {
         WriteTNum(T_BACKREF);
         WriteImmediateObj(OBJ_BACKREF(INT_INTOBJ(ref)));
         return 1;
     }
     else {
-        STATE(SerializationIndex)++;
-        AddObjMap(STATE(SerializationRegistry), obj,
-                  INTOBJ_INT(STATE(SerializationIndex)));
+        STATE(Serialization).index++;
+        AddObjMap(STATE(Serialization).registry, obj,
+                  INTOBJ_INT(STATE(Serialization).index));
         return 0;
     }
 }
@@ -969,7 +955,7 @@ void SerializeTypedObj(Obj obj)
         case T_STRING:
         case T_STRING + IMMUTABLE:
             SerializeObj(rep);
-            UInt sp = LEN_PLIST(STATE(SerializationStack));
+            UInt sp = LEN_PLIST(STATE(Serialization).stack);
             switch (TNUM_OBJ(obj)) {
             case T_DATOBJ:
                 WriteByteBlock(obj, sizeof(Obj), SIZE_OBJ(obj) - sizeof(Obj));
@@ -981,7 +967,7 @@ void SerializeTypedObj(Obj obj)
                 SerializeRecord(obj);
                 break;
             }
-            while (LEN_PLIST(STATE(SerializationStack)) > sp) {
+            while (LEN_PLIST(STATE(Serialization).stack) > sp) {
                 SerializeObj(PopObj());
             }
             return;
@@ -1020,7 +1006,7 @@ void SerializeTypedObj(Obj obj)
     WriteImmediateObj(INTOBJ_INT(len - start + 1));
     while (start <= len && skip > 0) {
         Obj  el = ELM_PLIST(rep, start);
-        UInt sp = LEN_PLIST(STATE(SerializationStack));
+        UInt sp = LEN_PLIST(STATE(Serialization).stack);
         switch (TNUM_OBJ(el)) {
         case T_DATOBJ:
             WriteByte(1);
@@ -1047,7 +1033,7 @@ void SerializeTypedObj(Obj obj)
             WriteByte(0);
             SerializeObj(el);
         }
-        while (LEN_PLIST(STATE(SerializationStack)) > sp) {
+        while (LEN_PLIST(STATE(Serialization).stack) > sp) {
             SerializeObj(PopObj());
         }
         start++;
@@ -1055,10 +1041,10 @@ void SerializeTypedObj(Obj obj)
     }
     while (start <= len) {
         Obj  el = ELM_PLIST(rep, start);
-        UInt sp = LEN_PLIST(STATE(SerializationStack));
+        UInt sp = LEN_PLIST(STATE(Serialization).stack);
         WriteByte(0);
         SerializeObj(el);
-        while (LEN_PLIST(STATE(SerializationStack)) > sp) {
+        while (LEN_PLIST(STATE(Serialization).stack) > sp) {
             SerializeObj(PopObj());
         }
         start++;
@@ -1070,9 +1056,9 @@ Obj DeserializeBackRef(UInt tnum)
     UInt ref = BACKREF_OBJ(ReadImmediateObj());
     if (!ref) /* special case for unbound entries */
         return (Obj)0;
-    if (ref > LEN_PLIST(STATE(SerializationStack)))
+    if (ref > LEN_PLIST(STATE(Serialization).stack))
         DeserializationError();
-    return ELM_PLIST(STATE(SerializationStack), ref);
+    return ELM_PLIST(STATE(Serialization).stack, ref);
 }
 
 void SerializeError(Obj obj)
@@ -1106,9 +1092,9 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj)
         syLongjmp(&(STATE(ReadJmpError)), 1);
     }
     SerializeObj(obj);
-    while (LEN_PLIST(STATE(SerializationStack)) > 0)
+    while (LEN_PLIST(STATE(Serialization).stack) > 0)
         SerializeObj(PopObj());
-    result = STATE(SerializationObj);
+    result = STATE(Serialization).obj;
     memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     RestoreSerializationState(&state);
     return result;
