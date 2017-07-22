@@ -4,15 +4,15 @@
 # Brute force computation of the sum of orders of elements of a permutation group
 # (we deliberately not using representatives of conjugacy classes)
 
-runtime:=function(t1,t2) return 1000000*(t2.tv_sec-t1.tv_sec)+t2.tv_usec-t1.tv_usec; end;
+runtime:=function(t1,t2) return (t2-t1)/1000.; end;
 n := 5;
 S := SymmetricGroup(n);
 map := Order;
 
 # First do it sequentially
-t1:=CurrentTime();
+t1:=NanosecondsSinceEpoch();
 Print("Sum of orders sequential : ", Sum( List(S, s -> CallFuncList( map, [s] ) ) ), "\n");
-t2:=CurrentTime();
+t2:=NanosecondsSinceEpoch();
 Print("Iterator sequential : ", runtime(t1,t2), "\n"); 
 
 # Now in parallel
@@ -24,7 +24,7 @@ chunksize := 1;    # for MultiSendChannel
 inch  := CreateChannel( nrworkers*sizefactor ); # "shared" input channel
 outch := CreateChannel( nrworkers );            # output channel 
 
-t1:=CurrentTime();
+t1:=NanosecondsSinceEpoch();
 
 worker := function()
     local input, x, res;
@@ -81,7 +81,7 @@ for i in [1..nrworkers] do
     sum := sum + ReceiveChannel( outch );
 od;
 
-t2:=CurrentTime();           
+t2:=NanosecondsSinceEpoch();           
 Print("Sum of orders parallel   : ", sum, "\n");
 Print("Iterator parallel : ", runtime(t1,t2), "\n");            
            

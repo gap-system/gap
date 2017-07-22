@@ -120,10 +120,7 @@ Worker := function(gens,op,hashins,hashouts,f)
 end;
 
 TimeDiff := function(t,t2)
-  local a,b;
-  a := 1.0 * t.tv_sec + 1.E-6 * t.tv_usec;
-  b := 1.0 * t2.tv_sec + 1.E-6 * t2.tv_usec;
-  return b - a;
+  return (t2-t)*1.E-9;
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)
@@ -137,7 +134,7 @@ ParallelOrbit := function(gens,pt,op,opt)
     if IsMutable(gens) then MakeImmutable(gens); fi;
     if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
 
-    ti := IO_gettimeofday();
+    ti := NanosecondsSinceEpoch();
     ptcopy := StructuralCopy(pt);
     ShareObj(ptcopy);
     i := List([1..opt.nrhash],x->CreateChannel());
@@ -162,7 +159,7 @@ ParallelOrbit := function(gens,pt,op,opt)
             Add(allpts,ReceiveChannel(o[k]));
         od;
     od;
-    ti2 := IO_gettimeofday();
+    ti2 := NanosecondsSinceEpoch();
     return rec( allhashes := allhashes, allpts := allpts,
                 time := TimeDiff(ti,ti2) );
 end;
@@ -179,14 +176,14 @@ Measure := function(gens,pt,op,n)
   k := Length(gens);
   l := EmptyPlist(n*k);
   l[1] := pt;
-  ti := IO_gettimeofday();
+  ti := NanosecondsSinceEpoch();
   # This does Length(gens)*n operations and keeps the results:
   for j in [1..n] do
       for g in gens do
           Add(l,op(l[j],g));
       od;
   od;
-  ti2 := IO_gettimeofday();
+  ti2 := NanosecondsSinceEpoch();
   timeperop := TimeDiff(ti,ti2)/(k*n);  # time for one op
   computebandwidth := 1.0/timeperop;
   Print(computebandwidth,"\n");
@@ -199,11 +196,11 @@ Measure := function(gens,pt,op,n)
       x := HTValue(ht,l[j]);
       if x = fail then HTAdd(ht,l[j],j); fi;
   od;
-  ti := IO_gettimeofday();
+  ti := NanosecondsSinceEpoch();
   for j in [1..n*k] do
       x := HTValue(ht,l[j]);
   od;
-  ti2 := IO_gettimeofday();
+  ti2 := NanosecondsSinceEpoch();
   timeperlookup := TimeDiff(ti,ti2)/(k*n);  # time for one op
   lookupbandwidth := 1.0/timeperlookup;
   Print(lookupbandwidth,"\n");
@@ -233,9 +230,9 @@ Measure := function(gens,pt,op,n)
       if 2^i > Length(l) then break; fi;
       ll := l{[1..2^i]};
       Print(2^i,"... ");
-      ti := IO_gettimeofday();
+      ti := NanosecondsSinceEpoch();
       t1 := CreateThread(Ping,c1,c2,10000000);
-      ti2 := IO_gettimeofday();
+      ti2 := NanosecondsSinceEpoch();
       t := TimeDiff(ti,ti2)/10000000.0;
       Add(times,t);
       Print(t," ==> ",1.0/t," ping pongs/s.\n");
