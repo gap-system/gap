@@ -248,6 +248,7 @@ static Obj DeserializeBinary(UInt tnum)
 
 static inline int IsBasicObj(Obj obj)
 {
+    // FIXME: hard coding T_MACFLOAT like this seems like a bad idea
     return !obj || TNUM_OBJ(obj) <= T_MACFLOAT;
 }
 
@@ -1113,6 +1114,7 @@ static Int InitKernel(StructInitInfo * module)
 {
     UInt                 i;
     static const unsigned char binary_serializable_tnums[] = {
+        // FIXME: add T_TRANS2/4, T_PPERM2/4
         T_INTPOS, T_INTNEG, T_RAT, T_PERM2, T_PERM4, T_MACFLOAT
     };
     static const unsigned char typed_serializable_tnums[] = {
