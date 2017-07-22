@@ -124,10 +124,7 @@ Worker := function(gens,op,hashins,hashout,status,f)
 end;
 
 TimeDiff := function(t,t2)
-  local a,b;
-  a := 1.0 * t.tv_sec + 1.E-6 * t.tv_usec;
-  b := 1.0 * t2.tv_sec + 1.E-6 * t2.tv_usec;
-  return b - a;
+  return (t2-t)*1.E-9;
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)

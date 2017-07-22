@@ -50,26 +50,7 @@
 # (ZMQ=no is necessary because zeromq as bundled with hpcgap does not work
 #  on DragonFly)
 
-if not IsBound(CurrentTime) then
-    if IsBound(IO_gettimeofday) then
-        BindGlobal("CurrentTime", IO_gettimeofday);
-    else
-        Error("Don't know a way to get time of day\n");
-    fi;
-fi;
-MicroSeconds := function()
-    local t;
-    t := CurrentTime();
-    return t.tv_sec * 1000000 + t.tv_usec;
-end;
-Bench := function(f)
-    local start,stop;
-    start := MicroSeconds();
-    f();
-    stop := MicroSeconds();
-
-    return (stop - start) * 1.0 / 1000000;
-end;
+ReadGapRoot("demo/bench.g");
 
 p := (1,39,45,82,28,37,23,36,31,83,77,93,29,58,87,91,63,71,70,56,89,74,3,9,
 16,54,97,60,96,26,84,40,79,13,73,48,86,72,34,22,35,57,2,10,65,59,66)(4,
