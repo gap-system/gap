@@ -271,26 +271,18 @@ static void EndTraversal(void)
     TLS(traversalState) = currentTraversal()->previousTraversal;
 }
 
-#if SIZEOF_VOID_P == 4
-#define TRAV_HASH_MULT 0x9e3779b9UL
-#else
-#define TRAV_HASH_MULT 0x9e3779b97f4a7c13UL
-#endif
-#define TRAV_HASH_BITS (SIZEOF_VOID_P * 8)
-
 static void TraversalRehash(TraversalState * traversal);
 
 static int SeenDuringTraversal(Obj obj)
 {
     TraversalState * traversal = currentTraversal();
     Obj *            hashTable;
-    unsigned long    hash;
+    UInt             hash;
     if (!IS_BAG_REF(obj))
         return 0;
     if (traversal->hashSize * 3 / 2 >= traversal->hashCapacity)
         TraversalRehash(traversal);
-    hash = ((unsigned long)obj) * TRAV_HASH_MULT;
-    hash >>= TRAV_HASH_BITS - traversal->hashBits;
+    hash = FibHash((UInt)obj, traversal->hashBits);
     hashTable = ADDR_OBJ(traversal->hashTable) + 1;
     for (;;) {
         if (hashTable[hash] == NULL) {
@@ -307,12 +299,12 @@ static int SeenDuringTraversal(Obj obj)
 static UInt FindTraversedObj(Obj obj)
 {
     TraversalState * traversal = currentTraversal();
-    Obj *            hashTable = ADDR_OBJ(traversal->hashTable) + 1;
+    Obj *            hashTable;
     UInt             hash;
     if (!IS_BAG_REF(obj))
         return 0;
-    hash = ((UInt)obj) * TRAV_HASH_MULT;
-    hash >>= TRAV_HASH_BITS - traversal->hashBits;
+    hash = FibHash((UInt)obj, traversal->hashBits);
+    hashTable = ADDR_OBJ(traversal->hashTable) + 1;
     for (;;) {
         if (hashTable[hash] == obj)
             return (int)hash + 1;
