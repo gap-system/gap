@@ -1175,29 +1175,17 @@ void CodeAtomicEndBody (
     UInt nrexprs;
     Expr  e,qual;
 
-
-    /* fix up the case of no statements */
-    if ( 0 == nrstats ) {
-       PushStat( NewStat( T_EMPTY, 0) );
-       nrstats = 1;
-    }
-    
     /* collect the statements into a statement sequence   */
-    if ( 1 < nrstats ) {
-      stat1 = PopSeqStat( nrstats );
-    } else {
-      stat1 = PopStat();
-    }
+    stat1 = PopSeqStat( nrstats );
+
     nrexprs = INT_INTEXPR(PopExpr());
     
     /* allocate the atomic-statement                                        */
     stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
     
-
     /* enter the statement sequence */
     ADDR_STAT(stat)[0] = stat1;
 
-    
     /* enter the expressions                                                */
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
@@ -1205,7 +1193,6 @@ void CodeAtomicEndBody (
         ADDR_STAT(stat)[i] = e;
         ADDR_STAT(stat)[i-1] = qual;
     }
-
 
     /* push the atomic-statement                                            */
     PushStat( stat );
