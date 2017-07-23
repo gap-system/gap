@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#A  makedoc.g                             GAPDoc                 Frank Lübeck
+#A  makedoc.g                             GAPDoc                 Frank LÂ¸beck
 ##  
 ##  
 ##  Rebuild the whole documentation, provided sufficiently good (pdf)LaTeX

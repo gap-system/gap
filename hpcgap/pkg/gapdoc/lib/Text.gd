@@ -31,6 +31,7 @@ DeclareGlobalFunction("PositionMatchingDelimiter");
 DeclareGlobalFunction("SubstitutionSublist");
 DeclareGlobalFunction("NumberDigits");
 DeclareGlobalFunction("DigitsNumber");
+DeclareGlobalFunction("LabelInt");
 DeclareGlobalFunction("Base64String");
 DeclareGlobalFunction("StringBase64");
 DeclareGlobalFunction("StripBeginEnd");

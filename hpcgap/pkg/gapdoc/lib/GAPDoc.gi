@@ -247,11 +247,22 @@ end);
 PAGENRS := 0;
 InstallGlobalFunction(AddPageNumbersToSix, function(r, pnrfile)
   local   six,  a,  pos;
+  if not IsExistingFile(pnrfile) and
+    IsBound(GAPInfo.SIXFILEIGNOREMISSINGPNR) and
+    GAPInfo.SIXFILEIGNOREMISSINGPNR = true then
+    for a in r.six do a[5] := -1; od;
+    return;
+  fi;
   Read(pnrfile);
   six := r.six;
   for a in six do
     pos := Position(PAGENRS, a[3]);
-    a[5] := PAGENRS[pos+1];
+    # can fail, e.g. because LaTeX/makeindex do not produce an empty index
+    if pos = fail then
+      a[5] := PAGENRS[Length(PAGENRS)];
+    else
+      a[5] := PAGENRS[pos+1];
+    fi;
   od;
   Unbind(PAGENRS);
 end);
@@ -365,7 +376,7 @@ BindGlobal("TEXTMTRANSLATIONS",
 # unicode characters which do not yet have a simplification, we add their
 # LaTeX code as simplification to SimplifiedUnicodeTable (sometimes without
 # the leading backslash)
-GAPInfo.addMoreTEXTMUnicode := function()
+CallFuncList( function()
   local hash, s, str, pos, a;
   hash := List(SimplifiedUnicodeTable, a-> a[1]);
   # the candidates to add are found in the LaTeXUnicodeTable
@@ -392,10 +403,7 @@ GAPInfo.addMoreTEXTMUnicode := function()
     fi;
   od;
   Sort(SimplifiedUnicodeTable);
-end;
-GAPInfo.addMoreTEXTMUnicode();
-# Unbind(GAPInfo.addMoreTEXTMUnicode);
-GAPInfo.addMoreTEXTMUnicode := fail;
+end, []);
 
 InstallGlobalFunction(TextM, function(str)
   local subs, res, i, j;
@@ -536,7 +544,11 @@ end);
 
 # shared utility for the converters to read data for bibliography 
 BindGlobal("GAPDocAddBibData", function(r) 
-  local dat, datbt, bib, bibbt, b, keys, need, labels, tmp, pos, diff, a, j;
+  local dat, datbt, bib, bibbt, b, keys, need, labels, tmp, pos, diff, a,
+        j, p, lab, st;
+  if not IsBound(r.bibdata) then
+    return;
+  fi;
   if IsBound(r.bibentries) and IsBound(r.biblabels) then
     return;
   fi;
@@ -577,8 +589,37 @@ BindGlobal("GAPDocAddBibData", function(r)
   need := List(need, a-> [a, RecBibXMLEntry(a, "Text")]);
   SortParallel(List(need, a-> SortKeyRecBib(a[2])), need);
   keys := List(need, a-> a[2].Label);
+
+  # here we check if 'bibtex' is available, if yes we adjust the labels and
+  # ordering of the references to those produced by 'bibtex'
+  if Filename(DirectoriesSystemPrograms(), "bibtex") <> fail then
+    tmp := Filename(DirectoryTemporary(), "tmp.bib");
+    WriteBibFile(tmp, bib);
+    if not IsBound(r.bibstyle) then
+      st := "alpha";
+    else
+      st := r.bibstyle;
+    fi;
+    #ids := List(need, a->a[1].attributes.id);
+    lab := LabelsFromBibTeX(".", keys, [tmp], st);
+    RemoveFile(tmp);
+    tmp := [];
+    for p in lab do
+      a := Position(keys, p[1]);
+      if a <> fail then
+        a := need[Position(keys, p[1])];
+        a[2].key := HeuristicTranslationsLaTeX2XML.Apply(p[2]);
+        Add(tmp, a);
+      fi;
+    od;
+    need := tmp;
+    keys := List(need, a-> a[2].Label);
+  fi;
+
+  # now we get the labels
   labels := List(need, function(a) if IsBound(a[2].key) then return
                           a[2].key; else return a[2].printedkey; fi; end);
+
   # make labels unique
   tmp := Filtered(Collected(labels), a-> a[2] > 1);
   for a in tmp do
@@ -625,8 +666,8 @@ end);
 ##  
 ##  <Emph>Further  hints:</Emph>   To  get   strings  produced   by  &LaTeX;
 ##  right  you  will  probably  use the  <C>babel</C>  package  with  option
-##  <A>lang</A>,  see  the  information   on  <C>ExtraPreamble</C>  in  <Ref
-##  Func="GAPDoc2LaTeX"/>. If <A>lang</A> cannot be encoded in <C>latin1</C>
+##  <A>lang</A>,  see  <Ref Func="SetGapDocLaTeXOptions"/>. 
+##  If <A>lang</A> cannot be encoded in <C>latin1</C>
 ##  encoding  you   can  consider  the   use  of  <C>"utf8"</C>   with  <Ref
 ##  Func="SetGapDocLaTeXOptions"/>.
 ##  </Description>

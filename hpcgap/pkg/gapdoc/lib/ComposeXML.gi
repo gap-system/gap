@@ -26,19 +26,21 @@
 ##  <Ref Func="ComposedXMLString"/><C>( ... )</C> is an abbreviation for
 ##  <Ref Func="ComposedDocument"/><C>("GAPDoc", ... )</C>.<P/>
 ##  
-##  The argument <A>path</A> must be a path to  some   directory  (as
-##  string  or directory  object),  <A>main</A> the  name  of a  file
-##  in  this  directory  and  <A>source</A> a  list  of  file  names,
-##  all   of  these   relative  to   <A>path</A>.  The   document  is
-##  constructed  via  the  mechanism described  in  Section&nbsp;<Ref
-##  Sect="DistrConv"/>.<P/>
+##  The  argument <A>path</A>  must be  a  path to  some directory  (as
+##  string or  directory object),  <A>main</A> the name  of a  file and
+##  <A>source</A> a list  of file names. These file  names are relative
+##  to <A>path</A>,  except they  start with  <C>"/"</C> to  specify an
+##  absolute  path or  they  start with  <C>"gap://"</C>  to specify  a
+##  file  relative  to the  &GAP;  roots  (see <Ref  Func="FilenameGAP"
+##  />). The  document is  constructed via  the mechanism  described in
+##  Section&nbsp;<Ref Sect="DistrConv"/>.<P/>
 ##  
 ##  First  the   files  given   in  <A>source</A>  are   scanned  for
 ##  chunks of the document marked  by <C>&lt;#<A>tagname</A>
 ##  Label="..."></C> and  <C>&lt;/#<A>tagname</A>></C> pairs.  
 ##  Then the file <A>main</A> is read and all <C>&lt;#Include  ...
 ##  ></C>-tags are  substituted recursively by other  files or chunks
-##  of documentation found in the first step, respectively.
+##  of documentation found in the first step, respectively.<P/>
 ##  
 ##  If  the  optional  argument  <A>info</A>   is  given  and  set  to
 ##  <K>true</K>  this function  returns a  list <C>[str,  origin]</C>,
@@ -47,9 +49,19 @@
 ##  filename, line]</C>.  Here <C>pos</C>  runs through  all character
 ##  positions of starting lines or text pieces from different files in
 ##  <C>str</C>.  The  <C>filename</C>  and  <C>line</C>  describe  the
-##  origin of this part of the collected document.
+##  origin of this part of the collected document.<P/>
 ##  
 ##  Without the fourth argument only the string <C>str</C> is returned.
+##  <P/>
+##  
+##  By default <Ref Func="ComposedDocument"/> runs  into an error if an
+##  <C>&lt;#Include ...></C>-tag cannot be  substituted (because a file
+##  or  chunk is  missing). This  behaviour can  be changed  by setting
+##  <C>DOCCOMPOSEERROR  :=  false;</C>.  Then  the  missing  parts  are
+##  substituted by a short note about  what is missing. Of course, this
+##  feature is  only useful if  the resulting  document is a  valid XML
+##  document (e.g., when the missing  pieces are complete paragraphs or
+##  sections).<P/>
 ##  
 ##  <Log>
 ##  gap> doc := ComposedDocument("GAPDoc", "/my/dir", "manual.xml", 
@@ -64,7 +76,7 @@ DOCCOMPOSEERROR := true;
 InstallGlobalFunction(ComposedDocument, function(arg)
   local path, main, source, info, tagname, btag, etag,
         pieces, origin, fname, str, posnl, i, j, pre, pos, name, piece, 
-        b, len, Collect, res, src, f, a, usedpieces, lenb;
+        b, len, Collect, res, src, f, a, usedpieces, lenb, NormalizedFilename;
   # get arguments, 5th arg is optional for compatibility with older versions
   tagname := arg[1];
   btag := Concatenation("<#", tagname, " Label=\"");
@@ -81,11 +93,26 @@ InstallGlobalFunction(ComposedDocument, function(arg)
   if IsString(path) then
     path := Directory(path);
   fi;
+  # utility
+  NormalizedFilename := function(str)
+    local res;
+    if Length(str) > 6 and str{[1..6]} = "gap://" then
+      res := FilenameGAP(str);
+    elif Length(str) = 0 or str[1] <> '/' then
+      res := Filename(path, str);
+    else
+      res := str;
+    fi;
+    if res = fail then
+      res := str;
+    fi;
+    return res;
+  end;
   # first we fetch the chunks from the source files
   pieces := rec();
   origin := rec();
   for f in source do
-    fname := Filename(path, f);
+    fname := NormalizedFilename(f);
     Info(InfoGAPDoc, 2, "#I ComposedDocument: Searching for chunks in ",
                           fname, "\n");
     str := StringFile(fname);
@@ -172,7 +199,7 @@ InstallGlobalFunction(ComposedDocument, function(arg)
     posnl := Positions(cont, '\n');
     pos := 0;
     while pos <> fail do
-      i := PositionSublist(cont, "<\#Include ", pos);
+      i := PositionSublist(cont, "<#Include ", pos);
       if i = fail then
         # in this case add the rest to res
         i := Length(cont) + 1;
@@ -194,11 +221,11 @@ InstallGlobalFunction(ComposedDocument, function(arg)
       if i <= Length(cont) then
         pos := Position(cont, '>', i);
         if pos = fail then
-          Error("Input ends within <\#Include ... tag.");
+          Error("Input ends within <#Include ... tag.");
         fi;
         piece := SplitString(cont{[i+9..pos-1]}, "", "\"= ");
         if piece[1]="SYSTEM" then
-          Collect(res, src, Filename(path, piece[2]), 0);
+          Collect(res, src, NormalizedFilename(piece[2]), 0);
         elif piece[1]="Label" then 
           if not IsBound(pieces.(piece[2])) and DOCCOMPOSEERROR=true then
             Error("Did not find chunk ", piece[2]);
@@ -217,9 +244,9 @@ InstallGlobalFunction(ComposedDocument, function(arg)
   res := "";
   src := [];
   # now start the recursion as #Include of the main file in empty string
-  Collect(res, src, Filename(path, main), 0);
+  Collect(res, src, NormalizedFilename(main), 0);
   Info(InfoGAPDoc, 2, "#I Labels of chunks which were not used: ",
-                      Difference(RecFields(pieces), usedpieces), "\n");
+                      Difference(RecNames(pieces), usedpieces), "\n");
   if info then
     return [res, src];
   else
@@ -251,3 +278,34 @@ InstallGlobalFunction(OriginalPositionDocument, function(srcinfo, pos)
   fi;
   return [srcinfo[r][2], srcinfo[r][3]];
 end);
+
+##  Utility for file names
+##  <#GAPDoc Label="FilenameGAP"/>
+##  <ManSection >
+##  <Func Arg="fname" Name="FilenameGAP"/>
+##  <Returns>file name as string or fail</Returns>
+##  <Description>
+##  
+##  This functions  returns the full path  of a file with  name <A>fname</A>
+##  relative to a  &GAP; root path, or  <K>fail</K> if such a  file does not
+##  exist. The  argument <A>fname</A> can  optionally start with  the prefix
+##  <C>"gap://"</C> which will be removed.
+##  
+##  <Log>
+##  gap> FilenameGAP("hsdkfhs.g");
+##  fail
+##  gap> FilenameGAP("lib/system.g");
+##  "/usr/local/gap4/lib/system.g"
+##  gap> FilenameGAP("gap://lib/system.g");
+##  "/usr/local/gap4/lib/system.g"
+##  </Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+InstallGlobalFunction(FilenameGAP, function(fpath)
+  if Length(fpath) > 5 and fpath{[1..6]} = "gap://" then
+    fpath := fpath{[7..Length(fpath)]};
+  fi;
+  return Filename(List(GAPInfo.RootPaths, Directory), fpath);
+end);
+

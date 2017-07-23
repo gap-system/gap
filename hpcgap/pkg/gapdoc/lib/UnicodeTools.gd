@@ -56,6 +56,7 @@ DeclareGlobalFunction("UppercaseUnicodeString");
 ###### Utilities for different lengths of UTF-8 encoded GAP strings ########
 DeclareGlobalFunction("NrCharsUTF8String");
 DeclareGlobalFunction("WidthUTF8String");
+DeclareGlobalFunction("InitialSubstringUTF8String");
 
 ###### Simplification for sorting and searching #####
 DeclareGlobalFunction("LowerASCIIString");

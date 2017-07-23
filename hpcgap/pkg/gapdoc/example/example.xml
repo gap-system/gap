@@ -12,7 +12,7 @@
   <Subtitle>Every element shows up</Subtitle>
   <Version>Version <#Include SYSTEM "../version"></Version>
   <TitleComment>
-  If the subtitle ist not sufficient, this &lt;TitleComment> 
+  If the subtitle is not sufficient, this &lt;TitleComment> 
   element can be used for a slightly longer text on the front page.
   </TitleComment>
   <Author>Frank Lübeck 
@@ -21,10 +21,10 @@
   <Author> Max Neunhöffer 
           <Email>neunhoef at mcs.st-and.ac.uk</Email>
   </Author>
-  <Date>February 2012</Date>
+  <Date>July 2017</Date>
   <Address>
-  Lehrstuhl D für Mathematik<Br/> Templergraben 
-  64<Br/> 52062 Aachen<Br/> (Germany)
+  Lehrstuhl D für Mathematik<Br/>  Pontdriesch
+  14/16<Br/> 52062 Aachen<Br/> (Germany)
   </Address>
   <Abstract>This document tries to use all elements that exist in &GAPDoc;.
             In addition, the final output not only contains the usual
@@ -33,7 +33,7 @@
             source text. This should enable new users to learn &GAPDoc;
             quickly.
   </Abstract>
-  <Copyright>&copyright; 2000-2012 by Frank Lübeck and Max Neunhöffer
+  <Copyright>&copyright; 2000-2017 by Frank Lübeck and Max Neunhöffer
   </Copyright>
   <Acknowledgements>We thank Lehrstuhl D für Mathematik.
   </Acknowledgements>
@@ -373,12 +373,12 @@ archives</LinkText></URL>.
 
 One can generate index entries as follows (look up the words 
 <Q>&TeX;-UserGroup</Q>, <Q>RWTH</Q>, <Q>Aachen, Hauptbahnhof</Q>, and
-<Q>&GAP;, <Package>GAPDoc</Package></Q>).
+<Q><Package>GAPDoc</Package>, for &GAP; programmers</Q>).
 <Index Key="TeX-Usergroup">&TeX;-UserGroup</Index>
-<Index Key="Aachen" Subkey="Hauptbahnhof">Aachen</Index>
-<Index Key="GAP" Subkey="GAPDoc">&GAP;<Subkey>
-<Package>GAPDoc</Package></Subkey></Index>
 <Index>RWTH</Index>
+<Index>Aachen <Subkey>Hauptbahnhof</Subkey></Index>
+<Index Key="GAPDoc" Subkey="for GAP programmers"><Package>GAPDoc</Package> 
+<Subkey>for &GAP; programmers</Subkey></Index>
 
 </Section>
 
@@ -920,8 +920,10 @@ and Homepages another one:
 One can generate index entries as follows (look up the words 
 <Q>&TeX;-UserGroup</Q>, <Q>RWTH</Q>, and <Q>Aachen, Hauptbahnhof</Q>).
 <Index Key="TeX-Usergroup">&TeX;-UserGroup</Index>
-<Index Key="Aachen" Subkey="Hauptbahnhof">Aachen</Index>
 <Index>RWTH</Index>
+<Index>Aachen <Subkey>Hauptbahnhof</Subkey></Index>
+<Index Key="GAPDoc" Subkey="for GAP programmers">&GAPDoc; 
+<Subkey>for &GAP; programmers</Subkey></Index>
 
 </Section>]]>
 </Listing>

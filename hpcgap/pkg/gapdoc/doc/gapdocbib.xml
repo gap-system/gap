@@ -29,7 +29,7 @@
   <title><Wrap Name="Package">IO</Wrap>,
          Bindings for low level <C>C</C> library <C>IO</C>,
          <C>V</C>ersion 2.2</title>
-  <howpublished><URL>http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/io.html</URL></howpublished>
+  <howpublished><URL>http://gap-packages.github.io/io/</URL></howpublished>
   <year>2007</year>
   <note><Wrap Name="Package">GAP</Wrap> package</note>
 </misc></entry>

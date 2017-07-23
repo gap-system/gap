@@ -41,5 +41,10 @@ Print("\n========== converting small example from introduction ============\n");
 CopyHTMLStyleFiles("3k+1");
 
 # .lab files for references from main manual
-GAPDocManualLab("GAPDoc");
+#GAPDocManualLab("GAPDoc");
+#  This alternative also works if this directory is not that of the
+#  currently loaded GAPDoc version:
+GAPDocManualLabFromSixFile("GAPDoc", "doc/manual.six");
+GAPDocManualLabFromSixFile("GAPDoc", "example/manual.six");
+
 

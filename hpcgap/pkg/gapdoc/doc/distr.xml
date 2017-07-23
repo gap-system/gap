@@ -46,7 +46,8 @@ All lines up to a line containing the character sequence
 character) are ignored. The characters
 on the same line before this sequence are stored as <Q>prefix</Q>. 
 The characters after the sequence up to the next double quotes character
-are stored as <Q>label</Q>. All other characters in the line are ignored. 
+(which should not contain whitespace) are stored as <Q>label</Q>. 
+All other characters in the line are ignored. 
 </Item>
 
 <Item>
@@ -116,6 +117,8 @@ document.
 <#Include Label="ComposedDocument">
 
 <#Include Label="OriginalPositionDocument">
+
+<#Include Label="FilenameGAP">
 
 </Section>
 

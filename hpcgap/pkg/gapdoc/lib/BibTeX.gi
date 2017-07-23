@@ -14,13 +14,26 @@
 ##  name(s) and ...
 ##  see Lamport: LaTeX App.B 1.2
 InstallGlobalFunction(NormalizedNameAndKey, function(str)
-  local   nbsp,  new,  pp,  p,  a,  i,  names,  norm,  keyshort,  
-          keylong,  res;
+  local   isutf8, nbsp, ini, new,  pp,  p,  a,  i,  names,  norm,  keyshort,  
+          keylong,  res, utf8initial;
+  utf8initial := function(s)
+    local i, n;
+    i := 1;
+    while Length(s) <= i and s[i] in "-.{}\\\"\'`\003" do
+      i := i+1;
+    od;
+    if i > Length(s) then
+      return fail;
+    fi;
+    n := UNICODE_RECODE.UnicodeUTF8Char(s, i);
+    return Encode(Unicode([n]),"UTF-8");
+  end;
   # do almost nothing if already list of strings (e.g., from BibXMLext tools
   if IsString(str) then
+    isutf8 := (Unicode(str) <> fail);
     # first normalize white space inside braces { ... } and change
-    # spaces to non-breakable spaces
-    nbsp := CHAR_INT(160);
+    # spaces to non-spaces (removed below)
+    nbsp := '\003';
     new := "";
     pp := 0;
     p := Position(str, '{');
@@ -89,12 +102,22 @@ InstallGlobalFunction(NormalizedNameAndKey, function(str)
           fi;
           lnam := Filtered(lnam, x-> x<>',');
         od;
-        # first name initials   -  wrong for UTF-8!
+        # first name initials
         fnam := "";
         for j in [i+1..Length(n)] do
-          Add(fnam, First(n[j], x-> not x in WHITESPACE 
-                                    and not x in "-.{}\\\"\'\`"));
-          Append(fnam, ". ");
+          if isutf8 then
+            ini := utf8initial(n[j]);
+          else
+            ini := First(n[j], x-> not x in WHITESPACE 
+                              and not x in "-.{}\\\"\'`\003");
+            if ini <> fail then
+              ini := [ini];
+            fi;
+          fi;
+          if ini <> fail then
+            Append(fnam, ini);
+            Append(fnam, ". ");
+          fi;
         od;
         fnamfull := JoinStringsWithSeparator(n{[i+1..Length(n)]}, " ");
       else
@@ -112,14 +135,35 @@ InstallGlobalFunction(NormalizedNameAndKey, function(str)
             Add(lnam, ' ');
           fi;
         od;
-        # first name capitals
+        # first name initials
         fnam := "";
         for j in [1..i-1] do
-          Add(fnam, First(n[j], x-> x in LETTERS));
-          Append(fnam, ". ");
+          if isutf8 then
+            ini := utf8initial(n[j]);
+          else
+            ini := First(n[j], x-> not x in WHITESPACE 
+                              and not x in "-.{}\\\"\'`\003");
+            if ini <> fail then
+              ini := [ini];
+            fi;
+          fi;
+          if ini <> fail then
+            Append(fnam, ini);
+            Append(fnam, ". ");
+          fi;
         od;
         fnamfull := JoinStringsWithSeparator(n{[1..i-1]}, " ");
       fi;
+      for j in [1..Length(lnam)] do
+        if lnam[j] = '\003' then
+          lnam[j] := ' ';
+        fi;
+      od;
+      for j in [1..Length(fnamfull)] do
+        if fnamfull[j] = '\003' then
+          fnamfull[j] := ' ';
+        fi;
+      od;
       while Length(fnam) > 0 and fnam[Length(fnam)] in WHITESPACE do
         fnam := fnam{[1..Length(fnam)-1]};
       od;
@@ -362,10 +406,6 @@ end);
 ##  names. The fourth entry is a list of lists, one for each name, where a 
 ##  name is described by three strings for the last name, the first name
 ##  initials and the first name(s) as given in the input. <P/>
-##  
-##  Note that the determination of the initials is limited to names where the
-##  first letter is described by a single character (and does not contain some
-##  markup, say for accents).<P/>
 ##  
 ##  The function <Ref Func="NormalizeNameAndKey"/> gets as argument <A>r</A> 
 ##  a record for a bibliography entry as returned by <Ref  Func="ParseBibFiles"
@@ -903,16 +943,16 @@ InstallGlobalFunction(StringBibAsText, function(arg)
   ansi.Bib_editor := ansi.Bib_author;
   ansi.Bib_subtitle := ansi.Bib_title;
   if Length(arg) = 2  and arg[2] <> true then
-    for f in RecFields(arg[2]) do
+    for f in RecNames(arg[2]) do
       ansi.(f) := arg[2].(f);
     od;
   elif IsBound(r.From) and IsBound(r.From.options) and
             IsBound(r.From.options.ansi) then
-    for f in RecFields(r.From.options.ansi) do
+    for f in RecNames(r.From.options.ansi) do
       ansi.(f) := r.From.options.ansi.(f);
     od;
   else
-    for f in RecFields(ansi) do
+    for f in RecNames(ansi) do
       ansi.(f) := "";
     od;
   fi;
@@ -1128,11 +1168,11 @@ end);
 ##  gap> for b in bib2.entries do 
 ##  >          PrintFormattedString(StringBibXMLEntry(b, "Text")); od;     
 ##  [Gau95]   Gauss,   C.   F.,  Disquisitiones  arithmeticae,  Academia
-##  Colombiana  de  Ciencias  Exactas  Físicas  y  Naturales,  Colección
-##  Enrique  Pérez  Arbeláez  [Enrique  Pérez  Arbeláez Collection], 10,
-##  Bogotá  (1995),  xliv+495  pages, (Translated from the Latin by Hugo
-##  Barrantes  Campos,  Michael  Josephy  and  Ángel Ruiz Zúñiga, With a
-##  preface by Ruiz Zúñiga).
+##  Colombiana   de  Ciencias  Exactas,  Físicas  y  Naturales,  Bogotá,
+##  Colección   Enrique   Pérez   Arbeláez   [Enrique   Pérez   Arbeláez
+##  Collection],  10  (1995), xliv+495 pages, (Translated from the Latin
+##  by  Hugo  Barrantes  Campos,  Michael Josephy and Ángel Ruiz Zúñiga,
+##  With a preface by Ruiz Zúñiga).
 ##  
 ##  [Gau86]  Gauss, C. F., Disquisitiones arithmeticae, Springer-Verlag,
 ##  New  York  (1986),  xx+472  pages, (Translated and with a preface by
@@ -1140,8 +1180,8 @@ end);
 ##  Greither and A. W. Grootendorst and with a preface by Waterhouse).
 ##  
 ##  [Gau66]  Gauss,  C. F., Disquisitiones arithmeticae, Yale University
-##  Press, Translated into English by Arthur A. Clarke, S. J, New Haven,
-##  Conn. (1966), xx+472 pages.
+##  Press, New Haven, Conn.-London, Translated into English by Arthur A.
+##  Clarke, S. J (1966), xx+472 pages.
 ##  
 ##  </Example>
 ##  </Description>
@@ -1154,7 +1194,7 @@ end);
 ##  <#/GAPDoc>
 
 
-SEARCHMRHOST := "ams.org";
+SEARCHMRHOST := "www.ams.org";
 ##  SEARCHMRHOST := "ams.math.uni-bielefeld.de";
 if not IsBound(SingleHTTPRequest) then
   SingleHTTPRequest := 0;
@@ -1250,7 +1290,7 @@ InstallGlobalFunction(SearchMRBib, function(arg)
     fi;
   else
     a := ShallowCopy(a);
-    for f in RecFields(a) do
+    for f in RecNames(a) do
       if IsString(a.(f)) then
         a.(f) := HeuristicTranslationsLaTeX2XML.Apply(a.(f));
       fi;
@@ -1282,4 +1322,114 @@ end);
 if SingleHTTPRequest = 0 then
   Unbind(SingleHTTPRequest);
 fi;
+
+##  <#GAPDoc Label="LabelsFromBibTeX">
+##  <ManSection >
+##  <Func Arg="path, keys, bibfiles, style" Name="LabelsFromBibTeX" />
+##  <Returns>a list of pairs of strings <C>[key, label]</C></Returns>
+##  <Description>
+##  This function uses  <C>bibtex</C> to determine the ordering  of a list
+##  of  references and  a label  for each  entry which  is typeset  in   a
+##  document citing these references.
+##  <P/>
+##  The  argument  <A>path</A>  is  a directory  specified  as  string  or
+##  directory object. The argument <A>bibfiles</A> must be a list of files
+##  in  &BibTeX;  format,  each  specified  by  a  path  relative  to  the
+##  first  argument, or  an absolute  path (starting  with <C>'/'</C>)  or
+##  relative to the &GAP; roots  (starting with <C>"gap://"</C>). The list
+##  <A>keys</A>  must contain  strings which  occur as  keys in  the given
+##  &BibTeX; files. Finally the string <A>style</A>  must be the name of a
+##  bibliography style (like <C>"alpha"</C>). <P/>
+##  
+##  The list returned by this  function contains pairs <C>[key, label]</C>
+##  where <C>key</C> is one of the entries of <A>keys</A> and <C>label</C>
+##  is  a string  used  for  citations  of the   bibliography  entry  in a
+##  document. These  pairs are ordered  as the reference list  produced by
+##  &BibTeX;.
+##  <Example>
+##  gap> f := Filename(DirectoriesPackageLibrary("gapdoc","doc"), "test.bib");;
+##  gap> LabelsFromBibTeX(".", ["AB2000"], [f], "alpha");
+##  [ [ "AB2000", "FS00" ] ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+InstallGlobalFunction(LabelsFromBibTeX, function(path, keys, bibfiles, style)
+  local aux, flist, poss, d, dstr, auxfile, out, res, lab, pos, k, n, i;
+  aux := "";
+  # keys of citations
+  for k in keys do
+    Append(aux, "\\citation{");
+    Append(aux, k);
+    Append(aux, "}\n");
+  od;
+  if IsString(path) then
+    path := Directory(path);
+  fi;
+
+  # file names of bib-files
+  flist := [];
+  for n in bibfiles do
+    if Length(n) > 0 and n[1] = '/' then
+      Add(flist, n);
+    elif Length(n) > 5 and n{[1..6]} = "gap://" then
+      Add(flist, FilenameGAP(n));
+    else
+      Add(flist, n);
+    fi;
+  od;
+  poss := Positions(flist, fail);
+  if Length(poss) > 0 then
+    Error("Cannot generate path for bibfiles ",bibfiles{poss},".\n");
+    return fail;
+  fi;
+  Append(aux, "\\bibdata{");
+  Append(aux, JoinStringsWithSeparator(flist, ","));
+  Append(aux, "}\n");
+
+  # bibstyle of result
+  Append(aux, "\\bibstyle{");
+  Append(aux, style);
+  Append(aux, "}\n");
+
+  # write out, call bibtex, filter \bibitem lines from result
+  d := DirectoryTemporary();
+  dstr := Filename(d, "");
+  auxfile := Filename(d, "temp.aux");
+  FileString(auxfile, aux);
+  Exec(Concatenation("(export TEXMFOUTPUT=", dstr, "; cd ", Filename(path, ""), 
+                 "; bibtex ", dstr, "/temp > /dev/null 2>&1 ; ",
+                 "grep '^\\\\bibitem' ", dstr, "/temp.bbl > ", dstr, "/out )"));
+  out := StringFile(Filename(d, "out"));
+  if out = fail then
+    Error("Call of 'bibtex' was not successful.\n");
+    return fail;
+  fi;
+  
+  # clean temporary directory
+  for n in DirectoryContents(d) do 
+    if not n in [".", ".."] then
+      RemoveFile(Filename(d, n)); 
+    fi; 
+  od;
+  # ???  RemoveDir(Filename(d,""));
+
+  # parse result
+  out := SplitString(out, "", "\n");
+  res := [];
+  for i in [1..Length(out)] do
+    n := out[i];
+    if n[9] = '[' then
+      pos := Position(n, ']', 9);
+      lab := n{[10..pos-1]};
+      pos := Position(n, '{', pos);
+    else
+      lab := String(i);
+      pos := Position(n, '{', 8);
+    fi;
+    Add(res, [n{[pos+1..PositionMatchingDelimiter(n, "{}", pos)-1]}, lab]);
+  od;
+  return res;
+end);
 

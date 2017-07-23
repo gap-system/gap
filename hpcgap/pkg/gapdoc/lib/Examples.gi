@@ -39,6 +39,13 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 
+if not GAPInfo.CommandLineOptions.O and 
+       UserPreference( "ReadObsolete" ) <> false then
+  MANEXreadobs := true;
+else
+  MANEXreadobs := false;
+fi;
+
 # obsolete
 # Extract examples units-wise from a GAPDoc document as XML tree, 
 # 'units' can either be: "Chapter" or "Section" or "Subsection" or "Single"
@@ -46,6 +53,7 @@
 # For all other values of 'units' one string with all examples is returned.
 # Before each extracted example there is its paragraph number in a comment:
 #  [ chapter, section, subsection, paragraph ]
+if MANEXreadobs then
 InstallGlobalFunction(ManualExamplesXMLTree, function( tree, units )
   local secelts, sec, exelts, res, str, a, ex;
   if units = "Chapter" then
@@ -92,6 +100,7 @@ InstallGlobalFunction(ManualExamplesXMLTree, function( tree, units )
   fi;
   return res;
 end);
+fi;
 
 InstallGlobalFunction(ExtractExamplesXMLTree, function( tree, units )
   local secelts, sec, exelts, orig, res, l, b, e, a, ex;
@@ -139,12 +148,14 @@ end);
 
 # obsolete
 # compose and parse document, then extract examples units-wise
+if MANEXreadobs then
 InstallGlobalFunction(ManualExamples, function( path, main, files, units )
   local str, xmltree;
   str:= ComposedDocument( "GAPDoc", path, main, files, true );
   xmltree:= ParseTreeXMLString( str[1], str[2] );
   return ManualExamplesXMLTree(xmltree, units);
 end);
+fi;
 
 # compose and parse document, then extract examples units-wise
 InstallGlobalFunction(ExtractExamples, function( path, main, files, units )
@@ -202,6 +213,7 @@ end);
 
 # obsolete
 # test a string with examples 
+if MANEXreadobs then
 InstallGlobalFunction(ReadTestExamplesString, function(str)
   local res, file;
   file := InputTextString(str);
@@ -209,9 +221,11 @@ InstallGlobalFunction(ReadTestExamplesString, function(str)
   CloseStream(file);
   return res;
 end);
+fi;
 
 # obsolete
 # args:  str, print
+if MANEXreadobs then
 InstallGlobalFunction(TestExamplesString, function(arg)
   local l, s, z, inp, out, f, lout, pos, bad, i, n, diffs, str;
   str := arg[1];
@@ -279,8 +293,10 @@ InstallGlobalFunction(TestExamplesString, function(arg)
   fi;
   return bad;
 end);
+fi;
 
 # obsolete
+if MANEXreadobs then
 InstallGlobalFunction(TestManualExamples, function(arg)
   local ex, bad, res, a;
   if IsRecord(arg[1]) then
@@ -297,12 +313,13 @@ InstallGlobalFunction(TestManualExamples, function(arg)
   od; 
   return res;
 end);
+fi;
 
 
 ##  <#GAPDoc Label="RunExamples">
 ##  <ManSection >
 ##  <Func Arg="exmpls[, optrec]" Name="RunExamples" />
-##  <Returns>nothing</Returns>
+##  <Returns><K>true</K> or <K>false</K></Returns>
 ##  <Description>
 ##  The argument <A>exmpls</A> must be the output of a call to 
 ##  <Ref Func="ExtractExamples"/> or <Ref Func="ExtractExamplesXMLTree"/>.
@@ -315,6 +332,9 @@ end);
 ##  source code of that example. Before running the examples in each unit (entry
 ##  of <A>exmpls</A>) the function <Ref BookName="Reference" Func="START_TEST"/>
 ##  is called and the screen width is set to 72 characters.
+##  <P/>
+##  This function returns <K>true</K> if no differences are found and
+##  <K>false</K> otherwise.
 ##  <P/>
 ##  If the argument <A>optrec</A> is given, the following components are
 ##  recognized:
@@ -330,6 +350,12 @@ end);
 ##  running the examples. As mentioned above, the default is 72 which is a
 ##  sensible value for the text version of the &GAPDoc; document used
 ##  in a 80 character wide terminal.
+##  </Item>
+##  <Mark><C>ignoreComments</C></Mark>
+##  <Item>
+##  The default is <K>false</K>.<Br/>
+##  If set to <K>true</K> comments in the input will be ignored (as in the
+##  default behaviour of the <Ref Func="Test" BookName="reference"/> function).
 ##  </Item>
 ##  <Mark><C>changeSources</C></Mark>
 ##  <Item>
@@ -362,17 +388,19 @@ end);
 
 InstallGlobalFunction(RunExamples, function(arg)
   local exlists, opts, oldscr, l, sp, bad, s, test, pex, new, inp, ch, 
-        fnams, str, fch, pos, pre, a, j, ex, i, attedStrin, f;
+        fnams, str, fch, pos, pre, a, j, ex, i, attedStrin, f, nodiffs;
   exlists := arg[1];
   opts := rec(
           showDiffs := true,
           changeSources := false,
+          ignoreComments := false,
           width := 72,
           compareFunction := EQ,
           checkWidth := false,
   );                 
+  nodiffs := true;
   if Length(arg) > 1 and IsRecord(arg[2]) then
-    for a in RecFields(arg[2]) do
+    for a in RecNames(arg[2]) do
       opts.(a) := arg[2].(a);
     od;
   fi;
@@ -399,7 +427,7 @@ InstallGlobalFunction(RunExamples, function(arg)
         fi;
       fi;
       s := InputTextString(ex[1]);
-      test := Test(s, rec(ignoreComments := false,
+      test := Test(s, rec(ignoreComments := opts.ignoreComments,
                    width := opts.width,
                    compareFunction := opts.compareFunction,
                    reportDiff := Ignore
@@ -409,6 +437,7 @@ InstallGlobalFunction(RunExamples, function(arg)
       if test = false then
         for i in [1..Length(pex[1])] do
           if opts.compareFunction(pex[2][i], pex[4][i]) <> true then
+            nodiffs := false;
             if opts.showDiffs = true then
               Print("########> Diff in ", ex[2]{[1..3]}, "\n# Input is:\n");
               PrintFormattedString(pex[1][i]);
@@ -485,5 +514,8 @@ InstallGlobalFunction(RunExamples, function(arg)
     fi;
   fi;
   SizeScreen(oldscr);
+  return nodiffs;
 end);
+
+Unbind(MANEXreadobs);
 

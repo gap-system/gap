@@ -358,6 +358,8 @@ Two kinds of files can be specified in <C>Databases</C>: The first are
 &BibTeX; files as defined in&nbsp;<Cite Key="La85" Where="Appendix B"/>.
 Such files must have a name with extension <F>.bib</F>, and in
 <C>Databases</C> the name must be given <E>without</E> this extension.
+Note that such  <F>.bib</F>-files should be in latin1-encoding (or 
+ASCII-encoding). 
 The second are files in BibXMLext format as defined in Section&nbsp;<Ref 
 Sect="BibXMLformat"/>. These files must have an extension <F>.xml</F>
 and in <C>Databases</C> the <E>full</E> name  must be specified.<P/>
@@ -952,16 +954,12 @@ syntax <C>\cite[Where value]{Key value}</C>.
 <!ELEMENT Subkey (%InnerText;)*>]]>
 </Listing>
 
-This  element generates  an  index entry.  The text  within  the element  is
-typeset  in the  index  entry, which  is  sorted under  the  value, that  is
-specified in  the <C>Key</C> and  <C>Subkey</C> attributes. If they  are not
-specified, the typeset text itself is used as the key. <P/>
-
-A subkey can be specified in the simpler version  as an attribute, but
-then no further markup can be used for the subkey. Optionally, the
-subkey text can be given in a <C>Subkey</C> element, in this case the
-attribute value is used for sorting but the typeset text is taken from
-the content of <C>Subkey</C>.<P/>
+This element generates an index entry. The content of the element is typeset
+in the index.  It can optionally contain a <C>Subkey</C>  element. If one or
+both  of the  attributes <C>Key</C>  and <C>Subkey</C>  are given,  then the
+attribute  values are  used for  sorting  the index  entries. Otherwise  the
+content itself is  used for sorting. The attributes should  be used when the
+content contains markup.
 
 Note that all <C>Func</C> and  similar elements automatically generate index
 entries. If the <C>TheIndex</C> element  (<Ref Subsect="TheIndex" />) is not
@@ -1035,7 +1033,7 @@ reasonable in all output formats.
 <Index Key="List"><C>List</C></Index>
 
 <Listing Type="From gapdoc.dtd">
-<![CDATA[<!ELEMENT List ( ((Mark,Item)|(BigMark,Item)|Item)+ )>
+<![CDATA[<!ELEMENT List ( ((Mark,Item)|Item)+ )>
 <!ATTLIST List Only CDATA #IMPLIED
                Not  CDATA #IMPLIED>]]>
 </Listing>
@@ -1384,12 +1382,15 @@ using  the  corresponding  entities  or by  enclosing  the  formula  between
 <Q><C>&lt;![CDATA[</C></Q> and  <Q><C>]]&gt;</C></Q>. (The  main reference
 for &LaTeX; is <Cite Key="La85" />.)<P/>
 
-It is also possible to use some unicode characters for mathematical
-symbols directly, provided that it can be translated by <Ref Func="Encode" /> into <C>"LaTeX"</C> encoding and that <Ref Func="SimplifiedUnicodeString"/> with arguments <C>"latin1"</C> and <C>"single"</C> returns something sensible.
-Currently, we support entities <C>&amp;CC;</C>, <C>&amp;ZZ;</C>,
-<C>&amp;NN;</C>, <C>&amp;PP;</C>, <C>&amp;QQ;</C>, <C>&amp;HH;</C>,
-<C>&amp;RR;</C> for the corresponding black board bold letters 
-&CC;, &ZZ;, &NN;,&PP;, &QQ;, &HH; and  &RR;, respectively.
+It   is   also   possible   to   use   some   unicode   characters   for
+mathematical  symbols  directly,  provided  that it  can  be  translated
+by  <Ref   Func="Encode"  />  into  <C>"LaTeX"</C>   encoding  and  that
+<Ref  Func="SimplifiedUnicodeString"/>  with  arguments  <C>"latin1"</C>
+and   <C>"single"</C>   returns   something  sensible.   Currently,   we
+support  entities   <C>&amp;CC;</C>,  <C>&amp;ZZ;</C>,  <C>&amp;NN;</C>,
+<C>&amp;PP;</C>,  <C>&amp;QQ;</C>, <C>&amp;HH;</C>,  <C>&amp;RR;</C> for
+the corresponding black board bold  letters &CC;, &ZZ;, &NN;, &PP;, &QQ;,
+&HH; and &RR;, respectively.
 <P/>
 
 The only  element type that  is allowed within  the formula elements  is the
@@ -1438,7 +1439,7 @@ some not too bad representation of a formula.<P/>
 As examples, here are some  &LaTeX;  macros which have  a  sensible 
 ASCII  translation and  are
 guaranteed to be translated accordingly by text (and HTML) converters 
-(for a full list of handled Macros see <C>RecFields(TEXTMTRANSLATIONS)</C>):
+(for a full list of handled Macros see <C>RecNames(TEXTMTRANSLATIONS)</C>):
 
 <Table Align="|l|l|">
  <Caption>&LaTeX; macros with special text translation</Caption>
@@ -1573,12 +1574,21 @@ output document. If the <C>Not</C>  attribute is specified the corresponding
 converter will ignore the content of the element. You can use other words to
 specify special alternatives for other converters of &GAPDoc; documents.<P/>
 
+In the case of  <Q><C>HTML</C></Q> there is a second word which is recognized
+and this can either be <Q><C>MathJax</C></Q> or <Q><C>noMathJax</C></Q>.
+For example a pair of <C>Alt</C> elements with 
+<C>&lt;Alt Only="HTML noMathJax">...</C> and 
+<C>&lt;Alt Not="HTML noMathJax">...</C> could provide special content for the
+case of HTML output without use of <Package>MathJax</Package> and every
+other output.<P/>
+
 We fix  a rule for  handling the content of  an <C>Alt</C> element  with 
 <C>Only</C> attribute. 
 In  their content code for the corresponding output format is included
 directly. So, in case of HTML the content is HTML code, in case of
 &LaTeX; the content is &LaTeX; code. The converters don't apply any
-handling of special  characters to this content. <P/>
+handling of special  characters to this content. In the case of &LaTeX;
+the formatting of the code is not changed.<P/>
 
 Within  the element  only <C>%InnerText;</C>  (see <Ref  Text="here"
 Label="InnerText"/>) is  allowed. This  is to  ensure that  the same  set of

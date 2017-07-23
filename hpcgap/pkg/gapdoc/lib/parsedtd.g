@@ -21,9 +21,9 @@ while pos <> fail do
 od;
 
 # substitute entities
-while ForAny(RecFields(entities), a-> PositionSublist(dtd,
+while ForAny(RecNames(entities), a-> PositionSublist(dtd,
                                             Concatenation("%",a)) <> fail) do
-  for a in RecFields(entities) do
+  for a in RecNames(entities) do
     dtd := SubstitutionSublist(dtd, Concatenation("%",a,";"), entities.(a));
   od;
 od;

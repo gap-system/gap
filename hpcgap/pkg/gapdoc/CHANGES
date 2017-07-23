@@ -1,9 +1,56 @@
                        CHANGES of the GAPDoc package
 
 1.5.1 -> 1.6
+- Changed and documented the handling of <Alt Only="LaTeX"> elements;
+  its content is not reformatted.
+
+- Can now handle help books with empty bibliography.
+
+- Some technical adjustments which make it easier to use GAPDoc with
+  HPC-GAP.
+
+- Some cosmetic improvements, mainly for text output and markup of nested
+  elements.
+
+- Introduce finer distinction of <Alt>-elements for HTML with/without
+  MathJax.
+
+- 'StringBibXMLEntry' supports now a 'rec(MathJax := true)' option.
+
+- Added a new utility function 'InitialSubstringUTF8String'.
+
+- 'NormalizedNameAndKey' can now find initials from UTF-8 encoded name
+  strings.
+
+- The HTML manuals in Browsers with Javascript now always have the 
+  [Style] link, even if no MathJax version is generated.
+
+- 'RunExamples' now returns 'true' or 'false'.
+
+- Removed support for the "MathML" variant of 'GAPDoc2HTML' which 
+  was probably not used anyway.
+
+- MakeGAPDocDoc (more precisely AddPageNumbersToSix) will no longer enter
+  a break loop in case of an empty index (noticed by Thomas Breuer).
+
+- New function 'LabelsFromBibTeX'. If BibTeX is available this is used to 
+  unify the labels used for citations and the ordering of the reference list
+  in the LaTeX, text and HTML version of a GAPDoc document. 
+
+- 'ComposedDocument' now accepts also file names with absolute paths and 
+  relative to GAP roots. (Uses a new function 'FilenameGAP'.)
+
+- Documented 'DOCCOMPOSEERROR' for 'ComposedDocument' to ignore missing
+  chunks.
+
+- Mention that .bib files for <Bibliography> must be in latin1-encoding,
+  and corrected 3k+1.bib accordingly (error noticed by Bill Allombert).
 
 - Corrected HorLine in tables without trailing | column (report and fix by
   Max Horn).
+
+- Recognize document encoding in <?xml tag and in some other places case
+  insensitively (proposed by Max Horn).
 
 1.5 -> 1.5.1
 
