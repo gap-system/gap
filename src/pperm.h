@@ -9,17 +9,17 @@
 **  PPerm <f>.
 */
 
-extern Obj OnTuplesPPerm ( Obj set, Obj f );
+extern Obj OnTuplesPPerm(Obj set, Obj f);
 
 /****************************************************************************
 **
 *F  OnSetsPPerm( <set>, <f> ) . . . . . . . .  operations on sets of points
 **
-**  'OnSetsPPerm' returns the  image of the  tuple <set> under the 
-**  partial perm <f>. 
+**  'OnSetsPPerm' returns the  image of the  tuple <set> under the
+**  partial perm <f>.
 */
 
-extern Obj OnSetsPPerm ( Obj set, Obj f );
+extern Obj OnSetsPPerm(Obj set, Obj f);
 
 /****************************************************************************
 
@@ -30,6 +30,6 @@ extern Obj OnSetsPPerm ( Obj set, Obj f );
 *F  InitInfoPPerm()  . . . . . . . . . . . . . . . table of init functions
 */
 
-StructInitInfo * InitInfoPPerm ( void );
+StructInitInfo * InitInfoPPerm(void);
 
-#endif // GAP_PPERM_H
+#endif    // GAP_PPERM_H
