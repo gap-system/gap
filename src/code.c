@@ -212,7 +212,7 @@ void SET_ENDLINE_BODY(Obj body, Obj val)
 ** Fill in filename and line of a statement, checking we do not overflow
 ** the space we have for storing information
 */
-Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
+static Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
 {
   Stat stat;
   if(fileid < 0 || fileid >= (1 << 16))
@@ -877,9 +877,11 @@ void CodeFuncExprEnd (
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
     ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
-        = ((Stat)FILENAMEID_STAT(FIRST_STAT_CURR_FUNC) << 48) +
-          ((Stat)LINE_STAT(FIRST_STAT_CURR_FUNC) << 32) +
-          ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
+        = fillFilenameLine(
+            FILENAMEID_STAT(FIRST_STAT_CURR_FUNC),
+            LINE_STAT(FIRST_STAT_CURR_FUNC),
+            nr*sizeof(Stat),
+            T_SEQ_STAT+nr-1);
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
