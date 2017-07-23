@@ -55,7 +55,15 @@ InstallValue(LETTERS, Concatenation(CAPITALLETTERS, SMALLLETTERS));
 IsSet(LETTERS);
 InstallValue(DIGITS, "0123456789");
 InstallValue(HEXDIGITS, "0123456789ABCDEFabcdef");
-InstallValue(BOXCHARS, `"─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝");
+InstallValue(BOXCHARS, "─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝");
+
+MakeImmutable(WHITESPACE);
+MakeImmutable(CAPITALLETTERS);
+MakeImmutable(SMALLLETTERS);
+MakeImmutable(LETTERS);
+MakeImmutable(DIGITS);
+MakeImmutable(HEXDIGITS);
+MakeImmutable(BOXCHARS);
 
 # utilities to find lines
 InstallGlobalFunction(PositionLinenumber, function(str, nr)
@@ -136,43 +144,37 @@ end);
 ##  <#/GAPDoc>
 ##  
 InstallValue(TextAttr, rec());
-TextAttr.CSI := `"\033[";
-TextAttr.reset := `Concatenation(TextAttr.CSI, "0m");
-TextAttr.normal := `Concatenation(TextAttr.CSI, "22m");
-TextAttr.bold := `Concatenation(TextAttr.CSI, "1m");
-TextAttr.underscore := `Concatenation(TextAttr.CSI, "4m");
-TextAttr.blink := `Concatenation(TextAttr.CSI, "5m");
-TextAttr.reverse := `Concatenation(TextAttr.CSI, "7m");
+TextAttr.CSI := "\033[";
+TextAttr.reset := Concatenation(TextAttr.CSI, "0m");
+TextAttr.normal := Concatenation(TextAttr.CSI, "22m");
+TextAttr.bold := Concatenation(TextAttr.CSI, "1m");
+TextAttr.underscore := Concatenation(TextAttr.CSI, "4m");
+TextAttr.blink := Concatenation(TextAttr.CSI, "5m");
+TextAttr.reverse := Concatenation(TextAttr.CSI, "7m");
 # foreground colors 0..7 (default: black, red, green, brown, blue, magenta,
 # cyan, white
-TextAttr.0 := `Concatenation(TextAttr.CSI, "30m");
-TextAttr.1 := `Concatenation(TextAttr.CSI, "31m");
-TextAttr.2 := `Concatenation(TextAttr.CSI, "32m");
-TextAttr.3 := `Concatenation(TextAttr.CSI, "33m");
-TextAttr.4 := `Concatenation(TextAttr.CSI, "34m");
-TextAttr.5 := `Concatenation(TextAttr.CSI, "35m");
-TextAttr.6 := `Concatenation(TextAttr.CSI, "36m");
-TextAttr.7 := `Concatenation(TextAttr.CSI, "37m");
+TextAttr.0 := Concatenation(TextAttr.CSI, "30m");
+TextAttr.1 := Concatenation(TextAttr.CSI, "31m");
+TextAttr.2 := Concatenation(TextAttr.CSI, "32m");
+TextAttr.3 := Concatenation(TextAttr.CSI, "33m");
+TextAttr.4 := Concatenation(TextAttr.CSI, "34m");
+TextAttr.5 := Concatenation(TextAttr.CSI, "35m");
+TextAttr.6 := Concatenation(TextAttr.CSI, "36m");
+TextAttr.7 := Concatenation(TextAttr.CSI, "37m");
 # background colors 0..7
-TextAttr.b0 := `Concatenation(TextAttr.CSI, "40m");
-TextAttr.b1 := `Concatenation(TextAttr.CSI, "41m");
-TextAttr.b2 := `Concatenation(TextAttr.CSI, "42m");
-TextAttr.b3 := `Concatenation(TextAttr.CSI, "43m");
-TextAttr.b4 := `Concatenation(TextAttr.CSI, "44m");
-TextAttr.b5 := `Concatenation(TextAttr.CSI, "45m");
-TextAttr.b6 := `Concatenation(TextAttr.CSI, "46m");
-TextAttr.b7 := `Concatenation(TextAttr.CSI, "47m");
+TextAttr.b0 := Concatenation(TextAttr.CSI, "40m");
+TextAttr.b1 := Concatenation(TextAttr.CSI, "41m");
+TextAttr.b2 := Concatenation(TextAttr.CSI, "42m");
+TextAttr.b3 := Concatenation(TextAttr.CSI, "43m");
+TextAttr.b4 := Concatenation(TextAttr.CSI, "44m");
+TextAttr.b5 := Concatenation(TextAttr.CSI, "45m");
+TextAttr.b6 := Concatenation(TextAttr.CSI, "46m");
+TextAttr.b7 := Concatenation(TextAttr.CSI, "47m");
 
-TextAttr.delline := `Concatenation(TextAttr.CSI, "2K");
-TextAttr.home := `Concatenation(TextAttr.CSI, "1G");
+TextAttr.delline := Concatenation(TextAttr.CSI, "2K");
+TextAttr.home := Concatenation(TextAttr.CSI, "1G");
 
-MakeImmutable(WHITESPACE);
-MakeImmutable(CAPITALLETTERS);
-MakeImmutable(SMALLLETTERS);
-MakeImmutable(LETTERS);
-MakeImmutable(DIGITS);
-MakeImmutable(HEXDIGITS);
-
+MakeImmutable(TextAttr);
 
 ##  <#GAPDoc Label="RepeatedString">
 ##  <ManSection >
@@ -455,6 +457,80 @@ InstallGlobalFunction(DigitsNumber, function(n, base)
   return Concatenation(s, Reversed(str));
 end);
 
+##  <#GAPDoc Label="LabelInt">
+##  <ManSection >
+##  <Func Arg="n, type, pre, post" Name="LabelInt" />
+##  <Returns>string</Returns>
+##  <Description>
+##  The argument <A>n</A> must be an integer in the range from 1 to 5000,
+##  while <A>pre</A> and <A>post</A> must be strings.
+##  <P/>
+##  The argument <A>type</A> can be one of <C>"Decimal"</C>,
+##  <C>"Roman"</C>, <C>"roman"</C>, <C>"Alpha"</C>, <C>"alpha"</C>.
+##  <P/>
+##  The function returns a string that starts with <A>pre</A>, followed by
+##  a decimal, respectively roman number or alphanumerical number literal
+##  (capital, respectively small letters), followed by <A>post</A>.
+##  <P/>
+##  <Example>
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"Decimal","","."));
+##  [ "1.", "2.", "3.", "4.", "5.", "691." ]
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"alpha","(",")"));
+##  [ "(a)", "(b)", "(c)", "(d)", "(e)", "(zo)" ]
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"alpha","(",")"));
+##  [ "(a)", "(b)", "(c)", "(d)", "(e)", "(zo)" ]
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"Alpha","",".)"));
+##  [ "A.)", "B.)", "C.)", "D.)", "E.)", "ZO.)" ]
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"roman","","."));
+##  [ "i.", "ii.", "iii.", "iv.", "v.", "dcxci." ]
+##  gap> List([1,2,3,4,5,691], i-> LabelInt(i,"Roman","",""));
+##  [ "I", "II", "III", "IV", "V", "DCXCI" ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+InstallGlobalFunction(LabelInt, function(n, type, pre, post)
+  local l1, l2, l3, l, res, r, i;
+  if not IsInt(n) or n < 1 or n>5000 then
+    return fail;
+  fi;
+  if type="roman" then
+    l1 := ["","i","ii","iii","iv","v","vi","vii","viii","ix"];
+    l2 := ["","x","xx","xxx","xl","l","lx","lxx","lxxx","xc"];
+    l3 := ["","c","cc","ccc","cd","d","dc","dcc","dccc","cm","m"];
+  elif type="Roman" then
+    l1 := ["","I","II","III","IV","V","VI","VII","VIII","IX"];
+    l2 := ["","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"];
+    l3 := ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM","M"];
+  fi;
+  if type="alpha" then
+    l := LETTERS{[27..52]};
+  elif type="Alpha" then
+    l := LETTERS{[1..26]};
+  fi;
+  if type="Decimal" then
+    res := String(n);
+  elif type in ["roman","Roman"] then
+    res := "";
+    for i in [1..QuoInt(n,1000)] do
+      Append(res, l3[11]);
+    od;
+    Append(res, l3[QuoInt(n,100) mod 10 + 1]);
+    Append(res, l2[QuoInt(n,10) mod 10 + 1]);
+    Append(res, l1[n mod 10 + 1]);
+  elif type in ["alpha", "Alpha"] then
+    if n < 27 then
+      res := l{[n]};
+    elif n <= 26*27 then
+      res := l{[QuoInt(n-1,26),((n-1) mod 26)+1]};
+    else
+      res := l{[QuoInt(n-27,26*26),
+                QuoInt((n-27) mod 26^2-1, 26)+1,((n-1) mod 26)+1]};
+    fi;
+  fi;
+  return Concatenation(pre, res, post);
+end);
  
 ##  <#GAPDoc Label="StripBeginEnd">
 ##  <ManSection >
@@ -814,6 +890,10 @@ InstallGlobalFunction(StripEscapeSequences, function(str)
       od;
       # first letter is last character of escape sequence
       i := i+1; 
+      # remove \027 marker of inner escape sequences as well
+      if IsBound(str[i]) and str[i] = '\027' then
+        i := i+1;
+      fi;
     else
       p := Position(str, esc, i);
       if p=fail then
@@ -844,7 +924,7 @@ InstallGlobalFunction(SubstituteEscapeSequences, function(str, subs)
     else
       orig := subs;
       subs := ShallowCopy(subs);
-      for a in RecFields(subs) do
+      for a in RecNames(subs) do
         if IsList(subs.(a)) then
           subs.(a) := [subs.(a)[1], List(subs.(a)[2], x-> 
                                 Encode(
@@ -1092,7 +1172,7 @@ fi;
 BindGlobal("Base64LETTERS",
           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 BindGlobal("Base64REVERSE",
-        [,,,,,,,,,-1,,,-1,,,,,,,,,,,,,,,,,,,-1,,,,,,,,,,,62,,62,,63,52,53,54,55,56,57,58,59,60,61,,,,-2,,,,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,,,,,63,,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51]);
+[,,,,,,,,,-1,,,-1,,,,,,,,,,,,,,,,,,,-1,,,,,,,,,,,62,,62,,63,52,53,54,55,56,57,58,59,60,61,,,,-2,,,,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,,,,,63,,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51]);
 
 MakeImmutable(Base64LETTERS);
 MakeImmutable(Base64REVERSE);

@@ -44,7 +44,6 @@ UNICODE_RECODE.NormalizedEncodings := rec(
   URL := "URL",
   percent := "URL",
 );
-
 UNICODE_RECODE.f := function()
   local nam, i;
   for i in Concatenation([1..11],[13..15]) do
@@ -62,7 +61,22 @@ UNICODE_RECODE.f := function()
 
   UNICODE_RECODE.NormalizedEncodings.("UTF-8") := "UTF-8";
   UNICODE_RECODE.NormalizedEncodings.("XML") := "XML";
+  for nam in RecNames(UNICODE_RECODE.NormalizedEncodings) do
+    UNICODE_RECODE.NormalizedEncodings.(LowercaseString(nam)) :=
+              UNICODE_RECODE.NormalizedEncodings.(nam);
+  od;
 end;
+# can be used for case insensitive normalization
+UNICODE_RECODE.NormalizedEncoding := function(str)
+  local lstr;
+  lstr := LowercaseString(str);
+  if not IsBound(UNICODE_RECODE.NormalizedEncodings.(lstr)) then
+    return fail;
+  else
+    return UNICODE_RECODE.NormalizedEncodings.(lstr);
+  fi;
+end;
+
 UNICODE_RECODE.f();
 Unbind(UNICODE_RECODE.f);
 # slightly more efficient for latin1:
@@ -516,7 +530,7 @@ end);
 ##  to a &GAP; string.<P/>
 ##  <Example>
 ##  gap> ustr := Unicode("a and \366", "latin1");
-##  Unicode("a and \303\266")
+##  Unicode("a and ö")
 ##  gap> ustr = Unicode("a and &amp;#246;", "XML");  
 ##  true
 ##  gap> IntListUnicodeString(ustr);
@@ -555,7 +569,7 @@ InstallMethod(Unicode, [IsString, IsString], function(str, enc)
   fi;
   if not IsBound(UNICODE_RECODE.NormalizedEncodings.(enc)) then
     Error("Sorry, only the following encodings are supported for 'Unicode':\n",
-              RecFields(UNICODE_RECODE.Decoder), "\n");
+              RecNames(UNICODE_RECODE.Decoder), "\n");
   fi;
   enc := UNICODE_RECODE.NormalizedEncodings.(enc);
   res := UNICODE_RECODE.Decoder.(enc)(str);
@@ -746,7 +760,7 @@ end);
 ##  
 ##  <Example>
 ##  gap> ustr := Unicode("a and &amp;#246;", "XML");
-##  Unicode("a and \303\266")
+##  Unicode("a and ö")
 ##  gap> SimplifiedUnicodeString(ustr, "ASCII");
 ##  Unicode("a and oe")
 ##  gap> SimplifiedUnicodeString(ustr, "ASCII", "single");
@@ -889,7 +903,7 @@ UNICODE_RECODE.Encoder.("LaTeX") := function(arg)
     elif n < 128 then
       Add(res, CHAR_INT(n));
     else
-      pos := POSITION_FIRST_COMPONENT_SORTED(tt, n);
+      pos := PositionSorted(tt, [n]);
       if IsBound(tt[pos]) and tt[pos][1] = n then
         Append(res, tt[pos][2]);
       elif leaveutf8 = true then
@@ -945,7 +959,7 @@ InstallGlobalFunction(SimplifiedUnicodeString, function(arg)
     if n <= max then
       Add(res, n);
     else
-      pos := POSITION_FIRST_COMPONENT_SORTED(tt, n);
+      pos := PositionSorted(tt, [n]);
       if IsBound(tt[pos]) and tt[pos][1] = n then
         a := tt[pos];
         f := Filtered([2..Length(a)], i-> (IsInt(a[i]) and a[i] <= max)
@@ -977,7 +991,7 @@ InstallGlobalFunction(LowercaseUnicodeString, function(ustr)
   res := ShallowCopy(IntListUnicodeString(ustr));
   tt := LowercaseUnicodeTable;
   for i in [1..Length(res)] do
-    pos := POSITION_FIRST_COMPONENT_SORTED(tt, res[i]);
+    pos := PositionSorted(tt, [res[i]]);
     if IsBound(tt[pos]) and tt[pos][1] = res[i] then
       res[i] := tt[pos][2];
     fi;
@@ -992,7 +1006,7 @@ InstallGlobalFunction(UppercaseUnicodeString, function(ustr)
   fi;
   tt := UppercaseUnicodeTable;
   for i in [1..Length(res)] do
-    pos := POSITION_FIRST_COMPONENT_SORTED(tt, res[i]);
+    pos := PositionSorted(tt, [res[i]]);
     if IsBound(tt[pos]) and tt[pos][1] = res[i] then
       res[i] := tt[pos][2];
     fi;
@@ -1046,7 +1060,7 @@ end;
 InstallMethod(Encode, [IsUnicodeString, IsString], function(ustr, enc)
   if not IsBound(UNICODE_RECODE.NormalizedEncodings.(enc)) then
     Error("Sorry, only the following encodings are supported for Encode:\n",
-                    RecFields(UNICODE_RECODE.Encoder), "\n");
+                    RecNames(UNICODE_RECODE.Encoder), "\n");
   fi;
   enc := UNICODE_RECODE.NormalizedEncodings.(enc);
   return UNICODE_RECODE.Encoder.(enc)(ustr);
@@ -1056,7 +1070,7 @@ InstallOtherMethod(Encode, [IsUnicodeString, IsString, IsObject],
 function(ustr, enc, data)
   if not IsBound(UNICODE_RECODE.NormalizedEncodings.(enc)) then
     Error("Sorry, only the following encodings are supported for Encode:\n",
-                    RecFields(UNICODE_RECODE.Encoder), "\n");
+                    RecNames(UNICODE_RECODE.Encoder), "\n");
   fi;
   enc := UNICODE_RECODE.NormalizedEncodings.(enc);
   return UNICODE_RECODE.Encoder.(enc)(ustr, data);
@@ -1129,7 +1143,7 @@ InstallGlobalFunction(WidthUTF8String, function(str)
     if i > 31 and i < 127 then
       res := res+1;
     else
-      pos := POSITION_FIRST_COMPONENT_SORTED(WidthUnicodeTable, i);
+      pos := PositionSorted(WidthUnicodeTable, [i]);
       if not IsBound(WidthUnicodeTable[pos]) or WidthUnicodeTable[pos][1] <> i
           then
         pos := pos-1;
@@ -1138,6 +1152,57 @@ InstallGlobalFunction(WidthUTF8String, function(str)
     fi;
   od;
   return res;
+end);
+
+##  <#GAPDoc Label="InitialSubstringUTF8String">
+##  <ManSection >
+##  <Func Arg="str, maxwidth" Name="InitialSubstringUTF8String" />
+##  <Returns>UTF-8 encoded string</Returns>
+##  <Description>
+##  The argument <A>str</A> must be a &GAP; string  with text in UTF-8 encoding
+##  or a unicode string. The function returns the longest initial substring of
+##  <A>str</A> which has at most visible width <A>maxwidth</A>, as UTF-8 encoded
+##  &GAP; string.
+##  <Example>
+##  gap> # A, German umlaut u, B, zero width space, C, newline
+##  gap> str := Encode( Unicode( "A&amp;#xFC;B&amp;#x200B;C\n", "XML" ) );;
+##  gap> ini := InitialSubstringUTF8String(str, 3);;
+##  gap> WidthUTF8String(ini);
+##  3
+##  gap> IntListUnicodeString(Unicode(ini));
+##  [ 65, 252, 66, 8203 ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+InstallGlobalFunction(InitialSubstringUTF8String, function(str, len)
+  local ints, sum, pos, j;
+  if not IsUnicodeString(str) then
+    ints := IntListUnicodeString(Unicode(str, "UTF-8"));
+  else
+    ints := IntListUnicodeString(str);
+  fi;
+  sum := 0;
+  for j in [1..Length(ints)] do
+    if ints[j] > 31 and ints[j] < 127 then
+      sum := sum + 1;
+    else 
+      pos := PositionSorted(WidthUnicodeTable, [ints[j]]);
+      if not IsBound( WidthUnicodeTable[ pos ] ) or
+         WidthUnicodeTable[pos][1] <> ints[j] then
+         pos := pos-1;
+      fi;
+      sum := sum + WidthUnicodeTable[pos][2];
+    fi;
+    if sum > len then
+      return Encode(Unicode(ints{[1..j-1]}));
+    fi;
+  od;
+  if IsString(str) then
+    return str;
+  else
+    return Encode(str, "UTF-8");
+  fi;
 end);
 
 
@@ -1183,5 +1248,6 @@ function(s)
   fi;
 end);
 
-MakeThreadLocal("UNICODE_RECODE");
-
+if IsBound(HPCGAP) then
+    MakeThreadLocal("UNICODE_RECODE");
+fi;

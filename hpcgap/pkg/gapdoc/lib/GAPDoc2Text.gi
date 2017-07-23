@@ -502,7 +502,7 @@ end);
 ##  write head and foot of Txt file.
 GAPDoc2TextProcs.WHOLEDOCUMENT := function(r, par)
   local i, pi, t, el, str, dat, datbt, bib, b, keys, need, labels, 
-        tmp, pos, j, diff, text, stream, a, ansi;
+        tmp, pos, j, diff, text, stream, a, ansi, k, l, ind;
   
   ##  add paragraph numbers to all nodes of the document
   AddParagraphNumbersGapDocTree(r);
@@ -555,20 +555,39 @@ GAPDoc2TextProcs.WHOLEDOCUMENT := function(r, par)
   # .index has entries of form [sorttext, subsorttext, numbertext, 
   #  entrytext, count[, subtext]]
   Info(InfoGAPDoc, 1, "#I Producing the index . . .\n");
-  Sort(r.index);
+  SortBy(r.index, a-> [a[1],STRING_LOWER(a[2]),
+                       List(SplitString(a[3],".-",""), Int)]);
   str := "";
-  for a in r.index do
-    Append(str, a[4]);
-    if IsBound(a[6]) then
-      Append(str, ", ");
-      Append(str, a[6]);
-    elif Length(a[2])>0 then
-      Append(str, ", ");
-      Append(str, a[2]);
+  ind := r.index;
+  k := 1;
+  while k <= Length(ind) do
+    if k > 1 and ind[k][4] = ind[k-1][4] then
+      Append(str, "    ");
+    else
+      Append(str, ind[k][4]);
     fi;
-    Append(str, "  ");
-    Append(str, a[3]);
-    Add(str, '\n');
+    if IsBound(ind[k][6]) then
+      if k = 1 or ind[k][4] <> ind[k-1][4] then
+        Append(str, ", ");
+      fi;
+      Append(str, ind[k][6]);
+    elif Length(ind[k][2]) > 0 then
+      if k = 1 or ind[k][4] <> ind[k-1][4] then
+        Append(str, ", ");
+      fi;
+      Append(str, ind[k][2]);
+    fi;
+    l := k;
+    while l <= Length(ind) and ind[l][4] = ind[k][4] and
+          ((IsBound(ind[k][6]) and IsBound(ind[l][6])
+            and ind[k][6] = ind[l][6]) or
+           (not IsBound(ind[k][6]) and not IsBound(ind[l][6])
+           and ind[k][2] = ind[l][2]))  do
+      Append(str, Concatenation(" ", ind[l][3], " "));
+      l := l+1;
+    od;
+    Append(str, "\n");
+    k := l;
   od;
   r.indextext := str;
   
@@ -578,7 +597,7 @@ GAPDoc2TextProcs.WHOLEDOCUMENT := function(r, par)
     need := List(r.bibentries, a-> RecBibXMLEntry(a, "Text", r.bibstrings));
     # copy the unique labels
     for a in [1..Length(need)] do
-      need[a].printedkey := r.biblabels[a];
+      need[a].key := r.biblabels[a];
     od;
     text := "";
     ansi := rec(
@@ -945,9 +964,20 @@ end;
 
 ##  this really produces the content of the heading
 GAPDoc2TextProcs.Heading1 := function(r, str)
-  local a;
+  local a, where;
   a := "";
   GAPDoc2TextContent(r, a);
+  if a = "" then
+    if IsBound(r.root) and IsBound(r.root.inputorigins) then
+      where := OriginalPositionDocument(r.root.inputorigins,r.start);
+      where := Concatenation("(file ",where[1],
+                             ", line ",String(where[2]),")");
+    else
+      where := "";
+    fi;
+    Error("Empty <Heading> element is not supported ",where);
+    return;
+  fi;
   Append(str, a[2]);
 end;
 ##  and this ignores the heading (for simpler recursion)
@@ -1000,6 +1030,9 @@ GAPDoc2TextProcs.Bibliography := function(r, par)
   fi;
   
   r.root.bibdata := r.attributes.Databases;
+  if IsBound(r.attributes.Style) then
+    r.root.bibstyle := r.attributes.Style;
+  fi;
   Add(par, r.count);
   if IsBound(r.root.bibtext) then
     Add(par, Concatenation("\n\n", WrapTextAttribute(GAPDocTexts.d.References, 
@@ -1121,8 +1154,8 @@ GAPDoc2TextProcs.Display := function(r, par)
     s := TextM(s);
   fi;
   s := WrapTextAttribute(s, GAPDoc2TextProcs.TextAttr.Display);
-  s := GAPDoc2TextProcs.MarkAndFormat(s, "left", Length(r.root.indent)+6,
-       r.root.linelength);
+  # change the indentation value in formatting escape sequence
+  s := SubstitutionSublist(s, "\033[0;0Y", "\033[0;6Y", "one");
   s := Concatenation("\n", s, "\n\n");
   Add(par, r.count);
   Add(par, s);
@@ -1350,7 +1383,7 @@ end;
 
 ##  this produces an implicit index entry and a label entry
 GAPDoc2TextProcs.LikeFunc := function(r, par, typ)
-  local   str,  s,  name,  lab,  i;
+  local   str,  s,  name,  lab, comma, i, entry;
   s := Concatenation(GAPDoc2TextProcs.TextAttr.DefLineMarker[1],
          WrapTextAttribute(r.attributes.Name, GAPDoc2TextProcs.TextAttr.Func));
   if IsBound(r.attributes.Arg) then
@@ -1360,19 +1393,25 @@ GAPDoc2TextProcs.LikeFunc := function(r, par, typ)
   fi;
   # label (if not given, the default is the Name)
   if IsBound(r.attributes.Label) then
-    lab := Concatenation(" (", r.attributes.Label, ")");
+    lab := r.attributes.Label;
+    comma := ", ";
   else
     lab := "";  
+    comma := "";
   fi;
   GAPDoc2TextProcs.Label(rec(count := r.count, attributes := rec(Name
-              := Concatenation(r.attributes.Name, lab)), root := r.root), par); 
+       := Concatenation(r.attributes.Name, comma, lab)), root := r.root), par);
   # index entry
   name := r.attributes.Name;
-  Add(r.root.index, [STRING_LOWER(name), "", 
-          GAPDoc2TextProcs.SectionNumber(r.count, "Subsection"), 
-          Concatenation(WrapTextAttribute(name, 
-                         GAPDoc2TextProcs.TextAttr.Func), lab),
-          r.count{[1..3]}]);
+  entry := [STRING_LOWER(name), "", 
+            GAPDoc2TextProcs.SectionNumber(r.count, "Subsection"), 
+            WrapTextAttribute(name, GAPDoc2TextProcs.TextAttr.Func),
+            r.count{[1..3]}];
+  if Length(lab) > 0 then
+    entry[2] := STRING_LOWER(StripEscapeSequences(lab));
+    Add(entry, lab);
+  fi;
+  Add(r.root.index, entry);
   # some hint about the type of the variable
   Append(s, GAPDoc2TextProcs.TextAttr.FillString[1]);
   Append(s, Concatenation(" ",typ,"\n"));
@@ -1424,7 +1463,6 @@ end;
 ##  using the HelpData(.., .., "ref") interface
 GAPDoc2TextProcs.ResolveExternalRef := function(bookname,  label, nr)
   local info, match, res;
-
   info := HELP_BOOK_INFO(bookname);
 
   atomic readonly HELP_REGION do
@@ -1456,7 +1494,7 @@ GAPDoc2TextProcs.Ref := function(r, str)
   if Length(int)>0 then
     txt := r.attributes.(int[1]);
     if IsBound(r.attributes.Label) then
-      lab := Concatenation(txt, " (", r.attributes.Label, ")");
+      lab := Concatenation(txt, ", ", r.attributes.Label);
     else
       lab := txt;
     fi;
@@ -1634,8 +1672,15 @@ GAPDoc2TextProcs.Mark := function(r, str)
   local s;
   s := "";
   GAPDoc2TextProcs.WrapAttr(r, s, "Mark");
+  # allow for <C> and <A> elements in <Mark>
+  s := SubstitutionSublist(s, GAPDoc2TextProcs.TextAttr.Arg[2], 
+                               Concatenation(GAPDoc2TextProcs.TextAttr.Arg[2],
+                               GAPDoc2TextProcs.TextAttr.Mark[1],"\027"));
+  s := SubstitutionSublist(s, GAPDoc2TextProcs.TextAttr.C[2], 
+                               Concatenation(GAPDoc2TextProcs.TextAttr.C[2],
+                               GAPDoc2TextProcs.TextAttr.Mark[1],"\027"));
   Append(str, r.root.indent);
-  Append(str, s);
+  Append(str, NormalizedWhitespace(s));
   Append(str, "\n");
 end;
 
@@ -1667,15 +1712,17 @@ GAPDoc2TextProcs.List := function(r, par)
     for a in Filtered(r.content, a-> a.name = "Item") do
       ss := "";
       GAPDoc2TextProcs.Item(a, ss);
-      # insert bullet
-      start := ss[2]{[1..Length(r.root.indent)]};
-      ss[2] := ss[2]{[Length(r.root.indent)+1..Length(ss[2])]};
-      for i in [1..2] do
-        Remove(ss[2], Position(ss[2],' '));
-      od;
-      ss[2] := Concatenation(start,
-                             GAPDoc2TextProcs.TextAttr.ListBullet[1], ss[2]);
-      Append(par, ss);
+      if ss <> "" then # ignore empty <Item>
+        # insert bullet
+        start := ss[2]{[1..Length(r.root.indent)]};
+        ss[2] := ss[2]{[Length(r.root.indent)+1..Length(ss[2])]};
+        for i in [1..2] do
+          Remove(ss[2], Position(ss[2],' '));
+        od;
+        ss[2] := Concatenation(start,
+                               GAPDoc2TextProcs.TextAttr.ListBullet[1], ss[2]);
+        Append(par, ss);
+      fi;
     od;
   fi;
 end;

@@ -117,7 +117,7 @@ GAPDoc2HTMLProcs.Head1 := "\
 <head>\n\
 <title>GAP (";
 
-GAPDoc2HTMLProcs.MathJaxURL := "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+GAPDoc2HTMLProcs.MathJaxURL := "http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
 
 GAPDoc2HTMLProcs.Head1MathJax := "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
@@ -219,6 +219,7 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
   for i in [1..Length(chnrs)] do
     n := chnrs[i];
     if r.root.mathmode = "MathML" then
+      # this MathML is no longer documented
       files.(n) := rec(text := 
                    ShallowCopy(GAPDoc2HTMLProcs.Head1MML), ssnr := []);
     elif r.root.mathmode = "Tth" then
@@ -266,6 +267,11 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
                 Concatenation("<p id=\"mathjaxlink\" ",
                 "class=\"pcenter\"><a href=\"chap",
                 String(n), ".html\">[MathJax off]</a></p>\n"));
+    else
+      # we still want the hook for the [Style] link
+      Append(files.(n).text, 
+                Concatenation("<p id=\"mathjaxlink\" ",
+                "class=\"pcenter\"></p>\n"));
     fi;
   od;
   for i in [2,4..Length(l)] do
@@ -399,23 +405,6 @@ end;
 ##  to  display  this  in  a  useful  manner,  check  <URL  Text="the
 ##  Tth homepage">http://hutchinson.belmont.ma.us/tth/</URL> for more
 ##  details.<P/>
-##  
-##  If  the   <A>mtrans</A>  argument   is  set   to  <C>"MathML"</C>
-##  it   is  assumed   that  you   have  installed   the  translation
-##  program    <C>ttm</C>,    see    also    <URL    Text="the    Tth
-##  homepage">http://hutchinson.belmont.ma.us/tth/</URL>).   This  is
-##  used    to   translate    the   contents    of   the    <C>M</C>,
-##  <C>Math</C>   and   <C>Display</C>   elements   to   MathML   2.0
-##  markup.  The  resulting  files   should  conform  to  the  "XHTML
-##  1.1   plus    MathML   2.0"   standard,   see    <URL   Text="the
-##  W3C  information">http://www.w3.org/TR/MathML2/</URL>   for  more
-##  details. It  is expected  that the  next generation  of graphical
-##  browsers  will be  able to  render  such files  (try for  example
-##  <C>Mozilla</C>, at  least 0.9.9).  You must copy  the <C>.xsl</C>
-##  and <C>.css</C>  files from &GAPDoc;s <F>mathml</F>  directory to
-##  the directory  containing the output files.  The translation with
-##  <C>ttm</C> is  still experimental.  The output of  this converter
-##  variant is garbage for browsers which don't support MathML.<P/>
 ##  
 ##  This  function works  by  running recursively  through the  document
 ##  tree   and   calling   a   handler  function   for   each   &GAPDoc;
@@ -608,7 +597,7 @@ end);
 ##  write head and foot of HTML file.
 GAPDoc2HTMLProcs.WHOLEDOCUMENT := function(r, par)
   local i, pi, t, el, remdiv, math, pos, pos1, str, dat, datbt, bib, b, 
-        keys, need, labels, tmp, j, diff, text, a;
+        keys, need, labels, tmp, j, diff, text, a, k, l, ind, opts;
   
   ##  add paragraph numbers to all nodes of the document
   AddParagraphNumbersGapDocTree(r);
@@ -724,29 +713,56 @@ GAPDoc2HTMLProcs.WHOLEDOCUMENT := function(r, par)
   # .index has entries of form [sorttext, subsorttext, numbertext, 
   # entrytext, url[, subtext]]
   Info(InfoGAPDoc, 1, "#I Producing the index . . .\n");
-  Sort(r.index);
+  SortBy(r.index, a-> [a[1],STRING_LOWER(a[2]),
+                       List(SplitString(a[3],".-",""), Int)]);
   str := "";
-  for a in r.index do
-    Append(str, a[4]);
-    if IsBound(a[6]) then
-      Append(str, ", ");
-      Append(str, a[6]);
-    elif Length(a[2])>0 then
-      Append(str, ", ");
-      Append(str, a[2]);
+  ind := r.index;
+  k := 1;
+  while k <= Length(ind) do
+    if k > 1 and ind[k][4] = ind[k-1][4] then
+      Append(str, "&nbsp;&nbsp;&nbsp;&nbsp;");
+    else
+      Append(str, ind[k][4]);
     fi;
-    Append(str, Concatenation("  <a href=\"", a[5], "\">", 
-                              a[3], "</a><br />\n"));
+    if IsBound(ind[k][6]) then
+      if k = 1 or ind[k][4] <> ind[k-1][4] then
+        Append(str, ", ");
+      fi;
+      Append(str, ind[k][6]);
+    elif Length(ind[k][2]) > 0 then
+      if k = 1 or ind[k][4] <> ind[k-1][4] then
+        Append(str, ", ");
+      fi;
+      Append(str, ind[k][2]);
+    fi;
+    l := k;
+    while l <= Length(ind) and ind[l][4] = ind[k][4] and
+          ((IsBound(ind[k][6]) and IsBound(ind[l][6])
+            and ind[k][6] = ind[l][6]) or
+           (not IsBound(ind[k][6]) and not IsBound(ind[l][6])
+           and ind[k][2] = ind[l][2]))  do
+      Append(str, Concatenation("  <a href=\"", ind[l][5], "\">",
+                              ind[l][3], "</a>  "));
+      l := l+1;
+    od;
+    Append(str, "<br />\n");
+    k := l;
   od;
   r.indextext := str;
   
   if Length(r.bibkeys) > 0 then
     GAPDocAddBibData(r);
     Info(InfoGAPDoc, 1, "#I Writing bibliography . . .\n");
-    need := List(r.bibentries, a-> RecBibXMLEntry(a, "HTML", r.bibstrings));
+    if r.root.mathmode = "MathJax" then
+      opts := rec(MathJax := true);
+    else
+      opts := rec();
+    fi;
+    need := List(r.bibentries, a-> RecBibXMLEntry(a, "HTML", r.bibstrings,
+            opts));
     # copy the unique labels
     for a in [1..Length(need)] do
-      need[a].printedkey := r.biblabels[a];
+      need[a].key := r.biblabels[a];
     od;
     text := "";
     for a in need do
@@ -1159,6 +1175,9 @@ GAPDoc2HTMLProcs.Bibliography := function(r, par)
                         GAPDoc2HTMLProcs.ext, "\"><span class=\"Heading\">", 
                         GAPDocTexts.d.References, "</span></a></div>\n")); 
   r.root.bibdata := r.attributes.Databases;
+  if IsBound(r.attributes.Style) then
+    r.root.bibstyle := r.attributes.Style;
+  fi;
   Add(par, r.count);
   if IsBound(r.root.bibtext) then
     Add(par, Concatenation("\n<h3>", GAPDocTexts.d.References, "</h3>\n\n", 
@@ -1507,7 +1526,7 @@ GAPDoc2HTMLProcs.Index := function(r, str)
   if IsBound(r.attributes.Subkey) then
     Add(entry, r.attributes.Subkey);
   else
-    Add(entry, STRING_LOWER(sub));
+    Add(entry, sub);
   fi;
   Add(entry, GAPDoc2HTMLProcs.SectionNumber(r.count, "Subsection"));
   Add(entry, s);
@@ -1813,6 +1832,10 @@ GAPDoc2HTMLProcs.ManSection := function(r, par)
   s := Concatenation(num, " ", 
          GAPDoc2HTMLProcs.EscapeAttrVal(r.content[i].attributes.Name));
   Add(par, r.count);
+  # avoid MathJax interpretation in \(, \[ outside <code>
+  if '\\' in s then
+    s := Concatenation("<code>",s,"</code>");
+  fi;
   Add(par, Concatenation("\n<h5>", s, "</h5>\n\n"));
   
   # append to TOC as subsection
@@ -1917,7 +1940,7 @@ GAPDoc2HTMLProcs.TheIndex := function(r, par)
 end;
 
 GAPDoc2HTMLProcs.AltYes := function(r)
-  local mark;
+  local mark, mj, l;
   # recursively mark text as HTML code (no escaping of HTML markup)
   mark := function(r)
     local a;
@@ -1929,18 +1952,52 @@ GAPDoc2HTMLProcs.AltYes := function(r)
       od;
     fi;
   end;
+  mj := r.root.mathmode="MathJax";
   if IsBound(r.attributes.Only) then
-    if "HTML" in SplitString(r.attributes.Only, "", "\n\r\t ,") then
-      mark(r);
-      return true;
+    l := SplitString(r.attributes.Only, "", "\n\r\t ,");
+    if "HTML" in l then
+      if "MathJax" in l then
+        if mj then
+          mark(r);
+          return true;
+        else
+          return false;
+        fi;
+      elif "noMathJax" in l then
+        if not mj then
+          mark(r);
+          return true;
+        else
+          return false;
+        fi;
+      else
+        mark(r);
+        return true;
+      fi;
     else
       return false;
     fi;
   elif IsBound(r.attributes.Not) then
-    if not "HTML" in SplitString(r.attributes.Not, "", "\n\r\t ,") then
-      return true;
+    # here, even if it is used, it is not HTML specific, so we not 'mark'
+    l := SplitString(r.attributes.Not, "", "\n\r\t ,");
+    if "HTML" in l then
+      if "MathJax" in l then
+        if mj then
+          return false;
+        else
+          return true;
+        fi;
+      elif "noMathJax" in l then
+        if not mj then
+          return false;
+        else
+          return true;
+        fi;
+      else
+        return false;
+      fi;
     else
-      return false;
+      return true;
     fi;
   fi;
   return true;
@@ -2073,11 +2130,11 @@ end;
 ##  The <Package>MathJax</Package> versions are written to files
 ##  <F>chap0_mj.html</F>, ..., <F>chapInd_mj.html</F>. <P/>
 ##  
-##  The  experimental versions  which  are  produced with  <C>tth</C>
-##  or  <C>ttm</C>   use  different  names  for   the  files,  namely
+##  The  experimental version  which  is  produced with  <C>tth</C>
+##  uses  different  names  for   the  files,  namely
 ##  <F>chap0_sym.html</F>,  and so  on  for  files which  need
-##  symbol  fonts  and  <F>chap0_mml.xml</F>  for  files  with
-##  MathML translations.<P/>
+##  symbol  fonts.
+##  <P/>
 ##  
 ##  You should also add stylesheet files to the directory with the HTML
 ##  files, see <Ref Subsect="StyleSheets"/>.
@@ -2100,7 +2157,10 @@ end);
 
 InstallGlobalFunction(CopyHTMLStyleFiles, function(dir)
   local d, todo, l, s, e, f;
-  d := Filename(DirectoriesPackageLibrary("GAPDoc","styles"),"");
+  if not IsDirectory(dir) then
+    dir := Directory(dir);
+  fi;
+  d := DirectoriesPackageLibrary("GAPDoc","styles")[1];
   todo := [];
   for f in DirectoryContents(d) do
     if f = "chooser.html" then
@@ -2115,14 +2175,13 @@ InstallGlobalFunction(CopyHTMLStyleFiles, function(dir)
     fi;
   od;
   for f in todo do
-    s := StringFile(Filename(Directory(d),f));
+    s := StringFile(Filename(d,f));
     if s = fail then
-      Info(InfoGAPDoc, 1, "Cannot read file ", Filename(Directory(d),f), "\n");
+      Info(InfoGAPDoc, 1, "Cannot read file ", Filename(d,f), "\n");
     else
-      e := FileString(Filename(Directory(dir),f), s);
+      e := FileString(Filename(dir,f), s);
       if e = fail then
-        Info(InfoGAPDoc, 1, "Cannot write file ", 
-                                             Filename(Directory(dir),f), "\n");
+        Info(InfoGAPDoc, 1, "Cannot write file ", Filename(dir,f), "\n");
       fi;
     fi;
   od;

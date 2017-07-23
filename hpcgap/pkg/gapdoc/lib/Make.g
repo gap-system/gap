@@ -67,13 +67,14 @@ BindGlobal("MakeGAPDocDoc", function(arg)
     latex := "latex -interaction=nonstopmode ";
     # sh-syntax for redirecting stderr and stdout to /dev/null
     null := " > /dev/null 2>&1 ";
-    Info(InfoGAPDoc, 1, "3 x pdflatex with bibtex and makeindex, \c");
+    Info(InfoGAPDoc, 1, "4 x pdflatex with bibtex and makeindex, \c");
     Exec(Concatenation("sh -c \" cd ", Filename(path,""),
     "; rm -f ", main, ".aux ", main, ".pdf ", main, ".log ",
     "; pdf", latex, main, null,
     "; bibtex ", main, null,
     "; pdf", latex, main, null,
     "; makeindex ", main, null,
+    "; pdf", latex, main, null,
     "; pdf", latex, main, null,"\""));
     # check log file for errors, warning, overfull boxes
     log := Filename(path, Concatenation(main, ".log"));

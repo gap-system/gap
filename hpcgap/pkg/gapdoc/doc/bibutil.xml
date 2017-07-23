@@ -34,6 +34,8 @@ Key="La85" Where="Appendix B"/>.
 
 <#Include Label="WriteBibFile">
 
+<#Include Label="LabelsFromBibTeX">
+
 <#Include Label="InfoBibTools">
 
 </Section>
@@ -144,7 +146,7 @@ Here is an example of a BibXMLext document:
 ]]></Listing>
 
 There is a standard XML header and a <C>DOCTYPE</C> declaration
-refering to the <F>bibxmlext.dtd</F> DTD mentioned above. Local
+referring to the <F>bibxmlext.dtd</F> DTD mentioned above. Local
 entities could be defined in the <C>DOCTYPE</C> tag as shown in the
 example in <Ref Subsect="GDent"/>. The actual content of the document is
 inside a <C>&lt;file></C>-element, it consists of <C>&lt;string></C>- and
