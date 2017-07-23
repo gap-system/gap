@@ -300,7 +300,7 @@ InstallMethod( String,
     fi;
 
     # We cannot handle the case of an empty string in the method for strings
-    # because the type of the empty string need not satify the requirement
+    # because the type of the empty string need not satisfy the requirement
     # `IsString'.
     if IsEmptyString( list ) then
       return "";
@@ -3767,7 +3767,7 @@ end);
 ##  This is intended for use in certain rare situations, such as before
 ##  Objectifying. Normally, ConstantAccessTimeList should be enough
 ##
-##  This function guarantees that the reult will be a plain list, distinct
+##  This function guarantees that the result will be a plain list, distinct
 ##  from the input object.
 ##
 InstallGlobalFunction(PlainListCopy, function( list )
