@@ -1464,13 +1464,9 @@ end;
 GAPDoc2TextProcs.ResolveExternalRef := function(bookname,  label, nr)
   local info, match, res;
   info := HELP_BOOK_INFO(bookname);
-
-  atomic readonly HELP_REGION do
   if info = fail then
     return fail;
   fi;
-  od;  
-  
   match := Concatenation(HELP_GET_MATCHES(info, SIMPLE_STRING(label), true));
   if Length(match) < nr then
     return fail;
@@ -1481,8 +1477,7 @@ GAPDoc2TextProcs.ResolveExternalRef := function(bookname,  label, nr)
   res[1] := SubstitutionSublist(res[1], " (not loaded): ", ": ", "one");
   return res;
   od;
-
-  end;
+end;
 
 GAPDoc2TextProcs.Ref := function(r, str)
   local   funclike,  int,  txt,  ref,  lab,  sectlike;
