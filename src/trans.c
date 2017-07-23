@@ -102,6 +102,47 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
 ** Internal functions for transformations
 *******************************************************************************/
 
+static inline Obj IMG_TRANS(Obj f)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    return ADDR_OBJ(f)[0];
+}
+
+static inline Obj KER_TRANS(Obj f)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    return ADDR_OBJ(f)[1];
+}
+
+static inline Obj EXT_TRANS(Obj f)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    return ADDR_OBJ(f)[2];
+}
+
+static inline void SET_IMG_TRANS(Obj f, Obj img)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    GAP_ASSERT(img == NULL || (IS_PLIST(img) && !IS_MUTABLE_PLIST(img)));
+    ADDR_OBJ(f)[0] = img;
+}
+
+static inline void SET_KER_TRANS(Obj f, Obj ker)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    GAP_ASSERT(ker == NULL || (IS_PLIST(ker) && !IS_MUTABLE_PLIST(ker) &&
+                               LEN_PLIST(ker) == DEG_TRANS(f)));
+    ADDR_OBJ(f)[1] = ker;
+}
+
+static inline void SET_EXT_TRANS(Obj f, Obj deg)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    GAP_ASSERT(deg == NULL ||
+               (IS_INTOBJ(deg) && INT_INTOBJ(deg) <= DEG_TRANS(f)));
+    ADDR_OBJ(f)[2] = deg;
+}
+
 static inline void ResizeTmpTrans(UInt len)
 {
     if (TmpTrans == (Obj)0) {
@@ -134,7 +175,7 @@ static inline UInt4 * ResizeInitTmpTrans(UInt len)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at most 65536.
 
-extern UInt INIT_TRANS2(Obj f)
+UInt INIT_TRANS2(Obj f)
 {
     UInt    deg, rank, i, j;
     UInt2 * ptf;
@@ -147,8 +188,8 @@ extern UInt INIT_TRANS2(Obj f)
         // special case for degree 0
         img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
         SET_LEN_PLIST(img, 0);
-        IMG_TRANS(f) = img;
-        KER_TRANS(f) = img;
+        SET_IMG_TRANS(f, img);
+        SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
         return 0;
     }
@@ -173,8 +214,8 @@ extern UInt INIT_TRANS2(Obj f)
     SHRINK_PLIST(img, (Int)rank);
     SET_LEN_PLIST(img, (Int)rank);
 
-    IMG_TRANS(f) = img;
-    KER_TRANS(f) = ker;
+    SET_IMG_TRANS(f, img);
+    SET_KER_TRANS(f, ker);
     CHANGED_BAG(f);
     return rank;
 }
@@ -182,7 +223,7 @@ extern UInt INIT_TRANS2(Obj f)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at least 65537.
 
-extern UInt INIT_TRANS4(Obj f)
+UInt INIT_TRANS4(Obj f)
 {
     UInt    deg, rank, i, j;
     UInt4 * ptf;
@@ -200,8 +241,8 @@ extern UInt INIT_TRANS4(Obj f)
 
         img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
         SET_LEN_PLIST(img, 0);
-        IMG_TRANS(f) = img;
-        KER_TRANS(f) = img;
+        SET_IMG_TRANS(f, img);
+        SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
         return 0;
     }
@@ -226,10 +267,22 @@ extern UInt INIT_TRANS4(Obj f)
     SHRINK_PLIST(img, (Int)rank);
     SET_LEN_PLIST(img, (Int)rank);
 
-    IMG_TRANS(f) = img;
-    KER_TRANS(f) = ker;
+    SET_IMG_TRANS(f, img);
+    SET_KER_TRANS(f, ker);
     CHANGED_BAG(f);
     return rank;
+}
+
+UInt RANK_TRANS2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
+    return (IMG_TRANS(f) == NULL ? INIT_TRANS2(f) : LEN_PLIST(IMG_TRANS(f)));
+}
+
+UInt RANK_TRANS4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
+    return (IMG_TRANS(f) == NULL ? INIT_TRANS4(f) : LEN_PLIST(IMG_TRANS(f)));
 }
 
 // TODO should this use the newer sorting algorithm by CAJ in PR #609?
@@ -488,8 +541,8 @@ Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
         }
     }
 
-    IMG_TRANS(f) = copy_img;
-    KER_TRANS(f) = copy_ker;
+    SET_IMG_TRANS(f, copy_img);
+    SET_KER_TRANS(f, copy_ker);
     CHANGED_BAG(f);
 
     return f;
@@ -556,8 +609,8 @@ Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
         }
     }
 
-    IMG_TRANS(f) = copy_img;
-    KER_TRANS(f) = copy_ker;
+    SET_IMG_TRANS(f, copy_img);
+    SET_KER_TRANS(f, copy_ker);
     CHANGED_BAG(f);
     return f;
 }
@@ -653,7 +706,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
             n = DEG_TRANS2(f);
             ptf2 = ADDR_TRANS2(f);
             if (ptf2[n - 1] != n - 1) {
-                EXT_TRANS(f) = INTOBJ_INT(n);
+                SET_EXT_TRANS(f, INTOBJ_INT(n));
             }
             else {
                 deg = 0;
@@ -665,7 +718,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
                         deg = i + 1;
                     }
                 }
-                EXT_TRANS(f) = INTOBJ_INT(deg);
+                SET_EXT_TRANS(f, INTOBJ_INT(deg));
             }
         }
         return EXT_TRANS(f);
@@ -675,7 +728,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
             n = DEG_TRANS4(f);
             ptf4 = ADDR_TRANS4(f);
             if (ptf4[n - 1] != n - 1) {
-                EXT_TRANS(f) = INTOBJ_INT(n);
+                SET_EXT_TRANS(f, INTOBJ_INT(n));
             }
             else {
                 deg = 0;
@@ -687,7 +740,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
                         deg = i + 1;
                     }
                 }
-                EXT_TRANS(f) = INTOBJ_INT(deg);
+                SET_EXT_TRANS(f, INTOBJ_INT(deg));
             }
         }
         return EXT_TRANS(f);
@@ -2337,9 +2390,9 @@ Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
             return (Obj)0;
         }
         ResizeBag(f, deg * sizeof(UInt2) + 3 * sizeof(Obj));
-        IMG_TRANS(f) = NULL;
-        KER_TRANS(f) = NULL;
-        EXT_TRANS(f) = NULL;
+        SET_IMG_TRANS(f, NULL);
+        SET_KER_TRANS(f, NULL);
+        SET_EXT_TRANS(f, NULL);
         CHANGED_BAG(f);
         return (Obj)0;
     }
@@ -2360,9 +2413,9 @@ Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
             RetypeBag(f, T_TRANS2);
             ResizeBag(f, deg * sizeof(UInt2) + 3 * sizeof(Obj));
         }
-        IMG_TRANS(f) = NULL;
-        KER_TRANS(f) = NULL;
-        EXT_TRANS(f) = NULL;
+        SET_IMG_TRANS(f, NULL);
+        SET_KER_TRANS(f, NULL);
+        SET_EXT_TRANS(f, NULL);
         CHANGED_BAG(f);
         return (Obj)0;
     }
