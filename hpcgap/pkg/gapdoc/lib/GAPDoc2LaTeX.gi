@@ -1162,13 +1162,9 @@ end;
 GAPDoc2LaTeXProcs.ResolveExternalRef := function(bookname,  label, nr)
   local info, match, res;
   info := HELP_BOOK_INFO(bookname);
-  
-  atomic readonly HELP_REGION do
   if info = fail then
     return fail;
   fi;
-  od;
-  
   match := Concatenation(HELP_GET_MATCHES(info, SIMPLE_STRING(label), true));
   #   maybe change, and check if there are matches to several subsections?
   #ssecs := List(match, i-> HELP_BOOK_HANDLER.(info.handler).HelpData(info,
