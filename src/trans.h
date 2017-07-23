@@ -29,16 +29,16 @@ extern UInt INIT_TRANS4(Obj f);
 **  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
 **  transformation <f>.
 */
-extern Obj OnTuplesTrans ( Obj tup, Obj f );
+extern Obj OnTuplesTrans(Obj tup, Obj f);
 
 /****************************************************************************
 **
 *F  OnSetsTrans( <set>, <f> ) . . . . . . . .  operations on sets of points
 **
-**  'OnSetsTrans' returns the  image of the  tuple <set> under the 
-**  transformation <f>. 
+**  'OnSetsTrans' returns the  image of the  tuple <set> under the
+**  transformation <f>.
 */
-extern Obj OnSetsTrans ( Obj set, Obj f );
+extern Obj OnSetsTrans(Obj set, Obj f);
 
 /****************************************************************************
 **
@@ -46,29 +46,23 @@ extern Obj OnSetsTrans ( Obj set, Obj f );
 **
 **  'IdentityTrans' is an identity transformation.
 */
-extern  Obj             IdentityTrans;
+extern Obj IdentityTrans;
 
 /****************************************************************************
 **
-*V  EqPermTrans22 . . . . . . . . . . . . . . . . .  
+*V  EqPermTrans22 . . . . . . . . . . . . . . . . .
 **
 **  The actual equality checking function for Perm2 and Trans2.
 */
-Int EqPermTrans22 (UInt                degL,
-                   UInt                degR, 
-                   UInt2 *             ptLstart,       
-                   UInt2 *             ptRstart);
+Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart);
 
 /****************************************************************************
 **
-*V  EqPermTrans44 . . . . . . . . . . . . . . . . .  
+*V  EqPermTrans44 . . . . . . . . . . . . . . . . .
 **
 **  The actual equality checking function for Perm4 and Trans4.
 */
-Int EqPermTrans44 (UInt                degL,
-                   UInt                degR, 
-                   UInt4 *             ptLstart,       
-                   UInt4 *             ptRstart);
+Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart);
 
 /****************************************************************************
 
@@ -79,6 +73,6 @@ Int EqPermTrans44 (UInt                degL,
 *F  InitInfoTrans()  . . . . . . . . . . . . . . . table of init functions
 */
 
-StructInitInfo * InitInfoTrans ( void );
+StructInitInfo * InitInfoTrans(void);
 
-#endif // GAP_TRANS_H
+#endif    // GAP_TRANS_H
