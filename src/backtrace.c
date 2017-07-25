@@ -1,7 +1,7 @@
 #include <src/system.h>
 #include <src/gapstate.h>
 
-#ifdef PRINT_BACKTRACE
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
