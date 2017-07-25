@@ -590,6 +590,9 @@ AS_IF([test "x$enable_hpcgap" = xyes],[
   AX_PTHREAD
   ])
 
+dnl backtraces via execinfo
+AX_EXECINFO
+
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
   dnl also enable backtrace, to help debug spurious crashes

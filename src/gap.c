@@ -531,13 +531,13 @@ int realmain( int argc, char * argv[], char * environ[] )
 
 #if !defined(COMPILECYGWINDLL)
 
-#ifdef PRINT_BACKTRACE
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 extern void InstallBacktraceHandlers();
 #endif
 
 int main ( int argc, char * argv[], char * environ[] )
 {
-#ifdef PRINT_BACKTRACE
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
   InstallBacktraceHandlers();
 #endif
 
