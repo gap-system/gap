@@ -883,7 +883,7 @@ Obj             EvalIntExpr (
 **
 *F  EvalTildeExpr(<expr>)  . . . . . . . . .  evaluate tilde expression
 **
-**  'EvalTrueExpr' evaluates the tilde expression and returns its value.
+**  'EvalTildeExpr' evaluates the tilde expression and returns its value.
 */
 Obj             EvalTildeExpr (
     Expr                expr )
@@ -981,7 +981,7 @@ Obj             EvalPermExpr (
             }
             c = INT_INTOBJ(val);
 	    if (c > MAX_DEG_PERM4)
-	      ErrorMayQuit( "Permutation literal exceeds maximum permutatuion degree -- %i vs %i",
+	      ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
 			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
@@ -1061,7 +1061,7 @@ Obj             EvalListExpr (
 {
     Obj                 list;         /* list value, result                */
 
-    /* evalute the list expression                                         */
+    /* evaluate the list expression                                         */
     list = ListExpr1( expr );
     ListExpr2( list, expr );
 
@@ -1456,7 +1456,7 @@ Obj             EvalRecExpr (
 **  'EvalRecExpr' is that in <expr> there are  occurrences of '~' referring to
 **  this record value.
 **
-**  'EvalRecTildeExpr' just  calls 'RecExpr1'  to create teh  record, assigns
+**  'EvalRecTildeExpr' just  calls 'RecExpr1'  to create the  record, assigns
 **  the record to the variable '~',  and finally calls 'RecExpr2' to evaluate
 **  the subexpressions  into the record.  Thus  subexpressions  in the record
 **  expression    can refer to this variable    and its  subobjects to create
@@ -1607,18 +1607,18 @@ void            PrintUnknownExpr (
 
 /****************************************************************************
 **
-*V  PrintPreceedence  . . . . . . . . . . . . . . . current preceedence level
+*V  PrintPrecedence  . . . . . . . . . . . . . . . . current precedence level
 **
-**  'PrintPreceedence' contains  the  current  preceedence   level,  i.e.  an
-**  integer  indicating the binding power  of the currently printed operator.
-**  If one of the operands is an operation that has lower binding power it is
-**  printed in parenthesis.  If the right  operand has the same binding power
-**  it is put in parenthesis, since  all the operations are left associative.
-**  Preceedence: 14: ^; 12: mod,/,*; 10: -,+; 8: in,=; 6: not; 4: and; 2: or.
-**  This sometimes puts in superflous parenthesis: 2 * f( (3 + 4) ), since it
+**  'PrintPrecedence' contains the current precedence level, i.e., an integer
+**  indicating the binding power of the currently printed operator. If one of
+**  the operands is an operation that has lower binding power it is printed
+**  in parenthesis. If the right operand has the same binding power it is put
+**  in parenthesis, since all the operations are left associative.
+**  Precedence: 14: ^; 12: mod,/,*; 10: -,+; 8: in,=; 6: not; 4: and; 2: or.
+**  This sometimes puts in superfluous parenthesis: 2 * f( (3 + 4) ), since it
 **  doesn't know that a function call adds automatically parenthesis.
 */
-UInt            PrintPreceedence;
+UInt            PrintPrecedence;
 
 
 /****************************************************************************
@@ -1632,11 +1632,11 @@ void            PrintNot (
 {
     UInt                oldPrec;
 
-    oldPrec = PrintPreceedence;
-    PrintPreceedence = 6;
+    oldPrec = PrintPrecedence;
+    PrintPrecedence = 6;
     
     /* if necessary print the opening parenthesis                          */
-    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    if ( oldPrec >= PrintPrecedence ) Pr("%>(%>",0L,0L);
     else Pr("%2>",0L,0L);
     
     Pr("not%> ",0L,0L);
@@ -1644,10 +1644,10 @@ void            PrintNot (
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
-    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    if ( oldPrec >= PrintPrecedence ) Pr("%2<)",0L,0L);
     else Pr("%2<",0L,0L);
     
-    PrintPreceedence = oldPrec;
+    PrintPrecedence = oldPrec;
 }
 
 
@@ -1656,18 +1656,18 @@ void            PrintNot (
 *F  PrintBinop(<expr>)  . . . . . . . . . . . . . .  prints a binary operator
 **
 **  'PrintBinop'  prints  the   binary operator    expression <expr>,   using
-**  'PrintPreceedence' for parenthesising.
+**  'PrintPrecedence' for parenthesising.
 */
 void            PrintAInv (
     Expr                expr )
 {
     UInt                oldPrec;
 
-    oldPrec = PrintPreceedence;
-    PrintPreceedence = 11;
+    oldPrec = PrintPrecedence;
+    PrintPrecedence = 11;
     
     /* if necessary print the opening parenthesis                          */
-    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    if ( oldPrec >= PrintPrecedence ) Pr("%>(%>",0L,0L);
     else Pr("%2>",0L,0L);
     
     Pr("-%> ",0L,0L);
@@ -1675,10 +1675,10 @@ void            PrintAInv (
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
-    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    if ( oldPrec >= PrintPrecedence ) Pr("%2<)",0L,0L);
     else Pr("%2<",0L,0L);
     
-    PrintPreceedence = oldPrec;
+    PrintPrecedence = oldPrec;
 }
 
 void            PrintInv (
@@ -1686,44 +1686,44 @@ void            PrintInv (
 {
     UInt                oldPrec;
 
-    oldPrec = PrintPreceedence;
-    PrintPreceedence = 14;
+    oldPrec = PrintPrecedence;
+    PrintPrecedence = 14;
     Pr("%> ",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<^-1",0L,0L);
-    PrintPreceedence = oldPrec;
+    PrintPrecedence = oldPrec;
 }
 
 void            PrintBinop (
     Expr                expr )
 {
-    UInt                oldPrec;        /* old preceedence level           */
+    UInt                oldPrec;        /* old precedence level           */
     const Char *        op;             /* operand                         */
-    /* remember the current preceedence level                              */
-    oldPrec = PrintPreceedence;
+    /* remember the current precedence level                              */
+    oldPrec = PrintPrecedence;
 
-    /* select the new preceedence level                                    */
+    /* select the new precedence level                                    */
     switch ( TNUM_EXPR(expr) ) {
-    case T_OR:     op = "or";   PrintPreceedence =  2;  break;
-    case T_AND:    op = "and";  PrintPreceedence =  4;  break;
-    case T_EQ:     op = "=";    PrintPreceedence =  8;  break;
-    case T_LT:     op = "<";    PrintPreceedence =  8;  break;
-    case T_GT:     op = ">";    PrintPreceedence =  8;  break;
-    case T_NE:     op = "<>";   PrintPreceedence =  8;  break;
-    case T_LE:     op = "<=";   PrintPreceedence =  8;  break;
-    case T_GE:     op = ">=";   PrintPreceedence =  8;  break;
-    case T_IN:     op = "in";   PrintPreceedence =  8;  break;
-    case T_SUM:    op = "+";    PrintPreceedence = 10;  break;
-    case T_DIFF:   op = "-";    PrintPreceedence = 10;  break;
-    case T_PROD:   op = "*";    PrintPreceedence = 12;  break;
-    case T_QUO:    op = "/";    PrintPreceedence = 12;  break;
-    case T_MOD:    op = "mod";  PrintPreceedence = 12;  break;
-    case T_POW:    op = "^";    PrintPreceedence = 16;  break;
+    case T_OR:     op = "or";   PrintPrecedence =  2;  break;
+    case T_AND:    op = "and";  PrintPrecedence =  4;  break;
+    case T_EQ:     op = "=";    PrintPrecedence =  8;  break;
+    case T_LT:     op = "<";    PrintPrecedence =  8;  break;
+    case T_GT:     op = ">";    PrintPrecedence =  8;  break;
+    case T_NE:     op = "<>";   PrintPrecedence =  8;  break;
+    case T_LE:     op = "<=";   PrintPrecedence =  8;  break;
+    case T_GE:     op = ">=";   PrintPrecedence =  8;  break;
+    case T_IN:     op = "in";   PrintPrecedence =  8;  break;
+    case T_SUM:    op = "+";    PrintPrecedence = 10;  break;
+    case T_DIFF:   op = "-";    PrintPrecedence = 10;  break;
+    case T_PROD:   op = "*";    PrintPrecedence = 12;  break;
+    case T_QUO:    op = "/";    PrintPrecedence = 12;  break;
+    case T_MOD:    op = "mod";  PrintPrecedence = 12;  break;
+    case T_POW:    op = "^";    PrintPrecedence = 16;  break;
     default:       op = "<bogus-operator>";   break;
     }
 
     /* if necessary print the opening parenthesis                          */
-    if ( oldPrec > PrintPreceedence ) Pr("%>(%>",0L,0L);
+    if ( oldPrec > PrintPrecedence ) Pr("%>(%>",0L,0L);
     else Pr("%2>",0L,0L);
 
     /* print the left operand                                              */
@@ -1744,16 +1744,16 @@ void            PrintBinop (
     Pr("%2< %2>%s%> %<",(Int)op,0L);
 
     /* print the right operand                                             */
-    PrintPreceedence++;
+    PrintPrecedence++;
     PrintExpr( ADDR_EXPR(expr)[1] );
-    PrintPreceedence--;
+    PrintPrecedence--;
 
     /* if necessary print the closing parenthesis                          */
-    if ( oldPrec > PrintPreceedence ) Pr("%2<)",0L,0L);
+    if ( oldPrec > PrintPrecedence ) Pr("%2<)",0L,0L);
     else Pr("%2<",0L,0L);
 
-    /* restore the old preceedence level                                   */
-    PrintPreceedence = oldPrec;
+    /* restore the old precedence level                                   */
+    PrintPrecedence = oldPrec;
 }
 
 
