@@ -11,17 +11,15 @@ environment:
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
-# FIXME: HPC-GAP builds on AppVeyor are disabled for now, as they experience
-# weird errors in building ward (which I cannot replicate on a Windows VM).
-#    - CYG_ARCH: x86
-#      CYG_ROOT: C:\cygwin
-#      ABI: 32
-#      HPCGAP: yes
-#      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
-#    - CYG_ARCH: x86_64
-#      CYG_ROOT: C:\cygwin64
-#      HPCGAP: yes
-#      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
+    - CYG_ARCH: x86
+      CYG_ROOT: C:\cygwin
+      ABI: 32
+      HPCGAP: yes
+      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
+    - CYG_ARCH: x86_64
+      CYG_ROOT: C:\cygwin64
+      HPCGAP: yes
+      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
 
 # change to packages-stable-X.Y.tar.gz in the stable branch
 cache:
