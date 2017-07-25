@@ -54,34 +54,7 @@
 #define MAX(a, b) (a < b ? b : a)
 #define MIN(a, b) (a < b ? a : b)
 
-#define IMG_PPERM(f) (ADDR_OBJ(f)[0])
-#define DOM_PPERM(f) (ADDR_OBJ(f)[1])
-
-#define NEW_PPERM2(deg)                                                      \
-    NewBag(T_PPERM2, (deg + 1) * sizeof(UInt2) + 2 * sizeof(Obj))
-#define CODEG_PPERM2(f) (*(UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2))
-#define ADDR_PPERM2(f) ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2) + 1)
-#define DEG_PPERM2(f)                                                        \
-    ((UInt)(SIZE_OBJ(f) - sizeof(UInt2) - 2 * sizeof(Obj)) / sizeof(UInt2))
-#define RANK_PPERM2(f)                                                       \
-    (IMG_PPERM(f) == NULL ? INIT_PPERM2(f) : LEN_PLIST(IMG_PPERM(f)))
-
-#define NEW_PPERM4(deg)                                                      \
-    NewBag(T_PPERM4, (deg + 1) * sizeof(UInt4) + 2 * sizeof(Obj))
-#define CODEG_PPERM4(f) (*(UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2))
-#define ADDR_PPERM4(f) ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2) + 1)
-#define DEG_PPERM4(f)                                                        \
-    ((UInt)(SIZE_OBJ(f) - sizeof(UInt4) - 2 * sizeof(Obj)) / sizeof(UInt4))
-#define RANK_PPERM4(f)                                                       \
-    (IMG_PPERM(f) == NULL ? INIT_PPERM4(f) : LEN_PLIST(IMG_PPERM(f)))
-
 #define IMAGEPP(i, ptf, deg) (i <= deg ? ptf[i - 1] : 0)
-#define IS_PPERM(f) (TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4)
-#define RANK_PPERM(f)                                                        \
-    (TNUM_OBJ(f) == T_PPERM2 ? RANK_PPERM2(f) : RANK_PPERM4(f))
-#define DEG_PPERM(f) (TNUM_OBJ(f) == T_PPERM2 ? DEG_PPERM2(f) : DEG_PPERM4(f))
-#define CODEG_PPERM(f)                                                       \
-    (TNUM_OBJ(f) == T_PPERM2 ? CODEG_PPERM2(f) : CODEG_PPERM4(f))
 
 Obj EmptyPartialPerm;
 
@@ -116,6 +89,110 @@ static inline void ResizeTmpPPerm(UInt len)
 * Static functions for partial perms
 *****************************************************************************/
 
+static inline UInt GET_CODEG_PPERM2(Obj f)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    return (*(UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2));
+}
+
+static inline void SET_CODEG_PPERM2(Obj f, UInt2 codeg)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    (*(UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2)) = codeg;
+}
+
+UInt CODEG_PPERM2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    if (GET_CODEG_PPERM2(f) != 0) {
+      return GET_CODEG_PPERM2(f);
+    }
+    UInt codeg = 0;
+    UInt i;
+    UInt2* ptf = ADDR_PPERM2(f);
+    for (i = 0; i < DEG_PPERM2(f); i++) {
+      if (ptf[i] > codeg) {
+        codeg = ptf[i];
+      }
+    }
+    SET_CODEG_PPERM2(f, codeg);
+    return codeg;
+}
+
+static inline UInt GET_CODEG_PPERM4(Obj f)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    return (*(UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2));
+}
+
+static inline void SET_CODEG_PPERM4(Obj f, UInt4 codeg)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    (*(UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2)) = codeg;
+}
+
+UInt CODEG_PPERM4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    if (GET_CODEG_PPERM4(f) != 0) {
+      return GET_CODEG_PPERM4(f);
+    }
+    UInt codeg = 0;
+    UInt i;
+    UInt4* ptf = ADDR_PPERM4(f);
+    for (i = 0; i < DEG_PPERM4(f); i++) {
+      if (ptf[i] > codeg) {
+        codeg = ptf[i];
+      }
+    }
+    SET_CODEG_PPERM4(f, codeg);
+    return codeg;
+}
+
+Obj NEW_PPERM2(UInt deg)
+{
+    // No assert since the values stored in this pperm must be UInt2s but the
+    // degree might be a UInt4.
+    return NewBag(T_PPERM2, (deg + 1) * sizeof(UInt2) + 2 * sizeof(Obj));
+}
+
+Obj NEW_PPERM4(UInt deg)
+{
+    return NewBag(T_PPERM4, (deg + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+}
+
+static inline Obj IMG_PPERM(Obj f)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    return ADDR_OBJ(f)[0];
+}
+
+static inline Obj DOM_PPERM(Obj f)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    return ADDR_OBJ(f)[1];
+}
+
+static inline void SET_IMG_PPERM(Obj f, Obj img)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PLIST(img) && !IS_MUTABLE_PLIST(img));
+    GAP_ASSERT(DOM_PPERM(f) == NULL ||
+               LEN_PLIST(img) == LEN_PLIST(DOM_PPERM(f)));
+    // TODO Could check entries of img are valid
+    ADDR_OBJ(f)[0] = img;
+}
+
+static inline void SET_DOM_PPERM(Obj f, Obj dom)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PLIST(dom) && !IS_MUTABLE_PLIST(dom));
+    GAP_ASSERT(IMG_PPERM(f) == NULL ||
+               LEN_PLIST(dom) == LEN_PLIST(IMG_PPERM(f)));
+    // TODO Could check entries of img are valid
+    ADDR_OBJ(f)[1] = dom;
+}
+
 // find domain and img set (unsorted) return the rank
 
 static UInt INIT_PPERM2(Obj f)
@@ -129,8 +206,8 @@ static UInt INIT_PPERM2(Obj f)
     if (deg == 0) {
         dom = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
         SET_LEN_PLIST(dom, 0);
-        DOM_PPERM(f) = dom;
-        IMG_PPERM(f) = dom;
+        SET_DOM_PPERM(f, dom);
+        SET_IMG_PPERM(f, dom);
         CHANGED_BAG(f);
         return deg;
     }
@@ -160,8 +237,8 @@ static UInt INIT_PPERM2(Obj f)
     SHRINK_PLIST(dom, (Int)rank);
     SET_LEN_PLIST(dom, (Int)rank);
 
-    DOM_PPERM(f) = dom;
-    IMG_PPERM(f) = img;
+    SET_DOM_PPERM(f, dom);
+    SET_IMG_PPERM(f, img);
     CHANGED_BAG(f);
     return rank;
 }
@@ -177,14 +254,14 @@ static UInt INIT_PPERM4(Obj f)
     if (deg == 0) {
         dom = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
         SET_LEN_PLIST(dom, 0);
-        DOM_PPERM(f) = dom;
-        IMG_PPERM(f) = dom;
+        SET_DOM_PPERM(f, dom);
+        SET_IMG_PPERM(f, dom);
         CHANGED_BAG(f);
         return deg;
     }
 
     dom = NEW_PLIST(T_PLIST_CYC_SSORT + IMMUTABLE, deg);
-    img = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, deg);
+    img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
 
     ptf = ADDR_PPERM4(f);
 
@@ -207,10 +284,22 @@ static UInt INIT_PPERM4(Obj f)
     SHRINK_PLIST(dom, (Int)rank);
     SET_LEN_PLIST(dom, (Int)rank);
 
-    DOM_PPERM(f) = dom;
-    IMG_PPERM(f) = img;
+    SET_DOM_PPERM(f, dom);
+    SET_IMG_PPERM(f, img);
     CHANGED_BAG(f);
     return rank;
+}
+
+UInt RANK_PPERM2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    return (IMG_PPERM(f) == NULL ? INIT_PPERM2(f) : LEN_PLIST(IMG_PPERM(f)));
+}
+
+UInt RANK_PPERM4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    return (IMG_PPERM(f) == NULL ? INIT_PPERM4(f) : LEN_PLIST(IMG_PPERM(f)));
 }
 
 static Obj SORT_PLIST_CYC(Obj res)
@@ -318,7 +407,7 @@ Obj FuncDensePartialPermNC(Obj self, Obj img)
             j = INT_INTOBJ(ELM_LIST(img, i + 1));
             *ptf2++ = (UInt2)j;
         }
-        CODEG_PPERM2(f) = (UInt2)codeg;    // codeg is already known
+        SET_CODEG_PPERM2(f, codeg);    // codeg is already known
     }
     else {
         f = NEW_PPERM4(deg);
@@ -329,7 +418,7 @@ Obj FuncDensePartialPermNC(Obj self, Obj img)
                 codeg = j;
             *ptf4++ = (UInt4)j;
         }
-        CODEG_PPERM4(f) = (UInt4)codeg;
+        SET_CODEG_PPERM4(f, codeg);
     }
     return f;
 }
@@ -363,9 +452,9 @@ Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
     if (!IS_PLIST(img))
         PLAIN_LIST(img);
 
-    // make dom and img immutable
-    MakeImmutable(dom);
+    // make img immutable
     MakeImmutable(img);
+    MakeImmutable(dom);
 
     // create the pperm
     if (codeg < 65536) {
@@ -375,9 +464,9 @@ Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
             ptf2[INT_INTOBJ(ELM_PLIST(dom, i)) - 1] =
                 INT_INTOBJ(ELM_PLIST(img, i));
         }
-        DOM_PPERM(f) = dom;
-        IMG_PPERM(f) = img;
-        CODEG_PPERM2(f) = codeg;
+        SET_DOM_PPERM(f, dom);
+        SET_IMG_PPERM(f, img);
+        SET_CODEG_PPERM2(f, codeg);
     }
     else {
         f = NEW_PPERM4(deg);
@@ -388,9 +477,9 @@ Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
                 codeg = j;
             ptf4[INT_INTOBJ(ELM_PLIST(dom, i)) - 1] = j;
         }
-        DOM_PPERM(f) = dom;
-        IMG_PPERM(f) = img;
-        CODEG_PPERM4(f) = codeg;
+        SET_DOM_PPERM(f, dom);
+        SET_IMG_PPERM(f, img);
+        SET_CODEG_PPERM4(f, codeg);
     }
     CHANGED_BAG(f);
     return f;
@@ -410,6 +499,7 @@ Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 }
 
 /* the codegree of pperm is the maximum point in its image */
+
 Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
 {
     if (TNUM_OBJ(f) == T_PPERM2) {
@@ -470,7 +560,7 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
             SET_LEN_PLIST(out, 0);
             return out;
         }
-        out = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, rank);
+        out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, rank);
         SET_LEN_PLIST(out, rank);
         ptf2 = ADDR_PPERM2(f);
         dom = DOM_PPERM(f);
@@ -493,7 +583,7 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
             SET_LEN_PLIST(out, 0);
             return out;
         }
-        out = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, rank);
+        out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, rank);
         SET_LEN_PLIST(out, rank);
         ptf4 = ADDR_PPERM4(f);
         dom = DOM_PPERM(f);
@@ -1450,9 +1540,9 @@ Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptg2[j] = j + 1;
         }
-        CODEG_PPERM2(g) = deg;
-        DOM_PPERM(g) = dom;
-        IMG_PPERM(g) = dom;
+        SET_CODEG_PPERM2(g, deg);
+        SET_DOM_PPERM(g, dom);
+        SET_IMG_PPERM(g, dom);
     }
     else {
         g = NEW_PPERM4(deg);
@@ -1461,9 +1551,9 @@ Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptg4[j] = j + 1;
         }
-        CODEG_PPERM4(g) = deg;
-        DOM_PPERM(g) = dom;
-        IMG_PPERM(g) = dom;
+        SET_CODEG_PPERM4(g, deg);
+        SET_DOM_PPERM(g, dom);
+        SET_IMG_PPERM(g, dom);
     }
     CHANGED_BAG(g);
     return g;
@@ -1496,10 +1586,10 @@ Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
             ptg2[j] = j + 1;
         }
         if (IS_SSORT_LIST(img)) {
-            DOM_PPERM(g) = img;
-            IMG_PPERM(g) = img;
+            SET_DOM_PPERM(g, img);
+            SET_IMG_PPERM(g, img);
         }
-        CODEG_PPERM2(g) = codeg;
+        SET_CODEG_PPERM2(g, codeg);
     }
     else {
         g = NEW_PPERM4(codeg);
@@ -1509,10 +1599,10 @@ Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
             ptg4[j] = j + 1;
         }
         if (IS_SSORT_LIST(img)) {
-            DOM_PPERM(g) = img;
-            IMG_PPERM(g) = img;
+            SET_DOM_PPERM(g, img);
+            SET_IMG_PPERM(g, img);
         }
-        CODEG_PPERM4(g) = codeg;
+        SET_CODEG_PPERM4(g, codeg);
     }
     CHANGED_BAG(g);
     return g;
@@ -1644,7 +1734,7 @@ Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
     dej = MAX(def, deg);
     if (dej < 65536) {
         join = NEW_PPERM2(dej);
-        CODEG_PPERM2(join) = dej;
+        SET_CODEG_PPERM2(join, dej);
         ptjoin2 = ADDR_PPERM2(join);
         ptf2 = ADDR_PPERM2(f);
         ptg2 = ADDR_PPERM2(g);
@@ -1679,7 +1769,7 @@ Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
     }
     else if (def >= 65536 && deg >= 65536) {    // 3 more cases required
         join = NEW_PPERM4(dej);
-        CODEG_PPERM4(join) = dej;
+        SET_CODEG_PPERM4(join, dej);
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
         ptg4 = ADDR_PPERM4(g);
@@ -1714,7 +1804,7 @@ Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
     }
     else if (def > deg) {    // def>=65536>deg
         join = NEW_PPERM4(dej);
-        CODEG_PPERM4(join) = dej;
+        SET_CODEG_PPERM4(join, dej);
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
         ptg2 = ADDR_PPERM2(g);
@@ -1760,7 +1850,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         degg = DEG_PPERM4(g);
         deg = MAX(degf, degg);
         join = NEW_PPERM4(deg);
-        CODEG_PPERM4(join) = codeg;
+        SET_CODEG_PPERM4(join, codeg);
 
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
@@ -1840,7 +1930,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         degg = DEG_PPERM2(g);
         deg = MAX(degf, degg);
         join = NEW_PPERM4(deg);
-        CODEG_PPERM4(join) = codeg;
+        SET_CODEG_PPERM4(join, codeg);
 
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
@@ -1923,7 +2013,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         degg = DEG_PPERM2(g);
         deg = MAX(degf, degg);
         join = NEW_PPERM2(deg);
-        CODEG_PPERM2(join) = codeg;
+        SET_CODEG_PPERM2(join, codeg);
 
         ptjoin2 = ADDR_PPERM2(join);
         ptf2 = ADDR_PPERM2(f);
@@ -2035,7 +2125,7 @@ Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
                     codeg = j;
             }
         }
-        CODEG_PPERM2(meet) = codeg;
+        SET_CODEG_PPERM2(meet, codeg);
     }
     else if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM2) {
         degf = DEG_PPERM4(f);
@@ -2063,7 +2153,7 @@ Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
                     codeg = j;
             }
         }
-        CODEG_PPERM2(meet) = codeg;
+        SET_CODEG_PPERM2(meet, codeg);
     }
     else if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM4) {
         degf = DEG_PPERM2(f);
@@ -2091,7 +2181,7 @@ Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
                     codeg = j;
             }
         }
-        CODEG_PPERM2(meet) = codeg;
+        SET_CODEG_PPERM2(meet, codeg);
     }
     else {
         degf = DEG_PPERM4(f);
@@ -2119,7 +2209,7 @@ Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
                     codeg = j;
             }
         }
-        CODEG_PPERM4(meet) = codeg;
+        SET_CODEG_PPERM4(meet, codeg);
     }
     return meet;
 }
@@ -2157,7 +2247,7 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
             if (ptg2[j] > codeg)
                 codeg = ptg2[j];
         }
-        CODEG_PPERM2(g) = codeg;
+        SET_CODEG_PPERM2(g, codeg);
         return g;
     }
     else if (TNUM_OBJ(f) == T_PPERM4) {
@@ -2181,7 +2271,7 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
             if (ptg4[j] > codeg)
                 codeg = ptg4[j];
         }
-        CODEG_PPERM4(g) = codeg;
+        SET_CODEG_PPERM4(g, codeg);
         return g;
     }
     return Fail;
@@ -2215,7 +2305,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                     j = INT_INTOBJ(ELM_LIST(set, i)) - 1;
                     ptf2[j] = IMAGE(j, ptp2, dep) + 1;
                 }
-                CODEG_PPERM2(f) = deg;
+                SET_CODEG_PPERM2(f, deg);
             }
             else {    // deg(f)<=deg(p)<=65536
                 // Pr("Case 2\n", 0L, 0L);
@@ -2228,7 +2318,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                     if (ptf2[j] > codeg)
                         codeg = ptf2[j];
                 }
-                CODEG_PPERM2(f) = codeg;
+                SET_CODEG_PPERM2(f, codeg);
             }
         }
         else {    // deg(p)<=65536<=deg(f)
@@ -2240,7 +2330,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                 j = INT_INTOBJ(ELM_LIST(set, i)) - 1;
                 ptf4[j] = IMAGE(j, ptp2, dep) + 1;
             }
-            CODEG_PPERM4(f) = deg;
+            SET_CODEG_PPERM4(f, deg);
         }
     }
     else {    // p is PERM4
@@ -2254,7 +2344,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                 j = INT_INTOBJ(ELM_LIST(set, i)) - 1;
                 ptf4[j] = IMAGE(j, ptp4, dep) + 1;
             }
-            CODEG_PPERM4(f) = deg;
+            SET_CODEG_PPERM4(f, deg);
         }
         else {    // deg<=dep
             // find the codeg
@@ -2275,7 +2365,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                     j = INT_INTOBJ(ELM_LIST(set, i)) - 1;
                     ptf2[j] = ptp4[j] + 1;
                 }
-                CODEG_PPERM2(f) = codeg;
+                SET_CODEG_PPERM2(f, codeg);
             }
             else {
                 // Pr("Case 6\n", 0L, 0L);
@@ -2288,7 +2378,7 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
                     if (ptf4[j] > codeg)
                         codeg = ptf4[j];
                 }
-                CODEG_PPERM4(f) = deg;
+                SET_CODEG_PPERM4(f, deg);
             }
         }
     }
@@ -2554,7 +2644,7 @@ Obj OnePPerm(Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptg2[j] = j + 1;
         }
-        CODEG_PPERM2(g) = deg;
+        SET_CODEG_PPERM2(g, deg);
     }
     else {
         g = NEW_PPERM4(deg);
@@ -2565,7 +2655,7 @@ Obj OnePPerm(Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptg4[j] = j + 1;
         }
-        CODEG_PPERM4(g) = deg;
+        SET_CODEG_PPERM4(g, deg);
     }
     return g;
 }
@@ -2974,7 +3064,7 @@ Obj ProdPPerm22(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM2(fg) = codeg;
+    SET_CODEG_PPERM2(fg, codeg);
     return fg;
 }
 
@@ -3030,7 +3120,7 @@ Obj ProdPPerm42(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM2(fg) = codeg;
+    SET_CODEG_PPERM2(fg, codeg);
     return fg;
 }
 
@@ -3091,7 +3181,7 @@ Obj ProdPPerm44(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(fg) = codeg;
+    SET_CODEG_PPERM4(fg, codeg);
     return fg;
 }
 
@@ -3155,7 +3245,7 @@ Obj ProdPPerm24(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(fg) = codeg;
+    SET_CODEG_PPERM4(fg, codeg);
     return fg;
 }
 
@@ -3226,7 +3316,7 @@ Obj ProdPPerm2Perm2(Obj f, Obj p)
                 }
             }
         }
-        CODEG_PPERM2(fp) = codeg;
+        SET_CODEG_PPERM2(fp, codeg);
     }
     else {
         ptfp4 = ADDR_PPERM4(fp);
@@ -3252,7 +3342,7 @@ Obj ProdPPerm2Perm2(Obj f, Obj p)
                     codeg = ptfp4[j];
             }
         }
-        CODEG_PPERM4(fp) = codeg;
+        SET_CODEG_PPERM4(fp, codeg);
     }
     return fp;
 }
@@ -3316,7 +3406,7 @@ Obj ProdPPerm4Perm4(Obj f, Obj p)
             }
         }
     }
-    CODEG_PPERM4(fp) = codeg;
+    SET_CODEG_PPERM4(fp, codeg);
     return fp;
 }
 
@@ -3353,7 +3443,7 @@ Obj ProdPPerm2Perm4(Obj f, Obj p)
                 codeg = ptfp[j];
         }
     }
-    CODEG_PPERM4(fp) = codeg;
+    SET_CODEG_PPERM4(fp, codeg);
     return fp;
 }
 
@@ -3391,7 +3481,7 @@ Obj ProdPPerm4Perm2(Obj f, Obj p)
             ptfp[j] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
         }
     }
-    CODEG_PPERM4(fp) = codeg;
+    SET_CODEG_PPERM4(fp, codeg);
     return fp;
 }
 
@@ -3434,7 +3524,7 @@ Obj ProdPerm2PPerm2(Obj p, Obj f)
             if (ptp[i] < degf)
                 ptpf[i] = ptf[ptp[i]];
     }
-    CODEG_PPERM2(pf) = CODEG_PPERM2(f);
+    SET_CODEG_PPERM2(pf, CODEG_PPERM2(f));
     return pf;
 }
 
@@ -3476,7 +3566,7 @@ Obj ProdPerm4PPerm4(Obj p, Obj f)
             if (ptp[i] < degf)
                 ptpf[i] = ptf[ptp[i]];
     }
-    CODEG_PPERM4(pf) = CODEG_PPERM4(f);
+    SET_CODEG_PPERM4(pf, CODEG_PPERM4(f));
     return pf;
 }
 
@@ -3519,7 +3609,7 @@ Obj ProdPerm4PPerm2(Obj p, Obj f)
                 ptpf[i] = ptf[ptp[i]];
     }
 
-    CODEG_PPERM2(pf) = CODEG_PPERM2(f);
+    SET_CODEG_PPERM2(pf, CODEG_PPERM2(f));
     return pf;
 }
 
@@ -3562,7 +3652,7 @@ Obj ProdPerm2PPerm4(Obj p, Obj f)
                 ptpf[i] = ptf[ptp[i]];
     }
 
-    CODEG_PPERM4(pf) = CODEG_PPERM4(f);
+    SET_CODEG_PPERM4(pf, CODEG_PPERM4(f));
     return pf;
 }
 
@@ -3594,7 +3684,7 @@ Obj InvPPerm2(Obj f)
                 ptinv2[ptf[j] - 1] = j + 1;
             }
         }
-        CODEG_PPERM2(inv) = deg;
+        SET_CODEG_PPERM2(inv, deg);
     }
     else {
         inv = NEW_PPERM4(codeg);
@@ -3613,7 +3703,7 @@ Obj InvPPerm2(Obj f)
                 ptinv4[ptf[j] - 1] = j + 1;
             }
         }
-        CODEG_PPERM4(inv) = deg;
+        SET_CODEG_PPERM4(inv, deg);
     }
     return inv;
 }
@@ -3645,7 +3735,7 @@ Obj InvPPerm4(Obj f)
                 ptinv2[ptf[j] - 1] = j + 1;
             }
         }
-        CODEG_PPERM2(inv) = deg;
+        SET_CODEG_PPERM2(inv, deg);
     }
     else {
         inv = NEW_PPERM4(codeg);
@@ -3664,7 +3754,7 @@ Obj InvPPerm4(Obj f)
                 ptinv4[ptf[j] - 1] = j + 1;
             }
         }
-        CODEG_PPERM4(inv) = deg;
+        SET_CODEG_PPERM4(inv, deg);
     }
     return inv;
 }
@@ -3707,7 +3797,7 @@ Obj PowPPerm2Perm2(Obj f, Obj p)
     codeg = CODEG_PPERM2(f);
 
     if (codeg > dep) {
-        CODEG_PPERM2(conj) = codeg;
+        SET_CODEG_PPERM2(conj, codeg);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
@@ -3722,7 +3812,7 @@ Obj PowPPerm2Perm2(Obj f, Obj p)
             if (k > codeg)
                 codeg = k;
         }
-        CODEG_PPERM2(conj) = codeg;
+        SET_CODEG_PPERM2(conj, codeg);
     }
 
     return conj;
@@ -3769,7 +3859,7 @@ Obj PowPPerm2Perm4(Obj f, Obj p)
         if (k > codeg)
             codeg = k;
     }
-    CODEG_PPERM4(conj) = codeg;
+    SET_CODEG_PPERM4(conj, codeg);
 
     return conj;
 }
@@ -3810,7 +3900,7 @@ Obj PowPPerm4Perm2(Obj f, Obj p)
     codeg = CODEG_PPERM4(f);
 
     if (codeg > dep) {
-        CODEG_PPERM4(conj) = codeg;
+        SET_CODEG_PPERM4(conj, codeg);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
@@ -3825,7 +3915,7 @@ Obj PowPPerm4Perm2(Obj f, Obj p)
             if (k > codeg)
                 codeg = k;
         }
-        CODEG_PPERM4(conj) = codeg;
+        SET_CODEG_PPERM4(conj, codeg);
     }
     return conj;
 }
@@ -3866,7 +3956,7 @@ Obj PowPPerm4Perm4(Obj f, Obj p)
 
     if (codeg > dep) {
         // Pr("case 1\n", 0L, 0L);
-        CODEG_PPERM4(conj) = codeg;
+        SET_CODEG_PPERM4(conj, codeg);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
@@ -3882,7 +3972,7 @@ Obj PowPPerm4Perm4(Obj f, Obj p)
             if (k > codeg)
                 codeg = k;
         }
-        CODEG_PPERM4(conj) = codeg;
+        SET_CODEG_PPERM4(conj, codeg);
     }
     return conj;
 }
@@ -4103,7 +4193,7 @@ Obj PowPPerm22(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM2(conj) = codec;
+    SET_CODEG_PPERM2(conj, codec);
     return conj;
 }
 
@@ -4322,7 +4412,7 @@ Obj PowPPerm24(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(conj) = codec;
+    SET_CODEG_PPERM4(conj, codec);
     return conj;
 }
 
@@ -4541,7 +4631,7 @@ Obj PowPPerm42(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(conj) = codec;
+    SET_CODEG_PPERM4(conj, codec);
     return conj;
 }
 
@@ -4759,7 +4849,7 @@ Obj PowPPerm44(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(conj) = codec;
+    SET_CODEG_PPERM4(conj, codec);
     return conj;
 }
 
@@ -4842,7 +4932,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
                 }
             }
         }
-        CODEG_PPERM2(quo) = codeg;
+        SET_CODEG_PPERM2(quo, codeg);
     }
     else {
         quo = NEW_PPERM4(deg);
@@ -4872,7 +4962,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
                     codeg = ptquo4[j];
             }
         }
-        CODEG_PPERM4(quo) = codeg;
+        SET_CODEG_PPERM4(quo, codeg);
     }
     return quo;
 }
@@ -4955,7 +5045,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p)
             }
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5014,7 +5104,7 @@ Obj QuoPPerm2Perm4(Obj f, Obj p)
                 codeg = ptquo[j];
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5070,7 +5160,7 @@ Obj QuoPPerm4Perm2(Obj f, Obj p)
             ptquo[j] = IMAGE(ptf[j] - 1, pttmp, lmp) + 1;
         }
     }
-    CODEG_PPERM4(quo) = CODEG_PPERM4(f);
+    SET_CODEG_PPERM4(quo, CODEG_PPERM4(f));
     return quo;
 }
 
@@ -5149,7 +5239,7 @@ Obj QuoPPerm22(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5234,7 +5324,7 @@ Obj QuoPPerm24(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5319,7 +5409,7 @@ Obj QuoPPerm42(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5396,7 +5486,7 @@ Obj QuoPPerm44(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(quo) = codeg;
+    SET_CODEG_PPERM4(quo, codeg);
     return quo;
 }
 
@@ -5503,7 +5593,7 @@ Obj LQuoPerm2PPerm2(Obj p, Obj f)
         }
     }
 
-    CODEG_PPERM2(lquo) = CODEG_PPERM2(f);
+    SET_CODEG_PPERM2(lquo, CODEG_PPERM2(f));
     return lquo;
 }
 
@@ -5584,8 +5674,7 @@ Obj LQuoPerm2PPerm4(Obj p, Obj f)
             }
         }
     }
-
-    CODEG_PPERM4(lquo) = CODEG_PPERM4(f);
+    SET_CODEG_PPERM4(lquo, CODEG_PPERM4(f));
     return lquo;
 }
 
@@ -5667,7 +5756,7 @@ Obj LQuoPerm4PPerm2(Obj p, Obj f)
         }
     }
 
-    CODEG_PPERM2(lquo) = CODEG_PPERM2(f);
+    SET_CODEG_PPERM2(lquo, CODEG_PPERM2(f));
     return lquo;
 }
 
@@ -5748,7 +5837,7 @@ Obj LQuoPerm4PPerm4(Obj p, Obj f)
         }
     }
 
-    CODEG_PPERM4(lquo) = CODEG_PPERM4(f);
+    SET_CODEG_PPERM4(lquo, CODEG_PPERM4(f));
     return lquo;
 }
 
@@ -5855,7 +5944,7 @@ Obj LQuoPPerm22(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM2(lquo) = codel;
+    SET_CODEG_PPERM2(lquo, codel);
     return lquo;
 }
 
@@ -5962,7 +6051,7 @@ Obj LQuoPPerm24(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(lquo) = codel;
+    SET_CODEG_PPERM4(lquo, codel);
     return lquo;
 }
 
@@ -6069,7 +6158,7 @@ Obj LQuoPPerm42(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM2(lquo) = codel;
+    SET_CODEG_PPERM2(lquo, codel);
     return lquo;
 }
 
@@ -6175,7 +6264,7 @@ Obj LQuoPPerm44(Obj f, Obj g)
             }
         }
     }
-    CODEG_PPERM4(lquo) = codel;
+    SET_CODEG_PPERM4(lquo, codel);
     return lquo;
 }
 
@@ -6286,8 +6375,8 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     if (LEN_LIST(tup) == 0)
         return tup;
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST_CYC_NSORT
-                                          : T_PLIST_CYC_NSORT + IMMUTABLE,
+    res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST_CYC
+                                          : T_PLIST_CYC + IMMUTABLE,
                     LEN_LIST(tup));
 
     /* get the pointer                                                 */
