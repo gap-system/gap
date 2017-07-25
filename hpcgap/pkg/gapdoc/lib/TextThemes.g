@@ -186,8 +186,8 @@ fi;
 
 # argument doesn't need all component, the missing ones are taken from default
 InstallGlobalFunction(SetGAPDocTextTheme, function(arg)
-local r, res, h, af, v, a, nam, f, i;
-atomic HELP_REGION do  
+  local r, res, h, af, v, a, nam, f, i;
+
   r := rec();
   for a in arg do
     if IsString(a) then
@@ -238,13 +238,10 @@ atomic HELP_REGION do
     res.(af[i]) := [[h[1][2*i-1], h[1][2*i]],[h[2][2*i-1], h[2][2*i]]];
   od;
   SortParallel(h[1], h[2]);
+atomic HELP_REGION do
   for f in RecNames(res) do
     GAPDocTextTheme.(f) := res.(f);
   od;
 od;  
 end);
-if IsBound(HPCGAP) then
-  SetGAPDocTextTheme( LockAndMigrateObj(rec(),HELP_REGION) );
-else
-  SetGAPDocTextTheme(rec());
-fi;
+SetGAPDocTextTheme(rec());
