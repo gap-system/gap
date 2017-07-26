@@ -1538,6 +1538,10 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       return fail;
     fi;
     if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
+      if dom <> [1..n] then
+        p1 := MappingPermListList(dom,[1..n]);
+        return p1*MappingPermListList(OnTuples(d,p1),OnTuples(e,p1))/p1;
+      fi;
       return MappingPermListList(d,e);
     fi;
   fi;
