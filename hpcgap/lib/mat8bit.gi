@@ -291,7 +291,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
                 fi;
 	      q1 := Size(q1);
 	  else
-	    return; # not a field -- exit
+	    return fail; # not a field -- exit
 	  fi;
         fi;
         givenq := true;
