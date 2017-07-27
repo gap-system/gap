@@ -242,8 +242,7 @@ InstallMethod(InversesOfSemigroupElement,
 [IsSemigroup, IsMultiplicativeElement],
 function(S, x)
   if not x in S then 
-    Error("usage: the 2nd argument must be an element of the 1st,");
-    return;
+    ErrorNoReturn("usage: the 2nd argument must be an element of the 1st,");
   fi;
   return Filtered(AsSSortedList(S), y -> x * y * x = x and y * x * y = y);
 end);
@@ -257,9 +256,8 @@ function(s, n)
   n:=NameRNam(n);
   n:=Int(n);
   if n=fail or Length(s)<n then
-    Error("usage: the second argument should be a pos int not greater than",
+    ErrorNoReturn("usage: the second argument should be a pos int not greater than",
      " the number of generators of the semigroup in the first argument,");
-    return;
   fi;
   return s[n];
 end);
@@ -273,9 +271,8 @@ function(s, n)
   n:=NameRNam(n);
   n:=Int(n);
   if n=fail or Length(s)<n then
-    Error("usage: the second argument should be a pos int not greater than",
+    ErrorNoReturn("usage: the second argument should be a pos int not greater than",
      " the number of generators of the semigroup in the first argument,");
-    return;
   fi;
   return s[n];
 end);

@@ -130,8 +130,7 @@ function(arg)
   if IsPartialPermCollection(arg[1]) then 
     return CallFuncList(JoinOfPartialPerms, arg[1]);
   elif not IsPartialPermCollection(arg) then 
-    Error("usage: the argument should be a collection of partial perms,");
-    return;
+    ErrorNoReturn("usage: the argument should be a collection of partial perms,");
   fi;
 
   join:=arg[1]; i:=1;
@@ -151,8 +150,7 @@ function(arg)
   if IsPartialPermCollection(arg[1]) then 
     return CallFuncList(JoinOfIdempotentPartialPermsNC, arg[1]);
   elif not IsPartialPermCollection(arg) then 
-    Error("usage: the argument should be a collection of partial perms,");
-    return;
+    ErrorNoReturn("usage: the argument should be a collection of partial perms,");
   fi;
 
   join:=arg[1]; i:=1;
@@ -172,8 +170,7 @@ function(arg)
   if Length(arg) = 1 and IsPartialPermCollection(arg[1]) then 
     return CallFuncList(MeetOfPartialPerms, AsList(arg[1]));
   elif not IsPartialPermCollection(arg) then 
-    Error("usage: the argument should be a collection of partial perms, ");
-    return;
+    ErrorNoReturn("usage: the argument should be a collection of partial perms, ");
   fi;
 
   meet := arg[1]; 
@@ -195,8 +192,7 @@ InstallMethod(AsPartialPerm, "for a perm and a list",
 function(p, list)
   
   if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
-    Error("usage: the second argument must be a set of positive integers,");
-    return;
+    ErrorNoReturn("usage: the second argument must be a set of positive integers,");
   fi;
 
   return AS_PPERM_PERM(p, list);
@@ -254,9 +250,8 @@ function(f, n)
   local deg, out, i;
   
   if n<DegreeOfPartialPerm(f) and n^f<>0 and n^f<>n then 
-    Error("usage: the 2nd argument must not be a moved point of the 1st ", 
+    ErrorNoReturn("usage: the 2nd argument must not be a moved point of the 1st ", 
     "argument,");
-    return;
   fi;
   deg:=Maximum(n, LargestMovedPoint(f)+1, LargestImageOfMovedPoint(f)+1); 
   out:=ListWithIdenticalEntries(deg, n);
@@ -283,8 +278,7 @@ InstallMethod(RestrictedPartialPerm, "for a partial perm",
 function(f, list)
 
   if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
-    Error("usage: the second argument must be a set of positive integers,");
-    return;
+    ErrorNoReturn("usage: the second argument must be a set of positive integers,");
   fi;
 
   return RESTRICTED_PPERM(f, list);
@@ -307,8 +301,7 @@ InstallMethod(PermLeftQuoPartialPerm, "for a partial perm and partial perm",
 function(f, g)
   
   if ImageSetOfPartialPerm(f)<>ImageSetOfPartialPerm(g) then 
-    Error("usage: the arguments must be partial perms with equal image sets,");
-    return;
+    ErrorNoReturn("usage: the arguments must be partial perms with equal image sets,");
   fi;
 
   return PERM_LEFT_QUO_PPERM_NC(f, g);
@@ -480,9 +473,8 @@ function(arg)
       min:=Minimum(source)-1;
       max:=Maximum(source);
     else
-      Error("usage: the argument must be a positive integer, a set, ",
+      ErrorNoReturn("usage: the argument must be a positive integer, a set, ",
       "or 2 sets, of positive integers,");
-      return;
     fi;
 
     out:=List([1..max], x-> 0);
@@ -518,9 +510,8 @@ function(arg)
     od;
     return SparsePartialPermNC(out1, out2);
   else 
-    Error("usage: the argument must be a positive integer, a set, ",
+    ErrorNoReturn("usage: the argument must be a positive integer, a set, ",
      "or 2 sets, of positive integers,");
-    return;
   fi;
 
 end);
@@ -536,8 +527,7 @@ function(arg)
     return SparsePartialPermNC(arg[1], arg[2]); 
   fi; 
  
-  Error("usage: there should be one or two arguments,"); 
-  return; 
+  ErrorNoReturn("usage: there should be one or two arguments,");
 end); 
 
 #
@@ -548,26 +538,23 @@ function(arg)
   if Length(arg)=1 then  
     if ForAll(arg[1], i-> i=0 or IsPosInt(i)) and 
       IsDuplicateFreeList(Filtered(arg[1], x-> x<>0)) then 
-      return DensePartialPermNC(arg[1]); 
+      return DensePartialPermNC(arg[1]);
     else
-      Error("usage: the argument must be a list of non-negative integers ", 
+      ErrorNoReturn("usage: the argument must be a list of non-negative integers ",
       "and the non-zero elements must be duplicate-free,");
-      return;
     fi;
   elif Length(arg)=2 then  
     if IsSSortedList(arg[1]) and ForAll(arg[1], IsPosInt) and
      IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsPosInt) then 
       return SparsePartialPermNC(arg[1], arg[2]); 
     else
-      Error("usage: the 1st argument must be a set of positive integers ",
+      ErrorNoReturn("usage: the 1st argument must be a set of positive integers ",
       "and the 2nd argument must be a duplicate-free list of positive ",
       "integers");
-      return;
     fi;
   fi; 
  
-  Error("usage: there should be one or two arguments,"); 
-  return; 
+  ErrorNoReturn("usage: there should be one or two arguments,");
 end); 
 
 # printing, viewing, displaying...
