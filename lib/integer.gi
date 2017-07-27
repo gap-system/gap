@@ -746,8 +746,7 @@ end);
 ##  
 InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
-    Error("PrimeDivisors: 0 has an infinite number of prime divisors.");
-    return;
+    Error( "<n> must be non zero" );
   fi;
   if n < 0 then
     n := -n;
