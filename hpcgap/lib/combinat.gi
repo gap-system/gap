@@ -942,8 +942,7 @@ BindGlobal( "EnumeratorOfCartesianProduct2",
     
     if (not ForAll(colls, IsFinite)) or not (ForAll(colls, IsCollection) or 
      ForAll(colls, IsEnumeratorByFunctions)) then
-      Error("usage: each argument must be a finite collection or enumerator,");
-      return;
+      ErrorNoReturn("usage: each argument must be a finite collection or enumerator,");
     fi;
 
     new_colls:=[]; 
@@ -1852,8 +1851,7 @@ InstallGlobalFunction(Partitions,function ( arg )
         fi;
     elif Length(arg) = 2  then
         if not(IsInt(arg[1]) and IsInt(arg[2])) then
-            Error("usage: Partitions( <n> [, <k>] )");
-            return;
+            ErrorNoReturn("usage: Partitions( <n> [, <k>] )");
         elif arg[1] < 0 or arg[2] < 0 then
             parts := [];
         else
@@ -1872,8 +1870,7 @@ InstallGlobalFunction(Partitions,function ( arg )
             fi;
         fi;
     else
-        Error("usage: Partitions( <n> [, <k>] )");
-        return;
+        ErrorNoReturn("usage: Partitions( <n> [, <k>] )");
     fi;
     return parts;
 end);
@@ -2039,8 +2036,7 @@ InstallGlobalFunction( PartitionsGreatestLE,
 function(n,m)
     local parts;
     if not(IsInt(n) and IsInt(m)) then
-        Error("usage: PartitionsGreatestLE( <n>, <m> )");
-        return;
+        ErrorNoReturn("usage: PartitionsGreatestLE( <n>, <m> )");
     elif n < 0 or m < 0 then
         parts := [];
     else
@@ -2132,8 +2128,7 @@ InstallGlobalFunction( PartitionsGreatestEQ,
 function(n,m)
     local parts;
     if not(IsInt(n) and IsInt(m)) then
-        Error("usage: PartitionsGreatestEQ( <n>, <m> )");
-        return;
+        ErrorNoReturn("usage: PartitionsGreatestEQ( <n>, <m> )");
     elif n < 0 or m < 0 then
         parts := [];
     else

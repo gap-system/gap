@@ -116,9 +116,8 @@ function(m)
   local filts, fam, type, inj, zero, gens, out;
   
   if Length(GeneratorsOfMagma(m))=0 then
-    Error("usage: it is only possible to adjoin a zero to a magma",  
+    ErrorNoReturn("usage: it is only possible to adjoin a zero to a magma",  
     " with generators,");
-    return;
   fi;
  
   # filters for the elements

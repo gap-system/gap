@@ -80,8 +80,7 @@ InstallGlobalFunction(ParseTestFile, function(arg)
   fi;
   str := StringFile(fnam);
   if str = fail then
-    Error("Cannot read file ",fnam,"\n");
-    return;
+    ErrorNoReturn("Cannot read file ",fnam,"\n");
   fi;
   return ParseTestInput(str, ignorecomments);
 end);
@@ -392,8 +391,7 @@ InstallGlobalFunction("Test", function(arg)
   if not opts.isStream then
     full := StringFile(fnam);
     if full = fail then
-      Error("Cannot read file ",fnam,"\n");
-      return;
+      ErrorNoReturn("Cannot read file ",fnam,"\n");
     fi;
   else
     full := ReadAll(fnam);

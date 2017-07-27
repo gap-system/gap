@@ -306,8 +306,7 @@ function(s, gens)
   if ForAll(gens, x-> x in s) then 
     return InverseSubsemigroupNC(s, gens);
   fi;
-  Error("the specified elements do not belong to the first argument,");
-  return;
+  ErrorNoReturn("the specified elements do not belong to the first argument,");
 end);
 
 #
@@ -335,8 +334,7 @@ function(s, gens)
     fi;
     return InverseSubmonoidNC(s, gens);
   fi;
-  Error("the specified elements do not belong to the first argument,");
-  return;
+  ErrorNoReturn("the specified elements do not belong to the first argument,");
 end);
 
 #

@@ -1338,7 +1338,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
 
    rt0:=Runtime();
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
-     return Error("Argument is not an irreducible module.");
+     ErrorNoReturn("Argument is not an irreducible module.");
    fi;
    if not SMTX.HasIsAbsolutelyIrreducible(module) then
       SMTX.IsAbsolutelyIrreducible(module);
