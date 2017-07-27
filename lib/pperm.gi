@@ -564,7 +564,6 @@ InstallMethod(String, "for a partial perm",
 function(f)
   return STRINGIFY("PartialPermNC( ", DomainOfPartialPerm(f), ", ",
    ImageListOfPartialPerm(f), " )");
-  return;
 end);
 
 #
@@ -575,7 +574,6 @@ function(f)
   return PRINT_STRINGIFY("PartialPermNC( ",
     Concatenation(PrintString(DomainOfPartialPerm(f)), ", "),
      ImageListOfPartialPerm(f), " )");
-  return;
 end);
 
 #
@@ -585,7 +583,6 @@ InstallMethod(PrintObj, "for a partial perm",
 function(f)
   Print("PartialPerm(\>\> ", DomainOfPartialPerm(f), "\<, \>",
      ImageListOfPartialPerm(f), "\<\< )");
-  return;
 end);
 
 #
@@ -614,7 +611,6 @@ function(f)
         return PRINT_STRINGIFY("<identity partial perm on ", 
          DomainOfPartialPerm(f), ">");
       fi;
-      return;
     elif UserPreference("NotationForPartialPerms")="input" then 
       return PrintString(f);
     fi;
