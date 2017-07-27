@@ -838,7 +838,6 @@ InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -860,7 +859,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -882,7 +880,6 @@ InstallGlobalFunction(HELP_SHOW_PREV, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -904,7 +901,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
