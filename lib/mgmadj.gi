@@ -189,7 +189,6 @@ function(m)
   Print("<");
   PrintObj(Source(UnderlyingInjectionZeroMagma(m)));
   Print(" with 0 adjoined>");
-  return;
 end);  
 
 #
@@ -200,7 +199,6 @@ function(m)
   Print("<");
   ViewObj(Source(UnderlyingInjectionZeroMagma(m)));
   Print(" with 0 adjoined>");
-  return; 
 end);
 
 #
@@ -280,6 +278,5 @@ function(x)
     PrintObj(x!.elt);
   fi;
   Print(">");
-  return;
 end);
 
