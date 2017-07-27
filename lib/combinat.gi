@@ -873,10 +873,8 @@ InstallGlobalFunction( "IteratorOfCartesianProduct",
     # this mimics usage of functions Cartesian and Cartesian2
     if Length( arg ) = 1  then
         return IteratorOfCartesianProduct2( arg[1] );
-    else
-        return IteratorOfCartesianProduct2( arg );
     fi;
-    return;
+    return IteratorOfCartesianProduct2( arg );
     end);
 
 BindGlobal( "NumberElement_Cartesian", 
@@ -982,10 +980,8 @@ InstallGlobalFunction( "EnumeratorOfCartesianProduct",
       return EmptyPlist(0);
     elif Length( arg ) = 1  then
         return EnumeratorOfCartesianProduct2( arg[1] );
-    else
-        return EnumeratorOfCartesianProduct2( arg );
     fi;
-    return;
+    return EnumeratorOfCartesianProduct2( arg );
 end);
 
 #############################################################################
