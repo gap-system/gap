@@ -1071,6 +1071,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                     od;
                 od;
             else
+              Error("not yet done");
 	      tails := List( [1..Length(fprels)], 
 			      x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
               for i in tails do

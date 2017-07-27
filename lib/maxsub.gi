@@ -551,8 +551,9 @@ local id,m,epi,cnt,h;
 
     # Are just finding out that a group is symmetric or alternating?
     # if so, try to use method that uses data library
-    if not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G))
-      and (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
+    if 
+    #not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G)) and
+        (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
       Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
       m:=MaximalSubgroupsSymmAlt(G,false);
       if m<>fail then
@@ -837,7 +838,12 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
     fi;
     List(lmax,Size);
     Info(InfoLattice,1,Length(lmax)," socle factor maxes");
-    lmax:=List(lmax,x->PreImage(act,x));
+    # special case: p factor
+    if Length(lmax)=1 and Size(lmax[1])=1 then
+      lmax:=[Socle(q)];
+    else
+      lmax:=List(lmax,x->PreImage(act,x));
+    fi;
     for mm in lmax do mm!.type:="1";od;
     Append(maxes,lmax);
   fi;
@@ -861,7 +867,8 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
       dorba[dn]:=act;
       if Length(dorb[dn])=1 and "2" in types then
 	# type 2: almost simple
-	lmax:=MaxesAlmostSimple(ImagesSource(act[2]));
+	a1:=ImagesSource(act[2]);
+	lmax:=MaxesAlmostSimple(a1);
 	lmax:=List(lmax,x->PreImage(act[2],x));
 	# eliminate those containing the socle
 	lmax:=Filtered(lmax,x->not IsSubset(x,soc));
@@ -954,10 +961,18 @@ for mm in lmax do mm!.type:="4a";od;
   fi;
 
   # the factorhom should be able to take preimages of subgroups OK
-  maxes:=List(maxes,x->PreImage(ff.factorhom,x));
+  #maxes:=List(maxes,x->PreImage(ff.factorhom,x));
+  lmax:=[];
+  d:=Size(KernelOfMultiplicativeGeneralMapping(ff.factorhom))>1;
+  for i in maxes do
+    a2:=PreImage(ff.factorhom,i);
+    if d then
+      SetRadicalGroup(a2,PreImage(ff.factorhom,RadicalGroup(i)));
+    fi;
+    Add(lmax,a2);
+  od;
 
-
-  return Concatenation(smax,maxes);
+  return Concatenation(smax,lmax);
 end);
 
 #############################################################################

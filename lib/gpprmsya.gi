@@ -91,8 +91,8 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
       dp:=d;
       ep:=e;
-      cd:=ShallowCopy(Cycles(d,[1..max]));
-      ce:=ShallowCopy(Cycles(e,[1..max]));
+      cd:=ShallowCopy(Cycles(d,dom));
+      ce:=ShallowCopy(Cycles(e,dom));
       Sort(cd,sortfun);
       Sort(ce,sortfun);
       rep:=MappingPermListList(Concatenation(cd),Concatenation(ce));
@@ -1589,8 +1589,8 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
         return fail;
       fi;
       max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
-      cd:=ShallowCopy(Cycles(d,[1..max]));
-      ce:=ShallowCopy(Cycles(e,[1..max]));
+      cd:=ShallowCopy(Cycles(d,dom));
+      ce:=ShallowCopy(Cycles(e,dom));
       Sort(cd,sortfun);
       Sort(ce,sortfun);
       return MappingPermListList(Concatenation(cd),Concatenation(ce));
@@ -2404,7 +2404,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
 end);
 
 InstallMethod( MaximalSubgroupClassReps, "symmetric", true,
-    [ IsNaturalSymmetricGroup and IsFinite], 0,
+    [ IsNaturalSymmetricGroup and IsFinite], OVERRIDENICE,
 function ( G )
 local m;
   m:=MaximalSubgroupsSymmAlt(G,false);
@@ -2416,7 +2416,7 @@ local m;
 end);
 
 InstallMethod( MaximalSubgroupClassReps, "alternating", true,
-    [ IsNaturalAlternatingGroup and IsFinite], 0,
+    [ IsNaturalAlternatingGroup and IsFinite], OVERRIDENICE,
 function ( G )
 local m;
   m:=MaximalSubgroupsSymmAlt(G,false);
@@ -2426,6 +2426,20 @@ local m;
     return m;
   fi;
 end);
+
+RadicalSymmAlt:=function(G)
+  if NrMovedPoints(G)<=4 then
+    return G;
+  else
+    return TrivialSubgroup(G);
+  fi;
+end;
+
+InstallMethod( RadicalGroup, "symmetric", true,
+    [ IsNaturalSymmetricGroup and IsFinite], 0,RadicalSymmAlt);
+
+InstallMethod( RadicalGroup, "alternating", true,
+    [ IsNaturalAlternatingGroup and IsFinite], 0,RadicalSymmAlt);
 
 
 #############################################################################
