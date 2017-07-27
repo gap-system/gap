@@ -1,0 +1,498 @@
+#############################################################################
+##
+#W  Makefile                    GAP source                       Frank Celler
+##
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file is the top level make file.  It is generated from `Makefile.in'
+##  by the `configure' script.  After unpacking GAP you simply type
+##
+##    ./configure
+##
+##  to create a make file and then
+##
+##    make
+##
+##  to compile and link GAP.
+##
+##  The "default" target:
+##    - creates a subdirectory CPU-VENDOR-OS in the directory `bin',
+##    - copies the configuration script into this directory,
+##    - it switches into this directory and executes the configure script,
+##    - it makes GAP in this directory.
+##
+##  The "clean" target:
+##    - removes the subdirectory CPU-VENDOR-OS in the directory `bin'
+##    - removes any files created by `configure'
+##
+##  The "check" target:
+##    - starts GAP and reads `tst/testinstall.g'
+##
+##  The "testinstall" target:
+##    - starts GAP and reads `tst/testinstall.g' twice, once without packages
+##      and once with all packages loaded. The results are logged to the
+##      subdirectory `dev/log/'.
+##
+##  The "teststandard" target:
+##    - starts GAP and reads `tst/teststandard.g' twice, once without packages
+##      and once with all packages loaded. The results are logged to the
+##      subdirectory `dev/log/'.
+##
+##  The "testpackages" target:
+##    - runs the tests provided by the available packages
+##
+##  The "testpackagesload" target:
+##    - tests loading of each available package
+##
+##  The "testmanuals" target:
+##    - runs the examples in the main GAP documentation
+##
+
+SHELL=/bin/sh
+CC=gcc
+BASECC=gcc
+TARGET=x86_64-apple-darwin16.3.0
+
+GMP_CFLAGS=-I/Applications/gap/gapdev/bin/x86_64-apple-darwin16.3.0-gcc-default64/extern/gmp/include
+GMP_LIBS=/Applications/gap/gapdev/bin/x86_64-apple-darwin16.3.0-gcc-default64/extern/gmp/lib/libgmp.a
+MAKE_GMP=gmp
+USE_GMP=yes
+ifndef GMP_VER
+ GMP_VER=6.0.0a
+endif
+ifndef ABI
+ ABI=64
+endif
+ABI_CFLAGS=
+export CFLAGS+= -g -O2
+export COPTS=
+ifndef CONFIGNAME
+ CONFIGNAME=default64
+endif
+GAPARCH=x86_64-apple-darwin16.3.0-gcc-default64
+GAPARGS=
+
+TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 1g -K 2g -A -q -x 80 -r $(GAPARGS)
+TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 1g -K 2g -q -x 80 -r $(GAPARGS)
+
+PKG_BOOTSTRAP_URL="https://www.gap-system.org/pub/gap/gap4pkgs/"
+PKG_MINIMAL="bootstrap-pkg-minimal.tar.gz"
+PKG_FULL="bootstrap-pkg-full.tar.gz"
+
+default: compile
+
+setconfig:
+	if test -e sysinfo.gap-$(CONFIGNAME); then \
+	  rm -f Makefile sysinfo.gap bin/gap.sh; \
+	  ln -s sysinfo.gap-$(CONFIGNAME) sysinfo.gap; \
+	  ln -s Makefile-$(CONFIGNAME) Makefile; \
+	  ln -s gap-$(CONFIGNAME).sh bin/gap.sh; \
+	else \
+	  echo "There is no config with name: "$(CONFIGNAME); \
+	fi;
+
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/config.status
+
+Makefile: Makefile-$(CONFIGNAME)
+Makefile-$(CONFIGNAME): config.status Makefile.in
+	./config.status --file $@:Makefile.in
+
+bin/$(GAPARCH)/configure: cnf/configure.out
+	mkdir -p bin/$(GAPARCH)
+	@rm -f bin/$(GAPARCH)/configure
+	cp cnf/configure.out bin/$(GAPARCH)/configure
+
+bin/$(GAPARCH)/extern/Makefile: bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status extern/Makefile )
+
+bin/$(GAPARCH)/Makefile : bin/$(GAPARCH)/config.status
+	( cd bin/$(GAPARCH) ; ./config.status Makefile )
+
+bin/$(GAPARCH)/config.status : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+	mkdir -p bin/$(GAPARCH)/extern
+	( cd bin/$(GAPARCH) ; \
+		CC='$(CC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		CONFIGNAME='$(CONFIGNAME)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		USE_GMP='$(USE_GMP)' \
+		GAPARCH='$(GAPARCH)' \
+		./configure --target=x86_64-apple-darwin16.3.0  )
+
+extern: config
+	( cd bin/$(GAPARCH)/extern ; \
+		$(MAKE) \
+		TARGET='$(TARGET)' \
+		BASECC='$(BASECC)' \
+		ABI='$(ABI)' \
+		ABI_CFLAGS='$(ABI_CFLAGS)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
+
+bin/$(GAPARCH)/gap_version.h:
+	cnf/mkversionheader.sh bin/$(GAPARCH)/gap_version.h
+
+compile: extern bin/$(GAPARCH)/gap_version.h
+	( cd bin/$(GAPARCH); \
+		$(MAKE) \
+		ABI='$(ABI)' \
+		CC='$(CC)' \
+		GMP_VER='$(GMP_VER)' \
+		GMP_CFLAGS='$(GMP_CFLAGS)' \
+		GMP_LIBS='$(GMP_LIBS)' \
+		MAKE_GMP='$(MAKE_GMP)' \
+		CONFIGNAME='$(CONFIGNAME)' )
+	chmod +x bin/gap-$(CONFIGNAME).sh
+
+static: extern
+	( cd bin/$(GAPARCH) ; $(MAKE) static CC='$(CC)' ABI='$(ABI)' )
+	chmod +x bin/gap-$(CONFIGNAME).sh
+	( cd bin/$(GAPARCH) ; strip gap)
+
+strip: compile
+	if ! grep darwin sysinfo.gap ; then ( cd bin/$(GAPARCH); strip gap) ; fi
+
+removewin: strip
+	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
+
+rebuild:
+	rm -f config.cache config.log config.status
+	touch src/*
+
+ifndef CLEANME
+ CLEANME=default64
+endif
+
+clean: clean_$(CLEANME)
+
+clean_$(CLEANME): clean_gap_$(CLEANME) clean_gmp_$(CLEANME)
+	rm -rf bin/$(GAPARCH)
+
+
+clean_gap: clean_gap_$(CLEANME)
+
+clean_gap_$(CLEANME): rebuild
+	rm -f bin/$(GAPARCH)/*.o
+	rm -f bin/$(GAPARCH)/Makefile
+	rm -f bin/$(GAPARCH)/config*
+	rm -f bin/$(GAPARCH)/gac
+	rm -f bin/$(GAPARCH)/gap
+	rm -f bin/$(GAPARCH)/sysinfo*
+	rm -f bin/gap-$(CONFIGNAME).sh
+	rm -f sysinfo.gap-$(CONFIGNAME)
+	(if ! test -h sysinfo.gap -a -e sysinfo.gap; then \
+	  nextconf=`ls sysinfo.gap-* 2>/dev/null | head -1 | \
+	          sed -e "s/sysinfo.gap-//g"`; \
+	  if [ "x$$nextconf" != "x" ]; then \
+	    echo "changing config to "$$nextconf; \
+	    $(MAKE) setconfig CONFIGNAME=$$nextconf; \
+	  else \
+	    rm -f Makefile sysinfo.gap bin/gap.sh; \
+	  fi; \
+	fi)
+	rm -f Makefile-$(CONFIGNAME)
+
+clean_gmp: clean_gmp_$(CLEANME)
+
+clean_gmp_$(CLEANME):
+	if test -d bin/$(GAPARCH)/extern/gmp-$(GMP_VER); then \
+	 rm -rf bin/$(GAPARCH)/extern/gmp-$(GMP_VER); fi
+	if test -h bin/$(GAPARCH)/extern/gmp; then \
+	 rm -f bin/$(GAPARCH)/extern/gmp; fi
+	if test -d extern/gmp-$(GMP_VER); then \
+	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
+	  if test -r Makefile; then $(MAKE) distclean; fi ); fi
+
+distclean:
+	while test -e Makefile; do $(MAKE) clean; done
+
+manuals: compile
+	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g | tee make_manuals.out )
+	( rm doc/wsp.g )
+
+check: compile
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) )
+
+testinstall: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
+
+teststandard: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+          ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+
+testpackages: compile
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages1", \
+            "$(TESTGAP) -L wsp.g", "false" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackagesA", \
+            "$(TESTGAPauto) -L wsp.g", "auto" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages2", \
+            "$(TESTGAP) -L wsp.g", "true" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+
+testpackage: compile
+	mkdir -p dev/log
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage1", \
+            "$(TESTGAP) -L wsp.g", "false", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackageA", \
+            "$(TESTGAPauto) -L wsp.g", "auto", "$(PKGNAME)" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackage.in", \
+            "dev/log/testpackage2", \
+            "$(TESTGAP) -L wsp.g", "true", "$(PKGNAME)" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackage.in; ./testpackage.in; rm testpackage.in )
+	( rm wsp.g )
+
+testpackagesload: compile
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesload1", \
+            "$(TESTGAP) -L wsp.g", false, false );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesloadN1", \
+            "$(TESTGAP) -L wsp.g", false, true );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadN1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadA", \
+            "$(TESTGAPauto) -L wsp.g", true, false );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadNA", \
+            "$(TESTGAPauto) -L wsp.g", true, true );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+
+testpackagesvars: compile
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageVarsTestsInput( "testpackagesvars.in", \
+            "dev/log/testpackagesvars", \
+            "$(TESTGAP) -L wsp.g" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesvars.in; ./testpackagesvars.in > \
+            `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
+	( rm wsp.g )
+
+testmanuals: compile
+	mkdir -p dev/log
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+
+check-manuals:
+	mkdir -p dev/log
+	((cd doc/ref ; \
+	  echo 'Read("testconsistency.g");' | ../../$(TESTGAP) ) \
+	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
+
+testupdates: compile
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
+
+testobsoletes: compile
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
+            "dev/log/testobsoletes1", \
+            "$(TESTGAP) -O -L wsp.g", false, false );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletes1.in; ./testobsoletes1.in > \
+            `date -u +dev/log/testobsoletes1_%Y-%m-%d-%H-%M`; rm testobsoletes1.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletesN1.in", \
+            "dev/log/testobsoletesN1", \
+            "$(TESTGAP) -O -L wsp.g", false, true );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletesN1.in; ./testobsoletesN1.in > \
+            `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
+	( rm wsp.g )
+
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+
+ifeq ($(uname_O), Cygwin)
+default: cygwin
+endif
+
+cygwin: compile
+	chmod +x bin/*.bat
+	chmod +x cnf/instcygwinterminfo.sh
+	cnf/instcygwinterminfo.sh
+	( if which peflags ; then peflags --cygwin-heap=2048 bin/$(GAPARCH)/gap.exe ; fi )
+
+bootstrap-pkg-minimal:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed."; \
+    else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) ; \
+        mkdir pkg ; \
+        cd pkg ; \
+        tar xzf ../$(PKG_MINIMAL) ; \
+    fi;
+
+bootstrap-pkg-full:
+	@if test -e pkg; then \
+        echo "The pkg directory already exists. Please move or remove it to proceed" ; \
+    else \
+        wget -N $(PKG_BOOTSTRAP_URL)$(PKG_FULL) ; \
+        mkdir pkg ; \
+        cd pkg ; \
+        tar xzf ../$(PKG_FULL) ; \
+    fi;
+
+# update ctags if requests
+tags:
+	ctags -R src lib grp
+
+.PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) distclean
+.PHONY: compile config default extern manuals packages rebuild removewin setconfig static strip
+.PHONY: testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard
+.PHONY: cygwin removewin winbinp
+.PHONY: bootstrap-pkg-minimal bootstrap-pkg-full
+.PHONY: check tags
