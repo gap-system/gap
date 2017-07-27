@@ -85,7 +85,6 @@ InstallOtherMethod( ZmodnZObj,
       # via residues.
       Fam!.typeOfZmodnZObj:= NewType( Fam,
                                  IsZmodpZObjSmall and IsModulusRep );
-      SetDataType( Fam!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
     fi;
     return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
@@ -983,7 +982,6 @@ InstallGlobalFunction( ZmodnZ, function( n )
       # Store the objects type.
       F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime
                                        and IsModulusRep );
-      SetDataType( F!.typeOfZmodnZObj, n );   # TODO: remove once no package uses this
 
       # as n is no prime, the family is no UFD
       SetIsUFDFamily(F,false);
