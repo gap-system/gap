@@ -310,7 +310,6 @@ void            InitBags (
     TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align,
-    UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
     UInt                i;              /* loop variable                   */
