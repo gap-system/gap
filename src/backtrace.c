@@ -1,16 +1,18 @@
 #include <src/system.h>
 #include <src/gapstate.h>
 
-#ifdef PRINT_BACKTRACE
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-void BacktraceHandler(int sig) {
+static void BacktraceHandler(int sig) NORETURN;
+
+static void BacktraceHandler(int sig) {
   void *trace[32];
   size_t size;
-  char *sigtext = "Unknown signal";
+  const char *sigtext = "Unknown signal";
   size = backtrace(trace, 32);
   switch (sig) {
     case SIGSEGV:
@@ -31,7 +33,7 @@ void BacktraceHandler(int sig) {
   exit(1);
 }
 
-void InstallBacktraceHandlers() {
+void InstallBacktraceHandlers(void) {
   signal(SIGSEGV, BacktraceHandler);
   signal(SIGBUS, BacktraceHandler);
   signal(SIGINT, BacktraceHandler);

@@ -26,7 +26,9 @@
 
 #include <src/sysfiles.h>               /* file input/output */
 #include <src/gasman.h>
-#include <src/util.h>
+#include <src/gaputils.h>
+
+#include <src/stats.h>
 
 #ifdef HPCGAP
 #include <src/hpc/misc.h>
@@ -46,7 +48,7 @@
 #include <unistd.h>                     /* definition of 'R_OK' */
 
 
-#if HAVE_LIBREADLINE
+#ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>          /* readline for interactive input */
 #endif
 
@@ -54,15 +56,15 @@
 
 #include <sys/time.h>                   /* definition of 'struct timeval' */
 
-#if HAVE_SYS_RESOURCE_H
+#ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
 
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
 #include <sys/mman.h>
 #endif
 
-#if SYS_IS_DARWIN
+#ifdef SYS_IS_DARWIN
 #include <mach/mach_time.h>
 #endif
 
@@ -77,14 +79,14 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 /****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . hard coded kernel version
-** do not edit the following line. Occurences of `4.dev' and `today'
+** do not edit the following line. Occurrences of `4.dev' and `today'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
-** do not edit the following line. Occurences of `gap4dev'
+** do not edit the following line. Occurrences of `gap4dev'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
 const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
@@ -100,7 +102,7 @@ const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
 **  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  must be  divisible by 'SyStackAlign'.  So if it  is 1, identifiers may be
 **  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
 **  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
 **  from a macro passed from the makefile, because it is machine dependent.
@@ -178,7 +180,7 @@ Int SyDebugLoading;
 **  It  is copied into the GAP  variable  called 'GAP_ROOT_PATHS' and used by
 **  'SyFindGapRootFile'.
 **
-**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
+**  Each entry must end  with the pathname separator, eg.  if 'init.g' is the
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 **
@@ -190,7 +192,7 @@ Int SyDebugLoading;
 #define MAX_GAP_DIRS 128
 */
 Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
 Char DotGapPath[GAP_PATH_MAX];
 #endif
 
@@ -231,7 +233,7 @@ UInt SyUseReadline;
 **
 *V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
 **
-**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
+**  'SyMsgsFlagBags' determines whether garbage collections are reported  or
 **  not.
 **
 **  Per default it is false, i.e. Gasman is silent about garbage collections.
@@ -316,8 +318,8 @@ Char * SyRestoring;
 **
 *V  SyInitializing                               set to 1 during library init
 **
-**  `SyInitializing' is set to 1 during the library intialization phase of
-**  startup. It supresses some ebhaviours that may not be possible so early
+**  `SyInitializing' is set to 1 during the library initialization phase of
+**  startup. It suppresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */
 
@@ -335,7 +337,7 @@ UInt SyInitializing;
 **  is often a reasonable value. It is usually changed with the '-o'
 **  option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -353,7 +355,7 @@ Int SyStorOverrun;
 **  This is per default disabled (i.e. = 0).
 **  Can be changed with the '-K' option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -761,7 +763,7 @@ void SyMsgsBags (
 **  'SyAllocBags' can either accept this reduction and  return 1  and  return
 **  the storage to the operating system or refuse the reduction and return 0.
 **
-**  If the operating system does not support dynamic memory managment, simply
+**  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
 
@@ -795,7 +797,7 @@ UInt * * * syWorkspace = NULL;
 UInt       syWorksize = 0;
 
 
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -805,7 +807,7 @@ static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
 static void *SyMMapAdvised;        /* We have already advised about non-usage
                                       up to here. */
 
-void SyMAdviseFree() {
+void SyMAdviseFree(void) {
     size_t size;
     void *from;
     if (!SyMMapStart) 
@@ -842,7 +844,7 @@ void SyMAdviseFree() {
      * by users...
      */
 #ifndef NO_DIRTY_OSX_MMAP_TRICK
-#if SYS_IS_DARWIN
+#ifdef SYS_IS_DARWIN
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
         fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
@@ -920,7 +922,7 @@ int halvingsdone = 0;
 
 void SyInitialAllocPool( void )
 {
-#if HAVE_SYSCONF
+#ifdef HAVE_SYSCONF
 #ifdef _SC_PAGESIZE
    pagesize = sysconf(_SC_PAGESIZE);
 #endif
@@ -930,7 +932,7 @@ void SyInitialAllocPool( void )
    do {
        /* Always round up to pagesize: */
        SyAllocPool = SyRoundUpToPagesize(SyAllocPool);
-#if HAVE_MADVISE
+#ifdef HAVE_MADVISE
        POOL = SyAnonMMap(SyAllocPool+pagesize);   /* For alignment */
 #else
        POOL = calloc(SyAllocPool+pagesize,1);   /* For alignment */
@@ -975,7 +977,7 @@ UInt ***SyAllocBagsFromPool(Int size, UInt need)
     return (UInt***)-1;
 }
 
-#if HAVE_SBRK && ! HAVE_VM_ALLOCATE /* prefer `vm_allocate' over `sbrk' */
+#if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
 
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1104,7 +1106,7 @@ UInt * * * SyAllocBags (
 **
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
-#if HAVE_VM_ALLOCATE
+#ifdef HAVE_VM_ALLOCATE
 
 #include <mach/mach.h>
 
@@ -1144,9 +1146,9 @@ UInt * * * SyAllocBags (
             SyExit(1);
         }
 
-        /* check that we don't try to shrink uninialized memory                */
+        /* check that we don't try to shrink uninitialized memory                */
         else if ( size <= 0 && syBase == 0 ) {
-            fputs( "gap: trying to shrink uninialized vm memory\n", stderr );
+            fputs( "gap: trying to shrink uninitialized vm memory\n", stderr );
             SyExit(1);
         }
 
@@ -1251,15 +1253,15 @@ void SyUSleep ( UInt msecs )
 **
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
-**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
-**  The function 'SyExit' must perform all the neccessary cleanup operations.
-**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
-**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+**  'SyExit' is the official way  to exit GAP, bus errors are the unofficial.
+**  The function 'SyExit' must perform all the necessary cleanup operations.
+**  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
+**  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 **
 **  If the user calls 'QUIT_GAP' with a value, then the global variable
 **  'UserHasQUIT' will be set, and their requested return value will be
 **  in 'SystemErrorCode'. If the return value would be 0, we check
-**  this calue and use it instead.
+**  this value and use it instead.
 */
 void SyExit (
     UInt                ret )
@@ -1289,7 +1291,7 @@ void SyExit (
 **  Returns -1 to represent failure
 **
 */
-Int8 SyNanosecondsSinceEpoch()
+Int8 SyNanosecondsSinceEpoch(void)
 {
   Int8 res;
 
@@ -1371,7 +1373,7 @@ Int8 SyNanosecondsSinceEpoch()
 **
 **  A result of 0 signifies inability to obtain any sensible value.
 */
-Int8 SyNanosecondsSinceEpochResolution()
+Int8 SyNanosecondsSinceEpochResolution(void)
 {
   Int8 res;
 
@@ -1487,7 +1489,7 @@ static void SySetGapRootPath( const Char * string )
         while ( *p && *p != ';' ) {
             *q = *p++;
 
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
             /* fix up for DOS */
             if (*q == '\\')
               *q = '/';
@@ -1506,14 +1508,15 @@ static void SySetGapRootPath( const Char * string )
             *q   = '\0';
         }
         if ( *p ) {
-            p++;  n++;
+            p++;
         }
+        n++;
 #ifdef HPCGAP
         // or each root <ROOT> we also add <ROOT/hpcgap> as a root (and first)
         if( n < MAX_GAP_DIRS ) {
-            strlcpy( SyGapRootPaths[n+1], SyGapRootPaths[n], sizeof(SyGapRootPaths[n]) );
+            strlcpy( SyGapRootPaths[n], SyGapRootPaths[n-1], sizeof(SyGapRootPaths[n]) );
         }
-        strxcat( SyGapRootPaths[n], "hpcgap/", sizeof(SyGapRootPaths[n]) );
+        strxcat( SyGapRootPaths[n-1], "hpcgap/", sizeof(SyGapRootPaths[n-1]) );
         n++;
 #endif
     }
@@ -1776,7 +1779,7 @@ void InitSystem (
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
     SyStorMax = 1024*1024L;          /* This is in kB! */
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     SyAllocPool = 0;                 /* works better on cygwin */
 #else
     SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
@@ -1795,10 +1798,10 @@ void InitSystem (
       }
     }
 
-#if HAVE_VM_ALLOCATE
+#ifdef HAVE_VM_ALLOCATE
     syBase = 0;
     syWorksize = 0;
-#elif HAVE_SBRK
+#elif defined(HAVE_SBRK)
     syWorkspace = (UInt ***)0;
 #endif
     /*  nopts = 0;
@@ -1809,7 +1812,7 @@ void InitSystem (
     preAllocAmount = 4*1024*1024;
     
     /* open the standard files                                             */
-#if HAVE_TTYNAME
+#ifdef HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
     syBuf[0].bufno = -1;
     if ( isatty( fileno(stdin) ) && ttyname(fileno(stdin)) != NULL ) {
@@ -1851,13 +1854,13 @@ void InitSystem (
     for (i = 0; i < ARRAY_SIZE(syBuffers); i++)
           syBuffers[i].inuse = 0;
 
-#if HAVE_LIBREADLINE
+#ifdef HAVE_LIBREADLINE
     rl_initialize ();
 #endif
     
     SyInstallAnswerIntr();
 
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
 #elif defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
@@ -1925,7 +1928,7 @@ void InitSystem (
           
       }
     /* adjust SyUseReadline if no readline support available or for XGAP  */
-#if !HAVE_LIBREADLINE
+#if !defined(HAVE_LIBREADLINE)
     SyUseReadline = 0;
 #endif
     if (SyWindow) SyUseReadline = 0;
@@ -1990,7 +1993,7 @@ void InitSystem (
     }
     */
 
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
         strxcpy(SyUserHome, getenv("HOME"), sizeof(SyUserHome));
@@ -2046,9 +2049,3 @@ usage:
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );
 }
-
-
-/****************************************************************************
-**
-*E  system.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

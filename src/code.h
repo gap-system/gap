@@ -16,7 +16,6 @@
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
 
-
 /****************************************************************************
 **
 *T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
@@ -87,11 +86,10 @@ void SET_ENDLINE_BODY(Obj body, Obj val);
 **  As long as statements   are represented by  bags,  these types  must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-#define FIRST_STAT_TNUM         (0UL)
-
 enum STAT_TNUMS {
+    FIRST_STAT_TNUM = 0,
 
-    T_PROCCALL_0ARGS,
+    T_PROCCALL_0ARGS = FIRST_STAT_TNUM,
     T_PROCCALL_1ARGS,
     T_PROCCALL_2ARGS,
     T_PROCCALL_3ARGS,
@@ -162,9 +160,9 @@ enum STAT_TNUMS {
     T_PROCCALL_OPTS,
 
     T_ATOMIC,
-};
 
-#define LAST_STAT_TNUM          T_ATOMIC
+    LAST_STAT_TNUM = T_ATOMIC
+};
 
 #define T_NO_STAT		(Stat)(-1)
 
@@ -307,10 +305,9 @@ typedef Stat Expr;
 **  As long as  expressions  are represented by  bags,  these types must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-
-#define FIRST_EXPR_TNUM         ((UInt)128)
-
 enum EXPR_TNUM {
+    FIRST_EXPR_TNUM = 128,
+
     T_FUNCCALL_0ARGS = FIRST_EXPR_TNUM,
     T_FUNCCALL_1ARGS,
     T_FUNCCALL_2ARGS,
@@ -389,9 +386,9 @@ enum EXPR_TNUM {
     T_ELMX_LIST,
     T_ASS2_LIST,
     T_ASSX_LIST,
-};
 
-#define LAST_EXPR_TNUM          T_ASSX_LIST
+    LAST_EXPR_TNUM = T_ASSX_LIST
+};
 
 
 /****************************************************************************
@@ -1371,8 +1368,3 @@ StructInitInfo * InitInfoCode ( void );
 
 
 #endif // GAP_CODE_H
-
-/****************************************************************************
-**
-*E  code.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

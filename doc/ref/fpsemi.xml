@@ -50,7 +50,7 @@ Notice that for &GAP; a finitely presented monoid is not a finitely
 presented semigroup.
 <P/>
 <Example><![CDATA[
-gap> IsFpSemigroup(m);
+gap> IsFpSemigroup( m );
 false
 ]]></Example>
 <P/>
@@ -63,7 +63,7 @@ So, if one wants to access the generators by their names, one first has to
 introduce the respective variables and to assign the generators to them.
 <P/>
 <Example><![CDATA[
-gap> Unbind(a);
+gap> Unbind( a );
 gap> f := FreeSemigroup( "a", "b" );;
 gap> s := f / [ [ f.1 * f.2, f.2 * f.1 ] ];;
 gap> a;
@@ -244,7 +244,6 @@ in finitely presented semigroups and monoids.
 <#Include Label="ReducedConfluentRewritingSystem">
 <#Include Label="KB_REW">
 
-
 <ManSection>
 <Heading>KnuthBendixRewritingSystem</Heading>
 <Oper Name="KnuthBendixRewritingSystem" Arg='s, wordord'
@@ -263,7 +262,6 @@ rewriting system of the finitely presented monoid <A>m</A> using the
 reduction ordering <A>wordord</A>.
 </Description>
 </ManSection>
-
 
 <#Include Label="SemigroupOfRewritingSystem">
 <#Include Label="FreeSemigroupOfRewritingSystem">

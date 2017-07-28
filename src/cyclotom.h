@@ -29,11 +29,3 @@ StructInitInfo * InitInfoCyc ( void );
 
 
 #endif // GAP_CYCLOTOM_H
-
-/****************************************************************************
-**
-*E  cyclotom.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
-
-
-

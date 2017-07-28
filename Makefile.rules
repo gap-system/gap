@@ -51,7 +51,6 @@ SOURCES += src/finfield.c
 SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
-SOURCES += src/gasman.c
 SOURCES += src/gapstate.c
 SOURCES += src/gmpints.c
 SOURCES += src/gvars.c
@@ -98,11 +97,19 @@ SOURCES += src/vecgf2.c
 SOURCES += src/vector.c
 SOURCES += src/weakptr.c
 
+# TODO: Change the following to check for a new USE_BOEHM flag
+ifeq ($(HPCGAP),yes)
+  SOURCES += src/boehm_gc.c
+else
+  SOURCES += src/gasman.c
+endif
+
+ifeq ($(GAPMPI),yes)
+  SOURCES += src/hpc/gapmpi.c
+endif
+
 ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/aobjects.c
-  ifeq ($(GAPMPI),yes)
-    SOURCES += src/hpc/gapmpi.c
-  endif
   SOURCES += src/hpc/misc.c
   SOURCES += src/hpc/serialize.c
   SOURCES += src/hpc/thread.c
@@ -139,20 +146,8 @@ GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
 GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
-# Enable warnings
-GAP_CPPFLAGS += \
-	-Wall \
-	-Wextra \
-	-Wshadow
-
-# ... disable some annoying warnings ...
-GAP_CPPFLAGS += \
-	-Wno-unused-parameter \
-	-Wno-sign-compare \
-	-Wno-implicit-fallthrough
-
-# ... and disable warnings about unknown warnings for clang
-GAP_CPPFLAGS += -Wno-unknown-warning-option
+# Add flags controlling compiler warnings
+GAP_CPPFLAGS += $(WARNING_CPPFLAGS)
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
@@ -622,7 +617,7 @@ all: bin/gap.sh
 bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 	$(SHELL) ./config.status $@
 
-# regenerate bin/$(GAPARCH)/src symlink if necessary
+# regenerate symlinks if necessary
 all: bin/$(GAPARCH)/src
 bin/$(GAPARCH)/src: config.status
 	@$(MKDIR_P) bin/$(GAPARCH)
@@ -632,6 +627,11 @@ all: bin/$(GAPARCH)/gac
 bin/$(GAPARCH)/gac:
 	@$(MKDIR_P) bin/$(GAPARCH)
 	ln -sf ../../gac $(@D)
+
+all: bin/$(GAPARCH)/gap
+bin/$(GAPARCH)/gap:
+	@$(MKDIR_P) bin/$(GAPARCH)
+	ln -sf ../../gap $(@D)
 
 endif
 
@@ -989,12 +989,10 @@ gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
 # and in parts on an example in the autoconf manual.
 ########################################################################
 
-ACLOCAL_M4 =
-#ACLOCAL_M4 = $(top_srcdir)/cnf/aclocal.m4
-aclocal_m4_deps = $(top_srcdir)/configure.ac
-configure_deps = $(top_srcdir)/configure.ac $(CONFIGURE_DEPENDENCIES) $(ACLOCAL_M4)
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4 $(wildcard $(top_srcdir)/cnf/m4/*.m4)
+configure_deps = $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 
-config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+config.status: $(top_srcdir)/configure
 	$(SHELL) ./config.status --recheck
 
 $(top_srcdir)/configure: $(configure_deps)

@@ -2515,9 +2515,3 @@ StructInitInfo * InitInfoListOper ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  listoper.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

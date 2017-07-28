@@ -76,9 +76,9 @@
 ##  <#/GAPDoc>
 ##
 
-BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current, desc )
+BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current )
     local value, orig_value;
-    if not ForAll( [ name_obsolete, name_current, desc ], IsString ) then
+    if not ForAll( [ name_obsolete, name_current ], IsString ) then
         Error("Each argument of DeclareObsoleteSynonym must be a string\n");
     fi;
     value := EvalString( name_current );
@@ -87,24 +87,24 @@ BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current, de
         value := function (arg)
             local res;
             Info( InfoObsolete, 1, "'", name_obsolete, "' is obsolete.",
-                "\n#I  It may be removed in the future release of GAP ", desc,
+                "\n#I  It may be removed in a future release of GAP.",
                 "\n#I  Use ", name_current, " instead.");
             # TODO: This will error out if orig_value is a function which returns nothing.
             #return CallFuncList(orig_value, arg);
-            res := CALL_WITH_CATCH(orig_value, arg);
-            if Length(res) = 2 then
-                return res[2];
+            res := CallFuncListWrap(orig_value, arg);
+            if Length(res) = 1 then
+                return res[1];
             fi; 
         end;
     fi;
     BIND_GLOBAL( name_obsolete, value );
 end );
 
-BIND_GLOBAL( "DeclareObsoleteSynonymAttr", function( name_obsolete, name_current, desc )
+BIND_GLOBAL( "DeclareObsoleteSynonymAttr", function( name_obsolete, name_current )
     Assert(0, IsFunction( ValueGlobal( name_current ) ) );
-    DeclareObsoleteSynonym( name_obsolete, name_current, desc );
-    DeclareObsoleteSynonym( Concatenation("Set", name_obsolete), Concatenation("Set", name_current), desc );
-    DeclareObsoleteSynonym( Concatenation("Has", name_obsolete), Concatenation("Has", name_current), desc );
+    DeclareObsoleteSynonym( name_obsolete, name_current );
+    DeclareObsoleteSynonym( Concatenation("Set", name_obsolete), Concatenation("Set", name_current) );
+    DeclareObsoleteSynonym( Concatenation("Has", name_obsolete), Concatenation("Has", name_current) );
 end );
 
 
@@ -165,10 +165,10 @@ BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
 # 01/2016: still used in fplsa, itc
 BindGlobal( "DeclarePackageDocumentation", Ignore );
 # 01/2016: still used in qaos
-BindGlobal( "ReadPkg", ReadPackage );
+DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 # 01/2016: still used in automgrp, ctbllib, fplsa, fwtree, grpconst, guava,
 # Hap (HapCocyclic), itc, modisom, pargap, qaos, xgap
-BindGlobal( "RequirePackage", LoadPackage );
+DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
 # 01/2016: still used (sometimes in examples or documentation) in ace,
 # autpgrp, edim, fwtree, hecke, itc, liepring, polycyclic, qaos, repsn,
 # sglppow, singular, tomlib, toric, unipot, xgap
@@ -206,7 +206,7 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 ##  Moved to obsoletes in May 2003. 
 ##  Still used in autpgrp, ctbllib, matgrp, sophus. (01/2016)
 ##
-DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors", "4.8" );
+DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 
 #############################################################################
 ##
@@ -243,7 +243,7 @@ DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors", "4.8" );
 ##  Moved to obsolete in Dec 2007, but as on Dec 2012 still used in ctbllib, 
 ##  gbnp, GradedModules, nilmat, rcwa and resclasses packages.
 ##
-DeclareObsoleteSynonym( "FormattedString", "String", "4.8" );
+DeclareObsoleteSynonym( "FormattedString", "String" );
 
 
 #############################################################################
@@ -256,8 +256,8 @@ DeclareObsoleteSynonym( "FormattedString", "String", "4.8" );
 #F  Tuple( ... ) - still used by cubefree, gpd, grpconst, openmath,
 ##                 sonata (01/2016)
 ##
-DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement", "4.8" );
-DeclareObsoleteSynonym( "Tuple", "DirectProductElement", "4.8" );
+DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement" );
+DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 
 ##  from GAPs "classical" random number generator:
 
@@ -319,15 +319,15 @@ BindGlobal( "RestoreStateRandom", function(seed)
 end);
 
 # older documentation referred to `StatusRandom'. 
-DeclareObsoleteSynonym( "StatusRandom", "StateRandom", "4.8" );
+DeclareObsoleteSynonym( "StatusRandom", "StateRandom" );
 
 # synonym formerly declared in factgrp.gd
 # Moved to obsoletes in October 2011, still used by xgap (01/2016)
-DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction", "4.8" );
+DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction" );
 
 # synonym retained for backwards compatibility with GAP 4.4.
 # Moved to obsoletes in April 2012. Still used by grpconst, hap (01/2016)
-DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives", "4.8" );
+DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" );
 
 
 #############################################################################
@@ -457,7 +457,7 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 ##  <#/GAPDoc>
 ##
 ## still used by autpgrp, float, modisom (01/2016)
-DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
+DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
 
 
 #############################################################################
@@ -479,7 +479,7 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat", "4.8" );
 ##  <#/GAPDoc>
 ##
 ## still used by grpconst, guava, liepring, modisom, qpa, singular (01/2016)
-DeclareObsoleteSynonym( "MutableNullMat", "NullMat", "4.8" );
+DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 
 #############################################################################
 ##
@@ -527,7 +527,7 @@ end);
 ## Deprecated in GAP >= 4.8
 ##
 ## still used by GAPDoc (01/2016)
-DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
+DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
 
 #############################################################################
 ##
@@ -551,7 +551,7 @@ end);
 ##  This got a nicer name before is became documented.
 ##
 ## still used by Browse, ctbllib, profiling, resclasses (01/2016)
-DeclareGlobalFunction( "USER_HOME_EXPAND" );
+DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 
 #############################################################################
 ##
@@ -560,7 +560,7 @@ DeclareGlobalFunction( "USER_HOME_EXPAND" );
 ##  This name stems from GAP 3 days.
 ##
 ## still used by Browse, ctbllib, gapdoc, genss, io, orb (05/2017)
-DeclareObsoleteSynonym( "RecFields", "RecNames", "4.0" );
+DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
 ##

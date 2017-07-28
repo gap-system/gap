@@ -17,6 +17,10 @@
 #include <src/scanner.h>
 #include <src/system.h>
 
+#if defined(HPCGAP)
+#include <src/hpc/serialize.h>
+#endif
+
 #define MAXPRINTDEPTH 1024L
 
 typedef struct GAPState {
@@ -59,7 +63,7 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;
-    Char * Prompt;
+    const Char * Prompt;
 #if defined(HPCGAP)
     TypInputFile *  InputFiles[16];
     TypOutputFile * OutputFiles[16];
@@ -165,11 +169,7 @@ typedef struct GAPState {
 
 #if defined(HPCGAP)
     /* For serializer.c */
-    Obj    SerializationObj;
-    UInt   SerializationIndex;
-    void * SerializationDispatcher;
-    Obj    SerializationRegistry;
-    Obj    SerializationStack;
+    SerializationState Serialization;
 #endif
 
     /* For objscoll*, objccoll* */

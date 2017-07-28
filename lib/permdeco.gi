@@ -380,6 +380,9 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
   # subgroup
   u:=fail;
   if Size(N)=1 then
+    if Length(cs)=2 and Size(Centralizer(G,M))=1 then
+      return [G,IdentityMapping(G),G,M,1];
+    fi;
     u:=cs[2];
   else
     i:=2;

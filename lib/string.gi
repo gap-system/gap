@@ -1146,21 +1146,25 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
 	  mini:=false;
 	fi;
 	if 'F' in cold.(f[i]) then
-	  # transform str in normal format
-	  str:=Filtered(str,x->x<>',');
-	  z:=0;
-	  a:=Position(str,'E');
-	  if a<>fail then
-	    z:=Int(Filtered(str{[a+1..Length(str)]},x->x<>'+'));
-	    str:=str{[1..a-1]};
-	  fi;
-	  a:=Position(str,'.');
-	  if a<>fail then
-	    z:=z-(Length(str)-a);
-	    str:=Filtered(str,x->x<>'.');
-	  fi;
+          if IsInt(str) then
+            a:=str;
+          else
+            # transform str in normal format
+            str:=Filtered(str,x->x<>',');
+            z:=0;
+            a:=Position(str,'E');
+            if a<>fail then
+              z:=Int(Filtered(str{[a+1..Length(str)]},x->x<>'+'));
+              str:=str{[1..a-1]};
+            fi;
+            a:=Position(str,'.');
+            if a<>fail then
+              z:=z-(Length(str)-a);
+              str:=Filtered(str,x->x<>'.');
+            fi;
 
-	  a:=Int(str)*10^z;
+            a:=Int(str)*10^z;
+          fi;
 
 	  a:=Collected(Factors(a));
 	  AppendTo(file,"$");

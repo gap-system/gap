@@ -57,7 +57,13 @@ fi
 # reports; and also the IO package, as the profiling package depends on it.
 pushd $SRCDIR/pkg
 
-cd io*
+# HACK: io 4.4.6 (shipped with GAP 4.8.6) directly accesses some GAP internals
+# (for GASMAN), which we will remove in GAP 4.9. To ensure it works,
+# we simply grab the latest version from git.
+rm -rf io*
+git clone https://github.com/gap-packages/io
+cd io
+./autogen.sh
 ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
 make V=1
 cd ..

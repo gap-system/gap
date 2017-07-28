@@ -81,7 +81,7 @@
 #include <src/saveload.h>               /* saving and loading */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 
@@ -360,15 +360,13 @@ Obj FuncSINT_CHAR (
 **
 *F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
 */
-Obj SINTCHARS[256];
-Obj INTCHARS[256];
 Obj FuncINTLIST_STRING (
     Obj             self,
     Obj             val,
     Obj             sign )
 {
   UInt l,i;
-  Obj n, *addr, *ints;
+  Obj n, *addr;
   UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
@@ -379,26 +377,21 @@ Obj FuncINTLIST_STRING (
          "you can replace <val> via 'return <val>;'" );
   }
 
-  /* initialize before first use */
-  if ( SINTCHARS[0] == (Obj) 0 )
-     for (i=0; i<256; i++) {
-       SINTCHARS[i] = INTOBJ_INT(SINT_CHAR(i));
-       INTCHARS[i] = INTOBJ_INT((UInt1)i);
-     }
-       
-
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
   SET_LEN_PLIST(n,l);
   p=CHARS_STRING(val);
   addr=ADDR_OBJ(n);
   /* signed or unsigned ? */
-  if (sign == INTOBJ_INT(1L)) 
-    ints = INTCHARS;
-  else
-    ints = SINTCHARS;
-  for (i=1; i<=l; i++) {
-    addr[i] = ints[p[i-1]];
+  if (sign == INTOBJ_INT(1L)) {
+    for (i=1; i<=l; i++) {
+      addr[i] = INTOBJ_INT((UInt1)p[i-1]);
+    }
+  }
+  else {
+    for (i=1; i<=l; i++) {
+      addr[i] = INTOBJ_INT(SINT_CHAR(p[i-1]));
+    }
   }
 
   CHANGED_BAG(n);
@@ -1761,7 +1754,7 @@ Obj FuncRemoveCharacters (
 {
   UInt1  *s;
   Int i, j, len;
-  UInt1 REMCHARLIST[257] = {0};
+  UInt1 REMCHARLIST[256] = {0};
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1784,7 +1777,6 @@ Obj FuncRemoveCharacters (
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(rem);
   s = CHARS_STRING(rem);
-  REMCHARLIST[256] = 1;
   for(i=0; i<len; i++) REMCHARLIST[s[i]] = 1;
   
   /* now change string in place */
@@ -1867,8 +1859,6 @@ Obj FuncTranslateString (
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */ 
-UInt1 SPLITSTRINGSEPS[257];
-UInt1 SPLITSTRINGWSPACE[257];
 Obj FuncSplitString (
 			      Obj     self,
 			      Obj     string,
@@ -1878,6 +1868,8 @@ Obj FuncSplitString (
   UInt1  *s;
   Int i, a, z, l, pos, len;
   Obj res, part;
+  UInt1 SPLITSTRINGSEPS[256] = { 0 };
+  UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
@@ -1906,26 +1898,14 @@ Obj FuncSplitString (
     return FuncSplitString( self, string, seps, wspace );
   }
   
-  /* reset SPLITSTRINGSEPS (in case of previous error) */
-  if (SPLITSTRINGSEPS[256] != 0) {
-    for(i=0; i<257; i++) SPLITSTRINGSEPS[i] = 0;
-  }
-  
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);
   s = CHARS_STRING(seps);
-  SPLITSTRINGSEPS[256] = 1;
   for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 1;
-  
-  /* reset SPLITSTRINGWSPACE (in case of previous error) */
-  if (SPLITSTRINGWSPACE[256] != 0) {
-    for(i=0; i<257; i++) SPLITSTRINGWSPACE[i] = 0;
-  }
   
   /* set SPLITSTRINGWSPACE by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(wspace);
   s = CHARS_STRING(wspace);
-  SPLITSTRINGWSPACE[256] = 1;
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
  
   /* create the result (list of strings) */
@@ -1980,18 +1960,6 @@ Obj FuncSplitString (
     pos++;
     AssPlist(res, pos, part);
   }
-
-  /* unset SPLITSTRINGSEPS  */
-  len = GET_LEN_STRING(seps);
-  s = CHARS_STRING(seps);
-  for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 0;
-  SPLITSTRINGSEPS[256] = 0;
-
-  /* unset SPLITSTRINGWSPACE  */
-  len = GET_LEN_STRING(wspace);
-  s = CHARS_STRING(wspace);
-  for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 0;
-  SPLITSTRINGWSPACE[256] = 0;
 
   return res;
 }
@@ -2595,7 +2563,7 @@ static Int InitKernel (
     }
 
     /* install the copy method                                             */
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyString;
         CopyObjFuncs [ t1          +IMMUTABLE ] = CopyString;
         CleanObjFuncs[ t1                     ] = CleanString;
@@ -2663,11 +2631,20 @@ static Int InitKernel (
 
     /* install the `IsString' functions                                    */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
+        assert(IsStringFuncs[ t1 ] == 0);
         IsStringFuncs[ t1 ] = AlwaysNo;
     }
 
-    for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
-        IsStringFuncs[ t1 ] = IsStringList;
+    IsStringFuncs[ T_PLIST                 ] = IsStringList;
+    IsStringFuncs[ T_PLIST      +IMMUTABLE ] = IsStringList;
+    IsStringFuncs[ T_PLIST_DENSE           ] = IsStringList;
+    IsStringFuncs[ T_PLIST_DENSE+IMMUTABLE ] = IsStringList;
+    IsStringFuncs[ T_PLIST_EMPTY           ] = AlwaysYes;
+    IsStringFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = AlwaysYes;
+
+    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_HOM_SSORT; t1 += 2 ) {
+        IsStringFuncs[ t1            ] = IsStringListHom;
+        IsStringFuncs[ t1 +IMMUTABLE ] = IsStringListHom;
     }
 
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
@@ -2740,9 +2717,3 @@ StructInitInfo * InitInfoString ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  stringobj.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

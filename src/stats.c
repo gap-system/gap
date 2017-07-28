@@ -57,7 +57,7 @@
 
 #include <src/hookintrprtr.h>           /* visit statements for profiling */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************
@@ -483,7 +483,7 @@ UInt            ExecFor (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -525,7 +525,7 @@ UInt            ExecFor (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -598,7 +598,7 @@ UInt            ExecFor2 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -645,7 +645,7 @@ UInt            ExecFor2 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -725,7 +725,7 @@ UInt            ExecFor3 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -778,7 +778,7 @@ UInt            ExecFor3 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -879,7 +879,7 @@ UInt            ExecForRange (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -945,7 +945,7 @@ UInt            ExecForRange2 (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1018,7 +1018,7 @@ UInt            ExecForRange3 (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1150,7 +1150,7 @@ UInt ExecWhile (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1188,7 +1188,7 @@ UInt ExecWhile2 (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1233,7 +1233,7 @@ UInt ExecWhile3 (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1299,7 +1299,7 @@ UInt ExecRepeat (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1337,7 +1337,7 @@ UInt ExecRepeat2 (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1382,7 +1382,7 @@ UInt ExecRepeat3 (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1494,7 +1494,7 @@ UInt ExecInfo (
     SET_BRK_CALL_TO( stat );
     SET_BRK_CURR_STAT( stat );
 
-    selected = CALL_2ARGS(InfoDecision, selectors, level);
+    selected = InfoCheckLevel(selectors, level);
     if (selected == True) {
 
         /* Get the number of arguments to be printed                       */
@@ -1623,7 +1623,7 @@ UInt ExecAssert3Args (
 UInt            ExecReturnObj (
     Stat                stat )
 {
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
     /* test for an interrupt                                               */
     if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1655,7 +1655,7 @@ UInt            ExecReturnObj (
 UInt            ExecReturnVoid (
     Stat                stat )
 {
-#if ! HAVE_SIGNAL
+#if !defined(HAVE_SIGNAL)
     /* test for an interrupt                                               */
     if ( HaveInterrupt() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
@@ -1693,7 +1693,7 @@ int volatile RealExecStatCopied = 0;
 */
 
 #if !defined(HPCGAP)
-static void UnInterruptExecStat() {
+static void UnInterruptExecStat(void) {
   UInt i;
   assert(RealExecStatCopied);
   for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
@@ -2429,9 +2429,3 @@ StructInitInfo * InitInfoStats ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

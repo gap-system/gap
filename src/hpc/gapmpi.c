@@ -105,7 +105,7 @@ Obj UNIX_Realtime( Obj self ) /* Time since beginning in seconds */
 }
 
 Obj UNIX_Alarm( Obj self, Obj seconds )
-{ if ( seconds > 0 )
+{ if ( INT_INTOBJ(seconds) > 0 )
     Pr("This process will die in %d seconds.  Call with arg, 0, to cancel.\n",
        INT_INTOBJ(seconds), 0L);
   else Pr("Alarm cancelled", 0L, 0L);
@@ -246,7 +246,7 @@ SYS_SIG_T ParGAPAnswerIntr( int signr ) {
   */
     ReadEvalError(); /* throw to MPI_READ_ERROR() */
   /*NOTREACHED*/
-#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
+#if defined(SYS_HAS_SIG_T) && !defined(HAVE_SIGNAL_VOID)
   return 0;                           /* is ignored                      */
 #endif
 }
@@ -367,7 +367,6 @@ Obj MPIcomm_rank( Obj self )
 /* This assumes same datatype units as last receive, or MPI_CHAR if no recv */
 Obj MPIget_count( Obj self )
 { int count, b;
-  Obj bob;
   if (last_datatype == UNINITIALIZED) last_datatype = MPI_CHAR;
   MPI_Comm_rank (MPI_COMM_WORLD, &b);
   MPI_Get_count(&last_status, last_datatype, &count);
@@ -421,7 +420,7 @@ Obj MPIattr_get( Obj self, Obj keyval )
   MPI_Attr_get(MPI_COMM_WORLD, INT_INTOBJ(keyval), &attribute_val, &flag);
 /* if (INT_INTOBJ(keyval) == MPI_HOST) flag = 0; */
   if (!flag) return False;
-  return INTOBJ_INT(attribute_val);
+  return INTOBJ_INT((Int)attribute_val);
 }
 
 
@@ -446,13 +445,12 @@ Obj MPIsend( Obj self, Obj args )
 
 Obj MPIbinsend( Obj self, Obj args )
 { Obj buf, dest, tag, size;
-  int s,i;
   MPIARGCHK(3, 4, MPI_Binsend( <string buf>, <int dest>, <int size>, [, <opt int tag = 0> ] ));
   buf = ELM_LIST( args, 1 );
   dest = ELM_LIST( args, 2 );
   size = ELM_LIST (args, 3);
   tag = ( LEN_LIST(args) > 3 ? ELM_LIST( args, 4 ) : 0 );
-  s = MPI_Send( ((char*)CSTR_STRING(buf)),
+  MPI_Send( ((char*)CSTR_STRING(buf)),
             INT_INTOBJ(size), /* don't incl. \0 */
             MPI_CHAR, INT_INTOBJ(dest), INT_INTOBJ(tag),
             MPI_COMM_WORLD);
@@ -675,7 +673,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MPI_Probe" , -1, "args", MPIprobe, "src/gapmpi.c:MPI_Probe" },
     { "MPI_Iprobe" , -1, "args", MPIiprobe, "src/gapmpi.c:MPI_Iprobe" },
 
-    { 0, 0, 0, 0, 0, 0 }
+    { 0, 0, 0, 0, 0 }
 
 };
 
@@ -736,13 +734,8 @@ StructInitInfo * InitInfoGapmpi ( void ) /* For backward compatibility */
 {
     return &module;
 }
+
 StructInitInfo * InitInfoPargapmpi ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  gapmpi.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

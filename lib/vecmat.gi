@@ -1365,58 +1365,25 @@ end);
 
 #############################################################################
 ##
-#F  ConvertToMatrixRep(<v>)
-##
-#InstallGlobalFunction(ConvertToMatrixRep,function(arg)
-#    local m;
-#    m:=arg[1];
-#    if IsGF2MatrixRep(m) then
-#        return true;
-#    fi;
-#    if not IsMatrix(m) or Length(m)=0 then
-#        return fail;
-#    fi;
-#    
-#    # enforce to run `ConvertToVectorRep' over all vectors to make them
-#    # compressed.
-#    if Length(arg)=1 then
-#        if ForAny(List(m,i->ConvertToVectorRep(i)),i->i<>2) then
-#            return fail;
-#        fi;
-#    else
-#        if ForAny(List(m,i->ConvertToVectorRep(i,arg[2])),i->i<>2) then
-#            return fail;
-#        fi;
-#    fi;
-#    if IsMutable(m) and ForAny(m, IsMutable) then
-#        return fail;
-#    fi;
-#    CONV_GF2MAT(m);
-#    return true;
-#end);
-
-#############################################################################
-##
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
-DoImmutableMatrix:=function(field,matrix,change)
+BindGlobal("DoImmutableMatrix", function(field,matrix,change)
 local sf, rep, ind, ind2, row, i,big,l;
   if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
-    # if empty of not list based, simply return `Immutable'.
+    # if empty or not list based, simply return `Immutable'.
     return Immutable(matrix);
   fi;
   if IsInt(field) then
     sf:=field;
-  else
-    if not IsField(field) then
-      # not a field
-      return Immutable(matrix);
-    fi;
+  elif IsField(field) then
     sf:=Size(field);
+  else
+    # not a field
+    return Immutable(matrix);
   fi;
 
-  big:=sf>256 or sf=0;
+  big:=sf>256 or sf=0 or not IsFFECollColl(matrix);
 
   # the representation we want the rows to be in
   if sf=2 then
@@ -1433,11 +1400,11 @@ local sf, rep, ind, ind2, row, i,big,l;
   for i in [1..Length(matrix)] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
-	or (IsMutable(matrix[i]) and not change) then
+        or (IsMutable(matrix[i]) and not change) then
         Add(ind2,i);
       else
-	# wrong rep, but can be converted
-	Add(ind,i);
+        # wrong rep, but can be converted
+        Add(ind,i);
       fi;
     elif (IsMutable(matrix[i]) and not change) then
       # right rep but wrong mutability
@@ -1470,21 +1437,19 @@ local sf, rep, ind, ind2, row, i,big,l;
       ConvertToVectorRepNC(row, sf);
       matrix[i] := row;
     od;
+    for i in ind do
+      ConvertToVectorRepNC(matrix[i],sf);
+    od;
   fi;
 
-  # this can only happen if not big
-  for i in ind do
-    ConvertToVectorRepNC(matrix[i],sf);
-  od;
-
   MakeImmutable(matrix);
-  if sf=2 and not IsGF2MatrixRep(matrix) then
+  if not big and sf=2 and not IsGF2MatrixRep(matrix) then
     CONV_GF2MAT(matrix);
-  elif sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
+  elif not big and sf>2 and sf<=256 and not Is8BitMatrixRep(matrix) then
     CONV_MAT8BIT(matrix,sf);
   fi;
   return matrix;
-end;
+end);
 
 InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
 function(f,m)
@@ -2222,7 +2187,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
   [IsList, IsInt, IsGF2MatrixRep],
   function(l,rl,m)
     local i,li;
-    if not(IsList(l[1])) then
+    if not IsList(l[1]) then
         li := [];
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
@@ -2250,7 +2215,7 @@ BindGlobal( "PositionLastNonZeroFunc2",
   end );
 
 InstallMethod( PositionLastNonZero, "for a row vector obj",
-  [IsRowVectorObj], PositionLastNonZeroFunc );
+  [IsVectorObj], PositionLastNonZeroFunc );
 InstallMethod( PositionLastNonZero, "for a matrix obj",
   [IsMatrixObj], PositionLastNonZeroFunc );
 InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
@@ -2343,7 +2308,7 @@ InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   KRONECKERPRODUCT_GF2MAT_GF2MAT );
 
 InstallMethod( Fold, "for a gf2 vector, a positive int, and a gf2 matrix",
-  [ IsRowVectorObj and IsGF2VectorRep, IsPosInt, IsGF2MatrixRep ],
+  [ IsVectorObj and IsGF2VectorRep, IsPosInt, IsGF2MatrixRep ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := [];
@@ -2366,7 +2331,7 @@ InstallMethod( BaseField, "for a compressed gf2 matrix",
 InstallMethod( BaseField, "for a compressed gf2 vector",
   [IsGF2VectorRep], function(v) return GF(2); end );
 
-InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
+InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;
@@ -2469,15 +2434,6 @@ InstallMethod( CompatibleVector, "for a gf2 matrix",
     return ShallowCopy(m[1]);
   end );
 
-InstallMethod( CompatibleMatrix, "for a gf2 vector",
-  [ IsGF2VectorRep ],
-  function( v )
-    local m;
-    m := [ShallowCopy(v)];
-    ConvertToMatrixRep(m,2);
-    return m;
-  end );
-
 InstallMethod( WeightOfVector, "for a gf2 vector",
   [ IsGF2VectorRep ],
   function( v )
@@ -2498,7 +2454,7 @@ InstallMethod( NewCompanionMatrix,
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;

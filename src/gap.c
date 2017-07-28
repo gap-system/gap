@@ -97,6 +97,8 @@
 
 #include <src/gapstate.h>
 
+#include <src/objset.h>
+
 #ifdef GAPMPI
 #include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
 #endif
@@ -108,8 +110,6 @@
 #include <src/hpc/misc.h>
 #include <src/hpc/threadapi.h>
 #include <src/hpc/serialize.h>          /* object serialization */
-
-#include <src/objset.h>
 #endif
 
 #include <src/vars.h>                   /* variables */
@@ -117,7 +117,7 @@
 #include <src/intfuncs.h>
 #include <src/iostream.h>
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 /****************************************************************************
 **
@@ -495,6 +495,10 @@ int realmain( int argc, char * argv[], char * environ[] )
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
+  // verify our TNUM enum does not overflow; note that TNUM 254 is T_BODY,
+  // and 255 is reserved for internal use by GASMAN.
+  assert(LAST_COPYING_TNUM <= 253);
+
 #if !defined(HPCGAP)
   InitMainGAPState();
 #endif
@@ -527,10 +531,13 @@ int realmain( int argc, char * argv[], char * environ[] )
 
 #if !defined(COMPILECYGWINDLL)
 
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
+extern void InstallBacktraceHandlers();
+#endif
+
 int main ( int argc, char * argv[], char * environ[] )
 {
-#ifdef PRINT_BACKTRACE
-  void InstallBacktraceHandlers();
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
   InstallBacktraceHandlers();
 #endif
 
@@ -791,6 +798,7 @@ Obj FuncWindowCmd (
   Int             n,  m;
   Int             i;
   Char *          ptr;
+  const Char *    inptr;
   Char *          qtr;
 
   /* check arguments                                                     */
@@ -872,35 +880,35 @@ Obj FuncWindowCmd (
 
   /* now call the window front end with the argument string              */
   qtr = CSTR_STRING(WindowCmdString);
-  ptr = SyWinCmd( qtr, strlen(qtr) );
-  len = strlen(ptr);
+  inptr = SyWinCmd( qtr, strlen(qtr) );
+  len = strlen(inptr);
 
   /* now convert result back into a list                                 */
   list = NEW_PLIST( T_PLIST, 11 );
   SET_LEN_PLIST( list, 0 );
   i = 1;
   while ( 0 < len ) {
-    if ( *ptr == 'I' ) {
-      ptr++;
-      for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-        n += (*ptr-'0') * m;
-      if ( *ptr++ == '-' )
+    if ( *inptr == 'I' ) {
+      inptr++;
+      for ( n=0,m=1; '0' <= *inptr && *inptr <= '9'; inptr++,m *= 10,len-- )
+        n += (*inptr-'0') * m;
+      if ( *inptr++ == '-' )
         n *= -1;
       len -= 2;
       AssPlist( list, i, INTOBJ_INT(n) );
     }
-    else if ( *ptr == 'S' ) {
-      ptr++;
-      for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
-        n += (*ptr-'0') * m;
-      ptr++; /* ignore the '+' */
-      C_NEW_STRING(tmp, n, ptr);
-      ptr += n;
+    else if ( *inptr == 'S' ) {
+      inptr++;
+      for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
+        n += (*inptr-'0') * m;
+      inptr++; /* ignore the '+' */
+      C_NEW_STRING(tmp, n, inptr);
+      inptr += n;
       len -= n+2;
       AssPlist( list, i, tmp );
     }
     else {
-      ErrorQuit( "unknown return value '%s'", (Int)ptr, 0 );
+      ErrorQuit( "unknown return value '%s'", (Int)inptr, 0 );
       return 0;
     }
     i++;
@@ -974,15 +982,15 @@ Obj FuncDownEnv (
   }
   else {
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
 
   DownEnvInner( depth);
-  return 0;
+  return (Obj)0;
 }
 
 Obj FuncUpEnv (
@@ -998,15 +1006,15 @@ Obj FuncUpEnv (
   }
   else {
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
 
   DownEnvInner(-depth);
-  return 0;
+  return (Obj)0;
 }
 
 Obj FuncExecutingStatementLocation(Obj self, Obj context)
@@ -1022,12 +1030,8 @@ Obj FuncExecutingStatementLocation(Obj self, Obj context)
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
   if (
-#if T_PROCCALL_0ARGS
         ( FIRST_STAT_TNUM <= TNUM_STAT(call)
                 && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-#else
-        ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-#endif
         ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
               && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
     line = LINE_STAT(call);
@@ -1053,12 +1057,8 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
   if ( call == 0 ) {
     Pr( "<compiled or corrupted statement> ", 0L, 0L );
   }
-#if T_PROCCALL_0ARGS
     else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
               && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
-#else
-     else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
-#endif
       PrintStat( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
@@ -1719,7 +1719,7 @@ Obj FuncLoadedModules (
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
-    return CopyObj( list, 0 );
+    return list;
 }
 
 
@@ -1740,10 +1740,6 @@ Obj FuncGASMAN (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 cmd;            /* argument                        */
-    UInt                i,  k;          /* loop variables                  */
-    Char                buf[41];
-
     /* check the argument                                                  */
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         ErrorMayQuit(
@@ -1752,10 +1748,10 @@ Obj FuncGASMAN (
     }
 
     /* loop over the arguments                                             */
-    for ( i = 1; i <= LEN_LIST(args); i++ ) {
+    for ( UInt i = 1; i <= LEN_LIST(args); i++ ) {
 
         /* evaluate and check the command                                  */
-        cmd = ELM_PLIST( args, i );
+        Obj cmd = ELM_PLIST( args, i );
 again:
         while ( ! IsStringConv(cmd) ) {
            cmd = ErrorReturnObj(
@@ -1764,13 +1760,28 @@ again:
                "you can replace <cmd> via 'return <cmd>;'" );
        }
 
+#ifdef BOEHM_GC
+        if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+            CollectBags(0,1);
+        }
+        else {
+            cmd = ErrorReturnObj(
+                "GASMAN: <cmd> must be \"collect\"", 0L, 0L,
+                "you can replace <cmd> via 'return <cmd>;'" );
+            goto again;
+        }
+
+#else // BOEHM_GC
+
         /* if request display the statistics                               */
         if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+#ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
+                    Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
@@ -1780,19 +1791,22 @@ again:
                                    (Int)(InfoBags[k].sizeAll/1024));
                 }
             }
+#endif
         }
 
         /* if request give a short display of the statistics                */
         else if ( strcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+#ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 && 
                      (InfoBags[k].nrLive != 0 ||
                       InfoBags[k].sizeLive != 0 ||
                       InfoBags[k].nrAll != 0 ||
                       InfoBags[k].sizeAll != 0) ) {
+                    Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, InfoBags[k].name, sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
@@ -1802,11 +1816,13 @@ again:
                                    (Int)(InfoBags[k].sizeAll/1024));
                 }
             }
+#endif
         }
 
         /* if request display the statistics                               */
         else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
-            for ( k = 0; k < 256; k++ ) {
+#ifdef COUNT_BAGS
+            for ( UInt k = 0; k < 256; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
                 InfoBags[k].nrAll    = InfoBags[k].nrLive;
                 InfoBags[k].sizeAll  = InfoBags[k].sizeLive;
@@ -1815,6 +1831,7 @@ again:
                 InfoBags[k].sizeAll  = 0;
 #endif
             }
+#endif
         }
 
         /* or collect the garbage                                          */
@@ -1851,6 +1868,7 @@ again:
                 "you can replace <cmd> via 'return <cmd>;'" );
             goto again;
         }
+#endif // ! BOEHM_GC
     }
 
     /* return nothing, this function is a procedure                        */
@@ -2050,31 +2068,6 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
     if (body == 0) return INTOBJ_INT(0);
     else return INTOBJ_INT( SIZE_BAG( body ) );
 }
-
-/****************************************************************************
-**
-*F  FuncSWAP_MPTR( <self>, <obj1>, <obj2> ) . . . . . . . swap master pointer
-**
-**  Never use this function unless you are debugging.
-*/
-Obj FuncSWAP_MPTR (
-    Obj                 self,
-    Obj                 obj1,
-    Obj                 obj2 )
-{
-    if ( IS_INTOBJ(obj1) || IS_FFE(obj1) ) {
-        ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
-        return 0;
-    }
-    if ( IS_INTOBJ(obj2) || IS_FFE(obj2) ) {
-        ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
-        return 0;
-    }
-        
-    SwapMasterPoint( obj1, obj2 );
-    return 0;
-}
-
 
 /****************************************************************************
 **
@@ -2476,11 +2469,12 @@ Obj FuncExportToKernelFinished (
 **
 */
 
-Obj FuncSleep( Obj self, Obj secs )
-{
 #ifdef HPCGAP
   extern UInt HaveInterrupt();
 #endif
+
+Obj FuncSleep( Obj self, Obj secs )
+{
   Int  s;
 
   while( ! IS_INTOBJ(secs) )
@@ -2515,7 +2509,6 @@ Obj FuncSleep( Obj self, Obj secs )
 
 Obj FuncMicroSleep( Obj self, Obj msecs )
 {
-  extern UInt HaveInterrupt();
   Int  s;
 
   while( ! IS_INTOBJ(msecs) )
@@ -2584,7 +2577,7 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   STATE(UserHasQUIT) = 1;
   ReadEvalError();
@@ -2606,7 +2599,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return 0;
+    return (Obj)0;
   }
   SyExit(SystemErrorCode);
 }
@@ -2666,7 +2659,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
   /* And also the DotGapPath if available */
-#if HAVE_DOTGAPRC
+#ifdef HAVE_DOTGAPRC
   tmp = MakeImmString( DotGapPath );
   r = RNamName("DOT_GAP_PATH");
   AssPRec(res,r,tmp);
@@ -2711,7 +2704,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
 #ifdef HPCGAP
-  extern UInt SyNumProcessors;
   r = RNamName("NUM_CPUS");
   AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
 #endif
@@ -2745,7 +2737,6 @@ Obj FuncKERNEL_INFO(Obj self) {
 
 Obj FuncTHREAD_UI(Obj self)
 {
-  extern UInt ThreadUI;
   return ThreadUI ? True : False;
 }
 
@@ -2884,9 +2875,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "HANDLE_OBJ", 1, "object",
       FuncHANDLE_OBJ, "src/gap.c:HANDLE_OBJ" },
 
-    { "SWAP_MPTR", 2, "obj1, obj2",
-      FuncSWAP_MPTR, "src/gap.c:SWAP_MPTR" },
-
     { "LoadedModules", 0, "",
       FuncLoadedModules, "src/gap.c:LoadedModules" },
 
@@ -2979,7 +2967,7 @@ static Int InitKernel (
     DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
 #endif
 
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
     InitCopyGVar("OnCharReadHookInFds",&OnCharReadHookInFds);
     InitCopyGVar("OnCharReadHookInFuncs",&OnCharReadHookInFuncs);
@@ -3160,11 +3148,13 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* main module                                                         */
     InitInfoGap,
 
+    // objsets / objmaps
+    InitInfoObjSets,
+
 #ifdef HPCGAP
     /* threads                                                             */
     InitInfoThreadAPI,
     InitInfoAObjects,
-    InitInfoObjSets,
     InitInfoSerialize,
 #endif
 
@@ -3207,7 +3197,7 @@ UInt NrBuiltinModules;
 void RecordLoadedModule (
     StructInitInfo *        info,
     Int                     isGapRootRelative,
-    Char *filename )
+    const Char *            filename )
 {
     UInt len;
     if ( NrModules == MAX_MODULES ) {
@@ -3279,7 +3269,9 @@ void InitializeGap (
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
               0, SyAbortBags );
-              InitMsgsFuncBags( SyMsgsBags ); 
+#if !defined(BOEHM_GC)
+    InitMsgsFuncBags( SyMsgsBags );
+#endif
 
     STATE(StackNams)    = NEW_PLIST( T_PLIST, 16 );
     STATE(CountNams)    = 0;
@@ -3343,7 +3335,7 @@ void InitializeGap (
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
-    /* you should set 'COUNT_BAGS' as well                                 */
+#ifdef COUNT_BAGS
 #   ifdef DEBUG_LOADING
         if ( SyRestoring ) {
             Pr( "#W  after setup\n", 0L, 0L );
@@ -3365,6 +3357,7 @@ void InitializeGap (
             }
         }
 #   endif
+#endif
 
 #ifndef BOEHM_GC
     /* and now for a special hack                                          */
@@ -3408,7 +3401,9 @@ void InitializeGap (
 
     /* otherwise call library initialisation                               */
     else {
-        WarnInitGlobalBag = 1;
+#       if !defined(BOEHM_GC)
+            WarnInitGlobalBag = 1;
+#       endif
 #       ifdef DEBUG_HANDLER_REGISTRATION
             CheckAllHandlers();
 #       endif
@@ -3430,7 +3425,9 @@ void InitializeGap (
                 }
             }
         }
-        WarnInitGlobalBag = 0;
+#if     !defined(BOEHM_GC)
+            WarnInitGlobalBag = 0;
+#       endif
     }
 
     /* check initialisation                                                */
@@ -3475,8 +3472,3 @@ void InitializeGap (
     }
 
 }
-
-/****************************************************************************
-**
-*E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

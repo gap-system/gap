@@ -82,7 +82,7 @@ static inline Int ARE_INTOBJS(Obj o1, Obj o2)
 static inline Int INT_INTOBJ(Obj o)
 {
     GAP_ASSERT(IS_INTOBJ(o));
-#if HAVE_ARITHRIGHTSHIFT
+#ifdef HAVE_ARITHRIGHTSHIFT
     return (Int)o >> 2;
 #else
     return ((Int)o - 1) / 4;
@@ -164,7 +164,7 @@ static inline Obj INTOBJ_INT(Int i)
 */
 
 
-#if SIZEOF_VOID_P == SIZEOF_INT && HAVE___BUILTIN_SMUL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_SMUL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(int l, int r)
 {
   int prod;
@@ -172,7 +172,7 @@ static inline Obj prod_intobjs(int l, int r)
     return (Obj) 0;
   return (Obj) ((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG && HAVE___BUILTIN_SMULL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_SMULL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(long l, long r)
 {
   long prod;
@@ -180,7 +180,7 @@ static inline Obj prod_intobjs(long l, long r)
     return (Obj) 0;
   return (Obj) ((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && HAVE___BUILTIN_SMULLL_OVERFLOW && HAVE_ARITHRIGHTSHIFT
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_SMULLL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
 static inline Obj prod_intobjs(long long l, long long r)
 {
   long long prod;
@@ -214,7 +214,7 @@ static inline Obj prod_intobjs(Int l, Int r)
       (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
     return (Obj) prod;
 
-#if HAVE_ARITHRIGHTSHIFT
+#ifdef HAVE_ARITHRIGHTSHIFT
   if ((prod -1) / (l >> 2) == r-1)
     return (Obj) prod;
 #else
@@ -300,147 +300,147 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **  then the record types, then the list types,  then the external types, and
 **  finally the virtual types.
 */
-#define FIRST_REAL_TNUM         0
+enum {
+    FIRST_REAL_TNUM         = 0,
 
-#define FIRST_CONSTANT_TNUM     (0UL)
-#define T_INT                   (FIRST_CONSTANT_TNUM+ 0)    /* immediate */
-#define T_INTPOS                (FIRST_CONSTANT_TNUM+ 1)
-#define T_INTNEG                (FIRST_CONSTANT_TNUM+ 2)
-#define T_RAT                   (FIRST_CONSTANT_TNUM+ 3)
-#define T_CYC                   (FIRST_CONSTANT_TNUM+ 4)
-#define T_FFE                   (FIRST_CONSTANT_TNUM+ 5)    /* immediate */
-#define T_PERM2                 (FIRST_CONSTANT_TNUM+ 6)
-#define T_PERM4                 (FIRST_CONSTANT_TNUM+ 7)
-#define T_BOOL                  (FIRST_CONSTANT_TNUM+ 8)
-#define T_CHAR                  (FIRST_CONSTANT_TNUM+ 9)
-#define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
-#define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
-#define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
-#define T_LVARS                 (FIRST_CONSTANT_TNUM+13)
-#define T_HVARS                 (FIRST_CONSTANT_TNUM+14)
-#define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)
-#define T_POLYMAKE              (FIRST_CONSTANT_TNUM+16)
-#define T_TRANS2                (FIRST_CONSTANT_TNUM+17)
-#define T_TRANS4                (FIRST_CONSTANT_TNUM+18)
-#define T_PPERM2                (FIRST_CONSTANT_TNUM+19)
-#define T_PPERM4                (FIRST_CONSTANT_TNUM+20)
-#define T_SPARE1                (FIRST_CONSTANT_TNUM+21)
-#define T_SPARE2                (FIRST_CONSTANT_TNUM+22)
-#define T_SPARE3                (FIRST_CONSTANT_TNUM+23)
-#define T_SPARE4                (FIRST_CONSTANT_TNUM+24)
-#define LAST_CONSTANT_TNUM      (T_SPARE4)
+    FIRST_CONSTANT_TNUM     = FIRST_REAL_TNUM,
+        T_INT               = FIRST_CONSTANT_TNUM,  // immediate
+        T_INTPOS,
+        T_INTNEG,
+        T_RAT,
+        T_CYC,
+        T_FFE,                                      // immediate
+        T_PERM2,
+        T_PERM4,
+        T_TRANS2,
+        T_TRANS4,
+        T_PPERM2,
+        T_PPERM4,
+        T_BOOL,
+        T_CHAR,
+        T_FUNCTION,
+        T_FLAGS,
+        T_MACFLOAT,
+        T_LVARS,
+        T_HVARS,
+    LAST_CONSTANT_TNUM      = T_HVARS,
 
-#define IMMUTABLE               1
+    IMMUTABLE               = 1,    // IMMUTABLE is not a TNUM, but rather a bitmask
 
-#define FIRST_IMM_MUT_TNUM      NEXT_EVEN_INT(LAST_CONSTANT_TNUM)
-#define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
-#define T_PREC                  (FIRST_RECORD_TNUM+ 0)
-#define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)
+    // first mutable/immutable TNUM
+    FIRST_IMM_MUT_TNUM      = NEXT_EVEN_INT(LAST_CONSTANT_TNUM),
 
-#define FIRST_LIST_TNUM         NEXT_EVEN_INT(LAST_RECORD_TNUM)
-#define FIRST_PLIST_TNUM        FIRST_LIST_TNUM
-#define T_PLIST                 (FIRST_LIST_TNUM+ 0)
-#define T_PLIST_NDENSE          (FIRST_LIST_TNUM+ 2)
-#define T_PLIST_DENSE           (FIRST_LIST_TNUM+ 4)
-#define T_PLIST_DENSE_NHOM      (FIRST_LIST_TNUM+ 6)
-#define T_PLIST_DENSE_NHOM_SSORT (FIRST_LIST_TNUM+8 )
-#define T_PLIST_DENSE_NHOM_NSORT (FIRST_LIST_TNUM+10)
-#define T_PLIST_EMPTY           (FIRST_LIST_TNUM+12)
-#define T_PLIST_HOM             (FIRST_LIST_TNUM+14)
-#define T_PLIST_HOM_NSORT       (FIRST_LIST_TNUM+16)
-#define T_PLIST_HOM_SSORT       (FIRST_LIST_TNUM+18)
-#define T_PLIST_TAB             (FIRST_LIST_TNUM+20)
-#define T_PLIST_TAB_NSORT       (FIRST_LIST_TNUM+22)
-#define T_PLIST_TAB_SSORT       (FIRST_LIST_TNUM+24)
-#define T_PLIST_TAB_RECT        (FIRST_LIST_TNUM+26)
-#define T_PLIST_TAB_RECT_NSORT  (FIRST_LIST_TNUM+28)
-#define T_PLIST_TAB_RECT_SSORT  (FIRST_LIST_TNUM+30)
-#define T_PLIST_CYC             (FIRST_LIST_TNUM+32)
-#define T_PLIST_CYC_NSORT       (FIRST_LIST_TNUM+34)
-#define T_PLIST_CYC_SSORT       (FIRST_LIST_TNUM+36)
-#define T_PLIST_FFE             (FIRST_LIST_TNUM+38)
-#define LAST_PLIST_TNUM         (T_PLIST_FFE+IMMUTABLE)
-#define T_RANGE_NSORT           (FIRST_LIST_TNUM+40)
-#define T_RANGE_SSORT           (FIRST_LIST_TNUM+42)
-#define T_BLIST                 (FIRST_LIST_TNUM+44)
-#define T_BLIST_NSORT           (FIRST_LIST_TNUM+46)
-#define T_BLIST_SSORT           (FIRST_LIST_TNUM+48)
-#define T_STRING                (FIRST_LIST_TNUM+50)
-#define T_STRING_NSORT          (FIRST_LIST_TNUM+52)
-#define T_STRING_SSORT          (FIRST_LIST_TNUM+54)
-#define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
-#define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
+        // records
+        FIRST_RECORD_TNUM                   = FIRST_IMM_MUT_TNUM,
+            T_PREC                          = FIRST_RECORD_TNUM,
+        LAST_RECORD_TNUM                    = T_PREC+IMMUTABLE,
 
-/* Object sets and maps */
-#define FIRST_OBJSET_TNUM       NEXT_EVEN_INT(LAST_LIST_TNUM)
-#define T_OBJSET                (FIRST_OBJSET_TNUM+0)
-#define T_OBJMAP                (FIRST_OBJSET_TNUM+2)
-#define LAST_OBJSET_TNUM        (T_OBJMAP+IMMUTABLE)
+        // lists
+        FIRST_LIST_TNUM                     = NEXT_EVEN_INT(LAST_RECORD_TNUM),
 
-/* IMMUTABLE is not used for external types but keep the parity */
-#define FIRST_EXTERNAL_TNUM     NEXT_EVEN_INT(LAST_OBJSET_TNUM)
-#define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
-#define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
-#define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
-#define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
+            // plists
+            FIRST_PLIST_TNUM                = FIRST_LIST_TNUM,
+                T_PLIST                     = FIRST_LIST_TNUM+ 0,
+                T_PLIST_NDENSE              = FIRST_LIST_TNUM+ 2,
+                T_PLIST_DENSE               = FIRST_LIST_TNUM+ 4,
+                T_PLIST_DENSE_NHOM          = FIRST_LIST_TNUM+ 6,
+                T_PLIST_DENSE_NHOM_SSORT    = FIRST_LIST_TNUM+ 8,
+                T_PLIST_DENSE_NHOM_NSORT    = FIRST_LIST_TNUM+10,
+                T_PLIST_EMPTY               = FIRST_LIST_TNUM+12,
+                T_PLIST_HOM                 = FIRST_LIST_TNUM+14,
+                T_PLIST_HOM_NSORT           = FIRST_LIST_TNUM+16,
+                T_PLIST_HOM_SSORT           = FIRST_LIST_TNUM+18,
+                T_PLIST_TAB                 = FIRST_LIST_TNUM+20,
+                T_PLIST_TAB_NSORT           = FIRST_LIST_TNUM+22,
+                T_PLIST_TAB_SSORT           = FIRST_LIST_TNUM+24,
+                T_PLIST_TAB_RECT            = FIRST_LIST_TNUM+26,
+                T_PLIST_TAB_RECT_NSORT      = FIRST_LIST_TNUM+28,
+                T_PLIST_TAB_RECT_SSORT      = FIRST_LIST_TNUM+30,
+                T_PLIST_CYC                 = FIRST_LIST_TNUM+32,
+                T_PLIST_CYC_NSORT           = FIRST_LIST_TNUM+34,
+                T_PLIST_CYC_SSORT           = FIRST_LIST_TNUM+36,
+                T_PLIST_FFE                 = FIRST_LIST_TNUM+38,
+            LAST_PLIST_TNUM                 = T_PLIST_FFE+IMMUTABLE,
+
+            // other kinds of lists
+            T_RANGE_NSORT                   = FIRST_LIST_TNUM+40,
+            T_RANGE_SSORT                   = FIRST_LIST_TNUM+42,
+            T_BLIST                         = FIRST_LIST_TNUM+44,
+            T_BLIST_NSORT                   = FIRST_LIST_TNUM+46,
+            T_BLIST_SSORT                   = FIRST_LIST_TNUM+48,
+            T_STRING                        = FIRST_LIST_TNUM+50,
+            T_STRING_NSORT                  = FIRST_LIST_TNUM+52,
+            T_STRING_SSORT                  = FIRST_LIST_TNUM+54,
+
+        LAST_LIST_TNUM                      = T_STRING_SSORT+IMMUTABLE,
+
+        // object sets and maps
+        FIRST_OBJSET_TNUM                   = NEXT_EVEN_INT(LAST_LIST_TNUM),
+            T_OBJSET                        = FIRST_OBJSET_TNUM+0,
+            T_OBJMAP                        = FIRST_OBJSET_TNUM+2,
+        LAST_OBJSET_TNUM                    = T_OBJMAP+IMMUTABLE,
+
+    // last mutable/immutable TNUM
+    LAST_IMM_MUT_TNUM       = LAST_LIST_TNUM,
+
+    // external types (IMMUTABLE is not used for them, but keep the parity anyway)
+    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_OBJSET_TNUM),
+        T_COMOBJ            = FIRST_EXTERNAL_TNUM,
+        T_POSOBJ,
+        T_DATOBJ,
+        T_WPOBJ,
+#ifdef HPCGAP
+        T_APOSOBJ,
+        T_ACOMOBJ,
+#endif
+
+        // package TNUMs, for use by kernel extensions
+        // note thatLAST_COPYING_TNUM must not exceed 253, which restricts
+        // the value for LAST_PACKAGE_TNUM indirectly
+        FIRST_PACKAGE_TNUM,
+#ifdef HPCGAP
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 42,
+#else
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
+#endif
+
+    LAST_EXTERNAL_TNUM      = LAST_PACKAGE_TNUM,
 
 #ifdef HPCGAP
+    FIRST_SHARED_TNUM       = LAST_EXTERNAL_TNUM+1,
+        // primitive types
+        T_THREAD            = FIRST_SHARED_TNUM,
+        T_MONITOR,
+        T_REGION,
+        // user-programmable types
+        T_SEMAPHORE,
+        T_CHANNEL,
+        T_BARRIER,
+        T_SYNCVAR,
+        // atomic lists and records, thread local records
+        T_FIXALIST,
+        T_ALIST,
+        T_AREC,
+        T_AREC_INNER,
+        T_TLREC,
+        T_TLREC_INNER,
+    LAST_SHARED_TNUM        = T_TLREC_INNER,
+#endif
 
-#define T_APOSOBJ               (FIRST_EXTERNAL_TNUM+ 4)
-#define T_ACOMOBJ               (FIRST_EXTERNAL_TNUM+ 5)
-
-/* reserve space for package TNUMs */
-#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 6)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+32)
-
-#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
-
-#define FIRST_SHARED_TNUM       (LAST_EXTERNAL_TNUM+1)
-
-/* Primitive types */
-#define T_THREAD                (FIRST_SHARED_TNUM+ 2)
-#define T_MUTEX                 (FIRST_SHARED_TNUM+ 3)
-#define T_CONDVAR               (FIRST_SHARED_TNUM+ 4)
-#define T_RWLOCK                (FIRST_SHARED_TNUM+ 5)
-#define T_MONITOR               (FIRST_SHARED_TNUM+ 6)
-#define T_REGION                (FIRST_SHARED_TNUM+ 7)
-
-/* User-programmable types */
-#define T_LOCK                  (FIRST_SHARED_TNUM+ 8)
-#define T_SEMAPHORE             (FIRST_SHARED_TNUM+ 9)
-#define T_CHANNEL               (FIRST_SHARED_TNUM+10)
-#define T_BARRIER               (FIRST_SHARED_TNUM+11)
-#define T_SYNCVAR               (FIRST_SHARED_TNUM+12)
-#define T_FIXALIST              (FIRST_SHARED_TNUM+13)
-#define T_ALIST                 (FIRST_SHARED_TNUM+14)
-#define T_AREC                  (FIRST_SHARED_TNUM+15)
-#define T_AREC_INNER            (FIRST_SHARED_TNUM+16)
-#define T_TLREC                 (FIRST_SHARED_TNUM+17)
-#define T_TLREC_INNER           (FIRST_SHARED_TNUM+18)
-#define LAST_SHARED_TNUM        (T_TLREC_INNER)
-
-#define LAST_REAL_TNUM          LAST_SHARED_TNUM
-
+#ifdef HPCGAP
+    LAST_REAL_TNUM          = LAST_SHARED_TNUM,
 #else
-
-/* reserve space for package TNUMs */
-#define FIRST_PACKAGE_TNUM      (FIRST_EXTERNAL_TNUM+ 4)
-#define LAST_PACKAGE_TNUM       (FIRST_EXTERNAL_TNUM+51)
-
-#define LAST_EXTERNAL_TNUM      LAST_PACKAGE_TNUM
-#define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
-
+    LAST_REAL_TNUM          = LAST_EXTERNAL_TNUM,
 #endif
 
+    // virtual TNUMs for copying objects
+    FIRST_COPYING_TNUM      = NEXT_EVEN_INT(LAST_REAL_TNUM),
+    COPYING                 = LAST_EXTERNAL_TNUM - FIRST_IMM_MUT_TNUM,
+    LAST_COPYING_TNUM       = LAST_REAL_TNUM + COPYING,
 
-#define FIRST_COPYING_TNUM      NEXT_EVEN_INT(LAST_REAL_TNUM)
-#define COPYING                 (FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM)
-#define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
-
-#if LAST_COPYING_TNUM > 254
-#error LAST_COPYING_TNUM out of range
-#endif
-
+    // the type of function body bags
+    T_BODY                  = 254,
+};
 
 /****************************************************************************
 **
@@ -452,19 +452,6 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 #ifdef HPCGAP
 #define TESTED (1 << 1)
-#endif
-
-
-/****************************************************************************
-**
-*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
-**
-**  'T_BODY' is the type of the function body bags.
-*/
-#define T_BODY                  254
-
-#if T_BODY <= LAST_COPYING_TNUM
-#error T_BODY out of range
 #endif
 
 
@@ -927,8 +914,3 @@ StructInitInfo * InitInfoObjects ( void );
 
 
 #endif // GAP_OBJECTS_H
-
-/****************************************************************************
-**
-*E  objects.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

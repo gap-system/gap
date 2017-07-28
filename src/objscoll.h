@@ -136,8 +136,3 @@ StructInitInfo * InitInfoSingleCollector ( void );
 
 
 #endif // GAP_OBJSCOLL_H
-
-/****************************************************************************
-**
-*E  objscoll.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

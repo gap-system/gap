@@ -71,13 +71,8 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
 end);
 
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-  local cl, out, fun, s;
-  cl := InfoData.LastClass![1];
-  if IsBound(InfoData.Output[cl]) then
-    out := InfoData.Output[cl];
-  else
-    out := DefaultInfoOutput;
-  fi;
+  local out, fun, s;
+  out := InfoOutput(infoclass);
   if out = "*Print*" then
     if IsBoundGlobal( "PrintFormattedString" ) then
       fun := function(s)
@@ -175,6 +170,18 @@ end);
 ##
 InstallGlobalFunction( SetInfoOutput, function(class, out)
   InfoData.Output[class![1]] := out;
+end);
+
+InstallGlobalFunction( UnbindInfoOutput, function(class)
+  Unbind(InfoData.Output[class![1]]);
+end);
+
+InstallGlobalFunction( InfoOutput, function(class)
+  if IsBound(InfoData.Output[class![1]]) then
+    return InfoData.Output[class![1]];
+  else
+    return DefaultInfoOutput;
+  fi;
 end);
 
 #############################################################################
@@ -287,39 +294,58 @@ end);
 
 #############################################################################
 ##
+#F  InfoDecisionFast( <index>, <selector>, <level>)
 #F  InfoDecision( <selector>, <level>) .  decide whether a message is printed
 ##
-##  This is called by the kernel
+##  These are called by the kernel. InfoDecisionFast is used when
+##  <selectors> is a single object of type 'IsInfoClassListRep' and
+##  <level> is a positive small integer. In that case, <index> is
+##  <selectors![1]>.
 ##
 
+BIND_GLOBAL( "InfoDecisionFast", function(index, selector, level)
+    if InfoData.CurrentLevels[index] >= level then
+        InfoData.LastClass := selector;
+        InfoData.LastLevel := level;
+        return true;
+    else
+        return false;
+    fi;
+end);
+
 BIND_GLOBAL( "InfoDecision", function(selectors, level)
-    local usage;
-    usage := "Usage : InfoDecision(<selectors>, <level>)";
+    local usage, ret;
+    usage := "usage : Info(<selectors>, <level>, ...)";
     if not IsInt(level) or level <= 0 then
         if level = 0 then
-            Error("Level 0 info messages are not allowed");
+            Error("level 0 Info messages are not allowed");
         else
             Error(usage);
         fi;
     fi;
-   
-    # store the class and level
-    if IsInfoClass(selectors) then
-      InfoData.LastClass := selectors;
-    else
-      InfoData.LastClass := selectors[1];
-    fi;
-    InfoData.LastLevel := level;
 
+    ret := false;
+    
     if IsInfoClass(selectors) then
-        return InfoLevel(selectors) >= level;
+        ret := InfoLevel(selectors) >= level;
     elif IsInfoSelector(selectors)  then
-
         # note that we 'or' the classes together
-        return ForAny(selectors, ic -> InfoLevel(ic) >= level);
+        ret :=  ForAny(selectors, ic -> InfoLevel(ic) >= level);
     else
         Error(usage);
     fi;
+
+    if ret then
+        # store the class and level
+        if IsInfoClass(selectors) then
+            InfoData.LastClass := selectors;
+        else
+            InfoData.LastClass := selectors[1];
+        fi;
+        InfoData.LastLevel := level;
+    fi;
+
+    return ret;
 end );
     
 #############################################################################

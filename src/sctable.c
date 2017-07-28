@@ -439,12 +439,3 @@ StructInitInfo * InitInfoSCTable ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  sctable.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
-
-
-

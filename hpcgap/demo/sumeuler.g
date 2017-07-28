@@ -1,6 +1,6 @@
 # Calculating time interval between t1 (start) and t2 (end) in microseconds
 runtime:=function(t1,t2) 
-return 1000000*(t2.tv_sec-t1.tv_sec)+(t2.tv_usec-t1.tv_usec); 
+return (t2-t1) * 1.E-9;
 end;
 
 # Parallel or sequential computation of Sum( List( [n1..n2], <func> ) )
@@ -15,7 +15,7 @@ while b2 < n2 do
   Add( chunks, [b1,b2] );
 od;
 # chunks := Reversed(chunks);
-curtime1:=CurrentTime();
+curtime1:=NanosecondsSinceEpoch();
 if not par then
    partialsums:=List( chunks, func );
 else
@@ -23,7 +23,7 @@ else
    partialsums :=List(jobs, TaskResult);
 fi;
 res := Sum(partialsums);
-curtime2:=CurrentTime();
+curtime2:=NanosecondsSinceEpoch();
 duration:=runtime(curtime1,curtime2);
 return rec(result:=res, time:=duration);
 end;
@@ -163,7 +163,7 @@ Compare( SumNrPrimeFactors, 1, 10^7, 10^4); # 26x on 64 cores
 List([1..10],i->Compare( SumEulerByDefinition, 1, 10^4, 10^2));Sum(last)/10;
  
 # Compare HPC-GAP and SCSCP performance: 1765s with HPC-GAP, 1135 with SCSCP
-curtime1:=CurrentTime();FoldSkeleton( SummatoryLiouvilleFunction, 1, 906180359, 10^5, true  );curtime2:=CurrentTime();
+curtime1:=NanosecondsSinceEpoch();FoldSkeleton( SummatoryLiouvilleFunction, 1, 906180359, 10^5, true  );curtime2:=NanosecondsSinceEpoch();
 duration:=runtime(curtime1,curtime2);
 
 # TODO: parallel slower than sequential! With Primes extended, becames even worse

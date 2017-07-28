@@ -246,9 +246,8 @@
 
 <!ELEMENT Item ( %Text;)*>
 <!ELEMENT Mark ( %InnerText;)*>
-<!ELEMENT BigMark ( %InnerText;)*>
 
-<!ELEMENT List ( ((Mark,Item)|(BigMark,Item)|Item)+ )>
+<!ELEMENT List ( ((Mark,Item)|Item)+ )>
 <!ATTLIST List Only CDATA #IMPLIED
                Not  CDATA #IMPLIED>
 <!ELEMENT Enum ( Item+ )>

@@ -64,18 +64,18 @@
 
 #include <termios.h>
 
-#if HAVE_SYS_WAIT_H
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
 
 #include <assert.h>
 
-#if HAVE_OPENPTY
-  #if HAVE_UTIL_H
+#ifdef HAVE_OPENPTY
+  #if defined(HAVE_UTIL_H)
     #include <util.h>     /* for openpty() on Mac OS X, OpenBSD and NetBSD */
-  #elif HAVE_LIBUTIL_H
+  #elif defined(HAVE_LIBUTIL_H)
     #include <libutil.h>  /* for openpty() on FreeBSD */
-  #elif HAVE_PTY_H
+  #elif defined(HAVE_PTY_H)
     #include <pty.h>      /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
   #endif
 #endif
@@ -160,7 +160,7 @@ static void KillChild(UInt stream)
 *F  GetMasterPty( <fid> ) . . . . . . . . .  open a master pty (from "xterm")
 */
 
-#if HAVE_OPENPTY
+#ifdef HAVE_OPENPTY
 
 static UInt OpenPty(int * master, int * slave)
 {
@@ -171,7 +171,7 @@ static UInt OpenPty(int * master, int * slave)
     return (openpty(master, slave, NULL, NULL, NULL) < 0);
 }
 
-#elif HAVE_POSIX_OPENPT
+#elif defined(HAVE_POSIX_OPENPT)
 
 static UInt OpenPty(int * master, int * slave)
 {
@@ -280,7 +280,6 @@ static void ChildStatusChanged(int whichsig)
 #ifdef HPCGAP
 Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 {
-    extern void ChildStatusChanged(int signr);
     ChildStatusChanged(SIGCHLD);
     return (Obj)0;
 }
@@ -351,7 +350,7 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
             _exit(-1);
         }
 
-#if HAVE_SETPGID
+#ifdef HAVE_SETPGID
         setpgid(0, 0);
 #endif
 
@@ -452,7 +451,7 @@ static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block)
     int ret;
 
     while (maxlen > 0) {
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
         if (!block || nread > 0) {
             fd_set         set;
             struct timeval tv;
@@ -750,9 +749,3 @@ StructInitInfo * InitInfoIOStream(void)
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  iostream.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -27,8 +27,3 @@ StructInitInfo * InitInfoTietze ( void );
 
 
 #endif // GAP_TIETZE_H
-
-/****************************************************************************
-**
-*E  tietze.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

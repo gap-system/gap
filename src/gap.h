@@ -471,7 +471,7 @@ extern UInt NrBuiltinModules;
 extern void RecordLoadedModule (
     StructInitInfo *        module,
     Int                     isGapRootRelative,
-    Char *                  filename );
+    const Char *            filename );
 
 
 
@@ -487,8 +487,3 @@ extern void InitializeGap (
 
 
 #endif // GAP_GAP_H
-
-/****************************************************************************
-**
-*E  gap.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

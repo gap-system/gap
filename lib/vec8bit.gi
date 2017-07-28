@@ -1035,7 +1035,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   [IsList, IsInt, Is8BitMatrixRep],
   function(l,rl,m)
     local q,i,li;
-    if not(IsList(l[1])) then
+    if not IsList(l[1]) then
         li := [];
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
@@ -1121,7 +1121,7 @@ InstallOtherMethod( KroneckerProduct, "for two 8bit matrices",
   end );
 
 InstallMethod( Fold, "for an 8bit vector, a positive int, and an 8bit matrix",
-  [ IsRowVectorObj and Is8BitVectorRep, IsPosInt, Is8BitMatrixRep ],
+  [ IsVectorObj and Is8BitVectorRep, IsPosInt, Is8BitMatrixRep ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := [];
@@ -1144,7 +1144,7 @@ InstallMethod( BaseField, "for a compressed 8bit matrix",
 InstallMethod( BaseField, "for a compressed 8bit vector",
   [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
 
-InstallMethod( NewRowVector, "for Is8BitVectorRep, GF(q), and a list",
+InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;
@@ -1250,15 +1250,6 @@ InstallMethod( CompatibleVector, "for an 8bit matrix",
     return ShallowCopy(m[1]);
   end );
 
-InstallMethod( CompatibleMatrix, "for an 8bit vector",
-  [ Is8BitVectorRep ],
-  function( v )
-    local m;
-    m := [ShallowCopy(v)];
-    ConvertToMatrixRep(m,Q_VEC8BIT(v));
-    return m;
-  end );
-
 InstallMethod( WeightOfVector, "for an 8bit vector",
   [ Is8BitVectorRep ],
   function( v )
@@ -1279,7 +1270,7 @@ InstallMethod( NewCompanionMatrix,
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;

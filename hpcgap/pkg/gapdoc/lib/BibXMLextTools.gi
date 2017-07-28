@@ -114,7 +114,7 @@ MakeImmutable(BibXMLextStructure);
 InstallGlobalFunction(TemplateBibXML, function(arg)
   local type, res, add, a, b;
   if Length(arg) = 0 then
-    return Filtered(RecFields(BibXMLextStructure), a-> not a in ["fill"]);
+    return Filtered(RecNames(BibXMLextStructure), a-> not a in ["fill"]);
   fi;
   type := arg[1];
   if type = "fill" or not IsBound(BibXMLextStructure.(type)) then
@@ -181,7 +181,7 @@ end);
 ##  
 ##  <#GAPDoc Label="ParseBibXMLextString">
 ##  <ManSection >
-##  <Func Arg="str" Name="ParseBibXMLextString" />
+##  <Func Arg="str[, res]" Name="ParseBibXMLextString" />
 ##  <Func Arg="fname1[, fname2[, ...]]" Name="ParseBibXMLextFiles" />
 ##  <Returns>a record with fields <C>.entries</C>, <C>.strings</C> and
 ##  <C>.entities</C></Returns>
@@ -195,6 +195,11 @@ end);
 ##  named entities which were used during the parsing.
 ##  <P/>
 ##  
+##  The optional argument <A>res</A> can be the result of a former call of 
+##  this function, in that case the newly parsed entries are added to this
+##  data structure.
+##  <P/>
+##  
 ##  The second function <Ref Func="ParseBibXMLextFiles"/> uses the first 
 ##  on the content of all files given by filenames <A>fname1</A> and so on.
 ##  It collects the results in a single record.<P/>
@@ -204,7 +209,7 @@ end);
 ##  
 ##  <Example>
 ##  gap> bib := ParseBibXMLextFiles("doc/testbib.xml");;
-##  gap> RecFields(bib);
+##  gap> RecNames(bib);
 ##  [ "entries", "strings", "entities" ]
 ##  gap> bib.entries;
 ##  [ &lt;BibXMLext entry: AB2000> ]
@@ -230,10 +235,10 @@ BindGlobal("BibXMLEntryOps", rec(
   PrintObj := function(entry)
     Print(StringXMLElement(entry)[1]);
   end
-    ));
-  
-MakeImmutable(BibXMLEntryOps);  
-  
+  ));
+
+MakeImmutable(BibXMLEntryOps);
+
 # the entities from bibxmlext.dtd
 BindGlobal("ENTITYDICT_bibxml", rec( 
   nbsp := "&#160;" ,
@@ -251,7 +256,7 @@ InstallGlobalFunction(ParseBibXMLextString, function(arg)
   fi;
   tr := ParseTreeXMLString(str, ENTITYDICT_bibxml);
   # get used entities from ENTITYDICT
-  ent := List(RecFields(ENTITYDICT), a-> [a, ENTITYDICT.(a)]);
+  ent := List(RecNames(ENTITYDICT), a-> [a, ENTITYDICT.(a)]);
   Append(res.entities, ent);
   res.entities := Set(res.entities);
 
@@ -300,7 +305,7 @@ end);
 ##  <Func Arg="str" Name="HeuristicTranslationsLaTeX2XML.Apply" />
 ##  <Returns>a string</Returns>
 ##  <Func Arg="fnam[, outnam]" 
-##                        Name="HeuristicTranslationsLaTeX2XML.ApplyFile" />
+##                        Name="HeuristicTranslationsLaTeX2XML.ApplyToFile" />
 ##  <Returns>nothing</Returns>
 ##  <Description>
 ##  These utilities translate some &LaTeX; code into text in UTF-8 encoding.
@@ -356,7 +361,7 @@ end);
 ##  If your &BibTeX; input contains &LaTeX; markup for special characters, 
 ##  it can be convenient to translate this input  with <Ref
 ##  Func="HeuristicTranslationsLaTeX2XML.Apply"/> or <Ref
-##  Func="HeuristicTranslationsLaTeX2XML.ApplyFile"/> before parsing it as
+##  Func="HeuristicTranslationsLaTeX2XML.ApplyToFile"/> before parsing it as
 ##  &BibTeX;.<P/>
 ##  
 ##  As an example we consider again the short &BibTeX; file <F>doc/test.bib</F> 
@@ -399,7 +404,7 @@ InstallGlobalFunction(StringBibAsXMLext,  function(arg)
     enc := arg[Length(arg)];
   else
     # try to autodetect UTF-8, else assume latin1
-    if ForAny(RecFields(r), a-> IsString(r.(a)) and Unicode(r.(a)) = fail) or
+    if ForAny(RecNames(r), a-> IsString(r.(a)) and Unicode(r.(a)) = fail) or
        ForAny(abbrevs, a-> Unicode(a) = fail) or
        ForAny(texts, a-> Unicode(a) = fail) then
       enc := "ISO-8859-1";
@@ -407,15 +412,15 @@ InstallGlobalFunction(StringBibAsXMLext,  function(arg)
       enc := "UTF-8";
     fi;
   fi;
-  if not IsBound(UNICODE_RECODE.NormalizedEncodings.(enc)) then
+  if UNICODE_RECODE.NormalizedEncoding(enc) = fail then
     Info(InfoBibTools, 1, "don't know encoding ", enc, " using ISO-8859-1\n");
     enc := "ISO-8859-1";
   else
-    enc := UNICODE_RECODE.NormalizedEncodings.(enc);
+    enc := UNICODE_RECODE.NormalizedEncoding(enc);
   fi;
   if enc <> "UTF-8" then
     r := ShallowCopy(r);
-    for a in RecFields(r) do
+    for a in RecNames(r) do
       if IsString(r.(a)) then
         r.(a) := Encode(Unicode(r.(a), enc));
       fi;
@@ -454,14 +459,14 @@ InstallGlobalFunction(StringBibAsXMLext,  function(arg)
     od;
     return ParseTreeXMLString(res).content;
   end;
-  if not (r.Type in RecFields(BibXMLextStructure)) then
+  if not (r.Type in RecNames(BibXMLextStructure)) then
     Info(InfoBibTools, 1, "#W WARNING: invalid .Type in Bib-record: ",
                                                           r.Type, "\n");
     Info(InfoBibTools, 2, r, "\n");
     return fail;
   fi;
   struct := BibXMLextStructure.(r.Type);
-  f := RecFields(r);
+  f := RecNames(r);
 
   if "Label" in f then
     lbl:= Concatenation( " (", r.Label, ") " );
@@ -585,7 +590,9 @@ InstallValue(HeuristicTranslationsLaTeX2XML,  rec(
 CharacterMarkup := [
       ["\\accent127", "\\\""],
       ["{\\\"a}", "ä"],
+      ["{\\\"{a}}", "ä"],
       ["\\\"a", "ä"],
+      ["\\\"{a}", "ä"],
       ["{\\\"A}", "Ä",],
       ["\\\"A", "Ä"],
       ["{\\'a}", "á"],
@@ -596,6 +603,8 @@ CharacterMarkup := [
       ["{\\d{a}}", "ạ"],
       [ "\\=a", "ā" ],         # 257
       [ "{\\aa}", "å" ],       # 229
+      [ "{\\AA}", "Å" ],       # 197
+      [ "\\AA", "Å" ],         # 197
       [ "{\\u{a}}", "ă" ],     # 259
       [ "{\\c{c}}", "ç" ],     # 231
       [ "{\\'c}", "ć" ],       # 263
@@ -627,13 +636,15 @@ CharacterMarkup := [
       [ "{\\i}", "ı" ],        # 305
       [ "{\\'n}", "ń" ],       # 324
       [ "{\\~n}", "ñ" ],       # 241
-      [ "{\\tilde n}", "ñ" ],       # 241
-      [ "\\tilde n", "ñ" ],       # 241
+      [ "\\~n", "ñ" ],         # 241
+      [ "{\\tilde n}", "ñ" ],  # 241
+      [ "\\tilde n", "ñ" ],    # 241
       ["{\\\"o}", "ö"],
       ["{\\\"O}", "Ö"],
       ["\\\"o", "ö"],
       ["\\\"O", "Ö"],
       ["{\\'o}", "ó"],
+      ["{\\'O}", "Ó"],
       ["\\'o", "ó"],
       [ "\\=o", "ō" ],         # 333
       [ "{\\H{O}}", "Ő" ],     # 336
@@ -643,9 +654,12 @@ CharacterMarkup := [
       [ "\\^o", "ô" ],         # 244
       [ "\\^u", "û" ],         # 251
       [ "{\\o}", "ø" ],        # 248
+      [ "{\\.P}", "Ṗ" ],       # 0x1E56
+      [ "{\\. P}", "Ṗ" ],      # 0x1E56
       [ "{\\v{s}}", "š" ],     # 353
       [ "{\\c{S}}", "Ş" ],     # 350
       [ "{\\v{S}}", "Š" ],     # 352
+      [ "{\\'s}", "ś" ],
       ["{\\\"u}", "ü"],
       ["{\\\"U}", "Ü"],
       ["\\\"{U}", "Ü"],
@@ -681,6 +695,7 @@ CharacterMarkup := [
       ["{\\cprime}", "ʹ"],
       [ "\\cprime ", "ʹ" ],
       [ "\\cprime,", "ʹ," ],
+      ["{\\etalchar{+}}", "+"],
       ["---", "—"],   # &mdash;
       ["--", "–"],    # &ndash;
       #T The following occurs once in the GAP bibliography, 
@@ -1097,7 +1112,7 @@ function(entry, elt, type, strings, opts)
     res := rec(From := rec(BibXML := true, type := type, options := opts));
     res.Label := entry.attributes.id;
     f := First(entry.content, a-> IsRecord(a) and a.name in
-                                             RecFields(BibXMLextStructure));
+                                             RecNames(BibXMLextStructure));
     res.Type := f.name;
     for a in f.content do
       if IsRecord(a) and not a.name = "PCDATA" then
@@ -1312,6 +1327,9 @@ AddHandlerBuildRecBibXMLEntry("C", ["Text", "HTML"], "Ignore");
 AddHandlerBuildRecBibXMLEntry(["M", "Math"], "default",
 function(entry, elt, default, strings, opts)
   local res;
+  if IsBound(opts.MathJax) and opts.MathJax = true then
+    return RECBIBXMLHNDLR.M.MathJax(entry, elt, default, strings, opts);
+  fi;
   RECBIBXMLHNDLR.recode := false;
   res := Concatenation("$", ContentBuildRecBibXMLEntry(entry, elt,
                                           default, strings, opts), "$");
@@ -1321,8 +1339,23 @@ end);
 AddHandlerBuildRecBibXMLEntry("M", "HTML",
 function(entry, elt, default, strings, opts)
   local res;
+  if IsBound(opts.MathJax) and opts.MathJax = true then
+    return RECBIBXMLHNDLR.M.MathJax(entry, elt, default, strings, opts);
+  fi;
   RECBIBXMLHNDLR.recode := false;
   res := TextM( ContentBuildRecBibXMLEntry(entry, elt, default, strings, opts));
+  RECBIBXMLHNDLR.recode := true;
+  res := SubstitutionSublist(res, "&", "&amp;");
+  res := SubstitutionSublist(res, "<", "&lt;");
+  return res;
+end);
+AddHandlerBuildRecBibXMLEntry("M", "MathJax",
+function(entry, elt, default, strings, opts)
+  local res;
+  RECBIBXMLHNDLR.recode := false;
+  res := Concatenation("\\(",
+         ContentBuildRecBibXMLEntry(entry, elt, default, strings, opts),
+         "\\)");
   RECBIBXMLHNDLR.recode := true;
   res := SubstitutionSublist(res, "&", "&amp;");
   res := SubstitutionSublist(res, "<", "&lt;");
@@ -1336,7 +1369,7 @@ end);
 AddHandlerBuildRecBibXMLEntry("value", "default",
 function(entry, elt, default, strings, opts)
   local pos;
-  pos := PositionFirstComponent(strings, elt.attributes.key);
+  pos := PositionSorted(strings, [elt.attributes.key]);
   if not IsBound(strings[pos]) or strings[pos][1] <> elt.attributes.key then
     return Concatenation("UNKNOWNVALUE(", elt.attributes.key, ")");
   else
@@ -1588,7 +1621,10 @@ end);
 ##  <Item>An HTML representation of the bibliography entry is returned. The text
 ##  from each field is enclosed in markup (mostly <C>&lt;span></C>-elements)
 ##  with the <C>class</C> attribute set to the field name. This allows a
-##  detailed layout of the code via a style sheet file.</Item>
+##  detailed layout of the code via a style sheet file.
+##  If <C>options.MathJax</C> is bound and has the value <K>true</K> then 
+##  formulae are encoded for display on pages with <Package>MathJax</Package>
+##  support.</Item>
 ##  </List>
 ## 
 ##  We use again the file shown in the example for <Ref
@@ -1620,7 +1656,23 @@ end);
 ##  formula  x^y  -  l_{i+1}  ?  R, Important Journal, 13 (2000), 13-25,
 ##  (Online        data        at        Bla        Bla        Publisher
 ##  (http://www.publish.com/~ImpJ/123#data)).
-##  
+##  gap> ehtml := StringBibXMLEntry(e, "HTML", strs, rec(MathJax := true));;
+##  gap> ehtml := Encode(Unicode(ehtml), GAPInfo.TermEncoding);;
+##  gap> PrintFormattedString(ehtml);
+##  <![CDATA[<p class='BibEntry'>
+##  [<span class='BibKey'>FS00</span>]   
+##   <b class='BibAuthor'>First, F. A. and Secőnd, X. Y.</b>,
+##   <i class='BibTitle'>The  Fritz package for the 
+##           formula \(x^y - l_{{i+1}} \rightarrow \mathbb{R}\)</i>,
+##   <span class='BibJournal'>Important Journal</span> 
+##  (<span class='BibNumber'>13</span>)
+##   (<span class='BibYear'>2000</span>),
+##   <span class='BibPages'>13–25</span><br />
+##  (<span class='BibNote'>Online data at 
+##  <a href="http://www.publish.com/~ImpJ/123#data">Bla Bla 
+##  Publisher</a></span>).
+##  </p>
+##  ]]>
 ##  </Example>
 ##  </Description>
 ##  </ManSection>

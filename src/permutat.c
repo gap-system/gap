@@ -4996,10 +4996,3 @@ StructInitInfo * InitInfoPermutat ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  permutat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
-  

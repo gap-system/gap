@@ -196,9 +196,6 @@ AS_IF([test "x$enable_hpcgap" = xyes],
 dnl
 dnl User setting: Debug mode (off by default)
 dnl
-dnl TODO: make this actually do something, e.g. disable or reduce optimizations,
-dnl enable/disable C level assertions, etc.
-dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
     [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])],
@@ -206,6 +203,26 @@ AC_ARG_ENABLE([debug],
     )
 AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
+
+dnl
+dnl User setting: Enable -Werror (off by default)
+dnl
+
+AC_ARG_ENABLE([Werror],
+    AS_HELP_STRING([--enable-Werror], [treat compiler warnings as errors]),
+    [],
+    [enable_Werror=no])
+AC_MSG_CHECKING([whether to treat C compiler warnings as errors])
+AC_MSG_RESULT([$enable_Werror])
+
+
+AS_IF([test "x$enable_Werror" != "xno"],
+  [ax_enable_compile_warnings=error],
+  [ax_enable_compile_warnings=yes])
+
+#WARNING_CPPFLAGS=""
+AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
+AC_SUBST([WARNING_CPPFLAGS])
 
 dnl
 dnl External dependencies
@@ -452,8 +469,6 @@ case "$host_os" in
     ;;
 esac
 
-dnl Note: AC_DEFINE defines conditionals to be put in config.h, while
-dnl AM_CONDITIONAL defines conditionals for use in in Makefile.am
 AC_SUBST([SYS_IS_CYGWIN32], [$CYGWIN])
 SYS_IS_DARWIN=$DARWIN
 AC_SUBST([SYS_IS_DARWIN])
@@ -574,6 +589,9 @@ dnl pthreads
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AX_PTHREAD
   ])
+
+dnl backtraces via execinfo
+AX_EXECINFO
 
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])

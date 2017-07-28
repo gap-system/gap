@@ -18,6 +18,8 @@
 
 #include <src/code.h>
 
+#include <src/gapstate.h>
+
 /****************************************************************************
 **
 *V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>
@@ -61,17 +63,6 @@ static inline UInt EXEC_STAT(Stat stat)
 
 
 #ifdef HPCGAP
-
-/****************************************************************************
-**
-*V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>
-**
-**  'ExecStatFuncs' is   the dispatch table  that contains  for every type of
-**  statements a pointer to the executor  for statements of  this type, i.e.,
-**  the function  that should  be  called  if a  statement   of that type  is
-**  executed.
-*/
-extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
@@ -183,8 +174,3 @@ StructInitInfo * InitInfoStats ( void );
 
 
 #endif // GAP_STATS_H
-
-/****************************************************************************
-**
-*E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

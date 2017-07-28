@@ -90,7 +90,9 @@ typedef struct {
     uint16_t reserved : 16;
     uint32_t size : 32;
 #endif
+#if !defined(BOEHM_GC)
     Bag link;
+#endif
 } BagHeader;
 
 
@@ -634,10 +636,12 @@ extern  UInt                    NrHalfDeadBags;
 */
 typedef struct  {
     const Char *            name;
+#ifdef COUNT_BAGS
     UInt                    nrLive;
     UInt                    nrAll;
     UInt                    sizeLive;
     UInt                    sizeAll;
+#endif
 } TNumInfoBags;
 
 extern  TNumInfoBags            InfoBags [ 256 ];
@@ -718,6 +722,7 @@ Bag MakeBagReadOnly(Bag bag);
 **  34+3016 is the  number  of bags allocated  between  the last two  garbage
 **  collections, using 978 KByte and the other two numbers are as above.
 */
+#if !defined(BOEHM_GC)
 typedef void            (* TNumMsgsFuncBags) (
             UInt                full,
             UInt                phase,
@@ -725,7 +730,7 @@ typedef void            (* TNumMsgsFuncBags) (
 
 extern  void            InitMsgsFuncBags (
             TNumMsgsFuncBags    msgs_func );
-
+#endif
 
 /****************************************************************************
 **
@@ -817,7 +822,7 @@ extern void MarkAllSubBagsDefault ( Bag );
 **  identifier.
 
 */
-#ifndef BOEHM_GC
+#if !defined(BOEHM_GC)
 extern void MarkBag( Bag bag );
 #else
 static inline void MarkBag( Bag bag ) {}
@@ -845,7 +850,9 @@ static inline void MarkBag( Bag bag ) {}
 **  "IS_WEAK_DEAD_BAG". Which should  always be   checked before copying   or
 **  using such an identifier.
 */
+#if !defined(BOEHM_GC)
 extern void MarkBagWeakly( Bag bag );
+#endif
 
 
 /****************************************************************************
@@ -859,27 +866,31 @@ extern void MarkArrayOfBags( Bag array[], int count );
 
 
 
-extern  Bag *                   MptrBags;
-extern  Bag *                   OldBags;
-extern  Bag *                   AllocBags;
-
 
 /****************************************************************************
 **
 *F
 */
 
-#ifndef BOEHM_GC
+#if !defined(BOEHM_GC)
+
+extern  Bag *                   MptrBags;
+extern  Bag *                   OldBags;
+extern  Bag *                   AllocBags;
+
 #define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
                                 (Bag)MptrBags <= (bag)    &&          \
                                 (bag) < (Bag)OldBags  &&              \
                                 (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
+
 #else
+
 #define IS_WEAK_DEAD_BAG(bag) (!(bag))
 #define REGISTER_WP(loc, obj) \
 	GC_general_register_disappearing_link((void **)(loc), (obj))
 #define FORGET_WP(loc) \
 	GC_unregister_disappearing_link((void **)(loc))
+
 #endif
              
 /****************************************************************************
@@ -916,19 +927,12 @@ extern  void            InitSweepFuncBags (
             TNumSweepFuncBags    sweep_func );
  
 
-#ifdef BOEHM_GC
-typedef void 		(* FinalizerFunction) (
-	    Bag bag );
-
-extern void		InitFinalizerFuncBags (
-	    UInt		tnum,
-	    FinalizerFunction finalizer_func );
-#endif
-
 /****************************************************************************
 **
 *V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
 */
+#if !defined(BOEHM_GC)
+
 #ifndef NR_GLOBAL_BAGS
 #define NR_GLOBAL_BAGS  20000L
 #endif
@@ -942,6 +946,7 @@ typedef struct {
 
 extern TNumGlobalBags GlobalBags;
 
+#endif
 
 /****************************************************************************
 **
@@ -958,7 +963,7 @@ extern TNumGlobalBags GlobalBags;
 **  problem  if  such a  variable does not   actually  hold a bag identifier,
 **  {\Gasman} will simply ignore it then.
 **
-**  There is a limit on the number of calls to 'InitGlobalBag', which is 512
+**  There is a limit on the number of calls to 'InitGlobalBag', which is 20000
 **  by default.   If the application has  more global variables that may hold
 **  bag  identifier, you  have to  compile  {\Gasman} with a  higher value of
 **  'NR_GLOBAL_BAGS', i.e., with 'make COPTS=-DNR_GLOBAL_BAGS=<nr>'.
@@ -968,11 +973,13 @@ extern TNumGlobalBags GlobalBags;
 **  after a save and load
 */
 
-extern Int WarnInitGlobalBag;
-
 extern void InitGlobalBag (
             Bag *               addr,
             const Char *        cookie );
+
+#if !defined(BOEHM_GC)
+
+extern Int WarnInitGlobalBag;
 
 extern void SortGlobals( UInt byWhat );
 
@@ -988,6 +995,7 @@ extern Bag NextBagRestoring( UInt type, UInt flags, UInt size );
 
 extern void FinishedRestoringBags( void );
 
+#endif
 
 
 /****************************************************************************
@@ -1222,8 +1230,3 @@ void *AllocateMemoryBlock(UInt size);
 #endif
 
 #endif // GAP_GASMAN_H
-
-/****************************************************************************
-**
-*E  gasman.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

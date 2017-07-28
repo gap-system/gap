@@ -71,8 +71,3 @@ extern StructInitInfo * InitInfoVec8bit ( void );
 
 
 #endif // GAP_VEC8BIT_H
-
-/****************************************************************************
-**
-*E  vecgf2.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

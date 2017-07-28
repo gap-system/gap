@@ -15,3 +15,5 @@ DeclareGlobalFunction("ComposedDocument");
 DeclareGlobalFunction("ComposedXMLString");
 DeclareGlobalFunction("OriginalPositionDocument");
 
+# helper function for paths of files
+DeclareGlobalFunction("FilenameGAP");

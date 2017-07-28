@@ -1,12 +1,11 @@
-MicroSeconds := function()
-  local t;
-  t := CurrentTime();
-  return t.tv_sec * 1000000 + t.tv_usec;
+TimeDiff := function(t,t2)
+    return (t2-t)*1.E-9;
 end;
+
 Bench := function(f)
-  local tstart, tend;
-  tstart := MicroSeconds();
-  f();
-  tend := MicroSeconds();
-  return (tend-tstart) * 1.0 / 1000000;
+    local tstart, tend;
+    tstart := NanosecondsSinceEpoch();
+    f();
+    tend := NanosecondsSinceEpoch();
+    return TimeDiff(tstart, tend);
 end;

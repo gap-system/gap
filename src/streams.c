@@ -421,7 +421,7 @@ static void READ_LOOP ( void )
 */
 
 
-Int READ_GAP_ROOT ( Char * filename )
+Int READ_GAP_ROOT ( const Char * filename )
 {
     TypGRF_Data         result;
     Int                 res;
@@ -769,7 +769,7 @@ Obj FuncPrint (
 
 static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 {
-    const char          *funcname = append ? "AppendTo" : "PrintTo";
+    const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
@@ -835,7 +835,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 
 static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 {
-    const char          *funcname = append ? "AppendTo" : "PrintTo";
+    const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
@@ -1785,7 +1785,7 @@ Obj FuncREAD_ALL_FILE (
 	SET_LEN_STRING(str, len);
 	syBuffers[bufno].bufstart += lstr;
       }
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1826,7 +1826,7 @@ Obj FuncREAD_ALL_FILE (
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
-#if SYS_IS_CYGWIN32
+#ifdef SYS_IS_CYGWIN32
     /* line end hackery */
     {
       UInt i = 0,j = 0;
@@ -2006,7 +2006,7 @@ Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 }
 #endif
 
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
 Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
                    Obj timeoutsec, Obj timeoutusec)
 {
@@ -2462,9 +2462,3 @@ StructInitInfo * InitInfoStreams ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  streams.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

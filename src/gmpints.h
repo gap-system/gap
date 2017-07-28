@@ -239,8 +239,3 @@ extern Int CLog2Int( Int intnum );
 StructInitInfo * InitInfoInt( void );
 
 #endif // GAP_GMPINTS_H
-
-/****************************************************************************
-**
-*E  gmpints.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

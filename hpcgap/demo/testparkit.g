@@ -224,10 +224,3 @@ StrassenMult := function(m1,m2, threshold)
     StopParkitManager(m);
     return res{[1..n]}{[1..n]};     
 end;
-
-
-TimeCurrent := function()
-    local ct;
-    ct := CurrentTime();
-    return 1000000*ct.tv_sec + ct.tv_usec;
-end;

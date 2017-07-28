@@ -47,7 +47,7 @@
 #include <src/hpc/traverse.h>           /* object traversal */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
@@ -987,7 +987,7 @@ static UInt LastPV = 0; /* This variable contains one of the values
 
 #ifdef HPCGAP
 /* On-demand creation of the PrintObj stack */
-void InitPrintObjStack()
+void InitPrintObjStack(void)
 {
   if (!STATE(PrintObjThiss)) {
     STATE(PrintObjThissObj) = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
@@ -1804,8 +1804,6 @@ Obj FuncCLONE_OBJ (
 */
 
 Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
-    Obj *ptr1, *ptr2;
-
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
         ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
                          "you can 'return;' to leave them in place" );
@@ -1816,8 +1814,6 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
                          "you can 'return;' to leave them in place" );
         return 0;
     }
-    ptr1 = PTR_BAG(obj1);
-    ptr2 = PTR_BAG(obj2);
 #ifdef HPCGAP
     Region *ds1 = REGION(obj1);
     Region *ds2 = REGION(obj2);
@@ -1828,8 +1824,7 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     REGION(obj2) = ds1;
     REGION(obj1) = ds2;
 #endif
-    PTR_BAG(obj2) = ptr1;
-    PTR_BAG(obj1) = ptr2;
+    SwapMasterPoint(obj1, obj2);
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);
     return (Obj) 0;
@@ -2023,6 +2018,7 @@ static Int InitKernel (
     InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(TypeObjFuncs[ t ] == 0);
         TypeObjFuncs[ t ] = TypeObjError;
         SetTypeObjFuncs [ t] = SetTypeObjError;
     }
@@ -2035,13 +2031,6 @@ static Int InitKernel (
     SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
     SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
 
-    /* SPARE TNUMs install placeholder entries for easier
-       debugging. Packages that use these should overwrite the entries */
-    InfoBags[T_SPARE1].name = "spare tnum 1 (overwrite this)";
-    InfoBags[T_SPARE2].name = "spare tnum 2 (overwrite this)";
-    InfoBags[T_SPARE3].name = "spare tnum 3 (overwrite this)";
-    InfoBags[T_SPARE4].name = "spare tnum 4 (overwrite this)";
-
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
     ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
@@ -2053,24 +2042,30 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(IsMutableObjFuncs[ t ] == 0);
         IsMutableObjFuncs[ t ] = IsMutableObjError;
+    }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
         IsMutableObjFuncs[ t ] = AlwaysNo;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjObject;
 
     /* make and install the 'IS_COPYABLE_OBJ' filter                       */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(IsCopyableObjFuncs[ t ] == 0);
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
+    }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = AlwaysNo;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjObject;
 
     /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(ShallowCopyObjFuncs[ t ] == 0);
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjError;
+    }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjConstant;
     for ( t = FIRST_RECORD_TNUM; t <= LAST_RECORD_TNUM; t++ )
@@ -2082,7 +2077,9 @@ static Int InitKernel (
 
     /* make and install the 'COPY_OBJ' function                            */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(CopyObjFuncs [ t ] == 0);
         CopyObjFuncs [ t ] = CopyObjError;
+        assert(CleanObjFuncs[ t ] == 0);
         CleanObjFuncs[ t ] = CleanObjError;
     }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ ) {
@@ -2103,16 +2100,22 @@ static Int InitKernel (
     CleanObjFuncs[ T_DATOBJ + COPYING ] = CleanObjDatObjCopy;
 
     /* make and install the 'PRINT_OBJ' operation                          */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(PrintObjFuncs[ t ] == 0);
         PrintObjFuncs[ t ] = PrintObjObject;
+    }
 
     /* enter 'PrintUnknownObj' in the dispatching tables                   */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(PrintPathFuncs[ t ] == 0);
         PrintPathFuncs[ t ] = PrintPathError;
+    }
 
     /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
     for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
+        assert(SaveObjFuncs[ t ] == 0);
         SaveObjFuncs[ t ] = SaveObjError;
+        assert(LoadObjFuncs[ t ] == 0);
         LoadObjFuncs[ t ] = LoadObjError;
     }
   
@@ -2126,8 +2129,10 @@ static Int InitKernel (
     LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
 
-    for (t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) 
-      MakeImmutableObjFuncs[t] = MakeImmutableError;
+    for (t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
+        assert(MakeImmutableObjFuncs[ t ] == 0);
+        MakeImmutableObjFuncs[t] = MakeImmutableError;
+    }
     
     /* install the makeimmutableing functions */
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
@@ -2220,9 +2225,3 @@ StructInitInfo * InitInfoObjects ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -52,8 +52,3 @@ StructInitInfo * InitInfoMacfloat ( void );
 
 
 #endif // GAP_MACFLOAT_H
-
-/****************************************************************************
-**
-*E  macfloat.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

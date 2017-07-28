@@ -28,8 +28,3 @@ StructInitInfo * InitInfoSCTable ( void );
 
 
 #endif // GAP_SCTABLE_H
-
-/****************************************************************************
-**
-*E  sctable.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -88,13 +88,24 @@ then
         "first argument with '--with-gaproot=' to this script."
 fi
 
-# HACK FIXME: detect whether GAP was built in 32bit mode
-if [[ "$(grep -c 'ABI = 32' $GAPROOT/GNUMakefile)" -ge 1 ]]
-then
-  notice "Building with 32-bit ABI"
-  ABI32=YES
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi
+# read in sysinfo
+source "$GAPROOT/sysinfo.gap"
+
+# detect whether GAP was built in 32bit mode
+case "$GAParch_abi" in
+  32-bit)
+    notice "Building with 32-bit ABI"
+    ABI32=YES
+    CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+    ;;
+  64-bit)
+    notice "Building with 64-bit ABI"
+    ABI32=NO
+    ;;
+  *)
+    error "Unsupported GAP ABI '$GAParch_abi'."
+    ;;
+esac
 
 
 LOGDIR=log

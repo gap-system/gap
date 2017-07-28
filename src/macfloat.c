@@ -363,22 +363,22 @@ MAKEMATHPRIMITIVE(ASIN,asin)
 MAKEMATHPRIMITIVE(ATAN,atan)
 MAKEMATHPRIMITIVE(LOG,log)
 MAKEMATHPRIMITIVE(EXP,exp)
-#if HAVE_LOG2
+#ifdef HAVE_LOG2
 MAKEMATHPRIMITIVE(LOG2,log2)
 #endif
-#if HAVE_LOG10
+#ifdef HAVE_LOG10
 MAKEMATHPRIMITIVE(LOG10,log10)
 #endif
-#if HAVE_LOG1P
+#ifdef HAVE_LOG1P
 MAKEMATHPRIMITIVE(LOG1P,log1p)
 #endif
-#if HAVE_EXP2
+#ifdef HAVE_EXP2
 MAKEMATHPRIMITIVE(EXP2,exp2)
 #endif
-#if HAVE_EXPM1
+#ifdef HAVE_EXPM1
 MAKEMATHPRIMITIVE(EXPM1,expm1)
 #endif
-#if HAVE_EXP10
+#ifdef HAVE_EXP10
 MAKEMATHPRIMITIVE(EXP10,exp10)
 #endif
 MAKEMATHPRIMITIVE(SQRT,sqrt)
@@ -393,7 +393,7 @@ extern Obj FuncIntHexString(Obj,Obj);
 
 Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
 {
-#if HAVE_TRUNC
+#ifdef HAVE_TRUNC
   Double f = trunc(VAL_MACFLOAT(obj));
 #else
   Double f = VAL_MACFLOAT(obj);
@@ -489,22 +489,22 @@ static StructGVarFunc GVarFuncs [] = {
 
   GVARENTRY(LOG),
   GVARENTRY(EXP),
-#if HAVE_LOG2
+#ifdef HAVE_LOG2
   GVARENTRY(LOG2),
 #endif
-#if HAVE_LOG10
+#ifdef HAVE_LOG10
   GVARENTRY(LOG10),
 #endif  
-#if HAVE_LOG1P
+#ifdef HAVE_LOG1P
   GVARENTRY(LOG1P),
 #endif  
-#if HAVE_EXP2
+#ifdef HAVE_EXP2
   GVARENTRY(EXP2),
 #endif  
-#if HAVE_EXPM1
+#ifdef HAVE_EXPM1
   GVARENTRY(EXPM1),
 #endif
-#if HAVE_EXP10
+#ifdef HAVE_EXP10
   GVARENTRY(EXP10),
 #endif
 
@@ -534,11 +534,11 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
+extern Int EqObject (Obj,Obj);
+
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int EqObject (Obj,Obj);
-
     /* install the marking functions for macfloatean values                    */
     InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
@@ -639,9 +639,3 @@ StructInitInfo * InitInfoMacfloat ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  macfloat.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

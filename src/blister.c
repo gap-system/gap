@@ -103,7 +103,7 @@
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/tls.h>                /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************
@@ -284,17 +284,34 @@ Obj DoCopyBlist(Obj list, Int mut) {
   
 }
 
+Obj CopyBlistImm(Obj list, Int mut)
+{
+    GAP_ASSERT(!IS_MUTABLE_OBJ(list));
+    return list;
+}
+
 Obj CopyBlist (
     Obj                 list,
     Int                 mut )
 {
+    Obj copy;
+    Obj tmp;
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
+    /* immutable objects should never end up here, because
+     * they have their own handler defined above
+     */
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
-    return DoCopyBlist(list, mut);
+    copy = DoCopyBlist(list, mut);
+    /* leave a forwarding pointer */
+    tmp = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( tmp, 2 );
+    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(list)[0] );
+    SET_ELM_PLIST( tmp, 2, copy );
+    ADDR_OBJ(list)[0] = tmp;
+    CHANGED_BAG(list);
+    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    return copy;
 }
 
 Obj ShallowCopyBlist ( Obj list)
@@ -308,11 +325,9 @@ Obj ShallowCopyBlist ( Obj list)
 **
 *F  CopyBlistCopy( <list>, <mut> )  . . . . . . . copy a already copied blist
 */
-Obj CopyBlistCopy (
-    Obj                 list,
-    Int                 mut )
+Obj CopyBlistCopy(Obj list, Int mut)
 {
-    return ADDR_OBJ(list)[0];
+    return ELM_PLIST(ADDR_OBJ(list)[0], 2);
 }
 
 
@@ -330,14 +345,13 @@ void CleanBlist (
 **
 *F  CleanBlistCopy( <list> )  . . . . . . . . . . . . .  clean a copied blist
 */
-void CleanBlistCopy (
-    Obj                 list )
+void CleanBlistCopy(Obj list)
 {
-    /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    /* remove the forwarding pointer */
+    ADDR_OBJ(list)[0] = ELM_PLIST(ADDR_OBJ(list)[0], 1);
 
-    /* now it is cleaned                                                   */
-    RetypeBag( list, TNUM_OBJ(list) - COPYING );
+    /* now it is cleaned */
+    RetypeBag(list, TNUM_OBJ(list) - COPYING);
 }
 
 
@@ -1193,8 +1207,6 @@ Obj FuncIS_BLIST (
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-Obj IsBlistFilt;
-
 Obj FuncIS_BLIST_CONV (
     Obj                 self,
     Obj                 val )
@@ -2672,7 +2684,7 @@ static Int InitKernel (
     /* install the copy functions                                          */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyBlist;
-        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlist;
+        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlistImm;
         CopyObjFuncs [ t1            +COPYING ] = CopyBlistCopy;
         CopyObjFuncs [ t1 +IMMUTABLE +COPYING ] = CopyBlistCopy;
         CleanObjFuncs[ t1                     ] = CleanBlist;
@@ -2785,9 +2797,3 @@ StructInitInfo * InitInfoBlist ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  blister.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -67,7 +67,7 @@
 
 #include <src/code.h>                   /* FilenameCache */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 #include <assert.h>
 #include <limits.h>
@@ -265,7 +265,7 @@ void Match (
 */
 
 #ifdef HPCGAP
-TypOutputFile *NewOutput()
+TypOutputFile *NewOutput(void)
 {
   TypOutputFile *result;
   result = AllocateMemoryBlock(sizeof(TypOutputFile));
@@ -274,7 +274,7 @@ TypOutputFile *NewOutput()
   return result;
 }
 
-TypInputFile *NewInput()
+TypInputFile *NewInput(void)
 {
   TypInputFile *result;
   result = AllocateMemoryBlock(sizeof(TypInputFile));
@@ -323,7 +323,7 @@ UInt OpenDefaultOutput( void )
 }
 #endif
 
-TypOutputFile *GetCurrentOutput() {
+TypOutputFile *GetCurrentOutput(void) {
 #ifdef HPCGAP
   if (!STATE(Output)) {
     OpenDefaultOutput();
@@ -1319,8 +1319,6 @@ static inline void UNGET_CHAR( Char c ) {
 **  only possible keyword  is 'function'.   Thus in this case  'GetIdent' can
 **  decide with one string comparison if 'STATE(Value)' holds a keyword or not.
 */
-extern void GetSymbol ( void );
-
 typedef struct {const Char *name; UInt sym;} s_keyword;
 
 static const s_keyword AllKeywords[] = {
@@ -3162,9 +3160,3 @@ void InitScannerState(GAPState * state)
 void DestroyScannerState(GAPState * state)
 {
 }
-
-
-/****************************************************************************
- **
- *E  scanner.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
- */

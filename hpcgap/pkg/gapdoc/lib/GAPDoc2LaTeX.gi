@@ -118,6 +118,9 @@ InstallGlobalFunction(GAPDoc2LaTeX, function(arg)
     str := arg[2];
   else
     AddRootParseTree(r);
+    # reset to defaults in case of interrupted previous call
+    GAPDoc2LaTeXProcs.verbatimPCDATA := false;
+    GAPDoc2LaTeXProcs.recode := true;
     str := "";
   fi;
   name := r.name;
@@ -256,14 +259,14 @@ GAPDoc2LaTeXProcs.HeadWithOptions := function(extra)
   local head, opt, f, ff;
   head := GAPDoc2LaTeXProcs.Head;
   opt := GAPDoc2LaTeXProcs.Options;
-  for f in RecFields(opt) do
+  for f in RecNames(opt) do
     if f = "ColorDefinitions" then
-      for ff in RecFields(opt.(f)) do
+      for ff in RecNames(opt.(f)) do
         head := SubstitutionSublist(head, 
                                Concatenation("CONFIGCOLOR",ff), opt.(f).(ff));
       od;
     elif f = "HyperrefOptions" then
-      for ff in RecFields(opt.(f)) do
+      for ff in RecNames(opt.(f)) do
         head := SubstitutionSublist(head, 
                                Concatenation("CONFIGHR",ff), opt.(f).(ff));
       od;
@@ -309,10 +312,10 @@ SetGapDocLaTeXOptions := function(arg)
 
   # now overwrite the defaults
   for r in recs do
-    for f in RecFields(r) do
+    for f in RecNames(r) do
       if IsRecord(r.(f)) then
         if IsBound(new.(f)) then
-          for ff in RecFields(r.(f)) do
+          for ff in RecNames(r.(f)) do
             if IsBound(new.(f).(ff)) then
               new.(f).(ff) := r.(f).(ff);
             fi;
@@ -795,6 +798,11 @@ end;
 ##  by one space).
 GAPDoc2LaTeXProcs.PCDATA := function(r, str)
   local   lines,  i;
+  if GAPDoc2LaTeXProcs.verbatimPCDATA then
+    # no reformatting at all, used for <Alt Only="LaTeX"> content
+    Append(str, r.content);
+    return;
+  fi;
   if Length(r.content)>0 and r.content[1] in WHITESPACE then
     Add(str, ' ');
   fi;
@@ -1062,7 +1070,7 @@ end;
 ##  this produces an implicit index entry and a label entry
 GAPDoc2LaTeXProcs.LikeFunc := function(r, str, typ)
   local nam, namclean, lab, inam, i;
-  Append(str, "\\noindent\\textcolor{FuncColor}{$\\triangleright$\\ \\ \\texttt{");
+  Append(str, "\\noindent\\textcolor{FuncColor}{$\\triangleright$\\enspace\\texttt{");
   nam := r.attributes.Name;
   namclean := GAPDoc2LaTeXProcs.DeleteUsBs(nam);
   # we allow _,  \ and so on here
@@ -1153,15 +1161,10 @@ end;
 ##  using the HelpData(.., .., "ref") interface
 GAPDoc2LaTeXProcs.ResolveExternalRef := function(bookname,  label, nr)
   local info, match, res;
-
   info := HELP_BOOK_INFO(bookname);
-  
-  atomic readonly HELP_REGION do
   if info = fail then
     return fail;
   fi;
-  od;
-  
   match := Concatenation(HELP_GET_MATCHES(info, SIMPLE_STRING(label), true));
   #   maybe change, and check if there are matches to several subsections?
   #ssecs := List(match, i-> HELP_BOOK_HANDLER.(info.handler).HelpData(info,
@@ -1482,6 +1485,7 @@ GAPDoc2LaTeXProcs.Alt := function(r, str)
     if "LaTeX" in types or "BibTeX" in types then
       take := true;
       GAPDoc2LaTeXProcs.recode := false;
+      GAPDoc2LaTeXProcs.verbatimPCDATA := true;
     fi;
   fi;
   if IsBound(r.attributes.Not) then
@@ -1495,6 +1499,7 @@ GAPDoc2LaTeXProcs.Alt := function(r, str)
     GAPDoc2LaTeXContent(r, str);
   fi;
   GAPDoc2LaTeXProcs.recode := true;
+  GAPDoc2LaTeXProcs.verbatimPCDATA := false;
 end;
 
 # copy a few entries with two element names

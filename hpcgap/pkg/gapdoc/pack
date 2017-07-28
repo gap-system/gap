@@ -20,14 +20,15 @@ rm -rf ttttmp
 echo "Checking out current version into ttttmp/pkg/"$dirnam" . . ."
 mkdir -p ttttmp/pkg/$dirnam
 cd ttttmp/pkg/$dirnam
-cp -a ../../../CVS .
-cvs update -d > /dev/null 2>&1
+cp -a ../../../.git .
+git co master .
 echo building documentation
 ../../../../../bin/gap.sh -r -l "../..;" < makedocrel.g > /dev/null
 
+
 echo "removing unwanted files . . ."
 rm -r pack TODO clean index.html pkgreadme.css
-rm -rf `find . -regex ".*/CVS"`
+rm -rf .git .gitignore
 rm -rf */*.{log,aux,blg,brf,bbl,idx,ilg,ind,pnr} */*.xml.bib */.cvsignore
 rm -f ./makedoc.g ./maketxt ./doku toweb
 
@@ -44,9 +45,10 @@ echo New archive in ./$dirnam.tar.bz2
 echo If ok then call
 echo "      ~/gap4/dev/DistributionUpdate/maindist/repack.py "$dirnam".tar.bz2"
 
-echo "If you are happy with this archive tag the current state before"
-echo "committing further changes, e.g.: "
-echo "       cvs tag REL"`sed -e "s/\./_/g" version`
-echo "Use the ./toweb script to update the webpage."
+echo "If you are happy with this archive 
+#tag the current state before"
+#echo "committing further changes, e.g.: "
+#echo "       cvs tag REL"`sed -e "s/\./_/g" version`
+echo "use the ./toweb script to update the webpage."
 echo "Then change version number back to '1.dev'."
 

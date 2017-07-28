@@ -1,24 +1,28 @@
-
 /****************************************************************************
 **
-*W  boehm_gc.h
+*W  boehm_gc.c
 **
 **  This file stores code only required by the boehm garbage collector
 **
-**  It should NOT be generally included, it is only for use in gasman.c
-**
-**  The definitions of methods in this file can be found in gasman.c,
+**  The definitions of methods in this file can be found in gasman.h,
 **  where the non-boehm versions of these methods live.
 **/
 
+#include <src/system.h>                 /* Ints, UInts */
+#include <src/gapstate.h>
+
+#include <src/gasman.h>                 /* garbage collector */
+
+#include <src/objects.h>                /* objects */
+
 
 #ifndef BOEHM_GC
-#error hpc_boehm_gc.h can only be used with the boehm GC collector
+#error This file can only be used when the Boehm GC collector is enabled
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h>
+#include <string.h>
 
 #define LARGE_GC_SIZE (8192 * sizeof(UInt))
 #define TL_GC_SIZE (256 * sizeof(UInt))
@@ -41,6 +45,21 @@
 #include <src/calls.h>                  /* calls */
 #include <src/vars.h>                   /* variables */
 #endif
+
+
+enum {
+    NTYPES = 256
+};
+
+TNumInfoBags            InfoBags [ NTYPES ];
+
+UInt            SizeAllBags;
+
+static inline Bag *DATA(BagHeader *bag)
+{
+    return (Bag *)(((char *)bag) + sizeof(BagHeader));
+}
+
 
 /****************************************************************************
 **
@@ -80,14 +99,14 @@ Region *RegionBag(Bag bag)
 
 /****************************************************************************
 **
-*F  InitFinalizerFuncBags(<type>,<finalizer-func>)  . . . . install finalizer
+*F  InitFreeFuncBag(<type>,<free-func>)
 */
 
-FinalizerFunction TabFinalizerFuncBags [ NTYPES ];
+TNumFreeFuncBags TabFreeFuncBags[ NTYPES ];
 
-void InitFinalizerFuncBags(UInt type, FinalizerFunction finalizer_func)
+void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 {
-  TabFinalizerFuncBags[type] = finalizer_func;
+  TabFreeFuncBags[type] = finalizer_func;
 }
 
 #ifndef WARD_ENABLED
@@ -98,20 +117,16 @@ void StandardFinalizer( void * bagContents, void * data )
   void *bagContents2;
   bagContents2 = ((char *) bagContents) + sizeof(BagHeader);
   bag = (Bag) &bagContents2;
-  TabFinalizerFuncBags[TNUM_BAG(bag)](bag);
+  TabFreeFuncBags[TNUM_BAG(bag)](bag);
 }
 
 #endif
 
 
-#ifdef BOEHM_GC
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCKind[MAX_GC_PREFIX_DESC+1];
 static GC_descr GCMDesc[MAX_GC_PREFIX_DESC+1];
 static unsigned GCMKind[MAX_GC_PREFIX_DESC+1];
-#endif
-
-#ifdef BOEHM_GC
 
 /*
  * Build memory layout information for Boehm GC.
@@ -153,13 +168,9 @@ void BuildPrefixGCDescriptor(unsigned prefix_len) {
     0, 0);
 }
 
-#endif
 
-#ifdef BOEHM_GC
 static void TLAllocatorInit(void);
-#endif
 
-#ifdef BOEHM_GC
 
 #define GRANULE_SIZE (2 * sizeof(UInt))
 
@@ -232,12 +243,11 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       else
         result = GC_malloc(size);
     }
-    if (TabFinalizerFuncBags[type])
+    if (TabFreeFuncBags[type])
       GC_register_finalizer_no_order(result, StandardFinalizer,
         NULL, NULL, NULL);
     return result;
 }
-#endif
 
 void LockFinalizer(void *lock, void *data)
 {
@@ -307,7 +317,6 @@ void            InitBags (
 
     /* install the marking functions                                       */
     for ( i = 0; i < 255; i++ ) {
-        TabMarkFuncBags[i] = MarkAllSubBagsDefault;
         TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC
@@ -421,6 +430,9 @@ Bag NewBag (
       }
     }
 #endif
+
+    SizeAllBags             += size;
+
     /* If the size of an object is zero (such as an empty permutation),
      * and the header size is a multiple of twice the word size of the
      * architecture, then the master pointer will actually point past
@@ -462,7 +474,6 @@ Bag NewBag (
     header->type = type;
     header->flags = 0;
     header->size = size;
-    header->link = bag;
 
     /* set the masterpointer                                               */
     PTR_BAG(bag) = DATA(header);
@@ -548,7 +559,6 @@ UInt ResizeBag (
         header->type = type;
         header->flags = flags;
         header->size = new_size;
-        header->link = bag;
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
@@ -566,43 +576,57 @@ UInt ResizeBag (
 
 
 /*****************************************************************************
-** The following functions are not required by boehm, so empty implementations
-** are provided
+** The following functions are not required respectively supported, so empty
+** implementations are provided
 **
 */
-
-void            InitMsgsFuncBags (
-    TNumMsgsFuncBags    msgs_func )
-{ }
 
 void InitGlobalBag (
     Bag *               addr,
     const Char *        cookie )
 { }
 
-void SortGlobals( UInt byWhat )
-{ }
-
-Bag * GlobalByCookie(
-       const Char * cookie )
-{
-    return (Bag *) 0;
-}
-
 void CallbackForAllBags(
      void (*func)(Bag) )
-{ }
-
-void StartRestoringBags( UInt nBags, UInt maxSize)
-{ }
-
-Bag NextBagRestoring( UInt type, UInt flags, UInt size )
-{ return 0; }
-
-void FinishedRestoringBags( void )
 { }
 
 void            InitCollectFuncBags (
     TNumCollectFuncBags before_func,
     TNumCollectFuncBags after_func )
 { }
+
+void SwapMasterPoint( Bag bag1, Bag bag2 )
+{
+    Obj *ptr1 = PTR_BAG(bag1);
+    Obj *ptr2 = PTR_BAG(bag2);
+    PTR_BAG(bag1) = ptr2;
+    PTR_BAG(bag2) = ptr1;
+}
+
+void MarkNoSubBags( Bag bag )
+{
+}
+
+void MarkOneSubBags( Bag bag )
+{
+}
+
+void MarkTwoSubBags( Bag bag )
+{
+}
+
+void MarkThreeSubBags( Bag bag )
+{
+}
+
+void MarkFourSubBags( Bag bag )
+{
+}
+
+void MarkAllSubBags( Bag bag )
+{
+}
+
+void MarkArrayOfBags( Bag array[], int count )
+{
+}

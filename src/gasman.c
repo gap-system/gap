@@ -209,20 +209,6 @@ static inline Bag *DATA(BagHeader *bag)
 }
 
 
-/* These variables are here so they can be accessed by
- * hpc_boehm_gc.h
- */
-
-TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
-
-
-/* Several functions in this file are guarded by #ifndef BOEHM_GC.
- * hpc_boehm_gc.h contains replacements of those functions for when
- * gasman is not in use */
-#ifdef BOEHM_GC
-#include <src/hpc/boehm_gc.h>           /* boehm-specific code */
-#endif
-
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
@@ -230,18 +216,17 @@ TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 *V  YoungBags . . . . . . . . . . . . . . .  beginning of the young bags area
 *V  AllocBags . . . . . . . . . . . . . . .  beginning of the allocation area
 *V  AllocSizeBags . . . . . . . . . . . . . . . . size of the allocation area
-*V  StopBags  . . . . . . . . . . . . . . . beginning of the unavailable area
 *V  EndBags . . . . . . . . . . . . . . . . . . . . . .  end of the workspace
 **
 **  {\Gasman} manages one large block of storage called the *workspace*.  The
 **  layout of the workspace is as follows{\:}
 **
-**  +-------------+-----------------+------------+------------+-------------+
-**  |masterpointer|    old bags     | young bags | allocation | unavailable |
-**  |    area     |      area       |    area    |    area    |    area     |
-**  +-------------+-----------------+------------+------------+-------------+
-**  ^             ^                 ^            ^            ^             ^
-**  MptrBags    OldBags         YoungBags    AllocBags     StopBags   EndBags
+**  +-----------------+-----------------+-----------------+-----------------+
+**  |  masterpointer  |    old bags     |   young bags    |   allocation    |
+**  |      area       |      area       |      area       |      area       |
+**  +-----------------+-----------------+-----------------+-----------------+
+**  ^                 ^                 ^                 ^                 ^
+**  MptrBags       OldBags          YoungBags         AllocBags       EndBags
 **
 **  The *masterpointer area*  contains  all the masterpointers  of  the bags.
 **  'MptrBags' points to the beginning of this area and 'OldBags' to the end.
@@ -261,11 +246,7 @@ TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 **  from  the beginning of   this area,  and  this  area  is  correspondingly
 **  reduced.   If  the body does not   fit in the  allocation  area a garbage
 **  collection is  performed.  'AllocBags' points   to the beginning of  this
-**  area and 'StopBags' to the end.
-**
-**  The *unavailable  area* is  the free  storage that  is not  available for
-**  allocation.   'StopBags'  points  to  the  beginning  of  this  area  and
-**  'EndBags' to the end.
+**  area and 'EndBags' to the end.
 **
 **  Note that  the  borders between the areas are not static.  In  particular
 **  each allocation increases the size of the young bags area and reduces the
@@ -277,15 +258,14 @@ Bag *                   OldBags;
 Bag *                   YoungBags;
 Bag *                   AllocBags;
 UInt                    AllocSizeBags;
-Bag *                   StopBags;
 Bag *                   EndBags;
 
-#if defined(MEMORY_CANARY) && !defined(BOEHM_GC)
+#if defined(MEMORY_CANARY)
 
 #include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>
 Int canary_size() {
-  Int bufsize = (Int)StopBags - (Int)AllocBags;
+  Int bufsize = (Int)EndBags - (Int)AllocBags;
   return bufsize<4096?bufsize:4096;
 }
 
@@ -324,10 +304,9 @@ void CHANGED_BAG_IMPL(Bag bag) {
 #define SpaceBetweenPointers(a,b) (((UInt)((UInt)(a) - (UInt)(b)))/sizeof(Bag))
 
 #define SizeMptrsArea SpaceBetweenPointers(OldBags, MptrBags)
-#define SizeOldBagsArea SpaceBetweenPointers(YoungBags,OldBags)
+#define SizeOldBagsArea SpaceBetweenPointers(YoungBags, OldBags)
 #define SizeYoungBagsArea SpaceBetweenPointers(AllocBags, YoungBags)
-#define SizeAllocationArea SpaceBetweenPointers(StopBags, AllocBags)
-#define SizeUnavailableArea SpaceBetweenPointers(EndBags, StopBags)
+#define SizeAllocationArea SpaceBetweenPointers(EndBags, AllocBags)
 
 #define SizeAllBagsArea SpaceBetweenPointers(AllocBags, OldBags)
 #define SizeWorkspace SpaceBetweenPointers(EndBags, MptrBags)
@@ -462,7 +441,6 @@ TNumInfoBags            InfoBags [ NTYPES ];
 **
 *F  IS_BAG -- check if a value looks like a masterpointer reference.
 */
-#ifndef BOEHM_GC
 static inline UInt IS_BAG (
     UInt                bid )
 {
@@ -470,7 +448,6 @@ static inline UInt IS_BAG (
          && (bid < (UInt)OldBags)
          && (bid & (sizeof(Bag)-1)) == 0);
 }
-#endif
 
 /****************************************************************************
 **
@@ -479,7 +456,6 @@ static inline UInt IS_BAG (
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
 **  variable.
 */
-#ifndef BOEHM_GC
 TNumMsgsFuncBags        MsgsFuncBags;
 
 void            InitMsgsFuncBags (
@@ -518,8 +494,6 @@ void InitSweepFuncBags (
     TabSweepFuncBags[type] = sweep_func;
 }
 
-#endif
-
 
 /****************************************************************************
 **
@@ -538,8 +512,8 @@ void InitSweepFuncBags (
 **  by GASMAN as default.  This will allow to catch type clashes.
 */
 
+TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 
-#ifndef BOEHM_GC
 void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
@@ -560,7 +534,6 @@ void InitMarkFuncBags (
 #endif
     TabMarkFuncBags[type] = mark_func;
 }
-#endif
 
 #define MARKED_DEAD(x)  (x)
 #define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
@@ -641,19 +614,19 @@ void MarkAllSubBagsDefault( Bag bag )
 // Other marking functions don't get to inline MarkBag calls anymore,
 // but luckily these are rare (and usually not performance critical
 // to start with).
-#ifndef BOEHM_GC
 inline void MarkBag( Bag bag )
 {
-    if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0
-         && (Bag)MptrBags <= (bag)      && (bag) < (Bag)OldBags
-         && YoungBags < PTR_BAG(bag)    && PTR_BAG(bag) <= AllocBags
-         && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
+  if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
+       && (Bag)MptrBags <= bag              /* in plausible range */
+       && bag < (Bag)OldBags                /*  "    "       "    */
+       && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
+       && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
+       && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
     {
         LINK_BAG(bag) = MarkedBags;
-        MarkedBags = (bag);
+        MarkedBags = bag;
     }
 }
-#endif
 
 void MarkBagWeakly( Bag bag )
 {
@@ -678,7 +651,6 @@ void MarkBagWeakly( Bag bag )
 **  walking the masterpointer area. Not terribly safe.
 **
 */
-#ifndef BOEHM_GC
 void CallbackForAllBags(
      void (*func)(Bag) )
 {
@@ -689,7 +661,6 @@ void CallbackForAllBags(
         (*func)(ptr);
       }
 }
-#endif
 
 
 /****************************************************************************
@@ -709,7 +680,6 @@ TNumGlobalBags GlobalBags;
 */
 Int WarnInitGlobalBag;
 
-#ifndef BOEHM_GC
 static UInt GlobalSortingStatus;
 extern TNumAbortFuncBags   AbortFuncBags;
 
@@ -928,9 +898,6 @@ void FinishedRestoringBags( void )
   Bag p;
 /*  Bag *ptr; */
   YoungBags = AllocBags;
-  StopBags = AllocBags + WORDS_BAG(AllocSizeBags);
-  if (StopBags > EndBags)
-    StopBags = EndBags;
   FreeMptrBags = NextMptrRestoring;
   for (p = NextMptrRestoring; p +1 < (Bag)OldBags; p++)
     *(Bag *)p = p+1;
@@ -952,18 +919,10 @@ void FinishedRestoringBags( void )
 */
 TNumFreeFuncBags        TabFreeFuncBags [ 256 ];
 
-UInt                    NrTabFreeFuncBags;
-
 void            InitFreeFuncBag (
     UInt                type,
     TNumFreeFuncBags    free_func )
 {
-    if ( free_func != 0 ) {
-        NrTabFreeFuncBags = NrTabFreeFuncBags + 1;
-    }
-    else {
-        NrTabFreeFuncBags = NrTabFreeFuncBags - 1;
-    }
     TabFreeFuncBags[type] = free_func;
 }
 
@@ -1071,7 +1030,6 @@ void            InitBags (
     AllocBags = OldBags;
 
     AllocSizeBags = 256;
-    StopBags = EndBags;
 
     /* remember whether bags should be clean                               */
     DirtyBags = dirty;
@@ -1084,7 +1042,6 @@ void            InitBags (
     ChangedBags = 0;
 
 }
-#endif
 
 
 /****************************************************************************
@@ -1125,7 +1082,6 @@ void            InitBags (
 **  local  variables  of the function.  To  enable  statistics only {\Gasman}
 **  needs to be recompiled.
 */
-#ifndef BOEHM_GC
 Bag NewBag (
     UInt                type,
     UInt                size )
@@ -1143,7 +1099,7 @@ Bag NewBag (
         return 0;
     }
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics                                               */
     NrAllBags               += 1;
     InfoBags[type].nrLive   += 1;
@@ -1195,7 +1151,7 @@ void            RetypeBag (
 {
     BagHeader * header = BAG_HEADER(bag);
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics      */
     {
           UInt                old_type;       /* old type of the bag */
@@ -1216,7 +1172,6 @@ void            RetypeBag (
 
     header->type = new_type;
 }
-#endif
 
 
 /****************************************************************************
@@ -1292,7 +1247,6 @@ void            RetypeBag (
 **  If {\Gasman}  was compiled with the  option 'COUNT_BAGS' then 'ResizeBag'
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
-#ifndef BOEHM_GC
 UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
@@ -1306,7 +1260,7 @@ UInt ResizeBag (
     UInt flags    = header->flags;
     UInt old_size = header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
     /* update the statistics                                               */
     InfoBags[type].sizeLive += new_size - old_size;
     InfoBags[type].sizeAll  += new_size - old_size;
@@ -1348,7 +1302,7 @@ UInt ResizeBag (
     else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
         CLEAR_CANARY();
         // check that enough storage for the new bag is available
-        if ( StopBags < PTR_BAG(bag)+WORDS_BAG(new_size)
+        if ( EndBags < PTR_BAG(bag)+WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
             return 0;
         }
@@ -1442,7 +1396,7 @@ UInt ResizeBag (
 **  we    can   assume that  'CollectBags'     is doing   a  partial  garbage
 **  collection.   In  addition,    the   values 'NewWeakDeadBagMarker'    and
 **  'OldWeakDeadBagMarker'  are exchanged, so  that bag identifiers that have
-**  been  halfdead  since    before  this full    garbage  collection cab  be
+**  been  halfdead  since    before  this full    garbage  collection can  be
 **  distinguished from those which have died on this pass.
 **
 **  Garbage collection  is  performed in  three phases.  The  mark phase, the
@@ -1805,82 +1759,6 @@ again:
 
     /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
 
-#if 0
-    /* call freeing function for all dead bags                             */
-    if ( NrTabFreeFuncBags ) {
-
-        /* run through the young generation                                */
-        src = YoungBags;
-        while ( src < AllocBags ) {
-            BagHeader * header = (BagHeader *)src;
-
-            /* leftover of a resize of <n> bytes                           */
-            if ( header->type == 255 ) {
-
-                if (header->flags == 1)
-                  src++;
-                else
-                  src += 1 + WORDS_BAG(header->size);
-
-            }
-
-            /* dead or half-dead (only weakly pointed to bag               */
-            /* here the usual check using UNMARKED_DEAD etc. is not
-               safe, because we are looking at the bag body rather
-               than its identifier, and a wrong guess for the bag
-               status can involve following a misaligned pointer. It
-               may cause bus errors or actual mistakes.
-
-               Instead we look directly at the value in the link word
-               and check its least significant bits */
-
-// FIXME: use macros...
-            else if ( ((UInt)header->link) % sizeof(Bag) == 0 ||
-                      ((UInt)header->link) % sizeof(Bag) == 2 ) {
-#ifdef DEBUG_MASTERPOINTERS
-                if  ( (header->size % sizeof(Bag) == 0 &&
-                       PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header))  ||
-                      (header->size % sizeof(Bag) == 2 &&
-                       PTR_BAG( UNMARKED_HALFDEAD(header->link)) != DATA(header)))
-                  {
-                    (*AbortFuncBags)("incorrectly marked bag");
-                  }
-#endif
-
-                /* call freeing function                                   */
-                if ( TabFreeFuncBags[ header->type ] != 0 )
-                  (*TabFreeFuncBags[ header->type ])( header->link );
-
-                /* advance src                                             */
-                src = DATA(header) + WORDS_BAG( header->size ) ;
-
-            }
-
-
-            /* live bag                                                    */
-            else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
-#ifdef DEBUG_MASTERPOINTERS
-                if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) )
-                  {
-                    (*AbortFuncBags)("incorrectly marked bag");
-                  }
-#endif
-
-                /* advance src                                             */
-                src = DATA(header) + WORDS_BAG( header->size );
-
-            }
-
-            /* oops                                                        */
-            else {
-                (*AbortFuncBags)(
-                  "Panic: Gasman found a bogus header (looking for dead bags)");
-            }
-
-        }
-
-    }
-#endif
     /* sweep through the young generation                                  */
     nrDeadBags = 0;
     nrHalfDeadBags = 0;
@@ -1911,14 +1789,16 @@ again:
 #endif
 
 
-            /* update count                                                */
+            /* call freeing function                                       */
             if (TabFreeFuncBags[ header->type ] != 0) {
               (*TabFreeFuncBags[ header->type ])( header->link );
             }
+
+            /* update count                                                */
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
@@ -1945,7 +1825,7 @@ again:
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
-#ifdef  COUNT_BAGS
+#ifdef COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
@@ -2034,9 +1914,8 @@ again:
 
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
 
-    /* temporarily store in 'StopBags' where this allocation takes us      */
-    StopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
-
+    // store in 'stopBags' where this allocation takes us
+    Bag * stopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
 
 
     /* if we only performed a partial garbage collection                   */
@@ -2047,14 +1926,14 @@ again:
 
              /* The test below should stop AllocSizeBags
                 growing uncontrollably when all bags are big */
-             && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
+             && stopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
             AllocSizeBags += 256;
         else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
                && 256 < AllocSizeBags )
             AllocSizeBags -= 256;
 
-        /* if we dont get enough free storage or masterpointers do full gc */
-        if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
+        /* if we don't get enough free storage or masterpointers do full gc */
+        if ( EndBags < stopBags + WORDS_BAG(1024*AllocSizeBags)
           || SizeMptrsArea <
 
              /*      nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
@@ -2097,44 +1976,44 @@ again:
 
 
         /* get the storage we absolutely need                              */
-        while ( EndBags < StopBags
+        while ( EndBags < stopBags
              && (*AllocFuncBags)(512,1) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* if not enough storage is free, fail                             */
-        if ( EndBags < StopBags )
+        if ( EndBags < stopBags )
             return 0;
 
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
-        while ( ( SpaceBetweenPointers(EndBags, StopBags) <  SpaceBetweenPointers(StopBags, OldBags)/7 ||
-                  SpaceBetweenPointers(EndBags, StopBags) < WORDS_BAG(AllocSizeBags) )
+        while ( ( SpaceBetweenPointers(EndBags, stopBags) <  SpaceBetweenPointers(stopBags, OldBags)/7 ||
+                  SpaceBetweenPointers(EndBags, stopBags) < WORDS_BAG(AllocSizeBags) )
              && (*AllocFuncBags)(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* If we are having trouble, then cut our cap to fit our cloth *.
-        if ( EndBags - StopBags < AllocSizeBags )
-        AllocSizeBags = 7*(Endbags - StopBags)/8; */
+        if ( EndBags - stopBags < AllocSizeBags )
+        AllocSizeBags = 7*(Endbags - stopBags)/8; */
 
         /* if less than 1/16th is free, prepare for an interrupt           */
-        if (SpaceBetweenPointers(StopBags,OldBags)/15 < SpaceBetweenPointers(EndBags,StopBags) ) {
+        if (SpaceBetweenPointers(stopBags,OldBags)/15 < SpaceBetweenPointers(EndBags,stopBags) ) {
             /*N 1993/05/16 martin must change 'gap.c'                      */
             ;
         }
 
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
-        while (SpaceBetweenPointers(StopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,StopBags)-WORDS_BAG(512*1024L)
-                && SpaceBetweenPointers(EndBags,StopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
+        while (SpaceBetweenPointers(stopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
+                && SpaceBetweenPointers(EndBags,stopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
              && (*AllocFuncBags)(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
-        if ( SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags < SpaceBetweenPointers(EndBags,StopBags)/7 ) {
+        if ( SizeMptrsArea-NrLiveBags < SpaceBetweenPointers(EndBags,stopBags)/7 ) {
 
             /* this is how many new masterpointers we want                 */
-            i = SpaceBetweenPointers(EndBags,StopBags)/7 - (SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags);
+            i = SpaceBetweenPointers(EndBags,stopBags)/7 - (SizeMptrsArea-NrLiveBags);
 
             /* move the bags area                                          */
-            memmove((void *)(OldBags+i), (void *)OldBags, SpaceBetweenPointers(AllocBags,OldBags)*sizeof(*OldBags));
+            memmove((void *)(OldBags+i), (void *)OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
             for ( p = MptrBags; p < OldBags; p++ ) {
@@ -2151,11 +2030,11 @@ again:
             *p = (Bag)FreeMptrBags;
             FreeMptrBags = (Bag)OldBags;
 
-            /* update 'OldBags', 'YoungBags', 'AllocBags', and 'StopBags'  */
+            /* update 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'  */
             OldBags   += i;
             YoungBags += i;
             AllocBags += i;
-            StopBags  += i;
+            stopBags  += i;
 
         }
 
@@ -2167,13 +2046,10 @@ again:
     /* information after the check phase                                   */
     if ( MsgsFuncBags )
       (*MsgsFuncBags)( FullBags, 5,
-                       SpaceBetweenPointers(EndBags, StopBags)/(1024/sizeof(Bag)));
+                       SpaceBetweenPointers(EndBags, stopBags)/(1024/sizeof(Bag)));
     if ( MsgsFuncBags )
         (*MsgsFuncBags)( FullBags, 6,
-                         SpaceBetweenPointers(EndBags, MptrBags)/(1024/sizeof(Bag)));
-
-    /* reset the stop pointer                                              */
-    StopBags = EndBags;
+                         SizeWorkspace/(1024/sizeof(Bag)));
 
     /* if we are not done, then true again                                 */
     if ( ! done ) {
@@ -2220,7 +2096,6 @@ void CheckMasterPointers( void )
         (*AbortFuncBags)("Bad master pointer detected in check");
     }
 }
-#endif
 
 
 /****************************************************************************
@@ -2233,6 +2108,7 @@ void SwapMasterPoint (
 {
     Bag *               ptr1;
     Bag *               ptr2;
+    Bag swapbag;
 
     if ( bag1 == bag2 )
         return;
@@ -2246,13 +2122,23 @@ void SwapMasterPoint (
         LINK_BAG(bag1) = bag2;
         LINK_BAG(bag2) = bag1;
     }
-    else if ( LINK_BAG(bag1) == bag1 ) {
-        LINK_BAG(bag1) = ChangedBags;
-        ChangedBags = bag1;
-    }
-    else if ( LINK_BAG(bag2) == bag2 ) {
-        LINK_BAG(bag2) = ChangedBags;
-        ChangedBags = bag2;
+    else
+    {
+        // First make sure both bags are in change list
+        // We can't use CHANGED_BAG as it skips young bags
+        if ( LINK_BAG(bag1) == bag1 ) {
+            LINK_BAG(bag1) = ChangedBags;
+            ChangedBags = bag1;
+        }
+        if ( LINK_BAG(bag2) == bag2 ) {
+            LINK_BAG(bag2) = ChangedBags;
+            ChangedBags = bag2;
+        }
+        // Now swap links, so in the end the list will go
+        // through the bags in the same order.
+        swapbag = LINK_BAG(bag1);
+        LINK_BAG(bag1) = LINK_BAG(bag2);
+        LINK_BAG(bag2) = swapbag;
     }
 
     /* swap them                                                           */
@@ -2338,9 +2224,3 @@ UInt SET_ELM_BAG (
 }
 
 #endif
-
-
-/****************************************************************************
-**
-*E  gasman.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

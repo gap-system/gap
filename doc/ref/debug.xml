@@ -204,6 +204,8 @@ gap> InfoLevel(InfoWarning);
 <Heading>Customizing <Ref Func="Info"/> statements</Heading>
 <Func Arg="infoclass, handler" Name="SetInfoHandler" />
 <Func Arg="infoclass, out" Name="SetInfoOutput" />
+<Func Arg="infoclass" Name="UnbindInfoOutput" />
+<Func Arg="infoclass" Name="InfoOutput" />
 <Func Arg="out" Name="SetDefaultInfoOutput" />
 <Returns>nothing</Returns>
 <Description>
@@ -223,8 +225,10 @@ If the first argument of an <Ref Func="Info"/> statement is a sum of
 Info classes, the handler of the first summand is used.
 <P/>
 The file or stream to which <Ref Func="Info"/> statements for individual
-<Ref Func="Info"/> classes print can be changed with 
-<Ref Func="SetInfoOutput"/>. The initial default for all <Ref Func="Info"/>
+<Ref Func="Info"/> classes print can be overriden with
+<Ref Func="SetInfoOutput"/>, retrieved with <Ref Func="InfoOutput"/>
+and reset to the default with <Ref Func="UnbindInfoOutput"/>.
+The initial default for all <Ref Func="Info"/>
 classes is the string <C>"*Print*"</C> which means the current output
 file. The default can be changed with <Ref Func="SetDefaultInfoOutput"/>.  
 The argument <A>out</A> can be a filename or an open stream, 

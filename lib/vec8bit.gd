@@ -26,7 +26,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 #R  Is8BitVectorRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
 DeclareRepresentation( "Is8BitVectorRep", 
-        IsDataObjectRep and IsRowVectorObj,[],
+        IsDataObjectRep and IsVectorObj,[],
         IsRowVector and IsSmallList );
 
 #############################################################################

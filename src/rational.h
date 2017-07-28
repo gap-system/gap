@@ -43,8 +43,3 @@ StructInitInfo * InitInfoRat ( void );
 
 
 #endif // GAP_RATIONAL_H
-
-/****************************************************************************
-**
-*E  rational.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

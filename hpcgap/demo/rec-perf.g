@@ -1,16 +1,12 @@
-MicroSeconds := function()
-  local t;
-  t := CurrentTime();
-  return t.tv_sec * 1000000 + t.tv_usec;
-end;
+ReadGapRoot("demo/bench.g");
 
 Bench := function(title, f)
   local tstart, tend;
-  tstart := MicroSeconds();
+  tstart := NanosecondsSinceEpoch();
   f();
-  tend := MicroSeconds();
+  tend := NanosecondsSinceEpoch();
   Print(title);
-  Display(tend-tstart);
+  Display((tend-tstart)*1.E-6);
 end;
 
 # Populate RNam table

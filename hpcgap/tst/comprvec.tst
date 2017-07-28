@@ -15,7 +15,7 @@ gap> IsIdenticalObj(z1,z2);
 false
 gap> z1=z2;
 true
-gap> NewRowVector(IsGF2VectorRep,GF(2),[Z(2),Z(2)]);
+gap> NewVector(IsGF2VectorRep,GF(2),[Z(2),Z(2)]);
 <a GF2 vector of length 2>
 gap> CopyToVectorRep(z,2);
 <a GF2 vector of length 3>

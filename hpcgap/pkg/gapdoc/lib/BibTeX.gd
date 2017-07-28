@@ -23,6 +23,7 @@ DeclareGlobalFunction("StringBibAsHTML");
 DeclareGlobalFunction("PrintBibAsHTML");
 DeclareGlobalFunction("SearchMR");
 DeclareGlobalFunction("SearchMRBib");
+DeclareGlobalFunction("LabelsFromBibTeX");
 
 
 ##  <#GAPDoc Label="InfoBibTools">

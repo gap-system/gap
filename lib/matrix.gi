@@ -3103,7 +3103,9 @@ InstallGlobalFunction( BlownUpMat, function ( B, mat )
       for b in vectors do
         resrow:= [];
         for entry in row do
-          Append( resrow, Coefficients( B, entry * b ) );
+          entry := Coefficients( B, entry * b );
+          if entry = fail then return fail; fi;
+          Append( resrow, entry );
         od;
         ConvertToVectorRepNC( resrow );
         Add( result, resrow );
@@ -3577,9 +3579,17 @@ end );
 ##
 InstallGlobalFunction( RandomUnimodularMat, function ( m )
     local  mat, c, i, j, k, l, a, b, v, w, gcd;
+    
+    if not IsPosInt( m ) then
+        Error("<m> must be a positive integer");
+    fi;
 
     # start with the identity matrix
     mat := IdentityMat( m );
+
+    if m = 1 then
+        return Random( [ 1, -1 ] ) * mat;
+    fi;
 
     for c  in [1..m]  do
 
@@ -3609,7 +3619,6 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
             v := mat[i][k];  w := mat[i][l];
             mat[i][k] := gcd.coeff1 * v + gcd.coeff2 * w;
             mat[i][l] := gcd.coeff3 * v + gcd.coeff4 * w;
-            ConvertToVectorRepNC( mat[i] );
         od;
 
     od;

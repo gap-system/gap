@@ -918,7 +918,7 @@ extern void             IntrEmpty ( void );
 *F  IntrInfoBegin() . . . . . . . . .  start interpretation of Info statement
 *F  IntrInfoMiddle()  . . . . . .  shift to interpreting printable arguments
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
-*V  InfoDecision . . . . . . . . . . .  fopy of the InfoDecision GAP function
+*V  InfoCheckLevel(<selectors>,<level>) . . . . . check if Info should output
 *V  InfoDoPrint  . . . . . . . . . . .  fopy of the InfoDoPrint GAP function
 */
 
@@ -926,7 +926,7 @@ extern void             IntrInfoBegin ( void );
 extern void             IntrInfoMiddle( void );
 extern void             IntrInfoEnd   (
            UInt                   narg );
-extern Obj              InfoDecision;
+extern Obj              InfoCheckLevel(Obj, Obj);
 extern Obj              InfoDoPrint;
 
 
@@ -995,8 +995,3 @@ StructInitInfo * InitInfoIntrprtr ( void );
 
 
 #endif // GAP_INTRPRTR_H
-
-/****************************************************************************
-**
-*E  intrprtr.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -46,8 +46,3 @@ StructInitInfo * InitInfoVector ( void );
 
 
 #endif // GAP_VECTOR_H
-
-/****************************************************************************
-**
-*E  vector.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

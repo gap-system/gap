@@ -13,12 +13,12 @@
 
 
 InstallMethod( WeightOfVector, "generic method",
-  [IsRowVectorObj],
+  [IsVectorObj],
   function(v)
     local i,n;
     n := 0;
     for i in [1..Length(v)] do
-        if not(IsZero(v[i])) then
+        if not IsZero(v[i]) then
             n := n + 1;
         fi;
     od;
@@ -26,7 +26,7 @@ InstallMethod( WeightOfVector, "generic method",
   end );
 
 InstallMethod( DistanceOfVectors, "generic method",
-  [IsRowVectorObj, IsRowVectorObj],
+  [IsVectorObj, IsVectorObj],
   function( v, w)
     local i,n;
     if Length(v) <> Length(w) then
@@ -42,47 +42,6 @@ InstallMethod( DistanceOfVectors, "generic method",
     return n;
   end );
 
-InstallMethod( AddMatrix, "for two row list matrices and a scalar",
-  [ IsMutable and IsRowListMatrix, IsRowListMatrix, IsMultiplicativeElement ],
-  function( A, B, s )
-    local i;
-    if Length(A) <> Length(B) then
-        Error("Matrices must have equal length");
-        return;
-    fi;
-    for i in [1..Length(A)] do
-        AddRowVector(A[i],B[i],s);
-    od;
-  end );
-
-InstallMethod( AddMatrix, "for two row list matrices",
-  [ IsMutable and IsRowListMatrix, IsRowListMatrix ],
-  function( A, B )
-    local i;
-    if Length(A) <> Length(B) then
-        Error("Matrices must have equal length");
-        return;
-    fi;
-    for i in [1..Length(A)] do
-        AddRowVector(A[i],B[i]);
-    od;
-  end );
-
-InstallMethod( MultMatrix, "for a row list matrix",
-  [ IsMutable and IsRowListMatrix, IsMultiplicativeElement ],
-  function( A, s )
-    local i;
-    for i in [1..Length(A)] do
-        MultRowVector(A[i],s);
-    od;
-  end );
-
-InstallMethod( ProductTransposedMatMat, "generic method",
-  [ IsMatrixObj, IsMatrixObj ],
-  function( A, B )
-    return TransposedMat(A) * B;
-  end );
-
 InstallMethod( Matrix, "generic convenience method with 2 args",
   [IsList,IsMatrixObj],
   function( l, m )
@@ -90,7 +49,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
         Error("Matrix: two-argument version not allowed with empty first arg");
         return;
     fi;
-    if not(IsList(l[1]) or IsRowVectorObj(l[1])) then
+    if not (IsList(l[1]) or IsVectorObj(l[1])) then
         Error("Matrix: flat data not supported in two-argument version");
         return;
     fi;
@@ -98,7 +57,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
   end );
 
 InstallMethod( Unfold, "for a matrix object, and a vector object",
-  [ IsMatrixObj, IsRowVectorObj ],
+  [ IsMatrixObj, IsVectorObj ],
   function( m, w )
     local v,i,l;
     if Length(m) = 0 then
@@ -114,7 +73,7 @@ InstallMethod( Unfold, "for a matrix object, and a vector object",
   end );
 
 InstallMethod( Fold, "for a vector, a positive int, and a matrix",
-  [ IsRowVectorObj, IsPosInt, IsMatrixObj ],
+  [ IsVectorObj, IsPosInt, IsMatrixObj ],
   function( v, rl, t )
     local rows,i,tt,m;
     m := Matrix([],rl,t);
@@ -134,7 +93,7 @@ InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
-    if not(IsOne(l[n+1])) then
+    if not IsOne(l[n+1]) then
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
@@ -153,7 +112,7 @@ InstallMethod( KroneckerProduct, "for two matrices",
   function( A, B )
     local rowsA, rowsB, colsA, colsB, newclass, AxB, i, j;
 
-    if not(IsIdenticalObj(BaseDomain(A),BaseDomain(B))) then
+    if not IsIdenticalObj(BaseDomain(A),BaseDomain(B)) then
         Error("KroneckerProduct: Matrices not over same base domain");
         return;
     fi;
@@ -176,7 +135,7 @@ InstallMethod( KroneckerProduct, "for two matrices",
       od;
     od;
 
-    if not(IsMutable(A)) and not(IsMutable(B)) then
+    if not IsMutable(A) and not IsMutable(B) then
         MakeImmutable(AxB);
     fi;
 
@@ -223,7 +182,7 @@ InstallGlobalFunction( MakeVector,
     else
         ty := IsPlistVectorRep;
     fi;
-    return NewRowVector(ty,bd,l);
+    return NewVector(ty,bd,l);
   end );
 
 InstallGlobalFunction( MakeMatrix,
@@ -256,13 +215,13 @@ InstallGlobalFunction( MakeMatrix,
   end );
 
 InstallMethod( ExtractSubVector, "generic method",
-  [ IsRowVectorObj, IsList ],
+  [ IsVectorObj, IsList ],
   function( v, l )
     return v{l};
   end );
 
 InstallOtherMethod( ScalarProduct, "generic method",
-  [ IsRowVectorObj, IsRowVectorObj ],
+  [ IsVectorObj, IsVectorObj ],
   function( v, w )
     local bd,i,s;
     bd := BaseDomain(v);

@@ -315,9 +315,7 @@ local oper,n,R,o,nrit,
 	    e:=List(em,r->List(r,Int))-b;
 	    e:=1/pp*e;
 	    e:=Concatenation(e)*one;
-	    if p<257 then
-	      ConvertToVectorRep(e,p);
-	    fi;
+        e:=ImmutableVector(p,e);
 	    if not e in sub then
 	      Add(bas,e);
 	      Add(basm,em);

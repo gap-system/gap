@@ -104,7 +104,7 @@ extern UInt ReadEvalFile ( void );
 **
 *F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
 */
-extern void ReadEvalError ( void );
+extern void ReadEvalError ( void ) NORETURN;
 
 /* extern ExecStatus ReadEvalDebug ( void ); */
 
@@ -157,8 +157,3 @@ StructInitInfo * InitInfoRead ( void );
 
 
 #endif // GAP_READ_H
-
-/****************************************************************************
-**
-*E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

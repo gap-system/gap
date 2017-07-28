@@ -168,8 +168,6 @@ end );
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
 
-BIND_GLOBAL("UNCLONEABLE_TNUMS",MakeImmutable([0,5,8]));
-
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
@@ -180,7 +178,9 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
     fi;
-    if TNUM_OBJ_INT(value) in UNCLONEABLE_TNUMS then
+    if TNUM_OBJ_INT(value) <= LAST_CONSTANT_TNUM
+        and (TNUM_OBJ_INT(value) = TNUM_OBJ_INT(0)
+             or IS_FFE(value) or IS_BOOL(value)) then
        Error("InstallValue: <value> cannot be immediate, boolean or character");
     fi;
     CLONE_OBJ (gvar, value);

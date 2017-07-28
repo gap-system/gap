@@ -1114,10 +1114,3 @@ StructInitInfo * InitInfoDTEvaluation ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  dteval.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-**
-*/

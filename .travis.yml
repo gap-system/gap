@@ -14,6 +14,8 @@ addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
+    - libgmp-dev:i386
+    - libreadline-dev:i386
     - gcc-multilib
     - g++-multilib
     - texinfo
@@ -23,10 +25,6 @@ matrix:
     # general test suite (subsumes testinstall tests, too)
     - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITE=testtravis ABI=32 CONFIGFLAGS="--enable-debug"
-      sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
-      before_install:
-        - sudo apt-get -qq update
-        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
 
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
@@ -59,10 +57,6 @@ matrix:
     # tests at least once with the ReproducibleBehaviour option turned off.
     - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-debug"
-      sudo: required    # trusty containers are missing libgmp:i386, use sudo-enabled infrastructure instead
-      before_install:
-        - sudo apt-get -qq update
-        - sudo apt-get install libgmp-dev:i386 gcc-multilib g++-multilib
 
     # run bugfix regression tests
     - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"

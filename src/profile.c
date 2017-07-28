@@ -124,7 +124,7 @@
 
 #include <sys/time.h>                   /* for gettimeofday */
 
-#if HAVE_SYS_RESOURCE_H
+#ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
 #endif
 
@@ -229,7 +229,7 @@ void leaveFunction(Obj func)
 ** of GAP's execution, before anything else is done.
 */
 
-#if HAVE_POPEN
+#ifdef HAVE_POPEN
 static int endsWithgz(char* s)
 {
   s = strrchr(s, '.');
@@ -242,7 +242,7 @@ static int endsWithgz(char* s)
 
 static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 {
-#if HAVE_POPEN
+#ifdef HAVE_POPEN
   char popen_buf[4096];
   if(endsWithgz(name) && strlen(name) < 3000)
   {
@@ -260,7 +260,7 @@ static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 
 static void fcloseMaybeCompressed(struct ProfileState* ps)
 {
-#if HAVE_POPEN
+#ifdef HAVE_POPEN
   if(ps->StreamWasPopened)
   {
     pclose(ps->Stream);
@@ -301,9 +301,9 @@ static inline UInt getFilenameId(Stat stat)
   return id;
 }
 
-static inline Int8 CPUmicroseconds()
+static inline Int8 CPUmicroseconds(void)
 {
-#if defined(HAVE_GETRUSAGE)
+#ifdef HAVE_GETRUSAGE
   struct rusage buf;
 
   getrusage( RUSAGE_SELF, &buf );
@@ -426,7 +426,7 @@ void visitStat(Stat stat)
 ** Activating and deacivating profiling, either at startup or by user request
 */
 
-void outputVersionInfo()
+void outputVersionInfo(void)
 {
     fprintf(profileState.Stream, 
             "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
@@ -655,7 +655,7 @@ Obj FuncIS_PROFILE_ACTIVE (
 
 Int CurrentColour = 0;
 
-static void setColour()
+static void setColour(void)
 {
   if(CurrentColour == 0) {
     Pr("\x1b[0m",0L,0L);
@@ -851,9 +851,3 @@ StructInitInfo * InitInfoProfile ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  stats.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

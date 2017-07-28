@@ -19,7 +19,7 @@
 # Overview:
 #
 # <#GAPDoc Label="MatObj_Overview">
-# The whole idea of this interface is that (row-) vectors and matrices must
+# The whole idea of this interface is that vectors and matrices must
 # be proper objects with a stored type (i.e. created by Objectify allowing
 # inheritance) to benefit from method selection. We therefore refer
 # to the new style vectors and matrices as <Q>vector objects</Q> and
@@ -117,12 +117,12 @@
 
 
 # The following are guaranteed to be always set or cheaply calculable:
-DeclareAttribute( "BaseDomain", IsRowVectorObj );
+DeclareAttribute( "BaseDomain", IsVectorObj );
 # Typically, the base domain will be a ring, it need not be commutative
-# nor associative. For non-associative base domains powering of matrices
-# is defined by the behaviour of POW_OBJ_INT.
+# nor associative. For non-associative base domains, the behavior of
+# powering matrices is undefined.
 
-DeclareAttribute( "Length", IsRowVectorObj );    # can be zero
+DeclareAttribute( "Length", IsVectorObj );    # can be zero
 # We have to declare this since a row vector is not necessarily
 # a list! Correspondingly we have to use InstallOtherMethod
 # for those row vector types that are lists.
@@ -152,29 +152,29 @@ DeclareAttribute( "Length", IsRowVectorObj );    # can be zero
 # In the following sense vectors behave like lists:
 ############################################################################
 
-DeclareOperation( "[]", [IsRowVectorObj,IsPosInt] );
+DeclareOperation( "[]", [IsVectorObj,IsPosInt] );
 # This is only defined for positions in [1..Length(VECTOR)]. 
 
-DeclareOperation( "[]:=", [IsRowVectorObj,IsPosInt,IsObject] );
+DeclareOperation( "[]:=", [IsVectorObj,IsPosInt,IsObject] );
 # This is only guaranteed to work for the position in [1..Length(VECTOR)] 
 # and only for elements in the BaseDomain(VECTOR)! 
 # Behaviour otherwise is undefined (from "unpacking" to Error all is possible)
 
-DeclareOperation( "{}", [IsRowVectorObj,IsList] );
+DeclareOperation( "{}", [IsVectorObj,IsList] );
 # Of course the positions must all lie in [1..Length(VECTOR)].
 # Returns a vector in the same representation!
 
-DeclareOperation( "PositionNonZero", [IsRowVectorObj] );
+DeclareOperation( "PositionNonZero", [IsVectorObj] );
 
-DeclareOperation( "PositionLastNonZero", [IsRowVectorObj] );
+DeclareOperation( "PositionLastNonZero", [IsVectorObj] );
 
-DeclareOperation( "ListOp", [IsRowVectorObj] );
-DeclareOperation( "ListOp", [IsRowVectorObj,IsFunction] );
+DeclareOperation( "ListOp", [IsVectorObj] );
+DeclareOperation( "ListOp", [IsVectorObj,IsFunction] );
 # This is an unpacking operation returning a mutable copy in form of a list.
 # It enables the "List" function to work.
 
 # The following unwraps a vector to a list:
-DeclareOperation( "Unpack", [IsRowVectorObj] );
+DeclareOperation( "Unpack", [IsVectorObj] );
 # It guarantees to copy, that is changing the returned object does
 # not change the original object.
 
@@ -195,7 +195,7 @@ DeclareOperation( "Unpack", [IsRowVectorObj] );
 # Thus we need:
 DeclareGlobalFunction( "ConcatenationOfVectors" );
 
-DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
+DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
 # Does the same as slicing v{l} but is here to be similar to
 # ExtractSubMatrix.
 
@@ -207,21 +207,21 @@ DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
 # to have a complete interface description in one place. Of course, vectors
 # have to implement those:
 
-# DeclareOperation( "ShallowCopy", [IsRowVectorObj] );
+# DeclareOperation( "ShallowCopy", [IsVectorObj] );
 
-# DeclareGlobalFunction( "StructuralCopy", [IsRowVectorObj] );
+# DeclareGlobalFunction( "StructuralCopy", [IsVectorObj] );
 
-# DeclareOperation( "ViewObj", [IsRowVectorObj] );
+# DeclareOperation( "ViewObj", [IsVectorObj] );
 
-# DeclareOperation( "PrintObj", [IsRowVectorObj] );
+# DeclareOperation( "PrintObj", [IsVectorObj] );
 # This must produce GAP readable input reproducing the representation!
 
-# DeclareAttribute( "String", IsRowVectorObj );
-# DeclareOperation( "String", [IsRowVectorObj,IsInt] );
+# DeclareAttribute( "String", IsVectorObj );
+# DeclareOperation( "String", [IsVectorObj,IsInt] );
 
-# DeclareOperation( "Display", [IsRowVectorObj] );
+# DeclareOperation( "Display", [IsVectorObj] );
 
-# DeclareOperation( "MakeImmutable", [IsRowVectorObj] );
+# DeclareOperation( "MakeImmutable", [IsVectorObj] );
 #  (this is a global function in the GAP library)
 
 
@@ -238,15 +238,15 @@ DeclareOperation( "ExtractSubVector", [IsRowVectorObj,IsList] );
 
 # The following "in place" operations exist with the same restrictions:
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable, IsRowVectorObj ] );
+  [ IsVectorObj and IsMutable, IsVectorObj ] );
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable, IsRowVectorObj, IsObject ] );
+  [ IsVectorObj and IsMutable, IsVectorObj, IsObject ] );
 DeclareOperation( "AddRowVector", 
-  [ IsRowVectorObj and IsMutable,IsRowVectorObj,IsObject,IsPosInt,IsPosInt ] );
+  [ IsVectorObj and IsMutable,IsVectorObj,IsObject,IsPosInt,IsPosInt ] );
 DeclareOperation( "MultRowVector",
-  [ IsRowVectorObj and IsMutable, IsObject ] );
+  [ IsVectorObj and IsMutable, IsObject ] );
 DeclareOperation( "MultRowVector",
-  [ IsRowVectorObj and IsMutable, IsList, IsRowVectorObj, IsList, IsObject ] );
+  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList, IsObject ] );
 
 # The following operations for scalars and vectors are possible of course
 # only for scalars in the BaseDomain:
@@ -257,7 +257,7 @@ DeclareOperation( "MultRowVector",
 #    AdditiveInverseSameMutability, ZeroImmutable, ZeroMutable, 
 #    ZeroSameMutability, IsZero, Characteristic
 
-DeclareOperation( "ScalarProduct", [ IsRowVectorObj, IsRowVectorObj ] );
+DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 # This is defined for two vectors of equal length, it returns the standard
 # scalar product.
 
@@ -265,7 +265,7 @@ DeclareOperation( "ScalarProduct", [ IsRowVectorObj, IsRowVectorObj ] );
 # The "representation-preserving" contructor methods:
 ############################################################################
 
-DeclareOperation( "ZeroVector", [IsInt,IsRowVectorObj] );
+DeclareOperation( "ZeroVector", [IsInt,IsVectorObj] );
 # Returns a new mutable zero vector in the same rep as the given one with
 # a possible different length.
 
@@ -273,7 +273,7 @@ DeclareOperation( "ZeroVector", [IsInt,IsMatrixObj] );
 # Returns a new mutable zero vector in a rep that is compatible with
 # the matrix but of possibly different length.
 
-DeclareOperation( "Vector", [IsList,IsRowVectorObj]);
+DeclareOperation( "Vector", [IsList,IsVectorObj]);
 # Creates a new vector in the same representation but with entries from list.
 # The length is given by the length of the first argument.
 # It is *not* guaranteed that the list is copied!
@@ -284,20 +284,24 @@ DeclareOperation( "Vector", [IsList,IsRowVectorObj]);
 ## the matrix but of possibly different length given by the first
 ## argument. It is *not* guaranteed that the list is copied!
 
-DeclareOperation( "ConstructingFilter", [IsRowVectorObj] );
+DeclareOperation( "ConstructingFilter", [IsVectorObj] );
 
-DeclareOperation( "CompatibleMatrix", [IsRowVectorObj] );
-
-DeclareConstructor( "NewRowVector", [IsRowVectorObj,IsRing,IsList] );
+DeclareConstructor( "NewVector", [IsVectorObj,IsSemiring,IsList] );
 # A constructor. The first argument must be a filter indicating the
 # representation the vector will be in, the second is the base domain.
 # The last argument is guaranteed not to be changed!
 
-DeclareConstructor( "NewZeroVector", [IsRowVectorObj,IsRing,IsInt] );
+DeclareSynonym( "NewRowVector", NewVector );
+# FIXME: Declare NewRowVector for backwards compatibility, so that existing
+# code which already used it keeps working (most notably, the cvec and fining
+# packages). We should eventually remove this synonym.
+
+
+DeclareConstructor( "NewZeroVector", [IsVectorObj,IsSemiring,IsInt] );
 # A similar constructor to construct a zero vector, the last argument
 # is the base domain.
 
-DeclareOperation( "ChangedBaseDomain", [IsRowVectorObj,IsRing] );
+DeclareOperation( "ChangedBaseDomain", [IsVectorObj,IsSemiring] );
 # Changes the base domain. A copy of the row vector in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
@@ -312,12 +316,12 @@ DeclareGlobalFunction( "MakeVector" );
 # Some things that fit nowhere else:
 ############################################################################
 
-DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable] );
+DeclareOperation( "Randomize", [IsVectorObj and IsMutable] );
 # Changes the mutable argument in place, every entry is replaced
 # by a random element from BaseDomain.
 # The argument is also returned by the function.
 
-DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable,IsRandomSource] );
+DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 # The same, use the second argument to provide "randomness".
 # The vector argument is also returned by the function.
 
@@ -340,13 +344,13 @@ DeclareOperation( "Randomize", [IsRowVectorObj and IsMutable,IsRandomSource] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "CopySubVector", 
-  [IsRowVectorObj,IsRowVectorObj and IsMutable, IsList,IsList] );
+  [IsVectorObj,IsVectorObj and IsMutable, IsList,IsList] );
 
-DeclareOperation( "WeightOfVector", [IsRowVectorObj] );
+DeclareOperation( "WeightOfVector", [IsVectorObj] );
 # This computes the Hamming weight of a vector, i.e. the number of
 # nonzero entries.
 
-DeclareOperation( "DistanceOfVectors", [IsRowVectorObj, IsRowVectorObj] );
+DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
 # This computes the Hamming distance of two vectors, i.e. the number
 # of positions, in which the vectors differ. The vectors must have the
 # same length.
@@ -366,8 +370,8 @@ DeclareOperation( "DistanceOfVectors", [IsRowVectorObj, IsRowVectorObj] );
 # The following are guaranteed to be always set or cheaply calculable:
 DeclareAttribute( "BaseDomain", IsMatrixObj );
 # Typically, the base domain will be a ring, it need not be commutative
-# nor associative. For non-associative base domains powering of matrices
-# is defined by the behaviour of POW_OBJ_INT in the kernel.
+# nor associative. For non-associative base domains, the behavior of
+# powering matrices is undefined.
 
 DeclareAttribute( "Length", IsMatrixObj );
 # We have to declare this since matrix objects need not be lists.
@@ -385,13 +389,13 @@ DeclareOperation( "RankMatDestructive", [ IsMatrixObj ] );
 # In the following sense matrices behave like lists:
 ############################################################################
 
-DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );
+DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # This is guaranteed to return a vector object that has the property
-# that changing it changes the matrix!
-# A flat matrix has to create an intermediate object that refers to some
+# that changing it changes <pos>th row (?) of the matrix <mat>!
+# A matrix which is not a row-lists internally has to create an intermediate object that refers to some
 # row within it to allow the old GAP syntax M[i][j] for read and write
 # access to work. Note that this will never be particularly efficient
-# for flat matrices. Efficient code will have to use MatElm and
+# for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
 # These should probably only be defined for RowListMatrices???
@@ -402,12 +406,12 @@ DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
 DeclareOperation( "PositionLastNonZero", [IsMatrixObj] );
 DeclareOperation( "PositionLastNonZero", [IsMatrixObj, IsInt] );
 
-DeclareOperation( "Position", [IsMatrixObj, IsRowVectorObj] );
-DeclareOperation( "Position", [IsMatrixObj, IsRowVectorObj, IsInt] );
+DeclareOperation( "Position", [IsMatrixObj, IsVectorObj] );
+DeclareOperation( "Position", [IsMatrixObj, IsVectorObj, IsInt] );
 
 # This allows for usage of PositionSorted:
-DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsRowVectorObj] );
-DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsRowVectorObj,IsFunction]);
+DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj] );
+DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsVectorObj,IsFunction]);
 
 # I intentionally left out "PositionNot" here.
 
@@ -469,7 +473,7 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
                                     IsList,IsList,IsList,IsList] );
 
 ############################################################################
-# New element access for matrices (especially necessary for flat mats:
+# New element access for matrices
 ############################################################################
 
 DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
@@ -521,6 +525,9 @@ DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 
 # For non-empty square matrices we have:
 #    ^ integer
+# (this is only well-defined over associative base domains, 
+#  do not use it over non-associative base domains.
+# // The behavior of ^ on non-associative base domains is undefined.
 
 # The following unary arithmetical operations are possible for matrices:
 #    AdditiveInverseImmutable, AdditiveInverseMutable, 
@@ -535,18 +542,6 @@ DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 # Problem: How about inverses of integer matrices that exist as
 # elements of rationals matrix?
 
-DeclareOperation( "AddMatrix", [IsMutable and IsMatrixObj,IsMatrixObj] );
-DeclareOperation( "AddMatrix", 
-  [IsMutable and IsMatrixObj,IsMatrixObj,IsMultiplicativeElement] );
-DeclareOperation( "MultMatrix", 
-  [IsMutable and IsMatrixObj,IsMultiplicativeElement] );
-
-# Changes first argument in place, matrices have to be of same
-# dimension and over same base domain.
-
-DeclareOperation( "ProductTransposedMatMat", [IsMatrixObj, IsMatrixObj] );
-# Computes the product TransposedMat(A)*B, possibly without
-# first computing TransposedMat(A).
 
 DeclareOperation( "TraceMat", [IsMatrixObj] );
 # The sum of the diagonal entries. Error for a non-square matrix.
@@ -576,7 +571,7 @@ DeclareOperation( "ZeroMatrix", [IsInt,IsInt,IsMatrixObj] );
 # possibly different dimensions. First argument is number of rows, second
 # is number of columns.
 
-DeclareConstructor( "NewZeroMatrix", [IsMatrixObj,IsRing,IsInt,IsInt]);
+DeclareConstructor( "NewZeroMatrix", [IsMatrixObj,IsSemiring,IsInt,IsInt]);
 # Returns a new fully mutable zero matrix over the base domain in the
 # 2nd argument. The integers are the number of rows and columns.
 
@@ -584,7 +579,7 @@ DeclareOperation( "IdentityMatrix", [IsInt,IsMatrixObj] );
 # Returns a new mutable identity matrix in the same rep as the given one with
 # possibly different dimensions.
 
-DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsRing,IsInt]);
+DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsSemiring,IsInt]);
 # Returns a new fully mutable identity matrix over the base domain in the
 # 2nd argument. The integer is the number of rows and columns.
 
@@ -594,7 +589,7 @@ DeclareOperation( "CompanionMatrix", [IsUnivariatePolynomial,IsMatrixObj] );
 # monic and its coefficients must lie in the BaseDomain of the matrix.
 
 DeclareConstructor( "NewCompanionMatrix", 
-  [IsMatrixObj, IsUnivariatePolynomial, IsRing] );
+  [IsMatrixObj, IsUnivariatePolynomial, IsSemiring] );
 # The constructor variant of <Ref Oper="CompanionMatrix"/>.
 
 # The following are already declared in the library:
@@ -622,7 +617,7 @@ DeclareOperation( "Matrix", [IsList,IsMatrixObj] );
 # Note that it is not possible to generate a matrix via "Matrix" without
 # a template matrix object. Use the constructor methods instead:
 
-DeclareConstructor( "NewMatrix", [IsMatrixObj, IsRing, IsInt, IsList] );
+DeclareConstructor( "NewMatrix", [IsMatrixObj, IsSemiring, IsInt, IsList] );
 # Constructs a new fully mutable matrix. The first argument has to be a filter
 # indicating the representation. The second the base domain, the third
 # the row length and the last a list containing either row vectors
@@ -634,7 +629,7 @@ DeclareOperation( "ConstructingFilter", [IsMatrixObj] );
 
 DeclareOperation( "CompatibleVector", [IsMatrixObj] );
 
-DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsRing] );
+DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );
 # Changes the base domain. A copy of the matrix in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
@@ -667,11 +662,11 @@ DeclareOperation( "IsLowerTriangularMat", [IsMatrixObj] );
 DeclareOperation( "KroneckerProduct", [IsMatrixObj,IsMatrixObj] );
 # The result is fully mutable.
 
-DeclareOperation( "Unfold", [IsMatrixObj, IsRowVectorObj] );
+DeclareOperation( "Unfold", [IsMatrixObj, IsVectorObj] );
 # Concatenates all rows of a matrix to one single vector in the same
 # representation as the given template vector. Usually this must
 # be compatible with the representation of the matrix given.
-DeclareOperation( "Fold", [IsRowVectorObj, IsPosInt, IsMatrixObj] );
+DeclareOperation( "Fold", [IsVectorObj, IsPosInt, IsMatrixObj] );
 # Cuts the row vector into pieces of length the second argument
 # and forms a matrix out of the pieces in the same representation 
 # as the third argument. The length of the vector must be a multiple
@@ -702,8 +697,8 @@ DeclareOperation( "[]:=", [IsRowListMatrix,IsPosInt,IsObject] );
 DeclareOperation( "{}", [IsRowListMatrix,IsList] );
 # Produces *not* a list of rows but a matrix in the same rep as the input!
 
-DeclareOperation( "Add", [IsRowListMatrix,IsRowVectorObj] );
-DeclareOperation( "Add", [IsRowListMatrix,IsRowVectorObj,IsPosInt] );
+DeclareOperation( "Add", [IsRowListMatrix,IsVectorObj] );
+DeclareOperation( "Add", [IsRowListMatrix,IsVectorObj,IsPosInt] );
 
 DeclareOperation( "Remove", [IsRowListMatrix] );
 DeclareOperation( "Remove", [IsRowListMatrix,IsPosInt] );
@@ -732,62 +727,21 @@ DeclareOperation( "ListOp", [IsRowListMatrix, IsFunction] );
 ############################################################################
 # Rule:
 # This all means that objects in IsRowListMatrix behave like lists that
-# insist on being dense and having only IsRowVectorObjs over the right
+# insist on being dense and having only IsVectorObjs over the right
 # BaseDomain and with the right length as entries. However, formally
 # they do not have to lie in the filter IsList.
 ############################################################################
 
-
-############################################################################
-############################################################################
-# Operations for flat matrices:
-############################################################################
-############################################################################
-
-
-############################################################################
-# List operations with some modifications:
-############################################################################
-
-DeclareOperation( "[]:=", [IsFlatMatrix,IsPosInt,IsObject] );
-# Only guaranteed to work for the position in [1..Length(VECTOR)] and only
-# for elements in a suitable vector type.
-# Here this is always a copying operation!
-# Behaviour otherwise is undefined (from "unpacking" to Error all is possible)
-
-DeclareOperation( "{}", [IsFlatMatrix,IsList] );
-# Again this is defined to be a copying operation!
-
-# The following list operations are not supported for flat matrices:
-# Add, Remove, IsBound[], Unbind[], {}:=, Append
-
-# ShallowCopy is in fact a structural copy here:
-# DeclareOperation( "ShallowCopy", [IsFlatMatrix] );
-
-
-############################################################################
-# Rule:
-# Objects in IsFlatMatrix are not lists and do not behave like them.
-############################################################################
 
 
 ############################################################################
 # Arithmetic involving vectors and matrices:
 ############################################################################
 
-# DeclareOperation( "*", [IsRowVectorObj, IsMatrixObj] );
+# DeclareOperation( "*", [IsVectorObj, IsMatrixObj] );
 
-# DeclareOperation( "^", [IsRowVectorObj, IsMatrixObj] );
+# DeclareOperation( "^", [IsVectorObj, IsMatrixObj] );
 
-# Only in this direction since vectors are row vectors. The standard
-# list arithmetic rules apply only in this sense here which is the
-# standard mathematical vector matrix multiplication.
-
-
-############################################################################
-# Rule:
-# Note that vectors are by convention row vectors.
-############################################################################
 
 
 ############################################################################

@@ -7,7 +7,8 @@ fi;
 
 N := 12;
 
-t := Bench(do CountSolutions(N); od);
-Print("Seq: ", t, "\n");
-t := Bench(do CountSolutionsPar(N); od);
-Print("Par: ", t, "\n");
+tseq := Bench(do CountSolutions(N); od);
+Print("Seq: ", tseq, "\n");
+tpar := Bench(do CountSolutionsPar(N); od);
+Print("Par: ", tpar, "\n");
+Print("Speedup ", tseq/tpar, "\n");

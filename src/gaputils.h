@@ -4,8 +4,8 @@
 **
 */
 
-#ifndef GAP_UTIL_H
-#define GAP_UTIL_H
+#ifndef GAP_UTILS_H
+#define GAP_UTILS_H
 
 /****************************************************************************
 **
@@ -17,4 +17,4 @@
 static inline Int AlwaysYes(Obj obj) { return 1; }
 static inline Int AlwaysNo(Obj obj) { return 0; }
 
-#endif // GAP_UTIL_H
+#endif // GAP_UTILS_H

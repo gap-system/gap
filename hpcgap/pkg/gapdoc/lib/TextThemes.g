@@ -17,7 +17,7 @@ GAPDoc2TextProcs.OtherThemes.default := rec(
   Package := TextAttr.bold,
   Returns := TextAttr.normal,
   URL := TextAttr.6,
-  Mark := Concatenation(TextAttr.bold, TextAttr.3),
+  Mark := Concatenation(TextAttr.bold, TextAttr.5),
   K := Concatenation(TextAttr.normal, TextAttr.1),
   C := Concatenation(TextAttr.normal, TextAttr.1),
   F := Concatenation(TextAttr.normal, TextAttr.6),
@@ -29,7 +29,7 @@ GAPDoc2TextProcs.OtherThemes.default := rec(
   BibTitle := TextAttr.4,
   BibJournal := ["",""],
   BibVolume := TextAttr.4,
-  BibLabel := TextAttr.3,
+  BibLabel := TextAttr.5,
   Q := ["\"","\""],
   M := ["",""],
   Math := ["$","$"],
@@ -58,7 +58,7 @@ GAPDoc2TextProcs.OtherThemes.classic := rec(
   Package := TextAttr.bold,
   Returns := TextAttr.bold,
   URL := TextAttr.4,
-  Mark := Concatenation(TextAttr.bold, TextAttr.3),
+  Mark := Concatenation(TextAttr.bold, TextAttr.5),
   K := Concatenation(TextAttr.normal, TextAttr.2),
   C := Concatenation(TextAttr.normal, TextAttr.2),
   F := Concatenation(TextAttr.bold, ""),
@@ -70,7 +70,7 @@ GAPDoc2TextProcs.OtherThemes.classic := rec(
   BibTitle := TextAttr.4,
   BibJournal := ["",""],
   BibVolume := TextAttr.4,
-  BibLabel := TextAttr.3,
+  BibLabel := TextAttr.5,
   Q := ["\"","\""],
   M := ["",""],
   Math := ["$","$"],
@@ -143,7 +143,7 @@ GAPDoc2TextProcs.f := function()
   local dt, a;
   dt := GAPDoc2TextProcs.OtherThemes.default;
   # most empty, some copied from default
-  for a in RecFields(dt) do
+  for a in RecNames(dt) do
     GAPDoc2TextProcs.OtherThemes.none.(a) := "";
   od;
   for a in ["Q", "DefLineMarker", "ListBullet", "FillString", "EnumMarks"] do
@@ -180,30 +180,32 @@ GAPDoc2TextProcs.OtherThemes.raggedright := rec(
 );
 
 InstallValue(GAPDocTextTheme, rec());
-LockAndMigrateObj( GAPDocTextTheme, HELP_REGION );
+if IsBound(HPCGAP) then
+  LockAndMigrateObj( GAPDocTextTheme, HELP_REGION );
+fi;
 
 # argument doesn't need all component, the missing ones are taken from default
 InstallGlobalFunction(SetGAPDocTextTheme, function(arg)
-local r, res, h, af, v, a, nam, f, i;
-atomic HELP_REGION do  
+  local r, res, h, af, v, a, nam, f, i;
+
   r := rec();
   for a in arg do
     if IsString(a) then
       if not IsBound(GAPDoc2TextProcs.OtherThemes.(a)) then
         Print("Only the following named text themes are available \
 (choose one or several):\n");
-        for nam in RecFields(GAPDoc2TextProcs.OtherThemes) do
+        for nam in RecNames(GAPDoc2TextProcs.OtherThemes) do
           Print("  ",String(Concatenation("\"",nam,"\""), -25),
                 GAPDoc2TextProcs.OtherThemes.(nam).info, "\n");
         od;
         return;
       else
-        for f in RecFields(GAPDoc2TextProcs.OtherThemes.(a)) do
+        for f in RecNames(GAPDoc2TextProcs.OtherThemes.(a)) do
           r.(f) := GAPDoc2TextProcs.OtherThemes.(a).(f);
         od;
       fi;
     else
-      for f in RecFields(a) do
+      for f in RecNames(a) do
         r.(f) := a.(f);
       od;
     fi;
@@ -236,10 +238,10 @@ atomic HELP_REGION do
     res.(af[i]) := [[h[1][2*i-1], h[1][2*i]],[h[2][2*i-1], h[2][2*i]]];
   od;
   SortParallel(h[1], h[2]);
-  for f in RecFields(res) do
+atomic HELP_REGION do
+  for f in RecNames(res) do
     GAPDocTextTheme.(f) := res.(f);
   od;
 od;  
 end);
-SetGAPDocTextTheme( LockAndMigrateObj(rec(),HELP_REGION) );
-
+SetGAPDocTextTheme(rec());

@@ -98,16 +98,15 @@ static inline void PopOffsBody( void ) {
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
-static void SetupOffsBodyStackAndLoopStack() {
+static void SetupOffsBodyStackAndLoopStack( void ) {
 #ifdef HPCGAP
   STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
   STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 #else
-  // Careful: Malloc without free
-/* Since this mallocs we use a global variable at the moment
-  STATE(OffsBodyStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  STATE(LoopStack) = malloc(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
-*/
+  static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
+  static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
+  STATE(OffsBodyStack) = MainOffsBodyStack;
+  STATE(LoopStack) = MainLoopStack;
 #endif
 }
 
@@ -212,7 +211,7 @@ void SET_ENDLINE_BODY(Obj body, Obj val)
 ** Fill in filename and line of a statement, checking we do not overflow
 ** the space we have for storing information
 */
-Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
+static Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
 {
   Stat stat;
   if(fileid < 0 || fileid >= (1 << 16))
@@ -877,9 +876,11 @@ void CodeFuncExprEnd (
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
     ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
-        = ((Stat)FILENAMEID_STAT(FIRST_STAT_CURR_FUNC) << 48) +
-          ((Stat)LINE_STAT(FIRST_STAT_CURR_FUNC) << 32) +
-          ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
+        = fillFilenameLine(
+            FILENAMEID_STAT(FIRST_STAT_CURR_FUNC),
+            LINE_STAT(FIRST_STAT_CURR_FUNC),
+            nr*sizeof(Stat),
+            T_SEQ_STAT+nr-1);
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
@@ -1175,29 +1176,17 @@ void CodeAtomicEndBody (
     UInt nrexprs;
     Expr  e,qual;
 
-
-    /* fix up the case of no statements */
-    if ( 0 == nrstats ) {
-       PushStat( NewStat( T_EMPTY, 0) );
-       nrstats = 1;
-    }
-    
     /* collect the statements into a statement sequence   */
-    if ( 1 < nrstats ) {
-      stat1 = PopSeqStat( nrstats );
-    } else {
-      stat1 = PopStat();
-    }
+    stat1 = PopSeqStat( nrstats );
+
     nrexprs = INT_INTEXPR(PopExpr());
     
     /* allocate the atomic-statement                                        */
     stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
     
-
     /* enter the statement sequence */
     ADDR_STAT(stat)[0] = stat1;
 
-    
     /* enter the expressions                                                */
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
@@ -1205,7 +1194,6 @@ void CodeAtomicEndBody (
         ADDR_STAT(stat)[i] = e;
         ADDR_STAT(stat)[i-1] = qual;
     }
-
 
     /* push the atomic-statement                                            */
     PushStat( stat );
@@ -1229,7 +1217,7 @@ void CodeQualifiedExprBegin(UInt qual)
   PushExpr(INTEXPR_INT(qual));
 }
 
-void CodeQualifiedExprEnd() 
+void CodeQualifiedExprEnd(void) 
 {
 }
 
@@ -3664,9 +3652,3 @@ StructInitInfo * InitInfoCode ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

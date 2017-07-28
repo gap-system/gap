@@ -30,9 +30,3 @@ StructInitInfo * InitInfoDTEvaluation ( void );
 
 
 #endif // GAP_DTEVAL_H
-
-/****************************************************************************
-**
-*E  dteval.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-**
-*/

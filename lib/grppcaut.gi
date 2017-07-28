@@ -983,7 +983,7 @@ local f,act,xset,stb,hom,n,m,l,i;
     stb:=[Position(xset,bas)];
   else
     act:=OnLines;
-    stb:=NormedVectors(VectorSpace(f,bas));
+    stb:=NormedRowVectors(VectorSpace(f,bas));
     xset:=Union(Orbits(G,stb,act));
     stb:=Set(List(stb,x->Position(xset,x)));
   fi;
@@ -1305,18 +1305,18 @@ if Length(rans[i])=0 then Error("EGAD");fi;
    Print("Test\n");
    b:=GL(n,field);
    # fixing spaces is projective
-   yet:=NormedVectors(field^n);
+   yet:=NormedRowVectors(field^n);
    act:=ActionHomomorphism(b,yet,OnLines,"surjective");
    b:=Image(act,b);
    spaces:=ShallowCopy(ospaces);
    SortBy(spaces,Length);
    for i in spaces do
-      i:=Set(List(NormedVectors(VectorSpace(field,i)),x->Position(yet,x)));
+      i:=Set(List(NormedRowVectors(VectorSpace(field,i)),x->Position(yet,x)));
       b:=Stabilizer(b,i,OnSets);
       Print("Stab ",Size(b),"\n");
     od;
     for i in osporb do
-      i:=List(i,x->Set(List(NormedVectors(VectorSpace(field,x)),x->Position(yet,x))));
+      i:=List(i,x->Set(List(NormedRowVectors(VectorSpace(field,x)),x->Position(yet,x))));
       b:=Stabilizer(b,Union(i),OnSets);
       b:=Stabilizer(b,Set(i),OnSetsSets);
     od;

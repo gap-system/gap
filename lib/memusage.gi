@@ -134,7 +134,6 @@ InstallMethod( MemoryUsage, "generic fallback method",
     # Count the bag, the header, and the master pointer
     mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
     if IS_POSOBJ(o) then
-        # Again the bag, its header, and the master pointer
         for i in [1..LEN_POSOBJ(o)] do
             if IsBound(o![i]) then
                 if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
@@ -143,21 +142,21 @@ InstallMethod( MemoryUsage, "generic fallback method",
             fi;
         od;
     elif IS_COMOBJ(o) then
-        # Again the bag, its header, and the master pointer
         for i in NamesOfComponents(o) do
             s := o!.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
                 mem := mem + MemoryUsage(s);
             fi;
         od;
+    elif IS_DATOBJ(o) then
+        # a DATOBJ cannot reference any subobjects (other than its type,
+        # which we ignore for all kinds of objects)
     elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
         # Since we are in the fallback method, clearly there is no
         # MemoryUsage method installed for the given object.
-        if not IsGF2VectorRep(o) and not Is8BitVectorRep(o) then
-            Info(InfoWarning, 1, "No MemoryUsage method installed for ",
-                                 TNUM_OBJ(o)[2],
-                                 ", reported usage may be too low" );
-        fi;
+        Info(InfoWarning, 1, "No MemoryUsage method installed for ",
+                             TNUM_OBJ(o)[2],
+                             ", reported usage may be too low" );
     fi;
     MU_Finalize();
     return mem;
@@ -170,8 +169,8 @@ InstallMethod( MemoryUsage, "for a plist",
     known := MU_AddToCache( o );
     if known = false then    # not yet known
         MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+        # Count the bag, the header, and the master pointer
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
         for i in [1..Length(o)] do
             if IsBound(o[i]) then
                 if SHALLOW_SIZE(o[i]) > 0 then    # a subobject!
@@ -192,8 +191,8 @@ InstallMethod( MemoryUsage, "for a record",
     known := MU_AddToCache( o );
     if known = false then    # not yet known
         MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+        # Count the bag, the header, and the master pointer
         mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        # Again the bag, its header, and the master pointer
         for i in RecNames(o) do
             s := o.(i);
             if SHALLOW_SIZE(s) > 0 then    # a subobject!
@@ -228,6 +227,20 @@ InstallMethod( MemoryUsage, "for a function",
     else
         return 0;
     fi;
+  end );
+
+InstallMethod( MemoryUsage, "for an object set",
+  [ IsObjSet ],
+  function( o )
+    # TODO: implement this
+    Info(InfoWarning, 1, "MemororyUsage does not yet support object sets");
+  end );
+
+InstallMethod( MemoryUsage, "for an object map",
+  [ IsObjMap ],
+  function( o )
+    # TODO: implement this
+    Info(InfoWarning, 1, "MemororyUsage does not yet support object maps");
   end );
 
 # Intentionally ignore families and types:

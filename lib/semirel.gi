@@ -498,28 +498,30 @@ x->GreensJClasses(Source(x)));
 ##
 ##  returns the XClass containing <hclass>, <lclass>, or <rclass>
 
-InstallMethod(RClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
-    function(hc)
-    local x;
-    x:=GreensRClasses(ParentAttr(hc));
-    return First(x, y-> Representative(hc) in y);
+InstallMethod(RClassOfHClass, "for a Green's H-class", [IsGreensHClass],
+function(H)
+  return GreensRClassOfElement(Parent(H), Representative(H));
 end);
 
-InstallMethod(LClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
-  function(hc)
-       local x;
-    x:=GreensLClasses(ParentAttr(hc));
-    return First(x, y-> Representative(hc) in y);
+InstallMethod(LClassOfHClass, "for a Green's H-class", [IsGreensHClass],
+function(H)
+  return GreensLClassOfElement(Parent(H), Representative(H));
 end);
 
-InstallMethod(DClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
- x-> DClassOfHClass(CanonicalGreensClass(x)));
+InstallMethod(DClassOfHClass, "for a Green's H-class", [IsGreensHClass],
+function(H)
+  return GreensDClassOfElement(Parent(H), Representative(H));
+end);
 
-InstallMethod(DClassOfLClass, "for a Green's L-class", true, [IsGreensLClass], 0,
- x-> DClassOfLClass(CanonicalGreensClass(x)));
+InstallMethod(DClassOfLClass, "for a Green's L-class", [IsGreensLClass],
+function(L)
+  return GreensDClassOfElement(Parent(L), Representative(L));
+end);
 
-InstallMethod(DClassOfRClass, "for a Green's R-class", true, [IsGreensRClass], 0,
- x-> DClassOfRClass(CanonicalGreensClass(x)));
+InstallMethod(DClassOfRClass, "for a Green's R-class", [IsGreensRClass],
+function(R)
+  return GreensDClassOfElement(Parent(R), Representative(R));
+end);
 
 #################
 #################

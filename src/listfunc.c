@@ -46,6 +46,7 @@
 #include <src/set.h>                    /* plain sets */
 #include <src/range.h>                  /* ranges */
 #include <src/code.h>
+#include <src/gmpints.h>
 
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
@@ -901,9 +902,7 @@ UInt            RemoveDupsDensePlist (
 **  Some common checks.
 */
 
-void CheckIsSmallList(
-     Obj                list,
-     Char*              caller)
+static void CheckIsSmallList( Obj list, const Char * caller)
 {
   if ( ! IS_SMALL_LIST(list) ) {
     ErrorMayQuit("%s: <list> must be a small list (not a %s)",
@@ -911,9 +910,7 @@ void CheckIsSmallList(
   }
 }
 
-void CheckIsFunction(
-     Obj                func,
-     Char*              caller)
+static void CheckIsFunction(Obj func, const Char * caller)
 {
   if ( TNUM_OBJ( func ) != T_FUNCTION ) {
     ErrorMayQuit("%s: <func> must be a function (not a %s)",
@@ -1904,9 +1901,3 @@ StructInitInfo * InitInfoListFunc ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  listfunc.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

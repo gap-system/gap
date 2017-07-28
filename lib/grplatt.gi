@@ -2344,7 +2344,7 @@ InstallMethod(IntermediateSubgroups,"using maximal subgroups",
   IsIdenticalObj, [IsGroup,IsGroup],
   1, # better than previous if index larger
 function(G,U)
-local uind,subs,incl,i,j,k,m,gens,t,c,p;
+local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
   if (not IsFinite(G)) and Index(G,U)=infinity then
     TryNextMethod();
   fi;
@@ -2353,25 +2353,42 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p;
     TryNextMethod();
   fi;
   subs:=[G]; #subgroups so far
+  conj:=[fail];
   incl:=[];
   i:=1;
   gens:=SmallGeneratingSet(U);
   while i<=Length(subs) do
-    # find all maximals containing U
-    m:=MaximalSubgroupClassReps(subs[i]);
+    if conj[i]<>fail then
+      m:=MaximalSubgroupClassReps(subs[conj[i][1]]); # fetch attribute
+      m:=List(m,x->x^conj[i][2]);
+    else
+      # find all maximals containing U
+      m:=MaximalSubgroupClassReps(subs[i]);
+    fi;
     m:=Filtered(m,x->IndexNC(subs[i],U) mod IndexNC(subs[i],x)=0);
+    
+    if IsPermGroup(G) then
+      # test orbit split
+      bas:=List(Orbits(U,MovedPoints(G)),Length);
+      if NrCombinations(bas)<10^6 then
+        bas:=Set(List(Combinations(bas),Sum));
+	m:=Filtered(m,
+	  x->ForAll(List(Orbits(x,MovedPoints(G)),Length),z->z in bas));
+      fi;
+    fi;
 
     Info(InfoLattice,1,"Subgroup ",i,", Order ",Size(subs[i]),": ",Length(m),
       " maxes");
     for j in m do
       Info(InfoLattice,2,"Max index ",Index(subs[i],j));
-      # maximals must be self-normalizing
+      # maximals must be self-normalizing or normal
       if IsNormal(subs[i],j) then
 	t:=ContainingConjugates(subs[i],j,U:anormalizer:=subs[i]);
       else
 	t:=ContainingConjugates(subs[i],j,U:anormalizer:=j);
       fi;
 
+      bas:=fail;
       for k in t do
 
 	# U is contained in the conjugate k[1]
@@ -2386,9 +2403,46 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p;
 	    ForAll(GeneratorsOfGroup(c),y->y in x));
 	  if p<>fail then 
 	    Add(incl,[p,i]);
+	    if bas=fail then
+	      bas:=PositionProperty(t,x->IsIdenticalObj(x,k));
+	      basl:=p;
+	    fi;
 	  else
 	    Add(subs,c);
+	    Add(conj,fail); # default setting
 	    Add(incl,[Length(subs),i]);
+	    r:=fail;
+	    if bas=fail then
+	      bas:=PositionProperty(t,x->IsIdenticalObj(x,k));
+	      basl:=Length(conj);
+
+	      # is there conjugacy?
+	      p:=PositionsProperty(subs,x->Size(x)=Size(c));
+	      p:=Filtered(p,x->conj[x]=fail and x<Length(subs)); # only conj. base.
+	      if Length(p)>0 then
+		j:=1;
+		while j<=Length(p) do
+		  r:=RepresentativeAction(G,subs[p[j]],c);
+		  if r<>fail then
+		    # note conjugacy
+		    conj[Length(conj)]:=[p[j],r];
+		    j:=Length(p)+1;
+		  fi;
+		  j:=j+1;
+		od;
+	      fi;
+
+	    else
+	      r:=t[bas][2]^-1*k[2]; # conj. element
+	      if conj[basl]<>fail then # base is conjugate itself
+	        p:=conj[basl][1];
+		r:=conj[basl][2]*r;
+	      else
+		p:=basl;
+	      fi;
+	      conj[Length(conj)]:=[p,r];
+	    fi;
+
 	  fi;
 	fi;
 
@@ -2895,12 +2949,22 @@ local n,pool,ext,sz,lsz,t,f,i,ns;
 	Add(ext,[lsz/sz,i{[Length(n)+2..Length(i)]}]);
       fi;
       for f in FusionsTom(t) do
-	if f[1]{[1..Minimum(Length(f[1]),Length(n))]} in ns and not f[1] in pool then
+	if ForAny(ns,x->x=f[1]{[1..Minimum(Length(f[1]),Length(x))]})
+	#f[1]{[1..Minimum(Length(f[1]),Length(n))]} in ns 
+	and not f[1] in pool then
 	  Add(pool,f[1]);
 	fi;
       od;
     fi;
   od;
+  ext:=List(ext,x->[x[1],Concatenation(r.tomName,".",x[2])]);
+
+  # an extension A_n.2 is called S_n
+  if Length(n)>1 and n[1]='A' 
+    and ForAll([2..Length(n)],x->n[x] in CHARS_DIGITS) then
+    Add(ext,[2,Concatenation("S",n{[2..Length(n)]})]);
+  fi;
+
   r!.tomExtensions:=ext;
   return ext;
 end);
@@ -2949,7 +3013,7 @@ local T,t,hom,inf,nam,i,aut;
   #extensions (as far as tom knows)
   inf:=Filtered(TomExtensionNames(inf),i->i[1]=Index(G,T));
   for i in inf do
-    t:=TableOfMarks(Concatenation(nam,".",i[2]));
+    t:=TableOfMarks(i[2]);
     if t<>fail and HasUnderlyingGroup(t) then
       Info(InfoLattice,3,"Trying Isomorphism");
       hom:=IsomorphismGroups(G,UnderlyingGroup(t):intersize:=Size(G));
@@ -2991,18 +3055,25 @@ end);
 
 #############################################################################
 ##
-#F  LowLayerSubgroups( <G>, <lim> [,<cond> [,<dosub>]] )
+#F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
 ##
 InstallGlobalFunction(LowLayerSubgroups,function(arg)
-local G,lim,cond,dosub,all,m,i,j,new,old;
-  G:=arg[1];
-  lim:=arg[2];
+local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
+  act:=arg[1];
+  if IsGroup(act) and IsGroup(arg[2]) then
+    offset:=2;
+  else
+    offset:=1;
+  fi;
+
+  G:=arg[offset];
+  lim:=arg[offset+1];
   cond:=ReturnTrue;
   dosub:=ReturnTrue;
-  if Length(arg)>2 then
-    cond:=arg[3];
-    if Length(arg)>3 then
-      dosub:=arg[4];
+  if Length(arg)>offset+1 then
+    cond:=arg[offset+2];
+    if Length(arg)>offset+2 then
+      dosub:=arg[offset+3];
     fi;
   fi;
 
@@ -3028,11 +3099,11 @@ local G,lim,cond,dosub,all,m,i,j,new,old;
     # any conjugate before?
     for j in new do
       old:=Filtered(all,x->Size(x)=Size(j));
-      if ForAll(old,x->RepresentativeAction(G,x,j)=fail) then
+      if ForAll(old,x->RepresentativeAction(act,x,j)=fail) then
         Add(m,j);
       fi;
     od;
-    m:=List(SubgroupsOrbitsAndNormalizers(G,m,false),x->x.representative);
+    m:=List(SubgroupsOrbitsAndNormalizers(act,m,false),x->x.representative);
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," new");
     Append(all,m);
   od;

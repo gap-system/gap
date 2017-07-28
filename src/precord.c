@@ -61,7 +61,7 @@
 #include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/aobjects.h>           /* thread-local storage */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************
@@ -1032,9 +1032,3 @@ StructInitInfo * InitInfoPRecord ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

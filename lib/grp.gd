@@ -1132,9 +1132,8 @@ DeclareAttribute( "ConjugacyClasses", IsGroup );
 ##  <Ref Func="MaximalSubgroupClassReps"/>.
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesMaximalSubgroups(g);
-##  [ Group( [ (2,4,3), (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (2,4,3) ] )^G ]
+##  [ AlternatingGroup( [ 1 .. 4 ] )^G, Group( [ (1,2,3), (1,2) ] )^G, 
+##    Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1180,8 +1179,8 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupClassReps(g);
-##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), Group([ (3,4), (1,4)
-##    (2,3), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) ]
+##  [ Alt( [ 1 .. 4 ] ), Group([ (1,2,3), (1,2) ]), Group([ (1,2), (3,4),
+##      (1,3)(2,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

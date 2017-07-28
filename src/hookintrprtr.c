@@ -49,7 +49,7 @@
 #include <src/hpc/thread.h>
 #include <src/hpc/tls.h>
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 /* List of active hooks */
 struct InterpreterHooks * activeHooks[HookCount];
@@ -61,7 +61,7 @@ static Int HookActiveCount;
 static Int PrintHookActive;
 
 /* Forward declaration */
-void CheckPrintOverflowWarnings();
+void CheckPrintOverflowWarnings(void);
 
 /****************************************************************************
 **
@@ -251,7 +251,7 @@ Obj FuncCLEAR_PROFILE_OVERFLOW_CHECKS(Obj self)
     return 0;
 }
 
-void CheckPrintOverflowWarnings()
+void CheckPrintOverflowWarnings(void)
 {
     if (!HaveReportedLineProfileOverflow && ShouldReportLineProfileOverflow) {
         HaveReportedLineProfileOverflow = 1;
@@ -270,7 +270,7 @@ void CheckPrintOverflowWarnings()
     }
 }
 
-void ReportLineNumberOverflowOccured()
+void ReportLineNumberOverflowOccured(void)
 {
     ShouldReportLineProfileOverflow = 1;
     if (HookActiveCount) {
@@ -278,7 +278,7 @@ void ReportLineNumberOverflowOccured()
     }
 }
 
-void ReportFileNumberOverflowOccured()
+void ReportFileNumberOverflowOccured(void)
 {
     ShouldReportFileProfileOverflow = 1;
     if (HookActiveCount) {
@@ -383,9 +383,3 @@ StructInitInfo * InitInfoHookIntrprtr(void)
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  hookintrprtr.c . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -39,7 +39,7 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##
 DeclareRepresentation(
     "IsGF2VectorRep",
-    IsDataObjectRep and IsRowVectorObj, [],
+    IsDataObjectRep and IsVectorObj, [],
     IsRowVector );
 
 

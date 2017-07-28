@@ -55,7 +55,7 @@
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
-#include <src/util.h>
+#include <src/gaputils.h>
 
 
 /****************************************************************************
@@ -2578,15 +2578,6 @@ void PrintLVars( Obj lvars )
   Pr("<lvars bag>", 0,0);
 }
 
-Int EqLVars (Obj x, Obj y)
-{
-  return (x == y);
-}
-
-Int EqLVarsX (Obj x, Obj y)
-{
-  return 0;
-}
 
 /****************************************************************************
 **
@@ -2621,8 +2612,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                i;              /* loop variable                   */
-
     STATE(CurrLVars) = (Bag) 0;
 
 #if !defined(HPCGAP)
@@ -2667,23 +2656,10 @@ static Int InitKernel (
     LoadObjFuncs[ T_HVARS ] = LoadLVars;
 
     /* and a type */
-
     TypeObjFuncs[ T_LVARS ] = TypeLVars;
     TypeObjFuncs[ T_HVARS ] = TypeLVars;
     PrintObjFuncs[ T_LVARS ] = PrintLVars;
     PrintObjFuncs[ T_HVARS ] = PrintLVars;
-    EqFuncs[T_LVARS][T_LVARS] = EqLVars;
-    EqFuncs[T_LVARS][T_HVARS] = EqLVars;
-    EqFuncs[T_HVARS][T_LVARS] = EqLVars;
-    EqFuncs[T_HVARS][T_HVARS] = EqLVars;
-    for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
-      {
-        EqFuncs[T_LVARS][i] = EqLVarsX;
-        EqFuncs[i][T_LVARS] = EqLVarsX;
-        EqFuncs[T_HVARS][i] = EqLVarsX;
-        EqFuncs[i][T_HVARS] = EqLVarsX;
-      }
-
 
     /* install executors, evaluators, and printers for local variables     */
     InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
@@ -2870,9 +2846,3 @@ StructInitInfo * InitInfoVars ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  vars.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

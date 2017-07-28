@@ -50,16 +50,15 @@ od;
 
 MakeImmutable(SpinsPerSecond);
 
-DiffCurrentTimes := function(t1, t2)
-    return (t1.tv_sec - t2.tv_sec)*1000000 +
-           (t1.tv_usec - t2.tv_usec);
+TimeDiff := function(t,t2)
+    return (t2-t)*1.E-9;
 end;
 
 TestParList := function(parListFun,ntasks, nworkers, spintype, taskLenFun)
     local   lens,  t,  tr;
     lens := List([1..ntasks],taskLenFun);
     t := Runtime();
-    tr := CurrentTime();
+    tr := NanosecondsSinceEpoch();
     parListFun(lens, t->Spin(spintype,t), nworkers);
-    return [Runtime()-t,QuoInt(DiffCurrentTimes(CurrentTime(),tr),1000)];
+    return [Runtime()-t,Int(1000*TimeDiff(NanosecondsSinceEpoch(),tr))];
 end;

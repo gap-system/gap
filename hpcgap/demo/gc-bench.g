@@ -4,27 +4,7 @@
 # All runtimes are in seconds, time taken by gettimeofday syscall
 #
 
-if not IsBound(CurrentTime) then
-    if IsBound(IO_gettimeofday) then
-        BindGlobal("CurrentTime", IO_gettimeofday);
-    else
-        Error("Don't know a way to get time of day\n");
-    fi;
-fi;
-MicroSeconds := function()
-    local t;
-    t := CurrentTime();
-    return t.tv_sec * 1000000 + t.tv_usec;
-end;
-Bench := function(f)
-    local start,stop;
-    start := MicroSeconds();
-    f();
-    stop := MicroSeconds();
-
-    return (stop - start) * 1.0 / 1000000;
-end;
-
+ReadGapRoot("demo/bench.g");
 
 # This is bad for non-generational GCs
 gc := function()

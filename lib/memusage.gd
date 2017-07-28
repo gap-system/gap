@@ -25,23 +25,25 @@ DeclareGlobalFunction( "ClearObjectMarker" );
 ##
 #O  MemoryUsage( <obj> )
 ##
+##  <#GAPDoc Label="MemoryUsage">
 ##  <ManSection>
 ##  <Oper Name="MemoryUsage" Arg='obj'/>
 ##
 ##  <Description>
-##  Returns the amount of memory in bytes used by the object <A>obj</A> 
+##  Returns the amount of memory in bytes used by the object <A>obj</A>
 ##  and its subobjects. Note that in general, objects can reference
 ##  each other in very difficult ways such that determining the memory
 ##  usage is a recursive procedure. In particular, computing the memory
 ##  usage of a complicated structure itself uses some additional memory,
 ##  which is however no longer used after completion of this operation.
-##  This procedure descents into lists and records, positional and
-##  component objects, however it does not take into account the type
-##  and family objects! For functions, it only takes the memory usage of
+##  This procedure descends into lists and records, positional and
+##  component objects; however it deliberately does not take into account
+##  the type and family objects. For functions, it only takes the memory usage of
 ##  the function body, not of the local context the function was created
-##  in, although the function keeps a reference to that as well!
+##  in, although the function keeps a reference to that as well.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MemoryUsage", [IsObject] );
 

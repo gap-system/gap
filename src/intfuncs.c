@@ -238,10 +238,6 @@ UInt4 nextrandMT_int32(UInt4* mt)
 integrate with GAP  SL*/
 
 
-#if HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
 #define FORCE_INLINE static inline
 
 #ifndef SYS_IS_64_BIT
@@ -696,9 +692,3 @@ StructInitInfo * InitInfoIntFuncs ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  intfuncs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -129,8 +129,3 @@ StructInitInfo * InitInfoListFunc ( void );
 
 
 #endif // GAP_LISTFUNC_H
-
-/****************************************************************************
-**
-*E  listfunc.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

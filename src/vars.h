@@ -179,7 +179,6 @@ static inline void MakeHighVars( Bag bag ) {
 */
 
 extern Obj STEVES_TRACING;
-extern Obj True;
 
 #include <stdio.h>
 
@@ -347,8 +346,3 @@ StructInitInfo * InitInfoVars ( void );
 
 
 #endif // GAP_VARS_H
-
-/****************************************************************************
-**
-*E  vars.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

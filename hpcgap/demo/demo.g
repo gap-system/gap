@@ -232,15 +232,15 @@ for i in [1..3] do
     t[i]:=CreateThread( 
              function(i) 
              local t, s; 
-             t:=CurrentTime();
+             t:=NanosecondsSinceEpoch();
              s := Concatenation("Thread ", String(i), " started at ", 
-                    String(t.tv_sec), ".", String(t.tv_usec), "\n");
+                    String(t*1.E-9), "\n");
              Print( s );
              Sleep(i); 
              WaitBarrier(bar); 
-             t:=CurrentTime();
+             t:=NanosecondsSinceEpoch();
              s := Concatenation("Thread ", String(i), " stopped at ", 
-                    String(t.tv_sec), ".", String(t.tv_usec), "\n");
+                    String(t*1.E-9), "\n");
              Print( s );
              end, 
              i );

@@ -54,6 +54,7 @@
 #include <src/read.h>
 
 #include <src/intrprtr.h>               /* interpreter */
+#include <src/intfuncs.h>
 
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
@@ -1552,10 +1553,6 @@ void            IntrAndL ( void )
     }
 }
 
-extern  Obj             NewAndFilter (
-            Obj                     oper1,
-            Obj                     oper2 );
-
 void            IntrAnd ( void )
 {
     Obj                 opL;            /* value of left  operand          */
@@ -2529,13 +2526,13 @@ void            IntrListExprEnd (
 
         /* if <low> is larger than <high> the range is empty               */
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-            list = NEW_PLIST( T_PLIST, 0 );
+            list = NEW_PLIST( T_PLIST_EMPTY, 0 );
             SET_LEN_PLIST( list, 0 );
         }
 
         /* if <low> is equal to <high> the range is a singleton list       */
         else if ( low == high ) {
-            list = NEW_PLIST( T_PLIST, 1 );
+            list = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
             SET_LEN_PLIST( list, 1 );
             SET_ELM_PLIST( list, 1, INTOBJ_INT(low) );
         }
@@ -4682,7 +4679,22 @@ void            IntrInfoBegin( void )
 
 }
 
-Obj             InfoDecision;
+static Obj InfoDecision;
+static Obj InfoDecisionFast;
+static Obj IsInfoClassListRep;
+
+Obj InfoCheckLevel(Obj selectors, Obj level)
+{
+    if (IS_POS_INTOBJ(level) &&
+        CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
+        Obj index = ELM_PLIST(selectors, 1);
+        return CALL_3ARGS(InfoDecisionFast, index, selectors, level);
+    }
+    else {
+        return CALL_2ARGS(InfoDecision, selectors, level);
+    }
+}
+
 
 void            IntrInfoMiddle( void )
 {
@@ -4700,7 +4712,9 @@ void            IntrInfoMiddle( void )
 
     level = PopObj();
     selectors = PopObj();
-    selected = CALL_2ARGS( InfoDecision, selectors, level);
+
+    selected = InfoCheckLevel(selectors, level);
+
     if (selected == False)
       STATE(IntrIgnoring) = 1;
     return;
@@ -4882,7 +4896,9 @@ static Int InitKernel (
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
+    ImportFuncFromLibrary("InfoDecisionFast", &InfoDecisionFast);
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
+    ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
 
     /* The work of handling Options is also delegated*/
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
@@ -4934,9 +4950,3 @@ StructInitInfo * InitInfoIntrprtr ( void )
 {
     return &module;
 }
-
-
-/****************************************************************************
-**
-*E  intrprtr.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/

@@ -14,17 +14,6 @@
 #ifndef GAP_LISTOPER_H
 #define GAP_LISTOPER_H
 
-/* These functions are exported because specialised methods may want to
-   fall back on them from other files (eg vec8bit) */
-
-extern  Obj             ProdListScl (
-            Obj                 listL,
-            Obj                 listR );
-
-extern Obj SumListList( Obj listL, Obj listR);
-extern Obj ProdListList( Obj listL, Obj listR);
-extern Obj DiffListList( Obj listL, Obj listR);
-
 /****************************************************************************
 **
 *F  EqListList(<listL>,<listR>) . . . . . . . . . test if two lists are equal
@@ -169,8 +158,3 @@ StructInitInfo * InitInfoListOper ( void );
 
 
 #endif // GAP_LISTOPER_H
-
-/****************************************************************************
-**
-*E  listoper.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-*/
