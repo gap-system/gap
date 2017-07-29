@@ -1,26 +1,75 @@
 #ifndef GAP_TRANS_H
 #define GAP_TRANS_H
 
-extern UInt INIT_TRANS2(Obj f);
-extern UInt INIT_TRANS4(Obj f);
+#include <src/plist.h>
 
-#define IMG_TRANS(f)      (ADDR_OBJ(f)[0])
-#define KER_TRANS(f)      (ADDR_OBJ(f)[1])
-#define EXT_TRANS(f)      (ADDR_OBJ(f)[2])
+static inline int IS_TRANS(Obj f)
+{
+    return (TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
+}
 
-#define NEW_TRANS2(deg)   NewBag(T_TRANS2, deg*sizeof(UInt2)+3*sizeof(Obj))
-#define ADDR_TRANS2(f)    ((UInt2*)((Obj*)(ADDR_OBJ(f))+3))
-#define DEG_TRANS2(f)     ((UInt)(SIZE_OBJ(f)-3*sizeof(Obj))/sizeof(UInt2))
-#define RANK_TRANS2(f)    (IMG_TRANS(f)==NULL?INIT_TRANS2(f):LEN_PLIST(IMG_TRANS(f)))
+static inline Obj NEW_TRANS2(UInt deg)
+{
+    GAP_ASSERT(deg <= 65536);
+    return NewBag(T_TRANS2, deg * sizeof(UInt2) + 3 * sizeof(Obj));
+}
 
-#define NEW_TRANS4(deg)   NewBag(T_TRANS4, deg*sizeof(UInt4)+3*sizeof(Obj))
-#define ADDR_TRANS4(f)    ((UInt4*)((Obj*)(ADDR_OBJ(f))+3))
-#define DEG_TRANS4(f)     ((UInt)(SIZE_OBJ(f)-3*sizeof(Obj))/sizeof(UInt4))
-#define RANK_TRANS4(f)    (IMG_TRANS(f)==NULL?INIT_TRANS4(f):LEN_PLIST(IMG_TRANS(f)))
+static inline UInt2 * ADDR_TRANS2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
+    return ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 3));
+}
 
-#define IS_TRANS(f)       (TNUM_OBJ(f)==T_TRANS2||TNUM_OBJ(f)==T_TRANS4)
-#define RANK_TRANS(f)     (TNUM_OBJ(f)==T_TRANS2?RANK_TRANS2(f):RANK_TRANS4(f))
-#define DEG_TRANS(f)      (TNUM_OBJ(f)==T_TRANS2?DEG_TRANS2(f):DEG_TRANS4(f))
+static inline UInt DEG_TRANS2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
+    return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt2));
+}
+
+UInt RANK_TRANS2(Obj f);
+
+static inline Obj NEW_TRANS4(UInt deg)
+{
+    // No assert here since we allow creating new T_TRANS4's when the degree
+    // is low enough to fit in a T_TRANS2.
+    return NewBag(T_TRANS4, deg * sizeof(UInt4) + 3 * sizeof(Obj));
+}
+
+static inline UInt4 * ADDR_TRANS4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
+    return ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 3));
+}
+
+static inline UInt DEG_TRANS4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
+    return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt4));
+}
+
+UInt RANK_TRANS4(Obj f);
+
+static inline Obj NEW_TRANS(UInt deg)
+{
+    if (deg < 65536) {
+        return NEW_TRANS2(deg);
+    }
+    else {
+        return NEW_TRANS4(deg);
+    }
+}
+
+static inline UInt DEG_TRANS(Obj f)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    return (TNUM_OBJ(f) == T_TRANS2 ? DEG_TRANS2(f) : DEG_TRANS4(f));
+}
+
+static inline UInt RANK_TRANS(Obj f)
+{
+    GAP_ASSERT(IS_TRANS(f));
+    return (TNUM_OBJ(f) == T_TRANS2 ? RANK_TRANS2(f) : RANK_TRANS4(f));
+}
 
 /****************************************************************************
 **
@@ -29,16 +78,16 @@ extern UInt INIT_TRANS4(Obj f);
 **  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
 **  transformation <f>.
 */
-extern Obj OnTuplesTrans ( Obj tup, Obj f );
+extern Obj OnTuplesTrans(Obj tup, Obj f);
 
 /****************************************************************************
 **
 *F  OnSetsTrans( <set>, <f> ) . . . . . . . .  operations on sets of points
 **
-**  'OnSetsTrans' returns the  image of the  tuple <set> under the 
-**  transformation <f>. 
+**  'OnSetsTrans' returns the  image of the  tuple <set> under the
+**  transformation <f>.
 */
-extern Obj OnSetsTrans ( Obj set, Obj f );
+extern Obj OnSetsTrans(Obj set, Obj f);
 
 /****************************************************************************
 **
@@ -46,29 +95,23 @@ extern Obj OnSetsTrans ( Obj set, Obj f );
 **
 **  'IdentityTrans' is an identity transformation.
 */
-extern  Obj             IdentityTrans;
+extern Obj IdentityTrans;
 
 /****************************************************************************
 **
-*V  EqPermTrans22 . . . . . . . . . . . . . . . . .  
+*V  EqPermTrans22 . . . . . . . . . . . . . . . . .
 **
 **  The actual equality checking function for Perm2 and Trans2.
 */
-Int EqPermTrans22 (UInt                degL,
-                   UInt                degR, 
-                   UInt2 *             ptLstart,       
-                   UInt2 *             ptRstart);
+Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart);
 
 /****************************************************************************
 **
-*V  EqPermTrans44 . . . . . . . . . . . . . . . . .  
+*V  EqPermTrans44 . . . . . . . . . . . . . . . . .
 **
 **  The actual equality checking function for Perm4 and Trans4.
 */
-Int EqPermTrans44 (UInt                degL,
-                   UInt                degR, 
-                   UInt4 *             ptLstart,       
-                   UInt4 *             ptRstart);
+Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart);
 
 /****************************************************************************
 
@@ -79,6 +122,6 @@ Int EqPermTrans44 (UInt                degL,
 *F  InitInfoTrans()  . . . . . . . . . . . . . . . table of init functions
 */
 
-StructInitInfo * InitInfoTrans ( void );
+StructInitInfo * InitInfoTrans(void);
 
-#endif // GAP_TRANS_H
+#endif    // GAP_TRANS_H

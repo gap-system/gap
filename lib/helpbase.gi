@@ -92,7 +92,7 @@ end);
 ##    changing algorithms used in `FindMultiSpelledHelpEntries' and
 ##    `HELP_SEARCH_ALTERNATIVES'.
 
-BindGlobal( "TRANSATL", 
+BindGlobal( "TRANSATL", MakeImmutable(
             [ [ "atalogue", "atalog" ],
               [ "olour", "olor" ],
               [ "entre", "enter" ],
@@ -101,7 +101,7 @@ BindGlobal( "TRANSATL",
               [ "abeling", "abelling" ],
               [ "olvable", "oluble" ],
               [ "yse", "yze" ],
-              [ "roebner", "robner"]] );
+              [ "roebner", "robner"]] ) );
 
 
 #############################################################################
@@ -316,7 +316,8 @@ fi;
 ##  No form of  normalization is applied to  <a> or <b>, so this  should be done
 ##  before calling MATCH_BEGIN.
 ##  
-InstallGlobalFunction(MATCH_BEGIN, function( a, b ) local p,q;
+InstallGlobalFunction(MATCH_BEGIN, function( a, b )
+    local p,q;
 
     if Length(a)=0 and Length(b)=0 then
       return true;
@@ -546,7 +547,7 @@ end);
 
 InstallGlobalFunction(HELP_REMOVE_BOOK, function( short )
   local str, pos;
-  
+
   str := SIMPLE_STRING(short);
   pos := Position(HELP_KNOWN_BOOKS[1], str);
   if pos = fail then
@@ -740,7 +741,7 @@ InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
   Append(books, List(HELP_KNOWN_BOOKS[2], a-> FILLED_LINE(a[1], a[2], ' ')));
   Pager(books);
   return true;
-  
+
 end);
 
 #############################################################################
@@ -748,7 +749,7 @@ end);
 #F  HELP_SHOW_CHAPTERS( <book> )  . . . . . . . . . . . . . show all chapters
 ##
 InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
-  local   info;
+  local info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
   if info = fail then
@@ -758,7 +759,7 @@ InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
     HELP_LAST.MATCH := 1;
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowChapters(info));
   fi;
-  return true;  
+  return true;
 end);
 
 #############################################################################
@@ -766,7 +767,7 @@ end);
 #F  HELP_SHOW_SECTIONS( <book> )  . . . . . . . . . . . . . show all sections
 ##
 InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
-  local   info;
+  local info;
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
   if info = fail then
@@ -776,7 +777,7 @@ InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
     HELP_LAST.MATCH := 1;
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowSections(info));
   fi;
-  return true;  
+  return true;
 end);
 
 #############################################################################
@@ -838,7 +839,6 @@ InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -860,7 +860,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -882,7 +881,6 @@ InstallGlobalFunction(HELP_SHOW_PREV, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -904,7 +902,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 

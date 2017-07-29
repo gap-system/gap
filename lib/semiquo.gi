@@ -20,8 +20,7 @@ function(cong)
   local S, Qrep, efam, filters, Q, Qgens;
 
   if not IsSemigroupCongruence(cong) then
-    Error("usage: the argument should be a semigroup congruence,");
-    return;
+    ErrorNoReturn("usage: the argument should be a semigroup congruence,");
   fi;
 
   S := Source(cong);

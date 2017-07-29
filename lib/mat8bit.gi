@@ -26,10 +26,14 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_MAT8BIT , [[],[]]);
-TYPES_MAT8BIT[1][257] := 1;
-TYPES_MAT8BIT[2][257] := 1;
-
+if IsBound(HPCGAP) then
+    InstallValue(TYPES_MAT8BIT, [ FixedAtomicList(256), FixedAtomicList(256) ]);
+    MakeReadOnly(TYPES_MAT8BIT);
+else
+    InstallValue(TYPES_MAT8BIT, [[],[]]);
+    TYPES_MAT8BIT[1][257] := 1;
+    TYPES_MAT8BIT[2][257] := 1;
+fi;
 
 #############################################################################
 ##
@@ -284,7 +288,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
                 fi;
 	      q1 := Size(q1);
 	  else
-	    return; # not a field -- exit
+	    return fail; # not a field -- exit
 	  fi;
         fi;
         givenq := true;

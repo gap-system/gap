@@ -753,8 +753,7 @@ function(gcL,gcR)
     return a in MagmaIdealByGenerators(ParentAttr(gcR),[b]);
   fi;
 
-  Error("Green's classes are not of the same type or not L-, R-, or J-classes");
-  return;
+  ErrorNoReturn("Green's classes are not of the same type or not L-, R-, or J-classes");
 end);
 
 #############################################################################

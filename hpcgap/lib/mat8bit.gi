@@ -26,14 +26,14 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_MAT8BIT, 
-  [ MakeWriteOnceAtomic([]), 
-    MakeWriteOnceAtomic([]) 
-  ]);
-TYPES_MAT8BIT[1][257] := 1;
-TYPES_MAT8BIT[2][257] := 1;
-
-MakeReadOnly(TYPES_MAT8BIT);
+if IsBound(HPCGAP) then
+    InstallValue(TYPES_MAT8BIT, [ FixedAtomicList(256), FixedAtomicList(256) ]);
+    MakeReadOnly(TYPES_MAT8BIT);
+else
+    InstallValue(TYPES_MAT8BIT, [[],[]]);
+    TYPES_MAT8BIT[1][257] := 1;
+    TYPES_MAT8BIT[2][257] := 1;
+fi;
 
 #############################################################################
 ##
@@ -45,7 +45,7 @@ MakeReadOnly(TYPES_MAT8BIT);
 
 InstallGlobalFunction(TYPE_MAT8BIT,
   function( q, mut)
-    local col,filts, type;
+    local col, filts, type;
     if mut then col := 1; else col := 2; fi;
     if not IsBound(TYPES_MAT8BIT[col][q]) then
         filts := IsHomogeneousList and IsListDefault and IsCopyable and
@@ -53,9 +53,9 @@ InstallGlobalFunction(TYPE_MAT8BIT,
                  IsRingElementTable and IsNoImmediateMethodsObject and 
                  HasIsRectangularTable and IsRectangularTable;
         if mut then filts := filts and IsMutable; fi;
-	type := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
-	InstallTypeSerializationTag(type, SERIALIZATION_BASE_MAT8BIT +
-	  SERIALIZATION_TAG_BASE * (q * 2 + col - 1));
+        type := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
+        InstallTypeSerializationTag(type, SERIALIZATION_BASE_MAT8BIT +
+                    SERIALIZATION_TAG_BASE * (q * 2 + col - 1));
         TYPES_MAT8BIT[col][q] := type;
     fi;
     return TYPES_MAT8BIT[col][q];
@@ -291,7 +291,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
                 fi;
 	      q1 := Size(q1);
 	  else
-	    return; # not a field -- exit
+	    return fail; # not a field -- exit
 	  fi;
         fi;
         givenq := true;

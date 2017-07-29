@@ -46,12 +46,10 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
   [IsList,IsMatrixObj],
   function( l, m )
     if Length(l) = 0 then
-        Error("Matrix: two-argument version not allowed with empty first arg");
-        return;
+        ErrorNoReturn("Matrix: two-argument version not allowed with empty first arg");
     fi;
     if not (IsList(l[1]) or IsVectorObj(l[1])) then
-        Error("Matrix: flat data not supported in two-argument version");
-        return;
+        ErrorNoReturn("Matrix: flat data not supported in two-argument version");
     fi;
     return Matrix(l,Length(l[1]),m);
   end );
@@ -113,8 +111,7 @@ InstallMethod( KroneckerProduct, "for two matrices",
     local rowsA, rowsB, colsA, colsB, newclass, AxB, i, j;
 
     if not IsIdenticalObj(BaseDomain(A),BaseDomain(B)) then
-        Error("KroneckerProduct: Matrices not over same base domain");
-        return;
+        ErrorNoReturn("KroneckerProduct: Matrices not over same base domain");
     fi;
 
     rowsA := Length(A);

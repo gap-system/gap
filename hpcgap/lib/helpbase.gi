@@ -68,16 +68,16 @@ BindGlobal( "IsDocumentedWord", function( arg )
   simple:= SIMPLE_STRING( word );
   cword:= case( word );
   atomic readwrite HELP_REGION do
-    for book in HELP_KNOWN_BOOKS[1] do
-      matches:= HELP_GET_MATCHES( [ book ], simple, true );
-      for a in Concatenation( matches ) do
-	match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
-	if cword in SplitString( match, "", Difference( match, inid ) ) then
-	  return true;
-	fi;
-      od;
+  for book in HELP_KNOWN_BOOKS[1] do
+    matches:= HELP_GET_MATCHES( [ book ], simple, true );
+    for a in Concatenation( matches ) do
+      match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
+      if cword in SplitString( match, "", Difference( match, inid ) ) then
+        return true;
+      fi;
     od;
   od;
+  od; # end atomic
   return false;
 end);
 
@@ -96,8 +96,8 @@ end);
 ##    changing algorithms used in `FindMultiSpelledHelpEntries' and
 ##    `HELP_SEARCH_ALTERNATIVES'.
 
-BindGlobal( "TRANSATL", 
-           `[ [ "atalogue", "atalog" ],
+BindGlobal( "TRANSATL", MakeImmutable(
+            [ [ "atalogue", "atalog" ],
               [ "olour", "olor" ],
               [ "entre", "enter" ],
               [ "isation", "ization" ],
@@ -105,7 +105,7 @@ BindGlobal( "TRANSATL",
               [ "abeling", "abelling" ],
               [ "olvable", "oluble" ],
               [ "yse", "yze" ],
-              [ "roebner", "robner"]] );
+              [ "roebner", "robner"]] ) );
 
 
 #############################################################################
@@ -136,9 +136,13 @@ BindGlobal( "TRANSATL",
 ##  about a dozen of entries which contains two occurrences of some patterns, 
 ##  and none with three or more of them.
 ##
+##  In addition, it ensures that the search for system setters and testers
+##  such as e.g. ?SetIsMapping and ?HasIsMapping will return corresponding
+##  attributes and properties. e.g. IsMapping.
+##
 BindGlobal( "HELP_SEARCH_ALTERNATIVES", function( topic )
 local positions, patterns, pattern, where, what, variant, pos,
-      newwhere, newwhat, i, chop, begin, topics;
+      newwhere, newwhat, i, chop, begin, topics, shorttopic, r;
 
 positions:=[];
 patterns:=[];
@@ -191,38 +195,60 @@ for pattern in TRANSATL do
   fi;
 od;
 
-if Length(positions) = 0 then # no matches - return immeditely
-  return [ topic ];
-fi;  
+if Length(positions) > 0 then # matches found
+  # sort data about matches accordingly to their positions in `topic'.
+  SortParallel( positions, patterns );
 
-# sort data about matches accordingly to their positions in `topic'.
-SortParallel( positions, patterns );
+  # Now chop the string 'topic' into a list of lists, each of them either
+  # a list of all variants from the respective spelling pattern or just
+  # a one-element list with the "glueing" string between two patterns or
+  # a pattern and the beginning or end of the string.
 
-# Now chop the string 'topic' into a list of lists, each of them either
-# a list of all variants from the respective spelling pattern or just
-# a one-element list with the "glueing" string between two pattersn or
-# a pattern and the beginning or end of the string. 
+  chop:=[];
+  begin:=1;
+  for i in [1..Length(positions)] do
+    Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
+    Add( chop, patterns[i].pattern );
+    begin := Minimum( patterns[i].finish+1, Length(topic) );
+  od;
 
-chop:=[];
-begin:=1;
-for i in [1..Length(positions)] do
-  Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
-  Add( chop, patterns[i].pattern );
-  begin := Minimum( patterns[i].finish+1, Length(topic) );
-od;
+  if begin < Length( topic ) then
+    Add( chop, [ topic{[begin..Length(topic)]} ] );
+  fi;
 
-if begin < Length( topic ) then
-  Add( chop, [ topic{[begin..Length(topic)]} ] );
+  # Take the cartesian product of 'chop' and form spelling suggestions
+  # as concatenations of its elements.
+
+  topics := List( Cartesian(chop), Concatenation );
+
+else # no matches
+
+  topics := [ topic ];
+
 fi;
 
-# Take the cartesian product of 'chop' and form spelling suggestions 
-# as concatenations of its elements. 
+r := [];
 
-topics := List( Cartesian(chop), Concatenation );
-Sort( topics );
-return( topics );
-
+# This ensures that e.g. `?HasIsMapping` will show `IsMapping` even if only the
+# latter is documented. It is guaranteed that the help system will send search
+# terms in lowercase. The requirement of the search term to have the length at
+# least 5 and do not have a space after "has" or "set" is essential: it prevents
+# "set stabiliser", "hash", "sets", "SetX" etc. to be handled in the same way.
+for topic in topics do
+  if Length(topic) > 4 and topic{[1..3]} in [ "has" , "set" ] and topic[4]<>' ' then
+    shorttopic := topic{[4..Length(topic)]};
+    Append( r, [ shorttopic,
+                 Concatenation( "has", shorttopic),
+                 Concatenation( "set", shorttopic) ] );
+  else
+    Add(r, topic );
+  fi;
 od;
+
+Sort( r );
+return( r );
+
+od; # end atomic
 
 end);
 
@@ -281,7 +307,7 @@ for pair in TRANSATL do
   od;
 od;
 return report;
-od;
+od; # end atomic
 end);
 
 if StripEscapeSequences = 0 then
@@ -299,7 +325,8 @@ fi;
 ##  No form of  normalization is applied to  <a> or <b>, so this  should be done
 ##  before calling MATCH_BEGIN.
 ##  
-InstallGlobalFunction(MATCH_BEGIN, atomic function( readonly a, readonly b ) local p,q;
+InstallGlobalFunction(MATCH_BEGIN, atomic function( readonly a, readonly b )
+    local p,q;
 
     if Length(a)=0 and Length(b)=0 then
       return true;
@@ -476,9 +503,9 @@ LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
 
 
 InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
-local sortfun, str, hnb, pos;
-# we sort books with main books first and packages alphabetically,
-# (looks a bit lengthy)
+  local sortfun, str, hnb, pos;
+  # we sort books with main books first and packages alphabetically,
+  # (looks a bit lengthy)
 atomic readwrite HELP_REGION do
   sortfun := function(a, b)
     local main, pa, pb;
@@ -526,12 +553,13 @@ atomic readwrite HELP_REGION do
   hnb[1][pos] := MigrateObj(str,HELP_REGION);
   hnb[2][pos] := MigrateObj([short, long, dir],HELP_REGION);
   SortParallel(hnb[1], hnb[2], sortfun);
-od;  
+od;   # end atomic
 end);
 
 
 InstallGlobalFunction(HELP_REMOVE_BOOK, function( short )
-local str, pos;
+  local str, pos;
+
 atomic readwrite HELP_REGION do
   str := SIMPLE_STRING(short);
   pos := Position(HELP_KNOWN_BOOKS[1], str);
@@ -542,7 +570,7 @@ atomic readwrite HELP_REGION do
     Remove (HELP_KNOWN_BOOKS[2], pos);
     Unbind (HELP_BOOKS_INFO.(str));
   fi;
-od;  
+od; # end atomic
 end);
 
 
@@ -584,7 +612,7 @@ LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
 ##  This information is  stored in a record with at  least the following
 ##  components, which are used by this generic interface to the help system:
 ##
-##  bookname:	    
+##  bookname:
 ##  
 ##    The short name of the book, e.g. "ref", "matrix", "EDIM".
 ##  
@@ -617,7 +645,7 @@ LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 ##  known book.
 ##  
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
-local pos, bnam, nnam, path, dirs, six, stream, line, handler;
+  local pos, bnam, nnam, path, dirs, six, stream, line, handler;
 
   # if this is already a record return it
   if IsRecord(book)  then
@@ -701,7 +729,7 @@ atomic readwrite HELP_REGION do
 
   # done
   return HELP_BOOKS_INFO.(bnam);
-od;
+od; # end atomic
 end);
 
 #############################################################################
@@ -725,7 +753,7 @@ end);
 #F  HELP_SHOW_BOOKS( ignored... ) . . . . . . . . . . .  show available books
 ##  
 InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
-local books;
+  local books;
 atomic readonly HELP_REGION do
 
   books := ["             Table of currently available help books",
@@ -734,7 +762,7 @@ atomic readonly HELP_REGION do
   Pager(books);
   return true;
 
-od;  
+od; # end atomic
 end);
 
 #############################################################################
@@ -742,7 +770,7 @@ end);
 #F  HELP_SHOW_CHAPTERS( <book> )  . . . . . . . . . . . . . show all chapters
 ##
 InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
-local info;
+  local info;
 atomic HELP_REGION do
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
@@ -753,8 +781,8 @@ atomic HELP_REGION do
     HELP_LAST.MATCH := 1;
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowChapters(info));
   fi;
-  return true; 
-od;  
+  return true;
+od; # end atomic
 end);
 
 #############################################################################
@@ -762,7 +790,7 @@ end);
 #F  HELP_SHOW_SECTIONS( <book> )  . . . . . . . . . . . . . show all sections
 ##
 InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
-local   info;
+  local info;
 atomic HELP_REGION do
   # delegate to handler 
   info := HELP_BOOK_INFO(book);
@@ -774,7 +802,7 @@ atomic HELP_REGION do
     Pager(HELP_BOOK_HANDLER.(info.handler).ShowSections(info));
   fi;
   return true;
-od;  
+od; # end atomic
 end);
 
 #############################################################################
@@ -785,7 +813,7 @@ end);
 ##  <match> is [book, entrynr]
 ##  
 InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
-local book, entrynr, viewer, hv, pos, type, data;
+  local book, entrynr, viewer, hv, pos, type, data;
 atomic readonly HELP_REGION do
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
@@ -817,7 +845,7 @@ atomic readonly HELP_REGION do
   HELP_LAST.MATCH := entrynr;
   HELP_LAST.VIEWER := viewer;
   return true;
-od;  
+od; # end atomic
 end);
 
 #############################################################################
@@ -838,7 +866,6 @@ InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -860,7 +887,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT_CHAPTER, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -882,7 +908,6 @@ InstallGlobalFunction(HELP_SHOW_PREV, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -904,7 +929,6 @@ InstallGlobalFunction(HELP_SHOW_NEXT, function( arg )
   else
     HELP_PRINT_MATCH(match);
     HELP_LAST.MATCH := match[2];
-    return true;
   fi;
 end);
 
@@ -938,7 +962,7 @@ end);
 ##  remaining ones.
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
-local exact, match, em, b, x, topics, transatl, pair, newtopic;
+  local exact, match, em, b, x, topics, transatl, pair, newtopic, getsecnum;
 atomic readwrite HELP_REGION do
 
   # First we try to produce some suggestions for possible different spellings
@@ -965,10 +989,10 @@ atomic readwrite HELP_REGION do
       if b<>fail then
         em := HELP_BOOK_HANDLER.(b.handler).SearchMatches(b, topic, frombegin);
         for x in em[1] do
-	      Add(exact, [b, x]);
+          Add(exact, [b, x]);
         od;
         for x in em[2] do
-	      Add(match, [b, x]);
+          Add(match, [b, x]);
         od;
       fi;
     od;
@@ -979,9 +1003,27 @@ atomic readwrite HELP_REGION do
   # Note: before GAP 4.5 this was only done in case of substring search.
   match := Concatenation(exact, match);
   exact := [];
+  
+  # check if all matches point to the same subsection of the same book,
+  # in that case we only keep the first match which then will be displayed
+  # immediately
+
+  # this function makes sure that nothing breaks if the help book handler
+  # has no support for SubsectionNumber
+  getsecnum := function(m)
+    if IsBound(HELP_BOOK_HANDLER.(m[1].handler).SubsectionNumber) then
+      return HELP_BOOK_HANDLER.(m[1].handler).SubsectionNumber(m[1], m[2]);
+    else
+      return m[2];
+    fi;
+  end;
+  if Length(match) > 1 and Length(Set(List(match, 
+                            m-> [m[1].bookname,getsecnum(m)]))) = 1 then
+    match := [match[1]];
+  fi;
 
   return [exact, match];
-od;  
+od; # end atomic
 end);
 
 #############################################################################
@@ -990,7 +1032,7 @@ end);
 #F  matches or single match directly
 ##  
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
-local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
+  local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
 atomic readwrite HELP_REGION do
 
   # first get lists of exact and other matches
@@ -1036,7 +1078,7 @@ atomic readwrite HELP_REGION do
     Pager(rec(lines := lines, formatted := true));
     return true;
   fi;
-od;  
+od; # end atomic
 end);
 
 # choosing one of last shown  list of matches
@@ -1109,7 +1151,7 @@ HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
   return res;
 end;
 
-od;
+od; # end atomic
 
 ##  From this info we generate a manual.lab file for a given book.
 ##  Note that the gapmacro format has subsection information in manual.lab
@@ -1170,7 +1212,7 @@ InstallGlobalFunction(HELP, function( str )
   book := SIMPLE_STRING(book);
   str := SIMPLE_STRING(str);
 
-  atomic readwrite HELP_REGION do
+atomic readwrite HELP_REGION do
   
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
@@ -1293,6 +1335,6 @@ InstallGlobalFunction(HELP, function( str )
      # cases above (?):
      # Print( "Help: Sorry, could not find a match for '", origstr, "'.\n");
   fi;
-  od;  
+od; # end atomic
 end);
 
