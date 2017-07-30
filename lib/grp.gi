@@ -182,52 +182,62 @@ InstallMethod( IsElementaryAbelian,
 ##
 #M  IsPGroup( <G> ) . . . . . . . . . . . . . . . . .  is a group a p-group ?
 ##
+
+# The following helper function makes use of the fact that for any given prime
+# p, any (possibly infinite) nilpotent group G is a p-group if and only if any
+# generating set of G consists of p-elements (i.e. elements whose order is a
+# power of p). For finite G this is well-known. The general case follows from
+# e.g. 5.2.6 in "A Course in the Theory of Groups" by Derek J.S. Robinson,
+# since it holds in the case were G is abelian, and since being a p-group is
+# a property inherited by quotients and extensions.
 BindGlobal( "IS_PGROUP_FOR_NILPOTENT",
-
     function( G )
-    local s, gen, ord;
+    local p, gen, ord;
 
-    s:= [];
+    p := fail;
     for gen in GeneratorsOfGroup( G ) do
-      ord:= Order( gen );
+      ord := Order( gen );
       if ord = infinity then
         return false;
-      elif 1 < ord then
-        if not IsPrimePowerInt( ord ) then
-          return false;
+      elif ord > 1 then
+        if p = fail then
+          p := SmallestRootInt( ord );
+          if not IsPrimeInt( p ) then
+            return false;
+          fi;
         else
-          AddSet( s, Factors( ord )[1] );
-          if 1 < Length( s ) then
+          if ord <> p^PValuation( ord, p ) then
             return false;
           fi;
         fi;
       fi;
     od;
-    if IsEmpty( s ) then
+    if p = fail then
       return true;
     fi;
 
-    SetPrimePGroup( G, s[1] );
+    SetPrimePGroup( G, p );
     return true;
     end);
 
+# The following helper function uses the well-known fact that a finite group
+# is a p-group if and only if its order is a prime power.
 BindGlobal( "IS_PGROUP_FROM_SIZE",
-
     function( G )
-    local s;
+    local s, p;
 
     s:= Size( G );
     if s = 1 then
       return true;
     elif s = infinity then
+      return fail; # cannot say anything about infinite groups
+    fi;
+    p := SmallestRootInt( s );
+    if not IsPrimeInt( p ) then
       return false;
-    elif not IsPrimePowerInt( s ) then
-      return false;
-    else
-      s:= Factors( s );
     fi;
 
-    SetPrimePGroup( G, s[1] );
+    SetPrimePGroup( G, p );
     return true;
     end);
 
@@ -262,6 +272,8 @@ InstallMethod( IsPGroup,
       return IS_PGROUP_FOR_NILPOTENT( G );
     fi;
     end );
+
+
 #############################################################################
 ##
 #M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
