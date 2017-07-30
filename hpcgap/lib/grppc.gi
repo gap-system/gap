@@ -223,7 +223,7 @@ end);
 ##
 #M  Pcgs( <G> )
 ##
-InstallMethod( Pcgs, "fail if insolvable", true,
+InstallMethod( Pcgs, "fail if not solvable", true,
         [ HasIsSolvableGroup ], 
 	SUM_FLAGS, # for groups for which we know that they are not solvable
 	           # this is the best we can do.
