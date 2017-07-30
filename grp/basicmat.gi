@@ -402,7 +402,8 @@ MaximalUnipotentSubgroupOfNaturalGL := function( gl )
     )
   );
   SetSize( u, Size(q)^Binomial(n,2) );
-  IsPGroup( u );
+  SetIsPGroup( u, true );
+  SetPrimePGroup( u, Characteristic(q) );
   return u;
 end;
 

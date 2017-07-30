@@ -1793,6 +1793,7 @@ InstallMethod(EpimorphismQuotientSystem,
 
     H := GroupByQuotientSystem( qs );
     SetIsPGroup( H, true );
+    SetPrimePGroup( H, qs!.prime );
 
     # now we write the images of the generators of G in H from qs:
     l := List(qs!.images,x->ObjByExtRep(FamilyObj(One(H)),ExtRepOfObj(x)));
