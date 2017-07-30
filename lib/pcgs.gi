@@ -59,7 +59,7 @@ end);
 ##
 ##  `HasPcgs' implies  `CanEasilyComputePcgs',  which implies `IsSolvable',
 ##  so a  pcgs cannot be set for insoluble permutation groups.
-##  As Pcgs may return 'fail' for insolvable permutation groups, this method
+##  As Pcgs may return 'fail' for non-solvable permutation groups, this method
 ##  is necessary.
 ##
 InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], 0,

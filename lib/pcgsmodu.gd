@@ -72,7 +72,7 @@ DeclareGlobalFunction( "ModuloTailPcgsByList" );
 ##
 ##  <Description>
 ##  returns a modulo pcgs for the factor <M><A>G</A>/<A>N</A></M> which must
-##  be solvable, which <A>N</A> may be insolvable.
+##  be solvable, while <A>N</A> may be non-solvable.
 ##  <Ref Func="ModuloPcgs"/> will return <E>a</E> pcgs for the factor,
 ##  there is no guarantee that it will be <Q>compatible</Q> with any other
 ##  pcgs.
