@@ -257,6 +257,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
 
     g := GroupByRwsNC( c );
     SetIsPGroup( g, true );
+    SetPrimePGroup( g, p );
     return g;
 end;
 

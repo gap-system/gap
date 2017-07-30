@@ -187,6 +187,7 @@ local hom,gp,f;
     f:=Factors(Size(gp));
     if Length(Set(f))=1 then
       SetIsPGroup(gp,true);
+      SetPrimePGroup(gp,f[1]);
     elif Length(Set(f))=2 then
       SetIsSolvableGroup(gp,true);
     fi;
