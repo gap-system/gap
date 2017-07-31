@@ -83,7 +83,7 @@ function(G)
   TryNextMethod();
 end);
 
-InstallMethod( MinimalGeneratingSet,"cyclic groups",true,
+InstallMethod( MinimalGeneratingSet,"finite cyclic groups",true,
     [ IsGroup and IsCyclic and IsFinite ],
     RankFilter(IsFinite and IsPcGroup),
 function ( G )
@@ -251,13 +251,15 @@ InstallMethod( IsPGroup,
     # known *and* the group knows to be nilpotent or is abelian;
     # thus an `IsAbelian' test may be forced (which can be done via comparing
     # products of generators) but *not* an `IsNilpotent' test.
-    if     ( not HasSize( G ) )
-       and (    ( HasIsNilpotentGroup( G ) and IsNilpotentGroup( G ) )
-             or IsAbelian( G ) ) then
+    if HasSize( G ) and IsFinite( G ) then
+      return IS_PGROUP_FROM_SIZE( G );
+    elif ( HasIsNilpotentGroup( G ) and IsNilpotentGroup( G ) )
+             or IsAbelian( G ) then
       return IS_PGROUP_FOR_NILPOTENT( G );
-    else
+    elif IsFinite( G ) then
       return IS_PGROUP_FROM_SIZE( G );
     fi;
+    TryNextMethod();
     end );
 
 InstallMethod( IsPGroup,
@@ -266,7 +268,7 @@ InstallMethod( IsPGroup,
     function( G )
     local s, gen, ord;
 
-    if HasSize( G ) then
+    if HasSize( G ) and IsFinite( G ) then
       return IS_PGROUP_FROM_SIZE( G );
     else
       return IS_PGROUP_FOR_NILPOTENT( G );
@@ -1072,7 +1074,7 @@ InstallOtherMethod( ElementaryAbelianSeries,
     end );
 
 InstallMethod( ElementaryAbelianSeries,
-    "generic method for groups",
+    "generic method for finite groups",
     [ IsGroup and IsFinite],
     function( G )
     local f;
@@ -1132,8 +1134,8 @@ InstallOtherMethod( ElementaryAbelianSeriesLargeSteps,
 #M  Exponent( <G> ) . . . . . . . . . . . . . . . . . . . . . exponent of <G>
 ##
 InstallMethod( Exponent,
-    "generic method for groups",
-    [ IsGroup ],
+    "generic method for finite groups",
+    [ IsGroup and IsFinite ],
 function(G)
   local exp, primes, p;
   exp := 1;
@@ -1145,17 +1147,17 @@ function(G)
 end);
 
 InstallMethod( Exponent,
-    "method for abelian groups with generators",
-    [ IsGroup and IsAbelian and HasGeneratorsOfGroup],
+    "method for finite abelian groups with generators",
+    [ IsGroup and IsAbelian and HasGeneratorsOfGroup and IsFinite ],
     function( G )
     G:= GeneratorsOfGroup( G );
     if IsEmpty( G ) then
       return 1;
-    else
-      return Lcm( List( G, Order ) );
     fi;
+    return Lcm( List( G, Order ) );
     end );
 
+RedispatchOnCondition( Exponent, true, [IsGroup], [IsFinite], 0);
 
 #############################################################################
 ##
@@ -1165,7 +1167,7 @@ InstallMethod( FittingSubgroup, "for nilpotent group",
     [ IsGroup and IsNilpotentGroup ], SUM_FLAGS, IdFunc );
 
 InstallMethod( FittingSubgroup,
-    "generic method for groups",
+    "generic method for finite groups",
     [ IsGroup and IsFinite ],
     function (G)
         if not IsTrivial( G ) then

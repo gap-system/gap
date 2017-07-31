@@ -465,7 +465,8 @@ DeclareProperty( "IsPowerfulPGroup", IsGroup );
 InstallFactorMaintenance( IsPowerfulPGroup,
     IsPowerfulPGroup, IsGroup, IsGroup );
 #abelian p-groups are powerful
-InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
+InstallTrueMethod( IsPowerfulPGroup, IsFinite and IsPGroup and IsAbelian );
+InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 
 #############################################################################
 ##
@@ -567,7 +568,7 @@ InstallFactorMaintenance( IsNilpotentGroup,
 
 InstallTrueMethod( IsNilpotentGroup, IsGroup and IsCommutative );
 
-InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup );
+InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
 
 
 #############################################################################
