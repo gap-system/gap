@@ -415,11 +415,18 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 ##
 ##  <Description>
 ##  <Index Key="p-group"><M>p</M>-group</Index>
-##  A <E><M>p</M>-group</E> is a finite group whose order
-##  (see&nbsp;<Ref Func="Size"/>) is of the form <M>p^n</M> for a prime
-##  integer <M>p</M> and a nonnegative integer <M>n</M>.
+##  A <E><M>p</M>-group</E> is a group in which the order
+##  (see&nbsp;<Ref Func="Order"/>) of every element is of the form <M>p^n</M>
+##  for a prime integer <M>p</M> and a nonnegative integer <M>n</M>.
 ##  <Ref Prop="IsPGroup"/> returns <K>true</K> if <A>G</A> is a
 ##  <M>p</M>-group, and <K>false</K> otherwise.
+##  <P/>
+##  Finite <M>p</M>-groups are precisely those groups whose order
+##  (see&nbsp;<Ref Func="Size"/>) is a prime power, and are always
+##  nilpotent.
+##  <P/>
+##  Note that <M>p</M>-groups can also be infinite, and in that case,
+##  need not be nilpotent.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
