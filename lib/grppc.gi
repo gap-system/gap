@@ -2508,8 +2508,8 @@ function(G,bound)
         return monic(LGLayers(pcgs),PrimePGroup(G),a->Order(PcElementByExponents(pcgs,a)));
 end);
 
-InstallMethod( Exponent,"solvable group",
-  true,[IsGroup and IsSolvableGroup],0,
+InstallMethod( Exponent,"finite solvable group",
+  true,[IsGroup and IsSolvableGroup and IsFinite],0,
 function(G)
 local exp, primes, p;
   if IsPGroup(G) then 
