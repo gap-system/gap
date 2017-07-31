@@ -348,7 +348,7 @@ local gen, s;
       break;
     fi;
   od;
-  return Factors( s )[1];
+  return SmallestRootInt( s );
 end );
 
 InstallMethod( PrimePGroup,
@@ -365,7 +365,7 @@ local s;
   if s = 1 then
     return fail;
   fi;
-  return Factors( s )[1];
+  return SmallestRootInt( s );
 end );
 
 RedispatchOnCondition (PrimePGroup, true,
@@ -399,7 +399,7 @@ InstallMethod( IsNilpotentGroup,
     s := Size ( G );
     if IsInt( s ) and IsPrimePowerInt( s ) then
         SetIsPGroup( G, true );
-        SetPrimePGroup( G, Factors( s )[1] );
+        SetPrimePGroup( G, SmallestRootInt( s ) );
         return true;
     else
         SetIsPGroup( G, false );
@@ -1025,7 +1025,7 @@ InstallMethod( DimensionsLoewyFactors,
     fi;
 
     # get the prime and the Jennings series
-    p := FactorsInt( Size( G ) )[1];
+    p := PrimePGroup( G );
     J := JenningsSeries( G );
 
     # construct the Jennings polynomial over the rationals
@@ -1268,7 +1268,7 @@ InstallMethod( JenningsSeries,
     fi;
 
     # get the prime
-    p := FactorsInt(Size(G))[1];
+    p := PrimePGroup( G );
 
     # and compute the series
     # (this is a new variant thanks to Laurent Bartholdi)
@@ -1381,7 +1381,7 @@ local ind, pcgs, primes, pos, p, i, e, f, a, j;
     pos:=[];
     for i in ind do
       Assert(1, IsPrimePowerInt(Order(i)));
-      p:=Factors(Order(i))[1];
+      p:=SmallestRootInt(Order(i));
       Add(primes,p);
       Add(pos,Length(pcgs)+1);
       while not IsOne(i) do
