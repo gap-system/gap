@@ -81,6 +81,11 @@ extern  Obj             OnSetsPerm (
 extern Obj Array2Perm (
     Obj                 array );
 
+/****************************************************************************
+**
+*F  LargestMovedPointPerm(perm) . . . . . . . . largest point moved by a perm
+*/
+UInt LargestMovedPointPerm(Obj perm);
 
 /****************************************************************************
 **
