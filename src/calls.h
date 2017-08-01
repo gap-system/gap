@@ -297,8 +297,6 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func);
 **  handler
 */
 
-extern void InitHandlerRegistration( void );
-
 extern void InitHandlerFunc (
      ObjFunc            hdlr,
      const Char *       cookie );

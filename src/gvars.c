@@ -1529,8 +1529,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitHandlerRegistration();
-
     /* init global bags and handler                                        */
     InitGlobalBag( &ErrorMustEvalToFuncFunc,
                    "src/gvars.c:ErrorMustEvalToFuncFunc" );

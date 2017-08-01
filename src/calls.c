@@ -884,10 +884,10 @@ typedef struct {
 }
 TypeHandlerInfo;
 
-static UInt HandlerSortingStatus;
+static UInt HandlerSortingStatus = 0;
 
 static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
-static UInt NHandlerFuncs;
+static UInt NHandlerFuncs = 0;
  
 void InitHandlerFunc (
     ObjFunc             hdlr,
@@ -917,16 +917,6 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
-
-void InitHandlerRegistration( void )
-{
-  /* initialize these here rather than statically to allow for restart */
-  /* can't do them in InitKernel of this module because it's called too late
-     so make it a function and call it from an earlier InitKernel */
-  HandlerSortingStatus = 0;
-  NHandlerFuncs = 0;
-
-}
 
 #ifdef DEBUG_HANDLER_REGISTRATION
 
