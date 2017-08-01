@@ -2414,36 +2414,22 @@ Obj             FuncPermList (
     return perm;
 }
 
-
 /****************************************************************************
 **
-*F  FuncLARGEST_MOVED_POINT_PERM( <self>, <perm> ) largest point moved by a perm
-**
-**  'FuncLARGEST_MOVED_POINT_PERM' implements the internal function
-**  'LargestMovedPointPerm'.
-**
-**  'LargestMovedPointPerm( <perm> )'
+*F  LargestMovedPointPerm( <perm> ) largest point moved by perm
 **
 **  'LargestMovedPointPerm' returns  the  largest  positive  integer that  is
 **  moved by the permutation <perm>.
 **
 **  This is easy, except that permutations may  contain  trailing  fixpoints.
 */
-Obj             FuncLARGEST_MOVED_POINT_PERM (
-    Obj                 self,
-    Obj                 perm )
+UInt LargestMovedPointPerm(Obj perm)
 {
     UInt                sup;            /* support (result)                */
     UInt2 *             ptPerm2;        /* pointer to the permutation      */
     UInt4 *             ptPerm4;        /* pointer to the permutation      */
 
-    /* check the argument                                                  */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    GAP_ASSERT(TNUM_OBJ(perm) == T_PERM2 || TNUM_OBJ(perm) == T_PERM4);
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -2469,10 +2455,28 @@ Obj             FuncLARGEST_MOVED_POINT_PERM (
 
     }
 
-    /* ahulpke: 19-nov-99: Removed special treatment of identity */
+    return sup;
+}
 
-    /* return it                                                           */
-    return INTOBJ_INT( sup );
+
+/****************************************************************************
+**
+*F  FuncLARGEST_MOVED_POINT_PERM( <self>, <perm> ) largest point moved by perm
+**
+**  GAP-level wrapper for 'LargestMovedPointPerm'.
+*/
+Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
+{
+
+    /* check the argument                                                  */
+    while (TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4) {
+        perm = ErrorReturnObj(
+            "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
+            (Int)TNAM_OBJ(perm), 0L,
+            "you can replace <perm> via 'return <perm>;'");
+    }
+
+    return INTOBJ_INT(LargestMovedPointPerm(perm));
 }
 
 
@@ -3600,8 +3604,6 @@ Obj             FuncSHIFTED_PERM (
 
   return new;
 }
-
-
 
 /****************************************************************************
 **
