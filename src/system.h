@@ -906,6 +906,12 @@ typedef struct {
     const Char *    cookie;
 } StructGVarFunc;
 
+#define GAP_GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
+  {#name, nparam, \
+   params, \
+   (GVarFunc)name, \
+   srcfile ":Func" #name }
+
 
 /****************************************************************************
 **
