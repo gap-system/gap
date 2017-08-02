@@ -1328,8 +1328,14 @@ Obj SET_TYPE_COMOBJ_Handler (
         RetypeBag( obj, T_ACOMOBJ );
         CHANGED_BAG( obj );
         break;
+      default:
+        ErrorMayQuit("You can't make component object from a %s.",
+                     (Int)TNAM_OBJ(obj), 0L);
     }
 #else
+    if (TNUM_OBJ(obj) == T_PREC+IMMUTABLE)
+      ErrorMayQuit("You can't make a component object from an immutable object",
+		   0L, 0L);
     TYPE_COMOBJ( obj ) = type;
     RetypeBag( obj, T_COMOBJ );
     CHANGED_BAG( obj );
