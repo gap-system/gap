@@ -2164,11 +2164,11 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
         REGION(objects[0])->owner == realTLS && AutoRetyping) {
         for (i = 0; i < count; i++)
             if (REGION(objects[i])->owner == realTLS)
-                CLEAR_OBJ_FLAG(objects[i], TESTED);
+                CLEAR_OBJ_FLAG(objects[i], OBJ_FLAG_TESTED);
         for (i = 0; i < count; i++) {
             if (REGION(objects[i])->owner == realTLS &&
                 IS_PLIST(objects[i])) {
-                if (!TEST_OBJ_FLAG(objects[i], TESTED))
+                if (!TEST_OBJ_FLAG(objects[i], OBJ_FLAG_TESTED))
                     TYPE_OBJ(objects[i]);
                 if (retype >= 2)
                     IsSet(objects[i]);

@@ -112,14 +112,14 @@ Int             GrowPlist (
 **
 **  TypePlist works with KTNumPlist to determine the type of a plain list
 **  Considerable care is needed to deal with self-referential lists. This is
-**  basically achieved with the TESTING flag in the TNum. This must be set in
-**  the "current" list before triggering determination of the Type (or KTNum)
-**  of any sublist.
+**  basically achieved with the OBJ_FLAG_TESTING object flag set. This must be
+**  set in the "current" list before triggering determination of the Type (or
+**  KTNum) of any sublist.
 **
 **  KTNumPlist determined the "true" TNum of the list, taking account of such
 **  factors as denseness, homogeneity and so on. It modifies the stored TNum
 **  of the list to the most informative "safe" value, allowing for the
-**  mutability of the list entries (and preserving TESTING).
+**  mutability of the list entries (and preserving OBJ_FLAG_TESTING).
 **
 **  Here begins a new attempt by Steve to describe how it all works:
 **
@@ -186,7 +186,7 @@ Int             GrowPlist (
 **     time this is slow is a homogenous list of lists which looks like a
 **     table until the very last entry which has the wrong length. This
 **     should be rare.
-**     
+**
 **     1 is the real nightmare, because it has to handle recursive mutable
 **     lists, lists with mutable subobjects, etc.  We now concentrate on this
 **     case.
@@ -199,10 +199,9 @@ Int             GrowPlist (
 **     the family of the elements.
 **
 **     recursive lists (ie lists which are there own subobjects are detected
-**     using the TESTING tnums. Any list being examined must have TESTING added to
-**     its tnum BEFORE any element of it is examined.
+**     using the OBJ_FLAG_TESTING flag. Any list being examined must have
+**     the OBJ_FLAG_TESTING flag set BEFORE any element of it is examined.
 **
-**     
 **     FIXME HPC-GAP: All of this is horribly thread-unsafe!
 **
 */
@@ -220,7 +219,7 @@ Obj TYPE_LIST_EMPTY_IMMUTABLE;
 Obj TYPE_LIST_HOM;
 
 #define IS_TESTING_PLIST(list) \
-    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
+    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, OBJ_FLAG_TESTING))
 
 
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
@@ -257,7 +256,7 @@ Int KTNumPlist (
     }
 #endif
     /* if list has `TESTING' keep that                                     */
-    testing = TEST_OBJ_FLAG(list, TESTING);
+    testing = TEST_OBJ_FLAG(list, OBJ_FLAG_TESTING);
 
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
@@ -293,9 +292,9 @@ Int KTNumPlist (
     }
     else {
 #ifdef HPCGAP
-	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
+	if (!testing) SET_OBJ_FLAG(list, OBJ_FLAG_TESTING|OBJ_FLAG_TESTED);
 #else
-	if (!testing) SET_OBJ_FLAG(list, TESTING);
+	if (!testing) SET_OBJ_FLAG(list, OBJ_FLAG_TESTING);
 #endif
 
 	if (IS_PLIST(elm)) {
@@ -323,7 +322,7 @@ Int KTNumPlist (
 	    }
 	  
         }
-	if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
+	if (!testing) CLEAR_OBJ_FLAG(list, OBJ_FLAG_TESTING);
     }
 
     i = 2;
@@ -605,18 +604,18 @@ static Obj TypePlistWithKTNum (
 #ifdef HPCGAP
     if (CheckWriteAccess(list)) {
       /* recursion is possible for this type of list                         */
-      SET_OBJ_FLAG( list, TESTING|TESTED );
+      SET_OBJ_FLAG( list, OBJ_FLAG_TESTING|OBJ_FLAG_TESTED );
       tnum = KTNumPlist( list, &family);
-      CLEAR_OBJ_FLAG( list, TESTING );
+      CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     } else {
       tnum = TNUM_OBJ(list);
       family = 0;
     }
 #else
     /* recursion is possible for this type of list                         */
-    SET_OBJ_FLAG( list, TESTING );
+    SET_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     tnum = KTNumPlist( list, &family);
-    CLEAR_OBJ_FLAG( list, TESTING );
+    CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
 #endif
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;

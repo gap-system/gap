@@ -448,12 +448,12 @@ enum {
 **
 */
 
-#define TESTING (1 << 0)
-
+enum {
+    OBJ_FLAG_TESTING   = (1 << 0),
 #ifdef HPCGAP
-#define TESTED (1 << 1)
+    OBJ_FLAG_TESTED    = (1 << 1),
 #endif
-
+};
 
 /****************************************************************************
 **
