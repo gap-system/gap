@@ -806,11 +806,13 @@ Obj PostMakeImmutableOp = 0;
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
 
-void MakeImmutable( Obj obj )
+void MakeImmutable(Obj obj)
 {
-  if (IS_MUTABLE_OBJ( obj ))
-    {
-      (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+    if (IS_MUTABLE_OBJ(obj)) {
+        SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+        (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+        GAP_ASSERT(!IS_MUTABLE_OBJ(obj));
+        GAP_ASSERT(TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE) == OBJ_FLAG_IMMUTABLE);
     }
 }
 
