@@ -530,6 +530,11 @@ Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int maxread){
   #endif
 }
 
+Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
+{
+    return HASHKEY_BAG_NC(obj, seed, 0, SIZE_OBJ(obj));
+}
+
 Obj IntStringInternal( Obj string )
 {
         Obj                 val;            /* value = <upp> * <pow> + <low>   */

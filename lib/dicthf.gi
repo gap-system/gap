@@ -25,6 +25,7 @@ InstallMethod(SparseIntKey,"defaults to DenseIntKey",true,[IsObject,IsObject],
 #############################################################################
 ##
 #F  HashKeyBag(<obj>,<seed>,<skip>,<maxread>)
+#F  HashKeyWholeBag(<obj>,<seed>)
 ##
 ##  returns a hash key which is given by the bytes in the bag storing <obj>.
 ##  The result is reduced modulo $2^{28}$ (on 32 bit systems) resp. modulo
@@ -40,7 +41,14 @@ InstallMethod(SparseIntKey,"defaults to DenseIntKey",true,[IsObject,IsObject],
 ##  between different runs of {\GAP} and no reference to their absolute
 ##  values ought to be made.
 ##
+##  HashKeyWholeBag hashes all the contents of a bag, which is equivalent
+##  to passing 0 and -1 as the third and fourth arguments of HashKeyBag.
+##  Be aware that for many types in GAP (for example permutations), equal
+##  objects may not have identical bags, so HashKeyWholeBag may return
+##  different values for two equal objects.
+##
 BindGlobal("HashKeyBag",HASHKEY_BAG);
+BindGlobal("HashKeyWholeBag", {x,y} -> HASHKEY_BAG(x,y,0,-1));
 
 #############################################################################
 ##
