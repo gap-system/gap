@@ -412,12 +412,12 @@ static Obj  HdlrFunc3 (
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
   t_5 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
-  ENVI_FUNC( t_5 ) = STATE(CurrLVars);
+  SET_ENVI_FUNC( t_5, STATE(CurrLVars) );
   t_6 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
   SET_STARTLINE_BODY(t_6, INTOBJ_INT(39));
   SET_ENDLINE_BODY(t_6, INTOBJ_INT(42));
   SET_FILENAME_BODY(t_6, FileName);
-  BODY_FUNC(t_5) = t_6;
+  SET_BODY_FUNC(t_5, t_6);
   CHANGED_BAG( STATE(CurrLVars) );
   CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
   
@@ -4122,12 +4122,12 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_2 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(19));
  SET_ENDLINE_BODY(t_3, INTOBJ_INT(26));
  SET_FILENAME_BODY(t_3, FileName);
- BODY_FUNC(t_2) = t_3;
+ SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
@@ -4151,12 +4151,12 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_2 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(31));
  SET_ENDLINE_BODY(t_3, INTOBJ_INT(52));
  SET_FILENAME_BODY(t_3, FileName);
- BODY_FUNC(t_2) = t_3;
+ SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
@@ -4199,12 +4199,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_FAMILY" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(90));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(120));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4214,12 +4214,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily2" );
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(123));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(128));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4229,12 +4229,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily3" );
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(131));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(136));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4244,12 +4244,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily4" );
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(139));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(144));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4259,12 +4259,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily5" );
  t_3 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(148));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(153));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4285,12 +4285,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily" );
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(156));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(179));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4383,12 +4383,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_TYPE" );
  t_3 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(207));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(308));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4398,12 +4398,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType3" );
  t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(312));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(319));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4413,12 +4413,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType4" );
  t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(322));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(329));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4439,12 +4439,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType" );
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(332));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(356));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4454,12 +4454,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype2" );
  t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(369));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(376));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4469,12 +4469,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype3" );
  t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(379));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(386));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4498,12 +4498,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype" );
  t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(390));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(405));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4513,12 +4513,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType2" );
  t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(419));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(426));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4528,12 +4528,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType3" );
  t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(429));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(436));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4551,12 +4551,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType" );
  t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(439));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(453));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4566,12 +4566,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyType" );
  t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(467));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(467));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4581,12 +4581,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsType" );
  t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(481));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(481));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4596,12 +4596,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataType" );
  t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(497));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(497));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4612,12 +4612,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetDataType" );
  t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(499));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(501));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4641,12 +4641,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsObj" );
  t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(600));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(600));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4656,12 +4656,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataObj" );
  t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(614));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(614));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4682,12 +4682,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetTypeObj" );
  t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(628));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(641));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4753,12 +4753,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Objectify" );
  t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(651));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(680));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4781,12 +4781,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ChangeTypeObj" );
  t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(694));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(709));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4839,12 +4839,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
  t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(733));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(771));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4881,12 +4881,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
  t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(793));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(815));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4908,12 +4908,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFeatureObj" );
  t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(831));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(837));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4961,12 +4961,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetMultipleAttributes" );
  t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(858));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(910));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -5040,12 +5040,12 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
  t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(957));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(1022));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -5499,10 +5499,10 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
- BODY_FUNC( func1 ) = body1;
+ SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
