@@ -45,6 +45,11 @@
 #ifndef GAP_CALLS_H
 #define GAP_CALLS_H
 
+#include <src/gap.h>
+#include <src/gaputils.h>
+#include <src/stringobj.h>
+#include <src/lists.h>
+
 
 /****************************************************************************
 **
@@ -136,7 +141,12 @@ static inline FunctionHeader * FUNC_HEADER(Obj func)
 #define NAME_FUNC(func)         (FUNC_HEADER(func)->name)
 #define NARG_FUNC(func)         (FUNC_HEADER(func)->nargs)
 #define NAMS_FUNC(func)         (FUNC_HEADER(func)->namesOfLocals)
-#define NAMI_FUNC(func,i)       CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i))
+
+static inline Char * NAMI_FUNC(Obj func, Int i)
+{
+    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+}
+
 #define PROF_FUNC(func)         (FUNC_HEADER(func)->prof)
 #define NLOC_FUNC(func)         (FUNC_HEADER(func)->nloc)
 #define BODY_FUNC(func)         (FUNC_HEADER(func)->body)
@@ -145,6 +155,63 @@ static inline FunctionHeader * FUNC_HEADER(Obj func)
 #ifdef HPCGAP
 #define LCKS_FUNC(func)         (FUNC_HEADER(func)->locks)
 #endif
+
+static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
+{
+    FunctionHeader *header = FUNC_HEADER(func);
+    GAP_ASSERT(0 <= i && i < ARRAY_SIZE(header->handlers));
+    header->handlers[i] = hdlr;
+}
+
+static inline void SET_NAME_FUNC(Obj func, Obj name)
+{
+    GAP_ASSERT(name == 0 || IS_STRING_REP(name));
+    FUNC_HEADER(func)->name = name;
+}
+
+static inline void SET_NARG_FUNC(Obj func, Int nargs)
+{
+    FUNC_HEADER(func)->nargs = nargs;
+}
+
+static inline void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
+{
+    FUNC_HEADER(func)->namesOfLocals = namesOfLocals;
+}
+
+static inline void SET_PROF_FUNC(Obj func, Obj prof)
+{
+    FUNC_HEADER(func)->prof = prof;
+}
+
+static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
+{
+    FUNC_HEADER(func)->nloc = nloc;
+}
+
+static inline void SET_BODY_FUNC(Obj func, Obj body)
+{
+    GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
+    FUNC_HEADER(func)->body = body;
+}
+
+static inline void SET_ENVI_FUNC(Obj func, Obj envi)
+{
+    FUNC_HEADER(func)->envi = envi;
+}
+
+static inline void SET_FEXS_FUNC(Obj func, Obj fexs)
+{
+    FUNC_HEADER(func)->fexs = fexs;
+}
+
+#ifdef HPCGAP
+static inline void SET_LCKS_FUNC(Obj func, Obj locks)
+{
+    FUNC_HEADER(func)->locks = locks;
+}
+#endif
+
 
 #define SIZE_FUNC               sizeof(FunctionHeader)
 
