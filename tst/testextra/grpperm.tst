@@ -83,8 +83,8 @@ gap> g:=SemidirectProduct(GL(3,5),GF(5)^3);
 <matrix group of size 186000000 with 3 generators>
 gap> g:=Image(IsomorphismPermGroup(g));
 <permutation group of size 186000000 with 3 generators>
-gap> List(MaximalSubgroupClassReps(g),Size);
-[ 93000000, 1488000, 6000000, 6000000, 60000, 48000, 46500 ]
+gap> SortedList(List(MaximalSubgroupClassReps(g),Size));
+[ 46500, 48000, 60000, 1488000, 6000000, 6000000, 93000000 ]
 gap> g:=Image(IsomorphismPermGroup(GL(2,5)));;
 gap> w:=WreathProduct(g,SymmetricGroup(5));;
 gap> m:=MaximalSubgroupClassReps(w);;
