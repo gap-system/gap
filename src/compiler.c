@@ -1207,13 +1207,13 @@ CVar CompFuncExpr (
     Emit( ", HdlrFunc%d );\n", nr );
 
     /* this should probably be done by 'NewFunction'                       */
-    Emit( "ENVI_FUNC( %c ) = STATE(CurrLVars);\n", func );
+    Emit( "SET_ENVI_FUNC( %c, STATE(CurrLVars) );\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
     Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
     Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
-    Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
+    Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
@@ -5739,10 +5739,10 @@ Int CompileFunc (
     }
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);\n" );
-    Emit( "ENVI_FUNC( func1 ) = STATE(CurrLVars);\n" );
+    Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
     Emit( "body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));\n" );
-    Emit( "BODY_FUNC( func1 ) = body1;\n" );
+    Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
     Emit( "\n/* return success */\n" );
