@@ -2685,8 +2685,8 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* make and install the 'POS_LIST' operation                           */
-    HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
-    HDLR_FUNC( PosListOper, 3 ) = PosListHandler3;
+    SET_HDLR_FUNC( PosListOper, 2, PosListHandler2 );
+    SET_HDLR_FUNC( PosListOper, 3, PosListHandler3 );
 
     /* return success                                                      */
     return PostRestore( module );

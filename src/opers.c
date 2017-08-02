@@ -3187,18 +3187,18 @@ Obj NewOperation (
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
 
     /* enter the handlers                                                  */
-    HDLR_FUNC(oper,0) = DoOperation0Args;
-    HDLR_FUNC(oper,1) = DoOperation1Args;
-    HDLR_FUNC(oper,2) = DoOperation2Args;
-    HDLR_FUNC(oper,3) = DoOperation3Args;
-    HDLR_FUNC(oper,4) = DoOperation4Args;
-    HDLR_FUNC(oper,5) = DoOperation5Args;
-    HDLR_FUNC(oper,6) = DoOperation6Args;
-    HDLR_FUNC(oper,7) = DoOperationXArgs;
+    SET_HDLR_FUNC(oper, 0, DoOperation0Args);
+    SET_HDLR_FUNC(oper, 1, DoOperation1Args);
+    SET_HDLR_FUNC(oper, 2, DoOperation2Args);
+    SET_HDLR_FUNC(oper, 3, DoOperation3Args);
+    SET_HDLR_FUNC(oper, 4, DoOperation4Args);
+    SET_HDLR_FUNC(oper, 5, DoOperation5Args);
+    SET_HDLR_FUNC(oper, 6, DoOperation6Args);
+    SET_HDLR_FUNC(oper, 7, DoOperationXArgs);
 
     /* reenter the given handler */
     if (narg != -1)
-      HDLR_FUNC(oper,narg) = hdlr;
+      SET_HDLR_FUNC(oper, narg, hdlr);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
     FLAG1_FILT(oper) = INTOBJ_INT(0);
@@ -4643,14 +4643,14 @@ Obj NewConstructor (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoConstructor0Args;
-        HDLR_FUNC(oper,1) = DoConstructor1Args;
-        HDLR_FUNC(oper,2) = DoConstructor2Args;
-        HDLR_FUNC(oper,3) = DoConstructor3Args;
-        HDLR_FUNC(oper,4) = DoConstructor4Args;
-        HDLR_FUNC(oper,5) = DoConstructor5Args;
-        HDLR_FUNC(oper,6) = DoConstructor6Args;
-        HDLR_FUNC(oper,7) = DoConstructorXArgs;
+        SET_HDLR_FUNC(oper, 0, DoConstructor0Args);
+        SET_HDLR_FUNC(oper, 1, DoConstructor1Args);
+        SET_HDLR_FUNC(oper, 2, DoConstructor2Args);
+        SET_HDLR_FUNC(oper, 3, DoConstructor3Args);
+        SET_HDLR_FUNC(oper, 4, DoConstructor4Args);
+        SET_HDLR_FUNC(oper, 5, DoConstructor5Args);
+        SET_HDLR_FUNC(oper, 6, DoConstructor6Args);
+        SET_HDLR_FUNC(oper, 7, DoConstructorXArgs);
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -5029,7 +5029,7 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     tester = MakeTester(name, flag2);
 
     /* Change the handlers */
-    HDLR_FUNC(oper, 1) = hdlr ? hdlr : DoAttribute;
+    SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
 
     SetupAttribute( oper, setter, tester, flag2);
 
@@ -5351,14 +5351,14 @@ Obj NewOperationArgs (
 
     /* check the number of args                                            */
     if ( narg == -1 ) {
-        HDLR_FUNC(func,0) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,1) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,2) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,3) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,4) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,5) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,6) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,7) = DoUninstalledOperationArgs;
+        SET_HDLR_FUNC(func, 0, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 1, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 2, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 3, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 4, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 5, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 6, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 7, DoUninstalledOperationArgs);
     }
     else {
         ErrorQuit("number of args must be -1 in `NewOperationArgs'",0L,0L);
@@ -5367,7 +5367,7 @@ Obj NewOperationArgs (
 
     /* added the name                                                      */
     namobj = CopyObj( name, 0 );
-    NAME_FUNC(func) = namobj;
+    SET_NAME_FUNC(func, namobj);
     CHANGED_BAG(func);
 
     /* and return                                                          */
@@ -5404,10 +5404,8 @@ void InstallMethodArgs (
             ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
         }
     }
-    // Note that ConvImmString may trigger a garbage collection in GASMAN,
-    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
-    name = ConvImmString(name);
-    NAME_FUNC(oper) = name;
+
+    SET_NAME_FUNC(oper, ConvImmString(name));
     CHANGED_BAG(oper);
 }
 
@@ -5887,7 +5885,7 @@ Obj FuncSETTER_FUNCTION (
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
     CHANGED_BAG(tmp);
-    ENVI_FUNC(func) = tmp;
+    SET_ENVI_FUNC(func, tmp);
     CHANGED_BAG(func);
     return func;
 }
@@ -5932,7 +5930,7 @@ Obj FuncGETTER_FUNCTION (
     /* Need to seperate this onto two lines, in case RNamObj causes
      * a garbage collection */
     rnam = INTOBJ_INT( RNamObj(name) );
-    ENVI_FUNC(func) = rnam;
+    SET_ENVI_FUNC(func, rnam);
     return func;
 }
 
@@ -6052,7 +6050,7 @@ void ChangeDoOperations (
         for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j+1];
+                    SET_HDLR_FUNC(oper, i, TabSilentVerboseOperations[j+1]);
                 }
             }
         }
@@ -6065,7 +6063,7 @@ void ChangeDoOperations (
         for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j-1];
+                    SET_HDLR_FUNC(oper, i, TabSilentVerboseOperations[j-1]);
                 }
             }
         }
