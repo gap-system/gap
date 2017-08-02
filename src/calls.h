@@ -137,23 +137,62 @@ static inline FunctionHeader * FUNC_HEADER(Obj func)
     return (FunctionHeader *)ADDR_OBJ(func);
 }
 
-#define HDLR_FUNC(func,i)       (FUNC_HEADER(func)->handlers[i])
-#define NAME_FUNC(func)         (FUNC_HEADER(func)->name)
-#define NARG_FUNC(func)         (FUNC_HEADER(func)->nargs)
-#define NAMS_FUNC(func)         (FUNC_HEADER(func)->namesOfLocals)
+static inline ObjFunc HDLR_FUNC(Obj func, Int i)
+{
+    return FUNC_HEADER(func)->handlers[i];
+}
+
+static inline Obj NAME_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->name;
+}
+
+static inline Int NARG_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->nargs;
+}
+
+static inline Obj NAMS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->namesOfLocals;
+}
 
 static inline Char * NAMI_FUNC(Obj func, Int i)
 {
     return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
 }
 
-#define PROF_FUNC(func)         (FUNC_HEADER(func)->prof)
-#define NLOC_FUNC(func)         (FUNC_HEADER(func)->nloc)
-#define BODY_FUNC(func)         (FUNC_HEADER(func)->body)
-#define ENVI_FUNC(func)         (FUNC_HEADER(func)->envi)
-#define FEXS_FUNC(func)         (FUNC_HEADER(func)->fexs)
+static inline Obj PROF_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->prof;
+}
+
+static inline UInt NLOC_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->nloc;
+}
+
+static inline Obj BODY_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->body;
+}
+
+static inline Obj ENVI_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->envi;
+}
+
+static inline Obj FEXS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->fexs;
+}
+
 #ifdef HPCGAP
-#define LCKS_FUNC(func)         (FUNC_HEADER(func)->locks)
+static inline Obj LCKS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->locks;
+}
+
 #endif
 
 static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
