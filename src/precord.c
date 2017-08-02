@@ -296,6 +296,11 @@ void MakeImmutablePRec( Obj rec)
   len = LEN_PREC( rec );
   for ( i = 1; i <= len; i++ )
     MakeImmutable(GET_ELM_PREC(rec,i));
+  
+  /* Sort the record at this point.
+     This can never hurt, unless the record will never be accessed again anyway
+     for HPCGAP it's essential so that immutable records are actually binary unchanging */
+  SortPRecRNam(rec, 1); 
   RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
 }
 
