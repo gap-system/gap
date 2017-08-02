@@ -4384,11 +4384,9 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [  ] )
 ##  gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 ##  [ 1, 3 ]
-##  gap> FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );
-##  Group([ f1, f2 ])
-##  gap> NormalSubgroupClassesInfo( tbl );
-##  rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], 
-##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [ Group([ f1, f2 ]) ] )
+##  gap> G := FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );;
+##  gap> NormalSubgroupClassesInfo( tbl ).nsgfactors[1] = G;
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
