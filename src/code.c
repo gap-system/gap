@@ -785,9 +785,9 @@ void CodeFuncExprBegin (
     
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, SIZE_FUNC );
-    NARG_FUNC( fexp ) = narg;
-    NLOC_FUNC( fexp ) = nloc;
-    NAMS_FUNC( fexp ) = nams;
+    SET_NARG_FUNC( fexp, narg );
+    SET_NLOC_FUNC( fexp, nloc );
+    SET_NAMS_FUNC( fexp, nams );
 #ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
 #endif
@@ -796,12 +796,12 @@ void CodeFuncExprBegin (
     /* give it a functions expressions list                                */
     fexs = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( fexs, 0 );
-    FEXS_FUNC( fexp ) = fexs;
+    SET_FEXS_FUNC( fexp, fexs );
     CHANGED_BAG( fexp );
 
     /* give it a body                                                      */
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
-    BODY_FUNC( fexp ) = body;
+    SET_BODY_FUNC( fexp, body );
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
@@ -814,7 +814,7 @@ void CodeFuncExprBegin (
     STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
-    ENVI_FUNC( fexp ) = STATE(CurrLVars);
+    SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
     CHANGED_BAG( fexp );
     MakeHighVars(STATE(CurrLVars));
 

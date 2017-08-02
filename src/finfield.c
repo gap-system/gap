@@ -2116,7 +2116,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
-    HDLR_FUNC(ValGVar(GVarName("Z")),2) = FuncZ2;
+    SET_HDLR_FUNC(ValGVar(GVarName("Z")), 2, FuncZ2);
 
     /* return success                                                      */
     return 0;

@@ -2206,7 +2206,7 @@ void SetupFuncInfo(Obj func, const Char* cookie)
         start = MakeImmString(pos+1);
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, start);
-        BODY_FUNC(func) = body_bag;
+        SET_BODY_FUNC(func, body_bag);
         CHANGED_BAG(body_bag);
         CHANGED_BAG(func);
     }
@@ -2773,7 +2773,7 @@ void ThreadedInterpreter(void *funcargs) {
   tmp = NewFunctionC( "bottom", 0, "", 0 );
   PTR_BAG(STATE(BottomLVars))[0] = tmp;
   tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0] ) = tmp;
+  SET_BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0], tmp );
   STATE(CurrLVars) = STATE(BottomLVars);
 
   IntrBegin( STATE(BottomLVars) );

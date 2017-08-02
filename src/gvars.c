@@ -396,7 +396,7 @@ void            AssGVar (
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVarObj(gvar));
         MakeImmutableString(onam);
-        NAME_FUNC(val) = onam;
+        SET_NAME_FUNC(val, onam);
         CHANGED_BAG(val);
     }
 #ifdef HPCGAP

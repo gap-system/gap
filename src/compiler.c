@@ -225,6 +225,7 @@ typedef UInt           CVar;
 typedef UInt4           LVar;
 
 #define INFO_FEXP(fexp)         PROF_FUNC(fexp)
+#define SET_INFO_FEXP(fexp,x)   SET_PROF_FUNC(fexp,x)
 #define NEXT_INFO(info)         PTR_BAG(info)[0]
 #define NR_INFO(info)           (*((Int*)(PTR_BAG(info)+1)))
 #define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+2)))
@@ -5458,7 +5459,7 @@ void CompFunc (
         NTEMP_INFO(info) = 0;
         NLOOP_INFO(info) = 0;
 
-        INFO_FEXP(func) = info;
+        SET_INFO_FEXP(func, info);
         CHANGED_BAG(func);
 
     }

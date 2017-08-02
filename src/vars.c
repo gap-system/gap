@@ -2813,7 +2813,7 @@ static Int InitLibrary (
     FUNC_LVARS( STATE(BottomLVars) ) = tmpFunc;
     PARENT_LVARS(STATE(BottomLVars)) = Fail;
     tmpBody = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-    BODY_FUNC( tmpFunc ) = tmpBody;
+    SET_BODY_FUNC( tmpFunc, tmpBody );
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

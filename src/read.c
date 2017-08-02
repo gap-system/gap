@@ -1503,7 +1503,7 @@ void ReadFuncExpr (
     /* now finally begin the function                                      */
     TRY_READ { IntrFuncExprBegin( isvarg ? -narg : narg, nloc, nams, startLine ); }
 #ifdef HPCGAP
-    if ( nrError == 0) LCKS_FUNC(CURR_FUNC) = locks;
+    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC, locks);
 #endif
 
     /* <Statments>                                                         */
