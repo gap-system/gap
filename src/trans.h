@@ -114,6 +114,15 @@ Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart);
 Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart);
 
 /****************************************************************************
+**
+*F HashFuncForTrans( <f>) . . . hash transformation
+**
+** Returns a hash value for a transformation
+*/
+
+Int HashFuncForTrans(Obj f);
+
+/****************************************************************************
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
 

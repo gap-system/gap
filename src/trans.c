@@ -2432,28 +2432,29 @@ Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
 
 // A hash function for transformations.
 
-Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
+Int HashFuncForTrans(Obj f)
 {
     UInt deg;
 
-    deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
+
+    deg = INT_INTOBJ(FuncDegreeOfTransformation(0, f));
 
     if (TNUM_OBJ(f) == T_TRANS4) {
         if (deg <= 65536) {
-            FuncTRIM_TRANS(self, f, INTOBJ_INT(deg));
+            FuncTRIM_TRANS(0, f, INTOBJ_INT(deg));
         }
         else {
-            return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4)255, 3 * sizeof(Obj),
-                                              (int)4 * deg) %
-                               (INT_INTOBJ(data))) +
-                              1);
+            return HASHKEY_BAG_NC(f, (UInt4)255, 3 * sizeof(Obj), (int)4 * deg);
         }
     }
 
-    return INTOBJ_INT(
-        (HASHKEY_BAG_NC(f, (UInt4)255, 3 * sizeof(Obj), (int)2 * deg) %
-         (INT_INTOBJ(data))) +
-        1);
+    return HASHKEY_BAG_NC(f, (UInt4)255, 3 * sizeof(Obj), (int)2 * deg);
+}
+
+Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
+{
+    return INTOBJ_INT((HashFuncForTrans(f) % INT_INTOBJ(data)) + 1);
 }
 
 /*******************************************************************************
