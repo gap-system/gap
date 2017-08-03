@@ -2720,6 +2720,13 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 
+  r = RNamName("KernelDebug");
+#ifdef GAP_KERNEL_DEBUG
+  AssPRec(res, r, True);
+#else
+  AssPRec(res, r, False);
+#endif
+
   MakeImmutable(res);
   
   return res;
