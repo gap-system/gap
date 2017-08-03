@@ -122,7 +122,7 @@ InstallGlobalFunction(RunTests, function(arg)
     elif opts.showProgress = "some" then
       Print("\r# line ", pos[i],
             " of ", nrlines,
-            " (", Int(Round(Float(pos[i] / nrlines * 100))), "%)",
+            " (", Int(pos[i] / nrlines * 100), "%)",
             "\c");
     fi;
     s := InputTextString(inp[i]);
