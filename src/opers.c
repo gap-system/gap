@@ -6313,11 +6313,28 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 
-  NextTypeID = 0;
-  CountFlags = 0;
+    NextTypeID = 0;
+    CountFlags = 0;
+
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
+
+    /* share between uncompleted functions                                 */
+    StringFilterSetter = MakeImmString("<<filter-setter>>");
+
+    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
+    SET_LEN_PLIST( ArglistObj, 1 );
+    SET_ELM_PLIST( ArglistObj, 1, MakeImmString("obj") );
+    CHANGED_BAG( ArglistObj );
+
+    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    SET_LEN_PLIST( ArglistObjVal, 2 );
+    SET_ELM_PLIST( ArglistObjVal, 1, MakeImmString("obj") );
+    CHANGED_BAG( ArglistObjVal );
+    SET_ELM_PLIST( ArglistObjVal, 2, MakeImmString("val") );
+    CHANGED_BAG( ArglistObjVal );
+
 
     /* Declare the handlers used in various places.  Some of the commonest */
     /* ones are abbreviated to save space in saved workspace.              */
@@ -6528,26 +6545,6 @@ static Int postRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj                 str;
-
-    /* share between uncompleted functions                                 */
-    StringFilterSetter = MakeImmString("<<filter-setter>>");
-
-    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
-    SET_LEN_PLIST( ArglistObj, 1 );
-    str = MakeImmString("obj");
-    SET_ELM_PLIST( ArglistObj, 1, str );
-    CHANGED_BAG( ArglistObj );
-
-    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
-    SET_LEN_PLIST( ArglistObjVal, 2 );
-    str = MakeImmString("obj");
-    SET_ELM_PLIST( ArglistObjVal, 1, str );
-    CHANGED_BAG( ArglistObjVal );
-    str = MakeImmString("val");
-    SET_ELM_PLIST( ArglistObjVal, 2, str );
-    CHANGED_BAG( ArglistObjVal );
-
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
