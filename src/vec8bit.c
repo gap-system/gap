@@ -894,7 +894,7 @@ void ConvVec8Bit (
         ResizeBag(list, nsize);
     SET_LEN_VEC8BIT(list, len);
     SET_FIELD_VEC8BIT(list, q);
-    type = TypeVec8Bit(q, HAS_FILT_LIST(list, FN_IS_MUTABLE));
+    type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
     SetTypeDatObj(list, type);
     RetypeBag(list, T_DATOBJ);
 }
@@ -1055,7 +1055,7 @@ Obj NewVec8Bit (
     /* retype bag */
     SET_LEN_VEC8BIT( res, len );
     SET_FIELD_VEC8BIT( res, q );
-    type = TypeVec8Bit( q, HAS_FILT_LIST( list, FN_IS_MUTABLE) );
+    type = TypeVec8Bit( q, IS_MUTABLE_OBJ( list ) );
     SetTypeDatObj( res, type );
     
     return res;
