@@ -395,7 +395,7 @@ void            AssGVar (
 #endif
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVarObj(gvar));
-        RESET_FILT_LIST( onam, FN_IS_MUTABLE );
+        MakeImmutableString(onam);
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
     }
@@ -617,7 +617,6 @@ UInt GVarName (
             strlcpy(gvarbuf, name, sizeof(gvarbuf));
         string = MakeImmString(gvarbuf);
 
-        RESET_FILT_LIST( string, FN_IS_MUTABLE );
 #ifdef USE_GVAR_BUCKETS
         UInt gvar_bucket = GVAR_BUCKET(CountGVars);
         if (!ValGVars[gvar_bucket]) {
