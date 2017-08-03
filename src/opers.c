@@ -6533,24 +6533,20 @@ static Int InitLibrary (
     Obj                 str;
 
     /* share between uncompleted functions                                 */
-    StringFilterSetter = MakeString("<<filter-setter>>");
-    RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
+    StringFilterSetter = MakeImmString("<<filter-setter>>");
 
     ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
     SET_LEN_PLIST( ArglistObj, 1 );
-    str = MakeString("obj");
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    str = MakeImmString("obj");
     SET_ELM_PLIST( ArglistObj, 1, str );
     CHANGED_BAG( ArglistObj );
 
     ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
-    str = MakeString("obj");
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    str = MakeImmString("obj");
     SET_ELM_PLIST( ArglistObjVal, 1, str );
     CHANGED_BAG( ArglistObjVal );
-    str = MakeString("val");
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    str = MakeImmString("val");
     SET_ELM_PLIST( ArglistObjVal, 2, str );
     CHANGED_BAG( ArglistObjVal );
 
