@@ -37,6 +37,7 @@
 #define GAP_GASMAN_H
 
 #include <src/system.h>
+#include <src/debug.h>
 
 #include <src/hpc/atomic.h>
 
@@ -103,6 +104,7 @@ typedef struct {
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
 static inline BagHeader * BAG_HEADER(Bag bag) {
+    GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
 }
 
