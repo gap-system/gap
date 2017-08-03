@@ -1319,7 +1319,6 @@ static Int ClearFiltsTab [] = {
 static Int HasFiltTab [] = {
 
     /* nsort mutable range                                                 */
-    T_RANGE_NSORT,              FN_IS_MUTABLE,  1,
     T_RANGE_NSORT,              FN_IS_EMPTY,    0,
     T_RANGE_NSORT,              FN_IS_DENSE,    1,
     T_RANGE_NSORT,              FN_IS_NDENSE,   0,
@@ -1331,7 +1330,6 @@ static Int HasFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    1,
 
     /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
@@ -1343,7 +1341,6 @@ static Int HasFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
 
     /* ssort mutable range                                                 */
-    T_RANGE_SSORT,              FN_IS_MUTABLE,  1,
     T_RANGE_SSORT,              FN_IS_EMPTY,    0,
     T_RANGE_SSORT,              FN_IS_DENSE,    1,
     T_RANGE_SSORT,              FN_IS_NDENSE,   0,
@@ -1355,7 +1352,6 @@ static Int HasFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_NSORT,    0,
 
     /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    1,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
@@ -1377,7 +1373,6 @@ static Int HasFiltTab [] = {
 static Int SetFiltTab [] = {
 
     /* nsort mutable range                                                 */
-    T_RANGE_NSORT,              FN_IS_MUTABLE,  T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_EMPTY,    -1,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   -1,
@@ -1389,7 +1384,6 @@ static Int SetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
     /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_NSORT,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    -1,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
@@ -1401,7 +1395,6 @@ static Int SetFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
 
     /* ssort mutable range                                                 */
-    T_RANGE_SSORT,              FN_IS_MUTABLE,  T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   -1,
@@ -1413,7 +1406,6 @@ static Int SetFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_NSORT,    -1,
 
     /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_SSORT,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
@@ -1437,7 +1429,6 @@ static Int SetFiltTab [] = {
 static Int ResetFiltTab [] = {
 
     /* nsort mutable range                                                 */
-    T_RANGE_NSORT,              FN_IS_MUTABLE,  T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT,              FN_IS_EMPTY,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   T_RANGE_NSORT,
@@ -1449,7 +1440,6 @@ static Int ResetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
     /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_NSORT+IMMUTABLE,
@@ -1461,7 +1451,6 @@ static Int ResetFiltTab [] = {
     T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
 
     /* ssort mutable range                                                 */
-    T_RANGE_SSORT,              FN_IS_MUTABLE,  T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   T_RANGE_SSORT,
@@ -1473,7 +1462,6 @@ static Int ResetFiltTab [] = {
     T_RANGE_SSORT,              FN_IS_NSORT,    T_RANGE_SSORT,
 
     /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
     T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_SSORT+IMMUTABLE,
