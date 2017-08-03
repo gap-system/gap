@@ -2061,7 +2061,7 @@ Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 /****************************************************************************
 **
-*V  ClearFiltsTNums[ <tnum> ] . clear all list filters except `FN_IS_MUTABLE'
+*V  ClearFiltsTNums[ <tnum> ] . . . . . . . . . . . .  clear all list filters
 **
 **  The type  number without any  known properties  of a  list of type number
 **  <tnum> is stored in:
@@ -2704,10 +2704,10 @@ static Int CheckInit (
     Int         j;              /* loop variable                           */
     Int         success = 1;
 
-    Int         fnums[] = { FN_IS_MUTABLE, FN_IS_EMPTY, FN_IS_DENSE,
+    Int         fnums[] = { FN_IS_EMPTY, FN_IS_DENSE,
                             FN_IS_NDENSE, FN_IS_HOMOG, FN_IS_NHOMOG,
                             FN_IS_TABLE, FN_IS_SSORT, FN_IS_NSORT };
-    const Char *fnams[] = { "mutable", "empty", "dense", "ndense",
+    const Char *fnams[] = { "empty", "dense", "ndense",
                             "homog", "nhomog", "table", "ssort",
                             "nsort" };
 

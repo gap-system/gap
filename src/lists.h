@@ -856,7 +856,7 @@ extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 /****************************************************************************
 **
-*V  ClearFiltsTNums[ <tnum> ] . clear all list filters except `FN_IS_MUTABLE'
+*V  ClearFiltsTNums[ <tnum> ] . . . . . . . . . . . .  clear all list filters
 **
 **  The type  number without any  known properties  of a  list of type number
 **  <tnum> is stored in:

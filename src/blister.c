@@ -2340,7 +2340,6 @@ static Int ClearFiltsTab [] = {
 static Int HasFiltTab [] = {
 
     /* mutable boolean list                                                */
-    T_BLIST,                    FN_IS_MUTABLE,  1,
     T_BLIST,                    FN_IS_EMPTY,    0,
     T_BLIST,                    FN_IS_DENSE,    1,
     T_BLIST,                    FN_IS_NDENSE,   0,
@@ -2351,7 +2350,6 @@ static Int HasFiltTab [] = {
     T_BLIST,                    FN_IS_NSORT,    0,
 
     /* immutable boolean list                                               */
-    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  0,
     T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    0,
     T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    1,
     T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   0,
@@ -2362,7 +2360,6 @@ static Int HasFiltTab [] = {
     T_BLIST      +IMMUTABLE,    FN_IS_NSORT,    0,
 
     /* nsort mutable boolean list                                          */
-    T_BLIST_NSORT,              FN_IS_MUTABLE,  1,
     T_BLIST_NSORT,              FN_IS_EMPTY,    0,
     T_BLIST_NSORT,              FN_IS_DENSE,    1,
     T_BLIST_NSORT,              FN_IS_NDENSE,   0,
@@ -2373,7 +2370,6 @@ static Int HasFiltTab [] = {
     T_BLIST_NSORT,              FN_IS_NSORT,    1,
 
     /* nsort immutable boolean list                                        */
-    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    1,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
@@ -2384,7 +2380,6 @@ static Int HasFiltTab [] = {
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
 
     /* ssort mutable boolean list                                          */
-    T_BLIST_SSORT,              FN_IS_MUTABLE,  1,
     T_BLIST_SSORT,              FN_IS_EMPTY,    0,
     T_BLIST_SSORT,              FN_IS_DENSE,    1,
     T_BLIST_SSORT,              FN_IS_NDENSE,   0,
@@ -2395,7 +2390,6 @@ static Int HasFiltTab [] = {
     T_BLIST_SSORT,              FN_IS_NSORT,    0,
 
     /* ssort immutable boolean list                                        */
-    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    1,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
@@ -2416,7 +2410,6 @@ static Int HasFiltTab [] = {
 static Int SetFiltTab [] = {
 
     /* mutable boolean list                                                */
-    T_BLIST,                    FN_IS_MUTABLE,  T_BLIST,
     T_BLIST,                    FN_IS_EMPTY,    T_BLIST_SSORT,
     T_BLIST,                    FN_IS_DENSE,    T_BLIST,
     T_BLIST,                    FN_IS_NDENSE,   -1,
@@ -2427,7 +2420,6 @@ static Int SetFiltTab [] = {
     T_BLIST,                    FN_IS_NSORT,    T_BLIST_NSORT,
 
     /* immutable boolean list                                              */
-    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST,
     T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
     T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    T_BLIST      +IMMUTABLE,
     T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   -1,
@@ -2438,7 +2430,6 @@ static Int SetFiltTab [] = {
     T_BLIST      +IMMUTABLE,    FN_IS_NSORT,    T_BLIST_NSORT+IMMUTABLE,
 
     /* nsort mutable boolean list                                          */
-    T_BLIST_NSORT,              FN_IS_MUTABLE,  T_BLIST_NSORT,
     T_BLIST_NSORT,              FN_IS_EMPTY,    -1,
     T_BLIST_NSORT,              FN_IS_DENSE,    T_BLIST_NSORT,
     T_BLIST_NSORT,              FN_IS_NDENSE,   -1,
@@ -2449,7 +2440,6 @@ static Int SetFiltTab [] = {
     T_BLIST_NSORT,              FN_IS_NSORT,    T_BLIST_NSORT,
 
     /* nsort immutable boolean list                                        */
-    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_NSORT,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    -1,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_NSORT+IMMUTABLE,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
@@ -2460,7 +2450,6 @@ static Int SetFiltTab [] = {
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST_NSORT+IMMUTABLE,
 
     /* ssort mutable boolean list                                          */
-    T_BLIST_SSORT,              FN_IS_MUTABLE,  T_BLIST_SSORT,
     T_BLIST_SSORT,              FN_IS_EMPTY,    T_BLIST_SSORT,
     T_BLIST_SSORT,              FN_IS_DENSE,    T_BLIST_SSORT,
     T_BLIST_SSORT,              FN_IS_NDENSE,   -1,
@@ -2471,7 +2460,6 @@ static Int SetFiltTab [] = {
     T_BLIST_SSORT,              FN_IS_NSORT,    -1,
 
     /* ssort immutable boolean list                                        */
-    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_SSORT,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
@@ -2493,7 +2481,6 @@ static Int SetFiltTab [] = {
 static Int ResetFiltTab [] = {
 
     /* mutable boolean list                                                */
-    T_BLIST,                    FN_IS_MUTABLE,  T_BLIST      +IMMUTABLE,
     T_BLIST,                    FN_IS_EMPTY,    T_BLIST,
     T_BLIST,                    FN_IS_DENSE,    T_BLIST,
     T_BLIST,                    FN_IS_NDENSE,   T_BLIST,
@@ -2504,7 +2491,6 @@ static Int ResetFiltTab [] = {
     T_BLIST,                    FN_IS_NSORT,    T_BLIST,
 
     /* immutable boolean list                                               */
-    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST      +IMMUTABLE,
     T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    T_BLIST      +IMMUTABLE,
     T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    T_BLIST      +IMMUTABLE,
     T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   T_BLIST      +IMMUTABLE,
@@ -2515,7 +2501,6 @@ static Int ResetFiltTab [] = {
     T_BLIST      +IMMUTABLE,    FN_IS_TABLE,    T_BLIST      +IMMUTABLE,
 
     /* nsort mutable boolean list                                          */
-    T_BLIST_NSORT,              FN_IS_MUTABLE,  T_BLIST_NSORT+IMMUTABLE,
     T_BLIST_NSORT,              FN_IS_EMPTY,    T_BLIST_NSORT,
     T_BLIST_NSORT,              FN_IS_DENSE,    T_BLIST_NSORT,
     T_BLIST_NSORT,              FN_IS_NDENSE,   T_BLIST_NSORT,
@@ -2526,7 +2511,6 @@ static Int ResetFiltTab [] = {
     T_BLIST_NSORT,              FN_IS_NSORT,    T_BLIST,
 
     /* nsort immutable boolean list                                        */
-    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_NSORT+IMMUTABLE,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_NSORT+IMMUTABLE,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_NSORT+IMMUTABLE,
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   T_BLIST_NSORT+IMMUTABLE,
@@ -2537,7 +2521,6 @@ static Int ResetFiltTab [] = {
     T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST      +IMMUTABLE,
 
     /* ssort mutable boolean list                                          */
-    T_BLIST_SSORT,              FN_IS_MUTABLE,  T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT,              FN_IS_EMPTY,    T_BLIST_SSORT,
     T_BLIST_SSORT,              FN_IS_DENSE,    T_BLIST_SSORT,
     T_BLIST_SSORT,              FN_IS_NDENSE,   T_BLIST_SSORT,
@@ -2548,7 +2531,6 @@ static Int ResetFiltTab [] = {
     T_BLIST_SSORT,              FN_IS_NSORT,    T_BLIST_SSORT,
 
     /* ssort immutable boolean list                                        */
-    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_SSORT+IMMUTABLE,
     T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   T_BLIST_SSORT+IMMUTABLE,
