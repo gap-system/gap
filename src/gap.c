@@ -2197,7 +2197,7 @@ void SetupFuncInfo(Obj func, const Char* cookie)
     const Char* pos = strchr(cookie, ':');
     if ( pos ) {
         Obj filename, start;
-        Obj body_bag = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
         char buffer[512];
         Int len = 511<(pos-cookie)?511:pos-cookie;
         memcpy(buffer, cookie, len);
@@ -2772,7 +2772,7 @@ void ThreadedInterpreter(void *funcargs) {
   STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
   PTR_BAG(STATE(BottomLVars))[0] = tmp;
-  tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+  tmp = NewBag( T_BODY, sizeof(BodyHeader) );
   SET_BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0], tmp );
   STATE(CurrLVars) = STATE(BottomLVars);
 

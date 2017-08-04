@@ -491,7 +491,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "CLEAR_IMP_CACHE" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(40));
  SET_FILENAME_BODY(t_4, FileName);
@@ -538,7 +538,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "WITH_IMPS_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(43));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(82));
  SET_FILENAME_BODY(t_4, FileName);
@@ -567,7 +567,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "RankFilter" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(91));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(108));
  SET_FILENAME_BODY(t_4, FileName);
@@ -676,7 +676,7 @@ static Int InitLibrary ( StructInitInfo * module )
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
+ body1 = NewBag( T_BODY, sizeof(BodyHeader));
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
