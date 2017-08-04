@@ -809,10 +809,13 @@ void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 void MakeImmutable(Obj obj)
 {
     if (IS_MUTABLE_OBJ(obj)) {
-        SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+        if (!IS_INTOBJ(obj) && !IS_FFE(obj)) {
+            SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+        }
         (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
         GAP_ASSERT(!IS_MUTABLE_OBJ(obj));
-        GAP_ASSERT(TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE) == OBJ_FLAG_IMMUTABLE);
+        GAP_ASSERT(TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE) ==
+                   OBJ_FLAG_IMMUTABLE);
     }
 }
 
@@ -1138,6 +1141,11 @@ Obj FuncSET_PRINT_OBJ_INDEX (Obj self, Obj ind)
   return 0;
 }
 
+
+Obj FuncOBJ_FLAGS(Obj self, Obj obj)
+{
+    return INTOBJ_INT(BAG_HEADER(obj)->flags);
+}
 
 /****************************************************************************
 **
@@ -1993,6 +2001,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SET_PRINT_OBJ_INDEX", 1, "index",
       FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
+
+    { "OBJ_FLAGS", 1, "obj",
+      FuncOBJ_FLAGS, "src/objects.c:OBJ_FLAGS" },
 
     { "MakeImmutable", 1, "obj",
       FuncMakeImmutable, "src/objects.c:MakeImmutable" },

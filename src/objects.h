@@ -618,7 +618,13 @@ extern void CheckedMakeImmutable( Obj obj );
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 static inline Int IS_MUTABLE_OBJ(Obj obj)
 {
-    return ((*IsMutableObjFuncs[TNUM_OBJ(obj)])(obj));
+    if(IS_INTOBJ(obj) || IS_FFE(obj)) {
+        return 0;
+    } else if (TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE) == OBJ_FLAG_IMMUTABLE) {
+        return 0;
+    } else {
+        return ((*IsMutableObjFuncs[TNUM_OBJ(obj)])(obj));
+    }
 }
 
 
