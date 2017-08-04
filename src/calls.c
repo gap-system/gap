@@ -1966,7 +1966,7 @@ Obj FuncIsKernelFunction(Obj self, Obj func) {
   else 
     return ((BODY_FUNC(func) == 0) ||
             (SIZE_OBJ(BODY_FUNC(func))
-             == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj))) ? True : False;
+             == sizeof(BodyHeader))) ? True : False;
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)

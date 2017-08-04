@@ -16,6 +16,10 @@
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
 
+#include <src/debug.h>
+#include <src/gasman.h>
+#include <src/objects.h>
+
 /****************************************************************************
 **
 *T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
@@ -54,6 +58,21 @@ typedef UInt8 Stat;
 **  All of these variables may be 0, if the information is not known,
 */
 
+typedef struct {
+    Obj filename;
+    union {
+        Obj startline;
+        Obj location;
+    };
+    Obj endline;
+} BodyHeader;
+
+static inline BodyHeader *BODY_HEADER(Obj body)
+{
+    GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
+    return (BodyHeader *)ADDR_OBJ(body);
+}
+
 Obj GET_FILENAME_BODY(Obj body);
 void SET_FILENAME_BODY(Obj body, Obj val);
 Obj GET_STARTLINE_BODY(Obj body);
@@ -63,8 +82,6 @@ void SET_LOCATION_BODY(Obj body, Obj val);
 Obj GET_ENDLINE_BODY(Obj body);
 void SET_ENDLINE_BODY(Obj body, Obj val);
 
-#define NUMBER_HEADER_ITEMS_BODY 3
-
 /****************************************************************************
 **
 *V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
@@ -72,7 +89,7 @@ void SET_ENDLINE_BODY(Obj body, Obj val);
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
 
-#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+NUMBER_HEADER_ITEMS_BODY*sizeof(Bag))
+#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+sizeof(BodyHeader))
 
 /****************************************************************************
 **
