@@ -24,7 +24,7 @@ matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
     - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testtravis ABI=32 CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITE=testtravis ABI=32
 
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
@@ -48,7 +48,7 @@ matrix:
     # HPC-GAP builds (for efficiency, we don't build all combinations)
     # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
     - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--enable-debug --with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
+    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -56,7 +56,7 @@ matrix:
     # setting NO_COVERAGE=1; this has the extra benefit of also running the
     # tests at least once with the ReproducibleBehaviour option turned off.
     - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build
 
     # run bugfix regression tests
     - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
