@@ -3880,17 +3880,6 @@ static Int ResetFiltTab [] = {
     T_PLIST_EMPTY,                FN_IS_SSORT,   T_PLIST,
     T_PLIST_EMPTY,                FN_IS_NSORT,   T_PLIST_EMPTY,
 
-    /* mutable empty list                                                  */
-    T_PLIST_EMPTY,                FN_IS_EMPTY,   T_PLIST,
-    T_PLIST_EMPTY,                FN_IS_DENSE,   T_PLIST,
-    T_PLIST_EMPTY,                FN_IS_NDENSE,  T_PLIST_EMPTY,
-    T_PLIST_EMPTY,                FN_IS_HOMOG,   T_PLIST,
-    T_PLIST_EMPTY,                FN_IS_NHOMOG,  T_PLIST_EMPTY,
-    T_PLIST_EMPTY,                FN_IS_TABLE,   T_PLIST_EMPTY,
-    T_PLIST_EMPTY,                FN_IS_RECT,   T_PLIST_EMPTY,
-    T_PLIST_EMPTY,                FN_IS_SSORT,   T_PLIST,
-    T_PLIST_EMPTY,                FN_IS_NSORT,   T_PLIST_EMPTY,
-
     /* immutable empty list                                                */
     T_PLIST_EMPTY     +IMMUTABLE, FN_IS_EMPTY,   T_PLIST           +IMMUTABLE,
     T_PLIST_EMPTY     +IMMUTABLE, FN_IS_DENSE,   T_PLIST           +IMMUTABLE,
