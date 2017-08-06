@@ -2807,6 +2807,38 @@ static Int CheckInit (
     /* check implications                                                  */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
 
+        if ( (i & IMMUTABLE) == 0 ) {
+            if ( ClearFiltsTNums[i]+IMMUTABLE != ClearFiltsTNums[i+IMMUTABLE]) {
+                Pr( "#W  ClearFiltsTNums [%s] mismatch between mutable and immutable\n",
+                    (Int)(InfoBags[i].name), 0 );
+                success = 0;
+            }
+            for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
+
+                if ( HasFiltListTNums[i][fnums[j]] !=
+                     HasFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  HasFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+                if ( (SetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
+                     SetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  SetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+                if ( (ResetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
+                     ResetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  ResetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+            }
+        }
+
         if ( HasFiltListTNums[i][FN_IS_EMPTY] ) {
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
