@@ -1305,9 +1305,7 @@ static StructBagNames BagNames[] = {
 */
 static Int ClearFiltsTab [] = {
     T_RANGE_NSORT,           T_RANGE_NSORT,
-    T_RANGE_NSORT+IMMUTABLE, T_RANGE_NSORT+IMMUTABLE,
     T_RANGE_SSORT,           T_RANGE_SSORT,
-    T_RANGE_SSORT+IMMUTABLE, T_RANGE_SSORT+IMMUTABLE,
     -1,                      -1
 };
 
@@ -1318,49 +1316,27 @@ static Int ClearFiltsTab [] = {
 */
 static Int HasFiltTab [] = {
 
-    /* nsort mutable range                                                 */
+    // nsort range
     T_RANGE_NSORT,              FN_IS_EMPTY,    0,
     T_RANGE_NSORT,              FN_IS_DENSE,    1,
     T_RANGE_NSORT,              FN_IS_NDENSE,   0,
     T_RANGE_NSORT,              FN_IS_HOMOG,    1,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   0,
     T_RANGE_NSORT,              FN_IS_TABLE,    0,
-    T_RANGE_NSORT,              FN_IS_RECT,    0,
+    T_RANGE_NSORT,              FN_IS_RECT,     0,
     T_RANGE_NSORT,              FN_IS_SSORT,    0,
     T_RANGE_NSORT,              FN_IS_NSORT,    1,
 
-    /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    0,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
-
-    /* ssort mutable range                                                 */
+    // ssort range
     T_RANGE_SSORT,              FN_IS_EMPTY,    0,
     T_RANGE_SSORT,              FN_IS_DENSE,    1,
     T_RANGE_SSORT,              FN_IS_NDENSE,   0,
     T_RANGE_SSORT,              FN_IS_HOMOG,    1,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   0,
     T_RANGE_SSORT,              FN_IS_TABLE,    0,
-    T_RANGE_SSORT,              FN_IS_RECT,    0,
+    T_RANGE_SSORT,              FN_IS_RECT,     0,
     T_RANGE_SSORT,              FN_IS_SSORT,    1,
     T_RANGE_SSORT,              FN_IS_NSORT,    0,
-
-    /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    0,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    0,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    0,
 
     -1,                         -1,             -1
 };
@@ -1372,50 +1348,27 @@ static Int HasFiltTab [] = {
 */
 static Int SetFiltTab [] = {
 
-    /* nsort mutable range                                                 */
+    // nsort range
     T_RANGE_NSORT,              FN_IS_EMPTY,    -1,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   -1,
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   -1,
     T_RANGE_NSORT,              FN_IS_TABLE,    -1,
-    T_RANGE_NSORT,              FN_IS_RECT,    -1,
+    T_RANGE_NSORT,              FN_IS_RECT,     -1,
     T_RANGE_NSORT,              FN_IS_SSORT,    -1,
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
-    /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    -1,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
-
-    /* ssort mutable range                                                 */
+    // ssort range
     T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   -1,
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   -1,
     T_RANGE_SSORT,              FN_IS_TABLE,    -1,
-    T_RANGE_SSORT,              FN_IS_RECT,    -1,
+    T_RANGE_SSORT,              FN_IS_RECT,     -1,
     T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NSORT,    -1,
-
-    /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    -1,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    -1,
-
 
     -1,                         -1,             -1
 
@@ -1428,49 +1381,27 @@ static Int SetFiltTab [] = {
 */
 static Int ResetFiltTab [] = {
 
-    /* nsort mutable range                                                 */
+    // nsort range
     T_RANGE_NSORT,              FN_IS_EMPTY,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NHOMOG,   T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_TABLE,    T_RANGE_NSORT,
-    T_RANGE_NSORT,              FN_IS_RECT,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_RECT,     T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_SSORT,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
-    /* nsort immutable range                                               */
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_RECT,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_NSORT+IMMUTABLE,
-    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
-
-    /* ssort mutable range                                                 */
+    // ssort range
     T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NHOMOG,   T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_TABLE,    T_RANGE_SSORT,
-    T_RANGE_SSORT,              FN_IS_RECT,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_RECT,     T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NSORT,    T_RANGE_SSORT,
-
-    /* ssort immutable range                                               */
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_RECT,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
-    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_SSORT+IMMUTABLE,
 
     -1,                         -1,             -1
 

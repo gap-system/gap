@@ -2101,6 +2101,7 @@ void InitClearFiltsTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 2 ) {
         ClearFiltsTNums[tab[i]] = tab[i+1];
+        ClearFiltsTNums[tab[i] | IMMUTABLE] = tab[i+1] | IMMUTABLE;
     }
 }
 
@@ -2116,6 +2117,7 @@ void InitHasFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         HasFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        HasFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2];
     }
 }
 
@@ -2131,6 +2133,7 @@ void InitSetFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         SetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        SetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
     }
 }
 
@@ -2146,6 +2149,7 @@ void InitResetFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         ResetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        ResetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
     }
 }
 

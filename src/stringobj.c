@@ -2117,11 +2117,8 @@ static StructBagNames BagNames[] = {
 */
 static Int ClearFiltsTab [] = {
     T_STRING,                 T_STRING,
-    T_STRING      +IMMUTABLE, T_STRING+IMMUTABLE,
     T_STRING_NSORT,           T_STRING,
-    T_STRING_NSORT+IMMUTABLE, T_STRING+IMMUTABLE,
     T_STRING_SSORT,           T_STRING,
-    T_STRING_SSORT+IMMUTABLE, T_STRING+IMMUTABLE,
     -1,                       -1
 };
 
@@ -2132,7 +2129,7 @@ static Int ClearFiltsTab [] = {
 */
 static Int HasFiltTab [] = {
 
-    /* mutable string                                                      */
+    // string
     T_STRING,                  FN_IS_EMPTY,   0,
     T_STRING,                  FN_IS_DENSE,   1,
     T_STRING,                  FN_IS_NDENSE,  0,
@@ -2143,60 +2140,27 @@ static Int HasFiltTab [] = {
     T_STRING,                  FN_IS_SSORT,   0,
     T_STRING,                  FN_IS_NSORT,   0,
 
-    /* immutable string                                                    */
-    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   0,
-    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   1,
-    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  0,
-    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   1,
-    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  0,
-    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   0,
-    T_STRING      +IMMUTABLE,  FN_IS_RECT,    0,
-    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   0,
-    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   0,
-
-    /* ssort mutable string                                                */
+    // ssort string
     T_STRING_SSORT,            FN_IS_EMPTY,   0,
     T_STRING_SSORT,            FN_IS_DENSE,   1,
     T_STRING_SSORT,            FN_IS_NDENSE,  0,
     T_STRING_SSORT,            FN_IS_HOMOG,   1,
     T_STRING_SSORT,            FN_IS_NHOMOG,  0,
     T_STRING_SSORT,            FN_IS_TABLE,   0,
-    T_STRING_SSORT,            FN_IS_RECT,   0,
+    T_STRING_SSORT,            FN_IS_RECT,    0,
     T_STRING_SSORT,            FN_IS_SSORT,   1,
     T_STRING_SSORT,            FN_IS_NSORT,   0,
 
-    /* ssort immutable string                                              */
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   0,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  0,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  0,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   0,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_RECT,   0,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   0,
-
-    /* nsort mutable string                                                */
+    // nsort string
     T_STRING_NSORT,            FN_IS_EMPTY,   0,
     T_STRING_NSORT,            FN_IS_DENSE,   1,
     T_STRING_NSORT,            FN_IS_NDENSE,  0,
     T_STRING_NSORT,            FN_IS_HOMOG,   1,
     T_STRING_NSORT,            FN_IS_NHOMOG,  0,
     T_STRING_NSORT,            FN_IS_TABLE,   0,
-    T_STRING_NSORT,            FN_IS_RECT,   0,
+    T_STRING_NSORT,            FN_IS_RECT,    0,
     T_STRING_NSORT,            FN_IS_SSORT,   0,
     T_STRING_NSORT,            FN_IS_NSORT,   1,
-
-    /* nsort immutable string                                              */
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_RECT,   0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   0,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   1,
 
     -1,                        -1,            -1
 };
@@ -2208,71 +2172,38 @@ static Int HasFiltTab [] = {
 */
 static Int SetFiltTab [] = {
 
-    /* mutable string                                                      */
+    // string
     T_STRING,                  FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING,                  FN_IS_DENSE,   T_STRING,
     T_STRING,                  FN_IS_NDENSE,  -1,
     T_STRING,                  FN_IS_HOMOG,   T_STRING,
     T_STRING,                  FN_IS_NHOMOG,  -1,
     T_STRING,                  FN_IS_TABLE,   -1,
-    T_STRING,                  FN_IS_RECT,   -1,
+    T_STRING,                  FN_IS_RECT,    -1,
     T_STRING,                  FN_IS_SSORT,   T_STRING_SSORT,
     T_STRING,                  FN_IS_NSORT,   T_STRING_NSORT,
 
-    /* immutable string                                                    */
-    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  -1,
-    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  -1,
-    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   -1,
-    T_STRING      +IMMUTABLE,  FN_IS_RECT,   -1,
-    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   T_STRING_NSORT+IMMUTABLE,
-
-    /* ssort mutable string                                                */
+    // ssort string
     T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NDENSE,  -1,
     T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NHOMOG,  -1,
     T_STRING_SSORT,            FN_IS_TABLE,   -1,
-    T_STRING_SSORT,            FN_IS_RECT,   -1,
+    T_STRING_SSORT,            FN_IS_RECT,    -1,
     T_STRING_SSORT,            FN_IS_SSORT,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NSORT,   -1,
 
-    /* ssort immutable string                                              */
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  -1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  -1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   -1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_RECT,   -1,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   -1,
-
-    /* nsort mutable string                                                */
+    // nsort string
     T_STRING_NSORT,            FN_IS_EMPTY,   -1,
     T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NDENSE,  -1,
     T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NHOMOG,  -1,
     T_STRING_NSORT,            FN_IS_TABLE,   -1,
-    T_STRING_NSORT,            FN_IS_RECT,   -1,
+    T_STRING_NSORT,            FN_IS_RECT,    -1,
     T_STRING_NSORT,            FN_IS_SSORT,   -1,
     T_STRING_NSORT,            FN_IS_NSORT,   T_STRING_NSORT,
-
-    /* nsort immutable string                                              */
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_RECT,   -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   -1,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING_NSORT+IMMUTABLE,
 
     -1,                        -1,            -1
 
@@ -2285,71 +2216,38 @@ static Int SetFiltTab [] = {
 */
 static Int ResetFiltTab [] = {
 
-    /* mutable string                                                      */
+    // string
     T_STRING,                  FN_IS_EMPTY,   T_STRING,
     T_STRING,                  FN_IS_DENSE,   T_STRING,
     T_STRING,                  FN_IS_NDENSE,  T_STRING,
     T_STRING,                  FN_IS_HOMOG,   T_STRING,
     T_STRING,                  FN_IS_NHOMOG,  T_STRING,
     T_STRING,                  FN_IS_TABLE,   T_STRING,
-    T_STRING,                  FN_IS_RECT,   T_STRING,
+    T_STRING,                  FN_IS_RECT,    T_STRING,
     T_STRING,                  FN_IS_SSORT,   T_STRING,
     T_STRING,                  FN_IS_NSORT,   T_STRING,
 
-    /* immutable string                                                    */
-    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_RECT,    T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   T_STRING      +IMMUTABLE,
-    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   T_STRING      +IMMUTABLE,
-
-    /* ssort mutable string                                                */
+    // ssort string
     T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NDENSE,  T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NHOMOG,  T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_TABLE,   T_STRING_SSORT,
-    T_STRING_SSORT,            FN_IS_RECT,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_RECT,    T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_SSORT,   T_STRING,
     T_STRING_SSORT,            FN_IS_NSORT,   T_STRING_SSORT,
 
-    /* ssort immutable string                                              */
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_RECT,   T_STRING_SSORT+IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING      +IMMUTABLE,
-    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING_SSORT+IMMUTABLE,
-
-    /* nsort mutable string                                                */
+    // nsort string
     T_STRING_NSORT,            FN_IS_EMPTY,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NDENSE,  T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NHOMOG,  T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_TABLE,   T_STRING_NSORT,
-    T_STRING_NSORT,            FN_IS_RECT,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_RECT,    T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_SSORT,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NSORT,   T_STRING,
-
-    /* nsort immutable string                                              */
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_RECT,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING_NSORT+IMMUTABLE,
-    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING      +IMMUTABLE,
 
     -1,                        -1,            -1
 
