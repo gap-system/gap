@@ -2734,7 +2734,7 @@ static Int CheckInit (
 
     /* check that all relevant `HasFiltListTNums' are installed            */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
                 Pr( "#W  HasFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2747,7 +2747,7 @@ static Int CheckInit (
 
     /* check that all relevant `SetFiltListTNums' are installed            */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  SetFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2759,7 +2759,7 @@ static Int CheckInit (
 
     /* check that all relevant `ResetFiltListTNums' are installed          */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  ResetFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2770,7 +2770,7 @@ static Int CheckInit (
 
     /* if a tnum has a filter, reset must change the tnum                  */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
                 Int     new;
                 new = ResetFiltListTNums[i][fnums[j]];
@@ -2790,7 +2790,7 @@ static Int CheckInit (
 
     /* if a tnum has a filter, set must not change the tnum                */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
                 Int     new;
                 new = SetFiltListTNums[i][fnums[j]];
