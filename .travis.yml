@@ -7,6 +7,8 @@ env:
   global:
     - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
     - LDFLAGS="-fprofile-arcs"
+    # CC_TEST_REPORTER_ID for CodeClimate:
+    - secure: bAVlSixOUgcNZbby3IN7dh7Hiih+v45l9/R8F6hD0XcYOyaj1OYntqKj+JhS2Nm0zF9B1Ccitbr1biNsrQ+mtraUpCjhyOBa48QC/9zYATX6vkyMrojuBz+80KcU+RecVL5DN43tZrKpo9iU101UPF3wZuDX6TpHVFxz4dYgg2M=
 
 # TODO: boehm GC, HPC-GAP compatibility mode
 
@@ -64,6 +66,11 @@ matrix:
     # test error reporting (quickest job in this test suite)
     - env: TEST_SUITE=testerror CONFIGFLAGS="--enable-debug"
 
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
 script:
   - gcov --version
   - bash etc/ci-prepare.sh
@@ -72,6 +79,7 @@ script:
 after_script:
   - bash etc/ci-gather-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 notifications:
   slack:
