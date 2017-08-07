@@ -216,12 +216,12 @@ void InitTraversalModule(void)
         assert(TraversalMethod[i] == 0);
         TraversalMethod[i] = TRAVERSE_NONE;
     }
-    TraversalMethod[T_PREC] = TRAVERSE_BY_FUNCTION;
-    TraversalMethod[T_PREC + IMMUTABLE] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[T_PREC] = TraversePRecord;
-    TraversalCopyFunc[T_PREC] = CopyPRecord;
-    TraversalFunc[T_PREC + IMMUTABLE] = TraversePRecord;
-    TraversalCopyFunc[T_PREC + IMMUTABLE] = CopyPRecord;
+    TraversalMethod[T_PREC           ] = TRAVERSE_BY_FUNCTION;
+    TraversalMethod[T_PREC +IMMUTABLE] = TRAVERSE_BY_FUNCTION;
+    TraversalFunc[T_PREC           ] = TraversePRecord;
+    TraversalFunc[T_PREC +IMMUTABLE] = TraversePRecord;
+    TraversalCopyFunc[T_PREC           ] = CopyPRecord;
+    TraversalCopyFunc[T_PREC +IMMUTABLE] = CopyPRecord;
     for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
         TraversalMethod[i] = TRAVERSE_BY_FUNCTION;
         TraversalFunc[i] = TraversePList;

@@ -1489,20 +1489,20 @@ static Int InitKernel (
 
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_NSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE          ] = CopyRange;
+    CopyObjFuncs [ T_RANGE_NSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_SSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE          ] = CopyRange;
+    CopyObjFuncs [ T_RANGE_SSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_NSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE          ] = CleanRange;
+    CleanObjFuncs[ T_RANGE_NSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
+    CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
 
     /* Make immutable methods */

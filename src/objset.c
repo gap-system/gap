@@ -911,27 +911,27 @@ static Int InitKernel (
   InfoBags[T_OBJMAP].name = "object map";
   InfoBags[T_OBJMAP+IMMUTABLE].name = "immutable object map";
   /* install kind functions */
-  TypeObjFuncs[T_OBJSET] = TypeObjSet;
+  TypeObjFuncs[T_OBJSET          ] = TypeObjSet;
   TypeObjFuncs[T_OBJSET+IMMUTABLE] = TypeObjSet;
-  TypeObjFuncs[T_OBJMAP] = TypeObjMap;
+  TypeObjFuncs[T_OBJMAP          ] = TypeObjMap;
   TypeObjFuncs[T_OBJMAP+IMMUTABLE] = TypeObjMap;
   /* install global variables */
   InitCopyGVar("TYPE_OBJSET", &TYPE_OBJSET);
   InitCopyGVar("TYPE_OBJMAP", &TYPE_OBJMAP);
   /* install mark functions */
-  InitMarkFuncBags(T_OBJSET, MarkObjSet);
-  InitMarkFuncBags(T_OBJMAP, MarkObjMap);
+  InitMarkFuncBags(T_OBJSET          , MarkObjSet);
   InitMarkFuncBags(T_OBJSET+IMMUTABLE, MarkObjSet);
+  InitMarkFuncBags(T_OBJMAP          , MarkObjMap);
   InitMarkFuncBags(T_OBJMAP+IMMUTABLE, MarkObjMap);
   /* install print functions */
-  PrintObjFuncs[ T_OBJSET ] = PrintObjSet;
+  PrintObjFuncs[ T_OBJSET           ] = PrintObjSet;
   PrintObjFuncs[ T_OBJSET+IMMUTABLE ] = PrintObjSet;
-  PrintObjFuncs[ T_OBJMAP ] = PrintObjMap;
+  PrintObjFuncs[ T_OBJMAP           ] = PrintObjMap;
   PrintObjFuncs[ T_OBJMAP+IMMUTABLE ] = PrintObjMap;
   /* install mutability functions */
-  IsMutableObjFuncs [ T_OBJSET ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJSET           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
-  IsMutableObjFuncs [ T_OBJMAP ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJMAP           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
   // init filters and functions
   InitHdlrFuncsFromTable( GVarFuncs );
