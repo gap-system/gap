@@ -1692,17 +1692,6 @@ Obj FuncMOD (
 
 /****************************************************************************
 **
-*V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
-*/
-static StructGVarAttr GVarAttrs [] = {
-
-    { 0, 0, 0, 0, 0 }
-
-};
-
-
-/****************************************************************************
-**
 *V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
 static StructGVarOper GVarOpers [] = {
@@ -1807,7 +1796,6 @@ static Int InitKernel (
     UInt                t2;             /* type of right operand           */
 
     /* init filters and functions                                          */
-    InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -1980,7 +1968,6 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* init filters and functions                                          */
-    InitGVarAttrsFromTable( GVarAttrs );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
