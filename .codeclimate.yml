@@ -1,0 +1,8 @@
+---
+engines:
+  fixme:
+    enabled: true
+exclude_paths:
+- "extern/"
+- "hpcgap/extern/"
+- "hpcgap/pkg/"
