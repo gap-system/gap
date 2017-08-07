@@ -2507,8 +2507,8 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-        InitMarkFuncBags( t1,                      MarkNoSubBags  );
-        InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
+        InitMarkFuncBags( t1                     , MarkNoSubBags  );
+        InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags  );
         InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
@@ -2550,8 +2550,8 @@ static Int InitKernel (
         CleanObjFuncs[ t1 +IMMUTABLE          ] = CleanBlist;
         CleanObjFuncs[ t1            +COPYING ] = CleanBlistCopy;
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
-	ShallowCopyObjFuncs[ t1 ] = ShallowCopyBlist;
-	ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyBlist;
+        ShallowCopyObjFuncs[ t1               ] = ShallowCopyBlist;
+        ShallowCopyObjFuncs[ t1 +IMMUTABLE    ] = ShallowCopyBlist;
     }
 
     /* install the comparison methods                                      */
