@@ -1160,6 +1160,11 @@ void            RetypeBag (
     }
 #endif
 
+    if ((FIRST_IMM_MUT_TNUM <= new_type) &&
+        (new_type <= LAST_IMM_MUT_TNUM) &&
+        (new_type & IMMUTABLE)) {
+        SET_OBJ_FLAG(bag, OBJ_FLAG_IMMUTABLE);
+    }
     header->type = new_type;
 }
 
