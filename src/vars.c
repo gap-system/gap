@@ -549,7 +549,7 @@ void            PrintIsbGVar (
 **
 *F  ExecAssList(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssList'  executes the list  assignment statement <stat> of the form
+**  'ExecAssList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
 UInt            ExecAssList (
@@ -598,7 +598,7 @@ UInt            ExecAssList (
 **
 *F  ExecAss2List(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAss2List'  executes the list  assignment statement <stat> of the form
+**  'ExecAss2List'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>,<position>] := <rhs>;'.
 */
 UInt            ExecAss2List (
@@ -629,7 +629,7 @@ UInt            ExecAss2List (
 **
 *F  ExecAssXList(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssXList'  executes the list  assignment statement <stat> of the form
+**  'ExecAssXList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>,<position>,<position>[,<position>]*] := <rhs>;'.
 */
 UInt            ExecAssXList (
@@ -825,7 +825,7 @@ UInt            ExecAsssListLevel (
 **
 *F  ExecUnbList(<ass>)  . . . . . . . . . . . . . unbind an element of a list
 **
-**  'ExexUnbList'  executes the list   unbind  statement <stat> of the   form
+**  'ExecUnbList'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
 UInt            ExecUnbList (
@@ -1109,7 +1109,7 @@ Obj             EvalElmsListLevel (
 **
 *F  EvalIsbList(<expr>) . . . . . . . . test if an element of a list is bound
 **
-**  'EvalElmList'  evaluates the list  isbound expression  <expr> of the form
+**  'EvalIsbList'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
 Obj             EvalIsbList (
@@ -1330,7 +1330,7 @@ void            PrintIsbList (
 **
 *F  PrintElmsList(<expr>) . . print a selection of several elements of a list
 **
-**  'PrElmsList'  prints the list  elements  expression  <expr> of the   form
+**  'PrintElmsList'  prints the list  elements  expression  <expr> of the   form
 **  '<list>{<positions>}'.
 **
 **  Linebreaks are preferred after the '{'.
@@ -1414,7 +1414,7 @@ UInt            ExecAssRecExpr (
 **
 *F  ExecUnbRecName(<stat>)  . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssRecName' executes the record  unbind statement <stat> of the form
+**  'ExecUnbRecName' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
 UInt            ExecUnbRecName (
@@ -1442,7 +1442,7 @@ UInt            ExecUnbRecName (
 **
 *F  ExecUnbRecExpr(<stat>)  . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssRecExpr' executes the record  unbind statement <stat> of the form
+**  'ExecUnbRecExpr' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
 UInt            ExecUnbRecExpr (
@@ -1700,7 +1700,7 @@ void            PrintIsbRecExpr (
 **
 *F  ExecAssPosObj(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssPosObj'  executes the list  assignment statement <stat> of the form
+**  'ExecAssPosObj'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
 UInt            ExecAssPosObj (
@@ -1753,7 +1753,7 @@ UInt            ExecAssPosObj (
 **
 *F  ExecUnbPosObj(<ass>)  . . . . . . . . . . . . . unbind an element of a list
 **
-**  'ExexUnbPosObj'  executes the list   unbind  statement <stat> of the   form
+**  'ExecUnbPosObj'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
 UInt            ExecUnbPosObj (
@@ -2088,7 +2088,7 @@ UInt            ExecAssComObjExpr (
 **
 *F  ExecUnbComObjName(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComObjName' executes the record unbind statement <stat> of the form
+**  'ExecUnbComObjName' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
 UInt            ExecUnbComObjName (
@@ -2128,7 +2128,7 @@ UInt            ExecUnbComObjName (
 **
 *F  ExecUnbComObjExpr(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComObjExpr' executes the record unbind statement <stat> of the form
+**  'ExecUnbComObjExpr' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
 UInt            ExecUnbComObjExpr (
@@ -2248,7 +2248,7 @@ Obj             EvalElmComObjExpr (
 **
 *F  EvalIsbComObjName(<expr>) . . . . . . . . test if a record element is bound
 **
-**  'EvalElmComObjName' evaluates  the record isbound  expression <expr> of the
+**  'EvalIsbComObjName' evaluates  the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
 Obj             EvalIsbComObjName (
