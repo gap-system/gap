@@ -381,10 +381,10 @@ enum {
         LAST_OBJSET_TNUM                    = T_OBJMAP+IMMUTABLE,
 
     // last mutable/immutable TNUM
-    LAST_IMM_MUT_TNUM       = LAST_LIST_TNUM,
+    LAST_IMM_MUT_TNUM       = LAST_OBJSET_TNUM,
 
     // external types (IMMUTABLE is not used for them, but keep the parity anyway)
-    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_OBJSET_TNUM),
+    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_IMM_MUT_TNUM),
         T_COMOBJ            = FIRST_EXTERNAL_TNUM,
         T_POSOBJ,
         T_DATOBJ,
