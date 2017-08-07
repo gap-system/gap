@@ -544,6 +544,8 @@ FF              FiniteField (
     }
     if (ff < 1 || ff > NUM_SHORT_FINITE_FIELDS)
       return 0;
+    if (CharFF[ff] != p)
+      return 0;
     if (SizeFF[ff] != q)
       return 0;
 #ifdef HPCGAP
@@ -1700,7 +1702,6 @@ Obj FuncIS_FFE (
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
 Obj LOG_FFE_LARGE;
-#include <stdio.h>
 
 Obj FuncLOG_FFE_DEFAULT (
     Obj                 self,
