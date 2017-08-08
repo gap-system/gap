@@ -2251,7 +2251,7 @@ Obj IsPermHandler (
 **
 **  Converts the list <list> into a  permutation,  which  is  then  returned.
 **
-**  'FunPermList' simply copies the list pointwise into  a  permutation  bag.
+**  'FuncPermList' simply copies the list pointwise into  a  permutation  bag.
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
 Obj             FuncPermList (
@@ -3656,7 +3656,7 @@ Obj             FuncTRIM_PERM (
 
 /****************************************************************************
 **
-*F  FunSPLIT_PARTITION( <Ppoints>, <Qnum>,<j>,<g>,<l>)
+*F  FuncSPLIT_PARTITION( <Ppoints>, <Qnum>,<j>,<g>,<l>)
 **  <l> is a list [<a>,<b>,<max>] -- needed because of large parameter number
 **
 **  This function is used in the partition backtrack to split a partition.
@@ -3667,7 +3667,7 @@ Obj             FuncTRIM_PERM (
 **  many are moved).
 **  Ppoints and Qnum must be plain lists of small integers.
 */
-Obj FunSPLIT_PARTITION(
+Obj FuncSPLIT_PARTITION(
     Obj self,
     Obj Ppoints,
     Obj Qnum,
@@ -3823,12 +3823,12 @@ Obj FuncDistancePerms( Obj self, Obj p1, Obj p2)
 
 /****************************************************************************
 **
-*F  Funsmallestimgtupleperm( <tup>, <perm> )
+*F  FuncSmallestImgTuplePerm( <tup>, <perm> )
 **
 **  `SmallestImgTuplePerm' returns the smallest image of the  tuple  <tup>
 **  under  the permutation <perm>.
 */
-Obj             FunSmallestImgTuplePerm (
+Obj             FuncSmallestImgTuplePerm (
     Obj			self,
     Obj                 tup,
     Obj                 perm )
@@ -4808,10 +4808,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SHIFTED_PERM, 2, "perm,shift"),
     GVAR_FUNC(TRIM_PERM, 2, "perm, degree"),
     { "SPLIT_PARTITION", 5, "Ppoints, Qn,j,g,a,b,max",
-      FunSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
+      FuncSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
 
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
-      FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
+      FuncSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
 
     { "DISTANCE_PERMS", 2, "perm1, perm2",
       FuncDistancePerms, "src/permutat.c:DISTANCE_PERMS" },

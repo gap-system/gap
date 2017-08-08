@@ -165,11 +165,11 @@ void GrowResultCyc(UInt size) {
 *V  LastNCyc  . . . . . . . . order of last constructed primitive root, local
 **
 **  'LastECyc'  remembers  the primitive  root that  was last  constructed by
-**  'FunE'.
+**  'FuncE'.
 **
 **  'LastNCyc' is the order of this primitive root.
 **
-**  These values are used in 'FunE' to avoid constructing the same  primitive
+**  These values are used in 'FuncE' to avoid constructing the same primitive
 **  root over and over again.  This might be expensive,  because  $e_n$  need
 **  itself not belong to the base.
 **

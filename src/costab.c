@@ -1128,7 +1128,7 @@ static void AddCosetFactor2 (
 **
 *F  FuncApplyRel2( <self>, <app>, <rel>, <nums> ) . . . . . . apply a relator
 **
-**  'FunApplyRel2' implements the internal function 'ApplyRel2'.
+**  'FuncApplyRel2' implements the internal function 'ApplyRel2'.
 **
 **  'ApplyRel2( <app>, <rel>, <nums> )'
 **

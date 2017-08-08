@@ -47,8 +47,8 @@
 **  dealing with a string.
 **
 **  The third part consists  of the functions 'PrintString', which is  called
-**  by 'FunPrint', and 'IsString', which test whether an arbitrary list  is a
-** string, and if so converts it into the above format.  
+**  by 'FuncPrint', and 'IsString', which test whether an arbitrary list is a
+**  string, and if so converts it into the above format.
 */
 #include <src/system.h>                 /* system dependent part */
 #include <src/gapstate.h>
