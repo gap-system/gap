@@ -351,13 +351,18 @@ local gens, lim, n, r, l, w, a,la,f,up;
     if not IsBound(grp!.randomrange) or lim<>grp!.randlim then
       # there are 1+(n+1)(1+n+n^2+...+n^(lim-1))=(n^lim*(n+1)-2)/(n-1)
       # words of length up to lim in the free group on |gens| generators
-      up:=(n^lim*(n+1)-2)/(n-1);
-      if up>=2^28 then
-	f:=Int(up/2^28+1);
-	grp!.randomrange:=[1..2^28-1];
+      if n=1 then
+        grp!.randomrange:=[1..Minimum(lim,2^28-1)];
+        f:=1;
       else
-	grp!.randomrange:=[1..up];
-	f:=1;
+        up:=(n^lim*(n+1)-2)/(n-1);
+        if up>=2^28 then
+          f:=Int(up/2^28+1);
+          grp!.randomrange:=[1..2^28-1];
+        else
+          grp!.randomrange:=[1..up];
+          f:=1;
+        fi;
       fi;
       l:=[Int(1/f),Int((n+2)/f)];
       a:=n+1;
