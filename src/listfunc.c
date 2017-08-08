@@ -1747,6 +1747,7 @@ static StructGVarOper GVarOpers [] = {
   /*    { "ADD_LIST", 2, "list, val", &AddListOper,
         FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
 
+    // FIXME: why DoOperation0Args below, and why the commented entry above?
     { "ADD_LIST", -1, "list, obj", &AddListOper,
       DoOperation0Args, "src/listfunc.c:ADD_LIST" },
 
