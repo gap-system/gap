@@ -103,7 +103,7 @@ Int EqMacfloat (
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
 }
 
-Obj FuncEqMacfloat (
+Obj FuncEQ_MACFLOAT (
     Obj                 self,
     Obj                 macfloatL,
     Obj                 macfloatR )
@@ -464,56 +464,51 @@ Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-#define GVARENTRY(NAME) { #NAME "_MACFLOAT", 1, "macfloat",		\
-      Func##NAME##_MACFLOAT, "src/macfloat.c:" #NAME "_MACFLOAT" }
-
 static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(MACFLOAT_INT, 1, "int"),
   GVAR_FUNC(MACFLOAT_STRING, 1, "string"),
-  GVARENTRY(SIN),
-  GVARENTRY(COS),
-  GVARENTRY(TAN),
-  GVARENTRY(ASIN),
-  GVARENTRY(ACOS),
-  GVARENTRY(ATAN),
+  GVAR_FUNC(SIN_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(COS_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(TAN_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(ASIN_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(ACOS_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(ATAN_MACFLOAT, 1, "macfloat"),
 
   GVAR_FUNC(ATAN2_MACFLOAT, 2, "real, imag"),
   GVAR_FUNC(HYPOT_MACFLOAT, 2, "real, imag"),
-  GVARENTRY(LOG),
-  GVARENTRY(EXP),
+  GVAR_FUNC(LOG_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(EXP_MACFLOAT, 1, "macfloat"),
 #ifdef HAVE_LOG2
-  GVARENTRY(LOG2),
+  GVAR_FUNC(LOG2_MACFLOAT, 1, "macfloat"),
 #endif
 #ifdef HAVE_LOG10
-  GVARENTRY(LOG10),
+  GVAR_FUNC(LOG10_MACFLOAT, 1, "macfloat"),
 #endif  
 #ifdef HAVE_LOG1P
-  GVARENTRY(LOG1P),
+  GVAR_FUNC(LOG1P_MACFLOAT, 1, "macfloat"),
 #endif  
 #ifdef HAVE_EXP2
-  GVARENTRY(EXP2),
+  GVAR_FUNC(EXP2_MACFLOAT, 1, "macfloat"),
 #endif  
 #ifdef HAVE_EXPM1
-  GVARENTRY(EXPM1),
+  GVAR_FUNC(EXPM1_MACFLOAT, 1, "macfloat"),
 #endif
 #ifdef HAVE_EXP10
-  GVARENTRY(EXP10),
+  GVAR_FUNC(EXP10_MACFLOAT, 1, "macfloat"),
 #endif
 
   GVAR_FUNC(LDEXP_MACFLOAT, 2, "macfloat, int"),
-  GVARENTRY(FREXP),
-  GVARENTRY(SQRT),
-  GVARENTRY(RINT),
-  GVARENTRY(INTFLOOR),
-  GVARENTRY(FLOOR),
-  GVARENTRY(CEIL),
-  GVARENTRY(ABS),
-  GVARENTRY(STRING),
+  GVAR_FUNC(FREXP_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(SQRT_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(RINT_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(INTFLOOR_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(FLOOR_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(CEIL_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(ABS_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(STRING_MACFLOAT, 1, "macfloat"),
 
   GVAR_FUNC(STRING_DIGITS_MACFLOAT, 2, "digits, macfloat"),
-  { "EQ_MACFLOAT", 2, "x, y",
-    FuncEqMacfloat, "src/macfloat.c:FuncEqMacfloat" },
-
+  GVAR_FUNC(EQ_MACFLOAT, 2, "x, y"),
   { 0, 0, 0, 0, 0 }
 };
 
