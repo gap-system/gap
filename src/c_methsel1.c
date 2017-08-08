@@ -5593,7 +5593,7 @@ static Int InitLibrary ( StructInitInfo * module )
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ 2,
+ /* type        = */ MODULE_STATIC,
  /* name        = */ "GAPROOT/lib/methsel1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
