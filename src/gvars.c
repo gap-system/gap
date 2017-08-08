@@ -479,7 +479,7 @@ Obj             ValGVarTL (
     return val;
 }
 
-Obj FuncIsThreadLocalGvar( Obj self, Obj name) {
+Obj FuncIsThreadLocalGVar( Obj self, Obj name) {
   if (!IsStringConv(name))
     ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
                  (Int)TNAM_OBJ(name), 0L);
@@ -1481,39 +1481,20 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeReadWriteGVar", 1, "name",
       MakeReadWriteGVarHandler, "src/gap.c:MakeReadWriteGVar" },
 
-    { "IsReadOnlyGVar", 1, "name",
-      FuncIsReadOnlyGVar, "src/gap.c:IsReadOnlyGVar" },
-
+    GVAR_FUNC(IsReadOnlyGVar, 1, "name"),
     { "AUTO", -1, "args",
       AUTOHandler, "src/gap.c:AUTO" },
                
-    { "IDENTS_GVAR", 0L, "",
-      FuncIDENTS_GVAR, "src/gap.c:IDENTS_GVAR" },
-
-    { "IDENTS_BOUND_GVARS", 0L, "",
-      FuncIDENTS_BOUND_GVARS, "src/gap.c:IDENTS_BOUND_GVARS" },
-
-    { "ISB_GVAR", 1L, "gvar",
-      FuncISB_GVAR, "src/gap.c:ISB_GVAR" },
-
-    { "ASS_GVAR", 2L, "gvar, value",
-      FuncASS_GVAR, "src/gap.c:ASS_GVAR" },
-
-    { "VAL_GVAR", 1L, "gvar",
-      FuncVAL_GVAR, "src/gap.c:VAL_GVAR" },
-
-    { "UNB_GVAR", 1L, "gvar",
-      FuncUNB_GVAR, "src/gap.c:UNB_GVAR" },
-
-    { "SET_NAMESPACE", 1L, "str",
-      FuncSET_NAMESPACE, "src/gvars.c:SET_NAMESPACE" },
-
-    { "GET_NAMESPACE", 0L, "",
-      FuncGET_NAMESPACE, "src/gvars.c:GET_NAMESPACE" },
-
+    GVAR_FUNC(IDENTS_GVAR, 0, ""),
+    GVAR_FUNC(IDENTS_BOUND_GVARS, 0, ""),
+    GVAR_FUNC(ISB_GVAR, 1, "gvar"),
+    GVAR_FUNC(ASS_GVAR, 2, "gvar, value"),
+    GVAR_FUNC(VAL_GVAR, 1, "gvar"),
+    GVAR_FUNC(UNB_GVAR, 1, "gvar"),
+    GVAR_FUNC(SET_NAMESPACE, 1, "str"),
+    GVAR_FUNC(GET_NAMESPACE, 0, ""),
 #ifdef HPCGAP
-    { "IsThreadLocalGVar", 1L, "name",
-      FuncIsThreadLocalGvar, "src/gvars.c:IsThreadLocalGvar"},
+    GVAR_FUNC(IsThreadLocalGVar, 1, "name"),
 #endif
 
     { 0, 0, 0, 0, 0 }

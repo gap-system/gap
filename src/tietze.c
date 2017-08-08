@@ -1700,27 +1700,13 @@ Obj  FuncReduceLetterRepWordsRewSys (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "TzSortC", 1, "tietze",
-      FuncTzSortC, "src/tietze.c:TzSortC" },
-
-    { "TzRenumberGens", 1, "tietze",
-      FuncTzRenumberGens, "src/tietze.c:TzRenumberGens" },
-    
-    { "TzReplaceGens", 1, "tietze",
-      FuncTzReplaceGens, "src/tietze.c:TzReplaceGens" },
-
-    { "TzSubstituteGen", 3, "tietze, gennum, word",
-      FuncTzSubstituteGen, "src/tietze.c:TzSubstituteGen" },
-
-    { "TzOccurrences", -1, "args",
-      FuncTzOccurrences, "src/tietze.c:TzOccurrences" },
-
-    { "TzOccurrencesPairs", -1, "args",
-      FuncTzOccurrencesPairs, "src/tietze.c:TzOccurrencesPairs" },
-
-    { "TzSearchC", -1, "args",
-      FuncTzSearchC, "src/tietze.c:TzSearchC" },
-
+    GVAR_FUNC(TzSortC, 1, "tietze"),
+    GVAR_FUNC(TzRenumberGens, 1, "tietze"),
+    GVAR_FUNC(TzReplaceGens, 1, "tietze"),
+    GVAR_FUNC(TzSubstituteGen, 3, "tietze, gennum, word"),
+    GVAR_FUNC(TzOccurrences, -1, "args"),
+    GVAR_FUNC(TzOccurrencesPairs, -1, "args"),
+    GVAR_FUNC(TzSearchC, -1, "args"),
     { "REDUCE_LETREP_WORDS_REW_SYS", 2, "tzwords, word",
       FuncReduceLetterRepWordsRewSys,"src/tietze.c:REDUCE_LETREP_WORDS_REW_SYS" },
 

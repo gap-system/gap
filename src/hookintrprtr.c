@@ -329,9 +329,7 @@ void DeactivatePrintHooks(struct PrintHooks * hook)
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
-    { "CLEAR_PROFILE_OVERFLOW_CHECKS", 0, "",
-      FuncCLEAR_PROFILE_OVERFLOW_CHECKS,
-      "src/profile.c:CLEAR_PROFILE_OVERFLOW_CHECKS" },
+    GVAR_FUNC(CLEAR_PROFILE_OVERFLOW_CHECKS, 0, ""),
     { 0, 0, 0, 0, 0 }
 };
 

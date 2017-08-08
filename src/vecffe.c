@@ -1128,15 +1128,9 @@ static StructGVarFunc GVarFuncs [] = {
   { "MULT_ROWVECTOR_VECFFES", 2, "vec, mult",
     FuncMultRowVectorVecFFEs, "src/vecffe.c: MULT_ROWVECTOR_VECFFES" },
   
-  { "IS_VECFFE", 1, "vec",
-    FuncIS_VECFFE, "src/vecffe.c: IS_VECFFE" },
-
-  { "COMMON_FIELD_VECFFE", 1, "vec",
-    FuncCOMMON_FIELD_VECFFE, "src/vecffe.c: COMMON_FIELD_VECFFE" },
-
-  { "SMALLEST_FIELD_VECFFE", 1, "vec",
-    FuncSMALLEST_FIELD_VECFFE, "src/vecffe.c: SMALLEST_FIELD_VECFFE" },
-  
+  GVAR_FUNC(IS_VECFFE, 1, "vec"),
+  GVAR_FUNC(COMMON_FIELD_VECFFE, 1, "vec"),
+  GVAR_FUNC(SMALLEST_FIELD_VECFFE, 1, "vec"),
   { 0, 0, 0, 0, 0 }
 
 };

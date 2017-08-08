@@ -936,12 +936,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "DENOMINATOR_RAT", 1, "rat",
       FuncDenominatorRat, "src/rational.c:DENOMINATOR_RAT" },
 
-    { "ABS_RAT", 1, "rat",
-      FuncABS_RAT, "src/rational.c:ABS_RAT" },
-
-    { "SIGN_RAT", 1, "rat",
-      FuncSIGN_RAT, "src/rational.c:SIGN_RAT" },
-
+    GVAR_FUNC(ABS_RAT, 1, "rat"),
+    GVAR_FUNC(SIGN_RAT, 1, "rat"),
     { 0, 0, 0, 0, 0 }
 
 };

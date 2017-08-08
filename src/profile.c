@@ -778,14 +778,11 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "ACTIVATE_PROFILING", 4, "string,boolean,boolean,integer",
-      FuncACTIVATE_PROFILING, "src/profile.c:ACTIVATE_PROFILING" },
-    { "DEACTIVATE_PROFILING", 0, "",
-      FuncDEACTIVATE_PROFILING, "src/profile.c:DEACTIVATE_PROFILING" },
+    GVAR_FUNC(ACTIVATE_PROFILING, 4, "string,boolean,boolean,integer"),
+    GVAR_FUNC(DEACTIVATE_PROFILING, 0, ""),
     { "IsLineByLineProfileActive", 0, "",
       FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
-    { "ACTIVATE_COLOR_PROFILING", 1, "bool",
-        FuncACTIVATE_COLOR_PROFILING, "src/profile.c:ACTIVATE_COLOR_PROFILING" },
+    GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "bool"),
     { 0, 0, 0, 0, 0 }
 };
 

@@ -4627,111 +4627,43 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CONV_GF2VEC", 1, "list",
-      FuncCONV_GF2VEC, "src/vecgf2.c:CONV_GF2VEC" },
-
-    { "COPY_GF2VEC", 1, "list",
-      FuncCOPY_GF2VEC, "src/vecgf2.c:COPY_GF2VEC" },
-      
-    { "PLAIN_GF2VEC", 1, "gf2vec",
-      FuncPLAIN_GF2VEC, "src/vecgf2.c:PLAIN_GF2VEC" },
-
-    { "PLAIN_GF2MAT", 1, "gf2mat",
-      FuncPLAIN_GF2MAT, "src/vecgf2.c:PLAIN_GF2MAT" },
-
-    { "EQ_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncEQ_GF2VEC_GF2VEC, "src/vecgf2.c:EQ_GF2VEC_GF2VEC" },
-
-    { "LT_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncLT_GF2VEC_GF2VEC, "src/vecgf2.c:LT_GF2VEC_GF2VEC" },
-
-    { "EQ_GF2MAT_GF2MAT", 2, "gf2mat, gf2mat",
-      FuncEQ_GF2MAT_GF2MAT, "src/vecgf2.c:EQ_GF2MAT_GF2MAT" },
-
-    { "LT_GF2MAT_GF2MAT", 2, "gf2mat, gf2mat",
-      FuncLT_GF2MAT_GF2MAT, "src/vecgf2.c:LT_GF2MAT_GF2MAT" },
-
-    { "LEN_GF2VEC", 1, "gf2vec",
-      FuncLEN_GF2VEC, "src/vecgf2.c:LEN_GF2VEC" },
-
-    { "ELM0_GF2VEC", 2, "gf2vec, pos",
-      FuncELM0_GF2VEC, "src/vecgf2.c:ELM0_GF2VEC" },
-
-    { "ELM_GF2VEC", 2, "gf2vec, pos",
-      FuncELM_GF2VEC, "src/vecgf2.c:ELM_GF2VEC" },
-
-    { "ELMS_GF2VEC", 2, "gf2vec, poss",
-      FuncELMS_GF2VEC, "src/vecgf2.c:ELMS_GF2VEC" },
-
-    { "ASS_GF2VEC", 3, "gf2vec, pos, elm",
-      FuncASS_GF2VEC, "src/vecgf2.c:ASS_GF2VEC" },
-
-    { "ASS_GF2MAT", 3, "gf2mat, pos, elm",
-      FuncASS_GF2MAT, "src/vecgf2.c:ASS_GF2MAT" },
-
-    { "UNB_GF2VEC", 2, "gf2vec, pos",
-      FuncUNB_GF2VEC, "src/vecgf2.c:UNB_GF2VEC" },
-
-    { "UNB_GF2MAT", 2, "gf2mat, pos",
-      FuncUNB_GF2MAT, "src/vecgf2.c:UNB_GF2MAT" },
-
-    { "ZERO_GF2VEC", 1, "gf2vec",
-      FuncZERO_GF2VEC, "src/vecgf2.c:ZERO_GF2VEC" },
-
-    { "ZERO_GF2VEC_2", 1, "len",
-      FuncZERO_GF2VEC_2, "src/vecgf2.c:ZERO_GF2VEC_2" },
-
-    { "INV_GF2MAT_MUTABLE", 1, "gf2mat",
-      FuncINV_GF2MAT_MUTABLE, "src/vecgf2.c:INV_GF2MAT_MUTABLE" },
-
-    { "INV_GF2MAT_SAME_MUTABILITY", 1, "gf2mat",
-      FuncINV_GF2MAT_SAME_MUTABILITY, "src/vecgf2.c:INV_GF2MAT_SAME_MUTABILITY" },
-
+    GVAR_FUNC(CONV_GF2VEC, 1, "list"),
+    GVAR_FUNC(COPY_GF2VEC, 1, "list"),
+    GVAR_FUNC(PLAIN_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(PLAIN_GF2MAT, 1, "gf2mat"),
+    GVAR_FUNC(EQ_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
+    GVAR_FUNC(LT_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
+    GVAR_FUNC(EQ_GF2MAT_GF2MAT, 2, "gf2mat, gf2mat"),
+    GVAR_FUNC(LT_GF2MAT_GF2MAT, 2, "gf2mat, gf2mat"),
+    GVAR_FUNC(LEN_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(ELM0_GF2VEC, 2, "gf2vec, pos"),
+    GVAR_FUNC(ELM_GF2VEC, 2, "gf2vec, pos"),
+    GVAR_FUNC(ELMS_GF2VEC, 2, "gf2vec, poss"),
+    GVAR_FUNC(ASS_GF2VEC, 3, "gf2vec, pos, elm"),
+    GVAR_FUNC(ASS_GF2MAT, 3, "gf2mat, pos, elm"),
+    GVAR_FUNC(UNB_GF2VEC, 2, "gf2vec, pos"),
+    GVAR_FUNC(UNB_GF2MAT, 2, "gf2mat, pos"),
+    GVAR_FUNC(ZERO_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(ZERO_GF2VEC_2, 1, "len"),
+    GVAR_FUNC(INV_GF2MAT_MUTABLE, 1, "gf2mat"),
+    GVAR_FUNC(INV_GF2MAT_SAME_MUTABILITY, 1, "gf2mat"),
     { "INV_GF2MAT", 1, "gf2mat",
       FuncINV_GF2MAT_IMMUTABLE, "src/vecgf2.c:INV_GF2MAT_IMMUTABLE" },
 
-    { "INV_PLIST_GF2VECS_DESTRUCTIVE", 1, "list",
-      FuncINV_PLIST_GF2VECS_DESTRUCTIVE, "src/vecgf2.c:INV_PLIST_GF2VECS_DESTRUCTIVE" },
-
-    { "SUM_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncSUM_GF2VEC_GF2VEC, "src/vecgf2.c:SUM_GF2VEC_GF2VEC" },
-
-    { "PROD_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncPROD_GF2VEC_GF2VEC, "src/vecgf2.c:PROD_GF2VEC_GF2VEC" },
-
-    { "PROD_GF2VEC_GF2MAT", 2, "gf2vec, gf2mat",
-      FuncPROD_GF2VEC_GF2MAT, "src/vecgf2.c:PROD_GF2VEC_GF2MAT" },
-
-    { "PROD_GF2MAT_GF2VEC", 2, "gf2mat, gf2vec",
-      FuncPROD_GF2MAT_GF2VEC, "src/vecgf2.c:PROD_GF2MAT_GF2VEC" },
-
-    { "PROD_GF2MAT_GF2MAT", 2, "gf2matl, gf2matr",
-      FuncPROD_GF2MAT_GF2MAT, "src/vecgf2.c:PROD_GF2MAT_GF2MAT" },
-
-    { "PROD_GF2MAT_GF2MAT_SIMPLE", 2, "gf2matl, gf2matr",
-      FuncPROD_GF2MAT_GF2MAT_SIMPLE, "src/vecgf2.c:PROD_GF2MAT_GF2MAT_SIMPLE" },
-
-    { "PROD_GF2MAT_GF2MAT_ADVANCED", 4, "gf2matl, gf2matr, greaselevel, blocklevel",
-      FuncPROD_GF2MAT_GF2MAT_ADVANCED, "src/vecgf2.c:PROD_GF2MAT_GF2MAT_ADVANCED" },
-
-    { "ADDCOEFFS_GF2VEC_GF2VEC_MULT", 3, "gf2vec, gf2vec, mul",
-      FuncADDCOEFFS_GF2VEC_GF2VEC_MULT, "src/vecgf2.c:ADDCOEFFS_GF2VEC_GF2VEC_MULT" },
-
-    { "ADDCOEFFS_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncADDCOEFFS_GF2VEC_GF2VEC, "src/vecgf2.c:ADDCOEFFS_GF2VEC_GF2VEC" },
-
-    { "SHRINKCOEFFS_GF2VEC", 1, "gf2vec",
-      FuncSHRINKCOEFFS_GF2VEC, "src/vecgf2.c:SHRINKCOEFFS_GF2VEC" },
-
-    { "POSITION_NONZERO_GF2VEC", 2, "gf2vec, zero",
-      FuncPOSITION_NONZERO_GF2VEC, "src/vecgf2.c:POSITION_NONZERO_GF2VEC" },
-
-    { "POSITION_NONZERO_GF2VEC3", 3, "gf2vec, zero, from",
-      FuncPOSITION_NONZERO_GF2VEC3, "src/vecgf2.c:POSITION_NONZERO_GF2VEC3" },
-
-    { "MULT_ROW_VECTOR_GF2VECS_2", 2, "gf2vecl, mul",
-      FuncMULT_ROW_VECTOR_GF2VECS_2, "src/vecgf2.c:MULT_ROW_VECTOR_GF2VECS_2" },
-
+    GVAR_FUNC(INV_PLIST_GF2VECS_DESTRUCTIVE, 1, "list"),
+    GVAR_FUNC(SUM_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
+    GVAR_FUNC(PROD_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
+    GVAR_FUNC(PROD_GF2VEC_GF2MAT, 2, "gf2vec, gf2mat"),
+    GVAR_FUNC(PROD_GF2MAT_GF2VEC, 2, "gf2mat, gf2vec"),
+    GVAR_FUNC(PROD_GF2MAT_GF2MAT, 2, "gf2matl, gf2matr"),
+    GVAR_FUNC(PROD_GF2MAT_GF2MAT_SIMPLE, 2, "gf2matl, gf2matr"),
+    GVAR_FUNC(PROD_GF2MAT_GF2MAT_ADVANCED, 4, "gf2matl, gf2matr, greaselevel, blocklevel"),
+    GVAR_FUNC(ADDCOEFFS_GF2VEC_GF2VEC_MULT, 3, "gf2vec, gf2vec, mul"),
+    GVAR_FUNC(ADDCOEFFS_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
+    GVAR_FUNC(SHRINKCOEFFS_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(POSITION_NONZERO_GF2VEC, 2, "gf2vec, zero"),
+    GVAR_FUNC(POSITION_NONZERO_GF2VEC3, 3, "gf2vec, zero, from"),
+    GVAR_FUNC(MULT_ROW_VECTOR_GF2VECS_2, 2, "gf2vecl, mul"),
     { "APPEND_GF2VEC", 2, "gf2vecl, gf2vecr",
       FuncAPPEND_VECGF2, "src/vecgf2.c:APPEND_GF2VEC" },
 
@@ -4741,79 +4673,38 @@ static StructGVarFunc GVarFuncs [] = {
     { "NUMBER_GF2VEC", 1, "gf2vec",
       FuncNUMBER_VECGF2, "src/vecgf2.c:NUMBER_GF2VEC" },
 
-    { "TRANSPOSED_GF2MAT", 1, "gf2mat",
-      FuncTRANSPOSED_GF2MAT, "src/vecgf2.c:TRANSPOSED_GF2MAT" },
-
-    { "DIST_GF2VEC_GF2VEC", 2, "gf2vec, gf2vec",
-      FuncDIST_GF2VEC_GF2VEC, "src/vecgf2.c:DIST_GF2VEC_GF2VEC" },
-
+    GVAR_FUNC(TRANSPOSED_GF2MAT, 1, "gf2mat"),
+    GVAR_FUNC(DIST_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
     { "DIST_VEC_CLOS_VEC", 3, "list, gf2vec, list",
       FuncDistVecClosVec, "src/vecgf2.c:DIST_VEC_CLOS_VEC" },
 
-    { "SUM_GF2MAT_GF2MAT", 2, "matl, matr",
-      FuncSUM_GF2MAT_GF2MAT, "src/vecgf2.c:SUM_GF2MAT_GF2MAT" },
-
+    GVAR_FUNC(SUM_GF2MAT_GF2MAT, 2, "matl, matr"),
     { "A_CLOS_VEC", 4, "list, gf2vec, int, int",
       FuncAClosVec, "src/vecgf2.c:A_CLOS_VEC" },
 
     { "A_CLOS_VEC_COORDS", 4, "list, gf2vec, int, int",
       FuncAClosVecCoords, "src/vecgf2.c:A_CLOS_VEC_COORDS" },
 
-    { "COSET_LEADERS_INNER_GF2", 4, "veclis, weight, tofind, leaders",
-      FuncCOSET_LEADERS_INNER_GF2, "src/vecgf2.c:COSET_LEADERS_INNER_GF2" },
-
-    { "CONV_GF2MAT", 1, "list",
-      FuncCONV_GF2MAT, "src/vecgf2.c:CONV_GF2MAT" },
-
+    GVAR_FUNC(COSET_LEADERS_INNER_GF2, 4, "veclis, weight, tofind, leaders"),
+    GVAR_FUNC(CONV_GF2MAT, 1, "list"),
     { "PROD_GF2VEC_ANYMAT", 2, "vec, mat",
       FuncProdGF2VecAnyMat, "src/vecgf2.c:PROD_GF2VEC_ANYMAT" },
     
-    { "RIGHTMOST_NONZERO_GF2VEC", 1, "vec",
-      FuncRIGHTMOST_NONZERO_GF2VEC, "src/vecgf2.c:RIGHTMOST_NONZERO_GF2VEC" },
-    
-    { "RESIZE_GF2VEC", 2, "vec, newlen",
-      FuncRESIZE_GF2VEC, "src/vecgf2.c:RESIZE_GF2VEC" },
-    
-    { "SHIFT_LEFT_GF2VEC", 2, "vec, amount",
-      FuncSHIFT_LEFT_GF2VEC, "src/vecgf2.c:SHIFT_LEFT_GF2VEC" },
-    
-    { "SHIFT_RIGHT_GF2VEC", 3, "vec, amount, zero",
-      FuncSHIFT_RIGHT_GF2VEC, "src/vecgf2.c:SHIFT_RIGHT_GF2VEC" },
-
-    { "ADD_GF2VEC_GF2VEC_SHIFTED", 4, "vec1, vec2,len2, off",
-      FuncADD_GF2VEC_GF2VEC_SHIFTED, "src/vecgf2.c:ADD_GF2VEC_GF2VEC_SHIFTED" },
-    
-    { "PROD_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncPROD_COEFFS_GF2VEC, "src/vecgf2.c:PROD_COEFFS_GF2VEC" },
-
-    { "REDUCE_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncREDUCE_COEFFS_GF2VEC, "src/vecgf2.c:REDUCE_COEFFS_GF2VEC" },
-
-    { "QUOTREM_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
-      FuncQUOTREM_COEFFS_GF2VEC, "src/vecgf2.c:QUOTREM_COEFFS_GF2VEC" },
-
-    { "SEMIECHELON_LIST_GF2VECS", 1, "mat",
-      FuncSEMIECHELON_LIST_GF2VECS, "src/vecgf2.c:SEMIECHELON_LIST_GF2VECS" },
-
-    { "SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS", 1, "mat",
-      FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS, "src/vecgf2.c:SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS" },
-
-    { "TRIANGULIZE_LIST_GF2VECS", 1, "mat",
-      FuncTRIANGULIZE_LIST_GF2VECS, "src/vecgf2.c:TRIANGULIZE_LIST_GF2VECS" },
-
-    { "DETERMINANT_LIST_GF2VECS", 1, "mat",
-      FuncDETERMINANT_LIST_GF2VECS, "src/vecgf2.c:DETERMINANT_LIST_GF2VECS" },
-
-    { "RANK_LIST_GF2VECS", 1, "mat",
-      FuncRANK_LIST_GF2VECS, "src/vecgf2.c:RANK_LIST_GF2VECS" },
-    
-    { "KRONECKERPRODUCT_GF2MAT_GF2MAT", 2, "mat, mat",
-      FuncKRONECKERPRODUCT_GF2MAT_GF2MAT, "src/vecgf2.c:KRONECKERPRODUCT_GF2MAT_GF2MAT" },
-
-
-    { "COPY_SECTION_GF2VECS", 5, "src, dest, from, to, howmany",
-      FuncCOPY_SECTION_GF2VECS, "src/vecgf2.c:COPY_SECTION_GF2VECS"},
-    
+    GVAR_FUNC(RIGHTMOST_NONZERO_GF2VEC, 1, "vec"),
+    GVAR_FUNC(RESIZE_GF2VEC, 2, "vec, newlen"),
+    GVAR_FUNC(SHIFT_LEFT_GF2VEC, 2, "vec, amount"),
+    GVAR_FUNC(SHIFT_RIGHT_GF2VEC, 3, "vec, amount, zero"),
+    GVAR_FUNC(ADD_GF2VEC_GF2VEC_SHIFTED, 4, "vec1, vec2,len2, off"),
+    GVAR_FUNC(PROD_COEFFS_GF2VEC, 4, "vec1, len1, vec2,len2"),
+    GVAR_FUNC(REDUCE_COEFFS_GF2VEC, 4, "vec1, len1, vec2,len2"),
+    GVAR_FUNC(QUOTREM_COEFFS_GF2VEC, 4, "vec1, len1, vec2,len2"),
+    GVAR_FUNC(SEMIECHELON_LIST_GF2VECS, 1, "mat"),
+    GVAR_FUNC(SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS, 1, "mat"),
+    GVAR_FUNC(TRIANGULIZE_LIST_GF2VECS, 1, "mat"),
+    GVAR_FUNC(DETERMINANT_LIST_GF2VECS, 1, "mat"),
+    GVAR_FUNC(RANK_LIST_GF2VECS, 1, "mat"),
+    GVAR_FUNC(KRONECKERPRODUCT_GF2MAT_GF2MAT, 2, "mat, mat"),
+    GVAR_FUNC(COPY_SECTION_GF2VECS, 5, "src, dest, from, to, howmany"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -615,66 +615,26 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "LessBoxedObj", 2, "lobj, lobj",
-      FuncLessBoxedObj, "src/objpcgel.c:LessBoxedObj" },
-
-    { "EqualBoxedObj", 2, "lobj, lobj",
-      FuncEqualBoxedObj, "src/objpcgel.c:EqualBoxedObj" },
-
-    { "NBitsPcWord_Comm", 2, "n_bits_pcword, n_bits_pcword",
-      FuncNBitsPcWord_Comm, "src/objpcgel.c:NBitsPcWord_Comm" },
-
-    { "NBitsPcWord_Conjugate", 2, "n_bits_pcword, n_bits_pcword",
-      FuncNBitsPcWord_Conjugate, "src/objpcgel.c:NBitsPcWord_Conjugate" },
-
-    { "NBitsPcWord_LeftQuotient", 2, "n_bits_pcword, n_bits_pcword",
-      FuncNBitsPcWord_LeftQuotient, "src/objpcgel.c:NBitsPcWord_LeftQuotient" },
-
-    { "NBitsPcWord_PowerSmallInt", 2, "n_bits_pcword, small_integer",
-      FuncNBitsPcWord_PowerSmallInt, "src/objpcgel.c:NBitsPcWord_PowerSmallInt" },
-
-    { "NBitsPcWord_Product", 2, "n_bits_pcword, n_bits_pcword",
-      FuncNBitsPcWord_Product, "src/objpcgel.c:NBitsPcWord_Product" },
-
-    { "NBitsPcWord_Quotient", 2, "n_bits_pcword, n_bits_pcword",
-      FuncNBitsPcWord_Quotient, "src/objpcgel.c:NBitsPcWord_Quotient" },
-
-    { "8Bits_DepthOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
-      Func8Bits_DepthOfPcElement, "src/objpcgel.c:8Bits_DepthOfPcElement" },
-
-    { "8Bits_ExponentOfPcElement", 3, "8_bits_pcgs, 8_bits_pcword, int",
-      Func8Bits_ExponentOfPcElement, "src/objpcgel.c:8Bits_ExponentOfPcElement" },
-
-    { "8Bits_LeadingExponentOfPcElement", 2, "8_bits_pcgs, 8_bits_word",
-      Func8Bits_LeadingExponentOfPcElement, "src/objpcgel.c:8Bits_LeadingExponentOfPcElement" },
-
-    { "8Bits_ExponentsOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
-      Func8Bits_ExponentsOfPcElement, "src/objpcgel.c:8Bits_ExponentsOfPcElement" },
-
-    { "16Bits_DepthOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
-      Func16Bits_DepthOfPcElement, "src/objpcgel.c:16Bits_DepthOfPcElement" },
-
-    { "16Bits_ExponentOfPcElement", 3, "16_bits_pcgs, 16_bits_pcword, int",
-      Func16Bits_ExponentOfPcElement, "src/objpcgel.c:16Bits_ExponentOfPcElement" },
-
-    { "16Bits_LeadingExponentOfPcElement", 2, "16_bits_pcgs, 16_bits_word",
-      Func16Bits_LeadingExponentOfPcElement, "src/objpcgel.c:16Bits_LeadingExponentOfPcElement" },
-
-    { "16Bits_ExponentsOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
-      Func16Bits_ExponentsOfPcElement, "src/objpcgel.c:16Bits_ExponentsOfPcElement" },
-
-    { "32Bits_DepthOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
-      Func32Bits_DepthOfPcElement, "src/objpcgel.c:32Bits_DepthOfPcElement" },
-
-    { "32Bits_ExponentOfPcElement", 3, "32_bits_pcgs, 32_bits_pcword, int",
-      Func32Bits_ExponentOfPcElement, "src/objpcgel.c:32Bits_ExponentOfPcElement" },
-
-    { "32Bits_LeadingExponentOfPcElement", 2, "32_bits_pcgs, 32_bits_word",
-      Func32Bits_LeadingExponentOfPcElement, "src/objpcgel.c:32Bits_LeadingExponentOfPcElement" },
-
-    { "32Bits_ExponentsOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
-      Func32Bits_ExponentsOfPcElement, "src/objpcgel.c:32Bits_ExponentsOfPcElement" },
-
+    GVAR_FUNC(LessBoxedObj, 2, "lobj, lobj"),
+    GVAR_FUNC(EqualBoxedObj, 2, "lobj, lobj"),
+    GVAR_FUNC(NBitsPcWord_Comm, 2, "n_bits_pcword, n_bits_pcword"),
+    GVAR_FUNC(NBitsPcWord_Conjugate, 2, "n_bits_pcword, n_bits_pcword"),
+    GVAR_FUNC(NBitsPcWord_LeftQuotient, 2, "n_bits_pcword, n_bits_pcword"),
+    GVAR_FUNC(NBitsPcWord_PowerSmallInt, 2, "n_bits_pcword, small_integer"),
+    GVAR_FUNC(NBitsPcWord_Product, 2, "n_bits_pcword, n_bits_pcword"),
+    GVAR_FUNC(NBitsPcWord_Quotient, 2, "n_bits_pcword, n_bits_pcword"),
+    GVAR_FUNC(8Bits_DepthOfPcElement, 2, "8_bits_pcgs, 8_bits_pcword"),
+    GVAR_FUNC(8Bits_ExponentOfPcElement, 3, "8_bits_pcgs, 8_bits_pcword, int"),
+    GVAR_FUNC(8Bits_LeadingExponentOfPcElement, 2, "8_bits_pcgs, 8_bits_word"),
+    GVAR_FUNC(8Bits_ExponentsOfPcElement, 2, "8_bits_pcgs, 8_bits_pcword"),
+    GVAR_FUNC(16Bits_DepthOfPcElement, 2, "16_bits_pcgs, 16_bits_pcword"),
+    GVAR_FUNC(16Bits_ExponentOfPcElement, 3, "16_bits_pcgs, 16_bits_pcword, int"),
+    GVAR_FUNC(16Bits_LeadingExponentOfPcElement, 2, "16_bits_pcgs, 16_bits_word"),
+    GVAR_FUNC(16Bits_ExponentsOfPcElement, 2, "16_bits_pcgs, 16_bits_pcword"),
+    GVAR_FUNC(32Bits_DepthOfPcElement, 2, "32_bits_pcgs, 32_bits_pcword"),
+    GVAR_FUNC(32Bits_ExponentOfPcElement, 3, "32_bits_pcgs, 32_bits_pcword, int"),
+    GVAR_FUNC(32Bits_LeadingExponentOfPcElement, 2, "32_bits_pcgs, 32_bits_word"),
+    GVAR_FUNC(32Bits_ExponentsOfPcElement, 2, "32_bits_pcgs, 32_bits_pcword"),
     { 0, 0, 0, 0, 0 }
 
 };

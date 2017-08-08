@@ -468,12 +468,8 @@ Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
       Func##NAME##_MACFLOAT, "src/macfloat.c:" #NAME "_MACFLOAT" }
 
 static StructGVarFunc GVarFuncs [] = {
-  { "MACFLOAT_INT", 1, "int",
-    FuncMACFLOAT_INT, "src/macfloat.c:MACFLOAT_INT" },
-
-  { "MACFLOAT_STRING", 1, "string",
-    FuncMACFLOAT_STRING, "src/macfloat.c:MACFLOAT_STRING" },
-
+  GVAR_FUNC(MACFLOAT_INT, 1, "int"),
+  GVAR_FUNC(MACFLOAT_STRING, 1, "string"),
   GVARENTRY(SIN),
   GVARENTRY(COS),
   GVARENTRY(TAN),
@@ -481,12 +477,8 @@ static StructGVarFunc GVarFuncs [] = {
   GVARENTRY(ACOS),
   GVARENTRY(ATAN),
 
-  { "ATAN2_MACFLOAT", 2, "real, imag",
-    FuncATAN2_MACFLOAT, "src/macfloat.c:ATAN2_MACFLOAT" },
-
-  { "HYPOT_MACFLOAT", 2, "real, imag",
-    FuncHYPOT_MACFLOAT, "src/macfloat.c:HYPOT_MACFLOAT" },
-
+  GVAR_FUNC(ATAN2_MACFLOAT, 2, "real, imag"),
+  GVAR_FUNC(HYPOT_MACFLOAT, 2, "real, imag"),
   GVARENTRY(LOG),
   GVARENTRY(EXP),
 #ifdef HAVE_LOG2
@@ -508,9 +500,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVARENTRY(EXP10),
 #endif
 
-  { "LDEXP_MACFLOAT", 2, "macfloat, int",
-    FuncLDEXP_MACFLOAT, "src/macfloat.c:LDEXP_MACFLOAT" },
-
+  GVAR_FUNC(LDEXP_MACFLOAT, 2, "macfloat, int"),
   GVARENTRY(FREXP),
   GVARENTRY(SQRT),
   GVARENTRY(RINT),
@@ -520,9 +510,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVARENTRY(ABS),
   GVARENTRY(STRING),
 
-  { "STRING_DIGITS_MACFLOAT", 2, "digits, macfloat",
-    FuncSTRING_DIGITS_MACFLOAT, "src/macfloat.c:STRING_DIGITS_MACFLOAT" },
-
+  GVAR_FUNC(STRING_DIGITS_MACFLOAT, 2, "digits, macfloat"),
   { "EQ_MACFLOAT", 2, "x, y",
     FuncEqMacfloat, "src/macfloat.c:FuncEqMacfloat" },
 
