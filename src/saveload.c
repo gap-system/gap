@@ -535,7 +535,7 @@ static void CheckEndiannessMarker( void )
 
 /***************************************************************************
 **
-**  BagStats
+**  FuncBagStats
 */
 
 static FILE *file;
@@ -545,7 +545,7 @@ static void report( Bag bag)
   fprintf(file,"%li %li\n", (long) TNUM_BAG(bag), (long) SIZE_BAG(bag));
 }
 
-Obj BagStats(Obj self, Obj filename)
+Obj FuncBagStats(Obj self, Obj filename)
 {
   file = fopen((Char *)CHARS_STRING(filename),"w");
   CallbackForAllBags(report);
@@ -1018,9 +1018,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SaveWorkspace, 1, "fname"),
     GVAR_FUNC(DumpWorkspace, 1, "fname"),
     GVAR_FUNC(FindBag, 3, "minsize, maxsize, tnum"),
-    { "BagStats", 1, "filename", 
-      BagStats, "src/saveload.c:BagStats" },
-
+    GVAR_FUNC(BagStats, 1, "filename"),
     { 0, 0, 0, 0, 0 }
 
 };

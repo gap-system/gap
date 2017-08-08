@@ -1242,7 +1242,7 @@ Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsTableListFilt;
 
-Obj             Func_IS_TABLE_LIST (
+Obj             FuncIS_TABLE_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -2252,9 +2252,7 @@ static StructGVarFilt GVarFilts [] = {
     GVAR_FILTER(IS_LIST, "obj", &IsListFilt),
     GVAR_FILTER(IS_DENSE_LIST, "obj", &IsDenseListFilt),
     GVAR_FILTER(IS_HOMOG_LIST, "obj", &IsHomogListFilt),
-    { "IS_TABLE_LIST", "obj", &IsTableListFilt,
-      Func_IS_TABLE_LIST, "src/lists.c:IS_TABLE_LIST" },
-
+    GVAR_FILTER(IS_TABLE_LIST, "obj", &IsTableListFilt),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -1017,7 +1017,7 @@ Obj FuncUpEnv (
   return (Obj)0;
 }
 
-Obj FuncExecutingStatementLocation(Obj self, Obj context)
+Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
   Obj currLVars = STATE(CurrLVars);
   Expr call;
@@ -1046,7 +1046,7 @@ Obj FuncExecutingStatementLocation(Obj self, Obj context)
   return retlist;
 }
 
-Obj FuncPrintExecutingStatement(Obj self, Obj context)
+Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
 {
   Obj currLVars = STATE(CurrLVars);
   Expr call;
@@ -2610,11 +2610,11 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
 
 /****************************************************************************
 **
-*F  FuncShouldQuitOnBreak()
+*F  FuncSHOULD_QUIT_ON_BREAK()
 **
 */
 
-Obj FuncShouldQuitOnBreak( Obj self)
+Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 {
   return SyQuitOnBreak ? True : False;
 }
@@ -2845,9 +2845,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GAP_EXIT_CODE, 1, "exit code"),
     GVAR_FUNC(QUIT_GAP, -1, "args"),
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
-    { "SHOULD_QUIT_ON_BREAK", 0, "",
-      FuncShouldQuitOnBreak, "src/gap.c:FuncShouldQuitOnBreak"},
-
+    GVAR_FUNC(SHOULD_QUIT_ON_BREAK, 0, ""),
     GVAR_FUNC(SHELL, -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile"),
     GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
     GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
@@ -2855,17 +2853,11 @@ static StructGVarFunc GVarFuncs [] = {
 #ifdef HPCGAP
     GVAR_FUNC(THREAD_UI, 0, ""),
 #endif
-
     GVAR_FUNC(SetUserHasQuit, 1, "value"),
     GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
     GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
-    { "PRINT_CURRENT_STATEMENT", 1, "context",
-      FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
-
-    { "CURRENT_STATEMENT_LOCATION", 1, "context",
-      FuncExecutingStatementLocation,
-      "src/gap.c:CURRENT_STATEMENT_LOCATION" },
-
+    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
+    GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -760,7 +760,7 @@ UInt DegreeFFE (
     return d;
 }
 
-Obj FunDEGREE_FFE_DEFAULT (
+Obj FuncDEGREE_FFE_DEFAULT (
     Obj                 self,
     Obj                 ffe )
 {
@@ -2000,9 +2000,7 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(CHAR_FFE_DEFAULT, 1, "z"),
-    { "DEGREE_FFE_DEFAULT", 1, "z",
-      FunDEGREE_FFE_DEFAULT, "src/finfield.c:DEGREE_FFE_DEFAULT" },
-
+    GVAR_FUNC(DEGREE_FFE_DEFAULT, 1, "z"),
     GVAR_FUNC(LOG_FFE_DEFAULT, 2, "z, root"),
     GVAR_FUNC(INT_FFE_DEFAULT, 1, "z"),
     GVAR_FUNC(Z, 1, "q"),
