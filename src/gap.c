@@ -2842,7 +2842,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(WindowCmd, 1, "arg-list"),
     GVAR_FUNC(MicroSleep, 1, "msecs"),
     GVAR_FUNC(Sleep, 1, "secs"),
-    GVAR_FUNC(GAP_EXIT_CODE, 1, "exit code"),
+    GVAR_FUNC(GAP_EXIT_CODE, 1, "exitCode"),
     GVAR_FUNC(QUIT_GAP, -1, "args"),
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
     GVAR_FUNC(SHOULD_QUIT_ON_BREAK, 0, ""),
