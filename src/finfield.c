@@ -1987,9 +1987,7 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_FFE", "obj", &IsFFEFilt,
-      FuncIS_FFE, "src/finfield.c:IS_FFE" },
-
+    GVAR_FILTER(IS_FFE, "obj", &IsFFEFilt),
     { 0, 0, 0, 0, 0 }
 
 };

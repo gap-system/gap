@@ -2042,9 +2042,7 @@ void LoadFunction ( Obj func )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_FUNCTION", "obj", &IsFunctionFilt, 
-      FuncIS_FUNCTION, "src/calls.c:IS_FUNCTION" },
-
+    GVAR_FILTER(IS_FUNCTION, "obj", &IsFunctionFilt),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -3614,9 +3614,7 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_PLIST_REP", "obj", &IsPListFilt,
-      FuncIS_PLIST_REP, "src/lists.c:IS_PLIST_REP" },
-
+    GVAR_FILTER(IS_PLIST_REP, "obj", &IsPListFilt),
     { 0, 0, 0, 0, 0 }
 
 };

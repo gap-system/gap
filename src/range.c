@@ -1414,12 +1414,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_RANGE", "obj", &IsRangeFilt,
-      FuncIS_RANGE, "src/range.c:IS_RANGE" },
-
-    { "IS_RANGE_REP", "obj", &IsRangeRepFilt,
-      FuncIS_RANGE_REP, "src/range.c:IS_RANGE_REP" },
-
+    GVAR_FILTER(IS_RANGE, "obj", &IsRangeFilt),
+    GVAR_FILTER(IS_RANGE_REP, "obj", &IsRangeRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };
