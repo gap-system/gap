@@ -2310,27 +2310,13 @@ static StructGVarOper GVarOpers [] = {
     { "POS_LIST", -1, "list, obj", &PosListOper,
       DoOperation0Args, "src/lists.c:POS_LIST" },
 
-    { "ISB_LIST", 2, "list, pos", &IsbListOper,
-      FuncISB_LIST, "src/lists.c:ISB_LIST" },
-
-    { "ELM0_LIST", 2, "list, pos", &Elm0ListOper,
-      FuncELM0_LIST, "src/lists.c:ELM0_LIST" },
-
-    { "ELM_LIST", 2, "list, pos", &ElmListOper,
-      FuncELM_LIST, "src/lists.c:ELM_LIST" },
-
-    { "ELMS_LIST", 2, "list, poss", &ElmsListOper,
-      FuncELMS_LIST, "src/lists.c:ELMS_LIST" },
-
-    { "UNB_LIST", 2, "list, pos", &UnbListOper, 
-      FuncUNB_LIST, "src/lists.c:UNB_LIST" },
-
-    { "ASS_LIST", 3, "list, pos, obj", &AssListOper, 
-      FuncASS_LIST, "src/lists.c:ASS_LIST" },
-
-    { "ASSS_LIST", 3, "list, poss, objs", &AsssListOper, 
-      FuncASSS_LIST, "src/lists.c:ASSS_LIST" },
-
+    GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),
+    GVAR_OPER(ELM0_LIST, 2, "list, pos", &Elm0ListOper),
+    GVAR_OPER(ELM_LIST, 2, "list, pos", &ElmListOper),
+    GVAR_OPER(ELMS_LIST, 2, "list, poss", &ElmsListOper),
+    GVAR_OPER(UNB_LIST, 2, "list, pos", &UnbListOper),
+    GVAR_OPER(ASS_LIST, 3, "list, pos, obj", &AssListOper),
+    GVAR_OPER(ASSS_LIST, 3, "list, poss, objs", &AsssListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };

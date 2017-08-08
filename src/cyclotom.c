@@ -2096,22 +2096,11 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "E", 1, "n", &EOper,
-      FuncE, "src/cyclotom.c:E" },
-
-    { "IS_CYC_INT", 1, "obj", &IsCycIntOper,
-      FuncIS_CYC_INT, "src/cyclotom.c:IS_CYC_INT" },
-                     
-    { "COEFFS_CYC", 1, "cyc", &CoeffsCycOper,
-      FuncCOEFFS_CYC, "src/cyclotom.c:COEFFS_CYC" },
-
-    { "GALOIS_CYC", 2, "cyc, n", &GaloisCycOper,
-      FuncGALOIS_CYC, "src/cyclotom.c:GALOIS_CYC" },
-
-    { "CycList", 1, "list", &CycListOper,
-      FuncCycList, "src/cyclotom.c:CycList" },
-
-
+    GVAR_OPER(E, 1, "n", &EOper),
+    GVAR_OPER(IS_CYC_INT, 1, "obj", &IsCycIntOper),
+    GVAR_OPER(COEFFS_CYC, 1, "cyc", &CoeffsCycOper),
+    GVAR_OPER(GALOIS_CYC, 2, "cyc, n", &GaloisCycOper),
+    GVAR_OPER(CycList, 1, "list", &CycListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };

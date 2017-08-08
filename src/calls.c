@@ -2056,36 +2056,17 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "CALL_FUNC", -1, "args", &CallFunctionOper,
-      FuncCALL_FUNC, "src/calls.c:CALL_FUNC" },
-
-    { "CALL_FUNC_LIST", 2, "func, list", &CallFuncListOper,
-      FuncCALL_FUNC_LIST, "src/calls.c:CALL_FUNC_LIST" },
-
-    { "CALL_FUNC_LIST_WRAP", 2, "func, list", &CallFuncListWrapOper,
-      FuncCALL_FUNC_LIST_WRAP, "src/calls.c:CALL_FUNC_LIST_WRAP" },
-
-    { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
-      FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
-
-    { "SET_NAME_FUNC", 2, "func, name", &SET_NAME_FUNC_Oper,
-      FuncSET_NAME_FUNC, "src/calls.c:SET_NAME_FUNC" },
-
-    { "NARG_FUNC", 1, "func", &NARG_FUNC_Oper,
-      FuncNARG_FUNC, "src/calls.c:NARG_FUNC" },
-
-    { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
-      FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
-
+    GVAR_OPER(CALL_FUNC, -1, "args", &CallFunctionOper),
+    GVAR_OPER(CALL_FUNC_LIST, 2, "func, list", &CallFuncListOper),
+    GVAR_OPER(CALL_FUNC_LIST_WRAP, 2, "func, list", &CallFuncListWrapOper),
+    GVAR_OPER(NAME_FUNC, 1, "func", &NAME_FUNC_Oper),
+    GVAR_OPER(SET_NAME_FUNC, 2, "func, name", &SET_NAME_FUNC_Oper),
+    GVAR_OPER(NARG_FUNC, 1, "func", &NARG_FUNC_Oper),
+    GVAR_OPER(NAMS_FUNC, 1, "func", &NAMS_FUNC_Oper),
 #ifdef HPCGAP
-    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
-      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
+    GVAR_OPER(LOCKS_FUNC, 1, "func", &LOCKS_FUNC_Oper),
 #endif
-
-    { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
-      FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
-
-
+    GVAR_OPER(PROF_FUNC, 1, "func", &PROF_FUNC_Oper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
