@@ -640,36 +640,17 @@ Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    { "CREATE_PTY_IOSTREAM", 3, "dir, prog, args",
-      FuncCREATE_PTY_IOSTREAM, "src/iostream.c:CREATE_PTY_IOSTREAM" },
-
-    { "WRITE_IOSTREAM", 3, "stream, string, len",
-      FuncWRITE_IOSTREAM, "src/iostream.c:WRITE_IOSTREAM" },
-
-    { "READ_IOSTREAM", 2, "stream, len",
-      FuncREAD_IOSTREAM, "src/iostream.c:READ_IOSTREAM" },
-
-    { "READ_IOSTREAM_NOWAIT", 2, "stream, len",
-      FuncREAD_IOSTREAM_NOWAIT, "src/iostream.c:READ_IOSTREAM_NOWAIT" },
-
-    { "KILL_CHILD_IOSTREAM", 1, "stream",
-      FuncKILL_CHILD_IOSTREAM, "src/iostream.c:KILL_CHILD_IOSTREAM" },
-
-    { "CLOSE_PTY_IOSTREAM", 1, "stream",
-      FuncCLOSE_PTY_IOSTREAM, "src/iostream.c:CLOSE_PTY_IOSTREAM" },
-
-    { "SIGNAL_CHILD_IOSTREAM", 2, "stream, signal",
-      FuncSIGNAL_CHILD_IOSTREAM, "src/iostream.c:SIGNAL_CHILD_IOSTREAM" },
-
-    { "IS_BLOCKED_IOSTREAM", 1, "stream",
-      FuncIS_BLOCKED_IOSTREAM, "src/iostream.c:IS_BLOCKED_IOSTREAM" },
-
-    { "FD_OF_IOSTREAM", 1, "stream",
-      FuncFD_OF_IOSTREAM, "src/iostream.c:FD_OF_IOSTREAM" },
-
+    GVAR_FUNC(CREATE_PTY_IOSTREAM, 3, "dir, prog, args"),
+    GVAR_FUNC(WRITE_IOSTREAM, 3, "stream, string, len"),
+    GVAR_FUNC(READ_IOSTREAM, 2, "stream, len"),
+    GVAR_FUNC(READ_IOSTREAM_NOWAIT, 2, "stream, len"),
+    GVAR_FUNC(KILL_CHILD_IOSTREAM, 1, "stream"),
+    GVAR_FUNC(CLOSE_PTY_IOSTREAM, 1, "stream"),
+    GVAR_FUNC(SIGNAL_CHILD_IOSTREAM, 2, "stream, signal"),
+    GVAR_FUNC(IS_BLOCKED_IOSTREAM, 1, "stream"),
+    GVAR_FUNC(FD_OF_IOSTREAM, 1, "stream"),
 #ifdef HPCGAP
-    { "DEFAULT_SIGCHLD_HANDLER", 0, "",
-      FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
+    GVAR_FUNC(DEFAULT_SIGCHLD_HANDLER, 0, ""),
 #endif
 
     { 0, 0, 0, 0, 0 }

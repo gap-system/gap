@@ -2097,36 +2097,16 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CLEAR_PROFILE_FUNC", 1, "func",
-      FuncCLEAR_PROFILE_FUNC, "src/calls.c:CLEAR_PROFILE_FUNC" },
-
-    { "IS_PROFILED_FUNC", 1, "func",
-      FuncIS_PROFILED_FUNC, "src/calls.c:IS_PROFILED_FUNC" },
-
-    { "PROFILE_FUNC", 1, "func",
-      FuncPROFILE_FUNC, "src/calls.c:PROFILE_FUNC" },
-
-    { "UNPROFILE_FUNC", 1, "func",
-      FuncUNPROFILE_FUNC, "src/calls.c:UNPROFILE_FUNC" },
-
-    { "IsKernelFunction", 1, "func",
-      FuncIsKernelFunction, "src/calls.c:IsKernelFunction" },
-
-    { "HandlerCookieOfFunction", 1, "func",
-      FuncHandlerCookieOfFunction, "src/calls.c:HandlerCookieOfFunction" },
-
-    { "FILENAME_FUNC", 1, "func", 
-      FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
-
-    { "LOCATION_FUNC", 1, "func", 
-      FuncLOCATION_FUNC, "src/calls.c:LOCATION_FUNC" },
-
-    { "STARTLINE_FUNC", 1, "func", 
-      FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
-
-    { "ENDLINE_FUNC", 1, "func", 
-      FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
-
+    GVAR_FUNC(CLEAR_PROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(IS_PROFILED_FUNC, 1, "func"),
+    GVAR_FUNC(PROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(UNPROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(IsKernelFunction, 1, "func"),
+    GVAR_FUNC(HandlerCookieOfFunction, 1, "func"),
+    GVAR_FUNC(FILENAME_FUNC, 1, "func"),
+    GVAR_FUNC(LOCATION_FUNC, 1, "func"),
+    GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
+    GVAR_FUNC(ENDLINE_FUNC, 1, "func"),
     { 0, 0, 0, 0, 0 }
 
 };

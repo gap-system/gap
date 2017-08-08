@@ -1764,22 +1764,11 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "COMM_DEFAULT", 2, "opL, opR",
-      FuncCOMM_DEFAULT, "src/ariths.c:COMM_DEFAULT" },
-
-    { "POW_DEFAULT", 2, "opL, opR",
-      FuncPOW_DEFAULT, "src/ariths.c:POW_DEFAULT" },
-
-    { "LQUO_DEFAULT", 2, "opL, opR",
-      FuncLQUO_DEFAULT, "src/ariths.c:LQUO_DEFAULT" },
-
-    { "QUO_DEFAULT", 2, "opL, opR",
-      FuncQUO_DEFAULT, "src/ariths.c:QUO_DEFAULT" },
-
-    { "DIFF_DEFAULT", 2, "opL, opR",
-      FuncDIFF_DEFAULT, "src/ariths.c:DIFF_DEFAULT" },
-
-
+    GVAR_FUNC(COMM_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(POW_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(LQUO_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(QUO_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(DIFF_DEFAULT, 2, "opL, opR"),
     { 0, 0, 0, 0, 0 }
 
 };

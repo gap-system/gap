@@ -2001,21 +2001,13 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CHAR_FFE_DEFAULT", 1, "z",
-      FuncCHAR_FFE_DEFAULT, "src/finfield.c:CHAR_FFE_DEFAULT" },
-
+    GVAR_FUNC(CHAR_FFE_DEFAULT, 1, "z"),
     { "DEGREE_FFE_DEFAULT", 1, "z",
       FunDEGREE_FFE_DEFAULT, "src/finfield.c:DEGREE_FFE_DEFAULT" },
 
-    { "LOG_FFE_DEFAULT", 2, "z, root",
-      FuncLOG_FFE_DEFAULT, "src/finfield.c:LOG_FFE_DEFAULT" },
-
-    { "INT_FFE_DEFAULT", 1, "z",
-      FuncINT_FFE_DEFAULT, "src/finfield.c:INT_FFE_DEFAULT" },
-
-    { "Z", 1, "q",
-      FuncZ, "src/finfield.c:Z" },
-
+    GVAR_FUNC(LOG_FFE_DEFAULT, 2, "z, root"),
+    GVAR_FUNC(INT_FFE_DEFAULT, 1, "z"),
+    GVAR_FUNC(Z, 1, "q"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -2342,30 +2342,14 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "LEN_LIST", 1, "list", 
-      FuncLEN_LIST, "src/lists.c:LEN_LIST" },
-
-    { "ELMS_LIST_DEFAULT", 2, "list, poss",
-      FuncELMS_LIST_DEFAULT, "src/list.c:ELMS_LIST_DEFAULT" },
-
-    { "ASSS_LIST_DEFAULT", 3, "list, poss, objs",
-      FuncASSS_LIST_DEFAULT, "src/list.c:ASSS_LIST_DEFAULT" },
-    
-    { "IS_SSORT_LIST_DEFAULT", 1, "list",
-      FuncIS_SSORT_LIST_DEFAULT, "src/list.c:IS_SSORT_LIST_DEFAULT" },
-
-    { "IS_POSS_LIST_DEFAULT", 1, "list",
-      FuncIS_POSS_LIST_DEFAULT, "src/list.c:IS_POSS_LIST_DEFAULT" },
-
-    { "POS_LIST_DEFAULT", 3, "list, obj, start",
-      FuncPOS_LIST_DEFAULT, "src/list.c:POS_LIST_DEFAULT" },
-
-    { "SET_FILTER_LIST", 2, "list, filter",
-      FuncSET_FILTER_LIST, "src/lists.c:SET_FILTER_LIST" },
-
-    { "RESET_FILTER_LIST", 2, "list, filter",
-      FuncRESET_FILTER_LIST, "src/lists.c:RESET_FILTER_LIST" },
-
+    GVAR_FUNC(LEN_LIST, 1, "list"),
+    GVAR_FUNC(ELMS_LIST_DEFAULT, 2, "list, poss"),
+    GVAR_FUNC(ASSS_LIST_DEFAULT, 3, "list, poss, objs"),
+    GVAR_FUNC(IS_SSORT_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(IS_POSS_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(POS_LIST_DEFAULT, 3, "list, obj, start"),
+    GVAR_FUNC(SET_FILTER_LIST, 2, "list, filter"),
+    GVAR_FUNC(RESET_FILTER_LIST, 2, "list, filter"),
     { 0, 0, 0, 0, 0 }
 
 };

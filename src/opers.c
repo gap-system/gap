@@ -6165,141 +6165,53 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "AND_FLAGS", 2, "oper1, oper2",
-      FuncAND_FLAGS, "src/opers.c:AND_FLAGS" },
-
-    { "SUB_FLAGS", 2, "oper1, oper2",
-      FuncSUB_FLAGS, "src/opers.c:SUB_FLAGS" },
-
-    { "HASH_FLAGS", 1, "flags",
-      FuncHASH_FLAGS, "src/opers.c:HASH_FLAGS" },
-
-    { "IS_EQUAL_FLAGS", 2, "flags1, flags2",
-      FuncIS_EQUAL_FLAGS, "src/opers.c:IS_EQUAL_FLAGS" },
-
-    { "CLEAR_HIDDEN_IMP_CACHE", 1, "flags",
-      FuncCLEAR_HIDDEN_IMP_CACHE, "src/opers.c:CLEAR_HIDDEN_IMP_CACHE" },
-    
-    { "WITH_HIDDEN_IMPS_FLAGS", 1, "flags",
-      FuncWITH_HIDDEN_IMPS_FLAGS, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS" },
-         
-    { "InstallHiddenTrueMethod", 2, "filter, filters",
-      FuncInstallHiddenTrueMethod, "src/opers.c:InstallHiddenTrueMethod" },
-          
-    { "IS_SUBSET_FLAGS", 2, "flags1, flags2",
-      FuncIS_SUBSET_FLAGS, "src/opers.c:IS_SUBSET_FLAGS" },
-
-    { "TRUES_FLAGS", 1, "flags",
-      FuncTRUES_FLAGS, "src/opers.c:TRUES_FLAGS" },
-
-    { "SIZE_FLAGS", 1, "flags",
-      FuncSIZE_FLAGS, "src/opers.c:SIZE_FLAGS" },
-
-    { "LEN_FLAGS", 1, "flags",
-      FuncLEN_FLAGS, "src/opers.c:LEN_FLAGS" },
-
-    { "ELM_FLAGS", 2, "flags, pos",
-      FuncELM_FLAGS, "src/opers.c:ELM_FLAGS" },
-
-    { "FLAG1_FILTER", 1, "oper",
-      FuncFLAG1_FILTER, "src/opers.c:FLAG1_FILTER" },
-
-    { "SET_FLAG1_FILTER", 2, "oper, flag1",
-      FuncSET_FLAG1_FILTER, "src/opers.c:SET_FLAG1_FILTER" },
-
-    { "FLAG2_FILTER", 1, "oper",
-      FuncFLAG2_FILTER, "src/opers.c:FLAG2_FILTER" },
-
-    { "SET_FLAG2_FILTER", 2, "oper, flag2",
-      FuncSET_FLAG2_FILTER, "src/opers.c:SET_FLAG2_FILTER" },
-
-    { "FLAGS_FILTER", 1, "oper",
-      FuncFLAGS_FILTER, "src/opers.c:FLAGS_FILTER" },
-
-    { "SET_FLAGS_FILTER", 2, "oper, flags",
-      FuncSET_FLAGS_FILTER, "src/opers.c:SET_FLAGS_FILTER" },
-
-    { "SETTER_FILTER", 1, "oper",
-      FuncSETTER_FILTER, "src/opers.c:SETTER_FILTER" },
-
-    { "SET_SETTER_FILTER", 2, "oper, other",
-      FuncSET_SETTER_FILTER, "src/opers.c:SET_SETTER_FILTER" },
-
-    { "TESTER_FILTER", 1, "oper",
-      FuncTESTER_FILTER, "src/opers.c:TESTER_FILTER" },
-
-    { "SET_TESTER_FILTER", 2, "oper, other",
-      FuncSET_TESTER_FILTER, "src/opers.c:SET_TESTER_FILTER" },
-
-    { "METHODS_OPERATION", 2, "oper, narg",
-      FuncMETHODS_OPERATION, "src/opers.c:METHODS_OPERATION" },
-
-    { "SET_METHODS_OPERATION", 3, "oper, narg, meths",
-      FuncSET_METHODS_OPERATION, "src/opers.c:SET_METHODS_OPERATION" },
-
-    { "CHANGED_METHODS_OPERATION", 2, "oper, narg",
-      FuncCHANGED_METHODS_OPERATION, "src/opers.c:CHANGED_METHODS_OPERATION" },
-
-    { "NEW_FILTER", 1, "name",
-      FuncNEW_FILTER, "src/opers.c:NEW_FILTER" },
-
-    { "NEW_OPERATION", 1, "name",
-      FuncNEW_OPERATION, "src/opers.c:NEW_OPERATION" },
-
-    { "NEW_CONSTRUCTOR", 1, "name",
-      FuncNEW_CONSTRUCTOR, "src/opers.c:NEW_CONSTRUCTOR" },
-
-    { "NEW_ATTRIBUTE", 1, "name",
-      FuncNEW_ATTRIBUTE, "src/opers.c:NEW_ATTRIBUTE" },
-
-    { "NEW_MUTABLE_ATTRIBUTE", 1, "name",
-      FuncNEW_MUTABLE_ATTRIBUTE, "src/opers.c:NEW_MUTABLE_ATTRIBUTE" },
-
-    { "NEW_PROPERTY", 1, "name",
-      FuncNEW_PROPERTY, "src/opers.c:NEW_PROPERTY" },
-
-    { "SETTER_FUNCTION", 2, "name, filter",
-      FuncSETTER_FUNCTION, "src/opers.c:SETTER_FUNCTION" },
-
-    { "GETTER_FUNCTION", 1, "name",
-      FuncGETTER_FUNCTION, "src/opers.c:GETTER_FUNCTION" },
-
-    { "NEW_OPERATION_ARGS", 1, "name",
-      FuncNEW_OPERATION_ARGS, "src/opers.c:NEW_OPERATION_ARGS" },
-
-    { "INSTALL_METHOD_ARGS", 2, "oper, func",
-      FuncINSTALL_METHOD_ARGS, "src/opers.c:INSTALL_METHOD_ARGS" },
-
-    { "TRACE_METHODS", 1, "oper",
-      FuncTRACE_METHODS, "src/opers.c:TRACE_METHODS" },
-
-    { "UNTRACE_METHODS", 1, "oper",
-      FuncUNTRACE_METHODS, "src/opers.c:UNTRACE_METHODS" },
-
-    { "OPERS_CACHE_INFO", 0, "",
-      FuncOPERS_CACHE_INFO, "src/opers.c:OPERS_CACHE_INFO" },
-
-    { "CLEAR_CACHE_INFO", 0, "",
-      FuncCLEAR_CACHE_INFO, "src/opers.c:CLEAR_CACHE_INFO" },
-    
-    { "SET_ATTRIBUTE_STORING", 2, "attr, val",
-      FuncSET_ATTRIBUTE_STORING, "src/opers.c:SET_ATTRIBUTE_STORING" },
-
-    { "DO_NOTHING_SETTER", 2, "obj, val",
-      FuncDO_NOTHING_SETTER, "src/opers.c:DO_NOTHING_SETTER" },
-
-    { "IS_AND_FILTER", 1, "filter",
-      FuncIS_AND_FILTER, "src/opers.c:IS_AND_FILTER" },
-
+    GVAR_FUNC(AND_FLAGS, 2, "oper1, oper2"),
+    GVAR_FUNC(SUB_FLAGS, 2, "oper1, oper2"),
+    GVAR_FUNC(HASH_FLAGS, 1, "flags"),
+    GVAR_FUNC(IS_EQUAL_FLAGS, 2, "flags1, flags2"),
+    GVAR_FUNC(CLEAR_HIDDEN_IMP_CACHE, 1, "flags"),
+    GVAR_FUNC(WITH_HIDDEN_IMPS_FLAGS, 1, "flags"),
+    GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
+    GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
+    GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
+    GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
+    GVAR_FUNC(LEN_FLAGS, 1, "flags"),
+    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
+    GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
+    GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAG2_FILTER, 2, "oper, flag2"),
+    GVAR_FUNC(FLAGS_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAGS_FILTER, 2, "oper, flags"),
+    GVAR_FUNC(SETTER_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_SETTER_FILTER, 2, "oper, other"),
+    GVAR_FUNC(TESTER_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_TESTER_FILTER, 2, "oper, other"),
+    GVAR_FUNC(METHODS_OPERATION, 2, "oper, narg"),
+    GVAR_FUNC(SET_METHODS_OPERATION, 3, "oper, narg, meths"),
+    GVAR_FUNC(CHANGED_METHODS_OPERATION, 2, "oper, narg"),
+    GVAR_FUNC(NEW_FILTER, 1, "name"),
+    GVAR_FUNC(NEW_OPERATION, 1, "name"),
+    GVAR_FUNC(NEW_CONSTRUCTOR, 1, "name"),
+    GVAR_FUNC(NEW_ATTRIBUTE, 1, "name"),
+    GVAR_FUNC(NEW_MUTABLE_ATTRIBUTE, 1, "name"),
+    GVAR_FUNC(NEW_PROPERTY, 1, "name"),
+    GVAR_FUNC(SETTER_FUNCTION, 2, "name, filter"),
+    GVAR_FUNC(GETTER_FUNCTION, 1, "name"),
+    GVAR_FUNC(NEW_OPERATION_ARGS, 1, "name"),
+    GVAR_FUNC(INSTALL_METHOD_ARGS, 2, "oper, func"),
+    GVAR_FUNC(TRACE_METHODS, 1, "oper"),
+    GVAR_FUNC(UNTRACE_METHODS, 1, "oper"),
+    GVAR_FUNC(OPERS_CACHE_INFO, 0, ""),
+    GVAR_FUNC(CLEAR_CACHE_INFO, 0, ""),
+    GVAR_FUNC(SET_ATTRIBUTE_STORING, 2, "attr, val"),
+    GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
+    GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
     { "COMPACT_TYPE_IDS", 0, "",
       FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
 
-    { "OPER_TO_ATTRIBUTE", 1, "oper",
-      FuncOPER_TO_ATTRIBUTE, "src/opers.c:OPER_TO_ATTRIBUTE" },
-
-    { "OPER_TO_MUTABLE_ATTRIBUTE", 1, "oper",
-      FuncOPER_TO_MUTABLE_ATTRIBUTE, "src/opers.c:OPER_TO_MUTABLE_ATTRIBUTE" },
-
+    GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
+    GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -2677,304 +2677,114 @@ Obj FuncTHREAD_COUNTERS_GET(Obj self)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    { "CreateThread", -1, "function", FuncCreateThread,
-      "src/threadapi.c:CreateThread" },
-
-    { "CurrentThread", 0, "", FuncCurrentThread,
-      "src/threadapi.c:CurrentThread" },
-
-    { "ThreadID", 1, "thread", FuncThreadID, "src/threadapi.c:ThreadID" },
-
-    { "WaitThread", 1, "thread", FuncWaitThread,
-      "src/threadapi.c:WaitThread" },
-
-    { "KillThread", 1, "thread", FuncKillThread,
-      "src/threadapi.c:KillThread" },
-
-    { "InterruptThread", 2, "thread, handler", FuncInterruptThread,
-      "src/threadapi.c:InterruptThread" },
-
-    { "SetInterruptHandler", 2, "handler, function", FuncSetInterruptHandler,
-      "src/threadapi.c:SetInterruptHandler" },
-
-    { "PauseThread", 1, "thread", FuncPauseThread,
-      "src/threadapi.c:PauseThread" },
-
-    { "ResumeThread", 1, "thread", FuncResumeThread,
-      "src/threadapi.c:ResumeThread" },
-
-    { "HASH_LOCK", 1, "object", FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
-
-    { "HASH_LOCK_SHARED", 1, "object", FuncHASH_LOCK_SHARED,
-      "src/threadapi.c:HASH_LOCK_SHARED" },
-
-    { "HASH_UNLOCK", 1, "object", FuncHASH_UNLOCK,
-      "src/threadapi.c:HASH_UNLOCK" },
-
-    { "HASH_UNLOCK_SHARED", 1, "object", FuncHASH_UNLOCK_SHARED,
-      "src/threadapi.c:HASH_UNLOCK_SHARED" },
-
-    { "HASH_SYNCHRONIZED", 2, "object, function", FuncHASH_SYNCHRONIZED,
-      "src/threadapi.c:HASH_SYNCHRONIZED" },
-
+    GVAR_FUNC(CreateThread, -1, "function"),
+    GVAR_FUNC(CurrentThread, 0, ""),
+    GVAR_FUNC(ThreadID, 1, "thread"),
+    GVAR_FUNC(WaitThread, 1, "thread"),
+    GVAR_FUNC(KillThread, 1, "thread"),
+    GVAR_FUNC(InterruptThread, 2, "thread, handler"),
+    GVAR_FUNC(SetInterruptHandler, 2, "handler, function"),
+    GVAR_FUNC(PauseThread, 1, "thread"),
+    GVAR_FUNC(ResumeThread, 1, "thread"),
+    GVAR_FUNC(HASH_LOCK, 1, "object"),
+    GVAR_FUNC(HASH_LOCK_SHARED, 1, "object"),
+    GVAR_FUNC(HASH_UNLOCK, 1, "object"),
+    GVAR_FUNC(HASH_UNLOCK_SHARED, 1, "object"),
+    GVAR_FUNC(HASH_SYNCHRONIZED, 2, "object, function"),
     { "SynchronizedShared", 2, "object, function",
       FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
 
-    { "RegionOf", 1, "object", FuncRegionOf, "src/threadapi.c:RegionOf" },
-
-    { "SetRegionName", 2, "obj, name", FuncSetRegionName,
-      "src/threadapi.c:SetRegionName" },
-
-    { "ClearRegionName", 1, "obj", FuncClearRegionName,
-      "src/threadapi.c:ClearRegionName" },
-
-    { "RegionName", 1, "obj", FuncRegionName, "src/threadapi.c:RegionName" },
-
-    { "WITH_TARGET_REGION", 2, "region, function", FuncWITH_TARGET_REGION,
-      "src/threadapi.c:WITH_TARGET_REGION" },
-
-    { "IsShared", 1, "object", FuncIsShared, "src/threadapi.c:IsShared" },
-
-    { "IsPublic", 1, "object", FuncIsPublic, "src/threadapi.c:IsPublic" },
-
-    { "IsThreadLocal", 1, "object", FuncIsThreadLocal,
-      "src/threadapi.c:IsThreadLocal" },
-
-    { "HaveWriteAccess", 1, "object", FuncHaveWriteAccess,
-      "src/threadapi.c:HaveWriteAccess" },
-
-    { "HaveReadAccess", 1, "object", FuncHaveReadAccess,
-      "src/threadapi.c:HaveReadAccess" },
-
-    { "CreateSemaphore", -1, "[count]", FuncCreateSemaphore,
-      "src/threadapi.c:CreateSemaphore" },
-
-    { "SignalSemaphore", 1, "semaphore", FuncSignalSemaphore,
-      "src/threadapi.c:SignalSemaphore" },
-
-    { "WaitSemaphore", 1, "semaphore", FuncWaitSemaphore,
-      "src/threadapi.c:WaitSemaphore" },
-
-    { "TryWaitSemaphore", 1, "semaphore", FuncTryWaitSemaphore,
-      "src/threadapi.c:TryWaitSemaphore" },
-
-    { "CreateChannel", -1, "[size]", FuncCreateChannel,
-      "src/threadapi.c:CreateChannel" },
-
-    { "DestroyChannel", 1, "channel", FuncDestroyChannel,
-      "src/threadapi.c:DestroyChannel" },
-
-    { "TallyChannel", 1, "channel", FuncTallyChannel,
-      "src/threadapi.c:TallyChannel" },
-
-    { "SendChannel", 2, "channel, obj", FuncSendChannel,
-      "src/threadapi.c:SendChannel" },
-
-    { "TransmitChannel", 2, "channel, obj", FuncTransmitChannel,
-      "src/threadapi.c:TransmitChannel" },
-
-    { "ReceiveChannel", 1, "channel", FuncReceiveChannel,
-      "src/threadapi:ReceiveChannel" },
-
-    { "ReceiveAnyChannel", -1, "channel list", FuncReceiveAnyChannel,
-      "src/threadapi:ReceiveAnyChannel" },
-
-    { "ReceiveAnyChannelWithIndex", -1, "channel list",
-      FuncReceiveAnyChannelWithIndex,
-      "src/threadapi:ReceiveAnyChannelWithIndex" },
-
-    { "MultiReceiveChannel", 2, "channel, count", FuncMultiReceiveChannel,
-      "src/threadapi:MultiReceiveChannel" },
-
-    { "TryReceiveChannel", 2, "channel, obj", FuncTryReceiveChannel,
-      "src/threadapi.c:TryReceiveChannel" },
-
-    { "MultiSendChannel", 2, "channel, list", FuncMultiSendChannel,
-      "src/threadapi:MultiSendChannel" },
-
-    { "TryMultiSendChannel", 2, "channel, list", FuncTryMultiSendChannel,
-      "src/threadapi:TryMultiSendChannel" },
-
-    { "TrySendChannel", 2, "channel, obj", FuncTrySendChannel,
-      "src/threadapi.c:TrySendChannel" },
-
-    { "MultiTransmitChannel", 2, "channel, list", FuncMultiTransmitChannel,
-      "src/threadapi:MultiTransmitChannel" },
-
-    { "TryMultiTransmitChannel", 2, "channel, list",
-      FuncTryMultiTransmitChannel, "src/threadapi:TryMultiTransmitChannel" },
-
-    { "TryTransmitChannel", 2, "channel, obj", FuncTryTransmitChannel,
-      "src/threadapi.c:TryTransmitChannel" },
-
-    { "InspectChannel", 1, "channel, obj", FuncInspectChannel,
-      "src/threadapi.c:InspectChannel" },
-
-    { "CreateBarrier", 0, "", FuncCreateBarrier,
-      "src/threadapi.c:CreateBarrier" },
-
-    { "StartBarrier", 2, "barrier, count", FuncStartBarrier,
-      "src/threadapi.c:StartBarrier" },
-
-    { "WaitBarrier", 1, "barrier", FuncWaitBarrier,
-      "src/threadapi.c:WaitBarrier" },
-
-    { "CreateSyncVar", 0, "", FuncCreateSyncVar,
-      "src/threadapi.c:CreateSyncVar" },
-
-    { "SyncWrite", 2, "syncvar, obj", FuncSyncWrite,
-      "src/threadapi.c:SyncWrite" },
-
-    { "SyncTryWrite", 2, "syncvar, obj", FuncSyncTryWrite,
-      "src/threadapi.c:SyncTryWrite" },
-
-    { "SyncRead", 1, "syncvar", FuncSyncRead, "src/threadapi.c:SyncRead" },
-
-    { "SyncIsBound", 1, "syncvar", FuncSyncIsBound,
-      "src/threadapi.c:SyncIsBound" },
-
-    { "IS_LOCKED", 1, "obj", FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
-
-    { "WriteLock", -1, "obj, ...", FuncWriteLock,
-      "src/threadapi.c:WriteLock" },
-
-    { "ReadLock", -1, "obj, ...", FuncReadLock, "src/threadapi.c:ReadLock" },
-
-    { "LOCK", -1, "obj, ...", FuncLOCK, "src/threadapi.c:LOCK" },
-
-    { "DO_LOCK", -1, "obj, ...", FuncDO_LOCK, "src/threadapi.c:DO_LOCK" },
-
-    { "WRITE_LOCK", 1, "obj", FuncWRITE_LOCK, "src/threadapi.c:WRITE_LOCK" },
-
-    { "READ_LOCK", 1, "obj", FuncREAD_LOCK, "src/threadapi.c:READ_LOCK" },
-
-    { "TRYLOCK", -1, "obj, ...", FuncTRYLOCK, "src/threadapi.c:TRYLOCK" },
-
-    { "UNLOCK", 1, "obj, newsp", FuncUNLOCK, "src/threadapi.c:LOCK" },
-
-    { "CURRENT_LOCKS", 0, "", FuncCURRENT_LOCKS,
-      "src/threadapi.c:FuncCURRENT_LOCKS" },
-
-    { "REFINE_TYPE", 1, "obj", FuncREFINE_TYPE,
-      "src/threadapi.c:REFINE_TYPE" },
-
-    { "SHARE_NORECURSE", 3, "obj, string, integer", FuncSHARE_NORECURSE,
-      "src/threadapi.c:SHARE_NORECURSE" },
-
-    { "ADOPT_NORECURSE", 1, "obj", FuncADOPT_NORECURSE,
-      "src/threadapi.c:ADOPT_NORECURSE" },
-
-    { "MIGRATE_NORECURSE", 2, "obj, target", FuncMIGRATE_NORECURSE,
-      "src/threadapi.c:MIGRATE_NORECURSE" },
-
-    { "NEW_REGION", 2, "string, integer", FuncNEW_REGION,
-      "src/threadapi.c:NEW_REGION" },
-
-    { "REGION_PRECEDENCE", 1, "obj", FuncREGION_PRECEDENCE,
-      "src/threadapi.c:REGION_PRECEDENCE" },
-
-    { "SHARE", 3, "obj, string, integer", FuncSHARE,
-      "src/threadapi.c:SHARE" },
-
-    { "SHARE_RAW", 3, "obj, string, integer", FuncSHARE_RAW,
-      "src/threadapi.c:SHARE_RAW" },
-
-    { "ADOPT", 1, "obj", FuncADOPT, "src/threadapi.c:ADOPT" },
-
-    { "MIGRATE", 2, "obj, target", FuncMIGRATE, "src/threadapi.c:MIGRATE" },
-
-    { "MIGRATE_RAW", 2, "obj, target", FuncMIGRATE_RAW,
-      "src/threadapi.c:MIGRATE_RAW" },
-
-    { "MAKE_PUBLIC_NORECURSE", 1, "obj", FuncMAKE_PUBLIC_NORECURSE,
-      "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
-
-    { "MAKE_PUBLIC", 1, "obj", FuncMAKE_PUBLIC,
-      "src/threadapi.c:MAKE_PUBLIC" },
-
-    { "FORCE_MAKE_PUBLIC", 1, "obj", FuncFORCE_MAKE_PUBLIC,
-      "src/threadapi.c:FORCE_MAKE_PUBLIC" },
-
-    { "REACHABLE", 1, "obj", FuncREACHABLE, "src/threadapi.c:REACHABLE" },
-
-    { "CLONE_REACHABLE", 1, "obj", FuncCLONE_REACHABLE,
-      "src/threadapi.c:CLONE_REACHABLE" },
-
-    { "CLONE_DELIMITED", 1, "obj", FuncCLONE_DELIMITED,
-      "src/threadapi.c:CLONE_DELIMITED" },
-
-    { "MakeThreadLocal", 1, "variable name", FuncMakeThreadLocal,
-      "src/threadapi.c:MakeThreadLocal" },
-
-    { "MakeReadOnly", 1, "obj", FuncMakeReadOnly,
-      "src/threadapi.c:MakeReadOnly" },
-
-    { "MakeReadOnlyRaw", 1, "obj", FuncMakeReadOnlyRaw,
-      "src/threadapi.c:MakeReadOnlyRaw" },
-
-    { "MakeReadOnlyObj", 1, "obj", FuncMakeReadOnlyObj,
-      "src/threadapi.c:MakeReadOnlyObj" },
-
-    { "IsReadOnly", 1, "obj", FuncIsReadOnly, "src/threadapi.c:IsReadOnly" },
-
-    { "ENABLE_AUTO_RETYPING", 0, "", FuncENABLE_AUTO_RETYPING,
-      "src/threadapi.c:ENABLE_AUTO_RETYPING" },
-
-    { "ORDERED_READ", 1, "obj", FuncORDERED_READ,
-      "src/threadapi.c:ORDERED_READ" },
-
-    { "ORDERED_WRITE", 1, "obj", FuncORDERED_WRITE,
-      "src/threadapi.c:ORDERED_WRITE" },
-
-    { "CREATOR_OF", 1, "obj", FuncCREATOR_OF, "src/threadapi.c:CREATOR_OF" },
-
-    { "DISABLE_GUARDS", 1, "flag", FuncDISABLE_GUARDS,
-      "src/threadapi.c:DISABLE_GUARDS" },
-
-    { "DEFAULT_SIGINT_HANDLER", 0, "", FuncDEFAULT_SIGINT_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGINT_HANDLER" },
-
-    { "DEFAULT_SIGVTALRM_HANDLER", 0, "", FuncDEFAULT_SIGVTALRM_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGVTALRM_HANDLER" },
-
-    { "DEFAULT_SIGWINCH_HANDLER", 0, "", FuncDEFAULT_SIGWINCH_HANDLER,
-      "src/threadapi.c:DEFAULT_SIGWINCH_HANDLER" },
-
-    { "SIGWAIT", 1, "record", FuncSIGWAIT, "src/threadapi.c:SIGWAIT" },
-
-    { "PERIODIC_CHECK", 2, "count, function", FuncPERIODIC_CHECK,
-      "src/threadapi.c:PERIODIC_CHECK" },
-
-    { "REGION_COUNTERS_ENABLE", 1, "region", FuncREGION_COUNTERS_ENABLE,
-      "src/threadapi.c:REGION_COUNTERS_ENABLE" },
-
-    { "REGION_COUNTERS_DISABLE", 1, "region", FuncREGION_COUNTERS_DISABLE,
-      "src/threadapi.c:REGION_COUNTERS_DISABLE" },
-
-    { "REGION_COUNTERS_GET_STATE", 1, "region", FuncREGION_COUNTERS_GET_STATE,
-      "src/threadapi.c:REGION_COUNTERS_GET_STATE" },
-
-    { "REGION_COUNTERS_GET", 1, "region", FuncREGION_COUNTERS_GET,
-      "src/threadapi.c:REGION_COUNTERS_GET" },
-
-    { "REGION_COUNTERS_RESET", 1, "region", FuncREGION_COUNTERS_RESET,
-      "src/threadapi.c:REGION_COUNTERS_RESET" },
-
-    { "THREAD_COUNTERS_ENABLE", 0, "", FuncTHREAD_COUNTERS_ENABLE,
-      "src/threadapi.c:THREAD_COUNTERS_ENABLE" },
-
-    { "THREAD_COUNTERS_DISABLE", 0, "", FuncTHREAD_COUNTERS_DISABLE,
-      "src/threadapi.c:THREAD_COUNTERS_DISABLE" },
-
-    { "THREAD_COUNTERS_GET_STATE", 0, "", FuncTHREAD_COUNTERS_GET_STATE,
-      "src/threadapi.c:THREAD_COUNTERS_GET_STATE" },
-
-    { "THREAD_COUNTERS_GET", 0, "", FuncTHREAD_COUNTERS_GET,
-      "src/threadapi.c:THREAD_COUNTERS_GET" },
-
-    { "THREAD_COUNTERS_RESET", 0, "", FuncTHREAD_COUNTERS_RESET,
-      "src/threadapi.c:THREAD_COUNTERS_RESET" },
-
+    GVAR_FUNC(RegionOf, 1, "object"),
+    GVAR_FUNC(SetRegionName, 2, "obj, name"),
+    GVAR_FUNC(ClearRegionName, 1, "obj"),
+    GVAR_FUNC(RegionName, 1, "obj"),
+    GVAR_FUNC(WITH_TARGET_REGION, 2, "region, function"),
+    GVAR_FUNC(IsShared, 1, "object"),
+    GVAR_FUNC(IsPublic, 1, "object"),
+    GVAR_FUNC(IsThreadLocal, 1, "object"),
+    GVAR_FUNC(HaveWriteAccess, 1, "object"),
+    GVAR_FUNC(HaveReadAccess, 1, "object"),
+    GVAR_FUNC(CreateSemaphore, -1, "[count]"),
+    GVAR_FUNC(SignalSemaphore, 1, "semaphore"),
+    GVAR_FUNC(WaitSemaphore, 1, "semaphore"),
+    GVAR_FUNC(TryWaitSemaphore, 1, "semaphore"),
+    GVAR_FUNC(CreateChannel, -1, "[size]"),
+    GVAR_FUNC(DestroyChannel, 1, "channel"),
+    GVAR_FUNC(TallyChannel, 1, "channel"),
+    GVAR_FUNC(SendChannel, 2, "channel, obj"),
+    GVAR_FUNC(TransmitChannel, 2, "channel, obj"),
+    GVAR_FUNC(ReceiveChannel, 1, "channel"),
+    GVAR_FUNC(ReceiveAnyChannel, -1, "channel list"),
+    GVAR_FUNC(ReceiveAnyChannelWithIndex, -1, "channel list"),
+    GVAR_FUNC(MultiReceiveChannel, 2, "channel, count"),
+    GVAR_FUNC(TryReceiveChannel, 2, "channel, obj"),
+    GVAR_FUNC(MultiSendChannel, 2, "channel, list"),
+    GVAR_FUNC(TryMultiSendChannel, 2, "channel, list"),
+    GVAR_FUNC(TrySendChannel, 2, "channel, obj"),
+    GVAR_FUNC(MultiTransmitChannel, 2, "channel, list"),
+    GVAR_FUNC(TryMultiTransmitChannel, 2, "channel, list"),
+    GVAR_FUNC(TryTransmitChannel, 2, "channel, obj"),
+    GVAR_FUNC(InspectChannel, 1, "channel, obj"),
+    GVAR_FUNC(CreateBarrier, 0, ""),
+    GVAR_FUNC(StartBarrier, 2, "barrier, count"),
+    GVAR_FUNC(WaitBarrier, 1, "barrier"),
+    GVAR_FUNC(CreateSyncVar, 0, ""),
+    GVAR_FUNC(SyncWrite, 2, "syncvar, obj"),
+    GVAR_FUNC(SyncTryWrite, 2, "syncvar, obj"),
+    GVAR_FUNC(SyncRead, 1, "syncvar"),
+    GVAR_FUNC(SyncIsBound, 1, "syncvar"),
+    GVAR_FUNC(IS_LOCKED, 1, "obj"),
+    GVAR_FUNC(WriteLock, -1, "obj, ..."),
+    GVAR_FUNC(ReadLock, -1, "obj, ..."),
+    GVAR_FUNC(LOCK, -1, "obj, ..."),
+    GVAR_FUNC(DO_LOCK, -1, "obj, ..."),
+    GVAR_FUNC(WRITE_LOCK, 1, "obj"),
+    GVAR_FUNC(READ_LOCK, 1, "obj"),
+    GVAR_FUNC(TRYLOCK, -1, "obj, ..."),
+    GVAR_FUNC(UNLOCK, 1, "obj, newsp"),
+    GVAR_FUNC(CURRENT_LOCKS, 0, ""),
+    GVAR_FUNC(REFINE_TYPE, 1, "obj"),
+    GVAR_FUNC(SHARE_NORECURSE, 3, "obj, string, integer"),
+    GVAR_FUNC(ADOPT_NORECURSE, 1, "obj"),
+    GVAR_FUNC(MIGRATE_NORECURSE, 2, "obj, target"),
+    GVAR_FUNC(NEW_REGION, 2, "string, integer"),
+    GVAR_FUNC(REGION_PRECEDENCE, 1, "obj"),
+    GVAR_FUNC(SHARE, 3, "obj, string, integer"),
+    GVAR_FUNC(SHARE_RAW, 3, "obj, string, integer"),
+    GVAR_FUNC(ADOPT, 1, "obj"),
+    GVAR_FUNC(MIGRATE, 2, "obj, target"),
+    GVAR_FUNC(MIGRATE_RAW, 2, "obj, target"),
+    GVAR_FUNC(MAKE_PUBLIC_NORECURSE, 1, "obj"),
+    GVAR_FUNC(MAKE_PUBLIC, 1, "obj"),
+    GVAR_FUNC(FORCE_MAKE_PUBLIC, 1, "obj"),
+    GVAR_FUNC(REACHABLE, 1, "obj"),
+    GVAR_FUNC(CLONE_REACHABLE, 1, "obj"),
+    GVAR_FUNC(CLONE_DELIMITED, 1, "obj"),
+    GVAR_FUNC(MakeThreadLocal, 1, "variable name"),
+    GVAR_FUNC(MakeReadOnly, 1, "obj"),
+    GVAR_FUNC(MakeReadOnlyRaw, 1, "obj"),
+    GVAR_FUNC(MakeReadOnlyObj, 1, "obj"),
+    GVAR_FUNC(IsReadOnly, 1, "obj"),
+    GVAR_FUNC(ENABLE_AUTO_RETYPING, 0, ""),
+    GVAR_FUNC(ORDERED_READ, 1, "obj"),
+    GVAR_FUNC(ORDERED_WRITE, 1, "obj"),
+    GVAR_FUNC(CREATOR_OF, 1, "obj"),
+    GVAR_FUNC(DISABLE_GUARDS, 1, "flag"),
+    GVAR_FUNC(DEFAULT_SIGINT_HANDLER, 0, ""),
+    GVAR_FUNC(DEFAULT_SIGVTALRM_HANDLER, 0, ""),
+    GVAR_FUNC(DEFAULT_SIGWINCH_HANDLER, 0, ""),
+    GVAR_FUNC(SIGWAIT, 1, "record"),
+    GVAR_FUNC(PERIODIC_CHECK, 2, "count, function"),
+    GVAR_FUNC(REGION_COUNTERS_ENABLE, 1, "region"),
+    GVAR_FUNC(REGION_COUNTERS_DISABLE, 1, "region"),
+    GVAR_FUNC(REGION_COUNTERS_GET_STATE, 1, "region"),
+    GVAR_FUNC(REGION_COUNTERS_GET, 1, "region"),
+    GVAR_FUNC(REGION_COUNTERS_RESET, 1, "region"),
+    GVAR_FUNC(THREAD_COUNTERS_ENABLE, 0, ""),
+    GVAR_FUNC(THREAD_COUNTERS_DISABLE, 0, ""),
+    GVAR_FUNC(THREAD_COUNTERS_GET_STATE, 0, ""),
+    GVAR_FUNC(THREAD_COUNTERS_GET, 0, ""),
+    GVAR_FUNC(THREAD_COUNTERS_RESET, 0, ""),
     { 0, 0, 0, 0, 0 }
 
 };

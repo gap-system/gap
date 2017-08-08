@@ -631,18 +631,10 @@ Obj FuncINT_STRING ( Obj self, Obj string )
 static StructGVarFunc GVarFuncs [] = {
 
 
-    { "HASHKEY_BAG", 4, "obj, int,int,int",
-      FuncHASHKEY_BAG, "src/integer.c:HASHKEY_BAG" },
-
-    { "SIZE_OBJ", 1, "obj",
-      FuncSIZE_OBJ, "src/integer.c:SIZE_OBJ" },
-
-    { "InitRandomMT", 1, "initstr",
-      FuncInitRandomMT, "src/integer.c:InitRandomMT" },
-
-    { "INT_STRING", 1, "string",
-      FuncINT_STRING, "src/integer.c:INT_STRING" },
-
+    GVAR_FUNC(HASHKEY_BAG, 4, "obj, int,int,int"),
+    GVAR_FUNC(SIZE_OBJ, 1, "obj"),
+    GVAR_FUNC(InitRandomMT, 1, "initstr"),
+    GVAR_FUNC(INT_STRING, 1, "string"),
     { 0, 0, 0, 0, 0 }
 
 };

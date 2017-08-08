@@ -2475,45 +2475,19 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "IS_BLIST_CONV", 1, "obj", 
-      FuncIS_BLIST_CONV, "src/blister.c:IS_BLIST_CONV" },
-
-    { "CONV_BLIST", 1, "blist",
-      FuncCONV_BLIST, "src/blister.c:CONV_BLIST" },
-
-    { "BLIST_LIST", 2, "list, sub",
-      FuncBLIST_LIST, "src/blister.c:BLIST_LIST" },
-
-    { "LIST_BLIST", 2, "list, blist",
-      FuncLIST_BLIST, "src/blister.c:LIST_BLIST" },
-
-    { "SIZE_BLIST", 1, "blist",
-      FuncSIZE_BLIST, "src/blister.c:SIZE_BLIST" },
-
-    { "IS_SUB_BLIST", 2, "blist1, blist2",
-      FuncIS_SUB_BLIST, "src/blister.c:IS_SUB_BLIST" },
-
-    { "UNITE_BLIST", 2, "blist1, blist2",
-      FuncUNITE_BLIST, "src/blister.c:UNITE_BLIST" },
-
-    { "UNITE_BLIST_LIST", 3, "list, blist, sub",
-      FuncUNITE_BLIST_LIST, "src/blister.c:UNITE_BLIST_LIST" },
-
-    { "INTER_BLIST", 2, "blist1, blist2",
-      FuncINTER_BLIST, "src/blister.c:INTER_BLIST" },
-
-    { "SUBTR_BLIST", 2, "blist1, blist2",
-      FuncSUBTR_BLIST, "src/blister.c:SUBTR_BLIST" },
-
-    { "MEET_BLIST", 2, "blist1, blist2",
-      FuncMEET_BLIST, "src/blister.c:MEET_BLIST" },
-
-    { "PositionNthTrueBlist", 2, "blist, nth",
-      FuncPositionNthTrueBlist, "src/blister.c:PositionNthTrueBlist" },
-
-    { "PositionsTrueBlist", 1, "blist",
-      FuncPositionsTrueBlist, "src/blister.c:PositionsTrueBlist" },
-
+    GVAR_FUNC(IS_BLIST_CONV, 1, "obj"),
+    GVAR_FUNC(CONV_BLIST, 1, "blist"),
+    GVAR_FUNC(BLIST_LIST, 2, "list, sub"),
+    GVAR_FUNC(LIST_BLIST, 2, "list, blist"),
+    GVAR_FUNC(SIZE_BLIST, 1, "blist"),
+    GVAR_FUNC(IS_SUB_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(UNITE_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(UNITE_BLIST_LIST, 3, "list, blist, sub"),
+    GVAR_FUNC(INTER_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(SUBTR_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(MEET_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(PositionNthTrueBlist, 2, "blist, nth"),
+    GVAR_FUNC(PositionsTrueBlist, 1, "blist"),
     { 0, 0, 0, 0, 0 }
 
 };

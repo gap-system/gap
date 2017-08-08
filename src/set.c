@@ -1074,30 +1074,14 @@ Obj FuncSUBTR_SET (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "LIST_SORTED_LIST", 1, "list",
-      FuncLIST_SORTED_LIST, "src/set.c:LIST_SORTED_LIST" },
-
-    { "IS_EQUAL_SET", 2, "set1, set2",
-      FuncIS_EQUAL_SET, "src/set.c:IS_EQUAL_SET" },
-
-    { "IS_SUBSET_SET", 2, "set1, set2",
-      FuncIS_SUBSET_SET, "src/set.c:IS_SUBSET_SET" },
-
-    { "ADD_SET", 2, "set, val",
-      FuncADD_SET, "src/set.c:ADD_SET" },
-
-    { "REM_SET", 2, "set, val",
-      FuncREM_SET, "src/set.c:REM_SET" },
-
-    { "UNITE_SET", 2, "set1, set2",
-      FuncUNITE_SET, "src/set.c:UNITE_SET" },
-
-    { "INTER_SET", 2, "set1, set2",
-      FuncINTER_SET, "src/set.c:INTER_SET" },
-
-    { "SUBTR_SET", 2, "set1, set2",
-      FuncSUBTR_SET, "src/set.c:SUBTR_SET" },
-
+    GVAR_FUNC(LIST_SORTED_LIST, 1, "list"),
+    GVAR_FUNC(IS_EQUAL_SET, 2, "set1, set2"),
+    GVAR_FUNC(IS_SUBSET_SET, 2, "set1, set2"),
+    GVAR_FUNC(ADD_SET, 2, "set, val"),
+    GVAR_FUNC(REM_SET, 2, "set, val"),
+    GVAR_FUNC(UNITE_SET, 2, "set1, set2"),
+    GVAR_FUNC(INTER_SET, 2, "set1, set2"),
+    GVAR_FUNC(SUBTR_SET, 2, "set1, set2"),
     { 0, 0, 0, 0, 0 }
 
 };

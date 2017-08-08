@@ -4784,12 +4784,8 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "PermList", 1, "list",
-      FuncPermList, "src/permutat.c:PermList" },
-
-    { "LARGEST_MOVED_POINT_PERM", 1, "perm",
-      FuncLARGEST_MOVED_POINT_PERM, "src/permutat.c:LARGEST_MOVED_POINT_PERM" },
-
+    GVAR_FUNC(PermList, 1, "list"),
+    GVAR_FUNC(LARGEST_MOVED_POINT_PERM, 1, "perm"),
     { "CYCLE_LENGTH_PERM_INT", 2, "perm, point",
       FuncCycleLengthPermInt, "src/permutat.c:CycleLengthPermInt" },
 
@@ -4808,15 +4804,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "SMALLEST_GENERATOR_PERM", 1, "perm",
       FuncSmallestGeneratorPerm, "src/permutat.c:SmallestGeneratorPerm" },
 
-    { "RESTRICTED_PERM", 3, "perm,domain,test",
-      FuncRESTRICTED_PERM, "src/permutat.c:RESTRICTED_PERM" },
-
-    { "SHIFTED_PERM", 2, "perm,shift",
-      FuncSHIFTED_PERM, "src/permutat.c:SHIFTED_PERM" },
-
-    { "TRIM_PERM", 2, "perm, degree",
-      FuncTRIM_PERM, "src/permutat.c:TRIM_PERM" },
-
+    GVAR_FUNC(RESTRICTED_PERM, 3, "perm,domain,test"),
+    GVAR_FUNC(SHIFTED_PERM, 2, "perm,shift"),
+    GVAR_FUNC(TRIM_PERM, 2, "perm, degree"),
     { "SPLIT_PARTITION", 5, "Ppoints, Qn,j,g,a,b,max",
       FunSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
 
@@ -4826,19 +4816,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "DISTANCE_PERMS", 2, "perm1, perm2",
       FuncDistancePerms, "src/permutat.c:DISTANCE_PERMS" },
     
-    { "AGEST", 6, "orbit, newlabels, labels, translabels, transversal,genblabels",
-      FuncAGEST, "src/permutat.c:AGEST" },
-    
-    { "AGESTC", -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels",
-      FuncAGESTC, "src/permutat.c:AGESTC" },
-    
-    { "MappingPermListList", 2, "src, dst", 
-      FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
-    
-    { "SCR_SIFT_HELPER", 3, "stabrec, perm, n",
-      FuncSCR_SIFT_HELPER, "src/permutat.c:SRC_SIFT_HELPER" },
-    
-
+    GVAR_FUNC(AGEST, 6, "orbit, newlabels, labels, translabels, transversal,genblabels"),
+    GVAR_FUNC(AGESTC, -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels"),
+    GVAR_FUNC(MappingPermListList, 2, "src, dst"),
+    GVAR_FUNC(SCR_SIFT_HELPER, 3, "stabrec, perm, n"),
     { 0, 0, 0, 0, 0 }
 
 };

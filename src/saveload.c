@@ -1015,15 +1015,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "SaveWorkspace", 1, "fname", 
-      FuncSaveWorkspace, "src/saveload.c:SaveWorkspace" },
-
-    { "DumpWorkspace", 1, "fname", 
-      FuncDumpWorkspace, "src/saveload.c:DumpWorkspace" },
-
-    { "FindBag", 3, "minsize, maxsize, tnum", 
-      FuncFindBag, "src/saveload.c:FindBag" },
-
+    GVAR_FUNC(SaveWorkspace, 1, "fname"),
+    GVAR_FUNC(DumpWorkspace, 1, "fname"),
+    GVAR_FUNC(FindBag, 3, "minsize, maxsize, tnum"),
     { "BagStats", 1, "filename", 
       BagStats, "src/saveload.c:BagStats" },
 

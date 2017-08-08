@@ -5913,9 +5913,7 @@ Obj FuncCOMPILE_FUNC (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "COMPILE_FUNC", -1, "arg",
-      FuncCOMPILE_FUNC, "src/compiler.c:COMPILE_FUNC" },
-
+    GVAR_FUNC(COMPILE_FUNC, -1, "arg"),
     { 0, 0, 0, 0, 0 }
 
 };

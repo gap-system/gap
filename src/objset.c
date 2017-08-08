@@ -879,48 +879,20 @@ static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) {
 
 static StructGVarFunc GVarFuncs [] = {
 
-    { "OBJ_SET", -1, "[list]",
-      FuncOBJ_SET, "src/objset.c:OBJ_SET" },
-
-    { "ADD_OBJ_SET", 2, "objset, obj",
-      FuncADD_OBJ_SET, "src/objset.c:ADD_OBJ_SET" },
-
-    { "REMOVE_OBJ_SET", 2, "objset, obj",
-      FuncREMOVE_OBJ_SET, "src/objset.c:REMOVE_OBJ_SET" },
-
-    { "FIND_OBJ_SET", 2, "objset, obj",
-      FuncFIND_OBJ_SET, "src/objset.c:FIND_OBJ_SET" },
-
-    { "CLEAR_OBJ_SET", 1, "objset",
-      FuncCLEAR_OBJ_SET, "src/objset.c:CLEAR_OBJ_SET" },
-
-    { "OBJ_SET_VALUES", 1, "objset",
-      FuncOBJ_SET_VALUES, "src/objset.c:OBJ_SET_VALUES" },
-
-    { "OBJ_MAP", -1, "[list]",
-      FuncOBJ_MAP, "src/objset.c:OBJ_MAP" },
-
-    { "ADD_OBJ_MAP", 3, "objmap, key, value",
-      FuncADD_OBJ_MAP, "src/objset.c:ADD_OBJ_MAP" },
-
-    { "REMOVE_OBJ_MAP", 2, "objmap, obj",
-      FuncREMOVE_OBJ_MAP, "src/objset.c:REMOVE_OBJ_MAP" },
-
-    { "FIND_OBJ_MAP", 3, "objmap, obj, default",
-      FuncFIND_OBJ_MAP, "src/objset.c:FIND_OBJ_MAP" },
-
-    { "CONTAINS_OBJ_MAP", 2, "objmap, obj",
-      FuncCONTAINS_OBJ_MAP, "src/objset.c:CONTAINS_OBJ_MAP" },
-
-    { "CLEAR_OBJ_MAP", 1, "objmap",
-      FuncCLEAR_OBJ_MAP, "src/objset.c:CLEAR_OBJ_MAP" },
-
-    { "OBJ_MAP_VALUES", 1, "objmap",
-      FuncOBJ_MAP_VALUES, "src/objset.c:OBJ_MAP_VALUES" },
-
-    { "OBJ_MAP_KEYS", 1, "objmap",
-      FuncOBJ_MAP_KEYS, "src/objset.c:OBJ_MAP_KEYS" },
-
+    GVAR_FUNC(OBJ_SET, -1, "[list]"),
+    GVAR_FUNC(ADD_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(REMOVE_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(FIND_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(CLEAR_OBJ_SET, 1, "objset"),
+    GVAR_FUNC(OBJ_SET_VALUES, 1, "objset"),
+    GVAR_FUNC(OBJ_MAP, -1, "[list]"),
+    GVAR_FUNC(ADD_OBJ_MAP, 3, "objmap, key, value"),
+    GVAR_FUNC(REMOVE_OBJ_MAP, 2, "objmap, obj"),
+    GVAR_FUNC(FIND_OBJ_MAP, 3, "objmap, obj, default"),
+    GVAR_FUNC(CONTAINS_OBJ_MAP, 2, "objmap, obj"),
+    GVAR_FUNC(CLEAR_OBJ_MAP, 1, "objmap"),
+    GVAR_FUNC(OBJ_MAP_VALUES, 1, "objmap"),
+    GVAR_FUNC(OBJ_MAP_KEYS, 1, "objmap"),
     { 0, 0, 0, 0, 0 }
 
 };

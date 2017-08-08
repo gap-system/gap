@@ -2589,18 +2589,10 @@ void PrintLVars( Obj lvars )
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  { "GetCurrentLVars", 0, "",
-    FuncGetCurrentLVars, "src/vars.c: GetCurrentLVars"},
-
-  { "GetBottomLVars", 0, "",
-    FuncGetBottomLVars, "src/vars.c: GetBottomLVars"},
-
-  { "ParentLVars", 1, "lvars",
-    FuncParentLVars, "src/vars.c: ParentLVars"},
-
-  { "ContentsLVars", 1, "lvars",
-    FuncContentsLVars, "src/vars.c: ContentsLVars"},
-
+  GVAR_FUNC(GetCurrentLVars, 0, ""),
+  GVAR_FUNC(GetBottomLVars, 0, ""),
+  GVAR_FUNC(ParentLVars, 1, "lvars"),
+  GVAR_FUNC(ContentsLVars, 1, "lvars"),
   { 0, 0, 0, 0, 0 }
 };
 

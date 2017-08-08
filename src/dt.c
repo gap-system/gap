@@ -1790,21 +1790,11 @@ Obj    FuncDT_evaluation(Obj      self,
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "MakeFormulaVector", 2, "tree, presentation",
-      FuncMakeFormulaVector, "src/dt.c:MakeFormulaVector" },
-
-    { "FindNewReps", 4, "tree, representatives, presentation, maximum",
-      FuncFindNewReps, "src/dt.c:FindNewReps" },
-
-    { "UnmarkTree", 1, "tree",
-      FuncUnmarkTree, "src/dt.c:UnmarkTree" },
-
-    { "GetPols", 3, "list, presentation, polynomial",
-      FuncGetPols, "src/dt.c:GetPols" },
-    
-    { "DT_evaluation", 1, "vector",
-      FuncDT_evaluation, "src/dt.c:DT_evaluation" },
-
+    GVAR_FUNC(MakeFormulaVector, 2, "tree, presentation"),
+    GVAR_FUNC(FindNewReps, 4, "tree, representatives, presentation, maximum"),
+    GVAR_FUNC(UnmarkTree, 1, "tree"),
+    GVAR_FUNC(GetPols, 3, "list, presentation, polynomial"),
+    GVAR_FUNC(DT_evaluation, 1, "vector"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -2215,175 +2215,65 @@ Obj FuncExecuteProcess (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "READ", 1L, "filename",
-      FuncREAD, "src/streams.c:READ" },
-
-    { "READ_NORECOVERY", 1L, "filename",
-      FuncREAD_NORECOVERY, "src/streams.c:READ_NORECOVERY" },
-
-    { "READ_ALL_COMMANDS", 2L, "stream, echo",
-      FuncREAD_ALL_COMMANDS, "src/streams.c:READ_ALL_COMMANDS" },
-
-    { "READ_COMMAND_REAL", 2L, "stream, echo",
-      FuncREAD_COMMAND_REAL, "src/streams.c:READ_COMMAND_REAL" },
-
-    { "READ_COMMAND", 2L, "stream, echo", 
-      FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },
-
-    { "READ_STREAM", 1L, "stream",
-      FuncREAD_STREAM, "src/streams.c:READ_STREAM" },
-
-    { "READ_STREAM_LOOP", 2L, "stream, catchstderrout",
-      FuncREAD_STREAM_LOOP, "src/streams.c:READ_STREAM_LOOP" },
-
-    { "READ_AS_FUNC", 1L, "filename",
-      FuncREAD_AS_FUNC, "src/streams.c:READ_AS_FUNC" },
-
-    { "READ_AS_FUNC_STREAM", 1L, "stream", 
-      FuncREAD_AS_FUNC_STREAM, "src/streams.c:READ_AS_FUNC_STREAM" },
-
-    { "READ_GAP_ROOT", 1L, "filename",
-      FuncREAD_GAP_ROOT, "src/streams.c:READ_GAP_ROOT" },
-
-    { "LOG_TO", 1L, "filename", 
-      FuncLOG_TO, "src/streams.c:LOG_TO" },
-
-    { "LOG_TO_STREAM", 1L, "filename", 
-      FuncLOG_TO_STREAM, "src/streams.c:LOG_TO_STREAM" },
-
-    { "CLOSE_LOG_TO", 0L, "", 
-      FuncCLOSE_LOG_TO, "src/streams.c:CLOSE_LOG_TO" },
-
-    { "INPUT_LOG_TO", 1L, "filename", 
-      FuncINPUT_LOG_TO, "src/streams.c:INPUT_LOG_TO" },
-
-    { "INPUT_LOG_TO_STREAM", 1L, "filename", 
-      FuncINPUT_LOG_TO_STREAM, "src/streams.c:INPUT_LOG_TO_STREAM" },
-
-    { "CLOSE_INPUT_LOG_TO", 0L, "", 
-      FuncCLOSE_INPUT_LOG_TO, "src/streams.c:CLOSE_INPUT_LOG_TO" },
-
-    { "OUTPUT_LOG_TO", 1L, "filename", 
-      FuncOUTPUT_LOG_TO, "src/streams.c:OUTPUT_LOG_TO" },
-
-    { "OUTPUT_LOG_TO_STREAM", 1L, "filename", 
-      FuncOUTPUT_LOG_TO_STREAM, "src/streams.c:OUTPUT_LOG_TO_STREAM" },
-
-    { "CLOSE_OUTPUT_LOG_TO", 0L, "", 
-      FuncCLOSE_OUTPUT_LOG_TO, "src/streams.c:CLOSE_OUTPUT_LOG_TO" },
-
-    { "Print", -1L, "args",
-      FuncPrint, "src/streams.c:Print" },
-
-    { "PRINT_TO", -1L, "args",
-      FuncPRINT_TO, "src/streams.c:PRINT_TO" },
-
-    { "PRINT_TO_STREAM", -1L, "args",
-      FuncPRINT_TO_STREAM, "src/streams.c:PRINT_TO_STREAM" },
-
-    { "APPEND_TO", -1L, "args",
-      FuncAPPEND_TO, "src/streams.c:APPEND_TO" },
-
-    { "APPEND_TO_STREAM", -1L, "args",
-      FuncAPPEND_TO_STREAM, "src/streams.c:APPEND_TO_STREAM" },
-
-    { "SET_OUTPUT", 2, "file, app",
-      FuncSET_OUTPUT, "src/streams.c:SET_OUTPUT" },
-
-    { "SET_PREVIOUS_OUTPUT", 0, "",
-      FuncSET_PREVIOUS_OUTPUT, "src/streams.c:SET_PREVIOUS_OUTPUT" },
-
-    { "TmpName", 0L, "",
-      FuncTmpName, "src/streams.c:TmpName" },
-
-    { "TmpDirectory", 0L, "",
-      FuncTmpDirectory, "src/streams.c:TmpDirectory" },
-
-    { "RemoveFile", 1L, "filename",
-      FuncRemoveFile, "src/streams.c:RemoveFile" },
-
-    { "CreateDir", 1L, "filename",
-      FuncCreateDir, "src/streams.c:CreateDir" },
-
-    { "RemoveDir", 1L, "filename",
-      FuncRemoveDir, "src/streams.c:RemoveDir" },
-
-    { "IsDir", 1L, "filename",
-      FuncIsDir, "src/streams.c:IsDir" },
-
-    { "LastSystemError", 0L, "", 
-      FuncLastSystemError, "src/streams.c:LastSystemError" },
-
-    { "IsExistingFile", 1L, "filename", 
-      FuncIsExistingFile, "src/streams.c:IsExistingFile" },
-
-    { "IsReadableFile", 1L, "filename",
-      FuncIsReadableFile, "src/streams.c:IsReadableFile" },
-
-    { "IsWritableFile", 1L, "filename",
-      FuncIsWritableFile, "src/streams.c:IsWritableFile" },
-
-    { "IsExecutableFile", 1L, "filename",
-      FuncIsExecutableFile, "src/streams.c:IsExecutableFile" },
-
-    { "IsDirectoryPathString", 1L, "filename",
-      FuncIsDirectoryPathString, "src/streams.c:IsDirectoryPath" },
-
-    { "STRING_LIST_DIR", 1L, "dirname",
-      FuncSTRING_LIST_DIR, "src/streams.c:STRING_LIST_DIR"},
-
-    { "CLOSE_FILE", 1L, "fid",
-      FuncCLOSE_FILE, "src/streams.c:CLOSE_FILE" },
-
-    { "INPUT_TEXT_FILE", 1L, "filename",
-      FuncINPUT_TEXT_FILE, "src/streams.c:INPUT_TEXT_FILE" },
-
-    { "OUTPUT_TEXT_FILE", 2L, "filename, append",
-      FuncOUTPUT_TEXT_FILE, "src/streams.c:OUTPUT_TEXT_FILE" },
-
-    { "IS_END_OF_FILE", 1L, "fid",
-      FuncIS_END_OF_FILE, "src/streams.c:IS_END_OF_FILE" },
-
-    { "POSITION_FILE", 1L, "fid",
-      FuncPOSITION_FILE, "src/streams.c:POSITION_FILE" },
-
-    { "READ_BYTE_FILE", 1L, "fid",
-      FuncREAD_BYTE_FILE, "src/streams.c:READ_BYTE_FILE" },
-
-    { "READ_LINE_FILE", 1L, "fid",
-      FuncREAD_LINE_FILE, "src/streams.c:READ_LINE_FILE" },
-
-    { "READ_ALL_FILE", 2L, "fid, limit",
-      FuncREAD_ALL_FILE, "src/streams.c:READ_ALL_FILE" },
-
-    { "SEEK_POSITION_FILE", 2L, "fid, pos",
-      FuncSEEK_POSITION_FILE, "src/streams.c:SEEK_POSITION_FILE" },
-
-    { "WRITE_BYTE_FILE", 2L, "fid, byte",
-      FuncWRITE_BYTE_FILE, "src/streams.c:WRITE_BYTE_FILE" },
-
-    { "WRITE_STRING_FILE_NC", 2L, "fid, string",
-      FuncWRITE_STRING_FILE_NC, "src/streams.c:WRITE_STRING_FILE_NC" },
-
-    { "READ_STRING_FILE", 1L, "fid",
-      FuncREAD_STRING_FILE, "src/streams.c:READ_STRING_FILE" },
-
-    { "FD_OF_FILE", 1L, "fid",
-      FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
-
+    GVAR_FUNC(READ, 1, "filename"),
+    GVAR_FUNC(READ_NORECOVERY, 1, "filename"),
+    GVAR_FUNC(READ_ALL_COMMANDS, 2, "stream, echo"),
+    GVAR_FUNC(READ_COMMAND_REAL, 2, "stream, echo"),
+    GVAR_FUNC(READ_COMMAND, 2, "stream, echo"),
+    GVAR_FUNC(READ_STREAM, 1, "stream"),
+    GVAR_FUNC(READ_STREAM_LOOP, 2, "stream, catchstderrout"),
+    GVAR_FUNC(READ_AS_FUNC, 1, "filename"),
+    GVAR_FUNC(READ_AS_FUNC_STREAM, 1, "stream"),
+    GVAR_FUNC(READ_GAP_ROOT, 1, "filename"),
+    GVAR_FUNC(LOG_TO, 1, "filename"),
+    GVAR_FUNC(LOG_TO_STREAM, 1, "filename"),
+    GVAR_FUNC(CLOSE_LOG_TO, 0, ""),
+    GVAR_FUNC(INPUT_LOG_TO, 1, "filename"),
+    GVAR_FUNC(INPUT_LOG_TO_STREAM, 1, "filename"),
+    GVAR_FUNC(CLOSE_INPUT_LOG_TO, 0, ""),
+    GVAR_FUNC(OUTPUT_LOG_TO, 1, "filename"),
+    GVAR_FUNC(OUTPUT_LOG_TO_STREAM, 1, "filename"),
+    GVAR_FUNC(CLOSE_OUTPUT_LOG_TO, 0, ""),
+    GVAR_FUNC(Print, -1, "args"),
+    GVAR_FUNC(PRINT_TO, -1, "args"),
+    GVAR_FUNC(PRINT_TO_STREAM, -1, "args"),
+    GVAR_FUNC(APPEND_TO, -1, "args"),
+    GVAR_FUNC(APPEND_TO_STREAM, -1, "args"),
+    GVAR_FUNC(SET_OUTPUT, 2, "file, app"),
+    GVAR_FUNC(SET_PREVIOUS_OUTPUT, 0, ""),
+    GVAR_FUNC(TmpName, 0, ""),
+    GVAR_FUNC(TmpDirectory, 0, ""),
+    GVAR_FUNC(RemoveFile, 1, "filename"),
+    GVAR_FUNC(CreateDir, 1, "filename"),
+    GVAR_FUNC(RemoveDir, 1, "filename"),
+    GVAR_FUNC(IsDir, 1, "filename"),
+    GVAR_FUNC(LastSystemError, 0, ""),
+    GVAR_FUNC(IsExistingFile, 1, "filename"),
+    GVAR_FUNC(IsReadableFile, 1, "filename"),
+    GVAR_FUNC(IsWritableFile, 1, "filename"),
+    GVAR_FUNC(IsExecutableFile, 1, "filename"),
+    GVAR_FUNC(IsDirectoryPathString, 1, "filename"),
+    GVAR_FUNC(STRING_LIST_DIR, 1, "dirname"),
+    GVAR_FUNC(CLOSE_FILE, 1, "fid"),
+    GVAR_FUNC(INPUT_TEXT_FILE, 1, "filename"),
+    GVAR_FUNC(OUTPUT_TEXT_FILE, 2, "filename, append"),
+    GVAR_FUNC(IS_END_OF_FILE, 1, "fid"),
+    GVAR_FUNC(POSITION_FILE, 1, "fid"),
+    GVAR_FUNC(READ_BYTE_FILE, 1, "fid"),
+    GVAR_FUNC(READ_LINE_FILE, 1, "fid"),
+    GVAR_FUNC(READ_ALL_FILE, 2, "fid, limit"),
+    GVAR_FUNC(SEEK_POSITION_FILE, 2, "fid, pos"),
+    GVAR_FUNC(WRITE_BYTE_FILE, 2, "fid, byte"),
+    GVAR_FUNC(WRITE_STRING_FILE_NC, 2, "fid, string"),
+    GVAR_FUNC(READ_STRING_FILE, 1, "fid"),
+    GVAR_FUNC(FD_OF_FILE, 1, "fid"),
 #ifdef HPCGAP
-    { "RAW_MODE_FILE", 2L, "fid, bool",
-      FuncRAW_MODE_FILE, "src/streams.c:RAW_MODE_FILE" },
+    GVAR_FUNC(RAW_MODE_FILE, 2, "fid, bool"),
 #endif
-
 #ifdef HAVE_SELECT
-    { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
-      FuncUNIXSelect, "src/streams.c:UNIXSelect" },
+    GVAR_FUNC(UNIXSelect, 5, "inlist, outlist, exclist, timeoutsec, timeoutusec"),
 #endif
-
-    { "ExecuteProcess", 5L, "dir, prg, in, out, args",
-      FuncExecuteProcess, "src/streams.c:ExecuteProcess" },
-
+    GVAR_FUNC(ExecuteProcess, 5, "dir, prg, in, out, args"),
     { 0, 0, 0, 0, 0 }
 
 };
