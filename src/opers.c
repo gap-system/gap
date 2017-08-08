@@ -68,6 +68,11 @@ Obj TRY_NEXT_METHOD;
 #define CACHE_SIZE 5
 
 
+static Obj StringFilterSetter;
+static Obj ArglistObjVal;
+static Obj ArglistObj;
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
@@ -1020,8 +1025,8 @@ Obj SetterAndFilter (
     Obj                 setter;
     Obj                 obj;
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-        setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                                "<<setter-and-filter>>", 2L, "obj, val",
+        setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+                                MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
                                 DoSetAndFilter );
         /* assign via 'obj' to avoid GC issues */
         obj =  SetterFilter( FLAG1_FILT(getter) );
@@ -1152,9 +1157,6 @@ Obj DoSetFilter (
     return 0;
 }
 
-static Obj StringFilterSetter;
-static Obj ArglistObjVal;
-
 Obj NewSetterFilter (
     Obj                 getter )
 {
@@ -1259,8 +1261,6 @@ Obj DoAndFilter (
     return True;
 }
 
-static Obj ArglistObj;
-
 Obj NewAndFilter (
     Obj                 oper1,
     Obj                 oper2 )
@@ -1347,8 +1347,8 @@ Obj SetterReturnTrueFilter (
 {
     Obj                 setter;
 
-    setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-        "<<setter-true-filter>>", 2L, "obj, val",
+    setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+        MakeImmString("<<setter-true-filter>>"), 2, ArglistObjVal,
         DoSetReturnTrueFilter );
     FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
@@ -1371,8 +1371,8 @@ Obj NewReturnTrueFilter ( void )
     Obj                 tester;
     Obj                 flags;
 
-    getter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-        "ReturnTrueFilter", 1L, "obj",
+    getter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+        MakeImmString("ReturnTrueFilter"), 1, ArglistObj,
         DoReturnTrueFilter );
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
@@ -5873,13 +5873,10 @@ Obj FuncSETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
     Obj                 tmp;
-    Obj                 args;
-
-    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "SetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
-                         args, DoSetterFunction );
+                         ArglistObjVal, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
@@ -5919,14 +5916,11 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
-    Obj                 args;
     Obj                 rnam;
-
-    args = ArgStringToList("object, value");
 
     WRAP_NAME(fname, name, "GetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
-                         args, DoGetterFunction );
+                         ArglistObj, DoGetterFunction );
     /* Need to seperate this onto two lines, in case RNamObj causes
      * a garbage collection */
     rnam = INTOBJ_INT( RNamObj(name) );
