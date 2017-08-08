@@ -1231,6 +1231,7 @@ Obj ArgStringToList(const Char *nams_c) {
         C_NEW_STRING( tmp, l - k, nams_c + k );
         RetypeBag( tmp, T_STRING+IMMUTABLE );
         SET_ELM_PLIST( nams_o, i, tmp );
+        CHANGED_BAG( nams_o );
         k = l;
     }
 
