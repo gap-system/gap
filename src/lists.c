@@ -2290,6 +2290,7 @@ static StructGVarProp GVarProps [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
+    // FIXME: why DoOperation0Args below?
     { "POS_LIST", -1, "list, obj", &PosListOper,
       DoOperation0Args, "src/lists.c:POS_LIST" },
 
