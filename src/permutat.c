@@ -4807,7 +4807,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(RESTRICTED_PERM, 3, "perm,domain,test"),
     GVAR_FUNC(SHIFTED_PERM, 2, "perm,shift"),
     GVAR_FUNC(TRIM_PERM, 2, "perm, degree"),
-    { "SPLIT_PARTITION", 5, "Ppoints, Qn,j,g,a,b,max",
+    { "SPLIT_PARTITION", 5, "Ppoints,Qn,j,g,a_b_max",
       FuncSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
 
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
