@@ -384,6 +384,15 @@ void            RetypeBag (
     BagHeader   *header = BAG_HEADER(bag);
     UInt old_type = header->type;
 
+    /* If the new_type is an immutable type set
+       the OBJ_FLAG_IMMUTABLE flag, and move it
+       into the public region */
+    if ((FIRST_IMM_MUT_TNUM <= new_type) &&
+        (new_type <= LAST_IMM_MUT_TNUM) &&
+        (new_type & IMMUTABLE)) {
+        SET_OBJ_FLAG(bag, OBJ_FLAG_IMMUTABLE);
+        REGION(bag) = NULL;
+    }
     /* change the size-type word                                           */
     header->type = new_type;
     {

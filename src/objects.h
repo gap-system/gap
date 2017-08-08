@@ -448,12 +448,13 @@ enum {
 **
 */
 
-#define TESTING (1 << 0)
-
+enum {
+    OBJ_FLAG_TESTING   = (1 << 0),
 #ifdef HPCGAP
-#define TESTED (1 << 1)
+    OBJ_FLAG_TESTED    = (1 << 1),
 #endif
-
+    OBJ_FLAG_IMMUTABLE = (1 << 2),
+};
 
 /****************************************************************************
 **
@@ -614,10 +615,18 @@ extern void CheckedMakeImmutable( Obj obj );
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
 **  change due to assignments), and 0 otherwise.
 */
-#define IS_MUTABLE_OBJ(obj) \
-                        ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+static inline Int IS_MUTABLE_OBJ(Obj obj)
+{
+    if(IS_INTOBJ(obj) || IS_FFE(obj)) {
+        return 0;
+    } else if (TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE) == OBJ_FLAG_IMMUTABLE) {
+        return 0;
+    } else {
+        return ((*IsMutableObjFuncs[TNUM_OBJ(obj)])(obj));
+    }
+}
+
 
 /****************************************************************************
 **
