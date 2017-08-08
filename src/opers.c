@@ -1680,7 +1680,7 @@ Obj CallHandleMethodNotFound( Obj oper,
 
 /****************************************************************************
 **
-*F  FuncCompactTypeIDs( <self> ) . . . garbage collect the type IDs
+*F  FuncCOMPACT_TYPE_IDS( <self> ) . . . garbage collect the type IDs
 **
 */
 
@@ -1697,7 +1697,7 @@ static void FixTypeIDs( Bag b ) {
 }
 
 
-Obj FuncCompactTypeIDs( Obj self )
+Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
   NextTypeID = -(1L << NR_SMALL_INT_BITS);
   CallbackForAllBags( FixTypeIDs );
@@ -6205,9 +6205,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SET_ATTRIBUTE_STORING, 2, "attr, val"),
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
-    { "COMPACT_TYPE_IDS", 0, "",
-      FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
-
+    GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
     GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
     GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
     { 0, 0, 0, 0, 0 }

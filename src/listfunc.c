@@ -544,7 +544,7 @@ UInt            PositionSortedDensePlistComp (
     return h;
 }
 
-Obj             FuncPOSITION_SORTED_COMP (
+Obj             FuncPOSITION_SORTED_LIST_COMP (
     Obj                 self,
     Obj                 list,
     Obj                 obj,
@@ -555,7 +555,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the first argument                                            */
     while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_COMP: <list> must be a small list (not a %s)",
+            "POSITION_SORTED_LIST_COMP: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
@@ -563,7 +563,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the third argument                                            */
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
-            "POSITION_SORTED_COMP: <func> must be a function (not a %s)",
+            "POSITION_SORTED_LIST_COMP: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
             "you can replace <func> via 'return <func>;'" );
     }
@@ -1765,9 +1765,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(APPEND_LIST_INTR, 2, "list1, list2"),
     GVAR_FUNC(POSITION_SORTED_LIST, 2, "list, obj"),
-    { "POSITION_SORTED_LIST_COMP", 3, "list, obj, func", 
-      FuncPOSITION_SORTED_COMP, "src/listfunc.c:POSITION_SORTED_LIST_COMP" },
-
+    GVAR_FUNC(POSITION_SORTED_LIST_COMP, 3, "list, obj, func"),
     GVAR_FUNC(POSITION_FIRST_COMPONENT_SORTED, 2, "list, obj"),
     GVAR_FUNC(SORT_LIST, 1, "list"),
     GVAR_FUNC(STABLE_SORT_LIST, 1, "list"),

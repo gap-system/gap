@@ -1536,7 +1536,7 @@ Obj FuncTzSearchC (
 
 /* rewriting using tz form relators */
 
-Obj  FuncReduceLetterRepWordsRewSys (
+Obj  FuncREDUCE_LETREP_WORDS_REW_SYS (
  Obj  self,
  Obj  tzrules,
  Obj  a_w )
@@ -1707,9 +1707,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(TzOccurrences, -1, "args"),
     GVAR_FUNC(TzOccurrencesPairs, -1, "args"),
     GVAR_FUNC(TzSearchC, -1, "args"),
-    { "REDUCE_LETREP_WORDS_REW_SYS", 2, "tzwords, word",
-      FuncReduceLetterRepWordsRewSys,"src/tietze.c:REDUCE_LETREP_WORDS_REW_SYS" },
-
+    GVAR_FUNC(REDUCE_LETREP_WORDS_REW_SYS, 2, "tzwords, word"),
     { 0, 0, 0, 0, 0 }
 
 };

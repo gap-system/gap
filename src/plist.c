@@ -2420,7 +2420,7 @@ Int             IsSSortPlistHom (
 }
 
 
-Obj FuncSetIsSSortedPlist (Obj self, Obj list)
+Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 {
   SET_FILT_LIST(list, FN_IS_SSORT);
   return (Obj)0;
@@ -3628,9 +3628,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(ASS_PLIST_DEFAULT, 3, "list, pos, val"),
     GVAR_FUNC(IsRectangularTablePlist, 1, "plist"),
-    { "SET_IS_SSORTED_PLIST", 1, "list",
-      FuncSetIsSSortedPlist, "src/lists.c:SET_IS_SSORTED_PLIST" },
-    
+    GVAR_FUNC(SET_IS_SSORTED_PLIST, 1, "list"),
     GVAR_FUNC(EmptyPlist, 1, "len"),
     GVAR_FUNC(ShrinkAllocationPlist, 1, "plist"),
     { 0, 0, 0, 0, 0 }

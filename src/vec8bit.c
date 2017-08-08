@@ -2481,7 +2481,7 @@ UInt AClosVec8Bit(
 *F  
 */
 
-Obj FuncAClosVec8Bits( 
+Obj FuncA_CLOSEST_VEC8BIT(
           Obj   self,
           Obj   veclis, /* pointers to matrix vectors and their multiples */
           Obj   vec,    /* vector we compute distance to */
@@ -2519,7 +2519,7 @@ Obj FuncAClosVec8Bits(
 *F  
 */
 
-Obj FuncAClosVec8BitsCoords( 
+Obj FuncA_CLOSEST_VEC8BIT_COORDS(
           Obj   self,
           Obj   veclis, /* pointers to matrix vectors and their multiples */
           Obj   vec,    /* vector we compute distance to */
@@ -5905,12 +5905,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(QUOTREM_COEFFS_VEC8BIT, 3, "vl, ll, vrshifted"),
     GVAR_FUNC(MAKE_SHIFTED_COEFFS_VEC8BIT, 2, " vr, lr"),
     GVAR_FUNC(DISTANCE_DISTRIB_VEC8BITS, 3, " veclis, vec, d"),
-    {"A_CLOSEST_VEC8BIT", 4, " veclis, vec, k, stop",
-       FuncAClosVec8Bits, "src/vec8bit.c:A_CLOSEST_VEC8BIT" },
-
-    {"A_CLOSEST_VEC8BIT_COORDS", 4, " veclis, vec, k, stop",
-       FuncAClosVec8BitsCoords, "src/vec8bit.c:A_CLOSEST_VEC8BIT_COORDS" },
-    
+    GVAR_FUNC(A_CLOSEST_VEC8BIT, 4, " veclis, vec, k, stop"),
+    GVAR_FUNC(A_CLOSEST_VEC8BIT_COORDS, 4, " veclis, vec, k, stop"),
     GVAR_FUNC(COSET_LEADERS_INNER_8BITS, 5, " veclis, weight, tofind, leaders, felts"),
     GVAR_FUNC(SEMIECHELON_LIST_VEC8BITS, 1, "mat"),
     GVAR_FUNC(SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS, 1, "mat"),
