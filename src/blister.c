@@ -2458,12 +2458,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_BLIST", "obj", &IsBlistFilt, 
-      FuncIS_BLIST, "src/blister.c:IS_BLIST" },
-
-    { "IS_BLIST_REP", "obj", &IsBlistRepFilt, 
-      FuncIS_BLIST_REP, "src/blister.c:IS_BLIST_REP" },
-
+    GVAR_FILTER(IS_BLIST, "obj", &IsBlistFilt),
+    GVAR_FILTER(IS_BLIST_REP, "obj", &IsBlistRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };

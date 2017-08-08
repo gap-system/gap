@@ -2319,9 +2319,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 */
 static StructGVarFilt GVarFilts [] = {
 
-  { "IS_INT", "obj", &IsIntFilt,
-    FuncIS_INT, "src/gmpints.c:IS_INT" },
-
+  GVAR_FILTER(IS_INT, "obj", &IsIntFilt),
   { 0, 0, 0, 0, 0 }
 
 };

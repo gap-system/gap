@@ -2249,15 +2249,9 @@ void AsssListLevelCheck (
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_LIST", "obj", &IsListFilt,
-      FuncIS_LIST, "src/lists.c:IS_LIST" },
-
-    { "IS_DENSE_LIST", "obj", &IsDenseListFilt,
-      FuncIS_DENSE_LIST, "src/lists.c:IS_DENSE_LIST" },
-
-    { "IS_HOMOG_LIST", "obj", &IsHomogListFilt,
-      FuncIS_HOMOG_LIST, "src/lists.c:IS_HOMOG_LIST" },
-
+    GVAR_FILTER(IS_LIST, "obj", &IsListFilt),
+    GVAR_FILTER(IS_DENSE_LIST, "obj", &IsDenseListFilt),
+    GVAR_FILTER(IS_HOMOG_LIST, "obj", &IsHomogListFilt),
     { "IS_TABLE_LIST", "obj", &IsTableListFilt,
       Func_IS_TABLE_LIST, "src/lists.c:IS_TABLE_LIST" },
 
@@ -2272,9 +2266,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    { "LENGTH", "list", &LengthAttr,
-      FuncLENGTH, "src/lists.c:LENGTH" },
-
+    GVAR_FILTER(LENGTH, "list", &LengthAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2286,16 +2278,9 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarProp GVarProps [] = {
 
-    { "IS_SSORT_LIST", "obj", &IsSSortListProp,
-      FuncIS_SSORT_LIST, "src/lists.c:IS_SSORT_LIST" },
-
-    { "IS_NSORT_LIST", "obj", &IsNSortListProp,
-      FuncIS_NSORT_LIST, "src/lists.c:IS_NSORT_LIST" },
-
-    { "IS_POSS_LIST", "obj", &IsPossListProp,
-      FuncIS_POSS_LIST, "src/lists.c:IS_POSS_LIST" },
-
-
+    GVAR_FILTER(IS_SSORT_LIST, "obj", &IsSSortListProp),
+    GVAR_FILTER(IS_NSORT_LIST, "obj", &IsNSortListProp),
+    GVAR_FILTER(IS_POSS_LIST, "obj", &IsPossListProp),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -783,9 +783,7 @@ void LoadWPObj( Obj wpobj )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IsWPObj", "obj", &IsWPObjFilt,
-      FuncIsWPObj, "src/weakptr.c:IsWPObj" },
-
+    GVAR_FILTER(IsWPObj, "obj", &IsWPObjFilt),
     { 0, 0, 0, 0, 0 }
 
 };

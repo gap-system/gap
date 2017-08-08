@@ -6151,9 +6151,7 @@ Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_OPERATION", "obj", &IsOperationFilt,
-      FuncIS_OPERATION, "src/opers.c:IS_OPERATION" },
-
+    GVAR_FILTER(IS_OPERATION, "obj", &IsOperationFilt),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -2260,12 +2260,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_STRING", "obj", &IsStringFilt,
-      FuncIS_STRING, "src/stringobj.c:IS_STRING" },
-
-    { "IS_STRING_REP", "obj", &IsStringRepFilt,
-      FuncIS_STRING_REP, "src/lists.c:IS_STRING_REP" },
-
+    GVAR_FILTER(IS_STRING, "obj", &IsStringFilt),
+    GVAR_FILTER(IS_STRING_REP, "obj", &IsStringRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };

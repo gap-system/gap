@@ -2068,9 +2068,7 @@ void  LoadCyc ( Obj cyc )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_CYC", "obj", &IsCycFilt,
-      FuncIS_CYC, "src/cyclotom.c:IS_CYC" },
-
+    GVAR_FILTER(IS_CYC, "obj", &IsCycFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2082,9 +2080,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    { "CONDUCTOR", "cyc", &ConductorAttr,
-      FuncCONDUCTOR, "src/cyclotom.c:CONDUCTOR" },
-
+    GVAR_FILTER(CONDUCTOR, "cyc", &ConductorAttr),
     { 0, 0, 0, 0, 0 }
 
 };
