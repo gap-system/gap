@@ -5745,10 +5745,10 @@ Int CompileFunc (
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
     if ( ! strcmp( "Init_Dynamic", name ) ) {
-        Emit( "/* type        = */ %d,\n",     MODULE_DYNAMIC ); 
+        Emit( "/* type        = */ MODULE_DYNAMIC,\n" );
     }
     else {
-        Emit( "/* type        = */ %d,\n",     MODULE_STATIC ); 
+        Emit( "/* type        = */ MODULE_STATIC,\n" );
     }
     Emit( "/* name        = */ \"%C\",\n", magic2 );
     Emit( "/* revision_c  = */ %d,\n",     0 );
