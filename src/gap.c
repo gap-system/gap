@@ -2153,6 +2153,15 @@ void InitResetFiltListTNumsFromTable (
     }
 }
 
+static Obj ValidatedArgList(const char *name, int nargs, const char *argStr)
+{
+    Obj args = ArgStringToList(argStr);
+    int len = LEN_PLIST(args);
+    if (nargs >= 0 && len != nargs)
+        fprintf(stderr, "#W %s takes %d arguments, but argument string is '%s'"
+          " which implies %d arguments\n", name, nargs, argStr, len);
+    return args;
+}
 
 /****************************************************************************
 **
@@ -2165,8 +2174,9 @@ void InitGVarFiltsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewFilter( NameGVarObj( gvar ), 1, ArgStringToList( tab[i].argument ), tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -2183,32 +2193,10 @@ void InitGVarAttrsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewAttribute( NameGVarObj( gvar ),
-                          1,
-                          ArgStringToList( tab[i].argument ),
-                          tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
-    }
-}
-
-void SetupFuncInfo(Obj func, const Char* cookie)
-{
-    const Char* pos = strchr(cookie, ':');
-    if ( pos ) {
-        Obj filename, start;
-        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
-        char buffer[512];
-        Int len = 511<(pos-cookie)?511:pos-cookie;
-        memcpy(buffer, cookie, len);
-        buffer[len] = 0;
-        filename = MakeImmString(buffer);
-        start = MakeImmString(pos+1);
-        SET_FILENAME_BODY(body_bag, filename);
-        SET_LOCATION_BODY(body_bag, start);
-        SET_BODY_FUNC(func, body_bag);
-        CHANGED_BAG(body_bag);
-        CHANGED_BAG(func);
     }
 }
 
@@ -2223,11 +2211,9 @@ void InitGVarPropsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewProperty( NameGVarObj( gvar ),
-                        1,
-                        ArgStringToList( tab[i].argument ),
-                        tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -2244,15 +2230,32 @@ void InitGVarOpersFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewOperation( NameGVarObj( gvar ),
-                          tab[i].nargs,
-                          ArgStringToList( tab[i].args ),
-                          tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        AssGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
 
+static void SetupFuncInfo(Obj func, const Char* cookie)
+{
+    const Char* pos = strchr(cookie, ':');
+    if ( pos ) {
+        Obj filename, start;
+        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
+        char buffer[512];
+        Int len = 511<(pos-cookie) ? 511 : pos-cookie;
+        memcpy(buffer, cookie, len);
+        buffer[len] = 0;
+        filename = MakeImmString(buffer);
+        start = MakeImmString(pos+1);
+        SET_FILENAME_BODY(body_bag, filename);
+        SET_LOCATION_BODY(body_bag, start);
+        SET_BODY_FUNC(func, body_bag);
+        CHANGED_BAG(body_bag);
+        CHANGED_BAG(func);
+    }
+}
 
 /****************************************************************************
 **
@@ -2265,10 +2268,9 @@ void InitGVarFuncsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        Obj func = NewFunction( NameGVarObj( gvar ),
-                                tab[i].nargs,
-                                ArgStringToList( tab[i].args ),
-                                tab[i].handler );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        Obj func = NewFunction( name, tab[i].nargs, args, tab[i].handler );
         SetupFuncInfo( func, tab[i].cookie );
         AssGVar( gvar, func );
         MakeReadOnlyGVar( gvar );
