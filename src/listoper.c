@@ -1997,7 +1997,7 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
 
 /****************************************************************************
 **
-*F  MONOM_GRLLEX( u, v ) . . . . . ``grlex'' ordering for internal monomials
+*F  MONOM_GRLEX( u, v ) . . . . . ``grlex'' ordering for internal monomials
 **
 **  This function  implements the ``grlex'' (degree, then lexicographic) ordering
 **  for monomials  of commuting indeterminates with x_1>x_2>x_3 etc. (this
