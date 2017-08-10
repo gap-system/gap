@@ -1870,8 +1870,8 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* make and install the 'ADD_LIST' operation                           */
-    HDLR_FUNC( AddListOper, 2 ) = FuncADD_LIST;
-    HDLR_FUNC( AddListOper, 3 ) = FuncADD_LIST3;
+    SET_HDLR_FUNC( AddListOper, 2, FuncADD_LIST);
+    SET_HDLR_FUNC( AddListOper, 3, FuncADD_LIST3);
 
     /* return success                                                      */
     return 0;

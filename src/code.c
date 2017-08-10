@@ -160,50 +160,46 @@ Obj FILENAME_STAT(Stat stat)
 
 Obj GET_FILENAME_BODY(Obj body)
 {
-    return PTR_BAG(body)[0];
+    return BODY_HEADER(body)->filename;
 }
 
 void SET_FILENAME_BODY(Obj body, Obj val)
 {
-    PTR_BAG(body)[0] = val;
+    GAP_ASSERT(IS_STRING_REP(val));
+    BODY_HEADER(body)->filename = val;
 }
 
 Obj GET_STARTLINE_BODY(Obj body)
 {
-    Obj line = PTR_BAG(body)[1];
-    if(IS_INTOBJ(line))
-        return line;
-    else
-        return 0;
+    Obj line = BODY_HEADER(body)->startline;
+    return IS_INTOBJ(line) ? line : 0;
 }
 
 void SET_STARTLINE_BODY(Obj body, Obj val)
 {
-    PTR_BAG(body)[1] = val;
+    GAP_ASSERT(IS_INTOBJ(val));
+    BODY_HEADER(body)->startline = val;
 }
 
 Obj GET_LOCATION_BODY(Obj body)
 {
-    Obj location = PTR_BAG(body)[1];
-    if(IS_STRING(location))
-        return location;
-    else
-        return 0;
+    Obj location = BODY_HEADER(body)->location;
+    return IS_STRING(location) ? location : 0;
 }
 
 void SET_LOCATION_BODY(Obj body, Obj val)
 {
-    PTR_BAG(body)[1] = val;
+    BODY_HEADER(body)->location = val;
 }
 
 Obj GET_ENDLINE_BODY(Obj body)
 {
-    return PTR_BAG(body)[2];
+    return BODY_HEADER(body)->endline;
 }
 
 void SET_ENDLINE_BODY(Obj body, Obj val)
 {
-    PTR_BAG(body)[2] = val;
+    BODY_HEADER(body)->endline = val;
 }
 
 /****************************************************************************
@@ -259,10 +255,10 @@ static Stat NewStatWithProf (
 
     /* make certain that the current body bag is large enough              */
     if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-      ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+      ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) + sizeof(BodyHeader) );
         STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) + NUMBER_HEADER_ITEMS_BODY*sizeof(Obj)  ) {
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) + sizeof(BodyHeader)  ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
     }
@@ -785,9 +781,9 @@ void CodeFuncExprBegin (
     
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, SIZE_FUNC );
-    NARG_FUNC( fexp ) = narg;
-    NLOC_FUNC( fexp ) = nloc;
-    NAMS_FUNC( fexp ) = nams;
+    SET_NARG_FUNC( fexp, narg );
+    SET_NLOC_FUNC( fexp, nloc );
+    SET_NAMS_FUNC( fexp, nams );
 #ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
 #endif
@@ -796,12 +792,12 @@ void CodeFuncExprBegin (
     /* give it a functions expressions list                                */
     fexs = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( fexs, 0 );
-    FEXS_FUNC( fexp ) = fexs;
+    SET_FEXS_FUNC( fexp, fexs );
     CHANGED_BAG( fexp );
 
     /* give it a body                                                      */
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
-    BODY_FUNC( fexp ) = body;
+    SET_BODY_FUNC( fexp, body );
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
@@ -814,7 +810,7 @@ void CodeFuncExprBegin (
     STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
-    ENVI_FUNC( fexp ) = STATE(CurrLVars);
+    SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
     CHANGED_BAG( fexp );
     MakeHighVars(STATE(CurrLVars));
 
@@ -887,7 +883,7 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+sizeof(BodyHeader) );
     SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(STATE(Input)->number));
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
 
@@ -3468,7 +3464,7 @@ void SaveBody ( Obj body )
   UInt *ptr;
   ptr = (UInt *) ADDR_OBJ(body);
   /* Save the new inforation in the body */
-  for (i =0; i < NUMBER_HEADER_ITEMS_BODY; i++)
+  for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     SaveSubObj((Obj)(*ptr++));
   /* and the rest */
   for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
@@ -3489,7 +3485,7 @@ void LoadBody ( Obj body )
   UInt i;
   UInt *ptr;
   ptr = (UInt *) ADDR_OBJ(body);
-  for (i =0; i < NUMBER_HEADER_ITEMS_BODY; i++)
+  for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     *(Obj *)(ptr++) = LoadSubObj();
   for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     *ptr++ = LoadUInt();

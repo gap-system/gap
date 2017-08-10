@@ -884,10 +884,10 @@ typedef struct {
 }
 TypeHandlerInfo;
 
-static UInt HandlerSortingStatus;
+static UInt HandlerSortingStatus = 0;
 
 static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
-static UInt NHandlerFuncs;
+static UInt NHandlerFuncs = 0;
  
 void InitHandlerFunc (
     ObjFunc             hdlr,
@@ -917,16 +917,6 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
-
-void InitHandlerRegistration( void )
-{
-  /* initialize these here rather than statically to allow for restart */
-  /* can't do them in InitKernel of this module because it's called too late
-     so make it a function and call it from an earlier InitKernel */
-  HandlerSortingStatus = 0;
-  NHandlerFuncs = 0;
-
-}
 
 #ifdef DEBUG_HANDLER_REGISTRATION
 
@@ -1133,37 +1123,33 @@ Obj NewFunctionT (
 
     /* create a function with a fixed number of arguments                  */
     if ( narg >= 0 ) {
-        HDLR_FUNC(func,0) = DoFail0args;
-        HDLR_FUNC(func,1) = DoFail1args;
-        HDLR_FUNC(func,2) = DoFail2args;
-        HDLR_FUNC(func,3) = DoFail3args;
-        HDLR_FUNC(func,4) = DoFail4args;
-        HDLR_FUNC(func,5) = DoFail5args;
-        HDLR_FUNC(func,6) = DoFail6args;
-        HDLR_FUNC(func,7) = DoFailXargs;
-        HDLR_FUNC( func, (narg <= 6 ? narg : 7) ) = hdlr;
+        SET_HDLR_FUNC(func, 0, DoFail0args);
+        SET_HDLR_FUNC(func, 1, DoFail1args);
+        SET_HDLR_FUNC(func, 2, DoFail2args);
+        SET_HDLR_FUNC(func, 3, DoFail3args);
+        SET_HDLR_FUNC(func, 4, DoFail4args);
+        SET_HDLR_FUNC(func, 5, DoFail5args);
+        SET_HDLR_FUNC(func, 6, DoFail6args);
+        SET_HDLR_FUNC(func, 7, DoFailXargs);
+        SET_HDLR_FUNC(func, (narg <= 6 ? narg : 7), hdlr );
     }
 
     /* create a function with a variable number of arguments               */
     else {
-      HDLR_FUNC(func,0) = (narg >= -1) ? DoWrap0args : DoFail0args;
-      HDLR_FUNC(func,1) = (narg >= -2) ? DoWrap1args : DoFail1args;
-      HDLR_FUNC(func,2) = (narg >= -3) ? DoWrap2args : DoFail2args;
-      HDLR_FUNC(func,3) = (narg >= -4) ? DoWrap3args : DoFail3args;
-      HDLR_FUNC(func,4) = (narg >= -5) ? DoWrap4args : DoFail4args;
-      HDLR_FUNC(func,5) = (narg >= -6) ? DoWrap5args : DoFail5args;
-      HDLR_FUNC(func,6) = (narg >= -7) ? DoWrap6args : DoFail6args;
-      HDLR_FUNC(func,7) = hdlr;
+      SET_HDLR_FUNC(func, 0, (narg >= -1) ? DoWrap0args : DoFail0args);
+      SET_HDLR_FUNC(func, 1, (narg >= -2) ? DoWrap1args : DoFail1args);
+      SET_HDLR_FUNC(func, 2, (narg >= -3) ? DoWrap2args : DoFail2args);
+      SET_HDLR_FUNC(func, 3, (narg >= -4) ? DoWrap3args : DoFail3args);
+      SET_HDLR_FUNC(func, 4, (narg >= -5) ? DoWrap4args : DoFail4args);
+      SET_HDLR_FUNC(func, 5, (narg >= -6) ? DoWrap5args : DoFail5args);
+      SET_HDLR_FUNC(func, 6, (narg >= -7) ? DoWrap6args : DoFail6args);
+      SET_HDLR_FUNC(func, 7, hdlr);
     }
 
     /* enter the arguments and the names                               */
-
-    // Note that ConvImmString may trigger a garbage collection in GASMAN,
-    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
-    name = ConvImmString(name);
-    NAME_FUNC(func) = name;
-    NARG_FUNC(func) = narg;
-    NAMS_FUNC(func) = nams;
+    SET_NAME_FUNC(func, ConvImmString(name));
+    SET_NARG_FUNC(func, narg);
+    SET_NAMS_FUNC(func, nams);
     if (nams) MakeBagPublic(nams);
     CHANGED_BAG(func);
 
@@ -1175,7 +1161,7 @@ Obj NewFunctionT (
     SET_TIME_WOUT_PROF( prof, 0 );
     SET_STOR_WITH_PROF( prof, 0 );
     SET_STOR_WOUT_PROF( prof, 0 );
-    PROF_FUNC(func) = prof;
+    SET_PROF_FUNC(func, prof);
     CHANGED_BAG(func);
 
     /* return the function bag                                             */
@@ -1645,7 +1631,7 @@ Obj FuncNAME_FUNC (
         name = NAME_FUNC(func);
         if ( name == 0 ) {
             name = MakeImmString("unknown");
-            NAME_FUNC(func) = name;
+            SET_NAME_FUNC(func, name);
             CHANGED_BAG(func);
         }
         return name;
@@ -1665,10 +1651,7 @@ Obj FuncSET_NAME_FUNC(
                           (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
-    // Note that ConvImmString may trigger a garbage collection in GASMAN,
-    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
-    name = ConvImmString(name);
-    NAME_FUNC(func) = name;
+    SET_NAME_FUNC(func, ConvImmString(name));
     CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
@@ -1834,27 +1817,27 @@ Obj FuncPROFILE_FUNC(
     /* install new handlers                                                */
     if ( TNUM_OBJ(prof) != T_FUNCTION ) {
         copy = NewBag( TNUM_OBJ(func), SIZE_OBJ(func) );
-        HDLR_FUNC(copy,0) = HDLR_FUNC(func,0);
-        HDLR_FUNC(copy,1) = HDLR_FUNC(func,1);
-        HDLR_FUNC(copy,2) = HDLR_FUNC(func,2);
-        HDLR_FUNC(copy,3) = HDLR_FUNC(func,3);
-        HDLR_FUNC(copy,4) = HDLR_FUNC(func,4);
-        HDLR_FUNC(copy,5) = HDLR_FUNC(func,5);
-        HDLR_FUNC(copy,6) = HDLR_FUNC(func,6);
-        HDLR_FUNC(copy,7) = HDLR_FUNC(func,7);
-        NAME_FUNC(copy)   = NAME_FUNC(func);
-        NARG_FUNC(copy)   = NARG_FUNC(func);
-        NAMS_FUNC(copy)   = NAMS_FUNC(func);
-        PROF_FUNC(copy)   = PROF_FUNC(func);
-        HDLR_FUNC(func,0) = DoProf0args;
-        HDLR_FUNC(func,1) = DoProf1args;
-        HDLR_FUNC(func,2) = DoProf2args;
-        HDLR_FUNC(func,3) = DoProf3args;
-        HDLR_FUNC(func,4) = DoProf4args;
-        HDLR_FUNC(func,5) = DoProf5args;
-        HDLR_FUNC(func,6) = DoProf6args;
-        HDLR_FUNC(func,7) = DoProfXargs;
-        PROF_FUNC(func)   = copy;
+        SET_HDLR_FUNC(copy,0, HDLR_FUNC(func,0));
+        SET_HDLR_FUNC(copy,1, HDLR_FUNC(func,1));
+        SET_HDLR_FUNC(copy,2, HDLR_FUNC(func,2));
+        SET_HDLR_FUNC(copy,3, HDLR_FUNC(func,3));
+        SET_HDLR_FUNC(copy,4, HDLR_FUNC(func,4));
+        SET_HDLR_FUNC(copy,5, HDLR_FUNC(func,5));
+        SET_HDLR_FUNC(copy,6, HDLR_FUNC(func,6));
+        SET_HDLR_FUNC(copy,7, HDLR_FUNC(func,7));
+        SET_NAME_FUNC(copy,   NAME_FUNC(func));
+        SET_NARG_FUNC(copy,   NARG_FUNC(func));
+        SET_NAMS_FUNC(copy,   NAMS_FUNC(func));
+        SET_PROF_FUNC(copy,   PROF_FUNC(func));
+        SET_HDLR_FUNC(func,0, DoProf0args);
+        SET_HDLR_FUNC(func,1, DoProf1args);
+        SET_HDLR_FUNC(func,2, DoProf2args);
+        SET_HDLR_FUNC(func,3, DoProf3args);
+        SET_HDLR_FUNC(func,4, DoProf4args);
+        SET_HDLR_FUNC(func,5, DoProf5args);
+        SET_HDLR_FUNC(func,6, DoProf6args);
+        SET_HDLR_FUNC(func,7, DoProfXargs);
+        SET_PROF_FUNC(func,   copy);
         CHANGED_BAG(func);
     }
 
@@ -1968,15 +1951,9 @@ Obj FuncUNPROFILE_FUNC(
     /* profiling is active, restore handlers                               */
     prof = PROF_FUNC(func);
     if ( TNUM_OBJ(prof) == T_FUNCTION ) {
-        HDLR_FUNC(func,0) = HDLR_FUNC(prof,0);
-        HDLR_FUNC(func,1) = HDLR_FUNC(prof,1);
-        HDLR_FUNC(func,2) = HDLR_FUNC(prof,2);
-        HDLR_FUNC(func,3) = HDLR_FUNC(prof,3);
-        HDLR_FUNC(func,4) = HDLR_FUNC(prof,4);
-        HDLR_FUNC(func,5) = HDLR_FUNC(prof,5);
-        HDLR_FUNC(func,6) = HDLR_FUNC(prof,6);
-        HDLR_FUNC(func,7) = HDLR_FUNC(prof,7);
-        PROF_FUNC(func)   = PROF_FUNC(prof);
+        for (Int i = 0; i <= 7; i++)
+            SET_HDLR_FUNC(func, i, HDLR_FUNC(prof, i));
+        SET_PROF_FUNC(func, PROF_FUNC(prof));
         CHANGED_BAG(func);
     }
 
@@ -1989,7 +1966,7 @@ Obj FuncIsKernelFunction(Obj self, Obj func) {
   else 
     return ((BODY_FUNC(func) == 0) ||
             (SIZE_OBJ(BODY_FUNC(func))
-             == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj))) ? True : False;
+             == sizeof(BodyHeader))) ? True : False;
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
@@ -2005,7 +1982,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  C_NEW_STRING_DYN(cookieStr, cookie);
+  cookieStr = MakeString(cookie);
   return cookieStr;
 }
 
@@ -2016,17 +1993,17 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
 */
 void SaveFunction ( Obj func )
 {
-  UInt i;
-  for (i = 0; i <= 7; i++)
-    SaveHandler(HDLR_FUNC(func,i));
-  SaveSubObj(NAME_FUNC(func));
-  SaveUInt(NARG_FUNC(func));
-  SaveSubObj(NAMS_FUNC(func));
-  SaveSubObj(PROF_FUNC(func));
-  SaveUInt(NLOC_FUNC(func));
-  SaveSubObj(BODY_FUNC(func));
-  SaveSubObj(ENVI_FUNC(func));
-  SaveSubObj(FEXS_FUNC(func));
+  FunctionHeader * header = FUNC_HEADER(func);
+  for (UInt i = 0; i <= 7; i++)
+    SaveHandler(header->handlers[i]);
+  SaveSubObj(header->name);
+  SaveUInt(header->nargs);
+  SaveSubObj(header->namesOfLocals);
+  SaveSubObj(header->prof);
+  SaveUInt(header->nloc);
+  SaveSubObj(header->body);
+  SaveSubObj(header->envi);
+  SaveSubObj(header->fexs);
   if (SIZE_OBJ(func) != SIZE_FUNC)
     SaveOperationExtras( func );
 }
@@ -2038,17 +2015,17 @@ void SaveFunction ( Obj func )
 */
 void LoadFunction ( Obj func )
 {
-  UInt i;
-  for (i = 0; i <= 7; i++)
-    HDLR_FUNC(func,i) = LoadHandler();
-  NAME_FUNC(func) = LoadSubObj();
-  NARG_FUNC(func) = LoadUInt();
-  NAMS_FUNC(func) = LoadSubObj();
-  PROF_FUNC(func) = LoadSubObj();
-  NLOC_FUNC(func) = LoadUInt();
-  BODY_FUNC(func) = LoadSubObj();
-  ENVI_FUNC(func) = LoadSubObj();
-  FEXS_FUNC(func) = LoadSubObj();
+  FunctionHeader * header = FUNC_HEADER(func);
+  for (UInt i = 0; i <= 7; i++)
+    header->handlers[i] = LoadHandler();
+  header->name = LoadSubObj();
+  header->nargs = LoadUInt();
+  header->namesOfLocals = LoadSubObj();
+  header->prof = LoadSubObj();
+  header->nloc = LoadUInt();
+  header->body = LoadSubObj();
+  header->envi = LoadSubObj();
+  header->fexs = LoadSubObj();
   if (SIZE_OBJ(func) != SIZE_FUNC)
     LoadOperationExtras( func );
 }

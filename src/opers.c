@@ -832,8 +832,8 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     UInt len = LEN_PLIST(HIDDEN_IMPS);
     GROW_PLIST(HIDDEN_IMPS, len + 2);
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
-    ELM_PLIST(HIDDEN_IMPS, len + 1) = imp;
-    ELM_PLIST(HIDDEN_IMPS, len + 2) = imps;
+    SET_ELM_PLIST(HIDDEN_IMPS, len + 1, imp);
+    SET_ELM_PLIST(HIDDEN_IMPS, len + 2, imps);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
@@ -856,8 +856,8 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
        FuncIS_SUBSET_FLAGS(0, ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags) == True)
     {
-        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) = 0;
-        ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1) = 0;
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i, 0);
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i + 1, 0);
         CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
     }
   }
@@ -936,10 +936,10 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
         old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
         old_moving = 1;
       }
-      
-      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1) = new_flags;
-      ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2) = new_with;
-      
+
+      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
+      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
+
       if(old_moving)
       {
         new_flags = old_flags;
@@ -1691,7 +1691,7 @@ static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
        (DoFilter(IsType, b ) == True ))
     {
-      ID_TYPE(b) = INTOBJ_INT(NextTypeID);
+      SET_ID_TYPE(b, INTOBJ_INT(NextTypeID));
       NextTypeID++;
     } 
 }
@@ -3187,18 +3187,18 @@ Obj NewOperation (
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
 
     /* enter the handlers                                                  */
-    HDLR_FUNC(oper,0) = DoOperation0Args;
-    HDLR_FUNC(oper,1) = DoOperation1Args;
-    HDLR_FUNC(oper,2) = DoOperation2Args;
-    HDLR_FUNC(oper,3) = DoOperation3Args;
-    HDLR_FUNC(oper,4) = DoOperation4Args;
-    HDLR_FUNC(oper,5) = DoOperation5Args;
-    HDLR_FUNC(oper,6) = DoOperation6Args;
-    HDLR_FUNC(oper,7) = DoOperationXArgs;
+    SET_HDLR_FUNC(oper, 0, DoOperation0Args);
+    SET_HDLR_FUNC(oper, 1, DoOperation1Args);
+    SET_HDLR_FUNC(oper, 2, DoOperation2Args);
+    SET_HDLR_FUNC(oper, 3, DoOperation3Args);
+    SET_HDLR_FUNC(oper, 4, DoOperation4Args);
+    SET_HDLR_FUNC(oper, 5, DoOperation5Args);
+    SET_HDLR_FUNC(oper, 6, DoOperation6Args);
+    SET_HDLR_FUNC(oper, 7, DoOperationXArgs);
 
     /* reenter the given handler */
     if (narg != -1)
-      HDLR_FUNC(oper,narg) = hdlr;
+      SET_HDLR_FUNC(oper, narg, hdlr);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
     FLAG1_FILT(oper) = INTOBJ_INT(0);
@@ -4643,14 +4643,14 @@ Obj NewConstructor (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoConstructor0Args;
-        HDLR_FUNC(oper,1) = DoConstructor1Args;
-        HDLR_FUNC(oper,2) = DoConstructor2Args;
-        HDLR_FUNC(oper,3) = DoConstructor3Args;
-        HDLR_FUNC(oper,4) = DoConstructor4Args;
-        HDLR_FUNC(oper,5) = DoConstructor5Args;
-        HDLR_FUNC(oper,6) = DoConstructor6Args;
-        HDLR_FUNC(oper,7) = DoConstructorXArgs;
+        SET_HDLR_FUNC(oper, 0, DoConstructor0Args);
+        SET_HDLR_FUNC(oper, 1, DoConstructor1Args);
+        SET_HDLR_FUNC(oper, 2, DoConstructor2Args);
+        SET_HDLR_FUNC(oper, 3, DoConstructor3Args);
+        SET_HDLR_FUNC(oper, 4, DoConstructor4Args);
+        SET_HDLR_FUNC(oper, 5, DoConstructor5Args);
+        SET_HDLR_FUNC(oper, 6, DoConstructor6Args);
+        SET_HDLR_FUNC(oper, 7, DoConstructorXArgs);
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -5029,7 +5029,7 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     tester = MakeTester(name, flag2);
 
     /* Change the handlers */
-    HDLR_FUNC(oper, 1) = hdlr ? hdlr : DoAttribute;
+    SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
 
     SetupAttribute( oper, setter, tester, flag2);
 
@@ -5351,14 +5351,14 @@ Obj NewOperationArgs (
 
     /* check the number of args                                            */
     if ( narg == -1 ) {
-        HDLR_FUNC(func,0) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,1) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,2) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,3) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,4) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,5) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,6) = DoUninstalledOperationArgs;
-        HDLR_FUNC(func,7) = DoUninstalledOperationArgs;
+        SET_HDLR_FUNC(func, 0, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 1, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 2, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 3, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 4, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 5, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 6, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 7, DoUninstalledOperationArgs);
     }
     else {
         ErrorQuit("number of args must be -1 in `NewOperationArgs'",0L,0L);
@@ -5367,7 +5367,7 @@ Obj NewOperationArgs (
 
     /* added the name                                                      */
     namobj = CopyObj( name, 0 );
-    NAME_FUNC(func) = namobj;
+    SET_NAME_FUNC(func, namobj);
     CHANGED_BAG(func);
 
     /* and return                                                          */
@@ -5404,10 +5404,8 @@ void InstallMethodArgs (
             ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
         }
     }
-    // Note that ConvImmString may trigger a garbage collection in GASMAN,
-    // thus we must not write `NAME_FUNC(func) = ConvImmString(name);`
-    name = ConvImmString(name);
-    NAME_FUNC(oper) = name;
+
+    SET_NAME_FUNC(oper, ConvImmString(name));
     CHANGED_BAG(oper);
 }
 
@@ -5634,7 +5632,7 @@ Obj FuncNEW_OPERATION_ARGS (
     }
 
     /* make the new operation                                              */
-    C_NEW_STRING_CONST( args, "args" )
+    args = MakeString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
@@ -5887,7 +5885,7 @@ Obj FuncSETTER_FUNCTION (
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
     CHANGED_BAG(tmp);
-    ENVI_FUNC(func) = tmp;
+    SET_ENVI_FUNC(func, tmp);
     CHANGED_BAG(func);
     return func;
 }
@@ -5932,7 +5930,7 @@ Obj FuncGETTER_FUNCTION (
     /* Need to seperate this onto two lines, in case RNamObj causes
      * a garbage collection */
     rnam = INTOBJ_INT( RNamObj(name) );
-    ENVI_FUNC(func) = rnam;
+    SET_ENVI_FUNC(func, rnam);
     return func;
 }
 
@@ -6052,7 +6050,7 @@ void ChangeDoOperations (
         for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j+1];
+                    SET_HDLR_FUNC(oper, i, TabSilentVerboseOperations[j+1]);
                 }
             }
         }
@@ -6065,7 +6063,7 @@ void ChangeDoOperations (
         for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j-1];
+                    SET_HDLR_FUNC(oper, i, TabSilentVerboseOperations[j-1]);
                 }
             }
         }
@@ -6315,11 +6313,28 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 
-  NextTypeID = 0;
-  CountFlags = 0;
+    NextTypeID = 0;
+    CountFlags = 0;
+
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
+
+    /* share between uncompleted functions                                 */
+    StringFilterSetter = MakeImmString("<<filter-setter>>");
+
+    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
+    SET_LEN_PLIST( ArglistObj, 1 );
+    SET_ELM_PLIST( ArglistObj, 1, MakeImmString("obj") );
+    CHANGED_BAG( ArglistObj );
+
+    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    SET_LEN_PLIST( ArglistObjVal, 2 );
+    SET_ELM_PLIST( ArglistObjVal, 1, MakeImmString("obj") );
+    CHANGED_BAG( ArglistObjVal );
+    SET_ELM_PLIST( ArglistObjVal, 2, MakeImmString("val") );
+    CHANGED_BAG( ArglistObjVal );
+
 
     /* Declare the handlers used in various places.  Some of the commonest */
     /* ones are abbreviated to save space in saved workspace.              */
@@ -6530,30 +6545,6 @@ static Int postRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj                 str;
-
-    /* share between uncompleted functions                                 */
-    C_NEW_STRING_CONST( StringFilterSetter, "<<filter-setter>>" );
-    RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
-
-    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
-    SET_LEN_PLIST( ArglistObj, 1 );
-    C_NEW_STRING_CONST( str, "obj" );
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
-    SET_ELM_PLIST( ArglistObj, 1, str );
-    CHANGED_BAG( ArglistObj );
-
-    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
-    SET_LEN_PLIST( ArglistObjVal, 2 );
-    C_NEW_STRING_CONST( str, "obj" );
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
-    SET_ELM_PLIST( ArglistObjVal, 1, str );
-    CHANGED_BAG( ArglistObjVal );
-    C_NEW_STRING_CONST( str, "val" );
-    RESET_FILT_LIST( str, FN_IS_MUTABLE );
-    SET_ELM_PLIST( ArglistObjVal, 2, str );
-    CHANGED_BAG( ArglistObjVal );
-
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
@@ -6570,7 +6561,7 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    C_NEW_STRING_CONST(TRY_NEXT_METHOD, "TRY_NEXT_METHOD");
+    TRY_NEXT_METHOD = MakeString("TRY_NEXT_METHOD");
     RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 

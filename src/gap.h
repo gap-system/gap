@@ -248,9 +248,6 @@ extern UInt SystemErrorCode;
 */
 
 enum {
-    /** filter number for `IsMutable' */
-    FN_IS_MUTABLE = 1,
-
     /** filter number for `IsEmpty' */
     FN_IS_EMPTY,
 

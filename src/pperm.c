@@ -1441,28 +1441,29 @@ Obj FuncTRIM_PPERM(Obj self, Obj f)
     return (Obj)0;
 }
 
-Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data)
+Int HashFuncForPPerm(Obj f)
 {
     UInt codeg;
+
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4);
 
     if (TNUM_OBJ(f) == T_PPERM4) {
         codeg = CODEG_PPERM4(f);
         if (codeg < 65536) {
-            FuncTRIM_PPERM(self, f);
+            FuncTRIM_PPERM(0, f);
         }
         else {
-            return INTOBJ_INT((HASHKEY_BAG_NC(f, (UInt4)255,
-                                              2 * sizeof(Obj) + sizeof(UInt4),
-                                              (int)4 * DEG_PPERM4(f)) %
-                               (INT_INTOBJ(data))) +
-                              1);
+            return HASHKEY_BAG_NC(f, (UInt4)255,
+                                  2 * sizeof(Obj) + sizeof(UInt4),
+                                  (int)4 * DEG_PPERM4(f));
         }
     }
-    return INTOBJ_INT(
-        (HASHKEY_BAG_NC(f, (UInt4)255, 2 * sizeof(Obj) + sizeof(UInt2),
-                        (int)2 * DEG_PPERM2(f)) %
-         (INT_INTOBJ(data))) +
-        1);
+    return HASHKEY_BAG_NC(f, (UInt4)255, 2 * sizeof(Obj) + sizeof(UInt2),
+                          (int)2 * DEG_PPERM2(f));
+}
+
+Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data) {
+    return INTOBJ_INT(HashFuncForPPerm(f) % INT_INTOBJ(data) + 1);
 }
 
 // test if a partial perm is an idempotent

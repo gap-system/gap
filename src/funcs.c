@@ -1726,16 +1726,16 @@ Obj             MakeFunction (
                          hdlr );
 
     /* install the things an interpreted function needs                    */
-    NLOC_FUNC( func ) = NLOC_FUNC( fexp );
-    BODY_FUNC( func ) = BODY_FUNC( fexp );
-    ENVI_FUNC( func ) = STATE(CurrLVars);
+    SET_NLOC_FUNC( func, NLOC_FUNC( fexp ) );
+    SET_BODY_FUNC( func, BODY_FUNC( fexp ) );
+    SET_ENVI_FUNC( func, STATE(CurrLVars) );
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
     MakeHighVars(STATE(CurrLVars));
 #ifdef HPCGAP
-    LCKS_FUNC( func ) = locks;
+    SET_LCKS_FUNC( func, locks );
 #endif
-    FEXS_FUNC( func ) = FEXS_FUNC( fexp );
+    SET_FEXS_FUNC( func, FEXS_FUNC( fexp ) );
 
     /* return the function                                                 */
     return func;

@@ -424,14 +424,14 @@ static Obj  HdlrFunc2 (
        
        /* Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), "\n" ); */
        t_9 = GF_Print;
-       C_NEW_STRING( t_10, 15, "#I  immediate: " );
+       t_10 = MakeString( "#I  immediate: " );
        t_12 = GF_NAME__FUNC;
        C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
        CHECK_INT_POS( t_14 )
        C_ELM_LIST_FPL( t_13, l_imm, t_14 )
        t_11 = CALL_1ARGS( t_12, t_13 );
        CHECK_FUNC_RESULT( t_11 )
-       C_NEW_STRING( t_12, 1, "\n" );
+       t_12 = MakeString( "\n" );
        CALL_3ARGS( t_9, t_10, t_11, t_12 );
        
       }
@@ -441,18 +441,18 @@ static Obj  HdlrFunc2 (
        
        /* Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), ": ", imm[i + 7], "\n" ); */
        t_9 = GF_Print;
-       C_NEW_STRING( t_10, 15, "#I  immediate: " );
+       t_10 = MakeString( "#I  immediate: " );
        t_12 = GF_NAME__FUNC;
        C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
        CHECK_INT_POS( t_14 )
        C_ELM_LIST_FPL( t_13, l_imm, t_14 )
        t_11 = CALL_1ARGS( t_12, t_13 );
        CHECK_FUNC_RESULT( t_11 )
-       C_NEW_STRING( t_12, 2, ": " );
+       t_12 = MakeString( ": " );
        C_SUM_FIA( t_14, l_i, INTOBJ_INT(7) )
        CHECK_INT_POS( t_14 )
        C_ELM_LIST_FPL( t_13, l_imm, t_14 )
-       C_NEW_STRING( t_14, 1, "\n" );
+       t_14 = MakeString( "\n" );
        CALL_5ARGS( t_9, t_10, t_11, t_12, t_13, t_14 );
        
       }
@@ -718,7 +718,7 @@ static Obj  HdlrFunc3 (
   
   /* APPEND_LIST_INTR( k, ": " ); */
   t_1 = GF_APPEND__LIST__INTR;
-  C_NEW_STRING( t_2, 2, ": " );
+  t_2 = MakeString( ": " );
   CALL_2ARGS( t_1, l_k, t_2 );
   
   /* APPEND_LIST_INTR( k, info ); */
@@ -984,8 +984,8 @@ static Obj  HdlrFunc3 (
       t_3 = GF_NAME__FUNC;
       t_2 = CALL_1ARGS( t_3, a_opr );
       CHECK_FUNC_RESULT( t_2 )
-      C_NEW_STRING( t_3, 23, ": <famrel> must accept " );
-      C_NEW_STRING( t_4, 10, " arguments" );
+      t_3 = MakeString( ": <famrel> must accept " );
+      t_4 = MakeString( " arguments" );
       CALL_4ARGS( t_1, t_2, t_3, l_narg, t_4 );
       
      }
@@ -1009,7 +1009,7 @@ static Obj  HdlrFunc3 (
     t_3 = GF_NAME__FUNC;
     t_2 = CALL_1ARGS( t_3, a_opr );
     CHECK_FUNC_RESULT( t_2 )
-    C_NEW_STRING( t_3, 49, ": <famrel> must be a function, `true', or `false'" );
+    t_3 = MakeString( ": <famrel> must be a function, `true', or `false'" );
     CALL_2ARGS( t_1, t_2, t_3 );
     
    }
@@ -1121,8 +1121,8 @@ static Obj  HdlrFunc3 (
       t_3 = GF_NAME__FUNC;
       t_2 = CALL_1ARGS( t_3, a_opr );
       CHECK_FUNC_RESULT( t_2 )
-      C_NEW_STRING( t_3, 23, ": <method> must accept " );
-      C_NEW_STRING( t_4, 10, " arguments" );
+      t_3 = MakeString( ": <method> must accept " );
+      t_4 = MakeString( " arguments" );
       CALL_4ARGS( t_1, t_2, t_3, l_narg, t_4 );
       
      }
@@ -1147,7 +1147,7 @@ static Obj  HdlrFunc3 (
     t_3 = GF_NAME__FUNC;
     t_2 = CALL_1ARGS( t_3, a_opr );
     CHECK_FUNC_RESULT( t_2 )
-    C_NEW_STRING( t_3, 49, ": <method> must be a function, `true', or `false'" );
+    t_3 = MakeString( ": <method> must be a function, `true', or `false'" );
     CALL_2ARGS( t_1, t_2, t_3 );
     
    }
@@ -1320,7 +1320,7 @@ static Obj  HdlrFunc6 (
   
   /* Error( "too few arguments given in <arglist>" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 36, "too few arguments given in <arglist>" );
+  t_2 = MakeString( "too few arguments given in <arglist>" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -1341,7 +1341,7 @@ static Obj  HdlrFunc6 (
   
   /* Error( "<opr> is not an operation" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 25, "<opr> is not an operation" );
+  t_2 = MakeString( "<opr> is not an operation" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -1434,8 +1434,8 @@ static Obj  HdlrFunc6 (
   
   /* Error( "<arglist>[", pos, "] must be a list of filters" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 10, "<arglist>[" );
-  C_NEW_STRING( t_3, 27, "] must be a list of filters" );
+  t_2 = MakeString( "<arglist>[" );
+  t_3 = MakeString( "] must be a list of filters" );
   CALL_3ARGS( t_1, t_2, l_pos, t_3 );
   
  }
@@ -1457,11 +1457,11 @@ static Obj  HdlrFunc6 (
   
   /* Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod, " arguments" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 25, "methods can have at most " );
+  t_2 = MakeString( "methods can have at most " );
   t_4 = GC_GAPInfo;
   CHECK_BOUND( t_4, "GAPInfo" )
   t_3 = ELM_REC( t_4, R_MaxNrArgsMethod );
-  C_NEW_STRING( t_4, 10, " arguments" );
+  t_4 = MakeString( " arguments" );
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
   
  }
@@ -1475,7 +1475,7 @@ static Obj  HdlrFunc6 (
  if ( t_1 ) {
   
   /* info1 := "[ "; */
-  C_NEW_STRING( t_1, 2, "[ " );
+  t_1 = MakeString( "[ " );
   l_info1 = t_1;
   
   /* isstr := true; */
@@ -1508,7 +1508,7 @@ static Obj  HdlrFunc6 (
     
     /* APPEND_LIST_INTR( info1, ", " ); */
     t_3 = GF_APPEND__LIST__INTR;
-    C_NEW_STRING( t_4, 2, ", " );
+    t_4 = MakeString( ", " );
     CALL_2ARGS( t_3, l_info1, t_4 );
     
     /* filters[i] := EvalString( filters[i] ); */
@@ -1530,7 +1530,7 @@ static Obj  HdlrFunc6 (
      
      /* Error( "string does not evaluate to a function" ); */
      t_3 = GF_Error;
-     C_NEW_STRING( t_4, 38, "string does not evaluate to a function" );
+     t_4 = MakeString( "string does not evaluate to a function" );
      CALL_1ARGS( t_3, t_4 );
      
     }
@@ -1641,7 +1641,7 @@ static Obj  HdlrFunc6 (
   
   /* Error( "the method is missing in <arglist>" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 34, "the method is missing in <arglist>" );
+  t_2 = MakeString( "the method is missing in <arglist>" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -1685,7 +1685,7 @@ static Obj  HdlrFunc6 (
   
   /* Error( "the method is missing in <arglist>" ); */
   t_1 = GF_Error;
-  C_NEW_STRING( t_2, 34, "the method is missing in <arglist>" );
+  t_2 = MakeString( "the method is missing in <arglist>" );
   CALL_1ARGS( t_1, t_2 );
   
  }
@@ -1741,7 +1741,7 @@ static Obj  HdlrFunc6 (
   t_3 = GF_NAME__FUNC;
   t_2 = CALL_1ARGS( t_3, l_opr );
   CHECK_FUNC_RESULT( t_2 )
-  C_NEW_STRING( t_3, 35, ": use `InstallTrueMethod' for <opr>" );
+  t_3 = MakeString( ": use `InstallTrueMethod' for <opr>" );
   CALL_2ARGS( t_1, t_2, t_3 );
   
  }
@@ -1768,13 +1768,13 @@ static Obj  HdlrFunc6 (
    
    /* INFO_DEBUG( 1, "a method is installed for the wrapper operation ", NAME_FUNC( opr ), "\n", "#I  probably it should be installed for (one of) its\n", "#I  underlying operation(s)" ); */
    t_1 = GF_INFO__DEBUG;
-   C_NEW_STRING( t_2, 48, "a method is installed for the wrapper operation " );
+   t_2 = MakeString( "a method is installed for the wrapper operation " );
    t_4 = GF_NAME__FUNC;
    t_3 = CALL_1ARGS( t_4, l_opr );
    CHECK_FUNC_RESULT( t_3 )
-   C_NEW_STRING( t_4, 1, "\n" );
-   C_NEW_STRING( t_5, 53, "#I  probably it should be installed for (one of) its\n" );
-   C_NEW_STRING( t_6, 27, "#I  underlying operation(s)" );
+   t_4 = MakeString( "\n" );
+   t_5 = MakeString( "#I  probably it should be installed for (one of) its\n" );
+   t_6 = MakeString( "#I  underlying operation(s)" );
    CALL_6ARGS( t_1, INTOBJ_INT(1), t_2, t_3, t_4, t_5, t_6 );
    
   }
@@ -1849,7 +1849,7 @@ static Obj  HdlrFunc6 (
    
    /* Error( "unknown operation ", NAME_FUNC( opr ) ); */
    t_1 = GF_Error;
-   C_NEW_STRING( t_2, 18, "unknown operation " );
+   t_2 = MakeString( "unknown operation " );
    t_4 = GF_NAME__FUNC;
    t_3 = CALL_1ARGS( t_4, l_opr );
    CHECK_FUNC_RESULT( t_3 )
@@ -2007,7 +2007,7 @@ static Obj  HdlrFunc6 (
     
     /* Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) ); */
     t_1 = GF_Error;
-    C_NEW_STRING( t_2, 56, "the number of arguments does not match a declaration of " );
+    t_2 = MakeString( "the number of arguments does not match a declaration of " );
     t_4 = GF_NAME__FUNC;
     t_3 = CALL_1ARGS( t_4, l_opr );
     CHECK_FUNC_RESULT( t_3 )
@@ -2020,17 +2020,17 @@ static Obj  HdlrFunc6 (
     
     /* Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) ); */
     t_1 = GF_Error;
-    C_NEW_STRING( t_2, 17, "required filters " );
+    t_2 = MakeString( "required filters " );
     t_4 = GF_NamesFilter;
     CHECK_INT_POS( l_notmatch )
     C_ELM_LIST_FPL( t_5, l_imp, l_notmatch )
     t_3 = CALL_1ARGS( t_4, t_5 );
     CHECK_FUNC_RESULT( t_3 )
-    C_NEW_STRING( t_4, 5, "\nfor " );
+    t_4 = MakeString( "\nfor " );
     t_6 = GF_Ordinal;
     t_5 = CALL_1ARGS( t_6, l_notmatch );
     CHECK_FUNC_RESULT( t_5 )
-    C_NEW_STRING( t_6, 40, " argument do not match a declaration of " );
+    t_6 = MakeString( " argument do not match a declaration of " );
     t_8 = GF_NAME__FUNC;
     t_7 = CALL_1ARGS( t_8, l_opr );
     CHECK_FUNC_RESULT( t_7 )
@@ -2123,11 +2123,11 @@ static Obj  HdlrFunc6 (
       
       /* INFO_DEBUG( 1, "method installed for ", NAME_FUNC( opr ), " matches more than one declaration" ); */
       t_4 = GF_INFO__DEBUG;
-      C_NEW_STRING( t_5, 21, "method installed for " );
+      t_5 = MakeString( "method installed for " );
       t_7 = GF_NAME__FUNC;
       t_6 = CALL_1ARGS( t_7, l_opr );
       CHECK_FUNC_RESULT( t_6 )
-      C_NEW_STRING( t_7, 34, " matches more than one declaration" );
+      t_7 = MakeString( " matches more than one declaration" );
       CALL_4ARGS( t_4, INTOBJ_INT(1), t_5, t_6, t_7 );
       
      }
@@ -2507,19 +2507,19 @@ static Obj  HdlrFunc7 (
    t_1 = GF_InstallOtherMethod;
    t_2 = OBJ_LVAR( 1 );
    CHECK_BOUND( t_2, "getter" )
-   C_NEW_STRING( t_3, 59, "default method requiring categories and checking properties" );
+   t_3 = MakeString( "default method requiring categories and checking properties" );
    t_4 = True;
    t_5 = NEW_PLIST( T_PLIST, 1 );
    SET_LEN_PLIST( t_5, 1 );
    SET_ELM_PLIST( t_5, 1, l_cats );
    CHANGED_BAG( t_5 );
    t_6 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
-   ENVI_FUNC( t_6 ) = STATE(CurrLVars);
-   t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+   SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
+   t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
    SET_STARTLINE_BODY(t_7, INTOBJ_INT(606));
    SET_ENDLINE_BODY(t_7, INTOBJ_INT(624));
    SET_FILENAME_BODY(t_7, FileName);
-   BODY_FUNC(t_6) = t_7;
+   SET_BODY_FUNC(t_6, t_7);
    CHANGED_BAG( STATE(CurrLVars) );
    CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, l_rank, t_6 );
    
@@ -2565,7 +2565,7 @@ static Obj  HdlrFunc9 (
  
  /* InstallOtherMethod( setter, "default method, does nothing", true, [ IS_OBJECT, IS_OBJECT ], 0, DO_NOTHING_SETTER ); */
  t_1 = GF_InstallOtherMethod;
- C_NEW_STRING( t_2, 28, "default method, does nothing" );
+ t_2 = MakeString( "default method, does nothing" );
  t_3 = True;
  t_4 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_4, 2 );
@@ -2717,7 +2717,7 @@ static Obj  HdlrFunc12 (
   t_1 = GF_Error;
   t_2 = OBJ_LVAR_1UP( 1 );
   CHECK_BOUND( t_2, "name" )
-  C_NEW_STRING( t_3, 21, ": <p> must be a prime" );
+  t_3 = MakeString( ": <p> must be a prime" );
   CALL_2ARGS( t_1, t_2, t_3 );
   
  }
@@ -3095,7 +3095,7 @@ static Obj  HdlrFunc11 (
  /* if keytest = "prime" then */
  t_2 = OBJ_LVAR( 2 );
  CHECK_BOUND( t_2, "keytest" )
- C_NEW_STRING( t_3, 5, "prime" );
+ t_3 = MakeString( "prime" );
  t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
  if ( t_1 ) {
   
@@ -3106,12 +3106,12 @@ static Obj  HdlrFunc11 (
       return;
   end; */
   t_1 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
-  ENVI_FUNC( t_1 ) = STATE(CurrLVars);
-  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
+  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
   SET_STARTLINE_BODY(t_2, INTOBJ_INT(803));
   SET_ENDLINE_BODY(t_2, INTOBJ_INT(807));
   SET_FILENAME_BODY(t_2, FileName);
-  BODY_FUNC(t_1) = t_2;
+  SET_BODY_FUNC(t_1, t_2);
   CHANGED_BAG( STATE(CurrLVars) );
   ASS_LVAR( 2, t_1 );
   
@@ -3128,7 +3128,7 @@ static Obj  HdlrFunc11 (
  
  /* APPEND_LIST_INTR( str, "Op" ); */
  t_1 = GF_APPEND__LIST__INTR;
- C_NEW_STRING( t_2, 2, "Op" );
+ t_2 = MakeString( "Op" );
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* DeclareOperation( str, [ domreq, keyreq ] ); */
@@ -3148,7 +3148,7 @@ static Obj  HdlrFunc11 (
  ASS_LVAR( 3, t_1 );
  
  /* str := "Computed"; */
- C_NEW_STRING( t_1, 8, "Computed" );
+ t_1 = MakeString( "Computed" );
  l_str = t_1;
  
  /* APPEND_LIST_INTR( str, name ); */
@@ -3159,12 +3159,12 @@ static Obj  HdlrFunc11 (
  
  /* APPEND_LIST_INTR( str, "s" ); */
  t_1 = GF_APPEND__LIST__INTR;
- C_NEW_STRING( t_2, 1, "s" );
+ t_2 = MakeString( "s" );
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* DeclareAttribute( str, domreq, "mutable" ); */
  t_1 = GF_DeclareAttribute;
- C_NEW_STRING( t_2, 7, "mutable" );
+ t_2 = MakeString( "mutable" );
  CALL_3ARGS( t_1, l_str, a_domreq, t_2 );
  
  /* attr := VALUE_GLOBAL( str ); */
@@ -3179,19 +3179,19 @@ static Obj  HdlrFunc11 (
  t_1 = GF_InstallMethod;
  t_2 = OBJ_LVAR( 4 );
  CHECK_BOUND( t_2, "attr" )
- C_NEW_STRING( t_3, 14, "default method" );
+ t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 1 );
  SET_LEN_PLIST( t_5, 1 );
  SET_ELM_PLIST( t_5, 1, a_domreq );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
- ENVI_FUNC( t_6 ) = STATE(CurrLVars);
- t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
+ t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(824));
  SET_ENDLINE_BODY(t_7, INTOBJ_INT(824));
  SET_FILENAME_BODY(t_7, FileName);
- BODY_FUNC(t_6) = t_7;
+ SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
@@ -3252,7 +3252,7 @@ static Obj  HdlrFunc11 (
  CHECK_BOUND( t_4, "name" )
  t_2 = CALL_1ARGS( t_3, t_4 );
  CHECK_FUNC_RESULT( t_2 )
- C_NEW_STRING( t_3, 14, "default method" );
+ t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_5, 2 );
@@ -3261,17 +3261,17 @@ static Obj  HdlrFunc11 (
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
- ENVI_FUNC( t_6 ) = STATE(CurrLVars);
- t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
+ t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(840));
  SET_ENDLINE_BODY(t_7, INTOBJ_INT(863));
  SET_FILENAME_BODY(t_7, FileName);
- BODY_FUNC(t_6) = t_7;
+ SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* str := "Has"; */
- C_NEW_STRING( t_1, 3, "Has" );
+ t_1 = MakeString( "Has" );
  l_str = t_1;
  
  /* APPEND_LIST_INTR( str, name ); */
@@ -3301,7 +3301,7 @@ static Obj  HdlrFunc11 (
  t_3 = GF_VALUE__GLOBAL;
  t_2 = CALL_1ARGS( t_3, l_str );
  CHECK_FUNC_RESULT( t_2 )
- C_NEW_STRING( t_3, 14, "default method" );
+ t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_5, 2 );
@@ -3310,17 +3310,17 @@ static Obj  HdlrFunc11 (
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
- ENVI_FUNC( t_6 ) = STATE(CurrLVars);
- t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
+ t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(873));
  SET_ENDLINE_BODY(t_7, INTOBJ_INT(881));
  SET_FILENAME_BODY(t_7, FileName);
- BODY_FUNC(t_6) = t_7;
+ SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* str := "Set"; */
- C_NEW_STRING( t_1, 3, "Set" );
+ t_1 = MakeString( "Set" );
  l_str = t_1;
  
  /* APPEND_LIST_INTR( str, name ); */
@@ -3359,7 +3359,7 @@ static Obj  HdlrFunc11 (
  t_3 = GF_VALUE__GLOBAL;
  t_2 = CALL_1ARGS( t_3, l_str );
  CHECK_FUNC_RESULT( t_2 )
- C_NEW_STRING( t_3, 14, "default method" );
+ t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_5, 3 );
@@ -3372,12 +3372,12 @@ static Obj  HdlrFunc11 (
  SET_ELM_PLIST( t_5, 3, t_6 );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
- ENVI_FUNC( t_6 ) = STATE(CurrLVars);
- t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
+ t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(890));
  SET_ENDLINE_BODY(t_7, INTOBJ_INT(903));
  SET_FILENAME_BODY(t_7, FileName);
- BODY_FUNC(t_6) = t_7;
+ SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
@@ -3623,7 +3623,7 @@ static Obj  HdlrFunc17 (
   ASS_LVAR( 1, t_1 );
   
   /* info := " fallback method to test conditions"; */
-  C_NEW_STRING( t_1, 35, " fallback method to test conditions" );
+  t_1 = MakeString( " fallback method to test conditions" );
   l_info = t_1;
   
   /* fampred := arg[2]; */
@@ -3683,7 +3683,7 @@ static Obj  HdlrFunc17 (
    
    /* Error( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" ); */
    t_1 = GF_Error;
-   C_NEW_STRING( t_2, 63, "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
+   t_2 = MakeString( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
    CALL_1ARGS( t_1, t_2 );
    
   }
@@ -3753,12 +3753,12 @@ static Obj  HdlrFunc17 (
  t_3 = OBJ_LVAR( 2 );
  CHECK_BOUND( t_3, "reqs" )
  t_4 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
- ENVI_FUNC( t_4 ) = STATE(CurrLVars);
- t_5 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
+ t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_5, INTOBJ_INT(971));
  SET_ENDLINE_BODY(t_5, INTOBJ_INT(987));
  SET_FILENAME_BODY(t_5, FileName);
- BODY_FUNC(t_4) = t_5;
+ SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, l_info, l_fampred, t_3, l_val, t_4 );
  
@@ -3845,22 +3845,22 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 19, "RunImmediateMethods" );
+ t_2 = MakeString( "RunImmediateMethods" );
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(26));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(117));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "METHODS_OPERATION_REGION", NewSpecialRegion( "operation methods" ) ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 24, "METHODS_OPERATION_REGION" );
+ t_2 = MakeString( "METHODS_OPERATION_REGION" );
  t_4 = GF_NewSpecialRegion;
- C_NEW_STRING( t_5, 17, "operation methods" );
+ t_5 = MakeString( "operation methods" );
  t_3 = CALL_1ARGS( t_4, t_5 );
  CHECK_FUNC_RESULT( t_3 )
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -3954,14 +3954,14 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 20, "INSTALL_METHOD_FLAGS" );
+ t_2 = MakeString( "INSTALL_METHOD_FLAGS" );
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(136));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(250));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -3970,14 +3970,14 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 13, "InstallMethod" );
+ t_2 = MakeString( "InstallMethod" );
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(297));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(299));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -3986,20 +3986,20 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 18, "InstallOtherMethod" );
+ t_2 = MakeString( "InstallOtherMethod" );
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(324));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(326));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* DeclareGlobalFunction( "EvalString" ); */
  t_1 = GF_DeclareGlobalFunction;
- C_NEW_STRING( t_2, 10, "EvalString" );
+ t_2 = MakeString( "EvalString" );
  CALL_1ARGS( t_1, t_2 );
  
  /* Unbind( INSTALL_METHOD ); */
@@ -4146,14 +4146,14 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 14, "INSTALL_METHOD" );
+ t_2 = MakeString( "INSTALL_METHOD" );
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(337));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(548));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4208,12 +4208,12 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
- ENVI_FUNC( t_2 ) = STATE(CurrLVars);
- t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(567));
  SET_ENDLINE_BODY(t_3, INTOBJ_INT(628));
  SET_FILENAME_BODY(t_3, FileName);
- BODY_FUNC(t_2) = t_3;
+ SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
@@ -4223,12 +4223,12 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
- ENVI_FUNC( t_2 ) = STATE(CurrLVars);
- t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(631));
  SET_ENDLINE_BODY(t_3, INTOBJ_INT(637));
  SET_FILENAME_BODY(t_3, FileName);
- BODY_FUNC(t_2) = t_3;
+ SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
@@ -4250,19 +4250,19 @@ static Obj  HdlrFunc1 (
       return k;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 26, "PositionSortedOddPositions" );
+ t_2 = MakeString( "PositionSortedOddPositions" );
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(650));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(674));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* IsPrimeInt := "2b defined"; */
- C_NEW_STRING( t_1, 10, "2b defined" );
+ t_1 = MakeString( "2b defined" );
  AssGVar( G_IsPrimeInt, t_1 );
  
  /* BIND_GLOBAL( "KeyDependentOperation", function ( name, domreq, keyreq, keytest )
@@ -4335,19 +4335,19 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 21, "KeyDependentOperation" );
+ t_2 = MakeString( "KeyDependentOperation" );
  t_3 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(799));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(904));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* CallFuncList := "2b defined"; */
- C_NEW_STRING( t_1, 10, "2b defined" );
+ t_1 = MakeString( "2b defined" );
  AssGVar( G_CallFuncList, t_1 );
  
  /* BIND_GLOBAL( "RedispatchOnCondition", function ( arg... )
@@ -4387,14 +4387,14 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
- C_NEW_STRING( t_2, 21, "RedispatchOnCondition" );
+ t_2 = MakeString( "RedispatchOnCondition" );
  t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
- ENVI_FUNC( t_3 ) = STATE(CurrLVars);
- t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+ SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
+ t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(939));
  SET_ENDLINE_BODY(t_4, INTOBJ_INT(988));
  SET_FILENAME_BODY(t_4, FileName);
- BODY_FUNC(t_3) = t_4;
+ SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -4402,7 +4402,7 @@ static Obj  HdlrFunc1 (
  t_1 = GF_InstallMethod;
  t_2 = GC_ViewObj;
  CHECK_BOUND( t_2, "ViewObj" )
- C_NEW_STRING( t_3, 31, "default method using `PrintObj'" );
+ t_3 = MakeString( "default method using `PrintObj'" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 1 );
  SET_LEN_PLIST( t_5, 1 );
@@ -4657,8 +4657,8 @@ static Int InitLibrary ( StructInitInfo * module )
  R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
  
  /* information for the functions */
- C_NEW_STRING( DefaultName, 14, "local function" );
- C_NEW_STRING( FileName, 19, "GAPROOT/lib/oper1.g" );
+ DefaultName = MakeString( "local function" );
+ FileName = MakeString( "GAPROOT/lib/oper1.g" );
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -4716,10 +4716,10 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- ENVI_FUNC( func1 ) = STATE(CurrLVars);
+ SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));
- BODY_FUNC( func1 ) = body1;
+ body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  

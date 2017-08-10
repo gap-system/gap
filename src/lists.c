@@ -2061,7 +2061,7 @@ Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
 /****************************************************************************
 **
-*V  ClearFiltsTNums[ <tnum> ] . clear all list filters except `FN_IS_MUTABLE'
+*V  ClearFiltsTNums[ <tnum> ] . . . . . . . . . . . .  clear all list filters
 **
 **  The type  number without any  known properties  of a  list of type number
 **  <tnum> is stored in:
@@ -2685,8 +2685,8 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* make and install the 'POS_LIST' operation                           */
-    HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
-    HDLR_FUNC( PosListOper, 3 ) = PosListHandler3;
+    SET_HDLR_FUNC( PosListOper, 2, PosListHandler2 );
+    SET_HDLR_FUNC( PosListOper, 3, PosListHandler3 );
 
     /* return success                                                      */
     return PostRestore( module );
@@ -2704,10 +2704,10 @@ static Int CheckInit (
     Int         j;              /* loop variable                           */
     Int         success = 1;
 
-    Int         fnums[] = { FN_IS_MUTABLE, FN_IS_EMPTY, FN_IS_DENSE,
+    Int         fnums[] = { FN_IS_EMPTY, FN_IS_DENSE,
                             FN_IS_NDENSE, FN_IS_HOMOG, FN_IS_NHOMOG,
                             FN_IS_TABLE, FN_IS_SSORT, FN_IS_NSORT };
-    const Char *fnams[] = { "mutable", "empty", "dense", "ndense",
+    const Char *fnams[] = { "empty", "dense", "ndense",
                             "homog", "nhomog", "table", "ssort",
                             "nsort" };
 
@@ -2734,7 +2734,7 @@ static Int CheckInit (
 
     /* check that all relevant `HasFiltListTNums' are installed            */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
                 Pr( "#W  HasFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2747,7 +2747,7 @@ static Int CheckInit (
 
     /* check that all relevant `SetFiltListTNums' are installed            */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  SetFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2759,7 +2759,7 @@ static Int CheckInit (
 
     /* check that all relevant `ResetFiltListTNums' are installed          */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  ResetFiltListTNums [%s] [%s] missing\n",
                     (Int)(InfoBags[i].name), (Int)fnams[j] );
@@ -2770,7 +2770,7 @@ static Int CheckInit (
 
     /* if a tnum has a filter, reset must change the tnum                  */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
                 Int     new;
                 new = ResetFiltListTNums[i][fnums[j]];
@@ -2790,7 +2790,7 @@ static Int CheckInit (
 
     /* if a tnum has a filter, set must not change the tnum                */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
-        for ( j = 0;  j < sizeof(fnums)/sizeof(fnums[1]);  j++ ) {
+        for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
                 Int     new;
                 new = SetFiltListTNums[i][fnums[j]];
@@ -2806,6 +2806,38 @@ static Int CheckInit (
 
     /* check implications                                                  */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
+
+        if ( (i & IMMUTABLE) == 0 ) {
+            if ( ClearFiltsTNums[i]+IMMUTABLE != ClearFiltsTNums[i+IMMUTABLE]) {
+                Pr( "#W  ClearFiltsTNums [%s] mismatch between mutable and immutable\n",
+                    (Int)(InfoBags[i].name), 0 );
+                success = 0;
+            }
+            for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
+
+                if ( HasFiltListTNums[i][fnums[j]] !=
+                     HasFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  HasFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+                if ( (SetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
+                     SetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  SetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+                if ( (ResetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
+                     ResetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
+                    Pr( "#W  ResetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
+                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    success = 0;
+                }
+
+            }
+        }
 
         if ( HasFiltListTNums[i][FN_IS_EMPTY] ) {
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {

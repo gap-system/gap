@@ -1755,8 +1755,7 @@ void InitSystem (
     UInt                i;             /* loop variable                   */
     Int res;                       /* return from option processing function */
 
-    /* Initialize global and static variables. Do it here rather than
-       with initializers to allow for restart */
+    /* Initialize global and static variables */
     SyCTRD = 1;             
     SyCompilePlease = 0;
     SyDebugLoading = 0;

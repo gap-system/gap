@@ -381,10 +381,10 @@ enum {
         LAST_OBJSET_TNUM                    = T_OBJMAP+IMMUTABLE,
 
     // last mutable/immutable TNUM
-    LAST_IMM_MUT_TNUM       = LAST_LIST_TNUM,
+    LAST_IMM_MUT_TNUM       = LAST_OBJSET_TNUM,
 
     // external types (IMMUTABLE is not used for them, but keep the parity anyway)
-    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_OBJSET_TNUM),
+    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_IMM_MUT_TNUM),
         T_COMOBJ            = FIRST_EXTERNAL_TNUM,
         T_POSOBJ,
         T_DATOBJ,
@@ -543,7 +543,8 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **  will renumber all IDs.  Therefore the  corresponding routine must excatly
 **  know where such numbers are stored.
 */
-#define ID_TYPE(type)           ELM_PLIST( type, 4 )
+#define ID_TYPE(type) ELM_PLIST(type, 4)
+#define SET_ID_TYPE(type, val) SET_ELM_PLIST(type, 4, val)
 
 
 /****************************************************************************

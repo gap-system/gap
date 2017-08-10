@@ -62,9 +62,10 @@ true
 gap> s:=SymmetricGroup([ 1, 5, 6, 7, 8, 9, 10 ]);;
 gap> RepresentativeAction(s,(9,10),(1,5)) in s;
 true
-gap> g:=SimpleGroup("M24");;
-gap> Length(MaximalSubgroupClassReps(g));
-9
+gap> if IsPackageMarkedForLoading("tomlib","") then
+> if Length(MaximalSubgroupClassReps(SimpleGroup("M24"))) <> 9 then
+> Print( "Error in calculation MaximalSubgroupClassReps of M24\n" );
+> fi; fi;
 gap> g:=SimpleGroup("L4(3)");;
 gap> Length(MaximalSubgroupClassReps(g));
 8

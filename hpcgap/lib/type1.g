@@ -497,7 +497,7 @@ BIND_GLOBAL( "FlagsType", K -> K![2] );
 BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
 BIND_GLOBAL( "SetDataType", function ( K, data )
-    StrictBindOnce(K, POS_DATA_TYPE, `data);
+    StrictBindOnce(K, POS_DATA_TYPE, MakeImmutable(data));
 end );
 
 

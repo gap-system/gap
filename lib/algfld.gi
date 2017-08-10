@@ -105,7 +105,7 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.deg:=deg;
   i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
   i[2]:=fam!.oneCoefficient;
-  i:=ImmutableVector(rchar,i,true);
+  i:=ImmutableVector(Size(f),i,true);
   fam!.primitiveElm:=MakeImmutable(ObjByExtRep(fam,i));
   fam!.indeterminateName:=MakeImmutable("a");
 

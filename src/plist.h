@@ -180,23 +180,36 @@ static inline void SET_ELM_PLIST(Obj list, Int pos, Obj val)
 **  be a positive  integer  less than  or  equal  to the  physical  length of
 **  <list>.  If <list> has no assigned element at position <pos>, 'ELM_PLIST'
 **  returns 0.
-**
-**  Note that  'ELM_PLIST' is a macro, so do  not call it with arguments that
-**  have side effects.
 */
-#define ELM_PLIST(list,pos)             (ADDR_OBJ(list)[pos])
+static inline Obj ELM_PLIST(Obj list, Int pos)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(pos >= 1);
+    GAP_ASSERT(pos <= CAPACITY_PLIST(list));
+    return ADDR_OBJ(list)[pos];
+}
 
-
-
-
+/****************************************************************************
+**
+*F  BASE_PTR_PLIST(<list>)  . . . . . . . . . . . . . element of a plain list
+**
+**  'BASE_PTR_PLIST' returns a point to the first element of the plist <list>
+**
+**  This point will be invalidated whenever a garbage collection occurs.
+*/
+static inline Obj * BASE_PTR_PLIST(Obj list)
+{
+    GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    return ADDR_OBJ(list) + 1;
+}
 /****************************************************************************
 **
 *F  IS_DENSE_PLIST( <list> )  . . . . . check if <list> is a dense plain list
 **
-** Note that this only checks for plists that are known to be dense.  This is  
-** very fast.  If you want  to also handle plists  for which it  is now known      
-** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST 
-** instead.                                                                   
+** Note that this only checks for plists that are known to be dense.  This is
+** very fast.  If you want  to also handle plists  for which it  is now known
+** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST
+** instead.
 */
 static inline Int IS_DENSE_PLIST(Obj list)
 {

@@ -37,6 +37,7 @@
 #define GAP_GASMAN_H
 
 #include <src/system.h>
+#include <src/debug.h>
 
 #include <src/hpc/atomic.h>
 
@@ -103,6 +104,7 @@ typedef struct {
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
 static inline BagHeader * BAG_HEADER(Bag bag) {
+    GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
 }
 
@@ -395,9 +397,7 @@ extern void CHANGED_BAG_IMPL(Bag b);
 **  The application can find the size of a bag with 'SIZE_BAG' and change  it
 **  with 'ResizeBag' (see "SIZE_BAG" and "ResizeBag").
 **
-**  If the initialization flag <dirty> is 0, all entries of  the new bag will
-**  be initialized to 0; otherwise the  entries  of the  new bag will contain
-**  random values (see "InitBags").
+**  All entries of  the new bag will be initialized to 0.
 **
 **  What  happens if {\Gasman}  cannot  get  enough  storage  to perform   an
 **  allocation     depends on  the  behavior    of   the allocation  function
@@ -469,9 +469,7 @@ extern  void            RetypeBagIfWritable (
 **  new size.  If the new size  <new> is larger than  the old size, {\Gasman}
 **  extends the bag.
 **
-**  If the initialization flag <dirty> is 0, all entries of an extension will
-**  be initialized to 0; otherwise the  entries of an  extension will contain
-**  random values (see "InitBags").
+**  All entries of an extension will be initialized to 0.
 **
 **  What happens  if {\Gasman} cannot   get   enough storage to  perform   an
 **  extension depends   on   the   behavior   of the   allocation    function
@@ -1075,7 +1073,7 @@ extern void CheckMasterPointers( void );
 **
 **  InitBags( <alloc-func>, <initial-size>,
 **            <stack-func>, <stack-start>, <stack-align>,
-**            <dirty>, <abort-func> )
+**            <abort-func> )
 **
 **  'InitBags'  initializes {\Gasman}.  It  must be called from a application
 **  using {\Gasman} before any bags can be allocated.
@@ -1136,12 +1134,6 @@ extern void CheckMasterPointers( void );
 **  on  the   machine,  the  operating system,   and   the compiler.   If the
 **  application provides another <stack-func>, <stack-align> is ignored.
 **
-**  The initialization  flag  <dirty> determines  whether  bags allocated  by
-**  'NewBag' are initialized to contain only 0 or not.   If <dirty> is 0, the
-**  bags are  initialized to  contain only 0.    If  <dirty> is  1, the  bags
-**  initially contain  random values.  Note that {\Gasman}  will be  a little
-**  bit faster if bags need not be initialized.
-**
 **  <abort-func> should be a function that {\Gasman} should call in case that
 **  something goes  wrong, e.g.,     if it  cannot allocation    the  initial
 **  workspace.  <abort-func> should be a function of one string argument, and
@@ -1163,7 +1155,6 @@ extern  void            InitBags (
             TNumStackFuncBags   stack_func,
             Bag *               stack_bottom,
             UInt                stack_align,
-            UInt                dirty,
             TNumAbortFuncBags   abort_func );
 
 /****************************************************************************

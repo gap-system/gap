@@ -526,8 +526,11 @@ BindGlobal( "ShowKernelInformation", function()
   if IsBound( GAPInfo.UseReadline ) then
     Add( libs, "readline" );
   fi;
+  if GAPInfo.KernelInfo.KernelDebug then
+    Add( libs, "KernelDebug" );
+  fi;
   if libs <> [] then
-    print_info( " Libs used:  ", libs, "\n" );
+    print_info( " Configuration:  ", libs, "\n" );
   fi;
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );

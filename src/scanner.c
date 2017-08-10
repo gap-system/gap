@@ -1104,9 +1104,9 @@ static Int GetLine2 (
 #endif
 
     if ( input->isstream ) {
-        if ( input->sline == 0
-          || GET_LEN_STRING(input->sline) <= input->spos )
-        {
+        if (input->sline == 0 ||
+            (IS_STRING(input->sline) &&
+             GET_LEN_STRING(input->sline) <= input->spos)) {
             input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
             input->spos  = 0;
         }
@@ -2587,7 +2587,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  C_NEW_STRING_DYN( p, STATE(Prompt) );
+  p = MakeString(STATE(Prompt));
   return p;
 }
 
@@ -2957,9 +2957,9 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 Obj FuncINPUT_FILENAME( Obj self) {
   Obj s;
   if (STATE(Input)) {
-    C_NEW_STRING_DYN( s, STATE(Input)->name );
+      s = MakeString(STATE(Input)->name);
   } else {
-    C_NEW_STRING_CONST( s, "*defin*" );
+      s = MakeString("*defin*");
   }
   return s;
 }

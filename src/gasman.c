@@ -964,10 +964,9 @@ void FinishBags( void )
 **
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
-**  'InitBags'   remembers   <alloc-func>,  <stack-func>,     <stack-bottom>,
-**  <stack-align>, <dirty>,    and   <abort-func>  in   global
-**  variables.   It also  allocates  the initial workspace,   and sets up the
-**  linked list of available masterpointer.
+**  'InitBags' remembers <alloc-func>, <stack-func>, <stack-bottom>,
+**  <stack-align> and <abort-func> in global variables. It also allocates the
+**  initial workspace, and sets up the linked list of available masterpointer.
 */
 TNumAllocFuncBags       AllocFuncBags;
 
@@ -977,8 +976,6 @@ Bag *                   StackBottomBags;
 
 UInt                    StackAlignBags;
 
-UInt                    DirtyBags;
-
 TNumAbortFuncBags       AbortFuncBags;
 
 void            InitBags (
@@ -987,7 +984,6 @@ void            InitBags (
     TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align,
-    UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
     Bag *               p;              /* loop variable                   */
@@ -1031,9 +1027,6 @@ void            InitBags (
 
     AllocSizeBags = 256;
 
-    /* remember whether bags should be clean                               */
-    DirtyBags = dirty;
-
     /* install the marking functions                                       */
     for ( i = 0; i < 255; i++ )
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
@@ -1068,10 +1061,7 @@ void            InitBags (
 **
 **  Finally it returns the identifier of the new bag.
 **
-**  Note that 'NewBag' never  initializes the new bag  to contain only 0.  If
-**  this is desired because  the initialization flag <dirty> (see "InitBags")
-**  was  0, it is the job  of 'CollectBags'  to initialize the new free space
-**  after a garbage collection.
+**  All entries of  the new bag will be initialized to 0.
 **
 **  If {\Gasman} was compiled with the option 'COUNT_BAGS' then 'NewBag' also
 **  updates the information in 'InfoBags' (see "InfoBags").
@@ -1894,8 +1884,7 @@ again:
     AllocBags = YoungBags = dst;
 
     /* clear the new free area                                             */
-    if (!DirtyBags)
-      memset((void *)dst, 0, ((Char *)src)-((Char *)dst));
+    memset((void *)dst, 0, ((Char *)src)-((Char *)dst));
 
     /* information after the sweep phase                                   */
     NrDeadBags += nrDeadBags;

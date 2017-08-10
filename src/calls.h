@@ -45,6 +45,11 @@
 #ifndef GAP_CALLS_H
 #define GAP_CALLS_H
 
+#include <src/gap.h>
+#include <src/gaputils.h>
+#include <src/stringobj.h>
+#include <src/lists.h>
+
 
 /****************************************************************************
 **
@@ -109,28 +114,145 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **  0 means no lock, 1 means a read-only lock, 2 means a read-write lock.
 **  The value of the bag can be null, in which case no argument requires a
 **  lock. Only used in HPC-GAP.
-**
-**  'LOCK_FUNC(<func>, <i>)' is the lock mode of the i-th argument.
-**  It is the responsibility of the caller to check that 'LCKS_FUNC(<func>)'
-**  does not return a null reference before calling 'LOCK_FUNC()'.
 */
-#define HDLR_FUNC(func,i)       (* (ObjFunc*) (ADDR_OBJ(func) + 0 +(i)) )
-#define NAME_FUNC(func)         (*            (ADDR_OBJ(func) + 8     ) )
-#define NARG_FUNC(func)         (* (Int*)     (ADDR_OBJ(func) + 9     ) )
-#define NAMS_FUNC(func)         (*            (ADDR_OBJ(func) +10     ) )
-#define NAMI_FUNC(func,i)       ((Char *)CHARS_STRING(ELM_LIST(NAMS_FUNC(func),i)))
-#define PROF_FUNC(func)         (*            (ADDR_OBJ(func) +11     ) )
-#define NLOC_FUNC(func)         (* (UInt*)    (ADDR_OBJ(func) +12     ) )
-#define BODY_FUNC(func)         (*            (ADDR_OBJ(func) +13     ) )
-#define ENVI_FUNC(func)         (*            (ADDR_OBJ(func) +14     ) )
-#define FEXS_FUNC(func)         (*            (ADDR_OBJ(func) +15     ) )
+typedef struct {
+    ObjFunc handlers[8];
+    Obj name;
+    Int nargs;
+    Obj namesOfLocals;
+    Obj prof;
+    UInt nloc;
+    Obj body;
+    Obj envi;
+    Obj fexs;
 #ifdef HPCGAP
-#define LCKS_FUNC(func)         (* (Bag*)     (ADDR_OBJ(func) +16     ) )
-#define LOCK_FUNC(func,i)       (CHARS_STRING(LCKS_FUNC(func))[(i)-1])
-#define SIZE_FUNC               (17*sizeof(Bag))
-#else
-#define SIZE_FUNC               (16*sizeof(Bag))
+    Obj locks;
 #endif
+    // additional data follows for operations
+} FunctionHeader;
+
+static inline FunctionHeader * FUNC_HEADER(Obj func)
+{
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    return (FunctionHeader *)ADDR_OBJ(func);
+}
+
+static inline ObjFunc HDLR_FUNC(Obj func, Int i)
+{
+    return FUNC_HEADER(func)->handlers[i];
+}
+
+static inline Obj NAME_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->name;
+}
+
+static inline Int NARG_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->nargs;
+}
+
+static inline Obj NAMS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->namesOfLocals;
+}
+
+static inline Char * NAMI_FUNC(Obj func, Int i)
+{
+    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+}
+
+static inline Obj PROF_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->prof;
+}
+
+static inline UInt NLOC_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->nloc;
+}
+
+static inline Obj BODY_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->body;
+}
+
+static inline Obj ENVI_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->envi;
+}
+
+static inline Obj FEXS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->fexs;
+}
+
+#ifdef HPCGAP
+static inline Obj LCKS_FUNC(Obj func)
+{
+    return FUNC_HEADER(func)->locks;
+}
+
+#endif
+
+static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
+{
+    FunctionHeader *header = FUNC_HEADER(func);
+    GAP_ASSERT(0 <= i && i < ARRAY_SIZE(header->handlers));
+    header->handlers[i] = hdlr;
+}
+
+static inline void SET_NAME_FUNC(Obj func, Obj name)
+{
+    GAP_ASSERT(name == 0 || IS_STRING_REP(name));
+    FUNC_HEADER(func)->name = name;
+}
+
+static inline void SET_NARG_FUNC(Obj func, Int nargs)
+{
+    FUNC_HEADER(func)->nargs = nargs;
+}
+
+static inline void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
+{
+    FUNC_HEADER(func)->namesOfLocals = namesOfLocals;
+}
+
+static inline void SET_PROF_FUNC(Obj func, Obj prof)
+{
+    FUNC_HEADER(func)->prof = prof;
+}
+
+static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
+{
+    FUNC_HEADER(func)->nloc = nloc;
+}
+
+static inline void SET_BODY_FUNC(Obj func, Obj body)
+{
+    GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
+    FUNC_HEADER(func)->body = body;
+}
+
+static inline void SET_ENVI_FUNC(Obj func, Obj envi)
+{
+    FUNC_HEADER(func)->envi = envi;
+}
+
+static inline void SET_FEXS_FUNC(Obj func, Obj fexs)
+{
+    FUNC_HEADER(func)->fexs = fexs;
+}
+
+#ifdef HPCGAP
+static inline void SET_LCKS_FUNC(Obj func, Obj locks)
+{
+    FUNC_HEADER(func)->locks = locks;
+}
+#endif
+
+
+#define SIZE_FUNC               sizeof(FunctionHeader)
 
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
 #define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))
@@ -296,8 +418,6 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func);
 **  saved workspace.  <cookie> should be a  unique  C string, identifying the
 **  handler
 */
-
-extern void InitHandlerRegistration( void );
 
 extern void InitHandlerFunc (
      ObjFunc            hdlr,

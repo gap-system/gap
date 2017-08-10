@@ -516,18 +516,28 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   return INTOBJ_INT(HASHKEY_BAG_NC( obj, (UInt4)INT_INTOBJ(opSeed), offs, (int) n));
 }
 
-Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int maxread){
-  #ifdef SYS_IS_64_BIT
+Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read)
+{
+#ifdef SYS_IS_64_BIT
     UInt8 hashout[2];
-    MurmurHash3_x64_128 ( (const void *)((UChar *)ADDR_OBJ(obj)+skip), 
-                           maxread, seed, (void *) hashout);
+    MurmurHash3_x64_128(ptr, read, seed, (void *)hashout);
     return hashout[0] % (1UL << 60);
-  #else
+#else
     UInt4 hashout;
-    MurmurHash3_x86_32 ( (const void *)((UChar *)ADDR_OBJ(obj)+skip), 
-                          maxread, seed, (void *) &hashout);
+    MurmurHash3_x86_32(ptr, read, seed, (void *)&hashout);
     return hashout % (1UL << 28);
-  #endif
+#endif
+}
+
+Int HASHKEY_BAG_NC(Obj obj, UInt4 seed, Int skip, int read)
+{
+    return HASHKEY_MEM_NC((const void *)((UChar *)ADDR_OBJ(obj) + skip), seed,
+                          read);
+}
+
+Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
+{
+    return HASHKEY_BAG_NC(obj, seed, 0, SIZE_OBJ(obj));
 }
 
 Obj IntStringInternal( Obj string )

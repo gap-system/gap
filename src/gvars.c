@@ -395,8 +395,8 @@ void            AssGVar (
 #endif
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVarObj(gvar));
-        RESET_FILT_LIST( onam, FN_IS_MUTABLE );
-        NAME_FUNC(val) = onam;
+        MakeImmutableString(onam);
+        SET_NAME_FUNC(val, onam);
         CHANGED_BAG(val);
     }
 #ifdef HPCGAP
@@ -617,7 +617,6 @@ UInt GVarName (
             strlcpy(gvarbuf, name, sizeof(gvarbuf));
         string = MakeImmString(gvarbuf);
 
-        RESET_FILT_LIST( string, FN_IS_MUTABLE );
 #ifdef USE_GVAR_BUCKETS
         UInt gvar_bucket = GVAR_BUCKET(CountGVars);
         if (!ValGVars[gvar_bucket]) {
@@ -1529,8 +1528,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitHandlerRegistration();
-
     /* init global bags and handler                                        */
     InitGlobalBag( &ErrorMustEvalToFuncFunc,
                    "src/gvars.c:ErrorMustEvalToFuncFunc" );

@@ -225,6 +225,7 @@ typedef UInt           CVar;
 typedef UInt4           LVar;
 
 #define INFO_FEXP(fexp)         PROF_FUNC(fexp)
+#define SET_INFO_FEXP(fexp,x)   SET_PROF_FUNC(fexp,x)
 #define NEXT_INFO(info)         PTR_BAG(info)[0]
 #define NR_INFO(info)           (*((Int*)(PTR_BAG(info)+1)))
 #define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+2)))
@@ -1207,13 +1208,13 @@ CVar CompFuncExpr (
     Emit( ", HdlrFunc%d );\n", nr );
 
     /* this should probably be done by 'NewFunction'                       */
-    Emit( "ENVI_FUNC( %c ) = STATE(CurrLVars);\n", func );
+    Emit( "SET_ENVI_FUNC( %c, STATE(CurrLVars) );\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
-    Emit( "%c = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );\n", tmp );
+    Emit( "%c = NewBag( T_BODY, sizeof(BodyHeader) );\n", tmp );
     Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
     Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
-    Emit( "BODY_FUNC(%c) = %c;\n", func, tmp );
+    Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
@@ -2730,12 +2731,10 @@ CVar CompStringExpr (
     string = CVAR_TEMP( NewTemp( "string" ) );
 
     /* create the string and copy the stuff                                */
-    Emit( "C_NEW_STRING( %c, %d, \"%C\" );\n",
-
+    Emit( "%c = MakeString( \"%C\" );\n",
           /* the sizeof(UInt) offset is to get past the length of the string
              which is now stored in the front of the literal */
-          string, SIZE_EXPR(expr)-1-sizeof(UInt),
-          sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
+          string, sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
 
     /* we know that the result is a list                                   */
     SetInfoCVar( string, W_LIST );
@@ -5460,7 +5459,7 @@ void CompFunc (
         NTEMP_INFO(info) = 0;
         NLOOP_INFO(info) = 0;
 
-        INFO_FEXP(func) = info;
+        SET_INFO_FEXP(func, info);
         CHANGED_BAG(func);
 
     }
@@ -5726,13 +5725,12 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" );\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" );\n", strlen(magic2), magic2 );
+    Emit( "DefaultName = MakeString( \"local function\" );\n" );
+    Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" );\n",
-                  i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
+            Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
         }
         else {
             Emit( "NameFunc[%d] = DefaultName;\n", i );
@@ -5742,10 +5740,10 @@ Int CompileFunc (
     }
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);\n" );
-    Emit( "ENVI_FUNC( func1 ) = STATE(CurrLVars);\n" );
+    Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
-    Emit( "body1 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj));\n" );
-    Emit( "BODY_FUNC( func1 ) = body1;\n" );
+    Emit( "body1 = NewBag( T_BODY, sizeof(BodyHeader));\n" );
+    Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
     Emit( "\n/* return success */\n" );

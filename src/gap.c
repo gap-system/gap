@@ -916,10 +916,10 @@ Obj FuncWindowCmd (
 
   /* if the first entry is one signal an error */
   if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
-    C_NEW_STRING_CONST(tmp, "window system: ");
-    SET_ELM_PLIST( list, 1, tmp );
-    SET_LEN_PLIST( list, i-1 );
-    return CALL_XARGS(Error,list);
+      tmp = MakeString("window system: ");
+      SET_ELM_PLIST(list, 1, tmp);
+      SET_LEN_PLIST(list, i - 1);
+      return CALL_XARGS(Error, list);
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
@@ -1210,7 +1210,7 @@ static Obj ErrorMessageToGAPString(
   Obj Message;
   SPrTo(message, sizeof(message), msg, arg1, arg2);
   message[sizeof(message)-1] = '\0';
-  C_NEW_STRING_DYN(Message, message);
+  Message = MakeString(message);
   return Message;
 }
 
@@ -1407,7 +1407,7 @@ Obj ErrorReturnObj (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING_DYN(LateMsg, msg2);
+  LateMsg = MakeString(msg2);
   return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
@@ -1423,7 +1423,7 @@ void ErrorReturnVoid (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING_DYN(LateMsg, msg2);
+  LateMsg = MakeString(msg2);
   CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
   /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
@@ -2101,6 +2101,7 @@ void InitClearFiltsTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 2 ) {
         ClearFiltsTNums[tab[i]] = tab[i+1];
+        ClearFiltsTNums[tab[i] | IMMUTABLE] = tab[i+1] | IMMUTABLE;
     }
 }
 
@@ -2116,6 +2117,7 @@ void InitHasFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         HasFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        HasFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2];
     }
 }
 
@@ -2131,6 +2133,7 @@ void InitSetFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         SetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        SetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
     }
 }
 
@@ -2146,6 +2149,7 @@ void InitResetFiltListTNumsFromTable (
 
     for ( i = 0;  tab[i] != -1;  i += 3 ) {
         ResetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+        ResetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
     }
 }
 
@@ -2193,7 +2197,7 @@ void SetupFuncInfo(Obj func, const Char* cookie)
     const Char* pos = strchr(cookie, ':');
     if ( pos ) {
         Obj filename, start;
-        Obj body_bag = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
+        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
         char buffer[512];
         Int len = 511<(pos-cookie)?511:pos-cookie;
         memcpy(buffer, cookie, len);
@@ -2202,7 +2206,7 @@ void SetupFuncInfo(Obj func, const Char* cookie)
         start = MakeImmString(pos+1);
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, start);
-        BODY_FUNC(func) = body_bag;
+        SET_BODY_FUNC(func, body_bag);
         CHANGED_BAG(body_bag);
         CHANGED_BAG(func);
     }
@@ -2720,6 +2724,13 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 
+  r = RNamName("KernelDebug");
+#ifdef GAP_KERNEL_DEBUG
+  AssPRec(res, r, True);
+#else
+  AssPRec(res, r, False);
+#endif
+
   MakeImmutable(res);
   
   return res;
@@ -2761,8 +2772,8 @@ void ThreadedInterpreter(void *funcargs) {
   STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
   PTR_BAG(STATE(BottomLVars))[0] = tmp;
-  tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0] ) = tmp;
+  tmp = NewBag( T_BODY, sizeof(BodyHeader) );
+  SET_BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0], tmp );
   STATE(CurrLVars) = STATE(BottomLVars);
 
   IntrBegin( STATE(BottomLVars) );
@@ -3268,7 +3279,7 @@ void InitializeGap (
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
-              0, SyAbortBags );
+              SyAbortBags );
 #if !defined(BOEHM_GC)
     InitMsgsFuncBags( SyMsgsBags );
 #endif

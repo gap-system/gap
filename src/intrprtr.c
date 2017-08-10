@@ -2123,7 +2123,7 @@ void            IntrFloatExpr (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) {  CodeFloatExpr( str );   return; }
 
-    C_NEW_STRING_DYN(val, str);
+    val = MakeString(str);
     PushObj(ConvertFloatLiteralEager(val));
 }
 
