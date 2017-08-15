@@ -1545,11 +1545,13 @@ static Int InitKernel (
                    "src/gvars.c:CopiesGVars" );
     InitGlobalBag( &FopiesGVars,
                    "src/gvars.c:FopiesGVars"  );
+#endif
 
+#if !defined(HPCGAP)
     InitGlobalBag( &STATE(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
-
 #endif
+
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
 
