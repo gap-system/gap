@@ -2239,18 +2239,32 @@ void InitGVarOpersFromTable (
 
 static void SetupFuncInfo(Obj func, const Char* cookie)
 {
+    // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
+    // We check if that is the case, and if so, split it into the parts before
+    // and after the colon. In addition, the file path is cut to only contain
+    // the last two '/'-separated components.
     const Char* pos = strchr(cookie, ':');
     if ( pos ) {
-        Obj filename, start;
-        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
+        Obj location = MakeImmString(pos+1);
+
+        Obj filename;
         char buffer[512];
         Int len = 511<(pos-cookie) ? 511 : pos-cookie;
         memcpy(buffer, cookie, len);
         buffer[len] = 0;
-        filename = MakeImmString(buffer);
-        start = MakeImmString(pos+1);
+
+        Char* start = strrchr(buffer, '/');
+        if (start) {
+            while (start > buffer && *(start-1) != '/')
+                start--;
+        }
+        else
+            start = buffer;
+        filename = MakeImmString(start);
+
+        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
         SET_FILENAME_BODY(body_bag, filename);
-        SET_LOCATION_BODY(body_bag, start);
+        SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
         CHANGED_BAG(body_bag);
         CHANGED_BAG(func);
