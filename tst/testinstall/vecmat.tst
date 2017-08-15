@@ -260,4 +260,51 @@ gap> IsMutable(m);
 false
 
 #
+# Test matrix access functions (see also listindex.tst)
+#
+gap> TestReadMatEntry := function(m)
+>     local dim;
+>     dim := DimensionsMat(m);
+>     dim := [ [1..dim[1]], [1..dim[2]] ];
+>     return ForAll(dim[1], row->ForAll(dim[2], col-> m[row,col] = m[row][col]));
+> end;;
+
+#
+gap> F := GF(2);; m := IdentityMat( 3, F );;
+gap> TestReadMatEntry(m);
+true
+gap> m[1,4];
+Error, List Element: <list>[4] must have an assigned value
+gap> m[4,1];
+Error, List Element: <list>[4] must have an assigned value
+
+#
+gap> m := ImmutableMatrix( 2, m );
+<an immutable 3x3 matrix over GF2>
+gap> TestReadMatEntry(m);
+true
+gap> m[1,4];
+Error, column index 4 exceeds 3, the number of columns
+gap> m[4,1];
+Error, row index 4 exceeds 3, the number of rows
+
+#
+gap> F := GF(9);; m := IdentityMat( 3, F );;
+gap> TestReadMatEntry(m);
+true
+gap> m[1,4];
+Error, List Element: <list>[4] must have an assigned value
+gap> m[4,1];
+Error, List Element: <list>[4] must have an assigned value
+
+#
+gap> m := ImmutableMatrix( 9, m );;
+gap> TestReadMatEntry(m);
+true
+gap> m[1,4];
+Error, column index 4 exceeds 3, the number of columns
+gap> m[4,1];
+Error, row index 4 exceeds 3, the number of rows
+
+#
 gap> STOP_TEST("vecmat.tst");
