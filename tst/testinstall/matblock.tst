@@ -100,6 +100,22 @@ gap> o2:= One( z );
 <block matrix of dimensions (3*2)x(3*2)>
 gap> o1 = o2;
 true
+
+# New style access to block matrix
+gap> dim := DimensionsMat( m1 );;
+gap> tmp := List([1..dim[1]], row->List([1..dim[2]], col -> m1[row,col]));;
+gap> tmp = MatrixByBlockMatrix(m1);
+true
+gap> dim := DimensionsMat( m2 );;
+gap> tmp := List([1..dim[1]], row->List([1..dim[2]], col -> m2[row,col]));;
+gap> tmp = MatrixByBlockMatrix(m2);
+true
+
+# block matrices are immutable
+gap> m1[1,2] := 5;
+Error, Matrix Assignment: <mat> must be a mutable matrix
+
+#
 gap> STOP_TEST( "matblock.tst", 1);
 
 #############################################################################
