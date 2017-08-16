@@ -73,8 +73,9 @@ InstallOtherMethod( Length, "For a compressed MatFFE",
 ##
 
 InstallOtherMethod( \[\],  "For a compressed MatFFE", 
-        true, [IsList and Is8BitMatrixRep, IsPosInt], 0, function(m,i) 
-    return m![i+1]; end);
+        [IsList and Is8BitMatrixRep, IsPosInt],
+        ELM_MAT8BIT
+        );
 
 #############################################################################
 ##
@@ -85,8 +86,7 @@ InstallOtherMethod( \[\],  "For a compressed MatFFE",
 ##
                
 InstallOtherMethod( \[\]\:\=,  "For a compressed MatFE", 
-        true, [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject], 
-        0,
+        [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject],
         ASS_MAT8BIT
         );
 

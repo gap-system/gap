@@ -1070,10 +1070,10 @@ InstallMethod( MutableCopyMat, "for an 8bit matrix",
   end );
 InstallMethod( MatElm, "for an 8bit matrix and two integers",
   [ Is8BitMatrixRep, IsPosInt, IsPosInt ],
-  function( m, r, c ) return m[r][c]; end );
+  MAT_ELM_MAT8BIT );
 InstallMethod( SetMatElm, "for an 8bit matrix, two integers, and a ffe",
   [ Is8BitMatrixRep, IsPosInt, IsPosInt, IsFFE ],
-  function( m, r, c, e ) m[r][c] := e; end );
+  SET_MAT_ELM_MAT8BIT );
 InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   [IsList, IsInt, Is8BitMatrixRep],
   function(l,rl,m)
