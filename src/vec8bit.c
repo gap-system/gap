@@ -4096,6 +4096,26 @@ cantdo:
     return (Obj)0;
 }
 
+
+/****************************************************************************
+**
+*F  FuncELM_MAT8BIT( <self>, <mat>, <row> ) .  select a row of an 8bit matrix
+**
+*/
+Obj FuncELM_MAT8BIT( Obj self, Obj mat, Obj row )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("ELM_MAT8BIT: position must be a small integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    UInt r = INT_INTOBJ(row);
+    if (LEN_MAT8BIT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_MAT8BIT(mat));
+    }
+    return ELM_MAT8BIT(mat, r);
+}
+
+
 /****************************************************************************
 **
 *F  SumMat8BitMat8Bit( <ml> ,<mr>)
@@ -5837,6 +5857,75 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
 
 /****************************************************************************
 **
+*F  FuncMAT_ELM_MAT8BIT( <self>, <mat>, <row>, <col> )
+**
+*/
+Obj FuncMAT_ELM_MAT8BIT( Obj self, Obj mat, Obj row, Obj col )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("row index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    if (!IS_POS_INTOBJ(col)) {
+        ErrorMayQuit("column index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(col), 0L);
+    }
+
+    UInt r = INT_INTOBJ(row);
+    if (LEN_MAT8BIT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_MAT8BIT(mat));
+    }
+
+    Obj vec = ELM_MAT8BIT(mat, r);
+
+    UInt c = INT_INTOBJ(col);
+    if (LEN_VEC8BIT(vec) < c) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c, LEN_VEC8BIT(vec));
+    }
+
+    return FuncELM_VEC8BIT(self, vec, col);
+}
+
+
+/****************************************************************************
+**
+*F  FuncSET_MAT_ELM_MAT8BIT( <self>, <mat>, <row>, <col>, <elm> )
+**
+*/
+Obj FuncSET_MAT_ELM_MAT8BIT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("row index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    if (!IS_POS_INTOBJ(col)) {
+        ErrorMayQuit("column index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(col), 0L);
+    }
+
+    UInt r = INT_INTOBJ(row);
+    if (LEN_MAT8BIT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_MAT8BIT(mat));
+    }
+
+    Obj vec = ELM_MAT8BIT(mat, r);
+    if ( ! IS_MUTABLE_OBJ(vec) ) {
+        ErrorMayQuit("row %d is immutable", r, 0);
+    }
+
+    UInt c = INT_INTOBJ(col);
+    if (LEN_VEC8BIT(vec) < c) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c, LEN_VEC8BIT(vec));
+    }
+
+    // TODO: replace the following call by direct access? E.g. so that we can
+    // always reject input elements in the "wrong domain"?
+    return FuncASS_VEC8BIT( self, vec, col, elm );
+}
+
+
+/****************************************************************************
+**
 *f * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * * */
 
 
@@ -5891,6 +5980,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(INV_MAT8BIT_SAME_MUTABILITY, 1, "mat"),
     GVAR_FUNC(INV_MAT8BIT_IMMUTABLE, 1, "mat"),
     GVAR_FUNC(ASS_MAT8BIT, 3, "mat, pos, obj"),
+    GVAR_FUNC(ELM_MAT8BIT, 2, "mat, pos"),
     GVAR_FUNC(SUM_MAT8BIT_MAT8BIT, 2, "ml, mr"),
     GVAR_FUNC(DIFF_MAT8BIT_MAT8BIT, 2, "ml, mr"),
     GVAR_FUNC(ADD_COEFFS_VEC8BIT_3, 3, "vec1, vec2, mult"),
@@ -5916,6 +6006,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(LT_MAT8BIT_MAT8BIT, 2, "mat8bit, mat8bit"),
     GVAR_FUNC(TRANSPOSED_MAT8BIT, 1, "mat8bit"),
     GVAR_FUNC(KRONECKERPRODUCT_MAT8BIT_MAT8BIT, 2, "mat8bit, mat8bit"),
+    GVAR_FUNC(MAT_ELM_MAT8BIT, 3, "mat, row, col"),
+    GVAR_FUNC(SET_MAT_ELM_MAT8BIT, 4, "mat, row, col, elm"),
     { 0, 0, 0, 0, 0 }
 
 };
