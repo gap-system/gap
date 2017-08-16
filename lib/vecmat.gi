@@ -553,42 +553,30 @@ end );
 
 #############################################################################
 ##
-#M  ELM_LIST( <list>, <pos> ) . . . . . . . select an element of a GF2 matrix
+#M  <list> [ <pos> ] . . . . . . . . . . .  select an element of a GF2 matrix
 ##
-InstallOtherMethod( ELM_LIST,
-    "for GF2 matrix",
-    true,
+InstallOtherMethod( \[\], "for GF2 matrix",
     [ IsMatrix and IsGF2MatrixRep,
       IsPosInt ],
-    0,
-
-function( list, pos )
-    return list![pos+1];
-end );
-
-
+    ELM_GF2MAT );
 
 
 #############################################################################
 ##
-#M  ASS_LIST( <gf2mat>, <pos>, <elm> )  . . assign an element to a GF2 matrix
+#M  <gf2mat> [ <pos> ] := <elm> . . . . . . assign an element to a GF2 matrix
 ##
-InstallOtherMethod( ASS_LIST,
+InstallOtherMethod( \[\]\:\=,
     "for GF2 matrix",
-    true,
     [ IsList and IsGF2MatrixRep and IsMutable,
       IsPosInt,
       IsObject ],
-    0,
     ASS_GF2MAT );
 
-InstallOtherMethod( ASS_LIST,
+InstallOtherMethod( \[\]\:\=,
     "for GF2 matrix",
-    true,
     [ IsList and IsGF2MatrixRep,
       IsPosInt,
       IsObject ],
-    0,
     ASS_GF2MAT );
 
 
@@ -2177,12 +2165,14 @@ InstallMethod( MutableCopyMat, "for a gf2 matrix",
     ConvertToMatrixRep(mm,2);
     return mm;
   end );
+
 InstallMethod( MatElm, "for a gf2 matrix and two integers",
   [ IsGF2MatrixRep, IsPosInt, IsPosInt ],
-  function( m, r, c ) return m[r][c]; end );
+  MAT_ELM_GF2MAT );
 InstallMethod( SetMatElm, "for a gf2 matrix, two integers, and a ffe",
   [ IsGF2MatrixRep, IsPosInt, IsPosInt, IsFFE ],
-  function( m, r, c, e ) m[r][c] := e; end );
+  SET_MAT_ELM_GF2MAT );
+
 InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
   [IsList, IsInt, IsGF2MatrixRep],
   function(l,rl,m)
