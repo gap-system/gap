@@ -9,7 +9,7 @@
 [<!ENTITY testing "<K>testing</K>">]
 >
 
-<Book Name="Development">
+<Book Name="dev">
 
 <TitlePage>
     <Title>The &GAP; 4 Development Manual</Title>

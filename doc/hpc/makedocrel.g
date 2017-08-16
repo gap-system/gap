@@ -22,7 +22,7 @@ MakeGAPDocDoc( GAPInfo.ManualDataHPC.pathtodoc,
                GAPInfo.ManualDataHPC.bookname,
                GAPInfo.ManualDataHPC.pathtoroot,
                "MathJax" );;
-               
+
 Exec ("mv -f manual.pdf manual-bw.pdf");
 
 SetGapDocLaTeXOptions("color", rec(Maintitlesize :=

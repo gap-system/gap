@@ -4,7 +4,8 @@
 
 Read( "makedocreldata.g" );
 
-SetGapDocLaTeXOptions("nocolor");
+SetGapDocLaTeXOptions("nocolor", rec(Maintitlesize :=
+"\\fontsize{36}{38}\\selectfont"));
 
 MakeGAPDocDoc( GAPInfo.ManualDataTut.pathtodoc,
                GAPInfo.ManualDataTut.main,
@@ -15,7 +16,8 @@ MakeGAPDocDoc( GAPInfo.ManualDataTut.pathtodoc,
 
 Exec ("mv -f manual.pdf manual-bw.pdf");
 
-SetGapDocLaTeXOptions("color");
+SetGapDocLaTeXOptions("color", rec(Maintitlesize :=
+"\\fontsize{36}{38}\\selectfont"));
 
 MakeGAPDocDoc( GAPInfo.ManualDataTut.pathtodoc,
                GAPInfo.ManualDataTut.main,

@@ -1,12 +1,12 @@
 #############################################################################
 ##
-##  values for the `MakeGAPDocDoc' call that builds the Changes Manual
+##  values for the `MakeGAPDocDoc' call that builds the HPC-GAP reference
 ##
 
-GAPInfo.ManualDataChanges:= rec(
+GAPInfo.ManualDataHPC:= rec(
   pathtodoc:= ".",
   main:= "main.xml",
-  bookname:= "changes",
+  bookname:= "hpc",
   pathtoroot:= "../..",
 
   files:= [
