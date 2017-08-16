@@ -1,12 +1,12 @@
 #############################################################################
 ##
-##  values for the `MakeGAPDocDoc' call that builds the Changes Manual
+##  values for the `MakeGAPDocDoc' call that builds the Developers Manuals
 ##
 
-GAPInfo.ManualDataChanges:= rec(
+GAPInfo.ManualDataDev:= rec(
   pathtodoc:= ".",
   main:= "main.xml",
-  bookname:= "changes",
+  bookname:= "dev",
   pathtoroot:= "../..",
 
   files:= [

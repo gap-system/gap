@@ -3,7 +3,6 @@
 <!-- %W  main.xml        GAP 4 Reference Manual        ... -->
 <!-- %Y  Copyright 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
-
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY ATLAS "<Package>Atlas</Package>">
      <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
