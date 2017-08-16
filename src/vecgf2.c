@@ -2300,6 +2300,25 @@ Obj FuncASS_GF2MAT (
 
 /****************************************************************************
 **
+*F  FuncELM_GF2MAT( <self>, <mat>, <row> ) . . . select a row of a GF2 matrix
+**
+*/
+Obj FuncELM_GF2MAT( Obj self, Obj mat, Obj row )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("ELM_GF2MAT: position must be a small integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    UInt r = INT_INTOBJ(row);
+    if (LEN_GF2MAT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_GF2MAT(mat));
+    }
+    return ELM_GF2MAT(mat, r);
+}
+
+
+/****************************************************************************
+**
 *F  FuncUNB_GF2VEC( <self>, <list>, <pos> ) . unbind position of a GF2 vector
 **
 **  'UNB_GF2VEC' unbind  the element at  the position  <pos> in  a GF2 vector
@@ -4611,8 +4630,82 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 }
 
 
+/****************************************************************************
+**
+*F  FuncMAT_ELM_GF2MAT( <self>, <mat>, <row>, <col> )
+**
+*/
+Obj FuncMAT_ELM_GF2MAT( Obj self, Obj mat, Obj row, Obj col )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("row index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    if (!IS_POS_INTOBJ(col)) {
+        ErrorMayQuit("column index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(col), 0L);
+    }
+
+    UInt r = INT_INTOBJ(row);
+    if (LEN_GF2MAT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_GF2MAT(mat));
+    }
+
+    Obj vec = ELM_GF2MAT(mat, r);
+
+    UInt c = INT_INTOBJ(col);
+    if (LEN_GF2VEC(vec) < c) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c, LEN_GF2VEC(vec));
+    }
+
+    return ELM_GF2VEC(vec, c);
+}
 
 
+/****************************************************************************
+**
+*F  FuncSET_MAT_ELM_GF2MAT( <self>, <mat>, <row>, <col>, <elm> )
+**
+*/
+Obj FuncSET_MAT_ELM_GF2MAT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
+{
+    if (!IS_POS_INTOBJ(row)) {
+        ErrorMayQuit("row index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(row), 0L);
+    }
+    if (!IS_POS_INTOBJ(col)) {
+        ErrorMayQuit("column index must be a small positive integer, not a %s",
+                     (Int)TNAM_OBJ(col), 0L);
+    }
+
+    UInt r = INT_INTOBJ(row);
+    if (LEN_GF2MAT(mat) < r) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_GF2MAT(mat));
+    }
+
+    Obj vec = ELM_GF2MAT(mat, r);
+    if ( ! IS_MUTABLE_OBJ(vec) ) {
+        ErrorMayQuit("row %d is immutable", r, 0);
+    }
+
+    UInt c = INT_INTOBJ(col);
+    if (LEN_GF2VEC(vec) < c) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c, LEN_GF2VEC(vec));
+    }
+
+    if ( EQ(GF2One, elm) ) {
+        BLOCK_ELM_GF2VEC(vec,c) |= MASK_POS_GF2VEC(c);
+    }
+    else if ( EQ(GF2Zero, elm) ) {
+        BLOCK_ELM_GF2VEC(vec,c) &= ~MASK_POS_GF2VEC(c);
+    }
+    else {
+        ErrorMayQuit("SET_MAT_ELM_GF2MAT: assigned element must be a GF(2) element, not a %s",
+                     (Int)TNAM_OBJ(elm), 0L);
+    }
+
+    return 0;
+}
 
 
 /****************************************************************************
@@ -4640,6 +4733,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(ELM_GF2VEC, 2, "gf2vec, pos"),
     GVAR_FUNC(ELMS_GF2VEC, 2, "gf2vec, poss"),
     GVAR_FUNC(ASS_GF2VEC, 3, "gf2vec, pos, elm"),
+    GVAR_FUNC(ELM_GF2MAT, 2, "gf2mat, pos"),
     GVAR_FUNC(ASS_GF2MAT, 3, "gf2mat, pos, elm"),
     GVAR_FUNC(UNB_GF2VEC, 2, "gf2vec, pos"),
     GVAR_FUNC(UNB_GF2MAT, 2, "gf2mat, pos"),
@@ -4705,6 +4799,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(RANK_LIST_GF2VECS, 1, "mat"),
     GVAR_FUNC(KRONECKERPRODUCT_GF2MAT_GF2MAT, 2, "mat, mat"),
     GVAR_FUNC(COPY_SECTION_GF2VECS, 5, "src, dest, from, to, howmany"),
+    GVAR_FUNC(MAT_ELM_GF2MAT, 3, "mat, row, col"),
+    GVAR_FUNC(SET_MAT_ELM_GF2MAT, 4, "mat, row, col, elm"),
     { 0, 0, 0, 0, 0 }
 
 };
