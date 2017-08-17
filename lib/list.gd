@@ -140,18 +140,17 @@ InstallTrueMethod(HasLength,IsPlistRep);
 #############################################################################
 ##
 #O  IsBound( <list>[<pos>] )  . . . . . . . . test for an element from a list
-#O  IsBound( <list>[<ix1>,<ix2>,...] )  . . . . . . . . test for an element from a list
 ##
 ##  <#GAPDoc Label="IsBound_list">
 ##  <ManSection>
 ##  <Oper Name="IsBound" Arg='list[n]' Label="for a list index"/>
-##  <Oper Name="IsBound" Arg='list[ix1,ix2,...]' Label="for multiple indices"/>
 ##
 ##  <Description>
 ##  <Ref Func="IsBound" Label="for a list index"/> returns <K>true</K>
-##  if the list <A>list</A> has a element at index <A>n</A>,
+##  if the list <A>list</A> has an element at index <A>n</A>,
 ##  and <K>false</K> otherwise.
-##  <A>list</A> must evaluate to a list, otherwise an error is signalled.
+##  <A>list</A> must evaluate to a list, or to an object for which a suitable
+##  method for <C>IsBound\[\]</C> has been installed, otherwise an error is signalled.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l := [ , 2, 3, , 5, , 7, , , , 11 ];;
@@ -162,9 +161,6 @@ InstallTrueMethod(HasLength,IsPlistRep);
 ##  gap> IsBound( l[101] );
 ##  false
 ##  ]]></Example>
-##
-##  <C>IsBound(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
-##  <C>IsBound(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -208,17 +204,17 @@ DeclareOperationKernel( "Elm0List",
 ##  <#GAPDoc Label="Unbind_list">
 ##  <ManSection>
 ##  <Oper Name="Unbind" Arg='list[n]' Label="unbind a list entry"/>
-##  <Oper Name="Unbind" Arg='list[ix1,ix2,...]' Label="for multiple indices"/>
 ##
 ##  <Description>
-##  <Ref Func="Unbind" Label="unbind a list entry"/> deletes the element with index
-##  <A>n</A> in the mutable list <A>list</A>.  That is, after
+##  <Ref Func="Unbind" Label="unbind a list entry"/> deletes the element with
+##  index <A>n</A> in the mutable list <A>list</A>.  That is, after
 ##  execution of <Ref Func="Unbind" Label="unbind a list entry"/>,
 ##  <A>list</A> no longer has an assigned value with index <A>n</A>.
 ##  Thus <Ref Func="Unbind" Label="unbind a list entry"/> can be used to
 ##  produce holes in a list.
 ##  Note that it is not an error to unbind a nonexistant list element.
-##  <A>list</A> must evaluate to a list, otherwise an error is signalled.
+##  <A>list</A> must evaluate to a list, or to an object for which a suitable
+##  method for <C>Unbind\[\]</C> has been installed, otherwise an error is signalled.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l := [ , 2, 3, 5, , 7, , , , 11 ];;
@@ -236,8 +232,6 @@ DeclareOperationKernel( "Elm0List",
 ##  and there would be no way to tell
 ##  <Ref Func="Unbind" Label="unbind a list entry"/>
 ##  which component to remove.
-##  <C>Unbind(<A>list</A>[<A>ix1</A>,<A>ix2</A>,...])</C> is a short-hand for
-##  <C>Unbind(<A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]])</C>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

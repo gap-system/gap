@@ -104,6 +104,7 @@ may have to be paid (see&nbsp;<Ref Func="ConstantTimeAccessList"/>).
 <Index Subkey="operation">list boundedness test</Index>
 <Index Subkey="operation">list assignment</Index>
 <Index Subkey="operation">list unbind</Index>
+
 <ManSection>
 <Oper Name="\[\]" Arg='list, ix'/>
 <Oper Name="IsBound\[\]" Arg='list, ix'/>
@@ -128,14 +129,6 @@ which clearly will usually be preferred;
 the former is useful mainly if one wants to access the operation itself,
 for example if one wants to install a method for element access in a
 special kind of lists.
-<P/>
-The syntax <C><A>list</A>[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>
-]</C>, with two or more indices is treated as a shorthand for
-<C><A>list</A>[[ <A>ix1</A>, <A>ix2</A>,.... <A>ixn</A>]]</C>
-
-This is intended to provide a nicer syntax for accessing elements of
-matrices and tensors.
-
 <P/>
 Similarly,
 <Ref Oper="IsBound\[\]"/> is used explicitly mainly in method installations.
@@ -174,11 +167,8 @@ gap> l := [ 2, 3, 5, 7, 11, 13 ];;  l[1];  l[2];  l[6];
 If <A>list</A> is not a built-in list, or <A>ix</A> does not evaluate to a
 positive integer, method selection is invoked to try and find a way of
 indexing <A>list</A> with index <A>ix</A>. If this fails, or the
-selected method finds that
-<C><A>list</A>[<A>ix</A>]</C> is unbound, an error is signalled.
-<P/>
-<Index>multiple indices</Index>
-<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...]</C> <P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]</C>
+selected method finds that <C><A>list</A>[<A>ix</A>]</C> is unbound,
+an error is signalled.
 <P/>
 
 <Index>sublist</Index>
@@ -322,13 +312,12 @@ thus this list must be mutable
 See&nbsp;<Ref Sect="Identical Lists"/> for subtleties of changing lists.
 <P/>
 If <A>list</A> does not evaluate to a list, <A>pos</A> does not evaluate to a
-positive integer or <A>object</A> is a call to a function which does not
+positive integer, method selection is invoked to try and find a way of
+indexing <A>list</A> with index <A>pos</A>. If this fails, or the
+selected method finds that <C><A>list</A>[<A>pos</A>]</C> is unbound,
+or if <A>object</A> is a call to a function which does not
 return a value (for example <C>Print</C>) an error is signalled.
 <P/>
-<Index Subkey="assignment">multiple indices</Index>
-<C><A>list</A>[ <A>ix1</A>,<A>ix2</A>,...] := <A>obj</A></C>
-<P/> is a short-hand for <C><A>list</A>[[<A>ix1</A>,<A>ix2</A>,...]]
-:= <A>obj</A></C>.<P/>
 <Index Subkey="assignment">sublist</Index>
 <C><A>list</A>{ <A>poss</A> } := <A>objects</A>;</C>
 <P/>
