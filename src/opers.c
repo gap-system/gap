@@ -4895,27 +4895,30 @@ Obj DoVerboseMutableAttribute (
 #define ImpliedWriteGuard(x)
 #endif
 
-#define WRAP_NAME(fname, name, addon) \
-    do { \
-        UInt name_len = GET_LEN_STRING(name); \
-        UInt addon_len = sizeof(addon) - 1; \
-        char *ptr; \
-        fname = NEW_STRING( name_len + addon_len + 2 ); \
-        ImpliedWriteGuard(fname); \
-        ptr = CSTR_STRING(fname); \
-        memcpy( ptr, addon, addon_len ); ptr += addon_len; \
-        *ptr++ = '('; \
-        memcpy( ptr, CSTR_STRING(name), name_len ); ptr += name_len; \
-        *ptr++ = ')'; \
-        *ptr = 0; \
-        RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) ); \
-    } while(0)
+static Obj WRAP_NAME(Obj name, const char *addon)
+{
+    UInt name_len = GET_LEN_STRING(name);
+    UInt addon_len = strlen(addon);
+    Obj fname = NEW_STRING( name_len + addon_len + 2 );
+    ImpliedWriteGuard(fname);
+
+    char *ptr = CSTR_STRING(fname);
+    memcpy( ptr, addon, addon_len );
+    ptr += addon_len;
+    *ptr++ = '(';
+    memcpy( ptr, CSTR_STRING(name), name_len );
+    ptr += name_len;
+    *ptr++ = ')';
+    *ptr = 0;
+    MakeImmutableString(fname);
+    return fname;
+}
 
 static Obj MakeSetter( Obj name, Int flag)
 {
   Obj fname;
   Obj setter;
-  WRAP_NAME(fname, name, "Setter");
+  fname = WRAP_NAME(name, "Setter");
   setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
   FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
   FLAG2_FILT(setter)  = INTOBJ_INT( flag );
@@ -4928,7 +4931,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     Obj fname;
     Obj tester;
     Obj flags;
-    WRAP_NAME(fname, name, "Tester");
+    fname = WRAP_NAME(name, "Tester");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestAttribute );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
@@ -5223,7 +5226,7 @@ Obj NewProperty (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    WRAP_NAME(fname, name, "Setter");
+    fname = WRAP_NAME(name, "Setter");
     setter = NewOperation( fname, 2L, 0L, DoSetProperty );
     FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
@@ -5814,7 +5817,7 @@ Obj FuncSETTER_FUNCTION (
     Obj                 fname;
     Obj                 tmp;
 
-    WRAP_NAME(fname, name, "SetterFunc");
+    fname = WRAP_NAME(name, "SetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
                          ArglistObjVal, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
@@ -5858,7 +5861,7 @@ Obj FuncGETTER_FUNCTION (
     Obj                 fname;
     Obj                 rnam;
 
-    WRAP_NAME(fname, name, "GetterFunc");
+    fname = WRAP_NAME(name, "GetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
                          ArglistObj, DoGetterFunction );
     /* Need to seperate this onto two lines, in case RNamObj causes
