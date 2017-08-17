@@ -336,10 +336,6 @@ extern Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-extern Obj DoTestFilter (
-    Obj                 self,
-    Obj                 obj );
-
 extern Obj NewTesterFilter (
     Obj                 getter );
 

@@ -1103,13 +1103,6 @@ Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-Obj DoTestFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    return True;
-}
-
 Obj NewTesterFilter (
     Obj                 getter )
 {
@@ -1316,13 +1309,6 @@ Obj ReturnTrueFilter;
 **
 *F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
-Obj DoTestReturnTrueFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    return True;
-}
-
 Obj TesterReturnTrueFilter (
     Obj                 getter )
 {
