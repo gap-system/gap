@@ -4914,16 +4914,16 @@ static Obj WRAP_NAME(Obj name, const char *addon)
     return fname;
 }
 
-static Obj MakeSetter( Obj name, Int flag)
+static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, Obj))
 {
-  Obj fname;
-  Obj setter;
-  fname = WRAP_NAME(name, "Setter");
-  setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-  FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-  FLAG2_FILT(setter)  = INTOBJ_INT( flag );
-  CHANGED_BAG(setter);
-  return setter;
+    Obj fname;
+    Obj setter;
+    fname = WRAP_NAME(name, "Setter");
+    setter = NewOperation( fname, 2L, 0L, setFunc );
+    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
+    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
+    CHANGED_BAG(setter);
+    return setter;
 }
 
 static Obj MakeTester( Obj name, Int flag1, Int flag2)
@@ -4981,7 +4981,8 @@ Obj NewAttribute (
     Int                 flag2;
     
     flag2 = ++CountFlags;
-    setter = MakeSetter(name, flag2);
+
+    setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
@@ -5002,17 +5003,14 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                  name;
+    Obj                 name;
 
     /* Need to get the name from oper */
     name = NAME_FUNC(oper);
 
     flag2 = ++CountFlags;
 
-    /* Make the setter */
-    setter = MakeSetter(name, flag2);
-
-    /* and the tester */
+    setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
     /* Change the handlers */
@@ -5221,17 +5219,11 @@ Obj NewProperty (
     Int                 flag1;
     Int                 flag2;
     Obj                 flags;
-    Obj                 fname;
     
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    fname = WRAP_NAME(name, "Setter");
-    setter = NewOperation( fname, 2L, 0L, DoSetProperty );
-    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
+    setter = MakeSetter(name, flag1, flag2, DoSetProperty);
     tester = MakeTester(name, flag1, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) ); 
