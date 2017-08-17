@@ -2122,42 +2122,16 @@ void GetChar ( void )
  */
 void GetSymbol ( void )
 {
-  /* special case if reading of a long token is not finished */
-  if (STATE(Symbol) == S_PARTIALSTRING) {
-    GetStr();
-    return;
-  }
-  
-  if (STATE(Symbol) == S_PARTIALTRIPSTRING) {
-      GetTripStr();
-      return;
-  }
-  
-  if (STATE(Symbol) == S_PARTIALINT) {
-    if (STATE(Value)[0] == '\0')
-      GetNumber(0);
-    else
-      GetNumber(1);
-    return;
-  }
-  if (STATE(Symbol) == S_PARTIALFLOAT1) {
-    GetNumber(2);
-    return;
-  }
-
-  if (STATE(Symbol) == S_PARTIALFLOAT2) {
-    GetNumber(3);
-    return;
-  }
-  if (STATE(Symbol) == S_PARTIALFLOAT3) {
-    GetNumber(4);
-    return;
-  }
-
-  if (STATE(Symbol) == S_PARTIALFLOAT4) {
-    GetNumber(5);
-    return;
-  }
+    /* special case if reading of a long token is not finished */
+    switch (STATE(Symbol)) {
+    case S_PARTIALSTRING:     GetStr();     return;
+    case S_PARTIALTRIPSTRING: GetTripStr(); return;
+    case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
+    case S_PARTIALFLOAT1:     GetNumber(2); return;
+    case S_PARTIALFLOAT2:     GetNumber(3); return;
+    case S_PARTIALFLOAT3:     GetNumber(4); return;
+    case S_PARTIALFLOAT4:     GetNumber(5); return;
+    }
 
 
   /* if no character is available then get one                           */
