@@ -416,21 +416,6 @@ when a new version of &GAP; is to be released.
     covered by the <C>TestFile</C> component of the <F>PackageInfo.g</F> file
     and hard tests.
   </Item>
-  <Item>
-    What is the meaning/status of the following files:
-    <F>dev/mattests.g</F>,
-    <F>dev/reflistarith.g</F>,
-    <F>tst/polytest.g</F>,
-    <F>tst/remake.sh</F>,
-    <F>tst/sanity.g</F>,
-    <F>tst/testlinalg.g</F>?
-  </Item>
-  <Item>
-    (This is not directly related to tests.)
-    What is the meaning/status of the following files:
-    <F>doc/Makefile</F>,
-    <F>dev/profile.g</F> (compared with <F>lib/profile.g</F>)?
-  </Item>
 </List>
 </Section>
 
