@@ -4914,11 +4914,28 @@ static Obj WRAP_NAME(Obj name, const char *addon)
     return fname;
 }
 
+static Obj PREFIX_NAME(Obj name, const char *prefix)
+{
+    UInt name_len = GET_LEN_STRING(name);
+    UInt prefix_len = strlen(prefix);
+    Obj fname = NEW_STRING( name_len + prefix_len );
+    ImpliedWriteGuard(fname);
+
+    char *ptr = CSTR_STRING(fname);
+    memcpy( ptr, prefix, prefix_len );
+    ptr += prefix_len;
+    memcpy( ptr, CSTR_STRING(name), name_len );
+    ptr += name_len;
+    *ptr = 0;
+    MakeImmutableString(fname);
+    return fname;
+}
+
 static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, Obj))
 {
     Obj fname;
     Obj setter;
-    fname = WRAP_NAME(name, "Setter");
+    fname = PREFIX_NAME(name, "Set");
     setter = NewOperation( fname, 2L, 0L, setFunc );
     FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
@@ -4931,7 +4948,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     Obj fname;
     Obj tester;
     Obj flags;
-    fname = WRAP_NAME(name, "Tester");
+    fname = PREFIX_NAME(name, "Has");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestAttribute );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
