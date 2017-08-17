@@ -22,7 +22,7 @@ and there is no need to update main &GAP; manuals for the update release.
 <Heading>Adding changes to the release branch</Heading>
 
 Changes that should appear in the next release should first appear in the
-the &stable; branch for the next minor release or in the &default; branch 
+the &stable; branch for the next minor release or in the &master; branch 
 for the next major release. Normally they may first be developed and 
 documented in feature branches, then tested and only after that merged 
 into the appropriate release branch. 
@@ -75,7 +75,7 @@ and other needed &GAPDoc; markup will be added).
 After the release, descriptions of those changes from <C>dev/Updates</C> 
 which made their way into the release should be moved to a new directory 
 with a name containing the release version (e.g. <C>dev/Updates4.5.7</C>)
-using <C>hg mv</C> command to keep them under version control.
+using <C>git mv</C> command to keep them under version control.
 The <F>dev/Updates</F> directory in the branch from which the release
 has been made must be reset to contain only the <F>README</F> file and 
 templates (and possibly descriptions of changes that has been added there
@@ -103,7 +103,7 @@ process (at least with the currently available scripts and tools).
 <Item>a disc partition with at least several GB of space</Item>
 <Item>the standard <C>sh</C> shell and basic UNIX utilities like <C>cp</C>, 
 <C>mv</C> or <C>cmp</C></Item>
-<Item><C>Mercurial</C> and access to the &GAP; Mercurial repository</Item>
+<Item><C>git</C></Item>
 <Item>a &TeX; installation (which can process big files)</Item>
 <!--
 <Item><C>perl</C> (for several manual tools)</Item>
@@ -121,7 +121,7 @@ and <C>python</C> (for repacking into the various formats)</Item>
 The following descriptions will explain what has to be done in the
 various steps, and will mention some tools which are available in 
 the <F>dev/DistributionUpdate/dist45</F> directory of the
-&GAP; Mercurial repository (the name <F>dist45</F> reflects
+&GAP; git repository (the name <F>dist45</F> reflects
 that these tools were revised for the &GAP; 4.5 release; we are continuing
 to use them to produce all subseqent releases).
 </Subsection>
@@ -137,7 +137,7 @@ an update release you may proceed with steps described in Section
 <List >
 <Mark>Run tests on release branch.</Mark>
 <Item>Before thinking about wrapping apply all the standard tests
-described in Chapter <Ref Chap="Chap-Testing"/> to a checked out Mercurial release
+described in Chapter <Ref Chap="Chap-Testing"/> to a checked out git release
 branch and make sure there are no problems. (But also do the tests again
 later, starting with the archives which will be actually delivered to the
 users!)
@@ -241,7 +241,7 @@ The &GAP; source distribution will be produced in the form of <F>.tar.gz</F>,
 archive whose text files have Windows-stile line breaks.
 <P/>
 To wrap the archives, change to the <F>dev/DistributionUpdate/dist45/</F> 
-directory of the &stable; branch of the &GAP; Mercurial repository, check that 
+directory of the &stable; branch of the &GAP; git repository, check that 
 you have properly set up version numbers in <F>setvar*</F> file(s) as explained
 in <Ref Label="Ssect-BeforeWrap"/> and then call one of the following:
 <Listing>
@@ -284,11 +284,11 @@ debugging; calling them out of order is not guaranteed to work!).
 sets various environment variables (paths, version numbers, etc.).
 </Item>
 
-<Mark><F>./checkouthg</F></Mark>
+<Mark><F>./checkoutgit</F></Mark>
 <Item>
-creates a new clone of the &GAP; Mercurial repository. Dependently on the
+creates a new clone of the &GAP; git repository. Dependently on the
 release (minor, major or update) it will set the working directory to the
-&stable; branch, &default; branch or to the revision taggest as the last
+&stable; branch, &master; branch or to the revision taggest as the last
 minor release respectively. It will also record the revision on which the
 working directory is based and the time of cloning which will be 
 subsequently used in the timestamp.
@@ -572,7 +572,7 @@ as necessary:
 <Item>
     In case of a minor or major release, read the file
     <F>dev/LinksOfAllHelpSections.g</F> from the &stable; branch of the 
-    &GAP; Mercurial repository using your brand new installation of the 
+    &GAP; git repository using your brand new installation of the 
     &GAP; version to be released (remember to start it with <C>-r</C> 
     option to avoid loading your private packages). This will create the
     file <F>AllLinksOfAllHelpSections.data</F> which is needed to create
@@ -656,7 +656,7 @@ as necessary:
         </Item>
         <Item> Move all files with documented changes from 
                <F>dev/Updates</F> directory to <F>dev/Update4.X.Y</F>
-               directory using <C>hg mv</C> command, so that the only 
+               directory using <C>git mv</C> command, so that the only 
                files left in <F>dev/Updates</F> directory should be
                <F>README</F> and two templates (important to do this in
                the &stable; branch, since other branches may have more

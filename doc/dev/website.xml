@@ -41,16 +41,15 @@ Sect="WPXHTML"/> for an explanation) and the <Package>Mixer</Package>
 handles the technical details.
 
 <P/>
-All the sources for the web pages are kept in the Mercurial repository
-<C>ssh://hg@hg.gap-system.org/GapWWW</C> in St Andrews. Everybody having 
-access should be able to clone this repository using
+All the sources for the web pages are kept in the git repository
+<C>https://github.com/gap-system/GapWWW</C>. So you can clone this repository using
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/GapWWW 
+git clone https://github.com/gap-system/GapWWW
 </Verb>
 
 The web server in St Andrews also uses its clone, updates it to the latest
-revision of the &default; branch, runs the <Package>Mixer</Package> and then 
+revision of the &master; branch, runs the <Package>Mixer</Package> and then 
 serves the pages. Another named branch is called &testing; and it is served
 on the password protected version of the &GAP; website at 
 <URL>http://devel.gap-system.org/testsite</URL> where work in progress may
@@ -66,7 +65,7 @@ pages is described in Sections <Ref Sect="WPManuals"/> to
 
 <P/>
 In the following sections we first cover the <Package>Mixer</Package>, the 
-web standard XHTML 1.0, the usage of Mercurial for the web pages, and the
+web standard XHTML 1.0, the usage of git for the web pages, and the
 installation of the web site on the web server.
 </Section>
 
@@ -80,13 +79,13 @@ you would like to commit to the website maintenance.
 
 A minimalistic scenario for small improvements (e.g. correcting details 
 and fixing typos) only requires to install 
-<URL Text="Mercurial">http://mercurial.selenic.com/</URL> and then:
+<URL Text="git">https://git-scm.com/</URL> and then:
 <Enum>
 <Item>
-Clone the Website repository: <C>hg clone ssh://hg@hg.gap-system.org/GapWWW</C>
+Clone the Website repository: <C>git clone https://github.com/gap-system/GapWWW</C>
 </Item>
 <Item>
-Make changes in the &default; branch 
+Make changes in the &master; branch 
 </Item>
 <Item>
 Commit and push changes to trigger notification to website admininstrator(s) 
@@ -99,7 +98,7 @@ break the <Package>Mixer</Package> syntax, is to clone also the
 <Package>Mixer</Package> repository with
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/Mixer
+git clone https://github.com/gap-system/Mixer
 </Verb>
 
 an build the <Package>Mixer</Package> as described in the <F>mixer.README</F> 
@@ -116,7 +115,7 @@ produced html pages look like in your browser before committing and
 pushing the changes. 
 <P/>
 
-Finally, while changes in the &default; branches will trigger notification 
+Finally, while changes in the &master; branches will trigger notification 
 to website admininstrator(s) to check and approve them, for changes that 
 you want to be internally reviewed prior to publication, you may use the 
 &testing; branch which is served on the password protected version of the 
@@ -143,15 +142,13 @@ library (which comes with the <Package>Mixer</Package>) has to be compiled
 first.
 
 <P/>
-The <Package>Mixer</Package> is kept in the Mercurial repository 
-<C>ssh://hg@hg.gap-system.org/Mixer</C> in St Andrews. To clone this
+The <Package>Mixer</Package> is kept in the git repository 
+<C>https://github.com/gap-system/Mixer</C>. To clone this
 repository, use
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/Mixer
+git clone https://github.com/gap-system/Mixer
 </Verb>
-
-assuming that you already have access.
 
 <P/>
 The above command creates a clone of this repository in the directory 
@@ -260,35 +257,34 @@ we found it not too difficult to produce sets of valid web pages.
 </Section>
 
 <Section Label="WPHG">
-<Heading>Mercurial usage</Heading>
+<Heading>Git usage</Heading>
 
-We assume here that you are familiar with the standard Mercurial commands
-<C>hg clone</C>, <C>hg pull</C>, <C>hg push</C>, <C>hg update</C>,
-<C>hg commit</C> etc.
+We assume here that you are familiar with the standard git commands
+<C>git clone</C>, <C>git pull</C>, <C>git push</C>, <C>git update</C>,
+<C>git commit</C> etc.
 <P/>
 
-The source files for the web site are kept in the Mercurial repository
-<C>ssh://hg@hg.gap-system.org/GapWWW</C> in St Andrews. Assuming that 
-you already have access, you may clone it by doing
+The source files for the web site are kept in the git repository
+<C>https://github.com/gap-system/GapWWW</C>. You may clone it by doing
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/GapWWW 
+git clone https://github.com/gap-system/GapWWW 
 </Verb>
 
 This command creates in your current directory a directory <F>GapWWW</F>
 with the complete source tree of the web site.
 <P/>
 
-Source files are treated like any other source file in the Mercurial repository,
+Source files are treated like any other source file in the git repository,
 that is you can update, modify, commit, add, remove them as usual.
 <P/>
 
-The only thing one has to understand with respect to Mercurial is which 
+The only thing one has to understand with respect to git is which 
 implications the branch in which the change has appeared will have on the
 process of its publication:
 <List>
 <Item>
-Changes in the &default; branch will not be automatically published on
+Changes in the &master; branch will not be automatically published on
 the web server. They will be reviewed by the website administrator who
 will then have to run the update script on the server in St Andrews as 
 described in Section <Ref Sect="WPyin"/> to make them available online.
@@ -308,7 +304,7 @@ work in progress) will not be visible anywhere.
 
 A little comment on the rationale behind this setup might be in order.
 It allows that more than one person works independently on the
-website and those people exchange versions via Mercurial, without 
+website and those people exchange versions via git, without 
 publishing them immediately. The actual guidelines who does what 
 in this process should be agreed on separately.
 <P/>
@@ -385,7 +381,7 @@ section is needed. This section was derived from the ASCII document
 
 <List>
 <Item>
-  standard tools: <C>hg</C>, <C>tar</C>, <C>gzip</C>, <C>make</C>, <C>sh</C>
+  standard tools: <C>git</C>, <C>tar</C>, <C>gzip</C>, <C>make</C>, <C>sh</C>
 </Item>
 <Item>
   a C-compiler, preferably <C>gcc</C>
@@ -424,20 +420,20 @@ section is needed. This section was derived from the ASCII document
 
 <Enum>
 <Item>
-Clone the Mercurial repository GapWWW:
+Clone the git repository GapWWW:
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/GapWWW 
+git clone https://github.com/gap-system/GapWWW 
 </Verb>
             
 This creates a subdirectory <F>GapWWW</F> in the current directory.
 </Item>
 
 <Item>
-Clone the Mercurial repository Mixer:
+Clone the git repository Mixer:
 
 <Verb>
-hg clone ssh://hg@hg.gap-system.org/Mixer
+git clone https://github.com/gap-system/Mixer
 </Verb>
 
 This creates a subdirectory <F>Mixer</F> in the current directory.
@@ -561,8 +557,7 @@ If things are changed in the repository, all that has to be done to update the
 pages locally is:
 
 <Verb>
-hg pull
-hg up
+git pull
 </Verb>
 
 in the <F>GapWWW</F> directory, followed by a

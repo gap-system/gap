@@ -4,7 +4,7 @@
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
 [<!ENTITY C "<Package>C</Package>">]
 [<!ENTITY GASMAN "<Package>GASMAN</Package>">]
-[<!ENTITY default "<K>default</K>">]
+[<!ENTITY master "<K>master</K>">]
 [<!ENTITY stable "<K>stable</K>">]
 [<!ENTITY testing "<K>testing</K>">]
 >
