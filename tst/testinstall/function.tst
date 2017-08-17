@@ -168,4 +168,12 @@ gap> function(a,b) local b,c,b,c; end;
 Syntax error: Name used for argument and local in stream:1
 function(a,b) local b,c,b,c; end;
                     ^
+gap> String(x->x);
+"function ( x ) return x; end"
+gap> DisplayString(x->x);
+"function ( x )\n    return x;\nend\n"
+gap> Display(x->x);
+function ( x )
+    return x;
+end
 gap> STOP_TEST("function.tst", 1);
