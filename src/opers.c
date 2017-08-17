@@ -4925,7 +4925,7 @@ static Obj MakeSetter( Obj name, Int flag)
   return setter;
 }
 
-static Obj MakeTester( Obj name, Int flag)
+static Obj MakeTester( Obj name, Int flag1, Int flag2)
 {
     Obj fname;
     Obj tester;
@@ -4933,11 +4933,11 @@ static Obj MakeTester( Obj name, Int flag)
     WRAP_NAME(fname, name, "Tester");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag );
-    NEW_FLAGS( flags, flag );
-    SET_LEN_FLAGS( flags, flag );
-    SET_ELM_FLAGS( flags, flag, True );
+    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
+    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
+    NEW_FLAGS( flags, flag2 );
+    SET_LEN_FLAGS( flags, flag2 );
+    SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
     SETTR_FILT(tester)  = 0;
     TESTR_FILT(tester)  = ReturnTrueFilter;
@@ -4982,7 +4982,7 @@ Obj NewAttribute (
     
     flag2 = ++CountFlags;
     setter = MakeSetter(name, flag2);
-    tester = MakeTester(name, flag2);
+    tester = MakeTester(name, 0, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
     
@@ -5013,7 +5013,7 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     setter = MakeSetter(name, flag2);
 
     /* and the tester */
-    tester = MakeTester(name, flag2);
+    tester = MakeTester(name, 0, flag2);
 
     /* Change the handlers */
     SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
@@ -5031,35 +5031,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
 Obj SET_FILTER_OBJ;
 
 Obj RESET_FILTER_OBJ;
-
-
-/****************************************************************************
-**
-**  DoTestProperty( <prop>, <obj> )
-*/
-Obj DoTestProperty (
-    Obj                 self,
-    Obj                 obj )
-{
-    Int                 flag2;
-    Obj                 type;
-    Obj                 flags;
-
-    /* get the flag for the tester                                         */
-    flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
-
-    /* get type of the object and its flags                                */
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
-
-    /* if the value of the property is already known, return 'true'        */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
-        return True;
-    }
-    
-    /* otherwise return 'false'                                            */
-    return False;
-}
 
 
 /****************************************************************************
@@ -5263,18 +5234,7 @@ Obj NewProperty (
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    WRAP_NAME(fname, name, "Tester");
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestProperty );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
+    tester = MakeTester(name, flag1, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) ); 
 
@@ -6243,7 +6203,6 @@ static Int InitKernel (
 
     InitHandlerFunc( DoProperty,                "src/opers.c:DoProperty"                );
     InitHandlerFunc( DoSetProperty,             "src/opers.c:DoSetProperty"             );
-    InitHandlerFunc( DoTestProperty,            "src/opers.c:DoTestProperty"            );
     InitHandlerFunc( DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
 
     InitHandlerFunc( DoSetterFunction,          "dtf"                                   );
