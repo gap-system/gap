@@ -606,19 +606,11 @@ static void AddSaveIndex( Bag bag)
   PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
 }
 
-/*  is this obsolete ???    
-static void CheckPlist( Bag bag)
-{
-  if (TNUM_BAG(bag) == 14 && sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])) > SIZE_BAG(bag))
-    Pr("Panic %d %d\n",sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])), SIZE_BAG(bag));
-  return;
-}
-*/
-
 static void RemoveSaveIndex( Bag bag)
 {
   PTR_BAG(bag)[-1] = bag;
 }
+
 static void WriteSaveHeader( void )
 {
   UInt i;
