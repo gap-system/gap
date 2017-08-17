@@ -4691,12 +4691,12 @@ Obj DoTestAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, return 'true'        */
+    /* if the value of the attribute is already known, return 'true'        */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return True;
     }
     
-    /* return the 'false'                                                  */
+    /* otherwise return 'false'                                            */
     return False;
 }
 
@@ -4723,7 +4723,7 @@ Obj DoAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoOperation1Args( self, obj );
     }
@@ -4778,13 +4778,14 @@ Obj DoVerboseAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoVerboseOperation1Args( self, obj );
     }
     
     /* call the operation to compute the value                             */
-    val = CopyObj( DoVerboseOperation1Args( self, obj ), 0 );
+    val = DoVerboseOperation1Args( self, obj );
+    val = CopyObj( val, 0 );
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1 ) {
@@ -4825,7 +4826,7 @@ Obj DoMutableAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoOperation1Args( self, obj );
     }
@@ -4872,7 +4873,7 @@ Obj DoVerboseMutableAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoVerboseOperation1Args( self, obj );
     }
@@ -5058,7 +5059,7 @@ Obj DoTestProperty (
     Obj                 type;
     Obj                 flags;
 
-    /* get the flags for the getter and the tester                         */
+    /* get the flag for the tester                                         */
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get type of the object and its flags                                */
@@ -6238,8 +6239,8 @@ static Int InitKernel (
     CHANGED_BAG( ArglistObjVal );
 
 
-    /* Declare the handlers used in various places.  Some of the commonest */
-    /* ones are abbreviated to save space in saved workspace.              */
+    // Declare the handlers used in various places. Some of the most common
+    // ones are abbreviated to save space in saved workspace.
     InitHandlerFunc( DoFilter,                  "df"                                    );
     InitHandlerFunc( DoSetFilter,               "dsf"                                   );
     InitHandlerFunc( DoAndFilter,               "daf"                                   );
