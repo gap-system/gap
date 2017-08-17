@@ -694,7 +694,6 @@ void ClearGlobalBags ( void )
   GlobalBags.nr = 0;
   GlobalSortingStatus = 0;
   WarnInitGlobalBag = 0;
-  return;
 }
 
 void InitGlobalBag (
@@ -783,7 +782,6 @@ void SortGlobals( UInt byWhat )
     h = h / 3;
   }
   GlobalSortingStatus = byWhat;
-  return;
 }
 
 
@@ -855,7 +853,6 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   NextMptrRestoring = (Bag)MptrBags;
   SizeAllBags = 0;
   NrAllBags = 0;
-  return;
 }
 
 Bag NextBagRestoring( UInt type, UInt flags, UInt size )
@@ -957,7 +954,6 @@ void            InitCollectFuncBags (
 void FinishBags( void )
 {
   (*AllocFuncBags)(-(sizeof(Bag)*SizeWorkspace/1024),2);
-  return;
 }
 
 /****************************************************************************
@@ -1581,7 +1577,6 @@ void SparcStackFuncBags( void )
 {
   asm (" ta 0x3 ");
   asm (" mov %sp,%o0" );
-  return;
 }
 #endif
 

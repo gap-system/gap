@@ -861,7 +861,6 @@ void SavePRec( Obj prec )
       SaveUInt(GET_RNAM_PREC(prec, i));
       SaveSubObj(GET_ELM_PREC(prec, i));
     }
-  return;
 }
 
 /****************************************************************************
@@ -880,7 +879,6 @@ void LoadPRec( Obj prec )
       SET_RNAM_PREC(prec, i, LoadUInt());
       SET_ELM_PREC(prec, i, LoadSubObj());
     }
-  return;
 }
 
 /****************************************************************************

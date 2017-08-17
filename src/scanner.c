@@ -1767,7 +1767,6 @@ void GetNumber ( UInt StartingStatus )
     SyntaxError("Badly Formed Number: need at least one digit in the exponent");
   STATE(Symbol) = S_FLOAT;
   STATE(Value)[i] = '\0';
-  return;
 }
 
 

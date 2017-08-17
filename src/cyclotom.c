@@ -2029,7 +2029,6 @@ void  SaveCyc ( Obj cyc )
   expos++;                      /*Skip past the XXX */
   for (i = 1; i < len; i++)
     SaveUInt4(*expos++);
-  return;
 }
 
 /****************************************************************************
@@ -2051,7 +2050,6 @@ void  LoadCyc ( Obj cyc )
   expos++;                      /*Skip past the XXX */
   for (i = 1; i < len; i++)
     *expos++ = LoadUInt4();
-  return;
 }
 
 

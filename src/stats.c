@@ -1700,7 +1700,6 @@ static void UnInterruptExecStat(void) {
     ExecStatFuncs[i] = RealExecStatFuncs[i];
   }
   RealExecStatCopied = 0;
-  return;
 }
 #endif
 

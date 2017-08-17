@@ -209,7 +209,6 @@ void SaveBlist (
     ptr = BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         SaveUInt(*ptr++);
-    return;
 }
 
 /****************************************************************************
@@ -231,7 +230,6 @@ void LoadBlist (
     ptr = (UInt *)BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         *ptr++ = LoadUInt();
-    return;
 }
 
 

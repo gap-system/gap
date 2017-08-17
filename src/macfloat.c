@@ -134,7 +134,6 @@ Int LtMacfloat (
 void SaveMacfloat( Obj obj )
 {
   SaveDouble(VAL_MACFLOAT(obj));
-  return;
 }
 
 /****************************************************************************

@@ -471,10 +471,8 @@ static void LoadBagData ( void )
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( type, flags, size );
   
-  /* despatch */
+  /* dispatch */
   (*(LoadObjFuncs[ type ]))(bag);
-  
-  return;
 }
 
 #endif
@@ -572,7 +570,6 @@ static void ScanBag( Bag bag)
       SIZE_BAG(bag) <= fb_maxsize && 
       TNUM_BAG(bag) == fb_tnum) 
     hit = bag;
-  return;
 }
 
 Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )

@@ -3924,7 +3924,6 @@ void ShiftLeftGF2Vec( Obj vec, UInt amount )
 	}
     }
   ResizeGF2Vec(vec, len-amount);
-  return;
 }
 
 /****************************************************************************
@@ -4001,7 +4000,6 @@ void ShiftRightGF2Vec( Obj vec, UInt amount )
       while (ptr1 >= ptr0)
 	*ptr1-- = 0;
     }
-  return;
 }
 
 /****************************************************************************
@@ -4232,7 +4230,6 @@ void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2, Obj quotient )
       i--;
       j--;
     }
- return;
 }
 
 /****************************************************************************

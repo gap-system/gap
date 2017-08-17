@@ -1520,7 +1520,6 @@ static void SySetGapRootPath( const Char * string )
         n++;
 #endif
     }
-    return; 
 }
 
 

@@ -2542,7 +2542,6 @@ void SaveLVars( Obj lvars )
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
     SaveSubObj(*ptr++);
-  return;
 }
 
 /****************************************************************************
@@ -2562,7 +2561,6 @@ void LoadLVars( Obj lvars )
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
     *ptr++ = LoadSubObj();
-  return;
 }
 
 Obj TYPE_LVARS;
