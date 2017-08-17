@@ -1318,7 +1318,6 @@ void  AddVec8BitVec8BitInner( Obj sum,
             while (ptrS < endS)
                 *ptrS++ = addtab[256 * (*ptrL++) + *ptrR++];
     }
-    return;
 }
 
 /****************************************************************************
@@ -1461,7 +1460,6 @@ void MultVec8BitFFEInner( Obj prod,
     endS = BYTES_VEC8BIT(prod) + stop / elts + 1;
     while (ptrS < endS)
         *ptrS++ = tab[*ptrV++];
-    return;
 }
 
 /****************************************************************************
@@ -1751,7 +1749,6 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
     } else
         while (ptrS < endS)
             *ptrS++ = *ptrL++ ^ multab[*ptrR++];
-    return;
 }
 
 /****************************************************************************
@@ -4374,7 +4371,6 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
         while (ptr < ptr2)
             *ptr++ = (UInt1)0;
     }
-    return;
 }
 
 
@@ -4433,7 +4429,6 @@ void ShiftLeftVec8Bit( Obj vec, UInt amount)
             *ptr1 = tbyte;
     }
     ResizeVec8Bit(vec, len - amount, 0);
-    return;
 }
 
 void ShiftRightVec8Bit( Obj vec, UInt amount) /* pads with zeros */
@@ -4494,7 +4489,6 @@ void ShiftRightVec8Bit( Obj vec, UInt amount) /* pads with zeros */
         while (ptr1 >= end)
             *ptr1-- = (UInt1)0;
     }
-    return;
 }
 
 
@@ -5066,7 +5060,6 @@ void ReduceCoeffsVec8Bit ( Obj vl, Obj vrshifted, Obj quot )
     if (quot) {
         MultVec8BitFFEInner(quot, quot, ELM_PLIST(vrshifted, elts + 2), 1, ll - lr + 1);
     }
-    return;
 }
 
 /****************************************************************************

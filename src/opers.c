@@ -122,7 +122,6 @@ void SaveFlags (
     ptr = BLOCKS_FLAGS(flags);
     for ( i = 1;  i <= len;  i++ )
         SaveUInt(*ptr++);
-    return;
 }
 
 
@@ -146,7 +145,6 @@ void LoadFlags(
     ptr = BLOCKS_FLAGS(flags);
     for ( i = 1;  i <= len;  i++ )
         *ptr++ = LoadUInt();
-    return;
 }
 
 
@@ -4964,7 +4962,6 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
   TESTR_FILT(attr)  = tester;
   SET_ENABLED_ATTR(attr,1);
   CHANGED_BAG(attr);
-  return;
 }
 
   
@@ -5019,8 +5016,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
 
     SetupAttribute( oper, setter, tester, flag2);
-
-    return;
 }
 
 
@@ -5385,7 +5380,6 @@ void SaveOperationExtras (
     for (i = 0; i <= 7; i++)
         SaveSubObj(CACHE_OPER(oper,i));
 #endif
-    return;
 }
 
 
@@ -5418,7 +5412,6 @@ void LoadOperationExtras (
     for (i = 0; i <= 7; i++)
         CACHE_OPER(oper,i) = LoadSubObj();
 #endif
-    return;
 }
 
 

@@ -1835,9 +1835,6 @@ static void            PrintFunccall1 (
             Pr("%<, %>",0L,0L);
         }
     }
-
-    return;
-    
 }
 
 void            PrintFunccall (

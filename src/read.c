@@ -209,7 +209,6 @@ void ReadFuncCallOption( TypSymbolSet follow )
     {
       TRY_READ { IntrFuncCallOptionsEndElmEmpty(); }
     }
-  return;
 }
 
 void ReadFuncCallOptions( TypSymbolSet follow )
@@ -227,8 +226,6 @@ void ReadFuncCallOptions( TypSymbolSet follow )
   TRY_READ {
     IntrFuncCallOptionsEnd( nr );
   }
-
-  return;
 }
 
 static Obj GAPInfo;

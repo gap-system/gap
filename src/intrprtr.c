@@ -961,7 +961,6 @@ void IntrQualifiedExprBegin(UInt qual)
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprBegin(qual); return; }
     PushObj(INTOBJ_INT(qual));
-    return;
 }
 
 void IntrQualifiedExprEnd( void ) 
@@ -970,7 +969,6 @@ void IntrQualifiedExprEnd( void )
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)--; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprEnd(); return; }
-    return;
 }
 
 /****************************************************************************
@@ -1008,7 +1006,6 @@ void            IntrAtomicBegin ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeAtomicBegin(); return; }
     /* nothing to do here */
-    return;
   
 }
 
@@ -1076,7 +1073,6 @@ void            IntrAtomicEndBody (
       CodeEnd( 0 );
       body = STATE(CodeResult);
       PushObj(body);
-      return;
     } else {
       
         assert( STATE(IntrCoding) > 0 );
@@ -1308,7 +1304,6 @@ void            IntrBreak ( void )
       ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
-    return;
 }
 
 
@@ -1333,7 +1328,6 @@ void            IntrContinue ( void )
       ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
-    return;
 }
 
 
@@ -4631,7 +4625,6 @@ void             IntrEmpty ( void )
 
     /* interpret */
     PushVoidObj();
-    return;
 
 }
 
@@ -4704,7 +4697,6 @@ void            IntrInfoMiddle( void )
 
     if (selected == False)
       STATE(IntrIgnoring) = 1;
-    return;
 }
 
 Obj             InfoDoPrint;
@@ -4737,7 +4729,6 @@ void            IntrInfoEnd( UInt narg )
        (even if we printed nothing) then return a Void */
     if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-    return;
 }
 
 
@@ -4827,7 +4818,6 @@ void             IntrAssertEnd2Args ( void )
 
     if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-    return;
 }
 
 
@@ -4852,7 +4842,6 @@ void             IntrAssertEnd3Args ( void )
 
   if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-  return;
 }
 
 

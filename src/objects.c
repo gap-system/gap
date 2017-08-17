@@ -139,7 +139,6 @@ void SetTypeObjError ( Obj obj, Obj type )
 {
     ErrorQuit( "Panic: cannot change type of object of type '%s'",
                (Int)TNAM_OBJ(obj), 0L );
-    return;
 }
 
 
@@ -1588,7 +1587,6 @@ void SaveComObj( Obj comobj)
       SaveUInt(GET_RNAM_PREC(comobj, i));
       SaveSubObj(GET_ELM_PREC(comobj, i));
     }
-  return;
 }
 
 /****************************************************************************
@@ -1606,7 +1604,6 @@ void SavePosObj( Obj posobj)
     {
       SaveSubObj(ADDR_OBJ(posobj)[i]);
     }
-  return;
 }
 
 /****************************************************************************
@@ -1628,7 +1625,6 @@ void SaveDatObj( Obj datobj)
     {
       SaveUInt(*ptr++);
     }
-  return;
 }
 
 /****************************************************************************
@@ -1648,7 +1644,6 @@ void LoadComObj( Obj comobj)
       SET_RNAM_PREC(comobj, i, LoadUInt());
       SET_ELM_PREC(comobj, i, LoadSubObj());
     }
-  return;
 }
 
 /****************************************************************************
@@ -1666,7 +1661,6 @@ void LoadPosObj( Obj posobj)
     {
       ADDR_OBJ(posobj)[i] = LoadSubObj();
     }
-  return;
 }
 
 /****************************************************************************
@@ -1688,7 +1682,6 @@ void LoadDatObj( Obj datobj)
     {
       *ptr ++ = LoadUInt();
     }
-  return;
 }
 
 

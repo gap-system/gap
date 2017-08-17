@@ -1160,7 +1160,6 @@ void CodeAtomicBegin ( void )
 void CodeAtomicBeginBody ( UInt nrexprs )
 {
   PushExpr(INTEXPR_INT(nrexprs)); 
-  return;
 }
 
 void CodeAtomicEndBody (

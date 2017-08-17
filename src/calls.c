@@ -996,7 +996,6 @@ void SortHandlers( UInt byWhat )
     h = h / 3;
   }
   HandlerSortingStatus = byWhat;
-  return;
 }
 
 const Char * CookieOfHandler (
