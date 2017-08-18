@@ -1363,7 +1363,7 @@ void PrintFunction (
                     else if ( GET_STARTLINE_BODY(body) ) {
                         Pr("<<compiled GAP code from %s:%d>>",
                             (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
-                            INT_INTOBJ(GET_STARTLINE_BODY(body)));
+                            GET_STARTLINE_BODY(body));
                             outputtedfunc = 1;
                     }
                 }
@@ -1892,9 +1892,9 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj sl = GET_STARTLINE_BODY(BODY_FUNC(func));
+        UInt sl = GET_STARTLINE_BODY(BODY_FUNC(func));
         if (sl)
-            return sl;
+            return INTOBJ_INT(sl);
     }
     return Fail;
 }
@@ -1907,9 +1907,9 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj el = GET_ENDLINE_BODY(BODY_FUNC(func));
+        UInt el = GET_ENDLINE_BODY(BODY_FUNC(func));
         if (el)
-            return el;
+            return INTOBJ_INT(el);
     }
     return Fail;
 }

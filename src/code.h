@@ -75,12 +75,13 @@ static inline BodyHeader *BODY_HEADER(Obj body)
 
 Obj GET_FILENAME_BODY(Obj body);
 void SET_FILENAME_BODY(Obj body, Obj val);
-Obj GET_STARTLINE_BODY(Obj body);
-void SET_STARTLINE_BODY(Obj body, Obj val);
 Obj GET_LOCATION_BODY(Obj body);
 void SET_LOCATION_BODY(Obj body, Obj val);
-Obj GET_ENDLINE_BODY(Obj body);
-void SET_ENDLINE_BODY(Obj body, Obj val);
+
+UInt GET_STARTLINE_BODY(Obj body);
+void SET_STARTLINE_BODY(Obj body, UInt val);
+UInt GET_ENDLINE_BODY(Obj body);
+void SET_ENDLINE_BODY(Obj body, UInt val);
 
 /****************************************************************************
 **

@@ -1210,8 +1210,8 @@ CVar CompFuncExpr (
     Emit( "SET_ENVI_FUNC( %c, STATE(CurrLVars) );\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewBag( T_BODY, sizeof(BodyHeader) );\n", tmp );
-    Emit( "SET_STARTLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_STARTLINE_BODY(BODY_FUNC(fexp))));
-    Emit( "SET_ENDLINE_BODY(%c, INTOBJ_INT(%d));\n", tmp, INT_INTOBJ(GET_ENDLINE_BODY(BODY_FUNC(fexp))));
+    Emit( "SET_STARTLINE_BODY(%c, %d);\n", tmp, GET_STARTLINE_BODY(BODY_FUNC(fexp)));
+    Emit( "SET_ENDLINE_BODY(%c, %d);\n", tmp, GET_ENDLINE_BODY(BODY_FUNC(fexp)));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
     Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
