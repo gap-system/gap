@@ -208,7 +208,6 @@ inline Obj ValGVar(UInt gvar) {
 *V  ExprGVars . . . . . . . . . .  expressions for automatic global variables
 *V  CopiesGVars . . . . . . . . . . . . . internal copies of global variables
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
-*V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */
 #ifdef USE_GVAR_BUCKETS
 static Obj             NameGVars[GVAR_BUCKETS];
@@ -216,7 +215,6 @@ static Obj             WriteGVars[GVAR_BUCKETS];
 static Obj             ExprGVars[GVAR_BUCKETS];
 static Obj             CopiesGVars[GVAR_BUCKETS];
 static Obj             FopiesGVars[GVAR_BUCKETS];
-static UInt            CountGVars;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar) )
@@ -234,7 +232,6 @@ static Obj             WriteGVars;
 static Obj             ExprGVars;
 static Obj             CopiesGVars;
 static Obj             FopiesGVars;
-static UInt            CountGVars;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list, gvar )
@@ -247,6 +244,11 @@ static UInt            CountGVars;
 
 #endif
 
+/****************************************************************************
+**
+*V  CountGVars  . . . . . . . . . . . .  number of global variables, as T_INT
+*/
+static Obj             CountGVars;
 
 /****************************************************************************
 **
@@ -611,15 +613,16 @@ UInt GVarName (
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
-        CountGVars++;
-        gvar = INTOBJ_INT(CountGVars);
+        const UInt numGVars = INT_INTOBJ(CountGVars) + 1;
+        CountGVars = INTOBJ_INT(numGVars);
+        gvar = INTOBJ_INT(numGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         if (name != gvarbuf)
             strlcpy(gvarbuf, name, sizeof(gvarbuf));
         string = MakeImmString(gvarbuf);
 
 #ifdef USE_GVAR_BUCKETS
-        UInt gvar_bucket = GVAR_BUCKET(CountGVars);
+        UInt gvar_bucket = GVAR_BUCKET(numGVars);
         if (!ValGVars[gvar_bucket]) {
            ValGVars[gvar_bucket] = NewGVarBucket();
            PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
@@ -630,30 +633,30 @@ UInt GVarName (
            FopiesGVars[gvar_bucket] = NewGVarBucket();
         }
 #else
-        GROW_PLIST(    ValGVars,    CountGVars );
-        SET_LEN_PLIST( ValGVars,    CountGVars );
-        GROW_PLIST(    NameGVars,   CountGVars );
-        SET_LEN_PLIST( NameGVars,   CountGVars );
-        GROW_PLIST(    WriteGVars,  CountGVars );
-        SET_LEN_PLIST( WriteGVars,  CountGVars );
-        GROW_PLIST(    ExprGVars,   CountGVars );
-        SET_LEN_PLIST( ExprGVars,   CountGVars );
-        GROW_PLIST(    CopiesGVars, CountGVars );
-        SET_LEN_PLIST( CopiesGVars, CountGVars );
-        GROW_PLIST(    FopiesGVars, CountGVars );
-        SET_LEN_PLIST( FopiesGVars, CountGVars );
+        GROW_PLIST(    ValGVars,    numGVars );
+        SET_LEN_PLIST( ValGVars,    numGVars );
+        GROW_PLIST(    NameGVars,   numGVars );
+        SET_LEN_PLIST( NameGVars,   numGVars );
+        GROW_PLIST(    WriteGVars,  numGVars );
+        SET_LEN_PLIST( WriteGVars,  numGVars );
+        GROW_PLIST(    ExprGVars,   numGVars );
+        SET_LEN_PLIST( ExprGVars,   numGVars );
+        GROW_PLIST(    CopiesGVars, numGVars );
+        SET_LEN_PLIST( CopiesGVars, numGVars );
+        GROW_PLIST(    FopiesGVars, numGVars );
+        SET_LEN_PLIST( FopiesGVars, numGVars );
         PtrGVars = ADDR_OBJ( ValGVars );
 #endif
-        SET_ELM_GVAR_LIST( ValGVars,    CountGVars, 0 );
-        SET_ELM_GVAR_LIST( NameGVars,   CountGVars, string );
-        CHANGED_GVAR_LIST( NameGVars,   CountGVars );
-        SET_ELM_GVAR_LIST( WriteGVars,  CountGVars, INTOBJ_INT(1) );
-        SET_ELM_GVAR_LIST( ExprGVars,   CountGVars, 0 );
-        SET_ELM_GVAR_LIST( CopiesGVars, CountGVars, 0 );
-        SET_ELM_GVAR_LIST( FopiesGVars, CountGVars, 0 );
+        SET_ELM_GVAR_LIST( ValGVars,    numGVars, 0 );
+        SET_ELM_GVAR_LIST( NameGVars,   numGVars, string );
+        CHANGED_GVAR_LIST( NameGVars,   numGVars );
+        SET_ELM_GVAR_LIST( WriteGVars,  numGVars, INTOBJ_INT(1) );
+        SET_ELM_GVAR_LIST( ExprGVars,   numGVars, 0 );
+        SET_ELM_GVAR_LIST( CopiesGVars, numGVars, 0 );
+        SET_ELM_GVAR_LIST( FopiesGVars, numGVars, 0 );
 
         /* if the table is too crowded, make a larger one, rehash the names     */
-        if ( sizeGVars < 3 * CountGVars / 2 ) {
+        if ( sizeGVars < 3 * numGVars / 2 ) {
             table = TableGVars;
             sizeGVars = 2 * sizeGVars + 1;
             TableGVars = NEW_PLIST( T_PLIST, sizeGVars );
@@ -906,8 +909,10 @@ UInt            iscomplete_gvar (
 {
     Char *              curr;
     UInt                i, k;
+    UInt                numGVars;
 
-    for ( i = 1; i <= CountGVars; i++ ) {
+    numGVars = INT_INTOBJ(CountGVars);
+    for ( i = 1; i <= numGVars; i++ ) {
         curr = NameGVar( i );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
@@ -922,9 +927,11 @@ UInt            completion_gvar (
     Char *              curr;
     Char *              next;
     UInt                i, k;
+    UInt                numGVars;
 
+    numGVars = INT_INTOBJ(CountGVars);
     next = 0;
-    for ( i = 1; i <= CountGVars; i++ ) {
+    for ( i = 1; i <= numGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
             curr = NameGVar( i );
@@ -962,10 +969,10 @@ Obj FuncIDENTS_GVAR (
 
 #ifdef HPCGAP
     LockGVars(0);
-    numGVars = CountGVars;
+    numGVars = INT_INTOBJ(CountGVars);
     UnlockGVars();
 #else
-    numGVars = CountGVars;
+    numGVars = INT_INTOBJ(CountGVars);
 #endif
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
@@ -990,10 +997,10 @@ Obj FuncIDENTS_BOUND_GVARS (
 
 #ifdef HPCGAP
     LockGVars(0);
-    numGVars = CountGVars;
+    numGVars = INT_INTOBJ(CountGVars);
     UnlockGVars();
 #else
-    numGVars = CountGVars;
+    numGVars = INT_INTOBJ(CountGVars);
 #endif
 
     copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
@@ -1553,6 +1560,10 @@ static Int InitKernel (
                    "src/gvars.c:CurrNamespace" );
 #endif
 
+    CountGVars = INTOBJ_INT(0);
+    InitGlobalBag( &CountGVars,
+                   "src/gvars.c:CountGVars" );
+
     InitGlobalBag( &TableGVars,
                    "src/gvars.c:TableGVars" );
 
@@ -1586,12 +1597,6 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* make the lists for global variables                                 */
-#ifdef USE_GVAR_BUCKETS
-    /* TODO: Implement with buckets. */
-#else
-    CountGVars = LEN_PLIST( ValGVars );
-#endif
     // restore PtrGVars
     GVarsAfterCollectBags();
 
@@ -1615,7 +1620,7 @@ static Int PreSave (
 
 /****************************************************************************
 **
-*F  PostSave( <module> ) . . . . . . . . . . . . . aftersave workspace
+*F  PostSave( <module> ) . . . . . . . . . . . . . after save workspace
 */
 static Int PostSave (
     StructInitInfo *    module )
