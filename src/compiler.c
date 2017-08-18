@@ -5687,7 +5687,10 @@ Int CompileFunc (
     Emit( "\n/* information for the functions */\n" );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
-        if ( n == 0 || ! IsStringConv(n) ) {
+        if ( n != 0 && IsStringConv(n) ) {
+            Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
+        }
+        else {
             Emit( "NameFunc[%d] = DefaultName;\n", i );
         }
         Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
@@ -5736,33 +5739,9 @@ Int CompileFunc (
     Emit( "Obj body1;\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
-    Emit( "\n/* global variables used in handlers */\n" );
-    for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
-        if ( CompGetUseGVar( i ) ) {
-            Emit( "G_%n = GVarName( \"%s\" );\n",
-                   NameGVar(i), NameGVar(i) );
-        }
-    }
-    Emit( "\n/* record names used in handlers */\n" );
-    for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
-        if ( CompGetUseRNam( i ) ) {
-            Emit( "R_%n = RNamName( \"%s\" );\n",
-                  NAME_RNAM(i), NAME_RNAM(i) );
-        }
-    }
-    Emit( "\n/* information for the functions */\n" );
     Emit( "DefaultName = MakeString( \"local function\" );\n" );
     Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
-    for ( i = 1; i <= CompFunctionsNr; i++ ) {
-        n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
-        if ( n != 0 && IsStringConv(n) ) {
-            Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
-        }
-        else {
-            Emit( "NameFunc[%d] = DefaultName;\n", i );
-        }
-        Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
-    }
+    Emit( "PostRestore(module);\n" );
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);\n" );
     Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
