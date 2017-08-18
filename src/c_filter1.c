@@ -43,7 +43,6 @@ static Obj  GC_RANK__FILTERS;
 /* information for the functions */
 static Obj  NameFunc[5];
 static Int  NargFunc[5];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -613,13 +612,13 @@ static Int PostRestore ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
+ NameFunc[1] = 0;
  NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
+ NameFunc[2] = 0;
  NargFunc[2] = 0;
- NameFunc[3] = DefaultName;
+ NameFunc[3] = 0;
  NargFunc[3] = 1;
- NameFunc[4] = DefaultName;
+ NameFunc[4] = 0;
  NargFunc[4] = 1;
  
  /* return success */
@@ -650,7 +649,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(74044960)" );
  InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(74044960)" );
  InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(74044960)" );
  InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](74044960)" );
@@ -674,7 +672,6 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/filter1.g" );
  PostRestore(module);
  

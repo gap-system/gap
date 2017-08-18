@@ -176,7 +176,6 @@ static RNam R_MaxNrArgsMethod;
 /* information for the functions */
 static Obj  NameFunc[19];
 static Int  NargFunc[19];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -4517,41 +4516,41 @@ static Int PostRestore ( StructInitInfo * module )
  R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
+ NameFunc[1] = 0;
  NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
+ NameFunc[2] = 0;
  NargFunc[2] = 2;
- NameFunc[3] = DefaultName;
+ NameFunc[3] = 0;
  NargFunc[3] = 6;
- NameFunc[4] = DefaultName;
+ NameFunc[4] = 0;
  NargFunc[4] = -1;
- NameFunc[5] = DefaultName;
+ NameFunc[5] = 0;
  NargFunc[5] = -1;
- NameFunc[6] = DefaultName;
+ NameFunc[6] = 0;
  NargFunc[6] = 2;
- NameFunc[7] = DefaultName;
+ NameFunc[7] = 0;
  NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
+ NameFunc[8] = 0;
  NargFunc[8] = 1;
- NameFunc[9] = DefaultName;
+ NameFunc[9] = 0;
  NargFunc[9] = 6;
- NameFunc[10] = DefaultName;
+ NameFunc[10] = 0;
  NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
+ NameFunc[11] = 0;
  NargFunc[11] = 4;
- NameFunc[12] = DefaultName;
+ NameFunc[12] = 0;
  NargFunc[12] = 1;
- NameFunc[13] = DefaultName;
+ NameFunc[13] = 0;
  NargFunc[13] = 1;
- NameFunc[14] = DefaultName;
+ NameFunc[14] = 0;
  NargFunc[14] = 2;
- NameFunc[15] = DefaultName;
+ NameFunc[15] = 0;
  NargFunc[15] = 2;
- NameFunc[16] = DefaultName;
+ NameFunc[16] = 0;
  NargFunc[16] = 3;
- NameFunc[17] = DefaultName;
+ NameFunc[17] = 0;
  NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
+ NameFunc[18] = 0;
  NargFunc[18] = -1;
  
  /* return success */
@@ -4650,7 +4649,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-6121159)" );
  InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-6121159)" );
  InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-6121159)" );
  InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-6121159)" );
@@ -4702,7 +4700,6 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/oper1.g" );
  PostRestore(module);
  
