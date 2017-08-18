@@ -155,7 +155,6 @@ static RNam R_MaxNrArgsMethod;
 
 /* information for the functions */
 static Obj  NameFunc[19];
-static Obj  NamsFunc[19];
 static Int  NargFunc[19];
 static Obj  DefaultName;
 static Obj FileName;
@@ -2434,7 +2433,7 @@ static Obj  HdlrFunc7 (
    SET_LEN_PLIST( t_5, 1 );
    SET_ELM_PLIST( t_5, 1, l_cats );
    CHANGED_BAG( t_5 );
-   t_6 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
+   t_6 = NewFunction( NameFunc[8], NargFunc[8], 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
    SET_STARTLINE_BODY(t_7, INTOBJ_INT(580));
@@ -3025,7 +3024,7 @@ static Obj  HdlrFunc11 (
       fi;
       return;
   end; */
-  t_1 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
+  t_1 = NewFunction( NameFunc[12], NargFunc[12], 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
   SET_STARTLINE_BODY(t_2, INTOBJ_INT(777));
@@ -3105,7 +3104,7 @@ static Obj  HdlrFunc11 (
  SET_LEN_PLIST( t_5, 1 );
  SET_ELM_PLIST( t_5, 1, a_domreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
+ t_6 = NewFunction( NameFunc[13], NargFunc[13], 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(798));
@@ -3168,7 +3167,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
+ t_6 = NewFunction( NameFunc[14], NargFunc[14], 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(811));
@@ -3217,7 +3216,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
+ t_6 = NewFunction( NameFunc[15], NargFunc[15], 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(844));
@@ -3279,7 +3278,7 @@ static Obj  HdlrFunc11 (
  CHECK_BOUND( t_6, "IS_OBJECT" )
  SET_ELM_PLIST( t_5, 3, t_6 );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
+ t_6 = NewFunction( NameFunc[16], NargFunc[16], 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_7, INTOBJ_INT(861));
@@ -3660,7 +3659,7 @@ static Obj  HdlrFunc17 (
  CHECK_BOUND( l_fampred, "fampred" )
  t_3 = OBJ_LVAR( 2 );
  CHECK_BOUND( t_3, "reqs" )
- t_4 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
+ t_4 = NewFunction( NameFunc[18], NargFunc[18], 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_5, INTOBJ_INT(942));
@@ -3754,7 +3753,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RunImmediateMethods" );
- t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
+ t_3 = NewFunction( NameFunc[2], NargFunc[2], 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(26));
@@ -3851,7 +3850,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INSTALL_METHOD_FLAGS" );
- t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
+ t_3 = NewFunction( NameFunc[3], NargFunc[3], 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(124));
@@ -3867,7 +3866,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "InstallMethod" );
- t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
+ t_3 = NewFunction( NameFunc[4], NargFunc[4], 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(282));
@@ -3883,7 +3882,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "InstallOtherMethod" );
- t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
+ t_3 = NewFunction( NameFunc[5], NargFunc[5], 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(309));
@@ -4041,7 +4040,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INSTALL_METHOD" );
- t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
+ t_3 = NewFunction( NameFunc[6], NargFunc[6], 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(322));
@@ -4098,7 +4097,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
+ t_2 = NewFunction( NameFunc[7], NargFunc[7], 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(548));
@@ -4113,7 +4112,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
+ t_2 = NewFunction( NameFunc[9], NargFunc[9], 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_3, INTOBJ_INT(605));
@@ -4142,7 +4141,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "PositionSortedOddPositions" );
- t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
+ t_3 = NewFunction( NameFunc[10], NargFunc[10], 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(624));
@@ -4225,7 +4224,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "KeyDependentOperation" );
- t_3 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
+ t_3 = NewFunction( NameFunc[11], NargFunc[11], 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(773));
@@ -4277,7 +4276,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RedispatchOnCondition" );
- t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[17], NargFunc[17], 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(910));
@@ -4529,62 +4528,44 @@ static Int InitLibrary ( StructInitInfo * module )
  DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/oper1.g" );
  NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
  NargFunc[1] = 0;
  NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
  NargFunc[2] = 2;
  NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
  NargFunc[3] = 6;
  NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
  NargFunc[4] = -1;
  NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
  NargFunc[5] = -1;
  NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
  NargFunc[6] = 2;
  NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
  NargFunc[7] = 6;
  NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
  NargFunc[8] = 1;
  NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
  NargFunc[9] = 6;
  NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
  NargFunc[10] = 2;
  NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
  NargFunc[11] = 4;
  NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
  NargFunc[12] = 1;
  NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
  NargFunc[13] = 1;
  NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
  NargFunc[14] = 2;
  NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
  NargFunc[15] = 2;
  NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
  NargFunc[16] = 3;
  NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
  NargFunc[17] = -1;
  NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
  NargFunc[18] = -1;
  
  /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
+ func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, sizeof(BodyHeader));
@@ -4681,58 +4662,40 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* information for the functions */
  NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
  NargFunc[1] = 0;
  NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
  NargFunc[2] = 2;
  NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
  NargFunc[3] = 6;
  NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
  NargFunc[4] = -1;
  NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
  NargFunc[5] = -1;
  NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
  NargFunc[6] = 2;
  NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
  NargFunc[7] = 6;
  NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
  NargFunc[8] = 1;
  NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
  NargFunc[9] = 6;
  NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
  NargFunc[10] = 2;
  NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
  NargFunc[11] = 4;
  NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
  NargFunc[12] = 1;
  NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
  NargFunc[13] = 1;
  NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
  NargFunc[14] = 2;
  NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
  NargFunc[15] = 2;
  NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
  NargFunc[16] = 3;
  NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
  NargFunc[17] = -1;
  NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
  NargFunc[18] = -1;
  
  /* return success */
