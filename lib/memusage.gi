@@ -223,7 +223,7 @@ InstallMethod( MemoryUsage, "for a function",
   function( o )
     if not(MU_AddToCache(o)) then
         return SHALLOW_SIZE(o) + 2*(MU_MemBagHeader + MU_MemPointer) +
-               FUNC_BODY_SIZE(o);
+               BODY_SIZE_FUNC(o);
     else
         return 0;
     fi;

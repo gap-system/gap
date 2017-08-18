@@ -2059,16 +2059,6 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 #endif
 }
 
-/* Returns a measure of the size of a GAP function */
-Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
-{
-    Obj body;
-    if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
-    body = BODY_FUNC(f);
-    if (body == 0) return INTOBJ_INT(0);
-    else return INTOBJ_INT( SIZE_BAG( body ) );
-}
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -2871,7 +2861,6 @@ static StructGVarFunc GVarFuncs [] = {
 #endif
     GVAR_FUNC(SetUserHasQuit, 1, "value"),
     GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
-    GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
     GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
     { 0, 0, 0, 0, 0 }
