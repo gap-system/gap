@@ -490,8 +490,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(40));
+ SET_STARTLINE_BODY(t_4, 38);
+ SET_ENDLINE_BODY(t_4, 40);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -537,8 +537,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(43));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(82));
+ SET_STARTLINE_BODY(t_4, 43);
+ SET_ENDLINE_BODY(t_4, 82);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -566,8 +566,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], NargFunc[4], 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(91));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(108));
+ SET_STARTLINE_BODY(t_4, 91);
+ SET_ENDLINE_BODY(t_4, 108);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );

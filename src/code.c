@@ -169,18 +169,6 @@ void SET_FILENAME_BODY(Obj body, Obj val)
     BODY_HEADER(body)->filename = val;
 }
 
-Obj GET_STARTLINE_BODY(Obj body)
-{
-    Obj line = BODY_HEADER(body)->startline;
-    return IS_INTOBJ(line) ? line : 0;
-}
-
-void SET_STARTLINE_BODY(Obj body, Obj val)
-{
-    GAP_ASSERT(IS_INTOBJ(val));
-    BODY_HEADER(body)->startline = val;
-}
-
 Obj GET_LOCATION_BODY(Obj body)
 {
     Obj location = BODY_HEADER(body)->location;
@@ -192,14 +180,26 @@ void SET_LOCATION_BODY(Obj body, Obj val)
     BODY_HEADER(body)->location = val;
 }
 
-Obj GET_ENDLINE_BODY(Obj body)
+UInt GET_STARTLINE_BODY(Obj body)
 {
-    return BODY_HEADER(body)->endline;
+    Obj line = BODY_HEADER(body)->startline;
+    return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
 }
 
-void SET_ENDLINE_BODY(Obj body, Obj val)
+void SET_STARTLINE_BODY(Obj body, UInt val)
 {
-    BODY_HEADER(body)->endline = val;
+    BODY_HEADER(body)->startline = val ? INTOBJ_INT(val) : 0;
+}
+
+UInt GET_ENDLINE_BODY(Obj body)
+{
+    Obj line = BODY_HEADER(body)->endline;
+    return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
+}
+
+void SET_ENDLINE_BODY(Obj body, UInt val)
+{
+    BODY_HEADER(body)->endline = val ? INTOBJ_INT(val) : 0;
 }
 
 /****************************************************************************
@@ -803,7 +803,7 @@ void CodeFuncExprBegin (
     /* record where we are reading from */
     SetupGapname(STATE(Input));
     SET_FILENAME_BODY(body, STATE(Input)->gapname);
-    SET_STARTLINE_BODY(body, INTOBJ_INT(startLine));
+    SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
     STATE(OffsBody) = 0;
@@ -884,7 +884,7 @@ void CodeFuncExprEnd (
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+sizeof(BodyHeader) );
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(STATE(Input)->number));
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), STATE(Input)->number);
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
 
     /* switch back to the previous function                                */
