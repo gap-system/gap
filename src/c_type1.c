@@ -207,7 +207,6 @@ static RNam R_HASH__SIZE;
 /* information for the functions */
 static Obj  NameFunc[34];
 static Int  NargFunc[34];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -4818,71 +4817,71 @@ static Int PostRestore ( StructInitInfo * module )
  R_HASH__SIZE = RNamName( "HASH_SIZE" );
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
+ NameFunc[1] = 0;
  NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
+ NameFunc[2] = 0;
  NargFunc[2] = 6;
- NameFunc[3] = DefaultName;
+ NameFunc[3] = 0;
  NargFunc[3] = 6;
- NameFunc[4] = DefaultName;
+ NameFunc[4] = 0;
  NargFunc[4] = 2;
- NameFunc[5] = DefaultName;
+ NameFunc[5] = 0;
  NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
+ NameFunc[6] = 0;
  NargFunc[6] = 2;
- NameFunc[7] = DefaultName;
+ NameFunc[7] = 0;
  NargFunc[7] = 3;
- NameFunc[8] = DefaultName;
+ NameFunc[8] = 0;
  NargFunc[8] = 4;
- NameFunc[9] = DefaultName;
+ NameFunc[9] = 0;
  NargFunc[9] = 5;
- NameFunc[10] = DefaultName;
+ NameFunc[10] = 0;
  NargFunc[10] = -1;
- NameFunc[11] = DefaultName;
+ NameFunc[11] = 0;
  NargFunc[11] = 5;
- NameFunc[12] = DefaultName;
+ NameFunc[12] = 0;
  NargFunc[12] = 3;
- NameFunc[13] = DefaultName;
+ NameFunc[13] = 0;
  NargFunc[13] = 4;
- NameFunc[14] = DefaultName;
+ NameFunc[14] = 0;
  NargFunc[14] = -1;
- NameFunc[15] = DefaultName;
+ NameFunc[15] = 0;
  NargFunc[15] = 2;
- NameFunc[16] = DefaultName;
+ NameFunc[16] = 0;
  NargFunc[16] = 3;
- NameFunc[17] = DefaultName;
+ NameFunc[17] = 0;
  NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
+ NameFunc[18] = 0;
  NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
+ NameFunc[19] = 0;
  NargFunc[19] = 3;
- NameFunc[20] = DefaultName;
+ NameFunc[20] = 0;
  NargFunc[20] = -1;
- NameFunc[21] = DefaultName;
+ NameFunc[21] = 0;
  NargFunc[21] = 1;
- NameFunc[22] = DefaultName;
+ NameFunc[22] = 0;
  NargFunc[22] = 1;
- NameFunc[23] = DefaultName;
+ NameFunc[23] = 0;
  NargFunc[23] = 1;
- NameFunc[24] = DefaultName;
+ NameFunc[24] = 0;
  NargFunc[24] = 2;
- NameFunc[25] = DefaultName;
+ NameFunc[25] = 0;
  NargFunc[25] = 1;
- NameFunc[26] = DefaultName;
+ NameFunc[26] = 0;
  NargFunc[26] = 1;
- NameFunc[27] = DefaultName;
+ NameFunc[27] = 0;
  NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
+ NameFunc[28] = 0;
  NargFunc[28] = 2;
- NameFunc[29] = DefaultName;
+ NameFunc[29] = 0;
  NargFunc[29] = 2;
- NameFunc[30] = DefaultName;
+ NameFunc[30] = 0;
  NargFunc[30] = 2;
- NameFunc[31] = DefaultName;
+ NameFunc[31] = 0;
  NargFunc[31] = 3;
- NameFunc[32] = DefaultName;
+ NameFunc[32] = 0;
  NargFunc[32] = -1;
- NameFunc[33] = DefaultName;
+ NameFunc[33] = 0;
  NargFunc[33] = -1;
  
  /* return success */
@@ -4996,7 +4995,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "Objectify", &GF_Objectify );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/type1.g:DefaultName(49519056)" );
  InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName(49519056)" );
  InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1(49519056)" );
  InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1](49519056)" );
@@ -5078,7 +5076,6 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/type1.g" );
  PostRestore(module);
  

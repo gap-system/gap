@@ -60,7 +60,6 @@ static Obj  GF_FamilyObj;
 /* information for the functions */
 static Obj  NameFunc[35];
 static Int  NargFunc[35];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -5436,73 +5435,73 @@ static Int PostRestore ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
+ NameFunc[1] = 0;
  NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
+ NameFunc[2] = 0;
  NargFunc[2] = 1;
- NameFunc[3] = DefaultName;
+ NameFunc[3] = 0;
  NargFunc[3] = 2;
- NameFunc[4] = DefaultName;
+ NameFunc[4] = 0;
  NargFunc[4] = 3;
- NameFunc[5] = DefaultName;
+ NameFunc[5] = 0;
  NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
+ NameFunc[6] = 0;
  NargFunc[6] = 5;
- NameFunc[7] = DefaultName;
+ NameFunc[7] = 0;
  NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
+ NameFunc[8] = 0;
  NargFunc[8] = 7;
- NameFunc[9] = DefaultName;
+ NameFunc[9] = 0;
  NargFunc[9] = -1;
- NameFunc[10] = DefaultName;
+ NameFunc[10] = 0;
  NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
+ NameFunc[11] = 0;
  NargFunc[11] = 3;
- NameFunc[12] = DefaultName;
+ NameFunc[12] = 0;
  NargFunc[12] = 4;
- NameFunc[13] = DefaultName;
+ NameFunc[13] = 0;
  NargFunc[13] = 5;
- NameFunc[14] = DefaultName;
+ NameFunc[14] = 0;
  NargFunc[14] = 6;
- NameFunc[15] = DefaultName;
+ NameFunc[15] = 0;
  NargFunc[15] = 7;
- NameFunc[16] = DefaultName;
+ NameFunc[16] = 0;
  NargFunc[16] = 8;
- NameFunc[17] = DefaultName;
+ NameFunc[17] = 0;
  NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
+ NameFunc[18] = 0;
  NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
+ NameFunc[19] = 0;
  NargFunc[19] = 1;
- NameFunc[20] = DefaultName;
+ NameFunc[20] = 0;
  NargFunc[20] = 2;
- NameFunc[21] = DefaultName;
+ NameFunc[21] = 0;
  NargFunc[21] = 3;
- NameFunc[22] = DefaultName;
+ NameFunc[22] = 0;
  NargFunc[22] = 4;
- NameFunc[23] = DefaultName;
+ NameFunc[23] = 0;
  NargFunc[23] = 5;
- NameFunc[24] = DefaultName;
+ NameFunc[24] = 0;
  NargFunc[24] = 6;
- NameFunc[25] = DefaultName;
+ NameFunc[25] = 0;
  NargFunc[25] = 7;
- NameFunc[26] = DefaultName;
+ NameFunc[26] = 0;
  NargFunc[26] = -1;
- NameFunc[27] = DefaultName;
+ NameFunc[27] = 0;
  NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
+ NameFunc[28] = 0;
  NargFunc[28] = 3;
- NameFunc[29] = DefaultName;
+ NameFunc[29] = 0;
  NargFunc[29] = 4;
- NameFunc[30] = DefaultName;
+ NameFunc[30] = 0;
  NargFunc[30] = 5;
- NameFunc[31] = DefaultName;
+ NameFunc[31] = 0;
  NargFunc[31] = 6;
- NameFunc[32] = DefaultName;
+ NameFunc[32] = 0;
  NargFunc[32] = 7;
- NameFunc[33] = DefaultName;
+ NameFunc[33] = 0;
  NargFunc[33] = 8;
- NameFunc[34] = DefaultName;
+ NameFunc[34] = 0;
  NargFunc[34] = -1;
  
  /* return success */
@@ -5527,7 +5526,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "FamilyObj", &GF_FamilyObj );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/methsel1.g:DefaultName(102657344)" );
  InitGlobalBag( &FileName, "GAPROOT/lib/methsel1.g:FileName(102657344)" );
  InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/methsel1.g:HdlrFunc1(102657344)" );
  InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/methsel1.g:NameFunc[1](102657344)" );
@@ -5611,7 +5609,6 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/methsel1.g" );
  PostRestore(module);
  

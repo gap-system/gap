@@ -5659,7 +5659,6 @@ Int CompileFunc (
     Emit( "\n/* information for the functions */\n" );
     Emit( "static Obj  NameFunc[%d];\n", CompFunctionsNr+1 );
     Emit( "static Int  NargFunc[%d];\n", CompFunctionsNr+1 );
-    Emit( "static Obj  DefaultName;\n" );
     Emit( "static Obj FileName;\n" );
 
 
@@ -5691,7 +5690,7 @@ Int CompileFunc (
             Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
         }
         else {
-            Emit( "NameFunc[%d] = DefaultName;\n", i );
+            Emit( "NameFunc[%d] = 0;\n", i );
         }
         Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
     }
@@ -5716,8 +5715,6 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "InitGlobalBag( &DefaultName, \"%s:DefaultName(%d)\" );\n",
-          magic2, magic1 );
     Emit( "InitGlobalBag( &FileName, \"%s:FileName(%d)\" );\n",
           magic2, magic1 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
@@ -5739,7 +5736,6 @@ Int CompileFunc (
     Emit( "Obj body1;\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
-    Emit( "DefaultName = MakeString( \"local function\" );\n" );
     Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
     Emit( "PostRestore(module);\n" );
     Emit( "\n/* create all the functions defined in this module */\n" );
