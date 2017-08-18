@@ -217,6 +217,7 @@ InstallGlobalFunction( BindGlobal,
         function (name, value)
     CheckGlobalName( name );
     Info( InfoGlobal, 2, "BindGlobal: called to set ", name, " to ", value);
+    ADD_LIST( BIND_LOCS, [ name, CURRENT_LOCATION() ] ); 
     BIND_GLOBAL( name, value );
 end);
 

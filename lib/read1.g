@@ -4,6 +4,12 @@
 #X  after this file is read an 'ExportToKernelFinished' is done.
 ##
 ReadLib( "hpc/thread1.g" );
+BIND_GLOBAL( "CURRENT_LOCATION",
+function()
+    return rec( line := INPUT_LINENUMBER(),
+                file := INPUT_FILENAME() );
+end);
+BIND_GLOBAL( "BIND_LOCS", [] );
 ReadLib( "filter.g"    );
 ReadLib( "filter1.g"   );
 ReadLib( "oper.g"      );

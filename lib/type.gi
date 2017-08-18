@@ -145,3 +145,81 @@ function ( type )
     fi;
     return res;
 end);
+
+InstallGlobalFunction( IsCategory,
+function(object)
+    local fid;
+    for fid in [1..Length(FILTERS)] do
+        if (FILTERS[fid] = object)
+           and (INFO_FILTERS[fid] in FNUM_CATS) then
+            return true;
+        fi;
+    od;
+    return false;
+end);
+
+InstallGlobalFunction( IsAttribute,
+function(object)
+    local fid;
+    for fid in [1..Length(FILTERS)] do
+        if (FILTERS[fid] = object)
+           and (INFO_FILTERS[fid] in FNUM_ATTS
+                # Every property is also an attribute
+                or INFO_FILTERS[fid] in FNUM_PROS) then
+            return true;
+        fi;
+    od;
+    return false;
+end);
+
+InstallGlobalFunction( IsProperty,
+function(object)
+    local fid;
+    for fid in [1..Length(FILTERS)] do
+        if (FILTERS[fid] = object)
+           and (INFO_FILTERS[fid] in FNUM_PROS) then
+            return true;
+        fi;
+    od;
+    return false;
+end);
+
+InstallGlobalFunction( CategoryByName,
+function(name)
+    local fid;
+
+    for fid in CATS_AND_REPS do
+        if (INFO_FILTERS[fid] in FNUM_CATS) and
+           (NAME_FUNC(FILTERS[fid]) = name) then
+            return FILTERS[fid];
+        fi;
+    od;
+    return fail;
+end);
+
+InstallGlobalFunction( LocationOfDeclaration,
+function(object)
+    local fid;
+    if IsFilter(object) then
+        fid := IdOfFilter(object);
+        if fid <> fail then
+            if IsBound(FILTERS_LOCATIONS[fid]) then
+                return FILTERS_LOCATIONS[fid];
+            fi;
+        fi;
+    fi;
+    if IsOperation(object) then
+        fid := Position(OPERATIONS, object);
+        if fid <> fail then
+            if IsBound(OPERATIONS_LOCATIONS[fid + 1]) then
+                return OPERATIONS_LOCATIONS[fid + 1];
+            fi;
+        fi;
+    fi;
+
+    fid := PositionProperty(BIND_LOCS, x -> x[1] = NAME_FUNC(object));
+    if fid <> fail then
+        return BIND_LOCS[fid][2];
+    fi;
+    return fail;
+end);

@@ -638,7 +638,7 @@ end);
 
 BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
     local   class,  flags,  types,  catok,  repok,  propok,  seenprop,
-            t, res;
+            t, flafs, res;
     class := "Operation";
     if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
         class := "Filter";
@@ -646,12 +646,9 @@ BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
         class := "Constructor";
     elif IsFilter(op) then
         class := "Filter";
-        flags := FLAGS_FILTER(op);
-        if flags <> false then
-            flags := TRUES_FLAGS(flags);
-        else
-            flags := [];
-        fi;
+        flafs := FLAGS_FILTER(op);
+        if flafs <> false then
+        flags := TRUES_FLAGS(FLAGS_FILTER(op));
         types := INFO_FILTERS{flags};
         catok := true;
         repok := true;
@@ -677,6 +674,7 @@ BIND_GLOBAL( "VIEW_STRING_OPERATION",    function ( op )
             class := "Category";
         elif repok then
             class := "Representation";
+        fi;
         fi;
     elif Tester(op) <> false  then
         # op is an attribute
