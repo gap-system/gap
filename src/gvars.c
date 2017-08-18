@@ -251,10 +251,8 @@ static UInt            CountGVars;
 /****************************************************************************
 **
 *V  TableGVars  . . . . . . . . . . . . . .  hashed table of global variables
-*V  SizeGVars . . . . . . .  current size of hashed table of global variables
 */
 static Obj             TableGVars;
-static UInt            SizeGVars;
 
 
 /****************************************************************************
@@ -567,6 +565,7 @@ UInt GVarName (
     Obj                 gvar2;          /* one element of <table>          */
     UInt                i;              /* loop variable                   */
     Int                 len;            /* length of name                  */
+    UInt                sizeGVars;      // size of <TableGVars>
 
     /* First see whether it could be namespace-local: */
     cns = STATE(CurrNamespace) ? CSTR_STRING(STATE(CurrNamespace)) : "";
@@ -586,10 +585,11 @@ UInt GVarName (
 #endif
 
     /* look through the table until we find a free slot or the global      */
-    pos = (hash % SizeGVars) + 1;
+    sizeGVars = LEN_PLIST(TableGVars);
+    pos = (hash % sizeGVars) + 1;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
          && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
-        pos = (pos % SizeGVars) + 1;
+        pos = (pos % sizeGVars) + 1;
     }
 
 #ifdef HPCGAP
@@ -599,10 +599,11 @@ UInt GVarName (
         LockGVars(1);
 
         /* look through the table until we find a free slot or the global  */
-        pos = (hash % SizeGVars) + 1;
+        sizeGVars = LEN_PLIST(TableGVars);
+        pos = (hash % sizeGVars) + 1;
         while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
              && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
-            pos = (pos % SizeGVars) + 1;
+            pos = (pos % sizeGVars) + 1;
         }
     }
 #endif
@@ -652,21 +653,21 @@ UInt GVarName (
         SET_ELM_GVAR_LIST( FopiesGVars, CountGVars, 0 );
 
         /* if the table is too crowded, make a larger one, rehash the names     */
-        if ( SizeGVars < 3 * CountGVars / 2 ) {
+        if ( sizeGVars < 3 * CountGVars / 2 ) {
             table = TableGVars;
-            SizeGVars = 2 * SizeGVars + 1;
-            TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+            sizeGVars = 2 * sizeGVars + 1;
+            TableGVars = NEW_PLIST( T_PLIST, sizeGVars );
+            SET_LEN_PLIST( TableGVars, sizeGVars );
 #ifdef HPCGAP
             MakeBagPublic(TableGVars);
 #endif
-            SET_LEN_PLIST( TableGVars, SizeGVars );
-            for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
+            for ( i = 1; i <= (sizeGVars-1)/2; i++ ) {
                 gvar2 = ELM_PLIST( table, i );
                 if ( gvar2 == 0 )  continue;
                 pos = HashString( NameGVar( INT_INTOBJ(gvar2) ) );
-                pos = (pos % SizeGVars) + 1;
+                pos = (pos % sizeGVars) + 1;
                 while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
-                    pos = (pos % SizeGVars) + 1;
+                    pos = (pos % sizeGVars) + 1;
                 }
                 SET_ELM_PLIST( TableGVars, pos, gvar2 );
             }
@@ -1591,7 +1592,6 @@ static Int PostRestore (
 #else
     CountGVars = LEN_PLIST( ValGVars );
     PtrGVars   = ADDR_OBJ( ValGVars );
-    SizeGVars  = LEN_PLIST( TableGVars );
 #endif
 
     /* update fopies and copies                                            */
@@ -1665,9 +1665,8 @@ static Int InitLibrary (
 #endif
 
     /* make the list of global variables                                   */
-    SizeGVars  = 14033;
-    TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-    SET_LEN_PLIST( TableGVars, SizeGVars );
+    TableGVars = NEW_PLIST( T_PLIST, 14033 );
+    SET_LEN_PLIST( TableGVars, 14033 );
 #ifdef HPCGAP
     MakeBagPublic(TableGVars);
 #endif
