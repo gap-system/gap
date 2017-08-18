@@ -5385,6 +5385,132 @@ static Obj  HdlrFunc1 (
  return 0;
 }
 
+/* 'PostRestore' restore gvars, rnams, functions */
+static Int PostRestore ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ G_METHOD__0ARGS = GVarName( "METHOD_0ARGS" );
+ G_METHOD__1ARGS = GVarName( "METHOD_1ARGS" );
+ G_METHOD__2ARGS = GVarName( "METHOD_2ARGS" );
+ G_METHOD__3ARGS = GVarName( "METHOD_3ARGS" );
+ G_METHOD__4ARGS = GVarName( "METHOD_4ARGS" );
+ G_METHOD__5ARGS = GVarName( "METHOD_5ARGS" );
+ G_METHOD__6ARGS = GVarName( "METHOD_6ARGS" );
+ G_METHOD__XARGS = GVarName( "METHOD_XARGS" );
+ G_NEXT__METHOD__0ARGS = GVarName( "NEXT_METHOD_0ARGS" );
+ G_NEXT__METHOD__1ARGS = GVarName( "NEXT_METHOD_1ARGS" );
+ G_NEXT__METHOD__2ARGS = GVarName( "NEXT_METHOD_2ARGS" );
+ G_NEXT__METHOD__3ARGS = GVarName( "NEXT_METHOD_3ARGS" );
+ G_NEXT__METHOD__4ARGS = GVarName( "NEXT_METHOD_4ARGS" );
+ G_NEXT__METHOD__5ARGS = GVarName( "NEXT_METHOD_5ARGS" );
+ G_NEXT__METHOD__6ARGS = GVarName( "NEXT_METHOD_6ARGS" );
+ G_NEXT__METHOD__XARGS = GVarName( "NEXT_METHOD_XARGS" );
+ G_CONSTRUCTOR__0ARGS = GVarName( "CONSTRUCTOR_0ARGS" );
+ G_CONSTRUCTOR__1ARGS = GVarName( "CONSTRUCTOR_1ARGS" );
+ G_CONSTRUCTOR__2ARGS = GVarName( "CONSTRUCTOR_2ARGS" );
+ G_CONSTRUCTOR__3ARGS = GVarName( "CONSTRUCTOR_3ARGS" );
+ G_CONSTRUCTOR__4ARGS = GVarName( "CONSTRUCTOR_4ARGS" );
+ G_CONSTRUCTOR__5ARGS = GVarName( "CONSTRUCTOR_5ARGS" );
+ G_CONSTRUCTOR__6ARGS = GVarName( "CONSTRUCTOR_6ARGS" );
+ G_CONSTRUCTOR__XARGS = GVarName( "CONSTRUCTOR_XARGS" );
+ G_NEXT__CONSTRUCTOR__0ARGS = GVarName( "NEXT_CONSTRUCTOR_0ARGS" );
+ G_NEXT__CONSTRUCTOR__1ARGS = GVarName( "NEXT_CONSTRUCTOR_1ARGS" );
+ G_NEXT__CONSTRUCTOR__2ARGS = GVarName( "NEXT_CONSTRUCTOR_2ARGS" );
+ G_NEXT__CONSTRUCTOR__3ARGS = GVarName( "NEXT_CONSTRUCTOR_3ARGS" );
+ G_NEXT__CONSTRUCTOR__4ARGS = GVarName( "NEXT_CONSTRUCTOR_4ARGS" );
+ G_NEXT__CONSTRUCTOR__5ARGS = GVarName( "NEXT_CONSTRUCTOR_5ARGS" );
+ G_NEXT__CONSTRUCTOR__6ARGS = GVarName( "NEXT_CONSTRUCTOR_6ARGS" );
+ G_NEXT__CONSTRUCTOR__XARGS = GVarName( "NEXT_CONSTRUCTOR_XARGS" );
+ G_Error = GVarName( "Error" );
+ G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
+ G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
+ G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
+ G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
+ G_fail = GVarName( "fail" );
+ G_LEN__LIST = GVarName( "LEN_LIST" );
+ G_AttributeValueNotSet = GVarName( "AttributeValueNotSet" );
+ G_TypeObj = GVarName( "TypeObj" );
+ G_FamilyObj = GVarName( "FamilyObj" );
+ 
+ /* record names used in handlers */
+ 
+ /* information for the functions */
+ NameFunc[1] = DefaultName;
+ NargFunc[1] = 0;
+ NameFunc[2] = DefaultName;
+ NargFunc[2] = 1;
+ NameFunc[3] = DefaultName;
+ NargFunc[3] = 2;
+ NameFunc[4] = DefaultName;
+ NargFunc[4] = 3;
+ NameFunc[5] = DefaultName;
+ NargFunc[5] = 4;
+ NameFunc[6] = DefaultName;
+ NargFunc[6] = 5;
+ NameFunc[7] = DefaultName;
+ NargFunc[7] = 6;
+ NameFunc[8] = DefaultName;
+ NargFunc[8] = 7;
+ NameFunc[9] = DefaultName;
+ NargFunc[9] = -1;
+ NameFunc[10] = DefaultName;
+ NargFunc[10] = 2;
+ NameFunc[11] = DefaultName;
+ NargFunc[11] = 3;
+ NameFunc[12] = DefaultName;
+ NargFunc[12] = 4;
+ NameFunc[13] = DefaultName;
+ NargFunc[13] = 5;
+ NameFunc[14] = DefaultName;
+ NargFunc[14] = 6;
+ NameFunc[15] = DefaultName;
+ NargFunc[15] = 7;
+ NameFunc[16] = DefaultName;
+ NargFunc[16] = 8;
+ NameFunc[17] = DefaultName;
+ NargFunc[17] = -1;
+ NameFunc[18] = DefaultName;
+ NargFunc[18] = 2;
+ NameFunc[19] = DefaultName;
+ NargFunc[19] = 1;
+ NameFunc[20] = DefaultName;
+ NargFunc[20] = 2;
+ NameFunc[21] = DefaultName;
+ NargFunc[21] = 3;
+ NameFunc[22] = DefaultName;
+ NargFunc[22] = 4;
+ NameFunc[23] = DefaultName;
+ NargFunc[23] = 5;
+ NameFunc[24] = DefaultName;
+ NargFunc[24] = 6;
+ NameFunc[25] = DefaultName;
+ NargFunc[25] = 7;
+ NameFunc[26] = DefaultName;
+ NargFunc[26] = -1;
+ NameFunc[27] = DefaultName;
+ NargFunc[27] = 2;
+ NameFunc[28] = DefaultName;
+ NargFunc[28] = 3;
+ NameFunc[29] = DefaultName;
+ NargFunc[29] = 4;
+ NameFunc[30] = DefaultName;
+ NargFunc[30] = 5;
+ NameFunc[31] = DefaultName;
+ NargFunc[31] = 6;
+ NameFunc[32] = DefaultName;
+ NargFunc[32] = 7;
+ NameFunc[33] = DefaultName;
+ NargFunc[33] = 8;
+ NameFunc[34] = DefaultName;
+ NargFunc[34] = -1;
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+
 /* 'InitKernel' sets up data structures, fopies, copies, handlers */
 static Int InitKernel ( StructInitInfo * module )
 {
@@ -5617,132 +5743,6 @@ static Int InitLibrary ( StructInitInfo * module )
  return 0;
  
 }
-
-/* 'PostRestore' restore gvars, rnams, functions */
-static Int PostRestore ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- G_METHOD__0ARGS = GVarName( "METHOD_0ARGS" );
- G_METHOD__1ARGS = GVarName( "METHOD_1ARGS" );
- G_METHOD__2ARGS = GVarName( "METHOD_2ARGS" );
- G_METHOD__3ARGS = GVarName( "METHOD_3ARGS" );
- G_METHOD__4ARGS = GVarName( "METHOD_4ARGS" );
- G_METHOD__5ARGS = GVarName( "METHOD_5ARGS" );
- G_METHOD__6ARGS = GVarName( "METHOD_6ARGS" );
- G_METHOD__XARGS = GVarName( "METHOD_XARGS" );
- G_NEXT__METHOD__0ARGS = GVarName( "NEXT_METHOD_0ARGS" );
- G_NEXT__METHOD__1ARGS = GVarName( "NEXT_METHOD_1ARGS" );
- G_NEXT__METHOD__2ARGS = GVarName( "NEXT_METHOD_2ARGS" );
- G_NEXT__METHOD__3ARGS = GVarName( "NEXT_METHOD_3ARGS" );
- G_NEXT__METHOD__4ARGS = GVarName( "NEXT_METHOD_4ARGS" );
- G_NEXT__METHOD__5ARGS = GVarName( "NEXT_METHOD_5ARGS" );
- G_NEXT__METHOD__6ARGS = GVarName( "NEXT_METHOD_6ARGS" );
- G_NEXT__METHOD__XARGS = GVarName( "NEXT_METHOD_XARGS" );
- G_CONSTRUCTOR__0ARGS = GVarName( "CONSTRUCTOR_0ARGS" );
- G_CONSTRUCTOR__1ARGS = GVarName( "CONSTRUCTOR_1ARGS" );
- G_CONSTRUCTOR__2ARGS = GVarName( "CONSTRUCTOR_2ARGS" );
- G_CONSTRUCTOR__3ARGS = GVarName( "CONSTRUCTOR_3ARGS" );
- G_CONSTRUCTOR__4ARGS = GVarName( "CONSTRUCTOR_4ARGS" );
- G_CONSTRUCTOR__5ARGS = GVarName( "CONSTRUCTOR_5ARGS" );
- G_CONSTRUCTOR__6ARGS = GVarName( "CONSTRUCTOR_6ARGS" );
- G_CONSTRUCTOR__XARGS = GVarName( "CONSTRUCTOR_XARGS" );
- G_NEXT__CONSTRUCTOR__0ARGS = GVarName( "NEXT_CONSTRUCTOR_0ARGS" );
- G_NEXT__CONSTRUCTOR__1ARGS = GVarName( "NEXT_CONSTRUCTOR_1ARGS" );
- G_NEXT__CONSTRUCTOR__2ARGS = GVarName( "NEXT_CONSTRUCTOR_2ARGS" );
- G_NEXT__CONSTRUCTOR__3ARGS = GVarName( "NEXT_CONSTRUCTOR_3ARGS" );
- G_NEXT__CONSTRUCTOR__4ARGS = GVarName( "NEXT_CONSTRUCTOR_4ARGS" );
- G_NEXT__CONSTRUCTOR__5ARGS = GVarName( "NEXT_CONSTRUCTOR_5ARGS" );
- G_NEXT__CONSTRUCTOR__6ARGS = GVarName( "NEXT_CONSTRUCTOR_6ARGS" );
- G_NEXT__CONSTRUCTOR__XARGS = GVarName( "NEXT_CONSTRUCTOR_XARGS" );
- G_Error = GVarName( "Error" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
- G_fail = GVarName( "fail" );
- G_LEN__LIST = GVarName( "LEN_LIST" );
- G_AttributeValueNotSet = GVarName( "AttributeValueNotSet" );
- G_TypeObj = GVarName( "TypeObj" );
- G_FamilyObj = GVarName( "FamilyObj" );
- 
- /* record names used in handlers */
- 
- /* information for the functions */
- NameFunc[1] = DefaultName;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NargFunc[2] = 1;
- NameFunc[3] = DefaultName;
- NargFunc[3] = 2;
- NameFunc[4] = DefaultName;
- NargFunc[4] = 3;
- NameFunc[5] = DefaultName;
- NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
- NargFunc[6] = 5;
- NameFunc[7] = DefaultName;
- NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
- NargFunc[8] = 7;
- NameFunc[9] = DefaultName;
- NargFunc[9] = -1;
- NameFunc[10] = DefaultName;
- NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
- NargFunc[11] = 3;
- NameFunc[12] = DefaultName;
- NargFunc[12] = 4;
- NameFunc[13] = DefaultName;
- NargFunc[13] = 5;
- NameFunc[14] = DefaultName;
- NargFunc[14] = 6;
- NameFunc[15] = DefaultName;
- NargFunc[15] = 7;
- NameFunc[16] = DefaultName;
- NargFunc[16] = 8;
- NameFunc[17] = DefaultName;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
- NargFunc[19] = 1;
- NameFunc[20] = DefaultName;
- NargFunc[20] = 2;
- NameFunc[21] = DefaultName;
- NargFunc[21] = 3;
- NameFunc[22] = DefaultName;
- NargFunc[22] = 4;
- NameFunc[23] = DefaultName;
- NargFunc[23] = 5;
- NameFunc[24] = DefaultName;
- NargFunc[24] = 6;
- NameFunc[25] = DefaultName;
- NargFunc[25] = 7;
- NameFunc[26] = DefaultName;
- NargFunc[26] = -1;
- NameFunc[27] = DefaultName;
- NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
- NargFunc[28] = 3;
- NameFunc[29] = DefaultName;
- NargFunc[29] = 4;
- NameFunc[30] = DefaultName;
- NargFunc[30] = 5;
- NameFunc[31] = DefaultName;
- NargFunc[31] = 6;
- NameFunc[32] = DefaultName;
- NargFunc[32] = 7;
- NameFunc[33] = DefaultName;
- NargFunc[33] = 8;
- NameFunc[34] = DefaultName;
- NargFunc[34] = -1;
- 
- /* return success */
- return 0;
- 
-}
-
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {
