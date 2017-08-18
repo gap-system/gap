@@ -1356,18 +1356,18 @@ static void RemoveCopyFopyInfo( void )
 /****************************************************************************
 **
 */
-void GVarsAfterCollectBags ( void )
+void GVarsAfterCollectBags(void)
 {
 #ifdef USE_GVAR_BUCKETS
-  int i;
-  for (i=0; i<GVAR_BUCKETS; i++)
+  for (int i = 0; i < GVAR_BUCKETS; i++) {
     if (ValGVars[i])
-      PtrGVars[i] = ADDR_OBJ( ValGVars[i] )+1;
+      PtrGVars[i] = ADDR_OBJ( ValGVars[i] ) + 1;
     else
       break;
+  }
 #else
   if (ValGVars)
-    PtrGVars = PTR_BAG( ValGVars );
+    PtrGVars = ADDR_OBJ( ValGVars );
 #endif
 }
 
@@ -1591,8 +1591,9 @@ static Int PostRestore (
     /* TODO: Implement with buckets. */
 #else
     CountGVars = LEN_PLIST( ValGVars );
-    PtrGVars   = ADDR_OBJ( ValGVars );
 #endif
+    // restore PtrGVars
+    GVarsAfterCollectBags();
 
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
