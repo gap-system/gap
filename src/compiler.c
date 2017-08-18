@@ -5666,7 +5666,38 @@ Int CompileFunc (
     /* now compile the handlers                                            */
     CompFunc( func );
 
-    /* emit the code for the function that links this module to GAP        */
+    // emit the code for PostRestore
+    Emit( "\n/* 'PostRestore' restore gvars, rnams, functions */\n" );
+    Emit( "static Int PostRestore ( StructInitInfo * module )\n" );
+    Emit( "{\n" );
+    Emit( "\n/* global variables used in handlers */\n" );
+    for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
+        if ( CompGetUseGVar( i ) ) {
+            Emit( "G_%n = GVarName( \"%s\" );\n",
+                   NameGVar(i), NameGVar(i) );
+        }
+    }
+    Emit( "\n/* record names used in handlers */\n" );
+    for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
+        if ( CompGetUseRNam( i ) ) {
+            Emit( "R_%n = RNamName( \"%s\" );\n",
+                  NAME_RNAM(i), NAME_RNAM(i) );
+        }
+    }
+    Emit( "\n/* information for the functions */\n" );
+    for ( i = 1; i <= CompFunctionsNr; i++ ) {
+        n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
+        if ( n == 0 || ! IsStringConv(n) ) {
+            Emit( "NameFunc[%d] = DefaultName;\n", i );
+        }
+        Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
+    }
+    Emit( "\n/* return success */\n" );
+    Emit( "return 0;\n" );
+    Emit( "\n}\n" );
+    Emit( "\n" );
+
+    // emit the code for InitKernel
     Emit( "\n/* 'InitKernel' sets up data structures, fopies, copies, handlers */\n" );
     Emit( "static Int InitKernel ( StructInitInfo * module )\n" );
     Emit( "{\n" );
@@ -5697,6 +5728,7 @@ Int CompileFunc (
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
 
+    // emit the code for InitLibrary
     Emit( "\n/* 'InitLibrary' sets up gvars, rnams, functions */\n" );
     Emit( "static Int InitLibrary ( StructInitInfo * module )\n" );
     Emit( "{\n" );
@@ -5742,36 +5774,6 @@ Int CompileFunc (
     Emit( "\n/* return success */\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
-
-    Emit( "\n/* 'PostRestore' restore gvars, rnams, functions */\n" );
-    Emit( "static Int PostRestore ( StructInitInfo * module )\n" );
-    Emit( "{\n" );
-    Emit( "\n/* global variables used in handlers */\n" );
-    for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
-        if ( CompGetUseGVar( i ) ) {
-            Emit( "G_%n = GVarName( \"%s\" );\n",
-                   NameGVar(i), NameGVar(i) );
-        }
-    }
-    Emit( "\n/* record names used in handlers */\n" );
-    for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
-        if ( CompGetUseRNam( i ) ) {
-            Emit( "R_%n = RNamName( \"%s\" );\n",
-                  NAME_RNAM(i), NAME_RNAM(i) );
-        }
-    }
-    Emit( "\n/* information for the functions */\n" );
-    for ( i = 1; i <= CompFunctionsNr; i++ ) {
-        n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
-        if ( n == 0 || ! IsStringConv(n) ) {
-            Emit( "NameFunc[%d] = DefaultName;\n", i );
-        }
-        Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
-    }
-    Emit( "\n/* return success */\n" );
-    Emit( "return 0;\n" );
-    Emit( "\n}\n" );
-    Emit( "\n" );
 
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );

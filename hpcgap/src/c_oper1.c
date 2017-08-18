@@ -4424,6 +4424,142 @@ static Obj  HdlrFunc1 (
  return 0;
 }
 
+/* 'PostRestore' restore gvars, rnams, functions */
+static Int PostRestore ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ G_REREADING = GVarName( "REREADING" );
+ G_SHALLOW__COPY__OBJ = GVarName( "SHALLOW_COPY_OBJ" );
+ G_PRINT__OBJ = GVarName( "PRINT_OBJ" );
+ G_GAPInfo = GVarName( "GAPInfo" );
+ G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
+ G_NAME__FUNC = GVarName( "NAME_FUNC" );
+ G_NARG__FUNC = GVarName( "NARG_FUNC" );
+ G_IS__OPERATION = GVarName( "IS_OPERATION" );
+ G_AINV = GVarName( "AINV" );
+ G_IS__INT = GVarName( "IS_INT" );
+ G_IS__LIST = GVarName( "IS_LIST" );
+ G_ADD__LIST = GVarName( "ADD_LIST" );
+ G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
+ G_Error = GVarName( "Error" );
+ G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
+ G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
+ G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
+ G_MakeImmutable = GVarName( "MakeImmutable" );
+ G_IS__OBJECT = GVarName( "IS_OBJECT" );
+ G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
+ G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
+ G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
+ G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
+ G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
+ G_SIZE__FLAGS = GVarName( "SIZE_FLAGS" );
+ G_LEN__FLAGS = GVarName( "LEN_FLAGS" );
+ G_ELM__FLAGS = GVarName( "ELM_FLAGS" );
+ G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
+ G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
+ G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
+ G_SET__METHODS__OPERATION = GVarName( "SET_METHODS_OPERATION" );
+ G_DO__NOTHING__SETTER = GVarName( "DO_NOTHING_SETTER" );
+ G_QUO__INT = GVarName( "QUO_INT" );
+ G_RETURN__TRUE = GVarName( "RETURN_TRUE" );
+ G_RETURN__FALSE = GVarName( "RETURN_FALSE" );
+ G_LEN__LIST = GVarName( "LEN_LIST" );
+ G_APPEND__LIST__INTR = GVarName( "APPEND_LIST_INTR" );
+ G_CONV__STRING = GVarName( "CONV_STRING" );
+ G_Print = GVarName( "Print" );
+ G_ViewObj = GVarName( "ViewObj" );
+ G_DO__LOCK = GVarName( "DO_LOCK" );
+ G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
+ G_READ__LOCK = GVarName( "READ_LOCK" );
+ G_UNLOCK = GVarName( "UNLOCK" );
+ G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
+ G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
+ G_RUN__IMMEDIATE__METHODS__HITS = GVarName( "RUN_IMMEDIATE_METHODS_HITS" );
+ G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
+ G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
+ G_IMM__FLAGS = GVarName( "IMM_FLAGS" );
+ G_IMMEDIATES = GVarName( "IMMEDIATES" );
+ G_IMMEDIATE__METHODS = GVarName( "IMMEDIATE_METHODS" );
+ G_TRACE__IMMEDIATE__METHODS = GVarName( "TRACE_IMMEDIATE_METHODS" );
+ G_NewSpecialRegion = GVarName( "NewSpecialRegion" );
+ G_METHODS__OPERATION__REGION = GVarName( "METHODS_OPERATION_REGION" );
+ G_IS__CONSTRUCTOR = GVarName( "IS_CONSTRUCTOR" );
+ G_RankFilter = GVarName( "RankFilter" );
+ G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
+ G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
+ G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_OPERATIONS__REGION = GVarName( "OPERATIONS_REGION" );
+ G_EvalString = GVarName( "EvalString" );
+ G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
+ G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
+ G_OPERATIONS = GVarName( "OPERATIONS" );
+ G_NamesFilter = GVarName( "NamesFilter" );
+ G_Ordinal = GVarName( "Ordinal" );
+ G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );
+ G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
+ G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
+ G_FILTER__REGION = GVarName( "FILTER_REGION" );
+ G_CATS__AND__REPS = GVarName( "CATS_AND_REPS" );
+ G_FILTERS = GVarName( "FILTERS" );
+ G_NUMBERS__PROPERTY__GETTERS = GVarName( "NUMBERS_PROPERTY_GETTERS" );
+ G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
+ G_Tester = GVarName( "Tester" );
+ G_IsPrimeInt = GVarName( "IsPrimeInt" );
+ G_DeclareOperation = GVarName( "DeclareOperation" );
+ G_VALUE__GLOBAL = GVarName( "VALUE_GLOBAL" );
+ G_DeclareAttribute = GVarName( "DeclareAttribute" );
+ G_InstallMethod = GVarName( "InstallMethod" );
+ G_PositionSortedOddPositions = GVarName( "PositionSortedOddPositions" );
+ G_CallFuncList = GVarName( "CallFuncList" );
+ 
+ /* record names used in handlers */
+ R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
+ 
+ /* information for the functions */
+ NameFunc[1] = DefaultName;
+ NargFunc[1] = 0;
+ NameFunc[2] = DefaultName;
+ NargFunc[2] = 2;
+ NameFunc[3] = DefaultName;
+ NargFunc[3] = 6;
+ NameFunc[4] = DefaultName;
+ NargFunc[4] = -1;
+ NameFunc[5] = DefaultName;
+ NargFunc[5] = -1;
+ NameFunc[6] = DefaultName;
+ NargFunc[6] = 2;
+ NameFunc[7] = DefaultName;
+ NargFunc[7] = 6;
+ NameFunc[8] = DefaultName;
+ NargFunc[8] = 1;
+ NameFunc[9] = DefaultName;
+ NargFunc[9] = 6;
+ NameFunc[10] = DefaultName;
+ NargFunc[10] = 2;
+ NameFunc[11] = DefaultName;
+ NargFunc[11] = 4;
+ NameFunc[12] = DefaultName;
+ NargFunc[12] = 1;
+ NameFunc[13] = DefaultName;
+ NargFunc[13] = 1;
+ NameFunc[14] = DefaultName;
+ NargFunc[14] = 2;
+ NameFunc[15] = DefaultName;
+ NargFunc[15] = 2;
+ NameFunc[16] = DefaultName;
+ NargFunc[16] = 3;
+ NameFunc[17] = DefaultName;
+ NargFunc[17] = -1;
+ NameFunc[18] = DefaultName;
+ NargFunc[18] = -1;
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+
 /* 'InitKernel' sets up data structures, fopies, copies, handlers */
 static Int InitKernel ( StructInitInfo * module )
 {
@@ -4708,142 +4844,6 @@ static Int InitLibrary ( StructInitInfo * module )
  return 0;
  
 }
-
-/* 'PostRestore' restore gvars, rnams, functions */
-static Int PostRestore ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- G_REREADING = GVarName( "REREADING" );
- G_SHALLOW__COPY__OBJ = GVarName( "SHALLOW_COPY_OBJ" );
- G_PRINT__OBJ = GVarName( "PRINT_OBJ" );
- G_GAPInfo = GVarName( "GAPInfo" );
- G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
- G_NAME__FUNC = GVarName( "NAME_FUNC" );
- G_NARG__FUNC = GVarName( "NARG_FUNC" );
- G_IS__OPERATION = GVarName( "IS_OPERATION" );
- G_AINV = GVarName( "AINV" );
- G_IS__INT = GVarName( "IS_INT" );
- G_IS__LIST = GVarName( "IS_LIST" );
- G_ADD__LIST = GVarName( "ADD_LIST" );
- G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
- G_Error = GVarName( "Error" );
- G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
- G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_MakeImmutable = GVarName( "MakeImmutable" );
- G_IS__OBJECT = GVarName( "IS_OBJECT" );
- G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
- G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
- G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
- G_SIZE__FLAGS = GVarName( "SIZE_FLAGS" );
- G_LEN__FLAGS = GVarName( "LEN_FLAGS" );
- G_ELM__FLAGS = GVarName( "ELM_FLAGS" );
- G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
- G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
- G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
- G_SET__METHODS__OPERATION = GVarName( "SET_METHODS_OPERATION" );
- G_DO__NOTHING__SETTER = GVarName( "DO_NOTHING_SETTER" );
- G_QUO__INT = GVarName( "QUO_INT" );
- G_RETURN__TRUE = GVarName( "RETURN_TRUE" );
- G_RETURN__FALSE = GVarName( "RETURN_FALSE" );
- G_LEN__LIST = GVarName( "LEN_LIST" );
- G_APPEND__LIST__INTR = GVarName( "APPEND_LIST_INTR" );
- G_CONV__STRING = GVarName( "CONV_STRING" );
- G_Print = GVarName( "Print" );
- G_ViewObj = GVarName( "ViewObj" );
- G_DO__LOCK = GVarName( "DO_LOCK" );
- G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
- G_READ__LOCK = GVarName( "READ_LOCK" );
- G_UNLOCK = GVarName( "UNLOCK" );
- G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
- G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
- G_RUN__IMMEDIATE__METHODS__HITS = GVarName( "RUN_IMMEDIATE_METHODS_HITS" );
- G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
- G_IMM__FLAGS = GVarName( "IMM_FLAGS" );
- G_IMMEDIATES = GVarName( "IMMEDIATES" );
- G_IMMEDIATE__METHODS = GVarName( "IMMEDIATE_METHODS" );
- G_TRACE__IMMEDIATE__METHODS = GVarName( "TRACE_IMMEDIATE_METHODS" );
- G_NewSpecialRegion = GVarName( "NewSpecialRegion" );
- G_METHODS__OPERATION__REGION = GVarName( "METHODS_OPERATION_REGION" );
- G_IS__CONSTRUCTOR = GVarName( "IS_CONSTRUCTOR" );
- G_RankFilter = GVarName( "RankFilter" );
- G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
- G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
- G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
- G_OPERATIONS__REGION = GVarName( "OPERATIONS_REGION" );
- G_EvalString = GVarName( "EvalString" );
- G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
- G_INFO__DEBUG = GVarName( "INFO_DEBUG" );
- G_OPERATIONS = GVarName( "OPERATIONS" );
- G_NamesFilter = GVarName( "NamesFilter" );
- G_Ordinal = GVarName( "Ordinal" );
- G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );
- G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
- G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
- G_FILTER__REGION = GVarName( "FILTER_REGION" );
- G_CATS__AND__REPS = GVarName( "CATS_AND_REPS" );
- G_FILTERS = GVarName( "FILTERS" );
- G_NUMBERS__PROPERTY__GETTERS = GVarName( "NUMBERS_PROPERTY_GETTERS" );
- G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
- G_Tester = GVarName( "Tester" );
- G_IsPrimeInt = GVarName( "IsPrimeInt" );
- G_DeclareOperation = GVarName( "DeclareOperation" );
- G_VALUE__GLOBAL = GVarName( "VALUE_GLOBAL" );
- G_DeclareAttribute = GVarName( "DeclareAttribute" );
- G_InstallMethod = GVarName( "InstallMethod" );
- G_PositionSortedOddPositions = GVarName( "PositionSortedOddPositions" );
- G_CallFuncList = GVarName( "CallFuncList" );
- 
- /* record names used in handlers */
- R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
- 
- /* information for the functions */
- NameFunc[1] = DefaultName;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NargFunc[2] = 2;
- NameFunc[3] = DefaultName;
- NargFunc[3] = 6;
- NameFunc[4] = DefaultName;
- NargFunc[4] = -1;
- NameFunc[5] = DefaultName;
- NargFunc[5] = -1;
- NameFunc[6] = DefaultName;
- NargFunc[6] = 2;
- NameFunc[7] = DefaultName;
- NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
- NargFunc[8] = 1;
- NameFunc[9] = DefaultName;
- NargFunc[9] = 6;
- NameFunc[10] = DefaultName;
- NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
- NargFunc[11] = 4;
- NameFunc[12] = DefaultName;
- NargFunc[12] = 1;
- NameFunc[13] = DefaultName;
- NargFunc[13] = 1;
- NameFunc[14] = DefaultName;
- NargFunc[14] = 2;
- NameFunc[15] = DefaultName;
- NargFunc[15] = 2;
- NameFunc[16] = DefaultName;
- NargFunc[16] = 3;
- NameFunc[17] = DefaultName;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NargFunc[18] = -1;
- 
- /* return success */
- return 0;
- 
-}
-
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {

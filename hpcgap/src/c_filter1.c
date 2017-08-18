@@ -668,6 +668,55 @@ static Obj  HdlrFunc1 (
  return 0;
 }
 
+/* 'PostRestore' restore gvars, rnams, functions */
+static Int PostRestore ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
+ G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
+ G_AND__FLAGS = GVarName( "AND_FLAGS" );
+ G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
+ G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
+ G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
+ G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
+ G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
+ G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
+ G_UNLOCK = GVarName( "UNLOCK" );
+ G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
+ G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" );
+ G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" );
+ G_IMPLICATIONS = GVarName( "IMPLICATIONS" );
+ G_ShareSpecialObj = GVarName( "ShareSpecialObj" );
+ G_WITH__IMPS__FLAGS__CACHE = GVarName( "WITH_IMPS_FLAGS_CACHE" );
+ G_LockAndMigrateObj = GVarName( "LockAndMigrateObj" );
+ G_WITH__IMPS__FLAGS__COUNT = GVarName( "WITH_IMPS_FLAGS_COUNT" );
+ G_WITH__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_IMPS_FLAGS_CACHE_HIT" );
+ G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
+ G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
+ G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
+ G_MigrateObj = GVarName( "MigrateObj" );
+ G_FILTER__REGION = GVarName( "FILTER_REGION" );
+ G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
+ 
+ /* record names used in handlers */
+ 
+ /* information for the functions */
+ NameFunc[1] = DefaultName;
+ NargFunc[1] = 0;
+ NameFunc[2] = DefaultName;
+ NargFunc[2] = 0;
+ NameFunc[3] = DefaultName;
+ NargFunc[3] = 1;
+ NameFunc[4] = DefaultName;
+ NargFunc[4] = 1;
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+
 /* 'InitKernel' sets up data structures, fopies, copies, handlers */
 static Int InitKernel ( StructInitInfo * module )
 {
@@ -775,55 +824,6 @@ static Int InitLibrary ( StructInitInfo * module )
  return 0;
  
 }
-
-/* 'PostRestore' restore gvars, rnams, functions */
-static Int PostRestore ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_AND__FLAGS = GVarName( "AND_FLAGS" );
- G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
- G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
- G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
- G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
- G_UNLOCK = GVarName( "UNLOCK" );
- G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
- G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" );
- G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" );
- G_IMPLICATIONS = GVarName( "IMPLICATIONS" );
- G_ShareSpecialObj = GVarName( "ShareSpecialObj" );
- G_WITH__IMPS__FLAGS__CACHE = GVarName( "WITH_IMPS_FLAGS_CACHE" );
- G_LockAndMigrateObj = GVarName( "LockAndMigrateObj" );
- G_WITH__IMPS__FLAGS__COUNT = GVarName( "WITH_IMPS_FLAGS_COUNT" );
- G_WITH__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_IMPS_FLAGS_CACHE_HIT" );
- G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
- G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
- G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_MigrateObj = GVarName( "MigrateObj" );
- G_FILTER__REGION = GVarName( "FILTER_REGION" );
- G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- 
- /* record names used in handlers */
- 
- /* information for the functions */
- NameFunc[1] = DefaultName;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NargFunc[2] = 0;
- NameFunc[3] = DefaultName;
- NargFunc[3] = 1;
- NameFunc[4] = DefaultName;
- NargFunc[4] = 1;
- 
- /* return success */
- return 0;
- 
-}
-
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {
