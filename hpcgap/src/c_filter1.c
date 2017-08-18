@@ -54,7 +54,6 @@ static Obj  GC_RANK__FILTERS;
 
 /* information for the functions */
 static Obj  NameFunc[5];
-static Obj  NamsFunc[5];
 static Int  NargFunc[5];
 static Obj  DefaultName;
 static Obj FileName;
@@ -566,7 +565,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "CLEAR_IMP_CACHE" );
- t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
+ t_3 = NewFunction( NameFunc[2], NargFunc[2], 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
@@ -617,7 +616,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "WITH_IMPS_FLAGS" );
- t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
+ t_3 = NewFunction( NameFunc[3], NargFunc[3], 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(46));
@@ -648,7 +647,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RankFilter" );
- t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
+ t_3 = NewFunction( NameFunc[4], NargFunc[4], 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, INTOBJ_INT(98));
@@ -755,20 +754,16 @@ static Int InitLibrary ( StructInitInfo * module )
  DefaultName = MakeString( "local function" );
  FileName = MakeString( "GAPROOT/lib/filter1.g" );
  NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
  NargFunc[1] = 0;
  NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
  NargFunc[2] = 0;
  NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
  NargFunc[3] = 1;
  NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
  NargFunc[4] = 1;
  
  /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
+ func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, sizeof(BodyHeader));
@@ -816,16 +811,12 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* information for the functions */
  NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
  NargFunc[1] = 0;
  NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
  NargFunc[2] = 0;
  NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
  NargFunc[3] = 1;
  NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
  NargFunc[4] = 1;
  
  /* return success */
