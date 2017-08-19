@@ -615,6 +615,56 @@ algorithms for such groups.
 
 </Section>
 
+
+<Section Label="gap488">
+<Heading>&GAP; 4.8.8 (August 2017)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.8.8">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.8.8</Heading>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+<!-- #1431 -->
+Fixed a bug in <Ref Func="RepresentativeAction" BookName="ref"/> producing
+incorrect answers for both symmetric and alternating groups, with both
+<Ref Func="OnTuples" BookName="ref"/> and <Ref Func="OnSets" BookName="ref"/>,
+by producing elements outside the group. [Reported by Mun See Chang]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+<!-- #1515 -->
+Fixed a bug in <Ref Func="RepresentativeAction" BookName="ref"/>
+for <M>S_n</M> and <M>A_n</M> acting on non-standard domains.
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+<!-- #1579 -->
+Fixed a problem with checking the path to a file
+when using the default browser as a help viewer on Windows.
+[Reported by Jack Saunders]
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.8.7"> 
+<Heading>New and updated packages since &GAP; 4.8.7</Heading>
+
+This release contains updated versions of 29 packages from &GAP; 4.8.7
+distribution. Additionally, the <Package>Gpd</Package> package
+(author: Chris Wensley) has been renamed to <Package>Groupoids</Package>.
+
+</Subsection>
+
+</Section>
+
 </Chapter>
 
 
