@@ -2251,7 +2251,7 @@ Obj IsPermHandler (
 **
 **  Converts the list <list> into a  permutation,  which  is  then  returned.
 **
-**  'FunPermList' simply copies the list pointwise into  a  permutation  bag.
+**  'FuncPermList' simply copies the list pointwise into  a  permutation  bag.
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
 Obj             FuncPermList (
@@ -3656,7 +3656,7 @@ Obj             FuncTRIM_PERM (
 
 /****************************************************************************
 **
-*F  FunSPLIT_PARTITION( <Ppoints>, <Qnum>,<j>,<g>,<l>)
+*F  FuncSPLIT_PARTITION( <Ppoints>, <Qnum>,<j>,<g>,<l>)
 **  <l> is a list [<a>,<b>,<max>] -- needed because of large parameter number
 **
 **  This function is used in the partition backtrack to split a partition.
@@ -3667,7 +3667,7 @@ Obj             FuncTRIM_PERM (
 **  many are moved).
 **  Ppoints and Qnum must be plain lists of small integers.
 */
-Obj FunSPLIT_PARTITION(
+Obj FuncSPLIT_PARTITION(
     Obj self,
     Obj Ppoints,
     Obj Qnum,
@@ -3823,12 +3823,12 @@ Obj FuncDistancePerms( Obj self, Obj p1, Obj p2)
 
 /****************************************************************************
 **
-*F  Funsmallestimgtupleperm( <tup>, <perm> )
+*F  FuncSmallestImgTuplePerm( <tup>, <perm> )
 **
 **  `SmallestImgTuplePerm' returns the smallest image of the  tuple  <tup>
 **  under  the permutation <perm>.
 */
-Obj             FunSmallestImgTuplePerm (
+Obj             FuncSmallestImgTuplePerm (
     Obj			self,
     Obj                 tup,
     Obj                 perm )
@@ -4784,12 +4784,8 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "PermList", 1, "list",
-      FuncPermList, "src/permutat.c:PermList" },
-
-    { "LARGEST_MOVED_POINT_PERM", 1, "perm",
-      FuncLARGEST_MOVED_POINT_PERM, "src/permutat.c:LARGEST_MOVED_POINT_PERM" },
-
+    GVAR_FUNC(PermList, 1, "list"),
+    GVAR_FUNC(LARGEST_MOVED_POINT_PERM, 1, "perm"),
     { "CYCLE_LENGTH_PERM_INT", 2, "perm, point",
       FuncCycleLengthPermInt, "src/permutat.c:CycleLengthPermInt" },
 
@@ -4808,37 +4804,22 @@ static StructGVarFunc GVarFuncs [] = {
     { "SMALLEST_GENERATOR_PERM", 1, "perm",
       FuncSmallestGeneratorPerm, "src/permutat.c:SmallestGeneratorPerm" },
 
-    { "RESTRICTED_PERM", 3, "perm,domain,test",
-      FuncRESTRICTED_PERM, "src/permutat.c:RESTRICTED_PERM" },
-
-    { "SHIFTED_PERM", 2, "perm,shift",
-      FuncSHIFTED_PERM, "src/permutat.c:SHIFTED_PERM" },
-
-    { "TRIM_PERM", 2, "perm, degree",
-      FuncTRIM_PERM, "src/permutat.c:TRIM_PERM" },
-
-    { "SPLIT_PARTITION", 5, "Ppoints, Qn,j,g,a,b,max",
-      FunSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
+    GVAR_FUNC(RESTRICTED_PERM, 3, "perm,domain,test"),
+    GVAR_FUNC(SHIFTED_PERM, 2, "perm,shift"),
+    GVAR_FUNC(TRIM_PERM, 2, "perm, degree"),
+    { "SPLIT_PARTITION", 5, "Ppoints,Qn,j,g,a_b_max",
+      FuncSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
 
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
-      FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
+      FuncSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
 
     { "DISTANCE_PERMS", 2, "perm1, perm2",
       FuncDistancePerms, "src/permutat.c:DISTANCE_PERMS" },
     
-    { "AGEST", 6, "orbit, newlabels, labels, translabels, transversal,genblabels",
-      FuncAGEST, "src/permutat.c:AGEST" },
-    
-    { "AGESTC", -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels",
-      FuncAGESTC, "src/permutat.c:AGESTC" },
-    
-    { "MappingPermListList", 2, "src, dst", 
-      FuncMappingPermListList, "src/permutat.c:MappingPermListList" },
-    
-    { "SCR_SIFT_HELPER", 3, "stabrec, perm, n",
-      FuncSCR_SIFT_HELPER, "src/permutat.c:SRC_SIFT_HELPER" },
-    
-
+    GVAR_FUNC(AGEST, 6, "orbit, newlabels, labels, translabels, transversal,genblabels"),
+    GVAR_FUNC(AGESTC, -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels"),
+    GVAR_FUNC(MappingPermListList, 2, "src, dst"),
+    GVAR_FUNC(SCR_SIFT_HELPER, 3, "stabrec, perm, n"),
     { 0, 0, 0, 0, 0 }
 
 };

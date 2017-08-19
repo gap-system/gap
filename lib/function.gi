@@ -59,3 +59,26 @@ function(func)
     Append(result, " ) ... end");
     return result;
 end);
+
+
+InstallMethod(DisplayString, "for a function, using string stream", [IsFunction], 
+function(fun)
+    local  s, stream;
+    s := "";
+    stream := OutputTextString(s, true);
+    PrintTo(stream, fun);
+    CloseStream(stream);
+    Add(s, '\n');    
+    return MakeImmutable(s);
+end);
+
+InstallMethod(String, "for a function, with whitespace reduced", [IsFunction], 
+function(fun)
+    local  s, str;
+    s := ShallowCopy(DisplayString(fun));
+    Remove(s);    
+    NormalizeWhitespace(s);
+    return MakeImmutable(s);
+end);
+
+    

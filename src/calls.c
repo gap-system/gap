@@ -996,7 +996,6 @@ void SortHandlers( UInt byWhat )
     h = h / 3;
   }
   HandlerSortingStatus = byWhat;
-  return;
 }
 
 const Char * CookieOfHandler (
@@ -1231,6 +1230,7 @@ Obj ArgStringToList(const Char *nams_c) {
         C_NEW_STRING( tmp, l - k, nams_c + k );
         RetypeBag( tmp, T_STRING+IMMUTABLE );
         SET_ELM_PLIST( nams_o, i, tmp );
+        CHANGED_BAG( nams_o );
         k = l;
     }
 
@@ -2042,9 +2042,7 @@ void LoadFunction ( Obj func )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_FUNCTION", "obj", &IsFunctionFilt, 
-      FuncIS_FUNCTION, "src/calls.c:IS_FUNCTION" },
-
+    GVAR_FILTER(IS_FUNCTION, "obj", &IsFunctionFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2056,36 +2054,17 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "CALL_FUNC", -1, "args", &CallFunctionOper,
-      FuncCALL_FUNC, "src/calls.c:CALL_FUNC" },
-
-    { "CALL_FUNC_LIST", 2, "func, list", &CallFuncListOper,
-      FuncCALL_FUNC_LIST, "src/calls.c:CALL_FUNC_LIST" },
-
-    { "CALL_FUNC_LIST_WRAP", 2, "func, list", &CallFuncListWrapOper,
-      FuncCALL_FUNC_LIST_WRAP, "src/calls.c:CALL_FUNC_LIST_WRAP" },
-
-    { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
-      FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
-
-    { "SET_NAME_FUNC", 2, "func, name", &SET_NAME_FUNC_Oper,
-      FuncSET_NAME_FUNC, "src/calls.c:SET_NAME_FUNC" },
-
-    { "NARG_FUNC", 1, "func", &NARG_FUNC_Oper,
-      FuncNARG_FUNC, "src/calls.c:NARG_FUNC" },
-
-    { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
-      FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
-
+    GVAR_OPER(CALL_FUNC, -1, "args", &CallFunctionOper),
+    GVAR_OPER(CALL_FUNC_LIST, 2, "func, list", &CallFuncListOper),
+    GVAR_OPER(CALL_FUNC_LIST_WRAP, 2, "func, list", &CallFuncListWrapOper),
+    GVAR_OPER(NAME_FUNC, 1, "func", &NAME_FUNC_Oper),
+    GVAR_OPER(SET_NAME_FUNC, 2, "func, name", &SET_NAME_FUNC_Oper),
+    GVAR_OPER(NARG_FUNC, 1, "func", &NARG_FUNC_Oper),
+    GVAR_OPER(NAMS_FUNC, 1, "func", &NAMS_FUNC_Oper),
 #ifdef HPCGAP
-    { "LOCKS_FUNC", 1, "func", &LOCKS_FUNC_Oper,
-      FuncLOCKS_FUNC, "src/calls.c:LOCKS_FUNC" },
+    GVAR_OPER(LOCKS_FUNC, 1, "func", &LOCKS_FUNC_Oper),
 #endif
-
-    { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
-      FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
-
-
+    GVAR_OPER(PROF_FUNC, 1, "func", &PROF_FUNC_Oper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
@@ -2097,36 +2076,16 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CLEAR_PROFILE_FUNC", 1, "func",
-      FuncCLEAR_PROFILE_FUNC, "src/calls.c:CLEAR_PROFILE_FUNC" },
-
-    { "IS_PROFILED_FUNC", 1, "func",
-      FuncIS_PROFILED_FUNC, "src/calls.c:IS_PROFILED_FUNC" },
-
-    { "PROFILE_FUNC", 1, "func",
-      FuncPROFILE_FUNC, "src/calls.c:PROFILE_FUNC" },
-
-    { "UNPROFILE_FUNC", 1, "func",
-      FuncUNPROFILE_FUNC, "src/calls.c:UNPROFILE_FUNC" },
-
-    { "IsKernelFunction", 1, "func",
-      FuncIsKernelFunction, "src/calls.c:IsKernelFunction" },
-
-    { "HandlerCookieOfFunction", 1, "func",
-      FuncHandlerCookieOfFunction, "src/calls.c:HandlerCookieOfFunction" },
-
-    { "FILENAME_FUNC", 1, "func", 
-      FuncFILENAME_FUNC, "src/calls.c:FILENAME_FUNC" },
-
-    { "LOCATION_FUNC", 1, "func", 
-      FuncLOCATION_FUNC, "src/calls.c:LOCATION_FUNC" },
-
-    { "STARTLINE_FUNC", 1, "func", 
-      FuncSTARTLINE_FUNC, "src/calls.c:STARTLINE_FUNC" },
-
-    { "ENDLINE_FUNC", 1, "func", 
-      FuncENDLINE_FUNC, "src/calls.c:ENDLINE_FUNC" },
-
+    GVAR_FUNC(CLEAR_PROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(IS_PROFILED_FUNC, 1, "func"),
+    GVAR_FUNC(PROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(UNPROFILE_FUNC, 1, "func"),
+    GVAR_FUNC(IsKernelFunction, 1, "func"),
+    GVAR_FUNC(HandlerCookieOfFunction, 1, "func"),
+    GVAR_FUNC(FILENAME_FUNC, 1, "func"),
+    GVAR_FUNC(LOCATION_FUNC, 1, "func"),
+    GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
+    GVAR_FUNC(ENDLINE_FUNC, 1, "func"),
     { 0, 0, 0, 0, 0 }
 
 };

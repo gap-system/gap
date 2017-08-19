@@ -783,9 +783,7 @@ void LoadWPObj( Obj wpobj )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IsWPObj", "obj", &IsWPObjFilt,
-      FuncIsWPObj, "src/weakptr.c:IsWPObj" },
-
+    GVAR_FILTER(IsWPObj, "obj", &IsWPObjFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -797,24 +795,12 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "WeakPointerObj", 1, "list",
-      FuncWeakPointerObj, "src/weakptr.c:WeakPointerObj" },
-
-    { "LengthWPObj", 1, "wp",
-      FuncLengthWPObj, "src/weakptr.c:LengthWPObj" },
-
-    { "SetElmWPObj", 3, "wp, pos, val",
-      FuncSetElmWPObj, "src/weakptr.c:SetElmWPObj" },
-
-    { "IsBoundElmWPObj", 2, "wp, pos",
-      FuncIsBoundElmWPObj, "src/weakptr.c:IsBoundElmWPObj" },
-
-    { "UnbindElmWPObj", 2, "wp, pos",
-      FuncUnbindElmWPObj, "src/weakptr.c:UnbindElmWPObj" },
-
-    { "ElmWPObj", 2, "wp, pos",
-      FuncElmWPObj, "src/weakptr.c:ElmWPObj" },
-
+    GVAR_FUNC(WeakPointerObj, 1, "list"),
+    GVAR_FUNC(LengthWPObj, 1, "wp"),
+    GVAR_FUNC(SetElmWPObj, 3, "wp, pos, val"),
+    GVAR_FUNC(IsBoundElmWPObj, 2, "wp, pos"),
+    GVAR_FUNC(UnbindElmWPObj, 2, "wp, pos"),
+    GVAR_FUNC(ElmWPObj, 2, "wp, pos"),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -3266,141 +3266,57 @@ Obj FuncMultBytLettrep (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "8Bits_Equal", 2, "8_bits_word, 8_bits_word",
-      Func8Bits_Equal, "src/objfgelm.c:8Bits_Equal" },
-
-    { "8Bits_ExponentSums1", 1, "8_bits_word",
-      Func8Bits_ExponentSums1, "src/objfgelm.c:8Bits_ExponentSums1" },
-
-    { "8Bits_ExponentSums3", 3, "8_bits_word, start, end",
-      Func8Bits_ExponentSums3, "src/objfgelm.c:8Bits_ExponentSums3" },
-
-    { "8Bits_ExponentSyllable", 2, "8_bits_word, position",
-      Func8Bits_ExponentSyllable, "src/objfgelm.c:8Bits_ExponentSyllable" },
-
-    { "8Bits_ExtRepOfObj", 1, "8_bits_word",
-      Func8Bits_ExtRepOfObj, "src/objfgelm.c:8Bits_ExtRepOfObj" },
-
-    { "8Bits_GeneratorSyllable", 2, "8_bits_word, position",
-      Func8Bits_GeneratorSyllable, "src/objfgelm.c:8Bits_GeneratorSyllable" },
-
-    { "8Bits_Less", 2, "8_bits_word, 8_bits_word",
-      Func8Bits_Less, "src/objfgelm.c:8Bits_Less" },
-
-    { "8Bits_AssocWord", 2, "type, data",
-      Func8Bits_AssocWord, "src/objfgelm.c:8Bits_AssocWord" },
-
+    GVAR_FUNC(8Bits_Equal, 2, "8_bits_word, 8_bits_word"),
+    GVAR_FUNC(8Bits_ExponentSums1, 1, "8_bits_word"),
+    GVAR_FUNC(8Bits_ExponentSums3, 3, "8_bits_word, start, end"),
+    GVAR_FUNC(8Bits_ExponentSyllable, 2, "8_bits_word, position"),
+    GVAR_FUNC(8Bits_ExtRepOfObj, 1, "8_bits_word"),
+    GVAR_FUNC(8Bits_GeneratorSyllable, 2, "8_bits_word, position"),
+    GVAR_FUNC(8Bits_Less, 2, "8_bits_word, 8_bits_word"),
+    GVAR_FUNC(8Bits_AssocWord, 2, "type, data"),
     { "8Bits_NumberSyllables", 1, "8_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:8Bits_NumberSyllables" },
 
-    { "8Bits_ObjByVector", 2, "type, data",
-      Func8Bits_ObjByVector, "src/objfgelm.c:8Bits_ObjByVector" },
-
-    { "8Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-      Func8Bits_HeadByNumber, "src/objfgelm.c:8Bits_HeadByNumber" },
-
-    { "8Bits_Power", 2, "8_bits_word, small_integer",
-      Func8Bits_Power, "src/objfgelm.c:8Bits_Power" },
-
-    { "8Bits_Product", 2, "8_bits_word, 8_bits_word",
-      Func8Bits_Product, "src/objfgelm.c:8Bits_Product" },
-
-    { "8Bits_Quotient", 2, "8_bits_word, 8_bits_word",
-      Func8Bits_Quotient, "src/objfgelm.c:8Bits_Quotient" },
-
-    { "8Bits_LengthWord", 1, "8_bits_word",
-      Func8Bits_LengthWord, "src/objfgelm.c:8Bits_LengthWord" },
-
-    { "16Bits_Equal", 2, "16_bits_word, 16_bits_word",
-      Func16Bits_Equal, "src/objfgelm.c:16Bits_Equal" },
-
-    { "16Bits_ExponentSums1", 1, "16_bits_word",
-      Func16Bits_ExponentSums1, "src/objfgelm.c:16Bits_ExponentSums1" },
-
-    { "16Bits_ExponentSums3", 3, "16_bits_word, start, end",
-      Func16Bits_ExponentSums3, "src/objfgelm.c:16Bits_ExponentSums3" },
-
-    { "16Bits_ExponentSyllable", 2, "16_bits_word, position",
-      Func16Bits_ExponentSyllable, "src/objfgelm.c:16Bits_ExponentSyllable" },
-
-    { "16Bits_ExtRepOfObj", 1, "16_bits_word",
-      Func16Bits_ExtRepOfObj, "src/objfgelm.c:16Bits_ExtRepOfObj" },
-
-    { "16Bits_GeneratorSyllable", 2, "16_bits_word, pos",
-      Func16Bits_GeneratorSyllable, "src/objfgelm.c:16Bits_GeneratorSyllable" },
-
-    { "16Bits_Less", 2, "16_bits_word, 16_bits_word",
-      Func16Bits_Less, "src/objfgelm.c:16Bits_Less" },
-
-    { "16Bits_AssocWord", 2, "type, data",
-      Func16Bits_AssocWord, "src/objfgelm.c:16Bits_AssocWord" },
-
+    GVAR_FUNC(8Bits_ObjByVector, 2, "type, data"),
+    GVAR_FUNC(8Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
+    GVAR_FUNC(8Bits_Power, 2, "8_bits_word, small_integer"),
+    GVAR_FUNC(8Bits_Product, 2, "8_bits_word, 8_bits_word"),
+    GVAR_FUNC(8Bits_Quotient, 2, "8_bits_word, 8_bits_word"),
+    GVAR_FUNC(8Bits_LengthWord, 1, "8_bits_word"),
+    GVAR_FUNC(16Bits_Equal, 2, "16_bits_word, 16_bits_word"),
+    GVAR_FUNC(16Bits_ExponentSums1, 1, "16_bits_word"),
+    GVAR_FUNC(16Bits_ExponentSums3, 3, "16_bits_word, start, end"),
+    GVAR_FUNC(16Bits_ExponentSyllable, 2, "16_bits_word, position"),
+    GVAR_FUNC(16Bits_ExtRepOfObj, 1, "16_bits_word"),
+    GVAR_FUNC(16Bits_GeneratorSyllable, 2, "16_bits_word, pos"),
+    GVAR_FUNC(16Bits_Less, 2, "16_bits_word, 16_bits_word"),
+    GVAR_FUNC(16Bits_AssocWord, 2, "type, data"),
     { "16Bits_NumberSyllables", 1, "16_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:16Bits_NumberSyllables" },
 
-    { "16Bits_ObjByVector", 2, "type, data",
-      Func16Bits_ObjByVector, "src/objfgelm.c:16Bits_ObjByVector" },
-
-    { "16Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-      Func16Bits_HeadByNumber, "src/objfgelm.c:16Bits_HeadByNumber" },
-
-    { "16Bits_Power", 2, "16_bits_word, small_integer",
-      Func16Bits_Power, "src/objfgelm.c:16Bits_Power" },
-
-    { "16Bits_Product", 2, "16_bits_word, 16_bits_word",
-      Func16Bits_Product, "src/objfgelm.c:16Bits_Product" },
-
-    { "16Bits_Quotient", 2, "16_bits_word, 16_bits_word",
-      Func16Bits_Quotient, "src/objfgelm.c:16Bits_Quotient" },
-
-    { "16Bits_LengthWord", 1, "16_bits_word",
-      Func16Bits_LengthWord, "src/objfgelm.c:16Bits_LengthWord" },
-
-    { "32Bits_Equal", 2, "32_bits_word, 32_bits_word",
-      Func32Bits_Equal, "src/objfgelm.c:32Bits_Equal" },
-
-    { "32Bits_ExponentSums1", 1, "32_bits_word",
-      Func32Bits_ExponentSums1, "src/objfgelm.c:32Bits_ExponentSums1" },
-
-    { "32Bits_ExponentSums3", 3, "32_bits_word, start, end",
-      Func32Bits_ExponentSums3, "src/objfgelm.c:32Bits_ExponentSums3" },
-
-    { "32Bits_ExponentSyllable", 2, "32_bits_word, position",
-      Func32Bits_ExponentSyllable, "src/objfgelm.c:32Bits_ExponentSyllable" },
-
-    { "32Bits_ExtRepOfObj", 1, "32_bits_word",
-      Func32Bits_ExtRepOfObj, "src/objfgelm.c:32Bits_ExtRepOfObj" },
-
-    { "32Bits_GeneratorSyllable", 2, "32_bits_word, pos",
-      Func32Bits_GeneratorSyllable, "src/objfgelm.c:32Bits_GeneratorSyllable" },
-
-    { "32Bits_Less", 2, "32_bits_word, 32_bits_word",
-      Func32Bits_Less, "src/objfgelm.c:32Bits_Less" },
-
-    { "32Bits_AssocWord", 2, "type, data",
-      Func32Bits_AssocWord, "src/objfgelm.c:32Bits_AssocWord" },
-
+    GVAR_FUNC(16Bits_ObjByVector, 2, "type, data"),
+    GVAR_FUNC(16Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
+    GVAR_FUNC(16Bits_Power, 2, "16_bits_word, small_integer"),
+    GVAR_FUNC(16Bits_Product, 2, "16_bits_word, 16_bits_word"),
+    GVAR_FUNC(16Bits_Quotient, 2, "16_bits_word, 16_bits_word"),
+    GVAR_FUNC(16Bits_LengthWord, 1, "16_bits_word"),
+    GVAR_FUNC(32Bits_Equal, 2, "32_bits_word, 32_bits_word"),
+    GVAR_FUNC(32Bits_ExponentSums1, 1, "32_bits_word"),
+    GVAR_FUNC(32Bits_ExponentSums3, 3, "32_bits_word, start, end"),
+    GVAR_FUNC(32Bits_ExponentSyllable, 2, "32_bits_word, position"),
+    GVAR_FUNC(32Bits_ExtRepOfObj, 1, "32_bits_word"),
+    GVAR_FUNC(32Bits_GeneratorSyllable, 2, "32_bits_word, pos"),
+    GVAR_FUNC(32Bits_Less, 2, "32_bits_word, 32_bits_word"),
+    GVAR_FUNC(32Bits_AssocWord, 2, "type, data"),
     { "32Bits_NumberSyllables", 1, "32_bits_word",
       FuncNBits_NumberSyllables, "src/objfgelm.c:32Bits_NumberSyllables" },
 
-    { "32Bits_ObjByVector", 2, "type, data",
-      Func32Bits_ObjByVector, "src/objfgelm.c:32Bits_ObjByVector" },
-
-    { "32Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-      Func32Bits_HeadByNumber, "src/objfgelm.c:32Bits_HeadByNumber" },
-
-    { "32Bits_Power", 2, "32_bits_word, small_integer",
-      Func32Bits_Power, "src/objfgelm.c:32Bits_Power" },
-
-    { "32Bits_Product", 2, "32_bits_word, 32_bits_word",
-      Func32Bits_Product, "src/objfgelm.c:32Bits_Product" },
-
-    { "32Bits_Quotient", 2, "32_bits_word, 32_bits_word",
-      Func32Bits_Quotient, "src/objfgelm.c:32Bits_Quotient" },
-
-    { "32Bits_LengthWord", 1, "32_bits_word",
-      Func32Bits_LengthWord, "src/objfgelm.c:32Bits_LengthWord" },
-
+    GVAR_FUNC(32Bits_ObjByVector, 2, "type, data"),
+    GVAR_FUNC(32Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
+    GVAR_FUNC(32Bits_Power, 2, "32_bits_word, small_integer"),
+    GVAR_FUNC(32Bits_Product, 2, "32_bits_word, 32_bits_word"),
+    GVAR_FUNC(32Bits_Quotient, 2, "32_bits_word, 32_bits_word"),
+    GVAR_FUNC(32Bits_LengthWord, 1, "32_bits_word"),
     { "MULT_WOR_LETTREP", 2, "list,list",
       FuncMultWorLettrep, "src/objfgelm.c:MULT_WOR_LETTREP" },
 

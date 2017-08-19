@@ -1042,7 +1042,7 @@ Obj DeserializeError(UInt tnum)
     return Fail;
 }
 
-Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj)
+Obj FuncSERIALIZE_TO_NATIVE_STRING(Obj self, Obj obj)
 {
     Obj                         result;
     volatile SerializationState state;
@@ -1095,12 +1095,8 @@ Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string)
 
 static StructGVarFunc GVarFuncs[] = {
 
-    { "SERIALIZE_TO_NATIVE_STRING", 1, "obj", FuncSERIALIZE_NATIVE_STRING,
-      "src/objset.c:SERIALIZE_NATIVE_STRING" },
-
-    { "DESERIALIZE_NATIVE_STRING", 1, "string", FuncDESERIALIZE_NATIVE_STRING,
-      "src/objset.c:DESERIALIZE_NATIVE_STRING" },
-
+    GVAR_FUNC(SERIALIZE_TO_NATIVE_STRING, 1, "obj"),
+    GVAR_FUNC(DESERIALIZE_NATIVE_STRING, 1, "string"),
     { 0, 0, 0, 0, 0 }
 
 };

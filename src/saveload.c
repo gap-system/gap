@@ -471,10 +471,8 @@ static void LoadBagData ( void )
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( type, flags, size );
   
-  /* despatch */
+  /* dispatch */
   (*(LoadObjFuncs[ type ]))(bag);
-  
-  return;
 }
 
 #endif
@@ -535,7 +533,7 @@ static void CheckEndiannessMarker( void )
 
 /***************************************************************************
 **
-**  BagStats
+**  FuncBagStats
 */
 
 static FILE *file;
@@ -545,7 +543,7 @@ static void report( Bag bag)
   fprintf(file,"%li %li\n", (long) TNUM_BAG(bag), (long) SIZE_BAG(bag));
 }
 
-Obj BagStats(Obj self, Obj filename)
+Obj FuncBagStats(Obj self, Obj filename)
 {
   file = fopen((Char *)CHARS_STRING(filename),"w");
   CallbackForAllBags(report);
@@ -572,7 +570,6 @@ static void ScanBag( Bag bag)
       SIZE_BAG(bag) <= fb_maxsize && 
       TNUM_BAG(bag) == fb_tnum) 
     hit = bag;
-  return;
 }
 
 Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
@@ -609,19 +606,11 @@ static void AddSaveIndex( Bag bag)
   PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
 }
 
-/*  is this obsolete ???    
-static void CheckPlist( Bag bag)
-{
-  if (TNUM_BAG(bag) == 14 && sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])) > SIZE_BAG(bag))
-    Pr("Panic %d %d\n",sizeof(UInt)*((UInt)(PTR_BAG(bag)[0])), SIZE_BAG(bag));
-  return;
-}
-*/
-
 static void RemoveSaveIndex( Bag bag)
 {
   PTR_BAG(bag)[-1] = bag;
 }
+
 static void WriteSaveHeader( void )
 {
   UInt i;
@@ -1015,18 +1004,10 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "SaveWorkspace", 1, "fname", 
-      FuncSaveWorkspace, "src/saveload.c:SaveWorkspace" },
-
-    { "DumpWorkspace", 1, "fname", 
-      FuncDumpWorkspace, "src/saveload.c:DumpWorkspace" },
-
-    { "FindBag", 3, "minsize, maxsize, tnum", 
-      FuncFindBag, "src/saveload.c:FindBag" },
-
-    { "BagStats", 1, "filename", 
-      BagStats, "src/saveload.c:BagStats" },
-
+    GVAR_FUNC(SaveWorkspace, 1, "fname"),
+    GVAR_FUNC(DumpWorkspace, 1, "fname"),
+    GVAR_FUNC(FindBag, 3, "minsize, maxsize, tnum"),
+    GVAR_FUNC(BagStats, 1, "filename"),
     { 0, 0, 0, 0, 0 }
 
 };

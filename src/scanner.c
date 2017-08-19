@@ -1767,7 +1767,6 @@ void GetNumber ( UInt StartingStatus )
     SyntaxError("Badly Formed Number: need at least one digit in the exponent");
   STATE(Symbol) = S_FLOAT;
   STATE(Value)[i] = '\0';
-  return;
 }
 
 
@@ -2123,42 +2122,16 @@ void GetChar ( void )
  */
 void GetSymbol ( void )
 {
-  /* special case if reading of a long token is not finished */
-  if (STATE(Symbol) == S_PARTIALSTRING) {
-    GetStr();
-    return;
-  }
-  
-  if (STATE(Symbol) == S_PARTIALTRIPSTRING) {
-      GetTripStr();
-      return;
-  }
-  
-  if (STATE(Symbol) == S_PARTIALINT) {
-    if (STATE(Value)[0] == '\0')
-      GetNumber(0);
-    else
-      GetNumber(1);
-    return;
-  }
-  if (STATE(Symbol) == S_PARTIALFLOAT1) {
-    GetNumber(2);
-    return;
-  }
-
-  if (STATE(Symbol) == S_PARTIALFLOAT2) {
-    GetNumber(3);
-    return;
-  }
-  if (STATE(Symbol) == S_PARTIALFLOAT3) {
-    GetNumber(4);
-    return;
-  }
-
-  if (STATE(Symbol) == S_PARTIALFLOAT4) {
-    GetNumber(5);
-    return;
-  }
+    /* special case if reading of a long token is not finished */
+    switch (STATE(Symbol)) {
+    case S_PARTIALSTRING:     GetStr();     return;
+    case S_PARTIALTRIPSTRING: GetTripStr(); return;
+    case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
+    case S_PARTIALFLOAT1:     GetNumber(2); return;
+    case S_PARTIALFLOAT2:     GetNumber(3); return;
+    case S_PARTIALFLOAT3:     GetNumber(4); return;
+    case S_PARTIALFLOAT4:     GetNumber(5); return;
+    }
 
 
   /* if no character is available then get one                           */
@@ -3010,31 +2983,14 @@ Obj FuncGET_FILENAME_CACHE(Obj self)
  */
 static StructGVarFunc GVarFuncs [] = {
 
-  { "ToggleEcho", 0, "",
-    FuncToggleEcho, "src/scanner.c:ToggleEcho" },
-
-  { "CPROMPT", 0, "",
-    FuncCPROMPT, "src/scanner.c:CPROMPT" },
-
-  { "PRINT_CPROMPT", 1, "prompt",
-    FuncPRINT_CPROMPT, "src/scanner.c:PRINT_CPROMPT" },
-
-  { "INPUT_FILENAME", 0 , "",
-    FuncINPUT_FILENAME, "src/scanner.c:INPUT_FILENAME" },
-
-  { "INPUT_LINENUMBER", 0 , "",
-    FuncINPUT_LINENUMBER, "src/scanner.c:INPUT_LINENUMBER" },
-
-  { "ALL_KEYWORDS", 0 , "",
-    FuncALL_KEYWORDS, "src/scanner.c:ALL_KEYWORDS"},
-
-  { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
-    FuncSET_PRINT_FORMATTING_STDOUT,
-    "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
-
-  { "GET_FILENAME_CACHE", 0, "",
-     FuncGET_FILENAME_CACHE, "src/scanner.c:GET_FILENAME_CACHE" },
-
+  GVAR_FUNC(ToggleEcho, 0, ""),
+  GVAR_FUNC(CPROMPT, 0, ""),
+  GVAR_FUNC(PRINT_CPROMPT, 1, "prompt"),
+  GVAR_FUNC(INPUT_FILENAME, 0, ""),
+  GVAR_FUNC(INPUT_LINENUMBER, 0, ""),
+  GVAR_FUNC(ALL_KEYWORDS, 0, ""),
+  GVAR_FUNC(SET_PRINT_FORMATTING_STDOUT, 1, "format"),
+  GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
   { 0, 0, 0, 0, 0 }
 
 };

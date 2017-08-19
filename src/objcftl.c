@@ -319,7 +319,7 @@ Obj CollectPolycyc (
     return (Obj)0;
 }
 
-Obj FuncCollectPolycyc (
+Obj FuncCollectPolycyclic (
     Obj self,
     Obj pcp,
     Obj list,
@@ -341,9 +341,7 @@ Obj FuncCollectPolycyc (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CollectPolycyclic", 3, "pcp, list, word",
-      FuncCollectPolycyc, "src/objcftl.c:CollectPolycyclic" },
-
+    GVAR_FUNC(CollectPolycyclic, 3, "pcp, list, word"),
     { 0, 0, 0, 0, 0 }
 
 };

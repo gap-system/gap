@@ -334,7 +334,7 @@ Obj LengthInternal (
 */
 Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             IsbListOper;
+static Obj             IsbListOper;
 
 Obj             FuncISB_LIST (
     Obj                 self,
@@ -433,7 +433,7 @@ Obj Elm0ListError (
 **  and `Fail'  means that there realy is  the object `Fail' at this position
 **  or if it is unbound in which case 0 is returned.
 */
-Obj Elm0ListOper;
+static Obj Elm0ListOper;
 
 Obj Elm0ListObject (
     Obj                 list,
@@ -538,26 +538,17 @@ Obj ElmListError (
 **  that <pos> is a positive integer.  The methods have to signal an error if
 **  <pos> is larger than the length of <list> or if the entry is not bound.
 */
-Obj ElmListOper;
+static Obj ElmListOper;
 
-Obj ElmListObject (
-    Obj                 list,
-    Int                 pos )
+Obj ElmListObject( Obj list, Int pos)
 {
-    Obj                 elm;
-
-    elm = DoOperation2Args( ElmListOper, list, INTOBJ_INT(pos) );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'" );
-    }
-    return elm;
+    return ELMB_LIST( list, INTOBJ_INT(pos) );
 }
 
 
-Obj ELMB_LIST(Obj list, Obj pos)     {
-   Obj                 elm;
+Obj ELMB_LIST(Obj list, Obj pos)
+{
+    Obj                 elm;
 
     elm = DoOperation2Args( ElmListOper, list, pos );
     while ( elm == 0 ) {
@@ -625,7 +616,7 @@ Obj ElmsListError (
 **
 **  `ElmsListObject' is the `ELMS_LIST' function for objects.
 */
-Obj ElmsListOper;
+static Obj ElmsListOper;
 
 Obj ElmsListObject (
     Obj                 list,
@@ -846,7 +837,7 @@ void ElmsListLevelCheck (
 */
 void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-Obj             UnbListOper;
+static Obj             UnbListOper;
 
 Obj             FuncUNB_LIST (
     Obj                 self,
@@ -911,7 +902,7 @@ void            UNBB_LIST (
 */
 void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-Obj AssListOper;
+static Obj AssListOper;
 
 Obj             FuncASS_LIST (
     Obj                 self,
@@ -990,7 +981,7 @@ void ASSB_LIST (
 */
 void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj objs );
 
-Obj             AsssListOper;
+static Obj             AsssListOper;
 
 Obj             FuncASSS_LIST (
     Obj                 self,
@@ -1242,7 +1233,7 @@ Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 Obj             IsTableListFilt;
 
-Obj             Func_IS_TABLE_LIST (
+Obj             FuncIS_TABLE_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1486,7 +1477,7 @@ Obj FuncIS_POSS_LIST_DEFAULT (
 */
 Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start );
 
-Obj             PosListOper;
+static Obj             PosListOper;
 
 Obj             PosListHandler2 (
     Obj                 self,
@@ -2249,18 +2240,10 @@ void AsssListLevelCheck (
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_LIST", "obj", &IsListFilt,
-      FuncIS_LIST, "src/lists.c:IS_LIST" },
-
-    { "IS_DENSE_LIST", "obj", &IsDenseListFilt,
-      FuncIS_DENSE_LIST, "src/lists.c:IS_DENSE_LIST" },
-
-    { "IS_HOMOG_LIST", "obj", &IsHomogListFilt,
-      FuncIS_HOMOG_LIST, "src/lists.c:IS_HOMOG_LIST" },
-
-    { "IS_TABLE_LIST", "obj", &IsTableListFilt,
-      Func_IS_TABLE_LIST, "src/lists.c:IS_TABLE_LIST" },
-
+    GVAR_FILTER(IS_LIST, "obj", &IsListFilt),
+    GVAR_FILTER(IS_DENSE_LIST, "obj", &IsDenseListFilt),
+    GVAR_FILTER(IS_HOMOG_LIST, "obj", &IsHomogListFilt),
+    GVAR_FILTER(IS_TABLE_LIST, "obj", &IsTableListFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2272,9 +2255,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    { "LENGTH", "list", &LengthAttr,
-      FuncLENGTH, "src/lists.c:LENGTH" },
-
+    GVAR_FILTER(LENGTH, "list", &LengthAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2286,16 +2267,9 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarProp GVarProps [] = {
 
-    { "IS_SSORT_LIST", "obj", &IsSSortListProp,
-      FuncIS_SSORT_LIST, "src/lists.c:IS_SSORT_LIST" },
-
-    { "IS_NSORT_LIST", "obj", &IsNSortListProp,
-      FuncIS_NSORT_LIST, "src/lists.c:IS_NSORT_LIST" },
-
-    { "IS_POSS_LIST", "obj", &IsPossListProp,
-      FuncIS_POSS_LIST, "src/lists.c:IS_POSS_LIST" },
-
-
+    GVAR_FILTER(IS_SSORT_LIST, "obj", &IsSSortListProp),
+    GVAR_FILTER(IS_NSORT_LIST, "obj", &IsNSortListProp),
+    GVAR_FILTER(IS_POSS_LIST, "obj", &IsPossListProp),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2307,30 +2281,17 @@ static StructGVarProp GVarProps [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
+    // FIXME: why DoOperation0Args below?
     { "POS_LIST", -1, "list, obj", &PosListOper,
       DoOperation0Args, "src/lists.c:POS_LIST" },
 
-    { "ISB_LIST", 2, "list, pos", &IsbListOper,
-      FuncISB_LIST, "src/lists.c:ISB_LIST" },
-
-    { "ELM0_LIST", 2, "list, pos", &Elm0ListOper,
-      FuncELM0_LIST, "src/lists.c:ELM0_LIST" },
-
-    { "ELM_LIST", 2, "list, pos", &ElmListOper,
-      FuncELM_LIST, "src/lists.c:ELM_LIST" },
-
-    { "ELMS_LIST", 2, "list, poss", &ElmsListOper,
-      FuncELMS_LIST, "src/lists.c:ELMS_LIST" },
-
-    { "UNB_LIST", 2, "list, pos", &UnbListOper, 
-      FuncUNB_LIST, "src/lists.c:UNB_LIST" },
-
-    { "ASS_LIST", 3, "list, pos, obj", &AssListOper, 
-      FuncASS_LIST, "src/lists.c:ASS_LIST" },
-
-    { "ASSS_LIST", 3, "list, poss, objs", &AsssListOper, 
-      FuncASSS_LIST, "src/lists.c:ASSS_LIST" },
-
+    GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),
+    GVAR_OPER(ELM0_LIST, 2, "list, pos", &Elm0ListOper),
+    GVAR_OPER(ELM_LIST, 2, "list, pos", &ElmListOper),
+    GVAR_OPER(ELMS_LIST, 2, "list, poss", &ElmsListOper),
+    GVAR_OPER(UNB_LIST, 2, "list, pos", &UnbListOper),
+    GVAR_OPER(ASS_LIST, 3, "list, pos, obj", &AssListOper),
+    GVAR_OPER(ASSS_LIST, 3, "list, poss, objs", &AsssListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
@@ -2342,30 +2303,14 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "LEN_LIST", 1, "list", 
-      FuncLEN_LIST, "src/lists.c:LEN_LIST" },
-
-    { "ELMS_LIST_DEFAULT", 2, "list, poss",
-      FuncELMS_LIST_DEFAULT, "src/list.c:ELMS_LIST_DEFAULT" },
-
-    { "ASSS_LIST_DEFAULT", 3, "list, poss, objs",
-      FuncASSS_LIST_DEFAULT, "src/list.c:ASSS_LIST_DEFAULT" },
-    
-    { "IS_SSORT_LIST_DEFAULT", 1, "list",
-      FuncIS_SSORT_LIST_DEFAULT, "src/list.c:IS_SSORT_LIST_DEFAULT" },
-
-    { "IS_POSS_LIST_DEFAULT", 1, "list",
-      FuncIS_POSS_LIST_DEFAULT, "src/list.c:IS_POSS_LIST_DEFAULT" },
-
-    { "POS_LIST_DEFAULT", 3, "list, obj, start",
-      FuncPOS_LIST_DEFAULT, "src/list.c:POS_LIST_DEFAULT" },
-
-    { "SET_FILTER_LIST", 2, "list, filter",
-      FuncSET_FILTER_LIST, "src/lists.c:SET_FILTER_LIST" },
-
-    { "RESET_FILTER_LIST", 2, "list, filter",
-      FuncRESET_FILTER_LIST, "src/lists.c:RESET_FILTER_LIST" },
-
+    GVAR_FUNC(LEN_LIST, 1, "list"),
+    GVAR_FUNC(ELMS_LIST_DEFAULT, 2, "list, poss"),
+    GVAR_FUNC(ASSS_LIST_DEFAULT, 3, "list, poss, objs"),
+    GVAR_FUNC(IS_SSORT_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(IS_POSS_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(POS_LIST_DEFAULT, 3, "list, obj, start"),
+    GVAR_FUNC(SET_FILTER_LIST, 2, "list, filter"),
+    GVAR_FUNC(RESET_FILTER_LIST, 2, "list, filter"),
     { 0, 0, 0, 0, 0 }
 
 };

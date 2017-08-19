@@ -1997,7 +1997,7 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
 
 /****************************************************************************
 **
-*F  MONOM_GRLLEX( u, v ) . . . . . ``grlex'' ordering for internal monomials
+*F  MONOM_GRLEX( u, v ) . . . . . ``grlex'' ordering for internal monomials
 **
 **  This function  implements the ``grlex'' (degree, then lexicographic) ordering
 **  for monomials  of commuting indeterminates with x_1>x_2>x_3 etc. (this
@@ -2287,66 +2287,26 @@ static StructGVarFunc GVarFuncs [] = {
     { "ONE_MATRIX_IMMUTABLE", 1, "list",
       FuncOneMatrixImmutable, "src/listoper.c:ONE_MATRIX_IMMUTABLE" },
 
-    { "INV_MATRIX_MUTABLE", 1, "list",
-      FuncINV_MATRIX_MUTABLE, "src/listoper.c:INV_MATRIX_MUTABLE" },
-
-    { "INV_MATRIX_SAME_MUTABILITY", 1, "list",
-      FuncINV_MATRIX_SAME_MUTABILITY, "src/listoper.c:INV_MATRIX_SAME_MUTABILITY" },
-
-    { "INV_MATRIX_IMMUTABLE", 1, "list",
-      FuncINV_MATRIX_IMMUTABLE, "src/listoper.c:INV_MATRIX_IMMUTABLE" },
-
-    { "ADD_ROW_VECTOR_5", 5, "list1, list2, mult, from, to",
-      FuncADD_ROW_VECTOR_5, "src/listoper.c:ADD_ROW_VECTOR_5" },
-
-    { "ADD_ROW_VECTOR_5_FAST", 5, "list1, list2, mult, from, to",
-      FuncADD_ROW_VECTOR_5_FAST, "src/listoper.c:ADD_ROW_VECTOR_5_FAST" },
-
-    { "ADD_ROW_VECTOR_3", 3, "list1, list2, mult",
-      FuncADD_ROW_VECTOR_3, "src/listoper.c:ADD_ROW_VECTOR_3" },
-
-    { "ADD_ROW_VECTOR_3_FAST", 3, "list1, list2, mult",
-      FuncADD_ROW_VECTOR_3_FAST, "src/listoper.c:ADD_ROW_VECTOR_3_FAST" },
-
-    { "ADD_ROW_VECTOR_2", 2, "list1, list2",
-      FuncADD_ROW_VECTOR_2, "src/listoper.c:ADD_ROW_VECTOR_2" },
-
-    { "ADD_ROW_VECTOR_2_FAST", 2, "list1, list2",
-      FuncADD_ROW_VECTOR_2_FAST, "src/listoper.c:ADD_ROW_VECTOR_2_FAST" },
-
-    { "MULT_ROW_VECTOR_2", 2, "list, mult",
-      FuncMULT_ROW_VECTOR_2, "src/listoper.c:MULT_ROW_VECTOR_2" },
-
-    { "MULT_ROW_VECTOR_2_FAST", 2, "list, mult",
-      FuncMULT_ROW_VECTOR_2_FAST, "src/listoper.c:MULT_ROW_VECTOR_2_FAST" },
-
-    { "PROD_VEC_MAT_DEFAULT", 2, "vec, mat",
-      FuncPROD_VEC_MAT_DEFAULT, "src/listoper.c:PROD_VEC_MAT_DEFAULT" },
-    
-    { "INV_MAT_DEFAULT_MUTABLE", 1, "mat",
-      FuncINV_MAT_DEFAULT_MUTABLE, "src/listoper.c:INV_MAT_DEFAULT_MUTABLE" },
-
-    { "INV_MAT_DEFAULT_SAME_MUTABILITY", 1, "mat",
-      FuncINV_MAT_DEFAULT_SAME_MUTABILITY, "src/listoper.c:INV_MAT_DEFAULT_SAME_MUTABILITY" },
-
-    { "INV_MAT_DEFAULT_IMMUTABLE", 1, "mat",
-      FuncINV_MAT_DEFAULT_IMMUTABLE, "src/listoper.c:INV_MAT_DEFAULT_IMMUTABLE" },
-
-    { "ADD_TO_LIST_ENTRIES_PLIST_RANGE", 3, "list, range, x",
-      FuncADD_TO_LIST_ENTRIES_PLIST_RANGE, "src/listfunc.c:ADD_TO_LIST_ENTRIES_PLIST_RANGE" },
-
-    { "MONOM_TOT_DEG_LEX", 2, "monomial, monomial",
-      FuncMONOM_TOT_DEG_LEX, "src/ratfun.c:FuncMONOM_TOT_DEG_LEX" },
-
-    { "MONOM_GRLEX", 2, "monomial, monomial",
-      FuncMONOM_GRLEX, "src/ratfun.c:FuncMONOM_GRLEX" },
-
-    { "ZIPPED_SUM_LISTS", 4, "list,list,zero,funclist",
-      FuncZIPPED_SUM_LISTS, "src/ratfun.c:FuncZIPPED_SUM_LISTS" },
-
-    { "MONOM_PROD", 2, "monomial, monomial",
-      FuncMONOM_PROD, "src/ratfun.c:FuncMONOM_PROD" },
-
+    GVAR_FUNC(INV_MATRIX_MUTABLE, 1, "list"),
+    GVAR_FUNC(INV_MATRIX_SAME_MUTABILITY, 1, "list"),
+    GVAR_FUNC(INV_MATRIX_IMMUTABLE, 1, "list"),
+    GVAR_FUNC(ADD_ROW_VECTOR_5, 5, "list1, list2, mult, from, to"),
+    GVAR_FUNC(ADD_ROW_VECTOR_5_FAST, 5, "list1, list2, mult, from, to"),
+    GVAR_FUNC(ADD_ROW_VECTOR_3, 3, "list1, list2, mult"),
+    GVAR_FUNC(ADD_ROW_VECTOR_3_FAST, 3, "list1, list2, mult"),
+    GVAR_FUNC(ADD_ROW_VECTOR_2, 2, "list1, list2"),
+    GVAR_FUNC(ADD_ROW_VECTOR_2_FAST, 2, "list1, list2"),
+    GVAR_FUNC(MULT_ROW_VECTOR_2, 2, "list, mult"),
+    GVAR_FUNC(MULT_ROW_VECTOR_2_FAST, 2, "list, mult"),
+    GVAR_FUNC(PROD_VEC_MAT_DEFAULT, 2, "vec, mat"),
+    GVAR_FUNC(INV_MAT_DEFAULT_MUTABLE, 1, "mat"),
+    GVAR_FUNC(INV_MAT_DEFAULT_SAME_MUTABILITY, 1, "mat"),
+    GVAR_FUNC(INV_MAT_DEFAULT_IMMUTABLE, 1, "mat"),
+    GVAR_FUNC(ADD_TO_LIST_ENTRIES_PLIST_RANGE, 3, "list, range, x"),
+    GVAR_FUNC(MONOM_TOT_DEG_LEX, 2, "monomial, monomial"),
+    GVAR_FUNC(MONOM_GRLEX, 2, "monomial, monomial"),
+    GVAR_FUNC(ZIPPED_SUM_LISTS, 4, "list,list,zero,funclist"),
+    GVAR_FUNC(MONOM_PROD, 2, "monomial, monomial"),
     { 0, 0, 0, 0, 0 }
 
 };

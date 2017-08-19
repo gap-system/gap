@@ -1128,7 +1128,7 @@ static void AddCosetFactor2 (
 **
 *F  FuncApplyRel2( <self>, <app>, <rel>, <nums> ) . . . . . . apply a relator
 **
-**  'FunApplyRel2' implements the internal function 'ApplyRel2'.
+**  'FuncApplyRel2' implements the internal function 'ApplyRel2'.
 **
 **  'ApplyRel2( <app>, <rel>, <nums> )'
 **
@@ -2423,48 +2423,20 @@ Obj FuncTC_QUICK_SCAN (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "ApplyRel", 2, "app, relator",
-      FuncApplyRel, "src/costab.c:ApplyRel" },
-
-    { "MakeConsequences", 1, "list",
-      FuncMakeConsequences, "src/costab.c:MakeConsequences" },
-
-    { "MakeConsequencesPres", 1, "list",
-      FuncMakeConsequencesPres, "src/costab.c:MakeConsequencesPres" },
-
-    { "StandardizeTableC", 2, "table, standard",
-      FuncStandardizeTableC, "src/costab.c:StandardizeTableC" },
-
-    { "ApplyRel2", 3, "app, relators, nums",
-      FuncApplyRel2, "src/costab.c:ApplyRel2" },
-
-    { "CopyRel", 1, "relator",
-      FuncCopyRel, "src/costab.c:CopyRel" },
-
-    { "MakeCanonical", 1, "relator",
-      FuncMakeCanonical, "src/costab.c:MakeCanonical" },
-
-    { "TreeEntry", 2, "relator, word",
-      FuncTreeEntry, "src/costab.c:TreeEntry" },
-
-    { "StandardizeTable2C", 3, "table, table, standard",
-      FuncStandardizeTable2C, "src/costab.c:StandardizeTable2C" },
-
-    { "AddAbelianRelator", 2, "rels, number",
-      FuncAddAbelianRelator, "src/costab.c:AddAbelianRelator" },
-
-    { "LOWINDEX_COSET_SCAN", 4, "table, relators, stack1,stack2",
-      FuncLOWINDEX_COSET_SCAN, "src/costab.c:LOWINDEX_COSET_SCAN" },
-
-    { "LOWINDEX_IS_FIRST", 4, "table, n, mu, nu",
-      FuncLOWINDEX_IS_FIRST, "src/costab.c:LOWINDEX_IS_FIRST" },
-
-    { "LOWINDEX_PREPARE_RELS", 1, "rels",
-      FuncLOWINDEX_PREPARE_RELS, "src/costab.c:LOWINDEX_PREPARE_RELS" },
-
-    { "TC_QUICK_SCAN", 5, "table, offset, alpha, word, result",
-      FuncTC_QUICK_SCAN, "src/costab.c:TC_QUICK_SCAN" },
-
+    GVAR_FUNC(ApplyRel, 2, "app, relator"),
+    GVAR_FUNC(MakeConsequences, 1, "list"),
+    GVAR_FUNC(MakeConsequencesPres, 1, "list"),
+    GVAR_FUNC(StandardizeTableC, 2, "table, standard"),
+    GVAR_FUNC(ApplyRel2, 3, "app, relators, nums"),
+    GVAR_FUNC(CopyRel, 1, "relator"),
+    GVAR_FUNC(MakeCanonical, 1, "relator"),
+    GVAR_FUNC(TreeEntry, 2, "relator, word"),
+    GVAR_FUNC(StandardizeTable2C, 3, "table, table, standard"),
+    GVAR_FUNC(AddAbelianRelator, 2, "rels, number"),
+    GVAR_FUNC(LOWINDEX_COSET_SCAN, 4, "table, relators, stack1,stack2"),
+    GVAR_FUNC(LOWINDEX_IS_FIRST, 4, "table, n, mu, nu"),
+    GVAR_FUNC(LOWINDEX_PREPARE_RELS, 1, "rels"),
+    GVAR_FUNC(TC_QUICK_SCAN, 5, "table, offset, alpha, word, result"),
     { 0, 0, 0, 0, 0 }
 
 };

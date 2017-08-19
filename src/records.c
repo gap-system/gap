@@ -679,9 +679,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "NameRNam", 1, "rnam",
       NameRNamHandler, "src/records.c:NameRNam" },
 
-    { "ALL_RNAMES", 0, "",
-      FuncALL_RNAMES, "src/records.c:ALL_RNAMES" },
-
+    GVAR_FUNC(ALL_RNAMES, 0, ""),
     { 0, 0, 0, 0, 0 }
 
 };

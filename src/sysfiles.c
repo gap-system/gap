@@ -3500,20 +3500,12 @@ Obj SyReadStringFid(Int fid) {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "CrcString", 1, "string",
-      FuncCrcString, "src/sysfiles.c:FuncCrcString" },
-
+    GVAR_FUNC(CrcString, 1, "string"),
 #ifdef HAVE_LIBREADLINE
-    { "BINDKEYSTOGAPHANDLER", 1, "keyseq",
-       FuncBINDKEYSTOGAPHANDLER, "src/sysfiles.c:FuncBINDKEYSTOGAPHANDLER" },
-
-    { "BINDKEYSTOMACRO", 2, "keyseq, macro",
-       FuncBINDKEYSTOMACRO, "src/sysfiles.c:FuncBINDKEYSTOMACRO" },
-
-    { "READLINEINITLINE", 1, "line",
-       FuncREADLINEINITLINE, "src/sysfiles.c:FuncREADLINEINITLINE" },
+    GVAR_FUNC(BINDKEYSTOGAPHANDLER, 1, "keyseq"),
+    GVAR_FUNC(BINDKEYSTOMACRO, 2, "keyseq, macro"),
+    GVAR_FUNC(READLINEINITLINE, 1, "line"),
 #endif
-
 
     { 0, 0, 0, 0, 0 }
 

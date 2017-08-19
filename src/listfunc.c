@@ -544,7 +544,7 @@ UInt            PositionSortedDensePlistComp (
     return h;
 }
 
-Obj             FuncPOSITION_SORTED_COMP (
+Obj             FuncPOSITION_SORTED_LIST_COMP (
     Obj                 self,
     Obj                 list,
     Obj                 obj,
@@ -555,7 +555,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the first argument                                            */
     while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
-            "POSITION_SORTED_COMP: <list> must be a small list (not a %s)",
+            "POSITION_SORTED_LIST_COMP: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
@@ -563,7 +563,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     /* check the third argument                                            */
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
         func = ErrorReturnObj(
-            "POSITION_SORTED_COMP: <func> must be a function (not a %s)",
+            "POSITION_SORTED_LIST_COMP: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
             "you can replace <func> via 'return <func>;'" );
     }
@@ -1747,15 +1747,12 @@ static StructGVarOper GVarOpers [] = {
   /*    { "ADD_LIST", 2, "list, val", &AddListOper,
         FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
 
+    // FIXME: why DoOperation0Args below, and why the commented entry above?
     { "ADD_LIST", -1, "list, obj", &AddListOper,
       DoOperation0Args, "src/listfunc.c:ADD_LIST" },
 
-    { "REM_LIST", 1, "list", &RemListOper,
-      FuncREM_LIST, "src/listfunc.c:REM_LIST" },
-
-    { "APPEND_LIST", 2, "list, val", &AppendListOper,
-      FuncAPPEND_LIST, "src/listfunc.c:APPEND_LIST" },
-
+    GVAR_OPER(REM_LIST, 1, "list", &RemListOper),
+    GVAR_OPER(APPEND_LIST, 2, "list, val", &AppendListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
@@ -1767,69 +1764,27 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "APPEND_LIST_INTR", 2, "list1, list2", 
-      FuncAPPEND_LIST_INTR, "src/listfunc.c:APPEND_LIST_INTR" },
-
-    { "POSITION_SORTED_LIST", 2, "list, obj", 
-      FuncPOSITION_SORTED_LIST, "src/listfunc.c:POSITION_SORTED_LIST" },
-
-    { "POSITION_SORTED_LIST_COMP", 3, "list, obj, func", 
-      FuncPOSITION_SORTED_COMP, "src/listfunc.c:POSITION_SORTED_LIST_COMP" },
-
-    { "POSITION_FIRST_COMPONENT_SORTED", 2, "list, obj", 
-      FuncPOSITION_FIRST_COMPONENT_SORTED, "src/listfunc.c:POSITION_FIRST_COMPONENT_SORTED" },
-
-    { "SORT_LIST", 1, "list",
-      FuncSORT_LIST, "src/listfunc.c:SORT_LIST" },
-
-    { "STABLE_SORT_LIST", 1, "list",
-      FuncSTABLE_SORT_LIST, "src/listfunc.c:STABLE_SORT_LIST" },
-
-    { "SORT_LIST_COMP", 2, "list, func",
-      FuncSORT_LIST_COMP, "src/listfunc.c:SORT_LIST_COMP" },
-
-    { "STABLE_SORT_LIST_COMP", 2, "list, func",
-      FuncSTABLE_SORT_LIST_COMP, "src/listfunc.c:STABLE_SORT_LIST_COMP" },
-
-    { "SORT_PARA_LIST", 2, "list, list",
-      FuncSORT_PARA_LIST, "src/listfunc.c:SORT_PARA_LIST" },
-
-    { "STABLE_SORT_PARA_LIST", 2, "list, list",
-      FuncSTABLE_SORT_PARA_LIST, "src/listfunc.c:STABLE_SORT_PARA_LIST" },
-
-    { "SORT_PARA_LIST_COMP", 3, "list, list, func",
-      FuncSORT_PARA_LIST_COMP, "src/listfunc.c:SORT_PARA_LIST_COMP" },
-
-    { "STABLE_SORT_PARA_LIST_COMP", 3, "list, list, func",
-      FuncSTABLE_SORT_PARA_LIST_COMP, "src/listfunc.c:STABLE_SORT_PARA_LIST_COMP" },
-
-    { "OnPoints", 2, "pnt, elm",
-      FuncOnPoints, "src/listfunc.c:OnPoints" },
-
-    { "OnPairs", 2, "pair, elm",
-      FuncOnPairs, "src/listfunc.c:OnPairs" },
-
-    { "OnTuples", 2, "tuple, elm",
-      FuncOnTuples, "src/listfunc.c:OnTuples" },
-
-    { "OnSets", 2, "set, elm",
-      FuncOnSets, "src/listfunc.c:OnSets" },
-
-    { "OnRight", 2, "pnt, elm",
-      FuncOnRight, "src/listfunc.c:OnRight" },
-
-    { "OnLeftAntiOperation", 2, "pnt, elm",
-      FuncOnLeftAntiOperation, "src/listfunc.c:OnLeftAntiOperation" },
-
-    { "OnLeftInverse", 2, "pnt, elm",
-      FuncOnLeftInverse, "src/listfunc.c:OnLeftInverse" },
-
-    { "COPY_LIST_ENTRIES", -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number",
-      FuncCOPY_LIST_ENTRIES, "src/listfunc.c:COPY_LIST_ENTRIES" },
-
-    { "STRONGLY_CONNECTED_COMPONENTS_DIGRAPH", 1, "digraph",
-      FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:STRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
-
+    GVAR_FUNC(APPEND_LIST_INTR, 2, "list1, list2"),
+    GVAR_FUNC(POSITION_SORTED_LIST, 2, "list, obj"),
+    GVAR_FUNC(POSITION_SORTED_LIST_COMP, 3, "list, obj, func"),
+    GVAR_FUNC(POSITION_FIRST_COMPONENT_SORTED, 2, "list, obj"),
+    GVAR_FUNC(SORT_LIST, 1, "list"),
+    GVAR_FUNC(STABLE_SORT_LIST, 1, "list"),
+    GVAR_FUNC(SORT_LIST_COMP, 2, "list, func"),
+    GVAR_FUNC(STABLE_SORT_LIST_COMP, 2, "list, func"),
+    GVAR_FUNC(SORT_PARA_LIST, 2, "list, list"),
+    GVAR_FUNC(STABLE_SORT_PARA_LIST, 2, "list, list"),
+    GVAR_FUNC(SORT_PARA_LIST_COMP, 3, "list, list, func"),
+    GVAR_FUNC(STABLE_SORT_PARA_LIST_COMP, 3, "list, list, func"),
+    GVAR_FUNC(OnPoints, 2, "pnt, elm"),
+    GVAR_FUNC(OnPairs, 2, "pair, elm"),
+    GVAR_FUNC(OnTuples, 2, "tuple, elm"),
+    GVAR_FUNC(OnSets, 2, "set, elm"),
+    GVAR_FUNC(OnRight, 2, "pnt, elm"),
+    GVAR_FUNC(OnLeftAntiOperation, 2, "pnt, elm"),
+    GVAR_FUNC(OnLeftInverse, 2, "pnt, elm"),
+    GVAR_FUNC(COPY_LIST_ENTRIES, -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
+    GVAR_FUNC(STRONGLY_CONNECTED_COMPONENTS_DIGRAPH, 1, "digraph"),
     { 0, 0, 0, 0, 0 }
 
 };

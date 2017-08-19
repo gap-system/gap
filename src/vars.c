@@ -549,7 +549,7 @@ void            PrintIsbGVar (
 **
 *F  ExecAssList(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssList'  executes the list  assignment statement <stat> of the form
+**  'ExecAssList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
 UInt            ExecAssList (
@@ -598,15 +598,15 @@ UInt            ExecAssList (
 **
 *F  ExecAss2List(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAss2List'  executes the list  assignment statement <stat> of the form
+**  'ExecAss2List'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>,<position>] := <rhs>;'.
 */
 UInt            ExecAss2List (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
-    Obj                 pos1;            /* position, left operand          */
-    Obj                 pos2;            /* position, left operand          */
+    Obj                 pos1;           /* position, left operand          */
+    Obj                 pos2;           /* position, left operand          */
     Obj                 rhs;            /* right hand side, right operand  */
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
@@ -629,7 +629,7 @@ UInt            ExecAss2List (
 **
 *F  ExecAssXList(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssXList'  executes the list  assignment statement <stat> of the form
+**  'ExecAssXList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>,<position>,<position>[,<position>]*] := <rhs>;'.
 */
 UInt            ExecAssXList (
@@ -650,7 +650,7 @@ UInt            ExecAssXList (
     ixs = NEW_PLIST(T_PLIST,narg);
 
     for (i = 1; i <= narg; i++) {
-      /* evaluate the position                                               */
+      /* evaluate the position                                             */
       pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
       SET_ELM_PLIST(ixs,i,pos);
       CHANGED_BAG(ixs);
@@ -825,7 +825,7 @@ UInt            ExecAsssListLevel (
 **
 *F  ExecUnbList(<ass>)  . . . . . . . . . . . . . unbind an element of a list
 **
-**  'ExexUnbList'  executes the list   unbind  statement <stat> of the   form
+**  'ExecUnbList'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
 UInt            ExecUnbList (
@@ -843,7 +843,7 @@ UInt            ExecUnbList (
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
       pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
-      /* unbind the element                                                  */
+      /* unbind the element                                                */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
       } else {
@@ -927,18 +927,17 @@ Obj             EvalElm2List (
 {
     Obj                 elm;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
-    Obj                 pos1;            /* position, right operand         */
-    Obj                 pos2;            /* position, right operand         */
+    Obj                 pos1;           /* position, right operand         */
+    Obj                 pos2;           /* position, right operand         */
 
-    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
-    /* evaluate and check the positions                                     */
+    /* evaluate and check the positions                                    */
     pos1 = EVAL_EXPR( ADDR_EXPR(expr)[1] ); 
     pos2 = EVAL_EXPR( ADDR_EXPR(expr)[2] ); 
    
     elm = ELM2_LIST(list, pos1, pos2);
-
 
     /* return the element                                                  */
     return elm;
@@ -962,10 +961,10 @@ Obj             EvalElmXList (
     Int i;
      
 
-    /* evaluate the list (checking is done by 'ELM2_LIST')                  */
+    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
-    /* evaluate and check the positions                                     */
+    /* evaluate and check the positions                                    */
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     ixs = NEW_PLIST(T_PLIST,narg);
     for (i = 1; i <= narg; i++) {
@@ -1110,7 +1109,7 @@ Obj             EvalElmsListLevel (
 **
 *F  EvalIsbList(<expr>) . . . . . . . . test if an element of a list is bound
 **
-**  'EvalElmList'  evaluates the list  isbound expression  <expr> of the form
+**  'EvalIsbList'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
 Obj             EvalIsbList (
@@ -1125,7 +1124,7 @@ Obj             EvalIsbList (
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     if (narg == 1) {
-      /* evaluate and check the position                                     */
+      /* evaluate and check the position                                   */
       pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
       
       if (IS_POS_INTOBJ(pos))
@@ -1331,7 +1330,7 @@ void            PrintIsbList (
 **
 *F  PrintElmsList(<expr>) . . print a selection of several elements of a list
 **
-**  'PrElmsList'  prints the list  elements  expression  <expr> of the   form
+**  'PrintElmsList'  prints the list  elements  expression  <expr> of the   form
 **  '<list>{<positions>}'.
 **
 **  Linebreaks are preferred after the '{'.
@@ -1415,7 +1414,7 @@ UInt            ExecAssRecExpr (
 **
 *F  ExecUnbRecName(<stat>)  . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssRecName' executes the record  unbind statement <stat> of the form
+**  'ExecUnbRecName' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
 UInt            ExecUnbRecName (
@@ -1443,7 +1442,7 @@ UInt            ExecUnbRecName (
 **
 *F  ExecUnbRecExpr(<stat>)  . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssRecExpr' executes the record  unbind statement <stat> of the form
+**  'ExecUnbRecExpr' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
 UInt            ExecUnbRecExpr (
@@ -1701,7 +1700,7 @@ void            PrintIsbRecExpr (
 **
 *F  ExecAssPosObj(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssPosObj'  executes the list  assignment statement <stat> of the form
+**  'ExecAssPosObj'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
 UInt            ExecAssPosObj (
@@ -1754,7 +1753,7 @@ UInt            ExecAssPosObj (
 **
 *F  ExecUnbPosObj(<ass>)  . . . . . . . . . . . . . unbind an element of a list
 **
-**  'ExexUnbPosObj'  executes the list   unbind  statement <stat> of the   form
+**  'ExecUnbPosObj'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
 UInt            ExecUnbPosObj (
@@ -2089,7 +2088,7 @@ UInt            ExecAssComObjExpr (
 **
 *F  ExecUnbComObjName(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComObjName' executes the record unbind statement <stat> of the form
+**  'ExecUnbComObjName' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
 UInt            ExecUnbComObjName (
@@ -2129,7 +2128,7 @@ UInt            ExecUnbComObjName (
 **
 *F  ExecUnbComObjExpr(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComObjExpr' executes the record unbind statement <stat> of the form
+**  'ExecUnbComObjExpr' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
 UInt            ExecUnbComObjExpr (
@@ -2249,7 +2248,7 @@ Obj             EvalElmComObjExpr (
 **
 *F  EvalIsbComObjName(<expr>) . . . . . . . . test if a record element is bound
 **
-**  'EvalElmComObjName' evaluates  the record isbound  expression <expr> of the
+**  'EvalIsbComObjName' evaluates  the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
 Obj             EvalIsbComObjName (
@@ -2299,7 +2298,7 @@ Obj             EvalIsbComObjExpr (
     Obj                 record;         /* the record, left operand        */
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ISB_REC')                */
+    /* evaluate the record (checking is done by 'ISB_REC')                 */
     record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
 
     /* evaluate the name and convert it to a record name                   */
@@ -2543,7 +2542,6 @@ void SaveLVars( Obj lvars )
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
     SaveSubObj(*ptr++);
-  return;
 }
 
 /****************************************************************************
@@ -2563,7 +2561,6 @@ void LoadLVars( Obj lvars )
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
     *ptr++ = LoadSubObj();
-  return;
 }
 
 Obj TYPE_LVARS;
@@ -2589,18 +2586,10 @@ void PrintLVars( Obj lvars )
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  { "GetCurrentLVars", 0, "",
-    FuncGetCurrentLVars, "src/vars.c: GetCurrentLVars"},
-
-  { "GetBottomLVars", 0, "",
-    FuncGetBottomLVars, "src/vars.c: GetBottomLVars"},
-
-  { "ParentLVars", 1, "lvars",
-    FuncParentLVars, "src/vars.c: ParentLVars"},
-
-  { "ContentsLVars", 1, "lvars",
-    FuncContentsLVars, "src/vars.c: ContentsLVars"},
-
+  GVAR_FUNC(GetCurrentLVars, 0, ""),
+  GVAR_FUNC(GetBottomLVars, 0, ""),
+  GVAR_FUNC(ParentLVars, 1, "lvars"),
+  GVAR_FUNC(ContentsLVars, 1, "lvars"),
   { 0, 0, 0, 0, 0 }
 };
 

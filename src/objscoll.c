@@ -739,38 +739,14 @@ Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "FinPowConjCol_CollectWordOrFail", 3, "sc, list, word",
-      FuncFinPowConjCol_CollectWordOrFail, 
-      "src/objscoll.c:FinPowConjCol_CollectWordOrFail" },
-
-    { "FinPowConjCol_ReducedComm", 3, "sc, word, word",
-      FuncFinPowConjCol_ReducedComm, 
-      "src/objscoll.c:FinPowConjCol_ReducedComm" },
-
-    { "FinPowConjCol_ReducedForm", 2, "sc, word",
-      FuncFinPowConjCol_ReducedForm, 
-      "src/objscoll.c:FinPowConjCol_ReducedForm" },
-
-    { "FinPowConjCol_ReducedLeftQuotient", 3, "sc, word, word",
-      FuncFinPowConjCol_ReducedLeftQuotient, 
-      "src/objscoll.c:FinPowConjCol_ReducedLeftQuotient" },
-
-    { "FinPowConjCol_ReducedPowerSmallInt", 3, "sc, word, int",
-      FuncFinPowConjCol_ReducedPowerSmallInt,
-      "src/objscoll.c:FinPowConjCol_ReducedPowerSmallInt" },
-
-    { "FinPowConjCol_ReducedProduct", 3, "sc, word, word",
-      FuncFinPowConjCol_ReducedProduct,
-      "src/objscoll.c:FinPowConjCol_ReducedProduct" },
-
-    { "FinPowConjCol_ReducedQuotient", 3, "sc, word, word",
-      FuncFinPowConjCol_ReducedQuotient,
-      "src/objscoll.c:FinPowConjCol_ReducedQuotient" },
-
-    { "SET_SCOBJ_MAX_STACK_SIZE", 1, "size",
-      FuncSET_SCOBJ_MAX_STACK_SIZE,
-      "src/objscoll.c:SET_SCOBJ_MAX_STACK_SIZE" },
-
+    GVAR_FUNC(FinPowConjCol_CollectWordOrFail, 3, "sc, list, word"),
+    GVAR_FUNC(FinPowConjCol_ReducedComm, 3, "sc, word, word"),
+    GVAR_FUNC(FinPowConjCol_ReducedForm, 2, "sc, word"),
+    GVAR_FUNC(FinPowConjCol_ReducedLeftQuotient, 3, "sc, word, word"),
+    GVAR_FUNC(FinPowConjCol_ReducedPowerSmallInt, 3, "sc, word, int"),
+    GVAR_FUNC(FinPowConjCol_ReducedProduct, 3, "sc, word, word"),
+    GVAR_FUNC(FinPowConjCol_ReducedQuotient, 3, "sc, word, word"),
+    GVAR_FUNC(SET_SCOBJ_MAX_STACK_SIZE, 1, "size"),
     { 0, 0, 0, 0, 0 }
 
 };

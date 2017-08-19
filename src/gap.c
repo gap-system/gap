@@ -1017,7 +1017,7 @@ Obj FuncUpEnv (
   return (Obj)0;
 }
 
-Obj FuncExecutingStatementLocation(Obj self, Obj context)
+Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
   Obj currLVars = STATE(CurrLVars);
   Expr call;
@@ -1046,7 +1046,7 @@ Obj FuncExecutingStatementLocation(Obj self, Obj context)
   return retlist;
 }
 
-Obj FuncPrintExecutingStatement(Obj self, Obj context)
+Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
 {
   Obj currLVars = STATE(CurrLVars);
   Expr call;
@@ -2153,6 +2153,15 @@ void InitResetFiltListTNumsFromTable (
     }
 }
 
+static Obj ValidatedArgList(const char *name, int nargs, const char *argStr)
+{
+    Obj args = ArgStringToList(argStr);
+    int len = LEN_PLIST(args);
+    if (nargs >= 0 && len != nargs)
+        fprintf(stderr, "#W %s takes %d arguments, but argument string is '%s'"
+          " which implies %d arguments\n", name, nargs, argStr, len);
+    return args;
+}
 
 /****************************************************************************
 **
@@ -2165,8 +2174,9 @@ void InitGVarFiltsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewFilter( NameGVarObj( gvar ), 1, ArgStringToList( tab[i].argument ), tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -2183,32 +2193,10 @@ void InitGVarAttrsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewAttribute( NameGVarObj( gvar ),
-                          1,
-                          ArgStringToList( tab[i].argument ),
-                          tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
-    }
-}
-
-void SetupFuncInfo(Obj func, const Char* cookie)
-{
-    const Char* pos = strchr(cookie, ':');
-    if ( pos ) {
-        Obj filename, start;
-        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
-        char buffer[512];
-        Int len = 511<(pos-cookie)?511:pos-cookie;
-        memcpy(buffer, cookie, len);
-        buffer[len] = 0;
-        filename = MakeImmString(buffer);
-        start = MakeImmString(pos+1);
-        SET_FILENAME_BODY(body_bag, filename);
-        SET_LOCATION_BODY(body_bag, start);
-        SET_BODY_FUNC(func, body_bag);
-        CHANGED_BAG(body_bag);
-        CHANGED_BAG(func);
     }
 }
 
@@ -2223,11 +2211,9 @@ void InitGVarPropsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewProperty( NameGVarObj( gvar ),
-                        1,
-                        ArgStringToList( tab[i].argument ),
-                        tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
@@ -2244,15 +2230,46 @@ void InitGVarOpersFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        AssGVar( gvar,
-            NewOperation( NameGVarObj( gvar ),
-                          tab[i].nargs,
-                          ArgStringToList( tab[i].args ),
-                          tab[i].handler ) );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        AssGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
         MakeReadOnlyGVar( gvar );
     }
 }
 
+static void SetupFuncInfo(Obj func, const Char* cookie)
+{
+    // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
+    // We check if that is the case, and if so, split it into the parts before
+    // and after the colon. In addition, the file path is cut to only contain
+    // the last two '/'-separated components.
+    const Char* pos = strchr(cookie, ':');
+    if ( pos ) {
+        Obj location = MakeImmString(pos+1);
+
+        Obj filename;
+        char buffer[512];
+        Int len = 511<(pos-cookie) ? 511 : pos-cookie;
+        memcpy(buffer, cookie, len);
+        buffer[len] = 0;
+
+        Char* start = strrchr(buffer, '/');
+        if (start) {
+            while (start > buffer && *(start-1) != '/')
+                start--;
+        }
+        else
+            start = buffer;
+        filename = MakeImmString(start);
+
+        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
+        SET_FILENAME_BODY(body_bag, filename);
+        SET_LOCATION_BODY(body_bag, location);
+        SET_BODY_FUNC(func, body_bag);
+        CHANGED_BAG(body_bag);
+        CHANGED_BAG(func);
+    }
+}
 
 /****************************************************************************
 **
@@ -2265,10 +2282,9 @@ void InitGVarFuncsFromTable (
 
     for ( i = 0;  tab[i].name != 0;  i++ ) {
         UInt gvar = GVarName( tab[i].name );
-        Obj func = NewFunction( NameGVarObj( gvar ),
-                                tab[i].nargs,
-                                ArgStringToList( tab[i].args ),
-                                tab[i].handler );
+        Obj name = NameGVarObj( gvar );
+        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        Obj func = NewFunction( name, tab[i].nargs, args, tab[i].handler );
         SetupFuncInfo( func, tab[i].cookie );
         AssGVar( gvar, func );
         MakeReadOnlyGVar( gvar );
@@ -2610,11 +2626,11 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
 
 /****************************************************************************
 **
-*F  FuncShouldQuitOnBreak()
+*F  FuncSHOULD_QUIT_ON_BREAK()
 **
 */
 
-Obj FuncShouldQuitOnBreak( Obj self)
+Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 {
   return SyQuitOnBreak ? True : False;
 }
@@ -2814,135 +2830,50 @@ void ThreadedInterpreter(void *funcargs) {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "Runtime", 0, "",
-      FuncRuntime, "src/gap.c:Runtime" },
-
-    { "RUNTIMES", 0, "",
-      FuncRUNTIMES, "src/gap.c:RUNTIMES" },
-
-    { "NanosecondsSinceEpoch", 0, "",
-      FuncNanosecondsSinceEpoch, "src/gap.c:NanosecondsSinceEpoch" },
-
-    { "NanosecondsSinceEpochInfo", 0, "",
-      FuncNanosecondsSinceEpochInfo, "src/gap.c:NanosecondsSinceEpochInfo" },
-
-    { "SizeScreen", -1, "args",
-      FuncSizeScreen, "src/gap.c:SizeScreen" },
-
-    { "ID_FUNC", 1, "object",
-      FuncID_FUNC, "src/gap.c:ID_FUNC" },
-
-    { "RETURN_FIRST", -1, "object",
-      FuncRETURN_FIRST, "src/gap.c:RETURN_FIRST" },
-
-    { "RETURN_NOTHING", -1, "object",
-      FuncRETURN_NOTHING, "src/gap.c:RETURN_NOTHING" },
-
-    { "ExportToKernelFinished", 0, "",
-      FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
-
-    { "DownEnv", -1, "args",
-      FuncDownEnv, "src/gap.c:DownEnv" },
-
-    { "UpEnv", -1, "args",
-      FuncUpEnv, "src/gap.c:UpEnv" },
-
-    { "GAP_CRC", 1, "filename",
-      FuncGAP_CRC, "src/gap.c:GAP_CRC" },
-
-    { "LOAD_DYN", 2, "filename, crc",
-      FuncLOAD_DYN, "src/gap.c:LOAD_DYN" },
-
-    { "LOAD_STAT", 2, "filename, crc",
-      FuncLOAD_STAT, "src/gap.c:LOAD_STAT" },
-
-    { "SHOW_STAT", 0, "",
-      FuncSHOW_STAT, "src/gap.c:SHOW_STAT" },
-
-    { "GASMAN", -1, "args",
-      FuncGASMAN, "src/gap.c:GASMAN" },
-
-    { "GASMAN_STATS", 0, "",
-      FuncGASMAN_STATS, "src/gap.c:GASMAN_STATS" },
-
-    { "GASMAN_MESSAGE_STATUS", 0, "",
-      FuncGASMAN_MESSAGE_STATUS, "src/gap.c:GASMAN_MESSAGE_STATUS" },
-
-    { "GASMAN_LIMITS", 0, "",
-      FuncGASMAN_LIMITS, "src/gap.c:GASMAN_LIMITS" },
-
-    { "SHALLOW_SIZE", 1, "object",
-      FuncSHALLOW_SIZE, "src/gap.c:SHALLOW_SIZE" },
-
-    { "TNUM_OBJ", 1, "object",
-      FuncTNUM_OBJ, "src/gap.c:TNUM_OBJ" },
-
-    { "TNUM_OBJ_INT", 1, "object",
-      FuncTNUM_OBJ_INT, "src/gap.c:TNUM_OBJ_INT" },
-
-    { "OBJ_HANDLE", 1, "object",
-      FuncOBJ_HANDLE, "src/gap.c:OBJ_HANDLE" },
-
-    { "HANDLE_OBJ", 1, "object",
-      FuncHANDLE_OBJ, "src/gap.c:HANDLE_OBJ" },
-
-    { "LoadedModules", 0, "",
-      FuncLoadedModules, "src/gap.c:LoadedModules" },
-
-    { "WindowCmd", 1, "arg-list",
-      FuncWindowCmd, "src/gap.c:WindowCmd" },
-
-    { "MicroSleep", 1, "msecs",
-      FuncMicroSleep, "src/gap.c:MicroSleep" },
-
-    { "Sleep", 1, "secs",
-      FuncSleep, "src/gap.c:Sleep" },
-
-    { "GAP_EXIT_CODE", 1, "exit code",
-      FuncGAP_EXIT_CODE, "src/gap.c:GAP_EXIT_CODE" },
-
-    { "QUIT_GAP", -1, "args",
-      FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
-
-    { "FORCE_QUIT_GAP", -1, "args",
-      FuncFORCE_QUIT_GAP, "src/gap.c:FORCE_QUIT_GAP" },
-
-    { "SHOULD_QUIT_ON_BREAK", 0, "",
-      FuncShouldQuitOnBreak, "src/gap.c:FuncShouldQuitOnBreak"},
-
-    { "SHELL", -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile",
-      FuncSHELL, "src/gap.c:FuncSHELL" },
-
-    { "CALL_WITH_CATCH", 2, "func, args",
-      FuncCALL_WITH_CATCH, "src/gap.c:CALL_WITH_CATCH" },
-
-    { "JUMP_TO_CATCH", 1, "payload",
-      FuncJUMP_TO_CATCH, "src/gap.c:JUMP_TO_CATCH" },
-
-    { "KERNEL_INFO", 0, "",
-      FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
-
+    GVAR_FUNC(Runtime, 0, ""),
+    GVAR_FUNC(RUNTIMES, 0, ""),
+    GVAR_FUNC(NanosecondsSinceEpoch, 0, ""),
+    GVAR_FUNC(NanosecondsSinceEpochInfo, 0, ""),
+    GVAR_FUNC(SizeScreen, -1, "args"),
+    GVAR_FUNC(ID_FUNC, 1, "object"),
+    GVAR_FUNC(RETURN_FIRST, -1, "object"),
+    GVAR_FUNC(RETURN_NOTHING, -1, "object"),
+    GVAR_FUNC(ExportToKernelFinished, 0, ""),
+    GVAR_FUNC(DownEnv, -1, "args"),
+    GVAR_FUNC(UpEnv, -1, "args"),
+    GVAR_FUNC(GAP_CRC, 1, "filename"),
+    GVAR_FUNC(LOAD_DYN, 2, "filename, crc"),
+    GVAR_FUNC(LOAD_STAT, 2, "filename, crc"),
+    GVAR_FUNC(SHOW_STAT, 0, ""),
+    GVAR_FUNC(GASMAN, -1, "args"),
+    GVAR_FUNC(GASMAN_STATS, 0, ""),
+    GVAR_FUNC(GASMAN_MESSAGE_STATUS, 0, ""),
+    GVAR_FUNC(GASMAN_LIMITS, 0, ""),
+    GVAR_FUNC(SHALLOW_SIZE, 1, "object"),
+    GVAR_FUNC(TNUM_OBJ, 1, "object"),
+    GVAR_FUNC(TNUM_OBJ_INT, 1, "object"),
+    GVAR_FUNC(OBJ_HANDLE, 1, "object"),
+    GVAR_FUNC(HANDLE_OBJ, 1, "object"),
+    GVAR_FUNC(LoadedModules, 0, ""),
+    GVAR_FUNC(WindowCmd, 1, "arg-list"),
+    GVAR_FUNC(MicroSleep, 1, "msecs"),
+    GVAR_FUNC(Sleep, 1, "secs"),
+    GVAR_FUNC(GAP_EXIT_CODE, 1, "exitCode"),
+    GVAR_FUNC(QUIT_GAP, -1, "args"),
+    GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
+    GVAR_FUNC(SHOULD_QUIT_ON_BREAK, 0, ""),
+    GVAR_FUNC(SHELL, -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile"),
+    GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
+    GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
+    GVAR_FUNC(KERNEL_INFO, 0, ""),
 #ifdef HPCGAP
-    { "THREAD_UI", 0, "",
-      FuncTHREAD_UI, "src/gap.c:THREAD_UI" },
+    GVAR_FUNC(THREAD_UI, 0, ""),
 #endif
-
-    { "SetUserHasQuit", 1, "value",
-      FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
-
-    { "MASTER_POINTER_NUMBER", 1, "ob",
-      FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
-
-    { "FUNC_BODY_SIZE", 1, "f",
-      FuncFUNC_BODY_SIZE, "src/gap.c:FUNC_BODY_SIZE" },
-
-    { "PRINT_CURRENT_STATEMENT", 1, "context",
-      FuncPrintExecutingStatement, "src/gap.c:PRINT_CURRENT_STATEMENT" },
-
-    { "CURRENT_STATEMENT_LOCATION", 1, "context",
-      FuncExecutingStatementLocation,
-      "src/gap.c:CURRENT_STATEMENT_LOCATION" },
-
+    GVAR_FUNC(SetUserHasQuit, 1, "value"),
+    GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
+    GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
+    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
+    GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
     { 0, 0, 0, 0, 0 }
 
 };

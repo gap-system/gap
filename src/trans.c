@@ -5519,173 +5519,63 @@ static StructGVarFilt GVarFilts[] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    /*  { "HAS_KER_TRANS", 1, "f",
-         FuncHAS_KER_TRANS,
-        "src/TRANS.c:FuncHAS_KER_TRANS" },
-
-      { "HAS_IMG_TRANS", 1, "f",
-         FuncHAS_IMG_TRANS,
-        "src/TRANS.c:FuncHAS_IMG_TRANS" },
-
-      { "INT_DEG_TRANS", 1, "f",
-         FuncINT_DEG_TRANS,
-        "src/TRANS.c:FuncINT_DEG_TRANS" },
+    /*  GVAR_FUNC(HAS_KER_TRANS, 1, "f"),
+      GVAR_FUNC(HAS_IMG_TRANS, 1, "f"),
+      GVAR_FUNC(INT_DEG_TRANS, 1, "f"),
         */
 
-    { "TransformationNC", 1, "list", FuncTransformationNC,
-      "src/trans.c:FuncTransformationNC" },
-
-    { "TransformationListListNC", 2, "src, ran", FuncTransformationListListNC,
-      "src/trans.c:FuncTransformationListListNC" },
-
-    { "DegreeOfTransformation", 1, "f", FuncDegreeOfTransformation,
-      "src/trans.c:FuncDegreeOfTransformation" },
-
-    { "HASH_FUNC_FOR_TRANS", 2, "f, data", FuncHASH_FUNC_FOR_TRANS,
-      "src/trans.c:FuncHASH_FUNC_FOR_TRANS" },
-
-    { "RANK_TRANS", 1, "f", FuncRANK_TRANS, "src/trans.c:FuncRANK_TRANS" },
-
-    { "RANK_TRANS_INT", 2, "f, n", FuncRANK_TRANS_INT,
-      "src/trans.c:FuncRANK_TRANS_INT" },
-
-    { "RANK_TRANS_LIST", 2, "f, list", FuncRANK_TRANS_LIST,
-      "src/trans.c:FuncRANK_TRANS_LIST" },
-
-    { "LARGEST_MOVED_PT_TRANS", 1, "f", FuncLARGEST_MOVED_PT_TRANS,
-      "src/trans.c:FuncLARGEST_MOVED_PT_TRANS" },
-
-    { "LARGEST_IMAGE_PT", 1, "f", FuncLARGEST_IMAGE_PT,
-      "src/trans.c:FuncLARGEST_IMAGE_PT" },
-
-    { "SMALLEST_MOVED_PT_TRANS", 1, "f", FuncSMALLEST_MOVED_PT_TRANS,
-      "src/trans.c:FuncSMALLEST_MOVED_PT_TRANS" },
-
-    { "SMALLEST_IMAGE_PT", 1, "f", FuncSMALLEST_IMAGE_PT,
-      "src/trans.c:FuncSMALLEST_IMAGE_PT" },
-
-    { "NR_MOVED_PTS_TRANS", 1, "f", FuncNR_MOVED_PTS_TRANS,
-      "src/trans.c:FuncNR_MOVED_PTS_TRANS" },
-
-    { "MOVED_PTS_TRANS", 1, "f", FuncMOVED_PTS_TRANS,
-      "src/trans.c:FuncMOVED_PTS_TRANS" },
-
-    { "IMAGE_LIST_TRANS_INT", 2, "f, n", FuncIMAGE_LIST_TRANS_INT,
-      "src/trans.c:FuncIMAGE_LIST_TRANS_INT" },
-
-    { "FLAT_KERNEL_TRANS", 1, "f", FuncFLAT_KERNEL_TRANS,
-      "src/trans.c:FuncFLAT_KERNEL_TRANS" },
-
-    { "FLAT_KERNEL_TRANS_INT", 2, "f, n", FuncFLAT_KERNEL_TRANS_INT,
-      "src/trans.c:FuncFLAT_KERNEL_TRANS_INT" },
-
-    { "IMAGE_SET_TRANS", 1, "f", FuncIMAGE_SET_TRANS,
-      "src/trans.c:FuncIMAGE_SET_TRANS" },
-
-    { "UNSORTED_IMAGE_SET_TRANS", 1, "f", FuncUNSORTED_IMAGE_SET_TRANS,
-      "src/trans.c:FuncUNSORTED_IMAGE_SET_TRANS" },
-
-    { "IMAGE_SET_TRANS_INT", 2, "f, n", FuncIMAGE_SET_TRANS_INT,
-      "src/trans.c:FuncIMAGE_SET_TRANS_INT" },
-
-    { "KERNEL_TRANS", 2, "f, n", FuncKERNEL_TRANS,
-      "src/trans.c:FuncKERNEL_TRANS" },
-
-    { "PREIMAGES_TRANS_INT", 2, "f, pt", FuncPREIMAGES_TRANS_INT,
-      "src/trans.c:FuncPREIMAGES_TRANS_INT" },
-
-    { "AS_TRANS_PERM", 1, "f", FuncAS_TRANS_PERM,
-      "src/trans.c:FuncAS_TRANS_PERM" },
-
-    { "AS_TRANS_PERM_INT", 2, "f, n", FuncAS_TRANS_PERM_INT,
-      "src/trans.c:FuncAS_TRANS_PERM_INT" },
-
-    { "AS_PERM_TRANS", 1, "f", FuncAS_PERM_TRANS,
-      "src/trans.c:FuncAS_PERM_TRANS" },
-
-    { "PermutationOfImage", 1, "f", FuncPermutationOfImage,
-      "src/trans.c:FuncPermutationOfImage" },
-
-    { "RestrictedTransformation", 2, "f, list", FuncRestrictedTransformation,
-      "src/trans.c:FuncRestrictedTransformation" },
-
-    { "AS_TRANS_TRANS", 2, "f, m", FuncAS_TRANS_TRANS,
-      "src/trans.c:FuncAS_TRANS_TRANS" },
-
-    { "TRIM_TRANS", 2, "f, m", FuncTRIM_TRANS, "src/trans.c:FuncTRIM_TRANS" },
-
-    { "IsInjectiveListTrans", 2, "t, l", FuncIsInjectiveListTrans,
-      "src/trans.c:FuncIsInjectiveListTrans" },
-
-    { "PermLeftQuoTransformationNC", 2, "f, g",
-      FuncPermLeftQuoTransformationNC,
-      "src/trans.c:FuncPermLeftQuoTransformationNC" },
-
-    { "TRANS_IMG_KER_NC", 2, "img, ker", FuncTRANS_IMG_KER_NC,
-      "src/trans.c:FuncTRANS_IMG_KER_NC" },
-
-    { "IDEM_IMG_KER_NC", 2, "img, ker", FuncIDEM_IMG_KER_NC,
-      "src/trans.c:FuncIDEM_IMG_KER_NC" },
-
-    { "InverseOfTransformation", 1, "f", FuncInverseOfTransformation,
-      "src/trans.c:FuncInverseOfTransformation" },
-
-    { "INV_LIST_TRANS", 2, "list, f", FuncINV_LIST_TRANS,
-      "src/trans.c:FuncINV_LIST_TRANS" },
-
-    { "TRANS_IMG_CONJ", 2, "f, g", FuncTRANS_IMG_CONJ,
-      "src/trans.c:FuncTRANS_IMG_CONJ" },
-
-    { "IndexPeriodOfTransformation", 1, "f", FuncIndexPeriodOfTransformation,
-      "src/trans.c:FuncIndexPeriodOfTransformation" },
-
-    { "SMALLEST_IDEM_POW_TRANS", 1, "f", FuncSMALLEST_IDEM_POW_TRANS,
-      "src/trans.c:FuncSMALLEST_IDEM_POW_TRANS" },
-
-    { "POW_KER_PERM", 2, "ker, f", FuncPOW_KER_PERM,
-      "src/trans.c:FuncPOW_KER_PERM" },
-
-    { "ON_KERNEL_ANTI_ACTION", 3, "ker, f, n", FuncON_KERNEL_ANTI_ACTION,
-      "src/trans.c:FuncON_KERNEL_ANTI_ACTION" },
-
-    { "INV_KER_TRANS", 2, "ker, f", FuncINV_KER_TRANS,
-      "src/trans.c:FuncINV_KER_TRANS" },
-
-    { "IS_IDEM_TRANS", 1, "f", FuncIS_IDEM_TRANS,
-      "src/trans.c:FuncIS_IDEM_TRANS" },
-
-    { "IS_ID_TRANS", 1, "f", FuncIS_ID_TRANS, "src/trans.c:FuncIS_ID_TRANS" },
-
-    { "COMPONENT_REPS_TRANS", 1, "f", FuncCOMPONENT_REPS_TRANS,
-      "src/trans.c:FuncCOMPONENT_REPS_TRANS" },
-
-    { "NR_COMPONENTS_TRANS", 1, "f", FuncNR_COMPONENTS_TRANS,
-      "src/trans.c:FuncNR_COMPONENTS_TRANS" },
-
-    { "COMPONENTS_TRANS", 1, "f", FuncCOMPONENTS_TRANS,
-      "src/trans.c:FuncCOMPONENTS_TRANS" },
-
-    { "COMPONENT_TRANS_INT", 2, "f, pt", FuncCOMPONENT_TRANS_INT,
-      "src/trans.c:FuncCOMPONENT_TRANS_INT" },
-
-    { "CYCLE_TRANS_INT", 2, "f, pt", FuncCYCLE_TRANS_INT,
-      "src/trans.c:FuncCYCLE_TRANS_INT" },
-
-    { "CYCLES_TRANS", 1, "f", FuncCYCLES_TRANS,
-      "src/trans.c:FuncCYCLES_TRANS" },
-
-    { "CYCLES_TRANS_LIST", 2, "f, pt", FuncCYCLES_TRANS_LIST,
-      "src/trans.c:FuncCYCLES_TRANS_LIST" },
-
-    { "LEFT_ONE_TRANS", 1, "f", FuncLEFT_ONE_TRANS,
-      "src/trans.c:FuncLEFT_ONE_TRANS" },
-
-    { "RIGHT_ONE_TRANS", 1, "f", FuncRIGHT_ONE_TRANS,
-      "src/trans.c:FuncRIGHT_ONE_TRANS" },
-
-    { "OnPosIntSetsTrans", 3, "set, f, n", FuncOnPosIntSetsTrans,
-      "src/trans.c:FuncOnPosIntSetsTrans" },
-
+    GVAR_FUNC(TransformationNC, 1, "list"),
+    GVAR_FUNC(TransformationListListNC, 2, "src, ran"),
+    GVAR_FUNC(DegreeOfTransformation, 1, "f"),
+    GVAR_FUNC(HASH_FUNC_FOR_TRANS, 2, "f, data"),
+    GVAR_FUNC(RANK_TRANS, 1, "f"),
+    GVAR_FUNC(RANK_TRANS_INT, 2, "f, n"),
+    GVAR_FUNC(RANK_TRANS_LIST, 2, "f, list"),
+    GVAR_FUNC(LARGEST_MOVED_PT_TRANS, 1, "f"),
+    GVAR_FUNC(LARGEST_IMAGE_PT, 1, "f"),
+    GVAR_FUNC(SMALLEST_MOVED_PT_TRANS, 1, "f"),
+    GVAR_FUNC(SMALLEST_IMAGE_PT, 1, "f"),
+    GVAR_FUNC(NR_MOVED_PTS_TRANS, 1, "f"),
+    GVAR_FUNC(MOVED_PTS_TRANS, 1, "f"),
+    GVAR_FUNC(IMAGE_LIST_TRANS_INT, 2, "f, n"),
+    GVAR_FUNC(FLAT_KERNEL_TRANS, 1, "f"),
+    GVAR_FUNC(FLAT_KERNEL_TRANS_INT, 2, "f, n"),
+    GVAR_FUNC(IMAGE_SET_TRANS, 1, "f"),
+    GVAR_FUNC(UNSORTED_IMAGE_SET_TRANS, 1, "f"),
+    GVAR_FUNC(IMAGE_SET_TRANS_INT, 2, "f, n"),
+    GVAR_FUNC(KERNEL_TRANS, 2, "f, n"),
+    GVAR_FUNC(PREIMAGES_TRANS_INT, 2, "f, pt"),
+    GVAR_FUNC(AS_TRANS_PERM, 1, "f"),
+    GVAR_FUNC(AS_TRANS_PERM_INT, 2, "f, n"),
+    GVAR_FUNC(AS_PERM_TRANS, 1, "f"),
+    GVAR_FUNC(PermutationOfImage, 1, "f"),
+    GVAR_FUNC(RestrictedTransformation, 2, "f, list"),
+    GVAR_FUNC(AS_TRANS_TRANS, 2, "f, m"),
+    GVAR_FUNC(TRIM_TRANS, 2, "f, m"),
+    GVAR_FUNC(IsInjectiveListTrans, 2, "t, l"),
+    GVAR_FUNC(PermLeftQuoTransformationNC, 2, "f, g"),
+    GVAR_FUNC(TRANS_IMG_KER_NC, 2, "img, ker"),
+    GVAR_FUNC(IDEM_IMG_KER_NC, 2, "img, ker"),
+    GVAR_FUNC(InverseOfTransformation, 1, "f"),
+    GVAR_FUNC(INV_LIST_TRANS, 2, "list, f"),
+    GVAR_FUNC(TRANS_IMG_CONJ, 2, "f, g"),
+    GVAR_FUNC(IndexPeriodOfTransformation, 1, "f"),
+    GVAR_FUNC(SMALLEST_IDEM_POW_TRANS, 1, "f"),
+    GVAR_FUNC(POW_KER_PERM, 2, "ker, f"),
+    GVAR_FUNC(ON_KERNEL_ANTI_ACTION, 3, "ker, f, n"),
+    GVAR_FUNC(INV_KER_TRANS, 2, "ker, f"),
+    GVAR_FUNC(IS_IDEM_TRANS, 1, "f"),
+    GVAR_FUNC(IS_ID_TRANS, 1, "f"),
+    GVAR_FUNC(COMPONENT_REPS_TRANS, 1, "f"),
+    GVAR_FUNC(NR_COMPONENTS_TRANS, 1, "f"),
+    GVAR_FUNC(COMPONENTS_TRANS, 1, "f"),
+    GVAR_FUNC(COMPONENT_TRANS_INT, 2, "f, pt"),
+    GVAR_FUNC(CYCLE_TRANS_INT, 2, "f, pt"),
+    GVAR_FUNC(CYCLES_TRANS, 1, "f"),
+    GVAR_FUNC(CYCLES_TRANS_LIST, 2, "f, pt"),
+    GVAR_FUNC(LEFT_ONE_TRANS, 1, "f"),
+    GVAR_FUNC(RIGHT_ONE_TRANS, 1, "f"),
+    GVAR_FUNC(OnPosIntSetsTrans, 3, "set, f, n"),
     { 0, 0, 0, 0, 0 }
 
 };

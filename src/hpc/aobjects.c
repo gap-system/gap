@@ -1794,95 +1794,36 @@ Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
 
 static StructGVarFunc GVarFuncs [] = {
 
-    { "AtomicList", -1, "list|count, obj",
-      FuncAtomicList, "src/aobjects.c:AtomicList" },
-
-    { "FixedAtomicList", -1, "list|count, obj",
-      FuncFixedAtomicList, "src/aobjects.c:FixedAtomicList" },
-
-    { "MakeFixedAtomicList", 1, "list",
-      FuncMakeFixedAtomicList, "src/aobjects.c:MakeFixedAtomicList" },
-
-    { "FromAtomicList", 1, "list",
-      FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
-
-    { "AddAtomicList", 2, "list, obj",
-      FuncAddAtomicList, "src/aobjects.c:AddAtomicList" },
-
-    { "GET_ATOMIC_LIST", 2, "list, index",
-      FuncGET_ATOMIC_LIST, "src/aobjects.c:GET_ATOMIC_LIST" },
-
-    { "SET_ATOMIC_LIST", 3, "list, index, value",
-      FuncSET_ATOMIC_LIST, "src/aobjects.c:SET_ATOMIC_LIST" },
-
-    { "COMPARE_AND_SWAP", 4, "list, index, old, new",
-      FuncCOMPARE_AND_SWAP, "src/aobjects.c:COMPARE_AND_SWAP" },
-
-    { "ATOMIC_ADDITION", 3, "list, index, inc",
-      FuncATOMIC_ADDITION, "src/aobjects.c:ATOMIC_ADDITION" },
-
-    { "AtomicRecord", -1, "[capacity]",
-      FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },
-   
-    { "IS_ATOMIC_LIST", 1, "object",
-      FuncIS_ATOMIC_LIST, "src/abjects.c:IS_ATOMIC_LIST" },
-
-    { "IS_FIXED_ATOMIC_LIST", 1, "object",
-      FuncIS_FIXED_ATOMIC_LIST, "src/abjects.c:IS_FIXED_ATOMIC_LIST" },
-
-    { "IS_ATOMIC_RECORD", 1, "object",
-      FuncIS_ATOMIC_RECORD, "src/abjects.c:IS_ATOMIC_RECORD" },
-
-    { "GET_ATOMIC_RECORD", 3, "record, field, default",
-      FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
-
-    { "SET_ATOMIC_RECORD", 3, "record, field, value",
-      FuncSET_ATOMIC_RECORD, "src/aobjects.c:SET_ATOMIC_RECORD" },
-
-    { "UNBIND_ATOMIC_RECORD", 2, "record, field",
-      FuncUNBIND_ATOMIC_RECORD, "src/aobjects.c:UNBIND_ATOMIC_RECORD" },
-
-    { "ATOMIC_RECORD_REPLACEMENT", 2, "record, policy",
-      FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
-    { "FromAtomicRecord", 1, "record",
-      FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
-
-    { "FromAtomicComObj", 1, "record",
-      FuncFromAtomicComObj, "src/aobjects.c:FromAtomicComObj" },
-
-    { "ThreadLocalRecord", -1, "record [, record]",
-      FuncThreadLocalRecord, "src/aobjects.c:ThreadLocalRecord" },
-
-    { "SetTLDefault", 3, "thread-local record, name, value",
-      FuncSetTLDefault, "src/aobjects.c:SetTLDefault" },
-
-    { "SetTLConstructor", 3, "thread-local record, name, function",
-      FuncSetTLConstructor, "src/aobjects.c:SetTLConstructor" },
-
-    { "MakeWriteOnceAtomic", 1, "obj",
-      FuncMakeWriteOnceAtomic, "src/aobjects.c:MakeWriteOnceAtomic" },
-
-    { "MakeReadWriteAtomic", 1, "obj",
-      FuncMakeReadWriteAtomic, "src/aobjects.c:MakeReadWriteAtomic" },
-
-    { "MakeStrictWriteOnceAtomic", 1, "obj",
-      FuncMakeStrictWriteOnceAtomic, "src/aobjects.c:MakeStrictWriteOnceAtomic" },
-
-    { "BindOnce", 3, "obj, index, value",
-      FuncBindOnce, "src/aobjects.c:BindOnce" },
-
-    { "StrictBindOnce", 3, "obj, index, value",
-      FuncStrictBindOnce, "src/aobjects.c:StrictBindOnce" },
-
-    { "TestBindOnce", 3, "obj, index, value",
-      FuncTestBindOnce, "src/aobjects.c:TestBindOnce" },
-
-    { "BindOnceExpr", 3, "obj, index, func",
-      FuncBindOnceExpr, "src/aobjects.c:BindOnceExpr" },
-
-    { "TestBindOnceExpr", 3, "obj, index, func",
-      FuncTestBindOnceExpr, "src/aobjects.c:TestBindOnceExpr" },
-
+    GVAR_FUNC(AtomicList, -1, "list|count, obj"),
+    GVAR_FUNC(FixedAtomicList, -1, "list|count, obj"),
+    GVAR_FUNC(MakeFixedAtomicList, 1, "list"),
+    GVAR_FUNC(FromAtomicList, 1, "list"),
+    GVAR_FUNC(AddAtomicList, 2, "list, obj"),
+    GVAR_FUNC(GET_ATOMIC_LIST, 2, "list, index"),
+    GVAR_FUNC(SET_ATOMIC_LIST, 3, "list, index, value"),
+    GVAR_FUNC(COMPARE_AND_SWAP, 4, "list, index, old, new"),
+    GVAR_FUNC(ATOMIC_ADDITION, 3, "list, index, inc"),
+    GVAR_FUNC(AtomicRecord, -1, "[capacity]"),
+    GVAR_FUNC(IS_ATOMIC_LIST, 1, "object"),
+    GVAR_FUNC(IS_FIXED_ATOMIC_LIST, 1, "object"),
+    GVAR_FUNC(IS_ATOMIC_RECORD, 1, "object"),
+    GVAR_FUNC(GET_ATOMIC_RECORD, 3, "record, field, default"),
+    GVAR_FUNC(SET_ATOMIC_RECORD, 3, "record, field, value"),
+    GVAR_FUNC(UNBIND_ATOMIC_RECORD, 2, "record, field"),
+    GVAR_FUNC(ATOMIC_RECORD_REPLACEMENT, 2, "record, policy"),
+    GVAR_FUNC(FromAtomicRecord, 1, "record"),
+    GVAR_FUNC(FromAtomicComObj, 1, "record"),
+    GVAR_FUNC(ThreadLocalRecord, -1, "record [, record]"),
+    GVAR_FUNC(SetTLDefault, 3, "threadLocalRecord, name, value"),
+    GVAR_FUNC(SetTLConstructor, 3, "threadLocalRecord, name, function"),
+    GVAR_FUNC(MakeWriteOnceAtomic, 1, "obj"),
+    GVAR_FUNC(MakeReadWriteAtomic, 1, "obj"),
+    GVAR_FUNC(MakeStrictWriteOnceAtomic, 1, "obj"),
+    GVAR_FUNC(BindOnce, 3, "obj, index, value"),
+    GVAR_FUNC(StrictBindOnce, 3, "obj, index, value"),
+    GVAR_FUNC(TestBindOnce, 3, "obj, index, value"),
+    GVAR_FUNC(BindOnceExpr, 3, "obj, index, func"),
+    GVAR_FUNC(TestBindOnceExpr, 3, "obj, index, func"),
     { 0, 0, 0, 0, 0 }
 
 };

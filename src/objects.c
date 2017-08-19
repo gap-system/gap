@@ -139,7 +139,6 @@ void SetTypeObjError ( Obj obj, Obj type )
 {
     ErrorQuit( "Panic: cannot change type of object of type '%s'",
                (Int)TNAM_OBJ(obj), 0L );
-    return;
 }
 
 
@@ -1588,7 +1587,6 @@ void SaveComObj( Obj comobj)
       SaveUInt(GET_RNAM_PREC(comobj, i));
       SaveSubObj(GET_ELM_PREC(comobj, i));
     }
-  return;
 }
 
 /****************************************************************************
@@ -1606,7 +1604,6 @@ void SavePosObj( Obj posobj)
     {
       SaveSubObj(ADDR_OBJ(posobj)[i]);
     }
-  return;
 }
 
 /****************************************************************************
@@ -1628,7 +1625,6 @@ void SaveDatObj( Obj datobj)
     {
       SaveUInt(*ptr++);
     }
-  return;
 }
 
 /****************************************************************************
@@ -1648,7 +1644,6 @@ void LoadComObj( Obj comobj)
       SET_RNAM_PREC(comobj, i, LoadUInt());
       SET_ELM_PREC(comobj, i, LoadSubObj());
     }
-  return;
 }
 
 /****************************************************************************
@@ -1666,7 +1661,6 @@ void LoadPosObj( Obj posobj)
     {
       ADDR_OBJ(posobj)[i] = LoadSubObj();
     }
-  return;
 }
 
 /****************************************************************************
@@ -1688,7 +1682,6 @@ void LoadDatObj( Obj datobj)
     {
       *ptr ++ = LoadUInt();
     }
-  return;
 }
 
 
@@ -1980,21 +1973,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "SET_TYPE_DATOBJ", 2, "obj, type",
       SET_TYPE_DATOBJ_Handler, "src/objects.c:SET_TYPE_DATOBJ" },
 
-    { "CLONE_OBJ", 2, "obj, dst, src",
-      FuncCLONE_OBJ, "src/objects.c:CLONE_OBJ" },
-
-    { "SWITCH_OBJ", 2, "obj1, obj2",
-      FuncSWITCH_OBJ, "src/objects.c:SWITCH_OBJ" },
-
-    { "FORCE_SWITCH_OBJ", 2, "obj1, obj2",
-      FuncFORCE_SWITCH_OBJ, "src/objects.c:FORCE_SWITCH_OBJ" },
-
-    { "SET_PRINT_OBJ_INDEX", 1, "index",
-      FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
-
-    { "MakeImmutable", 1, "obj",
-      FuncMakeImmutable, "src/objects.c:MakeImmutable" },
-    
+    GVAR_FUNC(CLONE_OBJ, 2, "dst, src"),
+    GVAR_FUNC(SWITCH_OBJ, 2, "obj1, obj2"),
+    GVAR_FUNC(FORCE_SWITCH_OBJ, 2, "obj1, obj2"),
+    GVAR_FUNC(SET_PRINT_OBJ_INDEX, 1, "index"),
+    GVAR_FUNC(MakeImmutable, 1, "obj"),
     { 0, 0, 0, 0, 0 }
 
 };

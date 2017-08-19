@@ -497,8 +497,8 @@ function( obj )
     # filter the representations
     trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_ATTS );
 
-    # convert it into names
-    return List( NamesFilter(trues), x -> x{[8..Length(x)-1]} );
+    # convert it into names, removing the "Has" prefix"
+    return List( NamesFilter(trues), x -> x{[4..Length(x)]} );
 end );
 
 
@@ -522,8 +522,8 @@ function( obj )
     # filter the representations
     trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_TPRS );
 
-    # convert it into names
-    return List( NamesFilter(trues), x -> x{[8..Length(x)-1]} );
+    # convert it into names, removing the "Has" prefix"
+    return List( NamesFilter(trues), x -> x{[4..Length(x)]} );
 end );
 
 

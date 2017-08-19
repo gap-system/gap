@@ -2420,7 +2420,7 @@ Int             IsSSortPlistHom (
 }
 
 
-Obj FuncSetIsSSortedPlist (Obj self, Obj list)
+Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 {
   SET_FILT_LIST(list, FN_IS_SSORT);
   return (Obj)0;
@@ -3614,9 +3614,7 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_PLIST_REP", "obj", &IsPListFilt,
-      FuncIS_PLIST_REP, "src/lists.c:IS_PLIST_REP" },
-
+    GVAR_FILTER(IS_PLIST_REP, "obj", &IsPListFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -3628,21 +3626,11 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "ASS_PLIST_DEFAULT", 3, "list, pos, val",
-      FuncASS_PLIST_DEFAULT, "src/lists.c:ASS_PLIST_DEFAULT" },
-    
-    { "IsRectangularTablePlist", 1, "plist",
-      FuncIsRectangularTablePlist, "src/lists.c:IsRectangularTablePlist" },
-
-    { "SET_IS_SSORTED_PLIST", 1, "list",
-      FuncSetIsSSortedPlist, "src/lists.c:SET_IS_SSORTED_PLIST" },
-    
-    { "EmptyPlist", 1, "len",
-      FuncEmptyPlist, "src/lists.c:FuncEmptyPlist" },
-    
-    { "ShrinkAllocationPlist", 1, "plist",
-      FuncShrinkAllocationPlist, "src/lists.c:FuncShrinkAllocationPlist" },
-    
+    GVAR_FUNC(ASS_PLIST_DEFAULT, 3, "list, pos, val"),
+    GVAR_FUNC(IsRectangularTablePlist, 1, "plist"),
+    GVAR_FUNC(SET_IS_SSORTED_PLIST, 1, "list"),
+    GVAR_FUNC(EmptyPlist, 1, "len"),
+    GVAR_FUNC(ShrinkAllocationPlist, 1, "plist"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -3710,10 +3698,10 @@ static Int InitKernel (
        work needs to be done here */
 
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
-        SaveObjFuncs[ t1 ]             = SavePlist;
-        SaveObjFuncs[ t1 + IMMUTABLE ] = SavePlist; 
-        LoadObjFuncs[ t1 ]             = LoadPlist;
-        LoadObjFuncs[ t1 + IMMUTABLE ] = LoadPlist; 
+        SaveObjFuncs[ t1            ] = SavePlist;
+        SaveObjFuncs[ t1 +IMMUTABLE ] = SavePlist; 
+        LoadObjFuncs[ t1            ] = LoadPlist;
+        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadPlist; 
     }
 
     /* get the types (resp. type functions)                                */
@@ -3899,33 +3887,32 @@ static Int InitKernel (
     /* install the list assignment methods                                 */
     AssListFuncs    [ T_PLIST           ] = AssPlist;
     AssListFuncs    [ T_PLIST+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_NDENSE    ] = AssPlistXXX;
+    AssListFuncs    [ T_PLIST_NDENSE           ] = AssPlistXXX;
     AssListFuncs    [ T_PLIST_NDENSE+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_DENSE    ] = AssPlistDense;
+    AssListFuncs    [ T_PLIST_DENSE           ] = AssPlistDense;
     AssListFuncs    [ T_PLIST_DENSE+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM    ] = AssPlistDense;
+    AssListFuncs    [ T_PLIST_DENSE_NHOM           ] = AssPlistDense;
     AssListFuncs    [ T_PLIST_DENSE_NHOM+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM_SSORT    ] = AssPlistDense;
+    AssListFuncs    [ T_PLIST_DENSE_NHOM_SSORT           ] = AssPlistDense;
     AssListFuncs    [ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM_NSORT    ] = AssPlistDense;
+    AssListFuncs    [ T_PLIST_DENSE_NHOM_NSORT           ] = AssPlistDense;
     AssListFuncs    [ T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE ] = AssPlistImm;
-    AssListFuncs    [ T_PLIST_EMPTY    ] = AssPlistEmpty;
+    AssListFuncs    [ T_PLIST_EMPTY           ] = AssPlistEmpty;
     AssListFuncs    [ T_PLIST_EMPTY+IMMUTABLE ] = AssPlistImm;
     
     
-    
     for ( t1 = T_PLIST_HOM; t1 < T_PLIST_CYC; t1 += 2 ) {
-      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
       AssListFuncs[ t1                ] = AssPlistHomog;
+      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
     }
 
     for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
-      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
       AssListFuncs[ t1                ] = AssPlistCyc;
+      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
     }
 
-    AssListFuncs[ T_PLIST_FFE+IMMUTABLE ] = AssPlistImm;
     AssListFuncs[ T_PLIST_FFE           ] = AssPlistFfe;
+    AssListFuncs[ T_PLIST_FFE+IMMUTABLE ] = AssPlistImm;
 
     /* install the list assignments methods                                */
     AsssListFuncs   [ T_PLIST            ] = AsssPlist;
@@ -3956,9 +3943,9 @@ static Int InitKernel (
     IsHomogListFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = IsHomogPlist;
     IsHomogListFuncs[ T_PLIST_DENSE_NHOM            ] = AlwaysNo;
     IsHomogListFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT      ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT      ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = AlwaysNo;
     IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = AlwaysNo;
     IsHomogListFuncs[ T_PLIST_EMPTY                 ] = AlwaysYes;
     IsHomogListFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = AlwaysYes;
@@ -3977,9 +3964,9 @@ static Int InitKernel (
     IsTableListFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = IsTablePlist;
     IsTableListFuncs[ T_PLIST_DENSE_NHOM            ] = AlwaysNo;
     IsTableListFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT      ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = AlwaysNo;
     IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT      ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = AlwaysNo;
     IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = AlwaysNo;
     IsTableListFuncs[ T_PLIST_EMPTY                 ] = AlwaysNo;
     IsTableListFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = AlwaysNo;
@@ -4020,9 +4007,9 @@ static Int InitKernel (
     IsSSortListFuncs[ T_PLIST_DENSE     +IMMUTABLE ] = IsSSortPlistDense;
     IsSSortListFuncs[ T_PLIST_DENSE_NHOM           ] = IsSSortPlistDense;
     IsSSortListFuncs[ T_PLIST_DENSE_NHOM+IMMUTABLE ] = IsSSortPlistDense;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT     ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT           ] = AlwaysYes;
     IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT     ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT           ] = AlwaysNo;
     IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_PLIST_EMPTY                ] = AlwaysYes;
     IsSSortListFuncs[ T_PLIST_EMPTY     +IMMUTABLE ] = AlwaysYes;
@@ -4071,7 +4058,7 @@ static Int InitKernel (
         PosListFuncs[ t1 +IMMUTABLE ] = PosPlistDense;
     }
     
-    PosListFuncs[ T_PLIST_DENSE_NHOM_SSORT     ] = PosPlistSort;
+    PosListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = PosPlistSort;
     PosListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = PosPlistSort;
     PosListFuncs[ T_PLIST_HOM_SSORT            ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_HOM_SSORT +IMMUTABLE ] = PosPlistHomSort;

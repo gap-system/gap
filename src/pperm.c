@@ -6607,118 +6607,44 @@ static StructGVarFilt GVarFilts[] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    { "EmptyPartialPerm", 0, "", FuncEmptyPartialPerm,
-      "src/pperm.c:FuncEmptyPartialPerm" },
-
-    { "DensePartialPermNC", 1, "img", FuncDensePartialPermNC,
-      "src/pperm.c:FuncDensePartialPermNC" },
-
-    { "SparsePartialPermNC", 2, "dom, img", FuncSparsePartialPermNC,
-      "src/pperm.c:FuncSparsePartialPermNC" },
-
-    { "DegreeOfPartialPerm", 1, "f", FuncDegreeOfPartialPerm,
-      "src/pperm.c:FuncDegreeOfPartialPerm" },
-
-    { "CoDegreeOfPartialPerm", 1, "f", FuncCoDegreeOfPartialPerm,
-      "src/pperm.c:FuncCoDegreeOfPartialPerm" },
-
-    { "RankOfPartialPerm", 1, "f", FuncRankOfPartialPerm,
-      "src/pperm.c:FuncRankOfPartialPerm" },
-
-    { "IMAGE_PPERM", 1, "f", FuncIMAGE_PPERM, "src/pperm.c:FuncIMAGE_PPERM" },
-
-    { "DOMAIN_PPERM", 1, "f", FuncDOMAIN_PPERM,
-      "src/pperm.c:FuncDOMAIN_PPERM" },
-
-    { "IMAGE_SET_PPERM", 1, "f", FuncIMAGE_SET_PPERM,
-      "src/pperm.c:FuncIMAGE_SET_PPERM" },
-
-    { "PREIMAGE_PPERM_INT", 2, "f, i", FuncPREIMAGE_PPERM_INT,
-      "src/pperm.c:FuncPREIMAGE_PPERM_INT" },
-
-    { "INDEX_PERIOD_PPERM", 1, "f", FuncINDEX_PERIOD_PPERM,
-      "src/pperm.c:FuncINDEX_PERIOD_PPERM" },
-
-    { "SMALLEST_IDEM_POW_PPERM", 1, "f", FuncSMALLEST_IDEM_POW_PPERM,
-      "src/pperm.c:FuncSMALLEST_IDEM_POW_PPERM" },
-
-    { "COMPONENT_REPS_PPERM", 1, "f", FuncCOMPONENT_REPS_PPERM,
-      "src/pperm.c:FuncCOMPONENT_REPS_PPERM" },
-
-    { "NR_COMPONENTS_PPERM", 1, "f", FuncNR_COMPONENTS_PPERM,
-      "src/pperm.c:FuncNR_COMPONENTS_PPERM" },
-
-    { "COMPONENTS_PPERM", 1, "f", FuncCOMPONENTS_PPERM,
-      "src/pperm.c:FuncCOMPONENTS_PPERM" },
-
-    { "COMPONENT_PPERM_INT", 2, "f, pt", FuncCOMPONENT_PPERM_INT,
-      "src/pperm.c:FuncCOMPONENT_PPERM_INT" },
-
-    { "FIXED_PTS_PPERM", 1, "f", FuncFIXED_PTS_PPERM,
-      "src/pperm.c:FuncFIXED_PTS_PPERM" },
-
-    { "NR_FIXED_PTS_PPERM", 1, "f", FuncNR_FIXED_PTS_PPERM,
-      "src/pperm.c:FuncNR_FIXED_PTS_PPERM" },
-
-    { "MOVED_PTS_PPERM", 1, "f", FuncMOVED_PTS_PPERM,
-      "src/pperm.c:FuncMOVED_PTS_PPERM" },
-
-    { "NR_MOVED_PTS_PPERM", 1, "f", FuncNR_MOVED_PTS_PPERM,
-      "src/pperm.c:FuncNR_MOVED_PTS_PPERM" },
-
-    { "LARGEST_MOVED_PT_PPERM", 1, "f", FuncLARGEST_MOVED_PT_PPERM,
-      "src/pperm.c:FuncLARGEST_MOVED_PT_PPERM" },
-
-    { "SMALLEST_MOVED_PT_PPERM", 1, "f", FuncSMALLEST_MOVED_PT_PPERM,
-      "src/pperm.c:FuncSMALLEST_MOVED_PT_PPERM" },
-
-    { "TRIM_PPERM", 1, "f", FuncTRIM_PPERM, "src/pperm.c:FuncTRIM_PPERM" },
-
-    { "HASH_FUNC_FOR_PPERM", 2, "f, data", FuncHASH_FUNC_FOR_PPERM,
-      "src/pperm.c:FuncHASH_FUNC_FOR_PPERM" },
-
-    { "IS_IDEM_PPERM", 1, "f", FuncIS_IDEM_PPERM,
-      "src/pperm.c:FuncIS_IDEM_PPERM" },
-
-    { "LEFT_ONE_PPERM", 1, "f", FuncLEFT_ONE_PPERM,
-      "src/pperm.c:FuncLEFT_ONE_PPERM" },
-
-    { "RIGHT_ONE_PPERM", 1, "f", FuncRIGHT_ONE_PPERM,
-      "src/pperm.c:FuncRIGHT_ONE_PPERM" },
-
-    { "NaturalLeqPartialPerm", 2, "f, g", FuncNaturalLeqPartialPerm,
-      "src/pperm.c:FuncNaturalLeqPartialPerm" },
-
-    { "JOIN_PPERMS", 2, "f, g", FuncJOIN_PPERMS,
-      "src/pperm.c:FuncJOIN_PPERMS" },
-
-    { "JOIN_IDEM_PPERMS", 2, "f, g", FuncJOIN_IDEM_PPERMS,
-      "src/pperm.c:FuncJOIN_IDEM_PPERMS" },
-
-    { "MEET_PPERMS", 2, "f, g", FuncMEET_PPERMS,
-      "src/pperm.c:FuncMEET_PPERMS" },
-
-    { "RESTRICTED_PPERM", 2, "f, g", FuncRESTRICTED_PPERM,
-      "src/pperm.c:FuncRESTRICTED_PPERM" },
-
-    { "AS_PPERM_PERM", 2, "p, set", FuncAS_PPERM_PERM,
-      "src/pperm.c:FuncAS_PPERM_PERM" },
-
-    { "AS_PERM_PPERM", 1, "f", FuncAS_PERM_PPERM,
-      "src/pperm.c:FuncAS_PERM_PPERM" },
-
-    { "PERM_LEFT_QUO_PPERM_NC", 2, "f, g", FuncPERM_LEFT_QUO_PPERM_NC,
-      "src/pperm.c:FuncPERM_LEFT_QUO_PPERM_NC" },
-
-    { "ShortLexLeqPartialPerm", 2, "f, g", FuncShortLexLeqPartialPerm,
-      "src/pperm.c:FuncShortLexLeqPartialPerm" },
-
-    { "HAS_DOM_PPERM", 1, "f", FuncHAS_DOM_PPERM,
-      "src/pperm.c:FuncHAS_DOM_PPERM" },
-
-    { "HAS_IMG_PPERM", 1, "f", FuncHAS_IMG_PPERM,
-      "src/pperm.c:FuncHAS_IMG_PPERM" },
-
+    GVAR_FUNC(EmptyPartialPerm, 0, ""),
+    GVAR_FUNC(DensePartialPermNC, 1, "img"),
+    GVAR_FUNC(SparsePartialPermNC, 2, "dom, img"),
+    GVAR_FUNC(DegreeOfPartialPerm, 1, "f"),
+    GVAR_FUNC(CoDegreeOfPartialPerm, 1, "f"),
+    GVAR_FUNC(RankOfPartialPerm, 1, "f"),
+    GVAR_FUNC(IMAGE_PPERM, 1, "f"),
+    GVAR_FUNC(DOMAIN_PPERM, 1, "f"),
+    GVAR_FUNC(IMAGE_SET_PPERM, 1, "f"),
+    GVAR_FUNC(PREIMAGE_PPERM_INT, 2, "f, i"),
+    GVAR_FUNC(INDEX_PERIOD_PPERM, 1, "f"),
+    GVAR_FUNC(SMALLEST_IDEM_POW_PPERM, 1, "f"),
+    GVAR_FUNC(COMPONENT_REPS_PPERM, 1, "f"),
+    GVAR_FUNC(NR_COMPONENTS_PPERM, 1, "f"),
+    GVAR_FUNC(COMPONENTS_PPERM, 1, "f"),
+    GVAR_FUNC(COMPONENT_PPERM_INT, 2, "f, pt"),
+    GVAR_FUNC(FIXED_PTS_PPERM, 1, "f"),
+    GVAR_FUNC(NR_FIXED_PTS_PPERM, 1, "f"),
+    GVAR_FUNC(MOVED_PTS_PPERM, 1, "f"),
+    GVAR_FUNC(NR_MOVED_PTS_PPERM, 1, "f"),
+    GVAR_FUNC(LARGEST_MOVED_PT_PPERM, 1, "f"),
+    GVAR_FUNC(SMALLEST_MOVED_PT_PPERM, 1, "f"),
+    GVAR_FUNC(TRIM_PPERM, 1, "f"),
+    GVAR_FUNC(HASH_FUNC_FOR_PPERM, 2, "f, data"),
+    GVAR_FUNC(IS_IDEM_PPERM, 1, "f"),
+    GVAR_FUNC(LEFT_ONE_PPERM, 1, "f"),
+    GVAR_FUNC(RIGHT_ONE_PPERM, 1, "f"),
+    GVAR_FUNC(NaturalLeqPartialPerm, 2, "f, g"),
+    GVAR_FUNC(JOIN_PPERMS, 2, "f, g"),
+    GVAR_FUNC(JOIN_IDEM_PPERMS, 2, "f, g"),
+    GVAR_FUNC(MEET_PPERMS, 2, "f, g"),
+    GVAR_FUNC(RESTRICTED_PPERM, 2, "f, g"),
+    GVAR_FUNC(AS_PPERM_PERM, 2, "p, set"),
+    GVAR_FUNC(AS_PERM_PPERM, 1, "f"),
+    GVAR_FUNC(PERM_LEFT_QUO_PPERM_NC, 2, "f, g"),
+    GVAR_FUNC(ShortLexLeqPartialPerm, 2, "f, g"),
+    GVAR_FUNC(HAS_DOM_PPERM, 1, "f"),
+    GVAR_FUNC(HAS_IMG_PPERM, 1, "f"),
     { "OnPosIntSetsPartialPerm", 2, "set, f", FuncOnPosIntSetsPPerm,
       "src/pperm.c:FuncOnPosIntSetsPPerm" },
 

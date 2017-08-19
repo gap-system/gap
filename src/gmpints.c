@@ -2319,9 +2319,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 */
 static StructGVarFilt GVarFilts [] = {
 
-  { "IS_INT", "obj", &IsIntFilt,
-    FuncIS_INT, "src/gmpints.c:IS_INT" },
-
+  GVAR_FILTER(IS_INT, "obj", &IsIntFilt),
   { 0, 0, 0, 0, 0 }
 
 };
@@ -2333,57 +2331,23 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-  { "QUO_INT", 2, "gmp1, gmp2",
-    FuncQUO_INT, "src/gmpints.c:QUO_INT" },
-
-  { "ABS_INT", 1, "x",
-    FuncABS_INT, "src/gmpints.c:ABS_INT" },
-
-  { "SIGN_INT", 1, "x",
-    FuncSIGN_INT, "src/gmpints.c:SIGN_INT" },
-
-  { "REM_INT", 2, "gmp1, gmp2",
-    FuncREM_INT, "src/gmpints.c:REM_INT" },
-
-  { "GCD_INT", 2, "gmp1, gmp2",
-    FuncGCD_INT, "src/gmpints.c:GCD_INT" },
-  
-  { "PROD_INT_OBJ", 2, "gmp, obj",
-    FuncPROD_INT_OBJ, "src/gmpints.c:PROD_INT_OBJ" },
-  
-  { "POW_OBJ_INT", 2, "obj, gmp",
-    FuncPOW_OBJ_INT, "src/gmpints.c:POW_OBJ_INT" },
-  
-  { "JACOBI_INT", 2, "gmp1, gmp2",
-    FuncJACOBI_INT, "src/gmpints.c:JACOBI_INT" },
-
-  { "PVALUATION_INT", 2, "n, p",
-    FuncPVALUATION_INT, "src/gmpints.c:PVALUATION_INT" },
-
-  { "POWERMODINT", 3, "base, exp, mod",
-    FuncPOWERMODINT, "src/gmpints.c:POWERMODINT" },
-
-  { "IS_PROBAB_PRIME_INT", 2, "n, reps",
-    FuncIS_PROBAB_PRIME_INT, "src/gmpints.c:IS_PROBAB_PRIME_INT" },
-
-  { "INVMODINT", 2, "base, mod",
-    FuncINVMODINT, "src/gmpints.c:INVMODINT" },
-
-  { "HexStringInt", 1, "gmp",
-    FuncHexStringInt, "src/gmpints.c:HexStringInt" },
-  
-  { "IntHexString", 1, "string",
-    FuncIntHexString, "src/gmpints.c:IntHexString" },
-  
-  { "Log2Int", 1, "gmp",
-    FuncLog2Int, "src/gmpints.c:Log2Int" },
-
-  { "STRING_INT", 1, "gmp",
-    FuncSTRING_INT, "src/gmpints.c:STRING_INT" },
-  
-  { "RandomIntegerMT", 2, "mtstr, nrbits",
-    FuncRandomIntegerMT, "src/gmpints.c:RandomIntegerMT" },
-
+  GVAR_FUNC(QUO_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(ABS_INT, 1, "x"),
+  GVAR_FUNC(SIGN_INT, 1, "x"),
+  GVAR_FUNC(REM_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(GCD_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
+  GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
+  GVAR_FUNC(JACOBI_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
+  GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
+  GVAR_FUNC(IS_PROBAB_PRIME_INT, 2, "n, reps"),
+  GVAR_FUNC(INVMODINT, 2, "base, mod"),
+  GVAR_FUNC(HexStringInt, 1, "gmp"),
+  GVAR_FUNC(IntHexString, 1, "string"),
+  GVAR_FUNC(Log2Int, 1, "gmp"),
+  GVAR_FUNC(STRING_INT, 1, "gmp"),
+  GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),
   { 0, 0, 0, 0, 0 }
 
 };

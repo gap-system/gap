@@ -8,16 +8,16 @@
 gap> START_TEST("listindex.tst");
 gap> r := NewCategory("ListTestObject",IsList and HasLength and HasIsFinite);
 <Category "ListTestObject">
-gap> InstallMethod(\[\],[r,IsObject],function(l,ix) 
+gap> InstallOtherMethod(\[\],[r,IsObject],function(l,ix) 
 >     return ix;
 > end);
-gap> InstallMethod(\[\]\:\=,[r and IsMutable,IsObject, IsObject],function(l,ix,x) 
+gap> InstallOtherMethod(\[\]\:\=,[r and IsMutable,IsObject, IsObject],function(l,ix,x) 
 >     Print ("Assign ",ix," ",x,"\n");
 > end);
-gap> InstallMethod(Unbind\[\],[r and IsMutable,IsObject],function(l,ix) 
+gap> InstallOtherMethod(Unbind\[\],[r and IsMutable,IsObject],function(l,ix) 
 >     Print ("Unbind ",ix,"\n");
 > end);
-gap> InstallMethod(IsBound\[\],[r and IsMutable,IsObject],function(l,ix) 
+gap> InstallOtherMethod(IsBound\[\],[r and IsMutable,IsObject],function(l,ix) 
 >     Print ("IsBound ",ix,"\n");
 >     return false;
 > end);

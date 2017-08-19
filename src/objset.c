@@ -879,48 +879,20 @@ static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) {
 
 static StructGVarFunc GVarFuncs [] = {
 
-    { "OBJ_SET", -1, "[list]",
-      FuncOBJ_SET, "src/objset.c:OBJ_SET" },
-
-    { "ADD_OBJ_SET", 2, "objset, obj",
-      FuncADD_OBJ_SET, "src/objset.c:ADD_OBJ_SET" },
-
-    { "REMOVE_OBJ_SET", 2, "objset, obj",
-      FuncREMOVE_OBJ_SET, "src/objset.c:REMOVE_OBJ_SET" },
-
-    { "FIND_OBJ_SET", 2, "objset, obj",
-      FuncFIND_OBJ_SET, "src/objset.c:FIND_OBJ_SET" },
-
-    { "CLEAR_OBJ_SET", 1, "objset",
-      FuncCLEAR_OBJ_SET, "src/objset.c:CLEAR_OBJ_SET" },
-
-    { "OBJ_SET_VALUES", 1, "objset",
-      FuncOBJ_SET_VALUES, "src/objset.c:OBJ_SET_VALUES" },
-
-    { "OBJ_MAP", -1, "[list]",
-      FuncOBJ_MAP, "src/objset.c:OBJ_MAP" },
-
-    { "ADD_OBJ_MAP", 3, "objmap, key, value",
-      FuncADD_OBJ_MAP, "src/objset.c:ADD_OBJ_MAP" },
-
-    { "REMOVE_OBJ_MAP", 2, "objmap, obj",
-      FuncREMOVE_OBJ_MAP, "src/objset.c:REMOVE_OBJ_MAP" },
-
-    { "FIND_OBJ_MAP", 3, "objmap, obj, default",
-      FuncFIND_OBJ_MAP, "src/objset.c:FIND_OBJ_MAP" },
-
-    { "CONTAINS_OBJ_MAP", 2, "objmap, obj",
-      FuncCONTAINS_OBJ_MAP, "src/objset.c:CONTAINS_OBJ_MAP" },
-
-    { "CLEAR_OBJ_MAP", 1, "objmap",
-      FuncCLEAR_OBJ_MAP, "src/objset.c:CLEAR_OBJ_MAP" },
-
-    { "OBJ_MAP_VALUES", 1, "objmap",
-      FuncOBJ_MAP_VALUES, "src/objset.c:OBJ_MAP_VALUES" },
-
-    { "OBJ_MAP_KEYS", 1, "objmap",
-      FuncOBJ_MAP_KEYS, "src/objset.c:OBJ_MAP_KEYS" },
-
+    GVAR_FUNC(OBJ_SET, -1, "[list]"),
+    GVAR_FUNC(ADD_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(REMOVE_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(FIND_OBJ_SET, 2, "objset, obj"),
+    GVAR_FUNC(CLEAR_OBJ_SET, 1, "objset"),
+    GVAR_FUNC(OBJ_SET_VALUES, 1, "objset"),
+    GVAR_FUNC(OBJ_MAP, -1, "[list]"),
+    GVAR_FUNC(ADD_OBJ_MAP, 3, "objmap, key, value"),
+    GVAR_FUNC(REMOVE_OBJ_MAP, 2, "objmap, obj"),
+    GVAR_FUNC(FIND_OBJ_MAP, 3, "objmap, obj, default"),
+    GVAR_FUNC(CONTAINS_OBJ_MAP, 2, "objmap, obj"),
+    GVAR_FUNC(CLEAR_OBJ_MAP, 1, "objmap"),
+    GVAR_FUNC(OBJ_MAP_VALUES, 1, "objmap"),
+    GVAR_FUNC(OBJ_MAP_KEYS, 1, "objmap"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -939,27 +911,27 @@ static Int InitKernel (
   InfoBags[T_OBJMAP].name = "object map";
   InfoBags[T_OBJMAP+IMMUTABLE].name = "immutable object map";
   /* install kind functions */
-  TypeObjFuncs[T_OBJSET] = TypeObjSet;
+  TypeObjFuncs[T_OBJSET          ] = TypeObjSet;
   TypeObjFuncs[T_OBJSET+IMMUTABLE] = TypeObjSet;
-  TypeObjFuncs[T_OBJMAP] = TypeObjMap;
+  TypeObjFuncs[T_OBJMAP          ] = TypeObjMap;
   TypeObjFuncs[T_OBJMAP+IMMUTABLE] = TypeObjMap;
   /* install global variables */
   InitCopyGVar("TYPE_OBJSET", &TYPE_OBJSET);
   InitCopyGVar("TYPE_OBJMAP", &TYPE_OBJMAP);
   /* install mark functions */
-  InitMarkFuncBags(T_OBJSET, MarkObjSet);
-  InitMarkFuncBags(T_OBJMAP, MarkObjMap);
+  InitMarkFuncBags(T_OBJSET          , MarkObjSet);
   InitMarkFuncBags(T_OBJSET+IMMUTABLE, MarkObjSet);
+  InitMarkFuncBags(T_OBJMAP          , MarkObjMap);
   InitMarkFuncBags(T_OBJMAP+IMMUTABLE, MarkObjMap);
   /* install print functions */
-  PrintObjFuncs[ T_OBJSET ] = PrintObjSet;
+  PrintObjFuncs[ T_OBJSET           ] = PrintObjSet;
   PrintObjFuncs[ T_OBJSET+IMMUTABLE ] = PrintObjSet;
-  PrintObjFuncs[ T_OBJMAP ] = PrintObjMap;
+  PrintObjFuncs[ T_OBJMAP           ] = PrintObjMap;
   PrintObjFuncs[ T_OBJMAP+IMMUTABLE ] = PrintObjMap;
   /* install mutability functions */
-  IsMutableObjFuncs [ T_OBJSET ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJSET           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
-  IsMutableObjFuncs [ T_OBJMAP ] = AlwaysYes;
+  IsMutableObjFuncs [ T_OBJMAP           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
   // init filters and functions
   InitHdlrFuncsFromTable( GVarFuncs );

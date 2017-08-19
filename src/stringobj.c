@@ -47,8 +47,8 @@
 **  dealing with a string.
 **
 **  The third part consists  of the functions 'PrintString', which is  called
-**  by 'FunPrint', and 'IsString', which test whether an arbitrary list  is a
-** string, and if so converts it into the above format.  
+**  by 'FuncPrint', and 'IsString', which test whether an arbitrary list is a
+**  string, and if so converts it into the above format.
 */
 #include <src/system.h>                 /* system dependent part */
 #include <src/gapstate.h>
@@ -2260,12 +2260,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_STRING", "obj", &IsStringFilt,
-      FuncIS_STRING, "src/stringobj.c:IS_STRING" },
-
-    { "IS_STRING_REP", "obj", &IsStringRepFilt,
-      FuncIS_STRING_REP, "src/lists.c:IS_STRING_REP" },
-
+    GVAR_FILTER(IS_STRING, "obj", &IsStringFilt),
+    GVAR_FILTER(IS_STRING_REP, "obj", &IsStringRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2277,71 +2273,34 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "IS_STRING_CONV", 1, "string",
-      FuncIS_STRING_CONV, "src/stringobj.c:IS_STRING_CONV" },
-
-    { "CONV_STRING", 1, "string",
-      FuncCONV_STRING, "src/stringobj.c:CONV_STRING" },
-
-    { "COPY_TO_STRING_REP", 1, "string",
-      FuncCOPY_TO_STRING_REP, "src/stringobj.c:COPY_TO_STRING_REP" },
-
-    { "CHAR_INT", 1, "integer",
-      FuncCHAR_INT, "src/stringobj.c:CHAR_INT" },
-
-    { "INT_CHAR", 1, "char",
-      FuncINT_CHAR, "src/stringobj.c:INT_CHAR" },
-
-    { "CHAR_SINT", 1, "integer",
-      FuncCHAR_SINT, "src/stringobj.c:CHAR_SINT" },
-
-    { "SINT_CHAR", 1, "char",
-      FuncSINT_CHAR, "src/stringobj.c:SINT_CHAR" },
-
-    { "STRING_SINTLIST", 1, "list",
-      FuncSTRING_SINTLIST, "src/stringobj.c:STRING_SINTLIST" },
-
-    { "INTLIST_STRING", 2, "string, sign",
-      FuncINTLIST_STRING, "src/stringobj.c:INTLIST_STRING" },
-
-    { "SINTLIST_STRING", 1, "string",
-      FuncSINTLIST_STRING, "src/stringobj.c:SINTLIST_STRING" },
-
-    { "EmptyString", 1, "len",
-      FuncEmptyString, "src/stringobj.c:FuncEmptyString" },
-    
-    { "ShrinkAllocationString", 1, "str",
-      FuncShrinkAllocationString, "src/stringobj.c:FuncShrinkAllocationString" },
-    
-    { "REVNEG_STRING", 1, "string",
-      FuncREVNEG_STRING, "src/stringobj.c:REVNEG_STRING" },
-
-    { "POSITION_SUBSTRING", 3, "string, substr, off",
-      FuncPOSITION_SUBSTRING, "src/stringobj.c:POSITION_SUBSTRING" },
-
+    GVAR_FUNC(IS_STRING_CONV, 1, "string"),
+    GVAR_FUNC(CONV_STRING, 1, "string"),
+    GVAR_FUNC(COPY_TO_STRING_REP, 1, "string"),
+    GVAR_FUNC(CHAR_INT, 1, "integer"),
+    GVAR_FUNC(INT_CHAR, 1, "char"),
+    GVAR_FUNC(CHAR_SINT, 1, "integer"),
+    GVAR_FUNC(SINT_CHAR, 1, "char"),
+    GVAR_FUNC(STRING_SINTLIST, 1, "list"),
+    GVAR_FUNC(INTLIST_STRING, 2, "string, sign"),
+    GVAR_FUNC(SINTLIST_STRING, 1, "string"),
+    GVAR_FUNC(EmptyString, 1, "len"),
+    GVAR_FUNC(ShrinkAllocationString, 1, "str"),
+    GVAR_FUNC(REVNEG_STRING, 1, "string"),
+    GVAR_FUNC(POSITION_SUBSTRING, 3, "string, substr, off"),
 #ifdef HPCGAP
-    { "FIND_ALL_IN_STRING", 2, "string, characters",
-      FuncFIND_ALL_IN_STRING, "src/stringobj.c:FIND_ALL_IN_STRING" },
-
-    { "NORMALIZE_NEWLINES", 1, "string",
-      FuncNORMALIZE_NEWLINES, "src/stringobj.c:NORMALIZE_NEWLINES" },
+    GVAR_FUNC(FIND_ALL_IN_STRING, 2, "string, characters"),
+    GVAR_FUNC(NORMALIZE_NEWLINES, 1, "string"),
 #endif
 
-    { "NormalizeWhitespace", 1, "string",
-      FuncNormalizeWhitespace, "src/stringobj.c:NormalizeWhitespace" },
-
+    GVAR_FUNC(NormalizeWhitespace, 1, "string"),
     { "REMOVE_CHARACTERS", 2, "string, rem",
       FuncRemoveCharacters, "src/stringobj.c:RemoveCharacters" },
 
-    { "TranslateString", 2, "string, trans",
-      FuncTranslateString, "src/stringobj.c:TranslateString" },
-
+    GVAR_FUNC(TranslateString, 2, "string, trans"),
     { "SplitStringInternal", 3, "string, seps, wspace",
       FuncSplitString, "src/stringobj.c:SplitStringInternal" },
 
-    { "SMALLINT_STR", 1, "string",
-      FuncSMALLINT_STR, "src/stringobj.c:SMALLINT_STR" },
-
+    GVAR_FUNC(SMALLINT_STR, 1, "string"),
     { 0, 0, 0, 0, 0 }
 
 };

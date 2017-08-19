@@ -1160,7 +1160,6 @@ void CodeAtomicBegin ( void )
 void CodeAtomicBeginBody ( UInt nrexprs )
 {
   PushExpr(INTEXPR_INT(nrexprs)); 
-  return;
 }
 
 void CodeAtomicEndBody (
@@ -2553,17 +2552,12 @@ void CodeAssList ( Int narg )
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment                                             */
-    switch (narg) {
-    case 1:
+    if (narg == 1)
       ass = NewStat( T_ASS_LIST, 3 * sizeof(Stat) );
-      break;
-
-    case 2:
-      ass = NewStat(T_ASS2_LIST, 4* sizeof(Stat));
-      break;
-    default:
-      ass  = NewStat(T_ASSX_LIST, (narg + 2)*sizeof(Stat));
-    }
+    else if (narg == 2)
+      ass = NewStat( T_ASS2_LIST, 4 * sizeof(Stat));
+    else
+      ass = NewStat( T_ASSX_LIST, (narg + 2) * sizeof(Stat));
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
@@ -2586,7 +2580,7 @@ void CodeAssListLevel ( Int narg,
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASS_LIST_LEV, (narg +3) * sizeof(Stat) );
+    ass = NewStat( T_ASS_LIST_LEV, (narg + 3) * sizeof(Stat) );
     ADDR_STAT(ass)[narg+2] = (Stat)level;
 
     /* let 'CodeAssListUniv' do the rest                                   */
@@ -2613,9 +2607,9 @@ void CodeAsssListLevel (
 */
 void CodeUnbList ( Int narg )
 {
+    Stat                ass;            /* unbind, result                  */
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
-    Stat                ass;            /* unbind, result                  */
     Int i;
 
     /* allocate the unbind                                                 */
@@ -2670,17 +2664,16 @@ void CodeElmList ( Int narg )
 {
     Expr                ref;            /* reference, result               */
 
-      /* allocate the reference                                              */
+    /* allocate the reference                                              */
     if (narg == 1)
       ref = NewExpr( T_ELM_LIST, 2 * sizeof(Expr) );
     else if (narg == 2)
       ref = NewExpr( T_ELM2_LIST, 3 * sizeof(Expr) );
     else
-      ref = NewExpr( T_ELMX_LIST, (narg + 1) *sizeof(Expr));
+      ref = NewExpr( T_ELMX_LIST, (narg + 1) * sizeof(Expr));
       
-      /* let 'CodeElmListUniv' to the rest                                   */
+    /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, narg );
-      
 }
 
 void CodeElmsList ( void )
@@ -2699,9 +2692,9 @@ void CodeElmListLevel ( Int narg,
 {
     Expr                ref;            /* reference, result               */
 
-    ref = NewExpr( T_ELM_LIST_LEV, (narg+2)*sizeof(Expr));
+    /* allocate the reference and enter the level                          */
+    ref = NewExpr( T_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
     ADDR_EXPR(ref)[narg+1] = (Stat)level;
-      
 
     /* let 'CodeElmListUniv' do the rest                                   */
     CodeElmListUniv( ref, narg );

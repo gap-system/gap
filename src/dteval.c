@@ -1020,27 +1020,13 @@ Obj       FuncDTQuotient( Obj      self,
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "DTCompress", 1, "list",
-      FuncDTCompress, "src/dteval.c:DTCompress" },
-
-    { "DTMultiply", 3, "lword, rword, rws",
-      FuncDTMultiply, "src/dteval.c:DTMultiply" },
-
-    { "DTPower", 3, "word, exponent, rws",
-      FuncDTPower, "src/dteval.c:DTPower" },
-
-    { "DTSolution", 3, "lword, rword, rws",
-      FuncDTSolution, "src/dteval.c:DTSolution" },
-
-    { "DTCommutator", 3, "lword, rword, rws",
-      FuncDTCommutator, "src/dteval.c:DTCommutator" },
-
-    { "DTQuotient", 3, "lword, rword, rws",
-      FuncDTQuotient, "src/dteval.c:DTQuotient" },
-
-    { "DTConjugate", 3, "lword, rword, rws",
-      FuncDTConjugate, "src/dteval.c:DTConjugate" },
-
+    GVAR_FUNC(DTCompress, 1, "list"),
+    GVAR_FUNC(DTMultiply, 3, "lword, rword, rws"),
+    GVAR_FUNC(DTPower, 3, "word, exponent, rws"),
+    GVAR_FUNC(DTSolution, 3, "lword, rword, rws"),
+    GVAR_FUNC(DTCommutator, 3, "lword, rword, rws"),
+    GVAR_FUNC(DTQuotient, 3, "lword, rword, rws"),
+    GVAR_FUNC(DTConjugate, 3, "lword, rword, rws"),
     { 0, 0, 0, 0, 0 }
 
 };

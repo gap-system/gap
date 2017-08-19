@@ -1692,78 +1692,29 @@ Obj FuncMOD (
 
 /****************************************************************************
 **
-*V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
-*/
-static StructGVarAttr GVarAttrs [] = {
-
-    { 0, 0, 0, 0, 0 }
-
-};
-
-
-/****************************************************************************
-**
 *V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "EQ", 2, "opL, opR", &EqOper,
-      FuncEQ, "src/ariths.c:EQ" },
-
-    { "LT", 2, "opL, opR", &LtOper,
-      FuncLT, "src/ariths.c:LT" },
-
-    { "IN", 2, "opL, opR", &InOper,
-      FuncIN, "src/ariths.c:IN" },
-
-    { "SUM", 2, "opL, opR", &SumOper,
-      FuncSUM, "src/ariths.c:SUM" },
-
-    { "DIFF", 2, "opL, opR", &DiffOper,
-      FuncDIFF, "src/ariths.c:DIFF" },
-
-    { "PROD", 2, "opL, opR", &ProdOper,
-      FuncPROD, "src/ariths.c:PROD" },
-
-    { "QUO", 2, "opL, opR", &QuoOper,
-      FuncQUO, "src/ariths.c:QUO" },
-
-    { "LQUO", 2, "opL, opR", &LQuoOper,
-      FuncLQUO, "src/ariths.c:LQUO" },
-
-    { "POW", 2, "opL, opR", &PowOper,
-      FuncPOW, "src/ariths.c:POW" },
-
-    { "COMM", 2, "opL, opR", &CommOper,
-      FuncCOMM, "src/ariths.c:COMM" },
-
-    { "MOD", 2, "opL, opR", &ModOper,
-      FuncMOD, "src/ariths.c:MOD" },
-
-    { "ZERO", 1, "op", &ZEROOp,
-      FuncZERO, "src/ariths.c:ZERO" },
-
-    { "ZERO_MUT", 1, "op", &ZeroOp,
-      FuncZERO_MUT, "src/ariths.c:ZERO_MUT" },
-
-    { "AINV", 1, "op", &AInvOp,
-      FuncAINV, "src/ariths.c:AINV" },
-
-    { "AINV_MUT", 1, "op", &AdditiveInverseOp,
-      FuncAINV_MUT, "src/ariths.c:AINV_MUT" },
-
-    { "ONE", 1, "op", &OneOp,
-      FuncONE, "src/ariths.c:ONE" },
-
-    { "ONE_MUT", 1, "op", &OneMutOp,
-      FuncONE_MUT, "src/ariths.c:ONE_MUT" },
-
-    { "INV", 1, "op", &InvOp,
-      FuncINV, "src/ariths.c:INV" },
-
-    { "INV_MUT", 1, "op", &InvMutOp,
-      FuncINV_MUT, "src/ariths.c:INV_MUT" },
-
+    GVAR_OPER(EQ, 2, "opL, opR", &EqOper),
+    GVAR_OPER(LT, 2, "opL, opR", &LtOper),
+    GVAR_OPER(IN, 2, "opL, opR", &InOper),
+    GVAR_OPER(SUM, 2, "opL, opR", &SumOper),
+    GVAR_OPER(DIFF, 2, "opL, opR", &DiffOper),
+    GVAR_OPER(PROD, 2, "opL, opR", &ProdOper),
+    GVAR_OPER(QUO, 2, "opL, opR", &QuoOper),
+    GVAR_OPER(LQUO, 2, "opL, opR", &LQuoOper),
+    GVAR_OPER(POW, 2, "opL, opR", &PowOper),
+    GVAR_OPER(COMM, 2, "opL, opR", &CommOper),
+    GVAR_OPER(MOD, 2, "opL, opR", &ModOper),
+    GVAR_OPER(ZERO, 1, "op", &ZEROOp),
+    GVAR_OPER(ZERO_MUT, 1, "op", &ZeroOp),
+    GVAR_OPER(AINV, 1, "op", &AInvOp),
+    GVAR_OPER(AINV_MUT, 1, "op", &AdditiveInverseOp),
+    GVAR_OPER(ONE, 1, "op", &OneOp),
+    GVAR_OPER(ONE_MUT, 1, "op", &OneMutOp),
+    GVAR_OPER(INV, 1, "op", &InvOp),
+    GVAR_OPER(INV_MUT, 1, "op", &InvMutOp),
     { 0, 0, 0, 0, 0, 0 }
 
 };
@@ -1775,22 +1726,11 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "COMM_DEFAULT", 2, "opL, opR",
-      FuncCOMM_DEFAULT, "src/ariths.c:COMM_DEFAULT" },
-
-    { "POW_DEFAULT", 2, "opL, opR",
-      FuncPOW_DEFAULT, "src/ariths.c:POW_DEFAULT" },
-
-    { "LQUO_DEFAULT", 2, "opL, opR",
-      FuncLQUO_DEFAULT, "src/ariths.c:LQUO_DEFAULT" },
-
-    { "QUO_DEFAULT", 2, "opL, opR",
-      FuncQUO_DEFAULT, "src/ariths.c:QUO_DEFAULT" },
-
-    { "DIFF_DEFAULT", 2, "opL, opR",
-      FuncDIFF_DEFAULT, "src/ariths.c:DIFF_DEFAULT" },
-
-
+    GVAR_FUNC(COMM_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(POW_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(LQUO_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(QUO_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC(DIFF_DEFAULT, 2, "opL, opR"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1807,7 +1747,6 @@ static Int InitKernel (
     UInt                t2;             /* type of right operand           */
 
     /* init filters and functions                                          */
-    InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -1980,7 +1919,6 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* init filters and functions                                          */
-    InitGVarAttrsFromTable( GVarAttrs );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 

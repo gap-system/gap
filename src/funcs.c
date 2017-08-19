@@ -1835,9 +1835,6 @@ static void            PrintFunccall1 (
             Pr("%<, %>",0L,0L);
         }
     }
-
-    return;
-    
 }
 
 void            PrintFunccall (
@@ -1933,9 +1930,7 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "SetRecursionTrapInterval", 1, "interval",
-      FuncSetRecursionTrapInterval, "src/funcs.c:SetRecursionTrapInterval" },
-
+    GVAR_FUNC(SetRecursionTrapInterval, 1, "interval"),
     { 0, 0, 0, 0, 0 }
 
 };

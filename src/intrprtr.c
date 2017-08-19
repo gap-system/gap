@@ -961,7 +961,6 @@ void IntrQualifiedExprBegin(UInt qual)
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprBegin(qual); return; }
     PushObj(INTOBJ_INT(qual));
-    return;
 }
 
 void IntrQualifiedExprEnd( void ) 
@@ -970,7 +969,6 @@ void IntrQualifiedExprEnd( void )
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)--; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprEnd(); return; }
-    return;
 }
 
 /****************************************************************************
@@ -1008,7 +1006,6 @@ void            IntrAtomicBegin ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeAtomicBegin(); return; }
     /* nothing to do here */
-    return;
   
 }
 
@@ -1076,7 +1073,6 @@ void            IntrAtomicEndBody (
       CodeEnd( 0 );
       body = STATE(CodeResult);
       PushObj(body);
-      return;
     } else {
       
         assert( STATE(IntrCoding) > 0 );
@@ -1308,7 +1304,6 @@ void            IntrBreak ( void )
       ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
     else
       CodeBreak();
-    return;
 }
 
 
@@ -1333,7 +1328,6 @@ void            IntrContinue ( void )
       ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
     else
       CodeContinue();
-    return;
 }
 
 
@@ -3237,9 +3231,6 @@ void            IntrAssList ( Int narg )
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
     Obj                 rhs;            /* right hand side                 */
-    Obj pos1,pos2;
-    Obj ixs;
-    Int i;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3249,9 +3240,7 @@ void            IntrAssList ( Int narg )
     /* get the right hand side                                             */
     rhs = PopObj();
     
-    switch (narg) {
-    case 1:
-
+    if (narg == 1) {
       /* get the position                                                    */
       pos = PopObj();
 
@@ -3261,22 +3250,21 @@ void            IntrAssList ( Int narg )
       /* assign to the element of the list                                   */
       if (IS_POS_INTOBJ(pos)) {
         ASS_LIST( list, INT_INTOBJ(pos), rhs );
-      } else {
+      }
+      else {
         ASSB_LIST(list, pos, rhs);
       }
-      break;
-
-    case 2:
-      pos2 = PopObj();
-      pos1 = PopObj();
+    }
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
 
       ASS2_LIST(list, pos1, pos2, rhs);
-      break;
-
-    default:
-      ixs = NEW_PLIST(T_PLIST, narg);
-      for (i = narg; i > 0; i--) {
+    }
+    else {
+      Obj ixs = NEW_PLIST(T_PLIST, narg);
+      for (Int i = narg; i > 0; i--) {
         pos = PopObj();
         SET_ELM_PLIST(ixs, i, pos);
         CHANGED_BAG(ixs);
@@ -3285,10 +3273,11 @@ void            IntrAssList ( Int narg )
       list = PopObj();
       ASSB_LIST(list, ixs, rhs);
     }
-      
+
     /* push the right hand side again                                      */
     PushObj( rhs );
 }
+
 
 void            IntrAsssList ( void )
 {
@@ -3410,8 +3399,6 @@ void            IntrUnbList ( Int narg )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
-    Obj                 ixs;
-    Int                 i;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3431,9 +3418,10 @@ void            IntrUnbList ( Int narg )
       } else {
         UNBB_LIST(list, pos);
       }
-    } else {
-      ixs = NEW_PLIST(T_PLIST,narg);
-      for (i = narg; i > 0; i--) {
+    }
+    else {
+      Obj ixs = NEW_PLIST(T_PLIST,narg);
+      for (Int i = narg; i > 0; i--) {
         pos = PopObj();
         SET_ELM_PLIST(ixs, i, pos);
         CHANGED_BAG(ixs);
@@ -3457,14 +3445,9 @@ void            IntrUnbList ( Int narg )
 */
 void            IntrElmList ( Int narg )
 {
-  Obj                 elm = (Obj) 0;            /* element, result                 */
+    Obj                 elm;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
-    Int                 i;
-    Obj                 ixs;
-    Obj                 pos1;
-    Obj                 pos2;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3475,39 +3458,39 @@ void            IntrElmList ( Int narg )
       SyntaxError("This should never happen");
 
     if (narg == 1) {
-      /* get  the position                                                   */
+      /* get the position                                                    */
       pos = PopObj();
+
       /* get the list (checking is done by 'ELM_LIST')                       */
       list = PopObj();
-      
-      
-      if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
-        /* This mostly dispatches to the library */
-        elm = ELMB_LIST( list, pos);
-      } else {
-        /* get the element of the list                                         */
-        elm = ELM_LIST( list, p );
+
+      /* get the element of the list                                         */
+      if (IS_POS_INTOBJ(pos)) {
+        elm = ELM_LIST( list, INT_INTOBJ( pos ) );
+      }
+      else {
+        elm = ELMB_LIST( list, pos );
       }
     }
-    if (narg == 2) {
-      pos2 = PopObj();
-      pos1 = PopObj();
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
-      /* leave open space for a fastpath for 2 */
+
       elm = ELM2_LIST(list, pos1, pos2);
     }
-    
-    if (narg > 2) {
-      ixs = NEW_PLIST(T_PLIST,narg);
-      for (i = narg; i > 0; i--) {
-        SET_ELM_PLIST(ixs,i,PopObj());
+    else {
+      Obj ixs = NEW_PLIST(T_PLIST,narg);
+      for (Int i = narg; i > 0; i--) {
+        pos = PopObj();
+        SET_ELM_PLIST(ixs, i, pos);
         CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       list = PopObj();
       elm = ELMB_LIST(list, ixs);
     }
-      
+
     /* push the element                                                    */
     PushObj( elm );
 }
@@ -3619,8 +3602,6 @@ void            IntrIsbList ( Int narg )
     Obj                 isb;            /* isbound, result                 */
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
-    Obj ixs;
-    Int i;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3638,11 +3619,12 @@ void            IntrIsbList ( Int narg )
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
       } else {
-        isb = ISBB_LIST( list, pos) ? True : False;
+        isb = ISBB_LIST( list, pos ) ? True : False;
       }
-    } else {
-      ixs = NEW_PLIST(T_PLIST,narg);
-      for (i = narg; i > 0; i--) {
+    }
+    else {
+      Obj ixs = NEW_PLIST(T_PLIST,narg);
+      for (Int i = narg; i > 0; i--) {
         pos = PopObj();
         SET_ELM_PLIST(ixs, i, pos);
         CHANGED_BAG(ixs);
@@ -3651,8 +3633,7 @@ void            IntrIsbList ( Int narg )
       list = PopObj();
       isb = ISBB_LIST(list, ixs) ? True: False;
     }
-      
-      
+
     /* push the result                                                     */
     PushObj( isb );
 }
@@ -4644,7 +4625,6 @@ void             IntrEmpty ( void )
 
     /* interpret */
     PushVoidObj();
-    return;
 
 }
 
@@ -4717,7 +4697,6 @@ void            IntrInfoMiddle( void )
 
     if (selected == False)
       STATE(IntrIgnoring) = 1;
-    return;
 }
 
 Obj             InfoDoPrint;
@@ -4750,7 +4729,6 @@ void            IntrInfoEnd( UInt narg )
        (even if we printed nothing) then return a Void */
     if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-    return;
 }
 
 
@@ -4840,7 +4818,6 @@ void             IntrAssertEnd2Args ( void )
 
     if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-    return;
 }
 
 
@@ -4865,7 +4842,6 @@ void             IntrAssertEnd3Args ( void )
 
   if (STATE(IntrIgnoring) == 0)
       PushVoidObj();
-  return;
 }
 
 

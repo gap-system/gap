@@ -166,6 +166,19 @@ typedef Bag Obj;
 
 /****************************************************************************
 **
+*V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
+**
+**  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
+**  which must be the same size as a bag identifier.
+**
+*/
+enum {
+    BIPEB =  sizeof(UInt) * 8L
+};
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
 
@@ -853,6 +866,11 @@ typedef struct {
     const Char *    cookie;
 } StructGVarFilt;
 
+// GVAR_FILTER a helper macro for quickly creating table entries in
+// StructGVarFilt, StructGVarAttr and StructGVarProp arrays
+#define GVAR_FILTER(name, argument, filter) \
+  { #name, argument, filter, Func ## name, __FILE__ ":" #name }
+
 
 /****************************************************************************
 **
@@ -893,6 +911,11 @@ typedef struct {
     const Char *    cookie;
 } StructGVarOper;
 
+// GVAR_OPER is a helper macro for quickly creating table entries in
+// StructGVarOper arrays
+#define GVAR_OPER(name, nargs, args, operation) \
+  { #name, nargs, args, operation, Func ## name, __FILE__ ":" #name }
+
 
 /****************************************************************************
 **
@@ -906,6 +929,10 @@ typedef struct {
     const Char *    cookie;
 } StructGVarFunc;
 
+// GVAR_FUNC is a helper macro for quickly creating table entries in
+// StructGVarFunc arrays
+#define GVAR_FUNC(name, nargs, args) \
+  { #name, nargs, args, Func ## name, __FILE__ ":" #name }
 
 /****************************************************************************
 **

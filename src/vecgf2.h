@@ -11,6 +11,8 @@
 #ifndef GAP_VECGF2_H
 #define GAP_VECGF2_H
 
+#include <src/system.h>
+
 /****************************************************************************
 **
 *F  IS_GF2VEC_REP( <obj> )  . . . . . . check that <obj> is in GF2 vector rep
@@ -27,6 +29,7 @@
     do { \
         vec = NewBag( T_DATOBJ, SIZE_PLEN_GF2VEC(len) ); \
         SetTypeDatObj(vec, type); \
+        SET_LEN_GF2VEC(vec, len); \
     } while (0)
 
 

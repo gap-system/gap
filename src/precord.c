@@ -861,7 +861,6 @@ void SavePRec( Obj prec )
       SaveUInt(GET_RNAM_PREC(prec, i));
       SaveSubObj(GET_ELM_PREC(prec, i));
     }
-  return;
 }
 
 /****************************************************************************
@@ -880,7 +879,6 @@ void LoadPRec( Obj prec )
       SET_RNAM_PREC(prec, i, LoadUInt());
       SET_ELM_PREC(prec, i, LoadSubObj());
     }
-  return;
 }
 
 /****************************************************************************
@@ -907,18 +905,10 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "REC_NAMES", 1, "rec",
-      FuncREC_NAMES, "src/precord.c:REC_NAMES" },
-
-    { "REC_NAMES_COMOBJ", 1, "rec obj",
-      FuncREC_NAMES_COMOBJ, "src/precord.c:REC_NAMES_COMOBJ" },
-
-    { "EQ_PREC", 2, "left, right",
-      FuncEQ_PREC, "src/precord.c:EQ_PREC" },
-
-    { "LT_PREC", 2, "left, right",
-      FuncLT_PREC, "src/precord.c:LT_PREC" },
-
+    GVAR_FUNC(REC_NAMES, 1, "rec"),
+    GVAR_FUNC(REC_NAMES_COMOBJ, 1, "rec"),
+    GVAR_FUNC(EQ_PREC, 2, "left, right"),
+    GVAR_FUNC(LT_PREC, 2, "left, right"),
     { 0, 0, 0, 0, 0 }
 
 };

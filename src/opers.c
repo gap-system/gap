@@ -68,6 +68,11 @@ Obj TRY_NEXT_METHOD;
 #define CACHE_SIZE 5
 
 
+static Obj StringFilterSetter;
+static Obj ArglistObjVal;
+static Obj ArglistObj;
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
@@ -117,7 +122,6 @@ void SaveFlags (
     ptr = BLOCKS_FLAGS(flags);
     for ( i = 1;  i <= len;  i++ )
         SaveUInt(*ptr++);
-    return;
 }
 
 
@@ -141,7 +145,6 @@ void LoadFlags(
     ptr = BLOCKS_FLAGS(flags);
     for ( i = 1;  i <= len;  i++ )
         *ptr++ = LoadUInt();
-    return;
 }
 
 
@@ -1020,8 +1023,8 @@ Obj SetterAndFilter (
     Obj                 setter;
     Obj                 obj;
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-        setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                                "<<setter-and-filter>>", 2L, "obj, val",
+        setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+                                MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
                                 DoSetAndFilter );
         /* assign via 'obj' to avoid GC issues */
         obj =  SetterFilter( FLAG1_FILT(getter) );
@@ -1098,13 +1101,6 @@ Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-Obj DoTestFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    return True;
-}
-
 Obj NewTesterFilter (
     Obj                 getter )
 {
@@ -1151,9 +1147,6 @@ Obj DoSetFilter (
     /* return 'void'                                                       */
     return 0;
 }
-
-static Obj StringFilterSetter;
-static Obj ArglistObjVal;
 
 Obj NewSetterFilter (
     Obj                 getter )
@@ -1259,8 +1252,6 @@ Obj DoAndFilter (
     return True;
 }
 
-static Obj ArglistObj;
-
 Obj NewAndFilter (
     Obj                 oper1,
     Obj                 oper2 )
@@ -1316,13 +1307,6 @@ Obj ReturnTrueFilter;
 **
 *F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
-Obj DoTestReturnTrueFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    return True;
-}
-
 Obj TesterReturnTrueFilter (
     Obj                 getter )
 {
@@ -1347,8 +1331,8 @@ Obj SetterReturnTrueFilter (
 {
     Obj                 setter;
 
-    setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-        "<<setter-true-filter>>", 2L, "obj, val",
+    setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+        MakeImmString("<<setter-true-filter>>"), 2, ArglistObjVal,
         DoSetReturnTrueFilter );
     FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
@@ -1371,8 +1355,8 @@ Obj NewReturnTrueFilter ( void )
     Obj                 tester;
     Obj                 flags;
 
-    getter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-        "ReturnTrueFilter", 1L, "obj",
+    getter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+        MakeImmString("ReturnTrueFilter"), 1, ArglistObj,
         DoReturnTrueFilter );
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
@@ -1680,7 +1664,7 @@ Obj CallHandleMethodNotFound( Obj oper,
 
 /****************************************************************************
 **
-*F  FuncCompactTypeIDs( <self> ) . . . garbage collect the type IDs
+*F  FuncCOMPACT_TYPE_IDS( <self> ) . . . garbage collect the type IDs
 **
 */
 
@@ -1697,7 +1681,7 @@ static void FixTypeIDs( Bag b ) {
 }
 
 
-Obj FuncCompactTypeIDs( Obj self )
+Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
   NextTypeID = -(1L << NR_SMALL_INT_BITS);
   CallbackForAllBags( FixTypeIDs );
@@ -4691,12 +4675,12 @@ Obj DoTestAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, return 'true'        */
+    /* if the value of the attribute is already known, return 'true'        */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return True;
     }
     
-    /* return the 'false'                                                  */
+    /* otherwise return 'false'                                            */
     return False;
 }
 
@@ -4723,7 +4707,7 @@ Obj DoAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoOperation1Args( self, obj );
     }
@@ -4778,13 +4762,14 @@ Obj DoVerboseAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoVerboseOperation1Args( self, obj );
     }
     
     /* call the operation to compute the value                             */
-    val = CopyObj( DoVerboseOperation1Args( self, obj ), 0 );
+    val = DoVerboseOperation1Args( self, obj );
+    val = CopyObj( val, 0 );
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1 ) {
@@ -4825,7 +4810,7 @@ Obj DoMutableAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoOperation1Args( self, obj );
     }
@@ -4872,7 +4857,7 @@ Obj DoVerboseMutableAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    /* if the value of the attribute is already known, simply return it     */
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return DoVerboseOperation1Args( self, obj );
     }
@@ -4910,47 +4895,67 @@ Obj DoVerboseMutableAttribute (
 #define ImpliedWriteGuard(x)
 #endif
 
-#define WRAP_NAME(fname, name, addon) \
-    do { \
-        UInt name_len = GET_LEN_STRING(name); \
-        UInt addon_len = sizeof(addon) - 1; \
-        char *ptr; \
-        fname = NEW_STRING( name_len + addon_len + 2 ); \
-        ImpliedWriteGuard(fname); \
-        ptr = CSTR_STRING(fname); \
-        memcpy( ptr, addon, addon_len ); ptr += addon_len; \
-        *ptr++ = '('; \
-        memcpy( ptr, CSTR_STRING(name), name_len ); ptr += name_len; \
-        *ptr++ = ')'; \
-        *ptr = 0; \
-        RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) ); \
-    } while(0)
-
-static Obj MakeSetter( Obj name, Int flag)
+static Obj WRAP_NAME(Obj name, const char *addon)
 {
-  Obj fname;
-  Obj setter;
-  WRAP_NAME(fname, name, "Setter");
-  setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-  FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-  FLAG2_FILT(setter)  = INTOBJ_INT( flag );
-  CHANGED_BAG(setter);
-  return setter;
+    UInt name_len = GET_LEN_STRING(name);
+    UInt addon_len = strlen(addon);
+    Obj fname = NEW_STRING( name_len + addon_len + 2 );
+    ImpliedWriteGuard(fname);
+
+    char *ptr = CSTR_STRING(fname);
+    memcpy( ptr, addon, addon_len );
+    ptr += addon_len;
+    *ptr++ = '(';
+    memcpy( ptr, CSTR_STRING(name), name_len );
+    ptr += name_len;
+    *ptr++ = ')';
+    *ptr = 0;
+    MakeImmutableString(fname);
+    return fname;
 }
 
-static Obj MakeTester( Obj name, Int flag)
+static Obj PREFIX_NAME(Obj name, const char *prefix)
+{
+    UInt name_len = GET_LEN_STRING(name);
+    UInt prefix_len = strlen(prefix);
+    Obj fname = NEW_STRING( name_len + prefix_len );
+    ImpliedWriteGuard(fname);
+
+    char *ptr = CSTR_STRING(fname);
+    memcpy( ptr, prefix, prefix_len );
+    ptr += prefix_len;
+    memcpy( ptr, CSTR_STRING(name), name_len );
+    ptr += name_len;
+    *ptr = 0;
+    MakeImmutableString(fname);
+    return fname;
+}
+
+static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, Obj))
+{
+    Obj fname;
+    Obj setter;
+    fname = PREFIX_NAME(name, "Set");
+    setter = NewOperation( fname, 2L, 0L, setFunc );
+    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
+    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
+    CHANGED_BAG(setter);
+    return setter;
+}
+
+static Obj MakeTester( Obj name, Int flag1, Int flag2)
 {
     Obj fname;
     Obj tester;
     Obj flags;
-    WRAP_NAME(fname, name, "Tester");
+    fname = PREFIX_NAME(name, "Has");
     tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
                            DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag );
-    NEW_FLAGS( flags, flag );
-    SET_LEN_FLAGS( flags, flag );
-    SET_ELM_FLAGS( flags, flag, True );
+    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
+    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
+    NEW_FLAGS( flags, flag2 );
+    SET_LEN_FLAGS( flags, flag2 );
+    SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
     SETTR_FILT(tester)  = 0;
     TESTR_FILT(tester)  = ReturnTrueFilter;
@@ -4961,23 +4966,17 @@ static Obj MakeTester( Obj name, Int flag)
 
 static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
 {
-  Obj flags;
+    // Install additional data
+    FLAG1_FILT(attr)  = INTOBJ_INT( 0 );
+    FLAG2_FILT(attr)  = INTOBJ_INT( flag2 );
 
-    /* Install additional data */
-  FLAG1_FILT(attr)  = INTOBJ_INT( 0 );
-  FLAG2_FILT(attr)  = INTOBJ_INT( flag2 );
-  NEW_FLAGS( flags, flag2 );
-  SET_LEN_FLAGS( flags, flag2 );
-  SET_ELM_FLAGS( flags, flag2, True );
-  
-  /*    FLAGS_FILT(tester)  = flags; */
-  FLAGS_FILT(attr) = FLAGS_FILT(tester);
-  
-  SETTR_FILT(attr)  = setter;
-  TESTR_FILT(attr)  = tester;
-  SET_ENABLED_ATTR(attr,1);
-  CHANGED_BAG(attr);
-  return;
+    // reuse flags from tester
+    FLAGS_FILT(attr)  = FLAGS_FILT(tester);
+
+    SETTR_FILT(attr)  = setter;
+    TESTR_FILT(attr)  = tester;
+    SET_ENABLED_ATTR(attr,1);
+    CHANGED_BAG(attr);
 }
 
   
@@ -4994,8 +4993,9 @@ Obj NewAttribute (
     Int                 flag2;
     
     flag2 = ++CountFlags;
-    setter = MakeSetter(name, flag2);
-    tester = MakeTester(name, flag2);
+
+    setter = MakeSetter(name, 0, flag2, DoSetAttribute);
+    tester = MakeTester(name, 0, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
     
@@ -5015,25 +5015,20 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                  name;
+    Obj                 name;
 
     /* Need to get the name from oper */
     name = NAME_FUNC(oper);
 
     flag2 = ++CountFlags;
 
-    /* Make the setter */
-    setter = MakeSetter(name, flag2);
-
-    /* and the tester */
-    tester = MakeTester(name, flag2);
+    setter = MakeSetter(name, 0, flag2, DoSetAttribute);
+    tester = MakeTester(name, 0, flag2);
 
     /* Change the handlers */
     SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
 
     SetupAttribute( oper, setter, tester, flag2);
-
-    return;
 }
 
 
@@ -5044,35 +5039,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
 Obj SET_FILTER_OBJ;
 
 Obj RESET_FILTER_OBJ;
-
-
-/****************************************************************************
-**
-**  DoTestProperty( <prop>, <obj> )
-*/
-Obj DoTestProperty (
-    Obj                 self,
-    Obj                 obj )
-{
-    Int                 flag2;
-    Obj                 type;
-    Obj                 flags;
-
-    /* get the flags for the getter and the tester                         */
-    flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
-
-    /* get type of the object and its flags                                */
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
-
-    /* if the value of the property is already known, return 'true'        */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
-        return True;
-    }
-    
-    /* otherwise return 'false'                                            */
-    return False;
-}
 
 
 /****************************************************************************
@@ -5265,29 +5231,12 @@ Obj NewProperty (
     Int                 flag1;
     Int                 flag2;
     Obj                 flags;
-    Obj                 fname;
     
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    WRAP_NAME(fname, name, "Setter");
-    setter = NewOperation( fname, 2L, 0L, DoSetProperty );
-    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
-    WRAP_NAME(fname, name, "Tester");
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestProperty );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
+    setter = MakeSetter(name, flag1, flag2, DoSetProperty);
+    tester = MakeTester(name, flag1, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) ); 
 
@@ -5438,7 +5387,6 @@ void SaveOperationExtras (
     for (i = 0; i <= 7; i++)
         SaveSubObj(CACHE_OPER(oper,i));
 #endif
-    return;
 }
 
 
@@ -5471,7 +5419,6 @@ void LoadOperationExtras (
     for (i = 0; i <= 7; i++)
         CACHE_OPER(oper,i) = LoadSubObj();
 #endif
-    return;
 }
 
 
@@ -5873,13 +5820,10 @@ Obj FuncSETTER_FUNCTION (
     Obj                 func;
     Obj                 fname;
     Obj                 tmp;
-    Obj                 args;
 
-    args = ArgStringToList("object, value");
-
-    WRAP_NAME(fname, name, "SetterFunc");
+    fname = WRAP_NAME(name, "SetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
-                         args, DoSetterFunction );
+                         ArglistObjVal, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
@@ -5919,14 +5863,11 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
-    Obj                 args;
     Obj                 rnam;
 
-    args = ArgStringToList("object, value");
-
-    WRAP_NAME(fname, name, "GetterFunc");
+    fname = WRAP_NAME(name, "GetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
-                         args, DoGetterFunction );
+                         ArglistObj, DoGetterFunction );
     /* Need to seperate this onto two lines, in case RNamObj causes
      * a garbage collection */
     rnam = INTOBJ_INT( RNamObj(name) );
@@ -6151,9 +6092,7 @@ Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_OPERATION", "obj", &IsOperationFilt,
-      FuncIS_OPERATION, "src/opers.c:IS_OPERATION" },
-
+    GVAR_FILTER(IS_OPERATION, "obj", &IsOperationFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -6165,141 +6104,51 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "AND_FLAGS", 2, "oper1, oper2",
-      FuncAND_FLAGS, "src/opers.c:AND_FLAGS" },
-
-    { "SUB_FLAGS", 2, "oper1, oper2",
-      FuncSUB_FLAGS, "src/opers.c:SUB_FLAGS" },
-
-    { "HASH_FLAGS", 1, "flags",
-      FuncHASH_FLAGS, "src/opers.c:HASH_FLAGS" },
-
-    { "IS_EQUAL_FLAGS", 2, "flags1, flags2",
-      FuncIS_EQUAL_FLAGS, "src/opers.c:IS_EQUAL_FLAGS" },
-
-    { "CLEAR_HIDDEN_IMP_CACHE", 1, "flags",
-      FuncCLEAR_HIDDEN_IMP_CACHE, "src/opers.c:CLEAR_HIDDEN_IMP_CACHE" },
-    
-    { "WITH_HIDDEN_IMPS_FLAGS", 1, "flags",
-      FuncWITH_HIDDEN_IMPS_FLAGS, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS" },
-         
-    { "InstallHiddenTrueMethod", 2, "filter, filters",
-      FuncInstallHiddenTrueMethod, "src/opers.c:InstallHiddenTrueMethod" },
-          
-    { "IS_SUBSET_FLAGS", 2, "flags1, flags2",
-      FuncIS_SUBSET_FLAGS, "src/opers.c:IS_SUBSET_FLAGS" },
-
-    { "TRUES_FLAGS", 1, "flags",
-      FuncTRUES_FLAGS, "src/opers.c:TRUES_FLAGS" },
-
-    { "SIZE_FLAGS", 1, "flags",
-      FuncSIZE_FLAGS, "src/opers.c:SIZE_FLAGS" },
-
-    { "LEN_FLAGS", 1, "flags",
-      FuncLEN_FLAGS, "src/opers.c:LEN_FLAGS" },
-
-    { "ELM_FLAGS", 2, "flags, pos",
-      FuncELM_FLAGS, "src/opers.c:ELM_FLAGS" },
-
-    { "FLAG1_FILTER", 1, "oper",
-      FuncFLAG1_FILTER, "src/opers.c:FLAG1_FILTER" },
-
-    { "SET_FLAG1_FILTER", 2, "oper, flag1",
-      FuncSET_FLAG1_FILTER, "src/opers.c:SET_FLAG1_FILTER" },
-
-    { "FLAG2_FILTER", 1, "oper",
-      FuncFLAG2_FILTER, "src/opers.c:FLAG2_FILTER" },
-
-    { "SET_FLAG2_FILTER", 2, "oper, flag2",
-      FuncSET_FLAG2_FILTER, "src/opers.c:SET_FLAG2_FILTER" },
-
-    { "FLAGS_FILTER", 1, "oper",
-      FuncFLAGS_FILTER, "src/opers.c:FLAGS_FILTER" },
-
-    { "SET_FLAGS_FILTER", 2, "oper, flags",
-      FuncSET_FLAGS_FILTER, "src/opers.c:SET_FLAGS_FILTER" },
-
-    { "SETTER_FILTER", 1, "oper",
-      FuncSETTER_FILTER, "src/opers.c:SETTER_FILTER" },
-
-    { "SET_SETTER_FILTER", 2, "oper, other",
-      FuncSET_SETTER_FILTER, "src/opers.c:SET_SETTER_FILTER" },
-
-    { "TESTER_FILTER", 1, "oper",
-      FuncTESTER_FILTER, "src/opers.c:TESTER_FILTER" },
-
-    { "SET_TESTER_FILTER", 2, "oper, other",
-      FuncSET_TESTER_FILTER, "src/opers.c:SET_TESTER_FILTER" },
-
-    { "METHODS_OPERATION", 2, "oper, narg",
-      FuncMETHODS_OPERATION, "src/opers.c:METHODS_OPERATION" },
-
-    { "SET_METHODS_OPERATION", 3, "oper, narg, meths",
-      FuncSET_METHODS_OPERATION, "src/opers.c:SET_METHODS_OPERATION" },
-
-    { "CHANGED_METHODS_OPERATION", 2, "oper, narg",
-      FuncCHANGED_METHODS_OPERATION, "src/opers.c:CHANGED_METHODS_OPERATION" },
-
-    { "NEW_FILTER", 1, "name",
-      FuncNEW_FILTER, "src/opers.c:NEW_FILTER" },
-
-    { "NEW_OPERATION", 1, "name",
-      FuncNEW_OPERATION, "src/opers.c:NEW_OPERATION" },
-
-    { "NEW_CONSTRUCTOR", 1, "name",
-      FuncNEW_CONSTRUCTOR, "src/opers.c:NEW_CONSTRUCTOR" },
-
-    { "NEW_ATTRIBUTE", 1, "name",
-      FuncNEW_ATTRIBUTE, "src/opers.c:NEW_ATTRIBUTE" },
-
-    { "NEW_MUTABLE_ATTRIBUTE", 1, "name",
-      FuncNEW_MUTABLE_ATTRIBUTE, "src/opers.c:NEW_MUTABLE_ATTRIBUTE" },
-
-    { "NEW_PROPERTY", 1, "name",
-      FuncNEW_PROPERTY, "src/opers.c:NEW_PROPERTY" },
-
-    { "SETTER_FUNCTION", 2, "name, filter",
-      FuncSETTER_FUNCTION, "src/opers.c:SETTER_FUNCTION" },
-
-    { "GETTER_FUNCTION", 1, "name",
-      FuncGETTER_FUNCTION, "src/opers.c:GETTER_FUNCTION" },
-
-    { "NEW_OPERATION_ARGS", 1, "name",
-      FuncNEW_OPERATION_ARGS, "src/opers.c:NEW_OPERATION_ARGS" },
-
-    { "INSTALL_METHOD_ARGS", 2, "oper, func",
-      FuncINSTALL_METHOD_ARGS, "src/opers.c:INSTALL_METHOD_ARGS" },
-
-    { "TRACE_METHODS", 1, "oper",
-      FuncTRACE_METHODS, "src/opers.c:TRACE_METHODS" },
-
-    { "UNTRACE_METHODS", 1, "oper",
-      FuncUNTRACE_METHODS, "src/opers.c:UNTRACE_METHODS" },
-
-    { "OPERS_CACHE_INFO", 0, "",
-      FuncOPERS_CACHE_INFO, "src/opers.c:OPERS_CACHE_INFO" },
-
-    { "CLEAR_CACHE_INFO", 0, "",
-      FuncCLEAR_CACHE_INFO, "src/opers.c:CLEAR_CACHE_INFO" },
-    
-    { "SET_ATTRIBUTE_STORING", 2, "attr, val",
-      FuncSET_ATTRIBUTE_STORING, "src/opers.c:SET_ATTRIBUTE_STORING" },
-
-    { "DO_NOTHING_SETTER", 2, "obj, val",
-      FuncDO_NOTHING_SETTER, "src/opers.c:DO_NOTHING_SETTER" },
-
-    { "IS_AND_FILTER", 1, "filter",
-      FuncIS_AND_FILTER, "src/opers.c:IS_AND_FILTER" },
-
-    { "COMPACT_TYPE_IDS", 0, "",
-      FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
-
-    { "OPER_TO_ATTRIBUTE", 1, "oper",
-      FuncOPER_TO_ATTRIBUTE, "src/opers.c:OPER_TO_ATTRIBUTE" },
-
-    { "OPER_TO_MUTABLE_ATTRIBUTE", 1, "oper",
-      FuncOPER_TO_MUTABLE_ATTRIBUTE, "src/opers.c:OPER_TO_MUTABLE_ATTRIBUTE" },
-
+    GVAR_FUNC(AND_FLAGS, 2, "oper1, oper2"),
+    GVAR_FUNC(SUB_FLAGS, 2, "oper1, oper2"),
+    GVAR_FUNC(HASH_FLAGS, 1, "flags"),
+    GVAR_FUNC(IS_EQUAL_FLAGS, 2, "flags1, flags2"),
+    GVAR_FUNC(CLEAR_HIDDEN_IMP_CACHE, 1, "flags"),
+    GVAR_FUNC(WITH_HIDDEN_IMPS_FLAGS, 1, "flags"),
+    GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
+    GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
+    GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
+    GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
+    GVAR_FUNC(LEN_FLAGS, 1, "flags"),
+    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
+    GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
+    GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAG2_FILTER, 2, "oper, flag2"),
+    GVAR_FUNC(FLAGS_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_FLAGS_FILTER, 2, "oper, flags"),
+    GVAR_FUNC(SETTER_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_SETTER_FILTER, 2, "oper, other"),
+    GVAR_FUNC(TESTER_FILTER, 1, "oper"),
+    GVAR_FUNC(SET_TESTER_FILTER, 2, "oper, other"),
+    GVAR_FUNC(METHODS_OPERATION, 2, "oper, narg"),
+    GVAR_FUNC(SET_METHODS_OPERATION, 3, "oper, narg, meths"),
+    GVAR_FUNC(CHANGED_METHODS_OPERATION, 2, "oper, narg"),
+    GVAR_FUNC(NEW_FILTER, 1, "name"),
+    GVAR_FUNC(NEW_OPERATION, 1, "name"),
+    GVAR_FUNC(NEW_CONSTRUCTOR, 1, "name"),
+    GVAR_FUNC(NEW_ATTRIBUTE, 1, "name"),
+    GVAR_FUNC(NEW_MUTABLE_ATTRIBUTE, 1, "name"),
+    GVAR_FUNC(NEW_PROPERTY, 1, "name"),
+    GVAR_FUNC(SETTER_FUNCTION, 2, "name, filter"),
+    GVAR_FUNC(GETTER_FUNCTION, 1, "name"),
+    GVAR_FUNC(NEW_OPERATION_ARGS, 1, "name"),
+    GVAR_FUNC(INSTALL_METHOD_ARGS, 2, "oper, func"),
+    GVAR_FUNC(TRACE_METHODS, 1, "oper"),
+    GVAR_FUNC(UNTRACE_METHODS, 1, "oper"),
+    GVAR_FUNC(OPERS_CACHE_INFO, 0, ""),
+    GVAR_FUNC(CLEAR_CACHE_INFO, 0, ""),
+    GVAR_FUNC(SET_ATTRIBUTE_STORING, 2, "attr, val"),
+    GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
+    GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
+    GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
+    GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
+    GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -6336,8 +6185,8 @@ static Int InitKernel (
     CHANGED_BAG( ArglistObjVal );
 
 
-    /* Declare the handlers used in various places.  Some of the commonest */
-    /* ones are abbreviated to save space in saved workspace.              */
+    // Declare the handlers used in various places. Some of the most common
+    // ones are abbreviated to save space in saved workspace.
     InitHandlerFunc( DoFilter,                  "df"                                    );
     InitHandlerFunc( DoSetFilter,               "dsf"                                   );
     InitHandlerFunc( DoAndFilter,               "daf"                                   );
@@ -6354,7 +6203,6 @@ static Int InitKernel (
 
     InitHandlerFunc( DoProperty,                "src/opers.c:DoProperty"                );
     InitHandlerFunc( DoSetProperty,             "src/opers.c:DoSetProperty"             );
-    InitHandlerFunc( DoTestProperty,            "src/opers.c:DoTestProperty"            );
     InitHandlerFunc( DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
 
     InitHandlerFunc( DoSetterFunction,          "dtf"                                   );

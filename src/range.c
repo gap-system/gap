@@ -1414,12 +1414,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_RANGE", "obj", &IsRangeFilt,
-      FuncIS_RANGE, "src/range.c:IS_RANGE" },
-
-    { "IS_RANGE_REP", "obj", &IsRangeRepFilt,
-      FuncIS_RANGE_REP, "src/range.c:IS_RANGE_REP" },
-
+    GVAR_FILTER(IS_RANGE, "obj", &IsRangeFilt),
+    GVAR_FILTER(IS_RANGE_REP, "obj", &IsRangeRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1430,9 +1426,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "INTER_RANGE", 2, "range1, range2",
-      FuncINTER_RANGE, "src/range.c:INTER_RANGE" },
-
+    GVAR_FUNC(INTER_RANGE, 2, "range1, range2"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1495,20 +1489,20 @@ static Int InitKernel (
 
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_NSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE          ] = CopyRange;
+    CopyObjFuncs [ T_RANGE_NSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_SSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE          ] = CopyRange;
+    CopyObjFuncs [ T_RANGE_SSORT            +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_NSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE          ] = CleanRange;
+    CleanObjFuncs[ T_RANGE_NSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
+    CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
 
     /* Make immutable methods */

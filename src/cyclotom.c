@@ -165,11 +165,11 @@ void GrowResultCyc(UInt size) {
 *V  LastNCyc  . . . . . . . . order of last constructed primitive root, local
 **
 **  'LastECyc'  remembers  the primitive  root that  was last  constructed by
-**  'FunE'.
+**  'FuncE'.
 **
 **  'LastNCyc' is the order of this primitive root.
 **
-**  These values are used in 'FunE' to avoid constructing the same  primitive
+**  These values are used in 'FuncE' to avoid constructing the same primitive
 **  root over and over again.  This might be expensive,  because  $e_n$  need
 **  itself not belong to the base.
 **
@@ -2029,7 +2029,6 @@ void  SaveCyc ( Obj cyc )
   expos++;                      /*Skip past the XXX */
   for (i = 1; i < len; i++)
     SaveUInt4(*expos++);
-  return;
 }
 
 /****************************************************************************
@@ -2051,7 +2050,6 @@ void  LoadCyc ( Obj cyc )
   expos++;                      /*Skip past the XXX */
   for (i = 1; i < len; i++)
     *expos++ = LoadUInt4();
-  return;
 }
 
 
@@ -2068,9 +2066,7 @@ void  LoadCyc ( Obj cyc )
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_CYC", "obj", &IsCycFilt,
-      FuncIS_CYC, "src/cyclotom.c:IS_CYC" },
-
+    GVAR_FILTER(IS_CYC, "obj", &IsCycFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2082,9 +2078,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    { "CONDUCTOR", "cyc", &ConductorAttr,
-      FuncCONDUCTOR, "src/cyclotom.c:CONDUCTOR" },
-
+    GVAR_FILTER(CONDUCTOR, "cyc", &ConductorAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2096,22 +2090,11 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "E", 1, "n", &EOper,
-      FuncE, "src/cyclotom.c:E" },
-
-    { "IS_CYC_INT", 1, "obj", &IsCycIntOper,
-      FuncIS_CYC_INT, "src/cyclotom.c:IS_CYC_INT" },
-                     
-    { "COEFFS_CYC", 1, "cyc", &CoeffsCycOper,
-      FuncCOEFFS_CYC, "src/cyclotom.c:COEFFS_CYC" },
-
-    { "GALOIS_CYC", 2, "cyc, n", &GaloisCycOper,
-      FuncGALOIS_CYC, "src/cyclotom.c:GALOIS_CYC" },
-
-    { "CycList", 1, "list", &CycListOper,
-      FuncCycList, "src/cyclotom.c:CycList" },
-
-
+    GVAR_OPER(E, 1, "n", &EOper),
+    GVAR_OPER(IS_CYC_INT, 1, "obj", &IsCycIntOper),
+    GVAR_OPER(COEFFS_CYC, 1, "cyc", &CoeffsCycOper),
+    GVAR_OPER(GALOIS_CYC, 2, "cyc, n", &GaloisCycOper),
+    GVAR_OPER(CycList, 1, "list", &CycListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
@@ -2122,12 +2105,8 @@ static StructGVarOper GVarOpers [] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . .  list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  { "SetCyclotomicsLimit", 1, "newlimit",
-    FuncSetCyclotomicsLimit, "src/cyclotomics.c:SetCyclotomicsLimit" },
-
-  { "GetCyclotomicsLimit", 0, "",
-    FuncGetCyclotomicsLimit, "src/cyclotomics.c:GetCyclotomicsLimit" },
-
+  GVAR_FUNC(SetCyclotomicsLimit, 1, "newlimit"),
+  GVAR_FUNC(GetCyclotomicsLimit, 0, ""),
   { 0, 0, 0, 0, 0 }
 };
 
