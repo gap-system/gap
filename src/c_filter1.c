@@ -42,7 +42,6 @@ static Obj  GC_RANK__FILTERS;
 
 /* information for the functions */
 static Obj  NameFunc[5];
-static Int  NargFunc[5];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -487,7 +486,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "CLEAR_IMP_CACHE" );
- t_3 = NewFunction( NameFunc[2], NargFunc[2], 0, HdlrFunc2 );
+ t_3 = NewFunction( NameFunc[2], 0, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 38);
@@ -534,7 +533,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "WITH_IMPS_FLAGS" );
- t_3 = NewFunction( NameFunc[3], NargFunc[3], 0, HdlrFunc3 );
+ t_3 = NewFunction( NameFunc[3], 1, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 43);
@@ -563,7 +562,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RankFilter" );
- t_3 = NewFunction( NameFunc[4], NargFunc[4], 0, HdlrFunc4 );
+ t_3 = NewFunction( NameFunc[4], 1, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 91);
@@ -613,13 +612,9 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* information for the functions */
  NameFunc[1] = 0;
- NargFunc[1] = 0;
  NameFunc[2] = 0;
- NargFunc[2] = 0;
  NameFunc[3] = 0;
- NargFunc[3] = 1;
  NameFunc[4] = 0;
- NargFunc[4] = 1;
  
  /* return success */
  return 0;
@@ -676,7 +671,7 @@ static Int InitLibrary ( StructInitInfo * module )
  PostRestore(module);
  
  /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);
+ func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, sizeof(BodyHeader));

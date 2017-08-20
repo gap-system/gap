@@ -1203,7 +1203,7 @@ CVar CompFuncExpr (
     func = CVAR_TEMP( NewTemp( "func" ) );
 
     /* make the function (all the pieces are in global variables)          */
-    Emit( "%c = NewFunction( NameFunc[%d], NargFunc[%d], 0", func, nr, nr );
+    Emit( "%c = NewFunction( NameFunc[%d], %d, 0", func, nr, NARG_FUNC(fexp) );
     Emit( ", HdlrFunc%d );\n", nr );
 
     /* this should probably be done by 'NewFunction'                       */
@@ -5658,7 +5658,6 @@ Int CompileFunc (
     /* emit code for the functions                                         */
     Emit( "\n/* information for the functions */\n" );
     Emit( "static Obj  NameFunc[%d];\n", CompFunctionsNr+1 );
-    Emit( "static Int  NargFunc[%d];\n", CompFunctionsNr+1 );
     Emit( "static Obj FileName;\n" );
 
 
@@ -5692,7 +5691,6 @@ Int CompileFunc (
         else {
             Emit( "NameFunc[%d] = 0;\n", i );
         }
-        Emit( "NargFunc[%d] = %d;\n", i, NARG_FUNC(ELM_PLIST(CompFunctions,i)));
     }
     Emit( "\n/* return success */\n" );
     Emit( "return 0;\n" );
@@ -5739,7 +5737,7 @@ Int CompileFunc (
     Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
     Emit( "PostRestore(module);\n" );
     Emit( "\n/* create all the functions defined in this module */\n" );
-    Emit( "func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);\n" );
+    Emit( "func1 = NewFunction(NameFunc[1],%d,0,HdlrFunc1);\n", NARG_FUNC(ELM_PLIST(CompFunctions,1)) );
     Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
     Emit( "body1 = NewBag( T_BODY, sizeof(BodyHeader));\n" );
