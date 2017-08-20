@@ -59,7 +59,6 @@ static Obj  GF_FamilyObj;
 
 /* information for the functions */
 static Obj  NameFunc[35];
-static Int  NargFunc[35];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -4652,7 +4651,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[2], NargFunc[2], 0, HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 1, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 19);
@@ -4672,7 +4671,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[3], NargFunc[3], 0, HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 2, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 37);
@@ -4692,7 +4691,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[4], NargFunc[4], 0, HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], 3, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 56);
@@ -4712,7 +4711,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[5], NargFunc[5], 0, HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], 4, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 76);
@@ -4733,7 +4732,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[6], NargFunc[6], 0, HdlrFunc6 );
+ t_1 = NewFunction( NameFunc[6], 5, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 97);
@@ -4754,7 +4753,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[7], NargFunc[7], 0, HdlrFunc7 );
+ t_1 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 121);
@@ -4775,7 +4774,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[8], NargFunc[8], 0, HdlrFunc8 );
+ t_1 = NewFunction( NameFunc[8], 7, 0, HdlrFunc8 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 146);
@@ -4789,7 +4788,7 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[9], NargFunc[9], 0, HdlrFunc9 );
+ t_1 = NewFunction( NameFunc[9], -1, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 172);
@@ -4814,7 +4813,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[10], NargFunc[10], 0, HdlrFunc10 );
+ t_1 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 189);
@@ -4839,7 +4838,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[11], NargFunc[11], 0, HdlrFunc11 );
+ t_1 = NewFunction( NameFunc[11], 3, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 212);
@@ -4864,7 +4863,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[12], NargFunc[12], 0, HdlrFunc12 );
+ t_1 = NewFunction( NameFunc[12], 4, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 236);
@@ -4890,7 +4889,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[13], NargFunc[13], 0, HdlrFunc13 );
+ t_1 = NewFunction( NameFunc[13], 5, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 261);
@@ -4916,7 +4915,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[14], NargFunc[14], 0, HdlrFunc14 );
+ t_1 = NewFunction( NameFunc[14], 6, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 287);
@@ -4942,7 +4941,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[15], NargFunc[15], 0, HdlrFunc15 );
+ t_1 = NewFunction( NameFunc[15], 7, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 316);
@@ -4968,7 +4967,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[16], NargFunc[16], 0, HdlrFunc16 );
+ t_1 = NewFunction( NameFunc[16], 8, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 346);
@@ -4982,7 +4981,7 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[17], NargFunc[17], 0, HdlrFunc17 );
+ t_1 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 377);
@@ -5014,7 +5013,7 @@ static Obj  HdlrFunc1 (
       Error( "No applicable method found for attribute" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[18], NargFunc[18], 0, HdlrFunc18 );
+ t_1 = NewFunction( NameFunc[18], 2, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 385);
@@ -5034,7 +5033,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[19], NargFunc[19], 0, HdlrFunc19 );
+ t_1 = NewFunction( NameFunc[19], 1, 0, HdlrFunc19 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 419);
@@ -5054,7 +5053,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[20], NargFunc[20], 0, HdlrFunc20 );
+ t_1 = NewFunction( NameFunc[20], 2, 0, HdlrFunc20 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 437);
@@ -5074,7 +5073,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[21], NargFunc[21], 0, HdlrFunc21 );
+ t_1 = NewFunction( NameFunc[21], 3, 0, HdlrFunc21 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 456);
@@ -5094,7 +5093,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[22], NargFunc[22], 0, HdlrFunc22 );
+ t_1 = NewFunction( NameFunc[22], 4, 0, HdlrFunc22 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 476);
@@ -5115,7 +5114,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[23], NargFunc[23], 0, HdlrFunc23 );
+ t_1 = NewFunction( NameFunc[23], 5, 0, HdlrFunc23 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 497);
@@ -5136,7 +5135,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[24], NargFunc[24], 0, HdlrFunc24 );
+ t_1 = NewFunction( NameFunc[24], 6, 0, HdlrFunc24 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 521);
@@ -5157,7 +5156,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[25], NargFunc[25], 0, HdlrFunc25 );
+ t_1 = NewFunction( NameFunc[25], 7, 0, HdlrFunc25 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 546);
@@ -5171,7 +5170,7 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[26], NargFunc[26], 0, HdlrFunc26 );
+ t_1 = NewFunction( NameFunc[26], -1, 0, HdlrFunc26 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 572);
@@ -5196,7 +5195,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[27], NargFunc[27], 0, HdlrFunc27 );
+ t_1 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 589);
@@ -5221,7 +5220,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[28], NargFunc[28], 0, HdlrFunc28 );
+ t_1 = NewFunction( NameFunc[28], 3, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 612);
@@ -5246,7 +5245,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[29], NargFunc[29], 0, HdlrFunc29 );
+ t_1 = NewFunction( NameFunc[29], 4, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 636);
@@ -5271,7 +5270,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[30], NargFunc[30], 0, HdlrFunc30 );
+ t_1 = NewFunction( NameFunc[30], 5, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 661);
@@ -5297,7 +5296,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[31], NargFunc[31], 0, HdlrFunc31 );
+ t_1 = NewFunction( NameFunc[31], 6, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 687);
@@ -5323,7 +5322,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[32], NargFunc[32], 0, HdlrFunc32 );
+ t_1 = NewFunction( NameFunc[32], 7, 0, HdlrFunc32 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 716);
@@ -5349,7 +5348,7 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[33], NargFunc[33], 0, HdlrFunc33 );
+ t_1 = NewFunction( NameFunc[33], 8, 0, HdlrFunc33 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 746);
@@ -5363,7 +5362,7 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[34], NargFunc[34], 0, HdlrFunc34 );
+ t_1 = NewFunction( NameFunc[34], -1, 0, HdlrFunc34 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 777);
@@ -5436,73 +5435,39 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* information for the functions */
  NameFunc[1] = 0;
- NargFunc[1] = 0;
  NameFunc[2] = 0;
- NargFunc[2] = 1;
  NameFunc[3] = 0;
- NargFunc[3] = 2;
  NameFunc[4] = 0;
- NargFunc[4] = 3;
  NameFunc[5] = 0;
- NargFunc[5] = 4;
  NameFunc[6] = 0;
- NargFunc[6] = 5;
  NameFunc[7] = 0;
- NargFunc[7] = 6;
  NameFunc[8] = 0;
- NargFunc[8] = 7;
  NameFunc[9] = 0;
- NargFunc[9] = -1;
  NameFunc[10] = 0;
- NargFunc[10] = 2;
  NameFunc[11] = 0;
- NargFunc[11] = 3;
  NameFunc[12] = 0;
- NargFunc[12] = 4;
  NameFunc[13] = 0;
- NargFunc[13] = 5;
  NameFunc[14] = 0;
- NargFunc[14] = 6;
  NameFunc[15] = 0;
- NargFunc[15] = 7;
  NameFunc[16] = 0;
- NargFunc[16] = 8;
  NameFunc[17] = 0;
- NargFunc[17] = -1;
  NameFunc[18] = 0;
- NargFunc[18] = 2;
  NameFunc[19] = 0;
- NargFunc[19] = 1;
  NameFunc[20] = 0;
- NargFunc[20] = 2;
  NameFunc[21] = 0;
- NargFunc[21] = 3;
  NameFunc[22] = 0;
- NargFunc[22] = 4;
  NameFunc[23] = 0;
- NargFunc[23] = 5;
  NameFunc[24] = 0;
- NargFunc[24] = 6;
  NameFunc[25] = 0;
- NargFunc[25] = 7;
  NameFunc[26] = 0;
- NargFunc[26] = -1;
  NameFunc[27] = 0;
- NargFunc[27] = 2;
  NameFunc[28] = 0;
- NargFunc[28] = 3;
  NameFunc[29] = 0;
- NargFunc[29] = 4;
  NameFunc[30] = 0;
- NargFunc[30] = 5;
  NameFunc[31] = 0;
- NargFunc[31] = 6;
  NameFunc[32] = 0;
- NargFunc[32] = 7;
  NameFunc[33] = 0;
- NargFunc[33] = 8;
  NameFunc[34] = 0;
- NargFunc[34] = -1;
  
  /* return success */
  return 0;
@@ -5613,7 +5578,7 @@ static Int InitLibrary ( StructInitInfo * module )
  PostRestore(module);
  
  /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],0,HdlrFunc1);
+ func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewBag( T_BODY, sizeof(BodyHeader));
