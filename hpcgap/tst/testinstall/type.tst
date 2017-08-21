@@ -45,6 +45,6 @@ Error, <oper> must be an operation
 #
 gap> List([IsAbelian, HasIsAbelian, IsMutable, \+, Size, AbelianGroupCons, Setter(IS_MUTABLE_OBJ)], TypeOfOperation);
 [ "Property", "Filter", "Category", "Operation", "Attribute", "Constructor", 
-  "Operation" ]
+  "Setter" ]
 
 #
