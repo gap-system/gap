@@ -17,29 +17,11 @@ for pkg in $packages
 do
     echo "=== Running tests for $pkg ==="
 $GAP -A  -x 80 -r <<GAPInput
-    pkg := "$pkg";;
-    if LoadPackage(pkg) = true then
-        Print("Package loaded successfully\n");
-    else
-        Print("Failed to load ", pkg, "\n");
-        QUIT_GAP(1);
-    fi;
-    info := PackageInfo(pkg)[1];;
-    if not IsBound(info.TestFile) then
+    status := TestPackage("$pkg");;
+    if status = fail then
+        QUIT_GAP(1); # signal failure;
+    elif status = false then
         Print("No test file found, skipping\n");
-    else
-        dir := DirectoriesPackageLibrary( pkg, "" );
-        testfile := Filename( dir, info.TestFile );
-        if EndsWith(testfile, ".tst") then
-            Print("testing ", testfile, " ...\n");
-            res := Test( testfile, rec(compareFunction := "uptowhitespace") );
-            if res = false then
-                QUIT_GAP(1);
-            fi;
-        else
-            Print("reading ", testfile, " ...\n");
-            ReadPkg(pkg,testfile);
-        fi;
     fi;
     QUIT_GAP(0);
 GAPInput
