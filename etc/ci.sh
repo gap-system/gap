@@ -112,7 +112,11 @@ then
         echo "All packages were built succesfully"
     fi
 
-    # TODO: actually run package tests
+    # return to base directory
+    popd
+
+    # Actually run package tests
+    etc/ci-packages.sh
 
     exit 0
 fi
