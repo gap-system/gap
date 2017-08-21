@@ -1783,15 +1783,8 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 
     if (BODY_FUNC(func)) {
         Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
-#ifndef WARD_ENABLED
-        if (fn) {
-#ifdef HPCGAP
-            if (IS_BAG_REF(fn))
-                MakeBagPublic(fn);
-#endif
+        if (fn)
             return fn;
-        }
-#endif
     }
     return Fail;
 }
