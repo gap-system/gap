@@ -4,6 +4,10 @@ GAP="bin/gap.sh --quitonbreak -q"
 
 packages=$($GAP -A <<GAPInput
     packages := SortedList(ShallowCopy(RecNames(GAPInfo.PackagesInfo)));;
+    # Remove some packages
+    SubtractSet(packages, [
+        "cubefree", # test take too long
+    ]);
     Perform(packages,Display);
     QUIT_GAP(0);
 GAPInput
