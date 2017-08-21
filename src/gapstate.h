@@ -31,7 +31,6 @@ typedef struct GAPState {
     UInt IntrCoding;
     Obj  IntrState;
     Obj  StackObj;
-    Int  CountObj;
     Obj  Tilde;
 
     /* From gvar.c */
