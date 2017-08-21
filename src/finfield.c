@@ -1821,12 +1821,7 @@ Obj INT_FF (
             SET_ELM_PLIST( conv, (z-1)/((q-1)/(p-1))+1, INTOBJ_INT(i) );
             z = succ[ z ];
         }
-        if ( LEN_PLIST(IntFF) < ff ) {
-            GROW_PLIST( IntFF, ff );
-            SET_LEN_PLIST( IntFF, (Int)ff );
-        }
-        SET_ELM_PLIST( IntFF, ff, conv );
-        CHANGED_BAG( IntFF );
+        AssPlist( IntFF, ff, conv );
     }
 
     /* return the conversion table                                           */
