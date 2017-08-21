@@ -7,7 +7,12 @@ packages=$($GAP -A <<GAPInput
     # Remove some packages
     SubtractSet(packages, [
         "anupq",    # tests take too long
+        "atlasrep",
+        "browse",
+        "ctblib",
         "cubefree", # tests take too long
+        "hap",
+        "hapcryst",
     ]);
     Perform(packages,Display);
     QUIT_GAP(0);
