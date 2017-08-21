@@ -65,8 +65,6 @@
 #include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
-#include <src/code.h>                   /* FilenameCache */
-
 #include <src/gaputils.h>
 
 #include <assert.h>
@@ -2965,11 +2963,6 @@ Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
   return val;
 }
 
-Obj FuncGET_FILENAME_CACHE(Obj self)
-{
-  return CopyObj(FilenameCache, 1);
-}
-
 
 
 /****************************************************************************
@@ -2990,7 +2983,6 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(INPUT_LINENUMBER, 0, ""),
   GVAR_FUNC(ALL_KEYWORDS, 0, ""),
   GVAR_FUNC(SET_PRINT_FORMATTING_STDOUT, 1, "format"),
-  GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
   { 0, 0, 0, 0, 0 }
 
 };

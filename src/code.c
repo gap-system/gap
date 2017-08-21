@@ -147,6 +147,11 @@ static inline void SetupGapname(TypInputFile* i)
   }
 }
 
+Obj FuncGET_FILENAME_CACHE(Obj self)
+{
+  return CopyObj(FilenameCache, 1);
+}
+
 Obj FILENAME_STAT(Stat stat)
 {
   Obj filename;
@@ -3493,6 +3498,17 @@ void LoadBody ( Obj body )
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+/****************************************************************************
+ **
+ *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+ */
+static StructGVarFunc GVarFuncs [] = {
+
+  GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
+  { 0, 0, 0, 0, 0 }
+
+};
+
 void InitCoderState(GAPState * state)
 {
     state->OffsBodyCount = 0;
@@ -3543,6 +3559,8 @@ static Int InitKernel (
     SetupOffsBodyStackAndLoopStack();
 #endif
 
+    InitHdlrFuncsFromTable( GVarFuncs );
+
     /* return success                                                      */
     return 0;
 }
@@ -3576,6 +3594,9 @@ static Int InitLibrary (
     SET_LEN_PLIST(cache,0);
 #endif
     AssGVar(gv, cache);
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;
