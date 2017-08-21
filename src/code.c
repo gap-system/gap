@@ -2076,25 +2076,20 @@ static void CodeEagerFloatExpr( Obj str, Char mark ) {
   UInt l = GET_LEN_STRING(str);
   Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
   Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+  UInt ix;
   assert(EAGER_FLOAT_LITERAL_CACHE);
 #ifdef HPCGAP
   assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
-  UInt next = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
-  ADDR_EXPR(fl)[0] = next;
+  ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
 #else
   assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
-  CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
-  SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+  AssPlist(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
+  ix = NextEagerFloatLiteralNumber++;
 #endif
+  ADDR_EXPR(fl)[0] = ix;
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
   memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
-#if !defined(HPCGAP)
-  NextEagerFloatLiteralNumber++;
-#endif
   PushExpr(fl);
 }
 
