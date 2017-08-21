@@ -202,6 +202,7 @@ static inline Obj * BASE_PTR_PLIST(Obj list)
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     return ADDR_OBJ(list) + 1;
 }
+
 /****************************************************************************
 **
 *F  IS_DENSE_PLIST( <list> )  . . . . . check if <list> is a dense plain list
@@ -217,7 +218,6 @@ static inline Int IS_DENSE_PLIST(Obj list)
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
 }
 
-
 /****************************************************************************
 **
 *F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
@@ -229,7 +229,7 @@ static inline Int IS_MUTABLE_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  AssPlist(<list>,<pos>,<val>)  . . . . . . . . . .  assign to a plain list
+*F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
 extern void            AssPlist (
     Obj                 list,
@@ -238,8 +238,28 @@ extern void            AssPlist (
 
 /****************************************************************************
 **
+*F  PushPlist( <list>, <val> ) . . . . . . . .  assign to end of a plain list
+**
+**  Note that this function does not adjust the TNUM of the list object. It
+**  also does not attempt to convert the list to a different representation,
+**  such as a string or blist. If your need that, use AddList or AddPlist
+**  instead.
+**
+*/
+static inline UInt PushPlist(Obj list, Obj val)
+{
+    const UInt pos = LEN_PLIST(list) + 1;
+    GROW_PLIST(list, pos);
+    SET_LEN_PLIST(list, pos);
+    SET_ELM_PLIST(list, pos, val);
+    CHANGED_BAG(list);
+    return pos;
+}
+
+/****************************************************************************
+**
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
-*F  UnbPlistImm( <list>, <pos> ) . . . . . unbind an element from a plain list
+*F  UnbPlistImm( <list>, <pos> ) . . . .  unbind an element from a plain list
 */
 extern void AssPlistEmpty (
     Obj                 list,
