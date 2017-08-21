@@ -13,6 +13,7 @@ packages=$($GAP -A <<GAPInput
         "cubefree", # tests take too long
         "hap",
         "hapcryst",
+        "help",
     ]);
     Perform(packages,Display);
     QUIT_GAP(0);
