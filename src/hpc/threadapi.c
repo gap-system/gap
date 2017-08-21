@@ -2044,24 +2044,20 @@ Obj FuncDO_LOCK(Obj self, Obj args)
 
 Obj FuncWRITE_LOCK(Obj self, Obj obj)
 {
-    int        result;
-    static int modes[] = { 1 };
-    result = LockObjects(1, &obj, modes);
-    if (result >= 0)
-        return INTOBJ_INT(result);
-    ErrorMayQuit("Cannot lock required regions", 0L, 0L);
-    return (Obj)0; /* flow control hint */
+    const int modes[] = { 1 };
+    int result = LockObjects(1, &obj, modes);
+    if (result < 0)
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+    return INTOBJ_INT(result);
 }
 
 Obj FuncREAD_LOCK(Obj self, Obj obj)
 {
-    int        result;
-    static int modes[] = { 0, 0, 0, 0, 0, 0 };
-    result = LockObjects(1, &obj, modes);
-    if (result >= 0)
-        return INTOBJ_INT(result);
-    ErrorMayQuit("Cannot lock required regions", 0L, 0L);
-    return (Obj)0; /* flow control hint */
+    const int modes[] = { 0 };
+    int result = LockObjects(1, &obj, modes);
+    if (result < 0)
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+    return INTOBJ_INT(result);
 }
 
 Obj FuncTRYLOCK(Obj self, Obj args)
