@@ -212,14 +212,14 @@ typedef struct {
 #endif
 
 static StructImportedGVars ImportedGVars[MAX_IMPORTED_GVARS];
-static Int NrImportedGVars;
+Int NrImportedGVars;
 
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
-static Int NrImportedFuncs;
+Int NrImportedFuncs;
 
 char *original_argv0;
 static char **sysargv;
-static char **sysenviron;
+char **sysenviron;
 
 Obj ShellContext = 0;
 Obj BaseShellContext = 0;
@@ -730,11 +730,7 @@ int DoFixGac(char *myself)
 }
 #endif
 
-#ifdef COMPILECYGWINDLL
-#define main realmain
-#endif
-
-int main (
+int gap_main_loop (
           int                 argc,
           char *              argv [],
           char *              environ [] )
@@ -1311,6 +1307,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
 
 Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 {
+  libgap_call_error_handler();
   TLS(ThrownObject) = payload;
   syLongjmp(TLS(ReadJmpError), 1);
   return 0;

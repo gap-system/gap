@@ -137,6 +137,7 @@
 
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
+#include        "libgap_internal.h"     /* gasman callback                 */
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
@@ -2209,6 +2210,9 @@ again:
 
     /* prepare the list of marked bags for the future                      */
     MarkedBags = 0;
+
+    /* call the libgap callback so library users can mark their own bags   */
+    libgap_call_gasman_callback();
 
     /* mark from the static area                                           */
     for ( i = 0; i < GlobalBags.nr; i++ )

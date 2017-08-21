@@ -103,7 +103,7 @@ typedef struct {
 #define SingleCollectWord   C8Bits_SingleCollectWord
 #define Solution            C8Bits_Solution
 #define UIntN               UInt1
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -125,7 +125,7 @@ FinPowConjCol C8Bits_SingleCollector = {
 #define SingleCollectWord   C16Bits_SingleCollectWord
 #define Solution            C16Bits_Solution
 #define UIntN               UInt2
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -147,7 +147,7 @@ FinPowConjCol C16Bits_SingleCollector = {
 #define SingleCollectWord   C32Bits_SingleCollectWord
 #define Solution            C32Bits_Solution
 #define UIntN               UInt4
-#include "src/objscoll-impl.h"
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **

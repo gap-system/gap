@@ -42,6 +42,8 @@
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
 
+#include        "libgap_internal.h"     /* GAP shared library              */
+
 #include        <assert.h>
 #include        <fcntl.h>
 
@@ -1135,16 +1137,20 @@ Int syFid;
 
 void syAnswerCont ( int signr )
 {
+#ifdef LIBGAP_SIGNALS
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
     kill( getpid(), SIGCONT );
+#endif
 }
 
 void syAnswerTstp ( int signr )
 {
+#ifdef LIBGAP_SIGNALS
     syStopraw( syFid );
     signal( SIGCONT, syAnswerCont );
     kill( getpid(), SIGTSTP );
+#endif
 }
 
 #endif
@@ -1217,11 +1223,12 @@ UInt syStartraw ( Int fid )
 
 #endif
 
-
+#ifdef LIBGAP_SIGNALS
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
     syFid = fid;
     signal( SIGTSTP, syAnswerTstp );
+#endif
 #endif
 
     /* indicate success                                                    */
@@ -1245,9 +1252,11 @@ void syStopraw (
     if ( SyWindow )
         return;
 
+#ifdef LIBGAP_SIGNALS
 #ifdef SIGTSTP
     /* remove signal handler for stop                                      */
     signal( SIGTSTP, SIG_DFL );
+#endif
 #endif
 
 #if HAVE_TERMIOS_H
@@ -1342,11 +1351,13 @@ void syAnswerIntr ( int signr )
 
 void SyInstallAnswerIntr ( void )
 {
+#ifdef LIBGAP_SIGNALS
     if ( signal( SIGINT, SIG_IGN ) != SIG_IGN )
     {
         signal( SIGINT, syAnswerIntr );
         siginterrupt( SIGINT, 0 );
     }
+#endif
 }
 
 
@@ -1625,7 +1636,9 @@ void getwindowsize( void )
             if (CO <= 0)
                 CO = win.ws_col;
         }
+#ifdef LIBGAP_SIGNALS
         (void) signal(SIGWINCH, syWindowChangeIntr);
+#endif
     }
 #endif /* TIOCGWINSZ */
 
@@ -3256,7 +3269,13 @@ Char * SyFgets (
     UInt                length,
     Int                 fid)
 {
-  return syFgets( line, length, fid, 1);
+  if(fid!=0 && fid!=2) {
+    // not stdin/stderr; probably file IO. Do the standard thing.
+    // printf("SyFgets fid=%i\n", fid);
+    return syFgets( line, length, fid, 1);
+  }
+  return libgap_get_input(line, length);
+  // return syFgets( line, length, fid, 1);
 }
 
 
@@ -3380,7 +3399,7 @@ void SySetErrorNo ( void )
 # endif
 #endif
 
-extern char ** environ;
+#include "libgap_internal.h"
 
 void NullSignalHandler(int scratch) {}
 
@@ -3495,6 +3514,7 @@ UInt SyExecuteProcess (
        `After that, we call the old signal handler, in case any other children have died in the
        meantime. This resets the handler */
 
+#ifdef LIBGAP_SIGNALS
     func2 = signal( SIGCHLD, SIG_DFL );
 
     /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
@@ -3503,6 +3523,7 @@ UInt SyExecuteProcess (
      * is to do nothing */
     if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
       func2 = &NullSignalHandler;
+#endif
 
     /* clone the process                                                   */
     pid = vfork();
@@ -3514,8 +3535,9 @@ UInt SyExecuteProcess (
     if ( pid != 0 ) {
 
         /* ignore a CTRL-C                                                 */
+#ifdef LIBGAP_SIGNALS
         func = signal( SIGINT, SIG_IGN );
-
+#endif
         /* wait for some action                                            */
 #if HAVE_WAITPID
         wait_pid = waitpid( pid, &status, 0 );
@@ -3523,18 +3545,24 @@ UInt SyExecuteProcess (
         wait_pid = wait4( pid, &status, 0, &usage );
 #endif
         if ( wait_pid == -1 ) {
+#ifdef LIBGAP_SIGNALS
             signal( SIGINT, func );
             (*func2)(SIGCHLD);
+#endif
             return -1;
         }
 
         if ( WIFSIGNALED(status) ) {
+#ifdef LIBGAP_SIGNALS
             signal( SIGINT, func );
             (*func2)(SIGCHLD);
+#endif
             return -1;
         }
+#ifdef LIBGAP_SIGNALS
         signal( SIGINT, func );
         (*func2)(SIGCHLD);
+#endif
         return WEXITSTATUS(status);
     }
 
