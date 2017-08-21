@@ -5,4 +5,4 @@
 gap> IS_MUTABLE_OBJ;
 <Category "IsMutable">
 gap> Setter(IS_MUTABLE_OBJ);
-<Category "<<filter-setter>>">
+<Setter "<<filter-setter>>">
