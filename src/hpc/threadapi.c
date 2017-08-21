@@ -2160,7 +2160,7 @@ static int
 MigrateObjects(int count, Obj * objects, Region * target, int retype)
 {
     int i;
-    if (retype && IS_BAG_REF(objects[0]) &&
+    if (count && retype && IS_BAG_REF(objects[0]) &&
         REGION(objects[0])->owner == realTLS && AutoRetyping) {
         for (i = 0; i < count; i++)
             if (REGION(objects[i])->owner == realTLS)
