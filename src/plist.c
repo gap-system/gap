@@ -1703,7 +1703,8 @@ void            AssPlist (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 }
 
 void            AssPlistXXX (
@@ -1725,7 +1726,8 @@ void            AssPlistXXX (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* We may be able cheaply to tell that the list is non-dense          */
     if (len +1 < pos)
@@ -1748,7 +1750,8 @@ void AssPlistCyc   (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* try and maintain maximum information about the list                */
     if (pos > len + 1) {
@@ -1787,7 +1790,8 @@ void AssPlistFfe   (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* try and maintain maximum information about the list                 */
     if( pos > len + 1 ) {

@@ -252,7 +252,8 @@ static inline UInt PushPlist(Obj list, Obj val)
     GROW_PLIST(list, pos);
     SET_LEN_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, val);
-    CHANGED_BAG(list);
+    if (IS_BAG_REF(val))
+        CHANGED_BAG(list);
     return pos;
 }
 
