@@ -283,18 +283,12 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 static inline UInt getFilenameId(Stat stat)
 {
   UInt id = FILENAMEID_STAT(stat);
-  if(id == 0)
-  {
+  if (id == 0) {
     return 0;
   }
-  if(LEN_PLIST(OutputtedFilenameList) < id || ELM_PLIST(OutputtedFilenameList,id) != True)
-  {
-    if(LEN_PLIST(OutputtedFilenameList) < id) {
-      GROW_PLIST(OutputtedFilenameList, id);
-      SET_LEN_PLIST(OutputtedFilenameList, id);
-    }
-    SET_ELM_PLIST(OutputtedFilenameList, id, True);
-    CHANGED_BAG(OutputtedFilenameList);
+  if (LEN_PLIST(OutputtedFilenameList) < id ||
+      ELM_PLIST(OutputtedFilenameList, id) != True) {
+    AssPlist(OutputtedFilenameList, id, True);
     fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
                                   CSTR_STRING(FILENAME_STAT(stat)), (int)id);
   }
