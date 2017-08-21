@@ -504,11 +504,7 @@ Obj    Mark2(
             else
             {
                 new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
-                GROW_PLIST(new, LEN_PLIST(new) + 1);
-                SET_LEN_PLIST(new, LEN_PLIST(new) + 1);
-                SET_ELM_PLIST(new, LEN_PLIST(new), INTOBJ_INT(i) );
-                /*  tell gasman that new has changed                         */
-                CHANGED_BAG(new);
+                PushPlist(new, INTOBJ_INT(i) );
             }
         }
         /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
@@ -1064,11 +1060,7 @@ void   FindNewReps1(
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
         {
             y = ShallowCopyPlist(tree);
-            GROW_PLIST(reps, LEN_PLIST(reps) + 1);
-            SET_LEN_PLIST(reps, LEN_PLIST(reps) + 1);
-            SET_ELM_PLIST(reps, LEN_PLIST(reps), y);
-            /*  tell gasman that <reps> has changed           */
-            CHANGED_BAG(reps);              
+            AssPlist(reps, LEN_PLIST(reps) + 1, y);
         }
         return;
     }
@@ -1272,10 +1264,7 @@ void   FindNewReps(
               UnmarkTree(tree);
               tree = MakeFormulaVector(tree, pr);
               list1 = ELM_PLIST(reps, CELM(rel, 3) );
-              GROW_PLIST(list1, LEN_PLIST(list1) + 1 );
-              SET_LEN_PLIST(list1, LEN_PLIST(list1) + 1 );
-              SET_ELM_PLIST(list1, LEN_PLIST(list1), tree);
-              CHANGED_BAG(list1);
+              PushPlist(list1, tree);
             }
             else
             {
@@ -1287,11 +1276,7 @@ void   FindNewReps(
                         i+=2                                        )
                 {
                     list1 = ELM_PLIST(reps, CELM(rel, i)  );
-                    GROW_PLIST(list1, LEN_PLIST(list1) + 1);
-                    SET_LEN_PLIST(list1, LEN_PLIST(list1) + 1);
-                    SET_ELM_PLIST(list1, LEN_PLIST(list1), y);
-                    /*  tell gasman that <list1> has changed           */
-                    CHANGED_BAG(list1);             
+                    PushPlist(list1, y);
                 }
             }
         }

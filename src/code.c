@@ -122,7 +122,7 @@ static inline void PopLoopNesting( void ) {
 
 static inline void SetupGapname(TypInputFile* i)
 {
-  if(!i->gapname) {
+  if (!i->gapname) {
     i->gapname = MakeImmString(i->name);
 #ifdef HPCGAP
     i->gapnameid = AddAList(FilenameCache, i->gapname);
@@ -130,13 +130,8 @@ static inline void SetupGapname(TypInputFile* i)
     // code below for GAP?!?
 #else
     Obj pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
-    if(pos == Fail) {
-        UInt len = LEN_PLIST( FilenameCache );
-        GROW_PLIST(      FilenameCache, len+1 );
-        SET_LEN_PLIST(   FilenameCache, len+1 );
-        SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
-        CHANGED_BAG(     FilenameCache );
-        i->gapnameid = len + 1;
+    if (pos == Fail) {
+        i->gapnameid = PushPlist(FilenameCache, i->gapname);;
     }
     else {
         i->gapnameid = INT_INTOBJ(pos);
@@ -901,13 +896,9 @@ void CodeFuncExprEnd (
     /* and store it in the function expression list of the outer function  */
     if ( STATE(CurrLVars) != STATE(CodeLVars) ) {
         fexs = FEXS_FUNC( CURR_FUNC );
-        len = LEN_PLIST( fexs );
-        GROW_PLIST(      fexs, len+1 );
-        SET_LEN_PLIST(   fexs, len+1 );
-        SET_ELM_PLIST(   fexs, len+1, fexp );
-        CHANGED_BAG(     fexs );
+        len = PushPlist( fexs, fexp );
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
-        ADDR_EXPR(expr)[0] = (Expr)(len+1);
+        ADDR_EXPR(expr)[0] = (Expr)len;
         PushExpr( expr );
     }
 
@@ -3552,8 +3543,9 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-  UInt gv;
-  Obj cache;
+    UInt gv;
+    Obj cache;
+
     /* allocate the statements and expressions stacks                      */
     STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
