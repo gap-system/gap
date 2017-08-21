@@ -712,10 +712,8 @@ void IntrForBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -780,10 +778,12 @@ void IntrForEnd ( void )
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
+
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+      SET_LEN_PLIST(STATE(StackNams), len - 1);
 
     func = STATE(CodeResult);
 
@@ -845,10 +845,8 @@ void            IntrWhileBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -898,18 +896,17 @@ void            IntrWhileEnd ( void )
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
 
-
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+      SET_LEN_PLIST(STATE(StackNams), len - 1);
 
     func = STATE(CodeResult);
-
 
     /* call the function                                                   */
     CALL_0ARGS( func );
@@ -1009,10 +1006,8 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
        
        If we are not in a break loop, then this would be a waste of time and effort */
     
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
     
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
@@ -1033,8 +1028,9 @@ void            IntrAtomicEndBody (
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-      if (STATE(CountNams) > 0)
-        STATE(CountNams)--;
+      const UInt len = LEN_PLIST(STATE(StackNams));
+      if (len > 0)
+        SET_LEN_PLIST(STATE(StackNams), len - 1);
 
       /* Code the body as a function expression */
       CodeFuncExprEnd( nrstats, 0UL );
@@ -1185,10 +1181,8 @@ void            IntrRepeatBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
@@ -1241,10 +1235,13 @@ void            IntrRepeatEnd ( void )
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
+
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+      SET_LEN_PLIST(STATE(StackNams), len - 1);
+
     func = STATE(CodeResult);
 
     /* call the function                                                   */

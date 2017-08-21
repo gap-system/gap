@@ -48,7 +48,6 @@ typedef struct GAPState {
     syJmp_buf ReadJmpError;
     syJmp_buf threadExit;
     Obj       StackNams;
-    UInt      CountNams;
     UInt      ReadTop;
     UInt      ReadTilde;
     UInt      CurrLHSGVar;

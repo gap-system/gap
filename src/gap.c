@@ -2777,7 +2777,6 @@ void ThreadedInterpreter(void *funcargs) {
 
   /* intialize everything and begin an interpreter                       */
   STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  STATE(CountNams)   = 0;
   STATE(ReadTop)     = 0;
   STATE(ReadTilde)   = 0;
   STATE(CurrLHSGVar) = 0;
@@ -3216,7 +3215,6 @@ void InitializeGap (
 #endif
 
     STATE(StackNams)    = NEW_PLIST( T_PLIST, 16 );
-    STATE(CountNams)    = 0;
     STATE(ReadTop)      = 0;
     STATE(ReadTilde)    = 0;
     STATE(CurrLHSGVar)  = 0;
