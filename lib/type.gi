@@ -149,7 +149,11 @@ end);
 InstallGlobalFunction( TypeOfOperation,
 function(oper)
     local type, flags, types, catok, repok, propok, seenprop,
-          t, flafs, res;
+          t, res;
+    if not IsOperation(oper) then
+        ErrorNoReturn("<oper> must be an operation");
+    fi;
+
     type := "Operation";
     if IS_IDENTICAL_OBJ(oper, IS_OBJECT) then
         type := "Filter";
@@ -187,8 +191,10 @@ function(oper)
                 type := "Representation";
             fi;
         fi;
+    elif FLAG1_FILTER(oper) > 0 then
+        type := "Setter";
     elif Tester(oper) <> false  then
-        # op is an attribute
+        # oper is an attribute
         type := "Attribute";
     fi;
     return type;
