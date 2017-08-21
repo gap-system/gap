@@ -6,8 +6,8 @@ packages=$($GAP -A <<GAPInput
     packages := SortedList(ShallowCopy(RecNames(GAPInfo.PackagesInfo)));;
     # Remove some packages
     SubtractSet(packages, [
+        "anupq",    # tests take too long
         "cubefree", # tests take too long
-        "help",     # tests take too long
     ]);
     Perform(packages,Display);
     QUIT_GAP(0);
