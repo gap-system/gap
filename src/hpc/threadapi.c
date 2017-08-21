@@ -2651,9 +2651,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(HASH_UNLOCK, 1, "object"),
     GVAR_FUNC(HASH_UNLOCK_SHARED, 1, "object"),
     GVAR_FUNC(HASH_SYNCHRONIZED, 2, "object, function"),
-    { "SynchronizedShared", 2, "object, function",
-      FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
-
+    GVAR_FUNC(HASH_SYNCHRONIZED_SHARED, 2, "object, function"),
     GVAR_FUNC(RegionOf, 1, "object"),
     GVAR_FUNC(SetRegionName, 2, "obj, name"),
     GVAR_FUNC(ClearRegionName, 1, "obj"),
