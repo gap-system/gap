@@ -1999,42 +1999,6 @@ Obj FuncIS_LOCKED(Obj self, Obj obj)
     return INTOBJ_INT(IsLocked(region));
 }
 
-void DoLockFunc(Obj args, int mode)
-{
-    Int   numargs = LEN_PLIST(args);
-    int * modes;
-    Int   i;
-    if (numargs > 1024) {
-        ErrorQuit("%s: Too many arguments",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-    if (TLS(lockStackPointer) == 0) {
-        ErrorQuit("%s: Not inside an atomic region or function",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-    modes = alloca(sizeof(int) * numargs);
-    for (i = 0; i < numargs; i++) {
-        modes[i] = mode;
-    }
-    if (LockObjects((int)numargs, ADDR_OBJ(args) + 1, modes) < 0) {
-        ErrorQuit("%s: Could not lock objects",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-}
-
-
-Obj FuncWriteLock(Obj self, Obj args)
-{
-    DoLockFunc(args, 1);
-    return (Obj)0;
-}
-
-Obj FuncReadLock(Obj self, Obj args)
-{
-    DoLockFunc(args, 0);
-    return (Obj)0;
-}
-
 Obj FuncLOCK(Obj self, Obj args)
 {
     int   numargs = LEN_PLIST(args);
@@ -2734,8 +2698,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(SyncRead, 1, "syncvar"),
     GVAR_FUNC(SyncIsBound, 1, "syncvar"),
     GVAR_FUNC(IS_LOCKED, 1, "obj"),
-    GVAR_FUNC(WriteLock, -1, "obj, ..."),
-    GVAR_FUNC(ReadLock, -1, "obj, ..."),
     GVAR_FUNC(LOCK, -1, "obj, ..."),
     GVAR_FUNC(DO_LOCK, -1, "obj, ..."),
     GVAR_FUNC(WRITE_LOCK, 1, "obj"),
