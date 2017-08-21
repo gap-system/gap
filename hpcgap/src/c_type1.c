@@ -5432,7 +5432,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- FileName = MakeString( "GAPROOT/lib/type1.g" );
+ FileName = MakeImmString( "GAPROOT/lib/type1.g" );
  PostRestore(module);
  
  /* create all the functions defined in this module */

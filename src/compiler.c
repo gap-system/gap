@@ -5686,7 +5686,7 @@ Int CompileFunc (
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "NameFunc[%d] = MakeString(\"%S\");\n", i, CSTR_STRING(n) );
+            Emit( "NameFunc[%d] = MakeImmString(\"%S\");\n", i, CSTR_STRING(n) );
         }
         else {
             Emit( "NameFunc[%d] = 0;\n", i );
@@ -5734,7 +5734,7 @@ Int CompileFunc (
     Emit( "Obj body1;\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
-    Emit( "FileName = MakeString( \"%s\" );\n", magic2 );
+    Emit( "FileName = MakeImmString( \"%s\" );\n", magic2 );
     Emit( "PostRestore(module);\n" );
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],%d,0,HdlrFunc1);\n", NARG_FUNC(ELM_PLIST(CompFunctions,1)) );

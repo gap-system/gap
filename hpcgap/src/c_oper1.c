@@ -4681,7 +4681,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
- FileName = MakeString( "GAPROOT/lib/oper1.g" );
+ FileName = MakeImmString( "GAPROOT/lib/oper1.g" );
  PostRestore(module);
  
  /* create all the functions defined in this module */
