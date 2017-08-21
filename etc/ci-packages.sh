@@ -21,7 +21,7 @@ echo "" > $log
 for pkg in $packages
 do
     echo "=== Running tests for $pkg ==="
-$GAP -A  -x 80 -r <<GAPInput
+time $GAP -A  -x 80 -r <<GAPInput
     status := TestPackage("$pkg");;
     if status = fail then
         QUIT_GAP(1); # signal failure;
