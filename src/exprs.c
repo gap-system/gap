@@ -1351,21 +1351,19 @@ Obj             EvalFloatExprLazy (
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
       cache = FLOAT_LITERAL_CACHE;
-      if (!cache)
-        {
 #ifdef HPCGAP
+      if (!cache) {
           cache = NewAtomicList(ix);
-#else
-          cache = NEW_PLIST(T_PLIST,ix);
-#endif
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
-        }
+      }
       else
-#ifdef HPCGAP
         assert(TNUM_OBJ(cache) == T_ALIST);
       fl = Elm0AList(cache,ix);
 #else
-        assert(IS_PLIST(cache));
+      if (!cache) {
+          cache = NEW_PLIST(T_PLIST,ix);
+          AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
+      }
       GROW_PLIST(cache,ix);
       fl = ELM_PLIST(cache,ix);
 #endif
@@ -1381,12 +1379,8 @@ Obj             EvalFloatExprLazy (
     if (cache) {
 #ifdef HPCGAP
       AssAList(cache, ix, fl);
-      CHANGED_BAG(cache);
 #else
-      SET_ELM_PLIST(cache, ix, fl);
-      CHANGED_BAG(cache);
-      if (LEN_PLIST(cache) < ix)
-        SET_LEN_PLIST(cache, ix);
+      AssPlist(cache, ix, fl);
 #endif
     }
 
