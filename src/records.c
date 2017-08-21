@@ -114,8 +114,6 @@ static inline UInt HashString( const Char * name )
 */
 Obj             HashRNam;
 
-UInt            SizeRNam;
-
 UInt            RNamName (
     const Char *        name )
 {
@@ -126,6 +124,7 @@ UInt            RNamName (
     Obj                 table;          /* temporary copy of <HashRNam>    */
     Obj                 rnam2;          /* one element of <table>          */
     UInt                i;              /* loop variable                   */
+    UInt                sizeRNam;
 
     if (strlen(name) >= 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
@@ -139,10 +138,11 @@ UInt            RNamName (
     HPC_LockNames(0); /* try a read lock first */
 
     /* look through the table until we find a free slot or the global      */
-    pos = (hash % SizeRNam) + 1;
+    sizeRNam = LEN_PLIST(HashRNam);
+    pos = (hash % sizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
          && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
-        pos = (pos % SizeRNam) + 1;
+        pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
       HPC_UnlockNames();
@@ -153,10 +153,11 @@ UInt            RNamName (
       HPC_UnlockNames(); /* switch to a write lock */
       HPC_LockNames(1);
       /* look through the table until we find a free slot or the global      */
-      pos = (hash % SizeRNam) + 1;
+      sizeRNam = LEN_PLIST(HashRNam);
+      pos = (hash % sizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
            && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
-          pos = (pos % SizeRNam) + 1;
+          pos = (pos % sizeRNam) + 1;
       }
     }
     if (rnam != 0) {
@@ -175,24 +176,24 @@ UInt            RNamName (
     SET_ELM_PLIST( HashRNam, pos, rnam );
 
     /* if the table is too crowded, make a larger one, rehash the names     */
-    if ( SizeRNam < 3 * countRNam / 2 ) {
+    if ( sizeRNam < 3 * countRNam / 2 ) {
         table = HashRNam;
-        SizeRNam = 2 * SizeRNam + 1;
-        HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+        sizeRNam = 2 * sizeRNam + 1;
+        HashRNam = NEW_PLIST( T_PLIST, sizeRNam );
+        SET_LEN_PLIST( HashRNam, sizeRNam );
 #ifdef HPCGAP
         /* The list is briefly non-public, but this is safe, because
          * the mutex protects it from being accessed by other threads.
          */
         MakeBagPublic(HashRNam);
 #endif
-        SET_LEN_PLIST( HashRNam, SizeRNam );
-        for ( i = 1; i <= (SizeRNam-1)/2; i++ ) {
+        for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
             pos = HashString( NAME_RNAM( INT_INTOBJ(rnam2) ) );
-            pos = (pos % SizeRNam) + 1;
+            pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
-                pos = (pos % SizeRNam) + 1;
+                pos = (pos % sizeRNam) + 1;
             }
             SET_ELM_PLIST( HashRNam, pos, rnam2 );
         }
@@ -756,21 +757,6 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* make the hash list of record names                                  */
-    SizeRNam = LEN_PLIST(HashRNam);
-
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
@@ -778,14 +764,13 @@ static Int InitLibrary (
 {
     /* make the list of names of record names                              */
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
-    MakeBagPublic(NamesRNam);
     SET_LEN_PLIST( NamesRNam, 0 );
+    MakeBagPublic(NamesRNam);
 
     /* make the hash list of record names                                  */
-    SizeRNam = 14033;
-    HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+    HashRNam = NEW_PLIST( T_PLIST, 14033 );
+    SET_LEN_PLIST( HashRNam, 14033 );
     MakeBagPublic(HashRNam);
-    SET_LEN_PLIST( HashRNam, SizeRNam );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
@@ -813,7 +798,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    PostRestore                         /* postRestore                    */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoRecords ( void )
