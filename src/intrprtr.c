@@ -116,15 +116,12 @@
 /****************************************************************************
 **
 *F  StackObj  . . . . . . . . . . . . . . . . . . . . . . . . .  values stack
-*F  CountObj  . . . . . . . . . . . . . . . . . number of values on the stack
 *F  PushObj(<val>)  . . . . . . . . . . . . . . . . push value onto the stack
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 *F  PopObj()  . . . . . . . . . . . . . . . . . . .  pop value from the stack
 *F  PopVoidObj()  . . . . . . . . . . . . . . . . .  pop value from the stack
 **
 **  'StackObj' is the stack of values.
-**
-**  'CountObj' is the number of values currently on the values stack.
 **
 **  'PushObj' pushes the value <val>  onto the values stack.   It is an error
 **  to push the void value.  The stack is automatically resized if necessary.
@@ -139,30 +136,23 @@
 **  It is an error if the stack is empty but not if the top element is void.
 **
 **  Since interpreters  can nest, there can   be more than one  values stack.
-**  The bottom  two  elements of each values  stack  are the  'StackObj'  and
-**  'CountObj' there were active when the current interpreter was started and
-**  which will be made active again when the current interpreter will stop.
+**  The bottom  element of each values stack is the 'StackObj' which was
+**  active when the current interpreter was started and which will be made
+**  active again when the current interpreter will stop.
 */
 /* TL: Obj             IntrState; */
 
 /* TL: Obj             StackObj; */
-
-/* TL: Int             CountObj; */
 
 void            PushObj (
     Obj                 val )
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
     assert( val != 0 );
 
-    /* count up and put the value onto the stack                           */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), val );
-    CHANGED_BAG(   STATE(StackObj) );
+    // put the value onto the stack
+    PushPlist( STATE(StackObj), val );
 }
 
 /* Special marker value to denote that a function returned no value, so we
@@ -178,26 +168,18 @@ void            PushFunctionVoidReturn ( void )
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
 
-    /* count up and put the void value onto the stack                      */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), (Obj)&VoidReturnMarker );
+    // put the value onto the stack
+    PushPlist( STATE(StackObj), (Obj)&VoidReturnMarker );
 }
 
 void            PushVoidObj ( void )
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
 
-    /* count up and put the void value onto the stack                      */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), (Obj)0 );
+    // put the value onto the stack
+    PushPlist( STATE(StackObj), (Obj)0 );
 }
 
 Obj             PopObj ( void )
@@ -206,13 +188,13 @@ Obj             PopObj ( void )
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( STATE(StackObj) != 0 );
-    assert( 1 <= STATE(CountObj) && STATE(CountObj) == LEN_LIST(STATE(StackObj)) );
+    UInt countObj = LEN_LIST(STATE(StackObj));
+    assert( 1 <= countObj );
 
     /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), 0 );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj)-1  );
-    STATE(CountObj)--;
+    val = ELM_PLIST( STATE(StackObj), countObj );
+    SET_ELM_PLIST( STATE(StackObj), countObj, 0 );
+    SET_LEN_PLIST( STATE(StackObj), countObj - 1 );
 
     if(val == (Obj)&VoidReturnMarker) {
         ErrorQuit(
@@ -230,13 +212,13 @@ Obj             PopVoidObj ( void )
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( STATE(StackObj) != 0 );
-    assert( 1 <= STATE(CountObj) && STATE(CountObj) == LEN_LIST(STATE(StackObj)) );
+    UInt countObj = LEN_LIST(STATE(StackObj));
+    assert( 1 <= countObj );
 
     /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), 0 );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj)-1  );
-    STATE(CountObj)--;
+    val = ELM_PLIST( STATE(StackObj), countObj );
+    SET_ELM_PLIST( STATE(StackObj), countObj, 0 );
+    SET_LEN_PLIST( STATE(StackObj), countObj - 1 );
 
     /* Treat a function which returned no value the same as 'void'         */
     if(val == (Obj)&VoidReturnMarker) {
@@ -273,17 +255,15 @@ void IntrBegin ( Obj frame )
     /* remember old interpreter state                                      */
     /* This bag cannot exist at the top-most loop, which is the only
        place from which we might call SaveWorkspace */
-    intrState = NewBag( T_PLIST, 4*sizeof(Obj) );
-    ADDR_OBJ(intrState)[0] = (Obj)3;
-    ADDR_OBJ(intrState)[1] = STATE(IntrState);
-    ADDR_OBJ(intrState)[2] = STATE(StackObj);
-    ADDR_OBJ(intrState)[3] = INTOBJ_INT(STATE(CountObj));
+    intrState = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( intrState, 2 );
+    SET_ELM_PLIST( intrState, 1, STATE(IntrState) );
+    SET_ELM_PLIST( intrState, 2, STATE(StackObj) );
     STATE(IntrState) = intrState;
 
     /* allocate a new values stack                                         */
     STATE(StackObj) = NEW_PLIST( T_PLIST, 64 );
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
 
     /* must be in immediate (non-ignoring, non-coding) mode                */
     assert( STATE(IntrIgnoring) == 0 );
@@ -316,13 +296,8 @@ ExecStatus IntrEnd (
         assert( STATE(IntrCoding)   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-        assert( STATE(CountObj) == 1 );
+        assert( LEN_PLIST(STATE(StackObj)) == 1 );
         STATE(IntrResult) = PopVoidObj();
-
-        /* switch back to the old state                                    */
-        STATE(CountObj)  = INT_INTOBJ( ADDR_OBJ(STATE(IntrState))[3] );
-        STATE(StackObj)  = ADDR_OBJ(STATE(IntrState))[2];
-        STATE(IntrState) = ADDR_OBJ(STATE(IntrState))[1];
 
     }
 
@@ -346,12 +321,11 @@ ExecStatus IntrEnd (
         /* dummy result value (probably ignored)                           */
         STATE(IntrResult) = (Obj)0;
 
-        /* switch back to the old state                                    */
-        STATE(CountObj)  = INT_INTOBJ( ADDR_OBJ(STATE(IntrState))[3] );
-        STATE(StackObj)  = ADDR_OBJ(STATE(IntrState))[2];
-        STATE(IntrState) = ADDR_OBJ(STATE(IntrState))[1];
-
     }
+
+    // switch back to the old state
+    STATE(StackObj)  = ELM_PLIST(STATE(IntrState), 2);
+    STATE(IntrState) = ELM_PLIST(STATE(IntrState), 1);
 
     /* indicate whether a return-statement was interpreted                 */
     return intrReturning;
@@ -1024,10 +998,8 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
     PushObj(INTOBJ_INT(nrexprs));
     CodeBegin();
     STATE(IntrCoding) = 1;
-    
-    
+
     /* code a function expression (with no arguments and locals)           */
-    
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
     
@@ -1038,9 +1010,9 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
        If we are not in a break loop, then this would be a waste of time and effort */
     
     if (STATE(CountNams) > 0) {
-      GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-      SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-      SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
+        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
+        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
     }
     
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
@@ -1352,7 +1324,6 @@ void            IntrReturnObj ( void )
     /* empty the values stack and push the return value                    */
     val = PopObj();
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushObj( val );
 
     /* indicate that a return-value-statement was interpreted              */
@@ -1377,7 +1348,6 @@ void            IntrReturnVoid ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
     /* indicate that a return-void-statement was interpreted               */
@@ -1406,7 +1376,6 @@ void            IntrQuit ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
 
@@ -1432,7 +1401,6 @@ void            IntrQUIT ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
 
@@ -2255,8 +2223,9 @@ void            IntrPermCycle (
         ptr4 = ADDR_PERM4( perm );
     }
     else {
-        m = INT_INTOBJ( ELM_LIST( STATE(StackObj), STATE(CountObj) - nrx ) );
-        perm = ELM_LIST( STATE(StackObj), STATE(CountObj) - nrx - 1 );
+        const UInt countObj = LEN_PLIST(STATE(StackObj));
+        m = INT_INTOBJ( ELM_LIST( STATE(StackObj), countObj - nrx ) );
+        perm = ELM_LIST( STATE(StackObj), countObj - nrx - 1 );
         ptr4 = ADDR_PERM4( perm );
     }
 
