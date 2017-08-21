@@ -1243,7 +1243,6 @@ static void DeclareAllGVars( void );
 void UpdateCopyFopyInfo ( void )
 {
     Obj                 cops;           /* copies list                     */
-    UInt                ncop;           /* number of copies                */
     UInt                gvar;
     const Char *        name;           /* name of the variable            */
     Obj *               copy;           /* address of the copy             */
@@ -1280,13 +1279,9 @@ void UpdateCopyFopyInfo ( void )
                 CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }
-        ncop = LEN_PLIST(cops);
 
-        /* append the copy to the copies list                              */
-        GROW_PLIST( cops, ncop+1 );
-        SET_LEN_PLIST( cops, ncop+1 );
-        SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
-        CHANGED_BAG(cops);
+        // append the copy to the copies list
+        PushPlist(cops, (Obj)copy);
 
         /* now copy the value of <gvar> to <cvar>                          */
         Obj val = ValGVar(gvar);
