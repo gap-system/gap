@@ -5418,7 +5418,6 @@ void CompAssert3 (
 **  handler of the function <func> and the handlers of all its subfunctions.
 */
 Obj CompFunctions;
-Int CompFunctionsNr;
 
 void CompFunc (
     Obj                 func )
@@ -5444,15 +5443,11 @@ void CompFunc (
     /* in the first pass allocate the info bag                             */
     if ( CompPass == 1 ) {
 
-        CompFunctionsNr++;
-        GROW_PLIST(    CompFunctions, CompFunctionsNr );
-        SET_ELM_PLIST( CompFunctions, CompFunctionsNr, func );
-        SET_LEN_PLIST( CompFunctions, CompFunctionsNr );
-        CHANGED_BAG(   CompFunctions );
+        UInt nr = PushPlist( CompFunctions, func );
 
         info = NewBag( T_STRING, SIZE_INFO(narg+nloc,8) );
         NEXT_INFO(info)  = INFO_FEXP( CURR_FUNC );
-        NR_INFO(info)    = CompFunctionsNr;
+        NR_INFO(info)    = nr;
         NLVAR_INFO(info) = narg + nloc;
         NHVAR_INFO(info) = 0;
         NTEMP_INFO(info) = 0;
@@ -5601,6 +5596,7 @@ Int CompileFunc (
     Int                 i;              /* loop variable                   */
     Obj                 n;              /* temporary                       */
     UInt                col;
+    UInt                compFunctionsNr;
 
     /* open the output file                                                */
     if ( ! OpenOutput( output ) ) {
@@ -5618,7 +5614,6 @@ Int CompileFunc (
     CompInfoRNam = NewBag( T_STRING, sizeof(UInt) * 1024 );
 
     /* create the list to collection the function expressions              */
-    CompFunctionsNr = 0;
     CompFunctions = NEW_PLIST( T_PLIST, 8 );
     SET_LEN_PLIST( CompFunctions, 0 );
 
@@ -5628,6 +5623,7 @@ Int CompileFunc (
 
     /* ok, lets emit some code now                                         */
     CompPass = 2;
+    compFunctionsNr = LEN_PLIST( CompFunctions );
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
@@ -5657,7 +5653,7 @@ Int CompileFunc (
 
     /* emit code for the functions                                         */
     Emit( "\n/* information for the functions */\n" );
-    Emit( "static Obj  NameFunc[%d];\n", CompFunctionsNr+1 );
+    Emit( "static Obj  NameFunc[%d];\n", compFunctionsNr+1 );
     Emit( "static Obj FileName;\n" );
 
 
@@ -5683,7 +5679,7 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    for ( i = 1; i <= CompFunctionsNr; i++ ) {
+    for ( i = 1; i <= compFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "NameFunc[%d] = MakeImmString(\"%S\");\n", i, CSTR_STRING(n) );
@@ -5715,7 +5711,7 @@ Int CompileFunc (
     Emit( "\n/* information for the functions */\n" );
     Emit( "InitGlobalBag( &FileName, \"%s:FileName(%d)\" );\n",
           magic2, magic1 );
-    for ( i = 1; i <= CompFunctionsNr; i++ ) {
+    for ( i = 1; i <= compFunctionsNr; i++ ) {
         Emit( "InitHandlerFunc( HdlrFunc%d, \"%s:HdlrFunc%d(%d)\" );\n",
               i, compilerMagic2, i, compilerMagic1 );
         Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s:NameFunc[%d](%d)\" );\n", 
@@ -5781,7 +5777,7 @@ Int CompileFunc (
     CloseOutput();
 
     /* return success                                                      */
-    return CompFunctionsNr;
+    return compFunctionsNr;
 }
 
 
