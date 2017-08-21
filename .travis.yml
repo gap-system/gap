@@ -26,6 +26,39 @@ matrix:
     - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITE=testtravis ABI=32
 
+    # compiler packages and run package tests
+    - env: TEST_SUITE=testpackages CONFIGFLAGS="--enable-debug"
+      addons:
+        apt_packages:
+          - gcc-multilib
+          - g++-multilib
+          - libgmp-dev
+          - libgmp-dev:i386         # for anupq
+          - libreadline-dev
+          - libboost-dev            # for NormalizInterface
+          - libmpfr-dev             # for float
+          - libmpfi-dev             # for float
+          - libmpc-dev              # for float
+          #- libfplll-dev           # for float
+          - pari-gp                 # for alnuth
+          - libzmq3-dev             # for ZeroMQInterface
+
+    - env: TEST_SUITE=testpackages ABI=32 CONFIGFLAGS="--enable-debug"
+      addons:
+        apt_packages:
+          - gcc-multilib
+          - g++-multilib
+          - libgmp-dev:i386
+          - libreadline-dev:i386
+          - libncurses5-dev:i386    # for Browse
+          - libboost-dev:i386       # for NormalizInterface
+          - libmpfr-dev:i386        # for float
+          - libmpfi-dev:i386        # for float
+          - libmpc-dev:i386         # for float
+          #- libfplll-dev:i386      # for float
+          - pari-gp:i386            # for alnuth
+          - libzmq3-dev:i386        # for ZeroMQInterface
+
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITE=testinstall
       os: osx

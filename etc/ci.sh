@@ -72,6 +72,50 @@ cd profiling
 make V=1
 cd ..
 
+if [[ "${TEST_SUITE}" == testpackages ]]
+then
+    # skip carat because building it leads to too much output which floods the log
+    rm -rf carat*
+    # skip linboxing because it hasn't compiled for years
+    rm -rf linboxing*
+    # skip pargap: no MPI present (though we could fix that), and it currently does not
+    # build with the GAP master branch
+    rm -rf pargap*
+    # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
+    rm -rf PolymakeInterface*
+    # HACK to work out timestamp issues with anupq
+    touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
+    # HACK to prevent float from complaining about missing C-XSC (not available in Ubuntu)
+    # and fplll (float 0.7.5 is not compatible with fplll 4.0)
+    perl -pi -e 's;CXSC=yes;CXSC=no;' float*/configure
+    perl -pi -e 's;CXSC=extern;CXSC=no;' float*/configure
+    perl -pi -e 's;FPLLL=yes;FPLLL=no;' float*/configure
+    perl -pi -e 's;FPLLL=extern;FPLLL=no;' float*/configure
+
+    if [[ x"$ABI" == "x32" ]]
+    then
+      # HACK: disable NormalizInterface in 32bit mode for now. Version
+      # 0.9.8 doesn't make it easy to support 32bit. With the next
+      # release of the package, this will hopefully change.
+      rm -rf NormalizInterface-0.9.8
+    fi
+
+    $SRCDIR/bin/BuildPackages.sh --with-gaproot=$BUILDDIR
+    if [[ "$(wc -l < log/fail.log)" -ge 3 ]]
+    then
+        echo "Some packages failed to build:"
+        cat "log/fail.log"
+        exit 1
+    else
+        echo "All packages were built succesfully"
+    fi
+
+    # TODO: actually run package tests
+
+    exit 0
+fi
+
+
 # Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
 if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
 then
