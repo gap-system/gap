@@ -48,15 +48,6 @@
 
 /****************************************************************************
 **
-*F  CountRnam . . . . . . . . . . . . . . . . . . . .  number of record names
-**
-**  'CountRnam' is the number of record names.
-*/
-UInt            CountRNam;
-
-
-/****************************************************************************
-**
 *F  NAME_RNAM(<rnam>) . . . . . . . . . . . . . . . .  name for a record name
 **
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
@@ -176,18 +167,15 @@ UInt            RNamName (
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-    CountRNam++;
-    rnam = INTOBJ_INT(CountRNam);
-    SET_ELM_PLIST( HashRNam, pos, rnam );
     strlcpy( namx, name, sizeof(namx) );
     string = MakeImmString(namx);
-    GROW_PLIST(    NamesRNam,   CountRNam );
-    SET_LEN_PLIST( NamesRNam,   CountRNam );
-    SET_ELM_PLIST( NamesRNam,   CountRNam, string );
-    CHANGED_BAG(   NamesRNam );
+
+    const UInt countRNam = PushPlist(NamesRNam, string);
+    rnam = INTOBJ_INT(countRNam);
+    SET_ELM_PLIST( HashRNam, pos, rnam );
 
     /* if the table is too crowded, make a larger one, rehash the names     */
-    if ( SizeRNam < 3 * CountRNam / 2 ) {
+    if ( SizeRNam < 3 * countRNam / 2 ) {
         table = HashRNam;
         SizeRNam = 2 * SizeRNam + 1;
         HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
@@ -317,9 +305,10 @@ Obj             NameRNamHandler (
 {
     Obj                 name;
     Obj                 oname;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
     while ( ! IS_INTOBJ(rnam)
          || INT_INTOBJ(rnam) <= 0
-        || CountRNam < INT_INTOBJ(rnam) ) {
+        || countRNam < INT_INTOBJ(rnam) ) {
         rnam = ErrorReturnObj(
             "NameRName: <rnam> must be a record name (not a %s)",
             (Int)TNAM_OBJ(rnam), 0L,
@@ -570,8 +559,9 @@ UInt            iscomplete_rnam (
 {
     Char *              curr;
     UInt                i, k;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
-    for ( i = 1; i <= CountRNam; i++ ) {
+    for ( i = 1; i <= countRNam; i++ ) {
         curr = NAME_RNAM( i );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
@@ -586,9 +576,10 @@ UInt            completion_rnam (
     Char *              curr;
     Char *              next;
     UInt                i, k;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     next = 0;
-    for ( i = 1; i <= CountRNam; i++ ) {
+    for ( i = 1; i <= countRNam; i++ ) {
         curr = NAME_RNAM( i );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k < len || curr[k] <= name[k] )  continue;
@@ -614,14 +605,15 @@ Obj FuncALL_RNAMES (
     Obj                 copy, s;
     UInt                i;
     Obj                 name;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
-    for ( i = 1;  i <= CountRNam;  i++ ) {
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, countRNam );
+    for ( i = 1;  i <= countRNam;  i++ ) {
         name = NAME_OBJ_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
     }
-    SET_LEN_PLIST( copy, CountRNam );
+    SET_LEN_PLIST( copy, countRNam );
     return copy;
 }
 
@@ -769,9 +761,6 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* make the list of names of record names                              */
-    CountRNam = LEN_PLIST(NamesRNam);
-
     /* make the hash list of record names                                  */
     SizeRNam = LEN_PLIST(HashRNam);
 
@@ -788,7 +777,6 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* make the list of names of record names                              */
-    CountRNam = 0;
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
     MakeBagPublic(NamesRNam);
     SET_LEN_PLIST( NamesRNam, 0 );
