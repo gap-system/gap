@@ -783,7 +783,7 @@ void IntrForEnd ( void )
        variable names list to get the counts right. Remove it */
     const UInt len = LEN_PLIST(STATE(StackNams));
     if (len > 0)
-      SET_LEN_PLIST(STATE(StackNams), len - 1);
+        PopPlist(STATE(StackNams));
 
     func = STATE(CodeResult);
 
@@ -904,7 +904,7 @@ void            IntrWhileEnd ( void )
        variable names list to get the counts right. Remove it */
     const UInt len = LEN_PLIST(STATE(StackNams));
     if (len > 0)
-      SET_LEN_PLIST(STATE(StackNams), len - 1);
+        PopPlist(STATE(StackNams));
 
     func = STATE(CodeResult);
 
@@ -1030,7 +1030,7 @@ void            IntrAtomicEndBody (
        variable names list to get the counts right. Remove it */
       const UInt len = LEN_PLIST(STATE(StackNams));
       if (len > 0)
-        SET_LEN_PLIST(STATE(StackNams), len - 1);
+          PopPlist(STATE(StackNams));
 
       /* Code the body as a function expression */
       CodeFuncExprEnd( nrstats, 0UL );
@@ -1240,7 +1240,7 @@ void            IntrRepeatEnd ( void )
        variable names list to get the counts right. Remove it */
     const UInt len = LEN_PLIST(STATE(StackNams));
     if (len > 0)
-      SET_LEN_PLIST(STATE(StackNams), len - 1);
+        PopPlist(STATE(StackNams));
 
     func = STATE(CodeResult);
 

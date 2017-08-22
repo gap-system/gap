@@ -1517,9 +1517,7 @@ void ReadFuncExpr (
     }
 
     /* pop the new local variables list                                    */
-    const UInt len = LEN_PLIST(STATE(StackNams));
-    assert(len > 0);
-    SET_LEN_PLIST(STATE(StackNams), len - 1);
+    PopPlist(STATE(StackNams));
 
     /* 'end'                                                               */
     if (is_block)
@@ -1578,9 +1576,7 @@ static void ReadFuncExprBody (
     }
 
     /* pop the new local variables list                                    */
-    const UInt len = LEN_PLIST(STATE(StackNams));
-    assert(len > 0);
-    SET_LEN_PLIST(STATE(StackNams), len - 1);
+    PopPlist(STATE(StackNams));
 }
 
 /****************************************************************************
