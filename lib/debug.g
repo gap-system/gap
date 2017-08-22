@@ -99,9 +99,9 @@ Debug := function(arg)
   MakeReadWriteGVar("REREADING");
   REREADING := true;
   if i > Length(DEBUG.LIST) then
-    INSTALL_METHOD_ARGS(oldversion,f);     # save the old version
+    INSTALL_GLOBAL_FUNCTION(oldversion,f);     # save the old version
   fi;
-  INSTALL_METHOD_ARGS(f,DEBUG.FUNCTION);
+  INSTALL_GLOBAL_FUNCTION(f,DEBUG.FUNCTION);
   REREADING := false;
   MakeReadOnlyGVar("REREADING");
 
@@ -154,7 +154,7 @@ UnDebug := function(f)
   # Copy the old version into the function:
   MakeReadWriteGVar("REREADING");
   REREADING := true;
-  INSTALL_METHOD_ARGS(DEBUG.LIST[nr].func,DEBUG.LIST[nr].old);
+  INSTALL_GLOBAL_FUNCTION(DEBUG.LIST[nr].func,DEBUG.LIST[nr].old);
   REREADING := false;
   MakeReadOnlyGVar("REREADING");
   Unbind(DEBUG.LIST[nr]);

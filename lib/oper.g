@@ -1766,7 +1766,7 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
 
     name := arg[1];
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
-    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+    BIND_GLOBAL( name, NEW_GLOBAL_FUNCTION( name ) );
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
@@ -1790,7 +1790,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       Error("you cannot install a global function for another global ",
             "function,\nuse `DeclareSynonym' instead!");
     fi;
-    INSTALL_METHOD_ARGS( oper, func );
+    INSTALL_GLOBAL_FUNCTION( oper, func );
 end );
 
 
