@@ -2196,7 +2196,7 @@ static Obj  HdlrFunc8 (
    t_5 = (Obj)(UInt)( ! ((Int)t_6) );
    if ( t_5 ) {
     
-    /* return TRY_NEXT_METHOD; */
+    /* TryNextMethod(); */
     t_5 = GC_TRY__NEXT__METHOD;
     CHECK_BOUND( t_5, "TRY_NEXT_METHOD" )
     RES_BRK_CURR_STAT();
@@ -2231,7 +2231,7 @@ static Obj  HdlrFunc8 (
  /* else */
  else {
   
-  /* return TRY_NEXT_METHOD; */
+  /* TryNextMethod(); */
   t_1 = GC_TRY__NEXT__METHOD;
   CHECK_BOUND( t_1, "TRY_NEXT_METHOD" )
   RES_BRK_CURR_STAT();
@@ -2411,14 +2411,14 @@ static Obj  HdlrFunc7 (
           if not Tester( prop )( obj )  then
               found := true;
               if not (prop( obj ) and Tester( prop )( obj ))  then
-                  return TRY_NEXT_METHOD;
+                  TryNextMethod();
               fi;
           fi;
       od;
       if found  then
           return getter( obj );
       else
-          return TRY_NEXT_METHOD;
+          TryNextMethod();
       fi;
       return;
   end ); */
@@ -3467,7 +3467,7 @@ static Obj  HdlrFunc18 (
  /* else */
  else {
   
-  /* return TRY_NEXT_METHOD; */
+  /* TryNextMethod(); */
   t_1 = GC_TRY__NEXT__METHOD;
   CHECK_BOUND( t_1, "TRY_NEXT_METHOD" )
   RES_BRK_CURR_STAT();
@@ -3646,7 +3646,7 @@ static Obj  HdlrFunc17 (
       if re  then
           return CallFuncList( oper, arg );
       else
-          return TRY_NEXT_METHOD;
+          TryNextMethod();
       fi;
       return;
   end ); */
@@ -4079,14 +4079,14 @@ static Obj  HdlrFunc1 (
                         if not Tester( prop )( obj )  then
                             found := true;
                             if not (prop( obj ) and Tester( prop )( obj ))  then
-                                return TRY_NEXT_METHOD;
+                                TryNextMethod();
                             fi;
                         fi;
                     od;
                     if found  then
                         return getter( obj );
                     else
-                        return TRY_NEXT_METHOD;
+                        TryNextMethod();
                     fi;
                     return;
                 end );
@@ -4266,7 +4266,7 @@ static Obj  HdlrFunc1 (
             if re  then
                 return CallFuncList( oper, arg );
             else
-                return TRY_NEXT_METHOD;
+                TryNextMethod();
             fi;
             return;
         end );
