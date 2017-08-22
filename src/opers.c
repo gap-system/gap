@@ -5571,7 +5571,7 @@ Obj FuncNEW_OPERATION_ARGS (
     }
 
     /* make the new operation                                              */
-    args = MakeString("args");
+    args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
