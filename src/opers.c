@@ -1263,8 +1263,11 @@ Obj NewAndFilter (
     Obj                 str;
     char*               s;
 
-    if ( oper1 == ReturnTrueFilter && oper2 == ReturnTrueFilter )
-        return ReturnTrueFilter;
+    if ( oper1 == ReturnTrueFilter )
+        return oper2;
+
+    if ( oper2 == ReturnTrueFilter )
+        return oper1;
 
     str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
     str = NEW_STRING(str_len);
