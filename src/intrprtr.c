@@ -1293,7 +1293,7 @@ void            IntrReturnObj ( void )
     PushObj( val );
 
     /* indicate that a return-value-statement was interpreted              */
-    STATE(IntrReturning) = 1;
+    STATE(IntrReturning) = STATUS_RETURN_VAL;
 }
 
 
@@ -1317,7 +1317,7 @@ void            IntrReturnVoid ( void )
     PushVoidObj();
 
     /* indicate that a return-void-statement was interpreted               */
-    STATE(IntrReturning) = 2;
+    STATE(IntrReturning) = STATUS_RETURN_VOID;
 }
 
 
