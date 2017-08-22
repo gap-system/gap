@@ -5287,8 +5287,7 @@ Obj NewGlobalFunction (
     Obj                 namobj;
 
     /* create the function                                                 */
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
-                         DoUninstalledGlobalFunction );
+    func = NewFunction( name, narg, nams, DoUninstalledGlobalFunction );
 
     /* check the number of args                                            */
     if ( narg == -1 ) {
@@ -5814,8 +5813,7 @@ Obj FuncSETTER_FUNCTION (
     Obj                 tmp;
 
     fname = WRAP_NAME(name, "SetterFunc");
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
-                         ArglistObjVal, DoSetterFunction );
+    func = NewFunction( fname, 2, ArglistObjVal, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
@@ -5857,8 +5855,7 @@ Obj FuncGETTER_FUNCTION (
     Obj                 fname;
 
     fname = WRAP_NAME(name, "GetterFunc");
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
-                         ArglistObj, DoGetterFunction );
+    func = NewFunction( fname, 1, ArglistObj, DoGetterFunction );
     SET_ENVI_FUNC(func, INTOBJ_INT( RNamObj(name) ));
     return func;
 }
