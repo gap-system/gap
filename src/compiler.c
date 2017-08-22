@@ -2318,7 +2318,6 @@ CVar CompPow (
 * but NOT the representation which will apply to the compiled code or the endianness
 *
 * The solution to this is macros: C_MAKE_INTEGER_BAG( size, type) 
-*                                 C_SET_LIMB2(bag, limbnumber, value)
 *                                 C_SET_LIMB4(bag, limbnumber, value)
 *                                 C_SET_LIMB8(bag, limbnumber, value)
 *
@@ -2351,9 +2350,7 @@ CVar CompIntExpr (
         }
 
         for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
-#if INTEGER_UNIT_SIZE == 2
-            Emit( "C_SET_LIMB2( %c, %d, %d);\n",val, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
-#elif INTEGER_UNIT_SIZE == 4
+#if INTEGER_UNIT_SIZE == 4
             Emit( "C_SET_LIMB4( %c, %d, %dL);\n",val, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
 #elif INTEGER_UNIT_SIZE == 8
             Emit( "C_SET_LIMB8( %c, %d, %dLL);\n",val, i, ((UInt8*)((UInt *)ADDR_EXPR(expr) + 1))[i]);
