@@ -259,6 +259,24 @@ static inline UInt PushPlist(Obj list, Obj val)
 
 /****************************************************************************
 **
+*F  PopPlist( <list> ) . . . . . . . . .  remove last element of a plain list
+**
+**  Also returns the removed element. Caller is responsible for ensuring that
+**  the list is non-empty. Otherwise, an assertion may be raised, or the plist
+**  be left in an invalid state.
+**
+*/
+static inline Obj PopPlist(Obj list)
+{
+    const UInt pos = LEN_PLIST(list);
+    Obj val = ELM_PLIST(list, pos);
+    SET_LEN_PLIST(list, pos - 1);
+    SET_ELM_PLIST(list, pos, 0);
+    return val;
+}
+
+/****************************************************************************
+**
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 *F  UnbPlistImm( <list>, <pos> ) . . . .  unbind an element from a plain list
 */
