@@ -5256,15 +5256,15 @@ Obj NewProperty (
 
 /****************************************************************************
 **
-*F  DoOperationArgs( <name> ) . . . . . . . . . . . make a new operation args
+*F  DoGlobalFunction( <name> ) . . . . . . . . . . make a new global function
 */
 
 
 /****************************************************************************
 **
-**  DoUninstalledOperationArgs( <oper>, <args> )
+**  DoUninstalledGlobalFunction( <oper>, <args> )
 */
-Obj DoUninstalledOperationArgs (
+Obj DoUninstalledGlobalFunction (
     Obj                 oper,
     Obj                 args )
 {
@@ -5276,9 +5276,9 @@ Obj DoUninstalledOperationArgs (
 
 /****************************************************************************
 **
-*F  NewOperationArgs( <name>, <nargs>, <nams> )
+*F  NewGlobalFunction( <name>, <nargs>, <nams> )
 */
-Obj NewOperationArgs (
+Obj NewGlobalFunction (
     Obj                 name,
     Int                 narg,
     Obj                 nams )
@@ -5288,21 +5288,21 @@ Obj NewOperationArgs (
 
     /* create the function                                                 */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
-                         DoUninstalledOperationArgs );
+                         DoUninstalledGlobalFunction );
 
     /* check the number of args                                            */
     if ( narg == -1 ) {
-        SET_HDLR_FUNC(func, 0, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 1, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 2, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 3, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 4, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 5, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 6, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 7, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 0, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 1, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 2, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 3, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 4, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 5, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 6, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
     }
     else {
-        ErrorQuit("number of args must be -1 in `NewOperationArgs'",0L,0L);
+        ErrorQuit("number of args must be -1 in `NewGlobalFunction'",0L,0L);
         return 0;
     }
 
@@ -5318,13 +5318,13 @@ Obj NewOperationArgs (
 
 /****************************************************************************
 **
-*F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
+*F  InstallGlobalFunction( <oper>, <func> ) . . . . . . . . .  clone function
 **
 **  There is a problem  with uncompleted functions: if  they are  cloned then
 **  only   the orignal and not  the  clone will be  completed.  Therefore the
 **  clone must postpone the real cloning.
 */
-void InstallMethodArgs (
+void InstallGlobalFunction (
     Obj                 oper,
     Obj                 func )
 {
@@ -5555,9 +5555,9 @@ Obj FuncNEW_PROPERTY (
 
 /****************************************************************************
 **
-*F  FuncNEW_OPERATION_ARGS( <self>, <name> )  . . . . . .  new operation args
+*F  FuncNEW_GLOBAL_FUNCTION( <self>, <name> ) . . . . . . new global function
 */
-Obj FuncNEW_OPERATION_ARGS (
+Obj FuncNEW_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 name )
 {
@@ -5566,7 +5566,7 @@ Obj FuncNEW_OPERATION_ARGS (
 
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
-        ErrorQuit( "usage: NewOperationArgs( <name> )", 0L, 0L );
+        ErrorQuit( "usage: NewGlobalFunction( <name> )", 0L, 0L );
         return 0;
     }
 
@@ -5576,17 +5576,17 @@ Obj FuncNEW_OPERATION_ARGS (
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
     CHANGED_BAG( list );
-    return NewOperationArgs( name, -1, list );
+    return NewGlobalFunction( name, -1, list );
 }
 
 
 /****************************************************************************
 **
-*F  FuncINSTALL_METHOD_ARGS( <self>, <oper>, <func> ) . . install method args
+*F  FuncINSTALL_GLOBAL_FUNCTION( <self>, <oper>, <func> )
 */
 static Obj REREADING;
 
-Obj FuncINSTALL_METHOD_ARGS (
+Obj FuncINSTALL_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 oper,
     Obj                 func )
@@ -5597,7 +5597,7 @@ Obj FuncINSTALL_METHOD_ARGS (
                    (Int)TNAM_OBJ(oper), 0L );
     }
     if ( (REREADING != True) &&
-         (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledOperationArgs) ) {
+         (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
         ErrorQuit( "operation already installed",
                    0L, 0L );
         return 0;
@@ -5613,7 +5613,7 @@ Obj FuncINSTALL_METHOD_ARGS (
     }
 
     /* install the new method                                              */
-    InstallMethodArgs( oper, func );
+    InstallGlobalFunction( oper, func );
     return 0;
 }
 
@@ -6125,8 +6125,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(NEW_PROPERTY, 1, "name"),
     GVAR_FUNC(SETTER_FUNCTION, 2, "name, filter"),
     GVAR_FUNC(GETTER_FUNCTION, 1, "name"),
-    GVAR_FUNC(NEW_OPERATION_ARGS, 1, "name"),
-    GVAR_FUNC(INSTALL_METHOD_ARGS, 2, "oper, func"),
+    GVAR_FUNC(NEW_GLOBAL_FUNCTION, 1, "name"),
+    GVAR_FUNC(INSTALL_GLOBAL_FUNCTION, 2, "oper, func"),
     GVAR_FUNC(TRACE_METHODS, 1, "oper"),
     GVAR_FUNC(UNTRACE_METHODS, 1, "oper"),
     GVAR_FUNC(OPERS_CACHE_INFO, 0, ""),
@@ -6232,7 +6232,7 @@ static Int InitKernel (
     InitHandlerFunc( DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
     InitHandlerFunc( DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
 
-    InitHandlerFunc( DoUninstalledOperationArgs, "src/opers.c:DoUninstalledOperationArgs" );
+    InitHandlerFunc( DoUninstalledGlobalFunction, "src/opers.c:DoUninstalledGlobalFunction" );
 
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
