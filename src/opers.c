@@ -5792,13 +5792,13 @@ Obj DoSetterFunction (
     }
 
     /* set the value                                                       */
+    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp,1));
 #ifdef HPCGAP
     if (atomic)
-      SetARecordField( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)),
-        CopyObj(value,0) );
+      SetARecordField( obj, rnam, CopyObj(value,0) );
     else
 #endif
-      AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+      AssPRec( obj, rnam, CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
@@ -5855,15 +5855,11 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
-    Obj                 rnam;
 
     fname = WRAP_NAME(name, "GetterFunc");
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
                          ArglistObj, DoGetterFunction );
-    /* Need to seperate this onto two lines, in case RNamObj causes
-     * a garbage collection */
-    rnam = INTOBJ_INT( RNamObj(name) );
-    SET_ENVI_FUNC(func, rnam);
+    SET_ENVI_FUNC(func, INTOBJ_INT( RNamObj(name) ));
     return func;
 }
 
