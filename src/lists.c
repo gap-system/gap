@@ -2281,8 +2281,9 @@ static StructGVarProp GVarProps [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    // FIXME: why DoOperation0Args below?
-    { "POS_LIST", -1, "list, obj", &PosListOper,
+    // POS_LIST can take 2 or 3 arguments; since NewOperation ignores the
+    // handler for variadic operations, use DoOperation0Args as a placeholder.
+    { "POS_LIST", -1, "list, obj[, start]", &PosListOper,
       DoOperation0Args, "src/lists.c:POS_LIST" },
 
     GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),
