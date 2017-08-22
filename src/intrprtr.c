@@ -739,6 +739,7 @@ void IntrForEnd ( void )
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
+    CodeForEnd();
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
