@@ -1101,15 +1101,6 @@ Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-Obj NewTesterFilter (
-    Obj                 getter )
-{
-    Obj                 tester;
-    tester = ReturnTrueFilter;
-    return tester;
-}
-
-
 Obj DoSetFilter (
     Obj                 self,
     Obj                 obj,
@@ -1200,7 +1191,6 @@ Obj NewFilter (
 {
     Obj                 getter;
     Obj                 setter;
-    Obj                 tester;
     Int                 flag1;
     Obj                 flags;
     
@@ -1219,8 +1209,7 @@ Obj NewFilter (
     SETTR_FILT(getter)  = setter;
     CHANGED_BAG(getter);
     
-    tester = NewTesterFilter( getter );
-    TESTR_FILT(getter)  = tester;
+    TESTR_FILT(getter)  = ReturnTrueFilter;
     CHANGED_BAG(getter);
 
     return getter;    
