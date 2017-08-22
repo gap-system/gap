@@ -176,4 +176,12 @@ gap> Display(x->x);
 function ( x )
     return x;
 end
+
+#
+gap> Display(function() TryNextMethod(); end);
+function (  )
+    TryNextMethod();
+end
+
+#
 gap> STOP_TEST("function.tst", 1);

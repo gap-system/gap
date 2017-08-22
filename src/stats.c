@@ -2241,9 +2241,16 @@ void            PrintAssert3Args (
 void            PrintReturnObj (
     Stat                stat )
 {
-    Pr( "%2>return%< %>", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
-    Pr( "%2<;", 0L, 0L );
+    Expr expr = ADDR_STAT(stat)[0];
+    if ( TNUM_EXPR(expr) == T_REF_GVAR &&
+         (UInt)(ADDR_STAT(expr)[0]) == GVarName( "TRY_NEXT_METHOD" ) ) {
+        Pr( "TryNextMethod();", 0L, 0L );
+    }
+    else {
+        Pr( "%2>return%< %>", 0L, 0L );
+        PrintExpr( expr );
+        Pr( "%2<;", 0L, 0L );
+    }
 }
 
 
