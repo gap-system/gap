@@ -617,6 +617,207 @@ Obj FuncINT_STRING ( Obj self, Obj string )
 
 /****************************************************************************
 **
+*F SmallInt Bitfield operations
+*
+* The goal here it to set up a division of the usable bits in a small
+* integer into fields which can be accessed very quickly from GAP
+* level and quickly and conveniently from C. The purpose is to allow
+* implementation of data structures that divide up the bits within a
+* word without having to make them entirely opaque to the GAP level or
+* ridiculously slow
+*
+* The API is defined in lib/bitfields.gd and works by providing the
+* user with a collection of functions to get and set fields and
+* assemble an entire word.
+*
+* These functions are constructed here and have special handlers. The
+* information the handlers need about the size and position of the
+* bitfields are stored in some of the fields of the function header
+* which are not normally used for kernel functions. Specifically, we
+* use the NLOC_FUNC and FEXS_FUNC fields, which we alias as
+* MASK_BITFIELD_FUNC and OFFSET_BITFIELD_FUNC.
+*
+* For fields of size 1 we also offer Boolean setters and getters which
+* accept and return True for 1 and False for 0. This makes for much
+* nicer code on the GAP side.
+*
+*/
+
+
+static inline UInt MASK_BITFIELD_FUNC(Obj func)
+{
+  return NLOC_FUNC(func);
+}
+
+static inline void SET_MASK_BITFIELD_FUNC(Obj func, UInt mask)
+{
+  SET_NLOC_FUNC(func, mask);
+}
+
+static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
+{
+  GAP_ASSERT(IS_INTOBJ(FEXS_FUNC(func)));
+  return INT_INTOBJ(FEXS_FUNC(func));
+}
+
+static inline void SET_OFFFSET_BITFIELD_FUNC(Obj func, UInt offset)
+{
+  return SET_FEXS_FUNC(func, INTOBJ_INT(offset));		    
+}
+
+static Obj DoFieldGetter(Obj self, Obj data)
+{
+    UInt mask = MASK_BITFIELD_FUNC(self);
+    UInt offset = OFFSET_BITFIELD_FUNC(self);
+    if (!IS_INTOBJ(data))
+        ErrorMayQuit("Field getter: argument must be small integer", 0, 0);
+    UInt x = INT_INTOBJ(data);
+    return INTOBJ_INT((x & mask) >> offset);
+}
+
+static Obj DoFieldSetter(Obj self, Obj data, Obj val)
+{
+    UInt mask = MASK_BITFIELD_FUNC(self);
+    UInt offset = OFFSET_BITFIELD_FUNC(self);
+    if (!ARE_INTOBJS(data, val))
+        ErrorMayQuit("Field Setter: both arguments must be small integers", 0,
+                     0);
+    UInt x = INT_INTOBJ(data);
+    UInt y = INT_INTOBJ(val);
+    return INTOBJ_INT((x & ~mask) | (y << offset));
+}
+
+static Obj DoBooleanFieldGetter(Obj self, Obj data)
+{
+  UInt mask = MASK_BITFIELD_FUNC(self);
+    if (!IS_INTOBJ(data))
+        ErrorMayQuit("Boolean Field getter: argument must be small integer", 0, 0);
+    UInt x = INT_INTOBJ(data);
+    return (x & mask) ? True : False;
+}
+
+static Obj DoBooleanFieldSetter(Obj self, Obj data, Obj val)
+{
+    UInt mask = MASK_BITFIELD_FUNC(self);
+    if (!IS_INTOBJ(data))
+        ErrorMayQuit("Boolean Field Setter: data must be small integer", 0,
+                     0);
+    UInt x = INT_INTOBJ(data);
+    if (val == True)
+        x |= mask;
+    else if (val == False)
+        x &= ~mask;
+    else
+        ErrorMayQuit("Boolean Field Setter: value must be true or false", 0,
+                     0);
+    return INTOBJ_INT(x);
+}
+
+
+static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
+{
+    GAP_ASSERT(IS_PLIST(args));
+    GAP_ASSERT(LEN_PLIST(args) >= 1 && ELM_PLIST(args, 1));
+    Obj widths = ELM_PLIST(args, 1);
+    if (!IS_LIST(widths))
+        ErrorMayQuit("Fields builder: first argument must be list of widths",
+                     0, 0);
+    UInt nfields = LEN_LIST(widths);
+    if (LEN_PLIST(args) != nfields + 1)
+        ErrorMayQuit(
+            "Fields builder: number of values must match number of widths", 0,
+            0);
+    UInt x = 0;
+    UInt i;
+    for (i = nfields; i > 0; i--) {
+        GAP_ASSERT(ISB_LIST(widths, i));
+        Obj y = ELM_LIST(widths, i);
+        x <<= INT_INTOBJ(y);
+        GAP_ASSERT(ELM_PLIST(args, i + 1));
+        Obj z = ELM_PLIST(args, i + 1);
+        if (!IS_INTOBJ(z))
+            ErrorMayQuit("Fields builder: values must be small integers", 0,
+                         0);
+        GAP_ASSERT(INT_INTOBJ(z) < (1 << INT_INTOBJ(y)));
+        x |= INT_INTOBJ(z);
+    }
+    return INTOBJ_INT(x);
+}
+
+
+Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
+{
+    if (!IS_LIST(widths))
+        ErrorMayQuit("MAKE_BITFIELDS: widths must be a list", 0, 0);
+    UInt nfields = LEN_LIST(widths);
+    UInt starts[nfields + 1];
+    starts[0] = 0;
+    for (UInt i = 1; i <= nfields; i++) {
+        Obj o = ELM_LIST(widths, i);
+        if (!IS_INTOBJ(o))
+            ErrorMayQuit("MAKE_BITFIELDS: widths must be small integers", 0,
+                         0);
+        UInt width = INT_INTOBJ(o);
+        starts[i] = starts[i - 1] + width;
+    }
+    if (starts[nfields] > 8 * sizeof(UInt))
+        ErrorMayQuit("MAKE_BITFIELDS: total widths too large", 0, 0);
+
+    Obj  setters = NEW_PLIST(T_PLIST_DENSE + IMMUTABLE, nfields);
+    Obj  getters = NEW_PLIST(T_PLIST_DENSE + IMMUTABLE, nfields);
+    Obj  bsetters = NEW_PLIST(T_PLIST + IMMUTABLE, nfields);
+    UInt bslen = 0;
+    Obj  bgetters = NEW_PLIST(T_PLIST + IMMUTABLE, nfields);
+    for (UInt i = 1; i <= nfields; i++) {
+        UInt mask = (1L << starts[i]) - (1L << starts[i - 1]);
+        Obj s = NewFunctionC("<field setter>", 2, "data, val", DoFieldSetter);
+        SET_MASK_BITFIELD_FUNC(s, mask);
+        SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
+        SET_ELM_PLIST(setters, i, s);
+        CHANGED_BAG(setters);
+        Obj g = NewFunctionC("<field getter>", 1, "data", DoFieldGetter);
+        SET_MASK_BITFIELD_FUNC(g, mask);
+        SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
+        SET_ELM_PLIST(getters, i, g);
+        CHANGED_BAG(getters);
+        if (starts[i] - starts[i - 1] == 1) {
+            s = NewFunctionC("<boolean field setter>", 2, "data, val",
+                             DoBooleanFieldSetter);
+            SET_MASK_BITFIELD_FUNC(s, mask);
+            SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
+            SET_ELM_PLIST(bsetters, i, s);
+            CHANGED_BAG(bsetters);
+            bslen = i;
+            g = NewFunctionC("<boolean field getter>", 1, "data",
+                             DoBooleanFieldGetter);
+            SET_MASK_BITFIELD_FUNC(g, mask);
+            SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
+            SET_ELM_PLIST(bgetters, i, g);
+            CHANGED_BAG(bgetters);
+        }
+    }
+
+    SET_LEN_PLIST(setters, nfields);
+    SET_LEN_PLIST(getters, nfields);
+    SET_LEN_PLIST(bsetters, bslen);
+    SET_LEN_PLIST(bgetters, bslen);
+
+    Obj ms = NEW_PREC(5);
+    AssPRec(ms, RNamName("widths"), CopyObj(widths, 0));
+    AssPRec(ms, RNamName("getters"), getters);
+    AssPRec(ms, RNamName("setters"), setters);
+    if (bslen > 0) {
+        AssPRec(ms, RNamName("booleanGetters"), bgetters);
+        AssPRec(ms, RNamName("booleanSetters"), bsetters);
+    }
+    SortPRecRNam(ms, 0);
+    RetypeBag(ms, T_PREC + IMMUTABLE);
+    return ms;
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -632,6 +833,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SIZE_OBJ, 1, "obj"),
     GVAR_FUNC(InitRandomMT, 1, "initstr"),
     GVAR_FUNC(INT_STRING, 1, "string"),
+    GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
+    GVAR_FUNC(BUILD_BITFIELDS, -2, "widths..."),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -645,6 +848,10 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 
+    InitHandlerFunc(DoFieldSetter, "field-setter");
+    InitHandlerFunc(DoFieldGetter, "field-getter");
+    InitHandlerFunc(DoBooleanFieldSetter, "boolean-field-setter");
+    InitHandlerFunc(DoBooleanFieldGetter, "boolean-field-getter");
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );

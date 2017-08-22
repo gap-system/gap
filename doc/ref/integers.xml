@@ -174,5 +174,20 @@ random integers and random choices from lists.
 <#Include Label="RandomSource">
 
 </Section>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Bitfields">
+  <Heading>Bitfields</Heading>
+Bitfields are a low-level feature intended to support efficient 
+subdivision of immediate integers into bitfields of various widths.
+This is typically useful in implementing space-efficient and/or
+cache-efficient data structures. This feature should be used with care
+because (<E>inter alia</E>) it has different limitations on 32-bit and 64-bit
+architectures.
+
+<#Include Label="MakeBitfields">
+<#Include Label="BuildBitfields">
+
+</Section>
+
 </Chapter>
 
