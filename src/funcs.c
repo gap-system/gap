@@ -1527,10 +1527,9 @@ Obj             MakeFunction (
     else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
 
     /* make the function                                                   */
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC,
-                         NAME_FUNC( fexp ),
-                         NARG_FUNC( fexp ), NAMS_FUNC( fexp ),
-                         hdlr );
+    func = NewFunction( NAME_FUNC( fexp ),
+                        NARG_FUNC( fexp ), NAMS_FUNC( fexp ),
+                        hdlr );
 
     /* install the things an interpreted function needs                    */
     SET_NLOC_FUNC( func, NLOC_FUNC( fexp ) );
