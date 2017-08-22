@@ -28,6 +28,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/attr.gd",
     "../../lib/basis.gd",
     "../../lib/basismut.gd",
+    "../../lib/bitfields.gd",
     "../../lib/boolean.g",
     "../../lib/clas.gd",
     "../../lib/cmdledit.g",
