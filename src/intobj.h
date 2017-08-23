@@ -93,8 +93,7 @@ static inline Obj INTOBJ_INT(Int i)
 **  equal to the (immediate) integer object <r> and  'False'  otherwise.  The
 **  result is also stored in <o>.
 */
-#define EQ_INTOBJS(o,l,r) \
-    ((o) = (((Int)(l)) == ((Int)(r)) ? True : False))
+#define EQ_INTOBJS(o, l, r) ((o) = (((Int)(l)) == ((Int)(r)) ? True : False))
 
 
 /****************************************************************************
@@ -105,8 +104,7 @@ static inline Obj INTOBJ_INT(Int i)
 **  less than the (immediate) integer object <r> and  'False' otherwise.  The
 **  result is also stored in <o>.
 */
-#define LT_INTOBJS(o,l,r) \
-    ((o) = (((Int)(l)) <  ((Int)(r)) ? True : False))
+#define LT_INTOBJS(o, l, r) ((o) = (((Int)(l)) < ((Int)(r)) ? True : False))
 
 
 /****************************************************************************
@@ -117,9 +115,9 @@ static inline Obj INTOBJ_INT(Int i)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-#define SUM_INTOBJS(o,l,r)             \
-    ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
+#define SUM_INTOBJS(o, l, r)                                                 \
+    ((o) = (Obj)((Int)(l) + (Int)(r)-1),                                     \
+     ((((UInt)(o)) >> (sizeof(UInt) * 8 - 2)) - 1) > 1)
 
 
 /****************************************************************************
@@ -130,9 +128,9 @@ static inline Obj INTOBJ_INT(Int i)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-#define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
+#define DIFF_INTOBJS(o, l, r)                                                \
+    ((o) = (Obj)((Int)(l) - (Int)(r) + 1),                                   \
+     ((((UInt)(o)) >> (sizeof(UInt) * 8 - 2)) - 1) > 1)
 
 
 /****************************************************************************
@@ -145,29 +143,32 @@ static inline Obj INTOBJ_INT(Int i)
 */
 
 
-#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_SMUL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
+#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE_ARITHRIGHTSHIFT) &&          \
+    defined(HAVE___BUILTIN_SMUL_OVERFLOW)
 static inline Obj prod_intobjs(int l, int r)
 {
-  int prod;
-  if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
+    int prod;
+    if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
+        return (Obj)0;
+    return (Obj)((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_SMULL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
+#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&       \
+    defined(HAVE___BUILTIN_SMULL_OVERFLOW)
 static inline Obj prod_intobjs(long l, long r)
 {
-  long prod;
-  if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
+    long prod;
+    if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
+        return (Obj)0;
+    return (Obj)((prod >> 1) ^ 1);
 }
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_SMULLL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
+#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&  \
+    defined(HAVE___BUILTIN_SMULLL_OVERFLOW)
 static inline Obj prod_intobjs(long long l, long long r)
 {
-  long long prod;
-  if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
+    long long prod;
+    if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
+        return (Obj)0;
+    return (Obj)((prod >> 1) ^ 1);
 }
 #else
 
@@ -179,35 +180,35 @@ static inline Obj prod_intobjs(long long l, long long r)
 
 static inline Obj prod_intobjs(Int l, Int r)
 {
-  Int prod;
-  if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
-    return INTOBJ_INT(0);
-  if (l == (Int)INTOBJ_INT(1))
-    return (Obj)r;
-  if (r == (Int)INTOBJ_INT(1))
-    return (Obj)l;
-  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
+    Int prod;
+    if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
+        return INTOBJ_INT(0);
+    if (l == (Int)INTOBJ_INT(1))
+        return (Obj)r;
+    if (r == (Int)INTOBJ_INT(1))
+        return (Obj)l;
+    prod = ((Int)((UInt)l >> 2) * ((UInt)r - 1) + 1);
 
-  if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
-    return (Obj) 0;
+    if (((((UInt)(prod)) >> (sizeof(UInt) * 8 - 2)) - 1) <= 1)
+        return (Obj)0;
 
-  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
-    return (Obj) prod;
+    if ((Int)(((UInt)l) << HALF_A_WORD) >> HALF_A_WORD == (Int)l &&
+        (Int)(((UInt)r) << HALF_A_WORD) >> HALF_A_WORD == (Int)r)
+        return (Obj)prod;
 
 #ifdef HAVE_ARITHRIGHTSHIFT
-  if ((prod -1) / (l >> 2) == r-1)
-    return (Obj) prod;
+    if ((prod - 1) / (l >> 2) == r - 1)
+        return (Obj)prod;
 #else
-  if ((prod-1) / ((l-1)/4) == r-1)
-    return (Obj) prod;
+    if ((prod - 1) / ((l - 1) / 4) == r - 1)
+        return (Obj)prod;
 #endif
 
-  return (Obj) 0;
+    return (Obj)0;
 }
 #endif
 
-#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
-                                  (o) != (Obj) 0)
+#define PROD_INTOBJS(o, l, r)                                                \
+    ((o) = prod_intobjs((Int)(l), (Int)(r)), (o) != (Obj)0)
 
-#endif // GAP_INTOBJ_H
+#endif    // GAP_INTOBJ_H
