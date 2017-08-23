@@ -5738,7 +5738,7 @@ Obj FuncSET_METHODS_OPERATION (
 
 /****************************************************************************
 **
-*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut setter
+*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute setter
 */
 Obj DoSetterFunction (
     Obj                 self,
@@ -5813,7 +5813,7 @@ Obj FuncSETTER_FUNCTION (
 
 /****************************************************************************
 **
-*F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut getter
+*F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute getter
 */
 Obj DoGetterFunction (
     Obj                 self,
