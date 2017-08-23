@@ -144,14 +144,9 @@
 
 /* TL: Obj             StackObj; */
 
-void            PushObj (
-    Obj                 val )
+static void PushObj(Obj val)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
     assert( val != 0 );
-
-    // put the value onto the stack
     PushPlist( STATE(StackObj), val );
 }
 
@@ -162,70 +157,43 @@ void            PushObj (
  * The only place other than these methods which access the stack is
  * the permutation reader, but it only directly accesses values it wrote,
  * so it will not see this magic value. */
-Obj VoidReturnMarker;
+static Obj VoidReturnMarker;
 
-void            PushFunctionVoidReturn ( void )
+static void PushFunctionVoidReturn(void)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
-
-    // put the value onto the stack
     PushPlist( STATE(StackObj), (Obj)&VoidReturnMarker );
 }
 
-void            PushVoidObj ( void )
+void PushVoidObj(void)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
-
-    // put the value onto the stack
     PushPlist( STATE(StackObj), (Obj)0 );
 }
 
-Obj             PopObj ( void )
+static Obj PopObj(void)
 {
-    Obj                 val;
+    Obj val = PopPlist( STATE(StackObj) );
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackObj) != 0 );
-    UInt countObj = LEN_LIST(STATE(StackObj));
-    assert( 1 <= countObj );
-
-    /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), countObj );
-    SET_ELM_PLIST( STATE(StackObj), countObj, 0 );
-    SET_LEN_PLIST( STATE(StackObj), countObj - 1 );
-
-    if(val == (Obj)&VoidReturnMarker) {
+    if (val == (Obj)&VoidReturnMarker) {
         ErrorQuit(
             "Function call: <func> must return a value",
             0L, 0L );
     }
-    /* return the popped value (which must be non-void)                    */
+
+    // return the popped value (which must be non-void)
     assert( val != 0 );
     return val;
 }
 
-Obj             PopVoidObj ( void )
+static Obj PopVoidObj(void)
 {
-    Obj                 val;
+    Obj val = PopPlist( STATE(StackObj) );
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackObj) != 0 );
-    UInt countObj = LEN_LIST(STATE(StackObj));
-    assert( 1 <= countObj );
-
-    /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), countObj );
-    SET_ELM_PLIST( STATE(StackObj), countObj, 0 );
-    SET_LEN_PLIST( STATE(StackObj), countObj - 1 );
-
-    /* Treat a function which returned no value the same as 'void'         */
-    if(val == (Obj)&VoidReturnMarker) {
+    // Treat a function which returned no value the same as 'void'
+    if (val == (Obj)&VoidReturnMarker) {
         val = 0;
     }
 
-    /* return the popped value (which may be void)                         */
+    // return the popped value (which may be void)
     return val;
 }
 
