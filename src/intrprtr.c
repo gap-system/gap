@@ -81,9 +81,9 @@
 **
 **  If 'IntrReturning' is  non-zero, the interpreter is currently  returning.
 **  The interpreter switches  to this mode when  it finds a return-statement.
-**  If it interpretes a return-value-statement, it sets 'IntrReturning' to 1.
-**  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
-**  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
+**  If it interprets a return-value-statement, it sets 'IntrReturning' to 1.
+**  If it interprets a return-void-statement,  it sets 'IntrReturning' to 2.
+**  If it interprets a quit-statement, it sets 'IntrReturning' to 8.
 */
 /* TL: UInt IntrReturning; */
 
