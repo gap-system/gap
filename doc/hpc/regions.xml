@@ -23,7 +23,7 @@ Shared regions are explicitly created through the <Ref Func="ShareObj"/> and <Re
 (see below). Multiple threads can access them concurrently, but accessing them requires that a thread uses an
 <C>atomic</C> statement to acquire a read or write lock beforehand.
 
-See the section on <C>atomic</C> statements (<Ref Sect="Atomic objects"/>) for details.
+See the section on <C>atomic</C> statements (<Ref Sect="The atomic statement."/>) for details.
 
   </Section>
   <Section Label="Ordering of shared regions">
