@@ -116,7 +116,7 @@ these semantics, either a &quot;write guard error&quot; (for a failed write acce
 caused such an error.
 
 One exception is that threads can modify objects in regions that they have only read access (but not write access) to
-using write-once functions (<Ref Func="write-once"/>).
+using write-once functions - see section <Ref Sect="Write-once functionality"/>.
 
 To inspect objects whose contents lie in other regions (and therefore cannot be displayed by <C>PrintObj</C> or
 <C>ViewObj</C>, the functions <Ref Func="ViewShared"/> and <Ref Func="UNSAFE_VIEW"/> can be used.
