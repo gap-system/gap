@@ -299,7 +299,6 @@ Obj FuncTRUES_FLAGS (
     Int                 len;            /* logical length of the list      */
     UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
     UInt                nn;
     UInt                i;              /* loop variable                   */
@@ -317,12 +316,7 @@ Obj FuncTRUES_FLAGS (
     /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
     nrb = NRB_FLAGS(flags);
     ptr = (UInt*)BLOCKS_FLAGS(flags);
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m); 
-        n += m;
-    }
+    n = COUNT_TRUES_BLOCKS(ptr, nrb);    
 
     /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
@@ -358,9 +352,7 @@ Obj FuncSIZE_FLAGS (
 {
     UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
-    UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
@@ -376,13 +368,7 @@ Obj FuncSIZE_FLAGS (
     nrb = NRB_FLAGS(flags);
     ptr = BLOCKS_FLAGS(flags);
 
-    /* loop over the blocks, adding the number of bits of each one         */
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
-    }
+    n = COUNT_TRUES_BLOCKS(ptr, nrb);
 
     /* return the number of bits                                           */
     return INTOBJ_INT( n );

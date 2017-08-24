@@ -3354,10 +3354,10 @@ UInt DistGF2Vecs(UInt* ptL,UInt* ptR,UInt len)
   end = ptL + ((len+BIPEB-1)/BIPEB);
   sum=0;
   /* loop over the entries */
+  /*T possibly unroll this loop */
   while ( ptL < end ) {
     m = *ptL++ ^ *ptR++; /* xor of bits, nr bits therein is difference */
-    COUNT_TRUES_BLOCK(m);
-    sum += m;
+    sum += COUNT_TRUES_BLOCK(m);
   }
   return sum;
 }
