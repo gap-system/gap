@@ -61,11 +61,12 @@ and is now equivalent to <C>function( arg... )</C>, so no changes in the
 existing code are required.
 </Item>
 <Item>
-Introduced <Ref Func="CallWithTimeout" BookName="ref"/> and
-<Ref Func="CallWithTimeoutList" BookName="ref"/> to call a function with
-a limit on the CPU time it can consume. This functionality may not be
-available on all systems and you should check <C>GAPInfo.TimeoutsSupported</C>
-before using this functionality.
+Introduced <C>CallWithTimeout</C> and <C>CallWithTimeoutList</C> to call a
+function with a limit on the CPU time it can consume. This functionality may
+not be available on all systems and you should check
+<C>GAPInfo.TimeoutsSupported</C> before using this functionality.
+<!-- https://github.com/gap-system/gap/pull/1324 -->
+(These functions were withdrawn in &GAP; 4.9.)
 </Item>
 <Item>
 &GAP; now displays the filename and line numbers of statements in backtraces

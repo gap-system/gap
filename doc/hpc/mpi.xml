@@ -91,7 +91,7 @@ and <C>InstallGlobalFunction</C>. In the case when pickling is used for object m
 <C>listOfArguments</C> can also be a function.
 
     </Subsection>
-    <Subsection Label="ExecuteTask">
+    <Subsection Label="ExecuteTask:MPI">
       <Heading>ExecuteTask(task)</Heading>
 
 <C>ExecuteTask</C> puts <C>task</C> into the task queue of the node where it was created.
@@ -101,7 +101,7 @@ node. All of the arguments are copied to the remote node. One or more arguments 
 case, only the handles (and not the underlying objects) are copied to the remote node.
 
     </Subsection>
-    <Subsection Label="RunTask">
+    <Subsection Label="RunTask:MPI">
       <Heading>RunTask(f,arg1,arg2,...,argN)</Heading>
 
 <C>RunTask</C> creates a task, with the function (or function name, depending on the method for marshalling, see
