@@ -120,6 +120,7 @@ static inline void GROW_PLIST(Obj list, Int plen)
 static inline void SHRINK_PLIST(Obj list, Int plen)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(plen >= 0);
     GAP_ASSERT(plen <= CAPACITY_PLIST(list));
     ResizeBag(list, (plen + 1) * sizeof(Obj));
 }
