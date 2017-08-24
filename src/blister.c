@@ -1107,58 +1107,20 @@ Int IsBlistConv (
 **  'SizeBlist' returns   the number of  entries of  the boolean list <blist>
 **  that are 'true'.
 **
-**  The sequence to compute the  number of bits in  a block is quite  clever.
-**  The idea is that after the <i>-th instruction each subblock of $2^i$ bits
-**  holds the number of   bits of this  subblock  in the original block  <m>.
-**  This is illustrated in the example below for a block of with 8 bits:
-**
-**       // a b c d e f g h
-**      m = (m & 0x55)       +  ((m >> 1) & 0x55);
-**       // . b . d . f . h  +  . a . c . e . g   =  a+b c+d e+f g+h
-**      m = (m & 0x33)       +  ((m >> 2) & 0x33);
-**       // . . c+d . . g+h  +  . . a+b . . e+f   =  a+b+c+d e+f+g+h
-**      m = (m & 0x0f)       +  ((m >> 4) & 0x0f);
-**       // . . . . e+f+g+h  +  . . . . a+b+c+d   =  a+b+c+d+e+f+g+h
-**
-**  In the actual  code  some unnecessary mask  have  been removed, improving
-**  performance quite a bit,  because masks are 32  bit immediate values  for
-**  which most RISC  processors need two  instructions to load them.  Talking
-**  about performance.  The code is  close to optimal,  it should compile  to
-**  only about  22 MIPS  or SPARC instructions.   Dividing the  block into  4
-**  bytes and looking up the number of bits  of a byte in a  table may be 10%
-**  faster, but only if the table lives in the data cache.
-**
-*N  1992/12/15 martin this depends on 'BIPEB' being 32 
-*N  1996/11/12 Steve  altered to handle 64 bit also
-**
-**  Introduced the SizeBlist function for kernel use, and the 
-**  COUNT_TRUES_BLOCK( <var> ) macro which replaces a block of bits in <var> 
-**  by the number of ones it contains. It will fail horribly if <var> is not 
-**  a variable.
+**  The work is done in `COUNT_TRUES_BLOCKS` in blister.h and the algorithms
+**  are documented there.
 */
 UInt SizeBlist (
     Obj                 blist )
 {
     UInt *              ptr;            /* pointer to blist                */
     UInt                nrb;            /* number of blocks in blist       */
-    UInt                m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in blist         */
-    UInt                i;              /* loop variable                   */
 
     /* get the number of blocks and a pointer                              */
     nrb = NUMBER_BLOCKS_BLIST(blist);
     ptr = BLOCKS_BLIST( blist );
 
-    /* loop over the blocks, adding the number of bits of each one         */
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
-    }
-
-    /* return the number of bits                                           */
-    return n;
+    return COUNT_TRUES_BLOCKS( ptr, nrb);
 }
 
 
@@ -1614,11 +1576,8 @@ Obj FuncPositionsTrueBlist (
     Obj                 blist )
 {
     Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt  *             ptr;            /* pointer to blist                */
-    UInt                nrb;            /* number of blocks in blist       */
-    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in blist         */
+    UInt                len;            
     UInt                nn;
     UInt                i;              /* loop variable                   */
 
@@ -1631,14 +1590,7 @@ Obj FuncPositionsTrueBlist (
     }
 
     /* compute the number of 'true'-s just as in 'FuncSIZE_BLIST'            */
-    nrb = NUMBER_BLOCKS_BLIST( blist);
-    ptr = BLOCKS_BLIST( blist );
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
-    }
+    n = SizeBlist(blist);
 
     /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST, n );
@@ -1700,15 +1652,13 @@ Obj FuncPositionNthTrueBlist (
     pos = 0;
     ptr = BLOCKS_BLIST( blist );
     i = 1;
-    m = *ptr;
-    COUNT_TRUES_BLOCK(m);
+    m = COUNT_TRUES_BLOCK(*ptr);
     while ( nth > m ) {
         if ( ++i > nrb )  return Fail;
         nth -= m;
         pos += BIPEB;
         ptr++;
-        m = *ptr;
-        COUNT_TRUES_BLOCK(m);
+        m = COUNT_TRUES_BLOCK(*ptr);
     }
     m = *ptr;
     mask = 0x1;

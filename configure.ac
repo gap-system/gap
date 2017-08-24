@@ -160,6 +160,7 @@ CHECK_COMPILER_BUILTIN([__builtin_smulll_overflow],[0,0,0]);
 CHECK_COMPILER_BUILTIN([__builtin_clz],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcountl],[0]);
 
 dnl determine sizeof of some standard types, so that the GAP headers
 dnl can pick the correct builtins among those we just tested
@@ -215,6 +216,33 @@ AC_ARG_ENABLE([Werror],
 AC_MSG_CHECKING([whether to treat C compiler warnings as errors])
 AC_MSG_RESULT([$enable_Werror])
 
+
+AS_IF([test "x$enable_Werror" != "xno"],
+  [ax_enable_compile_warnings=error],
+  [ax_enable_compile_warnings=yes])
+
+#WARNING_CPPFLAGS=""
+AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
+AC_SUBST([WARNING_CPPFLAGS])
+
+dnl
+dnl User setting: Enable popcnt (on by default)
+dnl
+
+AC_ARG_ENABLE([popcnt],
+    AS_HELP_STRING([--enable-popcnt], [use __builtin_popcntl if available]),
+    [],
+    [enable_popcnt=yes])
+AC_MSG_CHECKING([whether to try and use __builtin_popcntl])
+AC_MSG_RESULT([$enable_popcnt])
+
+AS_IF([test "x$enable_popcnt" != "xno"],
+    [USE_POPCNT=1],
+    [USE_POPCNT=0])
+
+AC_DEFINE_UNQUOTED([USE_POPCNT],
+    [$USE_POPCNT],
+    [define as 1 if we should try and use the __builtin_popcntl function if available])
 
 AS_IF([test "x$enable_Werror" != "xno"],
   [ax_enable_compile_warnings=error],
