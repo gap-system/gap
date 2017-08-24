@@ -168,6 +168,7 @@ gap> TaskResult(t);
     <ManSection>
       <Func Name="WaitTask" Arg='task1,...,taskn'/>
       <Func Name="WaitTask" Arg='condition'/>
+      <Func Name="WaitTask" Arg='condition' Label="with a condition" />
       <Func Name="WaitTasks" Arg='task1,...,taskn'/>
 
       <Description>
