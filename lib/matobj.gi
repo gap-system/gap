@@ -549,3 +549,62 @@ InstallMethod( Randomize,
         vec[ i ] := Random( rs, basedomain );
     od;
 end );
+
+
+
+##  In some cases we support mixed arithmetic of vectors/matrices over 
+##  different domains or in different representations. The following
+##  functions determine the base domain and representation of the result.
+
+##  Maybe more complicted functions are needed that decide common base ring
+##  and common representation (and maybe additional parameters) together?
+##  (E.g., Is8BitVectorRep with base domain GF(3^2) and GF(3^3) needs
+##  base domain GF(3^6) = GF(729) such that there is no 8 bit rep.)
+BindGlobal("CommonBaseDomain", function(dom1, dom2)
+  local p;
+  if dom1=dom2 then
+    return dom1;
+  fi;
+  if IsField(dom1) and IsFFECollection(dom1) and
+     IsField(dom2) and IsFFECollection(dom2) then
+    p := Characteristic(dom1);
+    if p = Characteristic(dom2) then
+      return GF(p^Lcm(Dimension(dom1), Dimension(dom2)));
+    fi;
+  fi;
+  # too general? (there may be no method to decide)
+  if IsSubset(dom1, dom2) then
+    return dom1;
+  fi;
+  if IsSubset(dom2, dom1) then
+    return dom2;
+  fi;
+  return fail;
+end);
+
+BindGlobal("CommonVectorRepresentation", function(vr1, vr2)
+  if vr1 = vr2 then
+    return vr1;
+  fi;
+  # not sure what to do else, maybe use a table or some registration of 
+  # vector representations?
+  if vr1 = IsPlistRep then
+    return vr2;
+  fi;
+  if vr1 = IsGF2VectorRep then
+    if vr2 = Is8BitVectorRep then
+      return Is8BitVectorRep;
+    fi;
+  fi;
+  return fail;
+end);
+
+BindGlobal("CommonMatrixRepresentation", function(mr1, mr2)
+  if mr1 = mr2 then
+    return mr1;
+  fi;
+  # not sure what to do else, maybe use a table or some registration of 
+  # matrix representations?
+  return fail;
+end);
+
