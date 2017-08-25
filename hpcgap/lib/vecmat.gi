@@ -1317,7 +1317,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 #
                 return true;
             fi;
-            CLONE_OBJ(v,vc); # horrible hack.
+            SWITCH_OBJ(v,vc); # horrible hack.
         else
             return true;
         fi;
