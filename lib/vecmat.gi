@@ -1199,7 +1199,7 @@ end);
 LOCAL_COPY_GF2 := GF(2);
 
 InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
-    local   v,  q,  vc,  common,  field, q0;
+    local v, q, vc, common, field, q0;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
     fi;
@@ -1291,6 +1291,11 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 # or vector contains non-ffes or no common characteristic
                 #
                 return true;
+            fi;
+            # CLONE_OBJ changes the mutability of v, so we make
+            # sure that if v is immutable it stays immutable.
+            if not IsMutable(v) then
+                MakeImmutable(vc);
             fi;
             CLONE_OBJ(v,vc); # horrible hack.
         else
