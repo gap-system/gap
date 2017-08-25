@@ -1292,12 +1292,12 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 #
                 return true;
             fi;
-            # CLONE_OBJ changes the mutability of v, so we make
+            # SWITCH_OBJ changes the mutability of v, so we make
             # sure that if v is immutable it stays immutable.
             if not IsMutable(v) then
                 MakeImmutable(vc);
             fi;
-            CLONE_OBJ(v,vc); # horrible hack.
+            SWITCH_OBJ(v,vc);
         else
             return true;
         fi;
