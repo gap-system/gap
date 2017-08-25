@@ -50,8 +50,10 @@ or
 # make bootstrap-pkg-full
 ```
 
-(in the latter case please that `make bootstrap-pkg-full` only unpacks packages
-but does not build those of them that require compilation).
+In the latter case please note that `make bootstrap-pkg-full` only unpacks packages
+but does not build those of them that require compilation. You can change to the
+`pkg` directory and then call `../bin/BuildPackages.sh` from there to build as many
+packages as possible.
 
 If everything goes well, you should be able to start GAP by executing
 ```
