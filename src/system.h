@@ -784,18 +784,56 @@ extern void SyAbortBags(const Char * msg) NORETURN;
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * loading of modules * * * * * * * * * * * * * * *
+**
+** GAP_KERNEL_API_VERSION gives the version of the GAP kernel. This value
+** is used to check if kernel modules were built with a compatible kernel.
+** This version is not the same as, and not connected to, the GAP version.
+**
+** This is stored as GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION
+**
+** The algorithm used is the following:
+**
+** The kernel will not load a module compiled for a newer kernel.
+**
+** The kernel will not load a module compiled for a different major version.
+**
+** The minor version should be incremented when new backwards-compatible
+** functionality is added. The major version should be incremented when
+** a backwards-incompatible change is made.
+**
 */
 
 enum {
+    GAP_KERNEL_MAJOR_VERSION = 1,
+    GAP_KERNEL_MINOR_VERSION = 1,
+    GAP_KERNEL_API_VERSION = GAP_KERNEL_MAJOR_VERSION * 1000 + GAP_KERNEL_MINOR_VERSION
+};
+
+enum {
     /** builtin module */
-    MODULE_BUILTIN = 1,
+    MODULE_BUILTIN = GAP_KERNEL_API_VERSION * 10,
 
     /** statically loaded compiled module */
-    MODULE_STATIC  = 2,
+    MODULE_STATIC = GAP_KERNEL_API_VERSION * 10 + 1,
 
     /** dynamically loaded compiled module */
-    MODULE_DYNAMIC = 3,
+    MODULE_DYNAMIC = GAP_KERNEL_API_VERSION * 10 + 2,
 };
+
+static inline Int IS_MODULE_BUILTIN(UInt type)
+{
+    return type % 10 == 0;
+}
+
+static inline Int IS_MODULE_STATIC(UInt type)
+{
+    return type % 10 == 1;
+}
+
+static inline Int IS_MODULE_DYNAMIC(UInt type)
+{
+    return type % 10 == 2;
+}
 
 
 /****************************************************************************
