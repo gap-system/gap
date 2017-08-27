@@ -1519,6 +1519,22 @@ Obj FuncLOAD_DYN (
     if ( info == 0 )
         ErrorQuit( "call to init function failed", 0L, 0L );
 
+    // info->type should not be larger than kernel version
+    if (info->type / 10 > GAP_KERNEL_API_VERSION)
+        ErrorMayQuit("LOAD_DYN: kernel module built for newer "
+                     "version of GAP",
+                     0L, 0L);
+
+    // info->type should not have an older major version
+    if (info->type / 10000 < GAP_KERNEL_MAJOR_VERSION)
+        ErrorMayQuit("LOAD_DYN: kernel module built for older "
+                     "version of GAP",
+                     0L, 0L);
+
+    // info->type % 10 should be 0, 1 or 2, for the 3 types of module
+    if (info->type % 10 > 2)
+        ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0L, 0L);
+
     /* check the crc value                                                 */
     if ( crc != False ) {
         crc1 = INTOBJ_INT( info->crc );
@@ -1689,14 +1705,14 @@ Obj FuncLoadedModules (
     SET_LEN_PLIST( list, NrModules * 3 );
     for ( i = 0;  i < NrModules;  i++ ) {
         m = Modules[i].info;
-        if ( m->type == MODULE_BUILTIN ) {
+        if (IS_MODULE_BUILTIN(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
-        else if ( m->type == MODULE_DYNAMIC ) {
+        else if (IS_MODULE_DYNAMIC(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );
@@ -1705,7 +1721,7 @@ Obj FuncLoadedModules (
             str = MakeImmString( Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
-        else if ( m->type == MODULE_STATIC ) {
+        else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );

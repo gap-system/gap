@@ -823,22 +823,22 @@ void LoadWorkspace( Char * fname )
 	{
 	  StructInitInfo *info = NULL;
  	  /* Search for user module static case first */
-	  if (type == MODULE_STATIC) { 
-	    UInt k;
-	    for ( k = 0;  CompInitFuncs[k];  k++ ) {
-	      info = (*(CompInitFuncs[k]))();
-	      if ( info == 0 ) {
-		continue;
-	      }
-	      if ( ! strcmp( buf, info->name ) ) {
-		break;
-	      }
-	    }
-	    if ( CompInitFuncs[k] == 0 ) {
-	      Pr( "Static module %s not found in loading kernel\n",
-		  (Int)buf, 0L );
-	      SyExit(1);
-	    }
+          if (IS_MODULE_STATIC(type)) {
+              UInt k;
+              for (k = 0; CompInitFuncs[k]; k++) {
+                  info = (*(CompInitFuncs[k]))();
+                  if (info == 0) {
+                      continue;
+                  }
+                  if (!strcmp(buf, info->name)) {
+                      break;
+                  }
+              }
+              if (CompInitFuncs[k] == 0) {
+                  Pr("Static module %s not found in loading kernel\n",
+                     (Int)buf, 0L);
+                  SyExit(1);
+              }
 	
 	  } else {
 	    /* and dynamic case */
