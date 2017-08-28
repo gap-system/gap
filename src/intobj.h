@@ -260,7 +260,6 @@ static inline Obj prod_intobjs(Int l, Int r)
 }
 #endif
 
-#define PROD_INTOBJS(o, l, r)                                                \
-    ((o) = prod_intobjs((Int)(l), (Int)(r)), (o) != (Obj)0)
+#define PROD_INTOBJS(o, l, r) ((o) = prod_intobjs((Int)(l), (Int)(r)))
 
 #endif    // GAP_INTOBJ_H
