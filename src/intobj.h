@@ -130,6 +130,22 @@ static inline Obj INTOBJ_INT(Int i)
 #define LT_INTOBJS(o, l, r) ((o) = (((Int)(l)) < ((Int)(r)) ? True : False))
 
 
+//
+// Check whether the sign and guard bit of the given word match.
+//
+static inline int DETECT_INTOBJ_OVERFLOW(UInt o)
+{
+    const UInt BITS_IN_UINT = sizeof(UInt) * 8;
+    // extract sign bit + guard bit
+    const UInt top_bits = ((UInt)o) >> (BITS_IN_UINT - 2);
+    // the integer object is valid if the two top bits are equal, i.e. if
+    // top_bits is 0 or 3. If we subtract 1 from this, the valid values are 2
+    // and (UInt)-1, which both are larger than 1; the invalid values are 0
+    // and 1.
+    return (top_bits - 1) <= 1;
+}
+
+
 /****************************************************************************
 **
 *F  SUM_INTOBJS( <o>, <l>, <r> )  . . . . . . . .  sum of two integer objects
@@ -138,9 +154,15 @@ static inline Obj INTOBJ_INT(Int i)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-#define SUM_INTOBJS(o, l, r)                                                 \
-    ((o) = (Obj)((Int)(l) + (Int)(r)-1),                                     \
-     ((((UInt)(o)) >> (sizeof(UInt) * 8 - 2)) - 1) > 1)
+static inline int sum_intobjs(Obj * o, Obj l, Obj r)
+{
+    const Int tmp = (Int)l + (Int)r - 1;
+    if (DETECT_INTOBJ_OVERFLOW(tmp))
+        return 0;
+    *o = (Obj)tmp;
+    return 1;
+}
+#define SUM_INTOBJS(o, l, r) sum_intobjs(&(o), (l), (r))
 
 
 /****************************************************************************
@@ -151,9 +173,15 @@ static inline Obj INTOBJ_INT(Int i)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-#define DIFF_INTOBJS(o, l, r)                                                \
-    ((o) = (Obj)((Int)(l) - (Int)(r) + 1),                                   \
-     ((((UInt)(o)) >> (sizeof(UInt) * 8 - 2)) - 1) > 1)
+static inline int diff_intobjs(Obj * o, Obj l, Obj r)
+{
+    const Int tmp = (Int)l - (Int)r + 1;
+    if (DETECT_INTOBJ_OVERFLOW(tmp))
+        return 0;
+    *o = (Obj)tmp;
+    return 1;
+}
+#define DIFF_INTOBJS(o, l, r) diff_intobjs(&(o), (l), (r))
 
 
 /****************************************************************************
@@ -203,16 +231,16 @@ typedef Int2 HalfInt;
 
 static inline Obj prod_intobjs(Int l, Int r)
 {
-    Int prod;
     if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
         return INTOBJ_INT(0);
     if (l == (Int)INTOBJ_INT(1))
         return (Obj)r;
     if (r == (Int)INTOBJ_INT(1))
         return (Obj)l;
-    prod = ((Int)((UInt)l >> 2) * ((UInt)r - 1) + 1);
 
-    if (((((UInt)(prod)) >> (sizeof(UInt) * 8 - 2)) - 1) <= 1)
+    const Int prod = ((Int)((UInt)l >> 2) * ((UInt)r - 1) + 1);
+
+    if (DETECT_INTOBJ_OVERFLOW(prod))
         return (Obj)0;
 
     // if both factors fit into half a word, their product fits in a word
