@@ -147,7 +147,7 @@ Int GrowWPObj (
       ELM_WPOBJ(wp, i) = 0;
       ELM_WPOBJ(copy, i) = tmp;
     }
-    PTR_BAG(wp) = PTR_BAG(copy);
+    SET_PTR_BAG(wp, PTR_BAG(copy));
 #endif
 
     /* return something (to please some C compilers)                       */
@@ -653,7 +653,7 @@ void MakeImmutableWPObj( Obj obj )
     SET_ELM_PLIST(copy, i, tmp);
   }
   SET_LEN_PLIST(copy, len);
-  PTR_BAG(obj) = PTR_BAG(copy);
+  SET_PTR_BAG(obj, PTR_BAG(copy));
 #endif
 }
 

@@ -293,7 +293,17 @@ static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
 **  Note that 'PTR_BAG' is a macro, so  do  not call it with  arguments  that
 **  have side effects.
 */
-#define PTR_BAG(bag)    (*(Bag**)(bag))
+static inline Bag *PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+    return *(Bag**)bag;
+}
+
+static inline void SET_PTR_BAG(Bag bag, Bag *val)
+{
+    GAP_ASSERT(bag != 0);
+    *(Bag**)bag = val;
+}
 
 
 /****************************************************************************
@@ -339,13 +349,11 @@ static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
 
 #ifdef BOEHM_GC
 
-#define CHANGED_BAG(bag) ((void) 0)
+static inline void CHANGED_BAG(Bag bag)
+{
+}
 
-#else
-
-extern  Bag *                   YoungBags;
-
-extern  Bag                     ChangedBags;
+#elif defined(MEMORY_CANARY)
 
 /****************************************************************************
 **
@@ -359,18 +367,21 @@ extern  Bag                     ChangedBags;
 **  block.
 */
 
-#ifdef MEMORY_CANARY
-extern void CHANGED_BAG_IMPL(Bag b);
-#define CHANGED_BAG(bag) CHANGED_BAG_IMPL(bag);
+extern void CHANGED_BAG(Bag b);
+
 #else
-#define CHANGED_BAG(bag)                                                    \
-                if (   PTR_BAG(bag) <= YoungBags                              \
-                  && LINK_BAG(bag) == (bag) ) {                          \
-                    LINK_BAG(bag) = ChangedBags; ChangedBags = (bag);    }
 
-#endif // MEMORY_CANARY
+extern Bag * YoungBags;
+extern Bag   ChangedBags;
+static inline void CHANGED_BAG(Bag bag)
+{
+    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
+        LINK_BAG(bag) = ChangedBags;
+        ChangedBags = bag;
+    }
+}
 
-#endif // BOEHM_GC
+#endif
 
 
 /****************************************************************************
