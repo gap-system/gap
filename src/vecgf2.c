@@ -1611,7 +1611,7 @@ void ConvGF2Vec (
     len   = LEN_PLIST(list);
 
     /* We may have to resize the bag now because a length 1
-       plain list is shorter than a length 1 VECGF2 */
+       plain list is shorter than a length 1 GF2VEC */
     if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
       ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
 
@@ -2978,11 +2978,11 @@ Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj 
 
 /****************************************************************************
 **
-*F  FuncAPPEND_VECGF2( <self>, <vecl>, <vecr> )
+*F  FuncAPPEND_GF2VEC( <self>, <vecl>, <vecr> )
 **
 */
 
-Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
+Obj FuncAPPEND_GF2VEC( Obj self, Obj vecl, Obj vecr )
 {
   UInt lenl, lenr;
   lenl = LEN_GF2VEC(vecl);
@@ -3001,11 +3001,11 @@ Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
 
 /****************************************************************************
 **
-*F  FuncSHALLOWCOPY_VECGF2( <self>, <vec> )
+*F  FuncSHALLOWCOPY_GF2VEC( <self>, <vec> )
 **
 */
 
-Obj FuncSHALLOWCOPY_VECGF2( Obj self, Obj vec)
+Obj FuncSHALLOWCOPY_GF2VEC( Obj self, Obj vec)
 {
   return ShallowCopyVecGF2(vec);
 }
@@ -3205,10 +3205,10 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 
 /****************************************************************************
 **
-*F  FuncNUMBER_VECGF2( <self>, <vect> )
+*F  FuncNUMBER_GF2VEC( <self>, <vect> )
 **
 */
-Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
+Obj FuncNUMBER_GF2VEC( Obj self, Obj vec )
 {
   UInt len,nd,i;
   UInt head,a;
@@ -4726,15 +4726,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(POSITION_NONZERO_GF2VEC, 2, "gf2vec, zero"),
     GVAR_FUNC(POSITION_NONZERO_GF2VEC3, 3, "gf2vec, zero, from"),
     GVAR_FUNC(MULT_ROW_VECTOR_GF2VECS_2, 2, "gf2vecl, mul"),
-    { "APPEND_GF2VEC", 2, "gf2vecl, gf2vecr",
-      FuncAPPEND_VECGF2, "src/vecgf2.c:APPEND_GF2VEC" },
-
-    { "SHALLOWCOPY_GF2VEC", 1, "gf2vec",
-      FuncSHALLOWCOPY_VECGF2, "src/vecgf2.c:SHALLOWCOPY_GF2VEC" },
-
-    { "NUMBER_GF2VEC", 1, "gf2vec",
-      FuncNUMBER_VECGF2, "src/vecgf2.c:NUMBER_GF2VEC" },
-
+    GVAR_FUNC(APPEND_GF2VEC, 2, "gf2vecl, gf2vecr"),
+    GVAR_FUNC(SHALLOWCOPY_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(NUMBER_GF2VEC, 1, "gf2vec"),
     GVAR_FUNC(TRANSPOSED_GF2MAT, 1, "gf2mat"),
     GVAR_FUNC(DIST_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
     { "DIST_VEC_CLOS_VEC", 3, "list, gf2vec, list",

@@ -74,7 +74,7 @@ extern Obj ObjInt_Int8(Int8 i);
 ** Reduce and normalize the given large integer object if necessary.
 **
 ** TODO: This is an internal implementation detail and ideally should not
-** be exported; unfortunately, FuncNUMBER_VECGF2 currently needs this.
+** be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
 extern Obj GMP_REDUCE( Obj gmp );
 extern Obj GMP_NORMALIZE( Obj gmp );
