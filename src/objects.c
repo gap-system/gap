@@ -481,13 +481,9 @@ Obj CopyObjPosObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -587,15 +583,10 @@ Obj CopyObjComObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-        SET_LEN_PREC(copy,LEN_PREC(obj));
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-        SET_LEN_PREC(copy,LEN_PREC(obj));
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    SET_LEN_PREC(copy,LEN_PREC(obj));
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -695,13 +686,9 @@ Obj CopyObjDatObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
