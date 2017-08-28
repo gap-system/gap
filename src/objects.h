@@ -39,8 +39,10 @@
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-#define IS_FFE(o)               \
-                        ((Int)(o) & 0x02)
+static inline Int IS_FFE(Obj o)
+{
+    return (Int)o & 0x02;
+}
 
 
 /****************************************************************************
@@ -290,7 +292,10 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **
 **  'SIZE_OBJ' returns the size of the object <obj>.
 */
-#define SIZE_OBJ        SIZE_BAG
+static inline UInt SIZE_OBJ(Obj obj)
+{
+    return SIZE_BAG(obj);
+}
 
 
 /****************************************************************************
@@ -300,7 +305,10 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-#define ADDR_OBJ(bag)        PTR_BAG(bag)
+static inline Obj *ADDR_OBJ(Obj obj)
+{
+    return PTR_BAG(obj);
+}
 
 
 /****************************************************************************
