@@ -1063,11 +1063,11 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 
 /****************************************************************************
 **
-*F  FuncProdGF2VecAnyMat( <self>, <v>, <m>) . . . method to handle vector*plain list
-**                                    of GF2Vectors reasonably efficiently
+*F  FuncPROD_GF2VEC_ANYMAT( <self>, <v>, <m>)
 **
+**  method to handle vector*plain list of GF2Vectors reasonably efficiently.
 */
-Obj FuncProdGF2VecAnyMat ( Obj self, Obj vec, Obj mat )
+Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 {
   Obj res;
   UInt len;
@@ -3475,7 +3475,7 @@ Int DistVecClosVec(
   return chg;
 }
 
-Obj FuncDistVecClosVec(
+Obj FuncDIST_VEC_CLOS_VEC(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -3591,7 +3591,7 @@ UInt AClosVec(
 
 
 
-Obj FuncAClosVec(
+Obj FuncA_CLOS_VEC(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -3622,7 +3622,7 @@ Obj FuncAClosVec(
   return best;
 }
 
-Obj FuncAClosVecCoords(
+Obj FuncA_CLOS_VEC_COORDS(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -4709,9 +4709,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(ZERO_GF2VEC_2, 1, "len"),
     GVAR_FUNC(INV_GF2MAT_MUTABLE, 1, "gf2mat"),
     GVAR_FUNC(INV_GF2MAT_SAME_MUTABILITY, 1, "gf2mat"),
-    { "INV_GF2MAT", 1, "gf2mat",
-      FuncINV_GF2MAT_IMMUTABLE, "src/vecgf2.c:INV_GF2MAT_IMMUTABLE" },
-
+    GVAR_FUNC(INV_GF2MAT_IMMUTABLE, 1, "gf2mat"),
     GVAR_FUNC(INV_PLIST_GF2VECS_DESTRUCTIVE, 1, "list"),
     GVAR_FUNC(SUM_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
     GVAR_FUNC(PROD_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
@@ -4731,21 +4729,13 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(NUMBER_GF2VEC, 1, "gf2vec"),
     GVAR_FUNC(TRANSPOSED_GF2MAT, 1, "gf2mat"),
     GVAR_FUNC(DIST_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
-    { "DIST_VEC_CLOS_VEC", 3, "list, gf2vec, list",
-      FuncDistVecClosVec, "src/vecgf2.c:DIST_VEC_CLOS_VEC" },
-
+    GVAR_FUNC(DIST_VEC_CLOS_VEC, 3, "list, gf2vec, list"),
     GVAR_FUNC(SUM_GF2MAT_GF2MAT, 2, "matl, matr"),
-    { "A_CLOS_VEC", 4, "list, gf2vec, int, int",
-      FuncAClosVec, "src/vecgf2.c:A_CLOS_VEC" },
-
-    { "A_CLOS_VEC_COORDS", 4, "list, gf2vec, int, int",
-      FuncAClosVecCoords, "src/vecgf2.c:A_CLOS_VEC_COORDS" },
-
+    GVAR_FUNC(A_CLOS_VEC, 4, "list, gf2vec, int, int"),
+    GVAR_FUNC(A_CLOS_VEC_COORDS, 4, "list, gf2vec, int, int"),
     GVAR_FUNC(COSET_LEADERS_INNER_GF2, 4, "veclis, weight, tofind, leaders"),
     GVAR_FUNC(CONV_GF2MAT, 1, "list"),
-    { "PROD_GF2VEC_ANYMAT", 2, "vec, mat",
-      FuncProdGF2VecAnyMat, "src/vecgf2.c:PROD_GF2VEC_ANYMAT" },
-    
+    GVAR_FUNC(PROD_GF2VEC_ANYMAT, 2, "vec, mat"),
     GVAR_FUNC(RIGHTMOST_NONZERO_GF2VEC, 1, "vec"),
     GVAR_FUNC(RESIZE_GF2VEC, 2, "vec, newlen"),
     GVAR_FUNC(SHIFT_LEFT_GF2VEC, 2, "vec, amount"),
