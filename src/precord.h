@@ -14,6 +14,9 @@
 #define GAP_PRECORD_H
 
 
+#include <src/records.h>
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * standard macros for plain records  * * * * * * * * * *
@@ -28,7 +31,53 @@
 **  Note that you still have to set the actual length once you have populated
 **  the record!
 */
-Obj NEW_PREC(UInt len);
+extern Obj NEW_PREC(UInt len);
+
+
+/****************************************************************************
+**
+*F  IS_PREC( <rec> ) . . . . . . . . .  check if <rec> is in plain record rep
+*/
+static inline Int IS_PREC(Obj rec)
+{
+    UInt tnum = TNUM_OBJ(rec);
+    return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
+}
+
+
+/****************************************************************************
+**
+*F  IS_PREC_OR_COMOBJ( <list> ) . . . . . . . . . . . . . check type of <rec>
+**
+**  Checks if this is 'PREC'-like.
+**  This function is used in a GAP_ASSERT checking if calling functions like
+**  SET_ELM_PREC is acceptable on an Obj.
+**
+**  Unlike IS_PREC, this function also accepts precs which are being copied
+**  (and hence have the COPYING flag set), as well as component objects
+**  (which have the same memory layout as precs), as the precs APIs using it
+**  for assertion checks are in practice invoked on such objects, too.
+*/
+static inline Int IS_PREC_OR_COMOBJ(Obj rec)
+{
+    UInt tnum = TNUM_OBJ(rec);
+    if (tnum > COPYING)
+        tnum -= COPYING;
+    return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
+}
+
+
+/****************************************************************************
+**
+*F  CAPACITY_PREC(<list>) . . . . . . . . . . . .  capacity of a plain record
+**
+**  'CAPACITY_PREC' returns the maximum capacity of a PREC.
+**
+*/
+static inline Int CAPACITY_PREC(Obj rec)
+{
+    return SIZE_OBJ(rec) / (2 * sizeof(Obj)) - 1;
+}
 
 
 /****************************************************************************
@@ -37,15 +86,25 @@ Obj NEW_PREC(UInt len);
 **
 **  'LEN_PREC' returns the number of components of the plain record <rec>.
 */
-#define LEN_PREC(rec)   (((UInt *)(ADDR_OBJ(rec)))[1])
+static inline UInt LEN_PREC(Obj rec)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    return ((UInt *)(ADDR_OBJ(rec)))[1];
+}
+
 
 /****************************************************************************
 **
-*F  SET_LEN_PREC( <rec> ) . . . . . .set number of components of plain record
+*F  SET_LEN_PREC( <rec> ) . . . . .  set number of components of plain record
 **
 **  'SET_LEN_PREC' sets the number of components of the plain record <rec>.
 */
-#define SET_LEN_PREC(rec,nr)   (((UInt *)(ADDR_OBJ(rec)))[1] = (nr))
+static inline void SET_LEN_PREC(Obj rec, UInt nr)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    ((UInt *)(ADDR_OBJ(rec)))[1] = nr;
+}
+
 
 /****************************************************************************
 **
@@ -54,9 +113,12 @@ Obj NEW_PREC(UInt len);
 **  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
 **  record <rec> to the record name <rnam>.
 */
-#define SET_RNAM_PREC(rec,i,rnam) \
-           do { Int rrrr = (rnam); \
- *(UInt*)(ADDR_OBJ(rec)+2*(i)) = rrrr; } while (0)
+static inline void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    *(UInt *)(ADDR_OBJ(rec)+2*(i)) = rnam;
+}
 
 
 /****************************************************************************
@@ -66,8 +128,12 @@ Obj NEW_PREC(UInt len);
 **  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
 **  the record <rec>.
 */
-#define GET_RNAM_PREC(rec,i) \
-                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)))
+static inline UInt GET_RNAM_PREC(Obj rec, UInt i)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    return *(UInt *)(ADDR_OBJ(rec)+2*(i));
+}
 
 
 /****************************************************************************
@@ -77,9 +143,12 @@ Obj NEW_PREC(UInt len);
 **  'SET_ELM_PREC' sets  the value  of  the  <i>-th  record component of  the
 **  record <rec> to the value <val>.
 */
-#define SET_ELM_PREC(rec,i,val) \
-                 do { Obj oooo = (val); \
-                        *(ADDR_OBJ(rec)+2*(i)+1) = oooo; } while (0)
+static inline void SET_ELM_PREC(Obj rec, UInt i, Obj val)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    *(ADDR_OBJ(rec)+2*(i)+1) = val;
+}
 
 
 /****************************************************************************
@@ -89,16 +158,12 @@ Obj NEW_PREC(UInt len);
 **  'GET_ELM_PREC' returns the value  of the <i>-th  record component of  the
 **  record <rec>.
 */
-#define GET_ELM_PREC(rec,i) \
-                        (*(ADDR_OBJ(rec)+2*(i)+1))
-
-
-/****************************************************************************
-**
-*F  IS_PREC_REP( <rec> )  . . . . . . . check if <rec> is in plain record rep
-*/
-#define IS_PREC_REP(list)  \
-  ( T_PREC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_PREC+IMMUTABLE )
+static inline Obj GET_ELM_PREC(Obj rec, UInt i)
+{
+    GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    return *(ADDR_OBJ(rec)+2*(i)+1);
+}
 
 
 /****************************************************************************
