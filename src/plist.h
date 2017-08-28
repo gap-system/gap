@@ -54,7 +54,7 @@ static inline Int IS_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  IS_PLIST_OR_POSOBJ( <list> )  . . . . . . .check type of <list>
+*F  IS_PLIST_OR_POSOBJ( <list> ) . . . . . . . . . . . . check type of <list>
 **
 **  Checks if this is 'PLIST'-like.
 **  This function is used in a GAP_ASSERT checking if calling functions like

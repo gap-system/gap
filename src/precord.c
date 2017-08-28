@@ -749,9 +749,9 @@ Obj FuncEQ_PREC (
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC_REP(left) )
+    if ( ! IS_PREC(left) )
         return False;
-    if ( ! IS_PREC_REP(right) )
+    if ( ! IS_PREC(right) )
         return False;
     if ( LEN_PREC(left) != LEN_PREC(right) )
         return False;
@@ -801,7 +801,7 @@ Obj FuncLT_PREC (
     Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC_REP(left) || ! IS_PREC_REP(right) ) {
+    if ( ! IS_PREC(left) || ! IS_PREC(right) ) {
         if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return True;
         if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return False;
     }
