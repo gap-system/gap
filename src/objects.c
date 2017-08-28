@@ -86,9 +86,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 
 /****************************************************************************
 **
-*F  FamilyTypeHandler( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
+*F  FuncFAMILY_TYPE( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
 */
-Obj FamilyTypeHandler (
+Obj FuncFAMILY_TYPE (
     Obj                 self,
     Obj                 type )
 {
@@ -98,9 +98,9 @@ Obj FamilyTypeHandler (
 
 /****************************************************************************
 **
-*F  FamilyObjHandler( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
+*F  FuncFAMILY_OBJ( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
 */
-Obj FamilyObjHandler (
+Obj FuncFAMILY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -144,10 +144,10 @@ void SetTypeObjError ( Obj obj, Obj type )
 
 /****************************************************************************
 **
-*F  TypeObjHandler( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
+*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
 #ifndef WARD_ENABLED
-Obj TypeObjHandler (
+Obj FuncTYPE_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -157,9 +157,9 @@ Obj TypeObjHandler (
 
 /****************************************************************************
 **
-*F  SetTypeObjHandler( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
+*F  FuncSET_TYPE_OBJ( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
 */
-Obj SetTypeObjHandler (
+Obj FuncSET_TYPE_OBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -757,9 +757,9 @@ void CleanObjDatObjCopy (
 
 /****************************************************************************
 **
-*F  ImmutableCopyObjHandler( <self>, <obj> )  . . . . immutable copy of <obj>
+*F  FuncIMMUTABLE_COPY_OBJ( <self>, <obj> )  . . . . immutable copy of <obj>
 */
-Obj ImmutableCopyObjHandler (
+Obj FuncIMMUTABLE_COPY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -769,9 +769,9 @@ Obj ImmutableCopyObjHandler (
 
 /****************************************************************************
 **
-*F  MutableCopyObjHandler( <self>, <obj> )  . . . . . . mutable copy of <obj>
+*F  FuncDEEP_COPY_OBJ( <self>, <obj> )  . . . . . . mutable copy of <obj>
 */
-Obj MutableCopyObjHandler (
+Obj FuncDEEP_COPY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1268,9 +1268,9 @@ void SetTypeComObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_COMOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
+*F  FuncIS_COMOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
-Obj             IS_COMOBJ_Handler (
+Obj FuncIS_COMOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1290,9 +1290,9 @@ Obj             IS_COMOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_COMOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
+*F  FuncSET_TYPE_COMOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
 */
-Obj SET_TYPE_COMOBJ_Handler (
+Obj FuncSET_TYPE_COMOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -1359,9 +1359,9 @@ void SetTypePosObj( Obj obj, Obj type)
 
 /****************************************************************************
 **
-*F  IS_POSOBJ_Handler( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
+*F  FuncIS_POSOBJ( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
 */
-Obj IS_POSOBJ_Handler (
+Obj FuncIS_POSOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1379,9 +1379,9 @@ Obj IS_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_POSOBJ_Handler( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
+*F  FuncSET_TYPE_POSOBJ( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
 */
-Obj SET_TYPE_POSOBJ_Handler (
+Obj FuncSET_TYPE_POSOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -1416,9 +1416,9 @@ Obj SET_TYPE_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  LEN_POSOBJ_Handler( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
+*F  FuncLEN_POSOBJ( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
 */
-Obj LEN_POSOBJ_Handler (
+Obj FuncLEN_POSOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1462,9 +1462,9 @@ void SetTypeDatObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_DATOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
+*F  FuncIS_DATOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */
-Obj             IS_DATOBJ_Handler (
+Obj FuncIS_DATOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1474,9 +1474,9 @@ Obj             IS_DATOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_DATOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
+*F  FuncSET_TYPE_DATOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
 */
-Obj SET_TYPE_DATOBJ_Handler (
+Obj FuncSET_TYPE_DATOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -1496,11 +1496,11 @@ Obj SET_TYPE_DATOBJ_Handler (
 
 /****************************************************************************
 **
-*F  IsIdenticalHandler( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
+*F  FuncIS_IDENTICAL_OBJ( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
 **
-**  'IsIdenticalHandler' implements 'IsIdentical'
+**  'FuncIS_IDENTICAL_OBJ' implements 'IsIdentical'
 */
-Obj IsIdenticalHandler (
+Obj FuncIS_IDENTICAL_OBJ (
     Obj                 self,
     Obj                 obj1,
     Obj                 obj2 )
@@ -1918,48 +1918,20 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "FAMILY_TYPE", 1, "type",
-      FamilyTypeHandler, "src/objects.c:FAMILY_TYPE" },
-
-    { "TYPE_OBJ", 1, "obj",
-      TypeObjHandler, "src/objects.c:TYPE_OBJ" },
-
-    { "SET_TYPE_OBJ", 2, "obj, type",
-      SetTypeObjHandler, "src/objects.c:SET_TYPE_OBJ" },
-
-    { "FAMILY_OBJ", 1, "obj",
-      FamilyObjHandler, "src/objects.c:FAMILY_OBJ" },
-
-    { "IMMUTABLE_COPY_OBJ", 1, "obj", 
-      ImmutableCopyObjHandler, "src/objects.c:IMMUTABLE_COPY_OBJ" },
-
-    { "DEEP_COPY_OBJ", 1, "obj",
-          MutableCopyObjHandler, "src/objects.c:DEEP_COPY_OBJ" },
-
-    { "IS_IDENTICAL_OBJ", 2, "obj1, obj2", 
-      IsIdenticalHandler, "src/objects.c:IS_IDENTICAL_OBJ" },
-
-    { "IS_COMOBJ", 1, "obj",
-      IS_COMOBJ_Handler, "src/objects.c:IS_COMOBJ" },
-
-    { "SET_TYPE_COMOBJ", 2, "obj, type",
-      SET_TYPE_COMOBJ_Handler, "src/objects.c:SET_TYPE_COMOBJ" },
-
-    { "IS_POSOBJ", 1, "obj",
-      IS_POSOBJ_Handler, "src/objects.c:IS_POSOBJ" },
-    
-    { "SET_TYPE_POSOBJ", 2, "obj, type",
-      SET_TYPE_POSOBJ_Handler, "src/objects.c:SET_TYPE_POSOBJ" },
-    
-    { "LEN_POSOBJ", 1, "obj",
-      LEN_POSOBJ_Handler, "src/objects.c:LEN_POSOBJ" },
-    
-    { "IS_DATOBJ", 1, "obj",
-      IS_DATOBJ_Handler, "src/objects.c:IS_DATOBJ" },
-    
-    { "SET_TYPE_DATOBJ", 2, "obj, type",
-      SET_TYPE_DATOBJ_Handler, "src/objects.c:SET_TYPE_DATOBJ" },
-
+    GVAR_FUNC(FAMILY_TYPE, 1, "type"),
+    GVAR_FUNC(TYPE_OBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_OBJ, 2, "obj, type"),
+    GVAR_FUNC(FAMILY_OBJ, 1, "obj"),
+    GVAR_FUNC(IMMUTABLE_COPY_OBJ, 1, "obj"),
+    GVAR_FUNC(DEEP_COPY_OBJ, 1, "obj"),
+    GVAR_FUNC(IS_IDENTICAL_OBJ, 2, "obj1, obj2"),
+    GVAR_FUNC(IS_COMOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_COMOBJ, 2, "obj, type"),
+    GVAR_FUNC(IS_POSOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_POSOBJ, 2, "obj, type"),
+    GVAR_FUNC(LEN_POSOBJ, 1, "obj"),
+    GVAR_FUNC(IS_DATOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_DATOBJ, 2, "obj, type"),
     GVAR_FUNC(CLONE_OBJ, 2, "dst, src"),
     GVAR_FUNC(SWITCH_OBJ, 2, "obj1, obj2"),
     GVAR_FUNC(FORCE_SWITCH_OBJ, 2, "obj1, obj2"),
