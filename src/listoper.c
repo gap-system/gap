@@ -97,7 +97,7 @@ Int             EqListList (
     return 1L;
 }
 
-Obj             EqListListHandler (
+Obj FuncEQ_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -147,7 +147,7 @@ Int             LtListList (
     return (lenL < lenR);
 }
 
-Obj             LtListListHandler (
+Obj FuncLT_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -170,7 +170,7 @@ Int             InList (
   return Fail != POS_LIST( listR, objL, INTOBJ_INT(0L) );
 }
 
-Obj             InListDefaultHandler (
+Obj FuncIN_LIST_DEFAULT (
     Obj                 self,
     Obj                 obj,
     Obj                 list )
@@ -318,7 +318,7 @@ Obj             SumListList (
     return listS;
 }
 
-Obj             SumSclListHandler (
+Obj FuncSUM_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -326,7 +326,7 @@ Obj             SumSclListHandler (
     return SumSclList( listL, listR );
 }
 
-Obj             SumListSclHandler (
+Obj FuncSUM_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -334,7 +334,7 @@ Obj             SumListSclHandler (
     return SumListScl( listL, listR );
 }
 
-Obj             SumListListHandler (
+Obj FuncSUM_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -417,7 +417,7 @@ Obj             ZeroListDefault (
     return res;
 }
 
-Obj             ZeroListDefaultHandler (
+Obj FuncZERO_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -478,7 +478,7 @@ Obj             ZeroListMutDefault (
     return res;
 }
 
-Obj             ZeroListMutDefaultHandler (
+Obj FuncZERO_MUT_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -493,7 +493,7 @@ Obj             ZeroListMutDefaultHandler (
    we want an immutable result, we can (a) reuse a single row of zeros
    (b) record that the result is a rectangular table */
 
-Obj ZeroAttrMat( Obj self, Obj mat )
+Obj FuncZERO_ATTR_MAT( Obj self, Obj mat )
 {
   Obj zrow;
   UInt len;
@@ -578,7 +578,7 @@ Obj AInvMutListDefault (
     return res;
 }
 
-Obj AInvMutListDefaultHandler (
+Obj FuncAINV_MUT_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -642,7 +642,7 @@ Obj AInvListDefault (
     return res;
 }
 
-Obj AInvListDefaultHandler (
+Obj FuncAINV_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -841,7 +841,7 @@ Obj             DiffListList (
     return listD;
 }
 
-Obj             DiffSclListHandler (
+Obj FuncDIFF_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -849,7 +849,7 @@ Obj             DiffSclListHandler (
     return DiffSclList( listL, listR );
 }
 
-Obj             DiffListSclHandler (
+Obj FuncDIFF_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -857,7 +857,7 @@ Obj             DiffListSclHandler (
     return DiffListScl( listL, listR );
 }
 
-Obj             DiffListListHandler (
+Obj FuncDIFF_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -1023,7 +1023,7 @@ Obj             ProdListList (
     return listP;
 }
 
-Obj             ProdSclListHandler (
+Obj FuncPROD_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -1031,7 +1031,7 @@ Obj             ProdSclListHandler (
     return ProdSclList( listL, listR );
 }
 
-Obj             ProdListSclHandler (
+Obj FuncPROD_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -1039,7 +1039,7 @@ Obj             ProdListSclHandler (
     return ProdListScl( listL, listR );
 }
 
-Obj             ProdListListHandler (
+Obj FuncPROD_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR,
@@ -1150,21 +1150,21 @@ Obj             OneMatrix (
     return res;
 }
 
-Obj             FuncOneMatrixImmutable (
+Obj FuncONE_MATRIX_IMMUTABLE (
     Obj                 self,
     Obj                 list )
 {
     return OneMatrix( list,0 );
 }
 
-Obj             FuncOneMatrixSameMutability (
+Obj FuncONE_MATRIX_SAME_MUTABILITY (
     Obj                 self,
     Obj                 list )
 {
     return OneMatrix( list,1 );
 }
 
-Obj             FuncOneMatrixMutable (
+Obj FuncONE_MATRIX_MUTABLE (
     Obj                 self,
     Obj                 list )
 {
@@ -2227,66 +2227,26 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "EQ_LIST_LIST_DEFAULT", 2, "listL, listR",
-      EqListListHandler, "src/listoper.c:EQ_LIST_LIST_DEFAULT" },
-
-    { "LT_LIST_LIST_DEFAULT", 2, "listL, listR",
-      LtListListHandler, "src/listoper.c:LT_LIST_LIST_DEFAULT" },
-
-    { "IN_LIST_DEFAULT", 2, "obj, list",
-      InListDefaultHandler, "src/listoper.c:IN_LIST_DEFAULT" },
-
-    { "SUM_SCL_LIST_DEFAULT", 2, "listL, listR",
-      SumSclListHandler, "src/listoper.c:SUM_SCL_LIST_DEFAULT" },
-
-    { "SUM_LIST_SCL_DEFAULT", 2, "listL, listR",
-      SumListSclHandler, "src/listoper.c:SUM_LIST_SCL_DEFAULT" },
-
-    { "SUM_LIST_LIST_DEFAULT", 2, "listL, listR",
-      SumListListHandler, "src/listoper.c:SUM_LIST_LIST_DEFAULT" },
-
-    { "ZERO_LIST_DEFAULT", 1, "list",
-      ZeroListDefaultHandler, "src/listoper.c:ZERO_LIST_DEFAULT" },
-
-    { "ZERO_MUT_LIST_DEFAULT", 1, "list",
-      ZeroListMutDefaultHandler, "src/listoper.c:ZERO_MUT_LIST_DEFAULT" },
-
-    { "ZERO_ATTR_MAT", 1, "mat",
-      ZeroAttrMat, "src/listoper.c:ZERO_ATTR_MAT" },
-
-    { "AINV_LIST_DEFAULT", 1, "list",
-      AInvListDefaultHandler, "src/listoper.c:AINV_LIST_DEFAULT" },
-
-    { "AINV_MUT_LIST_DEFAULT", 1, "list",
-      AInvMutListDefaultHandler, "src/listoper.c:AINV_MUT_LIST_DEFAULT" },
-
-    { "DIFF_SCL_LIST_DEFAULT", 2, "listL, listR",
-      DiffSclListHandler, "src/listoper.c:DIFF_SCL_LIST_DEFAULT" },
-
-    { "DIFF_LIST_SCL_DEFAULT", 2, "listL, listR",
-      DiffListSclHandler, "src/listoper.c:DIFF_LIST_SCL_DEFAULT" },
-
-    { "DIFF_LIST_LIST_DEFAULT", 2, "listL, listR",
-      DiffListListHandler, "src/listoper.c:DIFF_LIST_LIST_DEFAULT" },
-
-    { "PROD_SCL_LIST_DEFAULT", 2, "listL, listR",
-      ProdSclListHandler, "src/listoper.c:PROD_SCL_LIST_DEFAULT" },
-
-    { "PROD_LIST_SCL_DEFAULT", 2, "listL, listR",
-      ProdListSclHandler, "src/listoper.c:PROD_LIST_SCL_DEFAULT" },
-
-    { "PROD_LIST_LIST_DEFAULT", 3, "listL, listR, depthDiff",
-      ProdListListHandler, "src/listoper.c:PROD_LIST_LIST_DEFAULT" },
-
-    { "ONE_MATRIX_MUTABLE", 1, "list",
-      FuncOneMatrixMutable, "src/listoper.c:ONE_MATRIX_MUTABLE" },
-
-    { "ONE_MATRIX_SAME_MUTABILITY", 1, "list",
-      FuncOneMatrixSameMutability, "src/listoper.c:ONE_MATRIX_SAME_MUTABILITY" },
-
-    { "ONE_MATRIX_IMMUTABLE", 1, "list",
-      FuncOneMatrixImmutable, "src/listoper.c:ONE_MATRIX_IMMUTABLE" },
-
+    GVAR_FUNC(EQ_LIST_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(LT_LIST_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(IN_LIST_DEFAULT, 2, "obj, list"),
+    GVAR_FUNC(SUM_SCL_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(SUM_LIST_SCL_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(SUM_LIST_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(ZERO_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(ZERO_MUT_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(ZERO_ATTR_MAT, 1, "mat"),
+    GVAR_FUNC(AINV_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(AINV_MUT_LIST_DEFAULT, 1, "list"),
+    GVAR_FUNC(DIFF_SCL_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(DIFF_LIST_SCL_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(DIFF_LIST_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(PROD_SCL_LIST_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(PROD_LIST_SCL_DEFAULT, 2, "listL, listR"),
+    GVAR_FUNC(PROD_LIST_LIST_DEFAULT, 3, "listL, listR, depthDiff"),
+    GVAR_FUNC(ONE_MATRIX_MUTABLE, 1, "list"),
+    GVAR_FUNC(ONE_MATRIX_SAME_MUTABILITY, 1, "list"),
+    GVAR_FUNC(ONE_MATRIX_IMMUTABLE, 1, "list"),
     GVAR_FUNC(INV_MATRIX_MUTABLE, 1, "list"),
     GVAR_FUNC(INV_MATRIX_SAME_MUTABILITY, 1, "list"),
     GVAR_FUNC(INV_MATRIX_IMMUTABLE, 1, "list"),
