@@ -1773,7 +1773,7 @@ Obj FuncCLONE_OBJ (
     REGION(dst) = REGION(src);
     MEMBAR_WRITE();
     /* The following is a no-op unless the region is public */
-    PTR_BAG(dst) = PTR_BAG(tmp);
+    SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
 
     return 0;
@@ -1853,9 +1853,9 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     if (ds2 && ds2->owner != realTLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
-    PTR_BAG(obj2) = ptr1;
+    SET_PTR_BAG(obj2, ptr1);
     REGION(obj1) = ds2;
-    PTR_BAG(obj1) = ptr2;
+    SET_PTR_BAG(obj1, ptr2);
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);
     return (Obj) 0;

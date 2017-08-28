@@ -1442,7 +1442,7 @@ void AssAList(Obj list, Int pos, Obj obj)
       addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
       MEMBAR_WRITE();
       /* TODO: Won't work with GASMAN */
-      PTR_BAG(list) = PTR_BAG(newlist);
+      SET_PTR_BAG(list, PTR_BAG(newlist));
       MEMBAR_WRITE();
     } else {
       addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
@@ -1492,7 +1492,7 @@ UInt AddAList(Obj list, Obj obj)
     addr = ADDR_ATOM(newlist);
     addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
     MEMBAR_WRITE();
-    PTR_BAG(list) = PTR_BAG(newlist);
+    SET_PTR_BAG(list, PTR_BAG(newlist));
     MEMBAR_WRITE();
   } else {
     addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
@@ -1662,7 +1662,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
       mptr[1] = 0;
       ResizeBag(mptr, sizeof(Bag) * (n+1));
       MEMBAR_WRITE();
-      PTR_BAG(obj) = (void *)(mptr[0]);
+      SET_PTR_BAG(obj, (void *)(mptr[0]));
     }
     /* reread contents pointer */
     HashUnlock(obj);

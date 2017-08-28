@@ -208,7 +208,6 @@ static inline Bag *DATA(BagHeader *bag)
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
 
-
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
@@ -278,11 +277,11 @@ void CLEAR_CANARY() {
 #define CANARY_DISABLE_VALGRIND()  VALGRIND_DISABLE_ERROR_REPORTING
 #define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
 
-void CHANGED_BAG_IMPL(Bag bag) {
+void CHANGED_BAG(Bag bag) {
     CANARY_DISABLE_VALGRIND();
-    if ( PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == (bag) ) {
+    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
-        ChangedBags = (bag);
+        ChangedBags = bag;
     }
     CANARY_ENABLE_VALGRIND();
 }
@@ -1113,7 +1112,7 @@ Bag NewBag (
     header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = DATA(header);
+    SET_PTR_BAG(bag, DATA(header));
 
     /* return the identifier of the new bag                                */
     return bag;
@@ -1355,7 +1354,7 @@ UInt ResizeBag (
         Bag * src = DATA(header);
         Bag * end = src + WORDS_BAG(old_size);
         Bag * dst = DATA(newHeader);
-        PTR_BAG(bag) = dst;
+        SET_PTR_BAG(bag, dst);
 
         /* copy the contents of the bag                                    */
         while ( src < end )
@@ -1839,7 +1838,7 @@ again:
             BagHeader * dstHeader = (BagHeader *)dst;
 
             /* update identifier, copy size-type and link field            */
-            PTR_BAG( UNMARKED_ALIVE(header->link)) = DATA(dstHeader);
+            SET_PTR_BAG( UNMARKED_ALIVE(header->link), DATA(dstHeader));
             end = DATA(header) + WORDS_BAG( header->size );
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
@@ -2126,8 +2125,8 @@ void SwapMasterPoint (
     }
 
     /* swap them                                                           */
-    PTR_BAG(bag1) = ptr2;
-    PTR_BAG(bag2) = ptr1;
+    SET_PTR_BAG(bag1, ptr2);
+    SET_PTR_BAG(bag2, ptr1);
 }
 
 
