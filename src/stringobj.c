@@ -1727,12 +1727,12 @@ Obj FuncNormalizeWhitespace (
 
 /****************************************************************************
 **
-*F  FuncRemoveCharacters( <self>, <string>, <rem> ) . . . . . delete characters
+*F  FuncREMOVE_CHARACTERS( <self>, <string>, <rem> ) . . . . . delete characters
 **  from <rem> in <string> in place 
 **    
 */ 
 
-Obj FuncRemoveCharacters (
+Obj FuncREMOVE_CHARACTERS (
 			      Obj     self,
 			      Obj     string,
                               Obj     rem     )
@@ -1747,7 +1747,7 @@ Obj FuncRemoveCharacters (
 	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncRemoveCharacters( self, string, rem );
+    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* check whether <rem> is a string                                  */
@@ -1756,7 +1756,7 @@ Obj FuncRemoveCharacters (
 	     "RemoveCharacters: second argument <rem> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(rem), 0L,
 	     "you can replace <rem> via 'return <rem>;'" );
-    return FuncRemoveCharacters( self, string, rem );
+    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1838,13 +1838,13 @@ Obj FuncTranslateString (
 
 /****************************************************************************
 **
-*F  FuncSplitString( <self>, <string>, <seps>, <wspace> ) . . . . split string
+*F  FuncSplitStringInternal( <self>, <string>, <seps>, <wspace> ) . . . . split string
 **  at characters in <seps> and <wspace>
 **    
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */ 
-Obj FuncSplitString (
+Obj FuncSplitStringInternal (
 			      Obj     self,
 			      Obj     string,
                               Obj     seps,
@@ -1862,7 +1862,7 @@ Obj FuncSplitString (
 	     "SplitString: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <seps> is a string                                  */
@@ -1871,7 +1871,7 @@ Obj FuncSplitString (
 	     "SplitString: second argument <seps> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(seps), 0L,
 	     "you can replace <seps> via 'return <seps>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <wspace> is a string                                  */
@@ -1880,7 +1880,7 @@ Obj FuncSplitString (
 	     "SplitString: third argument <wspace> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(wspace), 0L,
 	     "you can replace <wspace> via 'return <wspace>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
@@ -1902,11 +1902,15 @@ Obj FuncSplitString (
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
   for (a=0, z=0; z<len; z++) {
+    // Whenever we encounter a separator or a white space, the substring
+    // starting after the last separator/white space is cut out.  The
+    // only difference between white spaces and separators is that white
+    // spaces don't separate empty strings.
     if (SPLITSTRINGWSPACE[s[z]] == 1) {
       if (a<z) {
         l = z-a;
         part = NEW_STRING(l);
-        /* in case of garbage collection we need update */
+        // update s in case there was a garbage collection
         s = CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
@@ -1923,6 +1927,7 @@ Obj FuncSplitString (
       if (SPLITSTRINGSEPS[s[z]] == 1) {
         l = z-a;
         part = NEW_STRING(l);
+        // update s in case there was a garbage collection
         s = CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
@@ -1934,7 +1939,8 @@ Obj FuncSplitString (
     }
   }
   
-  /* collect a trailing part */
+  // Pick up a substring at the end of the string.  Note that a trailing
+  // separator does not produce an empty string.
   if (a<z) {
     /* copy until last position which is z-1 */
     l = z-a;
@@ -2291,15 +2297,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FIND_ALL_IN_STRING, 2, "string, characters"),
     GVAR_FUNC(NORMALIZE_NEWLINES, 1, "string"),
 #endif
-
     GVAR_FUNC(NormalizeWhitespace, 1, "string"),
-    { "REMOVE_CHARACTERS", 2, "string, rem",
-      FuncRemoveCharacters, "src/stringobj.c:RemoveCharacters" },
-
+    GVAR_FUNC(REMOVE_CHARACTERS, 2, "string, rem"),
     GVAR_FUNC(TranslateString, 2, "string, trans"),
-    { "SplitStringInternal", 3, "string, seps, wspace",
-      FuncSplitString, "src/stringobj.c:SplitStringInternal" },
-
+    GVAR_FUNC(SplitStringInternal, 3, "string, seps, wspace"),
     GVAR_FUNC(SMALLINT_STR, 1, "string"),
     { 0, 0, 0, 0, 0 }
 

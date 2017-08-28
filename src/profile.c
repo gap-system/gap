@@ -629,7 +629,7 @@ Obj FuncDEACTIVATE_PROFILING (
   return True;
 }
 
-Obj FuncIS_PROFILE_ACTIVE (
+Obj FuncIsLineByLineProfileActive (
     Obj self)
 {
   if(profileState_Active) {
@@ -774,8 +774,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(ACTIVATE_PROFILING, 4, "string,boolean,boolean,integer"),
     GVAR_FUNC(DEACTIVATE_PROFILING, 0, ""),
-    { "IsLineByLineProfileActive", 0, "",
-      FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
+    GVAR_FUNC(IsLineByLineProfileActive, 0, ""),
     GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "bool"),
     { 0, 0, 0, 0, 0 }
 };

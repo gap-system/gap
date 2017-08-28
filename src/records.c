@@ -271,16 +271,16 @@ UInt            RNamObj (
 
 /****************************************************************************
 **
-*F  RNamObjHandler(<self>,<obj>)  . . . .  convert an object to a record name
+*F  FuncRNamObj(<self>,<obj>)  . . . .  convert an object to a record name
 **
-**  'RNamObjHandler' implements the internal function 'RNamObj'.
+**  'FuncRNamObj' implements the internal function 'RNamObj'.
 **
 **  'RNamObj( <obj> )'
 **
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-Obj             RNamObjHandler (
+Obj             FuncRNamObj (
     Obj                 self,
     Obj                 obj )
 {
@@ -290,9 +290,9 @@ Obj             RNamObjHandler (
 
 /****************************************************************************
 **
-*F  NameRNamHandler(<self>,<rnam>)  . . . . convert a record name to a string
+*F  FuncNameRNam(<self>,<rnam>)  . . . . convert a record name to a string
 **
-**  'NameRNamHandler' implements the internal function 'NameRName'.
+**  'FuncNameRNam' implements the internal function 'NameRName'.
 **
 **  'NameRName( <rnam> )'
 **
@@ -300,7 +300,7 @@ Obj             RNamObjHandler (
 */
 Obj             NameRNamFunc;
 
-Obj             NameRNamHandler (
+Obj             FuncNameRNam (
     Obj                 self,
     Obj                 rnam )
 {
@@ -666,12 +666,8 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "RNamObj", 1, "obj",
-      RNamObjHandler, "src/records.c:RNamObj" },
-
-    { "NameRNam", 1, "rnam",
-      NameRNamHandler, "src/records.c:NameRNam" },
-
+    GVAR_FUNC(RNamObj, 1, "obj"),
+    GVAR_FUNC(NameRNam, 1, "rnam"),
     GVAR_FUNC(ALL_RNAMES, 0, ""),
     { 0, 0, 0, 0, 0 }
 

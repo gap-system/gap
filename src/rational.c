@@ -818,15 +818,15 @@ Obj             IsRatHandler (
 
 /****************************************************************************
 **
-*F  FuncNumeratorRat(<self>,<rat>)  . . . . . . . . . numerator of a rational
+*F  FuncNUMERATOR_RAT(<self>,<rat>)  . . . . . . . . . numerator of a rational
 **
-**  'FuncNumeratorRat' implements the internal function 'NumeratorRat'.
+**  'FuncNUMERATOR_RAT' implements the internal function 'NumeratorRat'.
 **
 **  'NumeratorRat( <rat> )'
 **
 **  'NumeratorRat' returns the numerator of the rational <rat>.
 */
-Obj             FuncNumeratorRat (
+Obj             FuncNUMERATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -851,15 +851,15 @@ Obj             FuncNumeratorRat (
 
 /****************************************************************************
 **
-*F  FuncDenominatorRat(<self>,<rat>)  . . . . . . . denominator of a rational
+*F  FuncDENOMINATOR_RAT(<self>,<rat>)  . . . . . . . denominator of a rational
 **
-**  'FuncDenominatorRat' implements the internal function 'DenominatorRat'.
+**  'FuncDENOMINATOR_RAT' implements the internal function 'DenominatorRat'.
 **
 **  'DenominatorRat( <rat> )'
 **
 **  'DenominatorRat' returns the denominator of the rational <rat>.
 */
-Obj             FuncDenominatorRat (
+Obj             FuncDENOMINATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -930,12 +930,8 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "NUMERATOR_RAT", 1, "rat",
-      FuncNumeratorRat, "src/rational.c:NUMERATOR_RAT" },
-
-    { "DENOMINATOR_RAT", 1, "rat",
-      FuncDenominatorRat, "src/rational.c:DENOMINATOR_RAT" },
-
+    GVAR_FUNC(NUMERATOR_RAT, 1, "rat"),
+    GVAR_FUNC(DENOMINATOR_RAT, 1, "rat"),
     GVAR_FUNC(ABS_RAT, 1, "rat"),
     GVAR_FUNC(SIGN_RAT, 1, "rat"),
     { 0, 0, 0, 0, 0 }
