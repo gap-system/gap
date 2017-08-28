@@ -515,46 +515,7 @@ InstallMethod( SplitString,
         "for three strings",
         true,
         [ IsString, IsString, IsString ], 0,
-##  function( string, seps, wspace )
-##      local   substrings,  a,  z;
-##  
-##      ##  make sets from char lists
-##      seps := Set(seps);
-##      wspace := Set(wspace);
-##  
-##      ##  store the substrings in a list.
-##      substrings := [];
-##  
-##      ##  a is the position after the last separator/white space.
-##      a := 1;
-##      z := 0;
-##  
-##      for z in [1..Length( string )] do
-##          ##  Whenever we encounter a separator or a white space, the substring
-##          ##  starting after the last separator/white space is cut out.  The
-##          ##  only difference between white spaces and separators is that white
-##          ##  spaces don't separate empty strings.  
-##          if string[z] in wspace then
-##              if a < z then
-##                  Add( substrings, string{[a..z-1]} );
-##              fi;
-##              a := z+1;
-##          elif string[z] in seps then
-##              Add( substrings, string{[a..z-1]} );
-##              a := z+1;
-##          fi;
-##      od;
-##  
-##      ##  Pick up a substring at the end of the string.  Note that a trailing
-##      ##  separator does not produce an empty string.
-##      if a <= z  then
-##          Add( substrings, string{[a..z]} );
-##      fi;
-##      return substrings;
-##  end 
-# moved to kernel
-SplitStringInternal
-);
+        SplitStringInternal );
 
 InstallMethod( SplitString,
         "for a string and two characters",

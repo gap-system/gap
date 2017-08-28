@@ -74,7 +74,7 @@
 */
 Obj SCTableEntryFunc;
 
-Obj SCTableEntryHandler (
+Obj FuncSC_TABLE_ENTRY (
     Obj                 self,
     Obj                 table,
     Obj                 i,
@@ -94,7 +94,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table> must be a small list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
@@ -102,7 +102,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table> must be a list with at least 3 elements",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* check <i>                                                           */
@@ -111,7 +111,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <i> must be an integer between 0 and %d",
             dim, 0L,
             "you can replace <i> via 'return <i>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* get and check the relevant row                                      */
@@ -121,7 +121,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table>[%d] must be a list with %d elements",
             INT_INTOBJ(i), dim,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
 
     }
 
@@ -131,7 +131,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <j> must be an integer between 0 and %d",
             dim, 0L,
             "you can replace <j> via 'return <j>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* get and check the basis and coefficients list                       */
@@ -141,7 +141,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table>[%d][%d] must be a basis/coeffs list",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* get and check the basis list                                        */
@@ -151,7 +151,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table>[%d][%d][1] must be a basis list",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* get and check the coeffs list                                       */
@@ -161,7 +161,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table>[%d][%d][2] must be a coeffs list",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* check that they have the same length                                */
@@ -171,7 +171,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <table>[%d][%d][1], ~[2] must have equal length",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* check <k>                                                           */
@@ -180,7 +180,7 @@ Obj SCTableEntryHandler (
             "SCTableEntry: <k> must be an integer between 0 and %d",
             dim, 0L,
             "you can replace <k> via 'return <k>;'" );
-        return SCTableEntryHandler( self, table, i, j, k );
+        return FuncSC_TABLE_ENTRY( self, table, i, j, k );
     }
 
     /* look for the (i,j,k) entry                                          */
@@ -241,7 +241,7 @@ void SCTableProdAdd (
 
 Obj SCTableProductFunc;
 
-Obj SCTableProductHandler (
+Obj FuncSC_TABLE_PRODUCT (
     Obj                 self,
     Obj                 table,
     Obj                 list1,
@@ -262,7 +262,7 @@ Obj SCTableProductHandler (
             "SCTableProduct: <table> must be a list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableProductHandler( self, table, list1, list2 );
+        return FuncSC_TABLE_PRODUCT( self, table, list1, list2 );
     }
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
@@ -270,7 +270,7 @@ Obj SCTableProductHandler (
             "SCTableProduct: <table> must be a list with at least 3 elements",
             0L, 0L,
             "you can replace <table> via 'return <table>;'" );
-        return SCTableProductHandler( self, table, list1, list2 );
+        return FuncSC_TABLE_PRODUCT( self, table, list1, list2 );
     }
     zero = ELM_LIST( table, dim+2 );
     if ( ! IS_SMALL_LIST(list1) || LEN_LIST(list1) != dim ) {
@@ -278,14 +278,14 @@ Obj SCTableProductHandler (
             "SCTableProduct: <list1> must be a list with %d elements",
             dim, 0L,
             "you can replace <list1> via 'return <list1>;'" );
-        return SCTableProductHandler( self, table, list1, list2 );
+        return FuncSC_TABLE_PRODUCT( self, table, list1, list2 );
     }
     if ( ! IS_SMALL_LIST(list2) || LEN_LIST(list2) != dim ) {
         list2 = ErrorReturnObj(
             "SCTableProduct: <list2> must be a list with %d elements",
             dim, 0L,
             "you can replace <list2> via 'return <list2>;'" );
-        return SCTableProductHandler( self, table, list1, list2 );
+        return FuncSC_TABLE_PRODUCT( self, table, list1, list2 );
     }
 
     /* make the result list                                                */
@@ -375,12 +375,8 @@ Obj SCTableProductHandler (
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "SC_TABLE_ENTRY", 4, "table, i, j, k",
-      SCTableEntryHandler, "src/sctable.c:SC_TABLE_ENTRY" },
-
-    { "SC_TABLE_PRODUCT", 3, "table, list1, list2",
-      SCTableProductHandler, "src/sctable.c:SC_TABLE_PRODUCT" },
-
+    GVAR_FUNC(SC_TABLE_ENTRY, 4, "table, i, j, k"),
+    GVAR_FUNC(SC_TABLE_PRODUCT, 3, "table, list1, list2"),
     { 0, 0, 0, 0, 0 }
 
 };

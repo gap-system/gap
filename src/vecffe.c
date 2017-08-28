@@ -662,13 +662,13 @@ Obj             ProdVecFFEVecFFE (
 
 /****************************************************************************
 **
-*F  FuncAddRowVectorVecFFEsMult( <self>, <vecL>, <vecR>, <mult> )
+*F  FuncADD_ROWVECTOR_VECFFES_3( <self>, <vecL>, <vecR>, <mult> )
 **
 */
 
 static Obj AddRowVectorOp;   /* BH changed to static */
 
-Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
+Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 {
     Obj *ptrL;
     Obj *ptrR;
@@ -768,13 +768,13 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
 }
 /****************************************************************************
 **
-*F  FuncMultRowVectorVecFFEs( <self>, <vec>, <mult> )
+*F  FuncMULT_ROWVECTOR_VECFFES( <self>, <vec>, <mult> )
 **
 */
 
 static Obj MultRowVectorOp;   /* BH changed to static */
 
-Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
+Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 {
     Obj *ptr;
     FFV  valM;
@@ -845,10 +845,10 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
 
 /****************************************************************************
 **
-*F  FuncAddRowVectorVecFFEs( <self>, <vecL>, <vecR> )
+*F  FuncADD_ROWVECTOR_VECFFES_2( <self>, <vecL>, <vecR> )
 **
 */
-Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
+Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
 {
     Obj *ptrL;
     Obj *ptrR;
@@ -1119,15 +1119,9 @@ Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-  { "ADD_ROWVECTOR_VECFFES_3", 3, "vecl, vecr, mult",
-    FuncAddRowVectorVecFFEsMult, "src/vecffe.c: ADD_ROWVECTOR_VECFFES_3" },
-
-  { "ADD_ROWVECTOR_VECFFES_2", 2, "vecl, vecr",
-    FuncAddRowVectorVecFFEs, "src/vecffe.c: ADD_ROWVECTOR_VECFFES_2" },
-
-  { "MULT_ROWVECTOR_VECFFES", 2, "vec, mult",
-    FuncMultRowVectorVecFFEs, "src/vecffe.c: MULT_ROWVECTOR_VECFFES" },
-  
+  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_3, 3, "vecl, vecr, mult"),
+  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_2, 2, "vecl, vecr"),
+  GVAR_FUNC(MULT_ROWVECTOR_VECFFES, 2, "vec, mult"),
   GVAR_FUNC(IS_VECFFE, 1, "vec"),
   GVAR_FUNC(COMMON_FIELD_VECFFE, 1, "vec"),
   GVAR_FUNC(SMALLEST_FIELD_VECFFE, 1, "vec"),

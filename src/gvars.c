@@ -721,16 +721,16 @@ void MakeThreadLocalVar (
 
 /****************************************************************************
 **
-*F  MakeReadOnlyGVarHandler(<self>,<name>)   make a global variable read only
+*F  FuncMakeReadOnlyGVar(<self>,<name>)   make a global variable read only
 **
-**  'MakeReadOnlyGVarHandler' implements the function 'MakeReadOnlyGVar'.
+**  'FuncMakeReadOnlyGVar' implements the function 'MakeReadOnlyGVar'.
 **
 **  'MakeReadOnlyGVar( <name> )'
 **
 **  'MakeReadOnlyGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read only.
 */
-Obj MakeReadOnlyGVarHandler (
+Obj FuncMakeReadOnlyGVar (
     Obj                 self,
     Obj                 name )
 {       
@@ -764,16 +764,16 @@ void MakeReadWriteGVar (
 
 /****************************************************************************
 **
-*F  MakeReadWriteGVarHandler(<self>,<name>) make a global variable read write
+*F  FuncMakeReadWriteGVar(<self>,<name>) make a global variable read write
 **
-**  'MakeReadWriteGVarHandler' implements the function 'MakeReadWriteGVar'.
+**  'FuncMakeReadWriteGVar' implements the function 'MakeReadWriteGVar'.
 **
 **  'MakeReadWriteGVar( <name> )'
 **
 **  'MakeReadWriteGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read and writable.
 */
-Obj MakeReadWriteGVarHandler (
+Obj FuncMakeReadWriteGVar (
     Obj                 self,
     Obj                 name )
 {
@@ -828,9 +828,9 @@ static Obj FuncIsReadOnlyGVar (
 
 /****************************************************************************
 **
-*F  AUTOHandler() . . . . . . . . . . . . .   make automatic global variables
+*F  FuncAUTO() . . . . . . . . . . . . .   make automatic global variables
 **
-**  'AUTOHandler' implements the internal function 'AUTO'.
+**  'FuncAUTO' implements the internal function 'AUTO'.
 **
 **  'AUTO( <func>, <arg>, <name1>, ... )'
 **
@@ -841,7 +841,7 @@ static Obj FuncIsReadOnlyGVar (
 **  cause the execution  of an assignment to  that global variable, otherwise
 **  an error is signalled.
 */
-Obj             AUTOHandler (
+Obj             FuncAUTO (
     Obj                 self,
     Obj                 args )
 {
@@ -1478,16 +1478,10 @@ void SetGVar(GVarDescriptor *gvar, Obj obj)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "MakeReadOnlyGVar", 1, "name",
-      MakeReadOnlyGVarHandler, "src/gap.c:MakeReadOnlyGVar" },
-
-    { "MakeReadWriteGVar", 1, "name",
-      MakeReadWriteGVarHandler, "src/gap.c:MakeReadWriteGVar" },
-
+    GVAR_FUNC(MakeReadOnlyGVar, 1, "name"),
+    GVAR_FUNC(MakeReadWriteGVar, 1, "name"),
     GVAR_FUNC(IsReadOnlyGVar, 1, "name"),
-    { "AUTO", -1, "args",
-      AUTOHandler, "src/gap.c:AUTO" },
-               
+    GVAR_FUNC(AUTO, -1, "args"),
     GVAR_FUNC(IDENTS_GVAR, 0, ""),
     GVAR_FUNC(IDENTS_BOUND_GVARS, 0, ""),
     GVAR_FUNC(ISB_GVAR, 1, "gvar"),
