@@ -4,6 +4,29 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
+**  This file implements helper for dealing with GAP immediate integers.
+**
+**  Small integers are represented by an immediate integer handle, containing
+**  the value instead of pointing to it, which has the following form:
+**
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**      | guard | sign  | bit   | bit   |       | bit   | tag   | tag   |
+**      | bit   | bit   | N-5   | N-6   |       | 0     |  = 0  |  = 1  |
+**      +-------+-------+-------+-------+- - - -+-------+-------+-------+
+**
+**  Immediate integers handles carry the tag 'T_INT', i.e. the last bit is 1.
+**  This distinguishes immediate integers from other handles which point to
+**  structures aligned on even boundaries and therefore have last bit zero.
+**  (The second bit is reserved as tag to allow extensions of this scheme.)
+**  Using immediates as pointers and dereferencing them gives address errors.
+**
+**  To aid overflow check the most significant two bits must always be equal,
+**  that is to say that the sign bit of immediate integers has a guard bit.
+**
+**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
+a
+**  small integer value and its representation as immediate integer handle.
+
 */
 
 #ifndef GAP_INTOBJ_H
