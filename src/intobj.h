@@ -196,9 +196,9 @@ static inline Obj prod_intobjs(long long l, long long r)
 #else
 
 #ifdef SYS_IS_64_BIT
-#define HALF_A_WORD 32
+typedef Int4 HalfInt;
 #else
-#define HALF_A_WORD 16
+typedef Int2 HalfInt;
 #endif
 
 static inline Obj prod_intobjs(Int l, Int r)
@@ -215,10 +215,11 @@ static inline Obj prod_intobjs(Int l, Int r)
     if (((((UInt)(prod)) >> (sizeof(UInt) * 8 - 2)) - 1) <= 1)
         return (Obj)0;
 
-    if ((Int)(((UInt)l) << HALF_A_WORD) >> HALF_A_WORD == (Int)l &&
-        (Int)(((UInt)r) << HALF_A_WORD) >> HALF_A_WORD == (Int)r)
+    // if both factors fit into half a word, their product fits in a word
+    if ((HalfInt)l == (Int)l && (HalfInt)r == (Int)r)
         return (Obj)prod;
 
+// last resort: perform trial division
 #ifdef HAVE_ARITHRIGHTSHIFT
     if ((prod - 1) / (l >> 2) == r - 1)
         return (Obj)prod;
