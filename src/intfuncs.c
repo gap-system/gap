@@ -46,7 +46,6 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 
 #include <stdio.h>

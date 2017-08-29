@@ -44,7 +44,6 @@
 #include <assert.h>
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */

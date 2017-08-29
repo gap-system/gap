@@ -37,7 +37,6 @@
 #include <src/code.h>                   /* Needed for TakeInterrupt */
 #include <src/stats.h>
 
-#include <src/hpc/thread.h>             /* threads */
 
 #include <assert.h>
 

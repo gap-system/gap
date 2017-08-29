@@ -39,7 +39,6 @@
 
 #include <src/scanner.h>                /* scanner */
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

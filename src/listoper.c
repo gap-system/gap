@@ -43,7 +43,6 @@
 #include <src/opers.h>                  /* TRY_NEXT_METHOD */
 #include <src/range.h>                  /* Ranges */
 #include <src/code.h>                   /* Coder */
-#include <src/hpc/thread.h>             /* threads */
 
 
 #ifndef HPCGAP

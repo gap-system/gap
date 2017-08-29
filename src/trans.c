@@ -77,7 +77,6 @@
 #include <src/set.h>                    /* sets */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 #include <src/trans.h>                  /* transformations */
 #include <assert.h>

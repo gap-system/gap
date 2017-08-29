@@ -42,7 +42,6 @@
 #include <src/stats.h> 
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
-#include <src/hpc/thread.h>
 
 #ifndef DEBUG
 #ifndef NDEBUG

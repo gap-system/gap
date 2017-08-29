@@ -36,7 +36,6 @@
 #include <src/tietze.h>                 /* tietze helper functions */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************

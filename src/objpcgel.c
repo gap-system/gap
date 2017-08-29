@@ -36,7 +36,6 @@
 
 #include <src/objpcgel.h>               /* objects of polycyclic groups */
 
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************
