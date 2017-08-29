@@ -40,7 +40,6 @@
 #include <src/scanner.h>                /* scanner */
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

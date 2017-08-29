@@ -48,7 +48,6 @@
 
 #include <src/compiler.h>               /* compiler */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/vars.h>                   /* variables */
 

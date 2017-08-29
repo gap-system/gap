@@ -73,7 +73,6 @@
 #include <src/saveload.h>               /* saving and loading */
 #include <src/code.h>
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 
 
 #if defined(DEBUG_RATIONALS)

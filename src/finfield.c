@@ -83,7 +83,6 @@
 
 #include <src/hpc/aobjects.h>           /* atomic access to plists */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /****************************************************************************

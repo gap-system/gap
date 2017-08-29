@@ -23,7 +23,6 @@
 
 #include <src/gvars.h>                  /* global variables */
 #include <src/gap.h>                    /* error handling, initialisation */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/calls.h>                  /* generic call mechanism */
 
@@ -39,7 +38,6 @@
 
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/objfgelm.h>               /* objects of free groups */
 

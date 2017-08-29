@@ -71,7 +71,6 @@
 #include <src/code.h>                   /* coder */
 
 #include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>
 
 #include <src/trans.h>
 #include <assert.h>

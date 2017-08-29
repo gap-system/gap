@@ -51,7 +51,6 @@
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
@@ -1730,7 +1729,9 @@ UInt            ExecAssPosObj (
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         WriteGuard(list);
+#endif
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -1779,7 +1780,9 @@ UInt            ExecUnbPosObj (
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         WriteGuard(list);
+#endif
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }

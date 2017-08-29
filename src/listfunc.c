@@ -49,7 +49,6 @@
 #include <src/gmpints.h>
 
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <string.h>

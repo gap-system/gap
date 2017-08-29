@@ -14,7 +14,6 @@
 #include <src/gap.h>
 #include <src/lists.h>
 #include <src/hpc/aobjects.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/serialize.h>
 #include <src/objset.h>
 

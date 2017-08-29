@@ -45,7 +45,6 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/traverse.h>           /* object traversal */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/gaputils.h>
 
@@ -1482,7 +1481,9 @@ Obj FuncSET_TYPE_DATOBJ (
     Obj                 type )
 {
 #ifndef WARD_ENABLED
+#ifdef HPCGAP
     ReadGuard( obj );
+#endif
     TYPE_DATOBJ( obj ) = type;
 #ifdef HPCGAP
     if (TNUM_OBJ(obj) != T_DATOBJ)

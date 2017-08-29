@@ -53,7 +53,6 @@
 
 #include <src/bool.h>                   /* booleans */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 

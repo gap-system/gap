@@ -49,7 +49,6 @@
 #include <src/read.h>                   /* to access stack of for loop globals */
 #include <src/gvars.h>
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <src/vars.h>                   /* variables */

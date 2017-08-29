@@ -52,7 +52,6 @@
 
 #include <src/hpc/thread.h>
 #include <src/hpc/traverse.h>
-#include <src/hpc/tls.h>
 #include <src/vars.h>                   /* variables */
 
 #include <src/hpc/aobjects.h>

@@ -45,7 +45,6 @@
 
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */

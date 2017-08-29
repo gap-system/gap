@@ -79,7 +79,6 @@
 #include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/gaputils.h>
 

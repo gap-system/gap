@@ -50,7 +50,6 @@
 
 #include <assert.h>
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
 #include <src/vars.h>                   /* variables */
