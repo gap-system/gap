@@ -37,6 +37,7 @@
 #include <src/code.h>                   /* Needed for TakeInterrupt */
 #include <src/stats.h>
 
+#include <src/hpc/guards.h>
 
 #include <assert.h>
 

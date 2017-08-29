@@ -39,6 +39,7 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/misc.h>
 #include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/guards.h>
 #ifdef TRACK_CREATOR
 /* Need CURR_FUNC and NAME_FUNC() */
 #include <src/calls.h>                  /* calls */

@@ -53,7 +53,7 @@
 #include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
-
+#include <src/hpc/guards.h>
 
 static int             evlist, evlistvec;
 

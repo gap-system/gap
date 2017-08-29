@@ -56,6 +56,7 @@
 #include <src/hpc/misc.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/traverse.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/threadapi.h>
 
 #include <src/vars.h>                   /* variables */

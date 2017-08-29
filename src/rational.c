@@ -72,6 +72,7 @@
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/code.h>
+#include <src/hpc/guards.h>
 
 
 #if defined(DEBUG_RATIONALS)

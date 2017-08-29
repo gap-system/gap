@@ -36,6 +36,7 @@
 #include <src/tietze.h>                 /* tietze helper functions */
 
 #include <src/code.h>                   /* coder */
+#include <src/hpc/guards.h>
 
 
 /****************************************************************************

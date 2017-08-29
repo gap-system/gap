@@ -51,6 +51,7 @@
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <src/code.h>                   /* coder */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
