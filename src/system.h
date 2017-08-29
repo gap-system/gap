@@ -29,6 +29,7 @@
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
 
+#include <string.h>     // memcpy etc.
 
 
 /****************************************************************************

@@ -34,7 +34,6 @@
 #include <src/precord.h>                /* plain records */
 
 #include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
 

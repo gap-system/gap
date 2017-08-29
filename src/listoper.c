@@ -38,7 +38,6 @@
 #include <src/listoper.h>               /* operations for generic lists */
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 #include <src/opers.h>                  /* TRY_NEXT_METHOD */
 #include <src/range.h>                  /* Ranges */
 #include <src/code.h>                   /* Coder */

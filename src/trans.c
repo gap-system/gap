@@ -70,7 +70,6 @@
 #include <src/listfunc.h>               /* functions for lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
 

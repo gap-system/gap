@@ -23,7 +23,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
 #include <src/blister.h>                /* boolean lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/vecgf2.h>                 /* GF2 vectors */
 
