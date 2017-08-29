@@ -10,7 +10,6 @@
 */
 
 #include <src/system.h>
-#include <src/gapstate.h>
 #include <src/sysfiles.h>
 
 #include <src/gasman.h>

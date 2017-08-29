@@ -12,7 +12,6 @@
 **  throughout the kernel
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <unistd.h>                     /* write, read */

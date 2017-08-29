@@ -70,7 +70,6 @@
 *N  1992/12/16 martin should have 'LtBlist'
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */

@@ -11,7 +11,6 @@
 **  generic lists.
 */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 
 #include <src/sysfiles.h>               /* file input/output */

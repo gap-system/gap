@@ -11,7 +11,6 @@
 **  This file contains the functions of the  arithmetic  operations  package.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
