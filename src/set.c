@@ -49,7 +49,6 @@
 #include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************

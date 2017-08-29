@@ -82,7 +82,6 @@
 #include <src/code.h>                   /* coder */
 
 #include <src/hpc/aobjects.h>           /* atomic access to plists */
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************

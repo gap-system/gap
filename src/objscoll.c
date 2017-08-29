@@ -51,7 +51,6 @@
 #include <src/objscoll.h>               /* single collector */
 
 #include <src/objccoll.h>               /* combinatorial collector */
-#include <src/hpc/thread.h>
 
 /****************************************************************************
 **

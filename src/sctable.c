@@ -61,7 +61,6 @@
 #include <src/sctable.h>                /* structure constant table */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************

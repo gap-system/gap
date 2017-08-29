@@ -44,7 +44,6 @@
 #include <src/opers.h>                  /* for TRY_NEXT_METHOD */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
 
 #include <assert.h>
 
