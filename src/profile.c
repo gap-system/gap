@@ -48,7 +48,6 @@
 #include <src/profile.h>
 #include <src/hookintrprtr.h>
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
 #include <src/calls.h>                  /* function filename, line number */

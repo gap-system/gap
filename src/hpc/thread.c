@@ -13,7 +13,6 @@
 #include <src/stats.h>
 #include <src/gap.h>
 #include <src/hpc/misc.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
 #include <src/fibhash.h>

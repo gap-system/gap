@@ -37,7 +37,6 @@
 
 #include <src/read.h>                   /* reader */
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
 #include <src/vars.h>                   /* variables */

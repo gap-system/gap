@@ -43,7 +43,6 @@
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 
 #ifndef DEBUG
 #ifndef NDEBUG

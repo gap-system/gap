@@ -30,7 +30,6 @@
 
 #include <src/scanner.h>
 
-#include <src/hpc/tls.h>
 
 #include <src/gaputils.h>
 

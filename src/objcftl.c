@@ -41,7 +41,6 @@
 
 #include <src/code.h>
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))

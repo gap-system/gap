@@ -54,7 +54,6 @@
 
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 static int             evlist, evlistvec;

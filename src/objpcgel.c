@@ -31,13 +31,11 @@
 #include <src/bool.h>                   /* booleans */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/objfgelm.h>               /* objects of free groups */
 #include <src/objscoll.h>               /* single collector */
 
 #include <src/objpcgel.h>               /* objects of polycyclic groups */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/thread.h>             /* threads */
 
 

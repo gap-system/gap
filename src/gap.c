@@ -101,7 +101,6 @@
 
 #ifdef HPCGAP
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/aobjects.h>
 #include <src/hpc/misc.h>
 #include <src/hpc/threadapi.h>

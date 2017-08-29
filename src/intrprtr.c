@@ -56,7 +56,6 @@
 #include <src/intrprtr.h>               /* interpreter */
 #include <src/intfuncs.h>
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
