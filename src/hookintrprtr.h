@@ -13,7 +13,6 @@
 #define GAP_HOOKINTRPRTR_H
 
 #include <src/exprs.h>
-#include <src/gapstate.h>
 
 void InstallEvalBoolFunc(Int, Obj (*)(Expr));
 void InstallEvalExprFunc(Int, Obj (*)(Expr));

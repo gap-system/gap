@@ -9,7 +9,6 @@
 **
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
