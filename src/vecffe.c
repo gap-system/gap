@@ -33,7 +33,6 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/listoper.h>               /* operations for generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/vecffe.h>                 /* functions for fin field vectors */
 

@@ -69,6 +69,22 @@
 
 #include <assert.h>
 
+
+void SET_NAME_FUNC(Obj func, Obj name)
+{
+    GAP_ASSERT(name == 0 || IS_STRING_REP(name));
+    FUNC_HEADER(func)->name = name;
+}
+
+Char * NAMI_FUNC(Obj func, Int i)
+{
+    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+}
+
+
+Obj FuncIsKernelFunction(Obj self, Obj func);
+
+
 /****************************************************************************
 **
 *F * * * * wrapper for functions with variable number of arguments  * * * * *
@@ -1863,6 +1879,14 @@ Obj FuncUNPROFILE_FUNC(
     return (Obj)0;
 }
 
+/****************************************************************************
+*
+*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
+**
+**  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
+**  <func> is a function, and is installed as a kernel function, and False
+**  otherwise.
+*/
 Obj FuncIsKernelFunction(Obj self, Obj func) {
   if (!IS_FUNC(func))
     return Fail;

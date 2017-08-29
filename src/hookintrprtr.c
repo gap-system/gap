@@ -27,7 +27,6 @@
 
 #include <src/lists.h>
 #include <src/plist.h>
-#include <src/stringobj.h>
 
 #include <src/bool.h>
 

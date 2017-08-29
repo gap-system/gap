@@ -45,7 +45,6 @@
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
 

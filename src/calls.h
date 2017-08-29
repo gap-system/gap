@@ -47,7 +47,6 @@
 
 #include <src/gap.h>
 #include <src/gaputils.h>
-#include <src/stringobj.h>
 #include <src/lists.h>
 
 
@@ -157,10 +156,7 @@ static inline Obj NAMS_FUNC(Obj func)
     return FUNC_HEADER(func)->namesOfLocals;
 }
 
-static inline Char * NAMI_FUNC(Obj func, Int i)
-{
-    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
-}
+extern Char * NAMI_FUNC(Obj func, Int i);
 
 static inline Obj PROF_FUNC(Obj func)
 {
@@ -202,11 +198,7 @@ static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
     header->handlers[i] = hdlr;
 }
 
-static inline void SET_NAME_FUNC(Obj func, Obj name)
-{
-    GAP_ASSERT(name == 0 || IS_STRING_REP(name));
-    FUNC_HEADER(func)->name = name;
-}
+extern void SET_NAME_FUNC(Obj func, Obj name);
 
 static inline void SET_NARG_FUNC(Obj func, Int nargs)
 {
@@ -510,18 +502,6 @@ extern Obj ArgStringToList(const Char *nams_c);
 extern void PrintFunction (
     Obj                 func );
 
-
-/****************************************************************************
-*
-*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
-**
-**  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
-**  <func> is a function, and is installed as a kernel function, and False
-**  otherwise.
-*/
-extern Obj FuncIsKernelFunction(
-                        Obj self,
-                        Obj func);
 
 /****************************************************************************
 **
