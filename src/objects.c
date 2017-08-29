@@ -45,6 +45,7 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/traverse.h>           /* object traversal */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 

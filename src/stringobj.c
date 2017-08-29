@@ -79,6 +79,7 @@
 #include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 

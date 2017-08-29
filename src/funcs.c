@@ -51,6 +51,7 @@
 #include <src/opers.h>                  /* generic operations */
 #include <src/gvars.h>
 #include <src/hpc/thread.h>             /* threads */
+#include <src/hpc/guards.h>
 
 #include <src/vars.h>                   /* variables */
 

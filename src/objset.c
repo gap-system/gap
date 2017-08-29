@@ -30,6 +30,7 @@
 
 #include <src/scanner.h>
 
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 

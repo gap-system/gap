@@ -48,6 +48,7 @@
 #include <src/code.h>
 #include <src/gmpints.h>
 
+#include <src/hpc/guards.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <string.h>

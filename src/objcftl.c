@@ -40,6 +40,7 @@
 #include <src/objcftl.h>                /* from the left collect */
 
 #include <src/code.h>
+#include <src/hpc/guards.h>
 
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))

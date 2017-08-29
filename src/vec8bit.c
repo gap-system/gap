@@ -42,6 +42,7 @@
 #include <src/stats.h> 
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
+#include <src/hpc/guards.h>
 
 #ifndef DEBUG
 #ifndef NDEBUG

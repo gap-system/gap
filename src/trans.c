@@ -77,6 +77,7 @@
 #include <src/set.h>                    /* sets */
 
 #include <src/code.h>                   /* coder */
+#include <src/hpc/guards.h>
 
 #include <src/trans.h>                  /* transformations */
 #include <assert.h>

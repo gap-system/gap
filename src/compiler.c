@@ -48,6 +48,7 @@
 
 #include <src/compiler.h>               /* compiler */
 
+#include <src/hpc/guards.h>
 
 #include <src/vars.h>                   /* variables */
 

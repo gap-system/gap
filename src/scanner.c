@@ -62,6 +62,7 @@
 #include <src/opers.h>                  /* DoFilter... */
 #include <src/read.h>                   /* Call0ArgsInNewReader */
 
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 

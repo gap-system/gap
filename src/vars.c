@@ -50,6 +50,7 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
+#include <src/hpc/guards.h>
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
