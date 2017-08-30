@@ -2081,54 +2081,74 @@ void CheckMasterPointers( void )
 }
 
 
-/****************************************************************************
-**
-*F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
-*/
-void SwapMasterPoint (
-    Bag                 bag1,
-    Bag                 bag2 )
+// Swap the master pointers of bag1 and bag2
+//
+// We need to make sure the correct bags are garbage collected, so we always put
+// *both* bags on the ChangedBags linked-list, rather than pick through the
+// exact cases, as it is never incorrect to mark something changed.
+//
+// For completeness and future reference here are the necessary points to
+// consider.
+//
+// When swapping two master pointers, we have to take into account whether the
+// bags they refer are on the ChangedBags list, as we otherwise may end up in an
+// inconsistent state, where a bag is referenced, but GASMAN does not know this.
+// GASMAN then collects this bag, resulting in a corrupted workspace.
+//
+// We consider the following three cases:
+//
+// 1. Both bags are old. Then if the original bag1 had been previously marked as
+//    changed (by having been put into the ChangedBags singly linked list), then
+//    we must make sure to mark the new bag2 as changed, too (and vice-versa).
+//
+// 2. Both bags are young. Then they typically will not be on the list of
+//    changed bags, as CHANGED_BAGS just skips them.
+//    However, while CHANGED_BAG will never put a young bag on the list of
+//    changed bags, young bags can still be put on the ChangedBags list in
+//    step 3, so we need to do something similar as in step 1.
+//
+// 3. bag1 is young and bag2 is old (or vice-versa), then after swapping, bag1
+//    is old and bag2 is young, as the 'young'ness moves with the contents, so
+//    we must mark bag1 changed if bag2 was previously changed.
+//
+//    More importantly, bag2 is now young, but the only references to bag2 might
+//    be in an old bag, that is not marked changed. Thus bag2 would get
+//    (incorrectly) collected, because these bags are not considered in a
+//    garbage collection.
+//
+//    To avoid this we force bag2 onto the ChangedBags list, but we can't use
+//    CHANGED_BAG, as it skips young bags.
+//
+void SwapMasterPoint(Bag bag1, Bag bag2)
 {
-    Bag *               ptr1;
-    Bag *               ptr2;
-    Bag swapbag;
+    Bag * swapptr;
+    Bag   swapbag;
 
-    if ( bag1 == bag2 )
+    if (bag1 == bag2)
         return;
 
-    /* get the pointers                                                    */
-    ptr1 = PTR_BAG(bag1);
-    ptr2 = PTR_BAG(bag2);
-
-    /* check and update the link field and changed bags                    */
-    if ( LINK_BAG(bag1) == bag1 && LINK_BAG(bag2) == bag2 ) {
-        LINK_BAG(bag1) = bag2;
-        LINK_BAG(bag2) = bag1;
+    // First make sure both bags are in change list
+    // We can't use CHANGED_BAG as it skips young bags
+    if (LINK_BAG(bag1) == bag1) {
+        LINK_BAG(bag1) = ChangedBags;
+        ChangedBags = bag1;
     }
-    else
-    {
-        // First make sure both bags are in change list
-        // We can't use CHANGED_BAG as it skips young bags
-        if ( LINK_BAG(bag1) == bag1 ) {
-            LINK_BAG(bag1) = ChangedBags;
-            ChangedBags = bag1;
-        }
-        if ( LINK_BAG(bag2) == bag2 ) {
-            LINK_BAG(bag2) = ChangedBags;
-            ChangedBags = bag2;
-        }
-        // Now swap links, so in the end the list will go
-        // through the bags in the same order.
-        swapbag = LINK_BAG(bag1);
-        LINK_BAG(bag1) = LINK_BAG(bag2);
-        LINK_BAG(bag2) = swapbag;
+    if (LINK_BAG(bag2) == bag2) {
+        LINK_BAG(bag2) = ChangedBags;
+        ChangedBags = bag2;
     }
 
-    /* swap them                                                           */
-    SET_PTR_BAG(bag1, ptr2);
-    SET_PTR_BAG(bag2, ptr1);
+    // get the pointers & swap them
+    swapptr = PTR_BAG(bag1);
+    SET_PTR_BAG(bag1, PTR_BAG(bag2));
+    SET_PTR_BAG(bag2, swapptr);
+
+    // Now swap links, so in the end the list will go
+    // through the bags in the same order.
+    swapbag = LINK_BAG(bag1);
+    LINK_BAG(bag1) = LINK_BAG(bag2);
+    LINK_BAG(bag2) = swapbag;
 }
-
 
 
 /****************************************************************************
