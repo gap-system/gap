@@ -2146,7 +2146,6 @@ static Int InitLibrary (
 
 void InitExprState(GAPState * state)
 {
-    state->CurrEvalExprFuncs = EvalExprFuncs;
 }
 
 void DestroyExprState(GAPState * state)
