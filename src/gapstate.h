@@ -90,9 +90,6 @@ typedef struct GAPState {
     UInt            TheCount;
     UInt            TheLimit;
 
-    /* From exprs.c */
-    Obj (**CurrEvalExprFuncs)(Expr);
-
     /* From stats.c */
     Stat CurrStat;
     Obj  ReturnObjStat;
