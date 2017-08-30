@@ -41,8 +41,6 @@
 
 #include <src/vector.h>                 /* functions for plain vectors */
 
-#include <src/range.h>                  /* ranges */
-
 #include <src/code.h>                   /* coder */
 
 #include <assert.h>
