@@ -14,6 +14,8 @@
 
 #else
 
+#include <src/hpc/region.h>
+
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023
 
