@@ -9,6 +9,8 @@
 
 #else
 
+#include <src/hpc/atomic.h>
+
 StructInitInfo *InitInfoAObjects(void);
 Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);

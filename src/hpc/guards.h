@@ -17,6 +17,7 @@ static inline Bag ImpliedWriteGuard(Bag bag)
 
 #else
 
+#include <src/hpc/region.h>
 #include <src/hpc/tls.h>
 
 #ifdef VERBOSE_GUARDS
