@@ -2144,8 +2144,6 @@ Obj FuncELMS_GF2VEC (
 **  and that <elm> is not 0.
 */
 
-static Obj ConvertToVectorRep;	/* BH: changed to static */
-
 Obj FuncASS_GF2VEC (
     Obj                 self,
     Obj                 list,
@@ -4783,7 +4781,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    InitFopyGVar("ConvertToVectorRep", &ConvertToVectorRep);
     InitFopyGVar("IsLockedRepresentationVector", &IsLockedRepresentationVector);
 
     /* return success                                                      */
