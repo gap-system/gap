@@ -43,7 +43,6 @@
 
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
-#include <src/range.h>                  /* ranges */
 #include <src/code.h>
 #include <src/gmpints.h>
 

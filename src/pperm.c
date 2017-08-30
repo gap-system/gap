@@ -38,7 +38,6 @@
 
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
 
 #include <src/saveload.h>               /* saving and loading */
 
