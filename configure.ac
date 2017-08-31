@@ -290,7 +290,7 @@ AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
 dnl Find GNU readline
 AC_ARG_WITH([readline],
-  [AS_HELP_STRING([--with-readline@<:@=PREFIX:>@],
+  [AS_HELP_STRING([--with-readline@<:@=PREFIX@:>@],
     [support fancy command line editing via GNU readline; optionally
      specify a prefix where it can be found])])
 
@@ -330,7 +330,7 @@ AC_SUBST([READLINE_LIBS])
 
 dnl Find ward (if HPC-GAP mode is enabled)
 AC_ARG_WITH([ward],
-  [AS_HELP_STRING([--with-ward@<:@=PREFIX:>@],
+  [AS_HELP_STRING([--with-ward@<:@=PREFIX@:>@],
     [prefix to the ward tool (used for building HPC-GAP)])],
   [],
   [with_ward=check])
