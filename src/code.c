@@ -257,15 +257,14 @@ static Stat NewStatWithProf (
     STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
-    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-      ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) + sizeof(BodyHeader) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) + sizeof(BodyHeader)  ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    
+    UInt bodySize = SIZE_BAG(BODY_FUNC(CURR_FUNC));
+    if (bodySize == 0)
+        bodySize = STATE(OffsBody) + sizeof(BodyHeader);
+    while (bodySize < STATE(OffsBody) + sizeof(BodyHeader))
+        bodySize *= 2;
+    ResizeBag(BODY_FUNC(CURR_FUNC), bodySize);
+    STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+
     /* enter type and size                                                 */
     ADDR_STAT(stat)[-1] = fillFilenameLine(file, line, size, type);
     RegisterStatWithHook(stat);
@@ -302,14 +301,13 @@ Expr            NewExpr (
     STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
 
     /* make certain that the current body bag is large enough              */
-    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
+    UInt bodySize = SIZE_BAG(BODY_FUNC(CURR_FUNC));
+    if (bodySize == 0)
+        bodySize = STATE(OffsBody);
+    while (bodySize < STATE(OffsBody))
+        bodySize *= 2;
+    ResizeBag(BODY_FUNC(CURR_FUNC), bodySize);
+    STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 
     /* enter type and size                                                 */
     ADDR_EXPR(expr)[-1] = fillFilenameLine(STATE(Input)->gapnameid,
