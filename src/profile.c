@@ -316,18 +316,15 @@ static inline void outputStat(Stat stat, int exec, int visited)
 
   Int8 ticks = 0, newticks = 0;
 
-  HashLock(&profileState);
   // Explicitly skip these two cases, as they are often specially handled
   // and also aren't really interesting statements (something else will
   // be executed whenever they are).
   if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
-    HashUnlock(&profileState);
     return;
   }
 
   // Catch the case we arrive here and profiling is already disabled
   if(!profileState_Active) {
-    HashUnlock(&profileState);
     return;
   }
 
@@ -336,7 +333,6 @@ static inline void outputStat(Stat stat, int exec, int visited)
   // Statement not attached to a file
   if(nameid == 0)
   {
-    HashUnlock(&profileState);
     return;
   }
 
@@ -391,8 +387,6 @@ static inline void outputStat(Stat stat, int exec, int visited)
       profileState.lastNotOutputted.line = -1;
     }
   }
-
-  HashUnlock(&profileState);
 }
 
 void visitStat(Stat stat)
@@ -409,7 +403,9 @@ void visitStat(Stat stat)
   }
 
   if(profileState.OutputRepeats || !visited) {
+    HashLock(&profileState);
     outputStat(stat, 1, visited);
+    HashUnlock(&profileState);
   }
 }
 
@@ -440,10 +436,10 @@ void registerStat(Stat stat)
     int active;
     HashLock(&profileState);
     active = profileState_Active;
-    HashUnlock(&profileState);
-    if(active) {
+    if (active) {
       outputStat(stat, 0, 0);
     }
+    HashUnlock(&profileState);
 }
 
 
