@@ -37,11 +37,14 @@ initially knows the following groups:
 </Item>
 <Item>
   the  primitive  permutation groups of degree
-    <M>&lt; 2499</M> (see&nbsp;<Ref Sect="Primitive Permutation Groups"/>),
+    <M>&lt; 4096</M>, provided by the <Package>PrimGrp</Package> package
+    (see&nbsp;<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>),
 </Item>
 <Item>
   the  irreducible solvable subgroups of  <M>GL(n,p)</M> for
-    <M>n>1</M> and <M>p^n &lt; 256</M> (see <Ref Sect="Irreducible Solvable Matrix Groups"/>),
+    <M>n>1</M> and <M>p^n &lt; 256</M>, provided by the 
+    <Package>PrimGrp</Package> package
+    (see <Ref BookName="primgrp" Sect="Irreducible Solvable Matrix Groups"/>),
 </Item>
 <Item>
  the irreducible maximal finite integral matrix groups
@@ -200,8 +203,10 @@ properties.
 <!-- %ends with <C>Groups</C>. In between is a  name that hints at the nature of the -->
 <!-- %group library.  -->
 Currently, the library selection functions provided, of  this  type,  are
-<Ref Func="AllSmallGroups"/>, <Ref Func="AllIrreducibleSolvableGroups"/>,
-<C>AllTransitiveGroups</C>, and <C>AllPrimitiveGroups</C>.
+<Ref Func="AllSmallGroups"/>,
+<Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
+<C>AllTransitiveGroups</C>,
+and <Ref BookName="primgrp" Func="AllPrimitiveGroups"/>.
 Corresponding to  each  of  these  there  is  a
 <C>One<A>Library</A>Group</C> function (see below) which  returns  at
 most one group.
@@ -215,7 +220,7 @@ included in the selection, or a list of such  values.  For  the  function
 <Ref Attr="Size"/>, and, unlike  the
 other library selection functions,  it  supports  an  alternative  syntax
 where <Ref Func="Size"/> is omitted (see&nbsp;<Ref Func="AllSmallGroups"/>).
-Also, see <Ref Func="AllIrreducibleSolvableGroups"/>,
+Also, see <Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
 for details pertaining to this function.
 <P/>
 For an example, let us consider the selection function for the library of
@@ -271,9 +276,11 @@ list the properties that are stored for this library.
 <P/>
 For each <C>All<A>Library</A>Groups</C> function (see above) there is
 a corresponding function <C>One<A>Library</A>Group</C> on exactly the same
-arguments, i.e., there are <C>OneSmallGroup</C>,
-<C>OneIrreducibleSolvableGroup</C>, <C>OneTransitiveGroup</C>, and
-<C>OnePrimitiveGroup</C>.
+arguments, i.e., there are
+<C>OneSmallGroup</C>,
+<Ref BookName="primgrp" Func="OneIrreducibleSolvableGroup"/>,
+<C>OneTransitiveGroup</C>,
+and <Ref BookName="primgrp" Func="OnePrimitiveGroup"/>.
 Each function simply returns <E>one</E> group in
 the library that has the prescribed properties,
 instead of <E>all</E> such groups.
@@ -694,99 +701,6 @@ Otherwise the function provides a less explicit description of the
 together with a serial number if this is necessary to make it unique.
 
 </Subsection>
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Primitive Permutation Groups">
-<Heading>Primitive Permutation Groups</Heading>
-
-<#Include Label="[1]{primitiv}">
-<P/>
-<#Include Label="[2]{primitiv}">
-<#Include Label="PrimitiveGroup">
-<#Include Label="NrPrimitiveGroups">
-<#Include Label="PrimitiveGroupsIterator">
-
-<ManSection>
-<Var Name="COHORTS_PRIMITIVE_GROUPS"/>
-
-<Description>
-In <Cite Key="DixonMortimer88"/> the primitive groups are sorted in
-<Q>cohorts</Q> according to their socle. For each degree less than 2500, the variable
-<Ref Var="COHORTS_PRIMITIVE_GROUPS"/> contains a list of the cohorts
-for the primitive groups of this degree. Each cohort is represented by a
-list of length 2, the first entry specifies the socle type (see
-<Ref Func="SocleTypePrimitiveGroup"/>), the second
-entry listing the index numbers of the groups in this degree.
-<P/>
-For example in degree 49, we have four cohorts with socles <M>(&ZZ; / 7 &ZZ;)^2</M>,
-<M>L_2(7)^2</M>, <M>A_7^2</M> and <M>A_{49}</M> respectively. the group
-<C>PrimitiveGroup(49,36)</C>,
-which is isomorphic to <M>(A_7 \times A_7):2^2</M>, lies
-in the third cohort with socle <M>(A_7 \times A_7)</M>.
-<P/>
-<Example><![CDATA[
-gap> COHORTS_PRIMITIVE_GROUPS[49];
-[ [ rec( parameter := 7, series := "Z", width := 2 ), 
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 
-          18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 
-          33 ] ], 
-  [ rec( parameter := [ 2, 7 ], series := "L", width := 2 ), [ 34 ] ],
-  [ rec( parameter := 7, series := "A", width := 2 ), 
-      [ 35, 36, 37, 38 ] ], 
-  [ rec( parameter := 49, series := "A", width := 1 ), [ 39, 40 ] ] ]
-]]></Example>
-</Description>
-</ManSection>
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Index numbers of primitive groups">
-<Heading>Index numbers of primitive groups</Heading>
-
-<#Include Label="PrimitiveIdentification">
-<#Include Label="SimsNo">
-
-<ManSection>
-<Var Name="PRIMITIVE_INDICES_MAGMA"/>
-
-<Description>
-The system <Package>Magma</Package> also provides a list of primitive groups
-(see <Cite Key="RoneyDougal02"/>). For historical
-reasons, its indexing up to degree 999 
-differs from the one used by &GAP;. The
-variable <Ref Var="PRIMITIVE_INDICES_MAGMA"/>
-can be used to obtain this correspondence. The magma index number of
-the &GAP; group <C>PrimitiveGroup(<A>deg</A>,<A>nr</A>)</C> is stored in the entry
-<C>PRIMITIVE_INDICES_MAGMA[<A>deg</A>][<A>nr</A>]</C>, for degree at most 999.
-<P/>
-Vice versa, the group of degree <A>deg</A> with <Package>Magma</Package>
-index number <A>nr</A> has the &GAP; index 
-<P/>
-<C>Position(PRIMITIVE_INDICES_MAGMA[<A>deg</A>],<A>nr</A>)</C>, in particular
-it can be obtained by the &GAP; command
-<P/>
-<C>PrimitiveGroup(<A>deg</A>,Position(PRIMITIVE_INDICES_MAGMA[<A>deg</A>],<A>nr</A>));</C>
-</Description>
-</ManSection>
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Irreducible Solvable Matrix Groups">
-<Heading>Irreducible Solvable Matrix Groups</Heading>
-
-<#Include Label="IrreducibleSolvableGroupMS">
-<#Include Label="NumberIrreducibleSolvableGroups">
-<#Include Label="AllIrreducibleSolvableGroups">
-<#Include Label="OneIrreducibleSolvableGroup">
-<#Include Label="PrimitiveIndexIrreducibleSolvableGroup">
-<#Include Label="IrreducibleSolvableGroup">
-
 </Section>
 
 

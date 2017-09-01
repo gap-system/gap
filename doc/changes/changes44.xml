@@ -1989,7 +1989,7 @@ inverses of these field generators and&nbsp;{1}.
 
 <Item>
 The name of a group of order 117600 and degree 50 was
-incorrect in the <Ref BookName="ref" Func="Primitive Permutation Groups"/>
+incorrect in the <Ref BookName="primgrp" Func="Primitive Permutation Groups"/>
 Primitive Permutation Groups library.  In particular, a group
 was wrongly labelled as PGL(2, 49).
 </Item>
