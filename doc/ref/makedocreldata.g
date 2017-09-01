@@ -207,8 +207,6 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/wordass.gd",
     "../../lib/zlattice.gd",
     "../../lib/zmodnz.gd",
-    "../../prim/irredsol.gd",
-    "../../prim/primitiv.gd",
     "../../grp/simple.gd",
     "../../small/small.gd",
     "../../trans/trans.gd",
