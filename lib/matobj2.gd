@@ -408,6 +408,9 @@ DeclareOperation( "ZeroVector", [IsInt,IsMatrixObj] );
 
 # Operation to create vector objects.
 # The first just delegate to NewVector:
+# TODO: replace IsOperation by something nicer, like IsFilter (but sadly that
+# isn't a filter...)
+# TODO: actually, should these be global functions instead of operations?
 DeclareOperation( "Vector", [IsOperation, IsSemiring,  IsList]);
 DeclareOperation( "Vector", [IsOperation, IsSemiring,  IsVectorObj]);
 
