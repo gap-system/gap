@@ -373,12 +373,16 @@ DeclareAttribute( "BaseDomain", IsMatrixObj );
 # nor associative. For non-associative base domains, the behavior of
 # powering matrices is undefined.
 
-DeclareAttribute( "Length", IsMatrixObj );
-# We have to declare this since matrix objects need not be lists.
-# We have to use InstallOtherMethod for those matrix types that are
-# lists.
+DeclareAttribute( "NumberRows", IsMatrixObj );
+DeclareAttribute( "NumberColumns", IsMatrixObj );
+DeclareSynonym( "NrRows", NumberRows );
+DeclareSynonym( "NrCols", NumberColumns );
 
-DeclareAttribute( "RowLength", IsMatrixObj );
+# HACK: Length and RowLength were in the old version of MatrixObj. We want
+# to get rid of them, but for now, keep thm to allow the few packages
+# already using this to continue working.
+DeclareAttribute( "Length", IsMatrixObj ); # ????
+DeclareSynonym( "RowLength", NumberColumns );
 
 DeclareAttribute( "DimensionsMat", IsMatrixObj );   # returns [rows,cols]
 

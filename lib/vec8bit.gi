@@ -989,8 +989,10 @@ InstallMethod( BaseDomain, "for an 8bit vector",
   [ Is8BitVectorRep ], function( v ) return GF(Q_VEC8BIT(v)); end );
 InstallMethod( BaseDomain, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function( m ) return GF(Q_VEC8BIT(m[1])); end );
+InstallMethod( NumberRows, "for an 8bit matrix",
+  [ Is8BitMatrixRep ], m -> m![1]);
 # FIXME: this breaks down for matrices with 0 rows
-InstallMethod( RowLength, "for an 8bit matrix",
+InstallMethod( NumberColumns, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
 InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",

@@ -61,7 +61,7 @@ InstallMethod( Unfold, "for a matrix object, and a vector object",
     if Length(m) = 0 then
         return ZeroVector(0,w);
     else
-        l := RowLength(m);
+        l := NumberColumns(m);
         v := ZeroVector(Length(m)*l,w);
         for i in [1..Length(m)] do
             CopySubVector( m[i], v, [1..l], [(i-1)*l+1..i*l] );
@@ -114,10 +114,10 @@ InstallMethod( KroneckerProduct, "for two matrices",
         ErrorNoReturn("KroneckerProduct: Matrices not over same base domain");
     fi;
 
-    rowsA := Length(A);
-    colsA := RowLength(A);
-    rowsB := Length(B);
-    colsB := RowLength(B);
+    rowsA := NumberRows(A);
+    colsA := NumberColumns(A);
+    rowsB := NumberRows(B);
+    colsB := NumberColumns(B);
 
     AxB := ZeroMatrix( rowsA * rowsB, colsA * colsB, A );
 
@@ -239,13 +239,20 @@ InstallMethod( TraceMat, "generic method",
     local bd,i,s;
     bd := BaseDomain(m);
     s := Zero(bd);
-    if Length(m) <> RowLength(m) then
+    if NumberRows(m) <> NumberColumns(m) then
         Error("matrix must be square");
         return fail;
     fi;
-    for i in [1..Length(m)] do
+    for i in [1..NumberRows(m)] do
         s := s + MatElm(m,i,i);
     od;
     return s;
   end );
 
+#
+# Compatibility code: Install MatrixObj methods for IsMatrix.
+#
+InstallOtherMethod( NumberRows, "for a plist matrix",
+  [ IsMatrix ], Length);
+InstallOtherMethod( NumberColumns, "for a plist matrix",
+  [ IsMatrix ], m -> Length(m[1]) );

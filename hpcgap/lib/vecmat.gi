@@ -2331,7 +2331,9 @@ InstallMethod( BaseDomain, "for a gf2 vector",
   [ IsGF2VectorRep ], function( v ) return GF(2); end );
 InstallMethod( BaseDomain, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return GF(2); end );
-InstallMethod( RowLength, "for a gf2 matrix",
+InstallMethod( NumberRows, "for a gf2 matrix",
+  [ IsGF2MatrixRep ], m -> m![1]);
+InstallMethod( NumberColumns, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
