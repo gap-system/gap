@@ -1781,6 +1781,9 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
+      if not ISBOUND_GLOBAL(oper) then
+        Error("global function `", oper, "' is not declared yet");
+      fi;
       oper:= VALUE_GLOBAL( oper );
     fi;
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
