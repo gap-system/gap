@@ -79,7 +79,6 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
