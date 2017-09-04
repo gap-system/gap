@@ -213,28 +213,21 @@ extern void ErrorReturnVoid (
 **
 **  Values are powers of two, although I do not currently know of any
 **  cirumstances where they can get combined
-**
-** STATUS_END           0    ran off the end of the code 
-** STATUS_RETURN_VAL    1    value returned  
-** STATUS_RETURN_VOID   2    void returned   
-** STATUS_TNM           4    try-next-method 
-** STATUS_QUIT          8    quit command
-** STATUS_EOF          16    End of file 
-** STATUS_ERROR        32    error
-** STATUS_QQUIT        64    QUIT command
 */
 
 typedef UInt ExecStatus;
 
-#define STATUS_END         0
-#define STATUS_RETURN_VAL  1
-#define STATUS_RETURN_VOID 2
-#define STATUS_TNM         4
-#define STATUS_QUIT        8
-#define STATUS_EOF        16
-#define STATUS_ERROR      32
-#define STATUS_QQUIT      64
-
+enum {
+    STATUS_END         =  0,    // ran off the end of the code
+    STATUS_RETURN_VAL  =  1,    // value returned
+    STATUS_RETURN_VOID =  2,    // void returned
+    STATUS_BREAK       =  4,    // 'break' statement
+    STATUS_QUIT        =  8,    // quit command
+    STATUS_CONTINUE    =  8,    // 'continue' statement
+    STATUS_EOF         = 16,    // End of file
+    STATUS_ERROR       = 32,    // error
+    STATUS_QQUIT       = 64,    // QUIT command
+};
 
 
 // TL: extern UInt UserHasQuit;
