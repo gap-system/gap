@@ -1638,9 +1638,6 @@ UInt CollectBags (
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
 
-    /*     Bag *               last;
-           Char                type; */
-
     CANARY_DISABLE_VALGRIND();
     CLEAR_CANARY();
 #ifdef DEBUG_MASTERPOINTERS
