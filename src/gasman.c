@@ -118,6 +118,7 @@
 #include <src/objects.h>                /* objects */
 #include <src/scanner.h>                /* scanner */
 
+#include <src/gaputils.h>
 
 #include <stddef.h>
 
@@ -1670,16 +1671,10 @@ again:
             LINK_BAG(first) = first;
         }
 
-        /* Also time to change the tag for dead children of weak
-           pointer objects. After this collection, there can be no more
-           weak pointer objects pointing to anything with OldWeakDeadBagMarker
-           in it */
-        {
-          Bag * t;
-          t = OldWeakDeadBagMarker;
-          OldWeakDeadBagMarker = NewWeakDeadBagMarker;
-          NewWeakDeadBagMarker = t;
-        }
+        // Also time to change the tag for dead children of weak pointer
+        // objects. After this collection, there can be no more weak pointer
+        // objects pointing to anything with OldWeakDeadBagMarker in it.
+        SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
     }
 
     /* information at the beginning of garbage collections                 */
