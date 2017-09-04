@@ -6,7 +6,7 @@
 /configure
 /libtool
 /src/config.h.in
-
+/src/config.h.in~
 /gen/
 /obj/
 
