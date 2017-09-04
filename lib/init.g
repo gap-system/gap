@@ -311,6 +311,7 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
         local  name,  ext,  libname, error;
 
         name := arg[1];
+
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
@@ -320,7 +321,7 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
 
         if error then
           if LEN_LIST( arg )=1 then
-            Error( "the library file '", name, "' must exist and ",
+            Error( "the library file '", libname, "' must exist and ",
                    "be readable");
           else
             return false;
