@@ -1432,7 +1432,8 @@ void ErrorMayQuit (
     Int                 arg1,
     Int                 arg2)
 {
-  CallErrorInner(msg, arg1, arg2, 0, 0,0, False, 1);
+  Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
+  CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
  
 }
 
