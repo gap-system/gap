@@ -2396,8 +2396,8 @@ static Int InitKernel (
 
 void InitStatState(GAPState * state)
 {
-    state->CurrExecStatFuncs = ExecStatFuncs;
 #ifdef HPCGAP
+    state->CurrExecStatFuncs = ExecStatFuncs;
     MEMBAR_FULL();
     if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
         MEMBAR_FULL();
