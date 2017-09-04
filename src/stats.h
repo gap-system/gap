@@ -48,18 +48,16 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
-#ifdef HPCGAP
-
-#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
-
-#else
-
 static inline UInt EXEC_STAT(Stat stat)
-{ 
-  return ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) ); 
+{
+    UInt tnum = TNUM_STAT(stat);
+#ifdef HPCGAP
+    return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
+#else
+    return ( (*ExecStatFuncs[ tnum ]) ( stat ) );
+#endif
 }
 
-#endif
 
 
 #ifdef HPCGAP
