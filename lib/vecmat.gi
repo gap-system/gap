@@ -2126,7 +2126,9 @@ InstallMethod( BaseDomain, "for a gf2 vector",
   [ IsGF2VectorRep ], function( v ) return GF(2); end );
 InstallMethod( BaseDomain, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return GF(2); end );
-InstallMethod( RowLength, "for a gf2 matrix",
+InstallMethod( NumberRows, "for a gf2 matrix",
+  [ IsGF2MatrixRep ], m -> m![1]);
+InstallMethod( NumberColumns, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
@@ -2206,10 +2208,10 @@ BindGlobal( "PositionLastNonZeroFunc2",
 
 InstallMethod( PositionLastNonZero, "for a row vector obj",
   [IsVectorObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj",
-  [IsMatrixObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
-  [IsMatrixObj, IsPosInt], PositionLastNonZeroFunc2 );
+# InstallMethod( PositionLastNonZero, "for a matrix obj",
+#   [IsMatrixObj], PositionLastNonZeroFunc );
+# InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
+#   [IsMatrixObj, IsPosInt], PositionLastNonZeroFunc2 );
         
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],

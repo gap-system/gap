@@ -42,6 +42,7 @@ DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
 
 # Another pair of filters that slow down things:
+# TODO: document this (setting these filters seems to activate additional bounds checking)
 DeclareFilter( "IsCheckingVector" );
 DeclareFilter( "IsCheckingMatrix" );
 

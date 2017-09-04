@@ -12,6 +12,14 @@
 ############################################################################
 
 
+# TEMPORARY HACK
+InstallOtherMethod( \[\], [ IsMatrix, IsList ], {m,l} -> m[l[1]][l[2]] );
+InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsList, IsObject ], function(m,l,o) m[l[1]][l[2]] := o; end);
+
+InstallOtherMethod( \[\], [ IsMatrixObj, IsList ], {m,l} -> MatElm(m,l[1],l[2]));
+InstallOtherMethod( \[\]\:\=, [ IsMatrixObj, IsList, IsObject ], function(m,l,o) SetMatElm(m, l[1], l[2], o); end);
+
+
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)
@@ -42,17 +50,225 @@ InstallMethod( DistanceOfVectors, "generic method",
     return n;
   end );
 
+#
+# TODO: possibly rename the following
+#
+BindGlobal( "DefaultVectorRepForBaseDomain",
+function( basedomain )
+    if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
+        return IsGF2VectorRep;
+    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
+        return Is8BitVectorRep;
+    fi;
+    return IsPlistVectorRep;
+end);
+BindGlobal( "DefaultMatrixRepForBaseDomain",
+function( basedomain )
+    if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
+        return IsGF2MatrixRep;
+    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
+        return Is8BitMatrixRep;
+    fi;
+    return IsPlistMatrixRep;
+end);
+
+
+
+# methods to create vectors
+
+InstallMethod( Vector,
+  [IsOperation, IsSemiring,  IsList],
+function(rep, base, l)
+  return NewVector(rep, base, l);
+end);
+
+InstallMethod( Vector,
+  [IsOperation, IsSemiring,  IsVectorObj],
+function(rep, base, v)
+  return NewVector(rep, base, Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsSemiring,  IsList],
+function(base, l)
+  return NewVector(DefaultVectorRepForBaseDomain(base), base, l);
+end);
+
+InstallMethod( Vector,
+  [IsSemiring,  IsVectorObj],
+function(base, v)
+  return NewVector(DefaultVectorRepForBaseDomain(base), base, Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsList, IsVectorObj],
+function(l, example)
+  return NewVector(ConstructingFilter(example), BaseDomain(example), l);
+end);
+
+InstallMethod( Vector,
+  [IsVectorObj, IsVectorObj],
+function(v, example)
+  return NewVector(ConstructingFilter(example), BaseDomain(example), Unpack(v));
+end);
+
+InstallMethod( Vector,
+  [IsList],
+function(l)
+  local dom;
+  dom := DefaultScalarDomainOfMatrixList([[l]]);
+  return NewVector(DefaultVectorRepForBaseDomain(dom), dom, l);
+end);
+#
+#
+#
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsList, IsInt],
+  function( rep, basedomain, list, nrCols )
+    # TODO: adjust NewMatrix to use same arg order as Matrix (or vice-versa)
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsList],
+  function( rep, basedomain, list )
+    if Length(list) = 0 then Error("list must be not empty; to create empty matrices, please specify nrCols"); fi;
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+InstallMethod( Matrix,
+  [IsOperation, IsSemiring, IsMatrixObj],
+  function( rep, basedomain, mat )
+    # TODO: can we do better? encourage MatrixObj implementors to overload this?
+    return NewMatrix( rep, basedomain, NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( Matrix,
+  [IsSemiring, IsList, IsInt],
+  function( basedomain, list, nrCols )
+    local rep;
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsSemiring, IsList],
+  function( basedomain, list )
+    local rep;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+InstallMethod( Matrix,
+  [IsSemiring, IsMatrixObj],
+  function( basedomain, mat )
+    # TODO: can we do better? encourage MatrixObj implementors to overload this?
+    return NewMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( Matrix,
+  [IsList, IsInt],
+  function( list, nrCols )
+    local basedomain, rep;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
+    basedomain := DefaultScalarDomainOfMatrixList([list]);
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, nrCols, list );
+  end );
+
+InstallMethod( Matrix,
+  [IsList],
+  function( list )
+    local rep, basedomain;
+    if Length(list) = 0 then Error("list must be not empty"); fi;
+    if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
+    basedomain := DefaultScalarDomainOfMatrixList([list]);
+    rep := DefaultMatrixRepForBaseDomain(basedomain);
+    return NewMatrix( rep, basedomain, Length(list[1]), list );
+  end );
+
+#
+# matrix constructors using example objects (as last argument)
+#
+InstallMethod( Matrix,
+  [IsList, IsInt, IsMatrixObj],
+  function( list, nrCols, example )
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), nrCols, list );
+  end );
+
 InstallMethod( Matrix, "generic convenience method with 2 args",
-  [IsList,IsMatrixObj],
-  function( l, m )
-    if Length(l) = 0 then
+  [IsList, IsMatrixObj],
+  function( list, example )
+    if Length(list) = 0 then
         ErrorNoReturn("Matrix: two-argument version not allowed with empty first arg");
     fi;
-    if not (IsList(l[1]) or IsVectorObj(l[1])) then
+    if not (IsList(list[1]) or IsVectorObj(list[1])) then
         ErrorNoReturn("Matrix: flat data not supported in two-argument version");
     fi;
-    return Matrix(l,Length(l[1]),m);
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), Length(list[1]), list );
   end );
+
+InstallMethod( Matrix,
+  [IsMatrixObj, IsMatrixObj],
+  function( mat, example )
+    # TODO: can we avoid using Unpack? resp. make this more efficient
+    # perhaps adjust NewMatrix to take an IsMatrixObj?
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
+  end );
+
+#
+#
+#
+InstallMethod( ZeroMatrix,
+  [IsInt, IsInt, IsMatrixObj],
+  function( rows, cols, example )
+    return ZeroMatrix( ConstructingFilter(example), BaseDomain(example), rows, cols );
+  end );
+
+InstallMethod( ZeroMatrix,
+  [IsSemiring, IsInt, IsInt],
+  function( basedomain, rows, cols )
+    return ZeroMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, rows, cols );
+  end );
+
+InstallMethod( ZeroMatrix,
+  [IsOperation, IsSemiring, IsInt, IsInt],
+  function( rep, basedomain, rows, cols )
+    # TODO: urge matrixobj implementors to overload this
+    return NewMatrix( rep, basedomain, cols, ListWithIdenticalEntries( rows * cols, Zero(basedomain) ) );
+  end );
+
+#
+#
+#
+InstallMethod( IdentityMatrix,
+  [IsInt, IsMatrixObj],
+  function( dim, example )
+    return IdentityMatrix( ConstructingFilter(example), BaseDomain(example), dim );
+  end );
+
+InstallMethod( IdentityMatrix,
+  [IsSemiring, IsInt],
+  function( basedomain, dim )
+    return IdentityMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, dim );
+  end );
+
+InstallMethod( IdentityMatrix,
+  [IsOperation, IsSemiring, IsInt],
+  function( rep, basedomain, dim )
+    # TODO: avoid using IdentityMat eventually
+    return NewMatrix( rep, basedomain, dim, IdentityMat( dim, basedomain ) );
+  end );
+
+
 
 InstallMethod( Unfold, "for a matrix object, and a vector object",
   [ IsMatrixObj, IsVectorObj ],
@@ -61,7 +277,7 @@ InstallMethod( Unfold, "for a matrix object, and a vector object",
     if Length(m) = 0 then
         return ZeroVector(0,w);
     else
-        l := RowLength(m);
+        l := NumberColumns(m);
         v := ZeroVector(Length(m)*l,w);
         for i in [1..Length(m)] do
             CopySubVector( m[i], v, [1..l], [(i-1)*l+1..i*l] );
@@ -114,10 +330,10 @@ InstallMethod( KroneckerProduct, "for two matrices",
         ErrorNoReturn("KroneckerProduct: Matrices not over same base domain");
     fi;
 
-    rowsA := Length(A);
-    colsA := RowLength(A);
-    rowsB := Length(B);
-    colsB := RowLength(B);
+    rowsA := NumberRows(A);
+    colsA := NumberColumns(A);
+    rowsB := NumberRows(B);
+    colsB := NumberColumns(B);
 
     AxB := ZeroMatrix( rowsA * rowsB, colsA * colsB, A );
 
@@ -182,35 +398,6 @@ InstallGlobalFunction( MakeVector,
     return NewVector(ty,bd,l);
   end );
 
-InstallGlobalFunction( MakeMatrix,
-  function( arg )
-    local bd,l,len,rowlen,ty;
-    if Length(arg) = 1 then
-        l := arg[1];
-        bd := DefaultFieldOfMatrix(l);
-    elif Length(arg) <> 2 then
-        Error("usage: MakeVector( <list> [,<basedomain>] )");
-        return fail;
-    else
-        l := arg[1];
-        bd := arg[2];
-    fi;
-    len := Length(l);
-    if len = 0 then
-        Error("does not work for matrices with zero rows");
-        return fail;
-    fi;
-    rowlen := Length(l[1]);
-    if IsFinite(bd) and IsField(bd) and Size(bd) = 2 then
-        ty := IsGF2MatrixRep;
-    elif IsFinite(bd) and IsField(bd) and Size(bd) <= 256 then
-        ty := Is8BitMatrixRep;
-    else
-        ty := IsPlistMatrixRep;
-    fi;
-    return NewMatrix(ty,bd,rowlen,l);
-  end );
-
 InstallMethod( ExtractSubVector, "generic method",
   [ IsVectorObj, IsList ],
   function( v, l )
@@ -239,13 +426,124 @@ InstallMethod( TraceMat, "generic method",
     local bd,i,s;
     bd := BaseDomain(m);
     s := Zero(bd);
-    if Length(m) <> RowLength(m) then
+    if NumberRows(m) <> NumberColumns(m) then
         Error("matrix must be square");
         return fail;
     fi;
-    for i in [1..Length(m)] do
+    for i in [1..NumberRows(m)] do
         s := s + MatElm(m,i,i);
     od;
     return s;
   end );
 
+
+InstallMethod(PositionNonZero,
+  "generic method for a row vector",
+  [IsRowVector],
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i; fi;
+  od;
+  return i+1;
+end);
+
+InstallMethod(PositionNonZero,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i; fi;
+  od;
+  return i+1;
+end);
+
+InstallMethod( ListOp,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  function(vec)
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := vec[len];
+  for i in [ 1 .. len - 1 ] do
+    result[i] := vec[i];
+  od;
+  return result;
+end );
+
+InstallMethod( ListOp,
+  "generic method for a vector object and a function",
+  [ IsVectorObj, IsFunction ],
+  function(vec,func)
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := func(vec[len]);
+  for i in [ 1 .. len - 1 ] do
+    result[i] := func(vec[i]);
+  od;
+  return result;
+end );
+
+InstallMethod( Unpack,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  ListOp ); ## Potentially slower than a direct implementation,
+            ## but avoids code duplication.
+
+
+InstallMethod( \{\},
+  "generic method for a vector object and a list",
+  [ IsVectorObj, IsList ],
+  function(vec,pos)
+    local vec_list;
+    vec_list := ListOp(vec);
+    vec_list := vec_list{[pos]};
+    return Vector(vec_list,vec);
+end );
+
+InstallMethod( CopySubVector,
+  "generic method for vectors",
+  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ],
+  function(dst, dcols, src, scols)
+    local i;
+    if not Length( dcols ) = Length( scols ) then
+      Error( "source and destination index lists must be of equal length" );
+      return;
+    fi;
+    for i in [ 1 .. Length( dcols ) ] do
+      dst[dcols[i]] := src[scols[i]];
+    od;
+end );
+
+## Backwards compatible version
+InstallMethod( CopySubVector,
+  "generic method for vectors",
+  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+  function(src, dst, scols, dcols)
+    CopySubVector(dst,dcols,src,scols);
+end );
+
+InstallMethod( Randomize,
+  "generic method for a vector",
+  [ IsVectorObj and IsMutable ],
+  function(vec)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( basedomain );
+    od;
+end );
+
+InstallMethod( Randomize,
+  "generic method for a vector and a random source",
+  [ IsVectorObj and IsMutable, IsRandomSource ],
+  function(vec, rs)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( rs, basedomain );
+    od;
+end );
