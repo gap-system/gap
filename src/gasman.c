@@ -1702,9 +1702,30 @@ again:
 
     /* mark the subbags of the changed old bags                            */
     while ( ChangedBags != 0 ) {
+        // extract the head from the linked list
         first = ChangedBags;
         ChangedBags = LINK_BAG(first);
         LINK_BAG(first) = first;
+
+        // mark subbags - we need to distinguish between young and old bags:
+        // For old bags, we invoke the marking function for bags with the
+        // given TNUM.
+        // Young bags normally are never put onto the changed list, because
+        // CHANGED_BAGS ignores young bags. However, it can happen if we
+        // swap the masterpointers of an old and a young bag. In that case,
+        // we must be careful to not collect the young bag (which was old
+        // before the masterpointer swap; see the comment on
+        // 'SwapMasterPoint' for a detailed explanation why that is so). To
+        // facilitate this, 'SwapMasterPoint' forces that bag onto the
+        // ChangedBags list. Then, we put such a young bag onto the list of
+        // marked bags (via MarkBag), which ensures it is not collected.
+        //
+        // Note that it doesn't help to use 'MarkBag' on an old bags, as it
+        // ignores old bags (which are always assumed to be marked).
+        // Conversely, using TabMarkFuncBags on a young bag is no good,
+        // because that function only puts subbags on the list of marked
+        // bag, which does not prevent the young bag itself from being
+        // collected (which is what we need).
         if ( PTR_BAG(first) <= YoungBags )
             (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
@@ -1716,10 +1737,15 @@ again:
     nrLiveBags = 0;
     sizeLiveBags = 0;
     while ( MarkedBags != 0 ) {
+        // extract the head from the linked list
         first = MarkedBags;
         MarkedBags = LINK_BAG(first);
         LINK_BAG(first) = MARKED_ALIVE(first);
+
+        // mark subbags
         (*TabMarkFuncBags[TNUM_BAG(first)])( first );
+
+        // collect some statistics
         nrLiveBags++;
         sizeLiveBags += SIZE_BAG(first);
     }
