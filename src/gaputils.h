@@ -7,6 +7,16 @@
 #ifndef GAP_UTILS_H
 #define GAP_UTILS_H
 
+//
+// Swap the content of two variables <a> and <b> of type <T>.
+//
+// Example:
+// int a, b;
+// ...
+// SWAP(int, a, b);
+//
+#define SWAP(T, a, b)          do { T SWAP_TMP = a; a = b; b = SWAP_TMP; } while (0)
+
 /****************************************************************************
 **
 ** Compute the number of elements of a given C array.
