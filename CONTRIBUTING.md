@@ -6,9 +6,9 @@ possible.
 
 ## Packages versus contributions to the "core" system
 
-One way of contributing to GAP is to write a GAP package (see
-<https://www.gap-system.org/Packages/packages.html>) and send it to us to
-consider for redistribution with GAP.  This is appropriate if your
+One way of contributing to GAP is to write a
+[GAP package](https://www.gap-system.org/Packages/packages.html) and send it
+to us to consider for redistribution with GAP.  This is appropriate if your
 contribution adds a body of functionality for some area of mathematics (or
 some coherent batch of system functionality). A package is also appropriate
 if you plan to continue to develop your code in the future. You will retain
@@ -17,17 +17,6 @@ control of your code and be recorded as author and maintainer of it.
 Packages are not an appropriate way to release fixes or extremely small
 changes, or to impose your own preferences for, for instance, how things
 should be printed.
-
-## Packages versus contributions to the "core" system
-
-One way of contributing to GAP is to write a GAP [package](https://www.gap-system.org/Packages/packages.html) and 
-send it to us to consider for redistribution with GAP.  This is appropriate if your contribution adds 
-a body of functionality for some area of mathematics (or some coherent batch of system functionality). 
-A package is also appropriate if you plan to continue to develop your code in the future. You will retain control
-of your code and be recorded as author and maintainer of it.
-
-Packages are not an appropriate way to release fixes or extremely small changes, or to impose your own preferences for,
-for instance, how things should be printed.
 
 ## Issue reporting and code contributions
 
