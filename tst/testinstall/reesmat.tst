@@ -328,5 +328,49 @@ gap> ReesZeroMatrixSemigroup(Group(()), [[1]]);
 Error, the entries of the second argument must be 0 or belong to the first arg\
 ument (a semigroup)
 
+# Enumerator: for a Rees matrix semigroup
+gap> R := ReesMatrixSemigroup(SymmetricGroup(2), [[()]]);
+<Rees matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> enum := Enumerator(R);
+<enumerator of Rees matrix semigroup>
+gap> enum[1];
+(1,(),1)
+gap> Position(enum, enum[1]);
+1
+gap> enum[2];
+(1,(1,2),1)
+gap> Position(enum, enum[2]);
+2
+gap> S := ReesZeroMatrixSemigroup(Group(()), [[(), ()]]);;
+gap> Position(enum, RMSElement(S, 2, (), 1));
+fail
+gap> S := ReesMatrixSemigroup(SymmetricGroup(2), [[()]]);;
+gap> Position(enum, RMSElement(S, 1, (), 1));
+fail
+
+# Enumerator: for a Rees 0-matrix semigroup
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[()]]);
+<Rees 0-matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> enum := Enumerator(R);;
+gap> enum[Position(enum, enum[1])] = enum[1];
+true
+gap> enum[Position(enum, enum[2])] = enum[2];
+true
+gap> enum[Position(enum, enum[3])] = enum[3];
+true
+gap> S := ReesZeroMatrixSemigroup(Group(()), [[(), ()]]);;
+gap> Position(enum, RMSElement(S, 2, (), 1));
+fail
+gap> S := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[()]]);;
+gap> Position(enum, RMSElement(S, 1, (), 1));
+fail
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[(), 0]]);;
+gap> T := ReesZeroMatrixSubsemigroup(R, [1, 2], Group(()), [1]);;
+gap> SetIsReesZeroMatrixSemigroup(T, true);
+gap> SetUnderlyingSemigroup(T, Group(()));
+gap> enum := Enumerator(T);;
+gap> Position(enum, RMSElement(R, 1, (1,2), 1));
+fail
+
 #
 gap> STOP_TEST("reesmat.tst");
