@@ -243,6 +243,38 @@ gap> R := ReesZeroMatrixSemigroup(FullTransformationMonoid(2),
 gap> IsZeroSimpleSemigroup(R);
 false
 
+# IsReesMatrixSemigroup: for a semigroup
+gap> IsReesMatrixSemigroup(FullTransformationMonoid(2));
+false
+
+# IsReesMatrixSemigroup: for a Rees matrix subsemigroup with generators, 1
+gap> R := ReesMatrixSemigroup(SymmetricGroup(2), [[(1,2)]]);
+<Rees matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> IsReesMatrixSemigroup(R);
+true
+gap> S := Semigroup(Elements(R));
+<subsemigroup of 1x1 Rees matrix semigroup with 2 generators>
+gap> IsReesMatrixSemigroup(S);
+true
+
+# IsReesMatrixSemigroup: for a Rees matrix subsemigroup with generators, 2
+gap> S := SymmetricInverseMonoid(2);
+<symmetric inverse monoid of degree 2>
+gap> z := PartialPerm([0]);
+<empty partial perm>
+gap> R := ReesMatrixSemigroup(S, [[One(S), One(S)], [One(S), z]]);
+<Rees matrix semigroup 2x2 over <symmetric inverse monoid of degree 2>>
+gap> T := Semigroup(RMSElement(R, 1, One(S), 1), RMSElement(R, 2, One(S), 2));
+<subsemigroup of 2x2 Rees matrix semigroup with 2 generators>
+gap> IsReesMatrixSemigroup(T);
+true
+gap> R := ReesMatrixSemigroup(S, [[One(S), z], [z, z]]);
+<Rees matrix semigroup 2x2 over <symmetric inverse monoid of degree 2>>
+gap> T := Semigroup(RMSElement(R, 1, One(S), 1), RMSElement(R, 2, One(S), 2));
+<subsemigroup of 2x2 Rees matrix semigroup with 2 generators>
+gap> IsReesMatrixSemigroup(T);
+false
+
 # IsReesZeroMatrixSemigroup: for a semigroup
 gap> IsReesZeroMatrixSemigroup(FullTransformationMonoid(2));
 false

@@ -153,9 +153,6 @@ function(R)
   
   if IsWholeFamily(R) then 
     return true;
-  elif IsSimpleSemigroup(UnderlyingSemigroup(ParentAttr(R))) 
-   and not IsSimpleSemigroup(R) then 
-    return false;
   fi;
   
   # it is still possible that <R> is a Rees matrix semigroup, if, for example,
