@@ -129,20 +129,13 @@ R-> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 InstallMethod(IsZeroSimpleSemigroup, "for a Rees 0-matrix semigroup", 
 [IsReesZeroMatrixSemigroup],
 function(R)
-  local i;
+  local i, mat;
 
-  for i in Columns(R) do 
-    if ForAll(Rows(R), j-> Matrix(R)[i][j]=0) then 
-      return false;
-    fi;
-  od;
-  
-  for i in Rows(R) do 
-    if ForAll(Columns(R), j-> Matrix(R)[j][i]=0) then 
-      return false;
-    fi;
-  od;
-  
+  mat := Matrix(R);
+  if ForAny(Columns(R), j -> ForAll(Rows(R), i -> mat[j][i] = 0))
+      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j][i] = 0)) then 
+    return false;
+  fi;
   return IsSimpleSemigroup(UnderlyingSemigroup(R));
 end);
 
