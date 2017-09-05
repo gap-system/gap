@@ -1,0 +1,37 @@
+Tasks for MatrixObj
+===================
+
+- Decide the relation between 'IsMatrix' and 'IsMatrixObj',
+
+  define 'DefaultRing' for the entries as 'BaseDomain' of Plist matrices,
+
+  introduce 'ZeroOfBaseDomain'.
+
+- In the (about 240) library methods that *require* 'IsMatrix',
+  adjust the code according to the 'IsMatrixObj' interface.
+
+  (Avoid 'Zero(m[1][1])', 'm[i][j]', and working with rows.)
+
+- In the (about 90) library methods that *call* 'IsMatrix',
+  decide if one can use 'IsMatrixObj' instead.
+
+- Change 'm[i][j]' to 'm[i,j]'.
+
+  (Only where really matrices are affected?)
+
+- Check the library methods that *create* matrices:
+
+  What can be done in order to choose a suitable kind of matrix?
+
+- Replace 'PositionNot( obj, zero )' by 'PositionNonZero( obj )'.
+
+  (And change the default methods for 'PositionNonZero'.)
+
+- Replace 'EmptyMatrix' and 'NullMapMatrix' by 'IsMatrixObj' objects.
+
+- Document and implement the interface.
+
+- Provide test code.
+
+- Provide further kinds of vectors/matrices.
+
