@@ -201,11 +201,11 @@ function(R)
     return false; #Rees 0-matrix semigroups always contain the 0.
   fi;
   
-  gens:=GeneratorsOfSemigroup(R);
+  gens := Unique(GeneratorsOfSemigroup(R));
   pos:=Position(gens, MultiplicativeZero(R));
   if pos<>fail then 
     if Size(gens) = 1 then
-      return Size(ParentAttr(R)) = 1;
+      return false;
     fi;
     gens:=ShallowCopy(gens);
     Remove(gens, pos);

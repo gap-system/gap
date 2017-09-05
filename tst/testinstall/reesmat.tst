@@ -226,5 +226,41 @@ gap> R := ReesZeroMatrixSemigroup(S, [[One(S)]]);
 gap> IsRegularSemigroup(R);
 true
 
+# IsReesZeroMatrixSemigroup: for a semigroup
+gap> IsReesZeroMatrixSemigroup(FullTransformationMonoid(2));
+false
+
+# IsReesZeroMatrixSemigroup: for a Rees matrix subsemigroup with generators, 1
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[(1,2)]]);
+<Rees 0-matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> IsReesZeroMatrixSemigroup(R);
+true
+gap> S := Semigroup(Elements(R));
+<subsemigroup of 1x1 Rees 0-matrix semigroup with 3 generators>
+gap> IsReesZeroMatrixSemigroup(S);
+true
+gap> S := Semigroup(RMSElement(R, 1, (1,2), 1));
+<subsemigroup of 1x1 Rees 0-matrix semigroup with 1 generator>
+gap> IsReesZeroMatrixSemigroup(S);
+false
+gap> S := Semigroup(MultiplicativeZero(R), MultiplicativeZero(R));
+<subsemigroup of 1x1 Rees 0-matrix semigroup with 2 generators>
+gap> IsReesZeroMatrixSemigroup(S);
+false
+
+# IsReesZeroMatrixSemigroup: for a Rees matrix subsemigroup with generators, 1
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[(1,2)]]);
+<Rees 0-matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> S := Semigroup(RMSElement(R, 1, (1,2), 1), MultiplicativeZero(R));
+<subsemigroup of 1x1 Rees 0-matrix semigroup with 2 generators>
+gap> IsReesZeroMatrixSemigroup(S);
+false
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[()]]);
+<Rees 0-matrix semigroup 1x1 over Sym( [ 1 .. 2 ] )>
+gap> S := Semigroup(RMSElement(R, 1, (), 1), MultiplicativeZero(R));
+<subsemigroup of 1x1 Rees 0-matrix semigroup with 2 generators>
+gap> IsReesZeroMatrixSemigroup(S);
+true
+
 #
 gap> STOP_TEST("reesmat.tst");
