@@ -879,11 +879,11 @@ gap> IsomorphismReesZeroMatrixSemigroup(V);;
 
 #over semigroups not groups!
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[,0],[0,0]]);
-Error, the entries of the second argument (a list) must be lists of equal leng\
-th
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), [[0],[0,0]]);
-Error, the entries of the second argument (a list) must be lists of equal leng\
-th
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
 gap> mat:=List([1..3], x-> List([1..4], x->
 > Random(FullTransformationSemigroup(4))));;
 gap> ReesZeroMatrixSemigroup(FullTransformationSemigroup(3), mat);

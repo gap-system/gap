@@ -262,5 +262,22 @@ gap> S := Semigroup(RMSElement(R, 1, (), 1), MultiplicativeZero(R));
 gap> IsReesZeroMatrixSemigroup(S);
 true
 
+# ReesZeroMatrixSemigroup: for a semigroup and a dense list
+gap> ReesZeroMatrixSemigroup(Group(()), []);
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
+gap> ReesZeroMatrixSemigroup(Group(()), [[]]);
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
+gap> ReesZeroMatrixSemigroup(Group(()), [[1, 2], []]);
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
+gap> ReesZeroMatrixSemigroup(Group(()), [[1, 2, 3], [1, 2, 3], [1,, 3]]);
+Error, the second argument must be a non-empty list, whose entries are non-emp\
+ty lists of equal length
+gap> ReesZeroMatrixSemigroup(Group(()), [[1]]);
+Error, the entries of the second argument must be 0 or belong to the first arg\
+ument (a semigroup)
+
 #
 gap> STOP_TEST("reesmat.tst");
