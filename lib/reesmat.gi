@@ -479,6 +479,9 @@ function( R )
        Enumerator(UnderlyingSemigroup(R)), Columns(R), [Matrix(R)]),
     
     NumberElement:=function(enum, x)
+      if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
+        return fail;
+      fi;
       return Position(enum!.enum, [x![1], x![2], x![3], x![4]]);
     end,
     
@@ -507,7 +510,10 @@ function( R )
     
     NumberElement:=function(enum, x)
       local pos;
-      if IsMultiplicativeZero(R, x) then 
+
+      if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
+        return fail;
+      elif IsMultiplicativeZero(R, x) then 
         return 1;
       fi;
       
