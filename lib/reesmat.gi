@@ -77,15 +77,21 @@ end);
 InstallMethod(IsIdempotent, "for a Rees 0-matrix semigroup element",
 [IsReesZeroMatrixSemigroupElement], 
 function(x)
-  local R;
+  local matrix_entry, g;
 
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsGroup(UnderlyingSemigroup(R)) then 
-    # only for RZMS over groups!
-    return x![1]=0 or x![2]^-1=x![4][x![3]][x![1]];
-  else 
-    return x ^ 2 = x;
+  if x![1] = 0 then
+    # <x> is the 0 element of the family
+    return true;
   fi;
+
+  matrix_entry := x![4][x![3]][x![1]];
+
+  if matrix_entry = 0 then
+    return false;
+  fi;
+
+  g := UnderlyingElementOfReesZeroMatrixSemigroupElement(x);
+  return g * matrix_entry * g = g;
 end);
 
 #
