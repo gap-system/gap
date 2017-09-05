@@ -226,6 +226,23 @@ gap> R := ReesZeroMatrixSemigroup(S, [[One(S)]]);
 gap> IsRegularSemigroup(R);
 true
 
+# IsZeroSimpleSemigroup: for a Rees 0-matrix semigroup
+gap> S := Semigroup([Transformation([1, 1]), Transformation([2, 2])]);
+<transformation semigroup of degree 2 with 2 generators>
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, 0, 0], [0, S.1, 0]]);;
+gap> IsZeroSimpleSemigroup(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, S.1, S.1], [0, 0, 0]]);;
+gap> IsZeroSimpleSemigroup(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, 0, S.2], [0, S.1, 0]]);;
+gap> IsZeroSimpleSemigroup(R);
+true
+gap> R := ReesZeroMatrixSemigroup(FullTransformationMonoid(2),
+>                                 [[IdentityTransformation]]);;
+gap> IsZeroSimpleSemigroup(R);
+false
+
 # IsReesZeroMatrixSemigroup: for a semigroup
 gap> IsReesZeroMatrixSemigroup(FullTransformationMonoid(2));
 false
