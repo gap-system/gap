@@ -182,5 +182,24 @@ false
 gap> IsFinite(U);
 true
 
+# IsIdempotent: for a Rees 0-matrix semigroup element, 1
+gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(3), [[(1,2,3), 0]]);
+<Rees 0-matrix semigroup 2x1 over Sym( [ 1 .. 3 ] )>
+gap> IsIdempotent(MultiplicativeZero(R));
+true
+gap> Number(R, IsIdempotent);
+2
+gap> Set(Filtered(R, IsIdempotent));
+[ 0, (1,(1,3,2),1) ]
+
+# IsIdempotent: for a Rees 0-matrix semigroup element, 1
+gap> S := FullTransformationSemigroup(2);
+<full transformation monoid of degree 2>
+gap> R := ReesZeroMatrixSemigroup(S, [[IdentityTransformation, 0]]);
+<Rees 0-matrix semigroup 2x1 over <full transformation monoid of degree 2>>
+gap> x := Filtered(R, IsIdempotent);;
+gap> x = Filtered(R, s -> s * s = s);
+true
+
 #
 gap> STOP_TEST("reesmat.tst");
