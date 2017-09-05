@@ -375,14 +375,14 @@ DeclareAttribute( "BaseDomain", IsMatrixObj );
 
 DeclareAttribute( "NumberRows", IsMatrixObj );
 DeclareAttribute( "NumberColumns", IsMatrixObj );
-DeclareSynonym( "NrRows", NumberRows );
-DeclareSynonym( "NrCols", NumberColumns );
+DeclareSynonymAttr( "NrRows", NumberRows );
+DeclareSynonymAttr( "NrCols", NumberColumns );
 
 # HACK: Length and RowLength were in the old version of MatrixObj. We want
 # to get rid of them, but for now, keep thm to allow the few packages
 # already using this to continue working.
 DeclareAttribute( "Length", IsMatrixObj ); # ????
-DeclareSynonym( "RowLength", NumberColumns );
+DeclareSynonymAttr( "RowLength", NumberColumns );
 
 DeclareAttribute( "DimensionsMat", IsMatrixObj );   # returns [rows,cols]
 
