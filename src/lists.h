@@ -257,6 +257,8 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 */
 static inline Obj ELMV0_LIST(Obj list, Int pos)
 {
+    GAP_ASSERT(pos > 0);
+    GAP_ASSERT(pos <= LEN_LIST(list));
     return (*Elm0vListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
