@@ -90,40 +90,6 @@ end);
 
 #
 
-InstallMethod(IsOne, "for a Rees matrix semigroup element", 
-[IsReesMatrixSemigroupElement],
-function(x)
-  local R;
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsIdempotent(x) then 
-    if Length(Rows(R))=1 and Length(Columns(R))=1 then 
-      return true;
-    else 
-      return ForAll(GeneratorsOfSemigroup(R), y-> x*y=y and y*x=y);
-    fi;
-  fi;
-  return false;
-end);
-
-#
-
-InstallMethod(IsOne, "for a Rees 0-matrix semigroup element", 
-[IsReesZeroMatrixSemigroupElement],
-function(x)
-  local R;
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsIdempotent(x) then 
-    if Length(Rows(R))=1 and Length(Columns(R))=1 then 
-      return true;
-    else 
-      return ForAll(GeneratorsOfSemigroup(R), y-> x*y=y and y*x=y);
-    fi;
-  fi;
-  return false;
-end);
-
-#
-
 InstallTrueMethod(IsRegularSemigroup, 
 IsReesMatrixSemigroup and IsSimpleSemigroup);
 
