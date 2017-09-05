@@ -276,9 +276,10 @@ InstallMethod(ReesZeroMatrixSemigroup, "for a semigroup and a dense list",
 function(S, mat)
   local fam, R, type, x;
 
-  if not ForAll(mat, x -> IsDenseList(x) and Length(x) = Length(mat[1])) then
-    ErrorNoReturn("the entries of the second argument (a list) must be ",
-                  "lists of equal length");
+  if IsEmpty(mat) or not ForAll(mat, x -> IsDenseList(x) and not IsEmpty(x)
+                                          and Length(x) = Length(mat[1])) then
+    ErrorNoReturn("the second argument must be a non-empty list, whose ",
+                  "entries are non-empty lists of equal length");
   fi;
 
   for x in mat do
