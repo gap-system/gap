@@ -33,7 +33,11 @@
 InstallImmediateMethod(IsFinite, IsReesZeroMatrixSubsemigroup, 0,
 function(R)
   if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
-    return ElementsFamily(FamilyObj(R))!.IsFinite;
+    if HasIsWholeFamily(R) and IsWholeFamily(R) then
+      return ElementsFamily(FamilyObj(R))!.IsFinite;
+    elif ElementsFamily(FamilyObj(R))!.IsFinite then
+      return true;
+    fi;
   fi;
   TryNextMethod();
 end);
@@ -41,16 +45,11 @@ end);
 InstallImmediateMethod(IsFinite, IsReesMatrixSubsemigroup, 0,
 function(R)
   if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
-    return ElementsFamily(FamilyObj(R))!.IsFinite;
-  fi;
-  TryNextMethod();
-end);
-
-InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
-[IsReesMatrixSubsemigroup], 
-function(R)
-  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
-    return IsFinite(ParentAttr(R));
+    if HasIsWholeFamily(R) and IsWholeFamily(R) then
+      return ElementsFamily(FamilyObj(R))!.IsFinite;
+    elif ElementsFamily(FamilyObj(R))!.IsFinite then
+      return true;
+    fi;
   fi;
   TryNextMethod();
 end);
@@ -58,8 +57,17 @@ end);
 InstallMethod(IsFinite, "for a Rees 0-matrix subsemigroup",
 [IsReesZeroMatrixSubsemigroup], 
 function(R)
-  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
-    return IsFinite(ParentAttr(R));
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R))then 
+    return true;
+  fi;
+  TryNextMethod();
+end);
+
+InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
+[IsReesMatrixSubsemigroup], 
+function(R)
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R)) then 
+    return true;
   fi;
   TryNextMethod();
 end);
