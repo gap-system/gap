@@ -201,5 +201,30 @@ gap> x := Filtered(R, IsIdempotent);;
 gap> x = Filtered(R, s -> s * s = s);
 true
 
+# IsRegularSemigroup: for a Rees matrix semigroup, 1
+gap> R := ReesMatrixSemigroup(SymmetricGroup(3), [[(1, 3)], [()]]);
+<Rees matrix semigroup 1x2 over Sym( [ 1 .. 3 ] )>
+gap> IsRegularSemigroup(R);
+true
+
+# IsRegularSemigroup: for a Rees 0-matrix semigroup, 1
+gap> S := InverseMonoid(PartialPerm([1]));
+<trivial partial perm group of rank 1 with 1 generator>
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, S.1], [0, 0]]);;
+gap> IsRegularSemigroup(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, 0], [S.1, 0]]);;
+gap> IsRegularSemigroup(R);
+false
+gap> R := ReesZeroMatrixSemigroup(S, [[S.1, 0], [0, S.1]]);;
+gap> IsRegularSemigroup(R);
+true
+gap> S := FullTransformationMonoid(2);
+<full transformation monoid of degree 2>
+gap> R := ReesZeroMatrixSemigroup(S, [[One(S)]]);
+<Rees 0-matrix semigroup 1x1 over <full transformation monoid of degree 2>>
+gap> IsRegularSemigroup(R);
+true
+
 #
 gap> STOP_TEST("reesmat.tst");
