@@ -3198,15 +3198,7 @@ void            IntrAssList ( Int narg )
       ASS2_LIST(list, pos1, pos2, rhs);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST, narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      ASSB_LIST(list, ixs, rhs);
+      SyntaxError("[]:= only supports 1 or 2 indices");
     }
 
     /* push the right hand side again                                      */
@@ -3354,16 +3346,15 @@ void            IntrUnbList ( Int narg )
         UNBB_LIST(list, pos);
       }
     }
-    else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
-      UNBB_LIST(list, ixs);
+
+      UNB2_LIST(list, pos1, pos2);
+    }
+    else {
+      SyntaxError("Unbind[] only supports 1 or 2 indices");
     }
 
     /* push void                                                           */
@@ -3415,15 +3406,8 @@ void            IntrElmList ( Int narg )
       elm = ELM2_LIST(list, pos1, pos2);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      elm = ELMB_LIST(list, ixs);
+      SyntaxError("[] only supports 1 or 2 indices");
+      return;
     }
 
     /* push the element                                                    */
@@ -3557,16 +3541,16 @@ void            IntrIsbList ( Int narg )
         isb = ISBB_LIST( list, pos ) ? True : False;
       }
     }
-    else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
-      isb = ISBB_LIST(list, ixs) ? True: False;
+
+      isb = ISB2_LIST(list, pos1, pos2) ? True : False;
+    }
+    else {
+      SyntaxError("IsBound[] only supports 1 or 2 indices");
+      isb = Fail;
     }
 
     /* push the result                                                     */

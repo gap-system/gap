@@ -595,14 +595,14 @@ DeclareAttribute( "BaseDomain", IsMatrixObj );
 
 DeclareAttribute( "NumberRows", IsMatrixObj );
 DeclareAttribute( "NumberColumns", IsMatrixObj );
-DeclareSynonym( "NrRows", NumberRows );
-DeclareSynonym( "NrCols", NumberColumns );
+DeclareSynonymAttr( "NrRows", NumberRows );
+DeclareSynonymAttr( "NrCols", NumberColumns );
 
 # HACK: Length and RowLength were in the old version of MatrixObj. We want
 # to get rid of them, but for now, keep thm to allow the few packages
 # already using this to continue working.
 DeclareAttribute( "Length", IsMatrixObj ); # ????
-DeclareSynonym( "RowLength", NumberColumns );
+DeclareSynonymAttr( "RowLength", NumberColumns );
 
 
 # WARNING: the following attributes should not be stored if the matrix is mutable...
@@ -741,9 +741,11 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
 ############################################################################
 
 DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
+DeclareOperation( "[]", [IsMatrixObj,IsPosInt,IsPosInt] );
 # second and third arguments are row and column index
 
 DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
+DeclareOperation( "[]:=", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 # second and third arguments are row and column index
 
 

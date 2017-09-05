@@ -129,9 +129,6 @@ extern "C" {
 static Obj ObjInt_UIntInv( UInt i );
 
 
-/* macro for swapping two variables of a given type. Poor man's C++ macro. */
-#define SWAP(T, a, b)          do { T SWAP_TMP = a; a = b; b = SWAP_TMP; } while (0)
-
 /* debugging */
 #ifndef DEBUG_GMP
 #define DEBUG_GMP 0

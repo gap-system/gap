@@ -167,6 +167,29 @@ InstallMethod( \[\],
     return row;
     end );
 
+#############################################################################
+##
+#M  \[\]( <blockmat>, <row>, <col> ) . . . . . . . . . . . for a block matrix
+##
+InstallOtherMethod( \[\],
+    "for an ordinary block matrix and two positive integers",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep, IsPosInt, IsPosInt ],
+    function( blockmat, row, col )
+    local block_row, block_col, block;
+
+    # `n-1 = qr[1] * blockmat!.rpb + qr[2]'.
+    block_row := QuoInt(row - 1, blockmat!.rpb) + 1;
+    block_col := QuoInt(col - 1, blockmat!.cpb) + 1;
+    block := First(blockmat!.blocks, b -> b[1] = block_row and
+                                          b[2] = block_col);
+    if block = fail then
+        return blockmat!.zero;
+    fi;
+    row := row - (block_row - 1) * blockmat!.rpb;
+    col := col - (block_col - 1) * blockmat!.cpb;
+    return block[3][row,col];
+    end );
+
 
 #############################################################################
 ##

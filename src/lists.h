@@ -203,6 +203,8 @@ static inline Int ISB_LIST(Obj list, Int pos)
 
 extern Int ISBB_LIST( Obj list, Obj pos );
 
+extern Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
+
 
 /****************************************************************************
 **
@@ -302,21 +304,13 @@ static inline Obj ELM_LIST(Obj list, Int pos)
 /****************************************************************************
 **
 *F  ELM2_LIST( <list>, <pos1>, <pos2> ) . . . . select an element from a list
+**
+**  'ELM2_LIST' implements 'list[pos1,pos2]', which for lists of lists is
+**  defined as 'list[pos1][pos2]', and for other kind of objects is handled
+**  by method dispatch through the GAP attribute 'ELM_LIST' with three
+**  arguments.
 */
-
-extern Obj Elm2List(Obj list, Obj pos1, Obj pos2);
-
-static inline Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
-{
-    return Elm2List(list, pos1, pos2);
-}
-
-extern void Ass2List(Obj list, Obj pos1, Obj pos2, Obj obj);
-
-static inline void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
-{
-    Ass2List(list, pos1, pos2, obj);
-}
+extern Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
@@ -468,6 +462,8 @@ static inline void UNB_LIST(Obj list, Int pos)
     return (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
+extern void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
+
 
 /****************************************************************************
 **
@@ -497,6 +493,18 @@ static inline void ASS_LIST(Obj list, Int pos, Obj obj)
     GAP_ASSERT(obj != 0);
     (*AssListFuncs[TNUM_OBJ(list)])(list, pos, obj);
 }
+
+
+/****************************************************************************
+**
+*F  ASS2_LIST( <list>, <pos1>, <pos2>, <obj> )
+**
+**  'ASS2_LIST' implements 'list[pos1,pos2]:=obj', which for lists of lists
+**  is defined as 'list[pos1][pos2]:=obj', and for other kind of objects is
+**  handled by method dispatch through the GAP attribute 'ASS_LIST' with
+**  three arguments.
+*/
+extern void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj);
 
 
 /****************************************************************************

@@ -23,6 +23,15 @@ InstallMethod(Zero,
         [IsRectangularTable and IsAdditiveElementWithZeroCollColl and IsInternalRep],
         ZERO_ATTR_MAT);
 
+# Fallback methods for matrix entry access. We lower the rank
+# so that these are only used as a last resort.
+InstallOtherMethod( \[\], [ IsMatrix, IsPosInt, IsPosInt ],
+    -RankFilter(IsMatrix),
+    function (m,i,j) return m[i][j]; end );
+InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsPosInt, IsPosInt, IsObject ],
+    -RankFilter(IsMatrix),
+    function (m,i,j,o) m[i][j]:=o; end );
+
 #############################################################################
 ##
 #F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
@@ -127,17 +136,17 @@ InstallMethod( IsGeneralizedCartanMatrix,
 
     n:= Length( A );
     for i in [ 1 .. n ] do
-      if A[i][i] <> 2 then
+      if A[i,i] <> 2 then
         return false;
       fi;
     od;
     for i in [ 1 .. n ] do
       for j in [ i+1 .. n ] do
-        if not IsInt( A[i][j] ) or not IsInt( A[j][i] )
-           or 0 < A[i][j] or 0 < A[j][i] then
+        if not IsInt( A[i,j] ) or not IsInt( A[j,i] )
+           or 0 < A[i,j] or 0 < A[j,i] then
           return false;
-        elif  ( A[i][j] = 0 and A[j][i] <> 0 )
-           or ( A[j][i] = 0 and A[i][j] <> 0 ) then
+        elif  ( A[i,j] = 0 and A[j,i] <> 0 )
+           or ( A[j,i] = 0 and A[i,j] <> 0 ) then
           return false;
         fi;
       od;
@@ -156,10 +165,10 @@ InstallMethod( IsDiagonalMat,
     function( mat )
    local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1][1]);
+    z:=Zero(mat[1,1]);
     for i  in [ 1 .. Length( mat ) ]  do
         for j  in [ 1 .. Length( mat[i] ) ]  do
-            if mat[i][j] <> z and i <> j  then
+            if mat[i,j] <> z and i <> j  then
                 return false;
             fi;
         od;
@@ -180,10 +189,10 @@ InstallMethod( IsUpperTriangularMat,
     function( mat )
     local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1][1]);
+    z:=Zero(mat[1,1]);
     for i  in [ 1 .. Length( mat ) ]  do
         for j  in [ 1 .. i-1]  do
-            if mat[i][j] <> z  then
+            if mat[i,j] <> z  then
                 return false;
             fi;
         od;
@@ -201,10 +210,10 @@ InstallMethod( IsLowerTriangularMat,
     function( mat )
     local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1][1]);
+    z:=Zero(mat[1,1]);
     for i  in [ 1 .. Length( mat ) ]  do
         for j  in [ i+1 .. Length( mat[i] ) ]  do
-            if mat[i][j] <> z  then
+            if mat[i,j] <> z  then
                 return false;
             fi;
         od;
@@ -222,11 +231,11 @@ InstallGlobalFunction( DiagonalOfMat, function ( mat )
     diag := [];
     i := 1;
     while i <= Length(mat) and i <= Length(mat[1]) do
-        diag[i] := mat[i][i];
+        diag[i] := mat[i,i];
         i := i + 1;
     od;
     while 1 <= Length(mat) and i <= Length(mat[1]) do
-        diag[i] := mat[1][1] - mat[1][1];
+        diag[i] := mat[1,1] - mat[1,1];
         i := i + 1;
     od;
     return diag;
@@ -558,7 +567,7 @@ function( m )
     if Length(m[1]) = 0 then
         TryNextMethod();
     fi;
-    if  IsZmodnZObj(m[1][1]) then
+    if  IsZmodnZObj(m[1,1]) then
       # this case mostly applies to large characteristic, in
       # which the regular code for FFE elements does not work
       # (e.g. it tries to create the range [2..chr], which
@@ -566,12 +575,12 @@ function( m )
       Print("ZmodnZ matrix:\n");
       t:=List(m,i->List(i,i->i![1]));
       Display(t);
-      Print("modulo ",Characteristic(m[1][1]),"\n");
+      Print("modulo ",Characteristic(m[1,1]),"\n");
     else
       # get the degree and characteristic
       deg  := Lcm( List( m, DegreeFFE ) );
-      chr  := Characteristic(m[1][1]);
-      zero := Zero(m[1][1]);
+      chr  := Characteristic(m[1,1]);
+      zero := Zero(m[1,1]);
 
       # if it is a finite prime field,  use integers for display
       if deg = 1  then
@@ -644,7 +653,7 @@ InstallMethod( Display,
     "for matrix over Integers mod n",
     [ IsZmodnZObjNonprimeCollColl and IsMatrix ],
     function( m )
-    Print( "matrix over Integers mod ", Characteristic( m[1][1] ),
+    Print( "matrix over Integers mod ", Characteristic( m[1,1] ),
            ":\n" );
     Display( List( m, i -> List( i, i -> i![1] ) ) );
     end );
@@ -1095,7 +1104,7 @@ InstallMethod( Order, "ordinary matrix of finite field elements", true,
     if Length(mat) <> Length(mat[1]) then
         Error("Order of non-square matrix is not defined");
     fi;
-    o:=Characteristic(mat[1][1])^DegreeFFE(mat[1][1]); # size of field of
+    o:=Characteristic(mat[1,1])^DegreeFFE(mat[1,1]); # size of field of
                                                      # first entry
     o:=QuoInt(Length(mat),o)*5; 
 
@@ -1122,7 +1131,7 @@ InstallMethod( IsZero,
           row;    # loop over rows in 'obj'
 
     ncols:= DimensionsMat( mat )[2];
-    zero:= Zero( mat[1][1] );
+    zero:= Zero( mat[1,1] );
     for row in mat do
       if PositionNot( row, zero ) <= ncols then
         return false;
@@ -1205,10 +1214,10 @@ function( mat )
 
     # find the correct layer of <m>
     dim  := Length(mat);
-    zero := Zero(mat[1][1]);
+    zero := Zero(mat[1,1]);
     for i  in [ 1 .. dim-1 ]  do
         for j  in [ 1 .. dim-i ]  do
-            if mat[j][i+j] <> zero  then
+            if mat[j,i+j] <> zero  then
                 return i;
             fi;
         od;
@@ -1259,7 +1268,7 @@ InstallMethod( DeterminantMatDestructive,
 
     # check that the argument is a square matrix and get the size
     m := Length(mat);
-    zero := Zero(mat[1][1]);
+    zero := Zero(mat[1,1]);
     if m <> Length(mat[1])  then
         Error("DeterminantMat: <mat> must be a square matrix");
     fi;
@@ -1271,7 +1280,7 @@ InstallMethod( DeterminantMatDestructive,
         # find a nonzero entry in this column
         #N  26-Oct-91 martin if <mat> is a rational matrix look for a pivot
         j := i + 1;
-        while j <= m and mat[j][k] = zero  do j := j+1;  od;
+        while j <= m and mat[j,k] = zero  do j := j+1;  od;
 
         # if there is a nonzero entry
         if j <= m  then
@@ -1337,7 +1346,7 @@ function( mat )
     if m = 0 or m <> Length(mat[1])  then
         Error( "<mat> must be a square matrix at least 1x1" );
     fi;
-    zero := Zero(mat[1][1]);
+    zero := Zero(mat[1,1]);
 
     # normalize rows using the inverse
     if IsFFECollColl(mat)  then
@@ -1354,7 +1363,7 @@ function( mat )
 
         # look for a nonzero entry in this column
         j := k;
-        while j <= m and mat[j][k] = zero  do
+        while j <= m and mat[j,k] = zero  do
             j := j+1;
         od;
 
@@ -1469,10 +1478,10 @@ InstallMethod( DeterminantMatDivFree,
         ## initialze the final sum, the vertex set, initial parity
         ## and level indexes
         ##
-        zero := Zero(M[1][1]);
+        zero := Zero(M[1,1]);
         Vs := zero;
         V := [];
-        pmone := (-One(M[1][1]))^((n mod 2)+1);
+        pmone := (-One(M[1,1]))^((n mod 2)+1);
         clevel := 1; nlevel := 2;
 
         ##  Vertices are indexed [u,v,i] holding the (partial) monomials
@@ -1615,11 +1624,11 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   addcol:=function(a,b,m)
   local i;
     for i in [1..l] do
-      M[i][a]:=M[i][a]+m*M[i][b];
+      M[i,a]:=M[i,a]+m*M[i,b];
     od;
     if transform then
       for i in [1..n] do
-        right[i][a]:=right[i][a]+m*right[i][b];
+        right[i,a]:=right[i,a]+m*right[i,b];
       od;
     fi;
   end;
@@ -1637,11 +1646,11 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   multcol:=function(a,m)
   local i;
     for i in [1..l] do
-      M[i][a]:=M[i][a]*m;
+      M[i,a]:=M[i,a]*m;
     od;
     if transform then
       for i in [1..n] do
-        right[i][a]:=right[i][a]*m;
+        right[i,a]:=right[i,a]*m;
       od;
     fi;
   end;
@@ -1664,9 +1673,9 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
       for i in [start+1..n] do
         a:=i;
         b:=start;
-        if not IsZero(M[start][b]) then
+        if not IsZero(M[start,b]) then
           repeat
-            qr:=QuotientRemainder(R,M[start][a],M[start][b]);
+            qr:=QuotientRemainder(R,M[start,a],M[start,b]);
             addcol(a,b,-qr[1]);
             c:=a;a:=b;b:=c;
           until IsZero(qr[2]);
@@ -1676,7 +1685,7 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
         fi;
 
         # normalize
-        qr:=StandardAssociateUnit(R,M[start][start]);
+        qr:=StandardAssociateUnit(R,M[start,start]);
         multcol(start,qr);
 
       od;
@@ -1684,9 +1693,9 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
       for i in [start+1..l] do
         a:=i;
         b:=start;
-        if not IsZero(M[b][start]) then
+        if not IsZero(M[b,start]) then
           repeat
-            qr:=QuotientRemainder(R,M[a][start],M[b][start]);
+            qr:=QuotientRemainder(R,M[a,start],M[b,start]);
             addrow(a,b,-qr[1]);
             c:=a;a:=b;b:=c;
           until IsZero(qr[2]);
@@ -1695,11 +1704,11 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
           fi;
         fi;
 
-        qr:=StandardAssociateUnit(R,M[start][start]);
+        qr:=StandardAssociateUnit(R,M[start,start]);
         multrow(start,qr);
 
       od;
-    until ForAll([start+1..n],i->IsZero(M[start][i]));
+    until ForAll([start+1..n],i->IsZero(M[start,i]));
   end;
 
   start:=1;
@@ -1712,8 +1721,8 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
 
     for i in [start..l] do
       for j in [start..n] do
-        if not IsZero(M[i][j]) then
-          ed:=EuclideanDegree(R,M[i][j]);
+        if not IsZero(M[i,j]) then
+          ed:=EuclideanDegree(R,M[i,j]);
           if ed<d then
             d:=ed;
             posi:=i;
@@ -1739,7 +1748,7 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
           #make sure the pivot also divides the rest
           for i in [start+1..l] do
             for j in [start+1..n] do
-              if Quotient(M[i][j],M[start][start])=fail then
+              if Quotient(M[i,j],M[start,start])=fail then
                 alldivide:=false;
                 # do gcd
                 addrow(start,i,One(R));
@@ -1752,7 +1761,7 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
       fi;
 
       # normalize
-      qr:=StandardAssociateUnit(R,M[start][start]);
+      qr:=StandardAssociateUnit(R,M[start,start]);
       multcol(start,qr);
 
     fi;
@@ -1922,11 +1931,11 @@ InstallOtherMethod( MutableTransposedMat,
           if IsBound(t[i]) then
               if IsList(t[i]) then
                   for j in [1..Length(t[i])] do
-                      if IsBound(t[i][j]) then
+                      if IsBound(t[i,j]) then
                           if not IsBound(res[j]) then
                               res[j] := [];
                           fi;
-                          res[j][i] := t[i][j];
+                          res[j,i] := t[i,j];
                       fi;
                   od;
               else
@@ -1963,9 +1972,9 @@ InstallMethod( MutableTransposedMatDestructive,
     # swap the entries in the "square part" of the matrix.
     for i in [1..min] do
         for j in [i+1..min] do
-            store:= mat[i][j];
-            mat[i][j]:= mat[j][i];
-            mat[j][i]:= store;
+            store:= mat[i,j];
+            mat[i,j]:= mat[j,i];
+            mat[j,i]:= store;
         od;
     od;
 
@@ -1975,7 +1984,7 @@ InstallMethod( MutableTransposedMatDestructive,
         for i in [1..n-m] do
             store:= [ ];
             for j in [1..m] do
-                store[j]:= mat[j][m+i];
+                store[j]:= mat[j,m+i];
                 Unbind( mat[j][m+i] );
             od;
             Add( mat, store );
@@ -1988,7 +1997,7 @@ InstallMethod( MutableTransposedMatDestructive,
     if m > n then
         for i in [n+1..m] do
             for j in [1..n] do
-                mat[j][i]:= mat[i][j];
+                mat[j,i]:= mat[i,j];
             od;
             Unbind( mat[i] );
         od;
@@ -2038,15 +2047,15 @@ InstallMethod( TriangulizedNullspaceMatNT,
     TriangulizeMat( mat );
     m := Length(mat);
     n := Length(mat[1]);
-    zero := Zero( mat[1][1] );
-    one  := One( mat[1][1] );
+    zero := Zero( mat[1,1] );
+    one  := One( mat[1,1] );
     min := Minimum( m, n );
 
     # insert empty rows to bring the leading term of each row on the diagonal
     empty := 0*mat[1];
     i := 1;
     while i <= Length(mat)  do
-        if i < n  and mat[i][i] = zero  then
+        if i < n  and mat[i,i] = zero  then
             for k in Reversed([i..Minimum(Length(mat),n-1)])  do
                 mat[k+1] := mat[k];
             od;
@@ -2063,9 +2072,9 @@ InstallMethod( TriangulizedNullspaceMatNT,
     # by replacing this 0 by a -1, in  this  example  [2,-1,0,0], [2,0,3,-1].
     nullspace := [];
     for k  in Reversed([1..n]) do
-        if mat[k][k] = zero  then
+        if mat[k,k] = zero  then
             row := [];
-            for i  in [1..k-1]  do row[n-i+1] := -mat[i][k];  od;
+            for i  in [1..k-1]  do row[n-i+1] := -mat[i,k];  od;
             row[n-k+1] := one;
             for i  in [k+1..n]  do row[n-i+1] := zero;  od;
             ConvertToVectorRepNC( row );
@@ -2223,7 +2232,7 @@ InstallMethod( SemiEchelonMatDestructive,
     nrows:= Length( mat );
     ncols:= Length( mat[1] );
 
-    zero:= Zero( mat[1][1] );
+    zero:= Zero( mat[1,1] );
 
     heads:= ListWithIdenticalEntries( ncols, 0 );
     nzheads := [];
@@ -2317,7 +2326,7 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
     
     f := DefaultFieldOfMatrix(mat);
     if f = fail then
-        f := mat[1][1];
+        f := mat[1,1];
     fi;
     zero := Zero(f);
     
@@ -2390,7 +2399,7 @@ InstallGlobalFunction( SemiEchelonMatsNoCo, function( mats )
           scalar,
           x;
 
-    zero:= Zero( mats[1][1][1] );
+    zero:= Zero( mats[1][1,1] );
     m:= Length( mats[1]    );
     n:= Length( mats[1][1] );
 
@@ -2404,10 +2413,10 @@ InstallGlobalFunction( SemiEchelonMatsNoCo, function( mats )
       # Reduce the matrix modulo 'ech'.
       for i in [ 1 .. m ] do
         for j in [ 1 .. n ] do
-          if heads[i][j] <> 0 and mat[i][j] <> zero then
+          if heads[i][j] <> 0 and mat[i,j] <> zero then
 
-            # Compute 'mat:= mat - mat[i][j] * vectors[ heads[i][j] ];'
-            scalar:= - mat[i][j];
+            # Compute 'mat:= mat - mat[i,j] * vectors[ heads[i][j] ];'
+            scalar:= - mat[i,j];
             v:= vectors[ heads[i][j] ];
             for k in [ 1 .. m ] do
               AddRowVector( mat[k], v[k], scalar );
@@ -2428,14 +2437,14 @@ InstallGlobalFunction( SemiEchelonMatsNoCo, function( mats )
       if j <= n then
 
         # We found a new basis vector.
-        mij:= mat[i][j];
+        mij:= mat[i,j];
         for k in [ 1 .. m ] do
           for l in [ 1 .. n ] do
             x:= Inverse( mij );
             if x = fail then
               TryNextMethod();
             fi;
-            mat[k][l]:= mat[k][l] * x;
+            mat[k,l]:= mat[k,l] * x;
           od;
         od;
 
@@ -2512,7 +2521,7 @@ InstallMethod( IsMonomialMatrix,
           row,   # loop over rows
           j;     # position of first non-zero element
 
-    zero:= Zero(M[1][1]);
+    zero:= Zero(M[1,1]);
     len:= Length( M[1] );
     if Length( M ) <> len  then
         return false;
@@ -2558,7 +2567,7 @@ function( mat, m )
     for i  in [ 1 .. n ]  do
 
         pj := 1;
-        while MM[i][pj] = 0  do
+        while MM[i,pj] = 0  do
             pj := pj + 1;
             if pj > n then
               # <mat> is not invertible mod <m>
@@ -2566,14 +2575,14 @@ function( mat, m )
             fi;
         od;
         perm[pj] := i;
-        elem   := MM[i][pj];
+        elem   := MM[i,pj];
         MM[i]  := List( MM[i],  x -> (x/elem) mod m );
         inv[i] := List( inv[i], x -> (x/elem) mod m );
 
         liste  := [ 1 .. i-1 ];
         Append( liste, [i+1..n] );
         for l in liste do
-            elem   := MM[l][pj];
+            elem   := MM[l,pj];
             MM[l]  := MM[l] - MM[i] * elem;
             MM[l]  := List( MM[l], x -> x mod m );
             inv[l] := inv[l] - inv[i] * elem;
@@ -2653,7 +2662,7 @@ InstallMethod( SolutionMatDestructive,
         function( mat, vec )
     local i,ncols,sem, vno, z,x, row, sol;
     ncols := Length(vec);
-    z := Zero(mat[1][1]);
+    z := Zero(mat[1,1]);
     sol := ListWithIdenticalEntries(Length(mat),z);
     ConvertToVectorRepNC(sol);
     if ncols <> Length(mat[1]) then
@@ -2690,7 +2699,7 @@ end);
 #    vec  := ShallowCopy( vec );
 #    l    := Length( mat );
 #    r    := 0;
-#    zero := Zero( mat[1][1] );
+#    zero := Zero( mat[1,1] );
 #    Info( InfoMatrix, 1, "SolutionMat called" );
 #
 #    # Run through all columns of the matrix.
@@ -2699,7 +2708,7 @@ end);
 #
 #        # Find a nonzero entry in this column.
 #        s := r + 1;
-#        while s <= l and mat[ s ][ c ] = zero  do s := s + 1;  od;
+#        while s <= l and mat[ s , c ] = zero  do s := s + 1;  od;
 #
 #        # If there is a nonzero entry,
 #        if s <= l  then
@@ -2709,14 +2718,14 @@ end);
 #            r := r + 1;
 #
 #            # Make its row the current row and normalize it.
-#            tmp := mat[ s ][ c ] ^ -1;
+#            tmp := mat[ s , c ] ^ -1;
 #            v := mat[ s ];  mat[ s ] := mat[ r ];  mat[ r ] := tmp * v;
 #            v := vec[ s ];  vec[ s ] := vec[ r ];  vec[ r ] := tmp * v;
 #
 #            # Clear all entries in this column.
 #            for s  in [ 1 .. Length( mat ) ]  do
-#                if s <> r and mat[ s ][ c ] <> zero  then
-#                    tmp := mat[ s ][ c ];
+#                if s <> r and mat[ s , c ] <> zero  then
+#                    tmp := mat[ s , c ];
 #                    mat[ s ] := mat[ s ] - tmp * mat[ r ];
 #                    vec[ s ] := vec[ s ] - tmp * vec[ r ];
 #                fi;
@@ -2731,11 +2740,11 @@ end);
 #    od;
 #    h := [];
 #    s := Length( mat[ 1 ] );
-#    v := Zero( mat[ 1 ][ 1 ] );
+#    v := Zero( mat[ 1 , 1 ] );
 #    r := 1;
 #    c := 1;
 #    while c <= s and r <= l  do
-#        while c <= s and mat[ r ][ c ] = zero  do
+#        while c <= s and mat[ r , c ] = zero  do
 #            c := c + 1;
 #            Add( h, v );
 #        od;
@@ -2801,7 +2810,7 @@ function( M1, M2 )
       return [ M1, M2 ];
     elif Length( M1[1] ) <> Length( M2[1] ) then
       Error( "dimensions of matrices are not compatible" );
-    elif Zero( M1[1][1] ) <> Zero( M2[1][1] ) then
+    elif Zero( M1[1,1] ) <> Zero( M2[1,1] ) then
       Error( "fields of matrices are not compatible" );
     fi;
 
@@ -2867,7 +2876,7 @@ InstallMethod( TriangulizeMat,
        # get the size of the matrix
        m := Length(mat);
        n := Length(mat[1]);
-       zero := Zero( mat[1][1] );
+       zero := Zero( mat[1,1] );
 
        # make sure that the rows are mutable
        for i in [ 1 .. m ] do
@@ -2882,7 +2891,7 @@ InstallMethod( TriangulizeMat,
 
            # find a nonzero entry in this column
            j := i + 1;
-           while j <= m and mat[j][k] = zero  do j := j + 1;  od;
+           while j <= m and mat[j,k] = zero  do j := j + 1;  od;
 
            # if there is a nonzero entry
            if j <= m  then
@@ -2956,7 +2965,7 @@ function( mat, l )
 
     # run through the diagonal
     for i  in [ 1 .. dim-l ]  do
-        Add( exp, mat[i][l+i] );
+        Add( exp, mat[i,l+i] );
     od;
 
     # and return
@@ -3033,7 +3042,7 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   while Length(b)<l do
     stop:=false;
     repeat
-      if j<=dim and (Length(mat)<i or mat[i][j]=z) then
+      if j<=dim and (Length(mat)<i or mat[i,j]=z) then
         # Add vector from bas with j-th component not zero (if any exists)
         v:=PositionProperty(bas,k->k[j]<>z);
         if v<>fail then
@@ -3072,7 +3081,7 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   od;
   # add subspace indices
   while i<=Length(mat) do
-    if mat[i][j]<>z then
+    if mat[i,j]<>z then
       h[j]:=-i;
       i:=i+1;
     fi;
@@ -3180,7 +3189,7 @@ InstallGlobalFunction( IdentityMat, function ( arg )
     id := [];
     for i  in [1..m]  do
         id[i] := ShallowCopy( row );
-        id[i][i] := one;
+        id[i,i] := one;
     od;
 
     # We do *not* call ConvertToMatrixRep here, as that can cause
@@ -3296,8 +3305,8 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
                     #new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
                     new:=ShallowCopy(e);
                     for k in ran do
-                      #new[k]:=new[k]+pex * IntFFE(o*elem[j][k]+ sol[k]);
-                      new[k]:=new[k]+pex * ((elem[j][k]+ sol[k]) mod p);
+                      #new[k]:=new[k]+pex * IntFFE(o*elem[j,k]+ sol[k]);
+                      new[k]:=new[k]+pex * ((elem[j,k]+ sol[k]) mod p);
                     od;
 #T !
                     MakeImmutable(new); # otherwise newelem does not remember
@@ -3341,7 +3350,7 @@ InstallGlobalFunction (BasisNullspaceModN, function (M, n)
     null := IdentityMat (Length (M));
     
     for i in [1..snf.rank] do
-        null[i][i] := n/GcdInt (n, snf.normal[i][i]);
+        null[i,i] := n/GcdInt (n, snf.normal[i,i]);
     od;
     
     # nullM = null*R is the nullspace of M C mod n
@@ -3381,7 +3390,7 @@ InstallGlobalFunction( PermutationMat, function( arg )
     mat:= NullMat( dim, dim, F );
 
     for i in [ 1 .. dim ] do
-        mat[i][ i^perm ]:= One( F );
+        mat[i, i^perm ]:= One( F );
     od;
 
     return mat;
@@ -3403,7 +3412,7 @@ InstallGlobalFunction( DiagonalMat, function( vector )
 
     for i in [ 1 .. Length( vector ) ] do
       M[i]:= ShallowCopy( zerovec );
-      M[i][i]:= vector[i];
+      M[i,i]:= vector[i];
       ConvertToVectorRepNC(M[i]);
     od;
 
@@ -3616,9 +3625,10 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         for i  in [1..m]  do
-            v := mat[i][k];  w := mat[i][l];
-            mat[i][k] := gcd.coeff1 * v + gcd.coeff2 * w;
-            mat[i][l] := gcd.coeff3 * v + gcd.coeff4 * w;
+            v := mat[i,k];  w := mat[i,l];
+            mat[i,k] := gcd.coeff1 * v + gcd.coeff2 * w;
+            mat[i,l] := gcd.coeff3 * v + gcd.coeff4 * w;
+            ConvertToVectorRepNC( mat[i] );
         od;
 
     od;
@@ -3680,7 +3690,7 @@ InstallGlobalFunction( SimultaneousEigenvalues,
 
     # compute ksi
     if Length( arg ) = 2 then
-        q := Characteristic( matlist[1][1][1] );
+        q := Characteristic( matlist[1][1,1] );
 
         # get splitting field
         r := 1;
@@ -3768,7 +3778,7 @@ InstallGlobalFunction( DirectSumMat, function (arg)
       m:= arg[r]; r:=r+1;
     od;
     if m <> [ ] then
-      F:= DefaultField( m[1][1] );
+      F:= DefaultField( m[1,1] );
     else
       F:= Rationals;
     fi;
@@ -3799,9 +3809,9 @@ InstallMethod( TraceMat, "method for lists", [ IsList ],
     fi;
 
     # sum all the diagonal entries
-    trc := mat[1][1];
+    trc := mat[1,1];
     for i  in [2..m]  do
-        trc := trc + mat[i][i];
+        trc := trc + mat[i,i];
     od;
 
     # return the trace
@@ -3922,7 +3932,7 @@ local i,j,k,fg,f;
   if Length(l)=0 or ForAny(l,i->not IsMatrix(i)) then
     Error("<l> must be a list of matrices");
   fi;
-  fg:=[l[1][1][1]];
+  fg:=[l[1][1,1]];
   f:=Field(fg);
   for i in l do
     for j in i do
@@ -3949,7 +3959,7 @@ local i,j,k,fg,f;
   if Length(l)=0 or ForAny(l,i->not IsMatrix(i)) then
     Error("<l> must be a list of matrices");
   fi;
-  fg:=[l[1][1][1]];
+  fg:=[l[1][1,1]];
   if Characteristic(fg)=0 then
     f:=DefaultField(fg);
   else
@@ -4106,7 +4116,7 @@ local M, n, p, vars, slackVars, i, id, bestMove,
   Val:=function(M,vars,slackVars,len,x) 
       if x in vars then 
           return 0; 
-      else return M[Position(slackVars,x)+1][len]; 
+      else return M[Position(slackVars,x)+1,len]; 
       fi; 
   end;
 
@@ -4146,8 +4156,8 @@ local M, n, p, vars, slackVars, i, id, bestMove,
    TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
    #Display(M);
    #bestMove is the coeff var that will become nonzero
-   bestMove:=Minimum(List(vars,i->M[1][i]));
-   newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+   bestMove:=Minimum(List(vars,i->M[1,i]));
+   newNonzero:=vars[Position(List(vars,i->M[1,i]),bestMove)];
    
    #Print(newNonzero, " is the new nonzero guy \n");
    
@@ -4155,8 +4165,8 @@ local M, n, p, vars, slackVars, i, id, bestMove,
         
        #see if figure is unbounded
        #Print("about to do some ratios \n");
-       #Print(List([1..p],x-> M[x+1][newNonzero]), " is what we're going to divide by \n");
-       ratios:=List([1..p], function(x) if M[x+1][newNonzero]=0 then return infinity; else return M[x+1][len]/M[x+1][newNonzero]; fi; end);
+       #Print(List([1..p],x-> M[x+1,newNonzero]), " is what we're going to divide by \n");
+       ratios:=List([1..p], function(x) if M[x+1,newNonzero]=0 then return infinity; else return M[x+1,len]/M[x+1,newNonzero]; fi; end);
        #Print("done doing some ratios");
        positiveRatios:=Filtered(ratios,x -> x>0);
        if Size(positiveRatios)=0 then return "Feasible region unbounded!"; fi;
@@ -4181,9 +4191,9 @@ local M, n, p, vars, slackVars, i, id, bestMove,
 
        TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
        #Display(M);
-       bestMove:=Minimum(List(vars,i->M[1][i]));
+       bestMove:=Minimum(List(vars,i->M[1,i]));
        
-       newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+       newNonzero:=vars[Position(List(vars,i->M[1,i]),bestMove)];
        #Print(newNonzero," is the new nonzero guy");
 
    od;
@@ -4296,13 +4306,13 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     fi;
     i := i-1;
     for j in [1..Length(mat)] do
-      val[j][j] := val[j][j]+c[i];
+      val[j,j] := val[j,j]+c[i];
     od;
     while 1 < i  do
       val := mat * val;
       i := i - 1;
       for j in [1..Length(mat)] do
-        val[j][j] := val[j][j]+c[i];
+        val[j,j] := val[j,j]+c[i];
       od;
     od;
     if 0 <> f[2]  then
