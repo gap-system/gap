@@ -550,7 +550,7 @@ gap> f[3];
 gap> f[2]=x;
 true
 gap> f[4];
-Error, the second argument must equal 1, 2, or 3
+Error, the second argument must be 1, 2, or 3
 
 # more general tests
 gap> mat:=[ [ 0, 0, 0, (), (), (), () ], [ 0, (), (), 0, 0, (), () ], 

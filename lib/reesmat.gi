@@ -742,7 +742,12 @@ x-> x![1]);
 
 InstallMethod(RowOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![1]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![1];
+end);
 
 #
 
@@ -754,7 +759,12 @@ x-> x![2]);
 
 InstallMethod(UnderlyingElementOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![2]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![2];
+end);
 
 #
 
@@ -766,7 +776,12 @@ x-> x![3]);
 
 InstallMethod(ColumnOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![3]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![3];
+end);
 
 #
 
@@ -819,7 +834,7 @@ InstallMethod(ELM_LIST, "for a Rees matrix semigroup element",
 [IsReesMatrixSemigroupElement, IsPosInt], 
 function(x, i)
   if i > 3 then 
-    ErrorNoReturn("the second argument must equal 1, 2, or 3");
+    ErrorNoReturn("the second argument must be 1, 2, or 3");
   fi;
   return x![i];
 end);
