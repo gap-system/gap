@@ -157,7 +157,7 @@ end);
 BIND_GLOBAL("AtomicIncorporateObj", IncorporateObj);
 
 BIND_GLOBAL("CopyFromRegion", ID_FUNC);
-BIND_GLOBAL("CopyToRegion", ID_FUNC);
+BIND_GLOBAL("CopyToRegion", {x,y} -> x);
 
 
 ###########################
