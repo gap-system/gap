@@ -16,6 +16,7 @@ ReadLib( "methsel2.g"  );
 ReadLib( "random.g"    );
 ReadLib( "function.g"  );
 
+ReadLib( "cache.gd"    );
 ReadLib( "object.gd"   );
 
 ReadLib( "variable.g"  );
@@ -35,6 +36,7 @@ ReadLib( "set.gd"      );
 
 ReadLib( "record.gd"   );
 
+ReadLib( "cache.gi"    );
 ReadLib( "coll.gi"     );
 ReadLib( "queue.g"     );
 
