@@ -46,6 +46,22 @@ gap> PositionBound( [ ,,,, 1 ] );
 5
 gap> PositionBound( [] );
 fail
+gap> PositionNot( [ 2, 1 ], 1 );
+1
+gap> PositionNot( [ 1, 2 ], 1 );
+2
+gap> PositionNot( [ 1, 1 ], 1 );
+3
+gap> PositionNot( [ 1, 1 ], 1, 3 );
+4
+gap> PositionNonZero( [ 1, 1 ] );
+1
+gap> PositionNonZero( [ 0, 1 ] );
+2
+gap> PositionNonZero( [ 0, 0 ] );
+3
+gap> PositionNonZero( [ 0, 0 ], 3 );
+4
 gap> l:= [ 1 .. 10 ];;
 gap> SortParallel( [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ], l );
 gap> l;
