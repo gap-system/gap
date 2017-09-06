@@ -17,10 +17,6 @@
 ##  by their family.)
 ##
 
-atomic readwrite CYCLOTOMIC_FIELDS do
-  CYCLOTOMIC_FIELDS[1]:=Rationals;
-  CYCLOTOMIC_FIELDS[4]:=GaussianRationals;
-od;
 
 #############################################################################
 ##
@@ -32,7 +28,7 @@ od;
 ##  to call this function instead of constructing generators and calling
 ##  `FieldByGenerators', which would mean to construct <N> and <stab> again.
 ##
-BindGlobal( "AbelianNumberFieldByReducedGaloisStabilizerInfo",
+InstallGlobalFunction( AbelianNumberFieldByReducedGaloisStabilizerInfo,
     function( F, N, stab )
 
     local D, d;
@@ -103,12 +99,9 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
     # The subfield is given by `Rationals' denoting the prime field.
     if subfield = Rationals then
 
-      # The standard field is required.  Look whether it is already stored
-      atomic readonly CYCLOTOMIC_FIELDS do
-      	if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
-        	return CYCLOTOMIC_FIELDS[ xtension ];	
-        fi;
-      od;
+      # The standard field is required.  Look whether it is already stored.
+      # If not, generate it and return it
+      return CYCLOTOMIC_FIELDS( xtension );
 
     elif IsAbelianNumberField( subfield ) then
 
@@ -124,19 +117,10 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
     F:= AbelianNumberFieldByReducedGaloisStabilizerInfo( subfield,
             xtension, [ 1 ] );
 
-    # If the standard field was constructed, store it.
-    if subfield = Rationals then
-    	atomic readwrite CYCLOTOMIC_FIELDS do
-    		if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
-        		return CYCLOTOMIC_FIELDS[ xtension ];	
-        	fi;
-        	CYCLOTOMIC_FIELDS[ xtension ]:= F;
-        od;
-    fi;
-
     # Return the field.
     return F;
 end );
+
 
 #############################################################################
 ##
