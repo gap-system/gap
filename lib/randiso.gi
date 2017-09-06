@@ -240,6 +240,9 @@ InstallGlobalFunction( CodePcgs, function( pcgs )
 
     # basic structures
     l := Length( pcgs );
+    if l = 0 then
+      return 0;
+    fi;
     indices := RelativeOrders( pcgs );
     mi := Maximum( indices ) - 1;
     code := 0;
