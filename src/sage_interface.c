@@ -283,7 +283,7 @@ Obj libgap_NewPList(UInt cap)
 }
 
 UInt libgap_GrowPList(Obj list, UInt cap)
-{ return GROW_PLIST(list,  cap); }
+{ GROW_PLIST(list,  cap); }
 
 void libgap_ShrinkPList(Obj list, UInt cap)
 { return SHRINK_PLIST(list, cap); }
