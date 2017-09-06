@@ -499,7 +499,7 @@ InstallMethod( \{\},
   function(vec,pos)
     local vec_list;
     vec_list := ListOp(vec);
-    vec_list := vec_list{[pos]};
+    vec_list := vec_list{pos};
     return Vector(vec_list,vec);
 end );
 
