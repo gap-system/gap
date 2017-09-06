@@ -35,6 +35,12 @@ Tasks for MatrixObj
 
 - Provide further kinds of vectors/matrices.
 
+- Decide and document what `ShallowCopy` should do for IsVectorObj 
+  and IsMatrixObj objects. 
+  Idea: For IsVectorObj define and document similar behaviour as for
+  plain lists. For IsMatrixObj document it explicitly as undefined
+  (but some implementations may provide a method); suggest to use
+  `MutableCopyMat` for IsMatrixObj objects.
 
 
 Additional notes by Max
