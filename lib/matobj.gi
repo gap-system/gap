@@ -496,10 +496,10 @@ InstallMethod( Unpack,
 InstallMethod( \{\},
   "generic method for a vector object and a list",
   [ IsVectorObj, IsList ],
-  function(vec,pos)
+  function(vec,poss)
     local vec_list;
     vec_list := ListOp(vec);
-    vec_list := vec_list{pos};
+    vec_list := vec_list{poss};
     return Vector(vec_list,vec);
 end );
 
