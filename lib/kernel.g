@@ -168,8 +168,11 @@ POSITION_NOT := function( arg )
                 return i;
             fi;
         od;
-        return LENGTH(arg[1]) + 1;
-
+        if LENGTH( arg[1] ) <= arg[3] then
+          return arg[3] + 1;
+        else
+          return LENGTH(arg[1]) + 1;
+        fi;
     else
       Error( "usage: PositionNot( <list>, <val>[, <from>] )" );
     fi;
