@@ -554,3 +554,9 @@ InstallOtherMethod( NumberRows, "for a plist matrix",
   [ IsMatrix ], Length);
 InstallOtherMethod( NumberColumns, "for a plist matrix",
   [ IsMatrix ], m -> Length(m[1]) );
+
+#
+# Compatibility code: Generic methods for IsMatrixObj
+#
+InstallOtherMethod( DimensionsMat, "for a matrix in IsMatrixObj",
+  [ IsMatrixObj ], m -> [ NumberRows( m ), NumberColumns( m ) ] );
