@@ -438,7 +438,6 @@ AC_SUBST([COMPAT_MODE], [$enable_compat_mode])
 AS_IF([test "x$enable_compat_mode" = xyes],
     [
     AC_CONFIG_FILES([bin/gap.sh:cnf/compat/gap.sh.in], [chmod +x bin/gap.sh])
-    AC_CONFIG_FILES([sysinfo.gap:cnf/compat/sysinfo.gap.in])
     AS_IF([test x$BUILD_GMP = xyes],[
       AC_CONFIG_FILES([bin/$GAPARCH/extern/gmp/include/gmp.h:cnf/compat/gmp.h.in])
     ])
