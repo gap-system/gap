@@ -24,6 +24,9 @@ ADDGUARDS2 = @ADDGUARDS2@
 # garbage collector source files
 GC_SOURCES = @GC_SOURCES@
 
+# Dynamic library
+BUILD_LIBGAP = @BUILD_LIBGAP@
+
 # compatibility mode
 COMPAT_MODE = @COMPAT_MODE@
 GAPARCH = @GAPARCH@
