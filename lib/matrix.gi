@@ -534,7 +534,7 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
                         piv := j;
                         repeat
                             AddRowVector(w,base[piv],-w[piv], piv, n);
-                            piv := PositionNot(w, zero, piv);
+                            piv := PositionNonZero(w, piv);
                         until piv > n or not IsBound(base[piv]);
                         if piv <= n then
                             MultRowVector(w,Inverse(w[piv]));
@@ -1127,13 +1127,11 @@ InstallMethod( IsZero,
     [ IsMatrix ],
     function( mat )
     local ncols,  # number of columns
-          zero,   # zero coefficient
           row;    # loop over rows in 'obj'
 
     ncols:= DimensionsMat( mat )[2];
-    zero:= Zero( mat[1,1] );
     for row in mat do
-      if PositionNot( row, zero ) <= ncols then
+      if PositionNonZero( row ) <= ncols then
         return false;
       fi;
     od;
@@ -1201,6 +1199,51 @@ function( mat )
     od;
     return CF( deg );
 end );
+
+
+#############################################################################
+##
+#M  BaseDomain( <v> )
+#M  OneOfBaseDomain( <v> )
+#M  ZeroOfBaseDomain( <v> )
+#M  BaseDomain( <mat> )
+#M  OneOfBaseDomain( <mat> )
+#M  ZeroOfBaseDomain( <mat> )
+##
+##  Note that a matrix that is a plain list is necessarily nonempty
+##  and dense, hence it is safe to access the first row.
+##  Since the rows are homogeneous and nonempty,
+##  one can also access the first entry in the first row.
+##
+InstallMethod( BaseDomain,
+    "generic method for a row vector",
+    [ IsRowVector ],
+    DefaultRing );
+
+InstallOtherMethod( OneOfBaseDomain,
+    "generic method for a row vector",
+    [ IsRowVector ],
+    v -> One( v[1] ) );
+
+InstallOtherMethod( ZeroOfBaseDomain,
+    "generic method for a row vector",
+    [ IsRowVector ],
+    v -> Zero( v[1] ) );
+
+InstallMethod( BaseDomain,
+    "generic method for a matrix that is a plain list",
+    [ IsMatrix and IsPlistRep ],
+    mat -> BaseDomain( mat[1] ) );
+
+InstallOtherMethod( OneOfBaseDomain,
+    "generic method for a matrix that is a plain list",
+    [ IsMatrix and IsPlistRep ],
+    mat -> One( mat[1,1] ) );
+
+InstallOtherMethod( ZeroOfBaseDomain,
+    "generic method for a matrix that is a plain list",
+    [ IsMatrix and IsPlistRep ],
+    mat -> Zero( mat[1,1] ) );
 
 
 #############################################################################
@@ -1470,18 +1513,19 @@ InstallMethod( DeterminantMatDivFree,
               V;         ## graph
 
         # check that the argument is a square matrix and set the size
-        n := Length(M);
-        if not n = Length(M[1]) or not IsRectangularTable(M)  then
+        n := NumberRows( M );
+        if not n = NumberColumns( M ) or not IsRectangularTable(M)  then
             Error("DeterminantMatDivFree: <mat> must be a square matrix");
         fi;
 
         ## initialze the final sum, the vertex set, initial parity
         ## and level indexes
         ##
-        zero := Zero(M[1,1]);
+        zero := ZeroOfBaseDomain( M );
         Vs := zero;
         V := [];
-        pmone := (-One(M[1,1]))^((n mod 2)+1);
+        pmone := (-OneOfBaseDomain( M ))^((n mod 2)+1);
+#T better if/else
         clevel := 1; nlevel := 2;
 
         ##  Vertices are indexed [u,v,i] holding the (partial) monomials
@@ -1517,14 +1561,17 @@ InstallMethod( DeterminantMatDivFree,
             for u in [1..i+2] do  ## <---- pruning of vertices
                 for v in [u..n] do         ## (maintains the prefix property)
                     for w in [u+1..n] do
+#T for b in [ n-u, n-u-1 .. 1 ] do
 
                         ## translate indices to lower triangluar coordinates
                         ##
                         a := n-u+1; b := n-w+1; c := n-v+1;
+#T move a to for u ...
+#T move c to for v ...
                         V[a][b][nlevel]:= V[a][b][nlevel]+
-                            V[a][c][clevel]*M[v][w];
+                            V[a][c][clevel] * M[ v, w ];
                         V[b][b][nlevel]:= V[b][b][nlevel]-
-                            V[a][c][clevel]*M[v][u];
+                            V[a][c][clevel] * M[ v, u ];
                     od;
                 od;
             od;
@@ -1546,7 +1593,7 @@ InstallMethod( DeterminantMatDivFree,
         ##
         for u in [1..n] do
             for v in [u..n] do
-                Vs := Vs + V[n-u+1][n-v+1][clevel]*M[v][u];
+                Vs := Vs + V[n-u+1][n-v+1][clevel] * M[ v, u ];
             od;
         od;
 
@@ -2249,7 +2296,7 @@ InstallMethod( SemiEchelonMatDestructive,
             fi;
         od;
 
-        j := PositionNot( row, zero );
+        j := PositionNonZero( row );
         if j <= ncols then
 
             # We found a new basis vector.
@@ -2354,7 +2401,7 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
             fi;
         od;
 
-        j:= PositionNot( row, zero );
+        j:= PositionNonZero( row );
         if j <= ncols then
 
             # We found a new basis vector.
@@ -2428,10 +2475,10 @@ InstallGlobalFunction( SemiEchelonMatsNoCo, function( mats )
 
       # Get the first nonzero column.
       i:= 1;
-      j:= PositionNot( mat[1], zero );
+      j:= PositionNonZero( mat[1] );
       while n < j and i < m do
         i:= i + 1;
-        j:= PositionNot( mat[i], zero );
+        j:= PositionNonZero( mat[i] );
       od;
 
       if j <= n then
@@ -2515,24 +2562,22 @@ InstallMethod( IsMonomialMatrix,
     "generic method for matrices",
     [ IsMatrix ],
     function( M )
-    local zero,  # zero of the base ring
-          len,   # length of rows
+    local len,   # length of rows
           found, # store positions of nonzero elements
           row,   # loop over rows
           j;     # position of first non-zero element
 
-    zero:= Zero(M[1,1]);
     len:= Length( M[1] );
     if Length( M ) <> len  then
         return false;
     fi;
     found:= BlistList( M, [] );
     for row  in M  do
-        j := PositionNot( row, zero );
+        j := PositionNonZero( row );
         if len < j or found[j]  then
             return false;
         fi;
-        if PositionNot( row, zero, j ) <= len  then
+        if PositionNonZero( row, j ) <= len  then
             return false;
         fi;
         found[j] := true;

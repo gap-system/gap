@@ -86,7 +86,7 @@ Info(InfoMatInt,2,"NormHnf - i:= ",i);
        h := A.n;
        j := i;
        while j <= A.m and h > i do
-         t := PositionNot(A.T[j],0);
+         t := PositionNonZero(A.T[j]);
 	 if t < h then
 	    h := t;
 	 fi;
@@ -115,7 +115,7 @@ Info(InfoMatInt,2,"NormHnf - i:= ",i);
           # place empty rows of A at the end
 	  j := i + 1;
           while j <= A.m do
-	     if PositionNot(A.T[j],0) <= A.n then
+	     if PositionNonZero(A.T[j]) <= A.n then
 		j := j + 1;
 	     else
                 t        := A.T[j];     # swap out an empty row
@@ -130,7 +130,7 @@ Info(InfoMatInt,2,"NormHnf - i:= ",i);
        i := i + 1;
    od;
    for i in [1 .. A.m] do
-      j := PositionNot(A.T[i],0);
+      j := PositionNonZero(A.T[i]);
       if A.T[i][j] < 0 then
 	 A.T[i] := -A.T[i];
       fi;
@@ -139,7 +139,7 @@ Info(InfoMatInt,2,"NormHnf - i:= ",i);
    if not enf_flag then
       for i in [A.m, A.m-1 .. 1] do
 	 for j in [i+1 .. A.m] do
-	    h := PositionNot(A.T[j],0);
+	    h := PositionNonZero(A.T[j]);
 	    t := A.T[i][h];
 	    r := A.T[j][h];
 	    qq:=t mod r;
@@ -167,7 +167,7 @@ local h, i, j, k, l, m, n, q, t, v, A;
 
    # skip initial all zero rows
    i := 1;
-   while i <= m and PositionNot(A[i],0) > n do
+   while i <= m and PositionNonZero(A[i]) > n do
       i := i + 1;
    od;
 
@@ -188,9 +188,9 @@ od;
       # add row i of A to H
       v := MutableCopyMat(A[i]);
 
-      h := PositionNot(v,0);
+      h := PositionNonZero(v);
       for j in [1 .. k] do
-         if PositionNot(H[j],0) = h then
+         if PositionNonZero(H[j]) = h then
             repeat
                q := RoundCycDown(v[h]/H[j][h]);
                if q <> 0 then
@@ -210,15 +210,15 @@ od;
                   fi;
                fi;
             until v[h] = 0;
-            h := PositionNot(v,0);
-         elif PositionNot(H[j],0) > h then
+            h := PositionNonZero(v);
+         elif PositionNonZero(H[j]) > h then
             if v[h] < 0
                then t := -v;
                else t :=  v;
             fi;
             v := H[j];
             H[j] := t;
-            h := PositionNot(v,0);
+            h := PositionNonZero(v);
          fi;
       od;
 
@@ -230,15 +230,15 @@ od;
          fi;
       fi;
 
-      if H[k][PositionNot(H[k],0)] < 0 then
+      if H[k][PositionNonZero(H[k])] < 0 then
          H[k] := -H[k];
       fi;
       for j in [k-1,k-2 .. 1] do
-         if H[j][PositionNot(H[j],0)] < 0 then
+         if H[j][PositionNonZero(H[j])] < 0 then
             H[j] := -H[j];
          fi;
          for l in [j+1 .. k] do
-            h := PositionNot(H[l],0);
+            h := PositionNonZero(H[l]);
             q := H[j][h]/H[l][h];
             if not IsInt(q) and H[j][h] < 0 then
                q := q - SignInt(H[l][h]);
@@ -293,7 +293,7 @@ Info(InfoMatInt,2,"LcNormHnf - i:= ",i);
        h := A.n;
        j := i;
        while j <= A.m and h > i do
-         t := PositionNot(A.T[j],0);
+         t := PositionNonZero(A.T[j]);
 	 if t < h then
 	    h := t;
 	 fi;
@@ -324,7 +324,7 @@ Info(InfoMatInt,2,"LcNormHnf - i:= ",i);
           # place empty rows of A at the end
 	  j := i + 1;
           while j <= A.m do
-	     if PositionNot(A.T[j],0) <= A.n then
+	     if PositionNonZero(A.T[j]) <= A.n then
 		j := j + 1;
 	     else
                 t        := A.T[j];     # swap out an empty row
@@ -342,7 +342,7 @@ Info(InfoMatInt,2,"LcNormHnf - i:= ",i);
        i := i + 1;
    od;
    for i in [1 .. A.m] do
-      j := PositionNot(A.T[i],0);
+      j := PositionNonZero(A.T[i]);
       if A.T[i][j] < 0 then
 	 A.T[i] := -A.T[i];
          P[i]   := -P[i];
@@ -352,7 +352,7 @@ Info(InfoMatInt,2,"LcNormHnf - i:= ",i);
    if not enf_flag then
       for i in [A.m, A.m-1 .. 1] do
 	 for j in [i+1 .. A.m] do
-	    h := PositionNot(A.T[j],0);
+	    h := PositionNonZero(A.T[j]);
 	    t := A.T[i][h];
 	    r := A.T[j][h];
             qq:=t mod r;
@@ -381,7 +381,7 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
 
    # skip initial all zero rows
    i := 1;
-   while i <= m and PositionNot(A[i],0) > n do
+   while i <= m and PositionNonZero(A[i]) > n do
       i := i + 1;
    od;
 
@@ -390,7 +390,7 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
       return rec(normal := [], rowtrans := P);
    fi;
 
-   if A[i][PositionNot(A[i],0)] < 0 
+   if A[i][PositionNonZero(A[i])] < 0 
       then H := [ -A[i] ]; t := -P[i];
       else H := [  A[i] ]; t :=  P[i];
    fi;
@@ -402,9 +402,9 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
    while i <= m do
       # add row i of A to H
       v := MutableCopyMat(A[i]);
-      h := PositionNot(v,0);
+      h := PositionNonZero(v);
       for j in [1 .. k] do
-         if PositionNot(H[j],0) = h then
+         if PositionNonZero(H[j]) = h then
             repeat
                q := RoundCycDown(v[h]/H[j][h]);
 
@@ -429,8 +429,8 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
                fi;
 
             until v[h] = 0;
-            h := PositionNot(v,0);
-         elif PositionNot(H[j],0) > h then
+            h := PositionNonZero(v);
+         elif PositionNonZero(H[j]) > h then
             if v[h] < 0 then 
                t := -v; v := H[j]; H[j] := t;
                t := -P[i]; P[i] := P[j]; P[j] := t;
@@ -438,7 +438,7 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
                t := v; v := H[j]; H[j] := t;
                t := P[i]; P[i] := P[j]; P[j] := t;
             fi;
-            h := PositionNot(v,0);
+            h := PositionNonZero(v);
          fi;
       od;
 
@@ -454,17 +454,17 @@ local A,h, i, j, k, l, m, n, q, t, v, H, P;
          H[k] := v;
       fi;
 
-      if H[k][PositionNot(H[k],0)] < 0 then
+      if H[k][PositionNonZero(H[k])] < 0 then
          H[k] := -H[k];
          P[k] := -P[k];
       fi;
       for j in [k-1,k-2 .. 1] do
-         if H[j][PositionNot(H[j],0)] < 0 then
+         if H[j][PositionNonZero(H[j])] < 0 then
             H[j] := -H[j];
             P[j] := -P[j];
          fi;
          for l in [j+1 .. k] do
-            h := PositionNot(H[l],0);
+            h := PositionNonZero(H[l]);
             q := H[j][h]/H[l][h];
             if not IsInt(q) and H[j][h] < 0 then
                q := q - SignInt(H[l][h]);
@@ -544,16 +544,16 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
    fi;
 
    # sort rows according the position of the leading nonzero
-   SortParallel(b, P, function(x, y) return PositionNot(x,0) > PositionNot(y,0); end);
+   SortParallel(b, P, function(x, y) return PositionNonZero(x) > PositionNonZero(y); end);
 
    s := 0; # counts the rows of quotient space
 
    # skip all rows that are already in the echelon normal form
-   while PositionNot(b[m-s],0) < PositionNot(b[m-s-1],0) do
+   while PositionNonZero(b[m-s]) < PositionNonZero(b[m-s-1]) do
       s := s + 1;
    od;
 
-   c    := PositionNot(b[m-s],0);
+   c    := PositionNonZero(b[m-s]);
    kmax := 1;
    B    := [ b[1]*b[1] + P[1]*P[1] ];
    mu   := [ [ ] ];
@@ -636,7 +636,7 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
 
       c := n+1; 
       for i in [1 .. m - s] do
-         c := Minimum(c, PositionNot(b[i],0));
+         c := Minimum(c, PositionNonZero(b[i]));
       od;
    od;
 
@@ -645,17 +645,17 @@ local alpha, # LLL's sensitivity; 1/4 <= alpha <= 1
    # rows 1 .. s - 1 for the null space
 
    # use the remaining rows to create the Hermite normal form of b
-   if b[s][PositionNot(b[s],0)] < 0 then
+   if b[s][PositionNonZero(b[s])] < 0 then
       b[s] := -b[s];
       P[s] := -P[s];
    fi;
    for i in [s + 1 .. m] do
-      if b[i][PositionNot(b[i],0)] < 0 then
+      if b[i][PositionNonZero(b[i])] < 0 then
          b[i] := -b[i];
          P[i] := -P[i];
       fi;
       for j in [i-1, i-2 .. s] do
-         k := PositionNot(b[j],0);
+         k := PositionNonZero(b[j]);
          q := b[i][k]/b[j][k];
          if not IsInt(q) then
             if b[i][k] < 0 
@@ -1031,13 +1031,13 @@ local h, # point to the first nonzero in the current row
 
       dirty := not dirty;
       i := 1;
-      Add(H, PositionNot(S[1],0));
+      Add(H, PositionNonZero(S[1]));
 
       while i < m do
          i := i + 1;
          # introduce the i-th row of S to the partial SNF(S)
 
-         h := PositionNot(S[i],0);
+         h := PositionNonZero(S[i]);
          modfd := false; # set to true if columns require modifications
          for j in [1 .. i-1] do
             if H[j] = h then
@@ -1061,8 +1061,8 @@ local h, # point to the first nonzero in the current row
                      fi;
                   fi;
                until S[i][h] = 0;
-               h := PositionNot(S[i],0);
-            elif PositionNot(S[j],0) > h then
+               h := PositionNonZero(S[i]);
+            elif PositionNonZero(S[j]) > h then
                if S[i][h] < 0
                   then t := -S[i];
                   else t :=  S[i];

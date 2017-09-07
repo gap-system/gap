@@ -1384,7 +1384,8 @@ InstallGlobalFunction( PermCandidates,
           # delete zero rows:
           shrink:= [];
           for i in matrix do
-            if PositionNot( i, 0 ) <= Length( i ) then
+            if PositionNonZero( i ) <= Length( i ) then
+#T better call IsZero?
               Add( shrink, i );
             fi;
           od;
@@ -2146,7 +2147,8 @@ InstallGlobalFunction( PermCandidatesFaithful,
             # delete zero rows:
             shrink:= [];
             for i in matrix do
-               if PositionNot( i, 0 ) <= Length( i ) then
+               if PositionNonZero( i ) <= Length( i ) then
+#T better call IsZero?
                  Add( shrink, i );
                fi;
             od;

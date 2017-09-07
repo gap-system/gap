@@ -125,6 +125,14 @@ DeclareAttribute( "BaseDomain", IsVectorObj );
 # nor associative. For non-associative base domains, the behavior of
 # powering matrices is undefined.
 
+DeclareAttribute( "OneOfBaseDomain", IsVectorObj );
+DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
+# 'BaseDomain' shall work also for IsPlist objects (vectors and matrices),
+# but it is regarded as expensive to call this function;
+# fetching a one or zero is cheaper, and if one needs these values for a
+# non-plist vector or matrix then calling 'OneOfBaseDomain' or
+# 'ZeroOfBaseDomain' is not more expensive than calling 'BaseDomain' first.
+
 DeclareAttribute( "Length", IsVectorObj );    # can be zero
 # We have to declare this since a row vector is not necessarily
 # a list! Correspondingly we have to use InstallOtherMethod
@@ -597,6 +605,10 @@ DeclareAttribute( "NumberRows", IsMatrixObj );
 DeclareAttribute( "NumberColumns", IsMatrixObj );
 DeclareSynonymAttr( "NrRows", NumberRows );
 DeclareSynonymAttr( "NrCols", NumberColumns );
+
+DeclareAttribute( "OneOfBaseDomain", IsMatrixObj );
+DeclareAttribute( "ZeroOfBaseDomain", IsMatrixObj );
+
 
 # HACK: Length and RowLength were in the old version of MatrixObj. We want
 # to get rid of them, but for now, keep thm to allow the few packages

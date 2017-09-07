@@ -930,7 +930,6 @@ InstallMethod( IsAnticommutative,
     function( A )
     local n,      # dimension of `A'
           T,      # table of structure constants for `A'
-          zero,   # zero coefficient
           i, j;   # loop over rows and columns ot `T'
 
     if not IsFiniteDimensional( A ) then
@@ -939,12 +938,11 @@ InstallMethod( IsAnticommutative,
 
     n:= Dimension( A );
     T:= StructureConstantsTable( Basis( A ) );
-    zero:= T[ n+2 ];
     for i in [ 2 .. n ] do
       for j in [ 1 .. i-1 ] do
         if    T[i][j][1] <> T[j][i][1]
            or ( not IsEmpty( T[i][j][1] )
-                and PositionNot( T[i][j][2] + T[j][i][2], zero )
+                and PositionNonZero( T[i][j][2] + T[j][i][2] )
                         <= Length( T[i][j][2] ) ) then
           return false;
         fi;
@@ -2966,23 +2964,23 @@ InstallMethod( IsNilpotentElement,
     local B,     # a basis of `L'
           A,     # adjoint matrix of `x w.r. to `B'
           n,     # dimension of `L'
-          i,     # loop variable
-          zero;  # zero coefficient
+          i;     # loop variable
 
     B := Basis( L );
     A := AdjointMatrix( B, x );
     n := Dimension( L );
     i := 1;
-    zero:= Zero( A[1][1] );
 
-    if ForAll( A, x -> n < PositionNot( x, zero ) ) then
+    if ForAll( A, x -> n < PositionNonZero( x ) ) then
+#T better ask IsZero?
       return true;
     fi;
 
     while i < n do
       i:= 2 * i;
       A:= A * A;
-      if ForAll( A, x -> n < PositionNot( x, zero ) ) then
+      if ForAll( A, x -> n < PositionNonZero( x ) ) then
+#T better ask IsZero?
         return true;
       fi;
     od;

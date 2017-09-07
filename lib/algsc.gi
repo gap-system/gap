@@ -162,8 +162,7 @@ InstallMethod( PrintObj,
       return;
     fi;
 
-    zero  := Zero( elm[1] );
-    depth := PositionNot( elm, zero );
+    depth := PositionNonZero( elm );
 
     if len < depth then
 
@@ -174,6 +173,7 @@ InstallMethod( PrintObj,
     else
 
       one:= One(  elm[1] );
+      zero:= Zero( elm[1] );
 
       if elm[ depth ] <> one then
         Print( "(", elm[ depth ], ")*" );
@@ -221,8 +221,7 @@ InstallMethod( String,
       return "<zero of trivial s.c. algebra>";
     fi;
 
-    zero  := Zero( elm[1] );
-    depth := PositionNot( elm, zero );
+    depth := PositionNonZero( elm );
 
     s:="";
     if len < depth then
@@ -235,6 +234,7 @@ InstallMethod( String,
     else
 
       one:= One(  elm[1] );
+      zero:= Zero( elm[1] );
 
       if elm[ depth ] <> one then
 	Add(s,'(');

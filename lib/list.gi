@@ -3823,7 +3823,7 @@ InstallMethod( PositionNot, "default method ", [IsList, IsObject, IsInt ],
 InstallOtherMethod( PositionNot, "default value of third argument ",
         [IsList, IsObject],
         function(l,x) 
-    return PositionNot(l,x,0); 
+    return POSITION_NOT(l,x,0); 
 end
   );
     
@@ -3832,7 +3832,7 @@ InstallMethod( PositionNonZero, "default method", [IsHomogeneousList],
     if Length(l) = 0 then
         return 1;
     else
-        return PositionNot(l, Zero(l[1]));
+        return POSITION_NOT(l, Zero(l[1]), 0);
     fi;
 end);
 
@@ -3841,7 +3841,7 @@ InstallMethod( PositionNonZero, "default method with start", [IsHomogeneousList,
     if Length(l) = 0 then
         return from+1;
     fi;
-    return PositionNot(l, Zero(l[1]), from);
+    return POSITION_NOT(l, Zero(l[1]), from);
 end);
 
         
