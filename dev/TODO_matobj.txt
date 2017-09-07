@@ -3,6 +3,9 @@ Tasks for MatrixObj
 
 - Decide the relation between 'IsMatrix' and 'IsMatrixObj',
 
+- When multiplying PlistMatrixObjs we check whether the BaseDomains are
+  identical. Should we adopt this everywhere?
+
   define 'DefaultRing' for the entries as 'BaseDomain' of Plist matrices,
 
   introduce 'ZeroOfBaseDomain'.
@@ -29,16 +32,25 @@ Tasks for MatrixObj
 
 - Replace 'EmptyMatrix' and 'NullMapMatrix' by 'IsMatrixObj' objects.
 
-- Document and implement the interface.
-
-  - add entry in programming language section of ref manual for
+- add entry in programming language section of ref manual for
       x:=A[B];  and A[B]:=x;
     for arbitrary objects B
 
-  - add entries for [] and []:= to MatrixObj chapter
+- Document and implement the interface.
 
-  - link to these from the list chapter entries for [] and []:= (and vice versa)
+- add entries for [] and []:= to MatrixObj chapter
 
+- link to these from the list chapter entries for [] and []:= (and vice versa)
+
+- Add a chapter 'How to use IsMatrixObj' to the documentation.
+  There, add the following sections to the documentation:
+  - which Methods should be implemented for new IsMatrixObj types so that
+    the generic methods work for all new objects
+  - list the generic methods. Say that these can/should be overwritten by
+    more efficient specialized code.
+  - Changes from IsMatrix to IsMatrixObj
+  - how to convert existing IsMatrix code to adapt IsMatrixObj
+  - deprecated usages of operations/functions
 
 - Provide test code.
 
@@ -51,6 +63,7 @@ Tasks for MatrixObj
   (but some implementations may provide a method); suggest to use
   `MutableCopyMat` for IsMatrixObj objects.
 
+- Rename *RowVector to *Vector like AddRowVector to AddVector
 
 Additional notes by Max
 =======================
