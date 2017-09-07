@@ -38,12 +38,19 @@ BIND_GLOBAL("AtomicList", function(arg)
     return l;
   fi;
 
-  l := [];
-  for i in [1..arg[1]] do
-    l[i] := arg[2];
-  od;
-  return l;
+  if LEN_LIST(arg) = 1 then
+    # For plists, we can't set a capacity
+    return [];
+  else
+    l := [];
+    for i in [1..arg[1]] do
+        l[i] := arg[2];
+    od;
+    return l;
+  fi;
 end);
+
+BIND_GLOBAL("IsAtomicList", RETURN_FALSE);
 
 BIND_GLOBAL("FixedAtomicList", AtomicList);
 
@@ -153,6 +160,43 @@ BIND_GLOBAL("CopyToRegion", {x,y} -> x);
 
 BIND_GLOBAL("SetTLDefault", BindThreadLocal);
 BIND_GLOBAL("SetTLConstructor", BindThreadLocalConstructor);
+
+
+BIND_GLOBAL("CHECKED_GET_ATOMIC_LIST", function(l, pos, default)
+    if IsBound(l[pos]) then
+        return l[pos];
+    else
+        return default;
+    fi;
+end);
+
+BIND_GLOBAL("COMPARE_AND_SWAP", function(l, pos, old, new)
+    if IsBound(l[pos]) and IS_IDENTICAL_OBJ(l[pos], old) then
+        l[pos] := new;
+        return true;
+    else
+        return false;
+    fi;
+end);
+
+BIND_GLOBAL("ATOMIC_BIND", function(l, pos, new)
+    if IsBound(l[pos]) then
+        return false;
+    else
+        l[pos] := new;
+        return true;
+    fi;
+end);
+
+BIND_GLOBAL("ATOMIC_UNBIND", function(l, pos, old)
+    if IsBound(l[pos]) and IS_IDENTICAL_OBJ(l[pos], old) then
+        Unbind(l[pos]);
+        return true;
+    else
+        return false;
+    fi;
+end);
+
 
 BIND_GLOBAL("ATOMIC_ADDITION", function(list, index, inc)
   list[index] := list[index] + inc;
