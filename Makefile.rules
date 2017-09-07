@@ -342,13 +342,13 @@ COMPILE=$(LIBTOOL) --mode=compile $(CC)
 # Disabled for HPC-GAP, to ensure we always use the output of ward
 # and not the original source files
 ifeq ($(HPCGAP),no)
-obj/%.lo: src/%.c
+obj/%.lo: src/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 endif
 
 # Build rule for generated C source files
-obj/%.lo: gen/%.c
+obj/%.lo: gen/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 
@@ -359,7 +359,7 @@ obj/%.lo: gen/%.c
 
 LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic
 
-libgap.la: $(OBJS)
+libgap.la: $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) -no-undefined -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
 
 ifeq ($(SYS_IS_CYGWIN32),yes)
@@ -384,14 +384,14 @@ GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
 all: bin/$(GAPARCH)/gap.dll
 bin/$(GAPARCH)/gap.dll: symlinks libgap.la
 	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
-gap$(EXEEXT): libgap.la
+gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
 
 else
 
 # Linking rule and dependencies for the main gap executable
-gap$(EXEEXT): $(OBJS)
+gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
 
 endif
@@ -464,6 +464,7 @@ clean:
 	rm -f libgap.la
 	rm -f gen/gap_version.c
 	rm -f doc/wsp.g
+	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,LDFLAGS,LIBS,OBJS}
 
 .PHONY: clean distclean
 
@@ -978,6 +979,73 @@ bootstrap-pkg-full:
 
 # TODO
 
+
+########################################################################
+# Track CFLAGS, CPPFLAGS, LDFLAGS, LIBS, OBJS
+#
+# For each variable GAP_XYZ in the above list, we do the following:
+# First, escape all single quotation marks in GAP_XYZ. Then compare
+# GAP_XYZ with the content of file cnf/GAP-XYZ. Do nothing if they
+# match. Otherwise, write GAP_XYZ into cnf/GAP-XYZ. By only writing
+# something if there is a change, we avoid triggering unnecessary
+# rebuilds.
+#
+# The files cnf/GAP-XYZ in turn now allow us to rebuild things if any of
+# these variables change. Moreover, package build systems can extract
+# relevant flags from them.
+#
+# This code is closely based on code from the git build system.
+########################################################################
+
+ESCAPED_CFLAGS = $(subst ','\'',$(GAP_CFLAGS))
+
+cnf/GAP-CFLAGS: FORCE
+	@mkdir -p cnf
+	@FLAGS='$(ESCAPED_CFLAGS)'; \
+	    if test x"$$FLAGS" != x"`cat cnf/GAP-CFLAGS 2>/dev/null`" ; then \
+		echo >&2 "    * new compiler flags"; \
+		echo "$$FLAGS" >cnf/GAP-CFLAGS; \
+            fi
+
+ESCAPED_CPPFLAGS = $(subst ','\'',$(GAP_CPPFLAGS))
+
+cnf/GAP-CPPFLAGS: FORCE
+	@mkdir -p cnf
+	@FLAGS='$(ESCAPED_CPPFLAGS)'; \
+	    if test x"$$FLAGS" != x"`cat cnf/GAP-CPPFLAGS 2>/dev/null`" ; then \
+		echo >&2 "    * new preprocessor flags"; \
+		echo "$$FLAGS" >cnf/GAP-CPPFLAGS; \
+            fi
+
+ESCAPED_LDFLAGS = $(subst ','\'',$(GAP_LDFLAGS))
+
+cnf/GAP-LDFLAGS: FORCE
+	@mkdir -p cnf
+	@FLAGS='$(ESCAPED_LDFLAGS)'; \
+	    if test x"$$FLAGS" != x"`cat cnf/GAP-LDFLAGS 2>/dev/null`" ; then \
+		echo >&2 "    * new link flags"; \
+		echo "$$FLAGS" >cnf/GAP-LDFLAGS; \
+            fi
+
+ESCAPED_LIBS = $(subst ','\'',$(GAP_LIBS))
+
+cnf/GAP-LIBS: FORCE
+	@mkdir -p cnf
+	@FLAGS='$(ESCAPED_LIBS)'; \
+	    if test x"$$FLAGS" != x"`cat cnf/GAP-LIBS 2>/dev/null`" ; then \
+		echo >&2 "    * new library flags"; \
+		echo "$$FLAGS" >cnf/GAP-LIBS; \
+            fi
+
+ESCAPED_OBJS = $(subst ','\'',$(OBJS))
+
+cnf/GAP-OBJS: FORCE
+	@mkdir -p cnf
+	@FLAGS='$(ESCAPED_OBJS)'; \
+	    if test x"$$FLAGS" != x"`cat cnf/GAP-OBJS 2>/dev/null`" ; then \
+		echo >&2 "    * new object list"; \
+		echo "$$FLAGS" >cnf/GAP-OBJS; \
+            fi
 
 
 ########################################################################
