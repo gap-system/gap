@@ -14,17 +14,17 @@ gap> WeightOfVector( v2 );
 gap> l3 := [0,0,0,0,0,0];
 [ 0, 0, 0, 0, 0, 0 ]
 gap> v3 := Vector(IsPlistVectorRep, Rationals, l3);
-<plist vector over Rationals of length 6> 
+<plist vector over Rationals of length 6>
 gap> WeightOfVector( v3 );
-0 
+0
 gap> v4 := Vector(GF(5), l1*One(GF(5)));
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
 gap> WeightOfVector( v4 );
-5 
+5
 gap> v5 := Vector(GF(5), l2*One(GF(5)));
 [ 0*Z(5), Z(5), Z(5)^3, 0*Z(5), 0*Z(5), Z(5)^0 ]
 gap> WeightOfVector( v5 );
-3 
+3
 gap> v6 := Vector(GF(5), l3*One(GF(5)));
 [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> WeightOfVector( v6 );

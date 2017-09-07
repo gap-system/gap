@@ -12,5 +12,6 @@ gap> v3 := Vector(GF(5), l1*One(GF(5)));
 gap> v0 := ZeroVector( 12, v3 );
 < mutable compressed vector length 12 over GF(5) >
 gap> Unpack( v0 );
-[ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ]
+[ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 
+  0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> STOP_TEST("ZeroVector.tst",1);
