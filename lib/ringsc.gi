@@ -80,7 +80,7 @@ InstallMethod( PrintObj,
       return;
     fi;
 
-    depth := PositionNot( elm, 0 );
+    depth := PositionNonZero( elm );
 
     if len < depth then
 
@@ -137,7 +137,7 @@ function( elm )
       return "<zero of trivial s.c. ring>";
     fi;
 
-    depth := PositionNot( elm, 0 );
+    depth := PositionNonZero( elm );
 
     if len < depth then
 
@@ -556,7 +556,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
       e:=e[1];
     fi;
 
-    #p:=PositionNot(e,0);
+    #p:=PositionNonZero(e);
     # find the position of largest order
     p:=-1;
     f:=1;
@@ -1132,7 +1132,7 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
   for i in [1..Length(list)] do
     o:=[];
     for j in [1..Length(s[i][1])] do
-      p:=PositionNot(s[i][1][j],0);
+      p:=PositionNonZero(s[i][1][j]);
       if moduli[i][p]=0 then
 	Add(o,0);
       else

@@ -950,7 +950,7 @@ InstallMethod( IsZero,
     0,
 
 function ( x )
-    if PositionNot( x![2], 0 ) > Length( x![2] ) then
+    if PositionNonZero( x![2] ) > Length( x![2] ) then
         return true;
     fi;
     return false;

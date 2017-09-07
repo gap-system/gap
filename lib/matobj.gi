@@ -20,6 +20,27 @@ InstallOtherMethod( \[\], [ IsMatrixObj, IsList ], {m,l} -> MatElm(m,l[1],l[2]))
 InstallOtherMethod( \[\]\:\=, [ IsMatrixObj, IsList, IsObject ], function(m,l,o) SetMatElm(m, l[1], l[2], o); end);
 
 
+InstallMethod( OneOfBaseDomain,
+    "generic method for IsVectorObj",
+    [ IsVectorObj ],
+    v -> One( BaseDomain( v ) ) );
+
+InstallMethod( ZeroOfBaseDomain,
+    "generic method for IsVectorObj",
+    [ IsVectorObj ],
+    v -> Zero( BaseDomain( v ) ) );
+
+InstallMethod( OneOfBaseDomain,
+    "generic method for IsMatrixObj",
+    [ IsMatrixObj ],
+    M -> One( BaseDomain( M ) ) );
+
+InstallMethod( ZeroOfBaseDomain,
+    "generic method for IsMatrixObj",
+    [ IsMatrixObj ],
+    M -> Zero( BaseDomain( M ) ) );
+
+
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)

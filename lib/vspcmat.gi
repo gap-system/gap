@@ -338,10 +338,10 @@ BindGlobal( "HeadsInfoOfSemiEchelonizedMats", function( mats, dims )
 
         # Get the pivot.
         row:= 1;
-        j:= PositionNot( mats[i][row], zero );
+        j:= PositionNonZero( mats[i][row] );
         while dimcol < j and row < dimrow do
           row:= row + 1;
-          j:= PositionNot( mats[i][row], zero );
+          j:= PositionNonZero( mats[i][row] );
         od;
 
         if dimrow < row or mats[i][ row ][j] <> one then
@@ -1068,7 +1068,7 @@ InstallMethod( CloseMutableBasis,
 
       # If necessary add the sifted vector, and update the basis info.
       for i in [ 1 .. m ] do
-        j := PositionNot( v[i], zero );
+        j := PositionNonZero( v[i] );
         if j <= n then
           scalar:= Inverse( v[i][j] );
           for k in [ 1 .. m ] do

@@ -157,7 +157,7 @@ InstallGlobalFunction( PadicCoefficients,
     coeff:= [];
     step:= 0;
     p2:= ( prime - 1 ) / 2;
-    while PositionNot( b, 0 ) <= n and step < depth do
+    while PositionNonZero( b ) <= n and step < depth do
       step:= step + 1;
       coeff[ step ]:= ShallowCopy( b * Amodpinv );
       for i in [ 1 .. n ] do

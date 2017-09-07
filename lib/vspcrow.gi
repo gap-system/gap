@@ -300,7 +300,7 @@ InstallMethod( Coefficients,
 
     # Compute the coefficients of the base vectors.
     v:= ShallowCopy( v );
-    i:= PositionNot( v, zero );
+    i:= PositionNonZero( v );
     while i <= len do
       pos:= heads[i];
       if pos <> 0 then
@@ -309,7 +309,7 @@ InstallMethod( Coefficients,
       else
         return fail;
       fi;
-      i:= PositionNot( v, zero );
+      i:= PositionNonZero( v );
     od;
 
     # Return the coefficients.
@@ -396,7 +396,7 @@ HeadsInfoOfSemiEchelonizedMat := function( mat, dim )
       # Loop over the columns.
       for i in [ 1 .. nrows ] do
 
-        j:= PositionNot( mat[i], zero );
+        j:= PositionNonZero( mat[i] );
         if dim < j or mat[i][j] <> one then
           return fail;
         fi;
@@ -758,7 +758,7 @@ end);
 InstallMethod( IsZero,
     "for a row vector",
     [ IsRowVector ],
-    v -> IsEmpty( v ) or Length( v ) < PositionNot( v, Zero( v[1] ) ) );
+    v -> IsEmpty( v ) or Length( v ) < PositionNonZero( v ) );
 
 
 #############################################################################
@@ -1557,13 +1557,13 @@ InstallMethod( CloseMutableBasis,
 
       for j in [ 1 .. ncols ] do
         if zero <> v[j] and heads[j] <> 0 then
-#T better loop with `PositionNot'?
+#T better loop with `PositionNonZero'?
           AddRowVector( v, basisvectors[ heads[j] ], - v[j] );
         fi;
       od;
 
       # If necessary add the sifted vector, and update the basis info.
-      j := PositionNot( v, zero );
+      j := PositionNonZero( v );
       if j <= ncols then
         MultRowVector( v, Inverse( v[j] ) );
         Add( basisvectors, v );
@@ -1665,8 +1665,7 @@ InstallOtherMethod( SiftedVector,
 InstallGlobalFunction( OnLines, function( vec, g )
     local c;
     vec:= OnPoints( vec, g );
-    c:= PositionNonZero( vec ); # better than PositionNot, as no `Zero'
-                                # element needs to be created
+    c:= PositionNonZero( vec );
     if c <= Length( vec ) then
 
       # Normalize from the *left* if the matrices act from the right!
@@ -1688,8 +1687,7 @@ function( v )
     local   depth;
 
     if 0 < Length(v)  then
-	depth:=PositionNonZero( v ); # better than PositionNot, as no `Zero'
-				     # element needs to be created
+	depth:=PositionNonZero( v );
         if depth <= Length(v) then
             return Inverse(v[depth]) * v;
         else

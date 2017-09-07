@@ -586,7 +586,7 @@ function( pcgs, elm )
     local   exp,  dep;
 
     exp := ExponentsOfPcElement( pcgs, elm );
-    dep := PositionNot( exp, 0 );
+    dep := PositionNonZero( exp );
     if Length(exp) < dep  then
         return fail;
     else
@@ -730,7 +730,7 @@ function( pcgs, elm )
     if d > Length(num)  then
         return Length(pcgs)+1;
     elif d in pcgs!.moduloDepths  then
-        return PositionNot( ExponentsOfPcElement( pcgs, elm ), 0 );
+        return PositionNonZero( ExponentsOfPcElement( pcgs, elm ) );
     else
         return pcgs!.depthMap[d];
     fi;
