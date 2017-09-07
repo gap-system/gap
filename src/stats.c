@@ -79,7 +79,6 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -491,9 +490,9 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -533,9 +532,9 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -606,14 +605,14 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -653,14 +652,14 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -733,19 +732,19 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
 
@@ -786,19 +785,19 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
 
@@ -887,9 +886,9 @@ UInt            ExecForRange (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-          if (leave == 8) 
+          if (leave == STATUS_CONTINUE)
             continue;
-          return (leave & 3);
+          return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -953,14 +952,14 @@ UInt            ExecForRange2 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -1026,19 +1025,19 @@ UInt            ExecForRange3 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -1158,9 +1157,9 @@ UInt ExecWhile (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1196,14 +1195,14 @@ UInt ExecWhile2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1241,19 +1240,19 @@ UInt ExecWhile3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1307,9 +1306,9 @@ UInt ExecRepeat (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1345,14 +1344,14 @@ UInt ExecRepeat2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1390,19 +1389,19 @@ UInt ExecRepeat3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1419,8 +1418,8 @@ UInt ExecRepeat3 (
 **
 **  'ExecBreak' executes the break-statement <stat>.
 **
-**  This  is done   by  returning 4  (to tell  the   calling executor that  a
-**  break-statement was executed).
+**  This is done by returning STATUS_BREAK (to tell the calling executor that
+**  a break-statement was executed).
 **
 **  A break-statement is  represented  by a bag of   type 'T_BREAK' with   no
 **  subbags.
@@ -1429,7 +1428,7 @@ UInt            ExecBreak (
     Stat                stat )
 {
     /* return to the next loop                                             */
-    return 4;
+    return STATUS_BREAK;
 }
 
 /****************************************************************************
@@ -1438,8 +1437,8 @@ UInt            ExecBreak (
 **
 **  'ExecContinue' executes the continue-statement <stat>.
 **
-**  This  is done   by  returning 8 (to tell  the   calling executor that  a
-**  continue-statement was executed).
+**  This is done by returning STATUS_CONTINUE (to tell the calling executor
+**  that a continue-statement was executed).
 **
 **  A continue-statement is  represented  by a bag of   type 'T_CONTINUE' with   no
 **  subbags.
@@ -1448,7 +1447,7 @@ UInt            ExecContinue (
     Stat                stat )
 {
     /* return to the next loop                                             */
-    return 8;
+    return STATUS_CONTINUE;
 }
 
 /****************************************************************************
@@ -1634,7 +1633,7 @@ UInt            ExecReturnObj (
     STATE(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
-    return 1;
+    return STATUS_RETURN_VAL;
 }
 
 
@@ -1665,7 +1664,7 @@ UInt            ExecReturnVoid (
     STATE(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
-    return 2;
+    return STATUS_RETURN_VOID;
 }
 
 #ifdef HPCGAP
@@ -2396,8 +2395,8 @@ static Int InitKernel (
 
 void InitStatState(GAPState * state)
 {
-    state->CurrExecStatFuncs = ExecStatFuncs;
 #ifdef HPCGAP
+    state->CurrExecStatFuncs = ExecStatFuncs;
     MEMBAR_FULL();
     if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
         MEMBAR_FULL();
