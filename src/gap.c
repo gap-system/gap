@@ -2765,6 +2765,31 @@ Obj FuncKERNEL_INFO(Obj self) {
   
 }
 
+/****************************************************************************
+**
+*F FuncBREAKPOINT . . . . . . . . . . . . Mark kernel breakpoints in GAP code
+**
+** The purpose behind this function is to mark positions in the GAP code
+** and to transfer a stage flag to the kernel in a way that facilitates
+** the use of kernel breakpoints depending on GAP state.
+**
+** One use case is to simply insert BREAKPOINT(0) at a specific GAP
+** source location and then set a breakpoint on FuncBREAKPOINT in the
+** kernel.
+**
+** The function accepts any argument; if it is a small integer, it will be
+** converted and stored in the global variable BreakPointValue. This
+** also allows the encoding of GAP state in that value and to attach a
+** condition based on the value of BreakPointValue to other breakpoints.
+*/
+
+UInt BreakPointValue;
+
+Obj FuncBREAKPOINT(Obj self, Obj arg) {
+  if (IS_INTOBJ(arg))
+    BreakPointValue = INT_INTOBJ(arg);
+  return (Obj) 0;
+}
 
 #ifdef HPCGAP
 
@@ -2885,6 +2910,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
     GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
+    GVAR_FUNC(BREAKPOINT, 1, "integer"),
     { 0, 0, 0, 0, 0 }
 
 };
