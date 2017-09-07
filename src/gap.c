@@ -1103,11 +1103,14 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
     return res;
 }
 
-Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
+Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
 {
-  STATE(ThrownObject) = payload;
-  syLongjmp(&(STATE(ReadJmpError)), 1);
-  return 0;
+    STATE(ThrownObject) = payload;
+    if (STATE(JumpToCatchCallback) != 0) {
+        (*STATE(JumpToCatchCallback))();
+    }
+    syLongjmp(&(STATE(ReadJmpError)), 1);
+    return 0;
 }
 
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
@@ -3047,9 +3050,11 @@ void InitializeGap (
     STATE(ThrownObject) = 0;
     STATE(UserHasQUIT) = 0;
     STATE(UserHasQuit) = 0;
+    STATE(JumpToCatchCallback) = 0;
 
     NrImportedGVars = 0;
     NrImportedFuncs = 0;
+
 
     sysenviron = environ;
 
