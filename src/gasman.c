@@ -967,6 +967,8 @@ TNumAllocFuncBags       AllocFuncBags;
 
 TNumStackFuncBags       StackFuncBags;
 
+TNumExtraMarkFuncBags   ExtraMarkFuncBags;
+
 Bag *                   StackBottomBags;
 
 UInt                    StackAlignBags;
@@ -990,6 +992,7 @@ void            InitBags (
     /* install the allocator and the abort function                        */
     AllocFuncBags   = alloc_func;
     AbortFuncBags   = abort_func;
+    ExtraMarkFuncBags = 0;
 
     /* install the stack marking function and values                       */
     StackFuncBags   = stack_func;
@@ -1687,6 +1690,13 @@ again:
     for ( i = 0; i < GlobalBags.nr; i++ )
         MarkBag( *GlobalBags.addr[i] );
 
+    /* allow installing a custom marking function. This is used for integrating
+       GAP (possibly linked as a shared library) with other code bases which use
+       their own form of garbage collection. For example, with Python (for
+       SageMath) or Julia. */
+    if (ExtraMarkFuncBags) {
+        (*ExtraMarkFuncBags)();
+    }
 
     /* mark from the stack                                                 */
     if ( StackFuncBags ) {
