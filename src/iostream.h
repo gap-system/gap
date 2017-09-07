@@ -13,7 +13,7 @@
 #ifndef GAP_IOSTREAM_H
 #define GAP_IOSTREAM_H
 
-
+extern Int SIGCHLDHandlerDisabled;
 
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
