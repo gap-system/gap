@@ -17,9 +17,10 @@
 InstallGlobalFunction( MakePlistVectorType,
   function( basedomain, filter )
     local T, filter2;
+    filter2 := filter and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
        CanEasilyCompareElements(Representative(basedomain)) then
-        filter2 := filter and IsMutable and CanEasilyCompareElements;
+        filter2 := filter2 and CanEasilyCompareElements;
     fi;
     if IsIdenticalObj(basedomain,Integers) then
         T := NewType(FamilyObj(basedomain),
@@ -35,20 +36,20 @@ InstallGlobalFunction( MakePlistVectorType,
   end);
 
 InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
-  [ IsPlistVectorRep and IsCheckingVector, IsRing, IsList ],
+  [ IsPlistVectorRep, IsRing, IsList ],
   function( filter, basedomain, l )
     local typ, v;
-    typ := MakePlistVectorType(basedomain,filter);
+    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
     v := [basedomain,ShallowCopy(l)];
     Objectify(typ,v);
     return v;
   end );
 
 InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
-  [ IsPlistVectorRep and IsCheckingVector, IsRing, IsInt ],
+  [ IsPlistVectorRep, IsRing, IsInt ],
   function( filter, basedomain, l )
     local typ, v;
-    typ := MakePlistVectorType(basedomain,filter);
+    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
     v := [basedomain,Zero(basedomain)*[1..l]];
     Objectify(typ,v);
     return v;
@@ -56,25 +57,34 @@ InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
 
 InstallMethod( NewMatrix,
   "for IsPlistMatrixRep, a ring, an int, and a list",
-  [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt, IsList ],
+  [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
-    local m,i,e,filter2;
+    local nd, filterVectors, m, e, filter2, i;
+    # check if l is flat list
+    if Length(l) > 0 and not IsVectorObj(l[1]) then
+      nd := NestingDepthA(l);
+      if nd < 2 or nd mod 2 = 1 then
+        l := FoldList(l, rl);
+      elif Length(l) mod rl <> 0 then
+        Error( "NewMatrix: Length of l is not a multiple of rl" );
+      fi;
+    fi;
     if IsIdenticalObj(IsPlistMatrixRep,filter) then
-        filter2 := IsPlistVectorRep;
+        filterVectors := IsPlistVectorRep;
     else
-        filter2 := IsPlistVectorRep and IsCheckingVector;
+        filterVectors := IsPlistVectorRep and IsCheckingVector;
     fi;
     m := 0*[1..Length(l)];
-    e := NewVector(filter2, basedomain, []);
     for i in [1..Length(l)] do
         if IsVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
             m[i] := ShallowCopy(l[i]);
         else
-            m[i] := Vector( l[i], e );
+            m[i] := NewVector( filterVectors, basedomain, l[i] );
         fi;
     od;
+    e := NewVector(filterVectors, basedomain, []);
     m := [basedomain,e,rl,m];
-    filter2 := filter and IsMutable;
+    filter2 := IsPlistMatrixRep and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
        CanEasilyCompareElements(Representative(basedomain)) then
         filter2 := filter2 and CanEasilyCompareElements;
@@ -86,7 +96,7 @@ InstallMethod( NewMatrix,
 
 InstallMethod( NewZeroMatrix,
   "for IsPlistMatrixRep, a ring, and two ints",
-  [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt, IsInt ],
+  [ IsPlistMatrixRep, IsRing, IsInt, IsInt ],
   function( filter, basedomain, rows, cols )
     local m,i,e,filter2;
     if IsIdenticalObj(IsPlistMatrixRep,filter) then
@@ -107,16 +117,16 @@ InstallMethod( NewZeroMatrix,
 
 InstallMethod( NewIdentityMatrix,
   "for IsPlistMatrixRep, a ring, and an int",
-  [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt ],
+  [ IsPlistMatrixRep, IsRing, IsInt ],
   function( filter, basedomain, rows )
-    local m,i,e,filter2;
+    local filterVectors, m, e, i;
     if IsIdenticalObj(IsPlistMatrixRep,filter) then
-        filter2 := IsPlistVectorRep;
+        filterVectors := IsPlistVectorRep;
     else
-        filter2 := IsPlistVectorRep and IsCheckingVector;
+        filterVectors := IsPlistVectorRep and IsCheckingVector;
     fi;
     m := 0*[1..rows];
-    e := NewVector(IsPlistVectorRep, basedomain, []);
+    e := NewVector(filterVectors, basedomain, []);
     for i in [1..rows] do
         m[i] := ZeroVector( rows, e );
         m[i][i] := One(basedomain);
@@ -1005,99 +1015,99 @@ InstallMethod( Unpack, "for a plist matrix",
     return List(m![ROWSPOS],v->ShallowCopy(v![ELSPOS]));
   end );
 
-InstallMethod( PositionNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and IsZero(l[i]) do i := i + 1; od;
-    if i > le+1 then
-        return le+1;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := le;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsInt ],
-  function( m, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p-1;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    if i < 0 then
-        return 0;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := 1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( Position, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
-  function( m, v, p )
-    local i,l,le;
-    l := m![ROWSPOS];
-    le := Length(l);
-    i := p+1;
-    while i <= le and l[i] <> v do i := i + 1; od;
-    if i > le then
-        return fail;
-    else
-        return i;
-    fi;
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, v )
-    return POSITION_SORTED_LIST(m![ROWSPOS],v);
-  end );
-
-InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
-  [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
-  function( m, v, f )
-    return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
-  end );
+# InstallMethod( PositionNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and IsZero(l[i]) do i := i + 1; od;
+#     if i > le+1 then
+#         return le+1;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix",
+#   [ IsPlistMatrixRep ],
+#   function( m )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := le;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     return i;
+#   end );
+# 
+# InstallMethod( PositionLastNonZero, "for a plist matrix, and a position",
+#   [ IsPlistMatrixRep, IsInt ],
+#   function( m, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p-1;
+#     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
+#     if i < 0 then
+#         return 0;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := 1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( Position, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsInt ],
+#   function( m, v, p )
+#     local i,l,le;
+#     l := m![ROWSPOS];
+#     le := Length(l);
+#     i := p+1;
+#     while i <= le and l[i] <> v do i := i + 1; od;
+#     if i > le then
+#         return fail;
+#     else
+#         return i;
+#     fi;
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep ],
+#   function( m, v )
+#     return POSITION_SORTED_LIST(m![ROWSPOS],v);
+#   end );
+# 
+# InstallMethod( PositionSortedOp, "for a plist matrix, and a plist vector",
+#   [ IsPlistMatrixRep, IsPlistVectorRep, IsFunction ],
+#   function( m, v, f )
+#     return POSITION_SORTED_LIST_COMP(m![ROWSPOS],v);
+#   end );
 
 InstallMethod( MutableCopyMat, "for a plist matrix",
   [ IsPlistMatrixRep ],
@@ -1803,7 +1813,7 @@ InstallMethod( CompatibleVector, "for a plist matrix",
 InstallMethod( NewCompanionMatrix,
   "for IsPlistMatrixRep, a polynomial and a ring",
   [ IsPlistMatrixRep, IsUnivariatePolynomial, IsRing ],
-  function( ty, po, bd )
+  function( filter, po, bd )
     local i,l,ll,n,one;
     one := One(bd);
     l := CoefficientsOfUnivariatePolynomial(po);
@@ -1812,7 +1822,7 @@ InstallMethod( NewCompanionMatrix,
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
-    ll := NewMatrix(ty,bd,n,[]);
+    ll := NewMatrix(IsPlistMatrixRep,bd,n,[]);
     l := Vector(-l{[1..n]},CompatibleVector(ll));
     for i in [1..n-1] do
         Add(ll,ZeroMutable(l));
@@ -1822,24 +1832,25 @@ InstallMethod( NewCompanionMatrix,
     return ll;
   end );
 
-InstallMethod( NewCompanionMatrix,
-  "for IsPlistMatrixRep and IsCheckingMatrix, a polynomial and a ring",
-  [ IsPlistMatrixRep and IsCheckingMatrix, IsUnivariatePolynomial, IsRing ],
-  function( ty, po, bd )
-    local i,l,ll,n,one;
-    one := One(bd);
-    l := CoefficientsOfUnivariatePolynomial(po);
-    n := Length(l)-1;
-    if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial is not monic");
-        return fail;
-    fi;
-    ll := NewMatrix(ty,bd,n,[]);
-    l := Vector(-l{[1..n]},CompatibleVector(ll));
-    for i in [1..n-1] do
-        Add(ll,ZeroMutable(l));
-        ll[i][i+1] := one;
-    od;
-    Add(ll,l);
-    return ll;
-  end );
+## Duplicate of the Constructor without IsCheckingMatrix
+## InstallMethod( NewCompanionMatrix,
+##   "for IsPlistMatrixRep and IsCheckingMatrix, a polynomial and a ring",
+##   [ IsPlistMatrixRep and IsCheckingMatrix, IsUnivariatePolynomial, IsRing ],
+##   function( ty, po, bd )
+##     local i,l,ll,n,one;
+##     one := One(bd);
+##     l := CoefficientsOfUnivariatePolynomial(po);
+##     n := Length(l)-1;
+##     if not IsOne(l[n+1]) then
+##         Error("CompanionMatrix: polynomial is not monic");
+##         return fail;
+##     fi;
+##     ll := NewMatrix(ty,bd,n,[]);
+##     l := Vector(-l{[1..n]},CompatibleVector(ll));
+##     for i in [1..n-1] do
+##         Add(ll,ZeroMutable(l));
+##         ll[i][i+1] := one;
+##     od;
+##     Add(ll,l);
+##     return ll;
+##   end );

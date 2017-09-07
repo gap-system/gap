@@ -1646,6 +1646,7 @@ with possibly slightly different meaning for lists and non-list collections.
 <#Include Label="DuplicateFreeList">
 <#Include Label="AsDuplicateFreeList">
 <#Include Label="Flat">
+<#Include Label="FoldList">
 <#Include Label="Reversed">
 <#Include Label="Shuffle">
 <#Include Label="IsLexicographicallyLess">
