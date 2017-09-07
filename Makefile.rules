@@ -618,20 +618,16 @@ bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 	$(SHELL) ./config.status $@
 
 # regenerate symlinks if necessary
-all: bin/$(GAPARCH)/src
-bin/$(GAPARCH)/src: config.status
+all: symlinks
+symlinks: FORCE
 	@$(MKDIR_P) bin/$(GAPARCH)
-	@ln -sf $(abs_top_srcdir)/src $(@D)
+	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-$(CONFIGNAME)
+	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_top_srcdir)/src bin/$(GAPARCH)/src
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gen/config.h bin/$(GAPARCH)/config.h
 
-all: bin/$(GAPARCH)/gac
-bin/$(GAPARCH)/gac:
-	@$(MKDIR_P) bin/$(GAPARCH)
-	ln -sf ../../gac $(@D)
-
-all: bin/$(GAPARCH)/gap
-bin/$(GAPARCH)/gap:
-	@$(MKDIR_P) bin/$(GAPARCH)
-	ln -sf ../../gap $(@D)
+.PHONY: symlinks
 
 endif
 
