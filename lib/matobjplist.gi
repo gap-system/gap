@@ -69,11 +69,7 @@ InstallMethod( NewMatrix,
         Error( "NewMatrix: Length of l is not a multiple of rl" );
       fi;
     fi;
-    if IsIdenticalObj(IsPlistMatrixRep,filter) then
-        filterVectors := IsPlistVectorRep;
-    else
-        filterVectors := IsPlistVectorRep and IsCheckingVector;
-    fi;
+    filterVectors := IsPlistVectorRep;
     m := 0*[1..Length(l)];
     for i in [1..Length(l)] do
         if IsVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
@@ -99,11 +95,7 @@ InstallMethod( NewZeroMatrix,
   [ IsPlistMatrixRep, IsRing, IsInt, IsInt ],
   function( filter, basedomain, rows, cols )
     local m,i,e,filter2;
-    if IsIdenticalObj(IsPlistMatrixRep,filter) then
-        filter2 := IsPlistVectorRep;
-    else
-        filter2 := IsPlistVectorRep and IsCheckingVector;
-    fi;
+    filter2 := IsPlistVectorRep;
     m := 0*[1..rows];
     e := NewVector(filter2, basedomain, []);
     for i in [1..rows] do
@@ -120,11 +112,7 @@ InstallMethod( NewIdentityMatrix,
   [ IsPlistMatrixRep, IsRing, IsInt ],
   function( filter, basedomain, rows )
     local filterVectors, m, e, i;
-    if IsIdenticalObj(IsPlistMatrixRep,filter) then
-        filterVectors := IsPlistVectorRep;
-    else
-        filterVectors := IsPlistVectorRep and IsCheckingVector;
-    fi;
+    filterVectors := IsPlistVectorRep;
     m := 0*[1..rows];
     e := NewVector(filterVectors, basedomain, []);
     for i in [1..rows] do
@@ -149,16 +137,12 @@ InstallMethod( ViewObj, "for a plist vector", [ IsPlistVectorRep ],
     else
         Print("<");
     fi;
-    if IsCheckingVector(v) then Print("checking "); fi;
     Print("plist vector over ",v![BDPOS]," of length ",Length(v![ELSPOS]),">");
   end );
 
 InstallMethod( PrintObj, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
     Print("NewVector(IsPlistVectorRep");
-    if IsCheckingVector(v) then
-        Print(" and IsCheckingVector");
-    fi;
     if IsFinite(v![BDPOS]) and IsField(v![BDPOS]) then
         Print(",GF(",Size(v![BDPOS]),"),",v![ELSPOS],")");
     else
@@ -170,9 +154,6 @@ InstallMethod( String, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
     local st;
     st := "NewVector(IsPlistVectorRep";
-    if IsCheckingVector(v) then
-        Append(st," and IsCheckingVector");
-    fi;
     if IsFinite(v![BDPOS]) and IsField(v![BDPOS]) then
         Append(st,Concatenation( ",GF(",String(Size(v![BDPOS])),"),",
                                  String(v![ELSPOS]),")" ));
@@ -186,7 +167,6 @@ InstallMethod( String, "for a plist vector", [ IsPlistVectorRep ],
 InstallMethod( Display, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
     Print( "<a " );
-    if IsCheckingVector(v) then Print( "checking " ); fi;
     Print( "plist vector over ",BaseDomain(v),":\n");
     Print(v![ELSPOS],"\n>\n");
   end );
@@ -270,19 +250,6 @@ InstallMethod( \[\], "for a plist vector and a positive integer",
   [ IsPlistVectorRep, IsPosInt ],
   function( v, p )
     return v![ELSPOS][p];
-  end );
-
-InstallMethod( \[\]\:\=,
-  "for a checking plist vector, a positive integer, and an obj",
-  [ IsPlistVectorRep and IsCheckingVector, IsPosInt, IsObject ],
-  function( v, p, ob )
-    if p > Length(v![ELSPOS]) then
-        ErrorNoReturn("\\[\\]\\:\\=: Assignment out of bounds!");
-    fi;
-    if not ob in v![BDPOS] then
-        ErrorNoReturn("\\[\\]\\:\\=: Object to be assigned is not in base domain");
-    fi;
-    v![ELSPOS][p] := ob;
   end );
 
 InstallMethod( \[\]\:\=, "for a plist vector, a positive integer, and an obj",
@@ -370,54 +337,10 @@ InstallMethod( \+, "for two plist vectors",
                      [a![BDPOS],SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
   end );
 
-InstallMethod( \+, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector,
-    IsPlistVectorRep and IsCheckingVector],
-  function( a, b )
-    local ty;
-    if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
-        Error("\\+: Cannot add vectors of different length");
-        return fail;
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        Error("\\+: Cannot add vectors over different base domains");
-        return fail;
-    fi;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,
-                     [a![BDPOS],SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
-  end );
-
 InstallMethod( \-, "for two plist vectors",
   [ IsPlistVectorRep, IsPlistVectorRep ],
   function( a, b )
     local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,
-                     [a![BDPOS],DIFF_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
-  end );
-
-InstallMethod( \-, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector,
-    IsPlistVectorRep and IsCheckingVector],
-  function( a, b )
-    local ty;
-    if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
-        Error("\\-: Cannot subtract vectors of different length");
-        return fail;
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        Error("\\-: Cannot subtract vectors over different base domains");
-        return fail;
-    fi;
     if not IsMutable(a) and IsMutable(b) then
         ty := TypeObj(b);
     else
@@ -445,19 +368,6 @@ InstallMethod( AddRowVector, "for two plist vectors",
     ADD_ROW_VECTOR_2( a![ELSPOS], b![ELSPOS] );
   end );
 
-InstallMethod( AddRowVector, "for two checking plist vectors",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
-    IsPlistVectorRep and IsCheckingVector ],
-  function( a, b )
-    if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot add vectors of different length");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot add vectors over different base domains");
-    fi;
-    ADD_ROW_VECTOR_2( a![ELSPOS], b![ELSPOS] );
-  end );
-
 # Better method for integer vectors:
 InstallMethod( AddRowVector, "for two plist vectors",
   [ IsPlistVectorRep and IsMutable and IsIntVector,
@@ -469,19 +379,6 @@ InstallMethod( AddRowVector, "for two plist vectors",
 InstallMethod( AddRowVector, "for two plist vectors, and a scalar",
   [ IsPlistVectorRep and IsMutable, IsPlistVectorRep, IsObject ],
   function( a, b, s )
-    ADD_ROW_VECTOR_3( a![ELSPOS], b![ELSPOS], s );
-  end );
-
-InstallMethod( AddRowVector, "for two checking plist vectors, and a scalar",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
-    IsPlistVectorRep and IsCheckingVector, IsObject ],
-  function( a, b, s )
-    if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot subtract vectors of different length");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot add vectors over different base domains");
-    fi;
     ADD_ROW_VECTOR_3( a![ELSPOS], b![ELSPOS], s );
   end );
 
@@ -505,20 +402,6 @@ InstallMethod( AddRowVector,
     ADD_ROW_VECTOR_5( a![ELSPOS], b![ELSPOS], s, from, to );
   end );
 
-InstallMethod( AddRowVector,
-  "for two checking plist vectors, a scalar, and two positions",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable,
-    IsPlistVectorRep and IsCheckingVector, IsObject, IsPosInt, IsPosInt ],
-  function( a, b, s, from, to )
-    if Length(a![ELSPOS]) <> Length(b![ELSPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot add vectors of different length");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("AddRowVector: Cannot add vectors over different base domains");
-    fi;
-    ADD_ROW_VECTOR_5( a![ELSPOS], b![ELSPOS], s, from, to );
-  end );
-
 # Better method for integer vectors:
 InstallMethod( AddRowVector,
   "for two integer plist vectors, a scalar, and two positions",
@@ -535,15 +418,6 @@ InstallMethod( AddRowVector,
 InstallMethod( MultRowVector, "for a plist vector, and a scalar",
   [ IsPlistVectorRep and IsMutable, IsObject ],
   function( v, s )
-    MULT_ROW_VECTOR_2(v![ELSPOS],s);
-  end );
-
-InstallMethod( MultRowVector, "for a checking plist vector, and a scalar",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable, IsObject ],
-  function( v, s )
-    if not s in v![BDPOS] then
-        ErrorNoReturn("MultRowVector: Scalar is not in base domain");
-    fi;
     MULT_ROW_VECTOR_2(v![ELSPOS],s);
   end );
 
@@ -565,38 +439,9 @@ InstallMethod( MultRowVector,
     a![ELSPOS]{pa} := b![ELSPOS]{pb} * s;
   end );
 
-InstallMethod( MultRowVector,
-  "for a checking plist vector, a list, a ch. plist vector, a list, a scalar",
-  [ IsPlistVectorRep and IsCheckingVector and IsMutable, IsList,
-    IsPlistVectorRep and IsCheckingVector, IsList, IsObject ],
-  function( a, pa, b, pb, s )
-    local l;
-    l := Length(a![ELSPOS]);
-    if not ForAll(pa,x->x >= 1 and x <= l) then
-        ErrorNoReturn("MultRowVector: Positions pa must lie in first vector");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("MultRowVector: Cannot add vectors over different base domains");
-    fi;
-    if not s in a![BDPOS] then
-        ErrorNoReturn("MultRowVector: Scalar not in base domain");
-    fi;
-    a![ELSPOS]{pa} := b![ELSPOS]{pb} * s;
-  end );
-
 InstallMethod( \*, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s)] );
-  end );
-
-InstallMethod( \*, "for a checking plist vector and a scalar",
-  [ IsPlistVectorRep, IsScalar ],
-  function( v, s )
-    if not s in v![BDPOS] then
-        ErrorNoReturn("\\*: Scalar not in base domain");
-    fi;
     return Objectify( TypeObj(v),
              [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s)] );
   end );
@@ -608,36 +453,11 @@ InstallMethod( \*, "for a scalar and a plist vector",
              [v![BDPOS],PROD_SCL_LIST_DEFAULT(s,v![ELSPOS])] );
   end );
 
-InstallMethod( \*, "for a scalar and a checking plist vector",
-  [ IsScalar, IsPlistVectorRep ],
-  function( s, v )
-    if not s in v![BDPOS] then
-        ErrorNoReturn("\\*: Scalar not in base domain");
-    fi;
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_SCL_LIST_DEFAULT(s,v![ELSPOS])] );
-  end );
-
 InstallMethod( \/, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
     return Objectify( TypeObj(v),
              [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s^-1)] );
-  end );
-
-InstallMethod( \/, "for a checking plist vector and a scalar",
-  [ IsPlistVectorRep and IsCheckingVector, IsScalar ],
-  function( v, s )
-    local res;
-    if not s in v![BDPOS] then
-        ErrorNoReturn("\\/: Scalar not in base domain");
-    fi;
-    res := Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s^-1)] );
-    if IsIntVector(v) and not ForAll(res![ELSPOS],IsInt) then
-        ErrorNoReturn("\\/: Result is not an integer vector");
-    fi;
-    return res;
   end );
 
 InstallMethod( AdditiveInverseSameMutability, "for a plist vector",
@@ -708,16 +528,6 @@ InstallMethod( CopySubVector, "for two plist vectors and two lists",
   [ IsPlistVectorRep, IsPlistVectorRep and IsMutable, IsList, IsList ],
   function( a,b,pa,pb )
     # The following should eventually go into the kernel:
-    b![ELSPOS]{pb} := a![ELSPOS]{pa};
-  end );
-
-InstallMethod( CopySubVector, "for two plist vectors and two lists",
-  [ IsPlistVectorRep, IsPlistVectorRep and IsMutable and IsCheckingVector,
-    IsList, IsList ],
-  function( a,b,pa,pb )
-    if not(ForAll(pb,x->x <= Length(b![ELSPOS]))) then
-        ErrorNoReturn("CopySubVector: Positions in pb must lie in vector b");
-    fi;
     b![ELSPOS]{pb} := a![ELSPOS]{pa};
   end );
 
@@ -843,23 +653,6 @@ InstallMethod( \[\]\:\=,
     m![ROWSPOS][p] := v;
   end );
 
-InstallMethod( \[\]\:\=,
-  "for a checking plist matrix, a positive integer, and a plist vector",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
-    IsPosInt, IsPlistVectorRep ],
-  function( m, p, v )
-    if p > Length(m![ROWSPOS])+1 then
-        ErrorNoReturn("\\[\\]\\:\\=: Matrices must be dense, you cannot assign here");
-    fi;
-    if not IsIdenticalObj(m![BDPOS],v![BDPOS]) then
-        ErrorNoReturn("\\[\\]\\:\\=: Vector and matrix must be over the same base domain");
-    fi;
-    if not m![RLPOS] = Length(v![ELSPOS]) then
-        ErrorNoReturn("\\[\\]\\:\\=: Vector does not have the right length");
-    fi;
-    m![ROWSPOS][p] := v;
-  end );
-
 InstallMethod( \{\}, "for a plist matrix and a list",
   [ IsPlistMatrixRep, IsList ],
   function( m, p )
@@ -874,38 +667,9 @@ InstallMethod( Add, "for a plist matrix and a plist vector",
     Add(m![ROWSPOS],v);
   end );
 
-InstallMethod( Add, "for a checking plist matrix and a plist vector",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
-    IsPlistVectorRep ],
-  function( m, v )
-    if not IsIdenticalObj(m![BDPOS],v![BDPOS]) then
-        ErrorNoReturn("Add: Vector and matrix must be over the same base domain");
-    fi;
-    if not m![RLPOS] = Length(v![ELSPOS]) then
-        ErrorNoReturn("Add: Vector does not have the right length");
-    fi;
-    Add(m![ROWSPOS],v);
-  end );
-
 InstallMethod( Add, "for a plist matrix, a plist vector, and a pos. int",
   [ IsPlistMatrixRep and IsMutable, IsPlistVectorRep, IsPosInt ],
   function( m, v, p )
-    Add(m![ROWSPOS],v,p);
-  end );
-
-InstallMethod( Add, "for a checking plist matrix, a plist vector, and a pos",
-  [ IsPlistMatrixRep and IsMutable and IsCheckingMatrix,
-    IsPlistVectorRep, IsPosInt ],
-  function( m, v, p )
-    if p > Length(m![ROWSPOS])+1 then
-        ErrorNoReturn("Add: Matrices must be dense, you cannot assign here");
-    fi;
-    if not IsIdenticalObj(m![BDPOS],v![BDPOS]) then
-        ErrorNoReturn("Add: Vector and matrix must be over the same base domain");
-    fi;
-    if not m![RLPOS] = Length(v![ELSPOS]) then
-        ErrorNoReturn("Add: Vector does not have the right length");
-    fi;
     Add(m![ROWSPOS],v,p);
   end );
 
@@ -943,39 +707,9 @@ InstallMethod( \{\}\:\=, "for a plist matrix, a list, and a plist matrix",
     m![ROWSPOS]{pp} := n![ROWSPOS];
   end );
 
-InstallMethod( \{\}\:\=,
-  "for a checking plist matrix, a list, and a plist matrix",
-  [ IsPlistMatrixRep and IsMutable and IsCheckingMatrix, IsList,
-    IsPlistMatrixRep ],
-  function( m, pp, n )
-    if not(ForAll(pp,x->x >= 1 and x <= Length(m![ROWSPOS])+1)) then
-        ErrorNoReturn("\\{\\}\\:\\=: Positions must be in the matrix");
-    fi;
-    if not IsIdenticalObj(m![BDPOS],n![BDPOS]) then
-        ErrorNoReturn("\\{\\}\\:\\=: Both matrices must be over the same base domain");
-    fi;
-    if not m![RLPOS] = n![RLPOS] then
-        ErrorNoReturn("\\{\\}\\:\\=: Row lengths are not equal");
-    fi;
-    m![ROWSPOS]{pp} := n![ROWSPOS];
-  end );
-
 InstallMethod( Append, "for two plist matrices",
   [ IsPlistMatrixRep and IsMutable, IsPlistMatrixRep ],
   function( m, n )
-    Append(m![ROWSPOS],n![ROWSPOS]);
-  end );
-
-InstallMethod( Append, "for a checking plist matrix, and a plist matrix",
-  [ IsPlistMatrixRep and IsMutable and IsCheckingMatrix,
-    IsPlistMatrixRep ],
-  function( m, n )
-    if not IsIdenticalObj(m![BDPOS],n![BDPOS]) then
-        ErrorNoReturn("Append: Both matrices must be over the same base domain");
-    fi;
-    if not m![RLPOS] = n![RLPOS] then
-        ErrorNoReturn("Append: Row lengths are not equal");
-    fi;
     Append(m![ROWSPOS],n![ROWSPOS]);
   end );
 
@@ -1159,25 +893,6 @@ InstallOtherMethod( CopySubMatrix,
     od;
   end );
 
-InstallMethod( CopySubMatrix,
-  "for a plist matrix and a checking plist matrix and four lists",
-  [ IsPlistMatrixRep,
-    IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
-    IsList, IsList, IsList, IsList ],
-  function( m, n, srcrows, dstrows, srccols, dstcols )
-    local i;
-    if not ForAll(dstcols,x->x <= n![RLPOS]) then
-        ErrorNoReturn("CopySubMatrix: Destination column positions out of range");
-    fi;
-    if not(ForAll(dstcols,x->x <= Length(n![ROWSPOS])+1)) then
-        ErrorNoReturn("CopySubMatrix: Destination row positions out of range");
-    fi;
-    for i in [1..Length(srcrows)] do
-        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
-                  m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};
-    od;
-  end );
-
 InstallMethod( MatElm, "for a plist matrix and two positions",
   [ IsPlistMatrixRep, IsPosInt, IsPosInt ],
   function( m, row, col )
@@ -1190,20 +905,6 @@ InstallMethod( SetMatElm, "for a plist matrix, two positions, and an object",
     m![ROWSPOS][row]![ELSPOS][col] := ob;
   end );
 
-InstallMethod( SetMatElm,
-  "for a checking plist matrix, two positions, and an object",
-  [ IsPlistMatrixRep and IsCheckingMatrix and IsMutable,
-    IsPosInt, IsPosInt, IsObject ],
-  function( m, row, col, ob )
-    if row > Length( m![ROWSPOS] ) or col > m![RLPOS] then
-        ErrorNoReturn("SetMatElm: Row or column number out of bounds");
-    fi;
-    if not  ob in m![BDPOS]  then
-        ErrorNoReturn("SetMatElm: Value to be assigned is not in base domain");
-    fi;
-    m![ROWSPOS][row]![ELSPOS][col] := ob;
-  end );
-
 
 ############################################################################
 # Printing and viewing methods:
@@ -1212,7 +913,6 @@ InstallMethod( SetMatElm,
 InstallMethod( ViewObj, "for a plist matrix", [ IsPlistMatrixRep ],
   function( m )
     Print("<");
-    if IsCheckingMatrix(m) then Print("checking "); fi;
     if not IsMutable(m) then Print("immutable "); fi;
     Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],">");
   end );
@@ -1220,9 +920,6 @@ InstallMethod( ViewObj, "for a plist matrix", [ IsPlistMatrixRep ],
 InstallMethod( PrintObj, "for a plist matrix", [ IsPlistMatrixRep ],
   function( m )
     Print("NewMatrix(IsPlistMatrixRep");
-    if IsCheckingMatrix(m) then
-        Print(" and IsCheckingMatrix");
-    fi;
     if IsFinite(m![BDPOS]) and IsField(m![BDPOS]) then
         Print(",GF(",Size(m![BDPOS]),"),");
     else
@@ -1235,7 +932,6 @@ InstallMethod( Display, "for a plist matrix", [ IsPlistMatrixRep ],
   function( m )
     local i;
     Print("<");
-    if IsCheckingMatrix(m) then Print("checking "); fi;
     if not IsMutable(m) then Print("immutable "); fi;
     Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],":\n");
     for i in [1..Length(m![ROWSPOS])] do
@@ -1253,9 +949,6 @@ InstallMethod( String, "for plist matrix", [ IsPlistMatrixRep ],
   function( m )
     local st;
     st := "NewMatrix(IsPlistMatrixRep";
-    if IsCheckingMatrix(m) then
-        Append(st," and IsCheckingMatrix");
-    fi;
     Add(st,',');
     if IsFinite(m![BDPOS]) and IsField(m![BDPOS]) then
         Append(st,"GF(");
@@ -1289,52 +982,10 @@ InstallMethod( \+, "for two plist matrices",
                          SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
   end );
 
-InstallMethod( \+, "for two checking plist matrices",
-  [ IsPlistMatrixRep and IsCheckingMatrix,
-    IsPlistMatrixRep and IsCheckingMatrix ],
-  function( a, b )
-    local ty;
-    if Length(a![ROWSPOS]) <> Length(b![ROWSPOS]) or
-       a![RLPOS] <> b![RLPOS] then
-        ErrorNoReturn("\\+: Dimensions do not fit together");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("\\+: BaseDomains are not the same");
-    fi;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
-                         SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
-  end );
-
 InstallMethod( \-, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
     local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
-                         DIFF_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
-  end );
-
-InstallMethod( \-, "for two checking plist matrices",
-  [ IsPlistMatrixRep and IsCheckingMatrix,
-    IsPlistMatrixRep and IsCheckingMatrix ],
-  function( a, b )
-    local ty;
-    if Length(a![ROWSPOS]) <> Length(b![ROWSPOS]) or
-       a![RLPOS] <> b![RLPOS] then
-        ErrorNoReturn("\\-: Dimensions do not fit together");
-    fi;
-    if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
-        ErrorNoReturn("\\-: BaseDomains are not the same");
-    fi;
     if not IsMutable(a) and IsMutable(b) then
         ty := TypeObj(b);
     else
@@ -1754,18 +1405,6 @@ InstallMethod( Fold, "for a plist vector, a positive int, and a plist matrix",
 #    fi;
 #  end );
 
-InstallMethod( ConstructingFilter, "for a checking plist vector",
-  [ IsPlistVectorRep and IsCheckingVector ],
-  function( v )
-    return IsPlistVectorRep and IsCheckingVector;
-  end );
-
-InstallMethod( ConstructingFilter, "for a checking plist matrix",
-  [ IsPlistMatrixRep and IsCheckingMatrix ],
-  function( m )
-    return IsPlistMatrixRep and IsCheckingMatrix;
-  end );
-
 InstallMethod( ConstructingFilter, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
@@ -1784,23 +1423,10 @@ InstallMethod( ChangedBaseDomain, "for a plist vector, and a domain",
     return NewVector( IsPlistVectorRep, r, v![ELSPOS] );
   end );
 
-InstallMethod( ChangedBaseDomain, "for a checking plist vector, and a domain",
-  [ IsPlistVectorRep and IsCheckingVector, IsRing ],
-  function( v, r )
-    return NewVector(IsPlistVectorRep and IsCheckingVector, r, v![ELSPOS]);
-  end );
-
 InstallMethod( ChangedBaseDomain, "for a plist matrix, and a domain",
   [ IsPlistMatrixRep, IsRing ],
   function( m, r )
     return NewMatrix(IsPlistMatrixRep, r, NumberColumns(m),
-                     List(m![ROWSPOS], x-> x![ELSPOS]));
-  end );
-
-InstallMethod( ChangedBaseDomain, "for a checking plist matrix, and a domain",
-  [ IsPlistMatrixRep and IsCheckingMatrix, IsRing ],
-  function( m, r )
-    return NewMatrix(IsPlistMatrixRep and IsCheckingMatrix, r, NumberColumns(m),
                      List(m![ROWSPOS], x-> x![ELSPOS]));
   end );
 
@@ -1832,25 +1458,3 @@ InstallMethod( NewCompanionMatrix,
     return ll;
   end );
 
-## Duplicate of the Constructor without IsCheckingMatrix
-## InstallMethod( NewCompanionMatrix,
-##   "for IsPlistMatrixRep and IsCheckingMatrix, a polynomial and a ring",
-##   [ IsPlistMatrixRep and IsCheckingMatrix, IsUnivariatePolynomial, IsRing ],
-##   function( ty, po, bd )
-##     local i,l,ll,n,one;
-##     one := One(bd);
-##     l := CoefficientsOfUnivariatePolynomial(po);
-##     n := Length(l)-1;
-##     if not IsOne(l[n+1]) then
-##         Error("CompanionMatrix: polynomial is not monic");
-##         return fail;
-##     fi;
-##     ll := NewMatrix(ty,bd,n,[]);
-##     l := Vector(-l{[1..n]},CompatibleVector(ll));
-##     for i in [1..n-1] do
-##         Add(ll,ZeroMutable(l));
-##         ll[i][i+1] := one;
-##     od;
-##     Add(ll,l);
-##     return ll;
-##   end );
