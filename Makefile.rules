@@ -423,11 +423,7 @@ ffdata: ffgen
 	./ffgen -h > $(abs_top_srcdir)/src/ffdata.h
 	./ffgen -c > $(abs_top_srcdir)/src/ffdata.c
 
-clean: clean-ffdata
-clean-ffdata:
-	rm -f ffgen
-
-.PHONY: ffdata clean-ffffdata
+.PHONY: ffdata
 
 
 ########################################################################
@@ -436,12 +432,20 @@ clean-ffdata:
 distclean: clean
 	rm -f config.log config.status libtool stamp-h GNUmakefile configure
 	rm -f bin/gap.sh sysinfo.gap*
+	rm -f doc/make_doc
 	rm -rf gen
+	rm -rf dev/log
+	rm -rf coverage
+	rmdir bin cnf dev doc src 2>/dev/null || : # remove dirs if they are now empty
 
 clean:
+	rm -rf bin/$(GAPARCH)
 	rm -rf obj
-	rm -f gap$(EXEEXT) gac
+	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
+	rm -f src/compiled.h
+	rm -f gen/gap_version.c
+	rm -f doc/wsp.g
 
 .PHONY: clean distclean
 
