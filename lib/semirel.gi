@@ -959,7 +959,7 @@ function(m)
   local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last,
         currentlength, b, s, r, newelt, j, p, new, length, newword, first,
         final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi,
-        old, sortedelts, pos, semi, perm, free2;
+        old, sortedelts, pos, semi, perm, free2, one;
 
   if not IsFinite(m) then 
     return fail;
@@ -972,13 +972,14 @@ function(m)
   fi;
 
   #gens:=Set(GeneratorsOfMonoid(semi));
-  gens:=Set(Filtered(GeneratorsOfMonoid(semi), x-> not IsOne(x)));
+  one:=One(semi);
+  gens:=Set(Filtered(GeneratorsOfMonoid(semi), x -> x <> one));
   k:=Length(gens);
   free:=FreeMonoid(k);
   freegens:=GeneratorsOfMonoid(free);
-  actualelts:=Concatenation([One(semi)], gens);
+  actualelts:=Concatenation([one], gens);
   fpelts:=Concatenation([One(free)], freegens);
-  sortedelts:=List(Concatenation([One(semi)], gens));
+  sortedelts:=List(Concatenation([one], gens));
 
   #output
 
