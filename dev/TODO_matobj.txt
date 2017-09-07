@@ -1,37 +1,78 @@
 Tasks for MatrixObj
 ===================
 
+Design Decisions
+===================
 - Decide the relation between 'IsMatrix' and 'IsMatrixObj',
 
 - When multiplying PlistMatrixObjs we check whether the BaseDomains are
   identical. Should we adopt this everywhere?
 
-  define 'DefaultRing' for the entries as 'BaseDomain' of Plist matrices,
+- Decide and document what `ShallowCopy` should do for IsVectorObj 
+  and IsMatrixObj objects. 
+  Idea: For IsVectorObj define and document similar behaviour as for
+  plain lists. For IsMatrixObj document it explicitly as undefined
+  (but some implementations may provide a method); suggest to use
+  `MutableCopyMat` for IsMatrixObj objects.
 
-  introduce 'ZeroOfBaseDomain'.
+- matobj2.gd stats that +,-,*,<,=, AddRowVector, AddMultVector are possible
+  for vectors over the same BaseDomain and equal lengths.
+  Should this mean 'only if'?
 
+
+Changes to IsMatrixObj
+===================
+- define 'DefaultRing' for the entries as 'BaseDomain' of Plist matrices,
+
+- introduce 'ZeroOfBaseDomain'.
+
+- Define and implement 'EmptyMatrix' as IsMatrixObj
+
+- Define, document and implement generic methods mentioned in matobj{1,2}.gd
+
+- Provide test code.
+
+- Provide further kinds of vectors/matrices.
+
+- Rename *RowVector to *Vector like AddRowVector to AddVector
+
+
+Adapting the library
+===================
 - In the (about 240) library methods that *require* 'IsMatrix',
   adjust the code according to the 'IsMatrixObj' interface.
 
-  (Avoid 'Zero(m[1][1])', 'm[i][j]', and working with rows.)
+- Get rid of 'Zero(m[1][1])', 'm[i][j]', and working with rows.
 
 - In the (about 90) library methods that *call* 'IsMatrix',
   decide if one can use 'IsMatrixObj' instead.
 
 - Change 'm[i][j]' to 'm[i,j]'.
-
   (Only where really matrices are affected?)
 
 - Check the library methods that *create* matrices:
-
   What can be done in order to choose a suitable kind of matrix?
 
 - Replace 'PositionNot( obj, zero )' by 'PositionNonZero( obj )'.
-
   (And change the default methods for 'PositionNonZero'.)
 
 - Replace 'EmptyMatrix' and 'NullMapMatrix' by 'IsMatrixObj' objects.
+  Change GF2 and 8bit matrix code to support empty matrices
 
+- various operations on gf2 and 8bit matrix objects can silently convert
+  them to plists-of-plists; e.g. it is allows to unbind an element in the
+  middle, or assign something in cross characteristic, etc. etc. and all of
+  these work and silently convert the matrix/vector. I can't think of
+  situations where I'd want that -- I'd really prefer to require the user to
+  perform a manual conversion, and instead let accesses like the above
+  generate an error, to help track down bugs.
+
+- I'd like to rename `vecmat.{gi,gd}` to e.g. `vecmat_gf2.{gi,gd}`, to
+  indicate the purpose of those files; and then move any generic methods for
+  (compressed) matrices and vectors in it into another file
+
+Documentation
+===================
 - add entry in programming language section of ref manual for
       x:=A[B];  and A[B]:=x;
     for arbitrary objects B
@@ -52,23 +93,8 @@ Tasks for MatrixObj
   - how to convert existing IsMatrix code to adapt IsMatrixObj
   - deprecated usages of operations/functions
 
-- Provide test code.
-
-- Provide further kinds of vectors/matrices.
-
-- Decide and document what `ShallowCopy` should do for IsVectorObj 
-  and IsMatrixObj objects. 
-  Idea: For IsVectorObj define and document similar behaviour as for
-  plain lists. For IsMatrixObj document it explicitly as undefined
-  (but some implementations may provide a method); suggest to use
-  `MutableCopyMat` for IsMatrixObj objects.
-
-- Rename *RowVector to *Vector like AddRowVector to AddVector
-
 Additional notes by Max
 =======================
-
-- Change GF2 and 8bit matrix code to support empty matrices
 
 - I am still unhappy about the name `FoldList`, and the whole function.
   The terms "fold" and "foldlist" have a fixed meaning in functional programming,
@@ -86,15 +112,3 @@ Additional notes by Max
   code we just commented out in this PR, and some code generic code which for
   some reason ended up in `vecmat.gi` (even though that file is meant for GF2
   code only -- which its name sadly does not reflect).
-
-- I'd like to rename `vecmat.{gi,gd}` to e.g. `vecmat_gf2.{gi,gd}`, to
-  indicate the purpose of those files; and then move any generic methods for
-  (compressed) matrices and vectors in it into another file
-
-- various operations on gf2 and 8bit matrix objects can silently convert
-  them to plists-of-plists; e.g. it is allows to unbind an element in the
-  middle, or assign something in cross characteristic, etc. etc. and all of
-  these work and silently convert the matrix/vector. I can't think of
-  situations where I'd want that -- I'd really prefer to require the user to
-  perform a manual conversion, and instead let accesses like the above
-  generate an error, to help track down bugs.
