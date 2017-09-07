@@ -2998,11 +2998,19 @@ static Int InitLibrary (
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
 
+    UInt isvar = GVarName( "IsHPCGAP" );
+
 #ifdef HPCGAP
     UInt var = GVarName( "HPCGAP" );
     AssGVar( var, True );
-    MakeReadOnlyGVar( var );
+    MakeConstantGVar( var );
+
+    AssGVar( isvar, True );
+#else
+    AssGVar( isvar, False );
 #endif
+
+    MakeConstantGVar(isvar);
 
     /* return success                                                      */
     return PostRestore( module );
