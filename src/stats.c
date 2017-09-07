@@ -1972,6 +1972,7 @@ void            PrintIf (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
+    UInt                len;            /* length of loop                  */
 
     /* print the 'if' branch                                               */
     Pr( "if%4> ", 0L, 0L );
@@ -1980,9 +1981,11 @@ void            PrintIf (
     PrintStat( ADDR_STAT(stat)[1] );
     Pr( "%4<\n", 0L, 0L );
 
+    len = SIZE_STAT(stat) / (2 * sizeof(Stat));
     /* print the 'elif' branch                                             */
-    for ( i = 2; i <= SIZE_STAT(stat)/(2*sizeof(Stat)); i++ ) {
-        if ( TNUM_EXPR( ADDR_STAT(stat)[2*(i-1)] ) == T_TRUE_EXPR ) {
+    for (i = 2; i <= len; i++) {
+        if (i == len &&
+            TNUM_EXPR(ADDR_STAT(stat)[2 * (i - 1)]) == T_TRUE_EXPR) {
             Pr( "else%4>\n", 0L, 0L );
         }
         else {
