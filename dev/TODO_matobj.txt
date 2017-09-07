@@ -31,6 +31,15 @@ Tasks for MatrixObj
 
 - Document and implement the interface.
 
+  - add entry in programming language section of ref manual for
+      x:=A[B];  and A[B]:=x;
+    for arbitrary objects B
+
+  - add entries for [] and []:= to MatrixObj chapter
+
+  - link to these from the list chapter entries for [] and []:= (and vice versa)
+
+
 - Provide test code.
 
 - Provide further kinds of vectors/matrices.
