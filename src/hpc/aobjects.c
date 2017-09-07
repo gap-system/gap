@@ -347,6 +347,40 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   return addr[n+1].obj;
 }
 
+// If list[index] is bound then return it, else return 'value'.
+// The reason this function exists is that it is not thread-safe to
+// check if an index in a list is bound before reading it, as it
+// could be unbound before the actual reading is performed.
+static Obj FuncCHECKED_GET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
+{
+    UInt        n;
+    UInt        len;
+    AtomicObj * addr;
+    Obj         val;
+    if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
+        ArgumentError(
+            "CHECKED_GET_ATOMIC_LIST: First argument must be an atomic list");
+    addr = ADDR_ATOM(list);
+    len = ALIST_LEN((UInt)addr[0].atom);
+    if (!IS_INTOBJ(index))
+        ArgumentError("CHECKED_GET_ATOMIC_LIST: Second argument must be an integer");
+    n = INT_INTOBJ(index);
+    if (n <= 0 || n > len) {
+        val = 0;
+    }
+    else {
+        MEMBAR_READ();
+        val = addr[n + 1].obj;
+    }
+
+    if (val == 0) {
+        return value;
+    }
+    else {
+        return val;
+    }
+}
+
 static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
 {
   UInt n;
@@ -367,25 +401,33 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   return (Obj) 0;
 }
 
+static Obj AtomicCompareSwapAList(Obj list, Int index, Obj old, Obj new);
+
+// Given atomic list 'list', assign list[index] the value 'new', if list[index]
+// is currently assigned 'old'. This operation is performed atomicly.
 static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
 {
-  UInt n;
-  UInt len;
-  AtomicObj aold, anew;
-  AtomicObj *addr;
-  Obj result;
-  switch (TNUM_OBJ(list)) {
+    Int         len;
+    AtomicObj   aold, anew;
+    AtomicObj * addr;
+    Obj         result;
+
+    if (!IS_INTOBJ(index))
+        ArgumentError("COMPARE_AND_SWAP: Second argument must be an integer");
+    UInt n = INT_INTOBJ(index);
+
+    switch (TNUM_OBJ(list)) {
     case T_FIXALIST:
     case T_APOSOBJ:
       break;
+    case T_ALIST:
+        return AtomicCompareSwapAList(list, n, old, new);
     default:
-      ArgumentError("COMPARE_AND_SWAP: First argument must be a fixed atomic list");
+      ArgumentError("COMPARE_AND_SWAP: First argument must an atomic list");
   }
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt)addr[0].atom);
-  if (!IS_INTOBJ(index))
-    ArgumentError("COMPARE_AND_SWAP: Second argument must be an integer");
-  n = INT_INTOBJ(index);
+
   if (n <= 0 || n > len)
     ArgumentError("COMPARE_AND_SWAP: Index out of range");
   aold.obj = old;
@@ -395,6 +437,20 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
   if (result == True)
     CHANGED_BAG(list);
   return result;
+}
+
+// Similar to COMPARE_AND_SWAP, but assigns list[index] the value 'new'
+// if list[index] is currently unbound
+static Obj FuncATOMIC_BIND(Obj self, Obj list, Obj index, Obj new)
+{
+    return FuncCOMPARE_AND_SWAP(self, list, index, 0, new);
+}
+
+// Similar to COMPARE_AND_SWAP, but unbinds list[index] if list[index]
+// is currently assigned 'old'
+static Obj FuncATOMIC_UNBIND(Obj self, Obj list, Obj index, Obj old)
+{
+    return FuncCOMPARE_AND_SWAP(self, list, index, old, 0);
 }
 
 static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
@@ -1400,54 +1456,70 @@ void AssFixAList(Obj list, Int pos, Obj obj)
   MEMBAR_WRITE();
 }
 
+// Ensure the capacity of atomic list 'list' is at least 'pos'.
+// Errors if 'pos' is 'list' is fixed length and 'pos' is greater
+// than the existing length.
+// If this function returns, then the code has a (possibly shared)
+// HashLock on the list, which must be released by the caller.
+void EnlargeAList(Obj list, Int pos)
+{
+    HashLockShared(list);
+    AtomicObj * addr = ADDR_ATOM(list);
+    UInt        pol = (UInt)addr[0].atom;
+    UInt        len = ALIST_LEN(pol);
+    if (pos > len) {
+        HashUnlockShared(list);
+        HashLock(list);
+        addr = ADDR_ATOM(list);
+        pol = (UInt)addr[0].atom;
+        len = ALIST_LEN(pol);
+    }
+    if (pos > len) {
+        if (TNUM_OBJ(list) != T_ALIST) {
+            HashUnlock(list);
+            ErrorQuit(
+                "Atomic List Assignment: extending fixed size atomic list",
+                0L, 0L);
+            return; /* flow control hint */
+        }
+        addr = ADDR_ATOM(list);
+        if (pos > SIZE_BAG(list) / sizeof(AtomicObj) - 2) {
+            Obj  newlist;
+            UInt newlen = len;
+            do {
+                newlen = newlen * 3 / 2 + 1;
+            } while (pos > newlen);
+            newlist = NewBag(T_ALIST, sizeof(AtomicObj) * (2 + newlen));
+            memcpy(PTR_BAG(newlist), PTR_BAG(list),
+                   sizeof(AtomicObj) * (2 + len));
+            addr = ADDR_ATOM(newlist);
+            addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
+            MEMBAR_WRITE();
+            /* TODO: Won't work with GASMAN */
+            SET_PTR_BAG(list, PTR_BAG(newlist));
+            MEMBAR_WRITE();
+        }
+        else {
+            addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
+            MEMBAR_WRITE();
+        }
+    }
+}
+
 void AssAList(Obj list, Int pos, Obj obj)
 {
-  AtomicObj *addr;
-  UInt len, newlen, pol;
   if (pos < 1) {
     ErrorQuit(
 	"Atomic List Element: <pos>=%d is an invalid index for <list>",
 	(Int) pos, 0L);
     return; /* flow control hint */
   }
-  HashLockShared(list);
-  addr = ADDR_ATOM(list);
-  pol = (UInt)addr[0].atom;
-  len = ALIST_LEN(pol);
-  if (pos > len) {
-    HashUnlockShared(list);
-    HashLock(list);
-    addr = ADDR_ATOM(list);
-    pol = (UInt)addr[0].atom;
-    len = ALIST_LEN(pol);
-  }
-  if (pos > len) {
-    if (TNUM_OBJ(list) != T_ALIST) {
-      HashUnlock(list);
-      ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
-	0L, 0L);
-      return; /* flow control hint */
-    }
-    addr = ADDR_ATOM(list);
-    if (pos > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
-      Obj newlist;
-      newlen = len;
-      do {
-	newlen = newlen * 3 / 2 + 1 ;
-      } while (pos > newlen);
-      newlist = NewBag(T_ALIST, sizeof(AtomicObj) * ( 2 + newlen));
-      memcpy(PTR_BAG(newlist), PTR_BAG(list), sizeof(AtomicObj)*(2+len));
-      addr = ADDR_ATOM(newlist);
-      addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
-      MEMBAR_WRITE();
-      /* TODO: Won't work with GASMAN */
-      SET_PTR_BAG(list, PTR_BAG(newlist));
-      MEMBAR_WRITE();
-    } else {
-      addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
-      MEMBAR_WRITE();
-    }
-  }
+
+  EnlargeAList(list, pos);
+
+  AtomicObj * addr = ADDR_ATOM(list);
+  UInt        pol = (UInt)addr[0].atom;
+
   switch (ALIST_POL(pol)) {
     case ALIST_RW:
       ADDR_ATOM(list)[1+pos].obj = obj;
@@ -1467,6 +1539,32 @@ void AssAList(Obj list, Int pos, Obj obj)
   CHANGED_BAG(list);
   MEMBAR_WRITE();
   HashUnlock(list);
+}
+
+Obj AtomicCompareSwapAList(Obj list, Int pos, Obj old, Obj new)
+{
+    if (pos < 1) {
+        ErrorQuit(
+            "Atomic List Element: <pos>=%d is an invalid index for <list>",
+            (Int)pos, 0L);
+        return False; /* flow control hint */
+    }
+
+    EnlargeAList(list, pos);
+
+    UInt swap = COMPARE_AND_SWAP(&ADDR_ATOM(list)[1 + pos].atom,
+                                 (AtomicUInt)old, (AtomicUInt) new);
+
+    if (!swap) {
+        HashUnlock(list);
+        return False;
+    }
+    else {
+        CHANGED_BAG(list);
+        MEMBAR_WRITE();
+        HashUnlock(list);
+        return True;
+    }
 }
 
 UInt AddAList(Obj list, Obj obj)
@@ -1791,7 +1889,7 @@ Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(AtomicList, -1, "list|count, obj"),
     GVAR_FUNC(FixedAtomicList, -1, "list|count, obj"),
@@ -1799,8 +1897,12 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FromAtomicList, 1, "list"),
     GVAR_FUNC(AddAtomicList, 2, "list, obj"),
     GVAR_FUNC(GET_ATOMIC_LIST, 2, "list, index"),
+    GVAR_FUNC(CHECKED_GET_ATOMIC_LIST, 3, "list, index, default"),
     GVAR_FUNC(SET_ATOMIC_LIST, 3, "list, index, value"),
     GVAR_FUNC(COMPARE_AND_SWAP, 4, "list, index, old, new"),
+    GVAR_FUNC(ATOMIC_BIND, 3, "list, index, new"),
+    GVAR_FUNC(ATOMIC_UNBIND, 3, "list, index, old"),
+
     GVAR_FUNC(ATOMIC_ADDITION, 3, "list, index, inc"),
     GVAR_FUNC(AtomicRecord, -1, "[capacity]"),
     GVAR_FUNC(IS_ATOMIC_LIST, 1, "object"),
