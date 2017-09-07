@@ -1147,18 +1147,16 @@ typedef Bag *           (* TNumAllocFuncBags) (
                                 Int             size,
                                 UInt            need );
 
-typedef void            (* TNumStackFuncBags) ( void );
+typedef void (*TNumStackFuncBags)(void);
+typedef void (*TNumExtraMarkFuncBags)(void);
+typedef void (*TNumAbortFuncBags)(const Char * msg);
 
-typedef void            (* TNumAbortFuncBags) (
-                                const Char *    msg );
-
-extern  void            InitBags (
-            TNumAllocFuncBags   alloc_func,
-            UInt                initial_size,
-            TNumStackFuncBags   stack_func,
-            Bag *               stack_bottom,
-            UInt                stack_align,
-            TNumAbortFuncBags   abort_func );
+extern void InitBags(TNumAllocFuncBags alloc_func,
+                     UInt              initial_size,
+                     TNumStackFuncBags stack_func,
+                     Bag *             stack_bottom,
+                     UInt              stack_align,
+                     TNumAbortFuncBags abort_func);
 
 /****************************************************************************
 **
