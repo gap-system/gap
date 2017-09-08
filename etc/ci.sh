@@ -116,11 +116,12 @@ then
 fi
 
 
-# Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
-if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
+# Compile edim to test gac (but not on Cygwin, where gac is known to be broken)
+if [[ $OSTYPE != Cygwin* ]]
 then
+    source $BUILDDIR/sysinfo.gap
     cd edim
-    ./configure $BUILDDIR
+    ./configure $BUILDDIR CONFIGNAME=$CONFIGNAME
     make
     cd ..
 fi
