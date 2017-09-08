@@ -15,16 +15,6 @@
 
 #############################################################################
 ##
-#V  "forward declarations that will be picked up in filter1.g
-##
-
-IMPLICATIONS := fail;
-CLEAR_IMP_CACHE := fail;
-
-
-
-#############################################################################
-##
 #V  FILTERS . . . . . . . . . . . . . . . . . . . . . . . list of all filters
 ##
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
