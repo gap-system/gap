@@ -384,23 +384,47 @@ DeclareOperation( "AddRowVector",
 
 # TODO: rename MultRowVector to MultVector; but keep in mind that
 # historically there already was MultRowVector, so be careful to not break that
-DeclareOperation( "MultRowVector",
-  [ IsVectorObj and IsMutable, IsObject ] );
-
-#
-# Also, make it explicit from which side we multiply
-# DeclareOperation( "MultRowVectorFromLeft",
-#   [ IsVectorObj and IsMutable, IsObject ] );
-# DeclareOperation( "MultRowVectorFromRight",
-#   [ IsVectorObj and IsMutable, IsObject ] );
-#DeclareSynonym( "MultRowVector", MultRowVectorFromRight );
-
-# do we really need the following? for what? is any code using this right now?
-# ( a, pa, b, pb, s ) ->  a{pa} := b{pb} * s;
-DeclareOperation( "MultRowVector",
-  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList, IsObject ] );
-
-# maybe have this:   vec := vec{[from..to]} * scal ?? cvec has it
+#############################################################################
+##
+#O  MultRowVector( <vec>, <mul>[, <from>, <to>] )
+#O  MultRowVectorLeft( <vec>, <mul>[, <from>, <to>] )
+#O  MultRowVectorRight( <vec>, <mul>[, <from>, <to>] )
+##
+##  <#GAPDoc Label="MatObj_MultRowVector">
+##  <#GAPDoc Label="MatObj_MultRowVectorLeft">
+##  <#GAPDoc Label="MatObj_MultRowVectorRight">
+##  <ManSection>
+##  <Oper Name="MultRowVectorLeft" Arg='vec, mul[, from, to]'/>
+##  <Oper Name="MultRowVectorRight" Arg='vec, mul[, from, to]'/>
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  Note that <C>MultRowVector</C> is only a Synonym for
+##  <C>MultRowVectorLeft</C>.
+##  </P>
+##  These operations multiply <A>vec</A> with <A>mul</A> in-place and write
+##  the result to <A>vec</A>.
+##  <C>MultRowVectorLeft</C> multiplies <A>mul</A> to <A>vec</A> from the
+##  left. <C>MultRowVectorRight</C> does so from the right.
+##  </P>
+##  The optional parameters <A>from</A> and <A>to</A> can be used to restrict
+##  the effect of the operation to the entries
+##  <C><A>vec</A>{[<A>from</A>..<A>to</A>]}.
+##  This can be helpful if entries of <A>vec</A> are known to be zero.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultRowVectorLeft",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement ] );
+DeclareOperation( "MultRowVectorRight",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement ] );
+DeclareOperation( "MultRowVectorLeft",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ] );
+DeclareOperation( "MultRowVectorRight",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ] );
+#  Note that MultRowVector is declared a Synonym for MultRowVectorLeft in
+#  listcoef.gd
 
 
 # The following operations for scalars and vectors are possible for scalars in the BaseDomain

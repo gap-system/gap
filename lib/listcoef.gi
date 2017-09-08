@@ -262,73 +262,50 @@ end );
 
 #############################################################################
 ##
-#M  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mult> )
+#M  MultRowVectorLeft( <list>, <mul> )
 ##
-InstallMethod( MultRowVector,"generic method",
-    true,
-    [ IsDenseList and IsMutable,
-      IsDenseList,
-      IsDenseList,
-      IsDenseList,
-      IsMultiplicativeElement ],
-    0,
-
-function( l1, p1, l2, p2, m )
-    l1{p1} := m * l2{p2};
-end );
-
-InstallOtherMethod( MultRowVector,"error if immutable",true,
-    [ IsList,IsObject,IsObject,IsObject,IsObject],0,
-    L1_IMMUTABLE_ERROR);
-
-#############################################################################
-##
-#M  MultRowVector( <list>, <mul> )
-##
-InstallOtherMethod( MultRowVector,
-        "two argument generic method",
+InstallMethod( MultRowVectorLeft,
+    "for a mutable dense list, and a multiplicative element",
     true,
     [ IsDenseList and IsMutable,
       IsMultiplicativeElement ],
     0,
-
 function( l, m )
     local   i;
-
     for i  in [ 1 .. Length(l) ]  do
         l[i] := m * l[i];
     od;
 end );
-
-InstallOtherMethod( MultRowVector,"error if immutable",true,
-    [ IsList,IsObject],0,
+InstallOtherMethod( MultRowVectorLeft, "error if immutable", true,
+    [ IsList, IsMultiplicativeElement ],
+    0,
     L1_IMMUTABLE_ERROR);
 
-InstallOtherMethod( MultRowVector,
-        "Two argument kernel method for small list",
+InstallMethod( MultRowVectorLeft,
+    "kernel method for a mutable dense small list, and a \
+multiplicative element",
     IsCollsElms,
     [ IsSmallList and IsDenseList and IsMutable,
       IsMultiplicativeElement ],
     0,
-    MULT_ROW_VECTOR_2    
+    MULT_ROW_VECTOR_LEFT_2
 );
-
-InstallOtherMethod( MultRowVector,
-        "Two argument kernel method for plain list of cyclotomics and an integer",
+InstallMethod( MultRowVector,
+    "kernel method for a mutable dense plain list of \
+cyclotomics, and a cyclotomic",
     IsCollsElms,
-        [ IsSmallList and IsDenseList and IsMutable and IsPlistRep and
-          IsCyclotomicCollection,
+    [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
       IsCyclotomic ],
     0,
-    MULT_ROW_VECTOR_2_FAST    
+    MULT_ROW_VECTOR_2_FAST
 );
-
-InstallOtherMethod( MultRowVector,
-        "kernel method for vecffe (2 args)",
-        IsCollsElms,
-        [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
-          IsFFE],0,
-        MULT_ROWVECTOR_VECFFES );
+InstallMethod( MultRowVector,
+    "kernel method for a mutable row vector of ffes in \
+plain list rep, and an ffe",
+    IsCollsElms,
+    [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
+      IsFFE],0,
+    MULT_ROWVECTOR_VECFFES );
 
 
 #############################################################################

@@ -97,30 +97,28 @@ DeclareOperation(
 
 #############################################################################
 ##
-#O  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mul> )
-#O  MultRowVector( <list>, <mul> )
+#O  MultRowVectorLeft( <list>, <mul> )
 ##
 ##  <#GAPDoc Label="MultRowVector">
 ##  <ManSection>
-##  <Oper Name="MultRowVector" Arg='list1, [poss1, list2, poss2, ]mul'/>
+##  <Oper Name="MultRowVector" Arg='list1, mul'/>
+##  <Oper Name="MultRowVectorLeft" Arg='list1, mul'/>
+##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  The five argument version of this operation replaces
-##  <A>list1</A><C>[</C><A>poss1</A><C>[</C><M>i</M><C>]]</C> by
-##  <C><A>mul</A>*<A>list2</A>[<A>poss2</A>[</C><M>i</M><C>]]</C> for <M>i</M>
-##  between <M>1</M> and <C>Length( <A>poss1</A> )</C>.
+##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
 ##  <P/>
-##  The two-argument version simply multiplies each element of <A>list1</A>, 
-##  in-place, by <A>mul</A>.
+##  Note that <C>MultRowVectorLeft</C> is just a synonym for
+##  <C>MultRowVector</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation(
     "MultRowVector",
-        [ IsMutable and IsList, 
-          IsList, IsList, IsList, IsMultiplicativeElement ] );
-
+        [ IsMutable and IsList,
+          IsMultiplicativeElement ] );
+DeclareSynonym( "MultRowVectorLeft", MultRowVector );
 
 #############################################################################
 ##

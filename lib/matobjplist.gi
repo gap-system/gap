@@ -415,29 +415,28 @@ InstallMethod( AddRowVector,
     fi;
   end );
 
-InstallMethod( MultRowVector, "for a plist vector, and a scalar",
+InstallMethod( MultRowVectorLeft,
+  "for a plist vector, and an object",
   [ IsPlistVectorRep and IsMutable, IsObject ],
   function( v, s )
-    MULT_ROW_VECTOR_2(v![ELSPOS],s);
+    MULT_ROW_VECTOR_LEFT_2(v![ELSPOS],s);
   end );
 
-InstallMethod( MultRowVector, "for a plist vector, and a scalar",
-  [ IsPlistVectorRep and IsIntVector and IsMutable, IsObject ],
+InstallMethod( MultRowVectorRight,
+  "for a plist vector, and an object",
+  [ IsPlistVectorRep and IsMutable, IsObject ],
   function( v, s )
-    if IsSmallIntRep(s) then
-        MULT_ROW_VECTOR_2_FAST(v![ELSPOS],s);
-    else
-        MULT_ROW_VECTOR_2(v![ELSPOS],s);
-    fi;
+    MULT_ROW_VECTOR_RIGHT_2(v![ELSPOS],s);
   end );
 
-InstallMethod( MultRowVector,
-  "for a plist vector, a list, a plist vector, a list, and a scalar",
-  [ IsPlistVectorRep and IsMutable, IsList,
-    IsPlistVectorRep, IsList, IsObject ],
-  function( a, pa, b, pb, s )
-    a![ELSPOS]{pa} := b![ELSPOS]{pb} * s;
+InstallOtherMethod( MultRowVector, "for an integer vector, and a small integer",
+  [ IsPlistVectorRep and IsIntVector and IsMutable, IsSmallIntRep ],
+  function( v, s )
+    MULT_ROW_VECTOR_2_FAST(v![ELSPOS],s);
   end );
+
+# The four argument version of MultRowVector uses the generic implementation
+# in matobj.gi
 
 InstallMethod( \*, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],

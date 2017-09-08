@@ -879,6 +879,28 @@ end );
 
 #############################################################################
 ##
+#M  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mult> )
+##
+InstallOtherMethod( MultRowVector, "obsolete five argument method",
+    true,
+    [ IsDenseList and IsMutable,
+      IsDenseList,
+      IsDenseList,
+      IsDenseList,
+      IsMultiplicativeElement ],
+    0,
+function( l1, p1, l2, p2, m )
+    InfoObsolete(1, "This usage of `MultRowVector` is no longer",
+           "supported and will be removed eventually." );
+    l1{p1} := m * l2{p2};
+end );
+
+InstallOtherMethod( MultRowVector, "error if immutable", true,
+    [ IsList,IsObject,IsObject,IsObject,IsObject],0,
+    L1_IMMUTABLE_ERROR);
+
+#############################################################################
+##
 #F  SetUserPreferences
 ##
 ##  Set the defaults of `GAPInfo.UserPreferences'.

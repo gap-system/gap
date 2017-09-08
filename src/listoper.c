@@ -1347,7 +1347,7 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 /* We need these to redispatch when the user has supplied a replacement value. */
 
 static Obj AddRowVectorOp;   /* BH changed to static */
-static Obj MultRowVectorOp;  /* BH changed to static */
+static Obj MultRowVectorLeftOp;  /* BH changed to static */
 
 Obj FuncADD_ROW_VECTOR_5( Obj self,
                           Obj list1,
@@ -1579,28 +1579,50 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
 
 /****************************************************************************
 **
-*F  FuncMULT_ROW_VECTOR_2( <self>, <list>, <mult> )
+*F  FuncMULT_ROW_VECTOR_LEFT_RIGHT_2( <self>, <list>, <mult> )
 **
-**  This function destructively multiplies the entries of <list> by <mult>
-**  It does very little checking
+**  This function destructively multiplies the entries of <list> by <mult>.
+**  It multiplies with <mult> from the left if <left> is not 0 and from the
+**  right otherwise.
+**  It does very little checking.
 **
 */
 
-Obj FuncMULT_ROW_VECTOR_2( Obj self,
+Obj FuncMULT_ROW_VECTOR_LEFT_RIGHT_2( Obj self,
                            Obj list,
-                           Obj mult )
+                           Obj mult,
+                           UInt left )
 {
   UInt i;
   Obj prd;
   UInt len = LEN_LIST(list);
-  for (i = 1; i <= len; i++)
-    {
-      prd = ELMW_LIST(list,i);
-      prd = PROD(prd,mult);
-      ASS_LIST(list,i,prd);
-      CHANGED_BAG(list);
-    }
+  if (left != 0)
+    for (i = 1; i <= len; i++)
+      {
+        prd = ELMW_LIST(list,i);
+        prd = PROD(mult,prd);
+        ASS_LIST(list,i,prd);
+        CHANGED_BAG(list);
+      }
+  else
+    for (i = 1; i <= len; i++)
+      {
+        prd = ELMW_LIST(list,i);
+        prd = PROD(prd,mult);
+        ASS_LIST(list,i,prd);
+        CHANGED_BAG(list);
+      }
   return 0;
+}
+
+Obj FuncMULT_ROW_VECTOR_LEFT_2( Obj self, Obj list, Obj mult )
+{
+  return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 1);
+}
+
+Obj FuncMULT_ROW_VECTOR_RIGHT_2( Obj self, Obj list, Obj mult )
+{
+  return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 0);
 }
 
 /****************************************************************************
@@ -1674,7 +1696,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
           if (res == (Obj)0)
             {
               res = SHALLOW_COPY_OBJ(vecr);
-              CALL_2ARGS(MultRowVectorOp,res,elt);
+              CALL_2ARGS(MultRowVectorLeftOp,res,elt);
             }
           else
             CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
@@ -1692,7 +1714,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
 *F  FuncINV_MAT_DEFAULT
 **
 **  A faster version of InvMat for those matrices for whose rows AddRowVector
-** and MultRowVector make sense (and might have fast kernel methods)
+** and MultRowVectorLeft make sense (and might have fast kernel methods)
 **
 */
 
@@ -1793,8 +1815,8 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
       if (!EQ(x, one))
         {
           xi = INV(x);
-          CALL_2ARGS(MultRowVectorOp, row, xi);
-          CALL_2ARGS(MultRowVectorOp, row2, xi);
+          CALL_2ARGS(MultRowVectorLeftOp, row, xi);
+          CALL_2ARGS(MultRowVectorLeftOp, row2, xi);
         }
 
       /* Clear the entries. We know that we can ignore the entries in rows i..j */
@@ -2252,7 +2274,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(ADD_ROW_VECTOR_3_FAST, 3, "list1, list2, mult"),
     GVAR_FUNC(ADD_ROW_VECTOR_2, 2, "list1, list2"),
     GVAR_FUNC(ADD_ROW_VECTOR_2_FAST, 2, "list1, list2"),
-    GVAR_FUNC(MULT_ROW_VECTOR_2, 2, "list, mult"),
+    GVAR_FUNC(MULT_ROW_VECTOR_LEFT_2, 2, "list, mult"),
+    GVAR_FUNC(MULT_ROW_VECTOR_RIGHT_2, 2, "list, mult"),
     GVAR_FUNC(MULT_ROW_VECTOR_2_FAST, 2, "list, mult"),
     GVAR_FUNC(PROD_VEC_MAT_DEFAULT, 2, "vec, mat"),
     GVAR_FUNC(INV_MAT_DEFAULT_MUTABLE, 1, "mat"),
@@ -2284,7 +2307,7 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InitFopyGVar( "AddRowVector", &AddRowVectorOp );
-    InitFopyGVar( "MultRowVector", &MultRowVectorOp );
+    InitFopyGVar( "MultRowVectorLeft", &MultRowVectorLeftOp );
     InitFopyGVar( "ConvertToMatrixRep", &ConvertToMatrixRep );
 
 
