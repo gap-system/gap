@@ -627,8 +627,6 @@ ReadOrComplete( "lib/read4.g" );
 #  around function definitions!
 ReadLib( "helpview.gi"  );
 
-#T  1996/09/01 M.Schönert this helps performance
-IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 # allow type determination of IMPLICATIONS without using it
 TypeObj(IMPLICATIONS[1]);
 #T shouldn't this better be at the end of reading the library?

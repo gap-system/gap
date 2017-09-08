@@ -22,7 +22,6 @@
 #ifndef AVOID_PRECOMPILED
 extern StructInitInfo * Init__methsel1 ( void );
 extern StructInitInfo * Init__type1 ( void );
-extern StructInitInfo * Init__filter1 ( void );
 extern StructInitInfo * Init__oper1( void );
 #endif
 
@@ -31,7 +30,6 @@ InitInfoFunc CompInitFuncs [] = {
     Init__methsel1,
     Init__type1,
     Init__oper1,
-    Init__filter1,
 #endif
     0
 };
