@@ -2736,6 +2736,11 @@ InstallMethod( RadicalOfAlgebra,
     fi;
 
     n:= Dimension( A );
+
+    if n = 0 then
+      return A;
+    fi;
+
     BA:= Basis( A );
     bv:= BasisVectors( BA );
     F:= LeftActingDomain( A );
