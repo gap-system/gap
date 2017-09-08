@@ -531,6 +531,33 @@ DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
 
 #############################################################################
 ##
+#O  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mul> )
+##
+##  <#GAPDoc Label="MultRowVector">
+##  <ManSection>
+##  <Oper Name="MultRowVector" Arg='list1, [poss1, list2, poss2, ]mul'/>
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  The two argument version of this operation is an obsolete synonym for
+##  <C>MultVectorLeft</C>, which calculates <A>mul</A>*<A>list1</A> in-place.
+##  New code should use <C>MultVectorLeft</C> or its synonym
+##  <C>MultVector</C> instead.
+##  <P/>
+##  <E>The five argument version of this operation is kept for compatibility
+##  with older versions of &GAP; and will be removed eventually.</E>
+##  It replaces
+##  <A>list1</A><C>[</C><A>poss1</A><C>[</C><M>i</M><C>]]</C> by
+##  <C><A>mul</A>*<A>list2</A>[<A>poss2</A>[</C><M>i</M><C>]]</C> for <M>i</M>
+##  between <M>1</M> and <C>Length( <A>poss1</A> )</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareObsoleteSynonym( "MultRowVector", "MultVector" );
+
+#############################################################################
+##
 #O  ReadTest 
 ##
 ##  `ReadTest' is superseded by more robust and flexible `Test'. Since the

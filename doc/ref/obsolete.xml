@@ -174,6 +174,10 @@ Here are some further name changes.
   <Item><C>MutableNullMat</C></Item>
   <Item><Ref Func="NullMat"/></Item>
 </Row>
+<Row>
+  <Item><C>MultRowVector</C></Item>
+  <Item><Ref Oper="MultVectorLeft"/></Item>
+</Row>
 </Table>
 
 
@@ -185,6 +189,11 @@ Instead of <C>PositionFirstComponent(list,obj)</C>, you may use
 <C>PositionProperty(list,x->x[1]=obj)</C> as a replacement, depending on
 your specific use case.
 
+<Index Key="MultRowVector"><C>MultRowVector</C></Index>
+The five argument version of the operation <C>MultRowVector</C> has been
+deprecated in GAP 4.8 since it was unused and only available for coefficient
+lists.
+Note that <C>MultRowVector</C> was also renamed to <C>MultVectorLeft</C>.
 
 <ManSection>
 <InfoClass Name="InfoObsolete"/>

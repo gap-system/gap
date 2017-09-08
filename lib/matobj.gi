@@ -568,6 +568,51 @@ InstallMethod( Randomize,
     od;
 end );
 
+############################################################################
+# Arithmetical operations:
+############################################################################
+InstallMethod( MultRowVectorLeft,
+  "generic method for a mutable vector, and a multiplicative element",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement ],
+  function( v, s )
+    local i;
+    for i in [1 .. Length(v)] do
+      v[i] := s * v[i];
+    od;
+  end );
+
+InstallMethod( MultRowVectorRight,
+  "generic method for a mutable vector, and a multiplicative element",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement ],
+  function( v, s )
+    local i;
+    for i in [1 .. Length(v)] do
+      v[i] := v[i] * s;
+    od;
+  end );
+
+InstallMethod( MultRowVectorLeft,
+  "generic method for a mutable vector, a multiplicative element, an int, \
+and an int",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ],
+  function( v, s, from, to )
+    local i;
+    for i in [from .. to] do
+      v[i] := s * v[i];
+    od;
+  end );
+
+InstallMethod( MultRowVectorRight,
+  "generic method for a mutable vector, a multiplicative element, an int, \
+and an int",
+  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ],
+  function( v, s, from, to )
+    local i;
+    for i in [from .. to] do
+      v[i] := v[i] * s;
+    od;
+  end );
+
 #
 # Compatibility code: Install MatrixObj methods for IsMatrix.
 #

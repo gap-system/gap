@@ -768,7 +768,7 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 **
 */
 
-static Obj MultRowVectorOp;   /* BH changed to static */
+static Obj MultRowVectorLeftOp;   /* BH changed to static */
 
 Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 {
@@ -805,7 +805,7 @@ Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
                 "MultRowVector: <multiplier> has different field",
                 0L, 0L,
                 "you can replace <multiplier> via 'return <multiplier>;'");
-            return CALL_2ARGS(MultRowVectorOp, vec, mult);
+            return CALL_2ARGS(MultRowVectorLeftOp, vec, mult);
         }
 
         /* if the multiplier is over a non subfield then redispatch */
