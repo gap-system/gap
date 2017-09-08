@@ -84,6 +84,9 @@ typedef void       sig_handler_t ( int );
 #include <process.h>
 #endif
 
+#if defined(LIBGAP)
+#include "sage_interface_internal.h"
+#endif
 
 /* utility to check return value of 'write'  */
 ssize_t writeandcheck(int fd, const char *buf, size_t count) {
@@ -1153,7 +1156,9 @@ void getwindowsize( void )
             if (CO <= 0)
                 CO = win.ws_col;
         }
+#if !defined(LIBGAP)
         (void) signal(SIGWINCH, syWindowChangeIntr);
+#endif
     }
 #endif /* TIOCGWINSZ */
 
@@ -2735,9 +2740,19 @@ Char * SyFgets (
     UInt                length,
     Int                 fid)
 {
-  return syFgets( line, length, fid, 1);
+#if !defined(LIBGAP)
+    return syFgets( line, length, fid, 1);
+#else
+    if(fid!=0 && fid!=2) {
+        /* TODO: Do this properly */
+        // not stdin/stderr; probably file IO. Do the standard thing.
+        // printf("SyFgets fid=%i\n", fid);
+        return syFgets( line, length, fid, 1);
+    }
+    return libgap_get_input(line, length);
+    // return syFgets( line, length, fid, 1);
+#endif
 }
-
 
 Char *SyFgetsSemiBlock (
     Char *              line,

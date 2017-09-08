@@ -1,0 +1,33 @@
+Initialized
+Input:
+1+2+3;
+Output:
+6
+Input:
+g:=FreeGroup(2);
+Output:
+<free group on the generators [ f1, f2 ]>
+Input:
+a:=g.1;
+Output:
+f1
+Input:
+b:=g.2;
+Output:
+f2
+Input:
+lis:=[a^2, a^2, b*a];
+Output:
+[ f1^2, f1^2, f2*f1 ]
+Input:
+h:=g/lis;
+Output:
+<fp group on the generators [ f1, f2 ]>
+Input:
+c:=h.1;
+Output:
+f1
+Input:
+Set([1..1000000], i->Order(c));
+Output:
+[ 2 ]

@@ -114,6 +114,10 @@
 
 #include <src/gaputils.h>
 
+#if defined(LIBGAP)
+#include <src/sage_interface.h>
+#endif
+
 /****************************************************************************
 **
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
@@ -208,6 +212,8 @@ static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int NrImportedFuncs;
 
 static char **sysenviron;
+
+TJumpToCatchFunc JumpToCatchFunc = 0;
 
 /*
 TL: Obj ShellContext = 0;
@@ -1148,6 +1154,15 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
 {
   STATE(ThrownObject) = payload;
   syLongjmp(&(STATE(ReadJmpError)), 1);
+#if defined(LIBGAP)
+  libgap_call_error_handler();
+#endif
+  STATE(ThrownObject) = payload;
+  if(JumpToCatchFunc != 0) {
+      (*JumpToCatchFunc)();
+  }
+  STATE(ThrownObject) = payload;
+  syLongjmp(STATE(ReadJmpError), 1);
   return 0;
 }
 
@@ -3210,7 +3225,7 @@ void InitializeGap (
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyAllocBags, SyStorMin,
-              0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
+              0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign, 0,
               SyAbortBags );
 #if !defined(BOEHM_GC)
     InitMsgsFuncBags( SyMsgsBags );
@@ -3229,6 +3244,8 @@ void InitializeGap (
 
     NrImportedGVars = 0;
     NrImportedFuncs = 0;
+
+    JumpToCatchFunc = 0;
 
     sysenviron = environ;
 

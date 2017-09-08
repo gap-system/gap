@@ -683,8 +683,8 @@ static Int InitKernel(StructInitInfo * module)
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable(GVarFuncs);
-
-#if !defined(HPCGAP)
+  
+#if !defined(HPCGAP) && !defined(LIBGAP)
     /* Set up the trap to detect future dying children */
     signal(SIGCHLD, ChildStatusChanged);
 #endif

@@ -1153,6 +1153,7 @@ typedef Bag *           (* TNumAllocFuncBags) (
                                 UInt            need );
 
 typedef void            (* TNumStackFuncBags) ( void );
+typedef void            (* TExtraMarkFuncBags) (void);
 
 typedef void            (* TNumAbortFuncBags) (
                                 const Char *    msg );
@@ -1163,6 +1164,7 @@ extern  void            InitBags (
             TNumStackFuncBags   stack_func,
             Bag *               stack_bottom,
             UInt                stack_align,
+            UInt                dirty,
             TNumAbortFuncBags   abort_func );
 
 /****************************************************************************
@@ -1189,5 +1191,15 @@ extern void CallbackForAllBags(
 #ifdef BOEHM_GC
 void *AllocateMemoryBlock(UInt size);
 #endif
+
+/*
+ * If not 0 this function will be called in
+ * CollectBags to allow users of libgap to mark bags
+ */
+extern TExtraMarkFuncBags ExtraMarkFuncBags;
+
+static void SetExtraMarkFuncBags(TExtraMarkFuncBags func)
+{ ExtraMarkFuncBags = func; }
+
 
 #endif // GAP_GASMAN_H

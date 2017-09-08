@@ -2379,6 +2379,34 @@ Int nrLineBreak( KOutputStream stream )
 
 
 
+#if defined(LIBGAP)
+
+/* TODO: Do this properly */
+#include "sage_interface_internal.h"
+
+void PutChrTo(KOutputStream stream, Char ch)
+{
+    if (ch <= 3)  // GAP control characters
+        return;
+    // Magic constants are defined in SyFopen
+    if (stream->file == 0) {        // negative number indicates an error
+        assert(False);
+    } else if (stream->file == 0) { // 0 identifies the standard input file "*stdin*"
+        assert(False);
+    } else if (stream->file == 1) { // 1 identifies the standard outpt file "*stdout*"
+        libgap_append_stdout(ch);
+    } else if (stream->file == 2) { // 2 identifies the brk loop input file "*errin*"
+        assert(False);
+    } else if (stream->file == 3) { // 3 identifies the error messages file "*errout*"
+        libgap_append_stderr(ch);
+    } else {                        // anything else is a real file descriptor
+        stream->line[stream->pos++] = ch;
+        stream->line[stream->pos++] = '\0';
+        PutLineTo(stream, stream->pos);
+        stream->pos = 0;
+    }
+}
+#else
 void PutChrTo (
          KOutputStream stream,
          Char                ch )
@@ -2535,6 +2563,7 @@ void PutChrTo (
 
     }
 }
+#endif
 
 /****************************************************************************
  **

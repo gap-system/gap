@@ -201,6 +201,11 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
+typedef void  (* TJumpToCatchFunc)();
+extern TJumpToCatchFunc JumpToCatchFunc;
+static inline void SetJumpToCatchFunc(TJumpToCatchFunc func)
+{ JumpToCatchFunc = func; };
+
 /* TL: extern Obj ErrorLVars;
    TL: extern Obj ErrorLVars0;
  */
