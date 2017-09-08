@@ -682,25 +682,20 @@ ReadOrComplete( "lib/read4.g" );
 #  around function definitions!
 ReadLib( "helpview.gi"  );
 
-#T  1996/09/01 M.Schönert this helps performance
 if IsBound(HPCGAP) then
+#T  1996/09/01 M.Schönert this helps performance
     ORIGINAL_IMPS := IMPLICATIONS;
     atomic ORIGINAL_IMPS do
         IMPLICATIONS :=
           IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
         MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
     od;
-else
-    IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
-fi;
-#T shouldn't this better be at the end of reading the library?
-#T and what about implications installed in packages?
-#T (put later installations to the front?)
 
-# allow type determination of IMPLICATIONS without using it
-atomic IMPLICATIONS do
-    TypeObj(IMPLICATIONS[1]);
-od;
+    # allow type determination of IMPLICATIONS without using it
+    atomic IMPLICATIONS do
+        TypeObj(IMPLICATIONS[1]);
+    od;
+fi;
 
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.

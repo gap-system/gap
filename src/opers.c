@@ -860,6 +860,10 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 **
 *F  FuncWITH_HIDDEN_IMP_FLAGS( <self>, <flags> ) . . add hidden imps to flags
 */
+#ifdef COUNT_OPERS
+static Int WITH_HIDDEN_IMPS_MISS=0;
+static Int WITH_HIDDEN_IMPS_HIT=0;
+#endif
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     Int changed, i;
@@ -890,11 +894,17 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef HPCGAP
         RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
+#ifdef COUNT_OPERS
+        WITH_HIDDEN_IMPS_HIT++;
+#endif
         return ret;
       }
       hash = (hash * 311 + 61) % hidden_imps_cache_length;
     }
     
+#ifdef COUNT_OPERS
+    WITH_HIDDEN_IMPS_MISS++;
+#endif
     changed = 1;
     while(changed)
     {
@@ -942,6 +952,167 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
     return with;
+}
+
+static Obj IMPLICATIONS;
+static Obj WITH_IMPS_FLAGS_CACHE;
+static const Int imps_cache_length = 32001;
+
+/****************************************************************************
+**
+*F  FuncIMPLICATIONS( ) . . . . . . . . . .  return implications list to GAP
+*/
+Obj FuncImportIMPLICATIONS(Obj self)
+{
+    return IMPLICATIONS;
+}
+
+/****************************************************************************
+**
+*F  FuncCLEAR_IMP_CACHE( <self>, <flags> ) . . . . . . . clear cache of flags
+*/
+Obj FuncCLEAR_IMP_CACHE(Obj self)
+{
+  Int i;
+#ifdef HPCGAP
+  RegionWriteLock(REGION(IMPLICATIONS));
+#endif
+  for(i = 1; i < imps_cache_length * 2 - 1; i += 2)
+  {
+    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i, 0);
+    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i + 1, 0);
+    CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
+  }
+#ifdef HPCGAP
+  RegionWriteUnlock(REGION(IMPLICATIONS));
+#endif
+  return 0;
+}
+
+/****************************************************************************
+**
+*F  FuncWITH_IMPS_FLAGS( <self>, <flags> ) . . . . . . . . add imps to flags
+*/
+#ifdef COUNT_OPERS
+static Int WITH_IMPS_FLAGS_MISS=0;
+static Int WITH_IMPS_FLAGS_HIT=0;
+#endif
+Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
+{
+    Int changed, lastand, i;
+    Int stop, round;
+    Int imps_length = LEN_PLIST(IMPLICATIONS);
+    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % imps_cache_length;
+    Int hash = base_hash;
+    Int hash_loop = 0;
+    Obj cacheval;
+    Obj old_with, old_flags, new_with, new_flags;
+    Int old_moving;
+    Obj with = flags;
+    Obj imp;
+    
+    /* do some trivial checks - we have to do this so we can use
+     * UncheckedIS_SUBSET_FLAGS                                              */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+#ifdef HPCGAP
+    RegionWriteLock(REGION(IMPLICATIONS));
+#endif
+    for(hash_loop = 0; hash_loop < 3; ++hash_loop)
+    {
+      cacheval = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
+      if(cacheval && cacheval == flags) {
+        Obj ret = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
+#ifdef HPCGAP
+        RegionWriteUnlock(REGION(IMPLICATIONS));
+#endif
+#ifdef COUNT_OPERS
+        WITH_IMPS_FLAGS_HIT++;
+#endif
+        return ret;
+      }
+      hash = (hash * 311 + 61) % imps_cache_length;
+    }
+    
+#ifdef COUNT_OPERS
+    WITH_IMPS_FLAGS_MISS++;
+#endif
+    changed = 1;
+    lastand = imps_length+1;
+    //lastand = 0;
+    round = 0;
+    while(changed)
+    {
+      changed = 0;
+      round++;
+      //for (i = imps_length, stop = lastand; i > stop; --i)
+      for (i = 1, stop = lastand; i < stop; i++)
+      {
+        imp = ELM_PLIST(IMPLICATIONS, i);
+        if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
+           UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+        {
+          with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
+          changed = 1;
+          //stop = 0;
+          stop = imps_length+1;
+          lastand = i;
+        }
+      }
+    }
+
+    /* add to hash table, shuffling old values along (last one falls off) */
+    hash = base_hash;
+    
+    old_moving = 1;
+    new_with = with;
+    new_flags = flags;
+    
+    for(hash_loop = 0; old_moving && hash_loop < 3; ++hash_loop) {
+      old_moving = 0;
+      if(ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1))
+      {
+        old_flags = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
+        old_with = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
+        old_moving = 1;
+      }
+
+      SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
+      SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
+      CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
+
+      if(old_moving)
+      {
+        new_flags = old_flags;
+        new_with = old_with;
+        hash = (hash * 311 + 61) % imps_cache_length;
+      }
+    }
+    
+#ifdef HPCGAP
+    RegionWriteUnlock(REGION(IMPLICATIONS));
+#endif
+    return with;
+}
+
+Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
+{
+    Obj res;
+    res = NEW_PLIST(T_PLIST, 3);
+    SET_LEN_PLIST(res, 3);
+    SET_ELM_PLIST(res, 1, WITH_IMPS_FLAGS_CACHE);
+#ifdef COUNT_OPERS
+    SET_ELM_PLIST(res, 2, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
+    SET_ELM_PLIST(res, 3, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
+#else
+    SET_ELM_PLIST(res, 2, Fail);
+    SET_ELM_PLIST(res, 3, Fail);
+#endif
+    CHANGED_BAG(res);
+    return res;
 }
 
 /****************************************************************************
@@ -5859,8 +6030,8 @@ Obj FuncOPERS_CACHE_INFO (
     Int                 i;
 #endif
 
-    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
-    SET_LEN_PLIST( list, 9 );
+    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 13 );
+    SET_LEN_PLIST( list, 13 );
 #ifdef COUNT_OPERS
     SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
     SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
@@ -5871,8 +6042,12 @@ Obj FuncOPERS_CACHE_INFO (
     SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
     SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
+    SET_ELM_PLIST( list, 10, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT)  );
+    SET_ELM_PLIST( list, 11, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS) );
+    SET_ELM_PLIST( list, 12, INTOBJ_INT(WITH_IMPS_FLAGS_HIT)   );
+    SET_ELM_PLIST( list, 13, INTOBJ_INT(WITH_IMPS_FLAGS_MISS)  );
 #else
-    for (i = 1; i <= 9; i++)
+    for (i = 1; i <= 13; i++)
         SET_ELM_PLIST( list, i, INTOBJ_INT(0) );
 #endif
     return list;
@@ -5897,6 +6072,10 @@ Obj FuncCLEAR_CACHE_INFO (
     IsSubsetFlagsCalls1 = 0;
     IsSubsetFlagsCalls2 = 0;
     OperationNext = 0;
+    WITH_HIDDEN_IMPS_HIT = 0;
+    WITH_HIDDEN_IMPS_MISS = 0;
+    WITH_IMPS_FLAGS_HIT = 0;
+    WITH_IMPS_FLAGS_MISS = 0;
 #endif
 
     return 0;
@@ -6082,6 +6261,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(CLEAR_HIDDEN_IMP_CACHE, 1, "flags"),
     GVAR_FUNC(WITH_HIDDEN_IMPS_FLAGS, 1, "flags"),
     GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
+    GVAR_FUNC(CLEAR_IMP_CACHE, 0, ""),
+    GVAR_FUNC(ImportIMPLICATIONS, 0, ""),
+    GVAR_FUNC(WITH_IMPS_FLAGS, 1, "flags"),
+    GVAR_FUNC(WITH_IMPS_FLAGS_STAT, 0, ""),
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
@@ -6225,6 +6408,10 @@ static Int InitKernel (
     /* set up hidden implications                                          */
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
+    
+    /* set up implications                                                 */
+    InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
+    InitGlobalBag( &IMPLICATIONS, "src/opers.c:IMPLICATIONS");
     
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
@@ -6372,6 +6559,17 @@ static Int InitLibrary (
 #ifdef HPCGAP
     REGION(HIDDEN_IMPS) = NewRegion();
     REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
+#endif
+
+    IMPLICATIONS = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(IMPLICATIONS, 0);
+    WITH_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, imps_cache_length * 2);
+    SET_LEN_PLIST(WITH_IMPS_FLAGS_CACHE, imps_cache_length * 2);
+    AssGVar(GVarName("IMPLICATIONS"), IMPLICATIONS);
+
+#ifdef HPCGAP
+    REGION(IMPLICATIONS) = NewRegion();
+    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
 #endif
 
     /* make the 'true' operation                                           */  
