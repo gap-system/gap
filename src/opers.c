@@ -956,7 +956,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
 static Obj IMPLICATIONS;
 static Obj WITH_IMPS_FLAGS_CACHE;
-static const Int imps_cache_length = 32001;
+static const Int imps_cache_length = 11001;
 
 /****************************************************************************
 **
