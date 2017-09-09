@@ -1042,13 +1042,11 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #endif
     changed = 1;
     lastand = imps_length+1;
-    //lastand = 0;
     round = 0;
     while(changed)
     {
       changed = 0;
       round++;
-      //for (i = imps_length, stop = lastand; i > stop; --i)
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS, i);
@@ -1057,7 +1055,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
           changed = 1;
-          //stop = 0;
           stop = imps_length+1;
           lastand = i;
         }
