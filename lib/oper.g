@@ -1013,8 +1013,8 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    # store the ranks (1 is default)
+    # RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1107,8 +1107,9 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
 
           # store the rank
-          RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
-          
+          if rank <> 1 then
+            RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
+          fi;
           
           return;
       end);
@@ -1340,9 +1341,9 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    # store the ranks (1 is default)
+    # RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    # RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1419,12 +1420,13 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the rank
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) and arg[3]<>1 then
         RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-    else
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+    #else # 1 is default
+    #    RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
     fi;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
+    # 1 is default
+    # RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
 
     # and return the getter
     return getter;
