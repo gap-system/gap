@@ -443,7 +443,6 @@ clean:
 	rm -rf obj
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
-	rm -f src/compiled.h
 	rm -f gen/gap_version.c
 	rm -f doc/wsp.g
 
