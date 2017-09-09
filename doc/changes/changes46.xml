@@ -500,7 +500,7 @@ Fixed bugs that could lead to break loops:
 <Item>
 <!-- #404 -->
 A bug that may occur in some cases while calling 
-<Ref Attr="TransitiveIdentification" BookName="ref"/>.
+<Ref Attr="TransitiveIdentification" BookName="transgrp"/>.
 [Reported by Izumi Miyamoto]
 </Item>
 <Item>

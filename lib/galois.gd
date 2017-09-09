@@ -48,7 +48,7 @@ DeclareInfoClass("InfoGalois");
 ##  current factoring methods.
 ##  <P/>
 ##  This function requires the transitive groups library to be installed (see
-##  <Ref Sect="Transitive Permutation Groups"/>).
+##  <Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -71,7 +71,7 @@ DeclareAttribute("GaloisType",IsRationalFunction);
 ##  It is very fast, but the result is only probabilistic.
 ##  <P/>
 ##  This function requires the transitive groups library to be installed (see
-##  <Ref Sect="Transitive Permutation Groups"/>).
+##  <Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>).
 ##  <Example><![CDATA[
 ##  gap> f:=x^9-9*x^7+27*x^5-39*x^3+36*x-8;;
 ##  gap> GaloisType(f);

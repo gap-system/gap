@@ -490,8 +490,8 @@ or <K>fail</K> (before it only said <Q>not a boolean</Q>).
 </Item>
 <Item>
 <!-- #797 -->
-For consistency, both <Ref Func="NrTransitiveGroups" BookName="ref" /> and
-<Ref Func="TransitiveGroup" BookName="ref" /> now disallow the transitive
+For consistency, both <Ref Func="NrTransitiveGroups" BookName="transgrp" /> and
+<Ref Func="TransitiveGroup" BookName="transgrp" /> now disallow the transitive
 group of degree 1.
 </Item>
 </List>
