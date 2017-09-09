@@ -867,7 +867,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
-    Int changed, i;
+    Int changed, i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
     Int hash = base_hash;
@@ -907,16 +907,19 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     WITH_HIDDEN_IMPS_MISS++;
 #endif
     changed = 1;
+    lastand = 0;
     while(changed)
     {
       changed = 0;
-      for(i = hidden_imps_length; i >= 1; --i)
+      for (i = hidden_imps_length, stop = lastand; i > stop; i--)
       {
         if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
            UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
+          stop = 0;
+          lastand = i;
         }
       }
     }
@@ -957,7 +960,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
 static Obj IMPLICATIONS;
 static Obj WITH_IMPS_FLAGS_CACHE;
-enum { IMPS_CACHE_LENGTH = 32001 };
+enum { IMPS_CACHE_LENGTH = 11001 };
 
 /****************************************************************************
 **
@@ -991,7 +994,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     Int changed, lastand, i;
-    Int stop, round;
+    Int stop;
     Int imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
     Int hash = base_hash;
@@ -1034,13 +1037,9 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     changed = 1;
     imps_length = LEN_PLIST(IMPLICATIONS);
     lastand = imps_length+1;
-    //lastand = 0;
-    round = 0;
     while(changed)
     {
       changed = 0;
-      round++;
-      //for (i = imps_length, stop = lastand; i > stop; --i)
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS, i);
@@ -1049,7 +1048,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
           changed = 1;
-          //stop = 0;
           stop = imps_length+1;
           lastand = i;
         }
