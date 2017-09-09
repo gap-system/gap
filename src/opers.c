@@ -6543,7 +6543,7 @@ static Int postRestore (
     StructInitInfo *    module )
 {
 
-  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")))+1;
+  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")));
   return 0;
 }
 
