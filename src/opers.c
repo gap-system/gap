@@ -954,6 +954,40 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     return with;
 }
 
+
+/****************************************************************************
+**
+*F  FuncRankFilter( filt ) . . . . . . .  return rank of filter or flags
+*/
+static Obj RANK_FILTERS;
+Obj FuncRankFilter(Obj self, Obj flags)
+{
+    Int res, i, lenrf, pos;
+    Obj impflags, trues;
+
+    /* argument check and maybe first get flags */
+    if ( IS_OPERATION(flags) ) {
+        flags = FuncFLAGS_FILTER(0, flags);
+    }
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+    impflags = FuncWITH_HIDDEN_IMPS_FLAGS(0, flags);
+    trues = FuncTRUES_FLAGS(0, impflags);
+    if (trues == 0) return INTOBJ_INT(0);
+    lenrf = LEN_PLIST(RANK_FILTERS);
+    for (res = 0, i = 1; i <= LEN_PLIST(trues); i++) {
+        pos = INT_INTOBJ(ELM_PLIST(trues, i));
+        if (pos > lenrf || ELM_PLIST(RANK_FILTERS, pos) == 0)
+            res++;
+        else
+            res += INT_INTOBJ(ELM_PLIST(RANK_FILTERS, pos));
+    }
+    return INTOBJ_INT(res);
+}
+
 static Obj IMPLICATIONS;
 static Obj WITH_IMPS_FLAGS_CACHE;
 static const Int imps_cache_length = 11001;
@@ -6258,6 +6292,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(CLEAR_HIDDEN_IMP_CACHE, 1, "flags"),
     GVAR_FUNC(WITH_HIDDEN_IMPS_FLAGS, 1, "flags"),
     GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
+    GVAR_FUNC(RankFilter, 1, "filtorflags"),
     GVAR_FUNC(CLEAR_IMP_CACHE, 0, ""),
     GVAR_FUNC(ImportIMPLICATIONS, 0, ""),
     GVAR_FUNC(WITH_IMPS_FLAGS, 1, "flags"),
@@ -6409,6 +6444,7 @@ static Int InitKernel (
     /* set up implications                                                 */
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS, "src/opers.c:IMPLICATIONS");
+    InitGlobalBag( &RANK_FILTERS, "src/opers.c:RANK_FILTERS");
     
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
@@ -6569,6 +6605,14 @@ static Int InitLibrary (
     REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
 #endif
 
+    RANK_FILTERS = NEW_PLIST(T_PLIST, 3000);
+    SET_LEN_PLIST(RANK_FILTERS, 0);
+    AssGVar(GVarName("RANK_FILTERS"), RANK_FILTERS);
+
+#ifdef HPCGAP
+    REGION(IMPLICATIONS) = NewRegion();
+    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
+#endif
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
     AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );

@@ -65,7 +65,8 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
         IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
         INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-        RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        # 1 is default
+        #RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
@@ -115,10 +116,10 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     FILTERS[ FLAG1_FILTER( cat ) ] := cat;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
 
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) and arg[3] <> 1 then
       RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
-    else
-      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
+    #else  # 1 is default
+    #  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
     fi;
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
 
@@ -179,7 +180,8 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    # 1 is default
+    #RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
@@ -267,7 +269,8 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ] := rep;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    # 1 is default
+    #RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
 
     # Return the filter.

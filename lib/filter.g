@@ -29,8 +29,8 @@ BIND_GLOBAL( "FILTERS", [] );
 ##
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
 ##  filter with number <i> resp.  its rank.
-##
-BIND_GLOBAL( "RANK_FILTERS", [] );
+##  <RANK_FILTERS> is created in the kernel and we store the rank in this
+##  list only when it is different from the default value 1.
 
 
 #############################################################################
@@ -225,7 +225,9 @@ BIND_GLOBAL( "NewFilter", function( arg )
     # Do some administrational work.
     FILTERS[ FLAG1_FILTER( filter ) ] := filter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
-    RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+    if rank <> 1 then
+      RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+    fi;
     INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
 
     # Return the filter.
