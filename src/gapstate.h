@@ -192,8 +192,8 @@ typedef struct GAPState {
 
 #else
 
-extern GAPState * MainGAPState;
-#define STATE(x) (MainGAPState->x)
+extern GAPState MainGAPState;
+#define STATE(x) (MainGAPState.x)
 
 #endif
 

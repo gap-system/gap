@@ -11,16 +11,7 @@
 #include <src/system.h>
 #include <src/gapstate.h>
 
-static GAPState _MainGAPState;
-
-GAPState * MainGAPState = 0;
-
-void InitMainGAPState(void)
-{
-    // with GASMAN mallocing this struct could
-    // lead to unwanted effects.
-    MainGAPState = &_MainGAPState;
-}
+GAPState MainGAPState;
 
 void InitGAPState(GAPState * state)
 {

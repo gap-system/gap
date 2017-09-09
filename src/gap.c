@@ -494,10 +494,6 @@ int realmain( int argc, char * argv[], char * environ[] )
   // and 255 is reserved for internal use by GASMAN.
   assert(LAST_COPYING_TNUM <= 253);
 
-#if !defined(HPCGAP)
-  InitMainGAPState();
-#endif
-
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
@@ -3297,7 +3293,7 @@ void InitializeGap (
     InitMainThread();
     InitTLS();
 #else
-    InitGAPState(MainGAPState);
+    InitGAPState(&MainGAPState);
 #endif
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
