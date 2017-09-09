@@ -25,8 +25,9 @@ initially knows the following groups:
  Classical matrix groups (see&nbsp;<Ref Sect="Classical Groups"/>),
 </Item>
 <Item>
- the transitive permutation groups of degree at most 30
-    (see&nbsp;<Ref Sect="Transitive Permutation Groups"/>),
+ the transitive permutation groups of degree at most 30,
+    provided by the <Package>TransGrp</Package> package
+    (see&nbsp;<Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>),
 </Item>
 <Item>
  a library of groups of small order (see&nbsp;<Ref Sect="Small Groups"/>),
@@ -205,7 +206,7 @@ properties.
 Currently, the library selection functions provided, of  this  type,  are
 <Ref Func="AllSmallGroups"/>,
 <Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
-<C>AllTransitiveGroups</C>,
+<Ref BookName="transgrp" Func="AllTransitiveGroups"/>,
 and <Ref BookName="primgrp" Func="AllPrimitiveGroups"/>.
 Corresponding to  each  of  these  there  is  a
 <C>One<A>Library</A>Group</C> function (see below) which  returns  at
@@ -225,7 +226,7 @@ for details pertaining to this function.
 <P/>
 For an example, let us consider the selection function for the library of
 transitive groups
-(also see&nbsp;<Ref Sect="Transitive Permutation Groups"/>).
+(also see&nbsp;<Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>).
 The command
 <P/>
 <Log><![CDATA[
@@ -279,58 +280,12 @@ a corresponding function <C>One<A>Library</A>Group</C> on exactly the same
 arguments, i.e., there are
 <C>OneSmallGroup</C>,
 <Ref BookName="primgrp" Func="OneIrreducibleSolvableGroup"/>,
-<C>OneTransitiveGroup</C>,
+<Ref BookName="transgrp" Func="OneTransitiveGroup"/>,
 and <Ref BookName="primgrp" Func="OnePrimitiveGroup"/>.
 Each function simply returns <E>one</E> group in
 the library that has the prescribed properties,
 instead of <E>all</E> such groups.
 It returns <K>fail</K> if no such group exists in the library.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Transitive Permutation Groups">
-<Heading>Transitive Permutation Groups</Heading>
-
-The transitive groups library currently contains representatives for all
-transitive permutation groups of degree at most  30.
-Two permutations groups of the same degree are considered to be
-equivalent, if there is a renumbering of points, which maps one group into
-the other one.
-In other words, if they lie in the same conjugacy class under operation
-of the full symmetric group by conjugation.
-<P/>
-The selection functions (see&nbsp;<Ref Sect="Selection Functions"/>) for the transitive
-groups library are <C>AllTransitiveGroups</C> and <C>OneTransitiveGroup</C>.
-They obtain the following attributes from the database without having to
-compute them anew:
-<P/>
-<Ref Func="NrMovedPoints" Label="for a list or collection of permutations"/>,
-<Ref Func="Size"/>,
-<Ref Func="Transitivity" Label="for a group and an action domain"/>,
-and <Ref Func="IsPrimitive" Label="for a group, an action domain, etc."/>.
-<P/>
-This library was computed by  Gregory Butler, John McKay, Gordon Royle
-and Alexander Hulpke.  The list of transitive  groups up  to degree 11
-was published in <Cite Key="BM83"/>,  the list of degree  12 was published in
-<Cite Key="Roy87"/>, degree 14 and  15 were published in  <Cite Key="Butler93"/> and
-degrees 16-30 were published in <Cite Key="Hulpke96"/> and <Cite Key="HulpkeTG"/>.
-(Groups of prime degree of course are
-primitive and were known long before.)
-<P/>
-The arrangement and the names of the groups of degree up to 15 is the same
-as given in <Cite Key="ConwayHulpkeMcKay98"/>. With the exception of the symmetric
-and alternating group (which are represented as
-<Ref Func="SymmetricGroup" Label="for a degree"/>
-and <Ref Func="AlternatingGroup" Label="for a degree"/>)
-the generators for these groups also conform to this
-paper with the only difference that 0 (which is not permitted in &GAP; for
-permutations to act on) is always replaced by the degree.
-<P/>
-<#Include Label="TransitiveGroup">
-<#Include Label="NrTransitiveGroups">
-<#Include Label="TransitiveIdentification">
 
 </Section>
 
