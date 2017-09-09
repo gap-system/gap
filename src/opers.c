@@ -866,7 +866,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
-    Int changed, i;
+    Int changed, i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % hidden_imps_cache_length;
     Int hash = base_hash;
@@ -906,16 +906,19 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     WITH_HIDDEN_IMPS_MISS++;
 #endif
     changed = 1;
+    lastand = 0;
     while(changed)
     {
       changed = 0;
-      for(i = hidden_imps_length; i >= 1; --i)
+      for (i = hidden_imps_length, stop = lastand; i > stop; i--)
       {
         if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
            UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
+          stop = 0;
+          lastand = i;
         }
       }
     }
@@ -1034,7 +1037,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     Int changed, lastand, i;
-    Int stop, round;
+    Int stop;
     Int imps_length = LEN_PLIST(IMPLICATIONS);
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % imps_cache_length;
     Int hash = base_hash;
@@ -1076,11 +1079,9 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #endif
     changed = 1;
     lastand = imps_length+1;
-    round = 0;
     while(changed)
     {
       changed = 0;
-      round++;
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS, i);
