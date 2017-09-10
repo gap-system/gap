@@ -1020,11 +1020,10 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return Fail;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
-  if (
-        ( FIRST_STAT_TNUM <= TNUM_STAT(call)
-                && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-        ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
-              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
+  if ( ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
+         TNUM_STAT(call) <= LAST_STAT_TNUM ) ||
+       ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
+         TNUM_EXPR(call) <= LAST_EXPR_TNUM ) ) {
     line = LINE_STAT(call);
     filename = FILENAME_STAT(call);
     retlist = NEW_PLIST(T_PLIST, 2);
@@ -1048,13 +1047,13 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
   if ( call == 0 ) {
     Pr( "<compiled or corrupted statement> ", 0L, 0L );
   }
-    else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
-              && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
+    else if ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
+              TNUM_STAT(call) <= LAST_STAT_TNUM ) {
       PrintStat( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
-    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
-              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
+    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
+              TNUM_EXPR(call) <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }

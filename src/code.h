@@ -31,6 +31,14 @@
 */
 typedef UInt8 Stat;
 
+typedef struct {
+    unsigned int visited : 1;
+    unsigned int fileid : 15;
+    unsigned int line : 16;
+    unsigned int size : 24;
+    unsigned int type : 8;
+} StatHeader;
+
 
 /****************************************************************************
 **
@@ -90,7 +98,7 @@ void SET_ENDLINE_BODY(Obj body, UInt val);
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
 
-#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+sizeof(BodyHeader))
+#define FIRST_STAT_CURR_FUNC    (sizeof(StatHeader)+sizeof(BodyHeader))
 
 /****************************************************************************
 **
@@ -185,13 +193,17 @@ enum STAT_TNUMS {
 #define T_NO_STAT		(Stat)(-1)
 
 
+
+#define STAT_HEADER(stat) (((StatHeader *)ADDR_STAT(stat)) - 1)
+
+
 /****************************************************************************
 **
 *F  TNUM_STAT(<stat>) . . . . . . . . . . . . . . . . . . type of a statement
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-#define TNUM_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] & 0xFF))
+#define TNUM_STAT(stat) (STAT_HEADER(stat)->type)
 
 
 /****************************************************************************
@@ -200,7 +212,7 @@ enum STAT_TNUMS {
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-#define SIZE_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 8 & 0xFFFFFF))
+#define SIZE_STAT(stat) (STAT_HEADER(stat)->size)
 
 /****************************************************************************
 **
@@ -208,34 +220,34 @@ enum STAT_TNUMS {
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-#define LINE_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 32 & 0xFFFF))
+#define LINE_STAT(stat) (STAT_HEADER(stat)->line)
 
 /****************************************************************************
 **
 *F  FILENAMEID_STAT(<stat>) . . . . . . . . . . . . file name of a statement
 **
-**  'FILENAMEID_STAT' returns the file the statment <stat> was read from.
+**  'FILENAMEID_STAT' returns the file the statement <stat> was read from.
 **  This should be looked up in the FilenameCache variable
 */
-#define FILENAMEID_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 48 & 0x7FFF))
+#define FILENAMEID_STAT(stat) (STAT_HEADER(stat)->fileid)
 
 /****************************************************************************
 **
-*F  FILENAME_STAT(<stat>) . . . . . . . . . . . . file name of a statement
+*F  FILENAME_STAT(<stat>) . . . . . . . . . . . . .  file name of a statement
 **
-**  'FILENAME_STAT' returns a gap string containing the file where the statment
+**  'FILENAME_STAT' returns a gap string containing the file where the statement
 **  <stat> was read from.
 */
 Obj FILENAME_STAT(Stat stat);
 
 /****************************************************************************
 **
-*F  VISITED_STAT(<stat>) . . . . . . . . . . . . if statement has even been run
+*F  VISITED_STAT(<stat>) . . . . . . . . . . . if statement has even been run
 **
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-#define VISITED_STAT(stat) (ADDR_STAT(stat)[-1] >> 63 && 0x1)
+#define VISITED_STAT(stat) (STAT_HEADER(stat)->visited)
 
 
 
