@@ -354,7 +354,7 @@ void SaveSubObj( Obj subobj )
       SaveUInt(0);
     }
   else
-    SaveUInt(((UInt)((PTR_BAG(subobj))[-1])) << 2);
+    SaveUInt(((UInt)LINK_BAG(subobj)) << 2);
 #endif
 }
 
@@ -600,12 +600,12 @@ static UInt NextSaveIndex = 1;
 
 static void AddSaveIndex( Bag bag)
 {
-  PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
+  LINK_BAG(bag) = (Obj)NextSaveIndex++;
 }
 
 static void RemoveSaveIndex( Bag bag)
 {
-  PTR_BAG(bag)[-1] = bag;
+  LINK_BAG(bag) = bag;
 }
 
 static void WriteSaveHeader( void )
