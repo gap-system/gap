@@ -247,7 +247,7 @@ static Stat NewStatWithProf (
     Stat                stat;           /* result                          */
 
     /* this is where the new statement goes                                */
-    stat = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
+    stat = STATE(OffsBody) + sizeof(StatHeader);
 
     /* increase the offset                                                 */
     STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
@@ -255,8 +255,8 @@ static Stat NewStatWithProf (
     /* make certain that the current body bag is large enough              */
     UInt bodySize = SIZE_BAG(BODY_FUNC(CURR_FUNC));
     if (bodySize == 0)
-        bodySize = STATE(OffsBody) + sizeof(BodyHeader);
-    while (bodySize < STATE(OffsBody) + sizeof(BodyHeader))
+        bodySize = STATE(OffsBody);
+    while (bodySize < STATE(OffsBody))
         bodySize *= 2;
     ResizeBag(BODY_FUNC(CURR_FUNC), bodySize);
     STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
@@ -291,7 +291,7 @@ Expr            NewExpr (
     Expr                expr;           /* result                          */
 
     /* this is where the new expression goes                               */
-    expr = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
+    expr = STATE(OffsBody) + sizeof(StatHeader);
 
     /* increase the offset                                                 */
     STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
@@ -803,7 +803,7 @@ void CodeFuncExprBegin (
     SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
-    STATE(OffsBody) = 0;
+    STATE(OffsBody) = sizeof(BodyHeader);
     STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
@@ -880,7 +880,7 @@ void CodeFuncExprEnd (
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+sizeof(BodyHeader) );
+    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody) );
     SET_ENDLINE_BODY(BODY_FUNC(fexp), STATE(Input)->number);
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
 
