@@ -209,25 +209,22 @@ void SET_ENDLINE_BODY(Obj body, UInt val)
 ** Fill in filename and line of a statement, checking we do not overflow
 ** the space we have for storing information
 */
-static Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
+static StatHeader fillFilenameLine(Int fileid, Int line, Int size, Int type)
 {
-  Stat stat;
-  if(fileid < 0 || fileid >= (1 << 16))
-  {
-    fileid = (1 << 16) - 1;
+  if (fileid < 0 || fileid >= (1 << 15)) {
+    fileid = (1 << 15) - 1;
     ReportFileNumberOverflowOccured();
   }
-  if(line < 0 || line >= (1 << 16))
-  {
+  if (line < 0 || line >= (1 << 16)) {
     line = (1 << 16) - 1;
     ReportLineNumberOverflowOccured();
   }
 
-  stat = ((Stat)fileid << 48) + ((Stat)line << 32) +
-          ((Stat)size << 8) + (Stat)type;
-
-  return stat;
+  StatHeader header = { 0, fileid, line, size, type };
+  return header;
 }
+
+
 
 /****************************************************************************
 **
@@ -265,7 +262,7 @@ static Stat NewStatWithProf (
     STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = fillFilenameLine(file, line, size, type);
+    *STAT_HEADER(stat) = fillFilenameLine(file, line, size, type);
     RegisterStatWithHook(stat);
     /* return the new statement                                            */
     return stat;
@@ -309,7 +306,7 @@ Expr            NewExpr (
     STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 
     /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = fillFilenameLine(STATE(Input)->gapnameid,
+    *STAT_HEADER(expr) = fillFilenameLine(STATE(Input)->gapnameid,
                                            STATE(Input)->number, size, type);
     RegisterStatWithHook(expr);
     /* return the new expression                                           */
@@ -871,7 +868,7 @@ void CodeFuncExprEnd (
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
+    *STAT_HEADER(FIRST_STAT_CURR_FUNC)
         = fillFilenameLine(
             FILENAMEID_STAT(FIRST_STAT_CURR_FUNC),
             LINE_STAT(FIRST_STAT_CURR_FUNC),

@@ -392,17 +392,17 @@ static inline void outputStat(Stat stat, int exec, int visited)
 void visitStat(Stat stat)
 {
 #ifdef HPCGAP
-  if(profileState.profiledThread != TLS(threadID))
+  if (profileState.profiledThread != TLS(threadID))
     return;
 #endif
 
   int visited = VISITED_STAT(stat);
 
-  if(!visited) {
-    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
+  if (!visited) {
+    STAT_HEADER(stat)->visited = 1;
   }
 
-  if(profileState.OutputRepeats || !visited) {
+  if (profileState.OutputRepeats || !visited) {
     HashLock(&profileState);
     outputStat(stat, 1, visited);
     HashUnlock(&profileState);
