@@ -3,7 +3,20 @@ Tasks for MatrixObj
 
 Design Decisions
 ===================
-- Decide the relation between 'IsMatrix' and 'IsMatrixObj',
+- Decide the relation between 'IsMatrix' and 'IsMatrixObj'.
+
+  (September 08th)
+  We are going to use the following setup:
+  - 'IsMatrixObj' implies 'IsMatrix'.
+  - 'IsMatrixObj' does not imply 'IsOrdinaryMatrix'.
+  - All current implementations of 'IsMatrixObj' representations
+    are in fact intended for matrices with the ``usual'' matrix product
+    and hence get the filter 'IsOrdinaryMatrix' (explicitly)
+  - Whenever a method requires that some of its arguments are matrices
+    that have to be multiplied via the ``usual'' matrix product,
+    the filter 'IsOrdinaryMatrix' must be required for these arguments.
+
+  (Thomas is going to make the necessary changes.)
 
 - When multiplying PlistMatrixObjs we check whether the BaseDomains are
   identical. Should we adopt this everywhere?
@@ -15,16 +28,28 @@ Design Decisions
   (but some implementations may provide a method); suggest to use
   `MutableCopyMat` for IsMatrixObj objects.
 
-- matobj2.gd stats that +,-,*,<,=, AddRowVector, AddMultVector are possible
+- matobj2.gd states that +,-,*,<,=, AddRowVector, AddMultVector are possible
   for vectors over the same BaseDomain and equal lengths.
   Should this mean 'only if'?
 
+  (For example objects in 'Is8BitVectorRep' admit arithmetical operations
+  when the lengths are different.  I would say that the general documentation
+  should define the behaviour only for same lengths and equal BaseDomain,
+  and say that special vector representations may support more general
+  cases.)
+  
 
 Changes to IsMatrixObj
 ===================
-- define 'DefaultRing' for the entries as 'BaseDomain' of Plist matrices,
 
-- introduce 'ZeroOfBaseDomain'.
+- define 'DefaultRing' for the entries as default 'BaseDomain'
+  of Plist vectors and matrices
+  (Cheaper methods may be installed for special cases,
+  for example 'Cyclotomics' should be good enough for plists of (plists of)
+  cyclotomics, without computing conductors;
+  analogous objects for finite characteristic seem not to be available.)
+
+- introduce 'ZeroOfBaseDomain' (done)
 
 - Define and implement 'EmptyMatrix' as IsMatrixObj
 
@@ -39,6 +64,15 @@ Changes to IsMatrixObj
 
 Adapting the library
 ===================
+
+- Change method installations that match several declarations
+  since 'IsMatrix' implies 'IsMatrixObj'.
+  (For example, 'Length' is declared for 'IsList', 'IsVectorObj',
+  and 'IsMatrixObj'.
+  So 'Length' methods for 'IsMatrix' match two declarations.)
+
+  (Thomas is going to do this.)
+
 - In the (about 240) library methods that *require* 'IsMatrix',
   adjust the code according to the 'IsMatrixObj' interface.
 
@@ -55,6 +89,7 @@ Adapting the library
 
 - Replace 'PositionNot( obj, zero )' by 'PositionNonZero( obj )'.
   (And change the default methods for 'PositionNonZero'.)
+  (done)
 
 - Replace 'EmptyMatrix' and 'NullMapMatrix' by 'IsMatrixObj' objects.
   Change GF2 and 8bit matrix code to support empty matrices
@@ -70,6 +105,7 @@ Adapting the library
 - I'd like to rename `vecmat.{gi,gd}` to e.g. `vecmat_gf2.{gi,gd}`, to
   indicate the purpose of those files; and then move any generic methods for
   (compressed) matrices and vectors in it into another file
+
 
 Documentation
 ===================
