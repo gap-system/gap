@@ -444,13 +444,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
       fi;
 
       # find the operation
-      req := false;
-      for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
-        if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
-          req := OPERATIONS[i+1];
-          break;
-        fi;
-      od;
+      req := GET_OPER_FLAGS(opr);
       if req = false  then
         Error( "unknown operation ", NAME_FUNC(opr) );
       fi;
