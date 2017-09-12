@@ -73,12 +73,6 @@ DeclareGlobalFunction("NrTransitiveGroups");
 DeclareGlobalVariable( "TRANSCOMBCACHE", "combinations cache" );
 DeclareGlobalVariable( "TRANSARRCACHE", "arrangements cache" );
 
-if IsBound(HPCGAP) then
-  BindGlobal("TRANSREGION", NewLibraryRegion("transitive groups region"));
-else
-  BindGlobal("TRANSREGION", fail);
-fi;
-
 #############################################################################
 ##
 #E
