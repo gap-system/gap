@@ -187,8 +187,8 @@ Int IsMutableObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to test mutability of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to test mutability of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return 0;
 }
 
@@ -258,8 +258,8 @@ Int IsCopyableObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to test copyability of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to test copyability of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return 0L;
 }
 
@@ -299,8 +299,8 @@ Obj ShallowCopyObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to shallow copy object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to shallow copy object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return (Obj)0;
 }
 
@@ -416,8 +416,8 @@ Obj             CopyObjError (
     Int                 mut )
 {
     ErrorQuit(
-        "Panic: tried to copy object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to copy object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return (Obj)0;
 }
 
@@ -430,8 +430,8 @@ void CleanObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to clean object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to clean object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -1234,8 +1234,8 @@ void PrintPathError (
     Int                 indx )
 {
     ErrorQuit(
-        "Panic: tried to print a path of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to print a path of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -1530,8 +1530,8 @@ void (*SaveObjFuncs[256]) ( Obj obj );
 void SaveObjError( Obj obj )
 {
   ErrorQuit(
-            "Panic: tried to save an object of unknown type '%d'",
-            (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to save an object of unsupported type '%s'",
+            (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -1555,8 +1555,8 @@ void (*LoadObjFuncs[256]) ( Obj obj );
 void LoadObjError( Obj obj )
 {
   ErrorQuit(
-            "Panic: tried to load an object of unknown type '%d'",
-            (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to load an object of unsupported type '%s'",
+            (Int)TNAM_OBJ(obj), 0L );
 }
 
 /****************************************************************************
