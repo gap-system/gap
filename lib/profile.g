@@ -759,7 +759,7 @@ BIND_GLOBAL("ProfileOperationsOn",function()
     local   prof;
 
     # Note that the list of operations may have grown since the last call.
-    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
+    prof := OBJ_MAP_KEYS(OPERATIONS);
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof );
@@ -818,7 +818,7 @@ end);
 BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     local   prof;
 
-    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
+    prof := OBJ_MAP_KEYS(OPERATIONS);
     PROFILED_OPERATIONS := prof;
     ProfileFunctions( prof );
     ProfileMethods(prof);

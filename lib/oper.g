@@ -147,8 +147,13 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "OPERATIONS", [] );
+BIND_GLOBAL( "OPERATIONS", OBJ_MAP() );
 
+BIND_GLOBAL( "STORE_OPER_FLAGS",
+function(oper, flags)
+  ADD_OBJ_MAP( OPERATIONS, oper, flags );
+end);
+BIND_GLOBAL( "GET_OPER_FLAGS", oper -> FIND_OBJ_MAP(OPERATIONS, oper, false) );
 
 #############################################################################
 ##
@@ -567,8 +572,7 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    STORE_OPER_FLAGS(oper, [filt]);
     return oper;
 end );
 
@@ -694,8 +698,7 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
     ADD_LIST( CONSTRUCTORS, oper );
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
+    STORE_OPER_FLAGS(oper, [filt]);
     return oper;
 end );
 
@@ -716,7 +719,7 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareOperation", function ( name, filters )
-    local gvar, pos, filt, filter;
+    local gvar, pos, req, filt, filter;
 
     if   GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
@@ -772,14 +775,14 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
       
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      if filt in OPERATIONS[ pos+1 ] then
+      req := GET_OPER_FLAGS(gvar);
+      if filt in req then
         if not REREADING then
           INFO_DEBUG( 1, "equal requirements in multiple declarations ",
               "for operation `", name, "'\n" );
         fi;
       else
-        ADD_LIST( OPERATIONS[ pos+1 ], filt );
+        ADD_LIST( req, filt );
       fi;
 
     else
@@ -824,8 +827,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, [ filt ] );
+    STORE_OPER_FLAGS(oper, [filt]);
 end );
 
 
@@ -850,7 +852,7 @@ end );
 ##
 BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
-    local gvar, pos, filt, filter;
+    local gvar, req, filt, filter;
 
     if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
@@ -880,8 +882,8 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
 
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], filt );
+      req := GET_OPER_FLAGS(gvar);
+      ADD_LIST( req, filt );
 
     else
 
@@ -926,8 +928,7 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     od;
 
     ADD_LIST( CONSTRUCTORS, oper );
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   [ filt ] );
+    STORE_OPER_FLAGS(oper, [filt]);
 end );
 
 
@@ -993,13 +994,10 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    STORE_OPER_FLAGS(getter, [ [ FLAGS_FILTER(filter) ] ]);
+    STORE_OPER_FLAGS(setter, 
+                      [ [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_OBJECT) ] ]);
+    STORE_OPER_FLAGS(tester, [ [ FLAGS_FILTER(filter) ] ]);
 
     # store the information about the filter
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1089,10 +1087,8 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
 
-          ADD_LIST( OPERATIONS, setter );
-          ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
-          ADD_LIST( OPERATIONS, tester );
-          ADD_LIST( OPERATIONS, [ [ flags ] ] );
+          STORE_OPER_FLAGS(setter, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ]);
+          STORE_OPER_FLAGS(tester, [ [ flags ] ]);
 
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1140,8 +1136,8 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         rank := 1;
     fi;
-    ADD_LIST(OPERATIONS,getter);
-    ADD_LIST(OPERATIONS, [ [ flags ] ]);
+    STORE_OPER_FLAGS(getter, [ [ flags ] ]);
+
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
     # store the information about the filtera
     # And return the getter
@@ -1170,7 +1166,7 @@ end );
 ##
 
 BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local   name,  gvar,  pos,  reqs,  filter,  setter,  tester,  
+    local   name,  gvar,  req,  reqs,  filter,  setter,  tester,  
               attr,  nname, mutflag, flags, rank;
 
     name:= arg[1];
@@ -1196,8 +1192,8 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
           
           # if `gvar' has no one argument declarations we can turn it into 
           # an attribute
-          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-          for reqs in OPERATIONS[pos+1] do
+          req := GET_OPER_FLAGS(gvar);
+          for reqs in req do
               if LENGTH(reqs)  = 1 then
                   Error( "operation `", name, "' has been declared as a one ",
                          "argument Operation and cannot also be an Attribute");
@@ -1212,8 +1208,8 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
           fi;
           
           flags := FLAGS_FILTER(filter);
-          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-          ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+          req := GET_OPER_FLAGS(gvar);
+          ADD_LIST( req, [ FLAGS_FILTER( filter ) ] );
           
           # kernel magic for the conversion
           if mutflag then
@@ -1246,13 +1242,12 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       if not IS_OPERATION( filter ) then
         Error( "<filter> must be an operation" );
       fi;
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+      req := GET_OPER_FLAGS(gvar);
+      ADD_LIST( req, [ FLAGS_FILTER( filter ) ] );
 
       # also set the extended range for the setter
-      pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
-      ADD_LIST( OPERATIONS[ pos+1 ],
-                [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ] );
+      req := GET_OPER_FLAGS(Setter(gvar));
+      ADD_LIST( req, [ FLAGS_FILTER( filter), req[1][2] ] );
 
     else
 
@@ -1316,13 +1311,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS,
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
+    STORE_OPER_FLAGS(getter, [ [ FLAGS_FILTER(filter) ] ]);
+    STORE_OPER_FLAGS(setter, 
+                      [ [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ] ]);
+    STORE_OPER_FLAGS(tester, [ [ FLAGS_FILTER(filter) ] ]);
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
@@ -1392,12 +1384,9 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_BOOL ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
+    STORE_OPER_FLAGS(getter, [ [ flags ] ]);
+    STORE_OPER_FLAGS(setter, [ [ flags, FLAGS_FILTER(IS_BOOL) ] ]);
+    STORE_OPER_FLAGS(tester, [ [ flags ] ]);
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
@@ -1452,7 +1441,7 @@ end );
 ##
 BIND_GLOBAL( "DeclareProperty", function ( arg )
 
-    local prop, name, nname, gvar, pos, filter;
+    local prop, name, nname, gvar, req, filter;
 
     name:= arg[1];
 
@@ -1484,8 +1473,8 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
         Error( "<filter> must be an operation" );
       fi;
 
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+      req := GET_OPER_FLAGS(gvar);
+      ADD_LIST( req, [ FLAGS_FILTER( filter ) ] );
 
     else
 
@@ -1640,7 +1629,7 @@ end );
 ##
 BIND_GLOBAL( "TraceAllMethods", function( arg )
     local   fun;
-    TraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+    TraceMethods(OBJ_MAP_KEYS(OPERATIONS));
 end );
 
 
@@ -1702,7 +1691,7 @@ end );
 ##
 BIND_GLOBAL( "UntraceAllMethods", function( arg )
     local   fun;
-    UntraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+    UntraceMethods(OBJ_MAP_KEYS(OPERATIONS));
 end );
 
 #############################################################################
@@ -1795,10 +1784,10 @@ end );
 
 
 BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
-    local i,j;
-    for i in [1,3..LEN_LIST(OPERATIONS)-1] do
+    local oper,j;
+    for oper in OBJ_MAP_KEYS(OPERATIONS) do
         for j in [1..6] do
-            CHANGED_METHODS_OPERATION(OPERATIONS[i],j);
+            CHANGED_METHODS_OPERATION(oper,j);
         od;
     od;
 end);
