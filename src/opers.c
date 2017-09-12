@@ -991,18 +991,10 @@ Obj FuncRankFilter(Obj self, Obj flags)
     return INTOBJ_INT(res);
 }
 
-static Obj IMPLICATIONS;
+static Obj IMPLICATIONS_SIMPLE;
+static Obj IMPLICATIONS_COMPOSED;
 static Obj WITH_IMPS_FLAGS_CACHE;
 static const Int imps_cache_length = 11001;
-
-/****************************************************************************
-**
-*F  FuncIMPLICATIONS( ) . . . . . . . . . .  return implications list to GAP
-*/
-Obj FuncImportIMPLICATIONS(Obj self)
-{
-    return IMPLICATIONS;
-}
 
 /****************************************************************************
 **
@@ -1036,9 +1028,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
-    Int changed, lastand, i;
-    Int stop;
-    Int imps_length = LEN_PLIST(IMPLICATIONS);
+    Int changed, lastand, i, j, stop, imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % imps_cache_length;
     Int hash = base_hash;
     Int hash_loop = 0;
@@ -1047,6 +1037,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     Obj imp;
+    Obj trues;
     
     /* do some trivial checks - we have to do this so we can use
      * UncheckedIS_SUBSET_FLAGS                                              */
@@ -1071,12 +1062,29 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #endif
         return ret;
       }
-      hash = (hash * 311 + 61) % imps_cache_length;
+      hash = (hash * 3011 + 61) % imps_cache_length;
     }
     
 #ifdef COUNT_OPERS
     WITH_IMPS_FLAGS_MISS++;
 #endif
+    /* first implications from simple filters (need only be checked once) */
+    trues = FuncTRUES_FLAGS(0, flags);
+    for (i=1; i<=LEN_PLIST(trues); i++) {
+        j = INT_INTOBJ(ELM_PLIST(trues, i));
+        if (j <= LEN_PLIST(IMPLICATIONS_SIMPLE) 
+            && ELM_PLIST(IMPLICATIONS_SIMPLE, j)) {
+           imp = ELM_PLIST(IMPLICATIONS_SIMPLE, j);
+           if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
+              UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+           {
+             with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
+           }
+        }
+    }
+
+    /* the other implications have to be considered in a loop */
+    imps_length = LEN_PLIST(IMPLICATIONS_COMPOSED);
     changed = 1;
     lastand = imps_length+1;
     while(changed)
@@ -1084,7 +1092,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for (i = 1, stop = lastand; i < stop; i++)
       {
-        imp = ELM_PLIST(IMPLICATIONS, i);
+        imp = ELM_PLIST(IMPLICATIONS_COMPOSED, i);
         if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
            UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
         {
@@ -1120,7 +1128,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       {
         new_flags = old_flags;
         new_with = old_with;
-        hash = (hash * 311 + 61) % imps_cache_length;
+        hash = (hash * 3011 + 61) % imps_cache_length;
       }
     }
     
@@ -6298,7 +6306,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
     GVAR_FUNC(RankFilter, 1, "filtorflags"),
     GVAR_FUNC(CLEAR_IMP_CACHE, 0, ""),
-    GVAR_FUNC(ImportIMPLICATIONS, 0, ""),
     GVAR_FUNC(WITH_IMPS_FLAGS, 1, "flags"),
     GVAR_FUNC(WITH_IMPS_FLAGS_STAT, 0, ""),
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
@@ -6447,7 +6454,8 @@ static Int InitKernel (
     
     /* set up implications                                                 */
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
-    InitGlobalBag( &IMPLICATIONS, "src/opers.c:IMPLICATIONS");
+    InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
+    InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
     
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
@@ -6597,25 +6605,25 @@ static Int InitLibrary (
     REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
 #endif
 
-    IMPLICATIONS = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(IMPLICATIONS, 0);
+    IMPLICATIONS_SIMPLE = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(IMPLICATIONS_SIMPLE, 0);
+    IMPLICATIONS_COMPOSED = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(IMPLICATIONS_COMPOSED, 0);
     WITH_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, imps_cache_length * 2);
     SET_LEN_PLIST(WITH_IMPS_FLAGS_CACHE, imps_cache_length * 2);
-    AssGVar(GVarName("IMPLICATIONS"), IMPLICATIONS);
+    AssGVar(GVarName("IMPLICATIONS_SIMPLE"), IMPLICATIONS_SIMPLE);
+    AssGVar(GVarName("IMPLICATIONS_COMPOSED"), IMPLICATIONS_COMPOSED);
 
 #ifdef HPCGAP
-    REGION(IMPLICATIONS) = NewRegion();
-    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
+    REGION(IMPLICATIONS_SIMPLE) = NewRegion();
+    REGION(IMPLICATIONS_COMPOSED) = REGION(IMPLICATIONS_SIMPLE);
+    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS_SIMPLE);
 #endif
 
     RANK_FILTERS = NEW_PLIST(T_PLIST, 3000);
     SET_LEN_PLIST(RANK_FILTERS, 0);
     AssGVar(GVarName("RANK_FILTERS"), RANK_FILTERS);
 
-#ifdef HPCGAP
-    REGION(IMPLICATIONS) = NewRegion();
-    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
-#endif
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
     AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );

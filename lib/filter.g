@@ -122,7 +122,15 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
 
     # Extend available implications by the new one if applicable.
     found:= false;
-    for imp2 in IMPLICATIONS do
+    for imp2 in IMPLICATIONS_SIMPLE do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) then
+        imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+        if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+          found:= true;
+        fi;
+      fi;
+    od;
+    for imp2 in IMPLICATIONS_COMPOSED do
       if IS_SUBSET_FLAGS( imp2[2], imp[2] ) then
         imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
         if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
@@ -133,7 +141,11 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
 
     if not found then
       # Extend the list of implications.
-      ADD_LIST( IMPLICATIONS, imp );
+      if from in FILTERS then
+        IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
+      else
+        ADD_LIST( IMPLICATIONS_COMPOSED, imp );
+      fi;
     fi;
     InstallHiddenTrueMethod( tofilt, from );
 end );

@@ -628,7 +628,7 @@ ReadOrComplete( "lib/read4.g" );
 ReadLib( "helpview.gi"  );
 
 # allow type determination of IMPLICATIONS without using it
-TypeObj(IMPLICATIONS[1]);
+TypeObj(IMPLICATIONS_COMPOSED[1]);
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
