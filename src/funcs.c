@@ -811,6 +811,20 @@ Obj STEVES_TRACING;
 
 #endif
 
+static void ExecFuncHelper(void)
+{
+    OLD_BRK_CURR_STAT   // old executing statement
+
+    // execute the statement sequence
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+    // remove the link to the calling function, in case this values bag stays
+    // alive due to higher variable reference
+    SET_BRK_CALL_FROM( ((Obj) 0));
+}
+
 static Obj PopReturnObjStat(void)
 {
     Obj returnObjStat = STATE(ReturnObjStat);
@@ -823,7 +837,6 @@ Obj DoExecFunc0args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -831,14 +844,8 @@ Obj DoExecFunc0args (
     SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -855,7 +862,6 @@ Obj             DoExecFunc1args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -866,14 +872,8 @@ Obj             DoExecFunc1args (
     ASS_LVAR( 1, arg1 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -891,7 +891,6 @@ Obj             DoExecFunc2args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -903,14 +902,8 @@ Obj             DoExecFunc2args (
     ASS_LVAR( 2, arg2 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -929,7 +922,6 @@ Obj             DoExecFunc3args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -942,14 +934,8 @@ Obj             DoExecFunc3args (
     ASS_LVAR( 3, arg3 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -969,7 +955,6 @@ Obj             DoExecFunc4args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -983,14 +968,8 @@ Obj             DoExecFunc4args (
     ASS_LVAR( 4, arg4 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -1011,7 +990,6 @@ Obj             DoExecFunc5args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -1026,14 +1004,8 @@ Obj             DoExecFunc5args (
     ASS_LVAR( 5, arg5 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -1055,7 +1027,6 @@ Obj             DoExecFunc6args (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
 
     CHECK_RECURSION_BEFORE
 
@@ -1071,14 +1042,8 @@ Obj             DoExecFunc6args (
     ASS_LVAR( 6, arg6 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -1095,7 +1060,6 @@ Obj             DoExecFuncXargs (
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
 
@@ -1120,14 +1084,8 @@ Obj             DoExecFuncXargs (
     }
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -1182,11 +1140,9 @@ Obj             DoExecFunc0argsL (
     Obj                 func )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[1];
     LockFuncArgs(func, args);
-
 
     CHECK_RECURSION_BEFORE
 
@@ -1194,18 +1150,11 @@ Obj             DoExecFunc0argsL (
     SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1218,12 +1167,10 @@ Obj             DoExecFunc1argsL (
     Obj                 arg1 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[1];
     args[0] = arg1;
     LockFuncArgs(func, args);
-
 
     CHECK_RECURSION_BEFORE
 
@@ -1234,18 +1181,11 @@ Obj             DoExecFunc1argsL (
     ASS_LVAR( 1, arg1 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1259,8 +1199,7 @@ Obj             DoExecFunc2argsL (
     Obj                 arg2 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[2];
     args[0] = arg1;
     args[1] = arg2;
@@ -1276,18 +1215,11 @@ Obj             DoExecFunc2argsL (
     ASS_LVAR( 2, arg2 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1302,8 +1234,7 @@ Obj             DoExecFunc3argsL (
     Obj                 arg3 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[3];
     args[0] = arg1;
     args[1] = arg2;
@@ -1322,18 +1253,11 @@ Obj             DoExecFunc3argsL (
     ASS_LVAR( 3, arg3 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1349,8 +1273,7 @@ Obj             DoExecFunc4argsL (
     Obj                 arg4 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[4];
     args[0] = arg1;
     args[1] = arg2;
@@ -1370,18 +1293,11 @@ Obj             DoExecFunc4argsL (
     ASS_LVAR( 4, arg4 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1398,8 +1314,7 @@ Obj             DoExecFunc5argsL (
     Obj                 arg5 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[5];
     args[0] = arg1;
     args[1] = arg2;
@@ -1421,18 +1336,11 @@ Obj             DoExecFunc5argsL (
     ASS_LVAR( 5, arg5 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1450,8 +1358,7 @@ Obj             DoExecFunc6argsL (
     Obj                 arg6 )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
     Obj                 args[6];
     args[0] = arg1;
     args[1] = arg2;
@@ -1475,18 +1382,11 @@ Obj             DoExecFunc6argsL (
     ASS_LVAR( 6, arg6 );
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1499,10 +1399,9 @@ Obj             DoExecFuncXargsL (
     Obj                 args )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
-    int                 lockSP = TLS(lockStackPointer);
+    REMEMBER_LOCKSTACK();
 
     CHECK_RECURSION_BEFORE
 
@@ -1527,18 +1426,11 @@ Obj             DoExecFuncXargsL (
     }
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
+    ExecFuncHelper();
+    CLEAR_LOCK_STACK();
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
@@ -1552,8 +1444,6 @@ Obj             DoExecFuncXargsL (
 Obj DoPartialUnWrapFunc(Obj func, Obj args)
 {
     Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                named;          /* number of arguments             */
     UInt                i;              /* loop variable                   */
     UInt len;
@@ -1584,14 +1474,9 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args)
     ASS_LVAR(named+1, args);
 
     /* execute the statement sequence                                      */
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
-    RES_BRK_CURR_STAT();
+    REMEMBER_LOCKSTACK();
+    ExecFuncHelper();
     CLEAR_LOCK_STACK();
-
-   /* remove the link to the calling function, in case this values bag
-       stays alive due to higher variable reference */
-    SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
