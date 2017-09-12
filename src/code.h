@@ -108,9 +108,6 @@ void SET_ENDLINE_BODY(Obj body, UInt val);
 **
 **  For every type  of statements there is  a symbolic name  defined for this
 **  type.
-**
-**  As long as statements   are represented by  bags,  these types  must  not
-**  overlap with the object types, lest Gasman becomes confused.
 */
 enum STAT_TNUMS {
     FIRST_STAT_TNUM = 0,
@@ -331,9 +328,6 @@ typedef Stat Expr;
 **
 **  For every type of expressions there  is a symbolic  name defined for this
 **  type.
-**
-**  As long as  expressions  are represented by  bags,  these types must  not
-**  overlap with the object types, lest Gasman becomes confused.
 */
 enum EXPR_TNUM {
     FIRST_EXPR_TNUM = 128,
