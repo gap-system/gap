@@ -931,7 +931,9 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     return with;
 }
 
-static Obj IMPLICATIONS;
+
+static Obj IMPLICATIONS_SIMPLE;
+static Obj IMPLICATIONS_COMPOSED;
 static Obj WITH_IMPS_FLAGS_CACHE;
 enum { IMPS_CACHE_LENGTH = 11001 };
 
@@ -943,7 +945,7 @@ Obj FuncCLEAR_IMP_CACHE(Obj self)
 {
   Int i;
 #ifdef HPCGAP
-  RegionWriteLock(REGION(IMPLICATIONS));
+  RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
   for(i = 1; i < IMPS_CACHE_LENGTH * 2 - 1; i += 2)
   {
@@ -951,7 +953,7 @@ Obj FuncCLEAR_IMP_CACHE(Obj self)
     SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i + 1, 0);
   }
 #ifdef HPCGAP
-  RegionWriteUnlock(REGION(IMPLICATIONS));
+  RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
   return 0;
 }
@@ -966,9 +968,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
-    Int changed, lastand, i;
-    Int stop;
-    Int imps_length;
+    Int changed, lastand, i, j, stop, imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
     Int hash = base_hash;
     Int hash_loop = 0;
@@ -977,6 +977,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     Obj imp;
+    Obj trues;
     
     /* do some trivial checks - we have to do this so we can use
      * UncheckedIS_SUBSET_FLAGS                                              */
@@ -986,7 +987,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
             "you can replace <flags> via 'return <flags>;'" );
     }
 #ifdef HPCGAP
-    RegionWriteLock(REGION(IMPLICATIONS));
+    RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
@@ -994,7 +995,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       if(cacheval && cacheval == flags) {
         Obj ret = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
 #ifdef HPCGAP
-        RegionWriteUnlock(REGION(IMPLICATIONS));
+        RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
 #ifdef COUNT_OPERS
         WITH_IMPS_FLAGS_HIT++;
@@ -1007,15 +1008,31 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_IMPS_FLAGS_MISS++;
 #endif
+    /* first implications from simple filters (need only be checked once) */
+    trues = FuncTRUES_FLAGS(0, flags);
+    for (i=1; i<=LEN_PLIST(trues); i++) {
+        j = INT_INTOBJ(ELM_PLIST(trues, i));
+        if (j <= LEN_PLIST(IMPLICATIONS_SIMPLE)
+            && ELM_PLIST(IMPLICATIONS_SIMPLE, j)) {
+           imp = ELM_PLIST(IMPLICATIONS_SIMPLE, j);
+           if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
+              UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+           {
+             with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
+           }
+        }
+    }
+
+    /* the other implications have to be considered in a loop */
+    imps_length = LEN_PLIST(IMPLICATIONS_COMPOSED);
     changed = 1;
-    imps_length = LEN_PLIST(IMPLICATIONS);
     lastand = imps_length+1;
     while(changed)
     {
       changed = 0;
       for (i = 1, stop = lastand; i < stop; i++)
       {
-        imp = ELM_PLIST(IMPLICATIONS, i);
+        imp = ELM_PLIST(IMPLICATIONS_COMPOSED, i);
         if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
            UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
         {
@@ -1056,7 +1073,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     }
     
 #ifdef HPCGAP
-    RegionWriteUnlock(REGION(IMPLICATIONS));
+    RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
     return with;
 }
@@ -4237,7 +4254,8 @@ static Int InitKernel (
     
     /* set up implications                                                 */
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
-    InitGlobalBag( &IMPLICATIONS, "src/opers.c:IMPLICATIONS");
+    InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
+    InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
     
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
@@ -4383,15 +4401,19 @@ static Int InitLibrary (
     REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE) = REGION(HIDDEN_IMPS);
 #endif
 
-    IMPLICATIONS = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(IMPLICATIONS, 0);
+    IMPLICATIONS_SIMPLE = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(IMPLICATIONS_SIMPLE, 0);
+    IMPLICATIONS_COMPOSED = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(IMPLICATIONS_COMPOSED, 0);
     WITH_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, IMPS_CACHE_LENGTH * 2);
     SET_LEN_PLIST(WITH_IMPS_FLAGS_CACHE, IMPS_CACHE_LENGTH * 2);
-    AssGVar(GVarName("IMPLICATIONS"), IMPLICATIONS);
+    AssGVar(GVarName("IMPLICATIONS_SIMPLE"), IMPLICATIONS_SIMPLE);
+    AssGVar(GVarName("IMPLICATIONS_COMPOSED"), IMPLICATIONS_COMPOSED);
 
 #ifdef HPCGAP
-    REGION(IMPLICATIONS) = NewRegion();
-    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS);
+    REGION(IMPLICATIONS_SIMPLE) = NewRegion();
+    REGION(IMPLICATIONS_COMPOSED) = REGION(IMPLICATIONS_SIMPLE);
+    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS_SIMPLE);
 #endif
 
     /* make the 'true' operation                                           */  

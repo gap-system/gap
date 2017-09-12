@@ -109,7 +109,6 @@ BIND_GLOBAL( "NewCategory", function ( arg )
 
     # Create the filter.
     cat:= NEW_FILTER( arg[1] );
-    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS do
@@ -126,6 +125,9 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     fi;
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
     od;
+
+    # Do not call this before adding 'cat' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Return the filter.
     return cat;
@@ -281,7 +283,6 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     else
         Error("usage:NewRepresentation(<name>,<super>,<slots>[,<req>])");
     fi;
-    InstallTrueMethodNewFilter( arg[2], rep );
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
@@ -291,6 +292,9 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
     od;
+
+    # Do not call this before adding 'rep' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], rep );
 
     # Return the filter.
     return rep;
