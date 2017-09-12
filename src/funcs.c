@@ -811,6 +811,13 @@ Obj STEVES_TRACING;
 
 #endif
 
+static Obj PopReturnObjStat(void)
+{
+    Obj returnObjStat = STATE(ReturnObjStat);
+    STATE(ReturnObjStat) = (Obj)0;
+    return returnObjStat;
+}
+
 Obj DoExecFunc0args (
     Obj                 func )
 {
@@ -839,12 +846,7 @@ Obj DoExecFunc0args (
     CHECK_RECURSION_AFTER
     
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc1args (
@@ -879,12 +881,7 @@ Obj             DoExecFunc1args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc2args (
@@ -921,12 +918,7 @@ Obj             DoExecFunc2args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc3args (
@@ -965,12 +957,7 @@ Obj             DoExecFunc3args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc4args (
@@ -1011,12 +998,7 @@ Obj             DoExecFunc4args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc5args (
@@ -1059,12 +1041,7 @@ Obj             DoExecFunc5args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc6args (
@@ -1109,12 +1086,7 @@ Obj             DoExecFunc6args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFuncXargs (
@@ -1163,12 +1135,7 @@ Obj             DoExecFuncXargs (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 
@@ -1243,12 +1210,7 @@ Obj             DoExecFunc0argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc1argsL (
@@ -1288,12 +1250,7 @@ Obj             DoExecFunc1argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc2argsL (
@@ -1335,12 +1292,7 @@ Obj             DoExecFunc2argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc3argsL (
@@ -1386,12 +1338,7 @@ Obj             DoExecFunc3argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc4argsL (
@@ -1439,12 +1386,7 @@ Obj             DoExecFunc4argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc5argsL (
@@ -1495,12 +1437,7 @@ Obj             DoExecFunc5argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFunc6argsL (
@@ -1554,12 +1491,7 @@ Obj             DoExecFunc6argsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 Obj             DoExecFuncXargsL (
@@ -1611,12 +1543,7 @@ Obj             DoExecFuncXargsL (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }
+    return PopReturnObjStat();
 }
 
 #endif /* HPCGAP */
@@ -1672,12 +1599,7 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args)
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-      {
-        Obj                 returnObjStat;
-        returnObjStat = STATE(ReturnObjStat);
-        STATE(ReturnObjStat) = (Obj)0;
-        return returnObjStat;
-      }  
+    return PopReturnObjStat();
 }
 
 /****************************************************************************
