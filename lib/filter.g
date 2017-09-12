@@ -89,18 +89,16 @@ BIND_GLOBAL( "Setter", SETTER_FILTER );
 ##
 BIND_GLOBAL( "Tester", TESTER_FILTER );
 
-
-
 #############################################################################
 ##
-#F  InstallTrueMethodNewFilter( <to>, <from> )
+#F  InstallTrueMethodNewFilter( <tofilt>, <from> )
 ##
 ##  If <from> is a new filter then  it cannot occur in  the cache.  Therefore
 ##  we do not flush the cache.  <from> should a basic  filter not an `and' of
 ##  from. This should only be used in the file "type.g".
 ##
 BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
-    local   imp;
+    local   imp, found, imp2;
 
     # Check that no filter implies `IsMutable'.
     # (If this would be allowed then `Immutable' would be able
@@ -111,13 +109,34 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
       Error( "filter <from> must not imply `IsMutable'" );
     fi;
 
+    # If 'tofilt' equals 'IsObject' then do nothing.
+    if IS_IDENTICAL_OBJ( tofilt, IS_OBJECT ) then
+      return;
+    fi;
+
+    # Apply the available implications from 'tofilt and from' to 'tofilt'.
     imp := [];
-    imp[1] := FLAGS_FILTER( tofilt );
+    imp[1] := WITH_IMPS_FLAGS( AND_FLAGS( FLAGS_FILTER( tofilt ),
+                                          FLAGS_FILTER( from ) ) );
     imp[2] := FLAGS_FILTER( from );
-    ADD_LIST( IMPLICATIONS, imp );
+
+    # Extend available implications by the new one if applicable.
+    found:= false;
+    for imp2 in IMPLICATIONS do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) then
+        imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+        if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+          found:= true;
+        fi;
+      fi;
+    od;
+
+    if not found then
+      # Extend the list of implications.
+      ADD_LIST( IMPLICATIONS, imp );
+    fi;
     InstallHiddenTrueMethod( tofilt, from );
 end );
-
 
 #############################################################################
 ##
