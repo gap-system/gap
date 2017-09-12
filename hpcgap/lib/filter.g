@@ -119,11 +119,21 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
                                           FLAGS_FILTER( from ) ) );
     imp[2] := FLAGS_FILTER( from );
 
-    atomic IMPLICATIONS do
+    atomic IMPLICATIONS_SIMPLE do
     # Extend available implications by the new one if applicable.
     found:= false;
-    for imp2 in IMPLICATIONS do
-      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) then
+    for imp2 in IMPLICATIONS_SIMPLE do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+         or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
+        imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+        if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+          found:= true;
+        fi;
+      fi;
+    od;
+    for imp2 in IMPLICATIONS_COMPOSED do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+         or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
         imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
         if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
           found:= true;
@@ -133,8 +143,12 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
 
     if not found then
       # Extend the list of implications.
-      MIGRATE_RAW(imp, IMPLICATIONS);
-      ADD_LIST( IMPLICATIONS, imp );
+      MIGRATE_RAW(imp, IMPLICATIONS_SIMPLE);
+      if from in FILTERS then
+        IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
+      else
+        ADD_LIST( IMPLICATIONS_COMPOSED, imp );
+      fi;
     fi;
     od;
     InstallHiddenTrueMethod( tofilt, from );
@@ -240,9 +254,6 @@ BIND_GLOBAL( "NewFilter", function( arg )
 
     # Create the filter.
     filter := NEW_FILTER( name );
-    if implied <> 0 then
-      InstallTrueMethodNewFilter( implied, filter );
-    fi;
 
     # Do some administrational work.
     atomic FILTER_REGION do
@@ -251,6 +262,10 @@ BIND_GLOBAL( "NewFilter", function( arg )
     RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
     INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
     od;
+
+    if implied <> 0 then
+      InstallTrueMethodNewFilter( implied, filter );
+    fi;
 
     # Return the filter.
     return filter;

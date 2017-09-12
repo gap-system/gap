@@ -107,7 +107,6 @@ BIND_GLOBAL( "NewCategory", function ( arg )
 
     # Create the filter.
     cat:= NEW_FILTER( arg[1] );
-    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
@@ -120,6 +119,9 @@ BIND_GLOBAL( "NewCategory", function ( arg )
       RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
     fi;
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+
+    # Do not call this before adding 'cat' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Return the filter.
     return cat;
@@ -260,7 +262,6 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     else
         Error("usage:NewRepresentation(<name>,<super>,<slots>[,<req>])");
     fi;
-    InstallTrueMethodNewFilter( arg[2], rep );
 
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
@@ -268,6 +269,9 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+
+    # Do not call this before adding 'rep' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], rep );
 
     # Return the filter.
     return rep;
