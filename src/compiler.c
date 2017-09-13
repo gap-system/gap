@@ -261,7 +261,7 @@ void            SetInfoCVar (
     Bag                 info;           /* its info bag                    */
 
     /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
 
     /* set the type of a temporary                                         */
     if ( IS_TEMP_CVAR(cvar) ) {
@@ -281,7 +281,7 @@ Int             GetInfoCVar (
     Bag                 info;           /* its info bag                    */
 
     /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
 
     /* get the type of an integer                                          */
     if ( IS_INTG_CVAR(cvar) ) {
@@ -316,7 +316,7 @@ Bag             NewInfoCVars ( void )
 {
     Bag                 old;
     Bag                 new;
-    old = INFO_FEXP( CURR_FUNC );
+    old = INFO_FEXP( CURR_FUNC() );
     new = NewBag( TNUM_BAG(old), SIZE_BAG(old) );
     return new;
 }
@@ -402,7 +402,7 @@ Temp            NewTemp (
     Bag                 info;           /* information bag                 */
 
     /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
 
     /* take the next available temporary                                   */
     CTEMP_INFO( info )++;
@@ -427,7 +427,7 @@ void            FreeTemp (
     Bag                 info;           /* information bag                 */
 
     /* get the information bag                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
 
     /* check that deallocations happens in the correct order               */
     if ( temp != CTEMP_INFO( info ) && CompPass == 2 ) {
@@ -478,7 +478,7 @@ void            CompSetUseHVar (
     if ( CompPass != 1 )  return;
 
     /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
@@ -498,7 +498,7 @@ Int             CompGetUseHVar (
     Int                 i;              /* loop variable                   */
 
     /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
@@ -516,7 +516,7 @@ UInt            GetLevlHVar (
 
     /* walk up                                                             */
     levl = 0;
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
     levl++;
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
@@ -535,7 +535,7 @@ UInt            GetIndxHVar (
     Int                 i;              /* loop variable                   */
 
     /* walk up                                                             */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
@@ -690,7 +690,7 @@ void            Emit (
     if ( CompPass != 2 )  return;
 
     /* get the information bag                                             */
-    narg = NARG_FUNC( CURR_FUNC );
+    narg = NARG_FUNC( CURR_FUNC() );
     if (narg < 0) {
         narg = -narg;
     }
@@ -1195,7 +1195,7 @@ CVar CompFuncExpr (
     Int                 nr;             /* number of the function          */
 
     /* get the number of the function                                      */
-    fexs = FEXS_FUNC( CURR_FUNC );
+    fexs = FEXS_FUNC( CURR_FUNC() );
     fexp = ELM_PLIST( fexs, ((Int*)ADDR_EXPR(expr))[0] );
     nr   = NR_INFO( INFO_FEXP( fexp ) );
 
@@ -1246,7 +1246,7 @@ CVar CompOr (
     Emit( "%c = (%c ? True : False);\n", val, left );
     Emit( "if ( %c == False ) {\n", val );
     only_left = NewInfoCVars();
-    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
     /* compile the right expression                                        */
     right = CompBoolExpr( ADDR_EXPR(expr)[1] );
@@ -1254,7 +1254,7 @@ CVar CompOr (
     Emit( "}\n" );
 
     /* we know that the result is boolean                                  */
-    MergeInfoCVars( INFO_FEXP(CURR_FUNC), only_left );
+    MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
     /* free the temporaries                                                */
@@ -1286,7 +1286,7 @@ CVar CompOrBool (
     Emit( "%c = %c;\n", val, left );
     Emit( "if ( ! %c ) {\n", val );
     only_left = NewInfoCVars();
-    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
     /* compile the right expression                                        */
     right = CompBoolExpr( ADDR_EXPR(expr)[1] );
@@ -1294,7 +1294,7 @@ CVar CompOrBool (
     Emit( "}\n" );
 
     /* we know that the result is boolean (should be 'W_CBOOL')            */
-    MergeInfoCVars( INFO_FEXP(CURR_FUNC), only_left );
+    MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
     /* free the temporaries                                                */
@@ -1325,7 +1325,7 @@ CVar CompAnd (
     /* compile the left expression                                         */
     left = CompExpr( ADDR_EXPR(expr)[0] );
     only_left = NewInfoCVars();
-    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
     /* emit the code for the case that the left value is 'false'           */
     Emit( "if ( %c == False ) {\n", left );
@@ -1348,7 +1348,7 @@ CVar CompAnd (
     Emit( "}\n" );
 
     /* we know precious little about the result                            */
-    MergeInfoCVars( INFO_FEXP(CURR_FUNC), only_left );
+    MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOUND );
 
     /* free the temporaries                                                */
@@ -1381,7 +1381,7 @@ CVar CompAndBool (
     Emit( "%c = %c;\n", val, left );
     Emit( "if ( %c ) {\n", val );
     only_left = NewInfoCVars();
-    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
     /* compile the right expression                                        */
     right = CompBoolExpr( ADDR_EXPR(expr)[1] );
@@ -1389,7 +1389,7 @@ CVar CompAndBool (
     Emit( "}\n" );
 
     /* we know that the result is boolean (should be 'W_CBOOL')            */
-    MergeInfoCVars( INFO_FEXP(CURR_FUNC), only_left );
+    MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
     /* free the temporaries                                                */
@@ -3970,14 +3970,14 @@ void CompIf (
 
     /* remember what we know after evaluating the first condition          */
     info_in = NewInfoCVars();
-    CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC()) );
 
     /* compile the body                                                    */
     CompStat( ADDR_STAT( stat )[1] );
 
     /* remember what we know after executing the first body                */
     info_out = NewInfoCVars();
-    CopyInfoCVars( info_out, INFO_FEXP(CURR_FUNC) );
+    CopyInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
     /* emit the rest code                                                  */
     Emit( "\n}\n" );
@@ -4000,7 +4000,7 @@ void CompIf (
         Emit( "else {\n" );
 
         /* this is what we know if we enter this branch                    */
-        CopyInfoCVars( INFO_FEXP(CURR_FUNC), info_in );
+        CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
         /* compile the expression                                          */
         cond = CompBoolExpr( ADDR_STAT( stat )[2*(i-1)] );
@@ -4010,13 +4010,13 @@ void CompIf (
         if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
         /* remember what we know after evaluating all previous conditions  */
-        CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC) );
+        CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC()) );
 
         /* compile the body                                                */
         CompStat( ADDR_STAT( stat )[2*(i-1)+1] );
 
         /* remember what we know after executing one of the previous bodies*/
-        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC) );
+        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
         /* emit the rest code                                              */
         Emit( "\n}\n" );
@@ -4035,13 +4035,13 @@ void CompIf (
         Emit( "else {\n" );
 
         /* this is what we know if we enter this branch                    */
-        CopyInfoCVars( INFO_FEXP(CURR_FUNC), info_in );
+        CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
         /* compile the body                                                */
         CompStat( ADDR_STAT( stat )[2*(i-1)+1] );
 
         /* remember what we know after executing one of the previous bodies*/
-        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC) );
+        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
         /* emit the rest code                                              */
         Emit( "\n}\n" );
@@ -4052,10 +4052,10 @@ void CompIf (
     else {
 
         /* this is what we know if we enter this branch                    */
-        CopyInfoCVars( INFO_FEXP(CURR_FUNC), info_in );
+        CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
         /* remember what we know after executing one of the previous bodies*/
-        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC) );
+        MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
     }
 
@@ -4068,7 +4068,7 @@ void CompIf (
     Emit( "/* fi */\n" );
 
     /* put what we know into the current info                              */
-    CopyInfoCVars( INFO_FEXP(CURR_FUNC), info_out );
+    CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_out );
 
 }
 
@@ -4134,7 +4134,7 @@ void CompFor (
         CompPass = 99;
         prev = NewInfoCVars();
         do {
-            CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC) );
+            CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC()) );
             if ( HasInfoCVar( first, W_INT_SMALL_POS ) ) {
                 SetInfoCVar( CVAR_LVAR(var), W_INT_SMALL_POS );
             }
@@ -4144,8 +4144,8 @@ void CompFor (
             for ( i = 2; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
                 CompStat( ADDR_STAT(stat)[i] );
             }
-            MergeInfoCVars( INFO_FEXP(CURR_FUNC), prev );
-        } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC), prev ) );
+            MergeInfoCVars( INFO_FEXP(CURR_FUNC()), prev );
+        } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
         CompPass = pass;
 
         /* emit the code for the loop                                      */
@@ -4236,15 +4236,15 @@ void CompFor (
         CompPass = 99;
         prev = NewInfoCVars();
         do {
-            CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC) );
+            CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC()) );
             if ( vart == 'l' ) {
                 SetInfoCVar( CVAR_LVAR(var), W_BOUND );
             }
             for ( i = 2; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
                 CompStat( ADDR_STAT(stat)[i] );
             }
-            MergeInfoCVars( INFO_FEXP(CURR_FUNC), prev );
-        } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC), prev ) );
+            MergeInfoCVars( INFO_FEXP(CURR_FUNC()), prev );
+        } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
         CompPass = pass;
 
         /* emit the code for the loop                                      */
@@ -4332,15 +4332,15 @@ void CompWhile (
     Emit( "while ( 1 ) {\n" );
     prev = NewInfoCVars();
     do {
-        CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC) );
+        CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC()) );
         cond = CompBoolExpr( ADDR_STAT(stat)[0] );
         Emit( "if ( ! %c ) break;\n", cond );
         if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
         for ( i = 1; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
             CompStat( ADDR_STAT(stat)[i] );
         }
-        MergeInfoCVars( INFO_FEXP(CURR_FUNC), prev );
-    } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC), prev ) );
+        MergeInfoCVars( INFO_FEXP(CURR_FUNC()), prev );
+    } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
     Emit( "}\n" );
     CompPass = pass;
 
@@ -4390,15 +4390,15 @@ void CompRepeat (
     Emit( "do {\n" );
     prev = NewInfoCVars();
     do {
-        CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC) );
+        CopyInfoCVars( prev, INFO_FEXP(CURR_FUNC()) );
         for ( i = 1; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
             CompStat( ADDR_STAT(stat)[i] );
         }
         cond = CompBoolExpr( ADDR_STAT(stat)[0] );
         Emit( "if ( %c ) break;\n", cond );
         if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
-        MergeInfoCVars( INFO_FEXP(CURR_FUNC), prev );
-    } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC), prev ) );
+        MergeInfoCVars( INFO_FEXP(CURR_FUNC()), prev );
+    } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
     Emit( "} while ( 1 );\n" );
     CompPass = pass;
 
@@ -5443,7 +5443,7 @@ void CompFunc (
         UInt nr = PushPlist( CompFunctions, func );
 
         info = NewBag( T_STRING, SIZE_INFO(narg+nloc,8) );
-        NEXT_INFO(info)  = INFO_FEXP( CURR_FUNC );
+        NEXT_INFO(info)  = INFO_FEXP( CURR_FUNC() );
         NR_INFO(info)    = nr;
         NLVAR_INFO(info) = narg + nloc;
         NHVAR_INFO(info) = 0;
@@ -5459,7 +5459,7 @@ void CompFunc (
     SWITCH_TO_NEW_LVARS( func, narg, nloc, oldFrame );
 
     /* get the info bag                                                    */
-    info = INFO_FEXP( CURR_FUNC );
+    info = INFO_FEXP( CURR_FUNC() );
 
     /* compile the innner functions                                        */
     fexs = FEXS_FUNC(func);

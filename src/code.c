@@ -253,13 +253,14 @@ static Stat NewStatWithProf (
     STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
-    UInt bodySize = SIZE_BAG(BODY_FUNC(CURR_FUNC));
+    Obj body = BODY_FUNC(CURR_FUNC());
+    UInt bodySize = SIZE_BAG(body);
     if (bodySize == 0)
         bodySize = STATE(OffsBody);
     while (bodySize < STATE(OffsBody))
         bodySize *= 2;
-    ResizeBag(BODY_FUNC(CURR_FUNC), bodySize);
-    STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    ResizeBag(body, bodySize);
+    STATE(PtrBody) = (Stat*)PTR_BAG(body);
 
     /* enter type and size                                                 */
     *STAT_HEADER(stat) = fillFilenameLine(file, line, size, type);
@@ -297,13 +298,14 @@ Expr            NewExpr (
     STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
 
     /* make certain that the current body bag is large enough              */
-    UInt bodySize = SIZE_BAG(BODY_FUNC(CURR_FUNC));
+    Obj body = BODY_FUNC(CURR_FUNC());
+    UInt bodySize = SIZE_BAG(body);
     if (bodySize == 0)
         bodySize = STATE(OffsBody);
     while (bodySize < STATE(OffsBody))
         bodySize *= 2;
-    ResizeBag(BODY_FUNC(CURR_FUNC), bodySize);
-    STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    ResizeBag(body, bodySize);
+    STATE(PtrBody) = (Stat*)PTR_BAG(body);
 
     /* enter type and size                                                 */
     *STAT_HEADER(expr) = fillFilenameLine(STATE(Input)->gapnameid,
@@ -838,7 +840,7 @@ void CodeFuncExprEnd (
     UInt                i;              /* loop variable                   */
 
     /* get the function expression                                         */
-    fexp = CURR_FUNC;
+    fexp = CURR_FUNC();
     assert(!STATE(LoopNesting));
     
     /* get the body of the function                                        */
@@ -897,7 +899,7 @@ void CodeFuncExprEnd (
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
     if ( STATE(CurrLVars) != STATE(CodeLVars) ) {
-        fexs = FEXS_FUNC( CURR_FUNC );
+        fexs = FEXS_FUNC( CURR_FUNC() );
         len = PushPlist( fexs, fexp );
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
         ADDR_EXPR(expr)[0] = (Expr)len;

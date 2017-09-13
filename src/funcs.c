@@ -1557,7 +1557,7 @@ Obj             EvalFuncExpr (
     Obj                 fexp;           /* function expression bag         */
 
     /* get the function expression bag                                     */
-    fexs = FEXS_FUNC( CURR_FUNC );
+    fexs = FEXS_FUNC( CURR_FUNC() );
     fexp = ELM_PLIST( fexs, (Int)(ADDR_EXPR(expr)[0]) );
 
     /* and make the function                                               */
@@ -1578,7 +1578,7 @@ void            PrintFuncExpr (
     Obj                 fexp;           /* function expression bag         */
 
     /* get the function expression bag                                     */
-    fexs = FEXS_FUNC( CURR_FUNC );
+    fexs = FEXS_FUNC( CURR_FUNC() );
     fexp = ELM_PLIST( fexs, (Int)(ADDR_EXPR(expr)[0]) );
     PrintFunction( fexp );
     /* Pr("function ... end",0L,0L); */

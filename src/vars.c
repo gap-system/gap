@@ -254,7 +254,7 @@ void            ASS_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* assign the value                                                    */
@@ -275,7 +275,7 @@ Obj             OBJ_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* get the value                                                       */
@@ -298,7 +298,7 @@ Char *          NAME_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* get the name                                                        */
@@ -2523,7 +2523,7 @@ void VarsAfterCollectBags ( void )
   if (STATE(CurrLVars))
     {
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
-      STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC() ) );
     }
   GVarsAfterCollectBags();
 }

@@ -1495,7 +1495,7 @@ void ReadFuncExpr (
     /* now finally begin the function                                      */
     TRY_READ { IntrFuncExprBegin( isvarg ? -narg : narg, nloc, nams, startLine ); }
 #ifdef HPCGAP
-    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC, locks);
+    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC(), locks);
 #endif
 
     /* <Statments>                                                         */
@@ -2957,7 +2957,7 @@ UInt ReadEvalFile ( void )
         Obj fexp;
         CodeEnd(1);
         STATE(IntrCoding)--;
-        fexp = CURR_FUNC;
+        fexp = CURR_FUNC();
         if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
     }
 
@@ -2996,7 +2996,7 @@ UInt ReadEvalFile ( void )
 */
 void            ReadEvalError ( void )
 {
-    STATE(PtrBody)  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    STATE(PtrBody)  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC()));
     STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
     syLongjmp( &(STATE(ReadJmpError)), 1 );
 }
