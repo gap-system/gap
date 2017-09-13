@@ -126,20 +126,6 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 
 /****************************************************************************
 **
-*F  BRK_CALL_FROM() . . . . . . . . .  frame from which this frame was called
-*F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
-*/
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 PARENT_LVARS_PTR(STATE(PtrLVars))
-#define SET_BRK_CALL_FROM(lvars)        (PARENT_LVARS_PTR(STATE(PtrLVars)) = (lvars))
-#else
-#define BRK_CALL_FROM()                 /* do nothing */
-#define SET_BRK_CALL_FROM(lvars)        /* do nothing */
-#endif
-
-
-/****************************************************************************
-**
 *F  NewLVarsBag( <slots> ) . . make new lvars bag with <slots> variable slots
 *F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
 */
@@ -186,7 +172,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
   STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
   CURR_FUNC = func;
   STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-  SET_BRK_CALL_FROM( old );
+  PARENT_LVARS_PTR(STATE(PtrLVars)) = old;
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
@@ -242,6 +228,10 @@ static inline void SwitchToOldLVarsAndFree( Obj old
            file, line, (UInt)STATE(CurrLVars),(UInt)old);
   }
 #endif
+  // remove the link to the calling function, in case this values bag stays
+  // alive due to higher variable reference
+  PARENT_LVARS_PTR(STATE(PtrLVars)) = 0;
+
   CHANGED_BAG( STATE(CurrLVars) );
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));

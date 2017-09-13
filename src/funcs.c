@@ -819,10 +819,6 @@ static void ExecFuncHelper(void)
     REM_BRK_CURR_STAT();
     EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
-
-    // remove the link to the calling function, in case this values bag stays
-    // alive due to higher variable reference
-    SET_BRK_CALL_FROM( ((Obj) 0));
 }
 
 static Obj PopReturnObjStat(void)
