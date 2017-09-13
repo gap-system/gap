@@ -100,7 +100,12 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       FUNC_LVARS_PTR(STATE(PtrLVars))
+static inline Obj CURR_FUNC(void)
+{
+    GAP_ASSERT(IS_LVARS_OR_HVARS(STATE(CurrLVars)));
+    GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
+    return FUNC_LVARS_PTR(STATE(PtrLVars));
+}
 
 
 /****************************************************************************
@@ -167,7 +172,7 @@ static void SET_CURR_LVARS(Obj lvars)
     GAP_ASSERT(IS_LVARS_OR_HVARS(lvars));
     STATE(CurrLVars) = lvars;
     STATE(PtrLVars) = PTR_BAG(lvars);
-    STATE(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC));
+    STATE(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC()));
 }
 
 
@@ -302,7 +307,7 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
 */
-#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC, lvar )
+#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
 
 
 /****************************************************************************
