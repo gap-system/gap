@@ -120,7 +120,7 @@ extern Obj STEVES_TRACING;
 extern Obj True;
 #include <stdio.h>
 
-static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
+static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
             (int)expr, (int)STATE(CurrLVars), file, line);
@@ -191,7 +191,7 @@ extern Obj STEVES_TRACING;
 
 static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #ifdef TRACEFRAMES
-, char * file, int line
+, const char * file, int line
 #endif
 )
 {
@@ -233,7 +233,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 
 static inline void SwitchToOldLVars( Obj old
 #ifdef TRACEFRAMES
-, char *file, int line
+, const char *file, int line
 #endif
 )
 {
@@ -249,7 +249,7 @@ static inline void SwitchToOldLVars( Obj old
 
 static inline void SwitchToOldLVarsAndFree( Obj old
 #ifdef TRACEFRAMES
-, char *file, int line
+, const char *file, int line
 #endif
 )
 {
