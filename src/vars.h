@@ -190,13 +190,17 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #endif
 )
 {
+  // make sure old lvars are not garbage collected
   Obj old = STATE(CurrLVars);
   CHANGED_BAG( old );
-  STATE(CurrLVars) = NewLVarsBag( narg+nloc );
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  CURR_FUNC = func;
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-  PARENT_LVARS_PTR(STATE(PtrLVars)) = old;
+
+  // create new lvars (may cause garbage collection)
+  Obj new_lvars = NewLVarsBag( narg+nloc );
+  FUNC_LVARS(new_lvars) = func;
+  PARENT_LVARS(new_lvars) = old;
+
+  // switch to new lvars
+  SET_CURR_LVARS(new_lvars);
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
