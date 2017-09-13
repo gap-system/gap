@@ -134,13 +134,13 @@ typedef UInt    RNam;
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
 
 #define CURR_FRAME              STATE(CurrLVars)
-#define CURR_FRAME_1UP          ENVI_FUNC( PTR_BAG( CURR_FRAME     )[0] )
-#define CURR_FRAME_2UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_1UP )[0] )
-#define CURR_FRAME_3UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_2UP )[0] )
-#define CURR_FRAME_4UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_3UP )[0] )
-#define CURR_FRAME_5UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_4UP )[0] )
-#define CURR_FRAME_6UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_5UP )[0] )
-#define CURR_FRAME_7UP          ENVI_FUNC( PTR_BAG( CURR_FRAME_6UP )[0] )
+#define CURR_FRAME_1UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME     ) )
+#define CURR_FRAME_2UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_1UP ) )
+#define CURR_FRAME_3UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_2UP ) )
+#define CURR_FRAME_4UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_3UP ) )
+#define CURR_FRAME_5UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_4UP ) )
+#define CURR_FRAME_6UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_5UP ) )
+#define CURR_FRAME_7UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_6UP ) )
 
 /* #define OBJ_LVAR(lvar)  STATE(PtrLVars)[(lvar)+2] */
 #define OBJ_LVAR_0UP(lvar) \
