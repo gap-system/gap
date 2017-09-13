@@ -96,9 +96,9 @@ true
 #
 # test functions
 #
-gap> f:=x->x;; MemoryUsage(f) - SHALLOW_SIZE(f) in [160, 132];
+gap> f:=x->x;; MemoryUsage(f) - SHALLOW_SIZE(f) in [160, 96];
 true
-gap> f:=x->x+1;; MemoryUsage(f) - SHALLOW_SIZE(f) in [184, 156];
+gap> f:=x->x+1;; MemoryUsage(f) - SHALLOW_SIZE(f) in [184, 112];
 true
 gap> MemoryUsage(f) = MemoryUsage(f);
 true
