@@ -1047,11 +1047,9 @@ InstallMethod(DeterminantMatDestructive,
 ##
 
 
-InstallMethod(RankMatDestructive,
+InstallOtherMethod(RankMatDestructive,
         "kernel method for plain list of GF2 vectors",
-        true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
         RANK_LIST_VEC8BITS);
   
 InstallMethod(NestingDepthM, [Is8BitMatrixRep], m->2);

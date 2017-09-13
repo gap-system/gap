@@ -364,17 +364,17 @@ InstallOtherMethod(CycleStructurePerm,
 
 # Matrix methods:
 
-InstallMethod( DimensionsMat, "for a matrix with memory",true,
-  [ IsMatrix and IsObjWithMemory ], 0,
+InstallOtherMethod( DimensionsMat, "for a matrix with memory",
+  [ IsMatrix and IsObjWithMemory ],
   function(M)
     return DimensionsMat(M!.el);
   end);
 
-InstallMethod( Length, "for a matrix with memory",
+InstallOtherMethod( Length, "for a matrix with memory",
   [ IsMatrix and IsObjWithMemory ], M -> Length(M!.el) ) ;
 
-InstallMethod( ELM_LIST, "for a matrix with memory",true,
-  [ IsMatrix and IsObjWithMemory, IsPosInt ], 0,
+InstallOtherMethod( ELM_LIST, "for a matrix with memory",
+  [ IsMatrix and IsObjWithMemory, IsPosInt ],
   function(M,i)
     return M!.el[i];
   end);

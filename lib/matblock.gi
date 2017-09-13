@@ -132,7 +132,7 @@ end );
 ##
 #M  Length( <blockmat> )  . . . . . . . . . . . . . . . .  for a block matrix
 ##
-InstallMethod( Length,
+InstallOtherMethod( Length,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     blockmat -> blockmat!.nrb * blockmat!.rpb );
@@ -142,7 +142,7 @@ InstallMethod( Length,
 ##
 #M  \[\]( <blockmat>, <n> ) . . . . . . . . . . . . . . .  for a block matrix
 ##
-InstallMethod( \[\],
+InstallOtherMethod( \[\],
     "for an ordinary block matrix and a positive integer",
     [ IsOrdinaryMatrix and IsBlockMatrixRep, IsPosInt ],
     function( blockmat, n )
@@ -195,7 +195,7 @@ InstallOtherMethod( \[\],
 ##
 #M  TransposedMat( <blockmat> ) . . . . . . . . . . . . .  for a block matrix
 ##
-InstallMethod( TransposedMat,
+InstallOtherMethod( TransposedMat,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     m -> BlockMatrix( List( m!.blocks, i -> [ i[2], i[1],
@@ -668,7 +668,7 @@ InstallMethod( PrintObj,
 ##
 #M  DimensionsMat( <blockmat> ) . . . . . . . . . . . . .  for a block matrix
 ##
-InstallMethod( DimensionsMat,
+InstallOtherMethod( DimensionsMat,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     m -> [ m!.nrb * m!.rpb, m!.ncb * m!.cpb ] );

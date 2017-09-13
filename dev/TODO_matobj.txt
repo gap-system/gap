@@ -3,6 +3,7 @@ Tasks for MatrixObj
 
 Design Decisions
 ===================
+
 - Decide the relation between 'IsMatrix' and 'IsMatrixObj'.
 
   (September 08th)
@@ -38,18 +39,53 @@ Design Decisions
   and say that special vector representations may support more general
   cases.)
   
+- Attributes for 'IsMatrixObj' objects:
+
+  *Storing* rank, determinant, etc. makes sense only for immutable objects;
+  it would be dangerous/wrong to store such information in mutable matrices.
+  We can still declare 'RankMat', 'DeterminantMat', etc. as attributes,
+  since the feature to *store* attributes is deactivated unless one sets
+  the filter 'IsAttributeStoringRep' or installs special setter methods.
+  Thus we could document that we recommend to implement new kinds of matrix
+  objects in one of the following ways:
+
+  1. As always *immutable* objects,
+     with the possibility to set the filter 'IsAttributeStoringRep' or to
+     install special attribute setter methods,
+
+  2. as copyable objects (that is, with the possibility to create mutable
+     matrices);
+     here the filter 'IsAttributeStoringRep' should not be set,
+     and special attribute setter methods should better not be installed.
+
+  Note that 'IsMatrixObj' does currently imply 'IsCopyable'.
+  We could drop 'IsCopyable' from the general 'IsMatrixObj' definition,
+  and set it whenever mutable versions shall be supported.
+  (For example, if the objects returned by 'BlockMatrix' would not be lists
+  then one could think about removing 'IsCopyable' from their type.
+  Currently 'IsCopyable' is set, and 'ShallowCopy' is defined to return
+  a deep copy represented via plists.)
+
 
 Changes to IsMatrixObj
 ===================
 
-- define 'DefaultRing' for the entries as default 'BaseDomain'
-  of Plist vectors and matrices
-  (Cheaper methods may be installed for special cases,
-  for example 'Cyclotomics' should be good enough for plists of (plists of)
-  cyclotomics, without computing conductors;
-  analogous objects for finite characteristic seem not to be available.)
-
-- introduce 'ZeroOfBaseDomain' (done)
+- If the identity of the 'BaseDomain's of two matrices is a necessary
+  condition for the applicability of (generic) methods,
+  for example for 'KroneckerProduct',
+  then the 'BaseDomain' for plists of plists must be as large as possible,
+  in order to make these methods.
+  For plists of plists of cyclotomics, 'Cyclotomics' would be suitable.
+  For plists of plists of FFE elements, we do not have analogous objects
+  (one for each positive characteristic), but we could create them,
+  and for matrices of polynomials etc., things are getting complicated.
+  Alternatively, we could take the *family of the matrix entries* as the
+  'BaseDomain':
+  'One', 'Zero', 'Characteristic' work in principle,
+  'IsFinite', 'Size', '\in' could be provided.
+  (With this choice, computing the 'BaseDomain' would be cheap, as required.)
+  
+- introduce 'OneOfBaseDomain', 'ZeroOfBaseDomain' (done)
 
 - Define and implement 'EmptyMatrix' as IsMatrixObj
 

@@ -2092,9 +2092,8 @@ InstallMethod(DeterminantMatDestructive,
 ##
 
 
-InstallMethod(RankMatDestructive,
+InstallOtherMethod(RankMatDestructive,
         "kernel method for plain list of GF2 vectors",
-        true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
         GF2_AHEAD_OF_8BIT_RANK, 
         RANK_LIST_GF2VECS);
