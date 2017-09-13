@@ -1106,9 +1106,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
       SET_ELM_PLIST(res,2,STATE(ThrownObject));
       CHANGED_BAG(res);
       STATE(ThrownObject) = 0;
-      STATE(CurrLVars) = currLVars;
-      STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
-      STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      SET_CURR_LVARS(currLVars);
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
 #ifdef HPCGAP
