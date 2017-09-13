@@ -323,9 +323,8 @@ InstallMethod( Fold, "for a vector, a positive int, and a matrix",
 InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
   [ IsUnivariatePolynomial, IsMatrixObj ],
   function( po, m )
-    local l, n, q, ll, i, bd, one;
-    bd := BaseDomain(m);
-    one := One(bd);
+    local l, n, q, ll, i, one;
+    one := OneOfBaseDomain( m );
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
     if not IsOne(l[n+1]) then
@@ -428,13 +427,12 @@ InstallMethod( ExtractSubVector, "generic method",
 InstallOtherMethod( ScalarProduct, "generic method",
   [ IsVectorObj, IsVectorObj ],
   function( v, w )
-    local bd,i,s;
-    bd := BaseDomain(v);
-    s := Zero(bd);
+    local i,s;
     if Length(v) <> Length(w) then
         Error("vectors must have equal length");
         return fail;
     fi;
+    s:= ZeroOfBaseDomain( v );
     for i in [1..Length(v)] do
         s := s + v[i]*w[i];
     od;
@@ -444,15 +442,14 @@ InstallOtherMethod( ScalarProduct, "generic method",
 InstallMethod( TraceMat, "generic method",
   [ IsMatrixObj ],
   function( m )
-    local bd,i,s;
-    bd := BaseDomain(m);
-    s := Zero(bd);
+    local i,s;
     if NumberRows(m) <> NumberColumns(m) then
         Error("matrix must be square");
         return fail;
     fi;
+    s := ZeroOfBaseDomain( m );
     for i in [1..NumberRows(m)] do
-        s := s + MatElm(m,i,i);
+        s := s + m[ i, i ];
     od;
     return s;
   end );
@@ -467,6 +464,8 @@ InstallMethod(PositionNonZero,
   od;
   return i+1;
 end);
+#T superfluous?
+
 
 InstallMethod(PositionNonZero,
   "generic method for a vector object",
