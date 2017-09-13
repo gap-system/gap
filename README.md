@@ -36,7 +36,7 @@ To build GAP, enter the following commands:
 ```
 
 Now, if you do not have a GAP package archive yet, we recommend that you
-bootstrap the stable versions of packages by executing on of the the following
+bootstrap the stable versions of packages by executing one of the following
 commands. Whether you choose to `bootstrap-pkg-minimal` or `bootstrap-pkg-full`
 depends on your needs for development.
 
@@ -73,7 +73,7 @@ To keep up to date on GAP news (discussion of problems, release announcements,
 bug fixes), you can subscribe to the
 [GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) and
 [GAP development](https://mail.gap-system.org/mailman/listinfo/gap) mailing lists,
-notifications on github, and follow us on [Twitter](https://twitter.com/gap_system).
+notifications on GitHub, and follow us on [Twitter](https://twitter.com/gap_system).
 
 If you have any questions about working with GAP, you can ask them on
 [GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
