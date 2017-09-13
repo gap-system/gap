@@ -158,6 +158,18 @@ static inline void MakeHighVars( Bag bag ) {
 }
 
 
+/****************************************************************************
+**
+*F  SET_CURR_LVARS
+*/
+static void SET_CURR_LVARS(Obj lvars)
+{
+    GAP_ASSERT(IS_LVARS_OR_HVARS(lvars));
+    STATE(CurrLVars) = lvars;
+    STATE(PtrLVars) = PTR_BAG(lvars);
+    STATE(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC));
+}
+
 
 /****************************************************************************
 **
@@ -223,9 +235,7 @@ static inline void SwitchToOldLVars( Obj old
   }
 #endif
   CHANGED_BAG( STATE(CurrLVars) );
-  STATE(CurrLVars) = (old);
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  SET_CURR_LVARS(old);
 }
 
 static inline void SwitchToOldLVarsAndFree( Obj old
@@ -247,9 +257,7 @@ static inline void SwitchToOldLVarsAndFree( Obj old
   CHANGED_BAG( STATE(CurrLVars) );
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
-  STATE(CurrLVars) = (old);
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  SET_CURR_LVARS(old);
 }
 
 

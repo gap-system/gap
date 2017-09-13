@@ -1510,9 +1510,7 @@ void ReadFuncExpr (
     else if ( nrError == 0 && STATE(IntrCoding) ) {
         CodeEnd(1);
         STATE(IntrCoding)--;
-        STATE(CurrLVars) = currLVars;
-        STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-        STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        SET_CURR_LVARS(currLVars);
     }
 
     /* pop the new local variables list                                    */
@@ -1569,9 +1567,7 @@ static void ReadFuncExprBody (
     else if ( nrError == 0  && STATE(IntrCoding) ) {
         CodeEnd(1);
         STATE(IntrCoding)--;
-        STATE(CurrLVars) = currLVars;
-        STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-        STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        SET_CURR_LVARS(currLVars);
     }
 
     /* pop the new local variables list                                    */
@@ -2303,9 +2299,7 @@ void ReadFor (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            STATE(CurrLVars) = currLVars;
-            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            SET_CURR_LVARS(currLVars);
         }
     }
 }
@@ -2357,9 +2351,7 @@ void ReadWhile (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            STATE(CurrLVars) = currLVars;
-            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            SET_CURR_LVARS(currLVars);
         }
     }
 }
@@ -2439,9 +2431,7 @@ void ReadAtomic (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            STATE(CurrLVars) = currLVars;
-            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            SET_CURR_LVARS(currLVars);
         }
     }
 #ifdef HPCGAP
@@ -2497,9 +2487,7 @@ void ReadRepeat (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            STATE(CurrLVars) = currLVars;
-            STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-            STATE(PtrBody)   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+            SET_CURR_LVARS(currLVars);
         }
     }
 }
