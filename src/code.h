@@ -29,7 +29,7 @@
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-typedef UInt8 Stat;
+typedef UInt Stat;
 
 typedef struct {
     unsigned int visited : 1;
