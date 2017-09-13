@@ -377,13 +377,13 @@ Obj SyntaxTreeHVar(Expr expr)
 {
     HVar hvar;
 
-    hvar = (HVar)(ADDR_EXPR(expr)[0]);
+    hvar = (HVar)(expr);
     return INTOBJ_INT(hvar);
 }
 
 Obj SyntaxTreeGVar(Expr expr)
 {
-    return NameGVarObj((GVar)expr);
+  return NameGVarObj((GVar)(expr));
 }
 
 Obj SyntaxTreeRefLVar(Obj result, Expr expr)
@@ -391,12 +391,14 @@ Obj SyntaxTreeRefLVar(Obj result, Expr expr)
     AssPRec(result, RNamName("lvar"), SyntaxTreeLVar(expr));
     return result;
 }
+/*
 
 Obj SyntaxTreeRefHVar(Obj result, Expr expr)
 {
     AssPRec(result, RNamName("hvar"), SyntaxTreeHVar(expr));
     return result;
 }
+*/
 
 Obj SyntaxTreeRefGVar(Obj result, Expr expr)
 {
@@ -455,6 +457,9 @@ Obj SyntaxTreeIf(Obj result, Stat stat)
         cond = SyntaxTreeCompiler(ADDR_STAT(stat)[2 * i]);
         then = SyntaxTreeCompiler(ADDR_STAT(stat)[2 * i + 1]);
 
+        if(cond==0) {
+          fprintf(stderr, "cond 0, else?\n");
+        }
         pair = NEW_PREC(2);
         AssPRec(pair, RNamName("condition"), cond);
         AssPRec(pair, RNamName("then"), then);
@@ -595,7 +600,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
         }
         else {
             /* TODO: Probably put the number in */
-            C_NEW_STRING_CONST(str, "localvar");
+            C_NEW_STRING_DYN(str, "localvar");
         }
         SET_ELM_PLIST(argnams, i, str);
         CHANGED_BAG(argnams);
@@ -613,7 +618,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
         }
         else {
             /* TODO: Probably put the number in */
-            C_NEW_STRING_CONST(str, "localvar");
+            C_NEW_STRING_DYN(str, "localvar");
         }
         SET_ELM_PLIST(locnams, i, str);
         CHANGED_BAG(locnams);
@@ -782,10 +787,10 @@ static const CompilerT ExprCompilers[] = {
 
     COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
     COMPILER(T_ISB_LVAR, SyntaxTreeRefLVar),
-    COMPILER(T_REF_HVAR, SyntaxTreeRefHVar),
-    COMPILER(T_ISB_HVAR, SyntaxTreeRefHVar),
-    COMPILER(T_REF_GVAR, SyntaxTreeRefGVar),
-    COMPILER(T_ISB_GVAR, SyntaxTreeRefGVar),
+    COMPILER_(T_REF_HVAR, ARG("hvar", SyntaxTreeHVar)),
+    COMPILER_(T_ISB_HVAR, ARG("hvar", SyntaxTreeHVar)),
+    COMPILER_(T_REF_GVAR, ARG("gvar", SyntaxTreeGVar)),
+    COMPILER_(T_ISB_GVAR, ARG("gvar", SyntaxTreeGVar)),
 
     COMPILER_(T_ELM_LIST,
               ARG_("list"), ARG_("pos")),
