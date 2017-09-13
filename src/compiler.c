@@ -5625,6 +5625,7 @@ Int CompileFunc (
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
     Emit( "#include <src/compiled.h>\n" );
+    Emit( "#define FILE_CRC  \"%d\"\n", magic1 );
 
     /* emit code for global variables                                      */
     Emit( "\n/* global variables used in handlers */\n" );
@@ -5706,13 +5707,13 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "InitGlobalBag( &FileName, \"%s:FileName(%d)\" );\n",
-          magic2, magic1 );
+    Emit( "InitGlobalBag( &FileName, \"%s:FileName(\"FILE_CRC\")\" );\n",
+          magic2 );
     for ( i = 1; i <= compFunctionsNr; i++ ) {
-        Emit( "InitHandlerFunc( HdlrFunc%d, \"%s:HdlrFunc%d(%d)\" );\n",
-              i, compilerMagic2, i, compilerMagic1 );
-        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s:NameFunc[%d](%d)\" );\n", 
-               i, magic2, i, magic1 );
+        Emit( "InitHandlerFunc( HdlrFunc%d, \"%s:HdlrFunc%d(\"FILE_CRC\")\" );\n",
+              i, compilerMagic2, i );
+        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s:NameFunc[%d](\"FILE_CRC\")\" );\n", 
+               i, magic2, i );
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
     }
     Emit( "\n/* return success */\n" );
