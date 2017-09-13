@@ -63,6 +63,18 @@
 
 /****************************************************************************
 **
+*F  IS_LVARS_OR_HVARS()
+**
+*/
+static inline int IS_LVARS_OR_HVARS(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return tnum == T_LVARS || tnum == T_HVARS;
+}
+
+
+/****************************************************************************
+**
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
