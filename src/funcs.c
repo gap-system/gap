@@ -1672,13 +1672,13 @@ void            ExecBegin ( Obj frame )
     Obj                 execState;      /* old execution state             */
 
     /* remember the old execution state                                    */
-    execState = NewBag( T_PLIST, 4*sizeof(Obj) );
-    ADDR_OBJ(execState)[0] = (Obj)3;
-    ADDR_OBJ(execState)[1] = STATE(ExecState);
-    ADDR_OBJ(execState)[2] = STATE(CurrLVars);
+    execState = NEW_PLIST(T_PLIST, 3);
+    SET_LEN_PLIST(execState, 3);
+    SET_ELM_PLIST(execState, 1, STATE(ExecState));
+    SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
-    ADDR_OBJ(execState)[3] = INTOBJ_INT((Int)STATE(CurrStat));
+    SET_ELM_PLIST(execState, 3, INTOBJ_INT((Int)STATE(CurrStat)));
     STATE(ExecState) = execState;
 
     /* set up new state                                                    */
@@ -1698,9 +1698,9 @@ void            ExecEnd (
     }
 
     /* switch back to the old state                                    */
-    SET_BRK_CURR_STAT( (Stat)INT_INTOBJ((ADDR_OBJ(STATE(ExecState))[3]) ));
-    SWITCH_TO_OLD_LVARS( ADDR_OBJ(STATE(ExecState))[2] );
-    STATE(ExecState) = ADDR_OBJ(STATE(ExecState))[1];
+    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(STATE(ExecState), 3)));
+    SWITCH_TO_OLD_LVARS( ELM_PLIST(STATE(ExecState), 2) );
+    STATE(ExecState) = ELM_PLIST(STATE(ExecState), 1);
 }
 
 /****************************************************************************
