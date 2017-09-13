@@ -281,6 +281,7 @@ end);
 ##  <Example><![CDATA[
 ##  gap> ShowImpliedFilters(IsMatrix);
 ##  Implies:
+##     IsMatrixObj
 ##     IsGeneralizedRowVector
 ##     IsNearAdditiveElementWithInverse
 ##     IsAdditiveElement
