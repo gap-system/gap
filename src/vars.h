@@ -24,15 +24,6 @@
 
 /****************************************************************************
 **
-*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
-**
-**  'T_LVARS' is the type of bags used to store values of local variables.
-
-#define T_LVARS                 174
-*/
-
-/****************************************************************************
-**
 *V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
 **
 **  'CurrLVars'  is the bag containing the  values  of the local variables of
