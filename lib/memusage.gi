@@ -119,7 +119,7 @@ end );
 InstallMethod( MemoryUsage, "generic fallback method",
   [ IsObject ],
   function( o )
-    local mem,known,i,s;
+    local mem,i,s;
 
     if SHALLOW_SIZE(o) = 0 then
         return MU_MemPointer;
@@ -128,7 +128,6 @@ InstallMethod( MemoryUsage, "generic fallback method",
     if MU_AddToCache( o ) then
         return 0;    # already counted
     fi;
-
     MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
 
     # Count the bag, the header, and the master pointer
@@ -165,68 +164,81 @@ InstallMethod( MemoryUsage, "generic fallback method",
 InstallMethod( MemoryUsage, "for a plist",
   [ IsList and IsPlistRep ],
   function( o )
-    local mem,known,i;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
-        # Count the bag, the header, and the master pointer
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        for i in [1..Length(o)] do
-            if IsBound(o[i]) then
-                if SHALLOW_SIZE(o[i]) > 0 then    # a subobject!
-                    mem := mem + MemoryUsage(o[i]);
-                fi;
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
+    local mem,i;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
     fi;
-    return 0;    # already counted
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+
+    # Count the bag, the header, and the master pointer
+    mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+    for i in [1..Length(o)] do
+        if IsBound(o[i]) then
+            if SHALLOW_SIZE(o[i]) > 0 then    # a subobject!
+                mem := mem + MemoryUsage(o[i]);
+            fi;
+        fi;
+    od;
+    MU_Finalize();
+    return mem;
   end );
 
 InstallMethod( MemoryUsage, "for a record",
   [ IsRecord ],
   function( o )
-    local mem,known,i,s;
-    known := MU_AddToCache( o );
-    if known = false then    # not yet known
-        MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
-        # Count the bag, the header, and the master pointer
-        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
-        for i in RecNames(o) do
-            s := o.(i);
-            if SHALLOW_SIZE(s) > 0 then    # a subobject!
-                mem := mem + MemoryUsage(s);
-            fi;
-        od;
-        MU_Finalize();
-        return mem;
+    local mem,i,s;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
     fi;
-    return 0;    # already counted
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+
+    # Count the bag, the header, and the master pointer
+    mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+    for i in RecNames(o) do
+        s := o.(i);
+        if SHALLOW_SIZE(s) > 0 then    # a subobject!
+            mem := mem + MemoryUsage(s);
+        fi;
+    od;
+    MU_Finalize();
+    return mem;
   end );
 
 InstallMethod( MemoryUsage, "for a rational",
   [ IsRat ],
   function( o )
+    local mem;
+
     if IsInt(o) then TryNextMethod(); fi;
-    if not(MU_AddToCache(o)) then
-        return   SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer
-               + SHALLOW_SIZE(NumeratorRat(o)) 
-               + SHALLOW_SIZE(DenominatorRat(o));
-    else
-        return 0;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
     fi;
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+
+    mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer
+           + SHALLOW_SIZE(NumeratorRat(o)) 
+           + SHALLOW_SIZE(DenominatorRat(o));
+    MU_Finalize();
+    return mem;
   end );
 
 InstallMethod( MemoryUsage, "for a function",
   [ IsFunction ],
   function( o )
-    if not(MU_AddToCache(o)) then
-        return SHALLOW_SIZE(o) + 2*(MU_MemBagHeader + MU_MemPointer) +
-               FUNC_BODY_SIZE(o);
-    else
-        return 0;
+    local mem;
+
+    if MU_AddToCache( o ) then
+        return 0;    # already counted
     fi;
+    MEMUSAGECACHE_DEPTH := MEMUSAGECACHE_DEPTH + 1;
+
+    mem := SHALLOW_SIZE(o) + 2*(MU_MemBagHeader + MU_MemPointer)
+           + FUNC_BODY_SIZE(o);
+    MU_Finalize();
+    return mem;
   end );
 
 InstallMethod( MemoryUsage, "for an object set",
