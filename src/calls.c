@@ -1848,6 +1848,20 @@ Obj FuncLOCATION_FUNC(Obj self, Obj func) {
     return Fail;
 }
 
+/* Returns a measure of the size of a GAP function */
+static inline Obj FuncBODY_SIZE_FUNC(Obj self, Obj func)
+{
+    Obj body;
+    if (TNUM_OBJ(func) != T_FUNCTION)
+        return Fail;
+    body = BODY_FUNC(func);
+    if (body == 0)
+        return INTOBJ_INT(0);
+    else
+        return INTOBJ_INT(SIZE_BAG(body));
+}
+
+
 /****************************************************************************
 **
 *F  FuncUNPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . .  stop profile
@@ -2012,6 +2026,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(LOCATION_FUNC, 1, "func"),
     GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
     GVAR_FUNC(ENDLINE_FUNC, 1, "func"),
+    GVAR_FUNC(BODY_SIZE_FUNC, 1, "func"),
     { 0, 0, 0, 0, 0 }
 
 };

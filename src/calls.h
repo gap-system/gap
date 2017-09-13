@@ -246,6 +246,7 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 
 #define SIZE_FUNC               sizeof(FunctionHeader)
 
+
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
 #define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))
 #define HDLR_2ARGS(func)        ((ObjFunc_2ARGS)HDLR_FUNC(func,2))

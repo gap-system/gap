@@ -1934,151 +1934,6 @@ Obj FuncGASMAN_LIMITS( Obj self )
 
 /****************************************************************************
 **
-*F  FuncSHALLOW_SIZE( <self>, <obj> ) . . . .  expert function 'SHALLOW_SIZE'
-*/
-Obj FuncSHALLOW_SIZE (
-    Obj                 self,
-    Obj                 obj )
-{
-  if (IS_INTOBJ(obj) || IS_FFE(obj))
-    return INTOBJ_INT(0);
-  else
-    return ObjInt_UInt( SIZE_BAG( obj ) );
-}
-
-
-/****************************************************************************
-**
-*F  FuncTNUM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNUM_OBJ'
-*/
-
-Obj FuncTNUM_OBJ (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 res;
-    Obj                 str;
-    const Char *        cst;
-
-    res = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( res, 2 );
-
-    /* set the type                                                        */
-    SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
-    cst = TNAM_OBJ(obj);
-    str = MakeImmString(cst);
-    SET_ELM_PLIST( res, 2, str );
-
-    /* and return                                                          */
-    return res;
-}
-
-Obj FuncTNUM_OBJ_INT (
-    Obj                 self,
-    Obj                 obj )
-{
-
-  
-    return  INTOBJ_INT( TNUM_OBJ(obj) ) ;
-}
-
-/****************************************************************************
-**
-*F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
-*/
-Obj FuncOBJ_HANDLE (
-    Obj                 self,
-    Obj                 obj )
-{
-    UInt                hand;
-    UInt                prod;
-    Obj                 rem;
-
-    if ( IS_INTOBJ(obj) ) {
-        return (Obj)INT_INTOBJ(obj);
-    }
-    else if ( TNUM_OBJ(obj) == T_INTPOS ) {
-        hand = 0;
-        prod = 1;
-        while ( EQ( obj, INTOBJ_INT(0) ) == 0 ) {
-            rem  = RemInt( obj, INTOBJ_INT( 1 << 16 ) );
-            obj  = QuoInt( obj, INTOBJ_INT( 1 << 16 ) );
-            hand = hand + prod * INT_INTOBJ(rem);
-            prod = prod * ( 1 << 16 );
-        }
-        return (Obj) hand;
-    }
-    else {
-        ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return (Obj) 0;
-    }
-}
-
-
-/****************************************************************************
-**
-*F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
-**
-**  This is a very quick function which returns a unique integer for each object
-**  non-identical objects will have different handles. The integers may be large.
-*/
-Obj FuncHANDLE_OBJ (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 hnum;
-    Obj                 prod;
-    Obj                 tmp;
-    UInt                hand;
-
-    hand = (UInt) obj;
-    hnum = INTOBJ_INT(0);
-    prod = INTOBJ_INT(1);
-    while ( 0 < hand ) {
-        tmp  = PROD( prod, INTOBJ_INT( hand & 0xffff ) );
-        prod = PROD( prod, INTOBJ_INT( 1 << 16 ) );
-        hnum = SUM(  hnum, tmp );
-        hand = hand >> 16;
-    }
-    return hnum;
-}
-
-/* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0
-for all immediate objects (small integers or ffes) and (b) returns reasonably
-small results (roughly in the range from 1 to the max number of objects that
-have existed in this session. In HPCGAP it just returns the same value as
-HANDLE_OBJ for non-immediate objects */
-
-Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
-{
-#ifdef HPCGAP
-    if (IS_INTOBJ(o) || IS_FFE(o)) {
-        return INTOBJ_INT(0);
-    }
-    else {
-        return FuncHANDLE_OBJ(self, o);
-    }
-#else
-    if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
-        return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
-    } else {
-        return INTOBJ_INT( 0 );
-    }
-#endif
-}
-
-/* Returns a measure of the size of a GAP function */
-Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
-{
-    Obj body;
-    if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
-    body = BODY_FUNC(f);
-    if (body == 0) return INTOBJ_INT(0);
-    else return INTOBJ_INT( SIZE_BAG( body ) );
-}
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -2881,11 +2736,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GASMAN_STATS, 0, ""),
     GVAR_FUNC(GASMAN_MESSAGE_STATUS, 0, ""),
     GVAR_FUNC(GASMAN_LIMITS, 0, ""),
-    GVAR_FUNC(SHALLOW_SIZE, 1, "object"),
-    GVAR_FUNC(TNUM_OBJ, 1, "object"),
-    GVAR_FUNC(TNUM_OBJ_INT, 1, "object"),
-    GVAR_FUNC(OBJ_HANDLE, 1, "object"),
-    GVAR_FUNC(HANDLE_OBJ, 1, "object"),
     GVAR_FUNC(LoadedModules, 0, ""),
     GVAR_FUNC(WindowCmd, 1, "arg-list"),
     GVAR_FUNC(MicroSleep, 1, "msecs"),
@@ -2902,8 +2752,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(THREAD_UI, 0, ""),
 #endif
     GVAR_FUNC(SetUserHasQuit, 1, "value"),
-    GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
-    GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
     GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
     GVAR_FUNC(BREAKPOINT, 1, "integer"),
