@@ -84,7 +84,7 @@ extern Obj TRY_NEXT_METHOD;
 **                                 storing is enabled (default) else false
 */
 
-#define ENABLED_ATTR(oper)                    ((UInt)(ADDR_OBJ(oper)[37])) 
+#define ENABLED_ATTR(oper)                 ((UInt)(CONST_ADDR_OBJ(oper)[37]))
 
 /****************************************************************************
 **
@@ -130,7 +130,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 **  returns the list of trues of <flags> or 0 if the list is not known yet.
 */
-#define TRUES_FLAGS(flags)              (ADDR_OBJ(flags)[0])
+#define TRUES_FLAGS(flags)              (CONST_ADDR_OBJ(flags)[0])
 
 
 /****************************************************************************
@@ -144,7 +144,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-#define HASH_FLAGS(flags)               (ADDR_OBJ(flags)[1])
+#define HASH_FLAGS(flags)               (CONST_ADDR_OBJ(flags)[1])
 
 
 /****************************************************************************
@@ -158,7 +158,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
 */
-#define LEN_FLAGS(list)                 (INT_INTOBJ(ADDR_OBJ(list)[2]))
+#define LEN_FLAGS(list)                 (INT_INTOBJ(CONST_ADDR_OBJ(list)[2]))
 
 
 /****************************************************************************
@@ -172,7 +172,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . `and' cache of a flags list
 */
-#define AND_CACHE_FLAGS(list)           (ADDR_OBJ(list)[3])
+#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[3])
 
 
 /****************************************************************************

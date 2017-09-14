@@ -94,7 +94,7 @@ Obj IsVec8bitRep;
 **  Note that 'LEN_VEC8BIT' is a macro, so do not call it with  arguments that
 **  have side effects.
 */
-#define LEN_VEC8BIT(list)         ((Int)(ADDR_OBJ(list)[1]))
+#define LEN_VEC8BIT(list)         ((Int)(CONST_ADDR_OBJ(list)[1]))
 
 /****************************************************************************
 **
@@ -117,7 +117,7 @@ Obj IsVec8bitRep;
 **  that have side effects.
 */
 
-#define FIELD_VEC8BIT(list)         ((Int)(ADDR_OBJ(list)[2]))
+#define FIELD_VEC8BIT(list)         ((Int)(CONST_ADDR_OBJ(list)[2]))
 
 /****************************************************************************
 **
@@ -167,13 +167,13 @@ static Obj FieldInfo8Bit;
 **  Note ADD has to be last, because it is not there in characteristic 2
 */
 
-#define Q_FIELDINFO_8BIT( info ) ((UInt)(ADDR_OBJ(info)[1]))
+#define Q_FIELDINFO_8BIT( info ) ((UInt)(CONST_ADDR_OBJ(info)[1]))
 #define SET_Q_FIELDINFO_8BIT( info, q ) (ADDR_OBJ(info)[1] = (Obj)(q))
-#define P_FIELDINFO_8BIT( info ) ((UInt)(ADDR_OBJ(info)[2]))
+#define P_FIELDINFO_8BIT( info ) ((UInt)(CONST_ADDR_OBJ(info)[2]))
 #define SET_P_FIELDINFO_8BIT( info, p ) (ADDR_OBJ(info)[2] = (Obj)(p))
-#define D_FIELDINFO_8BIT( info ) ((UInt)(ADDR_OBJ(info)[3]))
+#define D_FIELDINFO_8BIT( info ) ((UInt)(CONST_ADDR_OBJ(info)[3]))
 #define SET_D_FIELDINFO_8BIT( info, d ) (ADDR_OBJ(info)[3] = (Obj)(d))
-#define ELS_BYTE_FIELDINFO_8BIT( info ) ((UInt)(ADDR_OBJ(info)[4]))
+#define ELS_BYTE_FIELDINFO_8BIT( info ) ((UInt)(CONST_ADDR_OBJ(info)[4]))
 #define SET_ELS_BYTE_FIELDINFO_8BIT( info, e ) (ADDR_OBJ(info)[4] = (Obj)(e))
 #define FFE_FELT_FIELDINFO_8BIT( info ) (ADDR_OBJ(info)+5)
 #define GAPSEQ_FELT_FIELDINFO_8BIT( info ) (ADDR_OBJ(info)+5+Q_FIELDINFO_8BIT(info))
@@ -3444,7 +3444,7 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
 
 static inline Int LEN_MAT8BIT(Obj mat)
 {
-    return INT_INTOBJ(ADDR_OBJ(mat)[1]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(mat)[1]);
 }
 static inline void SET_LEN_MAT8BIT(Obj mat, Int l)
 {
@@ -3457,7 +3457,7 @@ static inline Obj ELM_MAT8BIT(Obj mat, Int i)
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
-    return ADDR_OBJ(mat)[i + 1];
+    return CONST_ADDR_OBJ(mat)[i + 1];
 }
 static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
 {
@@ -5762,7 +5762,8 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
     UInt nrowl, nrowr, ncoll, ncolr, ncol, p, q, i, j, k, l, s, zero,
     mutable, elts;
     Obj mat, type, row, info, shift[5];
-    UInt1 *getelt, *setelt, *scalar, *add, *datar, *data;
+    UInt1 *getelt, *setelt, *scalar, *add, *data;
+    const UInt1 *datar;
 
     nrowl = LEN_MAT8BIT(matl);
     nrowr = LEN_MAT8BIT(matr);
@@ -5821,7 +5822,7 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
                 l = 0;
                 if (s != zero) {
                     /* append s*shift[ncol%elts] to data */
-                    datar = (UInt1 *) ADDR_OBJ(shift[ncol % elts]);
+                    datar = (const UInt1 *) CONST_ADDR_OBJ(shift[ncol % elts]);
                     if (ncol % elts) {
                         if (p == 2)
                             data[-1] ^= scalar[*datar++ + 256 * s];

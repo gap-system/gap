@@ -90,7 +90,7 @@ static inline Int SIZE_PLEN_BLIST(Int plen)
 static inline Int LEN_BLIST(Obj list)
 {
     GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
-    return INT_INTOBJ(ADDR_OBJ(list)[0]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
 }
 
 

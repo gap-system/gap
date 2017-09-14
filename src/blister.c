@@ -202,7 +202,7 @@ void SaveBlist (
     UInt *              ptr;
 
     /* logical length                                                      */
-    SaveSubObj(ADDR_OBJ(bl)[0]);
+    SaveSubObj(CONST_ADDR_OBJ(bl)[0]);
     ptr = BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         SaveUInt(*ptr++);
@@ -256,10 +256,10 @@ void LoadBlist (
 **  'CleanBlist' is the function in 'CleanObjFuncs' for boolean lists.
 */
 
-Obj DoCopyBlist(Obj list, Int mut) {
-  Obj copy;
-  UInt *l;
-  UInt *c;
+Obj DoCopyBlist(Obj list, Int mut)
+{
+    Obj copy;
+
     /* make a copy                                                         */
     if ( mut ) {
       copy = NewBag( MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list) );
@@ -268,11 +268,9 @@ Obj DoCopyBlist(Obj list, Int mut) {
       copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
 
-
     /* copy the subvalues                                                  */
-    l = (UInt*)(ADDR_OBJ(list));
-    c = (UInt*)(ADDR_OBJ(copy));
-    memcpy((void *)c, (void *)l, sizeof(UInt)*(1+NUMBER_BLOCKS_BLIST(list)));
+    memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(list),
+            sizeof(UInt)*(1+NUMBER_BLOCKS_BLIST(list)));
 
     /* return the copy                                                     */
     return copy;
@@ -301,7 +299,7 @@ Obj CopyBlist (
     /* leave a forwarding pointer */
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(list)[0] );
+    SET_ELM_PLIST( tmp, 1, CONST_ADDR_OBJ(list)[0] );
     SET_ELM_PLIST( tmp, 2, copy );
     ADDR_OBJ(list)[0] = tmp;
     CHANGED_BAG(list);
@@ -322,7 +320,7 @@ Obj ShallowCopyBlist ( Obj list)
 */
 Obj CopyBlistCopy(Obj list, Int mut)
 {
-    return ELM_PLIST(ADDR_OBJ(list)[0], 2);
+    return ELM_PLIST(CONST_ADDR_OBJ(list)[0], 2);
 }
 
 
@@ -343,7 +341,7 @@ void CleanBlist (
 void CleanBlistCopy(Obj list)
 {
     /* remove the forwarding pointer */
-    ADDR_OBJ(list)[0] = ELM_PLIST(ADDR_OBJ(list)[0], 1);
+    ADDR_OBJ(list)[0] = ELM_PLIST(CONST_ADDR_OBJ(list)[0], 1);
 
     /* now it is cleaned */
     RetypeBag(list, TNUM_OBJ(list) - COPYING);
@@ -1257,7 +1255,7 @@ Obj FuncBLIST_LIST (
     UInt                block;          /* one block of boolean list       */
     UInt                bit;            /* one bit of block                */
     Int                 lenList;        /* logical length of the list      */
-    Obj *               ptrSub;         /* pointer to the sublist          */
+    const Obj *               ptrSub;         /* pointer to the sublist          */
     UInt                lenSub;         /* logical length of sublist       */
     UInt                i, j, k = 0, l;     /* loop variables                  */
     long                s, t;           /* elements of a range             */
@@ -1316,7 +1314,7 @@ Obj FuncBLIST_LIST (
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
         ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
         ptrBlist = BLOCKS_BLIST(blist);
-        ptrSub = ADDR_OBJ(sub);
+        ptrSub = CONST_ADDR_OBJ(sub);
 
         /* loop over <sub> and set the corresponding entries to 'true'     */
         s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
@@ -1368,13 +1366,13 @@ Obj FuncBLIST_LIST (
 
             /* run over the elements of <sub> and search for the elements  */
             for ( l = 1; l <= LEN_LIST(sub); l++ ) {
-                if ( ADDR_OBJ(sub)[l] != 0 ) {
+                if ( CONST_ADDR_OBJ(sub)[l] != 0 ) {
 
                     /* perform the binary search to find the position      */
                     i = 0;  k = lenList+1;
                     while ( i+1 < k ) {
                         j = (i + k) / 2;
-                        if ( LT(ADDR_OBJ(list)[j],ADDR_OBJ(sub)[l]) )
+                        if ( LT(CONST_ADDR_OBJ(list)[j],CONST_ADDR_OBJ(sub)[l]) )
                             i = j;
                         else
                             k = j;
@@ -1382,7 +1380,7 @@ Obj FuncBLIST_LIST (
 
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
-                      && EQ( ADDR_OBJ(list)[k], ADDR_OBJ(sub)[l] ) )
+                      && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
                       SET_ELM_BLIST( blist, k, True);
                 }
             }
@@ -1410,12 +1408,12 @@ Obj FuncBLIST_LIST (
 
                 /* test if <list>[<l>] is in <sub>                         */
                 while ( k <= lenSub
-                     && LT(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) )
+                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
                     k++;
 
                 /* if <list>[<k>] is in <sub> set the current bit in block */
                 if ( k <= lenSub
-                  && EQ(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) ) {
+                  && EQ(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) ) {
                     block |= bit;
                     k++;
                 }
@@ -1455,16 +1453,16 @@ Obj FuncBLIST_LIST (
         for ( l = 1; l <= lenList; l++ ) {
 
             /* test if <list>[<l>] is in <sub>                             */
-            if ( l == 1 || LT(ADDR_OBJ(list)[l-1],ADDR_OBJ(list)[l]) ){
+            if ( l == 1 || LT(CONST_ADDR_OBJ(list)[l-1],CONST_ADDR_OBJ(list)[l]) ){
                 while ( k <= lenSub
-                     && LT(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) )
+                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
                     k++;
             }
             else {
                 i = 0;  k = LEN_PLIST(sub) + 1;
                 while ( i+1 < k ) {
                     j = (i + k) / 2;
-                    if ( LT( ADDR_OBJ(sub)[j], ADDR_OBJ(list)[l] ) )
+                    if ( LT( CONST_ADDR_OBJ(sub)[j], CONST_ADDR_OBJ(list)[l] ) )
                         i = j;
                     else
                         k = j;
@@ -1473,7 +1471,7 @@ Obj FuncBLIST_LIST (
 
             /* if <list>[<k>] is in <sub> set the current bit in the block */
             if ( k <= lenSub
-              && EQ( ADDR_OBJ(sub)[k], ADDR_OBJ(list)[l] ) ) {
+              && EQ( CONST_ADDR_OBJ(sub)[k], CONST_ADDR_OBJ(list)[l] ) ) {
                 block |= bit;
                 k++;
             }
@@ -1801,7 +1799,7 @@ Obj FuncUNITE_BLIST_LIST (
     UInt                block;          /* one block of boolean list       */
     UInt                bit;            /* one bit of block                */
     Int                 lenList;        /* logical length of the list      */
-    Obj *               ptrSub;         /* pointer to the sublist          */
+    const Obj *         ptrSub;         /* pointer to the sublist          */
     UInt                lenSub;         /* logical length of sublist       */
     UInt                i, j, k = 0, l;     /* loop variables                  */
     long                s, t;           /* elements of a range             */
@@ -1880,7 +1878,7 @@ Obj FuncUNITE_BLIST_LIST (
 
         lenSub   = LEN_LIST( sub );
         ptrBlist = BLOCKS_BLIST(blist);
-        ptrSub = ADDR_OBJ(sub);
+        ptrSub = CONST_ADDR_OBJ(sub);
 
         /* loop over <sub> and set the corresponding entries to 'true'     */
         s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
@@ -1934,13 +1932,13 @@ Obj FuncUNITE_BLIST_LIST (
 
             /* run over the elements of <sub> and search for the elements  */
             for ( l = 1; l <= LEN_LIST(sub); l++ ) {
-                if ( ADDR_OBJ(sub)[l] != 0 ) {
+                if ( CONST_ADDR_OBJ(sub)[l] != 0 ) {
 
                     /* perform the binary search to find the position      */
                     i = 0;  k = lenList+1;
                     while ( i+1 < k ) {
                         j = (i + k) / 2;
-                        if ( LT(ADDR_OBJ(list)[j],ADDR_OBJ(sub)[l]) )
+                        if ( LT(CONST_ADDR_OBJ(list)[j],CONST_ADDR_OBJ(sub)[l]) )
                             i = j;
                         else
                             k = j;
@@ -1948,7 +1946,7 @@ Obj FuncUNITE_BLIST_LIST (
 
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
-                      && EQ( ADDR_OBJ(list)[k], ADDR_OBJ(sub)[l] ) )
+                      && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
                       SET_ELM_BLIST( blist, k, True);
                 }
             }
@@ -1972,12 +1970,12 @@ Obj FuncUNITE_BLIST_LIST (
 
                 /* test if <list>[<l>] is in <sub>                         */
                 while ( k <= lenSub
-                     && LT(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) )
+                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
                     k++;
 
                 /* if <list>[<k>] is in <sub> set the current bit in block */
                 if ( k <= lenSub
-                  && EQ(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) ) {
+                  && EQ(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) ) {
                     block |= bit;
                     k++;
                 }
@@ -2024,16 +2022,16 @@ Obj FuncUNITE_BLIST_LIST (
         for ( l = 1; l <= lenList; l++ ) {
 
             /* test if <list>[<l>] is in <sub>                             */
-            if ( l == 1 || LT(ADDR_OBJ(list)[l-1],ADDR_OBJ(list)[l]) ){
+            if ( l == 1 || LT(CONST_ADDR_OBJ(list)[l-1],CONST_ADDR_OBJ(list)[l]) ){
                 while ( k <= lenSub
-                     && LT(ADDR_OBJ(sub)[k],ADDR_OBJ(list)[l]) )
+                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
                     k++;
             }
             else {
                 i = 0;  k = LEN_PLIST(sub) + 1;
                 while ( i+1 < k ) {
                     j = (i + k) / 2;
-                    if ( LT( ADDR_OBJ(sub)[j], ADDR_OBJ(list)[l] ) )
+                    if ( LT( CONST_ADDR_OBJ(sub)[j], CONST_ADDR_OBJ(list)[l] ) )
                         i = j;
                     else
                         k = j;
@@ -2042,7 +2040,7 @@ Obj FuncUNITE_BLIST_LIST (
 
             /* if <list>[<k>] is in <sub> set the current bit in the block */
             if ( k <= lenSub
-              && EQ( ADDR_OBJ(sub)[k], ADDR_OBJ(list)[l] ) ) {
+              && EQ( CONST_ADDR_OBJ(sub)[k], CONST_ADDR_OBJ(list)[l] ) ) {
                 block |= bit;
                 k++;
             }

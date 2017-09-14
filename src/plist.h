@@ -152,7 +152,7 @@ static inline void SET_LEN_PLIST(Obj list, Int len)
 static inline Int LEN_PLIST(Obj list)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
-    return ((Int)(ADDR_OBJ(list)[0]));
+    return ((Int)(CONST_ADDR_OBJ(list)[0]));
 }
 
 
@@ -187,7 +187,7 @@ static inline Obj ELM_PLIST(Obj list, Int pos)
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
     GAP_ASSERT(pos <= CAPACITY_PLIST(list));
-    return ADDR_OBJ(list)[pos];
+    return CONST_ADDR_OBJ(list)[pos];
 }
 
 /****************************************************************************

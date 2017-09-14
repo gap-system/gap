@@ -55,11 +55,11 @@
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
-static void AddWordIntoExpVec( Int *v, UIntN *w, Int e, 
+static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e, 
                            Int ebits, UInt expm, 
-                           Int p, Obj *pow, Int lpow ) {
+                           Int p, const Obj *pow, Int lpow ) {
 
-    UIntN *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
 
@@ -78,11 +78,11 @@ static void AddWordIntoExpVec( Int *v, UIntN *w, Int e,
     }
 }
 
-static void AddCommIntoExpVec( Int *v, UIntN *w, Int e, 
+static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e, 
                            Int ebits, UInt expm, 
-                           Int p, Obj *pow, Int lpow ) {
+                           Int p, const Obj *pow, Int lpow ) {
 
-    UIntN *    wend = w + (INT_INTOBJ((((Obj*)(w))[-1])) - 1);
+    const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
 
@@ -103,9 +103,9 @@ static void AddCommIntoExpVec( Int *v, UIntN *w, Int e,
     }
 }
 
-static void AddPartIntoExpVec( Int *v, UIntN *w, UIntN *wend,
+static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
                            Int ebits, UInt expm, 
-                           Int p, Obj *pow, Int lpow ) {
+                           Int p, const Obj *pow, Int lpow ) {
 
     Int        i;
     Int        ex;
@@ -144,18 +144,18 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     Obj         vpow;       /* rhs of power relations                      */
     Int         lpow;       /* length of <vpow>                            */
-    Obj *       pow;        /* address of <vpow>                           */
+    const Obj * pow;        /* address of <vpow>                           */
 
     Obj         vcnj;       /* rhs of conjugate relations                  */
     Int         lcnj;       /* length of <vcnj>                            */
-    Obj *       cnj;        /* address of <vcnj>                           */
+    const Obj * cnj;        /* address of <vcnj>                           */
 
-    Obj *       avc;        /* address of the avector                      */
-    Obj *       avc2;       /* address of the avector 2                    */
-    Obj *       wt;         /* address of the weights array                */
-    Obj *       gns;        /* address of the list of generators           */
-    Obj *       ro;         /* address of the list of relative orders      */
-    Obj *       inv;        /* address of the list of inverses             */
+    const Obj * avc;        /* address of the avector                      */
+    const Obj * avc2;       /* address of the avector 2                    */
+    const Obj * wt;         /* address of the weights array                */
+    const Obj * gns;        /* address of the list of generators           */
+    const Obj * ro;         /* address of the list of relative orders      */
+    const Obj * inv;        /* address of the list of inverses             */
 
     Int *       v;          /* address of <vv>                             */
 
@@ -242,23 +242,23 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
     /* conjugates, powers, order, generators, avector, inverses            */
     vpow = SC_POWERS(sc);
     lpow = LEN_PLIST(vpow);
-    pow  = ADDR_OBJ(vpow);
+    pow  = CONST_ADDR_OBJ(vpow);
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
     (void) lcnj; /* please compiler -- lcnj not actually used */
-    cnj  = ADDR_OBJ(vcnj);
+    cnj  = CONST_ADDR_OBJ(vcnj);
 
-    avc = ADDR_OBJ( SC_AVECTOR(sc) );
-    gns = ADDR_OBJ( SC_RWS_GENERATORS(sc) );
+    avc = CONST_ADDR_OBJ( SC_AVECTOR(sc) );
+    gns = CONST_ADDR_OBJ( SC_RWS_GENERATORS(sc) );
 
     cl   = INT_INTOBJ( SC_CLASS(sc) );
-    wt   = ADDR_OBJ( SC_WEIGHTS(sc) );
-    avc2 = ADDR_OBJ( SC_AVECTOR2(sc) );
+    wt   = CONST_ADDR_OBJ( SC_WEIGHTS(sc) );
+    avc2 = CONST_ADDR_OBJ( SC_AVECTOR2(sc) );
 
-    ro  = ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
+    ro  = CONST_ADDR_OBJ( SC_RELATIVE_ORDERS(sc) );
     p   = INT_INTOBJ(ro[1]);
-    inv = ADDR_OBJ( SC_INVERSES(sc) );
+    inv = CONST_ADDR_OBJ( SC_INVERSES(sc) );
 
     /* initialize the stack with <w>                                        */
     sp = 0;

@@ -43,7 +43,7 @@
 **  Note that 'LEN_GF2VEC' is a macro, so do not call it with  arguments that
 **  have side effects.
 */
-#define LEN_GF2VEC(list)         ((Int)(ADDR_OBJ(list)[1]))
+#define LEN_GF2VEC(list)         ((Int)(CONST_ADDR_OBJ(list)[1]))
 
 
 /****************************************************************************
@@ -136,7 +136,7 @@
 **  Note that 'LEN_GF2MAT' is a macro, so do not call it with  arguments that
 **  have side effects.
 */
-#define LEN_GF2MAT(list)         (INT_INTOBJ(ADDR_OBJ(list)[1]))
+#define LEN_GF2MAT(list)         (INT_INTOBJ(CONST_ADDR_OBJ(list)[1]))
 
 
 /****************************************************************************
@@ -163,7 +163,7 @@
 **  Note that 'ELM_GF2MAT' is a macro, so do  not call it with arguments that
 **  have side effects.
 */
-#define ELM_GF2MAT(list,pos)    (ADDR_OBJ(list)[pos+1])
+#define ELM_GF2MAT(list,pos)    (CONST_ADDR_OBJ(list)[pos+1])
 
 
 /****************************************************************************

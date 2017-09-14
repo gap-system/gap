@@ -4513,7 +4513,8 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol,
     i, j, k, l, mutable;
   Obj mat, type, row, shift[BIPEB];
-  UInt *datar, *data;
+  UInt *data;
+  const UInt *datar;
 
   nrowl = LEN_GF2MAT(matl);
   nrowr = LEN_GF2MAT(matr);
@@ -4572,7 +4573,7 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 	l = 0;
 	if (BLOCK_ELM_GF2VEC(ELM_GF2MAT(matl,i),k) & MASK_POS_GF2VEC(k)) {
 	  /* append shift[ncol%BIPEB] to data */
-	  datar = (UInt *) ADDR_OBJ(shift[ncol%BIPEB]);
+	  datar = (const UInt *) CONST_ADDR_OBJ(shift[ncol%BIPEB]);
 	  if (ncol % BIPEB) {
 	    data[-1] ^= *datar++;
 	    l = BIPEB - ncol%BIPEB;

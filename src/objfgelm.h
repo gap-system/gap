@@ -93,7 +93,7 @@
 **  pairs of <word>.
 */
 #define NPAIRS_WORD( word ) \
-    ( INT_INTOBJ( ADDR_OBJ( (word) )[1]) )
+    ( INT_INTOBJ( CONST_ADDR_OBJ( (word) )[1]) )
 
 
 /****************************************************************************

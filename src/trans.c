@@ -102,19 +102,19 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
 static inline Obj IMG_TRANS(Obj f)
 {
     GAP_ASSERT(IS_TRANS(f));
-    return ADDR_OBJ(f)[0];
+    return CONST_ADDR_OBJ(f)[0];
 }
 
 static inline Obj KER_TRANS(Obj f)
 {
     GAP_ASSERT(IS_TRANS(f));
-    return ADDR_OBJ(f)[1];
+    return CONST_ADDR_OBJ(f)[1];
 }
 
 static inline Obj EXT_TRANS(Obj f)
 {
     GAP_ASSERT(IS_TRANS(f));
-    return ADDR_OBJ(f)[2];
+    return CONST_ADDR_OBJ(f)[2];
 }
 
 static inline void SET_IMG_TRANS(Obj f, Obj img)
@@ -300,10 +300,10 @@ static void SORT_PLIST_CYC(Obj res)
         }
         while (0 < h) {
             for (i = h + 1; i <= len; i++) {
-                tmp = ADDR_OBJ(res)[i];
+                tmp = CONST_ADDR_OBJ(res)[i];
                 k = i;
-                while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-                    ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+                while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
+                    ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
                     k -= h;
                 }
                 ADDR_OBJ(res)[k] = tmp;
@@ -325,12 +325,12 @@ static void REMOVE_DUPS_PLIST_CYC(Obj res)
     len = LEN_PLIST(res);
 
     if (0 < len) {
-        tmp = ADDR_OBJ(res)[1];
+        tmp = CONST_ADDR_OBJ(res)[1];
         k = 1;
         for (i = 2; i <= len; i++) {
-            if (tmp != ADDR_OBJ(res)[i]) {
+            if (tmp != CONST_ADDR_OBJ(res)[i]) {
                 k++;
-                tmp = ADDR_OBJ(res)[i];
+                tmp = CONST_ADDR_OBJ(res)[i];
                 ADDR_OBJ(res)[k] = tmp;
             }
         }
@@ -935,7 +935,8 @@ Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 
 Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
 {
-    Obj new, *ptnew, *ptker;
+    Obj new, *ptnew;
+    const Obj *ptker;
     UInt deg, m, i;
 
     if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
@@ -962,7 +963,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             new = NEW_PLIST(T_PLIST_CYC_NSORT, m);
             SET_LEN_PLIST(new, m);
 
-            ptker = ADDR_OBJ(KER_TRANS(f)) + 1;
+            ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
             ptnew = ADDR_OBJ(new) + 1;
 
             // copy the kernel set up to minimum of m, deg
@@ -1003,7 +1004,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             new = NEW_PLIST(T_PLIST_CYC_NSORT, m);
             SET_LEN_PLIST(new, m);
 
-            ptker = ADDR_OBJ(KER_TRANS(f)) + 1;
+            ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
             ptnew = ADDR_OBJ(new) + 1;
 
             // copy the kernel set up to minimum of m, deg
@@ -1201,7 +1202,8 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 {
     Obj     im, new;
     UInt    deg, m, len, i, j, rank;
-    Obj *   ptnew, *ptim;
+    Obj *   ptnew;
+    const Obj *ptim;
     UInt4 * pttmp, *ptf4;
     UInt2 * ptf2;
 
@@ -1268,7 +1270,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         SET_LEN_PLIST(new, m - deg + len);
 
         ptnew = ADDR_OBJ(new) + 1;
-        ptim = ADDR_OBJ(im) + 1;
+        ptim = CONST_ADDR_OBJ(im) + 1;
 
         // copy the image set
         for (i = 0; i < len; i++) {

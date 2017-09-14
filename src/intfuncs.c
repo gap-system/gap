@@ -528,7 +528,7 @@ Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read)
 
 Int HASHKEY_BAG_NC(Obj obj, UInt4 seed, Int skip, int read)
 {
-    return HASHKEY_MEM_NC((const void *)((UChar *)ADDR_OBJ(obj) + skip), seed,
+    return HASHKEY_MEM_NC((const UChar *)CONST_ADDR_OBJ(obj) + skip, seed,
                           read);
 }
 

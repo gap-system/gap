@@ -1680,7 +1680,7 @@ void CodeIntExpr (
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        memcpy(((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1754,7 +1754,7 @@ void CodeLongIntExpr (
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1955,7 +1955,7 @@ void CodeStringExpr (
     string = NewExpr( T_STRING_EXPR, SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* copy the string                                                     */
-    memcpy( (void *)ADDR_EXPR(string), ADDR_OBJ(str), 
+    memcpy( (void *)ADDR_EXPR(string), CONST_ADDR_OBJ(str),
                         SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* push the string                                                     */
@@ -3444,8 +3444,7 @@ void CodeAssertEnd3Args ( void )
 void SaveBody ( Obj body )
 {
   UInt i;
-  UInt *ptr;
-  ptr = (UInt *) ADDR_OBJ(body);
+  const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
   /* Save the new inforation in the body */
   for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     SaveSubObj((Obj)(*ptr++));
