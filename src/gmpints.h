@@ -55,6 +55,7 @@ extern "C" {
 
 
 #define ADDR_INT(obj)          ((mp_limb_t *)ADDR_OBJ(obj))
+#define CONST_ADDR_INT(obj)    ((const mp_limb_t *)CONST_ADDR_OBJ(obj))
 #define SIZE_INT(obj)          ((mp_size_t)SIZE_OBJ(obj)/sizeof(mp_limb_t))
 /* SIZE_INT gives a result in limbs                                        */
 
