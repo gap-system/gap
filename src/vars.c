@@ -1830,7 +1830,7 @@ Obj             EvalElmPosObj (
     /* special case for plain lists (use generic code to signal errors)    */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
 #ifdef HPCGAP
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -1897,7 +1897,7 @@ Obj             EvalIsbPosObj (
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
 #ifdef HPCGAP
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
           isb = False;
         else

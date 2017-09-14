@@ -108,17 +108,6 @@ static inline BagHeader * BAG_HEADER(Bag bag) {
 
 /****************************************************************************
 **
-*F  BAG_HEADER_CONTENTS(<ptr>) . . . . . . . . . . . . . . .  header of a bag
-**
-**  'BAG_HEADER' returns the header of the bag whose contents start at <ptr>.
-*/
-static inline BagHeader * BAG_HEADER_CONTENTS(void *ptr) {
-    return (((BagHeader *)ptr) - 1);
-}
-
-
-/****************************************************************************
-**
 *F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
 **
 **  'TNUM_BAG' returns the type of the bag with the identifier <bag>.
@@ -217,8 +206,8 @@ static inline UInt SIZE_BAG(Bag bag) {
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
-    return BAG_HEADER_CONTENTS(ptr)->size;
+static inline UInt SIZE_BAG_CONTENTS(const void *ptr) {
+    return ((const BagHeader *)ptr)[-1].size;
 }
 
 
