@@ -150,7 +150,7 @@ static Obj ObjInt_UIntInv( UInt i );
 
 
 /* macros to save typing later :)  */
-#define VAL_LIMB0(obj)          (*ADDR_INT(obj))
+#define VAL_LIMB0(obj)          (*CONST_ADDR_INT(obj))
 #define SET_VAL_LIMB0(obj,val)  do { *ADDR_INT(obj) = val; } while(0)
 #define IS_INTPOS(obj)          (TNUM_OBJ(obj) == T_INTPOS)
 #define IS_INTNEG(obj)          (TNUM_OBJ(obj) == T_INTNEG)
@@ -249,10 +249,8 @@ Obj FuncIS_INT ( Obj self, Obj val )
 */
 void SaveInt( Obj gmp )
 {
-  mp_limb_t *ptr;
-  UInt i;
-  ptr = ADDR_INT(gmp);
-  for (i = 0; i < SIZE_INT(gmp); i++)
+  const mp_limb_t *ptr = CONST_ADDR_INT(gmp);
+  for (UInt i = 0; i < SIZE_INT(gmp); i++)
     SaveLimb(*ptr++);
   return;
 }
@@ -266,10 +264,8 @@ void SaveInt( Obj gmp )
 */
 void LoadInt( Obj gmp )
 {
-  mp_limb_t *ptr;
-  UInt i;
-  ptr = ADDR_INT(gmp);
-  for (i = 0; i < SIZE_INT(gmp); i++)
+  mp_limb_t *ptr = ADDR_INT(gmp);
+  for (UInt i = 0; i < SIZE_INT(gmp); i++)
     *ptr++ = LoadLimb();
   return;
 }
@@ -417,7 +413,7 @@ Obj GMP_NORMALIZE ( Obj gmp )
     return gmp;
   }
   for ( size = SIZE_INT(gmp); size != (mp_size_t)1; size-- ) {
-    if ( ADDR_INT(gmp)[(size - 1)] != 0 ) {
+    if ( CONST_ADDR_INT(gmp)[(size - 1)] != 0 ) {
       break;
     }
   }
@@ -464,7 +460,7 @@ int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
     return 0;
   }
   for ( size = SIZE_INT(op); size != (mp_size_t)1; size-- ) {
-    if ( ADDR_INT(op)[(size - 1)] != 0 ) {
+    if ( CONST_ADDR_INT(op)[(size - 1)] != 0 ) {
       break;
     }
   }
@@ -857,7 +853,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
 
   if ( IS_LARGEINT(integer) ) {
     UInt len = SIZE_INT(integer) - 1;
-    UInt a = CLog2UInt( ADDR_INT(integer)[len] );
+    UInt a = CLog2UInt( CONST_ADDR_INT(integer)[len] );
 
     CHECK_INT(integer);
 
@@ -919,7 +915,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
        || SIZE_INT(gmpL) != SIZE_INT(gmpR) )
     return 0L;
 
-  if ( mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) == 0 ) 
+  if ( mpn_cmp( CONST_ADDR_INT(gmpL), CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) == 0 ) 
     return 1L;
   else
     return 0L;
@@ -956,7 +952,7 @@ Int LtInt ( Obj gmpL, Obj gmpR )
   else if ( SIZE_INT(gmpL) > SIZE_INT(gmpR) )
     res = 0;
   else
-    res = mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
+    res = mpn_cmp( CONST_ADDR_INT(gmpL), CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
 
   /* if both arguments are negative, flip the result */
   if ( IS_INTNEG(gmpL) )
@@ -1107,7 +1103,7 @@ Obj AInvInt ( Obj gmp )
       inv = NewBag( T_INTPOS, SIZE_OBJ(gmp) );
     }
 
-    memcpy( ADDR_INT(inv), ADDR_INT(gmp), SIZE_OBJ(gmp) );
+    memcpy( ADDR_INT(inv), CONST_ADDR_INT(gmp), SIZE_OBJ(gmp) );
   }
   
   /* return the inverse                                                    */
@@ -1138,7 +1134,7 @@ Obj AbsInt( Obj op )
     return op;
   } else if ( IS_INTNEG(op) ) {
     a = NewBag( T_INTPOS, SIZE_OBJ(op) );
-    memcpy( ADDR_INT(a), ADDR_INT(op), SIZE_OBJ(op) );
+    memcpy( ADDR_INT(a), CONST_ADDR_INT(op), SIZE_OBJ(op) );
     return a;
   }
   return Fail;
@@ -1322,7 +1318,7 @@ Obj ProdIntObj ( Obj n, Obj op )
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(mp_limb_t);
-      l = ADDR_INT(n)[i-1];
+      l = CONST_ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : SUM( res, res ));
         k--;
@@ -1490,7 +1486,7 @@ Obj             PowObjInt ( Obj op, Obj n )
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
       k = 8*sizeof(mp_limb_t);
-      l = ADDR_INT(n)[i-1];
+      l = CONST_ADDR_INT(n)[i-1];
       while ( 0 < k ) {
         res = (res == 0 ? res : PROD( res, res ));
         k--;
@@ -1593,7 +1589,7 @@ Obj ModInt ( Obj opL, Obj opR )
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), (mp_limb_t)i );
+      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), (mp_limb_t)i );
     }
     
     /* now c is the result, it has the same sign as the left operand       */
@@ -1633,8 +1629,8 @@ Obj ModInt ( Obj opL, Obj opR )
 
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(mod), 0,
-                 ADDR_INT(opL), SIZE_INT(opL),
-                 ADDR_INT(opR), SIZE_INT(opR)    );
+                 CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 CONST_ADDR_INT(opR), SIZE_INT(opR)    );
       
     /* reduce to small integer if possible, otherwise shrink bag           */
     mod = GMP_NORMALIZE( mod );
@@ -1746,7 +1742,7 @@ Obj QuoInt ( Obj opL, Obj opR )
 
     /* use gmp function for dividing by a 1-limb number                    */
     mpn_divrem_1( ADDR_INT(quo), 0,
-                  ADDR_INT(opL), SIZE_INT(opL),
+                  CONST_ADDR_INT(opL), SIZE_INT(opL),
                   k );
   }
   
@@ -1769,8 +1765,8 @@ Obj QuoInt ( Obj opL, Obj opR )
                     (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
 
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-                 ADDR_INT(opL), SIZE_INT(opL),
-                 ADDR_INT(opR), SIZE_INT(opR) );
+                 CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 CONST_ADDR_INT(opR), SIZE_INT(opR) );
   }
   
   /* normalize and return the result                                       */
@@ -1873,7 +1869,7 @@ Obj RemInt ( Obj opL, Obj opR )
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( ADDR_INT(opL), SIZE_INT(opL), i );
+      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
     
     /* now c is the result, it has the same sign as the left operand       */
@@ -1898,8 +1894,8 @@ Obj RemInt ( Obj opL, Obj opR )
     
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-                 ADDR_INT(opL), SIZE_INT(opL),
-                 ADDR_INT(opR), SIZE_INT(opR)    );
+                 CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 CONST_ADDR_INT(opR), SIZE_INT(opR)    );
     
     /* reduce to small integer if possible, otherwise shrink bag           */
     rem = GMP_NORMALIZE( rem );
