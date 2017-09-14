@@ -53,16 +53,16 @@ InstallMethod( GeneratorsOfLeftModule,
 ##  All other cases are handled by the vector space methods.
 ##
 InstallMethod( Random,
-    "for a finite prime field",
-    [ IsField and IsPrimeField and IsFinite ],
-    F -> Random(1,Size(F)) * One( F ) );
+    "for a random source and a finite prime field",
+    [ IsRandomSource, IsField and IsPrimeField and IsFinite ],
+    { rs, F } -> Random(rs,1,Size(F)) * One( F ) );
 
 InstallMethod( Random,
-    "for a finite field with known primitive root",
-    [ IsField and IsFinite and HasPrimitiveRoot ],
-    function ( F )
+    "for a random source and a finite field with known primitive root",
+    [ IsRandomSource, IsField and IsFinite and HasPrimitiveRoot ],
+    function ( rs, F )
     local   rnd;
-    rnd := Random( 0, Size( F )-1 );
+    rnd := Random( rs, 0, Size( F )-1 );
     if rnd = 0  then
       rnd := Zero( F );
     else
