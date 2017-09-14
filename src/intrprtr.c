@@ -4031,7 +4031,7 @@ void            IntrElmPosObj ( void )
          * only have read-only access, we have to be careful when accessing
          * positional objects.
          */
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         MEMBAR_READ(); /* essential memory barrier */
         if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
@@ -4204,7 +4204,7 @@ void            IntrIsbPosObj ( void )
          * only have read-only access, we have to be careful when accessing
          * positional objects.
          */
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
           isb = False;
         else
