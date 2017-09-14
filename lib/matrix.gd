@@ -1615,16 +1615,17 @@ DeclareGlobalFunction( "ReflectionMat" );
 
 #############################################################################
 ##
-#F  RandomInvertibleMat( <m> [, <R>] )  . . . make a random invertible matrix
+#F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . .  random invertible matrix
 ##
 ##  <#GAPDoc Label="RandomInvertibleMat">
 ##  <ManSection>
-##  <Func Name="RandomInvertibleMat" Arg='m [, R]'/>
+##  <Func Name="RandomInvertibleMat" Arg='[rs ,] m [, R]'/>
 ##
 ##  <Description>
 ##  <Ref Func="RandomInvertibleMat"/> returns a new mutable invertible random
 ##  matrix with <A>m</A> rows and columns with elements taken from the ring
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
+##  Optionally, a random source <A>rs</A> can be supplied.
 ##  <Example><![CDATA[
 ##  gap> m := RandomInvertibleMat(4);
 ##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ], 
@@ -1642,16 +1643,17 @@ DeclareGlobalFunction( "RandomInvertibleMat" );
 
 #############################################################################
 ##
-#F  RandomMat( <m>, <n> [, <R>] ) . . . . . . . . . . .  make a random matrix
+#F  RandomMat( [rs ,] <m>, <n> [, <R>] ) . . . . . . . . make a random matrix
 ##
 ##  <#GAPDoc Label="RandomMat">
 ##  <ManSection>
-##  <Func Name="RandomMat" Arg='m, n [, R]'/>
+##  <Func Name="RandomMat" Arg='[rs ,] m, n [, R]'/>
 ##
 ##  <Description>
 ##  <Ref Func="RandomMat"/> returns a new mutable random matrix with <A>m</A> rows and
 ##  <A>n</A> columns with elements taken from the ring <A>R</A>, which defaults
 ##  to <Ref Var="Integers"/>.
+##  Optionally, a random source <A>rs</A> can be supplied.
 ##  <Example><![CDATA[
 ##  gap> RandomMat(2,3,GF(3));
 ##  [ [ Z(3), Z(3), 0*Z(3) ], [ Z(3), Z(3)^0, Z(3) ] ]
@@ -1665,15 +1667,16 @@ DeclareGlobalFunction( "RandomMat" );
 
 #############################################################################
 ##
-#F  RandomUnimodularMat( <m> )  . . . . . . . . . .  random unimodular matrix
+#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
 ##  <ManSection>
-##  <Func Name="RandomUnimodularMat" Arg='m'/>
+##  <Func Name="RandomUnimodularMat" Arg='[rs ,] m'/>
 ##
 ##  <Description>
 ##  returns a new random mutable <A>m</A><M>\times</M><A>m</A> matrix with integer
 ##  entries that is invertible over the integers.
+##  Optionally, a random source <A>rs</A> can be supplied.
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
 ##  [ [ -5, 1, 0 ], [ 12, -2, -1 ], [ -14, 3, 0 ] ]

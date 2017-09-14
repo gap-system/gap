@@ -3499,14 +3499,20 @@ end );
 
 #########################################################################
 ##
-#F  RandomInvertibleMat( <m> [, <R>] )  . . . make a random invertible matrix
+#F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . . make a random invertible matrix
 ##
 ##  'RandomInvertibleMat' returns a invertible   random matrix with  <m> rows
 ##  and columns  with elements  taken from  the  ring <R>, which defaults  to
 ##  'Integers'.
 ##
 InstallGlobalFunction( RandomInvertibleMat, function ( arg )
-    local   mat, m, R, i, row, k;
+    local   rs, mat, m, R, i, row, k;
+
+    if Length(arg) >= 1 and IsRandomSource(arg[1]) then
+        rs := Remove(arg, 1);
+    else
+        rs := GlobalMersenneTwister;
+    fi;
 
     # check the arguments and get the list of elements
     if Length(arg) = 1  then
@@ -3516,7 +3522,7 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
         m := arg[1];
         R := arg[2];
     else
-        Error("usage: RandomInvertibleMat( <m> [, <R>] )");
+        Error("usage: RandomInvertibleMat( [rs ,] <m> [, <R>] )");
     fi;
 
     # now construct the random matrix
@@ -3525,7 +3531,7 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
         repeat
             row := [];
             for k  in [1..m]  do
-                row[k] := Random( R );
+                row[k] := Random( rs, R );
             od;
             ConvertToVectorRepNC( row, R );
             mat[i] := row;
@@ -3542,13 +3548,19 @@ end );
 
 #############################################################################
 ##
-#F  RandomMat( <m>, <n> [, <R>] ) . . . . . . . . . . .  make a random matrix
+#F  RandomMat( [rs ,] <m>, <n> [, <R>] ) . . . . . . . . make a random matrix
 ##
 ##  'RandomMat' returns a random matrix with <m> rows and  <n>  columns  with
 ##  elements taken from the ring <R>, which defaults to 'Integers'.
 ##
 InstallGlobalFunction( RandomMat, function ( arg )
-    local   mat, m, n, R, i, row, k;
+    local   rs, mat, m, n, R, i, row, k;
+
+    if Length(arg) >= 1 and IsRandomSource(arg[1]) then
+        rs := Remove(arg, 1);
+    else
+        rs := GlobalMersenneTwister;
+    fi;
 
     # check the arguments and get the list of elements
     if Length(arg) = 2  then
@@ -3560,7 +3572,7 @@ InstallGlobalFunction( RandomMat, function ( arg )
         n := arg[2];
         R := arg[3];
     else
-        Error("usage: RandomMat( <m>, <n> [, <F>] )");
+        Error("usage: RandomMat( [rs ,] <m>, <n> [, <F>] )");
     fi;
 
     # now construct the random matrix
@@ -3568,7 +3580,7 @@ InstallGlobalFunction( RandomMat, function ( arg )
     for i  in [1..m]  do
         row := [];
         for k  in [1..n]  do
-            row[k] := Random( R );
+            row[k] := Random( rs, R );
         od;
         ConvertToVectorRepNC( row, R );
         mat[i] := row;
@@ -3584,11 +3596,23 @@ end );
 
 #############################################################################
 ##
-#F  RandomUnimodularMat( <m> )  . . . . . . . . . .  random unimodular matrix
+#F  RandomUnimodularMat( [rs ,] <m> )  . . . . . . . random unimodular matrix
 ##
-InstallGlobalFunction( RandomUnimodularMat, function ( m )
-    local  mat, c, i, j, k, l, a, b, v, w, gcd;
+InstallGlobalFunction( RandomUnimodularMat, function ( arg )
+    local  rs, m, mat, c, i, j, k, l, a, b, v, w, gcd;
     
+    if Length(arg) >= 1 and IsRandomSource(arg[1]) then
+        rs := Remove(arg, 1);
+    else
+        rs := GlobalMersenneTwister;
+    fi;
+
+    if Length(arg) = 1 then
+        m := arg[1];
+    else
+        Error("usage: RandomUnimodularMat( [rs ,] <m> )");
+    fi;
+
     if not IsPosInt( m ) then
         Error("<m> must be a positive integer");
     fi;
@@ -3597,18 +3621,19 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
     mat := IdentityMat( m );
 
     if m = 1 then
-        return Random( [ 1, -1 ] ) * mat;
+        return Random( rs, [ 1, -1 ] ) * mat;
     fi;
 
     for c  in [1..m]  do
 
         # multiply two random rows with a random? unimodular 2x2 matrix
-        i := Random([1..m]);
+        i := Random(rs, [1..m]);
         repeat
-            j := Random([1..m]);
+            j := Random(rs, [1..m]);
         until j <> i;
         repeat
-            a := Random( Integers );  b := Random( Integers );
+            a := Random( rs, Integers );
+            b := Random( rs, Integers );
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         v := mat[i];  w := mat[j];
@@ -3616,12 +3641,13 @@ InstallGlobalFunction( RandomUnimodularMat, function ( m )
         mat[j] := ShallowCopy(gcd.coeff3 * v + gcd.coeff4 * w);
 
         # multiply two random cols with a random? unimodular 2x2 matrix
-        k := Random([1..m]);
+        k := Random(rs, [1..m]);
         repeat
-            l := Random([1..m]);
+            l := Random(rs, [1..m]);
         until l <> k;
         repeat
-            a := Random( Integers );  b := Random( Integers );
+            a := Random( rs, Integers );
+            b := Random( rs, Integers );
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         for i  in [1..m]  do
