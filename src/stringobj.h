@@ -41,7 +41,29 @@
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-extern Obj ObjsChar [256];
+extern Obj ObjsChar[256];
+
+
+/****************************************************************************
+**
+*F  CHAR_VALUE( <charObj> )
+*/
+static inline UChar CHAR_VALUE(Obj charObj)
+{
+    GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
+    return *(const UChar *)CONST_ADDR_OBJ(charObj);
+}
+
+
+/****************************************************************************
+**
+*F  SET_CHAR_VALUE( <charObj>, <c> )
+*/
+static inline void SET_CHAR_VALUE(Obj charObj, UChar c)
+{
+    GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
+    *(UChar *)CONST_ADDR_OBJ(charObj) = c;
+}
 
 
 /****************************************************************************
@@ -106,7 +128,7 @@ static inline UChar * CHARS_STRING(Obj list)
 static inline UInt GET_LEN_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
-    return *((UInt *)ADDR_OBJ(list));
+    return *((const UInt *)CONST_ADDR_OBJ(list));
 }
 
 /****************************************************************************
@@ -202,7 +224,7 @@ static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
     GAP_ASSERT(pos <= GET_LEN_STRING(list));
     GAP_ASSERT(TNUM_OBJ(val) == T_CHAR);
     UChar * ptr = CHARS_STRING(list) + (pos - 1);
-    *ptr = *(UChar *)ADDR_OBJ(val);
+    *ptr = CHAR_VALUE(val);
 }
 
 /****************************************************************************
