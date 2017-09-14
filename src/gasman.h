@@ -296,6 +296,12 @@ static inline Bag *PTR_BAG(Bag bag)
     return *(Bag**)bag;
 }
 
+static inline const Bag *CONST_PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+    return *(const Bag**)bag;
+}
+
 static inline void SET_PTR_BAG(Bag bag, Bag *val)
 {
     GAP_ASSERT(bag != 0);
