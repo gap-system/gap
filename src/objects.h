@@ -310,6 +310,11 @@ static inline Obj *ADDR_OBJ(Obj obj)
     return PTR_BAG(obj);
 }
 
+static inline const Obj *CONST_ADDR_OBJ(Obj obj)
+{
+    return CONST_PTR_BAG(obj);
+}
+
 
 /****************************************************************************
 **
