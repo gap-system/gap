@@ -189,7 +189,7 @@ Obj CopyPRec (
     else {
         copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(rec)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(rec)[0];
 
     // leave a forwarding pointer
     ADDR_OBJ(rec)[0] = copy;
@@ -229,7 +229,7 @@ void CleanPRecCopy (
     UInt                i;              /* loop variable                   */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(rec)[0] = ADDR_OBJ( ADDR_OBJ(rec)[0] )[0];
+    ADDR_OBJ(rec)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(rec)[0] )[0];
 
     /* now it is cleaned                                               */
     RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
@@ -562,7 +562,7 @@ void SortPRecRNam (
             i++; k++;
         }
         /* Finally, copy everything back to where it came from: */
-        memcpy(ADDR_OBJ(rec)+2,ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
+        memcpy(ADDR_OBJ(rec)+2,CONST_ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
     } else {   /* We have to work in place to avoid a garbage collection. */
         /* i == save is the cut point */
         j = 1;

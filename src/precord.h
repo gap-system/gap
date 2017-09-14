@@ -89,7 +89,7 @@ static inline Int CAPACITY_PREC(Obj rec)
 static inline UInt LEN_PREC(Obj rec)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
-    return ((UInt *)(ADDR_OBJ(rec)))[1];
+    return ((const UInt *)(CONST_ADDR_OBJ(rec)))[1];
 }
 
 
@@ -132,7 +132,7 @@ static inline UInt GET_RNAM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
-    return *(UInt *)(ADDR_OBJ(rec)+2*(i));
+    return *(const UInt *)(CONST_ADDR_OBJ(rec)+2*(i));
 }
 
 
@@ -162,7 +162,7 @@ static inline Obj GET_ELM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
-    return *(ADDR_OBJ(rec)+2*(i)+1);
+    return *(CONST_ADDR_OBJ(rec)+2*(i)+1);
 }
 
 

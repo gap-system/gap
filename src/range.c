@@ -181,7 +181,7 @@ Obj CopyRange (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
     ADDR_OBJ(list)[0] = copy;
@@ -191,8 +191,8 @@ Obj CopyRange (
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
-    ADDR_OBJ(copy)[1] = ADDR_OBJ(list)[1];
-    ADDR_OBJ(copy)[2] = ADDR_OBJ(list)[2];
+    ADDR_OBJ(copy)[1] = CONST_ADDR_OBJ(list)[1];
+    ADDR_OBJ(copy)[2] = CONST_ADDR_OBJ(list)[2];
 
     /* return the copy                                                     */
     return copy;
@@ -229,7 +229,7 @@ void CleanRangeCopy (
     Obj                 list )
 {
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
@@ -867,9 +867,9 @@ Obj FuncIS_RANGE (
 
 void SaveRange( Obj range )
 {
-  SaveSubObj(ADDR_OBJ(range)[0]); /* length */
-  SaveSubObj(ADDR_OBJ(range)[1]); /* base */
-  SaveSubObj(ADDR_OBJ(range)[2]); /* increment */
+  SaveSubObj(CONST_ADDR_OBJ(range)[0]); /* length */
+  SaveSubObj(CONST_ADDR_OBJ(range)[1]); /* base */
+  SaveSubObj(CONST_ADDR_OBJ(range)[2]); /* increment */
 }
 
 /****************************************************************************

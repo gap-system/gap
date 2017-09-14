@@ -27,13 +27,13 @@
 **
 */
 #define SC_CLASS(sc) \
-    (ADDR_OBJ(sc)[SCP_CLASS])
+    (CONST_ADDR_OBJ(sc)[SCP_CLASS])
 
 #define SC_WEIGHTS(sc) \
-    (ADDR_OBJ(sc)[SCP_WEIGHTS])
+    (CONST_ADDR_OBJ(sc)[SCP_WEIGHTS])
 
 #define SC_AVECTOR2(sc) \
-    (ADDR_OBJ(sc)[SCP_AVECTOR2])
+    (CONST_ADDR_OBJ(sc)[SCP_AVECTOR2])
 
 
 /****************************************************************************

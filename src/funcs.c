@@ -1095,9 +1095,7 @@ Obj             DoExecFuncXargs (
 
 #ifdef HPCGAP
 
-void            LockFuncArgs (
-    Obj                 func,
-    Obj *               args )
+static void LockFuncArgs(Obj func, const Obj * args)
 {
     Int nargs = NARG_FUNC(func);
     Int i;
@@ -1411,7 +1409,7 @@ Obj             DoExecFuncXargsL (
         PLAIN_LIST( args );
     }
 
-    LockFuncArgs(func, ADDR_OBJ(args) + 1);
+    LockFuncArgs(func, CONST_ADDR_OBJ(args) + 1);
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );

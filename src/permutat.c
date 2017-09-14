@@ -2261,7 +2261,7 @@ Obj             FuncPermList (
     UInt2 *             ptPerm2;        /* pointer to the permutation      */
     UInt4 *             ptPerm4;        /* pointer to the permutation      */
     UInt                degPerm;        /* degree of the permutation       */
-    Obj *               ptList;         /* pointer to the list             */
+    const Obj *         ptList;         /* pointer to the list             */
     UInt2 *             ptTmp2;         /* pointer to the buffer bag       */
     UInt4 *             ptTmp4;         /* pointer to the buffer bag       */
     Int                 i,  k;          /* loop variables                  */
