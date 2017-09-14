@@ -772,12 +772,12 @@ InstallMethod( AsSSortedList,
 ##
 #M  Random( <R> ) . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
-InstallMethod( Random,
-    "for full ring Z/nZ",
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+InstallMethodWithRandomSource(Random,
+    "for a random source and full ring Z/nZ",
+    [ IsRandomSource, IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     RankFilter( IsRing ),
-    R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
-                    Random( [ 0 .. Size( R ) - 1 ] ) ) );
+    { rs, R } -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
+                    Random( rs, [ 0 .. Size( R ) - 1 ] ) ) );
 
 
 #############################################################################
