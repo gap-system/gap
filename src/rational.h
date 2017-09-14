@@ -27,8 +27,25 @@
 *F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
 *F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
 */
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+static inline Obj NUM_RAT(Obj rat)
+{
+    return CONST_ADDR_OBJ(rat)[0];
+}
+
+static inline Obj DEN_RAT(Obj rat)
+{
+    return CONST_ADDR_OBJ(rat)[1];
+}
+
+static inline void SET_NUM_RAT(Obj rat, Obj val)
+{
+    ADDR_OBJ(rat)[0] = val;
+}
+
+static inline void SET_DEN_RAT(Obj rat, Obj val)
+{
+    ADDR_OBJ(rat)[1] = val;
+}
 
 /****************************************************************************
 **

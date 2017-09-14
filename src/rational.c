@@ -283,8 +283,8 @@ Obj             SumRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denS != INTOBJ_INT( 1L ) ) {
         sum  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(sum) = numS;
-        DEN_RAT(sum) = denS;
+        SET_NUM_RAT(sum, numS);
+        SET_DEN_RAT(sum, denS);
         /* 'CHANGED_BAG' not needed, 'sum' is the youngest bag             */
     }
     else {
@@ -320,8 +320,8 @@ Obj             AInvRat (
     CHECK_RAT(op);
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
     tmp = AINV( NUM_RAT(op) );
-    NUM_RAT(res) = tmp;
-    DEN_RAT(res) = DEN_RAT(op);
+    SET_NUM_RAT(res, tmp);
+    SET_DEN_RAT(res, DEN_RAT(op));
     CHANGED_BAG(res);
     CHECK_RAT(res);
     return res;
@@ -342,8 +342,8 @@ Obj AbsRat( Obj op )
         return op;
 
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
-    NUM_RAT(res) = tmp;
-    DEN_RAT(res) = DEN_RAT(op);
+    SET_NUM_RAT(res, tmp);
+    SET_DEN_RAT(res, DEN_RAT(op));
     CHANGED_BAG(res);
     CHECK_RAT(res);
     return res;
@@ -441,8 +441,8 @@ Obj             DiffRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denD != INTOBJ_INT( 1L ) ) {
         dif  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(dif) = numD;
-        DEN_RAT(dif) = denD;
+        SET_NUM_RAT(dif, numD);
+        SET_DEN_RAT(dif, denD);
         /* 'CHANGED_BAG' not needed, 'dif' is the youngest bag             */
     }
     else {
@@ -511,8 +511,8 @@ Obj             ProdRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denP != INTOBJ_INT( 1L ) ) {
         prd = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(prd) = numP;
-        DEN_RAT(prd) = denP;
+        SET_NUM_RAT(prd, numP);
+        SET_DEN_RAT(prd, denP);
         /* 'CHANGED_BAG' not needed, 'prd' is the youngest bag             */
     }
     else {
@@ -630,8 +630,8 @@ Obj             QuoRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denQ != INTOBJ_INT( 1L ) ) {
         quo = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(quo) = numQ;
-        DEN_RAT(quo) = denQ;
+        SET_NUM_RAT(quo, numQ);
+        SET_DEN_RAT(quo, denQ);
         /* 'CHANGED_BAG' not needed, 'quo' is the youngest bag             */
     }
     else {
@@ -742,8 +742,8 @@ Obj             PowRat (
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
         pow = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(pow) = numP;
-        DEN_RAT(pow) = denP;
+        SET_NUM_RAT(pow, numP);
+        SET_DEN_RAT(pow, denP);
         /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
     }
 
@@ -766,12 +766,12 @@ Obj             PowRat (
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
         if ( (IS_INTOBJ(denP) && 0 < INT_INTOBJ(denP))
           || TNUM_OBJ(denP) == T_INTPOS ) {
-            NUM_RAT(pow) = numP;
-            DEN_RAT(pow) = denP;
+            SET_NUM_RAT(pow, numP);
+            SET_DEN_RAT(pow, denP);
         }
         else {
-            NUM_RAT(pow) = ProdInt( INTOBJ_INT( -1L ), numP );
-            DEN_RAT(pow) = ProdInt( INTOBJ_INT( -1L ), denP );
+            SET_NUM_RAT(pow, ProdInt( INTOBJ_INT( -1L ), numP ));
+            SET_DEN_RAT(pow, ProdInt( INTOBJ_INT( -1L ), denP ));
         }
         /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
     }
@@ -898,8 +898,8 @@ void SaveRat(Obj rat)
 
 void LoadRat(Obj rat)
 {
-  NUM_RAT(rat) = LoadSubObj();
-  DEN_RAT(rat) = LoadSubObj();
+  SET_NUM_RAT(rat, LoadSubObj());
+  SET_DEN_RAT(rat, LoadSubObj());
 }
 
 /****************************************************************************
