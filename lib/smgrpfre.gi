@@ -331,14 +331,14 @@ InstallMethod( Size,
 ##
 #T use better method for the whole family
 ##
-InstallMethod( Random,
-    "for a free semigroup",
-    [ IsSemigroup and IsAssocWordCollection ],
-    function( S )
+InstallMethodWithRandomSource(Random,
+    "for a random source and a free semigroup",
+    [ IsRandomSource, IsSemigroup and IsAssocWordCollection ],
+    function( rs, S )
     local len, result, gens, i;
 
     # Get a random length for the word.
-    len:= Random( Integers );
+    len:= Random( rs, Integers );
     if 0 <= len then
       len:= 2 * len;
     else
@@ -347,9 +347,9 @@ InstallMethod( Random,
 
     # Multiply $'len' + 1$ random generators.
     gens:= GeneratorsOfMagma( S );
-    result:= Random( gens );
+    result:= Random( rs, gens );
     for i in [ 1 .. len ] do
-      result:= result * Random( gens );
+      result:= result * Random( rs, gens );
     od;
 
     # Return the result.
