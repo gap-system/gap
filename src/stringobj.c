@@ -128,7 +128,7 @@ Int EqChar (
     Obj                 charL,
     Obj                 charR )
 {
-    return (*(UChar*)ADDR_OBJ(charL) == *(UChar*)ADDR_OBJ(charR));
+    return CHAR_VALUE(charL) == CHAR_VALUE(charR);
 }
 
 
@@ -143,7 +143,7 @@ Int LtChar (
     Obj                 charL,
     Obj                 charR )
 {
-    return (*(UChar*)ADDR_OBJ(charL) < *(UChar*)ADDR_OBJ(charR));
+    return CHAR_VALUE(charL) < CHAR_VALUE(charR);
 }
 
 
@@ -158,7 +158,7 @@ void PrintChar (
 {
     UChar               chr;
 
-    chr = *(UChar*)ADDR_OBJ(val);
+    chr = CHAR_VALUE(val);
     if      ( chr == '\n'  )  Pr("'\\n'",0L,0L);
     else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
     else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);
@@ -189,7 +189,7 @@ void PrintChar (
 */
 void SaveChar ( Obj c )
 {
-    SaveUInt1( *(UChar *)ADDR_OBJ(c));
+    SaveUInt1( CHAR_VALUE(c));
 }
 
 
@@ -200,7 +200,7 @@ void SaveChar ( Obj c )
 */
 void LoadChar( Obj c )
 {
-    *(UChar *)ADDR_OBJ(c) = LoadUInt1();
+    SET_CHAR_VALUE(c, LoadUInt1());
 }
 
 
@@ -301,7 +301,7 @@ Obj FuncINT_CHAR (
     }
 
     /* return the character                                                */
-    return INTOBJ_INT(*(UChar*)ADDR_OBJ(val));
+    return INTOBJ_INT(CHAR_VALUE(val));
 }
 
 /****************************************************************************
@@ -352,7 +352,7 @@ Obj FuncSINT_CHAR (
   }
 
   /* return the character                                                */
-  return INTOBJ_INT(SINT_CHAR(*(UChar*)ADDR_OBJ(val)));
+  return INTOBJ_INT(SINT_CHAR(CHAR_VALUE(val)));
 }
 
 /****************************************************************************
@@ -603,7 +603,7 @@ Obj CopyString (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
     ADDR_OBJ(list)[0] = copy;
@@ -613,7 +613,7 @@ Obj CopyString (
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
-    memcpy((void*)(ADDR_OBJ(copy)+1), (void*)(ADDR_OBJ(list)+1), 
+    memcpy(ADDR_OBJ(copy)+1, CONST_ADDR_OBJ(list)+1,
            ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)-1) * sizeof(Obj));
 
     /* return the copy                                                     */
@@ -628,7 +628,7 @@ Obj CopyStringCopy (
     Obj                 list,
     Int                 mut )
 {
-    return ADDR_OBJ(list)[0];
+    return CONST_ADDR_OBJ(list)[0];
 }
 
 
@@ -650,7 +650,7 @@ void CleanStringCopy (
     Obj                 list )
 {
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
@@ -1095,7 +1095,7 @@ void AssString (
 
     /* now perform the assignment and return the assigned value            */
     SET_ELM_STRING( list, pos, val ); 
-    /*    CHARS_STRING(list)[pos-1] = *((UInt1*)ADDR_OBJ(val)); */
+    /*    CHARS_STRING(list)[pos-1] = CHAR_VALUE(val); */
     CHANGED_BAG( list );
   }
 }    
@@ -1247,7 +1247,7 @@ Obj PosString (
     if (TNUM_OBJ(val) != T_CHAR) return Fail;
     
     /* val as C character   */
-    valc = *(UInt1*)ADDR_OBJ(val);
+    valc = CHAR_VALUE(val);
 
     /* search entries in <list>                                     */
     p = CHARS_STRING(list);
@@ -1294,7 +1294,7 @@ void PlainString (
 	  CHANGED_BAG( list );
 	  }
     */
-    memcpy((void*)ADDR_OBJ(list), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(list);
 }
 
@@ -1365,13 +1365,13 @@ Obj CopyToStringRep(
     copy = NEW_STRING(lenString);
 
     if ( IS_STRING_REP(string) ) {
-        memcpy(ADDR_OBJ(copy), ADDR_OBJ(string), SIZE_OBJ(string));
+        memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(string), SIZE_OBJ(string));
         /* XXX no error checks? */
     } else {
         /* copy the string to the string representation                     */
         for ( i = 1; i <= lenString; i++ ) {
             elm = ELMW_LIST( string, i );
-            CHARS_STRING(copy)[i-1] = *((UChar*)ADDR_OBJ(elm));
+            CHARS_STRING(copy)[i-1] = CHAR_VALUE(elm);
         } 
         CHARS_STRING(copy)[lenString] = '\0';
     }
@@ -1408,7 +1408,7 @@ void ConvString (
     /* copy the string to the string representation                     */
     for ( i = 1; i <= lenString; i++ ) {
         elm = ELMW_LIST( string, i );
-        CHARS_STRING(tmp)[i-1] = *((UChar*)ADDR_OBJ(elm));
+        CHARS_STRING(tmp)[i-1] = CHAR_VALUE(elm);
     }
     CHARS_STRING(tmp)[lenString] = '\0';
 
@@ -1416,7 +1416,7 @@ void ConvString (
     RetypeBag( string, IS_MUTABLE_OBJ(string)?T_STRING:T_STRING+IMMUTABLE );
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     /* copy data area from tmp */
-    memcpy((void*)ADDR_OBJ(string), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(string);
 }
 
@@ -2506,7 +2506,7 @@ static Int InitLibrary (
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
         ObjsChar[i] = NewBag( T_CHAR, 1L );
-        *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
+        SET_CHAR_VALUE(ObjsChar[i], (UChar)i);
     }
 
     /* init filters and functions                                          */

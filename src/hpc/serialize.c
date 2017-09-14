@@ -379,7 +379,7 @@ Obj DeserializeFFE(UInt tnum)
 
 void SerializeChar(Obj obj)
 {
-    UChar ch = *(char *)ADDR_OBJ(obj);
+    UChar ch = CHAR_VALUE(obj);
     WriteTNum(T_CHAR);
     WriteByte(ch);
 }
