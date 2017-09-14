@@ -1220,7 +1220,7 @@ end );
 ##  Since the rows are homogeneous and nonempty,
 ##  one can also access the first entry in the first row.
 ##
-InstallMethod( BaseDomain,
+InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
     DefaultRing );
