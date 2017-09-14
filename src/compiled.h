@@ -373,15 +373,7 @@ static inline Obj C_MAKE_MED_INT( Int8 value ) {
 }
 
 static inline Obj C_NORMALIZE_64BIT(Obj o) {
-  Int value =  *(Int *)ADDR_OBJ(o);
-  if (value < 0)
-    return o;
-  if (TNUM_OBJ(o) == T_INTNEG)
-    value = -value;
-  if (-(1L << 60) <= value && value < (1L << 60))
-    return INTOBJ_INT(value);
-  else
-    return o;    
+  return GMP_REDUCE(o);
 }
 
 
