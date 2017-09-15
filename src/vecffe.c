@@ -768,7 +768,7 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 **
 */
 
-static Obj MultRowVectorLeftOp;   /* BH changed to static */
+static Obj MultRowVectorLeftOp; /* BH changed to static */
 
 Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 {

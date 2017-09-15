@@ -382,48 +382,47 @@ DeclareOperation( "AddRowVector",
 
 
 
-# TODO: rename MultRowVector to MultVector; but keep in mind that
-# historically there already was MultRowVector, so be careful to not break that
 #############################################################################
 ##
 #O  MultRowVector( <vec>, <mul>[, <from>, <to>] )
 #O  MultRowVectorLeft( <vec>, <mul>[, <from>, <to>] )
 #O  MultRowVectorRight( <vec>, <mul>[, <from>, <to>] )
 ##
-##  <#GAPDoc Label="MatObj_MultRowVector">
 ##  <#GAPDoc Label="MatObj_MultRowVectorLeft">
-##  <#GAPDoc Label="MatObj_MultRowVectorRight">
 ##  <ManSection>
+##  <Oper Name="MultRowVector" Arg='vec, mul[, from, to]'/>
 ##  <Oper Name="MultRowVectorLeft" Arg='vec, mul[, from, to]'/>
 ##  <Oper Name="MultRowVectorRight" Arg='vec, mul[, from, to]'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  Note that <C>MultRowVector</C> is only a Synonym for
+##  These operations multiply <A>mul</A> with <A>vec</A> in-place
+##  where <C>MultRowVectorLeft</C> multiplies with <A>mul</A> from the left
+##  and <C>MultRowVectorRight</C> does so from the right.
+##  </P>
+##  Note that <C>MultRowVector</C> is just a synonym for
 ##  <C>MultRowVectorLeft</C>.
 ##  </P>
-##  These operations multiply <A>vec</A> with <A>mul</A> in-place and write
-##  the result to <A>vec</A>.
-##  <C>MultRowVectorLeft</C> multiplies <A>mul</A> to <A>vec</A> from the
-##  left. <C>MultRowVectorRight</C> does so from the right.
-##  </P>
-##  The optional parameters <A>from</A> and <A>to</A> can be used to restrict
-##  the effect of the operation to the entries
-##  <C><A>vec</A>{[<A>from</A>..<A>to</A>]}.
+##  If the optional parameters <A>from</A> and <A>to</A> are given only the
+##  index range <C>[<A>from</A>..<A>to</A>]</C> is guaranteed to be 
+##  affected. Other indices <E>may</E> be affected, if it is more convenient
+##  to do so.
 ##  This can be helpful if entries of <A>vec</A> are known to be zero.
+##  </P>
+##  If <A>from</A> is bigger than <A>to</A>, the operation does nothing.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "MultRowVectorLeft",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement ] );
+  [ IsVectorObj and IsMutable, IsObject ] );
 DeclareOperation( "MultRowVectorRight",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement ] );
+  [ IsVectorObj and IsMutable, IsObject ] );
 DeclareOperation( "MultRowVectorLeft",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ] );
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ] );
 DeclareOperation( "MultRowVectorRight",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ] );
-#  Note that MultRowVector is declared a Synonym for MultRowVectorLeft in
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ] );
+#  Note that MultRowVector is declared a synonym for MultRowVectorLeft in
 #  listcoef.gd
 
 

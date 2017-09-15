@@ -429,14 +429,14 @@ InstallMethod( MultRowVectorRight,
     MULT_ROW_VECTOR_RIGHT_2(v![ELSPOS],s);
   end );
 
-InstallOtherMethod( MultRowVector, "for an integer vector, and a small integer",
+InstallOtherMethod( MultRowVectorLeft, "for an integer vector, and a small integer",
   [ IsPlistVectorRep and IsIntVector and IsMutable, IsSmallIntRep ],
   function( v, s )
     MULT_ROW_VECTOR_2_FAST(v![ELSPOS],s);
   end );
 
-# The four argument version of MultRowVector uses the generic implementation
-# in matobj.gi
+# The four argument version of MultRowVectorLeft / ..Right uses the generic
+# implementation in matobj.gi
 
 InstallMethod( \*, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
