@@ -973,16 +973,54 @@ void CodeIfEnd (
 {
     Stat                stat;           /* if-statement, result            */
     Expr                cond;           /* condition of a branch           */
-    Stat                body;           /* body of a branch                */
     UInt                hase;           /* has else branch                 */
     UInt                i;              /* loop variable                   */
+    Expr                cond1 = 0;      /* first condition                 */
+    Expr                cond2 = 0;      /* second condition                */
 
-    /* peek at the last condition                                          */
-    body = PopStat();
-    cond = PopExpr();
-    hase = (TNUM_EXPR(cond) == T_TRUE_EXPR);
-    PushExpr( cond );
-    PushStat( body );
+    /* peek at the last two conditions                                     */
+    cond1 = PopExpr();
+    hase = (TNUM_EXPR(cond1) == T_TRUE_EXPR);
+    if (nr == 2) {
+        cond2 = PopExpr();
+        PushExpr(cond2);
+    }
+    PushExpr(cond1);
+
+    // Some optimisation cases
+    if (nr == 1) {
+        if (TNUM_EXPR(cond1) == T_TRUE_EXPR) {
+            // Leave statement
+            PopExpr();
+            return;
+        }
+        else if (TNUM_EXPR(cond1) == T_FALSE_EXPR) {
+            // Remove entire if statement
+            PopStat();
+            PopExpr();
+            PushStat(NewStat(T_EMPTY, 0));
+            return;
+        }
+    }
+
+    if (nr == 2 && hase) {
+        if (TNUM_EXPR(cond2) == T_TRUE_EXPR) {
+            // Leave 'true' case
+            PopStat();
+            PopExpr();
+            PopExpr();
+            return;
+        }
+        else if (TNUM_EXPR(cond2) == T_FALSE_EXPR) {
+            // Leave 'false' case
+            Stat body = PopStat();
+            PopExpr();
+            PopStat();
+            PopExpr();
+            PushStat(body);
+            return;
+        }
+    }
 
     /* allocate the if-statement                                           */
     if      ( nr == 1 ) {
@@ -1000,7 +1038,7 @@ void CodeIfEnd (
 
     /* enter the branches                                                  */
     for ( i = nr; 1 <= i; i-- ) {
-        body = PopStat();
+        Stat body = PopStat();
         cond = PopExpr();
         ADDR_STAT(stat)[2*(i-1)] = cond;
         ADDR_STAT(stat)[2*(i-1)+1] = body;
@@ -1615,6 +1653,11 @@ void CodePow ( void )
     PushBinaryOp( T_POW );
 }
 
+
+void CodeGAPSmallInt(Obj val)
+{
+    PushExpr(INTEXPR_INT(INT_INTOBJ(val)));
+}
 
 /****************************************************************************
 **

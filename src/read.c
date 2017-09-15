@@ -481,7 +481,22 @@ void ReadCallVarAss (
     /* Now we know this isn't a lambda function, look up the name          */
     if ( type == 'g' ) {
         var = GVarName( varname );
+
+        // Check if the variable is a constant
+        if (mode != 'i' && ValGVar(var) && IsConstantGVar(var)) {
+            Obj val = ValAutoGVar(var);
+            if (val == True)
+                IntrTrueExpr();
+            else if (val == False)
+                IntrFalseExpr();
+            else if (IS_INTOBJ(val))
+                IntrIntObjExpr(val);
+            else
+                SyntaxError("Invalid constant variable");
+            return;
+        }
     }
+
 
     /* check whether this is an unbound global variable                    */
 

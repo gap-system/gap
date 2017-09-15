@@ -323,6 +323,15 @@ void            AssGVar (
     UInt                i;              /* loop variable                   */
     Obj                 onam;           /* object of <name>                */
 
+    Obj writeval;
+
+    writeval = ELM_GVAR_LIST(WriteGVars, gvar);
+
+    // Make certain variable is not constant
+    if (writeval == INTOBJ_INT(-1)) {
+        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+    }
+
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
             (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
@@ -692,9 +701,28 @@ UInt GVarName (
 */
 void MakeReadOnlyGVar (
     UInt                gvar )
-{       
+{
+    if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
+        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+    }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );
+}
+
+/****************************************************************************
+**
+*F  MakeConstantGVar( <gvar> )  . . . . . .  make a global variable constant
+*/
+void MakeConstantGVar(UInt gvar)
+{
+    Obj val = ValGVar(gvar);
+    if (!IS_INTOBJ(val) && val != True && val != False) {
+        ErrorMayQuit(
+            "Variable: '%s' must be assigned a small integer, true or false",
+            (Int)NameGVar(gvar), 0L);
+    }
+    SET_ELM_GVAR_LIST(WriteGVars, gvar, INTOBJ_INT(-1));
+    CHANGED_GVAR_LIST(WriteGVars, gvar);
 }
 
 
@@ -749,6 +777,32 @@ Obj FuncMakeReadOnlyGVar (
     return 0;
 }
 
+/****************************************************************************
+**
+*F  FuncMakeConstantGVar(<self>,<name>)   make a global variable constant
+**
+**  'FuncMakeConstantGVar' implements the function 'MakeConstantGVar'.
+**
+**  'MakeConstantGVar( <name> )'
+**
+**  'MakeConstantGVar' make the global  variable with the name <name>  (which
+**  must be a GAP string) constant.
+*/
+Obj FuncMakeConstantGVar(Obj self, Obj name)
+{
+    /* check the argument                                                  */
+    while (!IsStringConv(name)) {
+        name = ErrorReturnObj(
+            "MakeConstantGVar: <name> must be a string (not a %s)",
+            (Int)TNAM_OBJ(name), 0L, "you can return a string for <name>");
+    }
+
+    /* get the variable and make it read only                              */
+    MakeConstantGVar(GVarName(CSTR_STRING(name)));
+
+    /* return void                                                         */
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -757,6 +811,9 @@ Obj FuncMakeReadOnlyGVar (
 void MakeReadWriteGVar (
     UInt                gvar )
 {
+    if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
+        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+    }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );
 }
@@ -799,9 +856,8 @@ Obj FuncMakeReadWriteGVar (
 Int IsReadOnlyGVar (
     UInt                gvar )
 {
-    return !INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar));
+    return ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0);
 }
-
 
 /****************************************************************************
 **
@@ -823,6 +879,34 @@ static Obj FuncIsReadOnlyGVar (
 
     /* get the answer                             */
     return IsReadOnlyGVar(GVarName(CSTR_STRING(name))) ? True : False;
+}
+
+/****************************************************************************
+**
+*F  IsConstantGVar( <gvar> ) . . . . . . return if a variable is a constant
+*/
+Int IsConstantGVar(UInt gvar)
+{
+    return INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar)) == -1;
+}
+
+/****************************************************************************
+**
+*F  FuncIsConstantGVar( <name> ) . . .handler for GAP function
+**
+*/
+
+static Obj FuncIsConstantGVar(Obj self, Obj name)
+{
+    // check the argument
+    while (!IsStringConv(name)) {
+        name = ErrorReturnObj(
+            "IsConstantGVar: <name> must be a string (not a %s)",
+            (Int)TNAM_OBJ(name), 0L, "you can return a string for <name>");
+    }
+
+    /* get the answer                             */
+    return IsConstantGVar(GVarName(CSTR_STRING(name))) ? True : False;
 }
 
 
@@ -1476,12 +1560,16 @@ void SetGVar(GVarDescriptor *gvar, Obj obj)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(MakeReadOnlyGVar, 1, "name"),
     GVAR_FUNC(MakeReadWriteGVar, 1, "name"),
+    GVAR_FUNC(MakeConstantGVar, 1, "name"),
     GVAR_FUNC(IsReadOnlyGVar, 1, "name"),
+    GVAR_FUNC(IsConstantGVar, 1, "name"),
     GVAR_FUNC(AUTO, -1, "args"),
+
+
     GVAR_FUNC(IDENTS_GVAR, 0, ""),
     GVAR_FUNC(IDENTS_BOUND_GVARS, 0, ""),
     GVAR_FUNC(ISB_GVAR, 1, "gvar"),

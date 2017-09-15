@@ -550,6 +550,8 @@ extern  void            IntrPow ( void );
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
+
+extern void             IntrIntObjExpr(Obj val);
 extern  void            IntrIntExpr (
             Char *              str );
 extern  void            IntrLongIntExpr (
