@@ -1,2 +1,0 @@
-# 2005/07/18 (FL)
-gap> TypeObj(IMPLICATIONS);;
