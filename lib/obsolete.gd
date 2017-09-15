@@ -82,7 +82,7 @@ BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current )
         Error("Each argument of DeclareObsoleteSynonym must be a string\n");
     fi;
     value := EvalString( name_current );
-    if IsFunction( value ) then
+    if IsFunction( value ) and not IsOperation( value ) then
         orig_value := value;
         value := function (arg)
             local res;
