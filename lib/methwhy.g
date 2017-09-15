@@ -271,31 +271,40 @@ end);
 ##  <Func Name="ShowImpliedFilters" Arg='filter'/>
 ##
 ##  <Description>
-##  Displays information about the filters that may be implied by 
-##  <A>filter</A>. They are given by their names. <C>ShowImpliedFilters</C> first
-##  displays the names of all filters that are unconditionally implied by
-##  <A>filter</A>. It then displays implications that require further filters to
-##  be present (indicating by <C>+</C> the required further filters).
-##  The function displays only first-level implications, implications that
-##  follow in turn are not displayed (though &GAP; will do these).
+##  Displays information about the filters that may be
+##  implied by <A>filter</A>. They are given by their names.
+##  <C>ShowImpliedFilters</C> first displays the names of all filters
+##  that are unconditionally implied by <A>filter</A>. It then displays
+##  implications that require further filters to be present (indicating
+##  by <C>+</C> the required further filters).
 ##  <Example><![CDATA[
-##  gap> ShowImpliedFilters(IsMatrix);
+##  gap> ShowImpliedFilters(IsNilpotentGroup);
 ##  Implies:
-##     IsNearAdditiveElementWithInverse
-##     IsAdditiveElement
-##     IsMultiplicativeElement
-##     IsGeneralizedRowVector
+##     IsNilpotentGroup
+##     HasIsNilpotentGroup
+##     IsSupersolvableGroup
+##     HasIsSupersolvableGroup
+##     IsSolvableGroup
+##     HasIsSolvableGroup
+##     IsNilpotentByFinite
+##     HasIsNilpotentByFinite
 ##  
 ##  
 ##  May imply with:
-##  +IsInternalRep
-##     IsOrdinaryMatrix
-##  
-##  +CategoryCollections(CategoryCollections(IsAdditivelyCommutativeElement))
-##     IsAdditivelyCommutativeElement
-##  
-##  +IsGF2MatrixRep
-##     IsOrdinaryMatrix
+##  +IsFinitelyGeneratedGroup
+##  +HasIsFinitelyGeneratedGroup
+##     IsFinitelyGeneratedGroup
+##     HasIsFinitelyGeneratedGroup
+##     IsNilpotentGroup
+##     HasIsNilpotentGroup
+##     IsSupersolvableGroup
+##     HasIsSupersolvableGroup
+##     IsSolvableGroup
+##     HasIsSolvableGroup
+##     IsPolycyclicGroup
+##     HasIsPolycyclicGroup
+##     IsNilpotentByFinite
+##     HasIsNilpotentByFinite
 ##  
 ##  ]]></Example>
 ##  </Description>
