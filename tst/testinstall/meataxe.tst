@@ -172,14 +172,12 @@ gap> res:=SMTX.BasesCSSmallDimUp(m[2]);
   [ <a GF2 vector of length 6>, <a GF2 vector of length 6>, 
       <a GF2 vector of length 6>, <a GF2 vector of length 6>, 
       <a GF2 vector of length 6>, <a GF2 vector of length 6> ] ]
-gap> Display(Concatenation(res));
+gap> Display(res[2]);
  1 1 1 1 1 1
+gap> Display(res[3]);
  1 . . 1 1 .
  . 1 1 . . 1
- 1 . . . 1 1
- . 1 . . 1 .
- . . 1 . 1 1
- . . . 1 . 1
+gap> Display(res[5]);
  1 . . . . .
  . 1 . . . .
  . . 1 . . .
