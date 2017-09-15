@@ -72,6 +72,16 @@ IS_READ_ONLY_GLOBAL := IsReadOnlyGVar;
 
 #############################################################################
 ##
+#F  IS_CONSTANT_GLOBAL ( <name> ) determine if a global variable is constant
+##
+##  IS_CONSTANT_GLOBAL ( <name> ) returns true if the global variable
+##  named by the string <name> is constant and false otherwise (the default)
+##
+
+IS_CONSTANT_GLOBAL := IsConstantGVar;
+
+#############################################################################
+##
 #F  MAKE_READ_ONLY_GLOBAL ( <name> ) . . . . make a global variable read-only
 ##
 ##  MAKE_READ_ONLY_GLOBAL ( <name> ) marks the global variable named
@@ -89,6 +99,16 @@ MAKE_READ_ONLY_GLOBAL := MakeReadOnlyGVar;
 ##
 
 MAKE_READ_WRITE_GLOBAL := MakeReadWriteGVar;
+
+#############################################################################
+##
+#F  MAKE_CONSTANT_GLOBAL ( <name> )
+##
+##  MAKE_CONSTANT_GLOBAL ( <name> ) marks the global variable named
+##  by the string <name> as constant
+##
+
+MAKE_CONSTANT_GLOBAL := MakeConstantGVar;
 
 #############################################################################
 ##

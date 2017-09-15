@@ -971,6 +971,7 @@ extern  void            CodePow ( void );
 **  'CodeIntExpr' is the action to code a literal integer expression.  <str>
 **  is the integer as a (null terminated) C character string.
 */
+extern void             CodeGAPSmallInt(Obj obj);
 extern  void            CodeIntExpr (
             Char *              str );
 extern  void            CodeLongIntExpr (

@@ -2053,6 +2053,31 @@ void            IntrLongFloatExpr (
     PushObj(ConvertFloatLiteralEager(string));
 }
 
+/****************************************************************************
+**
+*F   IntrIntObjExpr()  . . . . . . .  'interpret' a GAP small integer
+**
+**  'IntrIntObjExpr' is the action to 'interpret' a existing GAP small
+**  integer. This is used for implementing constants.
+*/
+void IntrIntObjExpr(Obj val)
+{
+    /* ignore or code                                                      */
+    if (STATE(IntrReturning) > 0) {
+        return;
+    }
+    if (STATE(IntrIgnoring) > 0) {
+        return;
+    }
+    if (STATE(IntrCoding) > 0) {
+        CodeGAPSmallInt(val);
+        return;
+    }
+
+
+    /* push the value                                                      */
+    PushObj(val);
+}
 
 /****************************************************************************
 **

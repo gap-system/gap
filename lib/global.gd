@@ -115,6 +115,21 @@ DeclareGlobalFunction("UnbindGlobal");
 ##
 DeclareGlobalFunction("IsReadOnlyGlobal");
 
+#############################################################################
+##
+#F  IsConstantGlobal( <name> )  . determine if a global variable is constant
+##
+##  <ManSection>
+##  <Func Name="IsConstantGlobal" Arg='name'/>
+##
+##  <Description>
+##  IsConstantGlobal ( <A>name</A> ) returns true if the global variable
+##  named by the string <A>name</A> is constant and false otherwise (the default).
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("IsConstantGlobal");
+
 
 #############################################################################
 ##
@@ -151,6 +166,27 @@ DeclareGlobalFunction("MakeReadOnlyGlobal");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("MakeReadWriteGlobal");
+
+
+#############################################################################
+##
+#F  MakeConstantGlobal( <name> )   . . . . .  make a global variable constant
+##
+##  <ManSection>
+##  <Func Name="MakeConstantGlobal" Arg='name'/>
+##
+##  <Description>
+##  MakeConstantGlobal ( <A>name</A> ) marks the global variable named
+##  by the string <A>name</A> as constant. A constant variable can never
+##  be changed or made read-write. Constant variables can only take an
+##  integer value, <C>true</C> or <C>false</C>. There is a limit on
+##  the size of allowed integers.
+##  <P/>
+##  A warning is given if <A>name</A> is already constant.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("MakeConstantGlobal");
 
 
 #############################################################################
