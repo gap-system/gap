@@ -370,7 +370,13 @@ end);
 BIND_GLOBAL("PageSource", function ( fun )
     local f, l;
     f := FILENAME_FUNC( fun );
-    if f = fail then
+    if f <> fail then
+        l := STARTLINE_FUNC( fun );
+        if l <> fail then
+            l := Maximum(l-5, 1);
+        fi;
+    fi;
+    if f = fail or l = fail then
         if IsKernelFunction(fun) then
           Print("Cannot locate source of kernel function ",
                  NameFunction(fun),".\n");
@@ -380,7 +386,6 @@ BIND_GLOBAL("PageSource", function ( fun )
     elif not (IsExistingFile(f) and IsReadableFile(f)) then
         Print( "Cannot access code from file \"",f,"\".\n");
     else
-        l := Maximum(STARTLINE_FUNC( fun )-5, 1);
         Print( "Showing source in ", f, " (from line ", l, ")\n" );
         # Exec( Concatenation( "view +", String( l ), " ", f ) );
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
