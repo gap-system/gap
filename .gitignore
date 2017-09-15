@@ -21,6 +21,8 @@
 
 /bin/gap*.sh
 /bin/*-*/
+# Compiling the `xgap` package creates the file `xgap.sh`
+/bin/xgap.sh
 
 # TeX outputs, can occur in doc/ and dev/
 *.aux
