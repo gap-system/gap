@@ -1347,7 +1347,7 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 /* We need these to redispatch when the user has supplied a replacement value. */
 
 static Obj AddRowVectorOp;   /* BH changed to static */
-static Obj MultRowVectorLeftOp;  /* BH changed to static */
+static Obj MultRowVectorLeftOp; /* BH changed to static */
 
 Obj FuncADD_ROW_VECTOR_5( Obj self,
                           Obj list1,
@@ -1588,41 +1588,36 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
 **
 */
 
-Obj FuncMULT_ROW_VECTOR_LEFT_RIGHT_2( Obj self,
-                           Obj list,
-                           Obj mult,
-                           UInt left )
+Obj FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(Obj self, Obj list, Obj mult, UInt left)
 {
   UInt i;
   Obj prd;
   UInt len = LEN_LIST(list);
   if (left != 0)
-    for (i = 1; i <= len; i++)
-      {
-        prd = ELMW_LIST(list,i);
-        prd = PROD(mult,prd);
-        ASS_LIST(list,i,prd);
-        CHANGED_BAG(list);
+      for (i = 1; i <= len; i++) {
+          prd = ELMW_LIST(list, i);
+          prd = PROD(mult, prd);
+          ASS_LIST(list, i, prd);
+          CHANGED_BAG(list);
       }
   else
-    for (i = 1; i <= len; i++)
-      {
-        prd = ELMW_LIST(list,i);
-        prd = PROD(prd,mult);
-        ASS_LIST(list,i,prd);
-        CHANGED_BAG(list);
+      for (i = 1; i <= len; i++) {
+          prd = ELMW_LIST(list, i);
+          prd = PROD(prd, mult);
+          ASS_LIST(list, i, prd);
+          CHANGED_BAG(list);
       }
   return 0;
 }
 
-Obj FuncMULT_ROW_VECTOR_LEFT_2( Obj self, Obj list, Obj mult )
+Obj FuncMULT_ROW_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
 {
-  return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 1);
+    return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 1);
 }
 
-Obj FuncMULT_ROW_VECTOR_RIGHT_2( Obj self, Obj list, Obj mult )
+Obj FuncMULT_ROW_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 {
-  return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 0);
+    return FuncMULT_ROW_VECTOR_LEFT_RIGHT_2(self, list, mult, 0);
 }
 
 /****************************************************************************
@@ -1696,7 +1691,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
           if (res == (Obj)0)
             {
               res = SHALLOW_COPY_OBJ(vecr);
-              CALL_2ARGS(MultRowVectorLeftOp,res,elt);
+              CALL_2ARGS(MultRowVectorLeftOp, res, elt);
             }
           else
             CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
@@ -2243,7 +2238,7 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(EQ_LIST_LIST_DEFAULT, 2, "listL, listR"),
     GVAR_FUNC(LT_LIST_LIST_DEFAULT, 2, "listL, listR"),
@@ -2307,7 +2302,7 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InitFopyGVar( "AddRowVector", &AddRowVectorOp );
-    InitFopyGVar( "MultRowVectorLeft", &MultRowVectorLeftOp );
+    InitFopyGVar("MultRowVectorLeft", &MultRowVectorLeftOp);
     InitFopyGVar( "ConvertToMatrixRep", &ConvertToMatrixRep );
 
 

@@ -533,7 +533,7 @@ DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
 ##
 #O  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mul> )
 ##
-##  <#GAPDoc Label="MultRowVector">
+##  <#GAPDoc Label="MultRowVector_Obsolete">
 ##  <ManSection>
 ##  <Oper Name="MultRowVector" Arg='list1, [poss1, list2, poss2, ]mul'/>
 ##  <Returns>nothing</Returns>

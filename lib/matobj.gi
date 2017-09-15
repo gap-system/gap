@@ -572,8 +572,8 @@ end );
 # Arithmetical operations:
 ############################################################################
 InstallMethod( MultRowVectorLeft,
-  "generic method for a mutable vector, and a multiplicative element",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement ],
+  "generic method for a mutable vector, and an object",
+  [ IsVectorObj and IsMutable, IsObject ],
   function( v, s )
     local i;
     for i in [1 .. Length(v)] do
@@ -582,8 +582,8 @@ InstallMethod( MultRowVectorLeft,
   end );
 
 InstallMethod( MultRowVectorRight,
-  "generic method for a mutable vector, and a multiplicative element",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement ],
+  "generic method for a mutable vector, and an object",
+  [ IsVectorObj and IsMutable, IsObject ],
   function( v, s )
     local i;
     for i in [1 .. Length(v)] do
@@ -592,9 +592,9 @@ InstallMethod( MultRowVectorRight,
   end );
 
 InstallMethod( MultRowVectorLeft,
-  "generic method for a mutable vector, a multiplicative element, an int, \
+  "generic method for a mutable vector, an object, an int, \
 and an int",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ],
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
   function( v, s, from, to )
     local i;
     for i in [from .. to] do
@@ -603,9 +603,9 @@ and an int",
   end );
 
 InstallMethod( MultRowVectorRight,
-  "generic method for a mutable vector, a multiplicative element, an int, \
+  "generic method for a mutable vector, an object, an int, \
 and an int",
-  [ IsVectorObj and IsMutable, IsMultiplicativeElement, IsInt, IsInt ],
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
   function( v, s, from, to )
     local i;
     for i in [from .. to] do

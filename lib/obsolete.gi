@@ -168,7 +168,7 @@ InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
             mat{[d..nrrows]}[pivl] := col;
         fi;
         if mat[d][d] < 0  then
-            MultRowVector(mat[d],-1);
+            MultVector(mat[d],-1);
         fi;
 
         # now perform row operations so that the entries in the
@@ -252,7 +252,7 @@ InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
                 mat{[d..nrrows]}[pivl] := col;
             fi;
             if mat[d][d] < 0  then
-                MultRowVector(mat[d],-1);
+                MultVector(mat[d],-1);
             fi;
 
             # now perform row operations so that the entries in the
@@ -879,23 +879,23 @@ end );
 
 #############################################################################
 ##
-#M  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mult> )
+#M  MultVector( <list1>, <poss1>, <list2>, <poss2>, <mult> )
 ##
-InstallOtherMethod( MultRowVector, "obsolete five argument method",
+InstallOtherMethod( MultVector, "obsolete five argument method",
     true,
     [ IsDenseList and IsMutable,
       IsDenseList,
       IsDenseList,
       IsDenseList,
-      IsMultiplicativeElement ],
+      IsObject ],
     0,
 function( l1, p1, l2, p2, m )
-    InfoObsolete(1, "This usage of `MultRowVector` is no longer",
+    InfoObsolete(1, "This usage of `MultVector` is no longer",
            "supported and will be removed eventually." );
     l1{p1} := m * l2{p2};
 end );
 
-InstallOtherMethod( MultRowVector, "error if immutable", true,
+InstallOtherMethod( MultVector, "error if immutable", true,
     [ IsList,IsObject,IsObject,IsObject,IsObject],0,
     L1_IMMUTABLE_ERROR);
 

@@ -265,41 +265,35 @@ end );
 #M  MultRowVectorLeft( <list>, <mul> )
 ##
 InstallMethod( MultRowVectorLeft,
-    "for a mutable dense list, and a multiplicative element",
-    true,
+    "for a mutable dense list, and an object",
     [ IsDenseList and IsMutable,
-      IsMultiplicativeElement ],
-    0,
+      IsObject ],
 function( l, m )
     local   i;
     for i  in [ 1 .. Length(l) ]  do
         l[i] := m * l[i];
     od;
 end );
-InstallOtherMethod( MultRowVectorLeft, "error if immutable", true,
-    [ IsList, IsMultiplicativeElement ],
-    0,
+InstallOtherMethod( MultRowVectorLeft, "error if immutable",
+    [ IsList, IsObject ],
     L1_IMMUTABLE_ERROR);
 
 InstallMethod( MultRowVectorLeft,
-    "kernel method for a mutable dense small list, and a \
-multiplicative element",
+    "kernel method for a mutable dense small list, and an object",
     IsCollsElms,
     [ IsSmallList and IsDenseList and IsMutable,
-      IsMultiplicativeElement ],
-    0,
+      IsObject ],
     MULT_ROW_VECTOR_LEFT_2
 );
-InstallMethod( MultRowVector,
+InstallMethod( MultRowVectorLeft,
     "kernel method for a mutable dense plain list of \
 cyclotomics, and a cyclotomic",
     IsCollsElms,
     [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
       IsCyclotomic ],
-    0,
     MULT_ROW_VECTOR_2_FAST
 );
-InstallMethod( MultRowVector,
+InstallMethod( MultRowVectorLeft,
     "kernel method for a mutable row vector of ffes in \
 plain list rep, and an ffe",
     IsCollsElms,

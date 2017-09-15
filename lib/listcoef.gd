@@ -108,17 +108,18 @@ DeclareOperation(
 ##  <Description>
 ##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
 ##  <P/>
-##  Note that <C>MultRowVectorLeft</C> is just a synonym for
-##  <C>MultRowVector</C>.
+##  Note that <C>MultRowVector</C> is just a synonym for
+##  <C>MultRowVectorLeft</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation(
-    "MultRowVector",
+    "MultRowVectorLeft",
         [ IsMutable and IsList,
-          IsMultiplicativeElement ] );
-DeclareSynonym( "MultRowVectorLeft", MultRowVector );
+          IsObject ] );
+# For VectorObj objects there also exists a MultRowVectorRight operation
+DeclareSynonym( "MultRowVector", MultRowVectorLeft );
 
 #############################################################################
 ##
