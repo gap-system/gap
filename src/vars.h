@@ -192,10 +192,6 @@ static void SET_CURR_LVARS(Obj lvars)
 **  variables.  The old local variables bag is saved in <old>.
 */
 
-extern Obj STEVES_TRACING;
-
-#include <stdio.h>
-
 static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #ifdef TRACEFRAMES
 , const char * file, int line
@@ -238,11 +234,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 **  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
 */
 
-static inline void SwitchToOldLVars( Obj old
-#ifdef TRACEFRAMES
-, const char *file, int line
-#endif
-)
+static inline void SwitchToOldLVars(Obj old, const char *file, int line)
 {
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
@@ -254,11 +246,7 @@ static inline void SwitchToOldLVars( Obj old
   SET_CURR_LVARS(old);
 }
 
-static inline void SwitchToOldLVarsAndFree( Obj old
-#ifdef TRACEFRAMES
-, const char *file, int line
-#endif
-)
+static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 {
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
@@ -277,17 +265,8 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 }
 
 
-#ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
-#else
-#define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
-#endif
-
-#ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
-#else
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old))
-#endif
 
 
 /****************************************************************************
