@@ -84,6 +84,15 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 
 /****************************************************************************
 **
+*F  STAT_LVARS . . . . . . . current statement in function of the given lvars
+**
+*/
+#define STAT_LVARS_PTR(lvars_ptr)   (lvars_ptr[1])
+#define STAT_LVARS(lvars_obj)       STAT_LVARS_PTR(ADDR_OBJ(lvars_obj))
+
+
+/****************************************************************************
+**
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
@@ -115,25 +124,23 @@ static inline Obj CURR_FUNC(void)
 */
 
 #ifdef TRACEFRAMES
-
 extern Obj STEVES_TRACING;
 extern Obj True;
 #include <stdio.h>
+#endif
 
 static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
+#ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
             (int)expr, (int)STATE(CurrLVars), file, line);
   }
-  (STATE(PtrLVars)[1] = (Obj)(Int)(expr));
+#endif
+  STAT_LVARS_PTR(STATE(PtrLVars)) = (Obj)expr;
 }
 
-#else
-#define SetBrkCallTo(expr, file, line)  (STATE(PtrLVars)[1] = (Obj)(Int)(expr))
-#endif
-
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(STATE(PtrLVars)[1]))
+#define BRK_CALL_TO()                   ((Expr)STAT_LVARS_PTR(STATE(PtrLVars)))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #else
 #define BRK_CALL_TO()                   /* do nothing */
