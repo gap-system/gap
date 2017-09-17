@@ -1389,7 +1389,7 @@ void PrintFunction (
         else {
             SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
                                  oldLVars );
-            PrintStat( FIRST_STAT_CURR_FUNC );
+            PrintStat( OFFSET_FIRST_STAT );
             SWITCH_TO_OLD_LVARS( oldLVars );
         }
         Pr("%4<\n",0L,0L);

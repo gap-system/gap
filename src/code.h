@@ -93,12 +93,16 @@ void SET_ENDLINE_BODY(Obj body, UInt val);
 
 /****************************************************************************
 **
-*V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
+*V  OFFSET_FIRST_STAT . . . . . . . . . . offset of first statement in a body
 **
-**  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
+**  'OFFSET_FIRST_STAT' is the offset of the first statement in a body.
 */
 
-#define FIRST_STAT_CURR_FUNC    (sizeof(StatHeader)+sizeof(BodyHeader))
+enum {
+    OFFSET_FIRST_STAT = sizeof(StatHeader)+sizeof(BodyHeader)
+};
+
+
 
 /****************************************************************************
 **

@@ -802,7 +802,7 @@ void CodeFuncExprBegin (
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
-    assert( stat1 == FIRST_STAT_CURR_FUNC );
+    assert( stat1 == OFFSET_FIRST_STAT );
 }
 
 void CodeFuncExprEnd (
@@ -847,15 +847,15 @@ void CodeFuncExprEnd (
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    *STAT_HEADER(FIRST_STAT_CURR_FUNC)
+    *STAT_HEADER(OFFSET_FIRST_STAT)
         = fillFilenameLine(
-            FILENAMEID_STAT(FIRST_STAT_CURR_FUNC),
-            LINE_STAT(FIRST_STAT_CURR_FUNC),
+            FILENAMEID_STAT(OFFSET_FIRST_STAT),
+            LINE_STAT(OFFSET_FIRST_STAT),
             nr*sizeof(Stat),
             T_SEQ_STAT+nr-1);
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
-        ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
+        ADDR_STAT(OFFSET_FIRST_STAT)[nr-i] = stat1;
     }
 
     /* make the body smaller                                               */
