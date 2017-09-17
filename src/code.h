@@ -125,6 +125,15 @@ enum STAT_TNUMS {
     T_PROCCALL_6ARGS,
     T_PROCCALL_XARGS,
 
+    // The statement types between FIRST_NON_INTERRUPT_STAT
+    // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
+    // the user interrupted, e.g. via ctrl-c; or memory run full).
+    // They are all statement types which either contain sub-statements
+    // (and hence are not easy to interpret in backtraces), or else are
+    // ephemeral (break, continue, return)
+    // TODO: what about T_EMPTY and T_ATOMIC ?
+    START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
+
     T_SEQ_STAT,
     T_SEQ_STAT2,
     T_SEQ_STAT3,
@@ -152,6 +161,8 @@ enum STAT_TNUMS {
     T_CONTINUE,
     T_RETURN_OBJ,
     T_RETURN_VOID,
+
+    END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
 
     T_ASS_LVAR,
     T_UNB_LVAR,

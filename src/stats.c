@@ -1667,30 +1667,11 @@ UInt            ExecReturnVoid (
     return STATUS_RETURN_VOID;
 }
 
-#ifdef HPCGAP
-
 UInt (* IntrExecStatFuncs[256]) ( Stat stat );
-
-#else
-
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
-
-#ifdef HAVE_SIG_ATOMIC_T
-sig_atomic_t volatile RealExecStatCopied = 0;
-#else
-int volatile RealExecStatCopied = 0;
-#endif
-
-#endif  // HPCGAP
-
 
 static inline Int BreakLoopPending(void)
 {
-#ifdef HPCGAP
      return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
-#else
-     return RealExecStatCopied;
-#endif
 }
 
 
@@ -1703,16 +1684,8 @@ static inline Int BreakLoopPending(void)
 
 static void UnInterruptExecStat(void)
 {
-#ifdef HPCGAP
     assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
     STATE(CurrExecStatFuncs) = ExecStatFuncs;
-#else
-    assert(RealExecStatCopied);
-    for (UInt i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
-        ExecStatFuncs[i] = RealExecStatFuncs[i];
-    }
-    RealExecStatCopied = 0;
-#endif
 }
 
 
@@ -1800,54 +1773,10 @@ UInt ExecIntrStat (
 */
 void InterruptExecStat ( void )
 {
-#ifdef HPCGAP
     /* remember the original entries from the table 'ExecStatFuncs'        */
     STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
-#else
-    UInt                i;              /* loop variable                   */
-    /*    assert(reason > 0) */
-
-    /* remember the original entries from the table 'ExecStatFuncs'        */
-    if ( ! RealExecStatCopied ) {
-        for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
-            RealExecStatFuncs[i] = ExecStatFuncs[i];
-        }
-        RealExecStatCopied = 1;
-    }
-
-    /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
-    for ( i = 0;
-          i < T_SEQ_STAT;
-          i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
-    }
-    for ( i = T_RETURN_VOID;
-          i < ARRAY_SIZE(ExecStatFuncs);
-          i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
-    }
-#endif
 }
 
-#ifdef HPCGAP
-void InitIntrExecStats ( void )
-{
-    UInt                i;              /* loop variable                   */
-    /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
-    for ( i = 0;
-          i < T_SEQ_STAT;
-          i++ ) {
-        IntrExecStatFuncs[i] = ExecIntrStat;
-    }
-    for (i = T_SEQ_STAT; i < T_RETURN_VOID; i++)
-      IntrExecStatFuncs[i] = ExecStatFuncs[i];
-    for ( i = T_RETURN_VOID;
-          i < ARRAY_SIZE(ExecStatFuncs);
-          i++ ) {
-        IntrExecStatFuncs[i] = ExecIntrStat;
-    }
-}
-#endif
 
 /****************************************************************************
 **
@@ -2378,9 +2307,10 @@ static Int InitKernel (
     InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
     InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
 
-#ifdef HPCGAP
-    InitIntrExecStats();
-#endif
+    for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ )
+        IntrExecStatFuncs[i] = ExecIntrStat;
+    for (i = FIRST_NON_INTERRUPT_STAT; i <= LAST_NON_INTERRUPT_STAT; i++)
+        IntrExecStatFuncs[i] = ExecStatFuncs[i];
 
     /* return success                                                      */
     return 0;
@@ -2388,8 +2318,8 @@ static Int InitKernel (
 
 void InitStatState(GAPState * state)
 {
-#ifdef HPCGAP
     state->CurrExecStatFuncs = ExecStatFuncs;
+#ifdef HPCGAP
     MEMBAR_FULL();
     if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
         MEMBAR_FULL();

@@ -93,9 +93,7 @@ typedef struct GAPState {
     /* From stats.c */
     Stat CurrStat;
     Obj  ReturnObjStat;
-#if defined(HPCGAP)
     UInt (**CurrExecStatFuncs)(Stat);
-#endif
 
     /* From code.c */
     Stat * PtrBody;
