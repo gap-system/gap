@@ -51,16 +51,9 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 static inline UInt EXEC_STAT(Stat stat)
 {
     UInt tnum = TNUM_STAT(stat);
-#ifdef HPCGAP
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
-#else
-    return ( (*ExecStatFuncs[ tnum ]) ( stat ) );
-#endif
 }
 
-
-
-#ifdef HPCGAP
 
 /****************************************************************************
 **
@@ -73,8 +66,6 @@ static inline UInt EXEC_STAT(Stat stat)
 */
 
 extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
-
-#endif
 
 
 /****************************************************************************
