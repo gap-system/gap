@@ -1684,22 +1684,36 @@ int volatile RealExecStatCopied = 0;
 #endif  // HPCGAP
 
 
+static inline Int BreakLoopPending(void)
+{
+#ifdef HPCGAP
+     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+#else
+     return RealExecStatCopied;
+#endif
+}
+
+
+
 /****************************************************************************
 **
 *F  UnInterruptExecStat()  . . . . .revert the Statement execution jump table 
 **                                   to normal 
 */
 
-#if !defined(HPCGAP)
-static void UnInterruptExecStat(void) {
-  UInt i;
-  assert(RealExecStatCopied);
-  for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
-    ExecStatFuncs[i] = RealExecStatFuncs[i];
-  }
-  RealExecStatCopied = 0;
-}
+static void UnInterruptExecStat(void)
+{
+#ifdef HPCGAP
+    assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
+    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+#else
+    assert(RealExecStatCopied);
+    for (UInt i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
+        ExecStatFuncs[i] = RealExecStatFuncs[i];
+    }
+    RealExecStatCopied = 0;
 #endif
+}
 
 
 /****************************************************************************
@@ -1716,22 +1730,13 @@ static void UnInterruptExecStat(void) {
 ** including possible garbage collection. In this case 1 is returned.
 */
 
-UInt TakeInterrupt( void ) {
-#ifdef HPCGAP
-  if (STATE(CurrExecStatFuncs) == IntrExecStatFuncs) {
-      assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
-      STATE(CurrExecStatFuncs) = ExecStatFuncs;
+UInt TakeInterrupt( void )
+{
+  if (HaveInterrupt()) {
+      UnInterruptExecStat();
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
       return 1;
   }
-#else
-  if (HaveInterrupt()) {
-    UnInterruptExecStat();
-    
-    ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    return 1;
-  }
-#endif
   return 0;
 }
 
@@ -1750,17 +1755,16 @@ UInt ExecIntrStat (
     Stat                stat )
 {
 
-#ifdef HPCGAP
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+    if ( BreakLoopPending() ) {
+        UnInterruptExecStat();
+    }
 
+#ifdef HPCGAP
     /* and now for something completely different                          */
     HandleInterrupts(1, stat);
 #else
-    /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( RealExecStatCopied ) {
-      UnInterruptExecStat();
-    }
+    // ensure global interrupt flag syLastIntr is cleared
     HaveInterrupt();
 
     /* and now for something completely different                          */
@@ -1850,24 +1854,13 @@ void InitIntrExecStats ( void )
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
 
-static inline Int BreakLoopPending( void ) {
-#ifdef HPCGAP
-     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
-#else
-     return RealExecStatCopied;
-#endif
-}
-
 void ClearError ( void )
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
     if ( BreakLoopPending() ) {
-#ifdef HPCGAP
-        STATE(CurrExecStatFuncs) = ExecStatFuncs;
-#else
         UnInterruptExecStat();
-#endif
+
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
