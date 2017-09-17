@@ -289,30 +289,7 @@ Expr            NewExpr (
     UInt                type,
     UInt                size )
 {
-    Expr                expr;           /* result                          */
-
-    /* this is where the new expression goes                               */
-    expr = STATE(OffsBody) + sizeof(StatHeader);
-
-    /* increase the offset                                                 */
-    STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
-
-    /* make certain that the current body bag is large enough              */
-    Obj body = BODY_FUNC(CURR_FUNC());
-    UInt bodySize = SIZE_BAG(body);
-    if (bodySize == 0)
-        bodySize = STATE(OffsBody);
-    while (bodySize < STATE(OffsBody))
-        bodySize *= 2;
-    ResizeBag(body, bodySize);
-    STATE(PtrBody) = (Stat*)PTR_BAG(body);
-
-    /* enter type and size                                                 */
-    *STAT_HEADER(expr) = fillFilenameLine(STATE(Input)->gapnameid,
-                                           STATE(Input)->number, size, type);
-    RegisterStatWithHook(expr);
-    /* return the new expression                                           */
-    return expr;
+    return NewStat(type, size);
 }
 
 
