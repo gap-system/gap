@@ -817,7 +817,7 @@ static void ExecFuncHelper(void)
 
     // execute the statement sequence
     REM_BRK_CURR_STAT();
-    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    EXEC_STAT( OFFSET_FIRST_STAT );
     RES_BRK_CURR_STAT();
 }
 

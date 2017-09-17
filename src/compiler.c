@@ -5565,7 +5565,7 @@ void CompFunc (
     }
 
     /* compile the body                                                    */
-    CompStat( FIRST_STAT_CURR_FUNC );
+    CompStat( OFFSET_FIRST_STAT );
 
     /* emit the code to switch back to the old frame and return            */
     Emit( "\n/* return; */\n" );
