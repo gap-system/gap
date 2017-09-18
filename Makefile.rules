@@ -911,10 +911,22 @@ teststandard: all
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
+# run testbugfix.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+testbugfix: all
+	$(MKDIR_P) dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+          ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testbugfix1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+          ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
+
 coverage:
 	gcov -o . $(SOURCES)
 
-.PHONY: testinstall testmanuals testobsoletes teststandard
+.PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
 .PHONY: coverage
 
