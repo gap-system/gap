@@ -687,11 +687,9 @@ check-manuals: all
 testinstall: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
@@ -903,11 +901,9 @@ testpackagesvars: all
 teststandard: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
