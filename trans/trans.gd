@@ -18,8 +18,6 @@ MakeReadWriteGlobal("TransitiveGroup");
 Unbind(TransitiveGroup);
 MakeReadWriteGlobal("TRANSProperties");
 Unbind(TRANSProperties);
-MakeReadWriteGlobal("TRANSSHAPEFREQS");
-Unbind(TRANSSHAPEFREQS);
 
 #############################################################################
 ##
@@ -74,7 +72,6 @@ DeclareGlobalFunction("NrTransitiveGroups");
 
 DeclareGlobalVariable( "TRANSCOMBCACHE", "combinations cache" );
 DeclareGlobalVariable( "TRANSARRCACHE", "arrangements cache" );
-DeclareGlobalVariable( "TRANSSHAPEFREQS", "frequencies of shapes" );
 
 
 #############################################################################

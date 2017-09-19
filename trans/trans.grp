@@ -215,7 +215,6 @@ TRANSNONDISCRIM := [[],[],[],[],[],[],[],[],[],[],[],[[273,292]],[],
 TRANSSELECT :=[];
 TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
-InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
 if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
@@ -283,7 +282,6 @@ local Tbak,Fbak,flg,sel,i,fname;
     MakeImmutable(TRANSPROPERTIES[deg][i]);
   od;
   TRANSPARTNUM[deg]:=NrPartitions(deg);
-  TRANSSHAPEFREQS[deg]:=[];
 end);
 
 InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)

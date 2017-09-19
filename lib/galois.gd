@@ -95,7 +95,6 @@ DeclareGlobalFunction("GaloisSetResolvent");
 DeclareGlobalFunction("GaloisDiffResolvent");
 DeclareGlobalFunction("ParityPol");
 
-
 #############################################################################
 ##
 #E
