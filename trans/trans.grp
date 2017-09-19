@@ -69,6 +69,9 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 [(1,6,7),(2,6,7),(3,6,7),(4,6,7),(5,6,7),"A(7)"],
 [(1,7),(1,2),(2,3),(3,4),(4,5),(5,6),"S(7)"]]];
 
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSGRP, TRANSREGION);
+fi;
 
 #############################################################################
 ##
@@ -216,6 +219,16 @@ TRANSSELECT :=[];
 TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
 
+if IsBound(HPCGAP) then
+  atomic TRANSREGION do
+    MigrateObj(TRANSPROPERTIES, TRANSREGION);
+    MigrateObj(TRANSLENGTHS, TRANSREGION);
+    MigrateObj(TRANSNONDISCRIM, TRANSREGION);
+    MigrateObj(TRANSSIZES, TRANSREGION);
+    MigrateObj(TRANSPARTNUM, TRANSREGION);
+  od;
+fi;
+
 if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
   CallFuncList(function()
@@ -242,6 +255,12 @@ local Tbak,Fbak,flg,sel,i,fname;
     if deg>15 and not IsPrime(deg) then
       if not IsBound(TRANSGRP[deg]) then
 	ReadGapRoot( Concatenation( "trans/", fname, ".grp" ) );
+        if IsBound(HPCGAP) then
+          MigrateObj(TRANSGRP[deg], TRANSREGION);
+          MigrateObj(TRANSPROPERTIES[deg], TRANSREGION);
+          MigrateObj(TRANSSIZES[deg], TRANSREGION);
+          MigrateObj(TRANSSELECT[deg], TRANSREGION);
+        fi;
         if nr=0 then 
 	  return;
 	fi;
@@ -253,6 +272,9 @@ local Tbak,Fbak,flg,sel,i,fname;
 	  flg:=TRANSSELECT[deg]{[1..Length(TRANSSELECT[deg])-150]};
 	  sel:=Union(flg,sel);
 	  TRANSSELECT[deg]:=Difference(TRANSSELECT[deg],flg);
+          if IsBound(HPCGAP) then
+            MigrateObj(TRANSSELECT[deg], TRANSREGION);
+          fi;
 	fi;
         for i in sel do
 	  Unbind(TRANSGRP[deg][i]);
@@ -265,6 +287,10 @@ local Tbak,Fbak,flg,sel,i,fname;
     IsString(fname);
 
     ReadGapRoot( Concatenation( "trans/", fname, ".grp" ));
+    if IsBound(HPCGAP) then
+      MigrateObj(TRANSGRP[deg], TRANSREGION);
+      MigrateObj(TRANSPROPERTIES[deg], TRANSREGION);
+    fi;
 
     if deg>15 and not IsPrime(deg) then
       sel:=Difference(Filtered([1..Length(TRANSGRP[deg])],
@@ -274,6 +300,7 @@ local Tbak,Fbak,flg,sel,i,fname;
       TRANSSIZES[deg]:=List(TRANSPROPERTIES[deg],i->i[1]);
       sel:=[1..TRANSLENGTHS[deg]];
     fi;
+    MakeImmutable(TRANSSIZES[deg]);
     # make blists those which are
     ForAll(TRANSPROPERTIES[deg]{sel},i->IsBound(i[5]) and IsBlist(i[5]));
   fi;
@@ -349,14 +376,11 @@ end);
 
 InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
-  if not(deg in [1..TRANSDEGREES]) then
-    Error("degree must be in [1..",TRANSDEGREES,"]");
-  fi;
   if deg=1 then
     return fail;
   fi;
-  if not IsBound(TRANSLENGTHS[deg]) then
-    TransGrpLoad(deg,num);
+  if not TransitiveGroupsAvailable(deg) then
+    Error("Transitive Groups of degree ",deg," are not available");
   fi;
   if not (num in [1..TRANSLENGTHS[deg]]) then
     Error("maximal number of groups of degree ",deg," is ",
@@ -402,6 +426,10 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
 end );
 
 InstallFlushableValue(TRANSCOMBCACHE,[[0],[0],[0]]);
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSCOMBCACHE, TRANSREGION);
+fi;
+
 BindGlobal("TransCombinat",function(m,n)
 local i,l;
   for i in [1..3] do
@@ -420,6 +448,10 @@ local i,l;
 end);
 
 InstallFlushableValue(TRANSARRCACHE,[[0],[0],[0]]);
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSARRCACHE, TRANSREGION);
+fi;
+
 BindGlobal("TransArrange",function(m,n)
 local i,l;
   for i in [1..3] do
