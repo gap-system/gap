@@ -495,16 +495,21 @@ end);
 ##
 #F  ShapeFrequencies . . . . . . . . . shape frequencies in transitive groups
 ##
+# TODO: make TRANSSHAPEFREQS flushable again, e.g.
+# using MemoizePosIntFunction or some other similar method
+TRANSSHAPEFREQS := MakeWriteOnceAtomic([]);
+
+
 BindGlobal("ShapeFrequencies",function(n,i)
-local g,fu,j,k,ps,pps,sh;
+local list,g,fu,j,k,ps,pps,sh;
   if not TransitiveGroupsAvailable(n) then
     Error("Transitive groups of degree ",n," are not available");
   fi;
- atomic TRANSREGION do
   if not IsBound(TRANSSHAPEFREQS[n]) then
-    TRANSSHAPEFREQS[n]:=[];
+    TRANSSHAPEFREQS[n]:=MakeWriteOnceAtomic([]);
   fi;
-  if not IsBound(TRANSSHAPEFREQS[n][i]) then
+  list:=TRANSSHAPEFREQS[n];
+  if not IsBound(list[i]) then
     sh:=Partitions(n);
     g:=TransitiveGroup(n,i);
     fu:=List([1..Length(sh)-1],i->0); 
@@ -530,10 +535,9 @@ local g,fu,j,k,ps,pps,sh;
       fi;
     od;
     fu:=fu/Size(g);
-    TRANSSHAPEFREQS[n][i]:=fu;
+    list[i]:=fu;
   fi;
-  return TRANSSHAPEFREQS[n][i];
- od;
+  return list[i];
 end);
 
 #############################################################################

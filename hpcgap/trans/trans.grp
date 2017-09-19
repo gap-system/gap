@@ -217,8 +217,6 @@ TRANSNONDISCRIM := LockAndMigrateObj([[],[],[],[],[],[],[],[],[],[],[],[[273,292
 TRANSSELECT := LockAndMigrateObj([], TRANSREGION);
 TRANSSIZES  := LockAndMigrateObj([], TRANSREGION);
 TRANSPARTNUM:= LockAndMigrateObj([], TRANSREGION);
-InstallFlushableValue(TRANSSHAPEFREQS, []);
-LockAndMigrateObj(TRANSSHAPEFREQS, TRANSREGION);
 
 atomic TRANSREGION do
 if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
@@ -299,7 +297,6 @@ atomic TRANSREGION do
     MakeImmutable(TRANSPROPERTIES[deg][i]);
   od;
   TRANSPARTNUM[deg]:=NrPartitions(deg);
-  TRANSSHAPEFREQS[deg]:=[];
 od;
 end);
 
