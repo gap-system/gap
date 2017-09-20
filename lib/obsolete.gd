@@ -176,9 +176,9 @@ DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
 
 #############################################################################
 ##
-#V  KERNEL_VERSION   - not used in any redistributed package (01/2016)
-#V  VERSION          - not used in any redistributed package (01/2016)
-#V  GAP_ARCHITECTURE - still used by gbnp, singular (01/2016)
+#V  KERNEL_VERSION   - not used in any redistributed package
+#V  VERSION          - still used by SymbCompCC, scscp, singular (09/2017)
+#V  GAP_ARCHITECTURE - still used by gbnp, singular (09/2017)
 #V  GAP_ROOT_PATHS   - still used by finings, forms, xgap (01/2016)
 #V  DEBUG_LOADING    - still used by the GAP kernel itself (01/2016)
 #V  BANNER           - still used by cubefree, loops, quagroup (01/2016)
@@ -196,8 +196,14 @@ BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
 BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
 BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
 BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
-BindGlobal( "PACKAGES_VERSIONS", rec() );
 
+#############################################################################
+##
+#V  PACKAGES_VERSIONS - not used in any redistributed package
+#V  Revision          - still used by autpgrp, HAPcryst, format, grpconst,
+##                      polymaking, rds, singular, tomlib (09/2017)
+BindGlobal( "PACKAGES_VERSIONS", rec() );
+BindGlobal( "Revision", rec() );
 
 #############################################################################
 ##
