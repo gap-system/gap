@@ -60,18 +60,18 @@ end );
 ##  also used to remember which data files were read
 ##  
 BindGlobal("CONWAYPOLYNOMIALSINFO",  rec(
- RP := "original list by Richard Parker (from 1980's)\n",
- GAP := "computed with the GAP function by Thomas Breuer, just checks\n\
-conditions starting from 'smallest' polynomial\n",
- FL := "computed by a parallelized program by Frank Lübeck, computes\n\
-minimal polynomial of all compatible elements (~2001)\n",
- KM := "computed by Kate Minola, a parallelized program for p=2, considering\n\
-minimal polynomials of all compatible elements (~2004-2005)\n",
- RPn := "computed by Richard Parker (2004)\n",
- 3\,21 := "for p=3, n=21 there appeared a polynomial in some lists/systems\n\
-which was not the Conway polynomial; the current one in GAP is correct\n",
- JB := "computed by John Bray using minimal polynomials of consistent \
-elements, respectively a similar algorithm as in GAP (~2005)\n",
+ RP := MakeImmutable("original list by Richard Parker (from 1980's)\n"),
+ GAP := MakeImmutable("computed with the GAP function by Thomas Breuer, just checks\n\
+conditions starting from 'smallest' polynomial\n"),
+ FL := MakeImmutable("computed by a parallelized program by Frank Lübeck, computes\n\
+minimal polynomial of all compatible elements (~2001)\n"),
+ KM := MakeImmutable("computed by Kate Minola, a parallelized program for p=2, considering\n\
+minimal polynomials of all compatible elements (~2004-2005)\n"),
+ RPn := MakeImmutable("computed by Richard Parker (2004)\n"),
+ 3\,21 := MakeImmutable("for p=3, n=21 there appeared a polynomial in some lists/systems\n\
+which was not the Conway polynomial; the current one in GAP is correct\n"),
+ JB := MakeImmutable("computed by John Bray using minimal polynomials of consistent \
+elements, respectively a similar algorithm as in GAP (~2005)\n"),
  conwdat1 := false,
  conwdat2 := false,
  conwdat3 := false,
@@ -434,8 +434,8 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         found:= ShallowCopy( cpol );
         Unbind( found[ n+1 ] );
         ShrinkRowVector( found );
-        cachelist[n]:= [List([0..Length(found)-1], k-> p^k) * found, 
-                              "GAP"];
+        cachelist[n]:= MakeImmutable([List([0..Length(found)-1], k-> p^k) * found,
+                              "GAP"]);
       end;
       StoreConwayPol(cpol, cachelist);
     else
@@ -474,7 +474,7 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
                   CONWAYPOLDATA[p][n][2]));
       else
           Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.cache.(
-                  String(p))[n][2]);
+                 String(p))[n][2]);
       fi;
       return res;
     else
