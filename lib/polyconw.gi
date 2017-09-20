@@ -217,6 +217,16 @@ end;
 ##  
 ####################   end of list of new polynomials   ####################
 
+BIND_GLOBAL("LOAD_CONWAY_DATA", function(p)
+    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
+      ReadLib("conwdat1.g");
+    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
+      ReadLib("conwdat2.g");
+    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
+      ReadLib("conwdat3.g");
+    fi;
+end);
+
 ############################################################################
 ##
 #F  ConwayPol( <p>, <n> ) . . . . . <n>-th Conway polynomial in charact. <p>
@@ -247,18 +257,12 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           StoreConwayPol;  # maybe move out?
 
     # Check the arguments.
-    if not ( IsPrimeInt( p ) and IsInt( n ) and n > 0 ) then
+    if not ( IsPrimeInt( p ) and IsPosInt( n ) ) then
       Error( "<p> must be a prime, <n> a positive integer" );
     fi;
 
     # read data files if necessary
-    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-      ReadLib("conwdat1.g");
-    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-      ReadLib("conwdat2.g");
-    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-      ReadLib("conwdat3.g");
-    fi;
+    LOAD_CONWAY_DATA(p);
 
     if p < 110000 then
       if not IsBound( CONWAYPOLDATA[p] ) then
@@ -471,54 +475,54 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
 end );
 
 InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
-  if IsPrimeInt( p ) and IsPosInt( n ) then
-    # read data files if necessary
-    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-      ReadLib("conwdat1.g");
-    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-      ReadLib("conwdat2.g");
-    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-      ReadLib("conwdat3.g");
-    fi;
-    if p < 110000 and IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
-      return true;
+  local cacheentry;
+
+  if not ( IsPrimeInt( p ) and IsPosInt( n ) ) then
+    return false;
   fi;
-  if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) 
-     and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))[n]) then
-      return true;
+
+  # read data files if necessary
+  LOAD_CONWAY_DATA(p);
+  if p < 110000 and IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
+    return true;
   fi;
-    # this is not very precise, hopefully good enough for the moment
-    if p < 41 then 
-      if n < 100 and IsPrimeInt(n) then
-        return true;
+  if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) then
+      cacheentry := CONWAYPOLYNOMIALSINFO.cache.(String(p));
+      if IsBound(cacheentry[n]) then
+          return true;
       fi;
-    elif p < 100 then
-      if n < 40 and IsPrimeInt(n) then
-        return true;
-      fi;
-    elif p < 1000 then
-      if n < 14 and IsPrimeInt(n) then
-        return true;
-      fi;
-    elif p < 2^48 then
-      if n in [1,2,3,5,7] then
-        return true;
-      fi;
-    elif p < 2^60 then
-        if n in [1,2,3,5] then
-            return true;
-        fi;    
-    elif p < 2^120 then
-        if n in [1,2,3] then
-            return true;
-        fi;    
-    elif p < 2^200 then
-        if n in [1,2] then
-            return true;
-        fi;    
-    elif n = 1 then
-        return false;
+  fi;
+  # this is not very precise, hopefully good enough for the moment
+  if p < 41 then
+    if n < 100 and IsPrimeInt(n) then
+      return true;
     fi;
+  elif p < 100 then
+    if n < 40 and IsPrimeInt(n) then
+      return true;
+    fi;
+  elif p < 1000 then
+    if n < 14 and IsPrimeInt(n) then
+      return true;
+    fi;
+  elif p < 2^48 then
+    if n in [1,2,3,5,7] then
+      return true;
+    fi;
+  elif p < 2^60 then
+    if n in [1,2,3,5] then
+      return true;
+    fi;
+  elif p < 2^120 then
+    if n in [1,2,3] then
+      return true;
+    fi;
+  elif p < 2^200 then
+    if n in [1,2] then
+      return true;
+    fi;
+  elif n = 1 then
+    return false;
   fi;
   return false;
 end );
@@ -546,7 +550,7 @@ InstallGlobalFunction( RandomPrimitivePolynomial, function(F, n, varnum...)
   one := One(FF);
   zero := Zero(FF);
   fac:=List(Set(Factors(Size(FF)-1)), p-> (Size(FF)-1)/p);
-  repeat 
+  repeat
     a := Random(FF);
   until a <> zero and ForAll(fac, d-> a^d <> one);
   return MinimalPolynomial(F, a, i);
