@@ -86,8 +86,8 @@ for GAP 4.X.Y. The `<timestamp>` is updated whenever there is a change
 to the GAP system or any package.
 
 If you use Unix (including OS X), you can use the `.tar.gz`, `.tar.bz2` or
-`.zip` archives containing the GAP source distribution. Such archive will
-unpack to the directory named `gap4rX`.
+`.zip` archives containing the GAP source distribution. Such archives will
+unpack into a directory named `gap4rX`.
 
 If you use Windows, then use the `.exe` installer which contains binaries
 for GAP and some packages and provides the standard installation procedure.
@@ -144,11 +144,6 @@ Both will produce a lot of text output. You should end up with a shell
 script `bin/gap.sh` which you can use to start GAP. If you want, you can
 copy this script later to a directory that is listed in your search path.
 
-(Note: In fact, what is produced is a script called `bin/gap-<configname>.sh`,
-where `<configname>` is a name which you specify or a default string, and
-`bin/gap.sh` is a link to that script. See the section "Configure options"
-below.
-
 OS X users please note that this script must be started from within the
 Terminal Application. It is not possible to start GAP by clicking this
 script.
@@ -175,25 +170,27 @@ GAP 4 uses the external library GMP (see <http://www.gmplib.org>) for large
 integer arithmetic, replacing the built-in code used in previous versions
 and achieving a significant speed-up in related computations. There is a
 version of GMP included with the GAP archive you downloaded and this will
-be used unless otherwise requested. You can configure GMP use as follows:
+be used if GAP does not find a version of GMP already installed on your
+system. You can configure which GMP GAP uses as follows:
 
-./configure --with-gmp=yes|system|"path"
+./configure --with-gmp=builtin|PREFIX
 
-If the argument you supply is `yes`, then the version of GMP bundled with
-this GAP will be used. This is the default. If the argument is `system` you
-are telling GAP that the GMP library is reachable with the standard search
-path, under `/usr` or `/usr/local`.
+If this option is *not* given, GAP will try to find a suitable version of GMP
+can be found using the specified CPPFLAGS, CFLAGS and LDFLAGS. If not,
+it will fallback to compiling its own version of GMP.
 
-You may instead give the complete path to a directory which contains the
-library.
- 
-Note that --with-gmp is equivalent to --with-gmp=yes, and that the option
-build GAP without GMP has been removed.
+You can force GAP to build its own copy of GMP by passing `--with-gmp=builtin`.
+Finally, you pass a prefix path where GAP should search for a copy of GMP;
+i.e., `--with-gmp=PREFIX` instructs GAP to search for the header file `gmp.h`
+in `PREFIX/includes`, and the library itself in `PREFIX/lib`.
+
+For historical reasons, you may also pass `--with-gmp=system`, which is
+simply ignored by GAP (i.e., the default behavior described above is used).
 
 Readline
 --------
 
-GAP optionally also uses the external library Readline (see
+GAP optionally also uses the external library GNU Readline (see
 <http://www.gnu.org/software/readline>) for better command line
 editing. GAP will use this library by default if it is available on
 your system. You can configure Readline use as follows:
@@ -233,38 +230,8 @@ use. Note that building in 64-bit mode on a 32-bit architecture is not
 supported.
 
 It is possible (on a 64-bit machine) to have builds in both 32- and 64-bit
-modes "side by side". To do this you could unpack your GAP archive and then
-do:
-
-    ./configure ABI=64
-    make
-    ./configure ABI=32
-    make
-
-This will create both scripts `bin/gap-default32.sh` and `bin/gap-default64.sh`
-(or alternative names if you use the `CONFIGNAME` variable as below) and
-these can be called directly to choose the version you want. The link
-`bin/gap.sh` will point to the most recent of these.
-
-The configure step creates the `Makefile`, needed for the make command. You
-should not need to provide any arguments to `make` in order to build GAP.
-
-Configuration name
-------------------
-
-In order to facilitate having several builds of GAP side-by-side, perhaps
-in the case that you have both 32 and 64-bit builds or for other different
-combinations of configuration options, the configure process allows you to
-choose a configuration name as follows:
-
-    ./configure CONFIGNAME="name"
-
-where `name` is a string of your choice. Examples might include `withGMP32`,
-`withGMP64`, etc., but any name which is meaningful to you is fine. If you do
-not specify `CONFIGNAME`, then it defaults to `defaultXX` where `XX` is `32`
-or `64`, according to the (specified or detected) value of `ABI`.
-
-The configure options just described may be combined as you like or omitted.
+modes using "out of tree builds". For details, please refer to the file
+`README.buildsys.md`.
 
 
 6 Testing the installation
@@ -327,18 +294,19 @@ under a minute on an up-to-date desktop computer. You will get a large
 number of lines with output about the progress of the tests, for example:
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
+    You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.
 
-    test file         time(msec)
-    -------------------------------------------
-    testing: ..../gap4rX/tst/testinstall/flush.tst
-    flush.tst                 57
-    testing: ..../gap4rX/tst/testinstall/varargs.tst
-    varargs.tst               51
+    Architecture: SOMETHING-SOMETHING-gcc-default64
+
+    testing: ..../gap4rX/tst/testinstall/alghom.tst
+         105 msec for alghom.tst
+    testing: ..../gap4rX/tst/testinstall/algmat.tst
+        1216 msec for algmat.tst
     [ further lines deleted ]
-    testing: ..../gap4rX/tst/testinstall/grppcnrm.tst
-    grppcnrm.tst           14071
-    -------------------------------------------
-    total                  44347
+    testing: ..../gap4rX/tst/testinstall/zmodnze.tst
+          90 msec for zmodnze.tst
+    -----------------------------------
+    total     52070 msec
 
     #I  No errors detected while testing
 
@@ -430,8 +398,7 @@ the GAP Reference manual).
 
 There also is (if installed) an HTML version of some books that can be
 viewed with an HTML browser, see Section "Changing the Help Viewer" of the
-GAP Reference manual. Some of these use unicode characters for mathematical
-formulae. (Firefox, Konqueror and Safari all support unicode characters.)
+GAP Reference manual.
 
 The manual is also available in pdf format. In the full distribution these
 files are included in the directory `gap4rX/doc` in the subdirectories
@@ -580,7 +547,7 @@ variables. However such settings may conflict with the automatic
 configuration process. If configure produces strange error messages about
 not being able to run the compiler, check whether environment variables
 that might affect the compilation (in particular `CC`, `LD`, `CFLAGS`,
-`LDFLAGS` and `C_INCLUDE_PATH`) are set and reset them using `unsetenv`.
+`LDFLAGS` and `CPPFLAGS`) are set and reset them using `unsetenv`.
 
 
 12 Optimization and Compiler Options
@@ -592,19 +559,14 @@ possible optimisation level, but you might need to tell make about it.
 
 If you want to compile GAP with further compiler options (for example
 specific processor optimisations) you will have to assign them to the
-variable COPTS as in the following example when calling make:
-
-    make COPTS=-option
+variables CFLAGS, CPPFLAGS and LDFLAGS, then re-run configure and make.
 
 If there are several compiler options or if they contain spaces you might
 have to enclose them by quotes depending on the shell you are
 using.
 
-The configure process also introduces some default compiler options. (See
-the Makefile in the `bin/<architecture>` directory for details.) You can
-eliminate these by assigning the variable `CFLAGS` (which contains the
-default options and `COPTS`) to the desired list of compiler options in the
-same way as you would assign `COPTS`.
+The configure process also introduces some default compiler options. You can
+eliminate these by assigning the replacement options to the variable `CFLAGS`.
 
 The recommended C compiler for GAP is the GNU C compiler gcc. The clang
 compiler appears to compile GAP correctly but, just as for gcc, some
@@ -612,12 +574,9 @@ versions have problems with the GMP library. If you cannot build GAP -
 with or without GMP - using a particular compiler, you may wish to try
 another compiler or different version of the same compiler.
 
-If you do wish to use another compiler, you should run the command `make
-clean` in the GAP root directory, set the environment variable `CC` to
+If you do wish to use another compiler, you should run the command
+`make clean` in the GAP root directory, set the environment variable `CC` to
 the name of your preferred compiler and then rerun configure and make.
-You may have to experiment to determine the best values for `CFLAGS`
-and/or `COPTS` as described above. Please let us (<support@gap-system.org>)
-know the results of your experiments.
 
 We also recommend that you install a C++ compiler before compiling GAP;
 while GAP itself does not need it, there are GAP packages which do
@@ -625,7 +584,7 @@ require a C++ compiler.
 
 
 13 GAP for OS X
-===================
+===============
 
 Currently we provide no precompiler binary distribution for OS X. However,
 since OS X is an operating system in the Unix family, you can follow the
