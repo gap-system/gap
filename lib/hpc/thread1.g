@@ -178,7 +178,6 @@ BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
   Unbind(record.(field));
 end);
 
-BIND_GLOBAL("ATOMIC_RECORD_REPLACEMENT", RETURN_NOTHING);
 # From calls.c
 
 BIND_GLOBAL("LOCKS_FUNC", RETURN_FAIL);

@@ -80,7 +80,7 @@ elements, respectively a similar algorithm as in GAP (~2005)\n",
             
 ) ) );
 
-ATOMIC_RECORD_REPLACEMENT(CONWAYPOLYNOMIALSINFO.cache, false);
+MakeWriteOnceAtomic(CONWAYPOLYNOMIALSINFO.cache);
 
 ############################################################################
 ##
