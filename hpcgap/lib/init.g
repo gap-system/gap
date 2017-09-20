@@ -204,22 +204,37 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
-FILTER_REGION	 	 := NEW_REGION("filter region", -1);
-
+if IsBound(HPCGAP) then
+  FILTER_REGION := NEW_REGION("filter region", -1);
+else
+  BIND_GLOBAL("FILTER_REGION", "filter region");
+fi;
 
 #############################################################################
 ##
 #V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
-
-BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
-BIND_GLOBAL("BindThreadLocal", function(name, default)
-  MakeThreadLocal(name);
-  SetTLDefault(ThreadVar, name, default);
-end);
-BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
-  MakeThreadLocal(name);
-  SetTLConstructor(ThreadVar, name, default);
-end);
+if IsBound(HPCGAP) then
+  BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
+  BIND_GLOBAL("BindThreadLocal", function(name, default)
+    MakeThreadLocal(name);
+    SetTLDefault(ThreadVar, name, default);
+  end);
+  BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
+    MakeThreadLocal(name);
+    SetTLConstructor(ThreadVar, name, default);
+  end);
+else
+  BIND_GLOBAL("ThreadVar", rec());
+  BIND_GLOBAL("BindThreadLocal", ASS_GVAR);
+  BIND_GLOBAL("BindThreadLocalConstructor", function(name, fun)
+    local ret;
+    # Catch if the function returns a value
+    ret := CALL_WITH_CATCH(fun,[]);
+    if LEN_LIST(ret) > 1 then
+      ASS_GVAR(name, ret[2]);
+    fi;
+  end);
+fi;
 
 
 #############################################################################
@@ -239,9 +254,13 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
-    BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
-    BindThreadLocal( "SilentErrors", false );
-    BindThreadLocal( "LastErrorMessage", "" );
+    if IsBound(HPCGAP) then
+      BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+      BindThreadLocal( "SilentErrors", false );
+      BindThreadLocal( "LastErrorMessage", "" );
+    else
+      ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    fi;
 end);
 
 ReadOrComplete := function(name)
@@ -433,7 +452,9 @@ end);
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
-ENABLE_AUTO_RETYPING();
+if IsBound(HPCGAP) then
+  ENABLE_AUTO_RETYPING();
+fi;
 
 # try to find terminal encoding
 CallAndInstallPostRestore( function()
@@ -494,7 +515,7 @@ end );
 
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        libs, str;
+        libs, str, gap;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -528,12 +549,19 @@ BindGlobal( "ShowKernelInformation", function()
   else
     btop := "*********"; vert := "*"; bbot := btop;
   fi;
-  Print( " ",btop,"   HPC-GAP ", GAPInfo.BuildVersion,
+  if IsBound(HPCGAP) then
+    gap := "HPC-GAP";
+  else
+    gap := "GAP";
+  fi;
+  Print( " ",btop,"   ",gap," ", GAPInfo.BuildVersion,
          " of ", sysdate, "\n",
          " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
-         " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
-     "             Maximum concurrent threads: ",
-     GAPInfo.KernelInfo.NUM_CPUS, "\n");
+         " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+  if IsBound(HPCGAP) then
+    Print( "             Maximum concurrent threads: ",
+       GAPInfo.KernelInfo.NUM_CPUS, "\n");
+  fi;
   # For each library, print the name.
   libs:= [];
   if "gmpints" in LoadedModules() then
@@ -548,16 +576,21 @@ BindGlobal( "ShowKernelInformation", function()
   if IsBound( GAPInfo.UseReadline ) then
     Add( libs, "readline" );
   fi;
+  if GAPInfo.KernelInfo.KernelDebug then
+    Add( libs, "KernelDebug" );
+  fi;
   if libs <> [] then
-    print_info( " Libs used:  ", libs, "\n" );
+    print_info( " Configuration:  ", libs, "\n" );
   fi;
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
   fi;
-  Print("\n",
-        "#W <<< This is an alpha release.      >>>\n",
-        "#W <<< Do not use for important work. >>>\n",
-    "\n");
+  if IsBound(HPCGAP) then
+    Print("\n",
+          "#W <<< This is an alpha release.      >>>\n",
+          "#W <<< Do not use for important work. >>>\n",
+      "\n");
+  fi;
 end );
 
 # delay printing the banner, if -L option was passed (LB)
@@ -650,16 +683,24 @@ ReadOrComplete( "lib/read4.g" );
 ReadLib( "helpview.gi"  );
 
 #T  1996/09/01 M.Schönert this helps performance
-ORIGINAL_IMPS := IMPLICATIONS;
-atomic ORIGINAL_IMPS do
-    IMPLICATIONS :=
-      IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
-    MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
-    TypeObj(IMPLICATIONS[1]);
-od;
+if IsBound(HPCGAP) then
+    ORIGINAL_IMPS := IMPLICATIONS;
+    atomic ORIGINAL_IMPS do
+        IMPLICATIONS :=
+          IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+        MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
+    od;
+else
+    IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+fi;
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
+
+# allow type determination of IMPLICATIONS without using it
+atomic IMPLICATIONS do
+    TypeObj(IMPLICATIONS[1]);
+od;
 
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
@@ -1052,15 +1093,8 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
-HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Shared Memory Extensions and MPI", "doc/hpc");
-
-
-#############################################################################
-##
-##  MPIGAP loading 
-##
-if IsBoundGlobal("MPI_Initialized") then
-  ReadLib("distributed/distgap.g");
+if IsBound(HPCGAP) then
+  HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Shared Memory Extensions and MPI", "doc/hpc");
 fi;
 
 
@@ -1087,17 +1121,11 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-if IsBoundGlobal("MPI_Initialized") and MPI_Comm_rank() <> 0 then
-  WaitThread(TaskManager);
-  WaitThread(MessageManager);
-  MPI_Finalize();
+if IsBound(HPCGAP) and THREAD_UI() then
+  ReadLib("hpc/consoleui.g");
+  MULTI_SESSION();
 else
-  if THREAD_UI() then
-    ReadLib("hpc/consoleui.g");
-    MULTI_SESSION();
-  else
-    SESSION();
-  fi; 
+  SESSION();
 fi;
 
 PROGRAM_CLEAN_UP();
