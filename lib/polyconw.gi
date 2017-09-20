@@ -217,6 +217,14 @@ end;
 ##  
 ####################   end of list of new polynomials   ####################
 
+BIND_GLOBAL("SET_CONWAYPOLDATA", function(p, list)
+    local x;
+    for x in list do
+        MakeImmutable(x);
+    od;
+    CONWAYPOLDATA[p]:=list;
+end);
+
 BIND_GLOBAL("LOAD_CONWAY_DATA", function(p)
     if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
       ReadLib("conwdat1.g");
@@ -561,7 +569,7 @@ end);
 ##    local i, j, v;
 ##    for i in [1..Length(CONWAYPOLDATA)] do
 ##      if IsBound(CONWAYPOLDATA[i]) then
-##        PrintTo(f, "CONWAYPOLDATA[",i,"]:=[\n");
+##        PrintTo(f, "SET_CONWAYPOLDATA(",i,",[\n");
 ##        for j in [1..Length(CONWAYPOLDATA[i])] do
 ##          if IsBound(CONWAYPOLDATA[i][j]) then
 ##            PrintTo(f,"[",CONWAYPOLDATA[i][j][1],",\"",CONWAYPOLDATA[i][j][2],
@@ -569,7 +577,7 @@ end);
 ##          fi;
 ##          PrintTo(f,",");
 ##        od;
-##        PrintTo(f,"];\n");
+##        PrintTo(f,"]);\n");
 ##      fi;
 ##    od;
 ##  end;
