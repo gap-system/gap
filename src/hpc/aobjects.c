@@ -1192,21 +1192,6 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   return (Obj) 0;
 }
 
-static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj policy)
-{
-  if (TNUM_OBJ(record) != T_AREC)
-    ArgumentError("ATOMIC_RECORD_REPLACEMENT: First argument must be an atomic record");
-  if (policy == Fail)
-    SetARecordUpdatePolicy(record, AREC_WX);
-  else if (policy == False)
-    SetARecordUpdatePolicy(record, AREC_W1);
-  else if (policy == True)
-    SetARecordUpdatePolicy(record, AREC_RW);
-  else
-    ArgumentError("ATOMIC_RECORD_REPLACEMENT: Second argument must be true, false, or fail");
-  return (Obj) 0;
-}
-
 static Obj CreateTLDefaults(Obj defrec) {
   Region *saved_region = TLS(currentRegion);
   Obj result;
@@ -1809,7 +1794,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GET_ATOMIC_RECORD, 3, "record, field, default"),
     GVAR_FUNC(SET_ATOMIC_RECORD, 3, "record, field, value"),
     GVAR_FUNC(UNBIND_ATOMIC_RECORD, 2, "record, field"),
-    GVAR_FUNC(ATOMIC_RECORD_REPLACEMENT, 2, "record, policy"),
     GVAR_FUNC(FromAtomicRecord, 1, "record"),
     GVAR_FUNC(FromAtomicComObj, 1, "record"),
     GVAR_FUNC(ThreadLocalRecord, -1, "record [, record]"),
