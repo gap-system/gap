@@ -165,7 +165,7 @@ Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
     Obj fexs;
     Obj fexp;
 
-    fexs = FEXS_FUNC(CURR_FUNC);
+    fexs = FEXS_FUNC(CURR_FUNC());
     fexp = ELM_PLIST(fexs, ((Int *)ADDR_EXPR(expr))[0]);
 
     SyntaxTreeFunc(result, fexp);
