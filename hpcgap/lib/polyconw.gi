@@ -78,7 +78,7 @@ elements, respectively a similar algorithm as in GAP (~2005)\n",
  # cache for p > 110000 
  cache := AtomicRecord(rec())
             
-             ) ) );
+) ) );
 
 ATOMIC_RECORD_REPLACEMENT(CONWAYPOLYNOMIALSINFO.cache, false);
 
@@ -213,7 +213,7 @@ ConwayCandidates := function()
   od;
   Sort(cand);
   atomic readonly CONWAYPOLDATA do
-      cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
+  cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
   od;
   return cand;
 end;
@@ -230,7 +230,21 @@ BIND_GLOBAL("PREPARE_CONWAY_DATA", function(list)
     return ShareSpecialObj(list);
 end);
 
-
+BIND_GLOBAL("LOAD_CONWAY_DATA", function(p)
+    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat1.g");
+        od;
+    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat2.g");
+        od;
+    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat3.g");
+        od;
+    fi;
+end);
 
 ############################################################################
 ##
@@ -263,24 +277,12 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           StoreConwayPol;  # maybe move out?
 
     # Check the arguments.
-    if not ( IsPrimeInt( p ) and IsInt( n ) and n > 0 ) then
+    if not ( IsPrimeInt( p ) and IsPosInt( n ) ) then
       Error( "<p> must be a prime, <n> a positive integer" );
     fi;
 
     # read data files if necessary
-    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-        atomic readwrite CONWAYPOLDATA do
-            ReadLib("conwdat1.g");
-        od;
-    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-        atomic readwrite CONWAYPOLDATA do
-            ReadLib("conwdat2.g");
-        od;
-    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-        atomic readwrite CONWAYPOLDATA do
-            ReadLib("conwdat3.g");
-        od;
-    fi;
+    LOAD_CONWAY_DATA(p);
 
     if p < 110000 then
         cachelist := fail;
@@ -469,14 +471,13 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         ShrinkRowVector( found );
         cachelist[n]:= MakeImmutable([List([0..Length(found)-1], k-> p^k) * found, 
                               "GAP"]);
-    end;
-    atomic readwrite cachelist do
+      end;
+      atomic readwrite cachelist do
         if not IsBound(cachelist[n]) then
-            StoreConwayPol(cpol, cachelist);
+          StoreConwayPol(cpol, cachelist);
         fi;
-    od;
-    return cpol;
-else
+      od;
+    else
 
       # Decode the polynomial stored in the list (see description of
       # CONWAYPOLDATA above).
@@ -490,12 +491,11 @@ else
         Add( cpol, 0 );
       od;
       Add( cpol, 1 );
-        # Return the coefficients list.
-      return cpol;
-    
-  fi;
 
+    fi;
 
+    # Return the coefficients list.
+    return cpol;
 end );
 
 
@@ -504,7 +504,7 @@ end );
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
 InstallGlobalFunction( ConwayPolynomial, function( p, n )
-    local   F,  res;
+    local F, res;
     if IsPrimeInt( p ) and IsPosInt( n ) then
       F:= GF(p);
       res := UnivariatePolynomial( F, One( F ) * ConwayPol( p, n ) );
@@ -528,76 +528,74 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
 end );
 
 InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
-    local   cacheentry;
-  if IsPrimeInt( p ) and IsPosInt( n ) then
-    # read data files if necessary
-    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-      ReadLib("conwdat1.g");
-    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-      ReadLib("conwdat2.g");
-    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-      ReadLib("conwdat3.g");
+  local cacheentry;
+
+  if not ( IsPrimeInt( p ) and IsPosInt( n ) ) then
+    return false;
   fi;
-  atomic readonly CONWAYPOLDATA do
-      if p < 110000 then
-          atomic readonly CONWAYPOLDATA[p] do
-              if IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
-                  return true;
-              fi;
-          od;
-      fi;
-  od;
+
+  # read data files if necessary
+  LOAD_CONWAY_DATA(p);
+
+  if p < 110000 then
+    atomic readonly CONWAYPOLDATA do
+        if IsBound(CONWAYPOLDATA[p]) then
+            atomic readonly CONWAYPOLDATA[p] do
+                if IsBound(CONWAYPOLDATA[p][n]) then
+                    return true;
+                fi;
+            od;
+        fi;
+    od;
+  fi;
   if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) then
       cacheentry := CONWAYPOLYNOMIALSINFO.cache.(String(p));
       atomic readonly cacheentry do
-          if IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))[n]) then
+          if IsBound(cacheentry[n]) then
               return true;
           fi;
       od;
   fi;
-        # this is not very precise, hopefully good enough for the moment
-    if p < 41 then 
-      if n < 100 and IsPrimeInt(n) then
-        return true;
-      fi;
-    elif p < 100 then
-      if n < 40 and IsPrimeInt(n) then
-        return true;
-      fi;
-    elif p < 1000 then
-      if n < 14 and IsPrimeInt(n) then
-        return true;
-      fi;
-    elif p < 2^48 then
-      if n in [1,2,3,5,7] then
-        return true;
-      fi;
-    elif p < 2^60 then
-        if n in [1,2,3,5] then
-            return true;
-        fi;    
-    elif p < 2^120 then
-        if n in [1,2,3] then
-            return true;
-        fi;    
-    elif p < 2^200 then
-        if n in [1,2] then
-            return true;
-        fi;    
-    elif n = 1 then
-        return false;
+  # this is not very precise, hopefully good enough for the moment
+  if p < 41 then
+    if n < 100 and IsPrimeInt(n) then
+      return true;
     fi;
+  elif p < 100 then
+    if n < 40 and IsPrimeInt(n) then
+      return true;
+    fi;
+  elif p < 1000 then
+    if n < 14 and IsPrimeInt(n) then
+      return true;
+    fi;
+  elif p < 2^48 then
+    if n in [1,2,3,5,7] then
+      return true;
+    fi;
+  elif p < 2^60 then
+    if n in [1,2,3,5] then
+      return true;
+    fi;
+  elif p < 2^120 then
+    if n in [1,2,3] then
+      return true;
+    fi;
+  elif p < 2^200 then
+    if n in [1,2] then
+      return true;
+    fi;
+  elif n = 1 then
+    return false;
   fi;
   return false;
 end );
 
 # arg: F, n[, i]
-InstallGlobalFunction( RandomPrimitivePolynomial, function(arg)
-  local F, n, i, pol, FF, one, fac, a;
-  F := arg[1];
-  n := arg[2];
-  if Length(arg) > 2 then
-    i := arg[3];
+InstallGlobalFunction( RandomPrimitivePolynomial, function(F, n, varnum...)
+  local i, pol, FF, one, fac, a, zero;
+  if Length(varnum) > 0 then
+    i := varnum[1];
   else
     i := 1;
   fi;
@@ -607,16 +605,20 @@ InstallGlobalFunction( RandomPrimitivePolynomial, function(arg)
   if IsInt(F) then
     F := GF(F);
   fi;
-  repeat pol := RandomPol(F, n, i);
+  if n=1 and Size(F)=2 then
+    return Indeterminate(F, i) + One(F);
+  fi;
+  repeat pol := RandomPol(F, n);
   until IsIrreducibleRingElement(PolynomialRing(F), pol);
   FF := AlgebraicExtension(F, pol);
   one := One(FF);
+  zero := Zero(FF);
   fac:=List(Set(Factors(Size(FF)-1)), p-> (Size(FF)-1)/p);
-  repeat 
+  repeat
     a := Random(FF);
-  until ForAll(fac, d-> a^d <> one);
-  return MinimalPolynomial(F, a);
-end );
+  until a <> zero and ForAll(fac, d-> a^d <> one);
+  return MinimalPolynomial(F, a, i);
+end);
 
 ##  # utility to write new data files in case of extensions
 ##  printConwayData := function(f)
