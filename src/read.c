@@ -1562,12 +1562,13 @@ static void ReadFuncExprBody (
     TRY_READ {
         IntrFuncExprEnd( 1UL, 1UL );
     }
-
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0  && STATE(IntrCoding) ) {
-        CodeEnd(1);
-        STATE(IntrCoding)--;
-        SET_CURR_LVARS(currLVars);
+    CATCH_READ_ERROR {
+        /* an error has occured *after* the 'IntrFuncExprEnd'                  */
+        if ( nrError == 0  && STATE(IntrCoding) ) {
+            CodeEnd(1);
+            STATE(IntrCoding)--;
+            SET_CURR_LVARS(currLVars);
+        }
     }
 
     /* pop the new local variables list                                    */
