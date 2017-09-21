@@ -492,7 +492,11 @@ int realmain( int argc, char * argv[], char * environ[] )
 
   // verify our TNUM enum does not overflow; note that TNUM 254 is T_BODY,
   // and 255 is reserved for internal use by GASMAN.
-  assert(LAST_COPYING_TNUM <= 253);
+  if (LAST_COPYING_TNUM > 253) {
+    fprintf(stderr, "LAST_COPYING_TNUM = %d > 253 !\n", LAST_COPYING_TNUM);
+    SyExit(1);
+    return 1;
+  }
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
