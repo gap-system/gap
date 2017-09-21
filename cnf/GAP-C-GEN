@@ -14,15 +14,8 @@ C_FILE="$SRCDIR/src/c_$STEM.c"
 
 if ! test -r "$GAP_FILE"
 then
-    if test -r "$SRCDIR/../lib/$STEM.g"
-    then
-        # seem we are building for HPC-GAP, and hpcgap/lib/$STEM.g is missing
-        # so we should use lib/$STEM.g instead
-        GAP_FILE="$SRCDIR/../lib/$STEM.g"
-    else
-        echo "Error, could not find $GAP_FILE"
-        exit 1
-    fi
+    echo "Error, could not find $GAP_FILE"
+    exit 1
 fi
 
 # invoke GAP in compiler mode
