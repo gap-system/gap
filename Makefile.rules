@@ -624,7 +624,7 @@ bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 all: symlinks
 symlinks: FORCE
 	@$(MKDIR_P) bin/$(GAPARCH)
-	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-$(CONFIGNAME)
+	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-default$(ABI)
 	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_top_srcdir)/src bin/$(GAPARCH)/src
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap

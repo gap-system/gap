@@ -2724,10 +2724,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("ENVIRONMENT");
   AssPRec(res,r, tmp);
 
-  /* and also the CONFIGNAME of the running  GAP kernel  */
-  str = MakeImmString( CONFIGNAME );
-  r = RNamName("CONFIGNAME");
-  AssPRec(res, r, str);
 #ifdef HPCGAP
   r = RNamName("NUM_CPUS");
   AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
