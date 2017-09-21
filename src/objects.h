@@ -226,9 +226,9 @@ enum {
         // the value for LAST_PACKAGE_TNUM indirectly
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 42,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 41,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 49,
 #endif
 
     END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
@@ -258,8 +258,10 @@ enum {
 
     // virtual TNUMs for copying objects
     START_ENUM_RANGE_EVEN(FIRST_COPYING_TNUM),
-    COPYING                 = LAST_EXTERNAL_TNUM - FIRST_IMM_MUT_TNUM,
-    LAST_COPYING_TNUM       = LAST_REAL_TNUM + COPYING,
+        COPYING             = FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM,
+        // we use LAST_EXTERNAL_TNUM+1 instead of LAST_REAL_TNUM to
+        // skip over the shared TNUMs in HPC-GAP
+    LAST_COPYING_TNUM       = LAST_EXTERNAL_TNUM + COPYING,
 
     // the type of function body bags
     T_BODY                  = 254,
