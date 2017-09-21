@@ -220,13 +220,6 @@ CallAndInstallPostRestore( function()
     GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
     GAPInfo.BuildDateTime:= GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
-    GAPInfo.ArchitectureBase:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
-    for i in [ 1 .. LENGTH( GAPInfo.Architecture ) ] do
-      if GAPInfo.Architecture[i] = '/' then
-        GAPInfo.ArchitectureBase:= GAPInfo.Architecture{ [ 1 .. i-1 ] };
-        break;
-      fi;
-    od;
     # On 32-bit we have to adjust some values:
     if GAPInfo.BytesPerVariable = 4 then
       CommandLineOptionData := SHALLOW_COPY_OBJ( GAPInfo.CommandLineOptionData );
