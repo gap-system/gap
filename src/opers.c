@@ -1003,18 +1003,12 @@ static const Int IMPS_CACHE_LENGTH = 11001;
 Obj FuncCLEAR_IMP_CACHE(Obj self)
 {
   Int i;
-#ifdef HPCGAP
-  RegionWriteLock(REGION(IMPLICATIONS));
-#endif
   for(i = 1; i < IMPS_CACHE_LENGTH * 2 - 1; i += 2)
   {
     SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i, 0);
     SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i + 1, 0);
     CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
   }
-#ifdef HPCGAP
-  RegionWriteUnlock(REGION(IMPLICATIONS));
-#endif
   return 0;
 }
 
@@ -1046,17 +1040,11 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
-#ifdef HPCGAP
-    RegionWriteLock(REGION(IMPLICATIONS));
-#endif
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
       cacheval = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
       if(cacheval && cacheval == flags) {
         Obj ret = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
-#ifdef HPCGAP
-        RegionWriteUnlock(REGION(IMPLICATIONS));
-#endif
 #ifdef COUNT_OPERS
         WITH_IMPS_FLAGS_HIT++;
 #endif
@@ -1132,9 +1120,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       }
     }
     
-#ifdef HPCGAP
-    RegionWriteUnlock(REGION(IMPLICATIONS));
-#endif
     return with;
 }
 
@@ -6301,10 +6286,13 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(CLEAR_HIDDEN_IMP_CACHE, 1, "flags"),
     GVAR_FUNC(WITH_HIDDEN_IMPS_FLAGS, 1, "flags"),
     GVAR_FUNC(InstallHiddenTrueMethod, 2, "filter, filters"),
+/* for the moment make this invisible to HPCGAP */
+#if !defined(HPCGAP)
     GVAR_FUNC(RankFilter, 1, "filtorflags"),
     GVAR_FUNC(CLEAR_IMP_CACHE, 0, ""),
     GVAR_FUNC(WITH_IMPS_FLAGS, 1, "flags"),
     GVAR_FUNC(WITH_IMPS_FLAGS_STAT, 0, ""),
+#endif
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
@@ -6612,16 +6600,11 @@ static Int InitLibrary (
     AssGVar(GVarName("IMPLICATIONS_SIMPLE"), IMPLICATIONS_SIMPLE);
     AssGVar(GVarName("IMPLICATIONS_COMPOSED"), IMPLICATIONS_COMPOSED);
 
-#ifdef HPCGAP
-    REGION(IMPLICATIONS_SIMPLE) = NewRegion();
-    REGION(IMPLICATIONS_COMPOSED) = REGION(IMPLICATIONS_SIMPLE);
-    REGION(WITH_IMPS_FLAGS_CACHE) = REGION(IMPLICATIONS_SIMPLE);
-#endif
-
     RANK_FILTERS = NEW_PLIST(T_PLIST, 3000);
     SET_LEN_PLIST(RANK_FILTERS, 0);
+#if !defined(HPCGAP)
     AssGVar(GVarName("RANK_FILTERS"), RANK_FILTERS);
-
+#endif
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
     AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
