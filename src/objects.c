@@ -1866,6 +1866,74 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 #endif
 }
 
+
+/****************************************************************************
+**
+*F  FuncDEBUG_TNUM_NAMES
+**
+**  Print all defined TNUM values and names
+*/
+#define START_SYMBOLIC_TNUM(name)                                            \
+    if (k == name) {                                                         \
+        Pr("%3d: %s", k, (Int)indentStr);                                    \
+        Pr("%s" #name "\n", (Int)indentStr, 0);                              \
+        assert(indentLvl + 1 < sizeof(indentStr));                           \
+        indentStr[indentLvl++] = ' ';                                        \
+        indentStr[indentLvl] = 0;                                            \
+    }
+
+#define STOP_SYMBOLIC_TNUM(name)                                             \
+    if (k == name) {                                                         \
+        assert(indentLvl > 0);                                               \
+        indentStr[--indentLvl] = 0;                                          \
+        Pr("%3d: %s", k, (Int)indentStr);                                    \
+        Pr("%s" #name "\n", (Int)indentStr, 0);                              \
+    }
+
+Obj FuncDEBUG_TNUM_NAMES(Obj self)
+{
+    UInt indentLvl = 0;
+    Char indentStr[20] = "";
+    for (UInt k = 0; k < 256; k++) {
+        START_SYMBOLIC_TNUM(FIRST_REAL_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_CONSTANT_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_IMM_MUT_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_RECORD_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_LIST_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PLIST_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_OBJSET_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_EXTERNAL_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM);
+#ifdef HPCGAP
+        START_SYMBOLIC_TNUM(FIRST_SHARED_TNUM);
+#endif
+        START_SYMBOLIC_TNUM(FIRST_COPYING_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM + COPYING);
+        if (InfoBags[k].name != 0) {
+            Pr("%3d: %s", k, (Int)indentStr);
+            Pr("%s%s\n", (Int)indentStr, (Int)InfoBags[k].name);
+        }
+        STOP_SYMBOLIC_TNUM(LAST_CONSTANT_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_RECORD_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PLIST_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_LIST_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_OBJSET_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_IMM_MUT_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_EXTERNAL_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PACKAGE_TNUM);
+#ifdef HPCGAP
+        STOP_SYMBOLIC_TNUM(LAST_SHARED_TNUM);
+#endif
+        STOP_SYMBOLIC_TNUM(LAST_REAL_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PACKAGE_TNUM + COPYING);
+        STOP_SYMBOLIC_TNUM(LAST_COPYING_TNUM);
+    }
+    return 0;
+}
+#undef START_SYMBOLIC_TNUM
+#undef STOP_SYMBOLIC_TNUM
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -1918,7 +1986,7 @@ static StructGVarOper GVarOpers [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(FAMILY_TYPE, 1, "type"),
     GVAR_FUNC(TYPE_OBJ, 1, "obj"),
@@ -1939,6 +2007,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FORCE_SWITCH_OBJ, 2, "obj1, obj2"),
     GVAR_FUNC(SET_PRINT_OBJ_INDEX, 1, "index"),
     GVAR_FUNC(MakeImmutable, 1, "obj"),
+
+    GVAR_FUNC(DEBUG_TNUM_NAMES, 0, ""),
+
     { 0, 0, 0, 0, 0 }
 
 };
