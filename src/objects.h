@@ -61,12 +61,36 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  NEXT_EVEN_INT( <n> )
+*F  NEXT_ENUM_EVEN( <id> )
+*F  START_ENUM_RANGE_EVEN( <id> )
+*F  END_ENUM_RANGE_ODD( <id> )
 **
-**  Compute next even integer larger than <n>. Note that <n> must be a
-**  positive, literal integer constant.
+**  'NEXT_ENUM_EVEN' can be used in an enum to force <id> to use the next
+**  available even integer value.
+**
+**  'START_ENUM_RANGE_EVEN' is a variant of 'START_ENUM_RANGE' which always
+**  sets the value of <id> to the next even integer.
+**
+**  'END_ENUM_RANGE_ODD' is a variant of 'END_ENUM_RANGE' which always sets
+**  the value of <id> to an odd integer.
 */
-#define NEXT_EVEN_INT(n)   ( (n+2UL) & ~1UL )
+#define NEXT_ENUM_EVEN(id)   \
+    _##id##_pre, \
+    id = _##id##_pre + (_##id##_pre & 1)
+#define START_ENUM_RANGE_EVEN(id)   \
+    NEXT_ENUM_EVEN(id), \
+    _##id##_post = id - 1
+#define END_ENUM_RANGE_ODD(id)   \
+    _##id##_pre, \
+    id = _##id##_pre - !(_##id##_pre & 1)
+
+
+/****************************************************************************
+**
+*/
+enum {
+    IMMUTABLE = 1    // IMMUTABLE is not a TNUM, but rather a bitmask
+};
 
 /****************************************************************************
 **
@@ -106,15 +130,15 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **  finally the virtual types.
 */
 enum {
-    FIRST_REAL_TNUM         = 0,
+    START_ENUM_RANGE(FIRST_REAL_TNUM),
 
-    FIRST_CONSTANT_TNUM     = FIRST_REAL_TNUM,
-        T_INT               = FIRST_CONSTANT_TNUM,  // immediate
+    START_ENUM_RANGE(FIRST_CONSTANT_TNUM),
+        T_INT,      // immediate
         T_INTPOS,
         T_INTNEG,
         T_RAT,
         T_CYC,
-        T_FFE,                                      // immediate
+        T_FFE,      // immediate
         T_PERM2,
         T_PERM4,
         T_TRANS2,
@@ -128,69 +152,67 @@ enum {
         T_MACFLOAT,
         T_LVARS,
         T_HVARS,
-    LAST_CONSTANT_TNUM      = T_HVARS,
-
-    IMMUTABLE               = 1,    // IMMUTABLE is not a TNUM, but rather a bitmask
+    END_ENUM_RANGE(LAST_CONSTANT_TNUM),
 
     // first mutable/immutable TNUM
-    FIRST_IMM_MUT_TNUM      = NEXT_EVEN_INT(LAST_CONSTANT_TNUM),
+    START_ENUM_RANGE_EVEN(FIRST_IMM_MUT_TNUM),
 
         // records
-        FIRST_RECORD_TNUM                   = FIRST_IMM_MUT_TNUM,
-            T_PREC                          = FIRST_RECORD_TNUM,
-        LAST_RECORD_TNUM                    = T_PREC+IMMUTABLE,
+        START_ENUM_RANGE_EVEN(FIRST_RECORD_TNUM),
+            T_PREC,
+        END_ENUM_RANGE_ODD(LAST_RECORD_TNUM),
 
         // lists
-        FIRST_LIST_TNUM                     = NEXT_EVEN_INT(LAST_RECORD_TNUM),
+        START_ENUM_RANGE_EVEN(FIRST_LIST_TNUM),
 
             // plists
-            FIRST_PLIST_TNUM                = FIRST_LIST_TNUM,
-                T_PLIST                     = FIRST_LIST_TNUM+ 0,
-                T_PLIST_NDENSE              = FIRST_LIST_TNUM+ 2,
-                T_PLIST_DENSE               = FIRST_LIST_TNUM+ 4,
-                T_PLIST_DENSE_NHOM          = FIRST_LIST_TNUM+ 6,
-                T_PLIST_DENSE_NHOM_SSORT    = FIRST_LIST_TNUM+ 8,
-                T_PLIST_DENSE_NHOM_NSORT    = FIRST_LIST_TNUM+10,
-                T_PLIST_EMPTY               = FIRST_LIST_TNUM+12,
-                T_PLIST_HOM                 = FIRST_LIST_TNUM+14,
-                T_PLIST_HOM_NSORT           = FIRST_LIST_TNUM+16,
-                T_PLIST_HOM_SSORT           = FIRST_LIST_TNUM+18,
-                T_PLIST_TAB                 = FIRST_LIST_TNUM+20,
-                T_PLIST_TAB_NSORT           = FIRST_LIST_TNUM+22,
-                T_PLIST_TAB_SSORT           = FIRST_LIST_TNUM+24,
-                T_PLIST_TAB_RECT            = FIRST_LIST_TNUM+26,
-                T_PLIST_TAB_RECT_NSORT      = FIRST_LIST_TNUM+28,
-                T_PLIST_TAB_RECT_SSORT      = FIRST_LIST_TNUM+30,
-                T_PLIST_CYC                 = FIRST_LIST_TNUM+32,
-                T_PLIST_CYC_NSORT           = FIRST_LIST_TNUM+34,
-                T_PLIST_CYC_SSORT           = FIRST_LIST_TNUM+36,
-                T_PLIST_FFE                 = FIRST_LIST_TNUM+38,
-            LAST_PLIST_TNUM                 = T_PLIST_FFE+IMMUTABLE,
+            START_ENUM_RANGE_EVEN(FIRST_PLIST_TNUM),
+                NEXT_ENUM_EVEN(T_PLIST),
+                NEXT_ENUM_EVEN(T_PLIST_NDENSE),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_EMPTY),
+                NEXT_ENUM_EVEN(T_PLIST_HOM),
+                NEXT_ENUM_EVEN(T_PLIST_HOM_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_HOM_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_CYC),
+                NEXT_ENUM_EVEN(T_PLIST_CYC_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_CYC_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_FFE),
+            END_ENUM_RANGE_ODD(LAST_PLIST_TNUM),
 
             // other kinds of lists
-            T_RANGE_NSORT                   = FIRST_LIST_TNUM+40,
-            T_RANGE_SSORT                   = FIRST_LIST_TNUM+42,
-            T_BLIST                         = FIRST_LIST_TNUM+44,
-            T_BLIST_NSORT                   = FIRST_LIST_TNUM+46,
-            T_BLIST_SSORT                   = FIRST_LIST_TNUM+48,
-            T_STRING                        = FIRST_LIST_TNUM+50,
-            T_STRING_NSORT                  = FIRST_LIST_TNUM+52,
-            T_STRING_SSORT                  = FIRST_LIST_TNUM+54,
+            NEXT_ENUM_EVEN(T_RANGE_NSORT),
+            NEXT_ENUM_EVEN(T_RANGE_SSORT),
+            NEXT_ENUM_EVEN(T_BLIST),
+            NEXT_ENUM_EVEN(T_BLIST_NSORT),
+            NEXT_ENUM_EVEN(T_BLIST_SSORT),
+            NEXT_ENUM_EVEN(T_STRING),
+            NEXT_ENUM_EVEN(T_STRING_NSORT),
+            NEXT_ENUM_EVEN(T_STRING_SSORT),
 
-        LAST_LIST_TNUM                      = T_STRING_SSORT+IMMUTABLE,
+        END_ENUM_RANGE_ODD(LAST_LIST_TNUM),
 
         // object sets and maps
-        FIRST_OBJSET_TNUM                   = NEXT_EVEN_INT(LAST_LIST_TNUM),
-            T_OBJSET                        = FIRST_OBJSET_TNUM+0,
-            T_OBJMAP                        = FIRST_OBJSET_TNUM+2,
-        LAST_OBJSET_TNUM                    = T_OBJMAP+IMMUTABLE,
+        START_ENUM_RANGE_EVEN(FIRST_OBJSET_TNUM),
+            NEXT_ENUM_EVEN(T_OBJSET),
+            NEXT_ENUM_EVEN(T_OBJMAP),
+        END_ENUM_RANGE_ODD(LAST_OBJSET_TNUM),
 
     // last mutable/immutable TNUM
-    LAST_IMM_MUT_TNUM       = LAST_OBJSET_TNUM,
+    END_ENUM_RANGE(LAST_IMM_MUT_TNUM),
 
-    // external types (IMMUTABLE is not used for them, but keep the parity anyway)
-    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_IMM_MUT_TNUM),
-        T_COMOBJ            = FIRST_EXTERNAL_TNUM,
+    // external types
+    START_ENUM_RANGE(FIRST_EXTERNAL_TNUM),
+        T_COMOBJ,
         T_POSOBJ,
         T_DATOBJ,
         T_WPOBJ,
@@ -200,7 +222,7 @@ enum {
 #endif
 
         // package TNUMs, for use by kernel extensions
-        // note thatLAST_COPYING_TNUM must not exceed 253, which restricts
+        // note that LAST_COPYING_TNUM must not exceed 253, which restricts
         // the value for LAST_PACKAGE_TNUM indirectly
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
@@ -209,12 +231,12 @@ enum {
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
 #endif
 
-    LAST_EXTERNAL_TNUM      = LAST_PACKAGE_TNUM,
+    END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
 
 #ifdef HPCGAP
-    FIRST_SHARED_TNUM       = LAST_EXTERNAL_TNUM+1,
+    START_ENUM_RANGE(FIRST_SHARED_TNUM),
         // primitive types
-        T_THREAD            = FIRST_SHARED_TNUM,
+        T_THREAD,
         T_MONITOR,
         T_REGION,
         // user-programmable types
@@ -229,17 +251,13 @@ enum {
         T_AREC_INNER,
         T_TLREC,
         T_TLREC_INNER,
-    LAST_SHARED_TNUM        = T_TLREC_INNER,
+    END_ENUM_RANGE(LAST_SHARED_TNUM),
 #endif
 
-#ifdef HPCGAP
-    LAST_REAL_TNUM          = LAST_SHARED_TNUM,
-#else
-    LAST_REAL_TNUM          = LAST_EXTERNAL_TNUM,
-#endif
+    END_ENUM_RANGE(LAST_REAL_TNUM),
 
     // virtual TNUMs for copying objects
-    FIRST_COPYING_TNUM      = NEXT_EVEN_INT(LAST_REAL_TNUM),
+    START_ENUM_RANGE_EVEN(FIRST_COPYING_TNUM),
     COPYING                 = LAST_EXTERNAL_TNUM - FIRST_IMM_MUT_TNUM,
     LAST_COPYING_TNUM       = LAST_REAL_TNUM + COPYING,
 

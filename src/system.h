@@ -148,6 +148,34 @@ typedef Int4     Int;
 typedef UInt4    UInt;
 #endif
 
+/****************************************************************************
+**
+**  'START_ENUM_RANGE' and 'END_ENUM_RANGE' simplify creating "ranges" of
+**  enum variables.
+**
+**  Usage example:
+**    enum {
+**      START_ENUM_RANGE(FIRST),
+**        FOO,
+**        BAR,
+**      END_ENUM_RANGE(LAST)
+**    };
+**  is essentially equivalent to
+**    enum {
+**      FIRST,
+**        FOO = FIRST,
+**        BAR,
+**      LAST = BAR
+**    };
+**  Note that if we add a value into the range after 'BAR', we must adjust
+**  the definition of 'LAST', which is easy to forget. Also, reordering enum
+**  values may require extra work. With the range macros, all of this is
+**  taken care of automatically.
+*/
+#define START_ENUM_RANGE(id)            id, _##id##_post = id - 1
+#define START_ENUM_RANGE_INIT(id,init)  id = init, _##id##_post = id - 1
+#define END_ENUM_RANGE(id)              _##id##_pre, id = _##id##_pre - 1
+
 
 /****************************************************************************
 **
