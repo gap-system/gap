@@ -380,7 +380,7 @@ GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
 # GAP's standard main function is renamed. And gap.exe is a tiny binary which
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
-bin/$(GAPARCH)/gap.dll: libgap.la
+bin/$(GAPARCH)/gap.dll: symlinks libgap.la
 	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
 gap$(EXEEXT): libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
