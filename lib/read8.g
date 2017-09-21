@@ -9,6 +9,7 @@ ReadLib( "overload.g"  );
 #X  the compiler interface
 ##
 ReadLib( "compiler.g"  );
+ReadLib( "syntaxtree.gi" );
 
 #############################################################################
 ##
