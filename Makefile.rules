@@ -649,12 +649,6 @@ TESTGAPauto = $(abs_top_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -
 # Alias for backwards compatibility
 manuals: doc
 
-# TODO: when in HPCGAP mode, we should perhaps instead
-# compile the documentation in the hpcgap dir?
-# But probably not; instead, we should merge the HPCGAP
-# stuff into the regular manual, but inside a (set of)
-# separate chapters, which we can perhaps conditionally
-# compile ?!?
 doc: gap$(EXEEXT) doc/make_doc
 	doc/make_doc
 
