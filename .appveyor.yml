@@ -6,11 +6,11 @@ environment:
   LDFLAGS: "-fprofile-arcs"
   TEST_SUITES: testinstall
   matrix:
-    - CYG_ARCH: x86
-      CYG_ROOT: C:\cygwin
-      ABI: 32
-    - CYG_ARCH: x86_64
-      CYG_ROOT: C:\cygwin64
+#    - CYG_ARCH: x86
+#      CYG_ROOT: C:\cygwin
+#      ABI: 32
+#    - CYG_ARCH: x86_64
+#      CYG_ROOT: C:\cygwin64
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
       ABI: 32
