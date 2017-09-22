@@ -823,6 +823,7 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 1, imp);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 2, imps);
+    CHANGED_BAG(HIDDEN_IMPS);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
