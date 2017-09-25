@@ -109,53 +109,6 @@ ShowTree2 := function(tr)
     return ShowT(tr);
 end;
 
-
-intexpr := x -> 5;
-int_expr := x -> 500000000000000000000000000000;
-char_expr := x -> ' ';
-string_expr := x -> "Hello, world";
-perm_expr := x -> (1,2,3);
-list_expr := x -> [1];
-range_expr_1 := x -> [1..4];
-range_expr_2 := x -> [1,3..5];
-rec_expr := x -> rec( x := 4 );
-
-if_stat := function()
-    if true then
-        return 0;
-    fi;
-end;
-
-if_else_stat := function()
-    if true then
-        return 0;
-    else
-        return 1;
-    fi;
-end;
-
-if_elif_stat := function()
-    if true then
-        return 0;
-    elif false then
-        return 1;
-    fi;
-end;
-
-if_elif_else_stat := function()
-    if true then
-        return 0;
-    elif false then
-        return 1;
-    else
-        return 2;
-    fi;
-end;
-
-
-trees := List([intexpr, int_expr, char_expr, perm_expr, list_expr, range_expr_1, range_expr_2, string_expr, rec_expr], SYNTAX_TREE);
-
-
 PrintCompiler := function(tree)
     local info, compile, indent, _Print;
     indent := 0;
@@ -213,7 +166,7 @@ PrintCompiler := function(tree)
     # If statements are also handled uniformly in the
     # SYNTAX_TREE module
     info.T_IF := function(expr)
-        Print("if fi;")
+        Print("if fi;");
     end;
     info.T_IF_ELSE := info.T_IF;
     info.T_IF_ELIF := info.T_IF;
@@ -235,13 +188,67 @@ PrintCompiler := function(tree)
     info.T_REPEAT2 := function(expr) end;
     info.T_REPEAT3 := function(expr) end;
 
+    info.T_BREAK := function(expr) end;
+    info.T_CONTINUE := function(expr) end;
+
+    # Return statements (could also be folded into one)
+    info.T_RETURN_VOID := function(expr)
+        Print("return");
+    end;
+    info.T_RETURN_OBJ := function(expr)
+        Print("return ");
+        compile(expr.obj);
+        Print("\n");
+    end;
+
+    info.T_ASS_LVAR := function(expr) end;
+    info.T_UNB_LVAR := function(expr) end;
+
+    info.T_ASS_HVAR := function(expr) end;
+    info.T_UNB_HVAR := function(expr) end;
+
+    info.T_ASS_GVAR := function(expr) end;
+    info.T_UNB_GVAR := function(expr) end;
+
+    info.T_ASS_LIST := function(expr) end;
+    info.T_ASSS_LIST := function(expr) end;
+
+    info.T_ASS_LIST_LEV := function(expr) end;
+    info.T_ASSS_LIST_LEV := function(expr) end;
+
+    info.T_UNB_LIST := function(expr) end;
+
+    info.T_ASS_REC_NAME := function(expr) end;
+    info.T_ASS_REC_EXPR := function(expr) end;
+
+    info.T_UNB_REC_NAME := function(expr) end;
+    info.T_UNB_REC_EXPR := function(expr) end;
+
+    info.T_ASS_POSOBJ := function(expr) end;
+    info.T_ASSS_POSOBJ := function(expr) end;
+
+    info.T_ASS_POSOBJ_LEV := function(expr) end;
+    info.T_ASSS_POSOBJ_LEV := function(expr) end;
+
+    info.T_UNB_POSOBJ := function(expr) end;
+
+    info.T_ASS_COMOBJ_NAME := function(expr) end;
+    info.T_ASS_COMOBJ_EXPR := function(expr) end;
+
+    info.T_UNB_COMOBJ_NAME := function(expr) end;
+    info.T_UNB_COMOBJ_EXPR := function(expr) end;
+
     # Info evaluates arguments lazily
     info.T_INFO := function(expr) end;
+
+    info.T_ASSERT_2ARGS := function(expr) end;
+    info.T_ASSERT_3ARGS := function(expr) end;
+
     info.T_EMPTY := function(expr) end;
 
     # Options
     info.T_PROCCALL_OPTS := function(expr) end;
-    
+
     # HPC-GAP's atomic statement (what about readwrite/readonly?)
     info.T_ATOMIC := function(expr) end;
 
@@ -269,6 +276,26 @@ PrintCompiler := function(tree)
         Print("\n");
     end;
 
+    info.T_OR := function(expr) end;
+    info.T_AND := function(expr) end;
+    info.T_NOT := function(expr) end;
+    info.T_EQ := function(expr) end;
+    info.T_NE := function(expr) end;
+    info.T_LT := function(expr) end;
+    info.T_GE := function(expr) end;
+    info.T_GT := function(expr) end;
+    info.T_LE := function(expr) end;
+    info.T_IN := function(expr) end;
+    info.T_SUM := function(expr) end;
+    info.T_AINV := function(expr) end;
+    info.T_DIFF := function(expr) end;
+    info.T_PROD := function(expr) end;
+    info.T_INV := function(expr) end;
+    info.T_QUO := function(expr) end;
+    info.T_MOD := function(expr) end;
+    info.T_POW := function(expr) end;
+
+
     # These come from literals
     # TODO: Maybe make the component names uniform
     info.T_TRUE_EXPR := expr -> "true";
@@ -289,10 +316,12 @@ PrintCompiler := function(tree)
     # permutations behave more like lists, because they
     # can contain arbitrary expressions
     info.T_PERM_EXPR := expr -> String(expr.value);
+    info.T_PERM_CYCLE := function(expr) end;
     info.T_LIST_EXPR := function(expr) end;
     info.T_LIST_TILD_EXPR := function(expr) end;
     info.T_RANGE_EXPR := function(expr) end;
     info.T_REC_EXPR := function(expr) end;
+    info.T_REC_TILD_EXPR := function(expr) end;
 
     # Different variable references, and the
     # appropriate IsBound constructs
@@ -303,15 +332,29 @@ PrintCompiler := function(tree)
     info.T_REFLGAR := function(expr) end;
     info.T_ISB_GVAR := function(expr) end;
 
-    # Return statements (could also be folded into one)
-    info.T_RETURN_VOID := function(expr)
-        Print("return");
-    end;
-    info.T_RETURN_OBJ := function(expr)
-        Print("return ");
-        compile(expr.obj);
-        Print("\n");
-    end;
+    info.T_ELM_LIST := function(expr) end;
+    info.T_ELMS_LIST := function(expr) end;
+    info.T_ELM_LIST_LEV := function(expr) end;
+    info.T_ELMS_LIST_LEV := function(expr) end;
+    info.T_ISB_LIST := function(expr) end;
+    info.T_ELM_REC_NAME := function(expr) end;
+    info.T_ELM_REC_EXPR := function(expr) end;
+    info.T_ISB_REC_NAME := function(expr) end;
+    info.T_ISB_REC_EXPR := function(expr) end;
+    info.T_ELM_POSOBJ := function(expr) end;
+    info.T_ELMS_POSOBJ := function(expr) end;
+    info.T_ELM_POSOBJ_LEV := function(expr) end;
+    info.T_ELMS_POSOBJ_LEV := function(expr) end;
+    info.T_ISB_POSOBJ := function(expr) end;
+    info.T_ELM_COMOBJ_NAME := function(expr) end;
+    info.T_ELM_COMOBJ_EXPR := function(expr) end;
+    info.T_ISB_COMOBJ_NAME := function(expr) end;
+    info.T_ISB_COMOBJ_EXPR := function(expr) end;
+    info.T_FUNCCALL_OPTS := function(expr) end;
+    info.T_ELM2_LIST := function(expr) end;
+    info.T_ELMX_LIST := function(expr) end;
+    info.T_ASS2_LIST := function(expr) end;
+    info.T_ASSX_LIST := function(expr) end;
 
     compile := function(tree_)
         info.(tree_.type)(tree_);
