@@ -502,12 +502,12 @@ Obj SyntaxTreeWhile(Obj result, Stat stat)
     condition = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("condition"), condition);
 
-    nr = SIZE_STAT(stat) / sizeof(Stat);
-    body = NEW_PLIST(T_PLIST, nr - 1);
-    SET_LEN_PLIST(body, nr - 1);
+    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
+    body = NEW_PLIST(T_PLIST, nr);
+    SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
-    for (i = 1; i < nr; i++) {
+    for (i = 1; i < 1 + nr; i++) {
         SET_ELM_PLIST(body, i, SyntaxTreeCompiler(ADDR_STAT(stat)[i]));
         CHANGED_BAG(body);
     }
@@ -524,12 +524,12 @@ Obj SyntaxTreeRepeat(Obj result, Stat stat)
     cond = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
     AssPRec(result, RNamName("condition"), cond);
 
-    nr = SIZE_STAT(stat) / sizeof(Stat);
+    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
     body = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
-    for (i = 1; i < nr; i++) {
+    for (i = 1; i < 1 + nr; i++) {
         SET_ELM_PLIST(body, i, SyntaxTreeCompiler(ADDR_STAT(stat)[i]));
         CHANGED_BAG(body);
     }
