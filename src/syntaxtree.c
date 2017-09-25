@@ -678,9 +678,8 @@ static const CompilerT StatCompilers[] = {
     COMPILER_(T_RETURN_VOID),
 
     COMPILER_(T_ASS_LVAR,
-             ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
-    COMPILER_(T_UNB_LVAR,
-             ARG("lvar", SyntaxTreeLVar)),
+              ARG("lvar", SyntaxTreeIntObjInt), ARG_("rhs")),
+    COMPILER_(T_UNB_LVAR, ARG("lvar", SyntaxTreeIntObjInt)),
     COMPILER_(T_ASS_HVAR,
              ARG("hvar", SyntaxTreeHVar), ARG_("rhs")),
     COMPILER_(T_UNB_HVAR,
@@ -788,6 +787,7 @@ static const CompilerT ExprCompilers[] = {
 
     COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
     COMPILER(T_ISB_LVAR, SyntaxTreeRefLVar),
+
     COMPILER_(T_REF_HVAR, ARG("hvar", SyntaxTreeHVar)),
     COMPILER_(T_ISB_HVAR, ARG("hvar", SyntaxTreeHVar)),
     COMPILER_(T_REF_GVAR, ARG("gvar", SyntaxTreeGVar)),
