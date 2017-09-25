@@ -10,7 +10,9 @@
 **  - Floats
 **  - Tilde
 **  - Reconsider LVar, GVar, and HVar references
-**  - what about T_SEQ_STATN?
+**  - what about T_SEQ_STATN? This should be flattened to just a list of statements
+**    the same goes for ProccallNArgs, FunccallNargs, and the different loop body
+**    variants as these are really details of the bytecode.
 ** 
 */
 #include "system.h"
@@ -144,7 +146,7 @@ Obj SyntaxTreeFunccall(Obj result, Expr expr)
     UInt narg, i;
 
     func = SyntaxTreeCompiler(FUNC_CALL(expr));
-    AssPRec(result, RNamName("function"), func);
+    AssPRec(result, RNamName("funcref"), func);
 
     /* compile the argument expressions */
     narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
