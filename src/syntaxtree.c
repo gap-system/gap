@@ -100,8 +100,6 @@ static Obj SyntaxTreeCompiler(Expr expr)
         // error
     }
 
-    fprintf(stderr, "compiling %s\n", comp.name);
-
     result = NewSyntaxTreeNode(comp.name);
 
     comp.compile(result, expr);
@@ -110,7 +108,9 @@ static Obj SyntaxTreeCompiler(Expr expr)
 }
 
 static Obj SyntaxTreeIntObjInt(UInt i)
-{ return INTOBJ_INT(i); }
+{
+    return INTOBJ_INT(i);
+}
 
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 {
@@ -462,7 +462,7 @@ Obj SyntaxTreeIf(Obj result, Stat stat)
         }
         pair = NEW_PREC(2);
         AssPRec(pair, RNamName("condition"), cond);
-        AssPRec(pair, RNamName("then"), then);
+        AssPRec(pair, RNamName("stats"), then);
 
         SET_ELM_PLIST(branches, i + 1, pair);
         CHANGED_BAG(branches);
@@ -480,13 +480,14 @@ Obj SyntaxTreeFor(Obj result, Stat stat)
     AssPRec(result, RNamName("collection"),
             SyntaxTreeCompiler(ADDR_STAT(stat)[1]));
 
-    nr = SIZE_STAT(stat) / sizeof(Stat);
+    nr = SIZE_STAT(stat) / sizeof(Stat) - 2;
     body = NEW_PLIST(T_PLIST, nr);
     SET_LEN_PLIST(body, nr);
     AssPRec(result, RNamName("body"), body);
 
-    for (i = 2; i < SIZE_STAT(stat) / sizeof(Stat); i++) {
+    for (i = 2; i < 2 + nr; i++) {
         SET_ELM_PLIST(body, i - 1, SyntaxTreeCompiler(ADDR_STAT(stat)[i]));
+        CHANGED_BAG(body);
     }
 
     return result;
