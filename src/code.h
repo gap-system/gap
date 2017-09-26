@@ -136,6 +136,7 @@ enum STAT_TNUMS {
 
             START_ENUM_RANGE(FIRST_COMPOUND_STAT),
 
+            T_EMPTY,        // may also be considered to be "T_SEQ_STAT0"
             T_SEQ_STAT,
             T_SEQ_STAT2,
             T_SEQ_STAT3,
@@ -164,6 +165,8 @@ enum STAT_TNUMS {
             T_REPEAT,
             T_REPEAT2,
             T_REPEAT3,
+
+            T_ATOMIC,
 
             END_ENUM_RANGE(LAST_COMPOUND_STAT),
 
@@ -213,11 +216,7 @@ enum STAT_TNUMS {
         T_ASSERT_2ARGS,
         T_ASSERT_3ARGS,
 
-        T_EMPTY,
-
         T_PROCCALL_OPTS,
-
-        T_ATOMIC,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };
