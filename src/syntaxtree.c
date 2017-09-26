@@ -8,7 +8,6 @@
 **  - Documentation
 **  - Compiler functions per argument (will make more separate functions go away)
 **  - Floats
-**  - Tilde
 **  - Reconsider LVar, GVar, and HVar references
 **  - what about T_SEQ_STATN? This should be flattened to just a list of statements
 **    the same goes for ProccallNArgs, FunccallNargs, and the different loop body
@@ -567,6 +566,53 @@ Obj SyntaxTreeInfo(Obj result, Stat stat)
     return result;
 }
 
+static Obj SyntaxTreeElmList(Obj result, Stat stat)
+{
+    Obj list, refs;
+    Int nr;
+    Int i;
+
+    list = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
+    AssPRec(result, RNamName("list"), list);
+
+    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
+
+    refs = NEW_PLIST(T_PLIST, nr);
+    SET_LEN_PLIST(refs, nr);
+    AssPRec(result, RNamName("refs"), refs);
+
+    for(i = 1; i < 1 + nr; i++) {
+        SET_ELM_PLIST(refs, i, SyntaxTreeCompiler(ADDR_STAT(stat)[i]));
+        CHANGED_BAG(refs);
+    }
+    return result;
+}
+
+static Obj SyntaxTreeAssList(Obj result, Stat stat)
+{
+    Obj list, refs, rhss;
+    Int nr;
+    Int i;
+
+    list = SyntaxTreeCompiler(ADDR_STAT(stat)[0]);
+    AssPRec(result, RNamName("list"), list);
+
+    nr = SIZE_STAT(stat) / sizeof(Stat) - 2;
+
+    refs = NEW_PLIST(T_PLIST, nr);
+    SET_LEN_PLIST(refs, nr);
+    AssPRec(result, RNamName("refs"), refs);
+
+    for(i = 1; i < 1 + nr; i++) {
+        SET_ELM_PLIST(refs, i, SyntaxTreeCompiler(ADDR_STAT(stat)[i]));
+        CHANGED_BAG(refs);
+    }
+    rhss = SyntaxTreeCompiler(ADDR_STAT(stat)[nr + 1]);
+    AssPRec(result, RNamName("rhs"), rhss);
+
+    return result;
+}
+
 static Obj SyntaxTreeFunc(Obj result, Obj func)
 {
     Obj str;
@@ -795,6 +841,7 @@ static const CompilerT ExprCompilers[] = {
     COMPILER_(T_REF_GVAR, ARG("gvar", SyntaxTreeGVar)),
     COMPILER_(T_ISB_GVAR, ARG("gvar", SyntaxTreeGVar)),
 
+    // TODO: can this be unified?
     COMPILER_(T_ELM_LIST,
               ARG_("list"), ARG_("pos")),
     COMPILER_(T_ELMS_LIST,
@@ -838,11 +885,10 @@ static const CompilerT ExprCompilers[] = {
     COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeFloatEager),
     COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
 
-    /* TODO: What do these do? */
-    COMPILER_(T_ELM2_LIST),
-    COMPILER_(T_ELMX_LIST),
-    COMPILER_(T_ASS2_LIST),
-    COMPILER_(T_ASSX_LIST),
+    COMPILER(T_ELM2_LIST, SyntaxTreeElmList),
+    COMPILER(T_ELMX_LIST, SyntaxTreeElmList),
+    COMPILER(T_ASS2_LIST, SyntaxTreeAssList),
+    COMPILER(T_ASSX_LIST, SyntaxTreeAssList)
 };
 
 Obj FuncSYNTAX_TREE(Obj self, Obj func)
