@@ -725,36 +725,6 @@ Obj             EvalProd (
 
 /****************************************************************************
 **
-*F  EvalInv(<expr>) . . . . . . . . . . . . evaluate a multiplicative inverse
-**
-**  'EvalInv' evaluates the multiplicative inverse-expression and returns its
-**  value,  i.e., the multiplicative inverse  of  the operand.  'EvalInv' is
-**  called from 'EVAL_EXPR' to evaluate expressions of type 'T_INV'.
-**
-**  'EvalInv' evaluates the operand and then calls the 'INV' macro.
-*/
-Obj             EvalInv (
-    Expr                expr )
-{
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Expr                tmp;            /* temporary expression            */
-
-    /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
-    opL = EVAL_EXPR( tmp );
-
-    /* compute the multiplicative inverse                                  */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
-    val = INV_MUT( opL );
-
-    /* return the value                                                    */
-    return val;
-}
-
-
-/****************************************************************************
-**
 *F  EvalQuo(<expr>) . . . . . . . . . . . . . . . . . . . evaluate a quotient
 **
 **  'EvalQuo' evaluates the quotient-expression <expr> and returns its value,
@@ -1674,19 +1644,6 @@ void            PrintAInv (
     PrintPrecedence = oldPrec;
 }
 
-void            PrintInv (
-    Expr                expr )
-{
-    UInt                oldPrec;
-
-    oldPrec = PrintPrecedence;
-    PrintPrecedence = 14;
-    Pr("%> ",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
-    Pr("%<^-1",0L,0L);
-    PrintPrecedence = oldPrec;
-}
-
 void            PrintBinop (
     Expr                expr )
 {
@@ -2061,7 +2018,6 @@ static Int InitKernel (
     InstallEvalExprFunc( T_AINV           , EvalAInv);
     InstallEvalExprFunc( T_DIFF           , EvalDiff);
     InstallEvalExprFunc( T_PROD           , EvalProd);
-    InstallEvalExprFunc( T_INV            , EvalInv);
     InstallEvalExprFunc( T_QUO            , EvalQuo);
     InstallEvalExprFunc( T_MOD            , EvalMod);
     InstallEvalExprFunc( T_POW            , EvalPow);
@@ -2108,7 +2064,6 @@ static Int InitKernel (
     InstallPrintExprFunc( T_AINV           , PrintAInv);
     InstallPrintExprFunc( T_DIFF           , PrintBinop);
     InstallPrintExprFunc( T_PROD           , PrintBinop);
-    InstallPrintExprFunc( T_INV            , PrintInv);
     InstallPrintExprFunc( T_QUO            , PrintBinop);
     InstallPrintExprFunc( T_MOD            , PrintBinop);
     InstallPrintExprFunc( T_POW            , PrintBinop);

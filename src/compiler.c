@@ -2166,39 +2166,6 @@ CVar CompProd (
 
 /****************************************************************************
 **
-*F  CompInv( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_INV
-**
-** C_INV is not defined, so I guess this never gets called SL
-**
-*/
-CVar CompInv (
-    Expr                expr )
-{
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-
-    /* allocate a new temporary for the result                             */
-    val = CVAR_TEMP( NewTemp( "val" ) );
-
-    /* compile the operands                                                */
-    left  = CompExpr( ADDR_EXPR(expr)[0] );
-
-    /* emit the code                                                       */
-    Emit( "C_INV( %c, %c )\n", val, left );
-
-    /* set the information for the result                                  */
-    SetInfoCVar( val, W_BOUND );
-
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
-
-    /* return the result                                                   */
-    return val;
-}
-
-
-/****************************************************************************
-**
 *F  CompQuo( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_QUO
 */
 CVar CompQuo (
@@ -5935,7 +5902,6 @@ static Int InitKernel (
     CompExprFuncs[ T_AINV            ] = CompAInv;
     CompExprFuncs[ T_DIFF            ] = CompDiff;
     CompExprFuncs[ T_PROD            ] = CompProd;
-    CompExprFuncs[ T_INV             ] = CompInv;
     CompExprFuncs[ T_QUO             ] = CompQuo;
     CompExprFuncs[ T_MOD             ] = CompMod;
     CompExprFuncs[ T_POW             ] = CompPow;

@@ -1833,27 +1833,6 @@ void            IntrProd ( void )
     PushObj( val );
 }
 
-void            IntrInv ( void )
-{
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-
-    /* ignore or code                                                      */
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeInv(); return; }
-
-
-    /* get the operand                                                     */
-    opL = PopObj();
-
-    /* compute the multiplicative inverse                                  */
-    val = INV_MUT( opL );
-
-    /* push the result                                                     */
-    PushObj( val );
-}
-
 void            IntrQuo ( void )
 {
     Obj                 val;            /* value, result                   */

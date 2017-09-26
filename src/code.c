@@ -1473,7 +1473,6 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
 *F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
-*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -1570,11 +1569,6 @@ void CodeDiff ( void )
 void CodeProd ( void )
 {
     PushBinaryOp( T_PROD );
-}
-
-void CodeInv ( void )
-{
-    PushUnaryOp( T_INV );
 }
 
 void CodeQuo ( void )
