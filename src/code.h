@@ -116,88 +116,108 @@ enum {
 enum STAT_TNUMS {
     START_ENUM_RANGE(FIRST_STAT_TNUM),
 
-    T_PROCCALL_0ARGS,
-    T_PROCCALL_1ARGS,
-    T_PROCCALL_2ARGS,
-    T_PROCCALL_3ARGS,
-    T_PROCCALL_4ARGS,
-    T_PROCCALL_5ARGS,
-    T_PROCCALL_6ARGS,
-    T_PROCCALL_XARGS,
+        T_PROCCALL_0ARGS,
+        T_PROCCALL_1ARGS,
+        T_PROCCALL_2ARGS,
+        T_PROCCALL_3ARGS,
+        T_PROCCALL_4ARGS,
+        T_PROCCALL_5ARGS,
+        T_PROCCALL_6ARGS,
+        T_PROCCALL_XARGS,
 
-    // The statement types between FIRST_NON_INTERRUPT_STAT
-    // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
-    // the user interrupted, e.g. via ctrl-c; or memory run full).
-    // They are all statement types which either contain sub-statements
-    // (and hence are not easy to interpret in backtraces), or else are
-    // ephemeral (break, continue, return)
-    // TODO: what about T_EMPTY and T_ATOMIC ?
-    START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
+        // The statement types between FIRST_NON_INTERRUPT_STAT
+        // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
+        // the user interrupted, e.g. via ctrl-c; or memory run full).
+        // They are all statement types which either contain sub-statements
+        // (and hence are not easy to interpret in backtraces), or else are
+        // ephemeral (break, continue, return)
+        // TODO: what about T_EMPTY and T_ATOMIC ?
+        START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
 
-    T_SEQ_STAT,
-    T_SEQ_STAT2,
-    T_SEQ_STAT3,
-    T_SEQ_STAT4,
-    T_SEQ_STAT5,
-    T_SEQ_STAT6,
-    T_SEQ_STAT7,
-    T_IF,
-    T_IF_ELSE,
-    T_IF_ELIF,
-    T_IF_ELIF_ELSE,
-    T_FOR,
-    T_FOR2,
-    T_FOR3,
-    T_FOR_RANGE,
-    T_FOR_RANGE2,
-    T_FOR_RANGE3,
-    T_WHILE,
-    T_WHILE2,
-    T_WHILE3,
-    T_REPEAT,
-    T_REPEAT2,
-    T_REPEAT3,
-    T_BREAK,
-    T_CONTINUE,
-    T_RETURN_OBJ,
-    T_RETURN_VOID,
+            START_ENUM_RANGE(FIRST_COMPOUND_STAT),
 
-    END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
+            T_SEQ_STAT,
+            T_SEQ_STAT2,
+            T_SEQ_STAT3,
+            T_SEQ_STAT4,
+            T_SEQ_STAT5,
+            T_SEQ_STAT6,
+            T_SEQ_STAT7,
 
-    T_ASS_LVAR,
-    T_UNB_LVAR,
-    T_ASS_HVAR,
-    T_UNB_HVAR,
-    T_ASS_GVAR,
-    T_UNB_GVAR,
-    T_ASS_LIST,
-    T_ASSS_LIST,
-    T_ASS_LIST_LEV,
-    T_ASSS_LIST_LEV,
-    T_UNB_LIST,
-    T_ASS_REC_NAME,
-    T_ASS_REC_EXPR,
-    T_UNB_REC_NAME,
-    T_UNB_REC_EXPR,
-    T_ASS_POSOBJ,
-    T_ASSS_POSOBJ,
-    T_ASS_POSOBJ_LEV,
-    T_ASSS_POSOBJ_LEV,
-    T_UNB_POSOBJ,
-    T_ASS_COMOBJ_NAME,
-    T_ASS_COMOBJ_EXPR,
-    T_UNB_COMOBJ_NAME,
-    T_UNB_COMOBJ_EXPR,
+            T_IF,
+            T_IF_ELSE,
+            T_IF_ELIF,
+            T_IF_ELIF_ELSE,
 
-    T_INFO,
-    T_ASSERT_2ARGS,
-    T_ASSERT_3ARGS,
+            T_FOR,
+            T_FOR2,
+            T_FOR3,
 
-    T_EMPTY,
+            T_FOR_RANGE,
+            T_FOR_RANGE2,
+            T_FOR_RANGE3,
 
-    T_PROCCALL_OPTS,
+            T_WHILE,
+            T_WHILE2,
+            T_WHILE3,
 
-    T_ATOMIC,
+            T_REPEAT,
+            T_REPEAT2,
+            T_REPEAT3,
+
+            END_ENUM_RANGE(LAST_COMPOUND_STAT),
+
+            START_ENUM_RANGE(FIRST_CONTROL_FLOW_STAT),
+
+            T_BREAK,
+            T_CONTINUE,
+            T_RETURN_OBJ,
+            T_RETURN_VOID,
+
+            END_ENUM_RANGE(LAST_CONTROL_FLOW_STAT),
+
+        END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
+
+        T_ASS_LVAR,
+        T_UNB_LVAR,
+
+        T_ASS_HVAR,
+        T_UNB_HVAR,
+
+        T_ASS_GVAR,
+        T_UNB_GVAR,
+
+        T_ASS_LIST,
+        T_ASSS_LIST,
+        T_ASS_LIST_LEV,
+        T_ASSS_LIST_LEV,
+        T_UNB_LIST,
+
+        T_ASS_REC_NAME,
+        T_ASS_REC_EXPR,
+        T_UNB_REC_NAME,
+        T_UNB_REC_EXPR,
+
+        T_ASS_POSOBJ,
+        T_ASSS_POSOBJ,
+        T_ASS_POSOBJ_LEV,
+        T_ASSS_POSOBJ_LEV,
+        T_UNB_POSOBJ,
+
+        T_ASS_COMOBJ_NAME,
+        T_ASS_COMOBJ_EXPR,
+        T_UNB_COMOBJ_NAME,
+        T_UNB_COMOBJ_EXPR,
+
+        T_INFO,
+        T_ASSERT_2ARGS,
+        T_ASSERT_3ARGS,
+
+        T_EMPTY,
+
+        T_PROCCALL_OPTS,
+
+        T_ATOMIC,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };
