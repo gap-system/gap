@@ -213,6 +213,18 @@ Error, COPY_LIST_ENTRIES: list indices must be positive integers
 gap> CopyListEntries(s,1,1,l,0,1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
 
+# Indexing into plain lists
+gap> l := [[]];;
+gap> l[1,2] := 4;
+4
+gap> l;
+[ [ , 4 ] ]
+gap> l[1,1] := 3;;
+gap> l;
+[ [ 3, 4 ] ]
+gap> l[2,1];
+Error, List Element: <list>[2] must have an assigned value
+
 # that's all, folks
 gap> STOP_TEST( "listgen.tst", 1);
 

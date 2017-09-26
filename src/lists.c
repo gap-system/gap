@@ -994,13 +994,6 @@ void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
             Obj row = ELM_PLIST( list, p1 );
             Int p2 = INT_INTOBJ(pos2);
 
-            if ( IS_PLIST( row ) ) {
-                AssPlist( row, p2, obj );
-                return;
-            }
-
-            // fallback to generic list access code (also triggers error if
-            // row isn't a list)
             ASS_LIST( row, p2, obj );
             return;
         }
