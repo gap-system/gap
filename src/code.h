@@ -390,7 +390,6 @@ enum EXPR_TNUM {
     T_AINV,
     T_DIFF,
     T_PROD,
-    T_INV,
     T_QUO,
     T_MOD,
     T_POW,
@@ -917,7 +916,6 @@ extern  void            CodeReturnVoidWhichIsNotProfiled ( void );
 *F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
-*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -958,8 +956,6 @@ extern  void            CodeAInv ( void );
 extern  void            CodeDiff ( void );
 
 extern  void            CodeProd ( void );
-
-extern  void            CodeInv ( void );
 
 extern  void            CodeQuo ( void );
 
