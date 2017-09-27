@@ -675,7 +675,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
 
     /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work) */
     SWITCH_TO_NEW_LVARS(func, narg, nloc, oldFrame);
-    stats = SyntaxTreeCompiler(FIRST_STAT_CURR_FUNC);
+    stats = SyntaxTreeCompiler(OFFSET_FIRST_STAT);
     SWITCH_TO_OLD_LVARS(oldFrame);
 
     AssPRec(result, RNamName("stats"), stats);
@@ -696,6 +696,7 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
     COMPILER(T_PROCCALL_XARGS, SyntaxTreeFunccall),
 
+    COMPILER(T_EMPTY, SyntaxTreeDefaultCompiler),
     COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT3, SyntaxTreeSeqStat),
@@ -719,6 +720,8 @@ static const CompilerT StatCompilers[] = {
     COMPILER(T_REPEAT, SyntaxTreeRepeat),
     COMPILER(T_REPEAT2, SyntaxTreeRepeat),
     COMPILER(T_REPEAT3, SyntaxTreeRepeat),
+    COMPILER(T_ATOMIC, SyntaxTreeDefaultCompiler),
+
     COMPILER_(T_BREAK),
     COMPILER_(T_CONTINUE),
     COMPILER_(T_RETURN_OBJ,
@@ -779,12 +782,10 @@ static const CompilerT StatCompilers[] = {
     COMPILER_(T_ASSERT_3ARGS,
               ARG_("level"), ARG_("condition"), ARG_("message")),
 
-    COMPILER(T_EMPTY, SyntaxTreeDefaultCompiler),
 
     COMPILER(T_PROCCALL_OPTS, SyntaxTreeDefaultCompiler,
              ARG_("opts"), ARG_("call")),
 
-    COMPILER(T_ATOMIC, SyntaxTreeDefaultCompiler),
 };
 
 static const CompilerT ExprCompilers[] = {
