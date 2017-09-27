@@ -388,7 +388,7 @@ end );
 
 Unbind( Subtype );
 BIND_GLOBAL( "Subtype", function ( arg )
-    local p;
+    local p, type;
     p := READ_LOCK(arg);
     # check argument
     if not IsType( arg[1] )  then
@@ -397,11 +397,12 @@ BIND_GLOBAL( "Subtype", function ( arg )
 
     # delegate
     if LEN_LIST(arg) = 2  then
-        return Subtype2( arg[1], arg[2] );
+        type := Subtype2( arg[1], arg[2] );
     else
-        return Subtype3( arg[1], arg[2], arg[3] );
+        type := Subtype3( arg[1], arg[2], arg[3] );
     fi;
     UNLOCK(p);
+    return type;
 end );
 
 
