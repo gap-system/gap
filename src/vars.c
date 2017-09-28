@@ -1284,7 +1284,7 @@ void PrintElmXList (
     PrintExpr( ADDR_EXPR(expr)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[2] );
+      PrintExpr( ADDR_EXPR(expr)[i] );
     }
     Pr("%<]",0L,0L);
 }
@@ -1300,7 +1300,7 @@ void PrintElmListLevel (
     PrintExpr( ADDR_EXPR(expr)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[2] );
+      PrintExpr( ADDR_EXPR(expr)[i] );
     }
     Pr("%<]",0L,0L);
 }
