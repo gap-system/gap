@@ -458,12 +458,9 @@ Obj SyntaxTreeIf(Obj result, Stat stat)
         cond = SyntaxTreeCompiler(ADDR_STAT(stat)[2 * i]);
         then = SyntaxTreeCompiler(ADDR_STAT(stat)[2 * i + 1]);
 
-        if(cond==0) {
-          fprintf(stderr, "cond 0, else?\n");
-        }
         pair = NEW_PREC(2);
         AssPRec(pair, RNamName("condition"), cond);
-        AssPRec(pair, RNamName("stats"), then);
+        AssPRec(pair, RNamName("body"), then);
 
         SET_ELM_PLIST(branches, i + 1, pair);
         CHANGED_BAG(branches);
