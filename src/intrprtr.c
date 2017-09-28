@@ -3171,6 +3171,10 @@ void            IntrAssList ( Int narg )
     Obj                 pos;            /* position                        */
     Obj                 rhs;            /* right hand side                 */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("[]:= only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3200,9 +3204,6 @@ void            IntrAssList ( Int narg )
       list = PopObj();
 
       ASS2_LIST(list, pos1, pos2, rhs);
-    }
-    else {
-      SyntaxError("[]:= only supports 1 or 2 indices");
     }
 
     /* push the right hand side again                                      */
@@ -3331,6 +3332,10 @@ void            IntrUnbList ( Int narg )
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("Unbind[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3346,7 +3351,8 @@ void            IntrUnbList ( Int narg )
       /* unbind the element                                                  */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
-      } else {
+      }
+      else {
         UNBB_LIST(list, pos);
       }
     }
@@ -3356,9 +3362,6 @@ void            IntrUnbList ( Int narg )
       list = PopObj();
 
       UNB2_LIST(list, pos1, pos2);
-    }
-    else {
-      SyntaxError("Unbind[] only supports 1 or 2 indices");
     }
 
     /* push void                                                           */
@@ -3379,13 +3382,14 @@ void            IntrElmList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeElmList( narg ); return; }
-
-    if (narg <= 0)
-      SyntaxError("This should never happen");
 
     if (narg == 1) {
       /* get the position                                                    */
@@ -3402,16 +3406,12 @@ void            IntrElmList ( Int narg )
         elm = ELMB_LIST( list, pos );
       }
     }
-    else if (narg == 2) {
+    else /*if (narg == 2)*/ {
       Obj pos2 = PopObj();
       Obj pos1 = PopObj();
       list = PopObj();
 
       elm = ELM2_LIST(list, pos1, pos2);
-    }
-    else {
-      SyntaxError("[] only supports 1 or 2 indices");
-      return;
     }
 
     /* push the element                                                    */
@@ -3526,6 +3526,10 @@ void            IntrIsbList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("IsBound[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3541,20 +3545,17 @@ void            IntrIsbList ( Int narg )
       /* get the result                                                      */
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
-      } else {
+      }
+      else {
         isb = ISBB_LIST( list, pos ) ? True : False;
       }
     }
-    else if (narg == 2) {
+    else /*if (narg == 2)*/ {
       Obj pos2 = PopObj();
       Obj pos1 = PopObj();
       list = PopObj();
 
       isb = ISB2_LIST(list, pos1, pos2) ? True : False;
-    }
-    else {
-      SyntaxError("IsBound[] only supports 1 or 2 indices");
-      isb = Fail;
     }
 
     /* push the result                                                     */

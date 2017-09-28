@@ -99,25 +99,23 @@ gap> IsBound(o["abc"]);
 IsBound abc
 false
 gap> foo := function(a)
->     return[ a[1,2,3],
->             a[4,5],
->             o[1,2,3],
+>     return[ a[4,5],
 >             o[4,5],
 >             function()
->         return [a[6,7], a[5,6,7]];
+>         return [a[6,7], o[4,5]];
 >     end];
 > end;
 function( a ) ... end
 gap> Print(foo,"\n");
 function ( a )
-    return [ a[1, 2, 2], a[4, 5], o[1, 2, 2], o[4, 5], function (  )
-  return [ a[6, 7], a[5, 6, 6] ];
-end ];
+    return [ a[4, 5], o[4, 5], function (  )
+          return [ a[6, 7], o[4, 5] ];
+  end ];
 end
 gap> res := foo(o);
-[ [ 1, 2, 3 ], [ 4, 5 ], [ 1, 2, 3 ], [ 4, 5 ], function(  ) ... end ]
-gap> res[5]();
-[ [ 6, 7 ], [ 5, 6, 7 ] ]
+[ [ 4, 5 ], [ 4, 5 ], function(  ) ... end ]
+gap> res[3]();
+[ [ 6, 7 ], [ 4, 5 ] ]
 gap> s := [];; Add(s, 1); s;
 [ 1 ]
 gap> Add(s, 4); s;
