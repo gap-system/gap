@@ -70,7 +70,7 @@ DeclareGlobalFunction( "MakeBitfields" );
 #F  BuildBitfields( <widths>[, <val1>, [<val2>...]])
 ##  <#GAPDoc Label="BuildBitfields">
 ##  <ManSection>
-##  <Func Name="BuildBitfields" Arg='widths,....'/>
+##  <Func Name="BuildBitfields" Arg='widths, vals...'/>
 ##  <Description>
 ##
 ##  This function takes one or more argument. It's first argument is a list
