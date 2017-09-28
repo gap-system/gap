@@ -191,6 +191,8 @@ enum STAT_TNUMS {
         T_UNB_GVAR,
 
         T_ASS_LIST,
+        T_ASS2_LIST,
+        T_ASSX_LIST,
         T_ASSS_LIST,
         T_ASS_LIST_LEV,
         T_ASSS_LIST_LEV,
@@ -416,7 +418,10 @@ enum EXPR_TNUM {
     T_ISB_HVAR,
     T_REF_GVAR,
     T_ISB_GVAR,
+
     T_ELM_LIST,
+    T_ELM2_LIST,
+    T_ELMX_LIST,
     T_ELMS_LIST,
     T_ELM_LIST_LEV,
     T_ELMS_LIST_LEV,
@@ -438,11 +443,6 @@ enum EXPR_TNUM {
     T_FUNCCALL_OPTS,
     T_FLOAT_EXPR_EAGER,
     T_FLOAT_EXPR_LAZY,
-
-    T_ELM2_LIST,
-    T_ELMX_LIST,
-    T_ASS2_LIST,
-    T_ASSX_LIST,
 
     END_ENUM_RANGE(LAST_EXPR_TNUM)
 };
