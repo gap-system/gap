@@ -769,7 +769,7 @@ static const CompilerT StatCompilers[] = {
     COMPILER_(T_ASS_COMOBJ_EXPR,
               ARG_("comobj"), ARG_("expression"), ARG_("rhs")),
     COMPILER_(T_UNB_COMOBJ_NAME,
-              ARG_("comobj"), ARG_("name")),
+              ARG_("comobj"), ARG("rnam", SyntaxTreeRNam)),
     COMPILER_(T_UNB_COMOBJ_EXPR,
               ARG_("comobj"), ARG_("expression")),
 
