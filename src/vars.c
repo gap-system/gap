@@ -944,9 +944,9 @@ Obj             EvalElm2List (
 
 /****************************************************************************
 **
-*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+*F  EvalElmXList(<expr>) . . . . . . . . . . . . select an element of a list
 **
-**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  'EvalElmXList' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<pos1>,<pos2>,<pos3>,....]'.
 */
 Obj             EvalElmXList (
