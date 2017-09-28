@@ -834,7 +834,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(InitRandomMT, 1, "initstr"),
     GVAR_FUNC(INT_STRING, 1, "string"),
     GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
-    GVAR_FUNC(BUILD_BITFIELDS, -2, "widths..."),
+    GVAR_FUNC(BUILD_BITFIELDS, -2, "widths, vals"),
     { 0, 0, 0, 0, 0 }
 
 };
