@@ -461,7 +461,7 @@ extern void UnbListDefault( Obj list, Int  pos );
 static inline void UNB_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
-    return (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
+    (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
 extern void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
