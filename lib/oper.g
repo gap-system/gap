@@ -1500,7 +1500,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
 
         # `gvar' is not a property (tester).
         Error( "operation `", name, "' was not created as a property,",
-               " use`DeclareOperation'" );
+               " use `DeclareOperation'" );
 
       fi;
 
