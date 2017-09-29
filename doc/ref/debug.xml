@@ -876,20 +876,35 @@ brk> return;
 gap> 
 ]]></Log>
 <P/>
-This behaviour can be controlled using the following procedure.
+
+This behaviour can be controlled using the following procedures.
 
 <ManSection>
 <Func Name="SetRecursionTrapInterval" Arg='interval'/>
+<Func Name="GetRecursionDepth" Arg=''/>
 
 <Description>
-<A>interval</A> must be a non-negative small integer (between 0 and
-<M>2^{28}</M>). An <A>interval</A> of 0 suppresses the monitoring of recursion
+<Ref Func="GetRecursionDepth"/> returns the nesting level of the GAP
+interpreter. This is reset to 0 every time the break loop is entered.
+<Ref Func="SetRecursionTrapInterval"/> sets the depth of the stack at which
+GAP will enter the Break loop. <A>interval</A> must be a non-negative small
+integer (between 0 and <M>2^{28}</M>).
+An <A>interval</A> of 0 suppresses the monitoring of recursion
 altogether. In this case excessive recursion may cause &GAP; to crash.
 <P/>
 <Log><![CDATA[
-gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
-function( depth ) ... end
+gap> GetRecursionDepth();
+0
+gap> dive := function(depth)
+>  if depth>1 then
+>    dive(depth-1);
+>  else
+>    Print("Depth ", GetRecursionDepth());
+>  fi;
+> end;;
 gap> SetRecursionTrapInterval(1000);
+gap> dive(100);
+Depth 100
 gap> dive(2500);
 recursion depth trap (1000)
  at
@@ -910,6 +925,8 @@ dive( depth - 1 ); called from
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you may 'return;' to continue
+brk> GetRecursionDepth();
+0
 brk> return;
 gap> SetRecursionTrapInterval(-1);
 SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
@@ -918,19 +935,15 @@ not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can replace <interval> via 'return <interval>;' to continue
-brk> return ();
-SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
-l integer
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <interval> via 'return <interval>;' to continue
 brk> return 0;
 gap> dive(20000);
+Depth 20000
 gap> dive(2000000);
 Segmentation fault
 ]]></Log>
 </Description>
+
+
 </ManSection>
 
 </Section>
