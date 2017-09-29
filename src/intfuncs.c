@@ -537,61 +537,66 @@ Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
     return HASHKEY_BAG_NC(obj, seed, 0, SIZE_OBJ(obj));
 }
 
-Obj IntStringInternal( Obj string )
+Obj IntStringInternal(Obj string)
 {
-        Obj                 val;            /* value = <upp> * <pow> + <low>   */
-        Obj                 upp;            /* upper part                      */
-        Int                 pow;            /* power                           */
-        Int                 low;            /* lower part                      */
-        Int                 sign;           /* is the integer negative         */
-        UInt                i;              /* loop variable                   */
-        UChar *             str;            /* temp pointer                    */
-        
-        /* get the signs, if any                                                */
-        str = CHARS_STRING(string);
-        sign = 1;
-        i = 0;
-        while ( str[i] == '-' ) {
-            sign = - sign;
-            i++;
-        }
+    Obj     val;  // value = <upp> * <pow> + <low>
+    Obj     upp;  // upper part
+    Int     pow;  // power
+    Int     low;  // lower part
+    Int     sign; // is the integer negative
+    UInt    i;    // loop variable
+    UChar * str;  // temp pointer
 
-        /* collect the digits in groups of 8                                   */
-        low = 0;
-        pow = 1;
-        upp = INTOBJ_INT(0);
-        do {
-            if( str[i] < '0' || str[i] > '9') {
-                return Fail;
-            }
-            low = 10 * low + str[i] - '0';
-            pow = 10 * pow;
-            if ( pow == 100000000L ) {
-                upp = PROD(upp, INTOBJ_INT(pow) );
-                upp = SUM(upp, INTOBJ_INT(sign*low) );
-                // Regrab, in case garbage collection occurred.
-                str = CHARS_STRING(string);
-                pow = 1;
-                low = 0;
-            }
-            i++;
-        } while ( str[i] != '\0' );
+    // get the signs, if any
+    sign = 1;
+    i = 0;
+    while (str[i] == '-') {
+        sign = -sign;
+        i++;
+    }
 
-        /* compose the integer value                                           */
-        val = 0;
-        if ( upp == INTOBJ_INT(0) ) {
-            val = INTOBJ_INT(sign*low);
-        }
-        else if ( pow == 1 ) {
-            val = upp;
-        }
-        else {
-            upp =  PROD( upp, INTOBJ_INT(pow) );
-            val = SUM( upp , INTOBJ_INT(sign*low) );
-        }
+    // reject empty string (resp. string consisting only of minus signs)
+    str = CHARS_STRING(string);
+    if (!*str)
+        return Fail;
 
-        /* push the integer value                                              */
-        return val;
+    // collect the digits in groups of 8, for improved performance
+    // note that 2^26 < 10^8 < 2^27, so the intermediate
+    // values always fit into an immediate integer
+    low = 0;
+    pow = 1;
+    upp = INTOBJ_INT(0);
+    while (str[i] != '\0') {
+        if (str[i] < '0' || str[i] > '9') {
+            return Fail;
+        }
+        low = 10 * low + str[i] - '0';
+        pow = 10 * pow;
+        if (pow == 100000000L) {
+            upp = ProdInt(upp, INTOBJ_INT(pow));
+            upp = SumInt(upp, INTOBJ_INT(sign * low));
+            str = CHARS_STRING(
+                string);    // Regrab, in case garbage collection occurred
+            pow = 1;
+            low = 0;
+        }
+        i++;
+    }
+
+    // compose the integer value
+    if (upp == INTOBJ_INT(0)) {
+        val = INTOBJ_INT(sign * low);
+    }
+    else if (pow == 1) {
+        val = upp;
+    }
+    else {
+        upp = ProdInt(upp, INTOBJ_INT(pow));
+        val = SumInt(upp, INTOBJ_INT(sign * low));
+    }
+
+    // return the integer value
+    return val;
 }
 
 /****************************************************************************
