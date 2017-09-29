@@ -263,10 +263,15 @@ end );
 InstallMethod( PrimePGroup, "for direct products",
                [IsPGroup and HasDirectProductInfo],
 function( D )
-    local groups, p;
+    local groups, p, H;
     groups := DirectProductInfo(D).groups;
     Assert(1, ForAll(groups, IsPGroup));
-    p := PrimePGroup(First(groups, G -> PrimePGroup(G) <> fail));
+    H := First(groups, G -> PrimePGroup(G) <> fail);
+    if H = fail then
+      SetIsTrivial(D, true);
+      return fail;
+    fi;
+    p := PrimePGroup(H);
     Assert(1, ForAll(groups, G -> PrimePGroup(G) in [fail, p]));
     return p;
 end );
