@@ -966,16 +966,12 @@ extern  void            CodePow ( void );
 
 /****************************************************************************
 **
-*F  CodeIntExpr(<str>)  . . . . . . . . . . . code literal integer expression
+*F  CodeIntExpr(<val>)  . . . . . . . . . . . code literal integer expression
 **
-**  'CodeIntExpr' is the action to code a literal integer expression.  <str>
-**  is the integer as a (null terminated) C character string.
+**  'CodeIntExpr' is the action to code a literal integer expression.  <val>
+**  is the integer as a GAP object.
 */
-extern void             CodeGAPSmallInt(Obj obj);
-extern  void            CodeIntExpr (
-            Char *              str );
-extern  void            CodeLongIntExpr (
-            Obj                 string ); 
+extern void CodeIntExpr(Obj val);
 
 /****************************************************************************
 **

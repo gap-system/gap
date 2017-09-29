@@ -1625,65 +1625,16 @@ void CodePow ( void )
 }
 
 
-void CodeGAPSmallInt(Obj val)
-{
-    PushExpr(INTEXPR_INT(INT_INTOBJ(val)));
-}
-
 /****************************************************************************
 **
-*F  CodeIntExpr( <str> )  . . . . . . . . . . code literal integer expression
+*F  CodeIntExpr( <val> )  . . . . . . . . . . code literal integer expression
 **
-**  'CodeIntExpr' is the action to code a literal integer expression.  <str>
-**  is the integer as a (null terminated) C character string.
+**  'CodeIntExpr' is the action to code a literal integer expression.  <val>
+**  is the integer as a GAP object.
 */
-void CodeIntExpr (
-    Char *              str )
+void CodeIntExpr(Obj val)
 {
     Expr                expr;           /* expression, result              */
-    Obj                 val;            /* value = <upp> * <pow> + <low>    */
-    Obj                 upp;            /* upper part                       */
-    Int                 pow;            /* power                            */
-    Int                 low;            /* lower part                       */
-    Int                 sign;           /* is the integer negative          */
-    UInt                i;              /* loop variable                    */
-
-    /* get the signs, if any                                                */
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
-
-    /* collect the digits in groups of 8                                    */
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
-                          INTOBJ_INT(sign*low) );
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    /* compose the integer value (set <val> first to silence 'lint')       */
-    val = 0;
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
-    }
-    else {
-        val = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
-                      INTOBJ_INT(sign*low) );
-    }
 
     /* if it is small enough code it immediately                           */
     if ( IS_INTOBJ(val) ) {
@@ -1692,83 +1643,10 @@ void CodeIntExpr (
 
     /* otherwise stuff the value into the values list                      */
     else {
+        GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
         memcpy(((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
-    }
-
-    /* push the expression                                                 */
-    PushExpr( expr );
-}
-
-/****************************************************************************
-**
-*F  CodeLongIntExpr( <str> )   . . . code literal long integer expression
-**
-**  'CodeIntExpr'  is  the  action  to   code  a  long  literal  integer
-**  expression whose digits are stored in a string GAP object.
-*/
-void CodeLongIntExpr (
-    Obj              string )
-{
-    Expr                expr;           /* expression, result              */
-    Obj                 val;            /* value = <upp> * <pow> + <low>    */
-    Obj                 upp;            /* upper part                       */
-    Int                 pow;            /* power                            */
-    Int                 low;            /* lower part                       */
-    Int                 sign;           /* is the integer negative          */
-    UInt                i;              /* loop variable                    */
-    UChar *              str;
-
-    /* get the signs, if any                                                */
-    str = CHARS_STRING(string);
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
-
-    /* collect the digits in groups of 8                                    */
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
-                          INTOBJ_INT(sign*low) );
-            str = CHARS_STRING(string);
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    /* compose the integer value (set <val> first to silence 'lint')       */
-    val = 0;
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
-    }
-    else {
-        val = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
-                      INTOBJ_INT(sign*low) );
-    }
-
-    /* if it is small enough code it immediately                           */
-    if ( IS_INTOBJ(val) ) {
-        expr = INTEXPR_INT( INT_INTOBJ(val) );
-    }
-
-    /* otherwise stuff the value into the values list                      */
-    else {
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
-        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */

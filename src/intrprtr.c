@@ -1923,8 +1923,6 @@ void            IntrIntExpr (
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeIntExpr( str ); return; }
-
     
     /* get the signs, if any                                                */
     sign = 1;
@@ -1934,7 +1932,9 @@ void            IntrIntExpr (
         i++;
     }
 
-    /* collect the digits in groups of 8                                   */
+    // collect the digits in groups of 8, for improved performance
+    // note that 2^26 < 10^8 < 2^27, so the intermediate
+    // values always fit into an immediate integer
     low = 0;
     pow = 1;
     upp = INTOBJ_INT(0);
@@ -1942,16 +1942,16 @@ void            IntrIntExpr (
         low = 10 * low + str[i] - '0';
         pow = 10 * pow;
         if ( pow == 100000000L ) {
-            upp = PROD(upp,INTOBJ_INT(pow) );
-            upp = SUM(upp  , INTOBJ_INT(sign*low) );
+            upp = ProdInt(upp, INTOBJ_INT(pow));
+            upp = SumInt(upp, INTOBJ_INT(sign * low));
+
             pow = 1;
             low = 0;
         }
         i++;
     }
 
-    /* compose the integer value                                           */
-    val = 0;
+    // compose the integer value
     if ( upp == INTOBJ_INT(0) ) {
         val = INTOBJ_INT(sign*low);
     }
@@ -1959,12 +1959,17 @@ void            IntrIntExpr (
         val = upp;
     }
     else {
-        upp =  PROD( upp, INTOBJ_INT(pow) );
-        val = SUM( upp , INTOBJ_INT(sign*low) );
+        upp = ProdInt(upp, INTOBJ_INT(pow));
+        val = SumInt(upp, INTOBJ_INT(sign * low));
     }
 
-    /* push the integer value                                              */
-    PushObj( val );
+    if (STATE(IntrCoding) > 0) {
+        CodeIntExpr(val);
+    }
+    else {
+        // push the integer value
+        PushObj(val);
+    }
 }
 
 
@@ -1978,21 +1983,18 @@ void            IntrIntExpr (
 void            IntrLongIntExpr (
     Obj               string )
 {
-    Obj                 ret;            /* integer encoded as GAP obj      */
-    /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeLongIntExpr( string ); return; }
 
-    ret = IntStringInternal(string);
-    
-    if ( ret == Fail ) {
-        /* This should never happen */
-        ErrorQuit("Int: Invalid parsing (internal error)", 0, 0);
+    Obj val = IntStringInternal(string);
+
+    if (STATE(IntrCoding) > 0) {
+        CodeIntExpr(val);
     }
-
-    /* push the integer value                                              */
-    PushObj( ret );
+    else {
+        // push the integer value
+        PushObj(val);
+    }
 }
 
 /****************************************************************************
@@ -2070,7 +2072,7 @@ void IntrIntObjExpr(Obj val)
         return;
     }
     if (STATE(IntrCoding) > 0) {
-        CodeGAPSmallInt(val);
+        CodeIntExpr(val);
         return;
     }
 
