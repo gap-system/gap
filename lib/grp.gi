@@ -124,7 +124,7 @@ function(G)
     Error(
   "`MinimalGeneratingSet' currently assumes that the group must be solvable.\n",
   "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
-  "set that is small but not of guarateed smallest cardinality");
+  "set that is small but not of guaranteed smallest cardinality");
   fi;
 end);
 
