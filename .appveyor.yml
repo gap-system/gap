@@ -23,8 +23,9 @@ environment:
 #      HPCGAP: yes
 #      BUILDDIR: build       # HPC-GAP only supports kernel extensions for of out-of-tree builds
 
+# change to packages-stable-X.Y.tar.gz in the stable branch
 cache:
-  - bootstrap-pkg-full.tar.gz
+  - packages-master.tar.gz
 
 install:
   - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup -P libgmp-devel'
