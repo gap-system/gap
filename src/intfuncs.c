@@ -662,7 +662,7 @@ static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
 
 static inline void SET_OFFFSET_BITFIELD_FUNC(Obj func, UInt offset)
 {
-  return SET_FEXS_FUNC(func, INTOBJ_INT(offset));		    
+  SET_FEXS_FUNC(func, INTOBJ_INT(offset));
 }
 
 static Obj DoFieldGetter(Obj self, Obj data)
