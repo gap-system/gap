@@ -1910,58 +1910,13 @@ void            IntrPow ( void )
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
-void            IntrIntExpr (
-    Char *              str )
+void IntrIntExpr(Char * str)
 {
-    Obj                 val;            /* value = <upp> * <pow> + <low>   */
-    Obj                 upp;            /* upper part                      */
-    Int                 pow;            /* power                           */
-    Int                 low;            /* lower part                      */
-    Int                 sign;           /* is the integer negative         */
-    UInt                i;              /* loop variable                   */
-
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     
-    /* get the signs, if any                                                */
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
-
-    // collect the digits in groups of 8, for improved performance
-    // note that 2^26 < 10^8 < 2^27, so the intermediate
-    // values always fit into an immediate integer
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = ProdInt(upp, INTOBJ_INT(pow));
-            upp = SumInt(upp, INTOBJ_INT(sign * low));
-
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    // compose the integer value
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
-    }
-    else {
-        upp = ProdInt(upp, INTOBJ_INT(pow));
-        val = SumInt(upp, INTOBJ_INT(sign * low));
-    }
+    Obj val = IntStringInternal(0, str);
 
     if (STATE(IntrCoding) > 0) {
         CodeIntExpr(val);
@@ -1980,13 +1935,12 @@ void            IntrIntExpr (
 **  'IntrLongIntExpr' is the action to  interpret a long literal integer
 **  expression whose digits are stored in a string GAP object.
 */
-void            IntrLongIntExpr (
-    Obj               string )
+void IntrLongIntExpr(Obj string)
 {
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
-    Obj val = IntStringInternal(string);
+    Obj val = IntStringInternal(string, 0);
 
     if (STATE(IntrCoding) > 0) {
         CodeIntExpr(val);
