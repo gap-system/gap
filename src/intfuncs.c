@@ -537,7 +537,7 @@ Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
     return HASHKEY_BAG_NC(obj, seed, 0, SIZE_OBJ(obj));
 }
 
-Obj IntStringInternal(Obj string)
+Obj IntStringInternal(Obj string, const Char *str)
 {
     Obj     val;  // value = <upp> * <pow> + <low>
     Obj     upp;  // upper part
@@ -545,7 +545,10 @@ Obj IntStringInternal(Obj string)
     Int     low;  // lower part
     Int     sign; // is the integer negative
     UInt    i;    // loop variable
-    UChar * str;  // temp pointer
+
+    // if <string> is given, then we ignore <str>
+    if (string)
+        str = CSTR_STRING(string);
 
     // get the signs, if any
     sign = 1;
@@ -574,9 +577,11 @@ Obj IntStringInternal(Obj string)
         pow = 10 * pow;
         if (pow == 100000000L) {
             upp = ProdInt(upp, INTOBJ_INT(pow));
-            upp = SumInt(upp, INTOBJ_INT(sign * low));
-            str = CHARS_STRING(
-                string);    // Regrab, in case garbage collection occurred
+            upp = SumInt(upp, INTOBJ_INT(sign*low));
+            // refresh 'str', in case the arithmetic operations triggered
+            // a garbage collection
+            if (string)
+                str = CSTR_STRING(string);
             pow = 1;
             low = 0;
         }
@@ -617,7 +622,7 @@ Obj FuncINT_STRING ( Obj self, Obj string )
         string = CopyToStringRep(string);
     }
 
-    return IntStringInternal(string);
+    return IntStringInternal(string, 0);
 }
 
 /****************************************************************************

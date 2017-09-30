@@ -47,7 +47,14 @@ Int HASHKEY_WHOLE_BAG_NC (Obj obj, UInt4 seed);
 // Does NOT perform bounds checking
 Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int read);
 
-Obj IntStringInternal( Obj string );
+// Parse a string containing a decimal integer into a GAP integer
+// object. Returns 'fail' if the input is not a valid decimal.
+// This function handles signs.
+//
+// If <string> is non-NULL, then <str> is ignored, and <string>
+// must reference a GAP string object. If <string> is NULL, then
+// <str> must point to a C string.
+Obj IntStringInternal(Obj string, const Char *str);
 
 /****************************************************************************
 **
