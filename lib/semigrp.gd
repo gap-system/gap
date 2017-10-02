@@ -584,7 +584,7 @@ DeclareProperty("IsZeroSemigroup", IsSemigroup);
 InstallTrueMethod(IsMonoidAsSemigroup, IsMagmaWithOne and IsSemigroup);
 InstallTrueMethod(IsGroupAsSemigroup, IsMagmaWithInverses and IsSemigroup);
 InstallTrueMethod(IsGroupAsSemigroup, IsInverseSemigroup and IsSimpleSemigroup and IsFinite);
-InstallTrueMethod(IsGroupAsSemigroup, IsCommutativeSemigroup and IsSimpleSemigroup);
+InstallTrueMethod(IsGroupAsSemigroup, IsCommutative and IsSimpleSemigroup);
 InstallTrueMethod(IsBand, IsSemilattice);
 InstallTrueMethod(IsBrandtSemigroup, IsInverseSemigroup and IsZeroSimpleSemigroup);
 InstallTrueMethod(IsCliffordSemigroup, IsSemilattice);

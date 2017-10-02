@@ -51,7 +51,7 @@ true
 # gap> Print(Semigroup(IdentityTransformation));
 # Test SemigroupViewStringPrefix
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 
 # Test < 
 gap> T := Semigroup(Transformation([2, 3, 1]));
@@ -145,7 +145,7 @@ gap> S := Group(IdentityTransformation);
 gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 
 # Test IsomorphismPermGroup for an H-class
 gap> S := FullTransformationMonoid(4);;
@@ -169,7 +169,7 @@ gap> S := Semigroup(GeneratorsOfSemigroup(FullTransformationMonoid(3)));
 gap> IsFullTransformationSemigroup(S);
 true
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> IsFullTransformationSemigroup(S);
 true
 gap> S := Semigroup(GeneratorsOfSemigroup(FullTransformationMonoid(3)));
