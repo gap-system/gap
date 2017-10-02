@@ -5,3 +5,6 @@ gap> List(trees{ i }, x -> x.name);
 [  ]
 
 #
+gap> CompileAllFunctions();;
+
+#

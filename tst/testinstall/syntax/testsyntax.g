@@ -487,26 +487,26 @@ expect_trees := [
                        name := "stat_test_if",
                        narg := 0,
                        nloc := 1,
-                       stats := rec( statements := [ rec( branches := [ rec( condition := rec( type := "T_TRUE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                       body := rec( statements := [ rec( branches := [ rec( condition := rec( type := "T_TRUE_EXPR" ),
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 0 ),
                                                                                            type := "T_RETURN_OBJ" ) ) ],
                                                           type := "T_IF" ),
                                                      rec( branches := [ rec( condition := rec( type := "T_TRUE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 0 ),
                                                                                            type := "T_RETURN_OBJ" ) ),
                                                                         rec( condition := rec( type := "T_TRUE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 1 ),
                                                                                            type := "T_RETURN_OBJ" ) ) ],
                                                           type := "T_IF_ELSE" ),
                                                      rec( branches := [ rec( condition := rec( type := "T_TRUE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 0 ),
                                                                                            type := "T_RETURN_OBJ" ) ),
                                                                         rec( condition := rec( type := "T_FALSE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 1 ),
                                                                                            type := "T_RETURN_OBJ" ) ) ],
                                                           type := "T_IF_ELIF" ),
@@ -514,18 +514,18 @@ expect_trees := [
                                                                                                             type := "T_REFLVAR" ),
                                                                                                right := rec( type := "T_TRUE_EXPR" ),
                                                                                                type := "T_EQ" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 0 ),
                                                                                            type := "T_RETURN_OBJ" ) ),
                                                                         rec( condition := rec( left := rec( lvar := 1,
                                                                                                             type := "T_REFLVAR" ),
                                                                                                right := rec( type := "T_FALSE_EXPR" ),
                                                                                                type := "T_EQ" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 1 ),
                                                                                            type := "T_RETURN_OBJ" ) ),
                                                                         rec( condition := rec( type := "T_TRUE_EXPR" ),
-                                                                             stats := rec( obj := rec( type := "T_INTEXPR",
+                                                                             body := rec( obj := rec( type := "T_INTEXPR",
                                                                                                        value := 2 ),
                                                                                            type := "T_RETURN_OBJ" ) ) ],
                                                           type := "T_IF_ELIF_ELSE" ),
@@ -1171,3 +1171,23 @@ expect_trees := [
                        type := "T_FUNC_EXPR",
                        variadic := false )
                  ];
+
+# compile all functions that are bound
+# to a global variable
+CompileAllFunctions := function()
+    local n, f, t;
+
+    t := [];
+    for n in NamesGVars() do
+        if IsBoundGlobal(n) then
+            f := ValueGlobal(n);
+            if IsFunction(f) and
+               not (IsOperation(f) or
+                    IsKernelFunction(f)) then
+                Add(t, SYNTAX_TREE(f));
+            fi;
+        fi;
+    od;
+    return t;
+end;
+
