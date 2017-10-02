@@ -18,6 +18,13 @@ WeakPointerObj( [ 1, , 10995116277760000000000, Z(17),
 [ 2, 3, 4 ], fail, SymmetricGroup( [ 1 .. 5 ] ) ] )
 gap> LengthWPObj(w);
 7
+gap> val := "cheese";;
+gap> GetWithDefault(w, 1, "cheese");
+1
+gap> IsIdenticalObj(val, GetWithDefault(w, 2, val));
+true
+gap> IsIdenticalObj(val, GetWithDefault(w, 8, val));
+true
 gap> List([1..7],x->IsBoundElmWPObj(w,x));
 [ true, false, true, true, true, true, true ]
 gap> List([1..7],x->ElmWPObj(w,x)); 
@@ -55,6 +62,14 @@ gap> LengthWPObj(w);
 6
 gap> Print(ShallowCopy(w),"\n");
 WeakPointerObj( [ 1, , , , , fail ] )
+gap> List([1..8], x -> GetWithDefault(w, x, -1));
+[ 1, -1, -1, -1, -1, fail, -1, -1 ]
+gap> GetWithDefault(w, 1, "cheese");
+1
+gap> IsIdenticalObj(val, GetWithDefault(w, 2, val));
+true
+gap> IsIdenticalObj(val, GetWithDefault(w, 8, val));
+true
 
 #
 # Access as lists

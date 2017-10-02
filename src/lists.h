@@ -236,6 +236,31 @@ static inline Obj ELM0_LIST(Obj list, Int pos)
     return (*Elm0ListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
+/****************************************************************************
+**
+*V  ElmDefListFuncs[ <type> ] . . . . . . . . .  table of selection functions
+**
+**  A package implementing a list type <type> can provide a function for
+**  'ELM_DEFAULT_LIST' and install it in 'ElmDefListFuncs[<type>]', otherwise
+**  a default implementation is provided.
+*/
+extern Obj (*ElmDefListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos, Obj def);
+
+
+/****************************************************************************
+**
+*F  ELM_DEFAULT_LIST( <list>, <pos>, <default> )select an element from a list
+**
+**  'ELM_DEFAULT_LIST' returns the element at the position <pos> in the list
+**  <list>, or <default> if <list> has no assigned object at position <pos>.
+**  An error is signalled if <list> is not a list. It is the responsibility
+**  of the caller to ensure that <pos> is a positive integer.
+*/
+static inline Obj ELM_DEFAULT_LIST(Obj list, Int pos, Obj def)
+{
+    return (*ElmDefListFuncs[TNUM_OBJ(list)])(list, pos, def);
+}
+
 
 /****************************************************************************
 **

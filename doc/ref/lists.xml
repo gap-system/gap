@@ -440,6 +440,7 @@ the operations <Ref Func="Add"/> and <Ref Func="Remove"/>.
 <Heading>IsBound and Unbind for Lists</Heading>
 
 <#Include Label="IsBound_list">
+<#Include Label="GetWithDefault_list">
 <#Include Label="Unbind_list">
 
 </Section>

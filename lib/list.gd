@@ -178,6 +178,51 @@ DeclareOperationKernel( "[]",
     [ IsList, IS_INT ],
     ELM_LIST );
 
+#############################################################################
+##
+##  <#GAPDoc Label="GetWithDefault_list">
+##  <ManSection>
+##  <Oper Name="GetWithDefault" Arg='list, n, default'/>
+##
+##  <Description>
+##  <Ref Func="GetWithDefault"/> returns the <A>n</A>th element of the list
+##  <A>list</A>, if <A>list</A> has a value at index <A>n</A>, and
+##  <A>default</A> otherwise.
+##  <P/>
+##  While this method can be used on any list, it is particularly useful
+##  for Weak Pointer lists <Ref Sect="Weak Pointer Objects"/> where the
+##  value of the list can change.
+##  <P/>
+##  To distinguish between the <A>n</A>th element being unbound, or
+##  <A>default</A> being in <A>list</A>, users can create a new mutable
+##  object, such as a string. <Ref Func="IsIdenticalObj"/> returns
+##  <K>false</K> for different mutable strings, even if their contents are
+##  the same.
+##
+##  <Example><![CDATA[
+##  gap> l := [1,2,,"a"];
+##  [ 1, 2,, "a" ]
+##  gap> newobj := "a";
+##  "a"
+##  gap> GetWithDefault(l, 2, newobj);
+##  2
+##  gap> GetWithDefault(l, 3, newobj);
+##  "a"
+##  gap> GetWithDefault(l, 4, newobj);
+##  "a"
+##  gap> IsIdenticalObj(GetWithDefault(l, 3, newobj), newobj);
+##  true
+##  gap> IsIdenticalObj(GetWithDefault(l, 4, newobj), newobj);
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperationKernel( "GetWithDefault",
+    [ IsList, IS_INT, IsObject ],
+    ELM_DEFAULT_LIST );
+
 
 #############################################################################
 ##
