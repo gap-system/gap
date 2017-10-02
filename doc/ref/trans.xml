@@ -971,7 +971,7 @@ gap> S := FullTransformationSemigroup( 5 );
 gap> SmallestMovedPoint( S );              
 1
 gap> S := Semigroup( IdentityTransformation );
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> SmallestMovedPoint( S );
 infinity
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -1007,7 +1007,7 @@ gap> S := FullTransformationSemigroup( 5 );
 gap> LargestMovedPoint( S );
 5
 gap> S := Semigroup( IdentityTransformation );
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> LargestMovedPoint( S );
 0
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
@@ -1043,7 +1043,7 @@ gap> S := FullTransformationSemigroup( 5 );
 gap> SmallestImageOfMovedPoint( S );              
 1
 gap> S := Semigroup( IdentityTransformation );
-<trivial transformation monoid of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> SmallestImageOfMovedPoint( S );
 infinity
 gap> f := Transformation( [ 1, 2, 3, 6, 6, 6 ] );;
