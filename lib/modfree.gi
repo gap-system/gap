@@ -218,17 +218,17 @@ InstallMethod( AsSSortedList,
 ##
 #M  Random( <V> ) . . . . . . . . . . . . random vector of a free left module
 ##
-InstallMethod( Random,
-    "for a free left module",
-    [ IsFreeLeftModule ],
-    function( V )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a free left module",
+    [ IsRandomSource, IsFreeLeftModule ],
+    function( rs, V )
     local F;    # coefficient field of <V>
 
     if IsFiniteDimensional( V ) then
       F:= LeftActingDomain( V );
       return LinearCombination( Basis( V ),
                                 List( [ 1 .. Dimension( V ) ],
-                                      x -> Random( F ) ) );
+                                      x -> Random( rs, F ) ) );
     else
       TryNextMethod();
     fi;

@@ -8,7 +8,6 @@
 *Y  Copyright (C) 2002 The GAP Group
 */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -25,20 +24,16 @@
 
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/ariths.h>                 /* basic arithmetic */
 #include <src/bool.h>                   /* booleans */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/objfgelm.h>               /* objects of free groups */
 #include <src/objscoll.h>               /* single collector */
 
 #include <src/objpcgel.h>               /* objects of polycyclic groups */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
-#include <src/hpc/thread.h>             /* threads */
 
 
 /****************************************************************************

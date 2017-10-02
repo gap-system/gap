@@ -1,5 +1,4 @@
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -24,7 +23,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
 #include <src/blister.h>                /* boolean lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/vecgf2.h>                 /* GF2 vectors */
 
@@ -37,8 +35,7 @@
 #include <src/code.h>                   /* Needed for TakeInterrupt */
 #include <src/stats.h>
 
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <assert.h>
 
@@ -1063,11 +1060,11 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 
 /****************************************************************************
 **
-*F  FuncProdGF2VecAnyMat( <self>, <v>, <m>) . . . method to handle vector*plain list
-**                                    of GF2Vectors reasonably efficiently
+*F  FuncPROD_GF2VEC_ANYMAT( <self>, <v>, <m>)
 **
+**  method to handle vector*plain list of GF2Vectors reasonably efficiently.
 */
-Obj FuncProdGF2VecAnyMat ( Obj self, Obj vec, Obj mat )
+Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 {
   Obj res;
   UInt len;
@@ -1611,7 +1608,7 @@ void ConvGF2Vec (
     len   = LEN_PLIST(list);
 
     /* We may have to resize the bag now because a length 1
-       plain list is shorter than a length 1 VECGF2 */
+       plain list is shorter than a length 1 GF2VEC */
     if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
       ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
 
@@ -2146,8 +2143,6 @@ Obj FuncELMS_GF2VEC (
 **  It is the responsibility of the caller  to ensure that <pos> is positive,
 **  and that <elm> is not 0.
 */
-
-static Obj ConvertToVectorRep;	/* BH: changed to static */
 
 Obj FuncASS_GF2VEC (
     Obj                 self,
@@ -2978,11 +2973,11 @@ Obj FuncCOPY_SECTION_GF2VECS(Obj self, Obj src, Obj dest, Obj from, Obj to, Obj 
 
 /****************************************************************************
 **
-*F  FuncAPPEND_VECGF2( <self>, <vecl>, <vecr> )
+*F  FuncAPPEND_GF2VEC( <self>, <vecl>, <vecr> )
 **
 */
 
-Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
+Obj FuncAPPEND_GF2VEC( Obj self, Obj vecl, Obj vecr )
 {
   UInt lenl, lenr;
   lenl = LEN_GF2VEC(vecl);
@@ -3001,11 +2996,11 @@ Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
 
 /****************************************************************************
 **
-*F  FuncSHALLOWCOPY_VECGF2( <self>, <vec> )
+*F  FuncSHALLOWCOPY_GF2VEC( <self>, <vec> )
 **
 */
 
-Obj FuncSHALLOWCOPY_VECGF2( Obj self, Obj vec)
+Obj FuncSHALLOWCOPY_GF2VEC( Obj self, Obj vec)
 {
   return ShallowCopyVecGF2(vec);
 }
@@ -3205,10 +3200,10 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 
 /****************************************************************************
 **
-*F  FuncNUMBER_VECGF2( <self>, <vect> )
+*F  FuncNUMBER_GF2VEC( <self>, <vect> )
 **
 */
-Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
+Obj FuncNUMBER_GF2VEC( Obj self, Obj vec )
 {
   UInt len,nd,i;
   UInt head,a;
@@ -3359,10 +3354,10 @@ UInt DistGF2Vecs(UInt* ptL,UInt* ptR,UInt len)
   end = ptL + ((len+BIPEB-1)/BIPEB);
   sum=0;
   /* loop over the entries */
+  /*T possibly unroll this loop */
   while ( ptL < end ) {
     m = *ptL++ ^ *ptR++; /* xor of bits, nr bits therein is difference */
-    COUNT_TRUES_BLOCK(m);
-    sum += m;
+    sum += COUNT_TRUES_BLOCK(m);
   }
   return sum;
 }
@@ -3475,7 +3470,7 @@ Int DistVecClosVec(
   return chg;
 }
 
-Obj FuncDistVecClosVec(
+Obj FuncDIST_VEC_CLOS_VEC(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -3591,7 +3586,7 @@ UInt AClosVec(
 
 
 
-Obj FuncAClosVec(
+Obj FuncA_CLOS_VEC(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -3622,7 +3617,7 @@ Obj FuncAClosVec(
   return best;
 }
 
-Obj FuncAClosVecCoords(
+Obj FuncA_CLOS_VEC_COORDS(
   Obj		self,
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj		vec,    /* vector we compute distance to */
@@ -4518,7 +4513,8 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol,
     i, j, k, l, mutable;
   Obj mat, type, row, shift[BIPEB];
-  UInt *datar, *data;
+  UInt *data;
+  const UInt *datar;
 
   nrowl = LEN_GF2MAT(matl);
   nrowr = LEN_GF2MAT(matr);
@@ -4577,7 +4573,7 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 	l = 0;
 	if (BLOCK_ELM_GF2VEC(ELM_GF2MAT(matl,i),k) & MASK_POS_GF2VEC(k)) {
 	  /* append shift[ncol%BIPEB] to data */
-	  datar = (UInt *) ADDR_OBJ(shift[ncol%BIPEB]);
+	  datar = (const UInt *) CONST_ADDR_OBJ(shift[ncol%BIPEB]);
 	  if (ncol % BIPEB) {
 	    data[-1] ^= *datar++;
 	    l = BIPEB - ncol%BIPEB;
@@ -4709,9 +4705,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(ZERO_GF2VEC_2, 1, "len"),
     GVAR_FUNC(INV_GF2MAT_MUTABLE, 1, "gf2mat"),
     GVAR_FUNC(INV_GF2MAT_SAME_MUTABILITY, 1, "gf2mat"),
-    { "INV_GF2MAT", 1, "gf2mat",
-      FuncINV_GF2MAT_IMMUTABLE, "src/vecgf2.c:INV_GF2MAT_IMMUTABLE" },
-
+    GVAR_FUNC(INV_GF2MAT_IMMUTABLE, 1, "gf2mat"),
     GVAR_FUNC(INV_PLIST_GF2VECS_DESTRUCTIVE, 1, "list"),
     GVAR_FUNC(SUM_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
     GVAR_FUNC(PROD_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
@@ -4726,32 +4720,18 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(POSITION_NONZERO_GF2VEC, 2, "gf2vec, zero"),
     GVAR_FUNC(POSITION_NONZERO_GF2VEC3, 3, "gf2vec, zero, from"),
     GVAR_FUNC(MULT_ROW_VECTOR_GF2VECS_2, 2, "gf2vecl, mul"),
-    { "APPEND_GF2VEC", 2, "gf2vecl, gf2vecr",
-      FuncAPPEND_VECGF2, "src/vecgf2.c:APPEND_GF2VEC" },
-
-    { "SHALLOWCOPY_GF2VEC", 1, "gf2vec",
-      FuncSHALLOWCOPY_VECGF2, "src/vecgf2.c:SHALLOWCOPY_GF2VEC" },
-
-    { "NUMBER_GF2VEC", 1, "gf2vec",
-      FuncNUMBER_VECGF2, "src/vecgf2.c:NUMBER_GF2VEC" },
-
+    GVAR_FUNC(APPEND_GF2VEC, 2, "gf2vecl, gf2vecr"),
+    GVAR_FUNC(SHALLOWCOPY_GF2VEC, 1, "gf2vec"),
+    GVAR_FUNC(NUMBER_GF2VEC, 1, "gf2vec"),
     GVAR_FUNC(TRANSPOSED_GF2MAT, 1, "gf2mat"),
     GVAR_FUNC(DIST_GF2VEC_GF2VEC, 2, "gf2vec, gf2vec"),
-    { "DIST_VEC_CLOS_VEC", 3, "list, gf2vec, list",
-      FuncDistVecClosVec, "src/vecgf2.c:DIST_VEC_CLOS_VEC" },
-
+    GVAR_FUNC(DIST_VEC_CLOS_VEC, 3, "list, gf2vec, list"),
     GVAR_FUNC(SUM_GF2MAT_GF2MAT, 2, "matl, matr"),
-    { "A_CLOS_VEC", 4, "list, gf2vec, int, int",
-      FuncAClosVec, "src/vecgf2.c:A_CLOS_VEC" },
-
-    { "A_CLOS_VEC_COORDS", 4, "list, gf2vec, int, int",
-      FuncAClosVecCoords, "src/vecgf2.c:A_CLOS_VEC_COORDS" },
-
+    GVAR_FUNC(A_CLOS_VEC, 4, "list, gf2vec, int, int"),
+    GVAR_FUNC(A_CLOS_VEC_COORDS, 4, "list, gf2vec, int, int"),
     GVAR_FUNC(COSET_LEADERS_INNER_GF2, 4, "veclis, weight, tofind, leaders"),
     GVAR_FUNC(CONV_GF2MAT, 1, "list"),
-    { "PROD_GF2VEC_ANYMAT", 2, "vec, mat",
-      FuncProdGF2VecAnyMat, "src/vecgf2.c:PROD_GF2VEC_ANYMAT" },
-    
+    GVAR_FUNC(PROD_GF2VEC_ANYMAT, 2, "vec, mat"),
     GVAR_FUNC(RIGHTMOST_NONZERO_GF2VEC, 1, "vec"),
     GVAR_FUNC(RESIZE_GF2VEC, 2, "vec, newlen"),
     GVAR_FUNC(SHIFT_LEFT_GF2VEC, 2, "vec, amount"),
@@ -4802,7 +4782,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    InitFopyGVar("ConvertToVectorRep", &ConvertToVectorRep);
     InitFopyGVar("IsLockedRepresentationVector", &IsLockedRepresentationVector);
 
     /* return success                                                      */

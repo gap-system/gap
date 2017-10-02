@@ -10,7 +10,6 @@
 */
 
 #include <src/system.h>
-#include <src/gapstate.h>
 #include <src/sysfiles.h>
 
 #include <src/gasman.h>
@@ -28,7 +27,6 @@
 
 #include <src/lists.h>
 #include <src/plist.h>
-#include <src/stringobj.h>
 
 #include <src/bool.h>
 
@@ -47,7 +45,6 @@
 #include <src/hookintrprtr.h>
 
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 
 #include <src/gaputils.h>
 

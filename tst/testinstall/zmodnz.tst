@@ -431,6 +431,13 @@ matrix over Integers mod 170141183460469231731687303715884105728:
 [ [  92709463147897837085761925410587,  92709463147897837085761925410587 ],
   [  92709463147897837085761925410587,  92709463147897837085761925410587 ] ]
 
+# test the methods for Random
+gap> R := Integers mod 10;;
+gap> Random(R);
+ZmodnZObj( 4, 10 )
+gap> Random(GlobalRandomSource, R);
+ZmodnZObj( 9, 10 )
+
 #
 gap> STOP_TEST( "zmodnz.tst", 1);
 

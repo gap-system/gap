@@ -50,7 +50,6 @@
 **  The  third part consists  ...
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -74,166 +73,14 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
-
-/****************************************************************************
-**
-*F  NEW_RANGE() . . . . . . . . . . . . . . . . . . . . . .  make a new range
-**
-**  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
-**  low value, and the increment before you can use the range.
-**
-**  'NEW_RANGE' is defined in the declaration part of this package as follows
-**
-#define NEW_RANGE_NSORT() NewBag( T_RANGE_NSORT, 3 * sizeof(Obj) )
-#define NEW_RANGE_SSORT() NewBag( T_RANGE_SSORT, 3 * sizeof(Obj) )
-*/
-
-
-/****************************************************************************
-**
-*F  IS_RANGE(<val>) . . . . . . . . . . . . . . .  test if a value is a range
-**
-**  'IS_RANGE' returns 1  if the value  <val> is known  to be a range,  and 0
-**  otherwise.  Note that a list for which 'IS_RANGE' returns  0 may still be
-**  a range, but  the kernel does not know  this yet.  Use  'IsRange' to test
-**  whether a list is a range.
-**
-**  Note that  'IS_RANGE' is a  macro, so do not  call it with arguments that
-**  have side effects.
-**
-**  'IS_RANGE' is defined in the declaration part of this package as follows
-**
-#define IS_RANGE(val)   (TNUM_OBJ(val)==T_RANGE_NSORT || TNUM_OBJ(val)==T_RANGE_SSORT)
-*/
-
-
-/****************************************************************************
-**
-*F  SET_LEN_RANGE(<list>,<len>) . . . . . . . . . . set the length of a range
-**
-**  'SET_LEN_RANGE' sets the length  of the range <list>  to the value <len>,
-**  which must be a C integer larger than 1.
-**
-**  Note that 'SET_LEN_RANGE' is a macro,  so  do not  call it with arguments
-**  that have side effects.
-**
-**  'SET_LEN_RANGE' is  defined in  the declaration part  of  this package as
-**  follows
-**
-#define SET_LEN_RANGE(list,len)         (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
-*/
-
-
-/****************************************************************************
-**
-*F  GET_LEN_RANGE(<list>) . . . . . . . . . . . . . . . . . length of a range
-**
-**  'GET_LEN_RANGE' returns the  logical length of  the range <list>, as  a C
-**  integer.
-**
-**  Note that  'GET_LEN_RANGE' is a macro, so  do not call  it with arguments
-**  that have side effects.
-**
-**  'GET_LEN_RANGE' is  defined in  the declaration part  of this  package as
-**  follows
-**
-#define GET_LEN_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[0] )
-*/
-
-
-/****************************************************************************
-**
-*F  SET_LOW_RANGE(<list>,<low>) . . . . . .  set the first element of a range
-**
-**  'SET_LOW_RANGE' sets the  first element of the range  <list> to the value
-**  <low>, which must be a C integer.
-**
-**  Note  that 'SET_LOW_RANGE' is a macro, so do not call  it with  arguments
-**  that have side effects.
-**
-**  'SET_LOW_RANGE' is defined  in the declaration  part  of this package  as
-**  follows
-**
-#define SET_LOW_RANGE(list,low)         (ADDR_OBJ(list)[1] = INTOBJ_INT(low))
-*/
-
-
-/****************************************************************************
-**
-*F  GET_LOW_RANGE(<list>) . . . . . . . . . . . . .  first element of a range
-**
-**  'GET_LOW_RANGE' returns the first  element  of the  range  <list> as a  C
-**  integer.
-**
-**  Note that 'GET_LOW_RANGE' is a  macro, so do not  call it with  arguments
-**  that have side effects.
-**
-**  'GET_LOW_RANGE'  is defined in  the declaration  part  of this package as
-**  follows
-**
-#define GET_LOW_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[1] )
-*/
-
-
-/****************************************************************************
-**
-*F  SET_INC_RANGE(<list>,<inc>) . . . . . . . .  set the increment of a range
-**
-**  'SET_INC_RANGE' sets  the  increment of  the range  <list>   to the value
-**  <inc>, which must be a C integer.
-**
-**  Note that  'SET_INC_RANGE' is a macro,  so do  not call it with arguments
-**  that have side effects.
-**
-**  'SET_INC_RANGE' is  defined  in the  declaration part of  this package as
-**  follows
-**
-#define SET_INC_RANGE(list,inc)         (ADDR_OBJ(list)[2] = INTOBJ_INT(inc))
-*/
-
-
-/****************************************************************************
-**
-*F  GET_INC_RANGE(<list>) . . . . . . . . . . . . . . .  increment of a range
-**
-**  'GET_INC_RANGE' returns the increment of the range <list> as a C integer.
-**
-**  Note  that 'GET_INC_RANGE' is  a macro, so  do not call it with arguments
-**  that have side effects.
-**
-**  'GET_INC_RANGE' is  defined  in the  declaration part  of this package as
-**  follows
-**
-#define GET_INC_RANGE(list)             INT_INTOBJ( ADDR_OBJ(list)[2] )
-*/
-
-
-/****************************************************************************
-**
-*F  GET_ELM_RANGE(<list>,<pos>) . . . . . . . . . . . . .  element of a range
-**
-**  'GET_ELM_RANGE' return  the <pos>-th element  of the range <list>.  <pos>
-**  must be a positive integer less than or equal to the length of <list>.
-**
-**  Note that 'GET_ELM_RANGE'  is a macro, so do  not call  it with arguments
-**  that have side effects.
-**
-**  'GET_ELM_RANGE'  is  defined in the  declaration part  of this package as
-**  follows
-**
-#define GET_ELM_RANGE(list,pos)         INTOBJ_INT( GET_LOW_RANGE(list) \
-                                          + ((pos)-1) * GET_INC_RANGE(list) )
-*/
 
 
 /****************************************************************************
@@ -334,7 +181,7 @@ Obj CopyRange (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
     ADDR_OBJ(list)[0] = copy;
@@ -344,8 +191,8 @@ Obj CopyRange (
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
-    ADDR_OBJ(copy)[1] = ADDR_OBJ(list)[1];
-    ADDR_OBJ(copy)[2] = ADDR_OBJ(list)[2];
+    ADDR_OBJ(copy)[1] = CONST_ADDR_OBJ(list)[1];
+    ADDR_OBJ(copy)[2] = CONST_ADDR_OBJ(list)[2];
 
     /* return the copy                                                     */
     return copy;
@@ -382,7 +229,7 @@ void CleanRangeCopy (
     Obj                 list )
 {
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
@@ -1020,9 +867,9 @@ Obj FuncIS_RANGE (
 
 void SaveRange( Obj range )
 {
-  SaveSubObj(ADDR_OBJ(range)[0]); /* length */
-  SaveSubObj(ADDR_OBJ(range)[1]); /* base */
-  SaveSubObj(ADDR_OBJ(range)[2]); /* increment */
+  SaveSubObj(CONST_ADDR_OBJ(range)[0]); /* length */
+  SaveSubObj(CONST_ADDR_OBJ(range)[1]); /* base */
+  SaveSubObj(CONST_ADDR_OBJ(range)[2]); /* increment */
 }
 
 /****************************************************************************

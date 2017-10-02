@@ -1,5 +1,4 @@
 #include <src/system.h>
-#include <src/gapstate.h>
 
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>

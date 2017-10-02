@@ -54,7 +54,7 @@ static inline Int IS_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  IS_PLIST_OR_POSOBJ( <list> )  . . . . . . .check type of <list>
+*F  IS_PLIST_OR_POSOBJ( <list> ) . . . . . . . . . . . . check type of <list>
 **
 **  Checks if this is 'PLIST'-like.
 **  This function is used in a GAP_ASSERT checking if calling functions like
@@ -120,6 +120,7 @@ static inline void GROW_PLIST(Obj list, Int plen)
 static inline void SHRINK_PLIST(Obj list, Int plen)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
+    GAP_ASSERT(plen >= 0);
     GAP_ASSERT(plen <= CAPACITY_PLIST(list));
     ResizeBag(list, (plen + 1) * sizeof(Obj));
 }
@@ -151,7 +152,7 @@ static inline void SET_LEN_PLIST(Obj list, Int len)
 static inline Int LEN_PLIST(Obj list)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
-    return ((Int)(ADDR_OBJ(list)[0]));
+    return ((Int)(CONST_ADDR_OBJ(list)[0]));
 }
 
 
@@ -186,7 +187,7 @@ static inline Obj ELM_PLIST(Obj list, Int pos)
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
     GAP_ASSERT(pos <= CAPACITY_PLIST(list));
-    return ADDR_OBJ(list)[pos];
+    return CONST_ADDR_OBJ(list)[pos];
 }
 
 /****************************************************************************
@@ -202,6 +203,7 @@ static inline Obj * BASE_PTR_PLIST(Obj list)
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     return ADDR_OBJ(list) + 1;
 }
+
 /****************************************************************************
 **
 *F  IS_DENSE_PLIST( <list> )  . . . . . check if <list> is a dense plain list
@@ -217,7 +219,6 @@ static inline Int IS_DENSE_PLIST(Obj list)
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
 }
 
-
 /****************************************************************************
 **
 *F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
@@ -229,7 +230,7 @@ static inline Int IS_MUTABLE_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  AssPlist(<list>,<pos>,<val>)  . . . . . . . . . .  assign to a plain list
+*F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
 extern void            AssPlist (
     Obj                 list,
@@ -238,8 +239,47 @@ extern void            AssPlist (
 
 /****************************************************************************
 **
+*F  PushPlist( <list>, <val> ) . . . . . . . .  assign to end of a plain list
+**
+**  Note that this function does not adjust the TNUM of the list object. It
+**  also does not attempt to convert the list to a different representation,
+**  such as a string or blist. If your need that, use AddList or AddPlist
+**  instead.
+**
+*/
+static inline UInt PushPlist(Obj list, Obj val)
+{
+    const UInt pos = LEN_PLIST(list) + 1;
+    GROW_PLIST(list, pos);
+    SET_LEN_PLIST(list, pos);
+    SET_ELM_PLIST(list, pos, val);
+    if (IS_BAG_REF(val))
+        CHANGED_BAG(list);
+    return pos;
+}
+
+/****************************************************************************
+**
+*F  PopPlist( <list> ) . . . . . . . . .  remove last element of a plain list
+**
+**  Also returns the removed element. Caller is responsible for ensuring that
+**  the list is non-empty. Otherwise, an assertion may be raised, or the plist
+**  be left in an invalid state.
+**
+*/
+static inline Obj PopPlist(Obj list)
+{
+    const UInt pos = LEN_PLIST(list);
+    Obj val = ELM_PLIST(list, pos);
+    SET_LEN_PLIST(list, pos - 1);
+    SET_ELM_PLIST(list, pos, 0);
+    return val;
+}
+
+/****************************************************************************
+**
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
-*F  UnbPlistImm( <list>, <pos> ) . . . . . unbind an element from a plain list
+*F  UnbPlistImm( <list>, <pos> ) . . . .  unbind an element from a plain list
 */
 extern void AssPlistEmpty (
     Obj                 list,

@@ -49,7 +49,6 @@
 #include <src/read.h>                   /* to access stack of for loop globals */
 #include <src/gvars.h>
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <src/vars.h>                   /* variables */
@@ -122,7 +121,7 @@ static inline void PopLoopNesting( void ) {
 
 static inline void SetupGapname(TypInputFile* i)
 {
-  if(!i->gapname) {
+  if (!i->gapname) {
     i->gapname = MakeImmString(i->name);
 #ifdef HPCGAP
     i->gapnameid = AddAList(FilenameCache, i->gapname);
@@ -130,13 +129,8 @@ static inline void SetupGapname(TypInputFile* i)
     // code below for GAP?!?
 #else
     Obj pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
-    if(pos == Fail) {
-        UInt len = LEN_PLIST( FilenameCache );
-        GROW_PLIST(      FilenameCache, len+1 );
-        SET_LEN_PLIST(   FilenameCache, len+1 );
-        SET_ELM_PLIST(   FilenameCache, len+1, i->gapname );
-        CHANGED_BAG(     FilenameCache );
-        i->gapnameid = len + 1;
+    if (pos == Fail) {
+        i->gapnameid = PushPlist(FilenameCache, i->gapname);;
     }
     else {
         i->gapnameid = INT_INTOBJ(pos);
@@ -145,6 +139,11 @@ static inline void SetupGapname(TypInputFile* i)
     }
 #endif
   }
+}
+
+Obj FuncGET_FILENAME_CACHE(Obj self)
+{
+  return CopyObj(FilenameCache, 1);
 }
 
 Obj FILENAME_STAT(Stat stat)
@@ -166,40 +165,43 @@ Obj GET_FILENAME_BODY(Obj body)
 void SET_FILENAME_BODY(Obj body, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(val));
+    MakeImmutableString(val);
     BODY_HEADER(body)->filename = val;
-}
-
-Obj GET_STARTLINE_BODY(Obj body)
-{
-    Obj line = BODY_HEADER(body)->startline;
-    return IS_INTOBJ(line) ? line : 0;
-}
-
-void SET_STARTLINE_BODY(Obj body, Obj val)
-{
-    GAP_ASSERT(IS_INTOBJ(val));
-    BODY_HEADER(body)->startline = val;
 }
 
 Obj GET_LOCATION_BODY(Obj body)
 {
     Obj location = BODY_HEADER(body)->location;
-    return IS_STRING(location) ? location : 0;
+    return IS_STRING_REP(location) ? location : 0;
 }
 
 void SET_LOCATION_BODY(Obj body, Obj val)
 {
+    GAP_ASSERT(IS_STRING_REP(val));
+    MakeImmutableString(val);
     BODY_HEADER(body)->location = val;
 }
 
-Obj GET_ENDLINE_BODY(Obj body)
+UInt GET_STARTLINE_BODY(Obj body)
 {
-    return BODY_HEADER(body)->endline;
+    Obj line = BODY_HEADER(body)->startline;
+    return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
 }
 
-void SET_ENDLINE_BODY(Obj body, Obj val)
+void SET_STARTLINE_BODY(Obj body, UInt val)
 {
-    BODY_HEADER(body)->endline = val;
+    BODY_HEADER(body)->startline = val ? INTOBJ_INT(val) : 0;
+}
+
+UInt GET_ENDLINE_BODY(Obj body)
+{
+    Obj line = BODY_HEADER(body)->endline;
+    return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
+}
+
+void SET_ENDLINE_BODY(Obj body, UInt val)
+{
+    BODY_HEADER(body)->endline = val ? INTOBJ_INT(val) : 0;
 }
 
 /****************************************************************************
@@ -207,25 +209,22 @@ void SET_ENDLINE_BODY(Obj body, Obj val)
 ** Fill in filename and line of a statement, checking we do not overflow
 ** the space we have for storing information
 */
-static Stat fillFilenameLine(Int fileid, Int line, Int size, Int type)
+static StatHeader fillFilenameLine(Int fileid, Int line, Int size, Int type)
 {
-  Stat stat;
-  if(fileid < 0 || fileid >= (1 << 16))
-  {
-    fileid = (1 << 16) - 1;
+  if (fileid < 0 || fileid >= (1 << 15)) {
+    fileid = (1 << 15) - 1;
     ReportFileNumberOverflowOccured();
   }
-  if(line < 0 || line >= (1 << 16))
-  {
+  if (line < 0 || line >= (1 << 16)) {
     line = (1 << 16) - 1;
     ReportLineNumberOverflowOccured();
   }
 
-  stat = ((Stat)fileid << 48) + ((Stat)line << 32) +
-          ((Stat)size << 8) + (Stat)type;
-
-  return stat;
+  StatHeader header = { 0, fileid, line, size, type };
+  return header;
 }
+
+
 
 /****************************************************************************
 **
@@ -248,23 +247,23 @@ static Stat NewStatWithProf (
     Stat                stat;           /* result                          */
 
     /* this is where the new statement goes                                */
-    stat = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
+    stat = STATE(OffsBody) + sizeof(StatHeader);
 
     /* increase the offset                                                 */
     STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
-    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-      ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) + sizeof(BodyHeader) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) + sizeof(BodyHeader)  ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    
+    Obj body = BODY_FUNC(CURR_FUNC());
+    UInt bodySize = SIZE_BAG(body);
+    if (bodySize == 0)
+        bodySize = STATE(OffsBody);
+    while (bodySize < STATE(OffsBody))
+        bodySize *= 2;
+    ResizeBag(body, bodySize);
+    STATE(PtrBody) = (Stat*)PTR_BAG(body);
+
     /* enter type and size                                                 */
-    ADDR_STAT(stat)[-1] = fillFilenameLine(file, line, size, type);
+    *STAT_HEADER(stat) = fillFilenameLine(file, line, size, type);
     RegisterStatWithHook(stat);
     /* return the new statement                                            */
     return stat;
@@ -290,30 +289,7 @@ Expr            NewExpr (
     UInt                type,
     UInt                size )
 {
-    Expr                expr;           /* result                          */
-
-    /* this is where the new expression goes                               */
-    expr = STATE(OffsBody) + FIRST_STAT_CURR_FUNC;
-
-    /* increase the offset                                                 */
-    STATE(OffsBody) = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
-
-    /* make certain that the current body bag is large enough              */
-    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), STATE(OffsBody) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < STATE(OffsBody) ) {
-        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
-        STATE(PtrBody) = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
-    }
-
-    /* enter type and size                                                 */
-    ADDR_EXPR(expr)[-1] = fillFilenameLine(STATE(Input)->gapnameid,
-                                           STATE(Input)->number, size, type);
-    RegisterStatWithHook(expr);
-    /* return the new expression                                           */
-    return expr;
+    return NewStat(type, size);
 }
 
 
@@ -803,10 +779,10 @@ void CodeFuncExprBegin (
     /* record where we are reading from */
     SetupGapname(STATE(Input));
     SET_FILENAME_BODY(body, STATE(Input)->gapname);
-    SET_STARTLINE_BODY(body, INTOBJ_INT(startLine));
+    SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
-    STATE(OffsBody) = 0;
+    STATE(OffsBody) = sizeof(BodyHeader);
     STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
@@ -826,7 +802,7 @@ void CodeFuncExprBegin (
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
-    assert( stat1 == FIRST_STAT_CURR_FUNC );
+    assert( stat1 == OFFSET_FIRST_STAT );
 }
 
 void CodeFuncExprEnd (
@@ -841,7 +817,7 @@ void CodeFuncExprEnd (
     UInt                i;              /* loop variable                   */
 
     /* get the function expression                                         */
-    fexp = CURR_FUNC;
+    fexp = CURR_FUNC();
     assert(!STATE(LoopNesting));
     
     /* get the body of the function                                        */
@@ -871,20 +847,20 @@ void CodeFuncExprEnd (
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
+    *STAT_HEADER(OFFSET_FIRST_STAT)
         = fillFilenameLine(
-            FILENAMEID_STAT(FIRST_STAT_CURR_FUNC),
-            LINE_STAT(FIRST_STAT_CURR_FUNC),
+            FILENAMEID_STAT(OFFSET_FIRST_STAT),
+            LINE_STAT(OFFSET_FIRST_STAT),
             nr*sizeof(Stat),
             T_SEQ_STAT+nr-1);
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
-        ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
+        ADDR_STAT(OFFSET_FIRST_STAT)[nr-i] = stat1;
     }
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody)+sizeof(BodyHeader) );
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), INTOBJ_INT(STATE(Input)->number));
+    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody) );
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), STATE(Input)->number);
     /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
 
     /* switch back to the previous function                                */
@@ -900,14 +876,10 @@ void CodeFuncExprEnd (
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
     if ( STATE(CurrLVars) != STATE(CodeLVars) ) {
-        fexs = FEXS_FUNC( CURR_FUNC );
-        len = LEN_PLIST( fexs );
-        GROW_PLIST(      fexs, len+1 );
-        SET_LEN_PLIST(   fexs, len+1 );
-        SET_ELM_PLIST(   fexs, len+1, fexp );
-        CHANGED_BAG(     fexs );
+        fexs = FEXS_FUNC( CURR_FUNC() );
+        len = PushPlist( fexs, fexp );
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
-        ADDR_EXPR(expr)[0] = (Expr)(len+1);
+        ADDR_EXPR(expr)[0] = (Expr)len;
         PushExpr( expr );
     }
 
@@ -1501,7 +1473,6 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
 *F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
-*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -1600,11 +1571,6 @@ void CodeProd ( void )
     PushBinaryOp( T_PROD );
 }
 
-void CodeInv ( void )
-{
-    PushUnaryOp( T_INV );
-}
-
 void CodeQuo ( void )
 {
     PushBinaryOp( T_QUO );
@@ -1685,7 +1651,7 @@ void CodeIntExpr (
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        memcpy(((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1759,7 +1725,7 @@ void CodeLongIntExpr (
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1960,7 +1926,7 @@ void CodeStringExpr (
     string = NewExpr( T_STRING_EXPR, SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* copy the string                                                     */
-    memcpy( (void *)ADDR_EXPR(string), ADDR_OBJ(str), 
+    memcpy( (void *)ADDR_EXPR(string), CONST_ADDR_OBJ(str),
                         SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* push the string                                                     */
@@ -2068,25 +2034,20 @@ static void CodeEagerFloatExpr( Obj str, Char mark ) {
   UInt l = GET_LEN_STRING(str);
   Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
   Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+  UInt ix;
   assert(EAGER_FLOAT_LITERAL_CACHE);
 #ifdef HPCGAP
   assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
-  UInt next = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
-  ADDR_EXPR(fl)[0] = next;
+  ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
 #else
   assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
-  CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
-  SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+  AssPlist(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
+  ix = NextEagerFloatLiteralNumber++;
 #endif
+  ADDR_EXPR(fl)[0] = ix;
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
   memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
-#if !defined(HPCGAP)
-  NextEagerFloatLiteralNumber++;
-#endif
   PushExpr(fl);
 }
 
@@ -3454,8 +3415,7 @@ void CodeAssertEnd3Args ( void )
 void SaveBody ( Obj body )
 {
   UInt i;
-  UInt *ptr;
-  ptr = (UInt *) ADDR_OBJ(body);
+  const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
   /* Save the new inforation in the body */
   for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     SaveSubObj((Obj)(*ptr++));
@@ -3489,6 +3449,17 @@ void LoadBody ( Obj body )
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
+
+/****************************************************************************
+ **
+ *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+ */
+static StructGVarFunc GVarFuncs [] = {
+
+  GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
+  { 0, 0, 0, 0, 0 }
+
+};
 
 void InitCoderState(GAPState * state)
 {
@@ -3540,6 +3511,8 @@ static Int InitKernel (
     SetupOffsBodyStackAndLoopStack();
 #endif
 
+    InitHdlrFuncsFromTable( GVarFuncs );
+
     /* return success                                                      */
     return 0;
 }
@@ -3552,8 +3525,9 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-  UInt gv;
-  Obj cache;
+    UInt gv;
+    Obj cache;
+
     /* allocate the statements and expressions stacks                      */
     STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
@@ -3573,6 +3547,9 @@ static Int InitLibrary (
     SET_LEN_PLIST(cache,0);
 #endif
     AssGVar(gv, cache);
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;

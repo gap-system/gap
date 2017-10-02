@@ -9,7 +9,6 @@
 **
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/sysfiles.h>               /* file input/output */
@@ -48,7 +47,6 @@
 #include <src/profile.h>
 #include <src/hookintrprtr.h>
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
 #include <src/calls.h>                  /* function filename, line number */
@@ -283,18 +281,12 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 static inline UInt getFilenameId(Stat stat)
 {
   UInt id = FILENAMEID_STAT(stat);
-  if(id == 0)
-  {
+  if (id == 0) {
     return 0;
   }
-  if(LEN_PLIST(OutputtedFilenameList) < id || ELM_PLIST(OutputtedFilenameList,id) != True)
-  {
-    if(LEN_PLIST(OutputtedFilenameList) < id) {
-      GROW_PLIST(OutputtedFilenameList, id);
-      SET_LEN_PLIST(OutputtedFilenameList, id);
-    }
-    SET_ELM_PLIST(OutputtedFilenameList, id, True);
-    CHANGED_BAG(OutputtedFilenameList);
+  if (LEN_PLIST(OutputtedFilenameList) < id ||
+      ELM_PLIST(OutputtedFilenameList, id) != True) {
+    AssPlist(OutputtedFilenameList, id, True);
     fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
                                   CSTR_STRING(FILENAME_STAT(stat)), (int)id);
   }
@@ -324,18 +316,15 @@ static inline void outputStat(Stat stat, int exec, int visited)
 
   Int8 ticks = 0, newticks = 0;
 
-  HashLock(&profileState);
   // Explicitly skip these two cases, as they are often specially handled
   // and also aren't really interesting statements (something else will
   // be executed whenever they are).
   if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
-    HashUnlock(&profileState);
     return;
   }
 
   // Catch the case we arrive here and profiling is already disabled
   if(!profileState_Active) {
-    HashUnlock(&profileState);
     return;
   }
 
@@ -344,7 +333,6 @@ static inline void outputStat(Stat stat, int exec, int visited)
   // Statement not attached to a file
   if(nameid == 0)
   {
-    HashUnlock(&profileState);
     return;
   }
 
@@ -399,25 +387,25 @@ static inline void outputStat(Stat stat, int exec, int visited)
       profileState.lastNotOutputted.line = -1;
     }
   }
-
-  HashUnlock(&profileState);
 }
 
 void visitStat(Stat stat)
 {
 #ifdef HPCGAP
-  if(profileState.profiledThread != TLS(threadID))
+  if (profileState.profiledThread != TLS(threadID))
     return;
 #endif
 
   int visited = VISITED_STAT(stat);
 
-  if(!visited) {
-    ADDR_STAT(stat)[-1] |= (Stat)1 << 63;
+  if (!visited) {
+    STAT_HEADER(stat)->visited = 1;
   }
 
-  if(profileState.OutputRepeats || !visited) {
+  if (profileState.OutputRepeats || !visited) {
+    HashLock(&profileState);
     outputStat(stat, 1, visited);
+    HashUnlock(&profileState);
   }
 }
 
@@ -448,10 +436,10 @@ void registerStat(Stat stat)
     int active;
     HashLock(&profileState);
     active = profileState_Active;
-    HashUnlock(&profileState);
-    if(active) {
+    if (active) {
       outputStat(stat, 0, 0);
     }
+    HashUnlock(&profileState);
 }
 
 
@@ -635,7 +623,7 @@ Obj FuncDEACTIVATE_PROFILING (
   return True;
 }
 
-Obj FuncIS_PROFILE_ACTIVE (
+Obj FuncIsLineByLineProfileActive (
     Obj self)
 {
   if(profileState_Active) {
@@ -780,8 +768,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(ACTIVATE_PROFILING, 4, "string,boolean,boolean,integer"),
     GVAR_FUNC(DEACTIVATE_PROFILING, 0, ""),
-    { "IsLineByLineProfileActive", 0, "",
-      FuncIS_PROFILE_ACTIVE, "src/profile.c:IsLineByLineProfileActive" },
+    GVAR_FUNC(IsLineByLineProfileActive, 0, ""),
     GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "bool"),
     { 0, 0, 0, 0, 0 }
 };

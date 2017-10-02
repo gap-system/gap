@@ -55,6 +55,7 @@ extern "C" {
 
 
 #define ADDR_INT(obj)          ((mp_limb_t *)ADDR_OBJ(obj))
+#define CONST_ADDR_INT(obj)    ((const mp_limb_t *)CONST_ADDR_OBJ(obj))
 #define SIZE_INT(obj)          ((mp_size_t)SIZE_OBJ(obj)/sizeof(mp_limb_t))
 /* SIZE_INT gives a result in limbs                                        */
 
@@ -74,7 +75,7 @@ extern Obj ObjInt_Int8(Int8 i);
 ** Reduce and normalize the given large integer object if necessary.
 **
 ** TODO: This is an internal implementation detail and ideally should not
-** be exported; unfortunately, FuncNUMBER_VECGF2 currently needs this.
+** be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
 extern Obj GMP_REDUCE( Obj gmp );
 extern Obj GMP_NORMALIZE( Obj gmp );

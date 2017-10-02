@@ -1118,11 +1118,6 @@ InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
       if r.Version = version then
         path:= Concatenation( r.InstallationPath, "/bin/", arch, "/" );
         Add( dirs, Directory( path ) );
-        if arch <> GAPInfo.ArchitectureBase then
-          path:= Concatenation( r.InstallationPath, "/bin/",
-                     GAPInfo.ArchitectureBase, "/" );
-          Add( dirs, Directory( path ) );
-        fi;
       fi;
     od;
     return dirs;

@@ -581,6 +581,11 @@ InstallOtherMethod( \[\], "for GF2 matrix",
       IsPosInt ],
     ELM_GF2MAT );
 
+InstallMethod( \[\], "for GF2 matrix",
+    [ IsGF2MatrixRep,
+      IsPosInt, IsPosInt ],
+    MAT_ELM_GF2MAT );
+
 
 #############################################################################
 ##
@@ -599,6 +604,13 @@ InstallOtherMethod( \[\]\:\=,
       IsPosInt,
       IsObject ],
     ASS_GF2MAT );
+
+InstallMethod( \[\]\:\=,
+    "for GF2 matrix",
+    [ IsGF2MatrixRep,
+      IsPosInt, IsPosInt,
+      IsObject ],
+    SET_MAT_ELM_GF2MAT );
 
 
 #############################################################################
@@ -1208,7 +1220,7 @@ end);
 LOCAL_COPY_GF2 := GF(2);
 
 InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
-    local   v,  q,  vc,  common,  field, q0;
+    local v, q, vc, common, field, q0;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
     fi;
@@ -1305,7 +1317,15 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 #
                 return true;
             fi;
-            CLONE_OBJ(v,vc); # horrible hack.
+            # Switching the object below can change the mutability of
+            # v, hence restore it
+            if not IsMutable(v) then
+                MakeImmutable(vc);
+            fi;
+            # We need to force the switch, because v (and vc) might
+            # be in the public region, with all caveats that might have.
+            # ConvertToVectorRep should not be used in HPC-GAP
+            FORCE_SWITCH_OBJ(v,vc); # horrible hack.
         else
             return true;
         fi;
@@ -1433,7 +1453,9 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 #
                 return fail; # v can not be written over GF(q)
             fi;
-            # CLONE_OBJ(v,vc); # commented out the hack used in in-place conversion
+            if not IsMutable(v) then
+                MakeImmutable(vc);
+            fi;
         else
             return fail; # v can not be written over GF(q)
         fi;
@@ -2331,7 +2353,9 @@ InstallMethod( BaseDomain, "for a gf2 vector",
   [ IsGF2VectorRep ], function( v ) return GF(2); end );
 InstallMethod( BaseDomain, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return GF(2); end );
-InstallMethod( RowLength, "for a gf2 matrix",
+InstallMethod( NumberRows, "for a gf2 matrix",
+  [ IsGF2MatrixRep ], m -> m![1]);
+InstallMethod( NumberColumns, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",

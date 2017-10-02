@@ -57,8 +57,7 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 #include <src/hpc/aobjects.h>           /* thread-local storage */
 
 #include <src/gaputils.h>
@@ -183,57 +182,29 @@ Obj CopyPRec (
         return rec;
     }
 
-    /* if an empty record has not yet been copied                          */
-    if ( LEN_PREC(rec) == 0 ) {
-
-        /* make a copy                                                     */
-        if ( mut ) {
-            copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
-        }
-        else {
-            copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
-        }
-
-        /* leave a forwarding pointer                                      */
-        ResizeBag( rec, SIZE_OBJ(rec) + sizeof(Obj) );
-        SET_RNAM_PREC( rec, 1, (UInt)copy );
-        CHANGED_BAG( rec );
-
-        /* now it is copied                                                */
-        RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
+    /* make a copy                                                     */
+    if ( mut ) {
+        copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
     }
-
-    /* if the record has not yet been copied                               */
     else {
+        copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
+    }
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(rec)[0];
 
-        /* make a copy                                                     */
-        if ( mut ) {
-            copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
-        }
-        else {
-            copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
-        }
-        SET_RNAM_PREC( copy, 1, GET_RNAM_PREC( rec, 1 ) );
+    // leave a forwarding pointer
+    ADDR_OBJ(rec)[0] = copy;
+    CHANGED_BAG( rec );
 
-        /* leave a forwarding pointer                                      */
-        SET_RNAM_PREC( rec, 1, (UInt)copy );
-        CHANGED_BAG( rec );
+    // now it is copied
+    RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
 
-        /* now it is copied                                                */
-        RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
-
-        /* copy the subvalues                                              */
-        tmp = COPY_OBJ( GET_ELM_PREC( rec, 1 ), mut );
-        SET_LEN_PREC( copy, LEN_PREC(rec) );
-        SET_ELM_PREC( copy, 1, tmp );
+    // copy the subvalues
+    SET_LEN_PREC( copy, LEN_PREC(rec) );
+    for ( i = 1; i <= LEN_PREC(copy); i++ ) {
+        SET_RNAM_PREC( copy, i, GET_RNAM_PREC( rec, i ) );
+        tmp = COPY_OBJ( GET_ELM_PREC( rec, i ), mut );
+        SET_ELM_PREC( copy, i, tmp );
         CHANGED_BAG( copy );
-        for ( i = 2; i <= LEN_PREC(copy); i++ ) {
-            SET_RNAM_PREC( copy, i, GET_RNAM_PREC( rec, i ) );
-            tmp = COPY_OBJ( GET_ELM_PREC( rec, i ), mut );
-            SET_ELM_PREC( copy, i, tmp );
-            CHANGED_BAG( copy );
-        }
-
     }
 
     /* return the copy                                                     */
@@ -244,7 +215,7 @@ Obj CopyPRecCopy (
     Obj                 rec,
     Int                 mut )
 {
-    return (Obj)GET_RNAM_PREC( rec, 1 );
+    return ADDR_OBJ(rec)[0];
 }
 
 void CleanPRec (
@@ -257,30 +228,15 @@ void CleanPRecCopy (
 {
     UInt                i;              /* loop variable                   */
 
-    /* empty record                                                        */
-    if ( LEN_PREC(rec) == 0 ) {
+    /* remove the forwarding pointer                                       */
+    ADDR_OBJ(rec)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(rec)[0] )[0];
 
-        /* remove the forwarding pointer                                   */
-        ResizeBag( rec, SIZE_OBJ(rec) - sizeof(Obj) );
+    /* now it is cleaned                                               */
+    RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
 
-        /* now it is cleaned                                               */
-        RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
-    }
-
-    /* nonempty record                                                     */
-    else {
-
-        /* remove the forwarding pointer                                   */
-        SET_RNAM_PREC( rec, 1, GET_RNAM_PREC( GET_RNAM_PREC( rec, 1 ), 1 ) );
-
-        /* now it is cleaned                                               */
-        RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
-
-        /* clean the subvalues                                             */
-        CLEAN_OBJ( GET_ELM_PREC( rec, 1 ) );
-        for ( i = 2; i <= LEN_PREC(rec); i++ ) {
-            CLEAN_OBJ( GET_ELM_PREC( rec, i ) );
-        }
+    /* clean the subvalues                                             */
+    for ( i = 1; i <= LEN_PREC(rec); i++ ) {
+        CLEAN_OBJ( GET_ELM_PREC( rec, i ) );
     }
 }
 
@@ -606,7 +562,7 @@ void SortPRecRNam (
             i++; k++;
         }
         /* Finally, copy everything back to where it came from: */
-        memcpy(ADDR_OBJ(rec)+2,ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
+        memcpy(ADDR_OBJ(rec)+2,CONST_ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
     } else {   /* We have to work in place to avoid a garbage collection. */
         /* i == save is the cut point */
         j = 1;
@@ -749,9 +705,9 @@ Obj FuncEQ_PREC (
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC_REP(left) )
+    if ( ! IS_PREC(left) )
         return False;
-    if ( ! IS_PREC_REP(right) )
+    if ( ! IS_PREC(right) )
         return False;
     if ( LEN_PREC(left) != LEN_PREC(right) )
         return False;
@@ -801,7 +757,7 @@ Obj FuncLT_PREC (
     Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC_REP(left) || ! IS_PREC_REP(right) ) {
+    if ( ! IS_PREC(left) || ! IS_PREC(right) ) {
         if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return True;
         if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return False;
     }

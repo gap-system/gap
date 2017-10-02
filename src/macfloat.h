@@ -32,7 +32,7 @@ typedef double Double;
 #endif
 
 static inline Double VAL_MACFLOAT(Obj obj)
-{ Double __val; memcpy(&__val,ADDR_OBJ(obj),sizeof(Double)); return __val; }
+{ Double __val; memcpy(&__val,CONST_ADDR_OBJ(obj),sizeof(Double)); return __val; }
 static inline void SET_VAL_MACFLOAT(Obj obj, Double val)
 { Double __val = (val); memcpy(ADDR_OBJ(obj),&__val,sizeof(Double)); }
 

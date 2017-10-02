@@ -51,7 +51,6 @@
 **  string, and if so converts it into the above format.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -79,7 +78,7 @@
 #include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
@@ -129,7 +128,7 @@ Int EqChar (
     Obj                 charL,
     Obj                 charR )
 {
-    return (*(UChar*)ADDR_OBJ(charL) == *(UChar*)ADDR_OBJ(charR));
+    return CHAR_VALUE(charL) == CHAR_VALUE(charR);
 }
 
 
@@ -144,7 +143,7 @@ Int LtChar (
     Obj                 charL,
     Obj                 charR )
 {
-    return (*(UChar*)ADDR_OBJ(charL) < *(UChar*)ADDR_OBJ(charR));
+    return CHAR_VALUE(charL) < CHAR_VALUE(charR);
 }
 
 
@@ -159,7 +158,7 @@ void PrintChar (
 {
     UChar               chr;
 
-    chr = *(UChar*)ADDR_OBJ(val);
+    chr = CHAR_VALUE(val);
     if      ( chr == '\n'  )  Pr("'\\n'",0L,0L);
     else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
     else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);
@@ -190,7 +189,7 @@ void PrintChar (
 */
 void SaveChar ( Obj c )
 {
-    SaveUInt1( *(UChar *)ADDR_OBJ(c));
+    SaveUInt1( CHAR_VALUE(c));
 }
 
 
@@ -201,7 +200,7 @@ void SaveChar ( Obj c )
 */
 void LoadChar( Obj c )
 {
-    *(UChar *)ADDR_OBJ(c) = LoadUInt1();
+    SET_CHAR_VALUE(c, LoadUInt1());
 }
 
 
@@ -302,7 +301,7 @@ Obj FuncINT_CHAR (
     }
 
     /* return the character                                                */
-    return INTOBJ_INT(*(UChar*)ADDR_OBJ(val));
+    return INTOBJ_INT(CHAR_VALUE(val));
 }
 
 /****************************************************************************
@@ -353,7 +352,7 @@ Obj FuncSINT_CHAR (
   }
 
   /* return the character                                                */
-  return INTOBJ_INT(SINT_CHAR(*(UChar*)ADDR_OBJ(val)));
+  return INTOBJ_INT(SINT_CHAR(CHAR_VALUE(val)));
 }
 
 /****************************************************************************
@@ -604,7 +603,7 @@ Obj CopyString (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
     ADDR_OBJ(list)[0] = copy;
@@ -614,7 +613,7 @@ Obj CopyString (
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
 
     /* copy the subvalues                                                  */
-    memcpy((void*)(ADDR_OBJ(copy)+1), (void*)(ADDR_OBJ(list)+1), 
+    memcpy(ADDR_OBJ(copy)+1, CONST_ADDR_OBJ(list)+1,
            ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)-1) * sizeof(Obj));
 
     /* return the copy                                                     */
@@ -629,7 +628,7 @@ Obj CopyStringCopy (
     Obj                 list,
     Int                 mut )
 {
-    return ADDR_OBJ(list)[0];
+    return CONST_ADDR_OBJ(list)[0];
 }
 
 
@@ -651,7 +650,7 @@ void CleanStringCopy (
     Obj                 list )
 {
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
@@ -1096,7 +1095,7 @@ void AssString (
 
     /* now perform the assignment and return the assigned value            */
     SET_ELM_STRING( list, pos, val ); 
-    /*    CHARS_STRING(list)[pos-1] = *((UInt1*)ADDR_OBJ(val)); */
+    /*    CHARS_STRING(list)[pos-1] = CHAR_VALUE(val); */
     CHANGED_BAG( list );
   }
 }    
@@ -1248,7 +1247,7 @@ Obj PosString (
     if (TNUM_OBJ(val) != T_CHAR) return Fail;
     
     /* val as C character   */
-    valc = *(UInt1*)ADDR_OBJ(val);
+    valc = CHAR_VALUE(val);
 
     /* search entries in <list>                                     */
     p = CHARS_STRING(list);
@@ -1295,7 +1294,7 @@ void PlainString (
 	  CHANGED_BAG( list );
 	  }
     */
-    memcpy((void*)ADDR_OBJ(list), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(list);
 }
 
@@ -1366,13 +1365,13 @@ Obj CopyToStringRep(
     copy = NEW_STRING(lenString);
 
     if ( IS_STRING_REP(string) ) {
-        memcpy(ADDR_OBJ(copy), ADDR_OBJ(string), SIZE_OBJ(string));
+        memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(string), SIZE_OBJ(string));
         /* XXX no error checks? */
     } else {
         /* copy the string to the string representation                     */
         for ( i = 1; i <= lenString; i++ ) {
             elm = ELMW_LIST( string, i );
-            CHARS_STRING(copy)[i-1] = *((UChar*)ADDR_OBJ(elm));
+            CHARS_STRING(copy)[i-1] = CHAR_VALUE(elm);
         } 
         CHARS_STRING(copy)[lenString] = '\0';
     }
@@ -1409,7 +1408,7 @@ void ConvString (
     /* copy the string to the string representation                     */
     for ( i = 1; i <= lenString; i++ ) {
         elm = ELMW_LIST( string, i );
-        CHARS_STRING(tmp)[i-1] = *((UChar*)ADDR_OBJ(elm));
+        CHARS_STRING(tmp)[i-1] = CHAR_VALUE(elm);
     }
     CHARS_STRING(tmp)[lenString] = '\0';
 
@@ -1417,7 +1416,7 @@ void ConvString (
     RetypeBag( string, IS_MUTABLE_OBJ(string)?T_STRING:T_STRING+IMMUTABLE );
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     /* copy data area from tmp */
-    memcpy((void*)ADDR_OBJ(string), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(string);
 }
 
@@ -1727,12 +1726,12 @@ Obj FuncNormalizeWhitespace (
 
 /****************************************************************************
 **
-*F  FuncRemoveCharacters( <self>, <string>, <rem> ) . . . . . delete characters
+*F  FuncREMOVE_CHARACTERS( <self>, <string>, <rem> ) . . . . . delete characters
 **  from <rem> in <string> in place 
 **    
 */ 
 
-Obj FuncRemoveCharacters (
+Obj FuncREMOVE_CHARACTERS (
 			      Obj     self,
 			      Obj     string,
                               Obj     rem     )
@@ -1747,7 +1746,7 @@ Obj FuncRemoveCharacters (
 	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncRemoveCharacters( self, string, rem );
+    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* check whether <rem> is a string                                  */
@@ -1756,7 +1755,7 @@ Obj FuncRemoveCharacters (
 	     "RemoveCharacters: second argument <rem> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(rem), 0L,
 	     "you can replace <rem> via 'return <rem>;'" );
-    return FuncRemoveCharacters( self, string, rem );
+    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1838,13 +1837,13 @@ Obj FuncTranslateString (
 
 /****************************************************************************
 **
-*F  FuncSplitString( <self>, <string>, <seps>, <wspace> ) . . . . split string
+*F  FuncSplitStringInternal( <self>, <string>, <seps>, <wspace> ) . . . . split string
 **  at characters in <seps> and <wspace>
 **    
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */ 
-Obj FuncSplitString (
+Obj FuncSplitStringInternal (
 			      Obj     self,
 			      Obj     string,
                               Obj     seps,
@@ -1862,7 +1861,7 @@ Obj FuncSplitString (
 	     "SplitString: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <seps> is a string                                  */
@@ -1871,7 +1870,7 @@ Obj FuncSplitString (
 	     "SplitString: second argument <seps> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(seps), 0L,
 	     "you can replace <seps> via 'return <seps>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <wspace> is a string                                  */
@@ -1880,7 +1879,7 @@ Obj FuncSplitString (
 	     "SplitString: third argument <wspace> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(wspace), 0L,
 	     "you can replace <wspace> via 'return <wspace>;'" );
-    return FuncSplitString( self, string, seps, wspace );
+    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
@@ -1902,11 +1901,15 @@ Obj FuncSplitString (
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
   for (a=0, z=0; z<len; z++) {
+    // Whenever we encounter a separator or a white space, the substring
+    // starting after the last separator/white space is cut out.  The
+    // only difference between white spaces and separators is that white
+    // spaces don't separate empty strings.
     if (SPLITSTRINGWSPACE[s[z]] == 1) {
       if (a<z) {
         l = z-a;
         part = NEW_STRING(l);
-        /* in case of garbage collection we need update */
+        // update s in case there was a garbage collection
         s = CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
@@ -1923,6 +1926,7 @@ Obj FuncSplitString (
       if (SPLITSTRINGSEPS[s[z]] == 1) {
         l = z-a;
         part = NEW_STRING(l);
+        // update s in case there was a garbage collection
         s = CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
@@ -1934,7 +1938,8 @@ Obj FuncSplitString (
     }
   }
   
-  /* collect a trailing part */
+  // Pick up a substring at the end of the string.  Note that a trailing
+  // separator does not produce an empty string.
   if (a<z) {
     /* copy until last position which is z-1 */
     l = z-a;
@@ -2291,15 +2296,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FIND_ALL_IN_STRING, 2, "string, characters"),
     GVAR_FUNC(NORMALIZE_NEWLINES, 1, "string"),
 #endif
-
     GVAR_FUNC(NormalizeWhitespace, 1, "string"),
-    { "REMOVE_CHARACTERS", 2, "string, rem",
-      FuncRemoveCharacters, "src/stringobj.c:RemoveCharacters" },
-
+    GVAR_FUNC(REMOVE_CHARACTERS, 2, "string, rem"),
     GVAR_FUNC(TranslateString, 2, "string, trans"),
-    { "SplitStringInternal", 3, "string, seps, wspace",
-      FuncSplitString, "src/stringobj.c:SplitStringInternal" },
-
+    GVAR_FUNC(SplitStringInternal, 3, "string, seps, wspace"),
     GVAR_FUNC(SMALLINT_STR, 1, "string"),
     { 0, 0, 0, 0, 0 }
 
@@ -2506,7 +2506,7 @@ static Int InitLibrary (
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
         ObjsChar[i] = NewBag( T_CHAR, 1L );
-        *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
+        SET_CHAR_VALUE(ObjsChar[i], (UChar)i);
     }
 
     /* init filters and functions                                          */

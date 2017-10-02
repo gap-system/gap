@@ -66,12 +66,11 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
 
 #include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 
 #include <src/trans.h>
 #include <assert.h>
@@ -2262,7 +2261,7 @@ Obj             FuncPermList (
     UInt2 *             ptPerm2;        /* pointer to the permutation      */
     UInt4 *             ptPerm4;        /* pointer to the permutation      */
     UInt                degPerm;        /* degree of the permutation       */
-    Obj *               ptList;         /* pointer to the list             */
+    const Obj *         ptList;         /* pointer to the list             */
     UInt2 *             ptTmp2;         /* pointer to the buffer bag       */
     UInt4 *             ptTmp4;         /* pointer to the buffer bag       */
     Int                 i,  k;          /* loop variables                  */

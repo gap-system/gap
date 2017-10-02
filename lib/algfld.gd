@@ -89,11 +89,14 @@ DeclareAttribute( "AlgebraicElementsFamilies",
 ##  <Oper Name="AlgebraicElementsFamily" Arg='obj'/>
 ##
 ##  <Description>
+##  Arguments: base field, polynomial, check
+##  If check is true, then the irreducibility of the polynomial in 
+##  polynomial ring over base field is checked.
 ##  </Description>
 ##  </ManSection>
 ##
 DeclareOperation( "AlgebraicElementsFamily",
-  [IsField,IsUnivariatePolynomial]);
+  [IsField,IsUnivariatePolynomial,IsBool]);
 
 #############################################################################
 ##
@@ -101,7 +104,8 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##
 ##  <#GAPDoc Label="AlgebraicExtension">
 ##  <ManSection>
-##  <Oper Name="AlgebraicExtension" Arg='K,f'/>
+##  <Oper Name="AlgebraicExtension" Arg='K,f[,nam]'/>
+##  <Oper Name="AlgebraicExtensionNC" Arg='K,f[,nam]'/>
 ##
 ##  <Description>
 ##  constructs an extension <A>L</A> of the field <A>K</A> by one root of the
@@ -112,6 +116,12 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##  of <A>L</A> and the attribute
 ##  <Ref Func="RootOfDefiningPolynomial"/>
 ##  of <A>L</A> holds a root of <A>f</A> in <A>L</A>.
+##  By default this root is printed as <C>a</C>, this string can be
+##  overwritten with the optional argument <A>nam</A>. <P/>
+##  
+##  The first version of the command checks that the polynomial <A>f</A>
+##  is an irreducible polynomial over <A>K</A>. This check is skipped with
+##  the <C>NC</C> variant.
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(Rationals,"x");;
 ##  gap> p:=x^4+3*x^2+1;;
@@ -121,12 +131,17 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##  true
 ##  gap> a:=RootOfDefiningPolynomial(e);
 ##  a
+##  gap> l := AlgebraicExtensionNC(Rationals, x^24+3*x^2+1, "alpha");;
+##  gap> RootOfDefiningPolynomial(l)^50;
+##  9*alpha^6+6*alpha^4+alpha^2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "AlgebraicExtension",
+  [IsField,IsUnivariatePolynomial]);
+DeclareOperation( "AlgebraicExtensionNC",
   [IsField,IsUnivariatePolynomial]);
 
 #############################################################################

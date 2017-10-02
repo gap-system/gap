@@ -17,7 +17,6 @@
 **  vector flag and the compact representation of vectors over finite fields.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -39,15 +38,10 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/listoper.h>               /* operations for generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/vector.h>                 /* functions for plain vectors */
 
-#include <src/range.h>                  /* ranges */
-
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <assert.h>
 
@@ -71,7 +65,7 @@ Obj             SumIntVector (
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
     Obj                 elmS;           /* one element of sum list         */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -82,14 +76,14 @@ Obj             SumIntVector (
     SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
             CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
-            ptrR = ADDR_OBJ(vecR);
+            ptrR = CONST_ADDR_OBJ(vecR);
             ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
@@ -119,7 +113,7 @@ Obj             SumVectorInt (
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
     Obj                 elmS;           /* one element of sum list         */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -130,14 +124,14 @@ Obj             SumVectorInt (
     SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
             CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
+            ptrL = CONST_ADDR_OBJ(vecL);
             ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
@@ -167,9 +161,9 @@ Obj             SumVectorVector (
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
     Obj                 elmS;           /* one element of sum list         */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                lenL, lenR, len, lenmin; /* lengths                          */
     UInt                i;              /* loop variable                   */
@@ -189,8 +183,8 @@ Obj             SumVectorVector (
     SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrL = CONST_ADDR_OBJ(vecL);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= lenmin; i++) {
         elmL = ptrL[i];
@@ -198,8 +192,8 @@ Obj             SumVectorVector (
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
             CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
-            ptrR = ADDR_OBJ(vecR);
+            ptrL = CONST_ADDR_OBJ(vecL);
+            ptrR = CONST_ADDR_OBJ(vecR);
             ptrS = ADDR_OBJ(vecS);
         }
         ptrS[i] = elmS;
@@ -236,7 +230,7 @@ Obj             DiffIntVector (
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
     Obj                 elmD;           /* one element of difference list  */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -248,14 +242,14 @@ Obj             DiffIntVector (
     SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                 */
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
             CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
-            ptrR = ADDR_OBJ(vecR);
+            ptrR = CONST_ADDR_OBJ(vecR);
             ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
@@ -285,7 +279,7 @@ Obj             DiffVectorInt (
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
     Obj                 elmD;           /* one element of difference list  */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -296,14 +290,14 @@ Obj             DiffVectorInt (
     SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                 */
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
             CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
+            ptrL = CONST_ADDR_OBJ(vecL);
             ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
@@ -333,9 +327,9 @@ Obj             DiffVectorVector (
     Obj                 vecD;           /* handle of the sum               */
     Obj *               ptrD;           /* pointer into the sum            */
     Obj                 elmD;           /* one element of sum list         */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                lenL, lenR, len, lenmin; /* lengths                          */
     UInt                i;              /* loop variable                   */
@@ -355,8 +349,8 @@ Obj             DiffVectorVector (
     SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                   */
-    ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrL = CONST_ADDR_OBJ(vecL);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= lenmin; i++) {
         elmL = ptrL[i];
@@ -364,8 +358,8 @@ Obj             DiffVectorVector (
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
             CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
-            ptrR = ADDR_OBJ(vecR);
+            ptrL = CONST_ADDR_OBJ(vecL);
+            ptrR = CONST_ADDR_OBJ(vecR);
             ptrD = ADDR_OBJ(vecD);
         }
         ptrD[i] = elmD;
@@ -376,7 +370,7 @@ Obj             DiffVectorVector (
             if (! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD, INTOBJ_INT(0), elmR)) {
                 CHANGED_BAG(vecD);
                 elmD = AINV(elmR);
-                ptrR = ADDR_OBJ(vecR);
+                ptrR = CONST_ADDR_OBJ(vecR);
                 ptrD = ADDR_OBJ(vecD);
             }
             ptrD[i] = elmD;
@@ -409,7 +403,7 @@ Obj             ProdIntVector (
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
     Obj                 elmP;           /* one element of product list     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -421,14 +415,14 @@ Obj             ProdIntVector (
     SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
             CHANGED_BAG(vecP);
             elmP = PROD(elmL, elmR);
-            ptrR = ADDR_OBJ(vecR);
+            ptrR = CONST_ADDR_OBJ(vecR);
             ptrP = ADDR_OBJ(vecP);
         }
         ptrP[i] = elmP;
@@ -458,7 +452,7 @@ Obj             ProdVectorInt (
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
     Obj                 elmP;           /* one element of product list     */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -470,14 +464,14 @@ Obj             ProdVectorInt (
     SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
             CHANGED_BAG(vecP);
             elmP = PROD(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
+            ptrL = CONST_ADDR_OBJ(vecL);
             ptrP = ADDR_OBJ(vecP);
         }
         ptrP[i] = elmP;
@@ -507,9 +501,9 @@ Obj             ProdVectorVector (
     Obj                 elmP;           /* product, result                 */
     Obj                 elmS;           /* partial sum of result           */
     Obj                 elmT;           /* one summand of result           */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
     UInt                lenL, lenR, len; /* length                          */
     UInt                i;              /* loop variable                   */
@@ -520,14 +514,14 @@ Obj             ProdVectorVector (
     len = (lenL < lenR) ? lenL : lenR;
 
     /* loop over the entries and multiply                                  */
-    ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrL = CONST_ADDR_OBJ(vecL);
+    ptrR = CONST_ADDR_OBJ(vecR);
     elmL = ptrL[1];
     elmR = ptrR[1];
     if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmT, elmL, elmR)) {
         elmT = PROD(elmL, elmR);
-        ptrL = ADDR_OBJ(vecL);
-        ptrR = ADDR_OBJ(vecR);
+        ptrL = CONST_ADDR_OBJ(vecL);
+        ptrR = CONST_ADDR_OBJ(vecR);
     }
     elmP = elmT;
     for (i = 2; i <= len; i++) {
@@ -535,13 +529,13 @@ Obj             ProdVectorVector (
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmT, elmL, elmR)) {
             elmT = PROD(elmL, elmR);
-            ptrL = ADDR_OBJ(vecL);
-            ptrR = ADDR_OBJ(vecR);
+            ptrL = CONST_ADDR_OBJ(vecL);
+            ptrR = CONST_ADDR_OBJ(vecR);
         }
         if (! ARE_INTOBJS(elmP, elmT) || ! SUM_INTOBJS(elmS, elmP, elmT)) {
             elmS = SUM(elmP, elmT);
-            ptrL = ADDR_OBJ(vecL);
-            ptrR = ADDR_OBJ(vecR);
+            ptrL = CONST_ADDR_OBJ(vecL);
+            ptrR = CONST_ADDR_OBJ(vecR);
         }
         elmP = elmS;
     }
@@ -577,7 +571,7 @@ Obj             ProdVectorMatrix (
     Obj                 elmT;           /* another temporary               */
     Obj                 elmL;           /* one element of left operand     */
     Obj                 vecR;           /* one vector of right operand     */
-    Obj *               ptrR;           /* pointer into the right vector   */
+    const Obj *         ptrR;           /* pointer into the right vector   */
     Obj                 elmR;           /* one element from right vector   */
     UInt                len;            /* length                          */
     UInt                col;            /* length of the rows              */
@@ -603,7 +597,7 @@ Obj             ProdVectorMatrix (
     for (i = 1; i <= len; i++) {
         elmL = ELM_PLIST(vecL, i);
         vecR = ELM_PLIST(matR, i);
-        ptrR = ADDR_OBJ(vecR);
+        ptrR = CONST_ADDR_OBJ(vecR);
         ptrP = ADDR_OBJ(vecP);
         if (elmL == INTOBJ_INT(1L)) {
             for (k = 1; k <= col; k++) {
@@ -613,7 +607,7 @@ Obj             ProdVectorMatrix (
                 || ! SUM_INTOBJS(elmS, elmP, elmT)) {
                     CHANGED_BAG(vecP);
                     elmS = SUM(elmP, elmT);
-                    ptrR = ADDR_OBJ(vecR);
+                    ptrR = CONST_ADDR_OBJ(vecR);
                     ptrP = ADDR_OBJ(vecP);
                 }
                 ptrP[k] = elmS;
@@ -626,7 +620,7 @@ Obj             ProdVectorMatrix (
                         || ! DIFF_INTOBJS(elmS, elmP, elmT)) {
                     CHANGED_BAG(vecP);
                     elmS = DIFF(elmP, elmT);
-                    ptrR = ADDR_OBJ(vecR);
+                    ptrR = CONST_ADDR_OBJ(vecR);
                     ptrP = ADDR_OBJ(vecP);
                 }
                 ptrP[k] = elmS;
@@ -640,7 +634,7 @@ Obj             ProdVectorMatrix (
                             || ! PROD_INTOBJS(elmT, elmL, elmR)) {
                         CHANGED_BAG(vecP);
                         elmT = PROD(elmL, elmR);
-                        ptrR = ADDR_OBJ(vecR);
+                        ptrR = CONST_ADDR_OBJ(vecR);
                         ptrP = ADDR_OBJ(vecP);
                     }
                     elmP = ptrP[k];
@@ -648,7 +642,7 @@ Obj             ProdVectorMatrix (
                             || ! SUM_INTOBJS(elmS, elmP, elmT)) {
                         CHANGED_BAG(vecP);
                         elmS = SUM(elmP, elmT);
-                        ptrR = ADDR_OBJ(vecR);
+                        ptrR = CONST_ADDR_OBJ(vecR);
                         ptrP = ADDR_OBJ(vecP);
                     }
                     ptrP[k] = elmS;

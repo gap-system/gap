@@ -380,7 +380,7 @@ GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
 # GAP's standard main function is renamed. And gap.exe is a tiny binary which
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
-bin/$(GAPARCH)/gap.dll: libgap.la
+bin/$(GAPARCH)/gap.dll: symlinks libgap.la
 	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
 gap$(EXEEXT): libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
@@ -400,13 +400,15 @@ endif
 # replaces the old "etc/docomp" script.
 ########################################################################
 ifeq ($(HPCGAP),yes)
-DOCOMP_PREFIX=$(abs_top_srcdir)/hpcgap
+DOCOMP_PREFIX = $(abs_top_srcdir)/hpcgap
 else
-DOCOMP_PREFIX=$(abs_top_srcdir)
+DOCOMP_PREFIX = $(abs_top_srcdir)
 endif
 docomp: #gap$(EXEEXT)
 	@for file in filter1 methsel1 oper1 type1 ; do \
-	  "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
+	  if test -e $(DOCOMP_PREFIX)/lib/$$file ; then \
+	    "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
+	  fi \
 	done
 
 .PHONY: docomp
@@ -423,11 +425,7 @@ ffdata: ffgen
 	./ffgen -h > $(abs_top_srcdir)/src/ffdata.h
 	./ffgen -c > $(abs_top_srcdir)/src/ffdata.c
 
-clean: clean-ffdata
-clean-ffdata:
-	rm -f ffgen
-
-.PHONY: ffdata clean-ffffdata
+.PHONY: ffdata
 
 
 ########################################################################
@@ -436,12 +434,19 @@ clean-ffdata:
 distclean: clean
 	rm -f config.log config.status libtool stamp-h GNUmakefile configure
 	rm -f bin/gap.sh sysinfo.gap*
+	rm -f doc/make_doc
 	rm -rf gen
+	rm -rf dev/log
+	rm -rf coverage
+	rmdir bin cnf dev doc src 2>/dev/null || : # remove dirs if they are now empty
 
 clean:
+	rm -rf bin/$(GAPARCH)
 	rm -rf obj
-	rm -f gap$(EXEEXT) gac
+	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
+	rm -f gen/gap_version.c
+	rm -f doc/wsp.g
 
 .PHONY: clean distclean
 
@@ -618,20 +623,16 @@ bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
 	$(SHELL) ./config.status $@
 
 # regenerate symlinks if necessary
-all: bin/$(GAPARCH)/src
-bin/$(GAPARCH)/src: config.status
+all: symlinks
+symlinks: FORCE
 	@$(MKDIR_P) bin/$(GAPARCH)
-	@ln -sf $(abs_top_srcdir)/src $(@D)
+	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-default$(ABI)
+	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_top_srcdir)/src bin/$(GAPARCH)/src
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../gen/config.h bin/$(GAPARCH)/config.h
 
-all: bin/$(GAPARCH)/gac
-bin/$(GAPARCH)/gac:
-	@$(MKDIR_P) bin/$(GAPARCH)
-	ln -sf ../../gac $(@D)
-
-all: bin/$(GAPARCH)/gap
-bin/$(GAPARCH)/gap:
-	@$(MKDIR_P) bin/$(GAPARCH)
-	ln -sf ../../gap $(@D)
+.PHONY: symlinks
 
 endif
 
@@ -650,12 +651,6 @@ TESTGAPauto = $(abs_top_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -
 # Alias for backwards compatibility
 manuals: doc
 
-# TODO: when in HPCGAP mode, we should perhaps instead
-# compile the documentation in the hpcgap dir?
-# But probably not; instead, we should merge the HPCGAP
-# stuff into the regular manual, but inside a (set of)
-# separate chapters, which we can perhaps conditionally
-# compile ?!?
 doc: gap$(EXEEXT) doc/make_doc
 	doc/make_doc
 
@@ -688,11 +683,9 @@ check-manuals: all
 testinstall: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
@@ -904,18 +897,28 @@ testpackagesvars: all
 teststandard: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
-	( echo 'SetUserPreference("UseColorsInTerminal",false); \
-	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
+
+# run testbugfix.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+testbugfix: all
+	$(MKDIR_P) dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+          ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testbugfix1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+          ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
 coverage:
 	gcov -o . $(SOURCES)
 
-.PHONY: testinstall testmanuals testobsoletes teststandard
+.PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
 .PHONY: coverage
 
@@ -980,8 +983,6 @@ gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
 	@$(MKDIR_P) $(@D)
 	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" < $< > $@
 
-.PHONY: FORCE
-
 
 ########################################################################
 # Regenerate parts of the build system as needed.
@@ -1022,3 +1023,10 @@ doc/make_doc: $(srcdir)/doc/make_doc.in config.status
 
 gac: $(srcdir)/cnf/gac.in config.status
 	$(SHELL) ./config.status $@
+
+
+########################################################################
+# Special .PHONY target: targets depending on it will always be
+# considered dirty by target, hence are forced to be re-run
+########################################################################
+.PHONY: FORCE

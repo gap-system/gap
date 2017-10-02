@@ -21,9 +21,20 @@ InstallAtExit( function()
     fi;
 end);
 
+BIND_GLOBAL("PROGRAM_CLEAN_UP", function()
+    local f;
+    if IsBound( GAPInfo.AtExitFuncs ) and IsList( GAPInfo.AtExitFuncs ) then
+        for f in GAPInfo.AtExitFuncs do
+            if IsFunction(f) then
+                CALL_WITH_CATCH(f,[]);        # really should be CALL_WITH_CATCH here
+            fi;
+        od;
+    fi;
+end);
+
 BIND_GLOBAL("SESSION",
     function()
-    local   f, prompt;
+    local   prompt;
 
     if GAPInfo.CommandLineOptions.q then
         prompt := "";
@@ -49,14 +60,6 @@ BIND_GLOBAL("SESSION",
         true);
 
     BreakOnError := false;
-    if IsBound( GAPInfo.AtExitFuncs ) and IsList( GAPInfo.AtExitFuncs ) then
-        for f in GAPInfo.AtExitFuncs do
-            if IsFunction(f) then
-                CALL_WITH_CATCH(f,[]);        # really should be CALL_WITH_CATCH here
-            fi;
-        od;
-    fi;
-
 end);
 
 

@@ -133,6 +133,8 @@ gap> radc:= RadicalOfAlgebra( c );
 <algebra of dimension 0 over CF(5)>
 gap> Dimension( radc );
 0
+gap> Dimension( RadicalOfAlgebra( radc ) );
+0
 
 #############################################################################
 gap> cen:= Centralizer( c, GeneratorsOfAlgebra( c )[1] );

@@ -11,15 +11,11 @@
 ##
 ##  The major design decision here it to make these mocks fast, rather than
 ##  try to make them as accurate as possible. For example, in HPC-GAP many
-##  of these functions will perform an inernal copy of their argument,
+##  of these functions will perform an internal copy of their argument,
 ##  which we do not do here.
 ##
 
-# First we define some objects defined in init.g in HPC-GAP
-BIND_GLOBAL("FILTER_REGION", "filter region");
-BIND_GLOBAL("ThreadVar", rec());
-
-# Now we mock functions from thread1.g
+# Mock functions from thread1.g
 
 BIND_GLOBAL("MakeThreadLocal", ID_FUNC);
 BIND_GLOBAL("MakeReadOnly", ID_FUNC);
@@ -78,16 +74,6 @@ BIND_GLOBAL("AtomicRecord", function(arg)
   fi;
 end);
 
-BIND_GLOBAL("BindThreadLocal", ASS_GVAR);
-
-BIND_GLOBAL("BindThreadLocalConstructor", function(name, fun)
-  local ret;
-  # Catch if the function returns a value
-  ret := CALL_WITH_CATCH(fun,[]);
-  if LEN_LIST(ret) > 1 then
-    ASS_GVAR(name, ret[2]);
-  fi;
-end);
 
 
 # Convenience aliases
@@ -157,7 +143,7 @@ end);
 BIND_GLOBAL("AtomicIncorporateObj", IncorporateObj);
 
 BIND_GLOBAL("CopyFromRegion", ID_FUNC);
-BIND_GLOBAL("CopyToRegion", ID_FUNC);
+BIND_GLOBAL("CopyToRegion", {x,y} -> x);
 
 
 ###########################

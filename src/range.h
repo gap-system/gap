@@ -83,7 +83,7 @@ static inline void SET_LEN_RANGE(Obj list, Int len)
 static inline Int GET_LEN_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
-    return INT_INTOBJ(ADDR_OBJ(list)[0]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
 }
 
 
@@ -111,7 +111,7 @@ static inline void SET_LOW_RANGE(Obj list, Int low)
 static inline Int GET_LOW_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
-    return INT_INTOBJ(ADDR_OBJ(list)[1]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[1]);
 }
 
 
@@ -138,7 +138,7 @@ static inline void SET_INC_RANGE(Obj list, Int inc)
 static inline Int GET_INC_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
-    return INT_INTOBJ(ADDR_OBJ(list)[2]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[2]);
 }
 
 

@@ -24,7 +24,6 @@
 **  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
 */
 #include <src/system.h>
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -50,12 +49,9 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
-
+#include <src/hpc/guards.h>
 
 static int             evlist, evlistvec;
 

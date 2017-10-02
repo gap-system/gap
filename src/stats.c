@@ -50,7 +50,6 @@
 
 #include <assert.h>
 
-#include <src/hpc/tls.h>
 #include <src/hpc/thread.h>
 
 #include <src/vars.h>                   /* variables */
@@ -80,7 +79,6 @@
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*STATE(CurrExecStatFuncs)[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -492,9 +490,9 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -507,7 +505,7 @@ UInt            ExecFor (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -534,9 +532,9 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -607,14 +605,14 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -627,7 +625,7 @@ UInt            ExecFor2 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -654,14 +652,14 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
         }
@@ -734,19 +732,19 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
 
@@ -760,7 +758,7 @@ UInt            ExecFor3 (
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC_REP(list) ) {
+        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
@@ -787,19 +785,19 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == 8) 
+                if (leave == STATUS_CONTINUE)
                     continue;
-                return (leave & 3);
+                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
             }
 
 
@@ -888,9 +886,9 @@ UInt            ExecForRange (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-          if (leave == 8) 
+          if (leave == STATUS_CONTINUE)
             continue;
-          return (leave & 3);
+          return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -954,14 +952,14 @@ UInt            ExecForRange2 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -1027,19 +1025,19 @@ UInt            ExecForRange3 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
 
     }
@@ -1159,9 +1157,9 @@ UInt ExecWhile (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1197,14 +1195,14 @@ UInt ExecWhile2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1242,19 +1240,19 @@ UInt ExecWhile3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1308,9 +1306,9 @@ UInt ExecRepeat (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1346,14 +1344,14 @@ UInt ExecRepeat2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1391,19 +1389,19 @@ UInt ExecRepeat3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == 8) 
+            if (leave == STATUS_CONTINUE)
                 continue;
-            return (leave & 3);
+            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
         }
         SET_BRK_CURR_STAT( stat );
 
@@ -1420,8 +1418,8 @@ UInt ExecRepeat3 (
 **
 **  'ExecBreak' executes the break-statement <stat>.
 **
-**  This  is done   by  returning 4  (to tell  the   calling executor that  a
-**  break-statement was executed).
+**  This is done by returning STATUS_BREAK (to tell the calling executor that
+**  a break-statement was executed).
 **
 **  A break-statement is  represented  by a bag of   type 'T_BREAK' with   no
 **  subbags.
@@ -1430,7 +1428,7 @@ UInt            ExecBreak (
     Stat                stat )
 {
     /* return to the next loop                                             */
-    return 4;
+    return STATUS_BREAK;
 }
 
 /****************************************************************************
@@ -1439,8 +1437,8 @@ UInt            ExecBreak (
 **
 **  'ExecContinue' executes the continue-statement <stat>.
 **
-**  This  is done   by  returning 8 (to tell  the   calling executor that  a
-**  continue-statement was executed).
+**  This is done by returning STATUS_CONTINUE (to tell the calling executor
+**  that a continue-statement was executed).
 **
 **  A continue-statement is  represented  by a bag of   type 'T_CONTINUE' with   no
 **  subbags.
@@ -1449,7 +1447,7 @@ UInt            ExecContinue (
     Stat                stat )
 {
     /* return to the next loop                                             */
-    return 8;
+    return STATUS_CONTINUE;
 }
 
 /****************************************************************************
@@ -1635,7 +1633,7 @@ UInt            ExecReturnObj (
     STATE(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
 
     /* return up to function interpreter                                   */
-    return 1;
+    return STATUS_RETURN_VAL;
 }
 
 
@@ -1666,24 +1664,16 @@ UInt            ExecReturnVoid (
     STATE(ReturnObjStat) = 0;
 
     /* return up to function interpreter                                   */
-    return 2;
+    return STATUS_RETURN_VOID;
 }
-
-#ifdef HPCGAP
 
 UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
-#else
+static inline Int BreakLoopPending(void)
+{
+     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+}
 
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
-
-#ifdef HAVE_SIG_ATOMIC_T
-sig_atomic_t volatile RealExecStatCopied = 0;
-#else
-int volatile RealExecStatCopied = 0;
-#endif
-
-#endif  // HPCGAP
 
 
 /****************************************************************************
@@ -1692,16 +1682,11 @@ int volatile RealExecStatCopied = 0;
 **                                   to normal 
 */
 
-#if !defined(HPCGAP)
-static void UnInterruptExecStat(void) {
-  UInt i;
-  assert(RealExecStatCopied);
-  for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
-    ExecStatFuncs[i] = RealExecStatFuncs[i];
-  }
-  RealExecStatCopied = 0;
+static void UnInterruptExecStat(void)
+{
+    assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
+    STATE(CurrExecStatFuncs) = ExecStatFuncs;
 }
-#endif
 
 
 /****************************************************************************
@@ -1718,22 +1703,13 @@ static void UnInterruptExecStat(void) {
 ** including possible garbage collection. In this case 1 is returned.
 */
 
-UInt TakeInterrupt( void ) {
-#ifdef HPCGAP
-  if (STATE(CurrExecStatFuncs) == IntrExecStatFuncs) {
-      assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
-      STATE(CurrExecStatFuncs) = ExecStatFuncs;
+UInt TakeInterrupt( void )
+{
+  if (HaveInterrupt()) {
+      UnInterruptExecStat();
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
       return 1;
   }
-#else
-  if (HaveInterrupt()) {
-    UnInterruptExecStat();
-    
-    ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    return 1;
-  }
-#endif
   return 0;
 }
 
@@ -1752,17 +1728,16 @@ UInt ExecIntrStat (
     Stat                stat )
 {
 
-#ifdef HPCGAP
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+    if ( BreakLoopPending() ) {
+        UnInterruptExecStat();
+    }
 
+#ifdef HPCGAP
     /* and now for something completely different                          */
     HandleInterrupts(1, stat);
 #else
-    /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( RealExecStatCopied ) {
-      UnInterruptExecStat();
-    }
+    // ensure global interrupt flag syLastIntr is cleared
     HaveInterrupt();
 
     /* and now for something completely different                          */
@@ -1798,78 +1773,23 @@ UInt ExecIntrStat (
 */
 void InterruptExecStat ( void )
 {
-#ifdef HPCGAP
     /* remember the original entries from the table 'ExecStatFuncs'        */
     STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
-#else
-    UInt                i;              /* loop variable                   */
-    /*    assert(reason > 0) */
-
-    /* remember the original entries from the table 'ExecStatFuncs'        */
-    if ( ! RealExecStatCopied ) {
-        for ( i=0; i<ARRAY_SIZE(ExecStatFuncs); i++ ) {
-            RealExecStatFuncs[i] = ExecStatFuncs[i];
-        }
-        RealExecStatCopied = 1;
-    }
-
-    /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
-    for ( i = 0;
-          i < T_SEQ_STAT;
-          i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
-    }
-    for ( i = T_RETURN_VOID;
-          i < ARRAY_SIZE(ExecStatFuncs);
-          i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
-    }
-#endif
 }
 
-#ifdef HPCGAP
-void InitIntrExecStats ( void )
-{
-    UInt                i;              /* loop variable                   */
-    /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
-    for ( i = 0;
-          i < T_SEQ_STAT;
-          i++ ) {
-        IntrExecStatFuncs[i] = ExecIntrStat;
-    }
-    for (i = T_SEQ_STAT; i < T_RETURN_VOID; i++)
-      IntrExecStatFuncs[i] = ExecStatFuncs[i];
-    for ( i = T_RETURN_VOID;
-          i < ARRAY_SIZE(ExecStatFuncs);
-          i++ ) {
-        IntrExecStatFuncs[i] = ExecIntrStat;
-    }
-}
-#endif
 
 /****************************************************************************
 **
 *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
 */
 
-static inline Int BreakLoopPending( void ) {
-#ifdef HPCGAP
-     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
-#else
-     return RealExecStatCopied;
-#endif
-}
-
 void ClearError ( void )
 {
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
     if ( BreakLoopPending() ) {
-#ifdef HPCGAP
-        STATE(CurrExecStatFuncs) = ExecStatFuncs;
-#else
         UnInterruptExecStat();
-#endif
+
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
@@ -1978,7 +1898,7 @@ void            PrintIf (
     /* print the 'if' branch                                               */
     Pr( "if%4> ", 0L, 0L );
     PrintExpr( ADDR_STAT(stat)[0] );
-    Pr( "%2<  then%2>\n", 0L, 0L );
+    Pr( "%2< then%2>\n", 0L, 0L );
     PrintStat( ADDR_STAT(stat)[1] );
     Pr( "%4<\n", 0L, 0L );
 
@@ -1990,7 +1910,7 @@ void            PrintIf (
         else {
             Pr( "elif%4> ", 0L, 0L );
             PrintExpr( ADDR_STAT(stat)[2*(i-1)] );
-            Pr( "%2<  then%2>\n", 0L, 0L );
+            Pr( "%2< then%2>\n", 0L, 0L );
         }
         PrintStat( ADDR_STAT(stat)[2*(i-1)+1] );
         Pr( "%4<\n", 0L, 0L );
@@ -2017,9 +1937,9 @@ void            PrintFor (
 
     Pr( "for%4> ", 0L, 0L );
     PrintExpr( ADDR_STAT(stat)[0] );
-    Pr( "%2<  in%2> ", 0L, 0L );
+    Pr( "%2< in%2> ", 0L, 0L );
     PrintExpr( ADDR_STAT(stat)[1] );
-    Pr( "%2<  do%2>\n", 0L, 0L );
+    Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 2; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat( ADDR_STAT(stat)[i] );
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
@@ -2044,7 +1964,7 @@ void            PrintWhile (
 
     Pr( "while%4> ", 0L, 0L );
     PrintExpr( ADDR_STAT(stat)[0] );
-    Pr( "%2<  do%2>\n", 0L, 0L );
+    Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat( ADDR_STAT(stat)[i] );
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
@@ -2081,7 +2001,7 @@ void            PrintAtomic (
       }
       PrintExpr(ADDR_STAT(stat)[2*i]);
     }
-    Pr( "%2<  do%2>\n", 0L, 0L );
+    Pr( "%2< do%2>\n", 0L, 0L );
     PrintStat( ADDR_STAT(stat)[0]);
     Pr( "%4<\nod;", 0L, 0L );
 }
@@ -2241,9 +2161,16 @@ void            PrintAssert3Args (
 void            PrintReturnObj (
     Stat                stat )
 {
-    Pr( "%2>return%< %>", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
-    Pr( "%2<;", 0L, 0L );
+    Expr expr = ADDR_STAT(stat)[0];
+    if ( TNUM_EXPR(expr) == T_REF_GVAR &&
+         (UInt)(ADDR_STAT(expr)[0]) == GVarName( "TRY_NEXT_METHOD" ) ) {
+        Pr( "TryNextMethod();", 0L, 0L );
+    }
+    else {
+        Pr( "%2>return%< %>", 0L, 0L );
+        PrintExpr( expr );
+        Pr( "%2<;", 0L, 0L );
+    }
 }
 
 
@@ -2380,9 +2307,10 @@ static Int InitKernel (
     InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
     InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
 
-#ifdef HPCGAP
-    InitIntrExecStats();
-#endif
+    for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ )
+        IntrExecStatFuncs[i] = ExecIntrStat;
+    for (i = FIRST_NON_INTERRUPT_STAT; i <= LAST_NON_INTERRUPT_STAT; i++)
+        IntrExecStatFuncs[i] = ExecStatFuncs[i];
 
     /* return success                                                      */
     return 0;

@@ -1790,7 +1790,7 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
-    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+    BIND_GLOBAL( name, NEW_GLOBAL_FUNCTION( name ) );
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
@@ -1805,6 +1805,10 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
         func := arg[2];
     fi;
     if IS_STRING( oper ) then
+      # Can't use IsBoundGlobal yet in early loading
+      if not ISBOUND_GLOBAL(oper) then
+        Error("global function `", oper, "' is not declared yet");
+      fi;
       oper:= VALUE_GLOBAL( oper );
     fi;
     atomic readonly GLOBAL_FUNCTION_NAMES do
@@ -1812,7 +1816,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       Error("you cannot install a global function for another global ",
             "function,\nuse `DeclareSynonym' instead!");
     fi;
-    INSTALL_METHOD_ARGS( oper, func );
+    INSTALL_GLOBAL_FUNCTION( oper, func );
     od;
 end );
 

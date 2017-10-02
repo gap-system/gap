@@ -20,15 +20,7 @@
 #ifndef GAP_VARS_H
 #define GAP_VARS_H
 
-
-/****************************************************************************
-**
-*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
-**
-**  'T_LVARS' is the type of bags used to store values of local variables.
-
-#define T_LVARS                 174
-*/
+#include <src/gapstate.h>   // for STATE
 
 /****************************************************************************
 **
@@ -71,11 +63,32 @@
 
 /****************************************************************************
 **
+*F  IS_LVARS_OR_HVARS()
+**
+*/
+static inline int IS_LVARS_OR_HVARS(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return tnum == T_LVARS || tnum == T_HVARS;
+}
+
+
+/****************************************************************************
+**
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
 #define FUNC_LVARS_PTR(lvars_ptr)   (lvars_ptr[0])
 #define FUNC_LVARS(lvars_obj)       FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj))
+
+
+/****************************************************************************
+**
+*F  STAT_LVARS . . . . . . . current statement in function of the given lvars
+**
+*/
+#define STAT_LVARS_PTR(lvars_ptr)   (lvars_ptr[1])
+#define STAT_LVARS(lvars_obj)       STAT_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
 /****************************************************************************
@@ -96,7 +109,12 @@
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-#define CURR_FUNC       FUNC_LVARS_PTR(STATE(PtrLVars))
+static inline Obj CURR_FUNC(void)
+{
+    GAP_ASSERT(IS_LVARS_OR_HVARS(STATE(CurrLVars)));
+    GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
+    return FUNC_LVARS_PTR(STATE(PtrLVars));
+}
 
 
 /****************************************************************************
@@ -106,43 +124,27 @@
 */
 
 #ifdef TRACEFRAMES
-
 extern Obj STEVES_TRACING;
 extern Obj True;
 #include <stdio.h>
+#endif
 
-static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
+static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
+#ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"SBCT: %i %x %s %i\n",
             (int)expr, (int)STATE(CurrLVars), file, line);
   }
-  (STATE(PtrLVars)[1] = (Obj)(Int)(expr));
+#endif
+  STAT_LVARS_PTR(STATE(PtrLVars)) = (Obj)expr;
 }
 
-#else
-#define SetBrkCallTo(expr, file, line)  (STATE(PtrLVars)[1] = (Obj)(Int)(expr))
-#endif
-
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)(Int)(STATE(PtrLVars)[1]))
+#define BRK_CALL_TO()                   ((Expr)STAT_LVARS_PTR(STATE(PtrLVars)))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #else
 #define BRK_CALL_TO()                   /* do nothing */
 #define SET_BRK_CALL_TO(expr)           /* do nothing */
-#endif
-
-
-/****************************************************************************
-**
-*F  BRK_CALL_FROM() . . . . . . . . .  frame from which this frame was called
-*F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
-*/
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 PARENT_LVARS_PTR(STATE(PtrLVars))
-#define SET_BRK_CALL_FROM(lvars)        (PARENT_LVARS_PTR(STATE(PtrLVars)) = (lvars))
-#else
-#define BRK_CALL_FROM()                 /* do nothing */
-#define SET_BRK_CALL_FROM(lvars)        /* do nothing */
 #endif
 
 
@@ -168,6 +170,18 @@ static inline void MakeHighVars( Bag bag ) {
 }
 
 
+/****************************************************************************
+**
+*F  SET_CURR_LVARS
+*/
+static void SET_CURR_LVARS(Obj lvars)
+{
+    GAP_ASSERT(IS_LVARS_OR_HVARS(lvars));
+    STATE(CurrLVars) = lvars;
+    STATE(PtrLVars) = PTR_BAG(lvars);
+    STATE(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC()));
+}
+
 
 /****************************************************************************
 **
@@ -178,23 +192,23 @@ static inline void MakeHighVars( Bag bag ) {
 **  variables.  The old local variables bag is saved in <old>.
 */
 
-extern Obj STEVES_TRACING;
-
-#include <stdio.h>
-
 static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 #ifdef TRACEFRAMES
-, char * file, int line
+, const char * file, int line
 #endif
 )
 {
+  // make sure old lvars are not garbage collected
   Obj old = STATE(CurrLVars);
   CHANGED_BAG( old );
-  STATE(CurrLVars) = NewLVarsBag( narg+nloc );
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  CURR_FUNC = func;
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
-  SET_BRK_CALL_FROM( old );
+
+  // create new lvars (may cause garbage collection)
+  Obj new_lvars = NewLVarsBag( narg+nloc );
+  FUNC_LVARS(new_lvars) = func;
+  PARENT_LVARS(new_lvars) = old;
+
+  // switch to new lvars
+  SET_CURR_LVARS(new_lvars);
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
@@ -220,11 +234,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 **  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
 */
 
-static inline void SwitchToOldLVars( Obj old
-#ifdef TRACEFRAMES
-, char *file, int line
-#endif
-)
+static inline void SwitchToOldLVars(Obj old, const char *file, int line)
 {
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
@@ -233,16 +243,10 @@ static inline void SwitchToOldLVars( Obj old
   }
 #endif
   CHANGED_BAG( STATE(CurrLVars) );
-  STATE(CurrLVars) = (old);
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  SET_CURR_LVARS(old);
 }
 
-static inline void SwitchToOldLVarsAndFree( Obj old
-#ifdef TRACEFRAMES
-, char *file, int line
-#endif
-)
+static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 {
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
@@ -250,26 +254,19 @@ static inline void SwitchToOldLVarsAndFree( Obj old
            file, line, (UInt)STATE(CurrLVars),(UInt)old);
   }
 #endif
+  // remove the link to the calling function, in case this values bag stays
+  // alive due to higher variable reference
+  PARENT_LVARS_PTR(STATE(PtrLVars)) = 0;
+
   CHANGED_BAG( STATE(CurrLVars) );
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
-  STATE(CurrLVars) = (old);
-  STATE(PtrLVars)  = PTR_BAG( STATE(CurrLVars) );
-  STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  SET_CURR_LVARS(old);
 }
 
 
-#ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
-#else
-#define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
-#endif
-
-#ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
-#else
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old))
-#endif
 
 
 /****************************************************************************
@@ -296,7 +293,7 @@ static inline void SwitchToOldLVarsAndFree( Obj old
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
 */
-#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC, lvar )
+#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
 
 
 /****************************************************************************

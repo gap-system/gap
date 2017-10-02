@@ -67,9 +67,15 @@ end);
 
 ############################################################################
 ##  We provide the "classical" GAP random generator via a random source.
-##  
-InstallValue(GlobalRandomSource, Objectify(NewType(RandomSourcesFamily,
-                                                  IsGlobalRandomSource),rec()));
+##
+if IsBound(HPCGAP) then
+BindThreadLocalConstructor("GlobalRandomSource", {} ->
+    Objectify(NewType(RandomSourcesFamily, IsGlobalRandomSource), rec()));
+else
+InstallValue(GlobalRandomSource,
+    Objectify(NewType(RandomSourcesFamily, IsGlobalRandomSource), rec()));
+fi;
+
 InstallMethod(Init, [IsGlobalRandomSource, IsObject], function(rs, seed)
   if IsInt(seed) then
     RANDOM_SEED(seed);
@@ -218,7 +224,12 @@ end);
 
 # One global Mersenne twister random source, can be used to overwrite
 # the library Random(list) and Random(a,b) methods.
+if IsBound(HPCGAP) then
+BindThreadLocalConstructor("GlobalMersenneTwister", {} ->
+    RandomSource(IsMersenneTwister, String(GET_RANDOM_SEED_COUNTER())));
+else
 InstallValue(GlobalMersenneTwister, RandomSource(IsMersenneTwister, "1"));
+fi;
 
 # default random method for lists and pairs of integers using the Mersenne
 # twister

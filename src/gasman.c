@@ -112,13 +112,13 @@
 */
 #include <string.h>
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 
 #include <src/objects.h>                /* objects */
 #include <src/scanner.h>                /* scanner */
 
+#include <src/gaputils.h>
 
 #include <stddef.h>
 
@@ -208,7 +208,6 @@ static inline Bag *DATA(BagHeader *bag)
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
 
-
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
@@ -278,11 +277,11 @@ void CLEAR_CANARY() {
 #define CANARY_DISABLE_VALGRIND()  VALGRIND_DISABLE_ERROR_REPORTING
 #define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
 
-void CHANGED_BAG_IMPL(Bag bag) {
+void CHANGED_BAG(Bag bag) {
     CANARY_DISABLE_VALGRIND();
-    if ( PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == (bag) ) {
+    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
-        ChangedBags = (bag);
+        ChangedBags = bag;
     }
     CANARY_ENABLE_VALGRIND();
 }
@@ -1113,7 +1112,7 @@ Bag NewBag (
     header->link = bag;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = DATA(header);
+    SET_PTR_BAG(bag, DATA(header));
 
     /* return the identifier of the new bag                                */
     return bag;
@@ -1355,7 +1354,7 @@ UInt ResizeBag (
         Bag * src = DATA(header);
         Bag * end = src + WORDS_BAG(old_size);
         Bag * dst = DATA(newHeader);
-        PTR_BAG(bag) = dst;
+        SET_PTR_BAG(bag, dst);
 
         /* copy the contents of the bag                                    */
         while ( src < end )
@@ -1639,9 +1638,6 @@ UInt CollectBags (
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
 
-    /*     Bag *               last;
-           Char                type; */
-
     CANARY_DISABLE_VALGRIND();
     CLEAR_CANARY();
 #ifdef DEBUG_MASTERPOINTERS
@@ -1672,16 +1668,10 @@ again:
             LINK_BAG(first) = first;
         }
 
-        /* Also time to change the tag for dead children of weak
-           pointer objects. After this collection, there can be no more
-           weak pointer objects pointing to anything with OldWeakDeadBagMarker
-           in it */
-        {
-          Bag * t;
-          t = OldWeakDeadBagMarker;
-          OldWeakDeadBagMarker = NewWeakDeadBagMarker;
-          NewWeakDeadBagMarker = t;
-        }
+        // Also time to change the tag for dead children of weak pointer
+        // objects. After this collection, there can be no more weak pointer
+        // objects pointing to anything with OldWeakDeadBagMarker in it.
+        SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
     }
 
     /* information at the beginning of garbage collections                 */
@@ -1712,9 +1702,30 @@ again:
 
     /* mark the subbags of the changed old bags                            */
     while ( ChangedBags != 0 ) {
+        // extract the head from the linked list
         first = ChangedBags;
         ChangedBags = LINK_BAG(first);
         LINK_BAG(first) = first;
+
+        // mark subbags - we need to distinguish between young and old bags:
+        // For old bags, we invoke the marking function for bags with the
+        // given TNUM.
+        // Young bags normally are never put onto the changed list, because
+        // CHANGED_BAGS ignores young bags. However, it can happen if we
+        // swap the masterpointers of an old and a young bag. In that case,
+        // we must be careful to not collect the young bag (which was old
+        // before the masterpointer swap; see the comment on
+        // 'SwapMasterPoint' for a detailed explanation why that is so). To
+        // facilitate this, 'SwapMasterPoint' forces that bag onto the
+        // ChangedBags list. Then, we put such a young bag onto the list of
+        // marked bags (via MarkBag), which ensures it is not collected.
+        //
+        // Note that it doesn't help to use 'MarkBag' on an old bags, as it
+        // ignores old bags (which are always assumed to be marked).
+        // Conversely, using TabMarkFuncBags on a young bag is no good,
+        // because that function only puts subbags on the list of marked
+        // bag, which does not prevent the young bag itself from being
+        // collected (which is what we need).
         if ( PTR_BAG(first) <= YoungBags )
             (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
@@ -1726,10 +1737,15 @@ again:
     nrLiveBags = 0;
     sizeLiveBags = 0;
     while ( MarkedBags != 0 ) {
+        // extract the head from the linked list
         first = MarkedBags;
         MarkedBags = LINK_BAG(first);
         LINK_BAG(first) = MARKED_ALIVE(first);
+
+        // mark subbags
         (*TabMarkFuncBags[TNUM_BAG(first)])( first );
+
+        // collect some statistics
         nrLiveBags++;
         sizeLiveBags += SIZE_BAG(first);
     }
@@ -1839,7 +1855,7 @@ again:
             BagHeader * dstHeader = (BagHeader *)dst;
 
             /* update identifier, copy size-type and link field            */
-            PTR_BAG( UNMARKED_ALIVE(header->link)) = DATA(dstHeader);
+            SET_PTR_BAG( UNMARKED_ALIVE(header->link), DATA(dstHeader));
             end = DATA(header) + WORDS_BAG( header->size );
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
@@ -2082,54 +2098,74 @@ void CheckMasterPointers( void )
 }
 
 
-/****************************************************************************
-**
-*F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
-*/
-void SwapMasterPoint (
-    Bag                 bag1,
-    Bag                 bag2 )
+// Swap the master pointers of bag1 and bag2
+//
+// We need to make sure the correct bags are garbage collected, so we always put
+// *both* bags on the ChangedBags linked-list, rather than pick through the
+// exact cases, as it is never incorrect to mark something changed.
+//
+// For completeness and future reference here are the necessary points to
+// consider.
+//
+// When swapping two master pointers, we have to take into account whether the
+// bags they refer are on the ChangedBags list, as we otherwise may end up in an
+// inconsistent state, where a bag is referenced, but GASMAN does not know this.
+// GASMAN then collects this bag, resulting in a corrupted workspace.
+//
+// We consider the following three cases:
+//
+// 1. Both bags are old. Then if the original bag1 had been previously marked as
+//    changed (by having been put into the ChangedBags singly linked list), then
+//    we must make sure to mark the new bag2 as changed, too (and vice-versa).
+//
+// 2. Both bags are young. Then they typically will not be on the list of
+//    changed bags, as CHANGED_BAGS just skips them.
+//    However, while CHANGED_BAG will never put a young bag on the list of
+//    changed bags, young bags can still be put on the ChangedBags list in
+//    step 3, so we need to do something similar as in step 1.
+//
+// 3. bag1 is young and bag2 is old (or vice-versa), then after swapping, bag1
+//    is old and bag2 is young, as the 'young'ness moves with the contents, so
+//    we must mark bag1 changed if bag2 was previously changed.
+//
+//    More importantly, bag2 is now young, but the only references to bag2 might
+//    be in an old bag, that is not marked changed. Thus bag2 would get
+//    (incorrectly) collected, because these bags are not considered in a
+//    garbage collection.
+//
+//    To avoid this we force bag2 onto the ChangedBags list, but we can't use
+//    CHANGED_BAG, as it skips young bags.
+//
+void SwapMasterPoint(Bag bag1, Bag bag2)
 {
-    Bag *               ptr1;
-    Bag *               ptr2;
-    Bag swapbag;
+    Bag * swapptr;
+    Bag   swapbag;
 
-    if ( bag1 == bag2 )
+    if (bag1 == bag2)
         return;
 
-    /* get the pointers                                                    */
-    ptr1 = PTR_BAG(bag1);
-    ptr2 = PTR_BAG(bag2);
-
-    /* check and update the link field and changed bags                    */
-    if ( LINK_BAG(bag1) == bag1 && LINK_BAG(bag2) == bag2 ) {
-        LINK_BAG(bag1) = bag2;
-        LINK_BAG(bag2) = bag1;
+    // First make sure both bags are in change list
+    // We can't use CHANGED_BAG as it skips young bags
+    if (LINK_BAG(bag1) == bag1) {
+        LINK_BAG(bag1) = ChangedBags;
+        ChangedBags = bag1;
     }
-    else
-    {
-        // First make sure both bags are in change list
-        // We can't use CHANGED_BAG as it skips young bags
-        if ( LINK_BAG(bag1) == bag1 ) {
-            LINK_BAG(bag1) = ChangedBags;
-            ChangedBags = bag1;
-        }
-        if ( LINK_BAG(bag2) == bag2 ) {
-            LINK_BAG(bag2) = ChangedBags;
-            ChangedBags = bag2;
-        }
-        // Now swap links, so in the end the list will go
-        // through the bags in the same order.
-        swapbag = LINK_BAG(bag1);
-        LINK_BAG(bag1) = LINK_BAG(bag2);
-        LINK_BAG(bag2) = swapbag;
+    if (LINK_BAG(bag2) == bag2) {
+        LINK_BAG(bag2) = ChangedBags;
+        ChangedBags = bag2;
     }
 
-    /* swap them                                                           */
-    PTR_BAG(bag1) = ptr2;
-    PTR_BAG(bag2) = ptr1;
+    // get the pointers & swap them
+    swapptr = PTR_BAG(bag1);
+    SET_PTR_BAG(bag1, PTR_BAG(bag2));
+    SET_PTR_BAG(bag2, swapptr);
+
+    // Now swap links, so in the end the list will go
+    // through the bags in the same order.
+    swapbag = LINK_BAG(bag1);
+    LINK_BAG(bag1) = LINK_BAG(bag2);
+    LINK_BAG(bag2) = swapbag;
 }
-
 
 
 /****************************************************************************

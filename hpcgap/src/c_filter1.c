@@ -1,6 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
+#define FILE_CRC  "-14756924"
 
 /* global variables used in handlers */
 static GVar G_IS__FUNCTION;
@@ -54,9 +55,6 @@ static Obj  GC_RANK__FILTERS;
 
 /* information for the functions */
 static Obj  NameFunc[5];
-static Obj  NamsFunc[5];
-static Int  NargFunc[5];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -558,7 +556,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_CLEAR__IMP__CACHE, 0 );
  
  /* BIND_GLOBAL( "CLEAR_IMP_CACHE", function (  )
-      local  lock;
+      local lock;
       lock := WRITE_LOCK( IMPLICATIONS );
       WITH_IMPS_FLAGS_CACHE := MigrateObj( [  ], IMPLICATIONS );
       UNLOCK( lock );
@@ -566,24 +564,24 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "CLEAR_IMP_CACHE" );
- t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
+ t_3 = NewFunction( NameFunc[2], 0, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(38));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(43));
+ SET_STARTLINE_BODY(t_4, 38);
+ SET_ENDLINE_BODY(t_4, 43);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
-      local  with, changed, imp, hash, hash2, i, lock;
+      local with, changed, imp, hash, hash2, i, lock;
       hash := HASH_FLAGS( flags ) mod 11001;
       lock := WRITE_LOCK( IMPLICATIONS );
-      for i  in [ 0 .. 3 ]  do
+      for i in [ 0 .. 3 ] do
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
-          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] )  then
-              if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags )  then
+          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] ) then
+              if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags ) then
                   WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
                   with := WITH_IMPS_FLAGS_CACHE[hash2 + 1];
                   UNLOCK( lock );
@@ -593,7 +591,7 @@ static Obj  HdlrFunc1 (
               break;
           fi;
       od;
-      if i = 3  then
+      if i = 3 then
           WITH_IMPS_FLAGS_COUNT := (WITH_IMPS_FLAGS_COUNT + 1) mod 4;
           i := WITH_IMPS_FLAGS_COUNT;
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
@@ -601,10 +599,10 @@ static Obj  HdlrFunc1 (
       WITH_IMPS_FLAGS_CACHE_MISS := WITH_IMPS_FLAGS_CACHE_MISS + 1;
       with := flags;
       changed := true;
-      while changed  do
+      while changed do
           changed := false;
-          for imp  in IMPLICATIONS  do
-              if IS_SUBSET_FLAGS( with, imp[2] ) and not IS_SUBSET_FLAGS( with, imp[1] )  then
+          for imp in IMPLICATIONS do
+              if IS_SUBSET_FLAGS( with, imp[2] ) and not IS_SUBSET_FLAGS( with, imp[1] ) then
                   with := AND_FLAGS( with, imp[1] );
                   changed := true;
               fi;
@@ -617,27 +615,27 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "WITH_IMPS_FLAGS" );
- t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
+ t_3 = NewFunction( NameFunc[3], 1, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(46));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(89));
+ SET_STARTLINE_BODY(t_4, 46);
+ SET_ENDLINE_BODY(t_4, 89);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "RankFilter", function ( filter )
-      local  rank, flags, i, lock;
+      local rank, flags, i, lock;
       rank := 0;
-      if IS_FUNCTION( filter )  then
+      if IS_FUNCTION( filter ) then
           flags := FLAGS_FILTER( filter );
       else
           flags := filter;
       fi;
       lock := WRITE_LOCK( FILTER_REGION );
-      for i  in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) )  do
-          if IsBound( RANK_FILTERS[i] )  then
+      for i in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) ) do
+          if IsBound( RANK_FILTERS[i] ) then
               rank := rank + RANK_FILTERS[i];
           else
               rank := rank + 1;
@@ -648,11 +646,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RankFilter" );
- t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
+ t_3 = NewFunction( NameFunc[4], 1, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(98));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(117));
+ SET_STARTLINE_BODY(t_4, 98);
+ SET_ENDLINE_BODY(t_4, 117);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -667,118 +665,6 @@ static Obj  HdlrFunc1 (
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
-}
-
-/* 'InitKernel' sets up data structures, fopies, copies, handlers */
-static Int InitKernel ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- InitFopyGVar( "IS_FUNCTION", &GF_IS__FUNCTION );
- InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
- InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
- InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
- InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
- InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
- InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
- InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
- InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
- InitFopyGVar( "UNLOCK", &GF_UNLOCK );
- InitCopyGVar( "IMPLICATIONS", &GC_IMPLICATIONS );
- InitFopyGVar( "ShareSpecialObj", &GF_ShareSpecialObj );
- InitCopyGVar( "WITH_IMPS_FLAGS_CACHE", &GC_WITH__IMPS__FLAGS__CACHE );
- InitFopyGVar( "LockAndMigrateObj", &GF_LockAndMigrateObj );
- InitCopyGVar( "WITH_IMPS_FLAGS_COUNT", &GC_WITH__IMPS__FLAGS__COUNT );
- InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_HIT", &GC_WITH__IMPS__FLAGS__CACHE__HIT );
- InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_MISS", &GC_WITH__IMPS__FLAGS__CACHE__MISS );
- InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
- InitFopyGVar( "MigrateObj", &GF_MigrateObj );
- InitCopyGVar( "FILTER_REGION", &GC_FILTER__REGION );
- InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
- 
- /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-14756924)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(-14756924)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-14756924)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-14756924)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-14756924)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-14756924)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-14756924)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-14756924)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-14756924)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-14756924)" );
- 
- /* return success */
- return 0;
- 
-}
-
-/* 'InitLibrary' sets up gvars, rnams, functions */
-static Int InitLibrary ( StructInitInfo * module )
-{
- Obj func1;
- Obj body1;
- 
- /* Complete Copy/Fopy registration */
- UpdateCopyFopyInfo();
- 
- /* global variables used in handlers */
- G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_AND__FLAGS = GVarName( "AND_FLAGS" );
- G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
- G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
- G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
- G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
- G_UNLOCK = GVarName( "UNLOCK" );
- G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
- G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" );
- G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" );
- G_IMPLICATIONS = GVarName( "IMPLICATIONS" );
- G_ShareSpecialObj = GVarName( "ShareSpecialObj" );
- G_WITH__IMPS__FLAGS__CACHE = GVarName( "WITH_IMPS_FLAGS_CACHE" );
- G_LockAndMigrateObj = GVarName( "LockAndMigrateObj" );
- G_WITH__IMPS__FLAGS__COUNT = GVarName( "WITH_IMPS_FLAGS_COUNT" );
- G_WITH__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_IMPS_FLAGS_CACHE_HIT" );
- G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
- G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
- G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_MigrateObj = GVarName( "MigrateObj" );
- G_FILTER__REGION = GVarName( "FILTER_REGION" );
- G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
- 
- /* record names used in handlers */
- 
- /* information for the functions */
- DefaultName = MakeString( "local function" );
- FileName = MakeString( "GAPROOT/lib/filter1.g" );
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 0;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 1;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 1;
- 
- /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, sizeof(BodyHeader));
- SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
- CALL_0ARGS( func1 );
- 
- /* return success */
- return 0;
- 
 }
 
 /* 'PostRestore' restore gvars, rnams, functions */
@@ -815,18 +701,10 @@ static Int PostRestore ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 0;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 1;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 1;
+ NameFunc[1] = 0;
+ NameFunc[2] = 0;
+ NameFunc[3] = 0;
+ NameFunc[4] = 0;
  
  /* return success */
  return 0;
@@ -834,9 +712,77 @@ static Int PostRestore ( StructInitInfo * module )
 }
 
 
+/* 'InitKernel' sets up data structures, fopies, copies, handlers */
+static Int InitKernel ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ InitFopyGVar( "IS_FUNCTION", &GF_IS__FUNCTION );
+ InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
+ InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
+ InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
+ InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
+ InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
+ InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
+ InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
+ InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
+ InitFopyGVar( "UNLOCK", &GF_UNLOCK );
+ InitCopyGVar( "IMPLICATIONS", &GC_IMPLICATIONS );
+ InitFopyGVar( "ShareSpecialObj", &GF_ShareSpecialObj );
+ InitCopyGVar( "WITH_IMPS_FLAGS_CACHE", &GC_WITH__IMPS__FLAGS__CACHE );
+ InitFopyGVar( "LockAndMigrateObj", &GF_LockAndMigrateObj );
+ InitCopyGVar( "WITH_IMPS_FLAGS_COUNT", &GC_WITH__IMPS__FLAGS__COUNT );
+ InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_HIT", &GC_WITH__IMPS__FLAGS__CACHE__HIT );
+ InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_MISS", &GC_WITH__IMPS__FLAGS__CACHE__MISS );
+ InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
+ InitFopyGVar( "MigrateObj", &GF_MigrateObj );
+ InitCopyGVar( "FILTER_REGION", &GC_FILTER__REGION );
+ InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
+ 
+ /* information for the functions */
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4]("FILE_CRC")" );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+/* 'InitLibrary' sets up gvars, rnams, functions */
+static Int InitLibrary ( StructInitInfo * module )
+{
+ Obj func1;
+ Obj body1;
+ 
+ /* Complete Copy/Fopy registration */
+ UpdateCopyFopyInfo();
+ FileName = MakeImmString( "GAPROOT/lib/filter1.g" );
+ PostRestore(module);
+ 
+ /* create all the functions defined in this module */
+ func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
+ SET_ENVI_FUNC( func1, STATE(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
+ body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ SET_BODY_FUNC( func1, body1 );
+ CHANGED_BAG( func1 );
+ CALL_0ARGS( func1 );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ 2,
+ /* type        = */ MODULE_STATIC,
  /* name        = */ "GAPROOT/lib/filter1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,

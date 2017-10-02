@@ -54,7 +54,6 @@
 
 #include <src/code.h>
 
-#include <src/hpc/tls.h>
 
 #include <src/vars.h>                   /* STATE(BottomLVars) for execution contexts */
 

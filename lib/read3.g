@@ -12,6 +12,7 @@ ReadLib( "extrset.gd"  );
 ReadLib( "extuset.gd"  );
 
 ReadLib( "dict.gd"     );
+ReadLib( "bitfields.gd" );
 
 ReadLib( "mapping.gd"  );
 ReadLib( "mapphomo.gd" );

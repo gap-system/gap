@@ -11,7 +11,6 @@
 **  This file contains the functions for computing with finite presentations.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 #include <src/code.h>
 #include <src/stats.h>                  /* for TakeInterrupt */
 
@@ -36,8 +35,7 @@
 #include <src/tietze.h>                 /* tietze helper functions */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 
 /****************************************************************************

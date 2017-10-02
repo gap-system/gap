@@ -13,7 +13,6 @@
 #include <stdlib.h>
 
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
@@ -30,9 +29,13 @@
 
 #include <src/scanner.h>
 
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
+
+#include <src/calls.h>
+#include <src/saveload.h>
+
 
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;
@@ -359,6 +362,39 @@ static void ResizeObjSet(Obj set, UInt bits) {
   CHANGED_BAG(set);
 }
 
+void SaveObjSet(Obj set)
+{
+    UInt size = ADDR_WORD(set)[OBJSET_SIZE];
+    UInt bits = ADDR_WORD(set)[OBJSET_BITS];
+    UInt used = ADDR_WORD(set)[OBJSET_USED];
+    SaveUInt(size);
+    SaveUInt(bits);
+    SaveUInt(used);
+    for (UInt i = 0; i < size; i++) {
+        Obj val = ADDR_OBJ(set)[OBJSET_HDRSIZE + i];
+        if (!val || val == Undefined)
+            continue;
+        SaveSubObj(val);
+    }
+}
+
+void LoadObjSet(Obj set)
+{
+    UInt size = LoadUInt();
+    UInt bits = LoadUInt();
+    UInt used = LoadUInt();
+
+    ADDR_WORD(set)[OBJSET_SIZE] = size;
+    ADDR_WORD(set)[OBJSET_BITS] = bits;
+    ADDR_WORD(set)[OBJSET_USED] = 0;
+    ADDR_WORD(set)[OBJSET_DIRTY] = 0;
+
+    for (UInt i = 1; i <= used; i++) {
+        Obj val = LoadSubObj();
+        AddObjSetNew(set, val);
+    }
+}
+
 /**
  *  `NewObjMap()`
  *  -------------
@@ -606,6 +642,42 @@ static void ResizeObjMap(Obj map, UInt bits) {
   SwapMasterPoint(map, new);
   CHANGED_BAG(map);
   CHANGED_BAG(new);
+}
+
+void SaveObjMap(Obj map)
+{
+    UInt size = ADDR_WORD(map)[OBJSET_SIZE];
+    UInt bits = ADDR_WORD(map)[OBJSET_BITS];
+    UInt used = ADDR_WORD(map)[OBJSET_USED];
+    SaveUInt(size);
+    SaveUInt(bits);
+    SaveUInt(used);
+    for (UInt i = 0; i < size; i++) {
+        Obj key = ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * i];
+        Obj val = ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * i + 1];
+        if (!key || key == Undefined)
+            continue;
+        SaveSubObj(key);
+        SaveSubObj(val);
+    }
+}
+
+void LoadObjMap(Obj map)
+{
+    UInt size = LoadUInt();
+    UInt bits = LoadUInt();
+    UInt used = LoadUInt();
+
+    ADDR_WORD(map)[OBJSET_SIZE] = size;
+    ADDR_WORD(map)[OBJSET_BITS] = bits;
+    ADDR_WORD(map)[OBJSET_USED] = 0;
+    ADDR_WORD(map)[OBJSET_DIRTY] = 0;
+
+    for (UInt i = 1; i <= used; i++) {
+        Obj key = LoadSubObj();
+        Obj val = LoadSubObj();
+        AddObjMapNew(map, key, val);
+    }
 }
 
 /**
@@ -933,6 +1005,18 @@ static Int InitKernel (
   IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
   IsMutableObjFuncs [ T_OBJMAP           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
+
+  // Install saving functions
+  SaveObjFuncs[ T_OBJSET            ] = SaveObjSet;
+  SaveObjFuncs[ T_OBJSET +IMMUTABLE ] = SaveObjSet;
+  SaveObjFuncs[ T_OBJMAP            ] = SaveObjMap;
+  SaveObjFuncs[ T_OBJMAP +IMMUTABLE ] = SaveObjMap;
+
+  LoadObjFuncs[ T_OBJSET            ] = LoadObjSet;
+  LoadObjFuncs[ T_OBJSET +IMMUTABLE ] = LoadObjSet;
+  LoadObjFuncs[ T_OBJMAP            ] = LoadObjMap;
+  LoadObjFuncs[ T_OBJMAP +IMMUTABLE ] = LoadObjMap;
+
   // init filters and functions
   InitHdlrFuncsFromTable( GVarFuncs );
   /* return success                                                      */

@@ -301,8 +301,10 @@ end );
 ##  as all objects satisfy IsObject!
 ##
 BIND_GLOBAL( "IsFilter",
-    x -> IS_IDENTICAL_OBJ(x, IS_OBJECT) or
-         ( IS_OPERATION( x ) and ( FLAG1_FILTER( x ) <> 0 or x in FILTERS ) ) ) ;
+    x -> IS_IDENTICAL_OBJ(x, IS_OBJECT)
+         or ( IS_OPERATION( x )
+              and ( (FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
+                    or x in FILTERS ) ) );
 
 
 ## Global Rank declarations

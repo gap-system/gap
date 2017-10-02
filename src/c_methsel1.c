@@ -1,6 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
+#define FILE_CRC  "102657344"
 
 /* global variables used in handlers */
 static GVar G_METHOD__0ARGS;
@@ -59,9 +60,6 @@ static Obj  GF_FamilyObj;
 
 /* information for the functions */
 static Obj  NameFunc[35];
-static Obj  NamsFunc[35];
-static Int  NargFunc[35];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -4645,143 +4643,143 @@ static Obj  HdlrFunc1 (
  SET_BRK_CURR_STAT(0);
  
  /* METHOD_0ARGS := function ( operation )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 0 );
-      for i  in [ 1, 5 .. LEN_LIST( methods ) - 3 ]  do
-          if methods[i](  )  then
+      for i in [ 1, 5 .. LEN_LIST( methods ) - 3 ] do
+          if methods[i](  ) then
               return methods[i + 1];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 1, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(19));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(30));
+ SET_STARTLINE_BODY(t_2, 19);
+ SET_ENDLINE_BODY(t_2, 30);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__0ARGS, t_1 );
  
  /* METHOD_1ARGS := function ( operation, type1 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 1 );
-      for i  in [ 1, 6 .. LEN_LIST( methods ) - 4 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and methods[i]( type1![1] )  then
+      for i in [ 1, 6 .. LEN_LIST( methods ) - 4 ] do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and methods[i]( type1![1] ) then
               return methods[i + 2];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 2, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(37));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(49));
+ SET_STARTLINE_BODY(t_2, 37);
+ SET_ENDLINE_BODY(t_2, 49);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__1ARGS, t_1 );
  
  /* METHOD_2ARGS := function ( operation, type1, type2 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 2 );
-      for i  in [ 1, 7 .. LEN_LIST( methods ) - 5 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and methods[i]( type1![1], type2![1] )  then
+      for i in [ 1, 7 .. LEN_LIST( methods ) - 5 ] do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and methods[i]( type1![1], type2![1] ) then
               return methods[i + 3];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], 3, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(56));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(69));
+ SET_STARTLINE_BODY(t_2, 56);
+ SET_ENDLINE_BODY(t_2, 69);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__2ARGS, t_1 );
  
  /* METHOD_3ARGS := function ( operation, type1, type2, type3 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 3 );
-      for i  in [ 1, 8 .. LEN_LIST( methods ) - 6 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and methods[i]( type1![1], type2![1], type3![1] )  then
+      for i in [ 1, 8 .. LEN_LIST( methods ) - 6 ] do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and methods[i]( type1![1], type2![1], type3![1] ) then
               return methods[i + 4];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], 4, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(76));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(90));
+ SET_STARTLINE_BODY(t_2, 76);
+ SET_ENDLINE_BODY(t_2, 90);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__3ARGS, t_1 );
  
  /* METHOD_4ARGS := function ( operation, type1, type2, type3, type4 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 4 );
-      for i  in [ 1, 9 .. LEN_LIST( methods ) - 7 ]  do
+      for i in [ 1, 9 .. LEN_LIST( methods ) - 7 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
-              and methods[i]( type1![1], type2![1], type3![1], type4![1] )  then
+              and methods[i]( type1![1], type2![1], type3![1], type4![1] ) then
               return methods[i + 5];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
+ t_1 = NewFunction( NameFunc[6], 5, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(97));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(114));
+ SET_STARTLINE_BODY(t_2, 97);
+ SET_ENDLINE_BODY(t_2, 114);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__4ARGS, t_1 );
  
  /* METHOD_5ARGS := function ( operation, type1, type2, type3, type4, type5 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 5 );
-      for i  in [ 1, 10 .. LEN_LIST( methods ) - 8 ]  do
+      for i in [ 1, 10 .. LEN_LIST( methods ) - 8 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
-              and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
+              and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then
               return methods[i + 6];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
+ t_1 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(121));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(139));
+ SET_STARTLINE_BODY(t_2, 121);
+ SET_ENDLINE_BODY(t_2, 139);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__5ARGS, t_1 );
  
  /* METHOD_6ARGS := function ( operation, type1, type2, type3, type4, type5, type6 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 6 );
-      for i  in [ 1, 11 .. LEN_LIST( methods ) - 9 ]  do
+      for i in [ 1, 11 .. LEN_LIST( methods ) - 9 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
-                and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
+                and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then
               return methods[i + 7];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
+ t_1 = NewFunction( NameFunc[8], 7, 0, HdlrFunc8 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(146));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(165));
+ SET_STARTLINE_BODY(t_2, 146);
+ SET_ENDLINE_BODY(t_2, 165);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4791,23 +4789,23 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
+ t_1 = NewFunction( NameFunc[9], -1, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(172));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(174));
+ SET_STARTLINE_BODY(t_2, 172);
+ SET_ENDLINE_BODY(t_2, 174);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_METHOD__XARGS, t_1 );
  
  /* NEXT_METHOD_0ARGS := function ( operation, k )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 0 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 4 ]  do
-          if methods[4 * (i - 1) + 1](  )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 4 ] do
+          if methods[4 * (i - 1) + 1](  ) then
+              if k = j then
                   return methods[4 * (i - 1) + 2];
               else
                   j := j + 1;
@@ -4816,23 +4814,23 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
+ t_1 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(189));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(205));
+ SET_STARTLINE_BODY(t_2, 189);
+ SET_ENDLINE_BODY(t_2, 205);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__0ARGS, t_1 );
  
  /* NEXT_METHOD_1ARGS := function ( operation, k, type1 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 1 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 5 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[5 * (i - 1) + 2] ) and methods[5 * (i - 1) + 1]( type1![1] )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 5 ] do
+          if IS_SUBSET_FLAGS( type1![2], methods[5 * (i - 1) + 2] ) and methods[5 * (i - 1) + 1]( type1![1] ) then
+              if k = j then
                   return methods[5 * (i - 1) + 3];
               else
                   j := j + 1;
@@ -4841,23 +4839,23 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
+ t_1 = NewFunction( NameFunc[11], 3, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(212));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(229));
+ SET_STARTLINE_BODY(t_2, 212);
+ SET_ENDLINE_BODY(t_2, 229);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__1ARGS, t_1 );
  
  /* NEXT_METHOD_2ARGS := function ( operation, k, type1, type2 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 2 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 6 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[6 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( type1![1], type2![1] )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 6 ] do
+          if IS_SUBSET_FLAGS( type1![2], methods[6 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( type1![1], type2![1] ) then
+              if k = j then
                   return methods[6 * (i - 1) + 4];
               else
                   j := j + 1;
@@ -4866,24 +4864,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
+ t_1 = NewFunction( NameFunc[12], 4, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(236));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(254));
+ SET_STARTLINE_BODY(t_2, 236);
+ SET_ENDLINE_BODY(t_2, 254);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__2ARGS, t_1 );
  
  /* NEXT_METHOD_3ARGS := function ( operation, k, type1, type2, type3 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 3 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 7 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] )
-               then
-              if k = j  then
+              then
+              if k = j then
                   return methods[7 * (i - 1) + 5];
               else
                   j := j + 1;
@@ -4892,24 +4890,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
+ t_1 = NewFunction( NameFunc[13], 5, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(261));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(280));
+ SET_STARTLINE_BODY(t_2, 261);
+ SET_ENDLINE_BODY(t_2, 280);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__3ARGS, t_1 );
  
  /* NEXT_METHOD_4ARGS := function ( operation, k, type1, type2, type3, type4 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 4 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 8 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 8 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[8 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[8 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[8 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[8 * (i - 1) + 5] ) 
-              and methods[8 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1] )  then
-              if k = j  then
+              and methods[8 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1] ) then
+              if k = j then
                   return methods[8 * (i - 1) + 6];
               else
                   j := j + 1;
@@ -4918,24 +4916,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
+ t_1 = NewFunction( NameFunc[14], 6, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(287));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(309));
+ SET_STARTLINE_BODY(t_2, 287);
+ SET_ENDLINE_BODY(t_2, 309);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__4ARGS, t_1 );
  
  /* NEXT_METHOD_5ARGS := function ( operation, k, type1, type2, type3, type4, type5 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 5 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 9 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 9 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[9 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[9 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[9 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[9 * (i - 1) + 5] ) 
-                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
-              if k = j  then
+                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then
+              if k = j then
                   return methods[9 * (i - 1) + 7];
               else
                   j := j + 1;
@@ -4944,24 +4942,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
+ t_1 = NewFunction( NameFunc[15], 7, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(316));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(339));
+ SET_STARTLINE_BODY(t_2, 316);
+ SET_ENDLINE_BODY(t_2, 339);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__5ARGS, t_1 );
  
  /* NEXT_METHOD_6ARGS := function ( operation, k, type1, type2, type3, type4, type5, type6 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 6 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 10 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 10 ] do
           if IS_SUBSET_FLAGS( type1![2], methods[10 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
-              if k = j  then
+                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then
+              if k = j then
                   return methods[10 * (i - 1) + 8];
               else
                   j := j + 1;
@@ -4970,11 +4968,11 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
+ t_1 = NewFunction( NameFunc[16], 8, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(346));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(370));
+ SET_STARTLINE_BODY(t_2, 346);
+ SET_ENDLINE_BODY(t_2, 370);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4984,31 +4982,31 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
+ t_1 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(377));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(379));
+ SET_STARTLINE_BODY(t_2, 377);
+ SET_ENDLINE_BODY(t_2, 379);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__METHOD__XARGS, t_1 );
  
  /* AttributeValueNotSet := function ( attr, obj )
-      local  type, fam, methods, i, flag, erg;
+      local type, fam, methods, i, flag, erg;
       type := TypeObj( obj );
       fam := FamilyObj( obj );
       methods := METHODS_OPERATION( attr, 1 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 5 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 5 ] do
           flag := true;
           flag := flag and IS_SUBSET_FLAGS( type![2], methods[5 * (i - 1) + 2] );
-          if flag  then
+          if flag then
               flag := flag and methods[5 * (i - 1) + 1]( fam );
           fi;
-          if flag  then
+          if flag then
               attr := methods[5 * (i - 1) + 3];
               erg := attr( obj );
-              if not IS_IDENTICAL_OBJ( erg, TRY_NEXT_METHOD )  then
+              if not IS_IDENTICAL_OBJ( erg, TRY_NEXT_METHOD ) then
                   return erg;
               fi;
           fi;
@@ -5016,154 +5014,154 @@ static Obj  HdlrFunc1 (
       Error( "No applicable method found for attribute" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
+ t_1 = NewFunction( NameFunc[18], 2, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(385));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(406));
+ SET_STARTLINE_BODY(t_2, 385);
+ SET_ENDLINE_BODY(t_2, 406);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_AttributeValueNotSet, t_1 );
  
  /* CONSTRUCTOR_0ARGS := function ( operation )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 0 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 4 ]  do
-          if methods[4 * (i - 1) + 1](  )  then
+      for i in [ 1 .. LEN_LIST( methods ) / 4 ] do
+          if methods[4 * (i - 1) + 1](  ) then
               return methods[4 * (i - 1) + 2];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
+ t_1 = NewFunction( NameFunc[19], 1, 0, HdlrFunc19 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(419));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(430));
+ SET_STARTLINE_BODY(t_2, 419);
+ SET_ENDLINE_BODY(t_2, 430);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__0ARGS, t_1 );
  
  /* CONSTRUCTOR_1ARGS := function ( operation, flags1 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 1 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 5 ]  do
-          if IS_SUBSET_FLAGS( methods[5 * (i - 1) + 2], flags1 ) and methods[5 * (i - 1) + 1]( flags1 )  then
+      for i in [ 1 .. LEN_LIST( methods ) / 5 ] do
+          if IS_SUBSET_FLAGS( methods[5 * (i - 1) + 2], flags1 ) and methods[5 * (i - 1) + 1]( flags1 ) then
               return methods[5 * (i - 1) + 3];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
+ t_1 = NewFunction( NameFunc[20], 2, 0, HdlrFunc20 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(437));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(449));
+ SET_STARTLINE_BODY(t_2, 437);
+ SET_ENDLINE_BODY(t_2, 449);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__1ARGS, t_1 );
  
  /* CONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 2 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 6 ]  do
-          if IS_SUBSET_FLAGS( methods[6 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( flags1, type2![1] )  then
+      for i in [ 1 .. LEN_LIST( methods ) / 6 ] do
+          if IS_SUBSET_FLAGS( methods[6 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( flags1, type2![1] ) then
               return methods[6 * (i - 1) + 4];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
+ t_1 = NewFunction( NameFunc[21], 3, 0, HdlrFunc21 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(456));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(469));
+ SET_STARTLINE_BODY(t_2, 456);
+ SET_ENDLINE_BODY(t_2, 469);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__2ARGS, t_1 );
  
  /* CONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 3 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )  then
+      for i in [ 1 .. LEN_LIST( methods ) / 7 ] do
+          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] ) then
               return methods[7 * (i - 1) + 5];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
+ t_1 = NewFunction( NameFunc[22], 4, 0, HdlrFunc22 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(476));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(490));
+ SET_STARTLINE_BODY(t_2, 476);
+ SET_ENDLINE_BODY(t_2, 490);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__3ARGS, t_1 );
  
  /* CONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3, type4 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 4 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 8 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 8 ] do
           if IS_SUBSET_FLAGS( methods[8 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[8 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[8 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[8 * (i - 1) + 5] ) 
-              and methods[8 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1] )  then
+              and methods[8 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1] ) then
               return methods[8 * (i - 1) + 6];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
+ t_1 = NewFunction( NameFunc[23], 5, 0, HdlrFunc23 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(497));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(514));
+ SET_STARTLINE_BODY(t_2, 497);
+ SET_ENDLINE_BODY(t_2, 514);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__4ARGS, t_1 );
  
  /* CONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3, type4, type5 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 5 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 9 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 9 ] do
           if IS_SUBSET_FLAGS( methods[9 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[9 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[9 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[9 * (i - 1) + 5] ) 
-                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1] )  then
+                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1] ) then
               return methods[9 * (i - 1) + 7];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
+ t_1 = NewFunction( NameFunc[24], 6, 0, HdlrFunc24 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(521));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(539));
+ SET_STARTLINE_BODY(t_2, 521);
+ SET_ENDLINE_BODY(t_2, 539);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__5ARGS, t_1 );
  
  /* CONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3, type4, type5, type6 )
-      local  methods, i;
+      local methods, i;
       methods := METHODS_OPERATION( operation, 6 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 10 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 10 ] do
           if IS_SUBSET_FLAGS( methods[10 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1], type6![1] )  then
+                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1], type6![1] ) then
               return methods[10 * (i - 1) + 8];
           fi;
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
+ t_1 = NewFunction( NameFunc[25], 7, 0, HdlrFunc25 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(546));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(565));
+ SET_STARTLINE_BODY(t_2, 546);
+ SET_ENDLINE_BODY(t_2, 565);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -5173,23 +5171,23 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
+ t_1 = NewFunction( NameFunc[26], -1, 0, HdlrFunc26 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(572));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(574));
+ SET_STARTLINE_BODY(t_2, 572);
+ SET_ENDLINE_BODY(t_2, 574);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_CONSTRUCTOR__XARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_0ARGS := function ( operation, k )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 0 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 4 ]  do
-          if methods[4 * (i - 1) + 1](  )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 4 ] do
+          if methods[4 * (i - 1) + 1](  ) then
+              if k = j then
                   return methods[4 * (i - 1) + 2];
               else
                   j := j + 1;
@@ -5198,23 +5196,23 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
+ t_1 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(589));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(605));
+ SET_STARTLINE_BODY(t_2, 589);
+ SET_ENDLINE_BODY(t_2, 605);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__0ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_1ARGS := function ( operation, k, flags1 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 1 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 5 ]  do
-          if IS_SUBSET_FLAGS( methods[5 * (i - 1) + 2], flags1 ) and methods[5 * (i - 1) + 1]( flags1 )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 5 ] do
+          if IS_SUBSET_FLAGS( methods[5 * (i - 1) + 2], flags1 ) and methods[5 * (i - 1) + 1]( flags1 ) then
+              if k = j then
                   return methods[5 * (i - 1) + 3];
               else
                   j := j + 1;
@@ -5223,23 +5221,23 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
+ t_1 = NewFunction( NameFunc[28], 3, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(612));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(629));
+ SET_STARTLINE_BODY(t_2, 612);
+ SET_ENDLINE_BODY(t_2, 629);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__1ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 2 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 6 ]  do
-          if IS_SUBSET_FLAGS( methods[6 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( flags1, type2![1] )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 6 ] do
+          if IS_SUBSET_FLAGS( methods[6 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( flags1, type2![1] ) then
+              if k = j then
                   return methods[6 * (i - 1) + 4];
               else
                   j := j + 1;
@@ -5248,23 +5246,23 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
+ t_1 = NewFunction( NameFunc[29], 4, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(636));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(654));
+ SET_STARTLINE_BODY(t_2, 636);
+ SET_ENDLINE_BODY(t_2, 654);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__2ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 3 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] )  then
-              if k = j  then
+      for i in [ 1 .. LEN_LIST( methods ) / 7 ] do
+          if IS_SUBSET_FLAGS( methods[7 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( flags1, type2![1], type3![1] ) then
+              if k = j then
                   return methods[7 * (i - 1) + 5];
               else
                   j := j + 1;
@@ -5273,24 +5271,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
+ t_1 = NewFunction( NameFunc[30], 5, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(661));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(680));
+ SET_STARTLINE_BODY(t_2, 661);
+ SET_ENDLINE_BODY(t_2, 680);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__3ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3, type4 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 4 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 8 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 8 ] do
           if IS_SUBSET_FLAGS( methods[8 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[8 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[8 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[8 * (i - 1) + 5] ) 
-              and methods[8 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1] )  then
-              if k = j  then
+              and methods[8 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1] ) then
+              if k = j then
                   return methods[8 * (i - 1) + 6];
               else
                   j := j + 1;
@@ -5299,24 +5297,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
+ t_1 = NewFunction( NameFunc[31], 6, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(687));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(709));
+ SET_STARTLINE_BODY(t_2, 687);
+ SET_ENDLINE_BODY(t_2, 709);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__4ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3, type4, type5 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 5 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 9 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 9 ] do
           if IS_SUBSET_FLAGS( methods[9 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[9 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[9 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[9 * (i - 1) + 5] ) 
-                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1] )  then
-              if k = j  then
+                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1] ) then
+              if k = j then
                   return methods[9 * (i - 1) + 7];
               else
                   j := j + 1;
@@ -5325,24 +5323,24 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
+ t_1 = NewFunction( NameFunc[32], 7, 0, HdlrFunc32 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(716));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(739));
+ SET_STARTLINE_BODY(t_2, 716);
+ SET_ENDLINE_BODY(t_2, 739);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_NEXT__CONSTRUCTOR__5ARGS, t_1 );
  
  /* NEXT_CONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3, type4, type5, type6 )
-      local  methods, i, j;
+      local methods, i, j;
       methods := METHODS_OPERATION( operation, 6 );
       j := 0;
-      for i  in [ 1 .. LEN_LIST( methods ) / 10 ]  do
+      for i in [ 1 .. LEN_LIST( methods ) / 10 ] do
           if IS_SUBSET_FLAGS( methods[10 * (i - 1) + 2], flags1 ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1], type6![1] )  then
-              if k = j  then
+                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( flags1, type2![1], type3![1], type4![1], type5![1], type6![1] ) then
+              if k = j then
                   return methods[10 * (i - 1) + 8];
               else
                   j := j + 1;
@@ -5351,11 +5349,11 @@ static Obj  HdlrFunc1 (
       od;
       return fail;
   end; */
- t_1 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
+ t_1 = NewFunction( NameFunc[33], 8, 0, HdlrFunc33 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(746));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(770));
+ SET_STARTLINE_BODY(t_2, 746);
+ SET_ENDLINE_BODY(t_2, 770);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -5365,11 +5363,11 @@ static Obj  HdlrFunc1 (
       Error( "not supported yet" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
+ t_1 = NewFunction( NameFunc[34], -1, 0, HdlrFunc34 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, INTOBJ_INT(777));
- SET_ENDLINE_BODY(t_2, INTOBJ_INT(779));
+ SET_STARTLINE_BODY(t_2, 777);
+ SET_ENDLINE_BODY(t_2, 779);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -5384,273 +5382,6 @@ static Obj  HdlrFunc1 (
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
-}
-
-/* 'InitKernel' sets up data structures, fopies, copies, handlers */
-static Int InitKernel ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- InitFopyGVar( "Error", &GF_Error );
- InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
- InitCopyGVar( "TRY_NEXT_METHOD", &GC_TRY__NEXT__METHOD );
- InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
- InitFopyGVar( "METHODS_OPERATION", &GF_METHODS__OPERATION );
- InitCopyGVar( "fail", &GC_fail );
- InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitFopyGVar( "TypeObj", &GF_TypeObj );
- InitFopyGVar( "FamilyObj", &GF_FamilyObj );
- 
- /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/methsel1.g:DefaultName(102657344)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/methsel1.g:FileName(102657344)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/methsel1.g:HdlrFunc1(102657344)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/methsel1.g:NameFunc[1](102657344)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/methsel1.g:HdlrFunc2(102657344)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/methsel1.g:NameFunc[2](102657344)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/methsel1.g:HdlrFunc3(102657344)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/methsel1.g:NameFunc[3](102657344)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/methsel1.g:HdlrFunc4(102657344)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/methsel1.g:NameFunc[4](102657344)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/methsel1.g:HdlrFunc5(102657344)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/methsel1.g:NameFunc[5](102657344)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/methsel1.g:HdlrFunc6(102657344)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/methsel1.g:NameFunc[6](102657344)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/methsel1.g:HdlrFunc7(102657344)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/methsel1.g:NameFunc[7](102657344)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/methsel1.g:HdlrFunc8(102657344)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/methsel1.g:NameFunc[8](102657344)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/methsel1.g:HdlrFunc9(102657344)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/methsel1.g:NameFunc[9](102657344)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/methsel1.g:HdlrFunc10(102657344)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/methsel1.g:NameFunc[10](102657344)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/methsel1.g:HdlrFunc11(102657344)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/methsel1.g:NameFunc[11](102657344)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/methsel1.g:HdlrFunc12(102657344)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/methsel1.g:NameFunc[12](102657344)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/methsel1.g:HdlrFunc13(102657344)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/methsel1.g:NameFunc[13](102657344)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/methsel1.g:HdlrFunc14(102657344)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/methsel1.g:NameFunc[14](102657344)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/methsel1.g:HdlrFunc15(102657344)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/methsel1.g:NameFunc[15](102657344)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/methsel1.g:HdlrFunc16(102657344)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/methsel1.g:NameFunc[16](102657344)" );
- InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/methsel1.g:HdlrFunc17(102657344)" );
- InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/methsel1.g:NameFunc[17](102657344)" );
- InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/methsel1.g:HdlrFunc18(102657344)" );
- InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/methsel1.g:NameFunc[18](102657344)" );
- InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/methsel1.g:HdlrFunc19(102657344)" );
- InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/methsel1.g:NameFunc[19](102657344)" );
- InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/methsel1.g:HdlrFunc20(102657344)" );
- InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/methsel1.g:NameFunc[20](102657344)" );
- InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/methsel1.g:HdlrFunc21(102657344)" );
- InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/methsel1.g:NameFunc[21](102657344)" );
- InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/methsel1.g:HdlrFunc22(102657344)" );
- InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/methsel1.g:NameFunc[22](102657344)" );
- InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/methsel1.g:HdlrFunc23(102657344)" );
- InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/methsel1.g:NameFunc[23](102657344)" );
- InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/methsel1.g:HdlrFunc24(102657344)" );
- InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/methsel1.g:NameFunc[24](102657344)" );
- InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/methsel1.g:HdlrFunc25(102657344)" );
- InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/methsel1.g:NameFunc[25](102657344)" );
- InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/methsel1.g:HdlrFunc26(102657344)" );
- InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/methsel1.g:NameFunc[26](102657344)" );
- InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/methsel1.g:HdlrFunc27(102657344)" );
- InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/methsel1.g:NameFunc[27](102657344)" );
- InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/methsel1.g:HdlrFunc28(102657344)" );
- InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/methsel1.g:NameFunc[28](102657344)" );
- InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/methsel1.g:HdlrFunc29(102657344)" );
- InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/methsel1.g:NameFunc[29](102657344)" );
- InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/methsel1.g:HdlrFunc30(102657344)" );
- InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/methsel1.g:NameFunc[30](102657344)" );
- InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/methsel1.g:HdlrFunc31(102657344)" );
- InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/methsel1.g:NameFunc[31](102657344)" );
- InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/methsel1.g:HdlrFunc32(102657344)" );
- InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/methsel1.g:NameFunc[32](102657344)" );
- InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/methsel1.g:HdlrFunc33(102657344)" );
- InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/methsel1.g:NameFunc[33](102657344)" );
- InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/methsel1.g:HdlrFunc34(102657344)" );
- InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/methsel1.g:NameFunc[34](102657344)" );
- 
- /* return success */
- return 0;
- 
-}
-
-/* 'InitLibrary' sets up gvars, rnams, functions */
-static Int InitLibrary ( StructInitInfo * module )
-{
- Obj func1;
- Obj body1;
- 
- /* Complete Copy/Fopy registration */
- UpdateCopyFopyInfo();
- 
- /* global variables used in handlers */
- G_METHOD__0ARGS = GVarName( "METHOD_0ARGS" );
- G_METHOD__1ARGS = GVarName( "METHOD_1ARGS" );
- G_METHOD__2ARGS = GVarName( "METHOD_2ARGS" );
- G_METHOD__3ARGS = GVarName( "METHOD_3ARGS" );
- G_METHOD__4ARGS = GVarName( "METHOD_4ARGS" );
- G_METHOD__5ARGS = GVarName( "METHOD_5ARGS" );
- G_METHOD__6ARGS = GVarName( "METHOD_6ARGS" );
- G_METHOD__XARGS = GVarName( "METHOD_XARGS" );
- G_NEXT__METHOD__0ARGS = GVarName( "NEXT_METHOD_0ARGS" );
- G_NEXT__METHOD__1ARGS = GVarName( "NEXT_METHOD_1ARGS" );
- G_NEXT__METHOD__2ARGS = GVarName( "NEXT_METHOD_2ARGS" );
- G_NEXT__METHOD__3ARGS = GVarName( "NEXT_METHOD_3ARGS" );
- G_NEXT__METHOD__4ARGS = GVarName( "NEXT_METHOD_4ARGS" );
- G_NEXT__METHOD__5ARGS = GVarName( "NEXT_METHOD_5ARGS" );
- G_NEXT__METHOD__6ARGS = GVarName( "NEXT_METHOD_6ARGS" );
- G_NEXT__METHOD__XARGS = GVarName( "NEXT_METHOD_XARGS" );
- G_CONSTRUCTOR__0ARGS = GVarName( "CONSTRUCTOR_0ARGS" );
- G_CONSTRUCTOR__1ARGS = GVarName( "CONSTRUCTOR_1ARGS" );
- G_CONSTRUCTOR__2ARGS = GVarName( "CONSTRUCTOR_2ARGS" );
- G_CONSTRUCTOR__3ARGS = GVarName( "CONSTRUCTOR_3ARGS" );
- G_CONSTRUCTOR__4ARGS = GVarName( "CONSTRUCTOR_4ARGS" );
- G_CONSTRUCTOR__5ARGS = GVarName( "CONSTRUCTOR_5ARGS" );
- G_CONSTRUCTOR__6ARGS = GVarName( "CONSTRUCTOR_6ARGS" );
- G_CONSTRUCTOR__XARGS = GVarName( "CONSTRUCTOR_XARGS" );
- G_NEXT__CONSTRUCTOR__0ARGS = GVarName( "NEXT_CONSTRUCTOR_0ARGS" );
- G_NEXT__CONSTRUCTOR__1ARGS = GVarName( "NEXT_CONSTRUCTOR_1ARGS" );
- G_NEXT__CONSTRUCTOR__2ARGS = GVarName( "NEXT_CONSTRUCTOR_2ARGS" );
- G_NEXT__CONSTRUCTOR__3ARGS = GVarName( "NEXT_CONSTRUCTOR_3ARGS" );
- G_NEXT__CONSTRUCTOR__4ARGS = GVarName( "NEXT_CONSTRUCTOR_4ARGS" );
- G_NEXT__CONSTRUCTOR__5ARGS = GVarName( "NEXT_CONSTRUCTOR_5ARGS" );
- G_NEXT__CONSTRUCTOR__6ARGS = GVarName( "NEXT_CONSTRUCTOR_6ARGS" );
- G_NEXT__CONSTRUCTOR__XARGS = GVarName( "NEXT_CONSTRUCTOR_XARGS" );
- G_Error = GVarName( "Error" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
- G_fail = GVarName( "fail" );
- G_LEN__LIST = GVarName( "LEN_LIST" );
- G_AttributeValueNotSet = GVarName( "AttributeValueNotSet" );
- G_TypeObj = GVarName( "TypeObj" );
- G_FamilyObj = GVarName( "FamilyObj" );
- 
- /* record names used in handlers */
- 
- /* information for the functions */
- DefaultName = MakeString( "local function" );
- FileName = MakeString( "GAPROOT/lib/methsel1.g" );
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 1;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 2;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 3;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 5;
- NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
- NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
- NargFunc[8] = 7;
- NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
- NargFunc[9] = -1;
- NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
- NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
- NargFunc[11] = 3;
- NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
- NargFunc[12] = 4;
- NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
- NargFunc[13] = 5;
- NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
- NargFunc[14] = 6;
- NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
- NargFunc[15] = 7;
- NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
- NargFunc[16] = 8;
- NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
- NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
- NamsFunc[19] = 0;
- NargFunc[19] = 1;
- NameFunc[20] = DefaultName;
- NamsFunc[20] = 0;
- NargFunc[20] = 2;
- NameFunc[21] = DefaultName;
- NamsFunc[21] = 0;
- NargFunc[21] = 3;
- NameFunc[22] = DefaultName;
- NamsFunc[22] = 0;
- NargFunc[22] = 4;
- NameFunc[23] = DefaultName;
- NamsFunc[23] = 0;
- NargFunc[23] = 5;
- NameFunc[24] = DefaultName;
- NamsFunc[24] = 0;
- NargFunc[24] = 6;
- NameFunc[25] = DefaultName;
- NamsFunc[25] = 0;
- NargFunc[25] = 7;
- NameFunc[26] = DefaultName;
- NamsFunc[26] = 0;
- NargFunc[26] = -1;
- NameFunc[27] = DefaultName;
- NamsFunc[27] = 0;
- NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
- NamsFunc[28] = 0;
- NargFunc[28] = 3;
- NameFunc[29] = DefaultName;
- NamsFunc[29] = 0;
- NargFunc[29] = 4;
- NameFunc[30] = DefaultName;
- NamsFunc[30] = 0;
- NargFunc[30] = 5;
- NameFunc[31] = DefaultName;
- NamsFunc[31] = 0;
- NargFunc[31] = 6;
- NameFunc[32] = DefaultName;
- NamsFunc[32] = 0;
- NargFunc[32] = 7;
- NameFunc[33] = DefaultName;
- NamsFunc[33] = 0;
- NargFunc[33] = 8;
- NameFunc[34] = DefaultName;
- NamsFunc[34] = 0;
- NargFunc[34] = -1;
- 
- /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, sizeof(BodyHeader));
- SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
- CALL_0ARGS( func1 );
- 
- /* return success */
- return 0;
- 
 }
 
 /* 'PostRestore' restore gvars, rnams, functions */
@@ -5704,108 +5435,40 @@ static Int PostRestore ( StructInitInfo * module )
  /* record names used in handlers */
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 1;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 2;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 3;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 5;
- NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
- NargFunc[7] = 6;
- NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
- NargFunc[8] = 7;
- NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
- NargFunc[9] = -1;
- NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
- NargFunc[10] = 2;
- NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
- NargFunc[11] = 3;
- NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
- NargFunc[12] = 4;
- NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
- NargFunc[13] = 5;
- NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
- NargFunc[14] = 6;
- NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
- NargFunc[15] = 7;
- NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
- NargFunc[16] = 8;
- NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
- NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
- NamsFunc[19] = 0;
- NargFunc[19] = 1;
- NameFunc[20] = DefaultName;
- NamsFunc[20] = 0;
- NargFunc[20] = 2;
- NameFunc[21] = DefaultName;
- NamsFunc[21] = 0;
- NargFunc[21] = 3;
- NameFunc[22] = DefaultName;
- NamsFunc[22] = 0;
- NargFunc[22] = 4;
- NameFunc[23] = DefaultName;
- NamsFunc[23] = 0;
- NargFunc[23] = 5;
- NameFunc[24] = DefaultName;
- NamsFunc[24] = 0;
- NargFunc[24] = 6;
- NameFunc[25] = DefaultName;
- NamsFunc[25] = 0;
- NargFunc[25] = 7;
- NameFunc[26] = DefaultName;
- NamsFunc[26] = 0;
- NargFunc[26] = -1;
- NameFunc[27] = DefaultName;
- NamsFunc[27] = 0;
- NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
- NamsFunc[28] = 0;
- NargFunc[28] = 3;
- NameFunc[29] = DefaultName;
- NamsFunc[29] = 0;
- NargFunc[29] = 4;
- NameFunc[30] = DefaultName;
- NamsFunc[30] = 0;
- NargFunc[30] = 5;
- NameFunc[31] = DefaultName;
- NamsFunc[31] = 0;
- NargFunc[31] = 6;
- NameFunc[32] = DefaultName;
- NamsFunc[32] = 0;
- NargFunc[32] = 7;
- NameFunc[33] = DefaultName;
- NamsFunc[33] = 0;
- NargFunc[33] = 8;
- NameFunc[34] = DefaultName;
- NamsFunc[34] = 0;
- NargFunc[34] = -1;
+ NameFunc[1] = 0;
+ NameFunc[2] = 0;
+ NameFunc[3] = 0;
+ NameFunc[4] = 0;
+ NameFunc[5] = 0;
+ NameFunc[6] = 0;
+ NameFunc[7] = 0;
+ NameFunc[8] = 0;
+ NameFunc[9] = 0;
+ NameFunc[10] = 0;
+ NameFunc[11] = 0;
+ NameFunc[12] = 0;
+ NameFunc[13] = 0;
+ NameFunc[14] = 0;
+ NameFunc[15] = 0;
+ NameFunc[16] = 0;
+ NameFunc[17] = 0;
+ NameFunc[18] = 0;
+ NameFunc[19] = 0;
+ NameFunc[20] = 0;
+ NameFunc[21] = 0;
+ NameFunc[22] = 0;
+ NameFunc[23] = 0;
+ NameFunc[24] = 0;
+ NameFunc[25] = 0;
+ NameFunc[26] = 0;
+ NameFunc[27] = 0;
+ NameFunc[28] = 0;
+ NameFunc[29] = 0;
+ NameFunc[30] = 0;
+ NameFunc[31] = 0;
+ NameFunc[32] = 0;
+ NameFunc[33] = 0;
+ NameFunc[34] = 0;
  
  /* return success */
  return 0;
@@ -5813,9 +5476,125 @@ static Int PostRestore ( StructInitInfo * module )
 }
 
 
+/* 'InitKernel' sets up data structures, fopies, copies, handlers */
+static Int InitKernel ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ InitFopyGVar( "Error", &GF_Error );
+ InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
+ InitCopyGVar( "TRY_NEXT_METHOD", &GC_TRY__NEXT__METHOD );
+ InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
+ InitFopyGVar( "METHODS_OPERATION", &GF_METHODS__OPERATION );
+ InitCopyGVar( "fail", &GC_fail );
+ InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
+ InitFopyGVar( "TypeObj", &GF_TypeObj );
+ InitFopyGVar( "FamilyObj", &GF_FamilyObj );
+ 
+ /* information for the functions */
+ InitGlobalBag( &FileName, "GAPROOT/lib/methsel1.g:FileName("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/methsel1.g:HdlrFunc1("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/methsel1.g:NameFunc[1]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/methsel1.g:HdlrFunc2("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/methsel1.g:NameFunc[2]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/methsel1.g:HdlrFunc3("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/methsel1.g:NameFunc[3]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/methsel1.g:HdlrFunc4("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/methsel1.g:NameFunc[4]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/methsel1.g:HdlrFunc5("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/methsel1.g:NameFunc[5]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/methsel1.g:HdlrFunc6("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/methsel1.g:NameFunc[6]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/methsel1.g:HdlrFunc7("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/methsel1.g:NameFunc[7]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/methsel1.g:HdlrFunc8("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/methsel1.g:NameFunc[8]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/methsel1.g:HdlrFunc9("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/methsel1.g:NameFunc[9]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/methsel1.g:HdlrFunc10("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/methsel1.g:NameFunc[10]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/methsel1.g:HdlrFunc11("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/methsel1.g:NameFunc[11]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/methsel1.g:HdlrFunc12("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/methsel1.g:NameFunc[12]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/methsel1.g:HdlrFunc13("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/methsel1.g:NameFunc[13]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/methsel1.g:HdlrFunc14("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/methsel1.g:NameFunc[14]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/methsel1.g:HdlrFunc15("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/methsel1.g:NameFunc[15]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/methsel1.g:HdlrFunc16("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/methsel1.g:NameFunc[16]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/methsel1.g:HdlrFunc17("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/methsel1.g:NameFunc[17]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/methsel1.g:HdlrFunc18("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/methsel1.g:NameFunc[18]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/methsel1.g:HdlrFunc19("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/methsel1.g:NameFunc[19]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/methsel1.g:HdlrFunc20("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/methsel1.g:NameFunc[20]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/methsel1.g:HdlrFunc21("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/methsel1.g:NameFunc[21]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/methsel1.g:HdlrFunc22("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/methsel1.g:NameFunc[22]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/methsel1.g:HdlrFunc23("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/methsel1.g:NameFunc[23]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/methsel1.g:HdlrFunc24("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/methsel1.g:NameFunc[24]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/methsel1.g:HdlrFunc25("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/methsel1.g:NameFunc[25]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/methsel1.g:HdlrFunc26("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/methsel1.g:NameFunc[26]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/methsel1.g:HdlrFunc27("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/methsel1.g:NameFunc[27]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/methsel1.g:HdlrFunc28("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/methsel1.g:NameFunc[28]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/methsel1.g:HdlrFunc29("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/methsel1.g:NameFunc[29]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/methsel1.g:HdlrFunc30("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/methsel1.g:NameFunc[30]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/methsel1.g:HdlrFunc31("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/methsel1.g:NameFunc[31]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/methsel1.g:HdlrFunc32("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/methsel1.g:NameFunc[32]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/methsel1.g:HdlrFunc33("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/methsel1.g:NameFunc[33]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/methsel1.g:HdlrFunc34("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/methsel1.g:NameFunc[34]("FILE_CRC")" );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+/* 'InitLibrary' sets up gvars, rnams, functions */
+static Int InitLibrary ( StructInitInfo * module )
+{
+ Obj func1;
+ Obj body1;
+ 
+ /* Complete Copy/Fopy registration */
+ UpdateCopyFopyInfo();
+ FileName = MakeImmString( "GAPROOT/lib/methsel1.g" );
+ PostRestore(module);
+ 
+ /* create all the functions defined in this module */
+ func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
+ SET_ENVI_FUNC( func1, STATE(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
+ body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ SET_BODY_FUNC( func1, body1 );
+ CHANGED_BAG( func1 );
+ CALL_0ARGS( func1 );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ 2,
+ /* type        = */ MODULE_STATIC,
  /* name        = */ "GAPROOT/lib/methsel1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,

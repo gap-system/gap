@@ -176,4 +176,16 @@ gap> Display(x->x);
 function ( x )
     return x;
 end
+
+#
+gap> Display(function() TryNextMethod(); end);
+function (  )
+    TryNextMethod();
+end
+
+#
+gap> InstallGlobalFunction("CheeseCakeFunction123123", function() end);
+Error, global function `CheeseCakeFunction123123' is not declared yet
+
+#
 gap> STOP_TEST("function.tst", 1);

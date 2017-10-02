@@ -38,16 +38,13 @@
 
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/set.h>                    /* sets */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/pperm.h>                  /* same header applies */
 
@@ -2662,7 +2659,7 @@ Obj OnePPerm(Obj f)
 }
 
 // print a partial perm in disjoint cycle and chain notation
-Obj PrintPPerm2(Obj self, Obj f)
+Obj FuncPrintPPerm2(Obj self, Obj f)
 {
     UInt    i, j, n, rank, k, deg;
     UInt4 * ptseen;
@@ -2720,7 +2717,7 @@ Obj PrintPPerm2(Obj self, Obj f)
     return 0L;
 }
 
-Obj PrintPPerm4(Obj self, Obj f)
+Obj FuncPrintPPerm4(Obj self, Obj f)
 {
     UInt   i, j, n, rank, k, deg;
     UInt4 *ptseen, *ptf4;
@@ -6429,7 +6426,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     return res;
 }
 
-Obj FuncOnPosIntSetsPPerm(Obj self, Obj set, Obj f)
+Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 {
     UInt2 * ptf2;
     UInt4 * ptf4;
@@ -6645,13 +6642,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(ShortLexLeqPartialPerm, 2, "f, g"),
     GVAR_FUNC(HAS_DOM_PPERM, 1, "f"),
     GVAR_FUNC(HAS_IMG_PPERM, 1, "f"),
-    { "OnPosIntSetsPartialPerm", 2, "set, f", FuncOnPosIntSetsPPerm,
-      "src/pperm.c:FuncOnPosIntSetsPPerm" },
-
-    { "PrintPPerm2", 1, "f", PrintPPerm2, "src/pperm.c:PrintPPerm2" },
-
-    { "PrintPPerm4", 1, "f", PrintPPerm4, "src/pperm.c:PrintPPerm4" },
-
+    GVAR_FUNC(OnPosIntSetsPartialPerm, 2, "set, f"),
+    GVAR_FUNC(PrintPPerm2, 1, "f"),
+    GVAR_FUNC(PrintPPerm4, 1, "f"),
     { 0, 0, 0, 0, 0 }
 
 };

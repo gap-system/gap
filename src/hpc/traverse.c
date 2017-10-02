@@ -2,7 +2,6 @@
  * Functionality to traverse nested object structures.
  */
 #include <src/system.h>
-#include <src/gapstate.h>
 #include <src/gasman.h>
 #include <src/objects.h>
 #include <src/bool.h>
@@ -14,7 +13,7 @@
 #include <src/precord.h>
 #include <src/stats.h>
 #include <src/gap.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/traverse.h>
 #include <src/fibhash.h>

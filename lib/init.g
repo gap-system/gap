@@ -11,7 +11,6 @@
 ##
 ##  This file initializes GAP.
 ##
-Revision := rec();
 
 
 #############################################################################
@@ -205,6 +204,38 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
+if IsBound(HPCGAP) then
+  FILTER_REGION := NEW_REGION("filter region", -1);
+else
+  BIND_GLOBAL("FILTER_REGION", "filter region");
+fi;
+
+#############################################################################
+##
+#V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
+if IsBound(HPCGAP) then
+  BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
+  BIND_GLOBAL("BindThreadLocal", function(name, default)
+    MakeThreadLocal(name);
+    SetTLDefault(ThreadVar, name, default);
+  end);
+  BIND_GLOBAL("BindThreadLocalConstructor", function(name, default)
+    MakeThreadLocal(name);
+    SetTLConstructor(ThreadVar, name, default);
+  end);
+else
+  BIND_GLOBAL("ThreadVar", rec());
+  BIND_GLOBAL("BindThreadLocal", ASS_GVAR);
+  BIND_GLOBAL("BindThreadLocalConstructor", function(name, fun)
+    local ret;
+    # Catch if the function returns a value
+    ret := CALL_WITH_CATCH(fun,[]);
+    if LEN_LIST(ret) > 1 then
+      ASS_GVAR(name, ret[2]);
+    fi;
+  end);
+fi;
+
 
 #############################################################################
 ##
@@ -223,7 +254,13 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
-    ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    if IsBound(HPCGAP) then
+      BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+      BindThreadLocal( "SilentErrors", false );
+      BindThreadLocal( "LastErrorMessage", "" );
+    else
+      ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+    fi;
 end);
 
 ReadOrComplete := function(name)
@@ -311,6 +348,7 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
         local  name,  ext,  libname, error;
 
         name := arg[1];
+
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
@@ -320,7 +358,7 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
 
         if error then
           if LEN_LIST( arg )=1 then
-            Error( "the library file '", name, "' must exist and ",
+            Error( "the library file '", libname, "' must exist and ",
                    "be readable");
           else
             return false;
@@ -414,6 +452,9 @@ end);
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
+if IsBound(HPCGAP) then
+  ENABLE_AUTO_RETYPING();
+fi;
 
 # try to find terminal encoding
 CallAndInstallPostRestore( function()
@@ -474,7 +515,7 @@ end );
 
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        libs, str;
+        libs, str, gap;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -508,10 +549,19 @@ BindGlobal( "ShowKernelInformation", function()
   else
     btop := "*********"; vert := "*"; bbot := btop;
   fi;
-  Print( " ",btop,"   GAP ", GAPInfo.BuildVersion,
+  if IsBound(HPCGAP) then
+    gap := "HPC-GAP";
+  else
+    gap := "GAP";
+  fi;
+  Print( " ",btop,"   ",gap," ", GAPInfo.BuildVersion,
          " of ", sysdate, "\n",
          " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
          " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+  if IsBound(HPCGAP) then
+    Print( "             Maximum concurrent threads: ",
+       GAPInfo.KernelInfo.NUM_CPUS, "\n");
+  fi;
   # For each library, print the name.
   libs:= [];
   if "gmpints" in LoadedModules() then
@@ -534,6 +584,12 @@ BindGlobal( "ShowKernelInformation", function()
   fi;
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
+  fi;
+  if IsBound(HPCGAP) then
+    Print("\n",
+          "#W <<< This is an alpha release.      >>>\n",
+          "#W <<< Do not use for important work. >>>\n",
+      "\n");
   fi;
 end );
 
@@ -627,12 +683,24 @@ ReadOrComplete( "lib/read4.g" );
 ReadLib( "helpview.gi"  );
 
 #T  1996/09/01 M.Schönert this helps performance
-IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
-# allow type determination of IMPLICATIONS without using it
-TypeObj(IMPLICATIONS[1]);
+if IsBound(HPCGAP) then
+    ORIGINAL_IMPS := IMPLICATIONS;
+    atomic ORIGINAL_IMPS do
+        IMPLICATIONS :=
+          IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+        MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
+    od;
+else
+    IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+fi;
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)
+
+# allow type determination of IMPLICATIONS without using it
+atomic IMPLICATIONS do
+    TypeObj(IMPLICATIONS[1]);
+od;
 
 # Here are a few general user preferences which may be useful for 
 # various purposes. They are self-explaining.
@@ -745,16 +813,6 @@ CallAndInstallPostRestore( function()
       GAPInfo.Read_obsolete_gd:= true;
     fi;
 end );
-
-#############################################################################
-##
-##  ParGAP/MPI slave hook
-##
-##  A ParGAP slave redefines this as a function if the GAP package ParGAP
-##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
-##  process i.e. at the end of this file.
-##
-PAR_GAP_SLAVE_START := fail;
 
 
 #############################################################################
@@ -1035,16 +1093,9 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
-
-
-#############################################################################
-##
-##  ParGAP loading and switching into the slave mode hook
-##
-if IsBoundGlobal("MPI_Initialized") then
-  LoadPackage("pargap");
+if IsBound(HPCGAP) then
+  HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Reference Manual", "doc/hpc");
 fi;
-if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 
 #############################################################################
@@ -1070,7 +1121,14 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-SESSION();
+if IsBound(HPCGAP) and THREAD_UI() then
+  ReadLib("hpc/consoleui.g");
+  MULTI_SESSION();
+else
+  SESSION();
+fi;
+
+PROGRAM_CLEAN_UP();
 
 
 #############################################################################

@@ -21,7 +21,6 @@
 */
 #include <assert.h>                     /* assert */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -46,11 +45,8 @@
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /****************************************************************************

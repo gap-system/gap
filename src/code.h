@@ -29,7 +29,15 @@
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-typedef UInt8 Stat;
+typedef UInt Stat;
+
+typedef struct {
+    unsigned int visited : 1;
+    unsigned int fileid : 15;
+    unsigned int line : 16;
+    unsigned int size : 24;
+    unsigned int type : 8;
+} StatHeader;
 
 
 /****************************************************************************
@@ -75,21 +83,26 @@ static inline BodyHeader *BODY_HEADER(Obj body)
 
 Obj GET_FILENAME_BODY(Obj body);
 void SET_FILENAME_BODY(Obj body, Obj val);
-Obj GET_STARTLINE_BODY(Obj body);
-void SET_STARTLINE_BODY(Obj body, Obj val);
 Obj GET_LOCATION_BODY(Obj body);
 void SET_LOCATION_BODY(Obj body, Obj val);
-Obj GET_ENDLINE_BODY(Obj body);
-void SET_ENDLINE_BODY(Obj body, Obj val);
+
+UInt GET_STARTLINE_BODY(Obj body);
+void SET_STARTLINE_BODY(Obj body, UInt val);
+UInt GET_ENDLINE_BODY(Obj body);
+void SET_ENDLINE_BODY(Obj body, UInt val);
 
 /****************************************************************************
 **
-*V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
+*V  OFFSET_FIRST_STAT . . . . . . . . . . offset of first statement in a body
 **
-**  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
+**  'OFFSET_FIRST_STAT' is the offset of the first statement in a body.
 */
 
-#define FIRST_STAT_CURR_FUNC    (sizeof(Stat)+sizeof(BodyHeader))
+enum {
+    OFFSET_FIRST_STAT = sizeof(StatHeader)+sizeof(BodyHeader)
+};
+
+
 
 /****************************************************************************
 **
@@ -99,89 +112,120 @@ void SET_ENDLINE_BODY(Obj body, Obj val);
 **
 **  For every type  of statements there is  a symbolic name  defined for this
 **  type.
-**
-**  As long as statements   are represented by  bags,  these types  must  not
-**  overlap with the object types, lest Gasman becomes confused.
 */
 enum STAT_TNUMS {
-    FIRST_STAT_TNUM = 0,
+    START_ENUM_RANGE(FIRST_STAT_TNUM),
 
-    T_PROCCALL_0ARGS = FIRST_STAT_TNUM,
-    T_PROCCALL_1ARGS,
-    T_PROCCALL_2ARGS,
-    T_PROCCALL_3ARGS,
-    T_PROCCALL_4ARGS,
-    T_PROCCALL_5ARGS,
-    T_PROCCALL_6ARGS,
-    T_PROCCALL_XARGS,
+        T_PROCCALL_0ARGS,
+        T_PROCCALL_1ARGS,
+        T_PROCCALL_2ARGS,
+        T_PROCCALL_3ARGS,
+        T_PROCCALL_4ARGS,
+        T_PROCCALL_5ARGS,
+        T_PROCCALL_6ARGS,
+        T_PROCCALL_XARGS,
 
-    T_SEQ_STAT,
-    T_SEQ_STAT2,
-    T_SEQ_STAT3,
-    T_SEQ_STAT4,
-    T_SEQ_STAT5,
-    T_SEQ_STAT6,
-    T_SEQ_STAT7,
-    T_IF,
-    T_IF_ELSE,
-    T_IF_ELIF,
-    T_IF_ELIF_ELSE,
-    T_FOR,
-    T_FOR2,
-    T_FOR3,
-    T_FOR_RANGE,
-    T_FOR_RANGE2,
-    T_FOR_RANGE3,
-    T_WHILE,
-    T_WHILE2,
-    T_WHILE3,
-    T_REPEAT,
-    T_REPEAT2,
-    T_REPEAT3,
-    T_BREAK,
-    T_CONTINUE,
-    T_RETURN_OBJ,
-    T_RETURN_VOID,
+        // The statement types between FIRST_NON_INTERRUPT_STAT
+        // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
+        // the user interrupted, e.g. via ctrl-c; or memory run full).
+        // They are all statement types which either contain sub-statements
+        // (and hence are not easy to interpret in backtraces), or else are
+        // ephemeral (break, continue, return)
+        // TODO: what about T_EMPTY and T_ATOMIC ?
+        START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
 
-    T_ASS_LVAR,
-    T_UNB_LVAR,
-    T_ASS_HVAR,
-    T_UNB_HVAR,
-    T_ASS_GVAR,
-    T_UNB_GVAR,
-    T_ASS_LIST,
-    T_ASSS_LIST,
-    T_ASS_LIST_LEV,
-    T_ASSS_LIST_LEV,
-    T_UNB_LIST,
-    T_ASS_REC_NAME,
-    T_ASS_REC_EXPR,
-    T_UNB_REC_NAME,
-    T_UNB_REC_EXPR,
-    T_ASS_POSOBJ,
-    T_ASSS_POSOBJ,
-    T_ASS_POSOBJ_LEV,
-    T_ASSS_POSOBJ_LEV,
-    T_UNB_POSOBJ,
-    T_ASS_COMOBJ_NAME,
-    T_ASS_COMOBJ_EXPR,
-    T_UNB_COMOBJ_NAME,
-    T_UNB_COMOBJ_EXPR,
+            START_ENUM_RANGE(FIRST_COMPOUND_STAT),
 
-    T_INFO,
-    T_ASSERT_2ARGS,
-    T_ASSERT_3ARGS,
+            T_EMPTY,        // may also be considered to be "T_SEQ_STAT0"
+            T_SEQ_STAT,
+            T_SEQ_STAT2,
+            T_SEQ_STAT3,
+            T_SEQ_STAT4,
+            T_SEQ_STAT5,
+            T_SEQ_STAT6,
+            T_SEQ_STAT7,
 
-    T_EMPTY,
+            T_IF,
+            T_IF_ELSE,
+            T_IF_ELIF,
+            T_IF_ELIF_ELSE,
 
-    T_PROCCALL_OPTS,
+            T_FOR,
+            T_FOR2,
+            T_FOR3,
 
-    T_ATOMIC,
+            T_FOR_RANGE,
+            T_FOR_RANGE2,
+            T_FOR_RANGE3,
 
-    LAST_STAT_TNUM = T_ATOMIC
+            T_WHILE,
+            T_WHILE2,
+            T_WHILE3,
+
+            T_REPEAT,
+            T_REPEAT2,
+            T_REPEAT3,
+
+            T_ATOMIC,
+
+            END_ENUM_RANGE(LAST_COMPOUND_STAT),
+
+            START_ENUM_RANGE(FIRST_CONTROL_FLOW_STAT),
+
+            T_BREAK,
+            T_CONTINUE,
+            T_RETURN_OBJ,
+            T_RETURN_VOID,
+
+            END_ENUM_RANGE(LAST_CONTROL_FLOW_STAT),
+
+        END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
+
+        T_ASS_LVAR,
+        T_UNB_LVAR,
+
+        T_ASS_HVAR,
+        T_UNB_HVAR,
+
+        T_ASS_GVAR,
+        T_UNB_GVAR,
+
+        T_ASS_LIST,
+        T_ASSS_LIST,
+        T_ASS_LIST_LEV,
+        T_ASSS_LIST_LEV,
+        T_UNB_LIST,
+
+        T_ASS_REC_NAME,
+        T_ASS_REC_EXPR,
+        T_UNB_REC_NAME,
+        T_UNB_REC_EXPR,
+
+        T_ASS_POSOBJ,
+        T_ASSS_POSOBJ,
+        T_ASS_POSOBJ_LEV,
+        T_ASSS_POSOBJ_LEV,
+        T_UNB_POSOBJ,
+
+        T_ASS_COMOBJ_NAME,
+        T_ASS_COMOBJ_EXPR,
+        T_UNB_COMOBJ_NAME,
+        T_UNB_COMOBJ_EXPR,
+
+        T_INFO,
+        T_ASSERT_2ARGS,
+        T_ASSERT_3ARGS,
+
+        T_PROCCALL_OPTS,
+
+    END_ENUM_RANGE(LAST_STAT_TNUM),
 };
 
 #define T_NO_STAT		(Stat)(-1)
+
+
+
+#define STAT_HEADER(stat) (((StatHeader *)ADDR_STAT(stat)) - 1)
 
 
 /****************************************************************************
@@ -190,7 +234,7 @@ enum STAT_TNUMS {
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-#define TNUM_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] & 0xFF))
+#define TNUM_STAT(stat) (STAT_HEADER(stat)->type)
 
 
 /****************************************************************************
@@ -199,7 +243,7 @@ enum STAT_TNUMS {
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-#define SIZE_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 8 & 0xFFFFFF))
+#define SIZE_STAT(stat) (STAT_HEADER(stat)->size)
 
 /****************************************************************************
 **
@@ -207,34 +251,34 @@ enum STAT_TNUMS {
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-#define LINE_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 32 & 0xFFFF))
+#define LINE_STAT(stat) (STAT_HEADER(stat)->line)
 
 /****************************************************************************
 **
 *F  FILENAMEID_STAT(<stat>) . . . . . . . . . . . . file name of a statement
 **
-**  'FILENAMEID_STAT' returns the file the statment <stat> was read from.
+**  'FILENAMEID_STAT' returns the file the statement <stat> was read from.
 **  This should be looked up in the FilenameCache variable
 */
-#define FILENAMEID_STAT(stat) ((Int)(ADDR_STAT(stat)[-1] >> 48 & 0x7FFF))
+#define FILENAMEID_STAT(stat) (STAT_HEADER(stat)->fileid)
 
 /****************************************************************************
 **
-*F  FILENAME_STAT(<stat>) . . . . . . . . . . . . file name of a statement
+*F  FILENAME_STAT(<stat>) . . . . . . . . . . . . .  file name of a statement
 **
-**  'FILENAME_STAT' returns a gap string containing the file where the statment
+**  'FILENAME_STAT' returns a gap string containing the file where the statement
 **  <stat> was read from.
 */
 Obj FILENAME_STAT(Stat stat);
 
 /****************************************************************************
 **
-*F  VISITED_STAT(<stat>) . . . . . . . . . . . . if statement has even been run
+*F  VISITED_STAT(<stat>) . . . . . . . . . . . if statement has even been run
 **
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-#define VISITED_STAT(stat) (ADDR_STAT(stat)[-1] >> 63 && 0x1)
+#define VISITED_STAT(stat) (STAT_HEADER(stat)->visited)
 
 
 
@@ -318,14 +362,11 @@ typedef Stat Expr;
 **
 **  For every type of expressions there  is a symbolic  name defined for this
 **  type.
-**
-**  As long as  expressions  are represented by  bags,  these types must  not
-**  overlap with the object types, lest Gasman becomes confused.
 */
 enum EXPR_TNUM {
-    FIRST_EXPR_TNUM = 128,
+    START_ENUM_RANGE_INIT(FIRST_EXPR_TNUM, 128),
 
-    T_FUNCCALL_0ARGS = FIRST_EXPR_TNUM,
+    T_FUNCCALL_0ARGS,
     T_FUNCCALL_1ARGS,
     T_FUNCCALL_2ARGS,
     T_FUNCCALL_3ARGS,
@@ -349,7 +390,6 @@ enum EXPR_TNUM {
     T_AINV,
     T_DIFF,
     T_PROD,
-    T_INV,
     T_QUO,
     T_MOD,
     T_POW,
@@ -404,7 +444,7 @@ enum EXPR_TNUM {
     T_ASS2_LIST,
     T_ASSX_LIST,
 
-    LAST_EXPR_TNUM = T_ASSX_LIST
+    END_ENUM_RANGE(LAST_EXPR_TNUM)
 };
 
 
@@ -876,7 +916,6 @@ extern  void            CodeReturnVoidWhichIsNotProfiled ( void );
 *F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
-*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -917,8 +956,6 @@ extern  void            CodeAInv ( void );
 extern  void            CodeDiff ( void );
 
 extern  void            CodeProd ( void );
-
-extern  void            CodeInv ( void );
 
 extern  void            CodeQuo ( void );
 

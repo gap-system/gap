@@ -33,9 +33,9 @@ end);
 R_228 := 2^28;
 RANDOM_LIST := function ( list )
     local r_n, r_x;
-    r_n := VAL_GVAR(_R_N);
+    r_n := VAL_GVAR(_R_N) mod 55 + 1;
     r_x := VAL_GVAR(_R_X);
-    ASS_GVAR(_R_N, r_n mod 55 + 1);
+    ASS_GVAR(_R_N, r_n);
     r_x[r_n] := (r_x[r_n] + r_x[(r_n+30) mod 55+1]) mod R_228;
     return list[ QUO_INT( r_x[r_n] * LEN_LIST(list), R_228 ) + 1 ];
 end;
@@ -49,9 +49,10 @@ RANDOM_SEED := function ( n )
         r_x[i] := (1664525 * r_x[i-1] + 1) mod R_228;
     od;
     for i  in [1..99]  do
-        ASS_GVAR(_R_N, r_n mod 55 + 1);
+        r_n := r_n mod 55 + 1;
         r_x[r_n] := (r_x[r_n] + r_x[(r_n+30) mod 55+1]) mod R_228;
     od;
+    ASS_GVAR(_R_N, r_n);
 end;
 
 BIND_GLOBAL("RANDOM_SEED_CONSTRUCTOR", function()

@@ -18,6 +18,7 @@
 #define GAP_OBJECTS_H
 
 #include <src/debug.h>
+#include <src/intobj.h>
 
 /****************************************************************************
 **
@@ -33,211 +34,15 @@
 
 /****************************************************************************
 **
-*F  IS_INTOBJ( <o> )  . . . . . . . .  test if an object is an integer object
-**
-**  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
-**  and 0 otherwise.
-*/
-static inline Int IS_INTOBJ(Obj o)
-{
-    return (Int)o & 0x01;
-}
-
-
-/****************************************************************************
-**
-*F  IS_POS_INTOBJ( <o> )  . .  test if an object is a positive integer object
-**
-**  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
-**  object encoding a positive integer, and 0 otherwise.
-*/
-static inline Int IS_POS_INTOBJ(Obj o)
-{
-    return ((Int)o & 0x01) && ((Int)o > 0x01);
-}
-
-
-/****************************************************************************
-**
-*F  ARE_INTOBJS( <o1>, <o2> ) . . . . test if two objects are integer objects
-**
-**  'ARE_INTOBJS' returns 1 if the objects <o1> and <o2> are both (immediate)
-**  integer objects.
-*/
-static inline Int ARE_INTOBJS(Obj o1, Obj o2)
-{
-    return (Int)o1 & (Int)o2 & 0x01;
-}
-
-
-/****************************************************************************
-**
-*F  INT_INTOBJ( <o> ) . . . . . . .  convert an integer object to a C integer
-**
-**  'INT_INTOBJ' converts the (immediate) integer object <o> to a C integer.
-*/
-/* Note that the C standard does not define what >> does here if the
- * value is negative. So we have to be careful if the C compiler
- * chooses to do a logical right shift. */
-static inline Int INT_INTOBJ(Obj o)
-{
-    GAP_ASSERT(IS_INTOBJ(o));
-#ifdef HAVE_ARITHRIGHTSHIFT
-    return (Int)o >> 2;
-#else
-    return ((Int)o - 1) / 4;
-#endif
-}
-
-
-/****************************************************************************
-**
-*F  INTOBJ_INT( <i> ) . . . . . . .  convert a C integer to an integer object
-**
-**  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
-*/
-static inline Obj INTOBJ_INT(Int i)
-{
-    Obj o;
-    o = (Obj)(((UInt)i << 2) + 0x01);
-    GAP_ASSERT(INT_INTOBJ(o) == i);
-    return o;
-}
-
-/****************************************************************************
-**
-*F  EQ_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'EQ_INTOBJS' returns 'True' if the  (immediate)  integer  object  <l>  is
-**  equal to the (immediate) integer object <r> and  'False'  otherwise.  The
-**  result is also stored in <o>.
-*/
-#define EQ_INTOBJS(o,l,r) \
-    ((o) = (((Int)(l)) == ((Int)(r)) ? True : False))
-
-
-/****************************************************************************
-**
-*F  LT_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'LT_INTOBJS' returns 'True' if the  (immediate)  integer  object  <l>  is
-**  less than the (immediate) integer object <r> and  'False' otherwise.  The
-**  result is also stored in <o>.
-*/
-#define LT_INTOBJS(o,l,r) \
-    ((o) = (((Int)(l)) <  ((Int)(r)) ? True : False))
-
-
-/****************************************************************************
-**
-*F  SUM_INTOBJS( <o>, <l>, <r> )  . . . . . . . .  sum of two integer objects
-**
-**  'SUM_INTOBJS' returns  1  if  the  sum  of  the  (imm.)  integer  objects
-**  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
-**  The sum itself is stored in <o>.
-*/
-#define SUM_INTOBJS(o,l,r)             \
-    ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-
-
-/****************************************************************************
-**
-*F  DIFF_INTOBJS( <o>, <l>, <r> ) . . . . . difference of two integer objects
-**
-**  'DIFF_INTOBJS' returns 1 if the difference of the (imm.) integer  objects
-**  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
-**  The difference itself is stored in <o>.
-*/
-#define DIFF_INTOBJS(o,l,r)            \
-    ((o) = (Obj)((Int)(l)-(Int)(r)+1), \
-     ((((UInt) (o)) >> (sizeof(UInt)*8-2))-1) > 1)
-
-
-/****************************************************************************
-**
-*F  PROD_INTOBJS( <o>, <l>, <r> ) . . . . . .  product of two integer objects
-**
-**  'PROD_INTOBJS' returns 1 if the product of  the  (imm.)  integer  objects
-**  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
-**  The product itself is stored in <o>.
-*/
-
-
-#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_SMUL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
-static inline Obj prod_intobjs(int l, int r)
-{
-  int prod;
-  if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
-}
-#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_SMULL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
-static inline Obj prod_intobjs(long l, long r)
-{
-  long prod;
-  if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
-}
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_SMULLL_OVERFLOW) && defined(HAVE_ARITHRIGHTSHIFT)
-static inline Obj prod_intobjs(long long l, long long r)
-{
-  long long prod;
-  if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
-    return (Obj) 0;
-  return (Obj) ((prod >> 1) ^ 1);
-}
-#else
-
-#ifdef SYS_IS_64_BIT
-#define HALF_A_WORD 32
-#else
-#define HALF_A_WORD 16
-#endif
-
-static inline Obj prod_intobjs(Int l, Int r)
-{
-  Int prod;
-  if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
-    return INTOBJ_INT(0);
-  if (l == (Int)INTOBJ_INT(1))
-    return (Obj)r;
-  if (r == (Int)INTOBJ_INT(1))
-    return (Obj)l;
-  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
-
-  if (((((UInt) (prod)) >> (sizeof(UInt)*8-2))-1) <= 1)
-    return (Obj) 0;
-
-  if ((Int)(((UInt)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (Int)(((UInt)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
-    return (Obj) prod;
-
-#ifdef HAVE_ARITHRIGHTSHIFT
-  if ((prod -1) / (l >> 2) == r-1)
-    return (Obj) prod;
-#else
-  if ((prod-1) / ((l-1)/4) == r-1)
-    return (Obj) prod;
-#endif
-
-  return (Obj) 0;
-}
-#endif
-
-#define PROD_INTOBJS( o, l, r) ((o) = prod_intobjs((Int)(l),(Int)(r)), \
-                                  (o) != (Obj) 0)
-
-/****************************************************************************
-**
 *F  IS_FFE( <o> ) . . . . . . . . test if an object is a finite field element
 **
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-#define IS_FFE(o)               \
-                        ((Int)(o) & 0x02)
+static inline Int IS_FFE(Obj o)
+{
+    return (Int)o & 0x02;
+}
 
 
 /****************************************************************************
@@ -256,12 +61,36 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 
 /****************************************************************************
 **
-*F  NEXT_EVEN_INT( <n> )
+*F  NEXT_ENUM_EVEN( <id> )
+*F  START_ENUM_RANGE_EVEN( <id> )
+*F  END_ENUM_RANGE_ODD( <id> )
 **
-**  Compute next even integer larger than <n>. Note that <n> must be a
-**  positive, literal integer constant.
+**  'NEXT_ENUM_EVEN' can be used in an enum to force <id> to use the next
+**  available even integer value.
+**
+**  'START_ENUM_RANGE_EVEN' is a variant of 'START_ENUM_RANGE' which always
+**  sets the value of <id> to the next even integer.
+**
+**  'END_ENUM_RANGE_ODD' is a variant of 'END_ENUM_RANGE' which always sets
+**  the value of <id> to an odd integer.
 */
-#define NEXT_EVEN_INT(n)   ( (n+2UL) & ~1UL )
+#define NEXT_ENUM_EVEN(id)   \
+    _##id##_pre, \
+    id = _##id##_pre + (_##id##_pre & 1)
+#define START_ENUM_RANGE_EVEN(id)   \
+    NEXT_ENUM_EVEN(id), \
+    _##id##_post = id - 1
+#define END_ENUM_RANGE_ODD(id)   \
+    _##id##_pre, \
+    id = _##id##_pre - !(_##id##_pre & 1)
+
+
+/****************************************************************************
+**
+*/
+enum {
+    IMMUTABLE = 1    // IMMUTABLE is not a TNUM, but rather a bitmask
+};
 
 /****************************************************************************
 **
@@ -301,15 +130,15 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
 **  finally the virtual types.
 */
 enum {
-    FIRST_REAL_TNUM         = 0,
+    START_ENUM_RANGE(FIRST_REAL_TNUM),
 
-    FIRST_CONSTANT_TNUM     = FIRST_REAL_TNUM,
-        T_INT               = FIRST_CONSTANT_TNUM,  // immediate
+    START_ENUM_RANGE(FIRST_CONSTANT_TNUM),
+        T_INT,      // immediate
         T_INTPOS,
         T_INTNEG,
         T_RAT,
         T_CYC,
-        T_FFE,                                      // immediate
+        T_FFE,      // immediate
         T_PERM2,
         T_PERM4,
         T_TRANS2,
@@ -323,69 +152,67 @@ enum {
         T_MACFLOAT,
         T_LVARS,
         T_HVARS,
-    LAST_CONSTANT_TNUM      = T_HVARS,
-
-    IMMUTABLE               = 1,    // IMMUTABLE is not a TNUM, but rather a bitmask
+    END_ENUM_RANGE(LAST_CONSTANT_TNUM),
 
     // first mutable/immutable TNUM
-    FIRST_IMM_MUT_TNUM      = NEXT_EVEN_INT(LAST_CONSTANT_TNUM),
+    START_ENUM_RANGE_EVEN(FIRST_IMM_MUT_TNUM),
 
         // records
-        FIRST_RECORD_TNUM                   = FIRST_IMM_MUT_TNUM,
-            T_PREC                          = FIRST_RECORD_TNUM,
-        LAST_RECORD_TNUM                    = T_PREC+IMMUTABLE,
+        START_ENUM_RANGE_EVEN(FIRST_RECORD_TNUM),
+            T_PREC,
+        END_ENUM_RANGE_ODD(LAST_RECORD_TNUM),
 
         // lists
-        FIRST_LIST_TNUM                     = NEXT_EVEN_INT(LAST_RECORD_TNUM),
+        START_ENUM_RANGE_EVEN(FIRST_LIST_TNUM),
 
             // plists
-            FIRST_PLIST_TNUM                = FIRST_LIST_TNUM,
-                T_PLIST                     = FIRST_LIST_TNUM+ 0,
-                T_PLIST_NDENSE              = FIRST_LIST_TNUM+ 2,
-                T_PLIST_DENSE               = FIRST_LIST_TNUM+ 4,
-                T_PLIST_DENSE_NHOM          = FIRST_LIST_TNUM+ 6,
-                T_PLIST_DENSE_NHOM_SSORT    = FIRST_LIST_TNUM+ 8,
-                T_PLIST_DENSE_NHOM_NSORT    = FIRST_LIST_TNUM+10,
-                T_PLIST_EMPTY               = FIRST_LIST_TNUM+12,
-                T_PLIST_HOM                 = FIRST_LIST_TNUM+14,
-                T_PLIST_HOM_NSORT           = FIRST_LIST_TNUM+16,
-                T_PLIST_HOM_SSORT           = FIRST_LIST_TNUM+18,
-                T_PLIST_TAB                 = FIRST_LIST_TNUM+20,
-                T_PLIST_TAB_NSORT           = FIRST_LIST_TNUM+22,
-                T_PLIST_TAB_SSORT           = FIRST_LIST_TNUM+24,
-                T_PLIST_TAB_RECT            = FIRST_LIST_TNUM+26,
-                T_PLIST_TAB_RECT_NSORT      = FIRST_LIST_TNUM+28,
-                T_PLIST_TAB_RECT_SSORT      = FIRST_LIST_TNUM+30,
-                T_PLIST_CYC                 = FIRST_LIST_TNUM+32,
-                T_PLIST_CYC_NSORT           = FIRST_LIST_TNUM+34,
-                T_PLIST_CYC_SSORT           = FIRST_LIST_TNUM+36,
-                T_PLIST_FFE                 = FIRST_LIST_TNUM+38,
-            LAST_PLIST_TNUM                 = T_PLIST_FFE+IMMUTABLE,
+            START_ENUM_RANGE_EVEN(FIRST_PLIST_TNUM),
+                NEXT_ENUM_EVEN(T_PLIST),
+                NEXT_ENUM_EVEN(T_PLIST_NDENSE),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_EMPTY),
+                NEXT_ENUM_EVEN(T_PLIST_HOM),
+                NEXT_ENUM_EVEN(T_PLIST_HOM_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_HOM_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_CYC),
+                NEXT_ENUM_EVEN(T_PLIST_CYC_NSORT),
+                NEXT_ENUM_EVEN(T_PLIST_CYC_SSORT),
+                NEXT_ENUM_EVEN(T_PLIST_FFE),
+            END_ENUM_RANGE_ODD(LAST_PLIST_TNUM),
 
             // other kinds of lists
-            T_RANGE_NSORT                   = FIRST_LIST_TNUM+40,
-            T_RANGE_SSORT                   = FIRST_LIST_TNUM+42,
-            T_BLIST                         = FIRST_LIST_TNUM+44,
-            T_BLIST_NSORT                   = FIRST_LIST_TNUM+46,
-            T_BLIST_SSORT                   = FIRST_LIST_TNUM+48,
-            T_STRING                        = FIRST_LIST_TNUM+50,
-            T_STRING_NSORT                  = FIRST_LIST_TNUM+52,
-            T_STRING_SSORT                  = FIRST_LIST_TNUM+54,
+            NEXT_ENUM_EVEN(T_RANGE_NSORT),
+            NEXT_ENUM_EVEN(T_RANGE_SSORT),
+            NEXT_ENUM_EVEN(T_BLIST),
+            NEXT_ENUM_EVEN(T_BLIST_NSORT),
+            NEXT_ENUM_EVEN(T_BLIST_SSORT),
+            NEXT_ENUM_EVEN(T_STRING),
+            NEXT_ENUM_EVEN(T_STRING_NSORT),
+            NEXT_ENUM_EVEN(T_STRING_SSORT),
 
-        LAST_LIST_TNUM                      = T_STRING_SSORT+IMMUTABLE,
+        END_ENUM_RANGE_ODD(LAST_LIST_TNUM),
 
         // object sets and maps
-        FIRST_OBJSET_TNUM                   = NEXT_EVEN_INT(LAST_LIST_TNUM),
-            T_OBJSET                        = FIRST_OBJSET_TNUM+0,
-            T_OBJMAP                        = FIRST_OBJSET_TNUM+2,
-        LAST_OBJSET_TNUM                    = T_OBJMAP+IMMUTABLE,
+        START_ENUM_RANGE_EVEN(FIRST_OBJSET_TNUM),
+            NEXT_ENUM_EVEN(T_OBJSET),
+            NEXT_ENUM_EVEN(T_OBJMAP),
+        END_ENUM_RANGE_ODD(LAST_OBJSET_TNUM),
 
     // last mutable/immutable TNUM
-    LAST_IMM_MUT_TNUM       = LAST_OBJSET_TNUM,
+    END_ENUM_RANGE(LAST_IMM_MUT_TNUM),
 
-    // external types (IMMUTABLE is not used for them, but keep the parity anyway)
-    FIRST_EXTERNAL_TNUM     = NEXT_EVEN_INT(LAST_IMM_MUT_TNUM),
-        T_COMOBJ            = FIRST_EXTERNAL_TNUM,
+    // external types
+    START_ENUM_RANGE(FIRST_EXTERNAL_TNUM),
+        T_COMOBJ,
         T_POSOBJ,
         T_DATOBJ,
         T_WPOBJ,
@@ -395,21 +222,21 @@ enum {
 #endif
 
         // package TNUMs, for use by kernel extensions
-        // note thatLAST_COPYING_TNUM must not exceed 253, which restricts
+        // note that LAST_COPYING_TNUM must not exceed 253, which restricts
         // the value for LAST_PACKAGE_TNUM indirectly
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 42,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 41,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 49,
 #endif
 
-    LAST_EXTERNAL_TNUM      = LAST_PACKAGE_TNUM,
+    END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
 
 #ifdef HPCGAP
-    FIRST_SHARED_TNUM       = LAST_EXTERNAL_TNUM+1,
+    START_ENUM_RANGE(FIRST_SHARED_TNUM),
         // primitive types
-        T_THREAD            = FIRST_SHARED_TNUM,
+        T_THREAD,
         T_MONITOR,
         T_REGION,
         // user-programmable types
@@ -424,19 +251,17 @@ enum {
         T_AREC_INNER,
         T_TLREC,
         T_TLREC_INNER,
-    LAST_SHARED_TNUM        = T_TLREC_INNER,
+    END_ENUM_RANGE(LAST_SHARED_TNUM),
 #endif
 
-#ifdef HPCGAP
-    LAST_REAL_TNUM          = LAST_SHARED_TNUM,
-#else
-    LAST_REAL_TNUM          = LAST_EXTERNAL_TNUM,
-#endif
+    END_ENUM_RANGE(LAST_REAL_TNUM),
 
     // virtual TNUMs for copying objects
-    FIRST_COPYING_TNUM      = NEXT_EVEN_INT(LAST_REAL_TNUM),
-    COPYING                 = LAST_EXTERNAL_TNUM - FIRST_IMM_MUT_TNUM,
-    LAST_COPYING_TNUM       = LAST_REAL_TNUM + COPYING,
+    START_ENUM_RANGE_EVEN(FIRST_COPYING_TNUM),
+        COPYING             = FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM,
+        // we use LAST_EXTERNAL_TNUM+1 instead of LAST_REAL_TNUM to
+        // skip over the shared TNUMs in HPC-GAP
+    LAST_COPYING_TNUM       = LAST_EXTERNAL_TNUM + COPYING,
 
     // the type of function body bags
     T_BODY                  = 254,
@@ -487,7 +312,10 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **
 **  'SIZE_OBJ' returns the size of the object <obj>.
 */
-#define SIZE_OBJ        SIZE_BAG
+static inline UInt SIZE_OBJ(Obj obj)
+{
+    return SIZE_BAG(obj);
+}
 
 
 /****************************************************************************
@@ -497,7 +325,15 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-#define ADDR_OBJ(bag)        PTR_BAG(bag)
+static inline Obj *ADDR_OBJ(Obj obj)
+{
+    return PTR_BAG(obj);
+}
+
+static inline const Obj *CONST_ADDR_OBJ(Obj obj)
+{
+    return CONST_PTR_BAG(obj);
+}
 
 
 /****************************************************************************

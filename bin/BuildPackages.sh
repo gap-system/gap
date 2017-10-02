@@ -101,6 +101,7 @@ case "$GAParch_abi" in
   64-bit)
     notice "Building with 64-bit ABI"
     ABI32=NO
+    CONFIGFLAGS=""
     ;;
   *)
     error "Unsupported GAP ABI '$GAParch_abi'."

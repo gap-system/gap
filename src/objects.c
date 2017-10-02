@@ -45,7 +45,7 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/traverse.h>           /* object traversal */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
@@ -86,9 +86,9 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 
 /****************************************************************************
 **
-*F  FamilyTypeHandler( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
+*F  FuncFAMILY_TYPE( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
 */
-Obj FamilyTypeHandler (
+Obj FuncFAMILY_TYPE (
     Obj                 self,
     Obj                 type )
 {
@@ -98,9 +98,9 @@ Obj FamilyTypeHandler (
 
 /****************************************************************************
 **
-*F  FamilyObjHandler( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
+*F  FuncFAMILY_OBJ( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
 */
-Obj FamilyObjHandler (
+Obj FuncFAMILY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -144,10 +144,10 @@ void SetTypeObjError ( Obj obj, Obj type )
 
 /****************************************************************************
 **
-*F  TypeObjHandler( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
+*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
 #ifndef WARD_ENABLED
-Obj TypeObjHandler (
+Obj FuncTYPE_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -157,9 +157,9 @@ Obj TypeObjHandler (
 
 /****************************************************************************
 **
-*F  SetTypeObjHandler( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
+*F  FuncSET_TYPE_OBJ( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
 */
-Obj SetTypeObjHandler (
+Obj FuncSET_TYPE_OBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -187,8 +187,8 @@ Int IsMutableObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to test mutability of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to test mutability of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return 0;
 }
 
@@ -258,8 +258,8 @@ Int IsCopyableObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to test copyability of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to test copyability of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return 0L;
 }
 
@@ -299,8 +299,8 @@ Obj ShallowCopyObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to shallow copy object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to shallow copy object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return (Obj)0;
 }
 
@@ -416,8 +416,8 @@ Obj             CopyObjError (
     Int                 mut )
 {
     ErrorQuit(
-        "Panic: tried to copy object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to copy object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
     return (Obj)0;
 }
 
@@ -430,8 +430,8 @@ void CleanObjError (
     Obj                 obj )
 {
     ErrorQuit(
-        "Panic: tried to clean object of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to clean object of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -481,13 +481,9 @@ Obj CopyObjPosObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -587,15 +583,10 @@ Obj CopyObjComObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-        SET_LEN_PREC(copy,LEN_PREC(obj));
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-        SET_LEN_PREC(copy,LEN_PREC(obj));
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    SET_LEN_PREC(copy,LEN_PREC(obj));
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -695,13 +686,9 @@ Obj CopyObjDatObj (
     }
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
-    }
-    else {
-        copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
+    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
@@ -770,9 +757,9 @@ void CleanObjDatObjCopy (
 
 /****************************************************************************
 **
-*F  ImmutableCopyObjHandler( <self>, <obj> )  . . . . immutable copy of <obj>
+*F  FuncIMMUTABLE_COPY_OBJ( <self>, <obj> )  . . . . immutable copy of <obj>
 */
-Obj ImmutableCopyObjHandler (
+Obj FuncIMMUTABLE_COPY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -782,9 +769,9 @@ Obj ImmutableCopyObjHandler (
 
 /****************************************************************************
 **
-*F  MutableCopyObjHandler( <self>, <obj> )  . . . . . . mutable copy of <obj>
+*F  FuncDEEP_COPY_OBJ( <self>, <obj> )  . . . . . . mutable copy of <obj>
 */
-Obj MutableCopyObjHandler (
+Obj FuncDEEP_COPY_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1247,8 +1234,8 @@ void PrintPathError (
     Int                 indx )
 {
     ErrorQuit(
-        "Panic: tried to print a path of unknown type '%d'",
-        (Int)TNUM_OBJ(obj), 0L );
+        "Panic: tried to print a path of unsupported type '%s'",
+        (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -1281,9 +1268,9 @@ void SetTypeComObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_COMOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
+*F  FuncIS_COMOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
-Obj             IS_COMOBJ_Handler (
+Obj FuncIS_COMOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1303,9 +1290,9 @@ Obj             IS_COMOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_COMOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
+*F  FuncSET_TYPE_COMOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
 */
-Obj SET_TYPE_COMOBJ_Handler (
+Obj FuncSET_TYPE_COMOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -1372,9 +1359,9 @@ void SetTypePosObj( Obj obj, Obj type)
 
 /****************************************************************************
 **
-*F  IS_POSOBJ_Handler( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
+*F  FuncIS_POSOBJ( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
 */
-Obj IS_POSOBJ_Handler (
+Obj FuncIS_POSOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1392,9 +1379,9 @@ Obj IS_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_POSOBJ_Handler( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
+*F  FuncSET_TYPE_POSOBJ( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
 */
-Obj SET_TYPE_POSOBJ_Handler (
+Obj FuncSET_TYPE_POSOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
@@ -1429,9 +1416,9 @@ Obj SET_TYPE_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  LEN_POSOBJ_Handler( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
+*F  FuncLEN_POSOBJ( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
 */
-Obj LEN_POSOBJ_Handler (
+Obj FuncLEN_POSOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1475,9 +1462,9 @@ void SetTypeDatObj( Obj obj, Obj type)
 
 /*****************************************************************************
 **
-*F  IS_DATOBJ_Handler( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
+*F  FuncIS_DATOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */
-Obj             IS_DATOBJ_Handler (
+Obj FuncIS_DATOBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -1487,15 +1474,17 @@ Obj             IS_DATOBJ_Handler (
 
 /****************************************************************************
 **
-*F  SET_TYPE_DATOBJ_Handler( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
+*F  FuncSET_TYPE_DATOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
 */
-Obj SET_TYPE_DATOBJ_Handler (
+Obj FuncSET_TYPE_DATOBJ (
     Obj                 self,
     Obj                 obj,
     Obj                 type )
 {
 #ifndef WARD_ENABLED
+#ifdef HPCGAP
     ReadGuard( obj );
+#endif
     TYPE_DATOBJ( obj ) = type;
 #ifdef HPCGAP
     if (TNUM_OBJ(obj) != T_DATOBJ)
@@ -1509,11 +1498,11 @@ Obj SET_TYPE_DATOBJ_Handler (
 
 /****************************************************************************
 **
-*F  IsIdenticalHandler( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
+*F  FuncIS_IDENTICAL_OBJ( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
 **
-**  'IsIdenticalHandler' implements 'IsIdentical'
+**  'FuncIS_IDENTICAL_OBJ' implements 'IsIdentical'
 */
-Obj IsIdenticalHandler (
+Obj FuncIS_IDENTICAL_OBJ (
     Obj                 self,
     Obj                 obj1,
     Obj                 obj2 )
@@ -1541,8 +1530,8 @@ void (*SaveObjFuncs[256]) ( Obj obj );
 void SaveObjError( Obj obj )
 {
   ErrorQuit(
-            "Panic: tried to save an object of unknown type '%d'",
-            (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to save an object of unsupported type '%s'",
+            (Int)TNAM_OBJ(obj), 0L );
 }
 
 
@@ -1566,8 +1555,8 @@ void (*LoadObjFuncs[256]) ( Obj obj );
 void LoadObjError( Obj obj )
 {
   ErrorQuit(
-            "Panic: tried to load an object of unknown type '%d'",
-            (Int)TNUM_OBJ(obj), 0L );
+            "Panic: tried to load an object of unsupported type '%s'",
+            (Int)TNAM_OBJ(obj), 0L );
 }
 
 /****************************************************************************
@@ -1786,7 +1775,7 @@ Obj FuncCLONE_OBJ (
     REGION(dst) = REGION(src);
     MEMBAR_WRITE();
     /* The following is a no-op unless the region is public */
-    PTR_BAG(dst) = PTR_BAG(tmp);
+    SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
 
     return 0;
@@ -1866,9 +1855,9 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     if (ds2 && ds2->owner != realTLS)
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
-    PTR_BAG(obj2) = ptr1;
+    SET_PTR_BAG(obj2, ptr1);
     REGION(obj1) = ds2;
-    PTR_BAG(obj1) = ptr2;
+    SET_PTR_BAG(obj1, ptr2);
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);
     return (Obj) 0;
@@ -1876,6 +1865,74 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     return FuncSWITCH_OBJ(self, obj1, obj2);
 #endif
 }
+
+
+/****************************************************************************
+**
+*F  FuncDEBUG_TNUM_NAMES
+**
+**  Print all defined TNUM values and names
+*/
+#define START_SYMBOLIC_TNUM(name)                                            \
+    if (k == name) {                                                         \
+        Pr("%3d: %s", k, (Int)indentStr);                                    \
+        Pr("%s" #name "\n", (Int)indentStr, 0);                              \
+        assert(indentLvl + 1 < sizeof(indentStr));                           \
+        indentStr[indentLvl++] = ' ';                                        \
+        indentStr[indentLvl] = 0;                                            \
+    }
+
+#define STOP_SYMBOLIC_TNUM(name)                                             \
+    if (k == name) {                                                         \
+        assert(indentLvl > 0);                                               \
+        indentStr[--indentLvl] = 0;                                          \
+        Pr("%3d: %s", k, (Int)indentStr);                                    \
+        Pr("%s" #name "\n", (Int)indentStr, 0);                              \
+    }
+
+Obj FuncDEBUG_TNUM_NAMES(Obj self)
+{
+    UInt indentLvl = 0;
+    Char indentStr[20] = "";
+    for (UInt k = 0; k < 256; k++) {
+        START_SYMBOLIC_TNUM(FIRST_REAL_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_CONSTANT_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_IMM_MUT_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_RECORD_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_LIST_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PLIST_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_OBJSET_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_EXTERNAL_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM);
+#ifdef HPCGAP
+        START_SYMBOLIC_TNUM(FIRST_SHARED_TNUM);
+#endif
+        START_SYMBOLIC_TNUM(FIRST_COPYING_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM + COPYING);
+        if (InfoBags[k].name != 0) {
+            Pr("%3d: %s", k, (Int)indentStr);
+            Pr("%s%s\n", (Int)indentStr, (Int)InfoBags[k].name);
+        }
+        STOP_SYMBOLIC_TNUM(LAST_CONSTANT_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_RECORD_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PLIST_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_LIST_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_OBJSET_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_IMM_MUT_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_EXTERNAL_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PACKAGE_TNUM);
+#ifdef HPCGAP
+        STOP_SYMBOLIC_TNUM(LAST_SHARED_TNUM);
+#endif
+        STOP_SYMBOLIC_TNUM(LAST_REAL_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_PACKAGE_TNUM + COPYING);
+        STOP_SYMBOLIC_TNUM(LAST_COPYING_TNUM);
+    }
+    return 0;
+}
+#undef START_SYMBOLIC_TNUM
+#undef STOP_SYMBOLIC_TNUM
+
 
 /****************************************************************************
 **
@@ -1929,55 +1986,30 @@ static StructGVarOper GVarOpers [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
-    { "FAMILY_TYPE", 1, "type",
-      FamilyTypeHandler, "src/objects.c:FAMILY_TYPE" },
-
-    { "TYPE_OBJ", 1, "obj",
-      TypeObjHandler, "src/objects.c:TYPE_OBJ" },
-
-    { "SET_TYPE_OBJ", 2, "obj, type",
-      SetTypeObjHandler, "src/objects.c:SET_TYPE_OBJ" },
-
-    { "FAMILY_OBJ", 1, "obj",
-      FamilyObjHandler, "src/objects.c:FAMILY_OBJ" },
-
-    { "IMMUTABLE_COPY_OBJ", 1, "obj", 
-      ImmutableCopyObjHandler, "src/objects.c:IMMUTABLE_COPY_OBJ" },
-
-    { "DEEP_COPY_OBJ", 1, "obj",
-          MutableCopyObjHandler, "src/objects.c:DEEP_COPY_OBJ" },
-
-    { "IS_IDENTICAL_OBJ", 2, "obj1, obj2", 
-      IsIdenticalHandler, "src/objects.c:IS_IDENTICAL_OBJ" },
-
-    { "IS_COMOBJ", 1, "obj",
-      IS_COMOBJ_Handler, "src/objects.c:IS_COMOBJ" },
-
-    { "SET_TYPE_COMOBJ", 2, "obj, type",
-      SET_TYPE_COMOBJ_Handler, "src/objects.c:SET_TYPE_COMOBJ" },
-
-    { "IS_POSOBJ", 1, "obj",
-      IS_POSOBJ_Handler, "src/objects.c:IS_POSOBJ" },
-    
-    { "SET_TYPE_POSOBJ", 2, "obj, type",
-      SET_TYPE_POSOBJ_Handler, "src/objects.c:SET_TYPE_POSOBJ" },
-    
-    { "LEN_POSOBJ", 1, "obj",
-      LEN_POSOBJ_Handler, "src/objects.c:LEN_POSOBJ" },
-    
-    { "IS_DATOBJ", 1, "obj",
-      IS_DATOBJ_Handler, "src/objects.c:IS_DATOBJ" },
-    
-    { "SET_TYPE_DATOBJ", 2, "obj, type",
-      SET_TYPE_DATOBJ_Handler, "src/objects.c:SET_TYPE_DATOBJ" },
-
+    GVAR_FUNC(FAMILY_TYPE, 1, "type"),
+    GVAR_FUNC(TYPE_OBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_OBJ, 2, "obj, type"),
+    GVAR_FUNC(FAMILY_OBJ, 1, "obj"),
+    GVAR_FUNC(IMMUTABLE_COPY_OBJ, 1, "obj"),
+    GVAR_FUNC(DEEP_COPY_OBJ, 1, "obj"),
+    GVAR_FUNC(IS_IDENTICAL_OBJ, 2, "obj1, obj2"),
+    GVAR_FUNC(IS_COMOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_COMOBJ, 2, "obj, type"),
+    GVAR_FUNC(IS_POSOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_POSOBJ, 2, "obj, type"),
+    GVAR_FUNC(LEN_POSOBJ, 1, "obj"),
+    GVAR_FUNC(IS_DATOBJ, 1, "obj"),
+    GVAR_FUNC(SET_TYPE_DATOBJ, 2, "obj, type"),
     GVAR_FUNC(CLONE_OBJ, 2, "dst, src"),
     GVAR_FUNC(SWITCH_OBJ, 2, "obj1, obj2"),
     GVAR_FUNC(FORCE_SWITCH_OBJ, 2, "obj1, obj2"),
     GVAR_FUNC(SET_PRINT_OBJ_INDEX, 1, "index"),
     GVAR_FUNC(MakeImmutable, 1, "obj"),
+
+    GVAR_FUNC(DEBUG_TNUM_NAMES, 0, ""),
+
     { 0, 0, 0, 0, 0 }
 
 };

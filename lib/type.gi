@@ -145,3 +145,90 @@ function ( type )
     fi;
     return res;
 end);
+
+InstallGlobalFunction( TypeOfOperation,
+function(oper)
+    local type, flags, types, catok, repok, propok, seenprop,
+          t, res;
+    if not IsOperation(oper) then
+        ErrorNoReturn("<oper> must be an operation");
+    fi;
+
+    type := "Operation";
+    if IS_IDENTICAL_OBJ(oper, IS_OBJECT) then
+        type := "Filter";
+    elif IS_CONSTRUCTOR(oper) then
+        type := "Constructor";
+    elif IsFilter(oper) then
+        type := "Filter";
+        flags := FLAGS_FILTER(oper);
+        if flags <> false then
+            flags := TRUES_FLAGS(flags);
+            types := INFO_FILTERS{flags};
+            catok := true;
+            repok := true;
+            propok := true;
+            seenprop := false;
+            for t in types do
+                if not t in FNUM_REPS then
+                    repok := false;
+                fi;
+                if not t in FNUM_CATS then
+                    catok := false;
+                fi;
+                if not t in FNUM_PROS and not t in FNUM_TPRS then
+                    propok := false;
+                fi;
+                if t in FNUM_PROS then
+                    seenprop := true;
+                fi;
+            od;
+            if seenprop and propok then
+                type := "Property";
+            elif catok then
+                type := "Category";
+            elif repok then
+                type := "Representation";
+            fi;
+        fi;
+    elif FLAG1_FILTER(oper) > 0 then
+        type := "Setter";
+    elif Tester(oper) <> false  then
+        # oper is an attribute
+        type := "Attribute";
+    fi;
+    return type;
+end);
+
+InstallGlobalFunction( IsCategory,
+function(object)
+    return IsOperation(object) and TypeOfOperation(object) = "Category";
+end);
+
+InstallGlobalFunction( IsRepresentation,
+function(object)
+    return IsOperation(object) and TypeOfOperation(object) = "Representation";
+end);
+
+InstallGlobalFunction( IsAttribute,
+function(object)
+    return IsOperation(object) and TypeOfOperation(object) = "Attribute";
+end);
+
+InstallGlobalFunction( IsProperty,
+function(object)
+    return IsOperation(object) and TypeOfOperation(object) = "Property";
+end);
+
+InstallGlobalFunction( CategoryByName,
+function(name)
+    local fid;
+
+    for fid in CATS_AND_REPS do
+        if (INFO_FILTERS[fid] in FNUM_CATS) and
+           (NAME_FUNC(FILTERS[fid]) = name) then
+            return FILTERS[fid];
+        fi;
+    od;
+    return fail;
+end);

@@ -19,11 +19,6 @@
 
 #include <src/gapstate.h>
 
-#ifdef HPCGAP
-/* HACK: need to include this for STATE() below in CheckRecursionBefore */
-#include "src/hpc/tls.h"
-#endif
-
 /****************************************************************************
 **
 *F  MakeFunction(<fexp>)  . . . . . . . . . . . . . . . . . . make a function

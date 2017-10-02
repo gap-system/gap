@@ -33,7 +33,11 @@
 InstallImmediateMethod(IsFinite, IsReesZeroMatrixSubsemigroup, 0,
 function(R)
   if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
-    return ElementsFamily(FamilyObj(R))!.IsFinite;
+    if HasIsWholeFamily(R) and IsWholeFamily(R) then
+      return ElementsFamily(FamilyObj(R))!.IsFinite;
+    elif ElementsFamily(FamilyObj(R))!.IsFinite then
+      return true;
+    fi;
   fi;
   TryNextMethod();
 end);
@@ -41,16 +45,11 @@ end);
 InstallImmediateMethod(IsFinite, IsReesMatrixSubsemigroup, 0,
 function(R)
   if IsBound(ElementsFamily(FamilyObj(R))!.IsFinite) then
-    return ElementsFamily(FamilyObj(R))!.IsFinite;
-  fi;
-  TryNextMethod();
-end);
-
-InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
-[IsReesMatrixSubsemigroup], 
-function(R)
-  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
-    return IsFinite(ParentAttr(R));
+    if HasIsWholeFamily(R) and IsWholeFamily(R) then
+      return ElementsFamily(FamilyObj(R))!.IsFinite;
+    elif ElementsFamily(FamilyObj(R))!.IsFinite then
+      return true;
+    fi;
   fi;
   TryNextMethod();
 end);
@@ -58,8 +57,17 @@ end);
 InstallMethod(IsFinite, "for a Rees 0-matrix subsemigroup",
 [IsReesZeroMatrixSubsemigroup], 
 function(R)
-  if (not IsIdenticalObj(R, ParentAttr(R))) and HasIsFinite(ParentAttr(R)) then 
-    return IsFinite(ParentAttr(R));
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R))then 
+    return true;
+  fi;
+  TryNextMethod();
+end);
+
+InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
+[IsReesMatrixSubsemigroup], 
+function(R)
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R)) then 
+    return true;
   fi;
   TryNextMethod();
 end);
@@ -69,49 +77,21 @@ end);
 InstallMethod(IsIdempotent, "for a Rees 0-matrix semigroup element",
 [IsReesZeroMatrixSemigroupElement], 
 function(x)
-  local R;
+  local matrix_entry, g;
 
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsGroup(UnderlyingSemigroup(R)) then 
-    # only for RZMS over groups!
-    return x![1]=0 or x![2]^-1=x![4][x![3]][x![1]];
-  else 
-    return x ^ 2 = x;
+  if x![1] = 0 then
+    # <x> is the 0 element of the family
+    return true;
   fi;
-end);
 
-#
+  matrix_entry := x![4][x![3]][x![1]];
 
-InstallMethod(IsOne, "for a Rees matrix semigroup element", 
-[IsReesMatrixSemigroupElement],
-function(x)
-  local R;
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsIdempotent(x) then 
-    if Length(Rows(R))=1 and Length(Columns(R))=1 then 
-      return true;
-    else 
-      return ForAll(GeneratorsOfSemigroup(R), y-> x*y=y and y*x=y);
-    fi;
+  if matrix_entry = 0 then
+    return false;
   fi;
-  return false;
-end);
 
-#
-
-InstallMethod(IsOne, "for a Rees 0-matrix semigroup element", 
-[IsReesZeroMatrixSemigroupElement],
-function(x)
-  local R;
-  R:=ReesMatrixSemigroupOfFamily(FamilyObj(x));
-  if IsIdempotent(x) then 
-    if Length(Rows(R))=1 and Length(Columns(R))=1 then 
-      return true;
-    else 
-      return ForAll(GeneratorsOfSemigroup(R), y-> x*y=y and y*x=y);
-    fi;
-  fi;
-  return false;
+  g := UnderlyingElementOfReesZeroMatrixSemigroupElement(x);
+  return g * matrix_entry * g = g;
 end);
 
 #
@@ -124,9 +104,13 @@ IsReesMatrixSemigroup and IsSimpleSemigroup);
 InstallMethod(IsRegularSemigroup, "for a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSemigroup], 
 function(R)
-  if IsGroup(UnderlyingSemigroup(R)) then 
-    return ForAll(Rows(R), i-> ForAny(Columns(R), j-> Matrix(R)[j][i]<>0))
-     and ForAll(Columns(R), j-> ForAny(Rows(R), i-> Matrix(R)[j][i]<>0));
+  local mat;
+
+  mat := Matrix(R);
+  if HasIsGroupAsSemigroup(UnderlyingSemigroup(R))
+      and IsGroupAsSemigroup(UnderlyingSemigroup(R)) then 
+    return ForAll(Rows(R), i -> ForAny(Columns(R), j -> mat[j][i]<>0))
+      and ForAll(Columns(R), j -> ForAny(Rows(R), i -> mat[j][i]<>0));
   else
     TryNextMethod();
   fi;
@@ -145,20 +129,13 @@ R-> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 InstallMethod(IsZeroSimpleSemigroup, "for a Rees 0-matrix semigroup", 
 [IsReesZeroMatrixSemigroup],
 function(R)
-  local i;
+  local i, mat;
 
-  for i in Columns(R) do 
-    if ForAll(Rows(R), j-> Matrix(R)[i][j]=0) then 
-      return false;
-    fi;
-  od;
-  
-  for i in Rows(R) do 
-    if ForAll(Columns(R), j-> Matrix(R)[j][i]=0) then 
-      return false;
-    fi;
-  od;
-  
+  mat := Matrix(R);
+  if ForAny(Columns(R), j -> ForAll(Rows(R), i -> mat[j][i] = 0))
+      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j][i] = 0)) then 
+    return false;
+  fi;
   return IsSimpleSemigroup(UnderlyingSemigroup(R));
 end);
 
@@ -176,9 +153,6 @@ function(R)
   
   if IsWholeFamily(R) then 
     return true;
-  elif IsSimpleSemigroup(UnderlyingSemigroup(ParentAttr(R))) 
-   and not IsSimpleSemigroup(R) then 
-    return false;
   fi;
   
   # it is still possible that <R> is a Rees matrix semigroup, if, for example,
@@ -217,11 +191,11 @@ function(R)
     return false; #Rees 0-matrix semigroups always contain the 0.
   fi;
   
-  gens:=GeneratorsOfSemigroup(R);
+  gens := Unique(GeneratorsOfSemigroup(R));
   pos:=Position(gens, MultiplicativeZero(R));
   if pos<>fail then 
     if Size(gens) = 1 then
-      return Size(ParentAttr(R)) = 1;
+      return false;
     fi;
     gens:=ShallowCopy(gens);
     Remove(gens, pos);
@@ -292,9 +266,10 @@ InstallMethod(ReesZeroMatrixSemigroup, "for a semigroup and a dense list",
 function(S, mat)
   local fam, R, type, x;
 
-  if not ForAll(mat, x -> IsDenseList(x) and Length(x) = Length(mat[1])) then
-    ErrorNoReturn("the entries of the second argument (a list) must be ",
-                  "lists of equal length");
+  if IsEmpty(mat) or not ForAll(mat, x -> IsDenseList(x) and not IsEmpty(x)
+                                          and Length(x) = Length(mat[1])) then
+    ErrorNoReturn("the second argument must be a non-empty list, whose ",
+                  "entries are non-empty lists of equal length");
   fi;
 
   for x in mat do
@@ -504,6 +479,9 @@ function( R )
        Enumerator(UnderlyingSemigroup(R)), Columns(R), [Matrix(R)]),
     
     NumberElement:=function(enum, x)
+      if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
+        return fail;
+      fi;
       return Position(enum!.enum, [x![1], x![2], x![3], x![4]]);
     end,
     
@@ -532,7 +510,10 @@ function( R )
     
     NumberElement:=function(enum, x)
       local pos;
-      if IsMultiplicativeZero(R, x) then 
+
+      if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
+        return fail;
+      elif IsMultiplicativeZero(R, x) then 
         return 1;
       fi;
       
@@ -761,7 +742,12 @@ x-> x![1]);
 
 InstallMethod(RowOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![1]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![1];
+end);
 
 #
 
@@ -773,7 +759,12 @@ x-> x![2]);
 
 InstallMethod(UnderlyingElementOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![2]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![2];
+end);
 
 #
 
@@ -785,7 +776,12 @@ x-> x![3]);
 
 InstallMethod(ColumnOfReesZeroMatrixSemigroupElement, 
 "for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
-x-> x![3]);
+function(x)
+  if x![1] = 0 then
+    return fail;
+  fi;
+  return x![3];
+end);
 
 #
 
@@ -838,7 +834,7 @@ InstallMethod(ELM_LIST, "for a Rees matrix semigroup element",
 [IsReesMatrixSemigroupElement, IsPosInt], 
 function(x, i)
   if i > 3 then 
-    ErrorNoReturn("the second argument must equal 1, 2, or 3");
+    ErrorNoReturn("the second argument must be 1, 2, or 3");
   fi;
   return x![i];
 end);

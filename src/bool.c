@@ -14,7 +14,6 @@
 **  True and Fail.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -35,11 +34,8 @@
 #include <src/precord.h>                /* plain records */
 
 #include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /****************************************************************************

@@ -2736,6 +2736,11 @@ InstallMethod( RadicalOfAlgebra,
     fi;
 
     n:= Dimension( A );
+
+    if n = 0 then
+      return A;
+    fi;
+
     BA:= Basis( A );
     bv:= BasisVectors( BA );
     F:= LeftActingDomain( A );
@@ -2752,6 +2757,9 @@ InstallMethod( RadicalOfAlgebra,
         M:=[];
         for j in [1..n] do
           col:= Coefficients( BA, bv[i] * bv[j] );
+          if not IsMutable( col ) then
+            col:= ShallowCopy( col );
+          fi;
           col[n+1]:= Zero( F );
           Add( M, col );
         od;

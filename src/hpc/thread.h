@@ -14,6 +14,8 @@
 
 #else
 
+#include <src/hpc/region.h>
+
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023
 
@@ -71,8 +73,8 @@ void InitMainThread(void);
 int IsLocked(Region *region);
 void GetLockStatus(int count, Obj *objects, int *status);
 int LockObject(Obj obj, int mode);
-int LockObjects(int count, Obj *objects, int *mode);
-int TryLockObjects(int count, Obj *objects, int *mode);
+int LockObjects(int count, Obj *objects, const int *mode);
+int TryLockObjects(int count, Obj *objects, const int *mode);
 void PushRegionLock(Region *region);
 void PopRegionLocks(int newSP);
 int RegionLockSP(void);

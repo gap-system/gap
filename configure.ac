@@ -160,6 +160,7 @@ CHECK_COMPILER_BUILTIN([__builtin_smulll_overflow],[0,0,0]);
 CHECK_COMPILER_BUILTIN([__builtin_clz],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcountl],[0]);
 
 dnl determine sizeof of some standard types, so that the GAP headers
 dnl can pick the correct builtins among those we just tested
@@ -215,6 +216,33 @@ AC_ARG_ENABLE([Werror],
 AC_MSG_CHECKING([whether to treat C compiler warnings as errors])
 AC_MSG_RESULT([$enable_Werror])
 
+
+AS_IF([test "x$enable_Werror" != "xno"],
+  [ax_enable_compile_warnings=error],
+  [ax_enable_compile_warnings=yes])
+
+#WARNING_CPPFLAGS=""
+AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
+AC_SUBST([WARNING_CPPFLAGS])
+
+dnl
+dnl User setting: Enable popcnt (on by default)
+dnl
+
+AC_ARG_ENABLE([popcnt],
+    AS_HELP_STRING([--enable-popcnt], [use __builtin_popcntl if available]),
+    [],
+    [enable_popcnt=yes])
+AC_MSG_CHECKING([whether to try and use __builtin_popcntl])
+AC_MSG_RESULT([$enable_popcnt])
+
+AS_IF([test "x$enable_popcnt" != "xno"],
+    [USE_POPCNT=1],
+    [USE_POPCNT=0])
+
+AC_DEFINE_UNQUOTED([USE_POPCNT],
+    [$USE_POPCNT],
+    [define as 1 if we should try and use the __builtin_popcntl function if available])
 
 AS_IF([test "x$enable_Werror" != "xno"],
   [ax_enable_compile_warnings=error],
@@ -290,7 +318,7 @@ AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
 dnl Find GNU readline
 AC_ARG_WITH([readline],
-  [AS_HELP_STRING([--with-readline@<:@=PREFIX:>@],
+  [AS_HELP_STRING([--with-readline@<:@=PREFIX@:>@],
     [support fancy command line editing via GNU readline; optionally
      specify a prefix where it can be found])])
 
@@ -330,7 +358,7 @@ AC_SUBST([READLINE_LIBS])
 
 dnl Find ward (if HPC-GAP mode is enabled)
 AC_ARG_WITH([ward],
-  [AS_HELP_STRING([--with-ward@<:@=PREFIX:>@],
+  [AS_HELP_STRING([--with-ward@<:@=PREFIX@:>@],
     [prefix to the ward tool (used for building HPC-GAP)])],
   [],
   [with_ward=check])
@@ -388,12 +416,11 @@ AS_IF([test "x$enable_hpcgap" = xyes],
 dnl
 dnl User setting: Compatibility mode (on by default)
 dnl
-AS_IF([test "x$enable_hpcgap" = xyes],
-  [CONFIGNAME="hpcgap${ABI}"],
-  [CONFIGNAME="default${ABI}"])
 BASECC=`basename ${CC}`
-GAPARCH="$host-$BASECC-${CONFIGNAME}"
-AC_DEFINE_UNQUOTED([CONFIGNAME], ["$CONFIGNAME"], [for backwards compatibility])
+AS_IF([test "x$enable_hpcgap" = xyes],
+  [GAPARCH="$host-$BASECC-hpcgap${ABI}"],
+  [GAPARCH="$host-$BASECC-default${ABI}"])
+
 AC_DEFINE_UNQUOTED([SYS_ARCH], ["$GAPARCH"], [for backwards compatibility])
 AC_SUBST([GAPARCH])
 
@@ -409,8 +436,7 @@ AC_SUBST([COMPAT_MODE], [$enable_compat_mode])
 AS_IF([test "x$enable_compat_mode" = xyes],
     [
     AC_CONFIG_FILES([bin/gap.sh:cnf/compat/gap.sh.in], [chmod +x bin/gap.sh])
-    AC_CONFIG_FILES([sysinfo.gap:cnf/compat/sysinfo.gap.in], [ln -s sysinfo.gap sysinfo.gap-$CONFIGNAME], [CONFIGNAME='$CONFIGNAME'])
-    AC_CONFIG_LINKS([bin/$GAPARCH/config.h:gen/config.h])
+    AC_CONFIG_FILES([sysinfo.gap:cnf/compat/sysinfo.gap.in])
     AS_IF([test x$BUILD_GMP = xyes],[
       AC_CONFIG_FILES([bin/$GAPARCH/extern/gmp/include/gmp.h:cnf/compat/gmp.h.in])
     ])

@@ -50,7 +50,6 @@
 **  order of the finite field minus one.
 */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -77,13 +76,10 @@
 
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/code.h>                   /* coder */
 
 #include <src/hpc/aobjects.h>           /* atomic access to plists */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 
 /****************************************************************************
@@ -1821,12 +1817,7 @@ Obj INT_FF (
             SET_ELM_PLIST( conv, (z-1)/((q-1)/(p-1))+1, INTOBJ_INT(i) );
             z = succ[ z ];
         }
-        if ( LEN_PLIST(IntFF) < ff ) {
-            GROW_PLIST( IntFF, ff );
-            SET_LEN_PLIST( IntFF, (Int)ff );
-        }
-        SET_ELM_PLIST( IntFF, ff, conv );
-        CHANGED_BAG( IntFF );
+        AssPlist( IntFF, ff, conv );
     }
 
     /* return the conversion table                                           */

@@ -51,8 +51,7 @@
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
@@ -86,22 +85,6 @@ Int             IsListObject (
     return (DoFilter( IsListFilt, obj ) == True);
 }
 
-
-Obj Elm2List(Obj list, Obj pos1, Obj pos2) {
-  Obj ixs = NEW_PLIST(T_PLIST,2);
-  SET_ELM_PLIST(ixs,1,pos1);
-  SET_ELM_PLIST(ixs,2,pos2);
-  SET_LEN_PLIST(ixs,2);
-  return ELMB_LIST(list, ixs);
-}
-
-void Ass2List(Obj list, Obj pos1, Obj pos2, Obj obj) {
-  Obj ixs = NEW_PLIST(T_PLIST,2);
-  SET_ELM_PLIST(ixs,1,pos1);
-  SET_ELM_PLIST(ixs,2,pos2);
-  SET_LEN_PLIST(ixs,2);
-  ASSB_LIST(list, ixs, obj);
-}
 
 /****************************************************************************
 **
@@ -372,6 +355,11 @@ Int             ISBB_LIST (
     return DoOperation2Args( IsbListOper, list, pos ) == True;
 }
 
+Int ISB2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    return DoOperation3Args( IsbListOper, list, pos1, pos2 ) == True;
+}
+
 
 /****************************************************************************
 **
@@ -551,6 +539,33 @@ Obj ELMB_LIST(Obj list, Obj pos)
     Obj                 elm;
 
     elm = DoOperation2Args( ElmListOper, list, pos );
+    while ( elm == 0 ) {
+        elm = ErrorReturnObj(
+            "List access method must return a value", 0L, 0L,
+            "you can supply a value <val> via 'return <val>;'" );
+    }
+    return elm;
+}
+
+Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
+        Int p1 = INT_INTOBJ(pos1);
+        if ( p1 <= LEN_PLIST(list) ) {
+            Obj row = ELM_PLIST( list, p1 );
+            Int p2 = INT_INTOBJ(pos2);
+
+            if ( IS_PLIST(row) && p2 <= LEN_PLIST(row) ) {
+                return ELM_PLIST( row, p2 );
+            }
+
+            // fallback to generic list access code (also triggers error if
+            // row isn't a list)
+            return ELM_LIST( row, p2 );
+        }
+    }
+
+    Obj elm = DoOperation3Args( ElmListOper, list, pos1, pos2 );
     while ( elm == 0 ) {
         elm = ErrorReturnObj(
             "List access method must return a value", 0L, 0L,
@@ -884,6 +899,11 @@ void            UNBB_LIST (
     DoOperation2Args( UnbListOper, list, pos );
 }
 
+void UNB2_LIST(Obj list, Obj pos1, Obj pos2)
+{
+    DoOperation3Args( UnbListOper, list, pos1, pos2 );
+}
+
 /****************************************************************************
 **
 *F  ASS_LIST(<list>,<pos>,<obj>)  . . . . . . . . assign an element to a list
@@ -958,6 +978,35 @@ void ASSB_LIST (
     Obj                 obj )
 {
     DoOperation3Args( AssListOper, list, pos, obj );
+}
+
+void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
+{
+    if (!IS_MUTABLE_OBJ(list)) {
+        ErrorReturnVoid(
+            "Matrix Assignment: <mat> must be a mutable matrix",
+            0L, 0L,
+            "you can 'return;' and ignore the assignment" );
+    }
+    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
+        Int p1 = INT_INTOBJ(pos1);
+        if ( p1 <= LEN_PLIST(list) ) {
+            Obj row = ELM_PLIST( list, p1 );
+            Int p2 = INT_INTOBJ(pos2);
+
+            if ( IS_PLIST( row ) ) {
+                AssPlist( row, p2, obj );
+                return;
+            }
+
+            // fallback to generic list access code (also triggers error if
+            // row isn't a list)
+            ASS_LIST( row, p2, obj );
+            return;
+        }
+    }
+
+    DoOperation4Args( AssListOper, list, pos1, pos2, obj );
 }
 
 
@@ -2281,8 +2330,9 @@ static StructGVarProp GVarProps [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    // FIXME: why DoOperation0Args below?
-    { "POS_LIST", -1, "list, obj", &PosListOper,
+    // POS_LIST can take 2 or 3 arguments; since NewOperation ignores the
+    // handler for variadic operations, use DoOperation0Args as a placeholder.
+    { "POS_LIST", -1, "list, obj[, start]", &PosListOper,
       DoOperation0Args, "src/lists.c:POS_LIST" },
 
     GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),

@@ -50,8 +50,7 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #include <src/hookintrprtr.h>           /* installing methods */
 
@@ -229,7 +228,7 @@ void            PrintIsbLVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -255,7 +254,7 @@ void            ASS_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* assign the value                                                    */
@@ -276,7 +275,7 @@ Obj             OBJ_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* get the value                                                       */
@@ -299,7 +298,7 @@ Char *          NAME_HVAR (
     /* walk up the environment chain to the correct values bag             */
     currLVars = STATE(CurrLVars);
     for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC ) );
+        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
     }
 
     /* get the name                                                        */
@@ -426,7 +425,7 @@ void            PrintIsbHVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -541,7 +540,7 @@ void            PrintIsbGVar (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr( "%I", (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -1730,7 +1729,9 @@ UInt            ExecAssPosObj (
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         WriteGuard(list);
+#endif
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -1779,7 +1780,9 @@ UInt            ExecUnbPosObj (
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+#ifdef HPCGAP
         WriteGuard(list);
+#endif
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -1827,7 +1830,7 @@ Obj             EvalElmPosObj (
     /* special case for plain lists (use generic code to signal errors)    */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
 #ifdef HPCGAP
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -1894,7 +1897,7 @@ Obj             EvalIsbPosObj (
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
 #ifdef HPCGAP
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
           isb = False;
         else
@@ -1981,7 +1984,7 @@ void            PrintIsbPosObj (
     Pr("%<![",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[1] );
     Pr("%<]",0L,0L);
-    Pr( ")", 0L, 0L );
+    Pr( " )", 0L, 0L );
 }
 
 
@@ -2475,7 +2478,7 @@ Obj FuncGetBottomLVars( Obj self )
 
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
-  if (TNUM_OBJ(lvars) != T_LVARS && TNUM_OBJ(lvars) != T_HVARS) {
+  if (!IS_LVARS_OR_HVARS(lvars)) {
     ErrorQuit( "<lvars> must be an lvars (not a %s)",
                (Int)TNAM_OBJ(lvars), 0L );
     return 0;
@@ -2520,7 +2523,7 @@ void VarsAfterCollectBags ( void )
   if (STATE(CurrLVars))
     {
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
-      STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+      STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC() ) );
     }
   GVarsAfterCollectBags();
 }

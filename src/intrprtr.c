@@ -56,7 +56,7 @@
 #include <src/intrprtr.h>               /* interpreter */
 #include <src/intfuncs.h>
 
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
@@ -81,9 +81,9 @@
 **
 **  If 'IntrReturning' is  non-zero, the interpreter is currently  returning.
 **  The interpreter switches  to this mode when  it finds a return-statement.
-**  If it interpretes a return-value-statement, it sets 'IntrReturning' to 1.
-**  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
-**  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
+**  If it interprets a return-value-statement, it sets 'IntrReturning' to 1.
+**  If it interprets a return-void-statement,  it sets 'IntrReturning' to 2.
+**  If it interprets a quit-statement, it sets 'IntrReturning' to 8.
 */
 /* TL: UInt IntrReturning; */
 
@@ -116,15 +116,12 @@
 /****************************************************************************
 **
 *F  StackObj  . . . . . . . . . . . . . . . . . . . . . . . . .  values stack
-*F  CountObj  . . . . . . . . . . . . . . . . . number of values on the stack
 *F  PushObj(<val>)  . . . . . . . . . . . . . . . . push value onto the stack
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 *F  PopObj()  . . . . . . . . . . . . . . . . . . .  pop value from the stack
 *F  PopVoidObj()  . . . . . . . . . . . . . . . . .  pop value from the stack
 **
 **  'StackObj' is the stack of values.
-**
-**  'CountObj' is the number of values currently on the values stack.
 **
 **  'PushObj' pushes the value <val>  onto the values stack.   It is an error
 **  to push the void value.  The stack is automatically resized if necessary.
@@ -139,30 +136,18 @@
 **  It is an error if the stack is empty but not if the top element is void.
 **
 **  Since interpreters  can nest, there can   be more than one  values stack.
-**  The bottom  two  elements of each values  stack  are the  'StackObj'  and
-**  'CountObj' there were active when the current interpreter was started and
-**  which will be made active again when the current interpreter will stop.
+**  The bottom  element of each values stack is the 'StackObj' which was
+**  active when the current interpreter was started and which will be made
+**  active again when the current interpreter will stop.
 */
 /* TL: Obj             IntrState; */
 
 /* TL: Obj             StackObj; */
 
-/* TL: Int             CountObj; */
-
-void            PushObj (
-    Obj                 val )
+static void PushObj(Obj val)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
     assert( val != 0 );
-
-    /* count up and put the value onto the stack                           */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), val );
-    CHANGED_BAG(   STATE(StackObj) );
+    PushPlist( STATE(StackObj), val );
 }
 
 /* Special marker value to denote that a function returned no value, so we
@@ -172,78 +157,43 @@ void            PushObj (
  * The only place other than these methods which access the stack is
  * the permutation reader, but it only directly accesses values it wrote,
  * so it will not see this magic value. */
-Obj VoidReturnMarker;
+static Obj VoidReturnMarker;
 
-void            PushFunctionVoidReturn ( void )
+static void PushFunctionVoidReturn(void)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
-
-    /* count up and put the void value onto the stack                      */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), (Obj)&VoidReturnMarker );
+    PushPlist( STATE(StackObj), (Obj)&VoidReturnMarker );
 }
 
-void            PushVoidObj ( void )
+void PushVoidObj(void)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackObj) != 0 );
-    assert( 0 <= STATE(CountObj) && STATE(CountObj) == LEN_PLIST(STATE(StackObj)) );
-
-    /* count up and put the void value onto the stack                      */
-    STATE(CountObj)++;
-    GROW_PLIST(    STATE(StackObj), STATE(CountObj) );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), (Obj)0 );
+    PushPlist( STATE(StackObj), (Obj)0 );
 }
 
-Obj             PopObj ( void )
+static Obj PopObj(void)
 {
-    Obj                 val;
+    Obj val = PopPlist( STATE(StackObj) );
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackObj) != 0 );
-    assert( 1 <= STATE(CountObj) && STATE(CountObj) == LEN_LIST(STATE(StackObj)) );
-
-    /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), 0 );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj)-1  );
-    STATE(CountObj)--;
-
-    if(val == (Obj)&VoidReturnMarker) {
+    if (val == (Obj)&VoidReturnMarker) {
         ErrorQuit(
             "Function call: <func> must return a value",
             0L, 0L );
     }
-    /* return the popped value (which must be non-void)                    */
+
+    // return the popped value (which must be non-void)
     assert( val != 0 );
     return val;
 }
 
-Obj             PopVoidObj ( void )
+static Obj PopVoidObj(void)
 {
-    Obj                 val;
+    Obj val = PopPlist( STATE(StackObj) );
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackObj) != 0 );
-    assert( 1 <= STATE(CountObj) && STATE(CountObj) == LEN_LIST(STATE(StackObj)) );
-
-    /* get the top element from the stack and count down                   */
-    val = ELM_PLIST( STATE(StackObj), STATE(CountObj) );
-    SET_ELM_PLIST( STATE(StackObj), STATE(CountObj), 0 );
-    SET_LEN_PLIST( STATE(StackObj), STATE(CountObj)-1  );
-    STATE(CountObj)--;
-
-    /* Treat a function which returned no value the same as 'void'         */
-    if(val == (Obj)&VoidReturnMarker) {
+    // Treat a function which returned no value the same as 'void'
+    if (val == (Obj)&VoidReturnMarker) {
         val = 0;
     }
 
-    /* return the popped value (which may be void)                         */
+    // return the popped value (which may be void)
     return val;
 }
 
@@ -273,17 +223,15 @@ void IntrBegin ( Obj frame )
     /* remember old interpreter state                                      */
     /* This bag cannot exist at the top-most loop, which is the only
        place from which we might call SaveWorkspace */
-    intrState = NewBag( T_PLIST, 4*sizeof(Obj) );
-    ADDR_OBJ(intrState)[0] = (Obj)3;
-    ADDR_OBJ(intrState)[1] = STATE(IntrState);
-    ADDR_OBJ(intrState)[2] = STATE(StackObj);
-    ADDR_OBJ(intrState)[3] = INTOBJ_INT(STATE(CountObj));
+    intrState = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( intrState, 2 );
+    SET_ELM_PLIST( intrState, 1, STATE(IntrState) );
+    SET_ELM_PLIST( intrState, 2, STATE(StackObj) );
     STATE(IntrState) = intrState;
 
     /* allocate a new values stack                                         */
     STATE(StackObj) = NEW_PLIST( T_PLIST, 64 );
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
 
     /* must be in immediate (non-ignoring, non-coding) mode                */
     assert( STATE(IntrIgnoring) == 0 );
@@ -316,13 +264,8 @@ ExecStatus IntrEnd (
         assert( STATE(IntrCoding)   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-        assert( STATE(CountObj) == 1 );
+        assert( LEN_PLIST(STATE(StackObj)) == 1 );
         STATE(IntrResult) = PopVoidObj();
-
-        /* switch back to the old state                                    */
-        STATE(CountObj)  = INT_INTOBJ( ADDR_OBJ(STATE(IntrState))[3] );
-        STATE(StackObj)  = ADDR_OBJ(STATE(IntrState))[2];
-        STATE(IntrState) = ADDR_OBJ(STATE(IntrState))[1];
 
     }
 
@@ -346,12 +289,11 @@ ExecStatus IntrEnd (
         /* dummy result value (probably ignored)                           */
         STATE(IntrResult) = (Obj)0;
 
-        /* switch back to the old state                                    */
-        STATE(CountObj)  = INT_INTOBJ( ADDR_OBJ(STATE(IntrState))[3] );
-        STATE(StackObj)  = ADDR_OBJ(STATE(IntrState))[2];
-        STATE(IntrState) = ADDR_OBJ(STATE(IntrState))[1];
-
     }
+
+    // switch back to the old state
+    STATE(StackObj)  = ELM_PLIST(STATE(IntrState), 2);
+    STATE(IntrState) = ELM_PLIST(STATE(IntrState), 1);
 
     /* indicate whether a return-statement was interpreted                 */
     return intrReturning;
@@ -738,10 +680,8 @@ void IntrForBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -799,6 +739,7 @@ void IntrForEnd ( void )
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
+    CodeForEnd();
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
@@ -806,10 +747,12 @@ void IntrForEnd ( void )
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
+
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+        PopPlist(STATE(StackNams));
 
     func = STATE(CodeResult);
 
@@ -871,10 +814,8 @@ void            IntrWhileBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
@@ -924,18 +865,17 @@ void            IntrWhileEnd ( void )
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
 
-
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+        PopPlist(STATE(StackNams));
 
     func = STATE(CodeResult);
-
 
     /* call the function                                                   */
     CALL_0ARGS( func );
@@ -1024,10 +964,8 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
     PushObj(INTOBJ_INT(nrexprs));
     CodeBegin();
     STATE(IntrCoding) = 1;
-    
-    
+
     /* code a function expression (with no arguments and locals)           */
-    
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
     
@@ -1037,10 +975,8 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
        
        If we are not in a break loop, then this would be a waste of time and effort */
     
-    if (STATE(CountNams) > 0) {
-      GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-      SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-      SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
     
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
@@ -1061,8 +997,9 @@ void            IntrAtomicEndBody (
 
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-      if (STATE(CountNams) > 0)
-        STATE(CountNams)--;
+      const UInt len = LEN_PLIST(STATE(StackNams));
+      if (len > 0)
+          PopPlist(STATE(StackNams));
 
       /* Code the body as a function expression */
       CodeFuncExprEnd( nrstats, 0UL );
@@ -1213,10 +1150,8 @@ void            IntrRepeatBegin ( void )
 
        If we are not in a break loop, then this would be a waste of time and effort */
 
-    if (STATE(CountNams) > 0) {
-        GROW_PLIST(STATE(StackNams), ++STATE(CountNams));
-        SET_ELM_PLIST(STATE(StackNams), STATE(CountNams), nams);
-        SET_LEN_PLIST(STATE(StackNams), STATE(CountNams));
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
     }
 
     CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
@@ -1269,10 +1204,13 @@ void            IntrRepeatEnd ( void )
     /* switch back to immediate mode, get the function                     */
     STATE(IntrCoding) = 0;
     CodeEnd( 0 );
+
     /* If we are in a break loop, then we will have created a "dummy" local
        variable names list to get the counts right. Remove it */
-    if (STATE(CountNams) > 0)
-      STATE(CountNams)--;
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+        PopPlist(STATE(StackNams));
+
     func = STATE(CodeResult);
 
     /* call the function                                                   */
@@ -1352,11 +1290,10 @@ void            IntrReturnObj ( void )
     /* empty the values stack and push the return value                    */
     val = PopObj();
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushObj( val );
 
     /* indicate that a return-value-statement was interpreted              */
-    STATE(IntrReturning) = 1;
+    STATE(IntrReturning) = STATUS_RETURN_VAL;
 }
 
 
@@ -1377,11 +1314,10 @@ void            IntrReturnVoid ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
     /* indicate that a return-void-statement was interpreted               */
-    STATE(IntrReturning) = 2;
+    STATE(IntrReturning) = STATUS_RETURN_VOID;
 }
 
 
@@ -1406,7 +1342,6 @@ void            IntrQuit ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
 
@@ -1432,7 +1367,6 @@ void            IntrQUIT ( void )
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
-    STATE(CountObj) = 0;
     PushVoidObj();
 
 
@@ -1899,27 +1833,6 @@ void            IntrProd ( void )
     PushObj( val );
 }
 
-void            IntrInv ( void )
-{
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-
-    /* ignore or code                                                      */
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeInv(); return; }
-
-
-    /* get the operand                                                     */
-    opL = PopObj();
-
-    /* compute the multiplicative inverse                                  */
-    val = INV_MUT( opL );
-
-    /* push the result                                                     */
-    PushObj( val );
-}
-
 void            IntrQuo ( void )
 {
     Obj                 val;            /* value, result                   */
@@ -2255,8 +2168,9 @@ void            IntrPermCycle (
         ptr4 = ADDR_PERM4( perm );
     }
     else {
-        m = INT_INTOBJ( ELM_LIST( STATE(StackObj), STATE(CountObj) - nrx ) );
-        perm = ELM_LIST( STATE(StackObj), STATE(CountObj) - nrx - 1 );
+        const UInt countObj = LEN_PLIST(STATE(StackObj));
+        m = INT_INTOBJ( ELM_LIST( STATE(StackObj), countObj - nrx ) );
+        perm = ELM_LIST( STATE(StackObj), countObj - nrx - 1 );
         ptr4 = ADDR_PERM4( perm );
     }
 
@@ -3263,15 +3177,7 @@ void            IntrAssList ( Int narg )
       ASS2_LIST(list, pos1, pos2, rhs);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST, narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      ASSB_LIST(list, ixs, rhs);
+      SyntaxError("[]:= only supports 1 or 2 indices");
     }
 
     /* push the right hand side again                                      */
@@ -3419,16 +3325,15 @@ void            IntrUnbList ( Int narg )
         UNBB_LIST(list, pos);
       }
     }
-    else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
-      UNBB_LIST(list, ixs);
+
+      UNB2_LIST(list, pos1, pos2);
+    }
+    else {
+      SyntaxError("Unbind[] only supports 1 or 2 indices");
     }
 
     /* push void                                                           */
@@ -3480,15 +3385,8 @@ void            IntrElmList ( Int narg )
       elm = ELM2_LIST(list, pos1, pos2);
     }
     else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
-      list = PopObj();
-      elm = ELMB_LIST(list, ixs);
+      SyntaxError("[] only supports 1 or 2 indices");
+      return;
     }
 
     /* push the element                                                    */
@@ -3622,16 +3520,16 @@ void            IntrIsbList ( Int narg )
         isb = ISBB_LIST( list, pos ) ? True : False;
       }
     }
-    else {
-      Obj ixs = NEW_PLIST(T_PLIST,narg);
-      for (Int i = narg; i > 0; i--) {
-        pos = PopObj();
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
-      }
-      SET_LEN_PLIST(ixs, narg);
+    else if (narg == 2) {
+      Obj pos2 = PopObj();
+      Obj pos1 = PopObj();
       list = PopObj();
-      isb = ISBB_LIST(list, ixs) ? True: False;
+
+      isb = ISB2_LIST(list, pos1, pos2) ? True : False;
+    }
+    else {
+      SyntaxError("IsBound[] only supports 1 or 2 indices");
+      isb = Fail;
     }
 
     /* push the result                                                     */
@@ -4112,7 +4010,7 @@ void            IntrElmPosObj ( void )
          * only have read-only access, we have to be careful when accessing
          * positional objects.
          */
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         MEMBAR_READ(); /* essential memory barrier */
         if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
@@ -4285,7 +4183,7 @@ void            IntrIsbPosObj ( void )
          * only have read-only access, we have to be careful when accessing
          * positional objects.
          */
-        Bag *contents = PTR_BAG(list);
+        const Bag *contents = CONST_PTR_BAG(list);
         if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
           isb = False;
         else

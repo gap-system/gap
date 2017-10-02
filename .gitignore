@@ -6,7 +6,7 @@
 /configure
 /libtool
 /src/config.h.in
-
+/src/config.h.in~
 /gen/
 /obj/
 
@@ -19,80 +19,40 @@
 /sysinfo.gap
 /sysinfo.gap-*
 
-/doc/make_doc
-/doc/manualbib.xml.bib
-/doc/*/*.html
-/doc/*/*.txt
-/doc/*/*.css
-/doc/*/*.js
-/doc/*/*.aux
-/doc/*/*.bbl
-/doc/*/*.blg
-/doc/*/*.brf
-/doc/*/*.idx
-/doc/*/*.ilg
-/doc/*/*.ind
-/doc/*/*.log
-/doc/*/*.out
-/doc/*/*.pnr
-/doc/*/*.tex
-/doc/*/*.toc
-/doc/*/manual*.pdf
-/doc/*/manual.lab
-/doc/*/manual.pdf
-/doc/*/manual.six
-
-/doc/gapmacrodoc.aux
-/doc/gapmacrodoc.example-1.tst
-/doc/gapmacrodoc.idx
-/doc/gapmacrodoc.dvi
-/doc/gapmacrodoc.lab
-/doc/gapmacrodoc.log
-/doc/gapmacrodoc.pdf
-/doc/gapmacrodoc.six
-/doc/gapmacrodoc.synctex.gz
-/doc/gapmacrodoc.toc
-/doc/wsp.g
-
-/dev/log
-
-/pkg/
-/bootstrap-pkg-minimal.tar.gz
-/bootstrap-pkg-full.tar.gz
-
 /bin/gap*.sh
 /bin/*-*/
+# Compiling the `xgap` package creates the file `xgap.sh`
+/bin/xgap.sh
 
 # TeX outputs, can occur in doc/ and dev/
 *.aux
+*.bbl
+*.blg
+*.brf
 *.dvi
+*.ilg
+*.ind
+*.lab
 *.log
+*.out
 *.pdf
+*.pnr
+*.six
+*.synctex.gz
 *.toc
 
-# Documentation 
-*/doc/manualbib.xml.bib
-*/doc/*/*.html
-*/doc/*/*.txt
-*/doc/*/*.css
-*/doc/*/*.js
-*/doc/*/*.bbl
-*/doc/*/*.blg
-*/doc/*/*.brf
-*/doc/*/*.idx
-*/doc/*/*.ilg
-*/doc/*/*.ind
-*/doc/*/*.out
-*/doc/*/*.pnr
-*/doc/*/*.tex
-*/doc/*/manual.lab
-*/doc/*/manual.six
-*/doc/gapmacrodoc.example-1.tst
-*/doc/gapmacrodoc.idx
-*/doc/gapmacrodoc.lab
-*/doc/gapmacrodoc.six
-*/doc/gapmacrodoc.synctex.gz
-*/doc/wsp.g
+# Documentation
+/doc/make_doc
+/doc/wsp.g
+doc/manualbib.xml.bib
+doc/*/*.html
+doc/*/*.txt
+doc/*/*.css
+doc/*/*.js
+doc/*/*.idx
+doc/*/*.tex
+doc/gapmacrodoc.example-1.tst
+doc/gapmacrodoc.idx
 
 # GAP packages
 /bootstrap-pkg-full.tar.gz
@@ -102,21 +62,20 @@
 # external dependencies
 /extern/gmp*/
 
-# logs
-/log
+# tests, test logs, package build logs
 /dev/log
-
-# core dumps
-*.core
+/log
+/tst/testmanuals/*.tst
 
 # failed application of patches can produce .rej and .orig files
 *.rej
 *.orig
 
+# ctags output
 /tags
 /src/TAGS
 
-# Tests
-/tst/testmanuals/*.tst
+# ward
+/hpcgap/ward
 
 /builds/

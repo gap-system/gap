@@ -9,6 +9,8 @@
 
 #else
 
+#include <src/hpc/atomic.h>
+
 StructInitInfo *InitInfoAObjects(void);
 Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
@@ -131,7 +133,7 @@ static inline Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
 
 static inline Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
 #ifndef WARD_ENABLED
-  Obj *contents = ADDR_OBJ(list);
+  const Obj *contents = CONST_ADDR_OBJ(list);
   Obj result;
   result = contents[index];
   MEMBAR_READ(); /* matching memory barrier. */

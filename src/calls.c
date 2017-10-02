@@ -34,7 +34,6 @@
 **  ...what the other components are...
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 
@@ -65,11 +64,26 @@
 #include <src/stats.h>                  /* statements */
 
 #include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/vars.h>                   /* variables */
 
 #include <assert.h>
+
+
+void SET_NAME_FUNC(Obj func, Obj name)
+{
+    GAP_ASSERT(name == 0 || IS_STRING_REP(name));
+    FUNC_HEADER(func)->name = name;
+}
+
+Char * NAMI_FUNC(Obj func, Int i)
+{
+    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+}
+
+
+Obj FuncIsKernelFunction(Obj self, Obj func);
+
 
 /****************************************************************************
 **
@@ -1337,7 +1351,7 @@ void PrintFunction (
         /* print the locals                                                */
         nloc = NLOC_FUNC(func);
         if ( nloc >= 1 ) {
-            Pr("%>local  ",0L,0L);
+            Pr("%>local ",0L,0L);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
                     Pr( "%I", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );
@@ -1363,7 +1377,7 @@ void PrintFunction (
                     else if ( GET_STARTLINE_BODY(body) ) {
                         Pr("<<compiled GAP code from %s:%d>>",
                             (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
-                            INT_INTOBJ(GET_STARTLINE_BODY(body)));
+                            GET_STARTLINE_BODY(body));
                             outputtedfunc = 1;
                     }
                 }
@@ -1375,7 +1389,7 @@ void PrintFunction (
         else {
             SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
                                  oldLVars );
-            PrintStat( FIRST_STAT_CURR_FUNC );
+            PrintStat( OFFSET_FIRST_STAT );
             SWITCH_TO_OLD_LVARS( oldLVars );
         }
         Pr("%4<\n",0L,0L);
@@ -1411,94 +1425,6 @@ Obj FuncIS_FUNCTION (
     else {
         return DoFilter( self, obj );
     }
-}
-
-
-/****************************************************************************
-**
-*F  FuncCALL_FUNC( <self>, <args> ) . . . . . . . . . . . . . call a function
-**
-**  'FuncCALL_FUNC' implements the internal function 'CallFunction'.
-**
-**  'CallFunction( <func>, <arg1>... )'
-**
-**  'CallFunction' calls the  function <func> with the  arguments  <arg1>...,
-**  i.e., it is equivalent to '<func>( <arg1>, <arg2>... )'.
-*/
-Obj CallFunctionOper;
-
-
-
-Obj FuncCALL_FUNC (
-    Obj                 self,
-    Obj                 args )
-{
-    Obj                 result;         /* result                          */
-    Obj                 func;           /* function                        */
-    Obj                 list2;          /* list of arguments               */
-    Obj                 arg;            /* one argument                    */
-    UInt                i;              /* loop variable                   */
-
-    /* the first argument is the function                                  */
-    if ( LEN_LIST( args ) == 0 ) {
-        func = ErrorReturnObj(
-            "usage: CallFunction( <func>, <arg1>... )",
-            0L, 0L,
-            "you can replace function <func> via 'return <func>;'" );
-    }
-    else {
-        func = ELMV_LIST( args, 1 );
-    }    
-
-    /* check that the first argument is a function                         */
-    /*N 1996/06/26 mschoene this should be done by 'CALL_<i>ARGS'          */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "CallFunction: <func> must be a function",
-            0L, 0L,
-            "you can replace function <func> via 'return <func>;'" );
-    }
-
-    /* call the function                                                   */
-    if      ( LEN_LIST(args) == 1 ) {
-        result = CALL_0ARGS( func );
-    }
-    else if ( LEN_LIST(args) == 2 ) {
-        result = CALL_1ARGS( func, ELMV_LIST(args,2) );
-    }
-    else if ( LEN_LIST(args) == 3 ) {
-        result = CALL_2ARGS( func, ELMV_LIST(args,2), ELMV_LIST(args,3) );
-    }
-    else if ( LEN_LIST(args) == 4 ) {
-        result = CALL_3ARGS( func, ELMV_LIST(args,2), ELMV_LIST(args,3),
-                                   ELMV_LIST(args,4) );
-    }
-    else if ( LEN_LIST(args) == 5 ) {
-        result = CALL_4ARGS( func, ELMV_LIST(args,2), ELMV_LIST(args,3),
-                                   ELMV_LIST(args,4), ELMV_LIST(args,5) );
-    }
-    else if ( LEN_LIST(args) == 6 ) {
-        result = CALL_5ARGS( func, ELMV_LIST(args,2), ELMV_LIST(args,3),
-                                   ELMV_LIST(args,4), ELMV_LIST(args,5),
-                                   ELMV_LIST(args,6) );
-    }
-    else if ( LEN_LIST(args) == 7 ) {
-        result = CALL_6ARGS( func, ELMV_LIST(args,2), ELMV_LIST(args,3),
-                                   ELMV_LIST(args,4), ELMV_LIST(args,5),
-                                   ELMV_LIST(args,6), ELMV_LIST(args,7) );
-    }
-    else {
-        list2 = NEW_PLIST( T_PLIST, LEN_LIST(args)-1 );
-        SET_LEN_PLIST( list2, LEN_LIST(args)-1 );
-        for ( i = 1; i <= LEN_LIST(args)-1; i++ ) {
-            arg = ELMV_LIST( args, (Int)(i+1) );
-            SET_ELM_PLIST( list2, i, arg );
-        }
-        result = CALL_XARGS( func, list2 );
-    }
-
-    /* return the result                                                   */
-    return result;
 }
 
 
@@ -1871,15 +1797,8 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
 
     if (BODY_FUNC(func)) {
         Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
-#ifndef WARD_ENABLED
-        if (fn) {
-#ifdef HPCGAP
-            if (IS_BAG_REF(fn))
-                MakeBagPublic(fn);
-#endif
+        if (fn)
             return fn;
-        }
-#endif
     }
     return Fail;
 }
@@ -1892,9 +1811,9 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj sl = GET_STARTLINE_BODY(BODY_FUNC(func));
+        UInt sl = GET_STARTLINE_BODY(BODY_FUNC(func));
         if (sl)
-            return sl;
+            return INTOBJ_INT(sl);
     }
     return Fail;
 }
@@ -1907,9 +1826,9 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     }
 
     if (BODY_FUNC(func)) {
-        Obj el = GET_ENDLINE_BODY(BODY_FUNC(func));
+        UInt el = GET_ENDLINE_BODY(BODY_FUNC(func));
         if (el)
-            return el;
+            return INTOBJ_INT(el);
     }
     return Fail;
 }
@@ -1960,6 +1879,14 @@ Obj FuncUNPROFILE_FUNC(
     return (Obj)0;
 }
 
+/****************************************************************************
+*
+*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
+**
+**  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
+**  <func> is a function, and is installed as a kernel function, and False
+**  otherwise.
+*/
 Obj FuncIsKernelFunction(Obj self, Obj func) {
   if (!IS_FUNC(func))
     return Fail;
@@ -2054,7 +1981,6 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    GVAR_OPER(CALL_FUNC, -1, "args", &CallFunctionOper),
     GVAR_OPER(CALL_FUNC_LIST, 2, "func, list", &CallFuncListOper),
     GVAR_OPER(CALL_FUNC_LIST_WRAP, 2, "func, list", &CallFuncListWrapOper),
     GVAR_OPER(NAME_FUNC, 1, "func", &NAME_FUNC_Oper),

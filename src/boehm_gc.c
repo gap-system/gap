@@ -39,7 +39,7 @@
 #include <src/code.h>                   /* coder */
 #include <src/hpc/misc.h>
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 #ifdef TRACK_CREATOR
 /* Need CURR_FUNC and NAME_FUNC() */
 #include <src/calls.h>                  /* calls */
@@ -398,7 +398,7 @@ void            RetypeBag (
         old_mem = PTR_BAG(bag);
         old_mem = ((char *) old_mem) - sizeof(BagHeader);
         memcpy(new_mem, old_mem, size);
-        PTR_BAG(bag) = (void *)(((char *)new_mem) + sizeof(BagHeader));
+        SET_PTR_BAG(bag, (void *)(((char *)new_mem) + sizeof(BagHeader)));
       }
     }
     switch (DSInfoBags[new_type]) {
@@ -422,7 +422,7 @@ Bag NewBag (
 #else
     bag = GC_malloc(4*sizeof(Bag *));
     if (STATE(PtrLVars)) {
-      bag[2] = (void *)(CURR_FUNC);
+      bag[2] = (void *)CURR_FUNC();
       if (STATE(CurrLVars) != STATE(BottomLVars)) {
         Obj plvars = PARENT_LVARS(STATE(CurrLVars));
         bag[3] = (void *) (FUNC_LVARS(plvars));
@@ -475,7 +475,7 @@ Bag NewBag (
     header->size = size;
 
     /* set the masterpointer                                               */
-    PTR_BAG(bag) = DATA(header);
+    SET_PTR_BAG(bag, DATA(header));
     switch (DSInfoBags[type]) {
     case DSI_TL:
       REGION(bag) = CurrentRegion();
@@ -561,7 +561,7 @@ UInt ResizeBag (
 
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
-        PTR_BAG(bag) = DATA(header);
+        SET_PTR_BAG(bag, DATA(header));
 
         if (DATA(header) != src) {
             memcpy( DATA(header), src, old_size < new_size ? old_size : new_size );
@@ -598,8 +598,8 @@ void SwapMasterPoint( Bag bag1, Bag bag2 )
 {
     Obj *ptr1 = PTR_BAG(bag1);
     Obj *ptr2 = PTR_BAG(bag2);
-    PTR_BAG(bag1) = ptr2;
-    PTR_BAG(bag2) = ptr1;
+    SET_PTR_BAG(bag1, ptr2);
+    SET_PTR_BAG(bag2, ptr1);
 }
 
 void MarkNoSubBags( Bag bag )

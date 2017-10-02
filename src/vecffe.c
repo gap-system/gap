@@ -9,7 +9,6 @@
 **
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -34,7 +33,6 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/listoper.h>               /* operations for generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/vecffe.h>                 /* functions for fin field vectors */
 
@@ -44,8 +42,6 @@
 #include <src/opers.h>                  /* for TRY_NEXT_METHOD */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <assert.h>
 
@@ -68,7 +64,7 @@ Obj             SumFFEVecFFE (
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
     FFV                 valS;           /* the value of a sum              */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* the value of an element in vecR */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -100,7 +96,7 @@ Obj             SumFFEVecFFE (
 
     /* loop over the elements and add                                      */
     valL = VAL_FFE(elmL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
         valR = VAL_FFE(ptrR[i]);
@@ -130,7 +126,7 @@ Obj             SumVecFFEFFE (
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
@@ -163,7 +159,7 @@ Obj             SumVecFFEFFE (
 
     /* loop over the elements and add                                      */
     valR = VAL_FFE(elmR);
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -193,9 +189,9 @@ Obj             SumVecFFEVecFFE (
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
     FFV                 valS;           /* one element of sum list         */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     FFV                 valL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
     UInt                lenL, lenR, len; /* length                          */
     UInt                lenmin;
@@ -236,8 +232,8 @@ Obj             SumVecFFEVecFFE (
     succ = SUCC_FF(fld);
 
     /* loop over the elements and add                                      */
-    ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrL = CONST_ADDR_OBJ(vecL);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= lenmin; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -274,7 +270,7 @@ Obj             DiffFFEVecFFE (
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
@@ -307,7 +303,7 @@ Obj             DiffFFEVecFFE (
 
     /* loop over the elements and subtract                                 */
     valL = VAL_FFE(elmL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
         valR = VAL_FFE(ptrR[i]);
@@ -339,7 +335,7 @@ Obj             DiffVecFFEFFE (
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
     FFV                 valD;           /* the value of a difference       */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     FFV                 valL;           /* the value of an element in vecL */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -372,7 +368,7 @@ Obj             DiffVecFFEFFE (
     /* loop over the elements and subtract                                 */
     valR = VAL_FFE(elmR);
     valR = NEG_FFV(valR, succ);
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -403,9 +399,9 @@ Obj             DiffVecFFEVecFFE (
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
     FFV                 valD;           /* one element of difference list  */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     FFV                 valL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
     UInt                len, lenL, lenR; /* length                          */
     UInt                lenmin;
@@ -446,8 +442,8 @@ Obj             DiffVecFFEVecFFE (
     succ = SUCC_FF(fld);
 
     /* loop over the elements and subtract                                 */
-    ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrL = CONST_ADDR_OBJ(vecL);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= lenmin; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -490,7 +486,7 @@ Obj             ProdFFEVecFFE (
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
     FFV                 valP;           /* the value of a product          */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* the value of an element in vecR */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -522,7 +518,7 @@ Obj             ProdFFEVecFFE (
 
     /* loop over the elements and multiply                                 */
     valL = VAL_FFE(elmL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
         valR = VAL_FFE(ptrR[i]);
@@ -552,7 +548,7 @@ Obj             ProdVecFFEFFE (
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
     FFV                 valP;           /* the value of a product          */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     FFV                 valL;           /* the value of an element in vecL */
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
@@ -584,7 +580,7 @@ Obj             ProdVecFFEFFE (
 
     /* loop over the elements and multiply                                 */
     valR = VAL_FFE(elmR);
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -614,9 +610,9 @@ Obj             ProdVecFFEVecFFE (
 {
     FFV                 valP;           /* one product                     */
     FFV                 valS;           /* sum of the products             */
-    Obj *               ptrL;           /* pointer into the left operand   */
+    const Obj *         ptrL;           /* pointer into the left operand   */
     FFV                 valL;           /* one element of left operand     */
-    Obj *               ptrR;           /* pointer into the right operand  */
+    const Obj *         ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
     UInt                lenL, lenR, len; /* length                          */
     UInt                i;              /* loop variable                   */
@@ -647,7 +643,7 @@ Obj             ProdVecFFEVecFFE (
 
     /* loop over the elements and add                                      */
     valS = (FFV)0;
-    ptrL = ADDR_OBJ(vecL);
+    ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = ADDR_OBJ(vecR);
     for (i = 1; i <= len; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -662,16 +658,16 @@ Obj             ProdVecFFEVecFFE (
 
 /****************************************************************************
 **
-*F  FuncAddRowVectorVecFFEsMult( <self>, <vecL>, <vecR>, <mult> )
+*F  FuncADD_ROWVECTOR_VECFFES_3( <self>, <vecL>, <vecR>, <mult> )
 **
 */
 
 static Obj AddRowVectorOp;   /* BH changed to static */
 
-Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
+Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 {
     Obj *ptrL;
-    Obj *ptrR;
+    const Obj *ptrR;
     FFV  valM;
     FFV  valS;
     FFV  valL;
@@ -746,7 +742,7 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
 
     succ = SUCC_FF(fld);
     ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
 
     /* two versions of the loop to avoid multipling by 1 */
     if (valM == 1)
@@ -768,13 +764,13 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
 }
 /****************************************************************************
 **
-*F  FuncMultRowVectorVecFFEs( <self>, <vec>, <mult> )
+*F  FuncMULT_ROWVECTOR_VECFFES( <self>, <vec>, <mult> )
 **
 */
 
 static Obj MultRowVectorOp;   /* BH changed to static */
 
-Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
+Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 {
     Obj *ptr;
     FFV  valM;
@@ -845,13 +841,13 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
 
 /****************************************************************************
 **
-*F  FuncAddRowVectorVecFFEs( <self>, <vecL>, <vecR> )
+*F  FuncADD_ROWVECTOR_VECFFES_2( <self>, <vecL>, <vecR> )
 **
 */
-Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
+Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
 {
     Obj *ptrL;
-    Obj *ptrR;
+    const Obj *ptrR;
     FFV  valS;
     FFV  valL;
     FFV  valR;
@@ -895,7 +891,7 @@ Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
 
     succ = SUCC_FF(fld);
     ptrL = ADDR_OBJ(vecL);
-    ptrR = ADDR_OBJ(vecR);
+    ptrR = CONST_ADDR_OBJ(vecR);
 
     for (i = 1; i <= len; i++) {
         valL = VAL_FFE(ptrL[i]);
@@ -928,7 +924,7 @@ Obj             ProdVecFFEMatFFE (
     FFV                 valP;           /* one value of the product        */
     FFV                 valL;           /* one value of the left operand   */
     Obj                 vecR;           /* one vector of the right operand */
-    Obj *               ptrR;           /* pointer into the right vector   */
+    const Obj *         ptrR;           /* pointer into the right vector   */
     FFV                 valR;           /* one value from the right vector */
     UInt                len;            /* length                          */
     UInt                col;            /* length of the rows in matR      */
@@ -1119,15 +1115,9 @@ Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-  { "ADD_ROWVECTOR_VECFFES_3", 3, "vecl, vecr, mult",
-    FuncAddRowVectorVecFFEsMult, "src/vecffe.c: ADD_ROWVECTOR_VECFFES_3" },
-
-  { "ADD_ROWVECTOR_VECFFES_2", 2, "vecl, vecr",
-    FuncAddRowVectorVecFFEs, "src/vecffe.c: ADD_ROWVECTOR_VECFFES_2" },
-
-  { "MULT_ROWVECTOR_VECFFES", 2, "vec, mult",
-    FuncMultRowVectorVecFFEs, "src/vecffe.c: MULT_ROWVECTOR_VECFFES" },
-  
+  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_3, 3, "vecl, vecr, mult"),
+  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_2, 2, "vecl, vecr"),
+  GVAR_FUNC(MULT_ROWVECTOR_VECFFES, 2, "vec, mult"),
   GVAR_FUNC(IS_VECFFE, 1, "vec"),
   GVAR_FUNC(COMMON_FIELD_VECFFE, 1, "vec"),
   GVAR_FUNC(SMALLEST_FIELD_VECFFE, 1, "vec"),

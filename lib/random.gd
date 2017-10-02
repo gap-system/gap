@@ -100,7 +100,7 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  (or <Ref Func="InstallOtherMethod"/>) a second time to install
 ##  another method which lacks the initial random source argument; this
 ##  additional method simply invokes the original method, with
-##  <Ref Var="GlobalRandomSource"/> added as first argument.
+##  <Ref Var="GlobalMersenneTwister"/> added as first argument.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

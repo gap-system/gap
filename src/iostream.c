@@ -22,7 +22,6 @@
 */
 
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 #include <src/iostream.h>               /* file input/output */
 
@@ -45,7 +44,6 @@
 
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <stdio.h>                      /* standard input/output functions */
 #include <stdlib.h>

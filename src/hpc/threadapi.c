@@ -56,7 +56,7 @@
 #include <src/hpc/misc.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/traverse.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/threadapi.h>
 
 #include <src/vars.h>                   /* variables */
@@ -1999,42 +1999,6 @@ Obj FuncIS_LOCKED(Obj self, Obj obj)
     return INTOBJ_INT(IsLocked(region));
 }
 
-void DoLockFunc(Obj args, int mode)
-{
-    Int   numargs = LEN_PLIST(args);
-    int * modes;
-    Int   i;
-    if (numargs > 1024) {
-        ErrorQuit("%s: Too many arguments",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-    if (TLS(lockStackPointer) == 0) {
-        ErrorQuit("%s: Not inside an atomic region or function",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-    modes = alloca(sizeof(int) * numargs);
-    for (i = 0; i < numargs; i++) {
-        modes[i] = mode;
-    }
-    if (LockObjects((int)numargs, ADDR_OBJ(args) + 1, modes) < 0) {
-        ErrorQuit("%s: Could not lock objects",
-                  mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
-    }
-}
-
-
-Obj FuncWriteLock(Obj self, Obj args)
-{
-    DoLockFunc(args, 1);
-    return (Obj)0;
-}
-
-Obj FuncReadLock(Obj self, Obj args)
-{
-    DoLockFunc(args, 0);
-    return (Obj)0;
-}
-
 Obj FuncLOCK(Obj self, Obj args)
 {
     int   numargs = LEN_PLIST(args);
@@ -2080,24 +2044,20 @@ Obj FuncDO_LOCK(Obj self, Obj args)
 
 Obj FuncWRITE_LOCK(Obj self, Obj obj)
 {
-    int        result;
-    static int modes[] = { 1 };
-    result = LockObjects(1, &obj, modes);
-    if (result >= 0)
-        return INTOBJ_INT(result);
-    ErrorMayQuit("Cannot lock required regions", 0L, 0L);
-    return (Obj)0; /* flow control hint */
+    const int modes[] = { 1 };
+    int result = LockObjects(1, &obj, modes);
+    if (result < 0)
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+    return INTOBJ_INT(result);
 }
 
 Obj FuncREAD_LOCK(Obj self, Obj obj)
 {
-    int        result;
-    static int modes[] = { 0, 0, 0, 0, 0, 0 };
-    result = LockObjects(1, &obj, modes);
-    if (result >= 0)
-        return INTOBJ_INT(result);
-    ErrorMayQuit("Cannot lock required regions", 0L, 0L);
-    return (Obj)0; /* flow control hint */
+    const int modes[] = { 0 };
+    int result = LockObjects(1, &obj, modes);
+    if (result < 0)
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+    return INTOBJ_INT(result);
 }
 
 Obj FuncTRYLOCK(Obj self, Obj args)
@@ -2160,7 +2120,7 @@ static int
 MigrateObjects(int count, Obj * objects, Region * target, int retype)
 {
     int i;
-    if (retype && IS_BAG_REF(objects[0]) &&
+    if (count && retype && IS_BAG_REF(objects[0]) &&
         REGION(objects[0])->owner == realTLS && AutoRetyping) {
         for (i = 0; i < count; i++)
             if (REGION(objects[i])->owner == realTLS)
@@ -2691,9 +2651,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(HASH_UNLOCK, 1, "object"),
     GVAR_FUNC(HASH_UNLOCK_SHARED, 1, "object"),
     GVAR_FUNC(HASH_SYNCHRONIZED, 2, "object, function"),
-    { "SynchronizedShared", 2, "object, function",
-      FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
-
+    GVAR_FUNC(HASH_SYNCHRONIZED_SHARED, 2, "object, function"),
     GVAR_FUNC(RegionOf, 1, "object"),
     GVAR_FUNC(SetRegionName, 2, "obj, name"),
     GVAR_FUNC(ClearRegionName, 1, "obj"),
@@ -2734,8 +2692,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(SyncRead, 1, "syncvar"),
     GVAR_FUNC(SyncIsBound, 1, "syncvar"),
     GVAR_FUNC(IS_LOCKED, 1, "obj"),
-    GVAR_FUNC(WriteLock, -1, "obj, ..."),
-    GVAR_FUNC(ReadLock, -1, "obj, ..."),
     GVAR_FUNC(LOCK, -1, "obj, ..."),
     GVAR_FUNC(DO_LOCK, -1, "obj, ..."),
     GVAR_FUNC(WRITE_LOCK, 1, "obj"),

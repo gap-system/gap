@@ -46,13 +46,11 @@
 
 #include <src/code.h>                   /* coder */
 
-#include <src/hpc/tls.h>                /* thread-local storage */
 #include <src/objfgelm.h>               /* objects of free groups */
 
 #include <src/objscoll.h>               /* single collector */
 
 #include <src/objccoll.h>               /* combinatorial collector */
-#include <src/hpc/thread.h>
 
 /****************************************************************************
 **

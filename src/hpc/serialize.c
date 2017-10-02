@@ -14,7 +14,6 @@
 #include <src/gap.h>
 #include <src/lists.h>
 #include <src/hpc/aobjects.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/serialize.h>
 #include <src/objset.h>
 
@@ -255,11 +254,7 @@ static inline int IsBasicObj(Obj obj)
 static inline void PushObj(Obj obj)
 {
     Obj  stack = STATE(Serialization).stack;
-    UInt len = LEN_PLIST(stack);
-    len++;
-    GROW_PLIST(stack, len);
-    SET_LEN_PLIST(stack, len);
-    SET_ELM_PLIST(stack, len, obj);
+    PushPlist(stack, obj);
 }
 
 static inline Obj PopObj(void)
@@ -384,7 +379,7 @@ Obj DeserializeFFE(UInt tnum)
 
 void SerializeChar(Obj obj)
 {
-    UChar ch = *(char *)ADDR_OBJ(obj);
+    UChar ch = CHAR_VALUE(obj);
     WriteTNum(T_CHAR);
     WriteByte(ch);
 }

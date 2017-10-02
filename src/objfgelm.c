@@ -73,7 +73,6 @@
 */
 #include <assert.h>                     /* assert */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -97,8 +96,6 @@
 #include <src/bool.h>                   /* booleans */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/objfgelm.h>               /* objects of free groups */
 

@@ -729,13 +729,13 @@ InstallMethod( BaseDomain, "for a plist matrix",
     return m![BDPOS];
   end );
 
-InstallMethod( Length, "for a plist matrix",
+InstallMethod( NumberRows, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     return Length(m![ROWSPOS]);
   end );
 
-InstallMethod( RowLength, "for a plist matrix",
+InstallMethod( NumberColumns, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     return m![RLPOS];
@@ -1218,7 +1218,7 @@ InstallMethod( PrintObj, "for a plist matrix", [ IsPlistMatrixRep ],
     else
         Print(",",String(m![BDPOS]),",");
     fi;
-    Print(RowLength(m),",",Unpack(m),")");
+    Print(NumberColumns(m),",",Unpack(m),")");
   end );
 
 InstallMethod( Display, "for a plist matrix", [ IsPlistMatrixRep ],
@@ -1255,7 +1255,7 @@ InstallMethod( String, "for plist matrix", [ IsPlistMatrixRep ],
         Append(st,String(m![BDPOS]));
         Append(st,",");
     fi;
-    Append(st,String(RowLength(m)));
+    Append(st,String(NumberColumns(m)));
     Add(st,',');
     Append(st,String(Unpack(m)));
     Add(st,')');
@@ -1783,21 +1783,21 @@ InstallMethod( ChangedBaseDomain, "for a checking plist vector, and a domain",
 InstallMethod( ChangedBaseDomain, "for a plist matrix, and a domain",
   [ IsPlistMatrixRep, IsRing ],
   function( m, r )
-    return NewMatrix(IsPlistMatrixRep, r, RowLength(m),
+    return NewMatrix(IsPlistMatrixRep, r, NumberColumns(m),
                      List(m![ROWSPOS], x-> x![ELSPOS]));
   end );
 
 InstallMethod( ChangedBaseDomain, "for a checking plist matrix, and a domain",
   [ IsPlistMatrixRep and IsCheckingMatrix, IsRing ],
   function( m, r )
-    return NewMatrix(IsPlistMatrixRep and IsCheckingMatrix, r, RowLength(m),
+    return NewMatrix(IsPlistMatrixRep and IsCheckingMatrix, r, NumberColumns(m),
                      List(m![ROWSPOS], x-> x![ELSPOS]));
   end );
 
 InstallMethod( CompatibleVector, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( v )
-    return NewZeroVector(IsPlistVectorRep,BaseDomain(v),Length(v));
+    return NewZeroVector(IsPlistVectorRep,BaseDomain(v),NumberRows(v));
   end );
 
 InstallMethod( NewCompanionMatrix,

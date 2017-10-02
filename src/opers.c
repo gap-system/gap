@@ -50,7 +50,7 @@
 #include <src/gmpints.h>   
 
 #ifdef HPCGAP
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 #include <src/hpc/thread.h>             /* threads */
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
@@ -299,7 +299,6 @@ Obj FuncTRUES_FLAGS (
     Int                 len;            /* logical length of the list      */
     UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
     UInt                nn;
     UInt                i;              /* loop variable                   */
@@ -317,12 +316,7 @@ Obj FuncTRUES_FLAGS (
     /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
     nrb = NRB_FLAGS(flags);
     ptr = (UInt*)BLOCKS_FLAGS(flags);
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m); 
-        n += m;
-    }
+    n = COUNT_TRUES_BLOCKS(ptr, nrb);    
 
     /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
@@ -358,9 +352,7 @@ Obj FuncSIZE_FLAGS (
 {
     UInt *              ptr;            /* pointer to flags                */
     UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in flags         */
-    UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
@@ -376,13 +368,7 @@ Obj FuncSIZE_FLAGS (
     nrb = NRB_FLAGS(flags);
     ptr = BLOCKS_FLAGS(flags);
 
-    /* loop over the blocks, adding the number of bits of each one         */
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
-    }
+    n = COUNT_TRUES_BLOCKS(ptr, nrb);
 
     /* return the number of bits                                           */
     return INTOBJ_INT( n );
@@ -1101,15 +1087,6 @@ Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-Obj NewTesterFilter (
-    Obj                 getter )
-{
-    Obj                 tester;
-    tester = ReturnTrueFilter;
-    return tester;
-}
-
-
 Obj DoSetFilter (
     Obj                 self,
     Obj                 obj,
@@ -1200,7 +1177,6 @@ Obj NewFilter (
 {
     Obj                 getter;
     Obj                 setter;
-    Obj                 tester;
     Int                 flag1;
     Obj                 flags;
     
@@ -1219,8 +1195,7 @@ Obj NewFilter (
     SETTR_FILT(getter)  = setter;
     CHANGED_BAG(getter);
     
-    tester = NewTesterFilter( getter );
-    TESTR_FILT(getter)  = tester;
+    TESTR_FILT(getter)  = ReturnTrueFilter;
     CHANGED_BAG(getter);
 
     return getter;    
@@ -1263,8 +1238,11 @@ Obj NewAndFilter (
     Obj                 str;
     char*               s;
 
-    if ( oper1 == ReturnTrueFilter && oper2 == ReturnTrueFilter )
-        return ReturnTrueFilter;
+    if ( oper1 == ReturnTrueFilter )
+        return oper2;
+
+    if ( oper2 == ReturnTrueFilter )
+        return oper1;
 
     str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
     str = NEW_STRING(str_len);
@@ -5264,15 +5242,15 @@ Obj NewProperty (
 
 /****************************************************************************
 **
-*F  DoOperationArgs( <name> ) . . . . . . . . . . . make a new operation args
+*F  DoGlobalFunction( <name> ) . . . . . . . . . . make a new global function
 */
 
 
 /****************************************************************************
 **
-**  DoUninstalledOperationArgs( <oper>, <args> )
+**  DoUninstalledGlobalFunction( <oper>, <args> )
 */
-Obj DoUninstalledOperationArgs (
+Obj DoUninstalledGlobalFunction (
     Obj                 oper,
     Obj                 args )
 {
@@ -5284,9 +5262,9 @@ Obj DoUninstalledOperationArgs (
 
 /****************************************************************************
 **
-*F  NewOperationArgs( <name>, <nargs>, <nams> )
+*F  NewGlobalFunction( <name>, <nargs>, <nams> )
 */
-Obj NewOperationArgs (
+Obj NewGlobalFunction (
     Obj                 name,
     Int                 narg,
     Obj                 nams )
@@ -5295,22 +5273,21 @@ Obj NewOperationArgs (
     Obj                 namobj;
 
     /* create the function                                                 */
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
-                         DoUninstalledOperationArgs );
+    func = NewFunction( name, narg, nams, DoUninstalledGlobalFunction );
 
     /* check the number of args                                            */
     if ( narg == -1 ) {
-        SET_HDLR_FUNC(func, 0, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 1, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 2, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 3, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 4, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 5, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 6, DoUninstalledOperationArgs);
-        SET_HDLR_FUNC(func, 7, DoUninstalledOperationArgs);
+        SET_HDLR_FUNC(func, 0, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 1, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 2, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 3, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 4, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 5, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 6, DoUninstalledGlobalFunction);
+        SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
     }
     else {
-        ErrorQuit("number of args must be -1 in `NewOperationArgs'",0L,0L);
+        ErrorQuit("number of args must be -1 in `NewGlobalFunction'",0L,0L);
         return 0;
     }
 
@@ -5326,13 +5303,13 @@ Obj NewOperationArgs (
 
 /****************************************************************************
 **
-*F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
+*F  InstallGlobalFunction( <oper>, <func> ) . . . . . . . . .  clone function
 **
 **  There is a problem  with uncompleted functions: if  they are  cloned then
 **  only   the orignal and not  the  clone will be  completed.  Therefore the
 **  clone must postpone the real cloning.
 */
-void InstallMethodArgs (
+void InstallGlobalFunction (
     Obj                 oper,
     Obj                 func )
 {
@@ -5563,9 +5540,9 @@ Obj FuncNEW_PROPERTY (
 
 /****************************************************************************
 **
-*F  FuncNEW_OPERATION_ARGS( <self>, <name> )  . . . . . .  new operation args
+*F  FuncNEW_GLOBAL_FUNCTION( <self>, <name> ) . . . . . . new global function
 */
-Obj FuncNEW_OPERATION_ARGS (
+Obj FuncNEW_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 name )
 {
@@ -5574,27 +5551,27 @@ Obj FuncNEW_OPERATION_ARGS (
 
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
-        ErrorQuit( "usage: NewOperationArgs( <name> )", 0L, 0L );
+        ErrorQuit( "usage: NewGlobalFunction( <name> )", 0L, 0L );
         return 0;
     }
 
     /* make the new operation                                              */
-    args = MakeString("args");
+    args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
     CHANGED_BAG( list );
-    return NewOperationArgs( name, -1, list );
+    return NewGlobalFunction( name, -1, list );
 }
 
 
 /****************************************************************************
 **
-*F  FuncINSTALL_METHOD_ARGS( <self>, <oper>, <func> ) . . install method args
+*F  FuncINSTALL_GLOBAL_FUNCTION( <self>, <oper>, <func> )
 */
 static Obj REREADING;
 
-Obj FuncINSTALL_METHOD_ARGS (
+Obj FuncINSTALL_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 oper,
     Obj                 func )
@@ -5605,7 +5582,7 @@ Obj FuncINSTALL_METHOD_ARGS (
                    (Int)TNAM_OBJ(oper), 0L );
     }
     if ( (REREADING != True) &&
-         (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledOperationArgs) ) {
+         (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
         ErrorQuit( "operation already installed",
                    0L, 0L );
         return 0;
@@ -5621,7 +5598,7 @@ Obj FuncINSTALL_METHOD_ARGS (
     }
 
     /* install the new method                                              */
-    InstallMethodArgs( oper, func );
+    InstallGlobalFunction( oper, func );
     return 0;
 }
 
@@ -5761,7 +5738,7 @@ Obj FuncSET_METHODS_OPERATION (
 
 /****************************************************************************
 **
-*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut setter
+*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute setter
 */
 Obj DoSetterFunction (
     Obj                 self,
@@ -5800,13 +5777,13 @@ Obj DoSetterFunction (
     }
 
     /* set the value                                                       */
+    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp,1));
 #ifdef HPCGAP
     if (atomic)
-      SetARecordField( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)),
-        CopyObj(value,0) );
+      SetARecordField( obj, rnam, CopyObj(value,0) );
     else
 #endif
-      AssPRec( obj, (UInt)INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+      AssPRec( obj, rnam, CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
@@ -5822,8 +5799,7 @@ Obj FuncSETTER_FUNCTION (
     Obj                 tmp;
 
     fname = WRAP_NAME(name, "SetterFunc");
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 2,
-                         ArglistObjVal, DoSetterFunction );
+    func = NewFunction( fname, 2, ArglistObjVal, DoSetterFunction );
     tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
@@ -5837,7 +5813,7 @@ Obj FuncSETTER_FUNCTION (
 
 /****************************************************************************
 **
-*F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut getter
+*F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute getter
 */
 Obj DoGetterFunction (
     Obj                 self,
@@ -5863,15 +5839,10 @@ Obj FuncGETTER_FUNCTION (
 {
     Obj                 func;
     Obj                 fname;
-    Obj                 rnam;
 
     fname = WRAP_NAME(name, "GetterFunc");
-    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, fname, 1,
-                         ArglistObj, DoGetterFunction );
-    /* Need to seperate this onto two lines, in case RNamObj causes
-     * a garbage collection */
-    rnam = INTOBJ_INT( RNamObj(name) );
-    SET_ENVI_FUNC(func, rnam);
+    func = NewFunction( fname, 1, ArglistObj, DoGetterFunction );
+    SET_ENVI_FUNC(func, INTOBJ_INT( RNamObj(name) ));
     return func;
 }
 
@@ -6137,8 +6108,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(NEW_PROPERTY, 1, "name"),
     GVAR_FUNC(SETTER_FUNCTION, 2, "name, filter"),
     GVAR_FUNC(GETTER_FUNCTION, 1, "name"),
-    GVAR_FUNC(NEW_OPERATION_ARGS, 1, "name"),
-    GVAR_FUNC(INSTALL_METHOD_ARGS, 2, "oper, func"),
+    GVAR_FUNC(NEW_GLOBAL_FUNCTION, 1, "name"),
+    GVAR_FUNC(INSTALL_GLOBAL_FUNCTION, 2, "oper, func"),
     GVAR_FUNC(TRACE_METHODS, 1, "oper"),
     GVAR_FUNC(UNTRACE_METHODS, 1, "oper"),
     GVAR_FUNC(OPERS_CACHE_INFO, 0, ""),
@@ -6244,7 +6215,7 @@ static Int InitKernel (
     InitHandlerFunc( DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
     InitHandlerFunc( DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
 
-    InitHandlerFunc( DoUninstalledOperationArgs, "src/opers.c:DoUninstalledOperationArgs" );
+    InitHandlerFunc( DoUninstalledGlobalFunction, "src/opers.c:DoUninstalledGlobalFunction" );
 
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
@@ -6409,8 +6380,7 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    TRY_NEXT_METHOD = MakeString("TRY_NEXT_METHOD");
-    RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
+    TRY_NEXT_METHOD = MakeImmString("TRY_NEXT_METHOD");
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */

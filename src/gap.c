@@ -99,13 +99,8 @@
 
 #include <src/objset.h>
 
-#ifdef GAPMPI
-#include <src/hpc/gapmpi.h>             /* ParGAP/MPI */
-#endif
-
 #ifdef HPCGAP
 #include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
 #include <src/hpc/aobjects.h>
 #include <src/hpc/misc.h>
 #include <src/hpc/threadapi.h>
@@ -415,7 +410,7 @@ Obj FuncSHELL (Obj self, Obj args)
     ErrorMayQuit("SHELL takes 10 arguments",0,0);
   
   context = ELM_PLIST(args,1);
-  if (TNUM_OBJ(context) != T_LVARS && TNUM_OBJ(context) != T_HVARS)
+  if (!IS_LVARS_OR_HVARS(context))
     ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
   
   if (ELM_PLIST(args,2) == True)
@@ -497,11 +492,11 @@ int realmain( int argc, char * argv[], char * environ[] )
 
   // verify our TNUM enum does not overflow; note that TNUM 254 is T_BODY,
   // and 255 is reserved for internal use by GASMAN.
-  assert(LAST_COPYING_TNUM <= 253);
-
-#if !defined(HPCGAP)
-  InitMainGAPState();
-#endif
+  if (LAST_COPYING_TNUM > 253) {
+    fprintf(stderr, "LAST_COPYING_TNUM = %d > 253 !\n", LAST_COPYING_TNUM);
+    SyExit(1);
+    return 1;
+  }
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -1029,11 +1024,10 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return Fail;
   SWITCH_TO_OLD_LVARS(context);
   call = BRK_CALL_TO();
-  if (
-        ( FIRST_STAT_TNUM <= TNUM_STAT(call)
-                && TNUM_STAT(call)  <= LAST_STAT_TNUM ) ||
-        ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
-              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) ) {
+  if ( ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
+         TNUM_STAT(call) <= LAST_STAT_TNUM ) ||
+       ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
+         TNUM_EXPR(call) <= LAST_EXPR_TNUM ) ) {
     line = LINE_STAT(call);
     filename = FILENAME_STAT(call);
     retlist = NEW_PLIST(T_PLIST, 2);
@@ -1057,13 +1051,13 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
   if ( call == 0 ) {
     Pr( "<compiled or corrupted statement> ", 0L, 0L );
   }
-    else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
-              && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
+    else if ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
+              TNUM_STAT(call) <= LAST_STAT_TNUM ) {
       PrintStat( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
-    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
-              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
+    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
+              TNUM_EXPR(call) <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
       Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
     }
@@ -1116,9 +1110,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
       SET_ELM_PLIST(res,2,STATE(ThrownObject));
       CHANGED_BAG(res);
       STATE(ThrownObject) = 0;
-      STATE(CurrLVars) = currLVars;
-      STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
-      STATE(PtrBody) = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+      SET_CURR_LVARS(currLVars);
       STATE(CurrStat) = currStat;
       STATE(RecursionDepth) = recursionDepth;
 #ifdef HPCGAP
@@ -1437,7 +1429,8 @@ void ErrorMayQuit (
     Int                 arg1,
     Int                 arg2)
 {
-  CallErrorInner(msg, arg1, arg2, 0, 0,0, False, 1);
+  Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
+  CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
  
 }
 
@@ -1522,6 +1515,22 @@ Obj FuncLOAD_DYN (
     info = (*init)();
     if ( info == 0 )
         ErrorQuit( "call to init function failed", 0L, 0L );
+
+    // info->type should not be larger than kernel version
+    if (info->type / 10 > GAP_KERNEL_API_VERSION)
+        ErrorMayQuit("LOAD_DYN: kernel module built for newer "
+                     "version of GAP",
+                     0L, 0L);
+
+    // info->type should not have an older major version
+    if (info->type / 10000 < GAP_KERNEL_MAJOR_VERSION)
+        ErrorMayQuit("LOAD_DYN: kernel module built for older "
+                     "version of GAP",
+                     0L, 0L);
+
+    // info->type % 10 should be 0, 1 or 2, for the 3 types of module
+    if (info->type % 10 > 2)
+        ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0L, 0L);
 
     /* check the crc value                                                 */
     if ( crc != False ) {
@@ -1693,14 +1702,14 @@ Obj FuncLoadedModules (
     SET_LEN_PLIST( list, NrModules * 3 );
     for ( i = 0;  i < NrModules;  i++ ) {
         m = Modules[i].info;
-        if ( m->type == MODULE_BUILTIN ) {
+        if (IS_MODULE_BUILTIN(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
-        else if ( m->type == MODULE_DYNAMIC ) {
+        else if (IS_MODULE_DYNAMIC(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );
@@ -1709,7 +1718,7 @@ Obj FuncLoadedModules (
             str = MakeImmString( Modules[i].filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
-        else if ( m->type == MODULE_STATIC ) {
+        else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
             str = MakeImmString( m->name );
@@ -2719,10 +2728,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("ENVIRONMENT");
   AssPRec(res,r, tmp);
 
-  /* and also the CONFIGNAME of the running  GAP kernel  */
-  str = MakeImmString( CONFIGNAME );
-  r = RNamName("CONFIGNAME");
-  AssPRec(res, r, str);
 #ifdef HPCGAP
   r = RNamName("NUM_CPUS");
   AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
@@ -2753,6 +2758,31 @@ Obj FuncKERNEL_INFO(Obj self) {
   
 }
 
+/****************************************************************************
+**
+*F FuncBREAKPOINT . . . . . . . . . . . . Mark kernel breakpoints in GAP code
+**
+** The purpose behind this function is to mark positions in the GAP code
+** and to transfer a stage flag to the kernel in a way that facilitates
+** the use of kernel breakpoints depending on GAP state.
+**
+** One use case is to simply insert BREAKPOINT(0) at a specific GAP
+** source location and then set a breakpoint on FuncBREAKPOINT in the
+** kernel.
+**
+** The function accepts any argument; if it is a small integer, it will be
+** converted and stored in the global variable BreakPointValue. This
+** also allows the encoding of GAP state in that value and to attach a
+** condition based on the value of BreakPointValue to other breakpoints.
+*/
+
+UInt BreakPointValue;
+
+Obj FuncBREAKPOINT(Obj self, Obj arg) {
+  if (IS_INTOBJ(arg))
+    BreakPointValue = INT_INTOBJ(arg);
+  return (Obj) 0;
+}
 
 #ifdef HPCGAP
 
@@ -2777,7 +2807,6 @@ void ThreadedInterpreter(void *funcargs) {
 
   /* intialize everything and begin an interpreter                       */
   STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  STATE(CountNams)   = 0;
   STATE(ReadTop)     = 0;
   STATE(ReadTilde)   = 0;
   STATE(CurrLHSGVar) = 0;
@@ -2874,6 +2903,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
     GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
+    GVAR_FUNC(BREAKPOINT, 1, "integer"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -3100,11 +3130,6 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoSerialize,
 #endif
 
-#ifdef GAPMPI
-    /* ParGAP/MPI module                                                   */
-    InitInfoGapmpi,
-#endif
-
     0
 };
 
@@ -3200,11 +3225,6 @@ void InitializeGap (
     StructInitInfo *    info;
 
     /* initialize the basic system and gasman                              */
-#ifdef GAPMPI
-    /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
-    InitGapmpi( pargc, &argv );
-#endif
-
     InitSystem( *pargc, argv );
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
@@ -3216,7 +3236,6 @@ void InitializeGap (
 #endif
 
     STATE(StackNams)    = NEW_PLIST( T_PLIST, 16 );
-    STATE(CountNams)    = 0;
     STATE(ReadTop)      = 0;
     STATE(ReadTilde)    = 0;
     STATE(CurrLHSGVar)  = 0;
@@ -3271,7 +3290,7 @@ void InitializeGap (
     InitMainThread();
     InitTLS();
 #else
-    InitGAPState(MainGAPState);
+    InitGAPState(&MainGAPState);
 #endif
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");

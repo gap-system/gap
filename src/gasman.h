@@ -39,9 +39,6 @@
 #include <src/system.h>
 #include <src/debug.h>
 
-#include <src/hpc/atomic.h>
-
-
 
 /****************************************************************************
 **
@@ -106,17 +103,6 @@ typedef struct {
 static inline BagHeader * BAG_HEADER(Bag bag) {
     GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
-}
-
-
-/****************************************************************************
-**
-*F  BAG_HEADER_CONTENTS(<ptr>) . . . . . . . . . . . . . . .  header of a bag
-**
-**  'BAG_HEADER' returns the header of the bag whose contents start at <ptr>.
-*/
-static inline BagHeader * BAG_HEADER_CONTENTS(void *ptr) {
-    return (((BagHeader *)ptr) - 1);
 }
 
 
@@ -220,8 +206,8 @@ static inline UInt SIZE_BAG(Bag bag) {
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
-    return BAG_HEADER_CONTENTS(ptr)->size;
+static inline UInt SIZE_BAG_CONTENTS(const void *ptr) {
+    return ((const BagHeader *)ptr)[-1].size;
 }
 
 
@@ -293,7 +279,23 @@ static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
 **  Note that 'PTR_BAG' is a macro, so  do  not call it with  arguments  that
 **  have side effects.
 */
-#define PTR_BAG(bag)    (*(Bag**)(bag))
+static inline Bag *PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+    return *(Bag**)bag;
+}
+
+static inline const Bag *CONST_PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+    return *(const Bag**)bag;
+}
+
+static inline void SET_PTR_BAG(Bag bag, Bag *val)
+{
+    GAP_ASSERT(bag != 0);
+    *(Bag**)bag = val;
+}
 
 
 /****************************************************************************
@@ -339,13 +341,11 @@ static inline UInt SIZE_BAG_CONTENTS(void *ptr) {
 
 #ifdef BOEHM_GC
 
-#define CHANGED_BAG(bag) ((void) 0)
+static inline void CHANGED_BAG(Bag bag)
+{
+}
 
-#else
-
-extern  Bag *                   YoungBags;
-
-extern  Bag                     ChangedBags;
+#elif defined(MEMORY_CANARY)
 
 /****************************************************************************
 **
@@ -359,18 +359,21 @@ extern  Bag                     ChangedBags;
 **  block.
 */
 
-#ifdef MEMORY_CANARY
-extern void CHANGED_BAG_IMPL(Bag b);
-#define CHANGED_BAG(bag) CHANGED_BAG_IMPL(bag);
+extern void CHANGED_BAG(Bag b);
+
 #else
-#define CHANGED_BAG(bag)                                                    \
-                if (   PTR_BAG(bag) <= YoungBags                              \
-                  && LINK_BAG(bag) == (bag) ) {                          \
-                    LINK_BAG(bag) = ChangedBags; ChangedBags = (bag);    }
 
-#endif // MEMORY_CANARY
+extern Bag * YoungBags;
+extern Bag   ChangedBags;
+static inline void CHANGED_BAG(Bag bag)
+{
+    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
+        LINK_BAG(bag) = ChangedBags;
+        ChangedBags = bag;
+    }
+}
 
-#endif // BOEHM_GC
+#endif
 
 
 /****************************************************************************
@@ -1176,44 +1179,6 @@ extern void FinishBags( void );
 
 extern void CallbackForAllBags(
      void (*func)(Bag) );
-
-#ifdef HPCGAP
-
-typedef struct
-{
-    void *lock;       /* void * so that we don't have to include pthread.h always */
-    Bag obj;          /* references a unique T_REGION object per region */
-    Bag name;         /* name of the region, or a null pointer */
-    Int prec;         /* locking precedence */
-    int fixed_owner;
-    void *owner;      /* opaque thread descriptor */
-    void *alt_owner;  /* for paused threads */
-    int count_active; /* whether we counts number of (contended) locks */
-    AtomicUInt locks_acquired;    /* number of times the lock was acquired successfully */
-    AtomicUInt locks_contended;   /* number of failed attempts at acuiring the lock */
-    unsigned char readers[];     /* this field extends with number of threads
-                                     don't add any fields after it */
-} Region;
-
-/****************************************************************************
-**
-*F  NewRegion() . . . . . . . . . . . . . . . . allocate a new region
-*/
-
-Region *NewRegion(void);
-
-/****************************************************************************
-**
-*F  REGION(<bag>)  . . . . . . . .  return the region containing the bag
-*F  RegionBag(<bag>)   . . . . . .  return the region containing the bag
-**
-**  RegionBag() also contains a memory barrier.
-*/
-#define REGION(bag) (((Region **)(bag))[1])
-
-Region *RegionBag(Bag bag);
-
-#endif // HPCGAP
 
 
 #ifdef BOEHM_GC

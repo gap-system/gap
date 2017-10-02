@@ -62,13 +62,11 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
 #include <src/blister.h>                /* boolean lists */
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/code.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
 
@@ -1703,7 +1701,8 @@ void            AssPlist (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 }
 
 void            AssPlistXXX (
@@ -1725,7 +1724,8 @@ void            AssPlistXXX (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* We may be able cheaply to tell that the list is non-dense          */
     if (len +1 < pos)
@@ -1748,7 +1748,8 @@ void AssPlistCyc   (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* try and maintain maximum information about the list                */
     if (pos > len + 1) {
@@ -1787,7 +1788,8 @@ void AssPlistFfe   (
 
     /* now perform the assignment                                          */
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    if ( IS_BAG_REF( val ) )
+        CHANGED_BAG( list );
 
     /* try and maintain maximum information about the list                 */
     if( pos > len + 1 ) {

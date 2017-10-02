@@ -13,7 +13,6 @@
 **  records and the elements for the other packages in the GAP kernel.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -39,20 +38,10 @@
 
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/hpc/systhread.h>          /* system thread primitives */
 
 #include <src/gaputils.h>
-
-
-/****************************************************************************
-**
-*F  CountRnam . . . . . . . . . . . . . . . . . . . .  number of record names
-**
-**  'CountRnam' is the number of record names.
-*/
-UInt            CountRNam;
 
 
 /****************************************************************************
@@ -123,8 +112,6 @@ static inline UInt HashString( const Char * name )
 */
 Obj             HashRNam;
 
-UInt            SizeRNam;
-
 UInt            RNamName (
     const Char *        name )
 {
@@ -135,6 +122,7 @@ UInt            RNamName (
     Obj                 table;          /* temporary copy of <HashRNam>    */
     Obj                 rnam2;          /* one element of <table>          */
     UInt                i;              /* loop variable                   */
+    UInt                sizeRNam;
 
     if (strlen(name) >= 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
@@ -148,10 +136,11 @@ UInt            RNamName (
     HPC_LockNames(0); /* try a read lock first */
 
     /* look through the table until we find a free slot or the global      */
-    pos = (hash % SizeRNam) + 1;
+    sizeRNam = LEN_PLIST(HashRNam);
+    pos = (hash % sizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
          && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
-        pos = (pos % SizeRNam) + 1;
+        pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
       HPC_UnlockNames();
@@ -162,10 +151,11 @@ UInt            RNamName (
       HPC_UnlockNames(); /* switch to a write lock */
       HPC_LockNames(1);
       /* look through the table until we find a free slot or the global      */
-      pos = (hash % SizeRNam) + 1;
+      sizeRNam = LEN_PLIST(HashRNam);
+      pos = (hash % sizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
            && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
-          pos = (pos % SizeRNam) + 1;
+          pos = (pos % sizeRNam) + 1;
       }
     }
     if (rnam != 0) {
@@ -176,35 +166,32 @@ UInt            RNamName (
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-    CountRNam++;
-    rnam = INTOBJ_INT(CountRNam);
-    SET_ELM_PLIST( HashRNam, pos, rnam );
     strlcpy( namx, name, sizeof(namx) );
     string = MakeImmString(namx);
-    GROW_PLIST(    NamesRNam,   CountRNam );
-    SET_LEN_PLIST( NamesRNam,   CountRNam );
-    SET_ELM_PLIST( NamesRNam,   CountRNam, string );
-    CHANGED_BAG(   NamesRNam );
+
+    const UInt countRNam = PushPlist(NamesRNam, string);
+    rnam = INTOBJ_INT(countRNam);
+    SET_ELM_PLIST( HashRNam, pos, rnam );
 
     /* if the table is too crowded, make a larger one, rehash the names     */
-    if ( SizeRNam < 3 * CountRNam / 2 ) {
+    if ( sizeRNam < 3 * countRNam / 2 ) {
         table = HashRNam;
-        SizeRNam = 2 * SizeRNam + 1;
-        HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+        sizeRNam = 2 * sizeRNam + 1;
+        HashRNam = NEW_PLIST( T_PLIST, sizeRNam );
+        SET_LEN_PLIST( HashRNam, sizeRNam );
 #ifdef HPCGAP
         /* The list is briefly non-public, but this is safe, because
          * the mutex protects it from being accessed by other threads.
          */
         MakeBagPublic(HashRNam);
 #endif
-        SET_LEN_PLIST( HashRNam, SizeRNam );
-        for ( i = 1; i <= (SizeRNam-1)/2; i++ ) {
+        for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
             pos = HashString( NAME_RNAM( INT_INTOBJ(rnam2) ) );
-            pos = (pos % SizeRNam) + 1;
+            pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
-                pos = (pos % SizeRNam) + 1;
+                pos = (pos % sizeRNam) + 1;
             }
             SET_ELM_PLIST( HashRNam, pos, rnam2 );
         }
@@ -282,16 +269,16 @@ UInt            RNamObj (
 
 /****************************************************************************
 **
-*F  RNamObjHandler(<self>,<obj>)  . . . .  convert an object to a record name
+*F  FuncRNamObj(<self>,<obj>)  . . . .  convert an object to a record name
 **
-**  'RNamObjHandler' implements the internal function 'RNamObj'.
+**  'FuncRNamObj' implements the internal function 'RNamObj'.
 **
 **  'RNamObj( <obj> )'
 **
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-Obj             RNamObjHandler (
+Obj             FuncRNamObj (
     Obj                 self,
     Obj                 obj )
 {
@@ -301,9 +288,9 @@ Obj             RNamObjHandler (
 
 /****************************************************************************
 **
-*F  NameRNamHandler(<self>,<rnam>)  . . . . convert a record name to a string
+*F  FuncNameRNam(<self>,<rnam>)  . . . . convert a record name to a string
 **
-**  'NameRNamHandler' implements the internal function 'NameRName'.
+**  'FuncNameRNam' implements the internal function 'NameRName'.
 **
 **  'NameRName( <rnam> )'
 **
@@ -311,15 +298,16 @@ Obj             RNamObjHandler (
 */
 Obj             NameRNamFunc;
 
-Obj             NameRNamHandler (
+Obj             FuncNameRNam (
     Obj                 self,
     Obj                 rnam )
 {
     Obj                 name;
     Obj                 oname;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
     while ( ! IS_INTOBJ(rnam)
          || INT_INTOBJ(rnam) <= 0
-        || CountRNam < INT_INTOBJ(rnam) ) {
+        || countRNam < INT_INTOBJ(rnam) ) {
         rnam = ErrorReturnObj(
             "NameRName: <rnam> must be a record name (not a %s)",
             (Int)TNAM_OBJ(rnam), 0L,
@@ -570,8 +558,9 @@ UInt            iscomplete_rnam (
 {
     Char *              curr;
     UInt                i, k;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
-    for ( i = 1; i <= CountRNam; i++ ) {
+    for ( i = 1; i <= countRNam; i++ ) {
         curr = NAME_RNAM( i );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
@@ -586,9 +575,10 @@ UInt            completion_rnam (
     Char *              curr;
     Char *              next;
     UInt                i, k;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     next = 0;
-    for ( i = 1; i <= CountRNam; i++ ) {
+    for ( i = 1; i <= countRNam; i++ ) {
         curr = NAME_RNAM( i );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k < len || curr[k] <= name[k] )  continue;
@@ -614,14 +604,15 @@ Obj FuncALL_RNAMES (
     Obj                 copy, s;
     UInt                i;
     Obj                 name;
+    const UInt          countRNam = LEN_PLIST(NamesRNam);
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
-    for ( i = 1;  i <= CountRNam;  i++ ) {
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, countRNam );
+    for ( i = 1;  i <= countRNam;  i++ ) {
         name = NAME_OBJ_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
     }
-    SET_LEN_PLIST( copy, CountRNam );
+    SET_LEN_PLIST( copy, countRNam );
     return copy;
 }
 
@@ -673,12 +664,8 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "RNamObj", 1, "obj",
-      RNamObjHandler, "src/records.c:RNamObj" },
-
-    { "NameRNam", 1, "rnam",
-      NameRNamHandler, "src/records.c:NameRNam" },
-
+    GVAR_FUNC(RNamObj, 1, "obj"),
+    GVAR_FUNC(NameRNam, 1, "rnam"),
     GVAR_FUNC(ALL_RNAMES, 0, ""),
     { 0, 0, 0, 0, 0 }
 
@@ -764,40 +751,20 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* make the list of names of record names                              */
-    CountRNam = LEN_PLIST(NamesRNam);
-
-    /* make the hash list of record names                                  */
-    SizeRNam = LEN_PLIST(HashRNam);
-
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* make the list of names of record names                              */
-    CountRNam = 0;
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
-    MakeBagPublic(NamesRNam);
     SET_LEN_PLIST( NamesRNam, 0 );
+    MakeBagPublic(NamesRNam);
 
     /* make the hash list of record names                                  */
-    SizeRNam = 14033;
-    HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+    HashRNam = NEW_PLIST( T_PLIST, 14033 );
+    SET_LEN_PLIST( HashRNam, 14033 );
     MakeBagPublic(HashRNam);
-    SET_LEN_PLIST( HashRNam, SizeRNam );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
@@ -825,7 +792,7 @@ static StructInitInfo module = {
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    PostRestore                         /* postRestore                    */
+    0                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoRecords ( void )

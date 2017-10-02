@@ -473,6 +473,13 @@ true
 gap> Semigroup(Idempotents(S)) = S;
 true
 
+# test the methods for Random
+gap> S := FreeSemigroup(3);;
+gap> Random(S);
+s3*s1
+gap> Random(GlobalRandomSource, S);
+s3*s2^2
+
 #
 gap> STOP_TEST( "semigrp.tst", 1);
 

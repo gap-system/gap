@@ -114,20 +114,50 @@
 
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/code.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 
 /****************************************************************************
 **
 */
-#define SIZE_CYC(cyc)           (SIZE_OBJ(cyc) / (sizeof(Obj)+sizeof(UInt4)))
-#define COEFS_CYC(cyc)          (ADDR_OBJ(cyc))
-#define EXPOS_CYC(cyc,len)      ((UInt4*)(ADDR_OBJ(cyc)+(len)))
-#define NOF_CYC(cyc)            (COEFS_CYC(cyc)[0])
+static inline UInt SIZE_CYC(Obj cyc)
+{
+    return SIZE_OBJ(cyc) / (sizeof(Obj)+sizeof(UInt4));
+}
+
+static inline Obj * COEFS_CYC(Obj cyc)
+{
+    return ADDR_OBJ(cyc);
+}
+
+static inline const Obj * CONST_COEFS_CYC(Obj cyc)
+{
+    return CONST_ADDR_OBJ(cyc);
+}
+
+static inline UInt4 * EXPOS_CYC(Obj cyc, UInt len)
+{
+    return (UInt4 *)(ADDR_OBJ(cyc)+(len));
+}
+
+static inline const UInt4 * CONST_EXPOS_CYC(Obj cyc, UInt len)
+{
+    return (const UInt4 *)(CONST_ADDR_OBJ(cyc)+(len));
+}
+
+static inline Obj NOF_CYC(Obj cyc)
+{
+    return CONST_COEFS_CYC(cyc)[0];
+}
+
+static inline void SET_NOF_CYC(Obj cyc, Obj val)
+{
+    COEFS_CYC(cyc)[0] = val;
+}
+
 #define XXX_CYC(cyc,len)        (EXPOS_CYC(cyc,len)[0])
 
 
@@ -212,8 +242,8 @@ void            PrintCyc (
 {
     UInt                n;              /* order of the field              */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     UInt                i;              /* loop variable                   */
 
     n   = INT_INTOBJ( NOF_CYC(cyc) );
@@ -221,8 +251,8 @@ void            PrintCyc (
     Pr("%>",0L,0L);
     for ( i = 1; i < len; i++ ) {
         /* get pointers, they can change during Pr */
-        cfs = COEFS_CYC(cyc);
-        exs = EXPOS_CYC(cyc,len);
+        cfs = CONST_COEFS_CYC(cyc);
+        exs = CONST_EXPOS_CYC(cyc,len);
         if (      cfs[i]==INTOBJ_INT(1)    && exs[i]==0 )
             Pr("1",0L,0L);
         else if ( cfs[i]==INTOBJ_INT(1)    && exs[i]==1 && i==1 )
@@ -278,10 +308,10 @@ Int             EqCyc (
     Obj                 opR )
 {
     UInt                len;            /* number of terms                 */
-    Obj *               cfl;            /* ptr to coeffs of left operand   */
-    UInt4 *             exl;            /* ptr to expnts of left operand   */
-    Obj *               cfr;            /* ptr to coeffs of right operand  */
-    UInt4 *             exr;            /* ptr to expnts of right operand  */
+    const Obj *         cfl;            /* ptr to coeffs of left operand   */
+    const UInt4 *       exl;            /* ptr to expnts of left operand   */
+    const Obj *         cfr;            /* ptr to coeffs of right operand  */
+    const UInt4 *       exr;            /* ptr to expnts of right operand  */
     UInt                i;              /* loop variable                   */
 
     /* compare the order of both fields                                    */
@@ -294,10 +324,10 @@ Int             EqCyc (
 
     /* compare the cyclotomics termwise                                    */
     len = SIZE_CYC(opL);
-    cfl = COEFS_CYC(opL);
-    cfr = COEFS_CYC(opR);
-    exl = EXPOS_CYC(opL,len);
-    exr = EXPOS_CYC(opR,len);
+    cfl = CONST_COEFS_CYC(opL);
+    cfr = CONST_COEFS_CYC(opR);
+    exl = CONST_EXPOS_CYC(opL,len);
+    exr = CONST_EXPOS_CYC(opR,len);
     for ( i = 1; i < len; i++ ) {
         if ( exl[i] != exr[i] )
             return 0L;
@@ -334,11 +364,11 @@ Int             LtCyc (
     Obj                 opR )
 {
     UInt                lel;            /* nr of terms of left operand     */
-    Obj *               cfl;            /* ptr to coeffs of left operand   */
-    UInt4 *             exl;            /* ptr to expnts of left operand   */
+    const Obj *         cfl;            /* ptr to coeffs of left operand   */
+    const UInt4 *       exl;            /* ptr to expnts of left operand   */
     UInt                ler;            /* nr of terms of right operand    */
-    Obj *               cfr;            /* ptr to coeffs of right operand  */
-    UInt4 *             exr;            /* ptr to expnts of right operand  */
+    const Obj *         cfr;            /* ptr to coeffs of right operand  */
+    const UInt4 *       exr;            /* ptr to expnts of right operand  */
     UInt                i;              /* loop variable                   */
 
     /* compare the order of both fields                                    */
@@ -352,10 +382,10 @@ Int             LtCyc (
     /* compare the cyclotomics termwise                                    */
     lel = SIZE_CYC(opL);
     ler = SIZE_CYC(opR);
-    cfl = COEFS_CYC(opL);
-    cfr = COEFS_CYC(opR);
-    exl = EXPOS_CYC(opL,lel);
-    exr = EXPOS_CYC(opR,ler);
+    cfl = CONST_COEFS_CYC(opL);
+    cfr = CONST_COEFS_CYC(opR);
+    exl = CONST_EXPOS_CYC(opL,lel);
+    exr = CONST_EXPOS_CYC(opR,ler);
     for ( i = 1; i < lel && i < ler; i++ ) {
         if ( exl[i] != exr[i] )
             if ( exl[i] < exr[i] )
@@ -862,8 +892,8 @@ Obj             SumCyc (
     UInt                n;              /* order of smallest superfield    */
     UInt                ml, mr;         /* cofactors into the superfield   */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     Obj                 sum;            /* sum of two coefficients         */
     UInt                i;              /* loop variable                   */
@@ -887,8 +917,8 @@ Obj             SumCyc (
     }
     else {
         len = SIZE_CYC(opL);
-        cfs = COEFS_CYC(opL);
-        exs = EXPOS_CYC(opL,len);
+        cfs = CONST_COEFS_CYC(opL);
+        exs = CONST_EXPOS_CYC(opL,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
@@ -911,16 +941,16 @@ Obj             SumCyc (
     }
     else {
         len = SIZE_CYC(opR);
-        cfs = COEFS_CYC(opR);
-        exs = EXPOS_CYC(opR,len);
+        cfs = CONST_COEFS_CYC(opR);
+        exs = CONST_EXPOS_CYC(opR,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! SUM_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
                 CHANGED_BAG( STATE(ResultCyc) );
                 sum = SUM( res[exs[i]*mr], cfs[i] );
-                cfs = COEFS_CYC(opR);
-                exs = EXPOS_CYC(opR,len);
+                cfs = CONST_COEFS_CYC(opR);
+                exs = CONST_EXPOS_CYC(opR,len);
                 res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*mr] = sum;
@@ -958,8 +988,8 @@ Obj             AInvCyc (
 {
     Obj                 res;            /* inverse, result                 */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* ptr to coeffs of left operand   */
-    UInt4 *             exs;            /* ptr to expnts of left operand   */
+    const Obj *         cfs;            /* ptr to coeffs of left operand   */
+    const UInt4 *       exs;            /* ptr to expnts of left operand   */
     Obj *               cfp;            /* ptr to coeffs of product        */
     UInt4 *             exp;            /* ptr to expnts of product        */
     UInt                i;              /* loop variable                   */
@@ -967,20 +997,20 @@ Obj             AInvCyc (
 
     /* simply invert the coefficients                                      */
     res = NewBag( T_CYC, SIZE_CYC(op) * (sizeof(Obj)+sizeof(UInt4)) );
-    NOF_CYC(res) = NOF_CYC(op);
+    SET_NOF_CYC(res, NOF_CYC(op));
     len = SIZE_CYC(op);
-    cfs = COEFS_CYC(op);
+    cfs = CONST_COEFS_CYC(op);
+    exs = CONST_EXPOS_CYC(op,len);
     cfp = COEFS_CYC(res);
-    exs = EXPOS_CYC(op,len);
     exp = EXPOS_CYC(res,len);
     for ( i = 1; i < len; i++ ) {
         if ( ! IS_INTOBJ( cfs[i] ) || 
                cfs[i] == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) ) {
             CHANGED_BAG( res );
             prd = AINV( cfs[i] );
-            cfs = COEFS_CYC(op);
+            cfs = CONST_COEFS_CYC(op);
+            exs = CONST_EXPOS_CYC(op,len);
             cfp = COEFS_CYC(res);
-            exs = EXPOS_CYC(op,len);
             exp = EXPOS_CYC(res,len);
         }
         else {
@@ -1014,8 +1044,8 @@ Obj             DiffCyc (
     UInt                n;              /* order of smallest superfield    */
     UInt                ml, mr;         /* cofactors into the superfield   */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     Obj                 sum;            /* difference of two coefficients  */
     UInt                i;              /* loop variable                   */
@@ -1033,8 +1063,8 @@ Obj             DiffCyc (
     }
     else {
         len = SIZE_CYC(opL);
-        cfs = COEFS_CYC(opL);
-        exs = EXPOS_CYC(opL,len);
+        cfs = CONST_COEFS_CYC(opL);
+        exs = CONST_EXPOS_CYC(opL,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
@@ -1057,16 +1087,16 @@ Obj             DiffCyc (
     }
     else {
         len = SIZE_CYC(opR);
-        cfs = COEFS_CYC(opR);
-        exs = EXPOS_CYC(opR,len);
+        cfs = CONST_COEFS_CYC(opR);
+        exs = CONST_EXPOS_CYC(opR,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! DIFF_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
                 CHANGED_BAG( STATE(ResultCyc) );
                 sum = DIFF( res[exs[i]*mr], cfs[i] );
-                cfs = COEFS_CYC(opR);
-                exs = EXPOS_CYC(opR,len);
+                cfs = CONST_COEFS_CYC(opR);
+                exs = CONST_EXPOS_CYC(opR,len);
                 res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*mr] = sum;
@@ -1101,8 +1131,8 @@ Obj             ProdCycInt (
 {
     Obj                 hdP;            /* product, result                 */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* ptr to coeffs of left operand   */
-    UInt4 *             exs;            /* ptr to expnts of left operand   */
+    const Obj *         cfs;            /* ptr to coeffs of left operand   */
+    const UInt4 *       exs;            /* ptr to expnts of left operand   */
     Obj *               cfp;            /* ptr to coeffs of product        */
     UInt4 *             exp;            /* ptr to expnts of product        */
     UInt                i;              /* loop variable                   */
@@ -1132,20 +1162,20 @@ Obj             ProdCycInt (
     /* for $cyc * small$ use immediate multiplication if possible          */
     else if ( IS_INTOBJ(opR) ) {
         hdP = NewBag( T_CYC, SIZE_CYC(opL) * (sizeof(Obj)+sizeof(UInt4)) );
-        NOF_CYC(hdP) = NOF_CYC(opL);
+        SET_NOF_CYC(hdP, NOF_CYC(opL));
         len = SIZE_CYC(opL);
-        cfs = COEFS_CYC(opL);
+        cfs = CONST_COEFS_CYC(opL);
+        exs = CONST_EXPOS_CYC(opL,len);
         cfp = COEFS_CYC(hdP);
-        exs = EXPOS_CYC(opL,len);
         exp = EXPOS_CYC(hdP,len);
         for ( i = 1; i < len; i++ ) {
             if ( ! IS_INTOBJ( cfs[i] )
               || ! PROD_INTOBJS( prd, cfs[i], opR ) ) {
                 CHANGED_BAG( hdP );
                 prd = PROD( cfs[i], opR );
-                cfs = COEFS_CYC(opL);
+                cfs = CONST_COEFS_CYC(opL);
+                exs = CONST_EXPOS_CYC(opL,len);
                 cfp = COEFS_CYC(hdP);
-                exs = EXPOS_CYC(opL,len);
                 exp = EXPOS_CYC(hdP,len);
             }
             cfp[i] = prd;
@@ -1157,18 +1187,18 @@ Obj             ProdCycInt (
     /* otherwise multiply every coefficent                                 */
     else {
         hdP = NewBag( T_CYC, SIZE_CYC(opL) * (sizeof(Obj)+sizeof(UInt4)) );
-        NOF_CYC(hdP) = NOF_CYC(opL);
+        SET_NOF_CYC(hdP, NOF_CYC(opL));
         len = SIZE_CYC(opL);
-        cfs = COEFS_CYC(opL);
+        cfs = CONST_COEFS_CYC(opL);
+        exs = CONST_EXPOS_CYC(opL,len);
         cfp = COEFS_CYC(hdP);
-        exs = EXPOS_CYC(opL,len);
         exp = EXPOS_CYC(hdP,len);
         for ( i = 1; i < len; i++ ) {
             CHANGED_BAG( hdP );
             prd = PROD( cfs[i], opR );
-            cfs = COEFS_CYC(opL);
+            cfs = CONST_COEFS_CYC(opL);
+            exs = CONST_EXPOS_CYC(opL,len);
             cfp = COEFS_CYC(hdP);
-            exs = EXPOS_CYC(opL,len);
             exp = EXPOS_CYC(hdP,len);
             cfp[i] = prd;
             exp[i] = exs[i];
@@ -1201,8 +1231,8 @@ Obj             ProdCyc (
     Obj                 c;              /* one coefficient of the left op  */
     UInt                e;              /* one exponent of the left op     */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     Obj                 sum;            /* sum of two coefficients         */
     Obj                 prd;            /* product of two coefficients     */
@@ -1226,21 +1256,21 @@ Obj             ProdCyc (
     /* loop over the terms of the right operand                            */
     for ( k = 1; k < SIZE_CYC(opR); k++ ) {
         c = COEFS_CYC(opR)[k];
-        e = (mr * EXPOS_CYC( opR, SIZE_CYC(opR) )[k]) % n;
+        e = (mr * CONST_EXPOS_CYC( opR, SIZE_CYC(opR) )[k]) % n;
 
         /* if the coefficient is 1 just add                                */
         if ( c == INTOBJ_INT(1) ) {
             len = SIZE_CYC(opL);
-            cfs = COEFS_CYC(opL);
-            exs = EXPOS_CYC(opL,len);
+            cfs = CONST_COEFS_CYC(opL);
+            exs = CONST_EXPOS_CYC(opL,len);
             res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! SUM_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
                     CHANGED_BAG( STATE(ResultCyc) );
                     sum = SUM( res[(e+exs[i]*ml)%n], cfs[i] );
-                    cfs = COEFS_CYC(opL);
-                    exs = EXPOS_CYC(opL,len);
+                    cfs = CONST_COEFS_CYC(opL);
+                    exs = CONST_EXPOS_CYC(opL,len);
                     res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
@@ -1251,16 +1281,16 @@ Obj             ProdCyc (
         /* if the coefficient is -1 just subtract                          */
         else if ( c == INTOBJ_INT(-1) ) {
             len = SIZE_CYC(opL);
-            cfs = COEFS_CYC(opL);
-            exs = EXPOS_CYC(opL,len);
+            cfs = CONST_COEFS_CYC(opL);
+            exs = CONST_EXPOS_CYC(opL,len);
             res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! DIFF_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
                     CHANGED_BAG( STATE(ResultCyc) );
                     sum = DIFF( res[(e+exs[i]*ml)%n], cfs[i] );
-                    cfs = COEFS_CYC(opL);
-                    exs = EXPOS_CYC(opL,len);
+                    cfs = CONST_COEFS_CYC(opL);
+                    exs = CONST_EXPOS_CYC(opL,len);
                     res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
@@ -1271,8 +1301,8 @@ Obj             ProdCyc (
         /* if the coefficient is a small integer use immediate operations  */
         else if ( IS_INTOBJ(c) ) {
             len = SIZE_CYC(opL);
-            cfs = COEFS_CYC(opL);
-            exs = EXPOS_CYC(opL,len);
+            cfs = CONST_COEFS_CYC(opL);
+            exs = CONST_EXPOS_CYC(opL,len);
             res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( cfs[i], res[(e+exs[i]*ml)%n] )
@@ -1280,11 +1310,11 @@ Obj             ProdCyc (
                   || ! SUM_INTOBJS( sum, res[(e+exs[i]*ml)%n], prd ) ) {
                     CHANGED_BAG( STATE(ResultCyc) );
                     prd = PROD( cfs[i], c );
-                    exs = EXPOS_CYC(opL,len);
+                    exs = CONST_EXPOS_CYC(opL,len);
                     res = BASE_PTR_PLIST(STATE(ResultCyc));
                     sum = SUM( res[(e+exs[i]*ml)%n], prd );
-                    cfs = COEFS_CYC(opL);
-                    exs = EXPOS_CYC(opL,len);
+                    cfs = CONST_COEFS_CYC(opL);
+                    exs = CONST_EXPOS_CYC(opL,len);
                     res = BASE_PTR_PLIST(STATE(ResultCyc));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
@@ -1297,12 +1327,12 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             for ( i = 1; i < len; i++ ) {
                 CHANGED_BAG( STATE(ResultCyc) );
-                cfs = COEFS_CYC(opL);
+                cfs = CONST_COEFS_CYC(opL);
                 prd = PROD( cfs[i], c );
-                exs = EXPOS_CYC(opL,len);
+                exs = CONST_EXPOS_CYC(opL,len);
                 res = BASE_PTR_PLIST(STATE(ResultCyc));
                 sum = SUM( res[(e+exs[i]*ml)%n], prd );
-                exs = EXPOS_CYC(opL,len);
+                exs = CONST_EXPOS_CYC(opL,len);
                 res = BASE_PTR_PLIST(STATE(ResultCyc));
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1352,8 +1382,8 @@ Obj             InvCyc (
     UInt                n;              /* order of the field              */
     UInt                sqr;            /* if n < sqr*sqr n is squarefree  */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     UInt                i, k;           /* loop variable                   */
     UInt                gcd, s, t;      /* gcd of i and n, temporaries     */
@@ -1373,8 +1403,8 @@ Obj             InvCyc (
         if ( gcd == 1 ) {
 
             /* permute the terms                                           */
-            cfs = COEFS_CYC(op);
-            exs = EXPOS_CYC(op,len);
+            cfs = CONST_COEFS_CYC(op);
+            exs = CONST_EXPOS_CYC(op,len);
             res = BASE_PTR_PLIST(STATE(ResultCyc));
             for ( k = 1; k < len; k++ )
                 res[(i*exs[k])%n] = cfs[k];
@@ -1441,8 +1471,8 @@ Obj             PowCyc (
     /* for $(c*e_n^i)^exp$ if $e_n^i$ belongs to the base put 1 at $i*exp$ */
     else if ( SIZE_CYC(opL) == 2 ) {
         n = INT_INTOBJ( NOF_CYC(opL) );
-        pow = POW( COEFS_CYC(opL)[1], opR );
-        i = EXPOS_CYC(opL,2)[1];
+        pow = POW( CONST_COEFS_CYC(opL)[1], opR );
+        i = CONST_EXPOS_CYC(opL,2)[1];
         exp = ((exp*(Int)i) % n + n) % n;
         SET_ELM_PLIST( STATE(ResultCyc), exp + 1, pow );
         CHANGED_BAG( STATE(ResultCyc) );
@@ -1579,7 +1609,7 @@ Obj FuncIS_CYC_INT (
     Obj                 val )
 {
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
+    const Obj *         cfs;            /* pointer to the coefficients     */
     UInt                i;              /* loop variable                   */
 
     /* return 'true' if <obj> is a cyclotomic integer and 'false' otherwise*/
@@ -1709,8 +1739,8 @@ Obj FuncCOEFFS_CYC (
     Obj                 list;           /* list of coefficients, result    */
     UInt                n;              /* order of field                  */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     UInt                i;              /* loop variable                   */
 
     /* do full operation                                                   */
@@ -1743,8 +1773,8 @@ Obj FuncCOEFFS_CYC (
         list = NEW_PLIST( T_PLIST, n );
         SET_LEN_PLIST( list, n );
         len = SIZE_CYC(cyc);
-        cfs = COEFS_CYC(cyc);
-        exs = EXPOS_CYC(cyc,len);
+        cfs = CONST_COEFS_CYC(cyc);
+        exs = CONST_EXPOS_CYC(cyc,len);
         for ( i = 1; i <= n; i++ )
             SET_ELM_PLIST( list, i, INTOBJ_INT(0) );
         for ( i = 1; i < len; i++ )
@@ -1786,8 +1816,8 @@ Obj FuncGALOIS_CYC (
     Int                 o;              /* galois automorphism             */
     UInt                gcd, s, t;      /* gcd of n and ord, temporaries   */
     UInt                len;            /* number of terms                 */
-    Obj *               cfs;            /* pointer to the coefficients     */
-    UInt4 *             exs;            /* pointer to the exponents        */
+    const Obj *         cfs;            /* pointer to the coefficients     */
+    const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     UInt                i;              /* loop variable                   */
     UInt                tnumord, tnumcyc;
@@ -1852,15 +1882,15 @@ Obj FuncGALOIS_CYC (
     else if ( n % 2 == 0  && o == n/2 ) {
         gal = INTOBJ_INT(0);
         len = SIZE_CYC(cyc);
-        cfs = COEFS_CYC(cyc);
-        exs = EXPOS_CYC(cyc,len);
+        cfs = CONST_COEFS_CYC(cyc);
+        exs = CONST_EXPOS_CYC(cyc,len);
         for ( i = 1; i < len; i++ ) {
             if ( exs[i] % 2 == 1 ) {
                 if ( ! ARE_INTOBJS( gal, cfs[i] )
                   || ! DIFF_INTOBJS( sum, gal, cfs[i] ) ) {
                     sum = DIFF( gal, cfs[i] );
-                    cfs = COEFS_CYC(cyc);
-                    exs = EXPOS_CYC(cyc,len);
+                    cfs = CONST_COEFS_CYC(cyc);
+                    exs = CONST_EXPOS_CYC(cyc,len);
                 }
                 gal = sum;
             }
@@ -1868,8 +1898,8 @@ Obj FuncGALOIS_CYC (
                 if ( ! ARE_INTOBJS( gal, cfs[i] )
                   || ! SUM_INTOBJS( sum, gal, cfs[i] ) ) {
                     sum = SUM( gal, cfs[i] );
-                    cfs = COEFS_CYC(cyc);
-                    exs = EXPOS_CYC(cyc,len);
+                    cfs = CONST_COEFS_CYC(cyc);
+                    exs = CONST_EXPOS_CYC(cyc,len);
                 }
                 gal = sum;
             }
@@ -1881,8 +1911,8 @@ Obj FuncGALOIS_CYC (
 
         /* permute the coefficients                                        */
         len = SIZE_CYC(cyc);
-        cfs = COEFS_CYC(cyc);
-        exs = EXPOS_CYC(cyc,len);
+        cfs = CONST_COEFS_CYC(cyc);
+        exs = CONST_EXPOS_CYC(cyc,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             res[(UInt8)exs[i]*(UInt8)o%(UInt8)n] = cfs[i];
@@ -1905,16 +1935,16 @@ Obj FuncGALOIS_CYC (
 
         /* multiple roots may be mapped to the same root, add the coeffs   */
         len = SIZE_CYC(cyc);
-        cfs = COEFS_CYC(cyc);
-        exs = EXPOS_CYC(cyc,len);
+        cfs = CONST_COEFS_CYC(cyc);
+        exs = CONST_EXPOS_CYC(cyc,len);
         res = BASE_PTR_PLIST(STATE(ResultCyc));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] )
               || ! SUM_INTOBJS( sum, res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] ) ) {
                 CHANGED_BAG( STATE(ResultCyc) );
                 sum = SUM( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] );
-                cfs = COEFS_CYC(cyc);
-                exs = EXPOS_CYC(cyc,len);
+                cfs = CONST_COEFS_CYC(cyc);
+                exs = CONST_EXPOS_CYC(cyc,len);
                 res = BASE_PTR_PLIST(STATE(ResultCyc));
             }
             res[exs[i]*o%n] = sum;
@@ -2019,13 +2049,13 @@ void MarkCycSubBags( Obj cyc )
 void  SaveCyc ( Obj cyc )
 {
   UInt len, i;
-  Obj *coefs;
-  UInt4 *expos;
+  const Obj *coefs;
+  const UInt4 *expos;
   len = SIZE_CYC(cyc);
-  coefs = COEFS_CYC(cyc);
+  coefs = CONST_COEFS_CYC(cyc);
   for (i = 0; i < len; i++)
     SaveSubObj(*coefs++);
-  expos = EXPOS_CYC(cyc,len);
+  expos = CONST_EXPOS_CYC(cyc,len);
   expos++;                      /*Skip past the XXX */
   for (i = 1; i < len; i++)
     SaveUInt4(*expos++);

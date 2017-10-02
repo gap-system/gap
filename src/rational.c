@@ -43,7 +43,6 @@
 **  'SumInt', 'ProdInt' or 'GcdInt'.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -68,12 +67,10 @@
 #include <src/precord.h>                /* plain records */
 
 #include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/code.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 
 
 #if defined(DEBUG_RATIONALS)
@@ -286,8 +283,8 @@ Obj             SumRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denS != INTOBJ_INT( 1L ) ) {
         sum  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(sum) = numS;
-        DEN_RAT(sum) = denS;
+        SET_NUM_RAT(sum, numS);
+        SET_DEN_RAT(sum, denS);
         /* 'CHANGED_BAG' not needed, 'sum' is the youngest bag             */
     }
     else {
@@ -323,8 +320,8 @@ Obj             AInvRat (
     CHECK_RAT(op);
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
     tmp = AINV( NUM_RAT(op) );
-    NUM_RAT(res) = tmp;
-    DEN_RAT(res) = DEN_RAT(op);
+    SET_NUM_RAT(res, tmp);
+    SET_DEN_RAT(res, DEN_RAT(op));
     CHANGED_BAG(res);
     CHECK_RAT(res);
     return res;
@@ -345,8 +342,8 @@ Obj AbsRat( Obj op )
         return op;
 
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
-    NUM_RAT(res) = tmp;
-    DEN_RAT(res) = DEN_RAT(op);
+    SET_NUM_RAT(res, tmp);
+    SET_DEN_RAT(res, DEN_RAT(op));
     CHANGED_BAG(res);
     CHECK_RAT(res);
     return res;
@@ -444,8 +441,8 @@ Obj             DiffRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denD != INTOBJ_INT( 1L ) ) {
         dif  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(dif) = numD;
-        DEN_RAT(dif) = denD;
+        SET_NUM_RAT(dif, numD);
+        SET_DEN_RAT(dif, denD);
         /* 'CHANGED_BAG' not needed, 'dif' is the youngest bag             */
     }
     else {
@@ -514,8 +511,8 @@ Obj             ProdRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denP != INTOBJ_INT( 1L ) ) {
         prd = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(prd) = numP;
-        DEN_RAT(prd) = denP;
+        SET_NUM_RAT(prd, numP);
+        SET_DEN_RAT(prd, denP);
         /* 'CHANGED_BAG' not needed, 'prd' is the youngest bag             */
     }
     else {
@@ -633,8 +630,8 @@ Obj             QuoRat (
     /* make the fraction or, if possible, the integer                      */
     if ( denQ != INTOBJ_INT( 1L ) ) {
         quo = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(quo) = numQ;
-        DEN_RAT(quo) = denQ;
+        SET_NUM_RAT(quo, numQ);
+        SET_DEN_RAT(quo, denQ);
         /* 'CHANGED_BAG' not needed, 'quo' is the youngest bag             */
     }
     else {
@@ -745,8 +742,8 @@ Obj             PowRat (
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
         pow = NewBag( T_RAT, 2 * sizeof(Obj) );
-        NUM_RAT(pow) = numP;
-        DEN_RAT(pow) = denP;
+        SET_NUM_RAT(pow, numP);
+        SET_DEN_RAT(pow, denP);
         /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
     }
 
@@ -769,12 +766,12 @@ Obj             PowRat (
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
         if ( (IS_INTOBJ(denP) && 0 < INT_INTOBJ(denP))
           || TNUM_OBJ(denP) == T_INTPOS ) {
-            NUM_RAT(pow) = numP;
-            DEN_RAT(pow) = denP;
+            SET_NUM_RAT(pow, numP);
+            SET_DEN_RAT(pow, denP);
         }
         else {
-            NUM_RAT(pow) = ProdInt( INTOBJ_INT( -1L ), numP );
-            DEN_RAT(pow) = ProdInt( INTOBJ_INT( -1L ), denP );
+            SET_NUM_RAT(pow, ProdInt( INTOBJ_INT( -1L ), numP ));
+            SET_DEN_RAT(pow, ProdInt( INTOBJ_INT( -1L ), denP ));
         }
         /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
     }
@@ -818,15 +815,15 @@ Obj             IsRatHandler (
 
 /****************************************************************************
 **
-*F  FuncNumeratorRat(<self>,<rat>)  . . . . . . . . . numerator of a rational
+*F  FuncNUMERATOR_RAT(<self>,<rat>)  . . . . . . . . . numerator of a rational
 **
-**  'FuncNumeratorRat' implements the internal function 'NumeratorRat'.
+**  'FuncNUMERATOR_RAT' implements the internal function 'NumeratorRat'.
 **
 **  'NumeratorRat( <rat> )'
 **
 **  'NumeratorRat' returns the numerator of the rational <rat>.
 */
-Obj             FuncNumeratorRat (
+Obj             FuncNUMERATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -851,15 +848,15 @@ Obj             FuncNumeratorRat (
 
 /****************************************************************************
 **
-*F  FuncDenominatorRat(<self>,<rat>)  . . . . . . . denominator of a rational
+*F  FuncDENOMINATOR_RAT(<self>,<rat>)  . . . . . . . denominator of a rational
 **
-**  'FuncDenominatorRat' implements the internal function 'DenominatorRat'.
+**  'FuncDENOMINATOR_RAT' implements the internal function 'DenominatorRat'.
 **
 **  'DenominatorRat( <rat> )'
 **
 **  'DenominatorRat' returns the denominator of the rational <rat>.
 */
-Obj             FuncDenominatorRat (
+Obj             FuncDENOMINATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -901,8 +898,8 @@ void SaveRat(Obj rat)
 
 void LoadRat(Obj rat)
 {
-  NUM_RAT(rat) = LoadSubObj();
-  DEN_RAT(rat) = LoadSubObj();
+  SET_NUM_RAT(rat, LoadSubObj());
+  SET_DEN_RAT(rat, LoadSubObj());
 }
 
 /****************************************************************************
@@ -930,12 +927,8 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    { "NUMERATOR_RAT", 1, "rat",
-      FuncNumeratorRat, "src/rational.c:NUMERATOR_RAT" },
-
-    { "DENOMINATOR_RAT", 1, "rat",
-      FuncDenominatorRat, "src/rational.c:DENOMINATOR_RAT" },
-
+    GVAR_FUNC(NUMERATOR_RAT, 1, "rat"),
+    GVAR_FUNC(DENOMINATOR_RAT, 1, "rat"),
     GVAR_FUNC(ABS_RAT, 1, "rat"),
     GVAR_FUNC(SIGN_RAT, 1, "rat"),
     { 0, 0, 0, 0, 0 }

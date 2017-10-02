@@ -10,7 +10,6 @@
 **  This file contains the functions for generic lists.
 */
 #include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
 
 
@@ -44,12 +43,10 @@
 
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
-#include <src/range.h>                  /* ranges */
 #include <src/code.h>
 #include <src/gmpints.h>
 
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
 #include <string.h>
@@ -1744,11 +1741,9 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 */
 static StructGVarOper GVarOpers [] = {
 
-  /*    { "ADD_LIST", 2, "list, val", &AddListOper,
-        FuncADD_LIST, "src/listfunc.c:ADD_LIST" }, */
-
-    // FIXME: why DoOperation0Args below, and why the commented entry above?
-    { "ADD_LIST", -1, "list, obj", &AddListOper,
+    // ADD_LIST can take 2 or 3 arguments; since NewOperation ignores the
+    // handler for variadic operations, use DoOperation0Args as a placeholder.
+    { "ADD_LIST", -1, "list, obj[, pos]", &AddListOper,
       DoOperation0Args, "src/listfunc.c:ADD_LIST" },
 
     GVAR_OPER(REM_LIST, 1, "list", &RemListOper),

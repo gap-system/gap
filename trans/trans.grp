@@ -69,6 +69,9 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 [(1,6,7),(2,6,7),(3,6,7),(4,6,7),(5,6,7),"A(7)"],
 [(1,7),(1,2),(2,3),(3,4),(4,5),(5,6),"S(7)"]]];
 
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSGRP, TRANSREGION);
+fi;
 
 #############################################################################
 ##
@@ -215,8 +218,18 @@ TRANSNONDISCRIM := [[],[],[],[],[],[],[],[],[],[],[],[[273,292]],[],
 TRANSSELECT :=[];
 TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
-InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
+if IsBound(HPCGAP) then
+  atomic TRANSREGION do
+    MigrateObj(TRANSPROPERTIES, TRANSREGION);
+    MigrateObj(TRANSLENGTHS, TRANSREGION);
+    MigrateObj(TRANSNONDISCRIM, TRANSREGION);
+    MigrateObj(TRANSSIZES, TRANSREGION);
+    MigrateObj(TRANSPARTNUM, TRANSREGION);
+  od;
+fi;
+
+atomic TRANSREGION do
 if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
   CallFuncList(function()
@@ -229,12 +242,16 @@ if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   od;
   end,[]);
 fi;
+od;
 
 BIND_GLOBAL("TransGrpLoad",function(deg,nr)
 local Tbak,Fbak,flg,sel,i,fname;
+atomic readonly TRANSREGION do
   if IsBound(TRANSGRP[deg]) and (nr=0 or IsBound(TRANSGRP[deg][nr])) then
     return;
   fi;
+od;
+atomic TRANSREGION do
   if deg>TRANSDEGREES then
     Error("transitive groups are known only of degree up to ",
 	  TRANSDEGREES);
@@ -243,6 +260,12 @@ local Tbak,Fbak,flg,sel,i,fname;
     if deg>15 and not IsPrime(deg) then
       if not IsBound(TRANSGRP[deg]) then
 	ReadGapRoot( Concatenation( "trans/", fname, ".grp" ) );
+        if IsBound(HPCGAP) then
+          MigrateObj(TRANSGRP[deg], TRANSREGION);
+          MigrateObj(TRANSPROPERTIES[deg], TRANSREGION);
+          MigrateObj(TRANSSIZES[deg], TRANSREGION);
+          MigrateObj(TRANSSELECT[deg], TRANSREGION);
+        fi;
         if nr=0 then 
 	  return;
 	fi;
@@ -254,6 +277,9 @@ local Tbak,Fbak,flg,sel,i,fname;
 	  flg:=TRANSSELECT[deg]{[1..Length(TRANSSELECT[deg])-150]};
 	  sel:=Union(flg,sel);
 	  TRANSSELECT[deg]:=Difference(TRANSSELECT[deg],flg);
+          if IsBound(HPCGAP) then
+            MigrateObj(TRANSSELECT[deg], TRANSREGION);
+          fi;
 	fi;
         for i in sel do
 	  Unbind(TRANSGRP[deg][i]);
@@ -266,6 +292,10 @@ local Tbak,Fbak,flg,sel,i,fname;
     IsString(fname);
 
     ReadGapRoot( Concatenation( "trans/", fname, ".grp" ));
+    if IsBound(HPCGAP) then
+      MigrateObj(TRANSGRP[deg], TRANSREGION);
+      MigrateObj(TRANSPROPERTIES[deg], TRANSREGION);
+    fi;
 
     if deg>15 and not IsPrime(deg) then
       sel:=Difference(Filtered([1..Length(TRANSGRP[deg])],
@@ -275,6 +305,7 @@ local Tbak,Fbak,flg,sel,i,fname;
       TRANSSIZES[deg]:=List(TRANSPROPERTIES[deg],i->i[1]);
       sel:=[1..TRANSLENGTHS[deg]];
     fi;
+    MakeImmutable(TRANSSIZES[deg]);
     # make blists those which are
     ForAll(TRANSPROPERTIES[deg]{sel},i->IsBound(i[5]) and IsBlist(i[5]));
   fi;
@@ -283,10 +314,11 @@ local Tbak,Fbak,flg,sel,i,fname;
     MakeImmutable(TRANSPROPERTIES[deg][i]);
   od;
   TRANSPARTNUM[deg]:=NrPartitions(deg);
-  TRANSSHAPEFREQS[deg]:=[];
+od;
 end);
 
 InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)
+atomic TRANSREGION do
   if not IsPosInt(deg) then
     Error("degree must be a positive integer");
   fi;
@@ -295,9 +327,11 @@ InstallGlobalFunction(TransitiveGroupsAvailable,function(deg)
   fi;
   TransGrpLoad(deg,0); # to set up variables
   return true;
+od;
 end);
 
 BIND_GLOBAL("TRANSGrp",function(deg,nr)
+atomic TRANSREGION do
   if not IsBound(TRANSGRP[deg]) or not IsBound(TRANSGRP[deg][nr]) then
     TransGrpLoad(deg,nr);
   fi;
@@ -308,6 +342,7 @@ BIND_GLOBAL("TRANSGrp",function(deg,nr)
     return "fail";
   fi;
   return TRANSGRP[deg][nr];
+od;
 end);
 
 BIND_GLOBAL("TRANSProperties",function(deg,nr)
@@ -315,6 +350,7 @@ local l;
   if not TransitiveGroupsAvailable(deg) then 
     Error("Transitive Groups of degree ",deg," are not available");
   fi;
+atomic TRANSREGION do
   if not IsBound(TRANSPROPERTIES[deg]) or
     not IsBound(TRANSPROPERTIES[deg][nr]) then
     TransGrpLoad(deg,nr);
@@ -334,6 +370,7 @@ local l;
     TRANSPROPERTIES[deg][nr]:=l;
   fi;
   return l;
+od;
 end);
 
 InstallGlobalFunction(NrTransitiveGroups, function(deg)
@@ -346,20 +383,20 @@ InstallGlobalFunction(NrTransitiveGroups, function(deg)
   if not TransitiveGroupsAvailable(deg) then
     return fail;
   fi;
+atomic readonly TRANSREGION do
   return TRANSLENGTHS[deg];
+od;
 end);
 
 InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
-  if not(deg in [1..TRANSDEGREES]) then
-    Error("degree must be in [1..",TRANSDEGREES,"]");
-  fi;
   if deg=1 then
     return fail;
   fi;
-  if not IsBound(TRANSLENGTHS[deg]) then
-    TransGrpLoad(deg,num);
+  if not TransitiveGroupsAvailable(deg) then
+    Error("Transitive Groups of degree ",deg," are not available");
   fi;
+atomic TRANSREGION do
   if not (num in [1..TRANSLENGTHS[deg]]) then
     Error("maximal number of groups of degree ",deg," is ",
            TRANSLENGTHS[deg]);
@@ -401,16 +438,24 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
   fi;
   SetTransitiveIdentification(g,num);
   return g;
+od;
 end );
 
 InstallFlushableValue(TRANSCOMBCACHE,[[0],[0],[0]]);
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSCOMBCACHE, TRANSREGION);
+fi;
+
 BindGlobal("TransCombinat",function(m,n)
 local i,l;
+atomic readonly TRANSREGION do
   for i in [1..3] do
     if TRANSCOMBCACHE[i][1]=m and TRANSCOMBCACHE[i][2]=n then
       return TRANSCOMBCACHE[i][3];
     fi;
   od;
+od;
+atomic TRANSREGION do
   TRANSCOMBCACHE[3]:=TRANSCOMBCACHE[2];
   TRANSCOMBCACHE[2]:=TRANSCOMBCACHE[1];
   l:=Combinations(m,n);
@@ -419,16 +464,24 @@ local i,l;
   IsSet(l);
   TRANSCOMBCACHE[1]:=[m,n,l];
   return l;
+od;
 end);
 
 InstallFlushableValue(TRANSARRCACHE,[[0],[0],[0]]);
+if IsBound(HPCGAP) then
+  LockAndMigrateObj(TRANSARRCACHE, TRANSREGION);
+fi;
+
 BindGlobal("TransArrange",function(m,n)
 local i,l;
+atomic readonly TRANSREGION do
   for i in [1..3] do
     if TRANSARRCACHE[i][1]=m and TRANSARRCACHE[i][2]=n then
       return TRANSARRCACHE[i][3];
     fi;
   od;
+od;
+atomic TRANSREGION do
   TRANSARRCACHE[3]:=TRANSARRCACHE[2];
   TRANSARRCACHE[2]:=TRANSARRCACHE[1];
   l:=Arrangements(m,n);
@@ -437,6 +490,7 @@ local i,l;
   IsSet(l);
   TRANSARRCACHE[1]:=[m,n,l];
   return l;
+od;
 end);
 
 BindGlobal("CntOp",function(grp,orb,op)
@@ -499,6 +553,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     Error("Group must operate transitively");
   fi;
   deg:=Length(dom);
+atomic TRANSREGION do
   if not IsBound(TRANSLENGTHS[deg]) then
     TransGrpLoad(deg,0);
   fi;
@@ -572,7 +627,7 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
     cand:=cand{s};
     p:=p{s};
   fi;
-
+od;
   if Length(cand)>1 and cheap<>2 then
     # As all computations, which follow involve only the groups, convert
     # them to PcGroups if possible
@@ -689,6 +744,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   if not IsInt(l) then
     Error("wrong arguments");
   fi;
+atomic TRANSREGION do
   deg:=[2..TRANSDEGREES];
   p:=Position(arglis,NrMovedPoints);
   if p<>fail then
@@ -777,7 +833,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
       od;
     fi;
   od;
-
+od;
   if f then
     Print("#W  AllTransitiveGroups: Degree restricted to [2..",
           TRANSDEGREES,"]\n");

@@ -1,6 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
+#define FILE_CRC  "-132653476"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -243,9 +244,6 @@ static RNam R_HASH__SIZE;
 
 /* information for the functions */
 static Obj  NameFunc[35];
-static Obj  NamsFunc[35];
-static Int  NargFunc[35];
-static Obj  DefaultName;
 static Obj FileName;
 
 /* handler for function 2 */
@@ -411,11 +409,11 @@ static Obj  HdlrFunc3 (
   CHECK_BOUND( t_5, "IS_OBJECT" )
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
-  t_5 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
+  t_5 = NewFunction( NameFunc[4], 2, 0, HdlrFunc4 );
   SET_ENVI_FUNC( t_5, STATE(CurrLVars) );
   t_6 = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_STARTLINE_BODY(t_6, INTOBJ_INT(39));
-  SET_ENDLINE_BODY(t_6, INTOBJ_INT(42));
+  SET_STARTLINE_BODY(t_6, 39);
+  SET_ENDLINE_BODY(t_6, 42);
   SET_FILENAME_BODY(t_6, FileName);
   SET_BODY_FUNC(t_5, t_6);
   CHANGED_BAG( STATE(CurrLVars) );
@@ -1145,7 +1143,7 @@ static Obj  HdlrFunc11 (
            t_1 = (Obj)(((UInt)t_1)+4) ) {
       l_i = t_1;
       
-      /* if IsBound( cached![i]) then */
+      /* if IsBound( cached![i] ) then */
       CHECK_INT_SMALL_POS( l_i )
       if ( TNUM_OBJ(l_cached) == T_POSOBJ ) {
        t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(l_cached)/sizeof(Obj)-1
@@ -1226,7 +1224,7 @@ static Obj  HdlrFunc11 (
            t_1 = (Obj)(((UInt)t_1)+4) ) {
       l_i = t_1;
       
-      /* if IsBound( parent![i]) <> IsBound( cached![i]) then */
+      /* if IsBound( parent![i] ) <> IsBound( cached![i] ) then */
       CHECK_INT_SMALL_POS( l_i )
       if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
        t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
@@ -1263,7 +1261,7 @@ static Obj  HdlrFunc11 (
       }
       /* fi */
       
-      /* if IsBound( parent![i]) and IsBound( cached![i]) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
+      /* if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
       if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
        t_7 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
           && ELM_PLIST(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False);
@@ -1441,7 +1439,7 @@ static Obj  HdlrFunc11 (
         t_1 = (Obj)(((UInt)t_1)+4) ) {
    l_i = t_1;
    
-   /* if IsBound( parent![i]) and not IsBound( type[i] ) then */
+   /* if IsBound( parent![i] ) and not IsBound( type[i] ) then */
    CHECK_INT_SMALL_POS( l_i )
    if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
     t_6 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
@@ -4121,11 +4119,11 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
+ t_2 = NewFunction( NameFunc[2], 6, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, INTOBJ_INT(19));
- SET_ENDLINE_BODY(t_3, INTOBJ_INT(26));
+ SET_STARTLINE_BODY(t_3, 19);
+ SET_ENDLINE_BODY(t_3, 26);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4138,7 +4136,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
-      if mutflag  then
+      if mutflag then
           InstallOtherMethod( setter, "system mutable setter", true, [ IsAttributeStoringRep, IS_OBJECT ], 0, function ( obj, val )
                 obj!.(name) := val;
                 SetFilterObj( obj, tester );
@@ -4150,11 +4148,11 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
+ t_2 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, INTOBJ_INT(31));
- SET_ENDLINE_BODY(t_3, INTOBJ_INT(52));
+ SET_STARTLINE_BODY(t_3, 31);
+ SET_ENDLINE_BODY(t_3, 52);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4173,12 +4171,12 @@ static Obj  HdlrFunc1 (
  AssGVar( G_DS__TYPE__CACHE, t_1 );
  
  /* BIND_GLOBAL( "NEW_FAMILY", function ( typeOfFamilies, name, req_filter, imp_filter )
-      local  lock, type, pair, family;
+      local lock, type, pair, family;
       imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
       type := Subtype( typeOfFamilies, IsAttributeStoringRep );
       lock := READ_LOCK( CATEGORIES_FAMILY );
-      for pair  in CATEGORIES_FAMILY  do
-          if IS_SUBSET_FLAGS( imp_filter, pair[1] )  then
+      for pair in CATEGORIES_FAMILY do
+          if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then
               type := Subtype( type, pair[2] );
           fi;
       od;
@@ -4198,11 +4196,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_FAMILY" );
- t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
+ t_3 = NewFunction( NameFunc[5], 4, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(90));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(120));
+ SET_STARTLINE_BODY(t_4, 90);
+ SET_ENDLINE_BODY(t_4, 120);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4213,11 +4211,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily2" );
- t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
+ t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(123));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(128));
+ SET_STARTLINE_BODY(t_4, 123);
+ SET_ENDLINE_BODY(t_4, 128);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4228,11 +4226,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily3" );
- t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
+ t_3 = NewFunction( NameFunc[7], 3, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(131));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(136));
+ SET_STARTLINE_BODY(t_4, 131);
+ SET_ENDLINE_BODY(t_4, 136);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4243,11 +4241,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily4" );
- t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
+ t_3 = NewFunction( NameFunc[8], 4, 0, HdlrFunc8 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(139));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(144));
+ SET_STARTLINE_BODY(t_4, 139);
+ SET_ENDLINE_BODY(t_4, 144);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4258,24 +4256,24 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily5" );
- t_3 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
+ t_3 = NewFunction( NameFunc[9], 5, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(148));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(153));
+ SET_STARTLINE_BODY(t_4, 148);
+ SET_ENDLINE_BODY(t_4, 153);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily", function ( arg... )
-      if LEN_LIST( arg ) = 1  then
+      if LEN_LIST( arg ) = 1 then
           return NewFamily2( TypeOfFamilies, arg[1] );
-      elif LEN_LIST( arg ) = 2  then
+      elif LEN_LIST( arg ) = 2 then
           return NewFamily3( TypeOfFamilies, arg[1], arg[2] );
-      elif LEN_LIST( arg ) = 3  then
+      elif LEN_LIST( arg ) = 3 then
           return NewFamily4( TypeOfFamilies, arg[1], arg[2], arg[3] );
-      elif LEN_LIST( arg ) = 4  then
+      elif LEN_LIST( arg ) = 4 then
           return NewFamily5( TypeOfFamilies, arg[1], arg[2], arg[3], arg[4] );
       else
           Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
@@ -4284,11 +4282,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily" );
- t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
+ t_3 = NewFunction( NameFunc[10], -1, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(156));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(179));
+ SET_STARTLINE_BODY(t_4, 156);
+ SET_ENDLINE_BODY(t_4, 179);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4301,42 +4299,42 @@ static Obj  HdlrFunc1 (
  AssGVar( G_NEW__TYPE__CACHE__HIT, INTOBJ_INT(0) );
  
  /* BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
-      local  lock, hash, cache, cached, type, ncache, ncl, t, i, match;
+      local lock, hash, cache, cached, type, ncache, ncl, t, i, match;
       lock := WRITE_LOCK( DS_TYPE_CACHE );
       cache := family!.TYPES;
       hash := HASH_FLAGS( flags ) mod family!.HASH_SIZE + 1;
-      if IsBound( cache[hash] )  then
+      if IsBound( cache[hash] ) then
           cached := cache[hash];
-          if IS_EQUAL_FLAGS( flags, cached![2] )  then
+          if IS_EQUAL_FLAGS( flags, cached![2] ) then
               flags := cached![2];
-              if IS_IDENTICAL_OBJ( data, cached![POS_DATA_TYPE] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) )  then
-                  if IS_IDENTICAL_OBJ( parent, fail )  then
+              if IS_IDENTICAL_OBJ( data, cached![POS_DATA_TYPE] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then
+                  if IS_IDENTICAL_OBJ( parent, fail ) then
                       match := true;
-                      for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ]  do
-                          if IsBound( cached![i])  then
+                      for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( cached ) ] do
+                          if IsBound( cached![i] ) then
                               match := false;
                               break;
                           fi;
                       od;
-                      if match  then
+                      if match then
                           NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
                           UNLOCK( lock );
                           return cached;
                       fi;
                   fi;
-                  if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached )  then
+                  if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
                       match := true;
-                      for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ]  do
-                          if IsBound( parent![i]) <> IsBound( cached![i])  then
+                      for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+                          if IsBound( parent![i] ) <> IsBound( cached![i] ) then
                               match := false;
                               break;
                           fi;
-                          if IsBound( parent![i]) and IsBound( cached![i]) and not IS_IDENTICAL_OBJ( parent![i], cached![i] )  then
+                          if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then
                               match := false;
                               break;
                           fi;
                       od;
-                      if match  then
+                      if match then
                           NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
                           UNLOCK( lock );
                           return cached;
@@ -4347,7 +4345,7 @@ static Obj  HdlrFunc1 (
           NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1;
       fi;
       NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1;
-      if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT  then
+      if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then
           GASMAN( "collect" );
           FLUSH_ALL_METHOD_CACHES(  );
           NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS(  );
@@ -4355,18 +4353,18 @@ static Obj  HdlrFunc1 (
       type := [ family, flags ];
       type[POS_DATA_TYPE] := MakeReadOnly( data );
       type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
-      if not IS_IDENTICAL_OBJ( parent, fail )  then
-          for i  in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ]  do
-              if IsBound( parent![i]) and not IsBound( type[i] )  then
+      if not IS_IDENTICAL_OBJ( parent, fail ) then
+          for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( parent ) ] do
+              if IsBound( parent![i] ) and not IsBound( type[i] ) then
                   type[i] := parent![i];
               fi;
           od;
       fi;
       SET_TYPE_POSOBJ( type, typeOfTypes );
-      if 3 * family!.nTYPES > family!.HASH_SIZE  then
+      if 3 * family!.nTYPES > family!.HASH_SIZE then
           ncache := MIGRATE_RAW( [  ], DS_TYPE_CACHE );
           ncl := 3 * family!.HASH_SIZE + 1;
-          for t  in cache  do
+          for t in cache do
               ncache[HASH_FLAGS( t![2] ) mod ncl + 1] := t;
           od;
           family!.HASH_SIZE := ncl;
@@ -4382,11 +4380,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_TYPE" );
- t_3 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
+ t_3 = NewFunction( NameFunc[11], 5, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(207));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(308));
+ SET_STARTLINE_BODY(t_4, 207);
+ SET_ENDLINE_BODY(t_4, 308);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4397,11 +4395,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType3" );
- t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
+ t_3 = NewFunction( NameFunc[12], 3, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(312));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(319));
+ SET_STARTLINE_BODY(t_4, 312);
+ SET_ENDLINE_BODY(t_4, 319);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4412,24 +4410,24 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType4" );
- t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
+ t_3 = NewFunction( NameFunc[13], 4, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(322));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(329));
+ SET_STARTLINE_BODY(t_4, 322);
+ SET_ENDLINE_BODY(t_4, 329);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewType", function ( arg... )
-      local  type;
-      if not IsFamily( arg[1] )  then
+      local type;
+      if not IsFamily( arg[1] ) then
           Error( "<family> must be a family" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           type := NewType3( TypeOfTypes, arg[1], arg[2] );
-      elif LEN_LIST( arg ) = 3  then
+      elif LEN_LIST( arg ) = 3 then
           type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
       else
           Error( "usage: NewType( <family>, <filter> [, <data> ] )" );
@@ -4438,11 +4436,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType" );
- t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
+ t_3 = NewFunction( NameFunc[14], -1, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(332));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(356));
+ SET_STARTLINE_BODY(t_4, 332);
+ SET_ENDLINE_BODY(t_4, 356);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4453,11 +4451,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype2" );
- t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
+ t_3 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(369));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(376));
+ SET_STARTLINE_BODY(t_4, 369);
+ SET_ENDLINE_BODY(t_4, 376);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4468,11 +4466,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype3" );
- t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
+ t_3 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(379));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(386));
+ SET_STARTLINE_BODY(t_4, 379);
+ SET_ENDLINE_BODY(t_4, 386);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4482,12 +4480,12 @@ static Obj  HdlrFunc1 (
  AssGVar( G_Subtype, 0 );
  
  /* BIND_GLOBAL( "Subtype", function ( arg... )
-      local  p;
+      local p;
       p := READ_LOCK( arg );
-      if not IsType( arg[1] )  then
+      if not IsType( arg[1] ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           return Subtype2( arg[1], arg[2] );
       else
           return Subtype3( arg[1], arg[2], arg[3] );
@@ -4497,11 +4495,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype" );
- t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(390));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(405));
+ SET_STARTLINE_BODY(t_4, 390);
+ SET_ENDLINE_BODY(t_4, 405);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4512,11 +4510,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType2" );
- t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
+ t_3 = NewFunction( NameFunc[18], 2, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(419));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(426));
+ SET_STARTLINE_BODY(t_4, 419);
+ SET_ENDLINE_BODY(t_4, 426);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4527,21 +4525,21 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType3" );
- t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
+ t_3 = NewFunction( NameFunc[19], 3, 0, HdlrFunc19 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(429));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(436));
+ SET_STARTLINE_BODY(t_4, 429);
+ SET_ENDLINE_BODY(t_4, 436);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SupType", function ( arg... )
-      if not IsType( arg[1] )  then
+      if not IsType( arg[1] ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2  then
+      if LEN_LIST( arg ) = 2 then
           return SupType2( arg[1], arg[2] );
       else
           return SupType3( arg[1], arg[2], arg[3] );
@@ -4550,11 +4548,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType" );
- t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
+ t_3 = NewFunction( NameFunc[20], -1, 0, HdlrFunc20 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(439));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(453));
+ SET_STARTLINE_BODY(t_4, 439);
+ SET_ENDLINE_BODY(t_4, 453);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4565,11 +4563,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyType" );
- t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
+ t_3 = NewFunction( NameFunc[21], 1, 0, HdlrFunc21 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(467));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(467));
+ SET_STARTLINE_BODY(t_4, 467);
+ SET_ENDLINE_BODY(t_4, 467);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4580,11 +4578,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsType" );
- t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
+ t_3 = NewFunction( NameFunc[22], 1, 0, HdlrFunc22 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(481));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(481));
+ SET_STARTLINE_BODY(t_4, 481);
+ SET_ENDLINE_BODY(t_4, 481);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4595,11 +4593,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataType" );
- t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
+ t_3 = NewFunction( NameFunc[23], 1, 0, HdlrFunc23 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(497));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(497));
+ SET_STARTLINE_BODY(t_4, 497);
+ SET_ENDLINE_BODY(t_4, 497);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4611,11 +4609,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetDataType" );
- t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
+ t_3 = NewFunction( NameFunc[24], 2, 0, HdlrFunc24 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(499));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(501));
+ SET_STARTLINE_BODY(t_4, 499);
+ SET_ENDLINE_BODY(t_4, 501);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4640,11 +4638,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsObj" );
- t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
+ t_3 = NewFunction( NameFunc[25], 1, 0, HdlrFunc25 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(600));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(600));
+ SET_STARTLINE_BODY(t_4, 600);
+ SET_ENDLINE_BODY(t_4, 600);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4655,37 +4653,37 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataObj" );
- t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
+ t_3 = NewFunction( NameFunc[26], 1, 0, HdlrFunc26 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(614));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(614));
+ SET_STARTLINE_BODY(t_4, 614);
+ SET_ENDLINE_BODY(t_4, 614);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetTypeObj", function ( type, obj )
-      if not IsType( type )  then
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if IS_LIST( obj )  then
+      if IS_LIST( obj ) then
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_REC( obj )  then
+      elif IS_REC( obj ) then
           SET_TYPE_COMOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
       return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetTypeObj" );
- t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
+ t_3 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(628));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(641));
+ SET_STARTLINE_BODY(t_4, 628);
+ SET_ENDLINE_BODY(t_4, 641);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4722,69 +4720,69 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "Objectify", function ( type, obj )
-      local  flags;
-      if not IsType( type )  then
+      local flags;
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
       flags := FlagsType( type );
-      if IS_LIST( obj )  then
-          if IS_SUBSET_FLAGS( flags, IsAtomicPositionalObjectRepFlags )  then
+      if IS_LIST( obj ) then
+          if IS_SUBSET_FLAGS( flags, IsAtomicPositionalObjectRepFlags ) then
               FORCE_SWITCH_OBJ( obj, FixedAtomicList( obj ) );
           fi;
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_REC( obj )  then
-          if IS_ATOMIC_RECORD( obj )  then
-              if IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags )  then
+      elif IS_REC( obj ) then
+          if IS_ATOMIC_RECORD( obj ) then
+              if IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags ) then
                   FORCE_SWITCH_OBJ( obj, FromAtomicRecord( obj ) );
               fi;
-          elif not IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags )  then
+          elif not IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags ) then
               FORCE_SWITCH_OBJ( obj, AtomicRecord( obj ) );
           fi;
           SET_TYPE_COMOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
-      if IsReadOnlyPositionalObjectRep( obj )  then
+      if IsReadOnlyPositionalObjectRep( obj ) then
           MakeReadOnlyObj( obj );
       fi;
       return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Objectify" );
- t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
+ t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(651));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(680));
+ SET_STARTLINE_BODY(t_4, 651);
+ SET_ENDLINE_BODY(t_4, 680);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
-      if not IsType( type )  then
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if IS_POSOBJ( obj )  then
+      if IS_POSOBJ( obj ) then
           SET_TYPE_POSOBJ( obj, type );
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           SET_TYPE_COMOBJ( obj, type );
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           SET_TYPE_DATOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj )  then
+      if not IsNoImmediateMethodsObject( obj ) then
           RunImmediateMethods( obj, type![2] );
       fi;
       return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ChangeTypeObj" );
- t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(694));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(709));
+ SET_STARTLINE_BODY(t_4, 694);
+ SET_ENDLINE_BODY(t_4, 709);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4801,35 +4799,35 @@ static Obj  HdlrFunc1 (
  AssGVar( G_SetFilterObj, 0 );
  
  /* BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
-      local  type, newtype;
-      if IS_POSOBJ( obj )  then
+      local type, newtype;
+      if IS_POSOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_POSOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_COMOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           type := TYPE_OBJ( obj );
           newtype := Subtype2( type, filter );
           SET_TYPE_DATOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj ))  then
+          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_PLIST_REP( obj )  then
+      elif IS_PLIST_REP( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj )  then
+      elif IS_STRING_REP( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj )  then
+      elif IS_BLIST( obj ) then
           SET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj )  then
+      elif IS_RANGE( obj ) then
           SET_FILTER_LIST( obj, filter );
       else
           Error( "cannot set filter for internal object" );
@@ -4838,11 +4836,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
- t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[30], 2, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(733));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(771));
+ SET_STARTLINE_BODY(t_4, 733);
+ SET_ENDLINE_BODY(t_4, 771);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4856,22 +4854,22 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
-      if IS_AND_FILTER( filter )  then
+      if IS_AND_FILTER( filter ) then
           Error( "You can't reset an \"and-filter\". Reset components individually." );
       fi;
-      if IS_POSOBJ( obj )  then
+      if IS_POSOBJ( obj ) then
           SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_COMOBJ( obj )  then
+      elif IS_COMOBJ( obj ) then
           SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_DATOBJ( obj )  then
+      elif IS_DATOBJ( obj ) then
           SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_PLIST_REP( obj )  then
+      elif IS_PLIST_REP( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj )  then
+      elif IS_STRING_REP( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj )  then
+      elif IS_BLIST( obj ) then
           RESET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj )  then
+      elif IS_RANGE( obj ) then
           RESET_FILTER_LIST( obj, filter );
       else
           Error( "cannot reset filter for internal object" );
@@ -4880,11 +4878,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
+ t_3 = NewFunction( NameFunc[31], 2, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(793));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(815));
+ SET_STARTLINE_BODY(t_4, 793);
+ SET_ENDLINE_BODY(t_4, 815);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4898,7 +4896,7 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
-      if val  then
+      if val then
           SetFilterObj( obj, filter );
       else
           ResetFilterObj( obj, filter );
@@ -4907,34 +4905,34 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFeatureObj" );
- t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
+ t_3 = NewFunction( NameFunc[32], 3, 0, HdlrFunc32 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(831));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(837));
+ SET_STARTLINE_BODY(t_4, 831);
+ SET_ENDLINE_BODY(t_4, 837);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetMultipleAttributes", function ( arg... )
-      local  obj, type, flags, attr, val, i, extra, nfilt, nflags;
+      local obj, type, flags, attr, val, i, extra, nfilt, nflags;
       obj := arg[1];
-      if IsAttributeStoringRep( obj )  then
+      if IsAttributeStoringRep( obj ) then
           extra := [  ];
           type := TypeObj( obj );
           flags := FlagsType( type );
           nfilt := IS_OBJECT;
-          for i  in [ 2, 4 .. LEN_LIST( arg ) - 1 ]  do
+          for i in [ 2, 4 .. LEN_LIST( arg ) - 1 ] do
               attr := arg[i];
               val := arg[i + 1];
-              if 0 <> FLAG1_FILTER( attr )  then
-                  if val  then
+              if 0 <> FLAG1_FILTER( attr ) then
+                  if val then
                       nfilt := nfilt and attr;
                   else
                       nfilt := nfilt and Tester( attr );
                   fi;
-              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12  then
+              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12 then
                   ADD_LIST( extra, attr );
                   ADD_LIST( extra, val );
               else
@@ -4943,16 +4941,16 @@ static Obj  HdlrFunc1 (
               fi;
           od;
           nflags := FLAGS_FILTER( nfilt );
-          if not IS_SUBSET_FLAGS( flags, nflags )  then
+          if not IS_SUBSET_FLAGS( flags, nflags ) then
               flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
               ChangeTypeObj( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ) ), obj );
           fi;
-          for i  in [ 2, 4 .. LEN_LIST( extra ) ]  do
+          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
               Setter( extra[i - 1] )( obj, extra[i] );
           od;
       else
           extra := arg;
-          for i  in [ 2, 4 .. LEN_LIST( extra ) ]  do
+          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
               Setter( extra[i] )( obj, extra[i + 1] );
           od;
       fi;
@@ -4960,11 +4958,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetMultipleAttributes" );
- t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
+ t_3 = NewFunction( NameFunc[33], -1, 0, HdlrFunc33 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(858));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(910));
+ SET_STARTLINE_BODY(t_4, 858);
+ SET_ENDLINE_BODY(t_4, 910);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4993,27 +4991,27 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg... )
-      local  obj, type, flags, attr, val, i, extra, nflags;
+      local obj, type, flags, attr, val, i, extra, nflags;
       obj := arg[1];
       type := arg[2];
       flags := FlagsType( type );
       extra := [  ];
-      if not IS_SUBSET_FLAGS( flags, IsAttributeStoringRepFlags )  then
+      if not IS_SUBSET_FLAGS( flags, IsAttributeStoringRepFlags ) then
           extra := arg{[ 3 .. LEN_LIST( arg ) ]};
           INFO_OWA( "#W ObjectifyWithAttributes called ", "for non-attribute storing rep\n" );
           Objectify( type, obj );
       else
           nflags := EMPTY_FLAGS;
-          for i  in [ 3, 5 .. LEN_LIST( arg ) - 1 ]  do
+          for i in [ 3, 5 .. LEN_LIST( arg ) - 1 ] do
               attr := arg[i];
               val := arg[i + 1];
-              if 0 <> FLAG1_FILTER( attr )  then
-                  if val  then
+              if 0 <> FLAG1_FILTER( attr ) then
+                  if val then
                       nflags := AND_FLAGS( nflags, FLAGS_FILTER( attr ) );
                   else
                       nflags := AND_FLAGS( nflags, FLAGS_FILTER( Tester( attr ) ) );
                   fi;
-              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> LENGTH_SETTER_METHODS_2  then
+              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> LENGTH_SETTER_METHODS_2 then
                   ADD_LIST( extra, attr );
                   ADD_LIST( extra, val );
               else
@@ -5021,15 +5019,15 @@ static Obj  HdlrFunc1 (
                   nflags := AND_FLAGS( nflags, FLAGS_FILTER( Tester( attr ) ) );
               fi;
           od;
-          if not IS_SUBSET_FLAGS( flags, nflags )  then
+          if not IS_SUBSET_FLAGS( flags, nflags ) then
               flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
               Objectify( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ), fail ), obj );
           else
               Objectify( type, obj );
           fi;
       fi;
-      for i  in [ 1, 3 .. LEN_LIST( extra ) - 1 ]  do
-          if Tester( extra[i] )( obj )  then
+      for i in [ 1, 3 .. LEN_LIST( extra ) - 1 ] do
+          if Tester( extra[i] )( obj ) then
               INFO_OWA( "#W  Supplied type has tester of ", NAME_FUNC( extra[i] ), "with non-standard setter\n" );
               ResetFilterObj( obj, Tester( extra[i] ) );
           fi;
@@ -5039,11 +5037,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
+ t_3 = NewFunction( NameFunc[34], -1, 0, HdlrFunc34 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, INTOBJ_INT(957));
- SET_ENDLINE_BODY(t_4, INTOBJ_INT(1022));
+ SET_STARTLINE_BODY(t_4, 957);
+ SET_ENDLINE_BODY(t_4, 1022);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -5058,457 +5056,6 @@ static Obj  HdlrFunc1 (
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
-}
-
-/* 'InitKernel' sets up data structures, fopies, copies, handlers */
-static Int InitKernel ( StructInitInfo * module )
-{
- 
- /* global variables used in handlers */
- InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
- InitFopyGVar( "IsType", &GF_IsType );
- InitFopyGVar( "IS_REC", &GF_IS__REC );
- InitFopyGVar( "IS_LIST", &GF_IS__LIST );
- InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
- InitFopyGVar( "IS_PLIST_REP", &GF_IS__PLIST__REP );
- InitFopyGVar( "IS_BLIST", &GF_IS__BLIST );
- InitFopyGVar( "IS_RANGE", &GF_IS__RANGE );
- InitFopyGVar( "IS_STRING_REP", &GF_IS__STRING__REP );
- InitFopyGVar( "Error", &GF_Error );
- InitCopyGVar( "TYPE_OBJ", &GC_TYPE__OBJ );
- InitFopyGVar( "TYPE_OBJ", &GF_TYPE__OBJ );
- InitCopyGVar( "FAMILY_OBJ", &GC_FAMILY__OBJ );
- InitFopyGVar( "IMMUTABLE_COPY_OBJ", &GF_IMMUTABLE__COPY__OBJ );
- InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
- InitFopyGVar( "IS_COMOBJ", &GF_IS__COMOBJ );
- InitFopyGVar( "SET_TYPE_COMOBJ", &GF_SET__TYPE__COMOBJ );
- InitFopyGVar( "IS_POSOBJ", &GF_IS__POSOBJ );
- InitFopyGVar( "SET_TYPE_POSOBJ", &GF_SET__TYPE__POSOBJ );
- InitFopyGVar( "LEN_POSOBJ", &GF_LEN__POSOBJ );
- InitFopyGVar( "IS_DATOBJ", &GF_IS__DATOBJ );
- InitFopyGVar( "SET_TYPE_DATOBJ", &GF_SET__TYPE__DATOBJ );
- InitFopyGVar( "FORCE_SWITCH_OBJ", &GF_FORCE__SWITCH__OBJ );
- InitFopyGVar( "MakeImmutable", &GF_MakeImmutable );
- InitCopyGVar( "IS_OBJECT", &GC_IS__OBJECT );
- InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
- InitFopyGVar( "SUB_FLAGS", &GF_SUB__FLAGS );
- InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
- InitFopyGVar( "IS_EQUAL_FLAGS", &GF_IS__EQUAL__FLAGS );
- InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
- InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
- InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
- InitFopyGVar( "METHODS_OPERATION", &GF_METHODS__OPERATION );
- InitFopyGVar( "SETTER_FUNCTION", &GF_SETTER__FUNCTION );
- InitFopyGVar( "GETTER_FUNCTION", &GF_GETTER__FUNCTION );
- InitFopyGVar( "IS_AND_FILTER", &GF_IS__AND__FILTER );
- InitFopyGVar( "COMPACT_TYPE_IDS", &GF_COMPACT__TYPE__IDS );
- InitCopyGVar( "fail", &GC_fail );
- InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitFopyGVar( "SET_FILTER_LIST", &GF_SET__FILTER__LIST );
- InitFopyGVar( "RESET_FILTER_LIST", &GF_RESET__FILTER__LIST );
- InitFopyGVar( "GASMAN", &GF_GASMAN );
- InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
- InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
- InitFopyGVar( "UNLOCK", &GF_UNLOCK );
- InitFopyGVar( "MIGRATE_RAW", &GF_MIGRATE__RAW );
- InitFopyGVar( "MakeReadOnly", &GF_MakeReadOnly );
- InitFopyGVar( "MakeReadOnlyObj", &GF_MakeReadOnlyObj );
- InitFopyGVar( "AtomicList", &GF_AtomicList );
- InitFopyGVar( "FixedAtomicList", &GF_FixedAtomicList );
- InitFopyGVar( "AtomicRecord", &GF_AtomicRecord );
- InitFopyGVar( "IS_ATOMIC_RECORD", &GF_IS__ATOMIC__RECORD );
- InitFopyGVar( "FromAtomicRecord", &GF_FromAtomicRecord );
- InitFopyGVar( "MakeWriteOnceAtomic", &GF_MakeWriteOnceAtomic );
- InitFopyGVar( "StrictBindOnce", &GF_StrictBindOnce );
- InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
- InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
- InitCopyGVar( "IsAttributeStoringRep", &GC_IsAttributeStoringRep );
- InitFopyGVar( "IsAttributeStoringRep", &GF_IsAttributeStoringRep );
- InitCopyGVar( "GETTER_FLAGS", &GC_GETTER__FLAGS );
- InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
- InitCopyGVar( "SetFilterObj", &GC_SetFilterObj );
- InitFopyGVar( "SetFilterObj", &GF_SetFilterObj );
- InitFopyGVar( "Subtype", &GF_Subtype );
- InitCopyGVar( "DS_TYPE_CACHE", &GC_DS__TYPE__CACHE );
- InitFopyGVar( "ShareSpecialObj", &GF_ShareSpecialObj );
- InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
- InitFopyGVar( "WITH_IMPS_FLAGS", &GF_WITH__IMPS__FLAGS );
- InitCopyGVar( "CATEGORIES_FAMILY", &GC_CATEGORIES__FAMILY );
- InitFopyGVar( "NEW_FAMILY", &GF_NEW__FAMILY );
- InitCopyGVar( "EMPTY_FLAGS", &GC_EMPTY__FLAGS );
- InitFopyGVar( "NewFamily2", &GF_NewFamily2 );
- InitCopyGVar( "TypeOfFamilies", &GC_TypeOfFamilies );
- InitFopyGVar( "NewFamily3", &GF_NewFamily3 );
- InitFopyGVar( "NewFamily4", &GF_NewFamily4 );
- InitFopyGVar( "NewFamily5", &GF_NewFamily5 );
- InitCopyGVar( "NEW_TYPE_CACHE_MISS", &GC_NEW__TYPE__CACHE__MISS );
- InitCopyGVar( "NEW_TYPE_CACHE_HIT", &GC_NEW__TYPE__CACHE__HIT );
- InitCopyGVar( "POS_DATA_TYPE", &GC_POS__DATA__TYPE );
- InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
- InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
- InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
- InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
- InitCopyGVar( "POS_NUMB_TYPE", &GC_POS__NUMB__TYPE );
- InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
- InitFopyGVar( "IsFamily", &GF_IsFamily );
- InitFopyGVar( "NewType3", &GF_NewType3 );
- InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
- InitFopyGVar( "NewType4", &GF_NewType4 );
- InitFopyGVar( "Subtype2", &GF_Subtype2 );
- InitFopyGVar( "Subtype3", &GF_Subtype3 );
- InitFopyGVar( "SupType2", &GF_SupType2 );
- InitFopyGVar( "SupType3", &GF_SupType3 );
- InitFopyGVar( "FlagsType", &GF_FlagsType );
- InitFopyGVar( "TypeObj", &GF_TypeObj );
- InitFopyGVar( "DataType", &GF_DataType );
- InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
- InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
- InitCopyGVar( "IsNonAtomicComponentObjectRep", &GC_IsNonAtomicComponentObjectRep );
- InitCopyGVar( "IsAtomicPositionalObjectRep", &GC_IsAtomicPositionalObjectRep );
- InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
- InitFopyGVar( "IsReadOnlyPositionalObjectRep", &GF_IsReadOnlyPositionalObjectRep );
- InitCopyGVar( "IsAtomicPositionalObjectRepFlags", &GC_IsAtomicPositionalObjectRepFlags );
- InitCopyGVar( "IsNonAtomicComponentObjectRepFlags", &GC_IsNonAtomicComponentObjectRepFlags );
- InitCopyGVar( "ChangeTypeObj", &GC_ChangeTypeObj );
- InitFopyGVar( "ChangeTypeObj", &GF_ChangeTypeObj );
- InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
- InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
- InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
- InitFopyGVar( "Tester", &GF_Tester );
- InitFopyGVar( "Setter", &GF_Setter );
- InitFopyGVar( "FamilyType", &GF_FamilyType );
- InitCopyGVar( "Ignore", &GC_Ignore );
- InitFopyGVar( "MAKE_READ_WRITE_GLOBAL", &GF_MAKE__READ__WRITE__GLOBAL );
- InitCopyGVar( "IsAttributeStoringRepFlags", &GC_IsAttributeStoringRepFlags );
- InitFopyGVar( "INFO_OWA", &GF_INFO__OWA );
- InitFopyGVar( "Objectify", &GF_Objectify );
- 
- /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/type1.g:DefaultName(-132653476)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName(-132653476)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1(-132653476)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1](-132653476)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/type1.g:HdlrFunc2(-132653476)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/type1.g:NameFunc[2](-132653476)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/type1.g:HdlrFunc3(-132653476)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/type1.g:NameFunc[3](-132653476)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/type1.g:HdlrFunc4(-132653476)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/type1.g:NameFunc[4](-132653476)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/type1.g:HdlrFunc5(-132653476)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/type1.g:NameFunc[5](-132653476)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/type1.g:HdlrFunc6(-132653476)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/type1.g:NameFunc[6](-132653476)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/type1.g:HdlrFunc7(-132653476)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/type1.g:NameFunc[7](-132653476)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/type1.g:HdlrFunc8(-132653476)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/type1.g:NameFunc[8](-132653476)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/type1.g:HdlrFunc9(-132653476)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/type1.g:NameFunc[9](-132653476)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/type1.g:HdlrFunc10(-132653476)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/type1.g:NameFunc[10](-132653476)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/type1.g:HdlrFunc11(-132653476)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/type1.g:NameFunc[11](-132653476)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/type1.g:HdlrFunc12(-132653476)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/type1.g:NameFunc[12](-132653476)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/type1.g:HdlrFunc13(-132653476)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/type1.g:NameFunc[13](-132653476)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/type1.g:HdlrFunc14(-132653476)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/type1.g:NameFunc[14](-132653476)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/type1.g:HdlrFunc15(-132653476)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/type1.g:NameFunc[15](-132653476)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/type1.g:HdlrFunc16(-132653476)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/type1.g:NameFunc[16](-132653476)" );
- InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/type1.g:HdlrFunc17(-132653476)" );
- InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/type1.g:NameFunc[17](-132653476)" );
- InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/type1.g:HdlrFunc18(-132653476)" );
- InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/type1.g:NameFunc[18](-132653476)" );
- InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/type1.g:HdlrFunc19(-132653476)" );
- InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/type1.g:NameFunc[19](-132653476)" );
- InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20(-132653476)" );
- InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20](-132653476)" );
- InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/type1.g:HdlrFunc21(-132653476)" );
- InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/type1.g:NameFunc[21](-132653476)" );
- InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/type1.g:HdlrFunc22(-132653476)" );
- InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/type1.g:NameFunc[22](-132653476)" );
- InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/type1.g:HdlrFunc23(-132653476)" );
- InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23](-132653476)" );
- InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24(-132653476)" );
- InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24](-132653476)" );
- InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25(-132653476)" );
- InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25](-132653476)" );
- InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26(-132653476)" );
- InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26](-132653476)" );
- InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27(-132653476)" );
- InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27](-132653476)" );
- InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28(-132653476)" );
- InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28](-132653476)" );
- InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29(-132653476)" );
- InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29](-132653476)" );
- InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30(-132653476)" );
- InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30](-132653476)" );
- InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31(-132653476)" );
- InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31](-132653476)" );
- InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32(-132653476)" );
- InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32](-132653476)" );
- InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33(-132653476)" );
- InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33](-132653476)" );
- InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/type1.g:HdlrFunc34(-132653476)" );
- InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/type1.g:NameFunc[34](-132653476)" );
- 
- /* return success */
- return 0;
- 
-}
-
-/* 'InitLibrary' sets up gvars, rnams, functions */
-static Int InitLibrary ( StructInitInfo * module )
-{
- Obj func1;
- Obj body1;
- 
- /* Complete Copy/Fopy registration */
- UpdateCopyFopyInfo();
- 
- /* global variables used in handlers */
- G_NAME__FUNC = GVarName( "NAME_FUNC" );
- G_IsType = GVarName( "IsType" );
- G_IS__REC = GVarName( "IS_REC" );
- G_IS__LIST = GVarName( "IS_LIST" );
- G_ADD__LIST = GVarName( "ADD_LIST" );
- G_IS__PLIST__REP = GVarName( "IS_PLIST_REP" );
- G_IS__BLIST = GVarName( "IS_BLIST" );
- G_IS__RANGE = GVarName( "IS_RANGE" );
- G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
- G_Error = GVarName( "Error" );
- G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
- G_FAMILY__OBJ = GVarName( "FAMILY_OBJ" );
- G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
- G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
- G_IS__COMOBJ = GVarName( "IS_COMOBJ" );
- G_SET__TYPE__COMOBJ = GVarName( "SET_TYPE_COMOBJ" );
- G_IS__POSOBJ = GVarName( "IS_POSOBJ" );
- G_SET__TYPE__POSOBJ = GVarName( "SET_TYPE_POSOBJ" );
- G_LEN__POSOBJ = GVarName( "LEN_POSOBJ" );
- G_IS__DATOBJ = GVarName( "IS_DATOBJ" );
- G_SET__TYPE__DATOBJ = GVarName( "SET_TYPE_DATOBJ" );
- G_FORCE__SWITCH__OBJ = GVarName( "FORCE_SWITCH_OBJ" );
- G_MakeImmutable = GVarName( "MakeImmutable" );
- G_IS__OBJECT = GVarName( "IS_OBJECT" );
- G_AND__FLAGS = GVarName( "AND_FLAGS" );
- G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
- G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
- G_IS__EQUAL__FLAGS = GVarName( "IS_EQUAL_FLAGS" );
- G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
- G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
- G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
- G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
- G_SETTER__FUNCTION = GVarName( "SETTER_FUNCTION" );
- G_GETTER__FUNCTION = GVarName( "GETTER_FUNCTION" );
- G_IS__AND__FILTER = GVarName( "IS_AND_FILTER" );
- G_COMPACT__TYPE__IDS = GVarName( "COMPACT_TYPE_IDS" );
- G_fail = GVarName( "fail" );
- G_LEN__LIST = GVarName( "LEN_LIST" );
- G_SET__FILTER__LIST = GVarName( "SET_FILTER_LIST" );
- G_RESET__FILTER__LIST = GVarName( "RESET_FILTER_LIST" );
- G_GASMAN = GVarName( "GASMAN" );
- G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
- G_READ__LOCK = GVarName( "READ_LOCK" );
- G_UNLOCK = GVarName( "UNLOCK" );
- G_MIGRATE__RAW = GVarName( "MIGRATE_RAW" );
- G_MakeReadOnly = GVarName( "MakeReadOnly" );
- G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
- G_AtomicList = GVarName( "AtomicList" );
- G_FixedAtomicList = GVarName( "FixedAtomicList" );
- G_AtomicRecord = GVarName( "AtomicRecord" );
- G_IS__ATOMIC__RECORD = GVarName( "IS_ATOMIC_RECORD" );
- G_FromAtomicRecord = GVarName( "FromAtomicRecord" );
- G_MakeWriteOnceAtomic = GVarName( "MakeWriteOnceAtomic" );
- G_StrictBindOnce = GVarName( "StrictBindOnce" );
- G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
- G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
- G_IsAttributeStoringRep = GVarName( "IsAttributeStoringRep" );
- G_GETTER__FLAGS = GVarName( "GETTER_FLAGS" );
- G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
- G_SetFilterObj = GVarName( "SetFilterObj" );
- G_Subtype = GVarName( "Subtype" );
- G_DS__TYPE__CACHE = GVarName( "DS_TYPE_CACHE" );
- G_ShareSpecialObj = GVarName( "ShareSpecialObj" );
- G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_WITH__IMPS__FLAGS = GVarName( "WITH_IMPS_FLAGS" );
- G_CATEGORIES__FAMILY = GVarName( "CATEGORIES_FAMILY" );
- G_NEW__FAMILY = GVarName( "NEW_FAMILY" );
- G_EMPTY__FLAGS = GVarName( "EMPTY_FLAGS" );
- G_NewFamily2 = GVarName( "NewFamily2" );
- G_TypeOfFamilies = GVarName( "TypeOfFamilies" );
- G_NewFamily3 = GVarName( "NewFamily3" );
- G_NewFamily4 = GVarName( "NewFamily4" );
- G_NewFamily5 = GVarName( "NewFamily5" );
- G_NEW__TYPE__CACHE__MISS = GVarName( "NEW_TYPE_CACHE_MISS" );
- G_NEW__TYPE__CACHE__HIT = GVarName( "NEW_TYPE_CACHE_HIT" );
- G_POS__DATA__TYPE = GVarName( "POS_DATA_TYPE" );
- G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
- G_NEW__TYPE__NEXT__ID = GVarName( "NEW_TYPE_NEXT_ID" );
- G_NEW__TYPE__ID__LIMIT = GVarName( "NEW_TYPE_ID_LIMIT" );
- G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
- G_POS__NUMB__TYPE = GVarName( "POS_NUMB_TYPE" );
- G_NEW__TYPE = GVarName( "NEW_TYPE" );
- G_IsFamily = GVarName( "IsFamily" );
- G_NewType3 = GVarName( "NewType3" );
- G_TypeOfTypes = GVarName( "TypeOfTypes" );
- G_NewType4 = GVarName( "NewType4" );
- G_Subtype2 = GVarName( "Subtype2" );
- G_Subtype3 = GVarName( "Subtype3" );
- G_SupType2 = GVarName( "SupType2" );
- G_SupType3 = GVarName( "SupType3" );
- G_FlagsType = GVarName( "FlagsType" );
- G_TypeObj = GVarName( "TypeObj" );
- G_DataType = GVarName( "DataType" );
- G_IsNoImmediateMethodsObject = GVarName( "IsNoImmediateMethodsObject" );
- G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
- G_IsNonAtomicComponentObjectRep = GVarName( "IsNonAtomicComponentObjectRep" );
- G_IsAtomicPositionalObjectRep = GVarName( "IsAtomicPositionalObjectRep" );
- G_IsReadOnlyPositionalObjectRep = GVarName( "IsReadOnlyPositionalObjectRep" );
- G_IsAtomicPositionalObjectRepFlags = GVarName( "IsAtomicPositionalObjectRepFlags" );
- G_IsNonAtomicComponentObjectRepFlags = GVarName( "IsNonAtomicComponentObjectRepFlags" );
- G_ChangeTypeObj = GVarName( "ChangeTypeObj" );
- G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
- G_ResetFilterObj = GVarName( "ResetFilterObj" );
- G_Tester = GVarName( "Tester" );
- G_Setter = GVarName( "Setter" );
- G_FamilyType = GVarName( "FamilyType" );
- G_Ignore = GVarName( "Ignore" );
- G_MAKE__READ__WRITE__GLOBAL = GVarName( "MAKE_READ_WRITE_GLOBAL" );
- G_IsAttributeStoringRepFlags = GVarName( "IsAttributeStoringRepFlags" );
- G_INFO__OWA = GVarName( "INFO_OWA" );
- G_Objectify = GVarName( "Objectify" );
- 
- /* record names used in handlers */
- R_TYPES__LIST__FAM = RNamName( "TYPES_LIST_FAM" );
- R_NAME = RNamName( "NAME" );
- R_REQ__FLAGS = RNamName( "REQ_FLAGS" );
- R_IMP__FLAGS = RNamName( "IMP_FLAGS" );
- R_TYPES = RNamName( "TYPES" );
- R_nTYPES = RNamName( "nTYPES" );
- R_HASH__SIZE = RNamName( "HASH_SIZE" );
- 
- /* information for the functions */
- DefaultName = MakeString( "local function" );
- FileName = MakeString( "GAPROOT/lib/type1.g" );
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 6;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 6;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 2;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 2;
- NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
- NargFunc[7] = 3;
- NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
- NargFunc[8] = 4;
- NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
- NargFunc[9] = 5;
- NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
- NargFunc[10] = -1;
- NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
- NargFunc[11] = 5;
- NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
- NargFunc[12] = 3;
- NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
- NargFunc[13] = 4;
- NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
- NargFunc[14] = -1;
- NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
- NargFunc[15] = 2;
- NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
- NargFunc[16] = 3;
- NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
- NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
- NamsFunc[19] = 0;
- NargFunc[19] = 3;
- NameFunc[20] = DefaultName;
- NamsFunc[20] = 0;
- NargFunc[20] = -1;
- NameFunc[21] = DefaultName;
- NamsFunc[21] = 0;
- NargFunc[21] = 1;
- NameFunc[22] = DefaultName;
- NamsFunc[22] = 0;
- NargFunc[22] = 1;
- NameFunc[23] = DefaultName;
- NamsFunc[23] = 0;
- NargFunc[23] = 1;
- NameFunc[24] = DefaultName;
- NamsFunc[24] = 0;
- NargFunc[24] = 2;
- NameFunc[25] = DefaultName;
- NamsFunc[25] = 0;
- NargFunc[25] = 1;
- NameFunc[26] = DefaultName;
- NamsFunc[26] = 0;
- NargFunc[26] = 1;
- NameFunc[27] = DefaultName;
- NamsFunc[27] = 0;
- NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
- NamsFunc[28] = 0;
- NargFunc[28] = 2;
- NameFunc[29] = DefaultName;
- NamsFunc[29] = 0;
- NargFunc[29] = 2;
- NameFunc[30] = DefaultName;
- NamsFunc[30] = 0;
- NargFunc[30] = 2;
- NameFunc[31] = DefaultName;
- NamsFunc[31] = 0;
- NargFunc[31] = 2;
- NameFunc[32] = DefaultName;
- NamsFunc[32] = 0;
- NargFunc[32] = 3;
- NameFunc[33] = DefaultName;
- NamsFunc[33] = 0;
- NargFunc[33] = -1;
- NameFunc[34] = DefaultName;
- NamsFunc[34] = 0;
- NargFunc[34] = -1;
- 
- /* create all the functions defined in this module */
- func1 = NewFunction(NameFunc[1],NargFunc[1],NamsFunc[1],HdlrFunc1);
- SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, sizeof(BodyHeader));
- SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
- CALL_0ARGS( func1 );
- 
- /* return success */
- return 0;
- 
 }
 
 /* 'PostRestore' restore gvars, rnams, functions */
@@ -5638,108 +5185,40 @@ static Int PostRestore ( StructInitInfo * module )
  R_HASH__SIZE = RNamName( "HASH_SIZE" );
  
  /* information for the functions */
- NameFunc[1] = DefaultName;
- NamsFunc[1] = 0;
- NargFunc[1] = 0;
- NameFunc[2] = DefaultName;
- NamsFunc[2] = 0;
- NargFunc[2] = 6;
- NameFunc[3] = DefaultName;
- NamsFunc[3] = 0;
- NargFunc[3] = 6;
- NameFunc[4] = DefaultName;
- NamsFunc[4] = 0;
- NargFunc[4] = 2;
- NameFunc[5] = DefaultName;
- NamsFunc[5] = 0;
- NargFunc[5] = 4;
- NameFunc[6] = DefaultName;
- NamsFunc[6] = 0;
- NargFunc[6] = 2;
- NameFunc[7] = DefaultName;
- NamsFunc[7] = 0;
- NargFunc[7] = 3;
- NameFunc[8] = DefaultName;
- NamsFunc[8] = 0;
- NargFunc[8] = 4;
- NameFunc[9] = DefaultName;
- NamsFunc[9] = 0;
- NargFunc[9] = 5;
- NameFunc[10] = DefaultName;
- NamsFunc[10] = 0;
- NargFunc[10] = -1;
- NameFunc[11] = DefaultName;
- NamsFunc[11] = 0;
- NargFunc[11] = 5;
- NameFunc[12] = DefaultName;
- NamsFunc[12] = 0;
- NargFunc[12] = 3;
- NameFunc[13] = DefaultName;
- NamsFunc[13] = 0;
- NargFunc[13] = 4;
- NameFunc[14] = DefaultName;
- NamsFunc[14] = 0;
- NargFunc[14] = -1;
- NameFunc[15] = DefaultName;
- NamsFunc[15] = 0;
- NargFunc[15] = 2;
- NameFunc[16] = DefaultName;
- NamsFunc[16] = 0;
- NargFunc[16] = 3;
- NameFunc[17] = DefaultName;
- NamsFunc[17] = 0;
- NargFunc[17] = -1;
- NameFunc[18] = DefaultName;
- NamsFunc[18] = 0;
- NargFunc[18] = 2;
- NameFunc[19] = DefaultName;
- NamsFunc[19] = 0;
- NargFunc[19] = 3;
- NameFunc[20] = DefaultName;
- NamsFunc[20] = 0;
- NargFunc[20] = -1;
- NameFunc[21] = DefaultName;
- NamsFunc[21] = 0;
- NargFunc[21] = 1;
- NameFunc[22] = DefaultName;
- NamsFunc[22] = 0;
- NargFunc[22] = 1;
- NameFunc[23] = DefaultName;
- NamsFunc[23] = 0;
- NargFunc[23] = 1;
- NameFunc[24] = DefaultName;
- NamsFunc[24] = 0;
- NargFunc[24] = 2;
- NameFunc[25] = DefaultName;
- NamsFunc[25] = 0;
- NargFunc[25] = 1;
- NameFunc[26] = DefaultName;
- NamsFunc[26] = 0;
- NargFunc[26] = 1;
- NameFunc[27] = DefaultName;
- NamsFunc[27] = 0;
- NargFunc[27] = 2;
- NameFunc[28] = DefaultName;
- NamsFunc[28] = 0;
- NargFunc[28] = 2;
- NameFunc[29] = DefaultName;
- NamsFunc[29] = 0;
- NargFunc[29] = 2;
- NameFunc[30] = DefaultName;
- NamsFunc[30] = 0;
- NargFunc[30] = 2;
- NameFunc[31] = DefaultName;
- NamsFunc[31] = 0;
- NargFunc[31] = 2;
- NameFunc[32] = DefaultName;
- NamsFunc[32] = 0;
- NargFunc[32] = 3;
- NameFunc[33] = DefaultName;
- NamsFunc[33] = 0;
- NargFunc[33] = -1;
- NameFunc[34] = DefaultName;
- NamsFunc[34] = 0;
- NargFunc[34] = -1;
+ NameFunc[1] = 0;
+ NameFunc[2] = 0;
+ NameFunc[3] = 0;
+ NameFunc[4] = 0;
+ NameFunc[5] = 0;
+ NameFunc[6] = 0;
+ NameFunc[7] = 0;
+ NameFunc[8] = 0;
+ NameFunc[9] = 0;
+ NameFunc[10] = 0;
+ NameFunc[11] = 0;
+ NameFunc[12] = 0;
+ NameFunc[13] = 0;
+ NameFunc[14] = 0;
+ NameFunc[15] = 0;
+ NameFunc[16] = 0;
+ NameFunc[17] = 0;
+ NameFunc[18] = 0;
+ NameFunc[19] = 0;
+ NameFunc[20] = 0;
+ NameFunc[21] = 0;
+ NameFunc[22] = 0;
+ NameFunc[23] = 0;
+ NameFunc[24] = 0;
+ NameFunc[25] = 0;
+ NameFunc[26] = 0;
+ NameFunc[27] = 0;
+ NameFunc[28] = 0;
+ NameFunc[29] = 0;
+ NameFunc[30] = 0;
+ NameFunc[31] = 0;
+ NameFunc[32] = 0;
+ NameFunc[33] = 0;
+ NameFunc[34] = 0;
  
  /* return success */
  return 0;
@@ -5747,9 +5226,233 @@ static Int PostRestore ( StructInitInfo * module )
 }
 
 
+/* 'InitKernel' sets up data structures, fopies, copies, handlers */
+static Int InitKernel ( StructInitInfo * module )
+{
+ 
+ /* global variables used in handlers */
+ InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
+ InitFopyGVar( "IsType", &GF_IsType );
+ InitFopyGVar( "IS_REC", &GF_IS__REC );
+ InitFopyGVar( "IS_LIST", &GF_IS__LIST );
+ InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
+ InitFopyGVar( "IS_PLIST_REP", &GF_IS__PLIST__REP );
+ InitFopyGVar( "IS_BLIST", &GF_IS__BLIST );
+ InitFopyGVar( "IS_RANGE", &GF_IS__RANGE );
+ InitFopyGVar( "IS_STRING_REP", &GF_IS__STRING__REP );
+ InitFopyGVar( "Error", &GF_Error );
+ InitCopyGVar( "TYPE_OBJ", &GC_TYPE__OBJ );
+ InitFopyGVar( "TYPE_OBJ", &GF_TYPE__OBJ );
+ InitCopyGVar( "FAMILY_OBJ", &GC_FAMILY__OBJ );
+ InitFopyGVar( "IMMUTABLE_COPY_OBJ", &GF_IMMUTABLE__COPY__OBJ );
+ InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
+ InitFopyGVar( "IS_COMOBJ", &GF_IS__COMOBJ );
+ InitFopyGVar( "SET_TYPE_COMOBJ", &GF_SET__TYPE__COMOBJ );
+ InitFopyGVar( "IS_POSOBJ", &GF_IS__POSOBJ );
+ InitFopyGVar( "SET_TYPE_POSOBJ", &GF_SET__TYPE__POSOBJ );
+ InitFopyGVar( "LEN_POSOBJ", &GF_LEN__POSOBJ );
+ InitFopyGVar( "IS_DATOBJ", &GF_IS__DATOBJ );
+ InitFopyGVar( "SET_TYPE_DATOBJ", &GF_SET__TYPE__DATOBJ );
+ InitFopyGVar( "FORCE_SWITCH_OBJ", &GF_FORCE__SWITCH__OBJ );
+ InitFopyGVar( "MakeImmutable", &GF_MakeImmutable );
+ InitCopyGVar( "IS_OBJECT", &GC_IS__OBJECT );
+ InitFopyGVar( "AND_FLAGS", &GF_AND__FLAGS );
+ InitFopyGVar( "SUB_FLAGS", &GF_SUB__FLAGS );
+ InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
+ InitFopyGVar( "IS_EQUAL_FLAGS", &GF_IS__EQUAL__FLAGS );
+ InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
+ InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
+ InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
+ InitFopyGVar( "METHODS_OPERATION", &GF_METHODS__OPERATION );
+ InitFopyGVar( "SETTER_FUNCTION", &GF_SETTER__FUNCTION );
+ InitFopyGVar( "GETTER_FUNCTION", &GF_GETTER__FUNCTION );
+ InitFopyGVar( "IS_AND_FILTER", &GF_IS__AND__FILTER );
+ InitFopyGVar( "COMPACT_TYPE_IDS", &GF_COMPACT__TYPE__IDS );
+ InitCopyGVar( "fail", &GC_fail );
+ InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
+ InitFopyGVar( "SET_FILTER_LIST", &GF_SET__FILTER__LIST );
+ InitFopyGVar( "RESET_FILTER_LIST", &GF_RESET__FILTER__LIST );
+ InitFopyGVar( "GASMAN", &GF_GASMAN );
+ InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
+ InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
+ InitFopyGVar( "UNLOCK", &GF_UNLOCK );
+ InitFopyGVar( "MIGRATE_RAW", &GF_MIGRATE__RAW );
+ InitFopyGVar( "MakeReadOnly", &GF_MakeReadOnly );
+ InitFopyGVar( "MakeReadOnlyObj", &GF_MakeReadOnlyObj );
+ InitFopyGVar( "AtomicList", &GF_AtomicList );
+ InitFopyGVar( "FixedAtomicList", &GF_FixedAtomicList );
+ InitFopyGVar( "AtomicRecord", &GF_AtomicRecord );
+ InitFopyGVar( "IS_ATOMIC_RECORD", &GF_IS__ATOMIC__RECORD );
+ InitFopyGVar( "FromAtomicRecord", &GF_FromAtomicRecord );
+ InitFopyGVar( "MakeWriteOnceAtomic", &GF_MakeWriteOnceAtomic );
+ InitFopyGVar( "StrictBindOnce", &GF_StrictBindOnce );
+ InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
+ InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
+ InitCopyGVar( "IsAttributeStoringRep", &GC_IsAttributeStoringRep );
+ InitFopyGVar( "IsAttributeStoringRep", &GF_IsAttributeStoringRep );
+ InitCopyGVar( "GETTER_FLAGS", &GC_GETTER__FLAGS );
+ InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
+ InitCopyGVar( "SetFilterObj", &GC_SetFilterObj );
+ InitFopyGVar( "SetFilterObj", &GF_SetFilterObj );
+ InitFopyGVar( "Subtype", &GF_Subtype );
+ InitCopyGVar( "DS_TYPE_CACHE", &GC_DS__TYPE__CACHE );
+ InitFopyGVar( "ShareSpecialObj", &GF_ShareSpecialObj );
+ InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
+ InitFopyGVar( "WITH_IMPS_FLAGS", &GF_WITH__IMPS__FLAGS );
+ InitCopyGVar( "CATEGORIES_FAMILY", &GC_CATEGORIES__FAMILY );
+ InitFopyGVar( "NEW_FAMILY", &GF_NEW__FAMILY );
+ InitCopyGVar( "EMPTY_FLAGS", &GC_EMPTY__FLAGS );
+ InitFopyGVar( "NewFamily2", &GF_NewFamily2 );
+ InitCopyGVar( "TypeOfFamilies", &GC_TypeOfFamilies );
+ InitFopyGVar( "NewFamily3", &GF_NewFamily3 );
+ InitFopyGVar( "NewFamily4", &GF_NewFamily4 );
+ InitFopyGVar( "NewFamily5", &GF_NewFamily5 );
+ InitCopyGVar( "NEW_TYPE_CACHE_MISS", &GC_NEW__TYPE__CACHE__MISS );
+ InitCopyGVar( "NEW_TYPE_CACHE_HIT", &GC_NEW__TYPE__CACHE__HIT );
+ InitCopyGVar( "POS_DATA_TYPE", &GC_POS__DATA__TYPE );
+ InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
+ InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
+ InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
+ InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
+ InitCopyGVar( "POS_NUMB_TYPE", &GC_POS__NUMB__TYPE );
+ InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
+ InitFopyGVar( "IsFamily", &GF_IsFamily );
+ InitFopyGVar( "NewType3", &GF_NewType3 );
+ InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
+ InitFopyGVar( "NewType4", &GF_NewType4 );
+ InitFopyGVar( "Subtype2", &GF_Subtype2 );
+ InitFopyGVar( "Subtype3", &GF_Subtype3 );
+ InitFopyGVar( "SupType2", &GF_SupType2 );
+ InitFopyGVar( "SupType3", &GF_SupType3 );
+ InitFopyGVar( "FlagsType", &GF_FlagsType );
+ InitFopyGVar( "TypeObj", &GF_TypeObj );
+ InitFopyGVar( "DataType", &GF_DataType );
+ InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
+ InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
+ InitCopyGVar( "IsNonAtomicComponentObjectRep", &GC_IsNonAtomicComponentObjectRep );
+ InitCopyGVar( "IsAtomicPositionalObjectRep", &GC_IsAtomicPositionalObjectRep );
+ InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
+ InitFopyGVar( "IsReadOnlyPositionalObjectRep", &GF_IsReadOnlyPositionalObjectRep );
+ InitCopyGVar( "IsAtomicPositionalObjectRepFlags", &GC_IsAtomicPositionalObjectRepFlags );
+ InitCopyGVar( "IsNonAtomicComponentObjectRepFlags", &GC_IsNonAtomicComponentObjectRepFlags );
+ InitCopyGVar( "ChangeTypeObj", &GC_ChangeTypeObj );
+ InitFopyGVar( "ChangeTypeObj", &GF_ChangeTypeObj );
+ InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
+ InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
+ InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
+ InitFopyGVar( "Tester", &GF_Tester );
+ InitFopyGVar( "Setter", &GF_Setter );
+ InitFopyGVar( "FamilyType", &GF_FamilyType );
+ InitCopyGVar( "Ignore", &GC_Ignore );
+ InitFopyGVar( "MAKE_READ_WRITE_GLOBAL", &GF_MAKE__READ__WRITE__GLOBAL );
+ InitCopyGVar( "IsAttributeStoringRepFlags", &GC_IsAttributeStoringRepFlags );
+ InitFopyGVar( "INFO_OWA", &GF_INFO__OWA );
+ InitFopyGVar( "Objectify", &GF_Objectify );
+ 
+ /* information for the functions */
+ InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/type1.g:HdlrFunc2("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/type1.g:NameFunc[2]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/type1.g:HdlrFunc3("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/type1.g:NameFunc[3]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/type1.g:HdlrFunc4("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/type1.g:NameFunc[4]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/type1.g:HdlrFunc5("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/type1.g:NameFunc[5]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/type1.g:HdlrFunc6("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/type1.g:NameFunc[6]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/type1.g:HdlrFunc7("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/type1.g:NameFunc[7]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/type1.g:HdlrFunc8("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/type1.g:NameFunc[8]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/type1.g:HdlrFunc9("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/type1.g:NameFunc[9]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/type1.g:HdlrFunc10("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/type1.g:NameFunc[10]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/type1.g:HdlrFunc11("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/type1.g:NameFunc[11]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/type1.g:HdlrFunc12("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/type1.g:NameFunc[12]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/type1.g:HdlrFunc13("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/type1.g:NameFunc[13]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/type1.g:HdlrFunc14("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/type1.g:NameFunc[14]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/type1.g:HdlrFunc15("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/type1.g:NameFunc[15]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/type1.g:HdlrFunc16("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/type1.g:NameFunc[16]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/type1.g:HdlrFunc17("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/type1.g:NameFunc[17]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/type1.g:HdlrFunc18("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/type1.g:NameFunc[18]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/type1.g:HdlrFunc19("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/type1.g:NameFunc[19]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/type1.g:HdlrFunc21("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/type1.g:NameFunc[21]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/type1.g:HdlrFunc22("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/type1.g:NameFunc[22]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/type1.g:HdlrFunc23("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/type1.g:HdlrFunc34("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/type1.g:NameFunc[34]("FILE_CRC")" );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
+/* 'InitLibrary' sets up gvars, rnams, functions */
+static Int InitLibrary ( StructInitInfo * module )
+{
+ Obj func1;
+ Obj body1;
+ 
+ /* Complete Copy/Fopy registration */
+ UpdateCopyFopyInfo();
+ FileName = MakeImmString( "GAPROOT/lib/type1.g" );
+ PostRestore(module);
+ 
+ /* create all the functions defined in this module */
+ func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
+ SET_ENVI_FUNC( func1, STATE(CurrLVars) );
+ CHANGED_BAG( STATE(CurrLVars) );
+ body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ SET_BODY_FUNC( func1, body1 );
+ CHANGED_BAG( func1 );
+ CALL_0ARGS( func1 );
+ 
+ /* return success */
+ return 0;
+ 
+}
+
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ 2,
+ /* type        = */ MODULE_STATIC,
  /* name        = */ "GAPROOT/lib/type1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,

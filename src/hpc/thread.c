@@ -13,7 +13,7 @@
 #include <src/stats.h>
 #include <src/gap.h>
 #include <src/hpc/misc.h>
-#include <src/hpc/tls.h>
+#include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
 #include <src/fibhash.h>
@@ -1101,7 +1101,7 @@ int LockObject(Obj obj, int mode)
     return result;
 }
 
-int LockObjects(int count, Obj * objects, int * mode)
+int LockObjects(int count, Obj * objects, const int * mode)
 {
     int           result;
     int           i, p;
@@ -1168,7 +1168,7 @@ int LockObjects(int count, Obj * objects, int * mode)
     return result;
 }
 
-int TryLockObjects(int count, Obj * objects, int * mode)
+int TryLockObjects(int count, Obj * objects, const int * mode)
 {
     int           result;
     int           i;

@@ -123,6 +123,7 @@ BIND_GLOBAL := function( name, val)
     MAKE_READ_ONLY_GLOBAL(name);
     return val;
 end;
+MAKE_READ_ONLY_GLOBAL("BIND_GLOBAL");
 
 #############################################################################
 ##

@@ -20,7 +20,6 @@
 */
 
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 #include <src/gap.h>                    /* get UserHasQUIT */
 

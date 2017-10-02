@@ -1,5 +1,4 @@
 #include <src/system.h>
-#include <src/gapstate.h>
 #include <src/gasman.h>
 #include <src/objects.h>
 #include <src/scanner.h>

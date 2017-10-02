@@ -16,7 +16,6 @@
 **  in some other kind of object). 
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <src/gasman.h>                 /* garbage collector */
@@ -39,8 +38,7 @@
 
 #include <src/scanner.h>                /* scanner */
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
+#include <src/hpc/guards.h>
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP
@@ -80,7 +78,7 @@
 **  an overestimate
 */
 
-#define STORED_LEN_WPOBJ(wp)                 ((Int)(ADDR_OBJ(wp)[0]))
+#define STORED_LEN_WPOBJ(wp)                 ((Int)(CONST_ADDR_OBJ(wp)[0]))
 
 /****************************************************************************
 **
@@ -147,7 +145,7 @@ Int GrowWPObj (
       ELM_WPOBJ(wp, i) = 0;
       ELM_WPOBJ(copy, i) = tmp;
     }
-    PTR_BAG(wp) = PTR_BAG(copy);
+    SET_PTR_BAG(wp, PTR_BAG(copy));
 #endif
 
     /* return something (to please some C compilers)                       */
@@ -584,7 +582,7 @@ Obj CopyObjWPObj (
     /* make a copy                                                         */
     if ( mut ) {
         copy = NewBag( T_WPOBJ, SIZE_OBJ(obj) );
-        ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+        ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     }
     else {
         copy = NewBag( T_PLIST+IMMUTABLE, SIZE_OBJ(obj) );
@@ -594,7 +592,7 @@ Obj CopyObjWPObj (
     /* leave a forwarding pointer                                          */
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(obj)[0] );
+    SET_ELM_PLIST( tmp, 1, CONST_ADDR_OBJ(obj)[0] );
     SET_ELM_PLIST( tmp, 2, copy );
     ADDR_OBJ(obj)[0] = tmp;
     CHANGED_BAG(obj);
@@ -604,7 +602,7 @@ Obj CopyObjWPObj (
 
     /* copy the subvalues                                                  */
     for ( i =  SIZE_OBJ(obj)/sizeof(Obj)-1; i > 0; i-- ) {
-        elm = ADDR_OBJ(obj)[i];
+        elm = CONST_ADDR_OBJ(obj)[i];
         if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) {
             tmp = COPY_OBJ( elm, mut );
             ADDR_OBJ(copy)[i] = tmp;
@@ -653,7 +651,7 @@ void MakeImmutableWPObj( Obj obj )
     SET_ELM_PLIST(copy, i, tmp);
   }
   SET_LEN_PLIST(copy, len);
-  PTR_BAG(obj) = PTR_BAG(copy);
+  SET_PTR_BAG(obj, PTR_BAG(copy));
 #endif
 }
 
@@ -675,7 +673,7 @@ Obj CopyObjWPObjCopy (
     Obj                 obj,
     Int                 mut )
 {
-    return ELM_PLIST( ADDR_OBJ(obj)[0], 2 );
+    return ELM_PLIST( CONST_ADDR_OBJ(obj)[0], 2 );
 }
 
 
@@ -690,7 +688,7 @@ void CleanObjWPObjCopy (
     Obj                 elm;            /* subobject                       */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = ELM_PLIST( ADDR_OBJ(obj)[0], 1 );
+    ADDR_OBJ(obj)[0] = ELM_PLIST( CONST_ADDR_OBJ(obj)[0], 1 );
     CHANGED_BAG(obj);
 
     /* now it is cleaned                                                   */
@@ -698,7 +696,7 @@ void CleanObjWPObjCopy (
 
     /* clean the subvalues                                                 */
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
-        elm = ADDR_OBJ(obj)[i];
+        elm = CONST_ADDR_OBJ(obj)[i];
         if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) 
           CLEAN_OBJ( elm );
     }

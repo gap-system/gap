@@ -70,9 +70,12 @@ if ARCH_IS_WINDOWS() then
   type := "url",
   show := function( filename )
     local pos, winfilename;
-    if not filename{[1..9]}="/cygdrive" then
-      Error( "the name of the help file ", filename , " must start with /cygdrive" );
+    if not StartsWith(filename, "/cygdrive") and
+       not StartsWith(filename, "/proc/cygdrive") then
+      Error( "the name of the help file ", filename , " must start with /cygdrive or /proc/cygdrive" );
     else
+      # Ignoring part of the URL after '#' since we are unable
+      # to navigate to the precise location on Windows
       winfilename:=MakeExternalFilename( SplitString( filename, "#" )[1] );
     fi;
     Print( "Opening help page ", winfilename, " in default windows browser ... \c" );

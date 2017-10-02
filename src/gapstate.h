@@ -31,7 +31,6 @@ typedef struct GAPState {
     UInt IntrCoding;
     Obj  IntrState;
     Obj  StackObj;
-    Int  CountObj;
     Obj  Tilde;
 
     /* From gvar.c */
@@ -49,7 +48,6 @@ typedef struct GAPState {
     syJmp_buf ReadJmpError;
     syJmp_buf threadExit;
     Obj       StackNams;
-    UInt      CountNams;
     UInt      ReadTop;
     UInt      ReadTilde;
     UInt      CurrLHSGVar;
@@ -91,9 +89,6 @@ typedef struct GAPState {
     Char *          TheBuffer;
     UInt            TheCount;
     UInt            TheLimit;
-
-    /* From exprs.c */
-    Obj (**CurrEvalExprFuncs)(Expr);
 
     /* From stats.c */
     Stat CurrStat;
@@ -195,8 +190,8 @@ typedef struct GAPState {
 
 #else
 
-extern GAPState * MainGAPState;
-#define STATE(x) (MainGAPState->x)
+extern GAPState MainGAPState;
+#define STATE(x) (MainGAPState.x)
 
 #endif
 

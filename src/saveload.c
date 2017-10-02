@@ -12,7 +12,6 @@
 **  throughout the kernel
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
 
 #include <unistd.h>                     /* write, read */
@@ -35,8 +34,6 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/code.h>                   /* coder */
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/tls.h>                /* thread-local storage */
 
 #include <src/gaputils.h>
 
@@ -357,7 +354,7 @@ void SaveSubObj( Obj subobj )
       SaveUInt(0);
     }
   else
-    SaveUInt(((UInt)((PTR_BAG(subobj))[-1])) << 2);
+    SaveUInt(((UInt)LINK_BAG(subobj)) << 2);
 #endif
 }
 
@@ -603,12 +600,12 @@ static UInt NextSaveIndex = 1;
 
 static void AddSaveIndex( Bag bag)
 {
-  PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
+  LINK_BAG(bag) = (Obj)NextSaveIndex++;
 }
 
 static void RemoveSaveIndex( Bag bag)
 {
-  PTR_BAG(bag)[-1] = bag;
+  LINK_BAG(bag) = bag;
 }
 
 static void WriteSaveHeader( void )
@@ -823,22 +820,22 @@ void LoadWorkspace( Char * fname )
 	{
 	  StructInitInfo *info = NULL;
  	  /* Search for user module static case first */
-	  if (type == MODULE_STATIC) { 
-	    UInt k;
-	    for ( k = 0;  CompInitFuncs[k];  k++ ) {
-	      info = (*(CompInitFuncs[k]))();
-	      if ( info == 0 ) {
-		continue;
-	      }
-	      if ( ! strcmp( buf, info->name ) ) {
-		break;
-	      }
-	    }
-	    if ( CompInitFuncs[k] == 0 ) {
-	      Pr( "Static module %s not found in loading kernel\n",
-		  (Int)buf, 0L );
-	      SyExit(1);
-	    }
+          if (IS_MODULE_STATIC(type)) {
+              UInt k;
+              for (k = 0; CompInitFuncs[k]; k++) {
+                  info = (*(CompInitFuncs[k]))();
+                  if (info == 0) {
+                      continue;
+                  }
+                  if (!strcmp(buf, info->name)) {
+                      break;
+                  }
+              }
+              if (CompInitFuncs[k] == 0) {
+                  Pr("Static module %s not found in loading kernel\n",
+                     (Int)buf, 0L);
+                  SyExit(1);
+              }
 	
 	  } else {
 	    /* and dynamic case */

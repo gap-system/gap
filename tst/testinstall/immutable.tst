@@ -53,8 +53,32 @@ gap> IsMutable(StabChainImmutable(Group(())));
 false
 gap> IsMutable(StabChainMutable(Group(())));
 true
-gap> STOP_TEST( "immutable.tst", 1);
 
-#############################################################################
-##
-#E
+#
+gap> v := Immutable([Z(27), Z(3)]);;
+gap> IsMutable(v);
+false
+gap> ConvertToVectorRep(v);;
+gap> IsMutable(v);
+false
+gap> v := Immutable([Z(27), Z(3)]);;
+gap> IsMutable(v);
+false
+gap> ConvertToVectorRepNC(v);;
+gap> IsMutable(v);
+false
+gap> v := [Z(27), Z(3)];;
+gap> IsMutable(v);
+true
+gap> ConvertToVectorRep(v);;
+gap> IsMutable(v);
+true
+gap> v := [Z(27), Z(3)];;
+gap> IsMutable(v);
+true
+gap> ConvertToVectorRepNC(v);;
+gap> IsMutable(v);
+true
+
+#
+gap> STOP_TEST( "immutable.tst", 1);

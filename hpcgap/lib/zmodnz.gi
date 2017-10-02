@@ -85,7 +85,6 @@ InstallOtherMethod( ZmodnZObj,
       # via residues.
       Fam!.typeOfZmodnZObj:= NewType( Fam,
                                  IsZmodpZObjSmall and IsModulusRep );
-      SetDataType( Fam!.typeOfZmodnZObj, p );   # TODO: remove once no package uses this
 
     fi;
     return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
@@ -773,12 +772,12 @@ InstallMethod( AsSSortedList,
 ##
 #M  Random( <R> ) . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
-InstallMethod( Random,
-    "for full ring Z/nZ",
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
+InstallMethodWithRandomSource(Random,
+    "for a random source and full ring Z/nZ",
+    [ IsRandomSource, IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     RankFilter( IsRing ),
-    R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
-                    Random( [ 0 .. Size( R ) - 1 ] ) ) );
+    { rs, R } -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
+                    Random( rs, [ 0 .. Size( R ) - 1 ] ) ) );
 
 
 #############################################################################
@@ -992,7 +991,6 @@ InstallGlobalFunction( ZmodnZ, function( n )
 
     # Store the objects type.
     F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
-    SetDataType( F!.typeOfZmodnZObj, n ); # TODO: remove once no package uses this
 
     # as n is no prime, the family is no UFD
     SetIsUFDFamily(F,false);

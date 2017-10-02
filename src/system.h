@@ -29,6 +29,7 @@
 /* include C library stdlib.h to ensure size_t etc. is defined. */
 #include <stdlib.h>
 
+#include <string.h>     // memcpy etc.
 
 
 /****************************************************************************
@@ -146,6 +147,34 @@ typedef UInt8    UInt;
 typedef Int4     Int;
 typedef UInt4    UInt;
 #endif
+
+/****************************************************************************
+**
+**  'START_ENUM_RANGE' and 'END_ENUM_RANGE' simplify creating "ranges" of
+**  enum variables.
+**
+**  Usage example:
+**    enum {
+**      START_ENUM_RANGE(FIRST),
+**        FOO,
+**        BAR,
+**      END_ENUM_RANGE(LAST)
+**    };
+**  is essentially equivalent to
+**    enum {
+**      FIRST,
+**        FOO = FIRST,
+**        BAR,
+**      LAST = BAR
+**    };
+**  Note that if we add a value into the range after 'BAR', we must adjust
+**  the definition of 'LAST', which is easy to forget. Also, reordering enum
+**  values may require extra work. With the range macros, all of this is
+**  taken care of automatically.
+*/
+#define START_ENUM_RANGE(id)            id, _##id##_post = id - 1
+#define START_ENUM_RANGE_INIT(id,init)  id = init, _##id##_post = id - 1
+#define END_ENUM_RANGE(id)              _##id##_pre, id = _##id##_pre - 1
 
 
 /****************************************************************************
@@ -783,18 +812,56 @@ extern void SyAbortBags(const Char * msg) NORETURN;
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * loading of modules * * * * * * * * * * * * * * *
+**
+** GAP_KERNEL_API_VERSION gives the version of the GAP kernel. This value
+** is used to check if kernel modules were built with a compatible kernel.
+** This version is not the same as, and not connected to, the GAP version.
+**
+** This is stored as GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION
+**
+** The algorithm used is the following:
+**
+** The kernel will not load a module compiled for a newer kernel.
+**
+** The kernel will not load a module compiled for a different major version.
+**
+** The minor version should be incremented when new backwards-compatible
+** functionality is added. The major version should be incremented when
+** a backwards-incompatible change is made.
+**
 */
 
 enum {
+    GAP_KERNEL_MAJOR_VERSION = 1,
+    GAP_KERNEL_MINOR_VERSION = 1,
+    GAP_KERNEL_API_VERSION = GAP_KERNEL_MAJOR_VERSION * 1000 + GAP_KERNEL_MINOR_VERSION
+};
+
+enum {
     /** builtin module */
-    MODULE_BUILTIN = 1,
+    MODULE_BUILTIN = GAP_KERNEL_API_VERSION * 10,
 
     /** statically loaded compiled module */
-    MODULE_STATIC  = 2,
+    MODULE_STATIC = GAP_KERNEL_API_VERSION * 10 + 1,
 
     /** dynamically loaded compiled module */
-    MODULE_DYNAMIC = 3,
+    MODULE_DYNAMIC = GAP_KERNEL_API_VERSION * 10 + 2,
 };
+
+static inline Int IS_MODULE_BUILTIN(UInt type)
+{
+    return type % 10 == 0;
+}
+
+static inline Int IS_MODULE_STATIC(UInt type)
+{
+    return type % 10 == 1;
+}
+
+static inline Int IS_MODULE_DYNAMIC(UInt type)
+{
+    return type % 10 == 2;
+}
 
 
 /****************************************************************************
