@@ -161,15 +161,6 @@ BIND_GLOBAL("CopyToRegion", {x,y} -> x);
 BIND_GLOBAL("SetTLDefault", BindThreadLocal);
 BIND_GLOBAL("SetTLConstructor", BindThreadLocalConstructor);
 
-
-BIND_GLOBAL("CHECKED_GET_ATOMIC_LIST", function(l, pos, default)
-    if IsBound(l[pos]) then
-        return l[pos];
-    else
-        return default;
-    fi;
-end);
-
 BIND_GLOBAL("COMPARE_AND_SWAP", function(l, pos, old, new)
     if IsBound(l[pos]) and IS_IDENTICAL_OBJ(l[pos], old) then
         l[pos] := new;

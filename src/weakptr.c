@@ -434,6 +434,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
   return 0;
 }
 
+
 /****************************************************************************
 **
 *F  FuncElmWPObj( <self>, <wp>, <pos> ) . . . . . . . . . . .Access WP Object
@@ -448,32 +449,20 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 **  collection.
 */
 
-Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
+#include <stdio.h>
+
+// Provide implementation of ElmDefListFuncs
+Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 {
-  if (TNUM_OBJ(wp) != T_WPOBJ)
-    {
-      ErrorMayQuit("ElmWPObj: First argument must be a weak pointer object, not a %s",
-                   (Int)TNAM_OBJ(wp), 0);
-    }
-
-  if (!IS_INTOBJ(pos))
-    {
-      ErrorMayQuit("ElmWPObj: Position must be a small integer, not a %s",
-                (Int)TNAM_OBJ(pos),0L);
-    }
-
-  UInt ipos = INT_INTOBJ(pos);
-  if (ipos < 1)
-    {
-      ErrorMayQuit("ElmWPObj: Position must be a positive integer",0L,0L);
-    }
+    GAP_ASSERT(TNUM_OBJ(wp) == T_WPOBJ);
+    GAP_ASSERT(ipos >= 1);
 
 #ifdef HPCGAP
-  if ( LengthWPObj(wp) < ipos ) 
-    return Fail;
+  if ( LengthWPObj(wp) < ipos )
+      return def;
 #else
-  if ( STORED_LEN_WPOBJ(wp) < ipos ) 
-    return Fail;
+  if ( STORED_LEN_WPOBJ(wp) < ipos )
+      return def;
 #endif
 
 #ifdef BOEHM_GC
@@ -483,17 +472,38 @@ Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
 #ifdef BOEHM_GC
   MEMBAR_READ();
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
-    return Fail;
+      return def;
 #else
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
-      return Fail;
+      return def;
     }
   if (elm == 0)
-    return Fail;
+      return def;
 #endif
   return elm;
+}
+
+Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
+{
+    if (TNUM_OBJ(wp) != T_WPOBJ) {
+        ErrorMayQuit("ElmWPObj: First argument must be a weak pointer "
+                     "object, not a %s",
+                     (Int)TNAM_OBJ(wp), 0);
+    }
+
+    if (!IS_INTOBJ(pos)) {
+        ErrorMayQuit("ElmWPObj: Position must be a small integer, not a %s",
+                     (Int)TNAM_OBJ(pos), 0L);
+    }
+
+    Int ipos = INT_INTOBJ(pos);
+    if (ipos < 1) {
+        ErrorMayQuit("ElmWPObj: Position must be a positive integer", 0L, 0L);
+    }
+
+    return ElmDefWPList(wp, ipos, Fail);
 }
 
 
@@ -841,7 +851,10 @@ static Int InitKernel (
     /* saving function                                                     */
     SaveObjFuncs[ T_WPOBJ ] = SaveWPObj;
     LoadObjFuncs[ T_WPOBJ ] = LoadWPObj;
-    
+
+    // List functions
+    ElmDefListFuncs[T_WPOBJ] = ElmDefWPList;
+
     /* copying functions                                                   */
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
     CopyObjFuncs[  T_WPOBJ + COPYING ] = CopyObjWPObjCopy;

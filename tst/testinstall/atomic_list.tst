@@ -60,14 +60,14 @@ gap> IsBound(a[3]);
 false
 gap> IsBound(a[9]);
 false
-gap> CHECKED_GET_ATOMIC_LIST(a, 2, -1);
+gap> GetWithDefault(a, 2, -1);
 7
-gap> CHECKED_GET_ATOMIC_LIST(a, 3, -1);
+gap> GetWithDefault(a, 3, -1);
 -1
-gap> CHECKED_GET_ATOMIC_LIST(a, 10, -1);
+gap> GetWithDefault(a, 10, -1);
 -1
 gap> s := "";;
-gap> IsIdenticalObj(CHECKED_GET_ATOMIC_LIST(a, 10, s), s);
+gap> IsIdenticalObj(GetWithDefault(a, 10, s), s);
 true
 gap> COMPARE_AND_SWAP(a, 2, 6, 5);
 false
@@ -141,14 +141,14 @@ gap> IsBound(a[3]);
 false
 gap> IsBound(a[9]);
 false
-gap> CHECKED_GET_ATOMIC_LIST(a, 2, -1);
+gap> GetWithDefault(a, 2, -1);
 7
-gap> CHECKED_GET_ATOMIC_LIST(a, 3, -1);
+gap> GetWithDefault(a, 3, -1);
 -1
-gap> CHECKED_GET_ATOMIC_LIST(a, 10, -1);
+gap> GetWithDefault(a, 10, -1);
 -1
 gap> s := "";;
-gap> IsIdenticalObj(CHECKED_GET_ATOMIC_LIST(a, 10, s), s);
+gap> IsIdenticalObj(GetWithDefault(a, 10, s), s);
 true
 gap> COMPARE_AND_SWAP(a, 2, 6, 5);
 false

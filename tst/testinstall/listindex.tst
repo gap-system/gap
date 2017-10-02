@@ -23,6 +23,10 @@ gap> InstallOtherMethod(IsBound\[\],[r and IsMutable,IsObject],function(l,ix)
 >     Print ("IsBound ",ix,"\n");
 >     return false;
 > end);
+gap> InstallOtherMethod(GetWithDefault, [r and IsMutable, IsInt, IsObject], function(a,ix,d)
+>     Print("GetWithDefault ", ix, ":", d, "\n");
+>     return d;
+> end);
 
 #
 gap> InstallOtherMethod(\[\],[r,IsPosInt,IsPosInt],function(l,i,j) 
@@ -98,6 +102,9 @@ false
 gap> IsBound(o["abc"]);
 IsBound abc
 false
+gap> GetWithDefault(o, 2, "abc");
+GetWithDefault 2:abc
+"abc"
 gap> foo := function(a)
 >     return[ a[1,2,3],
 >             a[4,5],
@@ -138,6 +145,24 @@ gap> s;
 gap> s := [];; Add(s, 0, -1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Add' on 3 arguments
+gap> s := [];; GetWithDefault(s, 0, -1);
+Error, GetWithDefault: <pos> must be >= 0
+gap> s := [];; GetWithDefault(s, "cheese", -1);
+Error, GetWithDefault: <pos> must be an integer (not a list (string))
+gap> t := [];; GetWithDefault(t, 1, -1);
+-1
+gap> t := [6];; GetWithDefault(t, 1, -1);
+6
+gap> t := [6];; GetWithDefault(t, 2, -1);
+-1
+gap> t := "cheese";; GetWithDefault(t, 2, -1);
+'h'
+gap> t := "cheese";; GetWithDefault(t, 7, -1);
+-1
+gap> t := BlistList([1..5], [2]);; GetWithDefault(t, 2, -1);
+true
+gap> t := BlistList([1..5], [2]);; GetWithDefault(t, 6, -1);
+-1
 gap> l := [];; Append(l, [1]); l;
 [ 1 ]
 gap> l := [];; Append(l, "cheese"); l;

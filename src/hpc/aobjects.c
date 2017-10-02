@@ -351,20 +351,17 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 // The reason this function exists is that it is not thread-safe to
 // check if an index in a list is bound before reading it, as it
 // could be unbound before the actual reading is performed.
-static Obj FuncCHECKED_GET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
+static Obj ElmDefAList(Obj list, Int n, Obj value)
 {
-    UInt        n;
     UInt        len;
     AtomicObj * addr;
     Obj         val;
-    if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
-        ArgumentError(
-            "CHECKED_GET_ATOMIC_LIST: First argument must be an atomic list");
+
+    GAP_ASSERT(TNUM_OBJ(list) == T_ALIST || TNUM_OBJ(list) == T_FIXALIST);
+    GAP_ASSERT(n > 0);
     addr = ADDR_ATOM(list);
     len = ALIST_LEN((UInt)addr[0].atom);
-    if (!IS_INTOBJ(index))
-        ArgumentError("CHECKED_GET_ATOMIC_LIST: Second argument must be an integer");
-    n = INT_INTOBJ(index);
+
     if (n <= 0 || n > len) {
         val = 0;
     }
@@ -1882,7 +1879,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(FromAtomicList, 1, "list"),
     GVAR_FUNC(AddAtomicList, 2, "list, obj"),
     GVAR_FUNC(GET_ATOMIC_LIST, 2, "list, index"),
-    GVAR_FUNC(CHECKED_GET_ATOMIC_LIST, 3, "list, index, default"),
     GVAR_FUNC(SET_ATOMIC_LIST, 3, "list, index, value"),
     GVAR_FUNC(COMPARE_AND_SWAP, 4, "list, index, old, new"),
     GVAR_FUNC(ATOMIC_BIND, 3, "list, index, new"),
@@ -1988,6 +1984,7 @@ static Int InitKernel (
   LenListFuncs[T_FIXALIST] = LenListAList;
   LengthFuncs[T_FIXALIST] = LengthAList;
   Elm0ListFuncs[T_FIXALIST] = Elm0AList;
+  ElmDefListFuncs[T_FIXALIST] = ElmDefAList;
   Elm0vListFuncs[T_FIXALIST] = Elm0AList;
   ElmListFuncs[T_FIXALIST] = ElmAList;
   ElmvListFuncs[T_FIXALIST] = ElmAList;
@@ -2002,6 +1999,7 @@ static Int InitKernel (
   LenListFuncs[T_ALIST] = LenListAList;
   LengthFuncs[T_ALIST] = LengthAList;
   Elm0ListFuncs[T_ALIST] = Elm0AList;
+  ElmDefListFuncs[T_ALIST] = ElmDefAList;
   Elm0vListFuncs[T_ALIST] = Elm0AList;
   ElmListFuncs[T_ALIST] = ElmAList;
   ElmvListFuncs[T_ALIST] = ElmAList;

@@ -378,6 +378,58 @@ Int ISB2_LIST(Obj list, Obj pos1, Obj pos2)
 */
 Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
+/****************************************************************************
+**
+*V  ElmDefListFuncs[ <type> ] . . . . . . . . .  table of selection functions
+**
+**  'ELM_DEFAULT_LIST' returns the element at the position <pos> in the list
+**  <list>, or <default> if <list> has no assigned object at position <pos>.
+**  An error is signalled if <list> is not a list. It is the responsibility
+**  of the caller to ensure that <pos> is a positive integer.
+*/
+Obj (*ElmDefListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos, Obj def);
+
+// Default implementation of ELM_DEFAULT_LIST
+Obj ElmDefListDefault(Obj list, Int pos, Obj def)
+{
+    Obj val = ELM0_LIST(list, pos);
+    if (val) {
+        return val;
+    }
+    else {
+        return def;
+    }
+}
+
+/****************************************************************************
+**
+*F  ElmDefListObject( <list>, <pos>, <default> )select an element from a list
+**
+**  `ElmDefListObject' is the `ELM_DEFAULT_LIST' function for objects.
+**
+*/
+static Obj ElmDefListOper;
+
+Obj ElmDefListObject(Obj list, Int pos, Obj def)
+{
+    return DoOperation3Args(ElmDefListOper, list, INTOBJ_INT(pos), def);
+}
+
+Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
+{
+    // Dispath ensures 'list' is a list, and 'pos' is an int.
+    // just need to check 'pos' is a small int which is > 0.
+    if (!IS_INTOBJ(pos)) {
+        ErrorMayQuit("GetWithDefault: <pos> must be an integer (not a %s)",
+                     (Int)TNAM_OBJ(pos), 0);
+    }
+
+    Int ipos = INT_INTOBJ(pos);
+    if (ipos < 1) {
+        ErrorMayQuit("GetWithDefault: <pos> must be >= 0", 0, 0);
+    }
+    return ELM_DEFAULT_LIST(list, ipos, def);
+}
 
 /****************************************************************************
 **
@@ -2328,15 +2380,16 @@ static StructGVarProp GVarProps [] = {
 **
 *V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
-static StructGVarOper GVarOpers [] = {
+static StructGVarOper GVarOpers[] = {
 
     // POS_LIST can take 2 or 3 arguments; since NewOperation ignores the
     // handler for variadic operations, use DoOperation0Args as a placeholder.
-    { "POS_LIST", -1, "list, obj[, start]", &PosListOper,
-      DoOperation0Args, "src/lists.c:POS_LIST" },
+    { "POS_LIST", -1, "list, obj[, start]", &PosListOper, DoOperation0Args,
+      "src/lists.c:POS_LIST" },
 
     GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),
     GVAR_OPER(ELM0_LIST, 2, "list, pos", &Elm0ListOper),
+    GVAR_OPER(ELM_DEFAULT_LIST, 3, "list, pos, default", &ElmDefListOper),
     GVAR_OPER(ELM_LIST, 2, "list, pos", &ElmListOper),
     GVAR_OPER(ELMS_LIST, 2, "list, poss", &ElmsListOper),
     GVAR_OPER(UNB_LIST, 2, "list, pos", &UnbListOper),
@@ -2460,6 +2513,16 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         Elm0ListFuncs[  type ] = Elm0ListObject;
         Elm0vListFuncs[ type ] = Elm0ListObject;
+    }
+
+    // make and install ELM_DEFAULT_LIST operation
+    // we install this for all TNUMs, as the default implementation delegates
+    // to other list operations, we can error if approriate
+    for (type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++) {
+        ElmDefListFuncs[type] = ElmDefListDefault;
+    }
+    for (type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++) {
+        ElmDefListFuncs[type] = ElmDefListObject;
     }
 
 
