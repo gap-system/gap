@@ -427,14 +427,7 @@ function()
 
     # Basic setup of compiler
     compiler := rec();
-    compiler.compile := tree -> pretty(80,
-                                       group( DOC.CONCAT( DOC.CONCAT( DOC.CONCAT( DOC.TEXT("hello"), bracket("(", DOC.TEXT("world") ,")"))
-                                                                    , DOC.LINE )
-                                                                    , bracket( "begin"
-                                                                           , DOC.CONCAT( DOC.CONCAT( DOC.LINE
-                                                                                                   , DOC.TEXT("body") )
-                                                                                       , DOC.LINE )
-                                                                                       , "end" ) ) ) );
+    compiler.compile := tree -> compiler.(tree.type)(tree);
 
     # Maybe one can do this pretty printer
     # More generically (and prettier) maybe
@@ -653,7 +646,7 @@ function()
 
     # Return statements (could also be folded into one)
     compiler.T_RETURN_VOID := expr -> DOC.TEXT("return");
-    compiler.T_RETURN_OBJ := expr -> DOC.CONCAT("return", bracket"(", compiler.compile(expr.obj), ")");
+    compiler.T_RETURN_OBJ := expr -> DOC.CONCAT("return", bracket("(", compiler.compile(expr.obj), ")"));
 
     compiler.T_ASS_LVAR := expr -> DOC.CONCAT(expr.lvar, " := ", compiler.compile(expr.rhs));
     compiler.T_UNB_LVAR := expr -> DOC.CONCAT(DOC.TEXT("Unbind"), bracket("(", expr.lvar, ")"));
@@ -713,12 +706,13 @@ function()
 
     # A function expression
     compiler.T_FUNC_EXPR := function(expr)
-        return rec( type := "T_FUNC_EXPR"
-                  , argnams := expr.argnams
-                  , narg := expr.narg
-                  , locnams := expr.locnams
-                  , nloc := expr.nloc
-                  , stats := compiler.compile(expr.stats) );
+        return [ DOC.TEXT("function")
+               , bracket("(",
+                         folddoc(DOC.CONCAT, List(expr.argnams, DOC.TEXT))
+                         ,")")
+               , DOC.TEXT("local")
+               , folddoc(DOC.CONCAT, List(expr.locnams, DOC.TEXT))
+               , folddoc(DOC.CONCAT, List(expr.stats, compiler.compile)) ];
     end;
 
     compiler.T_OR := compile_record;
@@ -768,7 +762,7 @@ function()
         Error("encountered T_PERM_CYCLE");
     end;
 
-    compiler.T_LIST_EXPR := expr -> bracket("[", folddoc(DOC.CONCAT, List(expr.list, compile ), "]");
+    compiler.T_LIST_EXPR := expr -> bracket("[", folddoc(DOC.CONCAT, List(expr.list, compile ), "]"));
 
     compiler.T_LIST_TILD_EXPR := function(expr)
     end;
@@ -831,6 +825,6 @@ function()
     compiler.T_ASSX_LIST := compile_record;
 
     return Objectify(GAPCompilerType, rec( name := "PrettyPrintCompiler"
-                                         , compiler := compiler) );
+                                         , compiler := compiler ) );
 end);
 
