@@ -811,7 +811,6 @@ static const CompilerT ExprCompilers[] = {
     COMPILER_(T_AINV, ARG_("op")),
     COMPILER_(T_DIFF, ARG_("left"), ARG_("right")),
     COMPILER_(T_PROD, ARG_("left"), ARG_("right")),
-    COMPILER_(T_INV, ARG_("op")),
     COMPILER_(T_QUO, ARG_("left"), ARG_("right")),
     COMPILER_(T_MOD, ARG_("left"), ARG_("right")),
     COMPILER_(T_POW, ARG_("left"), ARG_("right")),
