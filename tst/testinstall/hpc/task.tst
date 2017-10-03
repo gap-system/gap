@@ -52,8 +52,6 @@ gap> enum:= Enumerator( g );;
 gap> first50:=List( [ 1 .. 50 ], x -> enum[x] );;
 gap> CallAsTask( Position, enum, first50[1]);
 1
-gap> CallAsTask(SmallGroup,256,1);
-<pc group of size 256 with 8 generators>
 gap> CallAsTask(QuaternionAlgebra,Rationals);
 <algebra-with-one of dimension 4 over Rationals>
 gap> A := CallAsTask( FreeAlgebraWithOne, Rationals, 2);
