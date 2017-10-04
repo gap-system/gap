@@ -884,12 +884,18 @@ Int             LtFFE (
     if ( vL == 0 || vR == 0 ) {
         return (vL == 0 && vR != 0);
     }
+    
+    /* get the sizes of the fields over which the elements are written */
+    qL = SIZE_FF( fL );
+    qR = SIZE_FF( fR );
+
+    /* Deal quickly with the case where both elements are written over the ground field */
+    if (qL ==pL &&  qR == pR)
+      return vL < vR;
 
     /* compute the sizes of the minimal fields in which the elements lie   */
-    qL = SIZE_FF( fL );
     mL = pL;
     while ( (qL-1) % (mL-1) != 0 || (vL-1) % ((qL-1)/(mL-1)) != 0 ) mL *= pL;
-    qR = SIZE_FF( fR );
     mR = pR;
     while ( (qR-1) % (mR-1) != 0 || (vR-1) % ((qR-1)/(mR-1)) != 0 ) mR *= pR;
 
