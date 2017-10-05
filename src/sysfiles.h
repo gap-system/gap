@@ -230,6 +230,9 @@ extern UInt syStartraw (
 extern void syStopraw (
             Int                 fid );
 
+extern Obj StandardInput;
+extern Obj StandardOutput;
+extern Obj StandardError;
 
 /****************************************************************************
 **

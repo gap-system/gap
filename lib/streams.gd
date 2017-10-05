@@ -1346,6 +1346,10 @@ DeclareGlobalFunction( "UnInstallCharReadHookFunc" );
 ##
 DeclareGlobalFunction( "InputFromUser" );
 
+# Default streams for input, output, and error messages
+DeclareGlobalVariable( "StandardInput" );
+DeclareGlobalVariable( "StandardOutput" );
+DeclareGlobalVariable( "StandardError" );
 
 #############################################################################
 ##

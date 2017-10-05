@@ -642,7 +642,7 @@ function( str )
     if fid = fail  then
         return fail;
     else
-        AddSet( InputTextFileStillOpen, fid );
+        ADD_SET( InputTextFileStillOpen, fid );
         return Objectify( InputTextFileType, Immutable([fid, str]) );
     fi;
 end );
@@ -1080,7 +1080,7 @@ function( str, append )
     if fid = fail  then
         return fail;
     else
-        AddSet( OutputTextFileStillOpen, fid );
+        ADD_SET( OutputTextFileStillOpen, fid );
         return Objectify( OutputTextFileType, Immutable([fid, str, true]) );
     fi;
 end );
@@ -1796,6 +1796,10 @@ InstallGlobalFunction( "UnInstallCharReadHookFunc",
 # to be bound means active:
 Unbind(OnCharReadHookActive);
 
+
+InstallValue(StandardInput, InputTextFile("*stdin*"));
+InstallValue(StandardOutput, OutputTextFile("*stdout*", true));
+InstallValue(StandardError, OutputTextFile("*errout*", true));
 
 #############################################################################
 ##

@@ -2928,6 +2928,10 @@ static Int InitKernel (
     DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
     DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
 #endif
+    
+    InitCopyGVar("StandardInput", &StandardInput);
+    InitCopyGVar("StandardOutput", &StandardOutput);
+    InitCopyGVar("StandardError", &StandardError);
 
 #ifdef HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);

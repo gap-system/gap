@@ -115,7 +115,7 @@ BIND_GLOBAL("ErrorInner",
 
 	context := arg[1].context;
     if not IsLVarsBag(context) then
-        PrintTo("*errout*", "ErrorInner:   option context must be a local variables bag\n");
+        PrintTo(StandardError, "ErrorInner:   option context must be a local variables bag\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi; 
@@ -123,7 +123,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].justQuit) then
         justQuit := arg[1].justQuit;
         if not justQuit in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option justQuit must be true or false\n");
+            PrintTo(StandardError, "ErrorInner: option justQuit must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -134,7 +134,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].mayReturnVoid) then
         mayReturnVoid := arg[1].mayReturnVoid;
         if not mayReturnVoid in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option mayReturnVoid must be true or false\n");
+            PrintTo(StandardError, "ErrorInner: option mayReturnVoid must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -145,7 +145,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].mayReturnObj) then
         mayReturnObj := arg[1].mayReturnObj;
         if not mayReturnObj in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option mayReturnObj must be true or false\n");
+            PrintTo(StandardError, "ErrorInner: option mayReturnObj must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -156,7 +156,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].printThisStatement) then
         printThisStatement := arg[1].printThisStatement;
         if not printThisStatement in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option printThisStatement must be true or false\n");
+            PrintTo(StandardError, "ErrorInner: option printThisStatement must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -167,7 +167,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].lateMessage) then
         lateMessage := arg[1].lateMessage;
         if not lateMessage in [false, true] and not IsString(lateMessage) then
-            PrintTo("*errout*", "ErrorInner: option lateMessage must be a string or false\n");
+            PrintTo(StandardError, "ErrorInner: option lateMessage must be a string or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -177,7 +177,7 @@ BIND_GLOBAL("ErrorInner",
         
     earlyMessage := arg[2];
     if Length(arg) <> 2 then
-        PrintTo("*errout*","ErrorInner: new format takes exactly two arguments\n");
+        PrintTo(StandardError,"ErrorInner: new format takes exactly two arguments\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi;
@@ -187,34 +187,34 @@ BIND_GLOBAL("ErrorInner",
     errorLVars := ErrorLVars;
     ErrorLVars := context;
     if QUITTING or not BreakOnError then
-        PrintTo("*errout*","Error, ");
+        PrintTo(StandardError,"Error, ");
         for x in earlyMessage do
-            PrintTo("*errout*",x);
+            PrintTo(StandardError,x);
         od;
-        PrintTo("*errout*","\n");
+        PrintTo(StandardError,"\n");
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
-    PrintTo("*errout*","Error, ");
+    PrintTo(StandardError,"Error, ");
     for x in earlyMessage do
-        PrintTo("*errout*",x);
+        PrintTo(StandardError,x);
     od;
     if printThisStatement then 
         if context <> GetBottomLVars() then
-            PrintTo("*errout*"," in\n  \c");
+            PrintTo(StandardError," in\n  \c");
             PRINT_CURRENT_STATEMENT(context);
             Print("\c");
-            PrintTo("*errout*"," called from \n");
+            PrintTo(StandardError," called from \n");
         else
-            PrintTo("*errout*","\c\n");
+            PrintTo(StandardError,"\c\n");
         fi;
     else
         location := CURRENT_STATEMENT_LOCATION(context);
-        if location <> fail then          PrintTo("*errout*", " at ", location[1], ":", location[2]);
+        if location <> fail then          PrintTo(StandardError, " at ", location[1], ":", location[2]);
         fi;
-        PrintTo("*errout*"," called from\c\n");
+        PrintTo(StandardError," called from\c\n");
     fi;
 
     if SHOULD_QUIT_ON_BREAK() then
@@ -225,7 +225,7 @@ BIND_GLOBAL("ErrorInner",
         OnBreak();
     fi;
     if IsString(lateMessage) then
-        PrintTo("*errout*",lateMessage,"\n");
+        PrintTo(StandardError,lateMessage,"\n");
     elif lateMessage then
         if IsBound(OnBreakMessage) and IsFunction(OnBreakMessage) then
             OnBreakMessage();
@@ -237,7 +237,7 @@ BIND_GLOBAL("ErrorInner",
         prompt := "brk> ";
     fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+        res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*",StandardError,false);
     else
         res := fail;
     fi;
