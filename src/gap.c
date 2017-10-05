@@ -240,8 +240,8 @@ Obj Shell ( Obj context,
   STATE(BaseShellContext) = context;
   Int oldErrorLLevel = STATE(ErrorLLevel);
   STATE(ErrorLLevel) = 0;
-  oldRecursionDepth = STATE(RecursionDepth);
-
+  oldRecursionDepth = GetRecursionDepth();
+  
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
@@ -268,7 +268,7 @@ Obj Shell ( Obj context,
     ClearError();
     STATE(PrintObjDepth) = 0;
     STATE(Output)->indent = 0;
-    STATE(RecursionDepth) = 0;
+    SetRecursionDepth(0);
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -326,7 +326,7 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      STATE(RecursionDepth) = 0;
+      SetRecursionDepth(0);
       STATE(UserHasQuit) = 1;
       break;
     }
@@ -356,7 +356,8 @@ Obj Shell ( Obj context,
   STATE(BaseShellContext) = oldBaseShellContext;
   STATE(ShellContext) = oldShellContext;
   STATE(ErrorLLevel) = oldErrorLLevel;
-  STATE(RecursionDepth) = oldRecursionDepth;
+  SetRecursionDepth(oldRecursionDepth);
+
   if (STATE(UserHasQUIT))
     {
       if (catchQUIT)
@@ -1092,7 +1093,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError), sizeof(syJmp_buf));
     currLVars = STATE(CurrLVars);
     currStat = STATE(CurrStat);
-    recursionDepth = STATE(RecursionDepth);
+    recursionDepth = GetRecursionDepth();
     tilde = STATE(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
 #ifdef HPCGAP
@@ -1107,7 +1108,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
       STATE(ThrownObject) = 0;
       SET_CURR_LVARS(currLVars);
       STATE(CurrStat) = currStat;
-      STATE(RecursionDepth) = recursionDepth;
+      SetRecursionDepth(recursionDepth);
 #ifdef HPCGAP
       STATE(Tilde) = tilde;
       PopRegionLocks(lockSP);
@@ -1152,7 +1153,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
   STATE(UserHasQuit) = INT_INTOBJ(value);
   if (STATE(UserHasQuit))
-    STATE(RecursionDepth) = 0;
+    SetRecursionDepth(0);
   return 0;
 }
 

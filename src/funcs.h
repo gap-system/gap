@@ -19,15 +19,18 @@
 
 #include <src/gapstate.h>
 
+void IncRecursionDepth(void);
+void DecRecursionDepth(void);
+Int GetRecursionDepth(void);
+void SetRecursionDepth(Int depth);
+
 /****************************************************************************
 **
 *F  MakeFunction(<fexp>)  . . . . . . . . . . . . . . . . . . make a function
 **
 **  'MakeFunction' makes a function from the function expression bag <fexp>.
 */
-extern  Obj             MakeFunction (
-            Obj                 fexp );
-
+extern Obj MakeFunction(Obj fexp);
 
 /****************************************************************************
 **
@@ -36,11 +39,8 @@ extern  Obj             MakeFunction (
 **
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-extern  void            ExecBegin ( Obj frame );
-
-extern  void            ExecEnd (
-            UInt                error );
-
+extern void ExecBegin(Obj frame);
+extern void ExecEnd(UInt error);
 
 /* TL: extern Int RecursionDepth; */
 extern UInt RecursionTrapInterval;
@@ -48,24 +48,13 @@ extern void RecursionDepthTrap( void );
 
 static inline void CheckRecursionBefore( void )
 {
-    STATE(RecursionDepth)++;
+    IncRecursionDepth();
     if ( RecursionTrapInterval &&
-         0 == (STATE(RecursionDepth) % RecursionTrapInterval) )
+         0 == (GetRecursionDepth() % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
 
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-*F  InitInfoFuncs() . . . . . . . . . . . . . . . . . table of init functions
-*/
 StructInitInfo * InitInfoFuncs ( void );
-
 
 #endif // GAP_FUNCS_H

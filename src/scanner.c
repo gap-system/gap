@@ -96,7 +96,6 @@ Obj             EndLineHook = 0;
 
 /* TL: TypOutputFile * OutputLog; */
 
-
 #ifdef HPCGAP
 #define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
 #else
@@ -3071,6 +3070,10 @@ static Int InitKernel (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(HELPSubsOn) = 1;
+}
 
 /****************************************************************************
  **
@@ -3091,16 +3094,11 @@ static StructInitInfo module = {
   0                                   /* postRestore                    */
 };
 
+
 StructInitInfo * InitInfoScanner ( void )
 {
-  return &module;
+    RegisterModuleState(0, InitModuleState, 0);
+    return &module;
 }
 
-void InitScannerState(GAPState * state)
-{
-    state->HELPSubsOn = 1;
-}
 
-void DestroyScannerState(GAPState * state)
-{
-}

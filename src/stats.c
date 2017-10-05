@@ -2319,22 +2319,17 @@ static Int InitKernel (
     return 0;
 }
 
-void InitStatState(GAPState * state)
+static void InitModuleState(ModuleStateOffset offset)
 {
-    state->CurrExecStatFuncs = ExecStatFuncs;
+    STATE(CurrExecStatFuncs) = ExecStatFuncs;
 #ifdef HPCGAP
     MEMBAR_FULL();
     if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
         MEMBAR_FULL();
-        state->CurrExecStatFuncs = IntrExecStatFuncs;
+        STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
     }
 #endif
 }
-
-void DestroyStatState(GAPState * state)
-{
-}
-
 
 /****************************************************************************
 **
@@ -2357,5 +2352,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoStats ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }
