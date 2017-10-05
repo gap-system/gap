@@ -57,6 +57,39 @@
 
 #include <src/hookintrprtr.h>
 
+static ModuleStateOffset funcsStateOffset;
+typedef struct {
+    Int RecursionDepth;
+    Obj ExecState;
+} funcsModuleState;
+
+void IncRecursionDepth(void)
+{
+    MODULE_STATE(funcs, RecursionDepth)++;
+}
+
+void DecRecursionDepth(void)
+{
+    MODULE_STATE(funcs, RecursionDepth)--;
+    /* FIXME: According to a comment in the function
+              RecursionDepthTrap below, RecursionDepth
+              can become "slightly" negative. This
+              needs some investigation.
+    GAP_ASSERT(MODULE_STATE(RecursionDepth) >= 0);
+    */
+}
+
+Int GetRecursionDepth(void)
+{
+    return MODULE_STATE(funcs, RecursionDepth);
+}
+
+void SetRecursionDepth(Int depth)
+{
+    GAP_ASSERT(depth >= 0);
+    MODULE_STATE(funcs, RecursionDepth) = depth;
+}
+
 /****************************************************************************
 **
 *F ExecProccallOpts( <call> ). . execute a procedure call with options
@@ -770,16 +803,16 @@ void RecursionDepthTrap( void )
      * when quit-ting a higher level brk-loop to a lower level one.
      * Therefore we don't do anything if  RecursionDepth <= 0
     */
-    if (STATE(RecursionDepth) > 0) {
-        recursionDepth = STATE(RecursionDepth);
-        STATE(RecursionDepth) = 0;
+    if (GetRecursionDepth() > 0) {
+        recursionDepth = GetRecursionDepth();
+        SetRecursionDepth(0);
         ErrorReturnVoid( "recursion depth trap (%d)",
                          (Int)recursionDepth, 0L,
                          "you may 'return;'" );
-        STATE(RecursionDepth) = recursionDepth;
+        SetRecursionDepth(recursionDepth);
     }
 }
-     
+
 #ifdef TRACEFRAMES
 Obj STEVES_TRACING;
 #endif
@@ -789,7 +822,7 @@ Obj STEVES_TRACING;
             HookedLineIntoFunction(func);
 
 #define CHECK_RECURSION_AFTER \
-            STATE(RecursionDepth)--; \
+            DecRecursionDepth(); \
             HookedLineOutFunction(func);
 
 #ifdef HPCGAP
@@ -1672,12 +1705,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NEW_PLIST(T_PLIST, 3);
     SET_LEN_PLIST(execState, 3);
-    SET_ELM_PLIST(execState, 1, STATE(ExecState));
+    SET_ELM_PLIST(execState, 1, MODULE_STATE(funcs, ExecState));
     SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
     SET_ELM_PLIST(execState, 3, INTOBJ_INT((Int)STATE(CurrStat)));
-    STATE(ExecState) = execState;
+    MODULE_STATE(funcs, ExecState) = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1696,9 +1729,9 @@ void            ExecEnd (
     }
 
     /* switch back to the old state                                    */
-    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(STATE(ExecState), 3)));
-    SWITCH_TO_OLD_LVARS( ELM_PLIST(STATE(ExecState), 2) );
-    STATE(ExecState) = ELM_PLIST(STATE(ExecState), 1);
+    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(MODULE_STATE(funcs, ExecState), 3)));
+    SWITCH_TO_OLD_LVARS( ELM_PLIST(MODULE_STATE(funcs, ExecState), 2) );
+    MODULE_STATE(funcs, ExecState) = ELM_PLIST(MODULE_STATE(funcs, ExecState), 1);
 }
 
 /****************************************************************************
@@ -1720,7 +1753,7 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 
 Obj FuncGetRecursionDepth( Obj self )
 {
-    return INTOBJ_INT(STATE(RecursionDepth));
+    return INTOBJ_INT(GetRecursionDepth());
 }
 
 /****************************************************************************
@@ -1771,7 +1804,7 @@ static Int InitKernel (
 
 #if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &STATE(ExecState), "src/funcs.c:ExecState" );
+    InitGlobalBag( &MODULE_STATE(funcs, ExecState), "src/funcs.c:ExecState" );
 #endif
 
     /* Register the handler for our exported function                      */
@@ -1853,6 +1886,11 @@ static Int InitKernel (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    MODULE_STATE(funcs, ExecState) = 0;
+    MODULE_STATE(funcs, RecursionDepth) = 0;
+}
 
 /****************************************************************************
 **
@@ -1875,5 +1913,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFuncs ( void )
 {
+    funcsStateOffset = RegisterModuleState(sizeof(funcsModuleState), InitModuleState, 0);
     return &module;
 }

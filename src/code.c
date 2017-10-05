@@ -97,18 +97,6 @@ static inline void PopOffsBody( void ) {
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
-static void SetupOffsBodyStackAndLoopStack( void ) {
-#ifdef HPCGAP
-  STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
-#else
-  static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-  static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
-  STATE(OffsBodyStack) = MainOffsBodyStack;
-  STATE(LoopStack) = MainLoopStack;
-#endif
-}
-
 static inline void PushLoopNesting( void ) {
   assert(STATE(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
   STATE(LoopStack)[STATE(LoopStackCount)++] = STATE(LoopNesting);
@@ -3378,19 +3366,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 };
 
-void InitCoderState(GAPState * state)
-{
-    state->OffsBodyCount = 0;
-    state->LoopNesting = 0;
-    state->LoopStackCount = 0;
-    state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
-}
-
-void DestroyCoderState(GAPState * state)
-{
-}
-
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3422,11 +3397,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
-#ifdef HPCGAP
-    InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
-#else
-    SetupOffsBodyStackAndLoopStack();
-#endif
 
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -3510,7 +3480,24 @@ static Int PreSave (
   return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(OffsBodyCount) = 0;
+    STATE(LoopNesting) = 0;
+    STATE(LoopStackCount) = 0;
+    STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
 
+#ifdef HPCGAP
+    STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+    STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+#else
+    static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
+    static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
+    STATE(OffsBodyStack) = MainOffsBodyStack;
+    STATE(LoopStack) = MainLoopStack;
+#endif
+}
 
 /****************************************************************************
 **
@@ -3533,5 +3520,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

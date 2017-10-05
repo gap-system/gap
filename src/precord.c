@@ -723,19 +723,19 @@ Obj FuncEQ_PREC (
 
         /* compare the names                                               */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            STATE(RecursionDepth)--;
+            DecRecursionDepth();
             return False;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-            STATE(RecursionDepth)--;
+            DecRecursionDepth();
             return False;
         }
     }
 
     /* the records are equal                                               */
-    STATE(RecursionDepth)--;
+    DecRecursionDepth();
     return True;
 }
 
@@ -796,7 +796,7 @@ Obj FuncLT_PREC (
     }
 
     /* the records are equal or the right is a prefix of the left          */
-    STATE(RecursionDepth)--;
+    DecRecursionDepth();
     return res ? True : False;
 }
 

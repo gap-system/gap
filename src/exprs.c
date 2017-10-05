@@ -2006,19 +2006,10 @@ static Int InitKernel (
 }
 
 
-static Int InitLibrary (
-    StructInitInfo *    module )
+static Int InitLibrary(StructInitInfo * module)
 {
     GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
     return 0;
-}
-
-void InitExprState(GAPState * state)
-{
-}
-
-void DestroyExprState(GAPState * state)
-{
 }
 
 /****************************************************************************

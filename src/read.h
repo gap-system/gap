@@ -46,9 +46,9 @@
 
 #define TRY_READ \
     if (!STATE(NrError)) { \
-        volatile Int recursionDepth = STATE(RecursionDepth); \
+        volatile Int recursionDepth = GetRecursionDepth();  \
         if (sySetjmp(STATE(ReadJmpError))) { \
-            STATE(RecursionDepth) = recursionDepth; \
+            SetRecursionDepth(recursionDepth);  \
             STATE(NrError)++; \
         }\
     }\

@@ -20,6 +20,7 @@
 #include <src/scanner.h>                /* scanner */
 
 #include <src/gap.h>                    /* error handling, initialisation */
+#include <src/funcs.h>
 
 #include <src/gvars.h>                  /* global variables */
 #include <src/stringobj.h>              /* strings */

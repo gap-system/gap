@@ -82,7 +82,7 @@ Int READ_COMMAND ( void )
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
-        STATE(RecursionDepth) = 0;
+        SetRecursionDepth(0);
         STATE(UserHasQuit) = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -260,7 +260,7 @@ static Int READ_INNER ( UInt UseUHQ )
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          STATE(RecursionDepth) = 0;
+          SetRecursionDepth(0);
           STATE(UserHasQuit) = 1;
           break;
         }

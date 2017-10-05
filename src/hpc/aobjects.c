@@ -1618,7 +1618,7 @@ void UnbAList(Obj list, Int pos)
   HashUnlockShared(list);
 }
 
-void InitAObjectsState(void)
+void InitAObjectsState(ModuleStateOffset offset)
 {
     TLS(tlRecords) = (Obj)0;
 }
@@ -2069,5 +2069,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoAObjects ( void )
 {
+    RegisterModuleState(0, InitAObjectsState, DestroyAObjectsState);
     return &module;
 }

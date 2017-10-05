@@ -6392,6 +6392,15 @@ static Int InitLibrary (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+#ifdef HPCGAP
+    STATE(MethodCache) = NEW_PLIST(T_PLIST, 1);
+    STATE(MethodCacheItems) = ADDR_OBJ(STATE(MethodCache));
+    STATE(MethodCacheSize) = 1;
+    SET_LEN_PLIST(STATE(MethodCache), 1);
+#endif
+}
 
 /****************************************************************************
 **
@@ -6414,20 +6423,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoOpers ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
-}
-
-void InitOpersState(GAPState * state)
-{
-#ifdef HPCGAP
-    state->MethodCache = NEW_PLIST(T_PLIST, 1);
-    state->MethodCacheItems = ADDR_OBJ(state->MethodCache);
-    state->MethodCacheSize = 1;
-    SET_LEN_PLIST(state->MethodCache, 1);
-#endif
-}
-
-void DestroyOpersState(GAPState * state)
-{
-  /* Nothing for now. */
 }

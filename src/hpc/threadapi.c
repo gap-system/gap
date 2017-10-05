@@ -958,15 +958,6 @@ static UInt RNAM_SIGVTALRM;
 static UInt RNAM_SIGWINCH;
 #endif
 
-
-void InitThreadAPIState(void)
-{
-}
-
-void DestroyThreadAPIState(void)
-{
-}
-
 #ifndef BOEHM_GC
 static void MarkSemaphoreBag(Bag bag)
 {

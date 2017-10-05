@@ -789,18 +789,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-#ifdef HPCGAP
-    InstallTLSHandler(SetupCollectorStacks, NULL);
-#else
-    InitGlobalBag( &STATE(SC_NW_STACK), "SC_NW_STACK" );
-    InitGlobalBag( &STATE(SC_LW_STACK), "SC_LW_STACK" );
-    InitGlobalBag( &STATE(SC_PW_STACK), "SC_PW_STACK" );
-    InitGlobalBag( &STATE(SC_EW_STACK), "SC_EW_STACK" );
-    InitGlobalBag( &STATE(SC_GE_STACK), "SC_GE_STACK" );
-    InitGlobalBag( &STATE(SC_CW_VECTOR), "SC_CW_VECTOR" );
-    InitGlobalBag( &STATE(SC_CW2_VECTOR), "SC_CW2_VECTOR" );
-#endif
-
     /* return success                                                      */
     return 0;
 }
@@ -855,6 +843,20 @@ static Int InitLibrary (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+#ifdef HPCGAP
+    SetupCollectorStacks();
+#else
+    InitGlobalBag( &STATE(SC_NW_STACK), "SC_NW_STACK" );
+    InitGlobalBag( &STATE(SC_LW_STACK), "SC_LW_STACK" );
+    InitGlobalBag( &STATE(SC_PW_STACK), "SC_PW_STACK" );
+    InitGlobalBag( &STATE(SC_EW_STACK), "SC_EW_STACK" );
+    InitGlobalBag( &STATE(SC_GE_STACK), "SC_GE_STACK" );
+    InitGlobalBag( &STATE(SC_CW_VECTOR), "SC_CW_VECTOR" );
+    InitGlobalBag( &STATE(SC_CW2_VECTOR), "SC_CW2_VECTOR" );
+#endif
+}
 
 /****************************************************************************
 **
@@ -877,5 +879,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSingleCollector ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }
