@@ -212,9 +212,32 @@ gap> CopyListEntries(s,1,1,l,1,-1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
 gap> CopyListEntries(s,1,1,l,0,1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
+gap> x := [1,3,4];;
+gap> \[\](x,-1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `[]' on 2 arguments
+gap> \[\](x,2);
+3
+gap> \[\](x,100);
+Error, List Element: <list>[100] must have an assigned value
+gap> \[\](x,(1,2,3));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `[]' on 2 arguments
+gap> \[\]\:\=(x,2,1);
+gap> x;
+[ 1, 1, 4 ]
+gap> \[\]\:\=(x,-1,1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `[]:=' on 3 arguments
+gap> \[\]\:\=(x,5,1);
+gap> x;
+[ 1, 1, 4,, 1 ]
+gap> \[\]\:\=(x,(1,2,3),1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `[]:=' on 3 arguments
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 1);
+gap> STOP_TEST( "listindex.tst", 1);
 
 #############################################################################
 ##
