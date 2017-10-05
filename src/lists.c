@@ -245,7 +245,7 @@ Int LenListObject (
     Obj                 len;
 
     len = FuncLENGTH( LengthAttr, obj );
-    while ( !IS_INTOBJ(len) || INT_INTOBJ(len) < 0 ) {
+    while (!IS_NONNEG_INTOBJ(len)) {
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
             (Int)TNAM_OBJ(len), 0L,
@@ -579,15 +579,12 @@ Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
 **
 *F  FuncELM_LIST( <self>, <list>, <pos> ) . . . . . . .  operation `ELM_LIST'
 */
-Obj FuncELM_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos )
+Obj FuncELM_LIST(Obj self, Obj list, Obj pos)
 {
-  if (IS_INTOBJ(pos))
-    return ELM_LIST( list, INT_INTOBJ(pos) );
-  else
-    return ELMB_LIST(list, pos );
+    if (IS_POS_INTOBJ(pos))
+        return ELM_LIST(list, INT_INTOBJ(pos));
+    else
+        return ELMB_LIST(list, pos);
 }
 
 
@@ -924,14 +921,10 @@ void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj )
 
 static Obj AssListOper;
 
-Obj             FuncASS_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos,
-    Obj                 obj )
+Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
 {
-    if (IS_INTOBJ(pos)) 
-        ASS_LIST( list, INT_INTOBJ(pos), obj );
+    if (IS_POS_INTOBJ(pos))
+        ASS_LIST(list, INT_INTOBJ(pos), obj);
     else
         ASSB_LIST(list, pos, obj);
     return 0;
@@ -1543,7 +1536,7 @@ Obj             PosListHandler3 (
     Obj                 start )
 {
     while ( TNUM_OBJ(start) != T_INTPOS &&
-            (! IS_INTOBJ(start) || INT_INTOBJ(start) < 0) ) {
+            (! IS_NONNEG_INTOBJ(start) ) ) {
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
             (Int)TNAM_OBJ(start), 0L,
