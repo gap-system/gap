@@ -2605,11 +2605,11 @@ Obj FuncSUM_GF2VEC_GF2VEC (
 
 /****************************************************************************
 **
-*F  FuncMULT_ROW_VECTOR_GF2VECS_2( <self>, <vl>, <mul> )
+*F  FuncMULT_VECTOR_GF2VECS_2( <self>, <vl>, <mul> )
 **                                      . . . . .  sum of GF2 vectors
 **
 */
-Obj FuncMULT_ROW_VECTOR_GF2VECS_2 (
+Obj FuncMULT_VECTOR_GF2VECS_2 (
     Obj                 self,
     Obj                 vl,
     Obj                 mul )
@@ -4718,7 +4718,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SHRINKCOEFFS_GF2VEC, 1, "gf2vec"),
     GVAR_FUNC(POSITION_NONZERO_GF2VEC, 2, "gf2vec, zero"),
     GVAR_FUNC(POSITION_NONZERO_GF2VEC3, 3, "gf2vec, zero, from"),
-    GVAR_FUNC(MULT_ROW_VECTOR_GF2VECS_2, 2, "gf2vecl, mul"),
+    GVAR_FUNC(MULT_VECTOR_GF2VECS_2, 2, "gf2vecl, mul"),
     GVAR_FUNC(APPEND_GF2VEC, 2, "gf2vecl, gf2vecr"),
     GVAR_FUNC(SHALLOWCOPY_GF2VEC, 1, "gf2vec"),
     GVAR_FUNC(NUMBER_GF2VEC, 1, "gf2vec"),

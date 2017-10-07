@@ -262,9 +262,9 @@ end );
 
 #############################################################################
 ##
-#M  MultRowVectorLeft( <list>, <mul> )
+#M  MultVectorLeft( <list>, <mul> )
 ##
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
     "for a mutable dense list, and an object",
     [ IsDenseList and IsMutable,
       IsObject ],
@@ -274,32 +274,32 @@ function( l, m )
         l[i] := m * l[i];
     od;
 end );
-InstallOtherMethod( MultRowVectorLeft, "error if immutable",
+InstallOtherMethod( MultVectorLeft, "error if immutable",
     [ IsList, IsObject ],
     L1_IMMUTABLE_ERROR);
 
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
     "kernel method for a mutable dense small list, and an object",
     IsCollsElms,
     [ IsSmallList and IsDenseList and IsMutable,
       IsObject ],
-    MULT_ROW_VECTOR_LEFT_2
+    MULT_VECTOR_LEFT_2
 );
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
     "kernel method for a mutable dense plain list of \
 cyclotomics, and a cyclotomic",
     IsCollsElms,
     [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
       IsCyclotomic ],
-    MULT_ROW_VECTOR_2_FAST
+    MULT_VECTOR_2_FAST
 );
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
     "kernel method for a mutable row vector of ffes in \
 plain list rep, and an ffe",
     IsCollsElms,
     [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
       IsFFE],0,
-    MULT_ROWVECTOR_VECFFES );
+    MULT_VECTOR_VECFFES );
 
 
 #############################################################################

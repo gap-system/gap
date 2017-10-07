@@ -563,7 +563,7 @@ local fam,gcd, u, v, w, val, r, s;
   od;
   #gcd := u * (a/u[Length(u)]);
   gcd:=u;
-  MultRowVector(gcd,a/u[Length(u)]);
+  MultVector(gcd,a/u[Length(u)]);
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
@@ -933,19 +933,19 @@ BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
   # convert <s> and <x> back into polynomials
   if 0 = Length(g)  then
     #sx := q * sx;
-    MultRowVector(sx,q);
+    MultVector(sx,q);
     ReduceCoeffsMod(sx,p);
     return [ LaurentPolynomialByCoefficients(brci[1],sx,0,brci[2]),
          Zero(brci[1]) ];
   else
     #hx := q * sx;
     hx:=ShallowCopy(sx);
-    MultRowVector(hx,q);
+    MultVector(hx,q);
     ReduceCoeffsMod(hx,p);
     hx := LaurentPolynomialByCoefficients(brci[1],hx,0,brci[2]);
     AddCoeffs(s,ProductCoeffs(sx,f),-1);
     #s := q * s;
-    MultRowVector(s,q);
+    MultVector(s,q);
     ReduceCoeffsMod(s,p);
     s := LaurentPolynomialByCoefficients(brci[1],s,0,brci[2]);
     g := LaurentPolynomialByCoefficients(brci[1],g,0,brci[2]);

@@ -1565,7 +1565,7 @@ InstallMethod( CloseMutableBasis,
       # If necessary add the sifted vector, and update the basis info.
       j := PositionNonZero( v );
       if j <= ncols then
-        MultRowVector( v, Inverse( v[j] ) );
+        MultVector( v, Inverse( v[j] ) );
         Add( basisvectors, v );
         heads[j]:= Length( basisvectors );
       fi;

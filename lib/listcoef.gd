@@ -97,29 +97,29 @@ DeclareOperation(
 
 #############################################################################
 ##
-#O  MultRowVectorLeft( <list>, <mul> )
+#O  MultVectorLeft( <list>, <mul> )
 ##
-##  <#GAPDoc Label="MultRowVector">
+##  <#GAPDoc Label="MultVector">
 ##  <ManSection>
-##  <Oper Name="MultRowVector" Arg='list1, mul'/>
-##  <Oper Name="MultRowVectorLeft" Arg='list1, mul'/>
+##  <Oper Name="MultVector" Arg='list1, mul'/>
+##  <Oper Name="MultVectorLeft" Arg='list1, mul'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
 ##  <P/>
-##  Note that <C>MultRowVector</C> is just a synonym for
-##  <C>MultRowVectorLeft</C>.
+##  Note that <C>MultVector</C> is just a synonym for
+##  <C>MultVectorLeft</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation(
-    "MultRowVectorLeft",
+    "MultVectorLeft",
         [ IsMutable and IsList,
           IsObject ] );
-# For VectorObj objects there also exists a MultRowVectorRight operation
-DeclareSynonym( "MultRowVector", MultRowVectorLeft );
+# For VectorObj objects there also exists a MultVectorRight operation
+DeclareSynonym( "MultVector", MultVectorLeft );
 
 #############################################################################
 ##

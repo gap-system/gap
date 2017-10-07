@@ -573,15 +573,15 @@ InstallOtherMethod( AddRowVector, "For 2 8 bit vectors",
 
 #############################################################################
 ##
-#M  MultRowVector( <vec>, <ffe> )
+#M  MultVector( <vec>, <ffe> )
 ##
 ##  multiply <vec> by <ffe> in place
 ##
 
-InstallOtherMethod( MultRowVector, "For an 8 bit vector and an ffe",
+InstallOtherMethod( MultVector, "For an 8 bit vector and an ffe",
         IsCollsElms, [ IsRowVector and Is8BitVectorRep,
                 IsFFE and IsInternalRep], 0,
-        MULT_ROWVECTOR_VEC8BITS);
+        MULT_VECTOR_VEC8BITS);
 
 #############################################################################
 ##

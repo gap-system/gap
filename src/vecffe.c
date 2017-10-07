@@ -764,13 +764,13 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 }
 /****************************************************************************
 **
-*F  FuncMULT_ROWVECTOR_VECFFES( <self>, <vec>, <mult> )
+*F  FuncMULT_VECTOR_VECFFES( <self>, <vec>, <mult> )
 **
 */
 
-static Obj MultRowVectorLeftOp; /* BH changed to static */
+static Obj MultVectorLeftOp; /* BH changed to static */
 
-Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
+Obj FuncMULT_VECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 {
     Obj *ptr;
     FFV  valM;
@@ -802,10 +802,10 @@ Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
         /* check the characteristic                                        */
         if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
             mult = ErrorReturnObj(
-                "MultRowVector: <multiplier> has different field",
+                "MultVector: <multiplier> has different field",
                 0L, 0L,
                 "you can replace <multiplier> via 'return <multiplier>;'");
-            return CALL_2ARGS(MultRowVectorLeftOp, vec, mult);
+            return CALL_2ARGS(MultVectorLeftOp, vec, mult);
         }
 
         /* if the multiplier is over a non subfield then redispatch */
@@ -1117,7 +1117,7 @@ static StructGVarFunc GVarFuncs [] = {
 
   GVAR_FUNC(ADD_ROWVECTOR_VECFFES_3, 3, "vecl, vecr, mult"),
   GVAR_FUNC(ADD_ROWVECTOR_VECFFES_2, 2, "vecl, vecr"),
-  GVAR_FUNC(MULT_ROWVECTOR_VECFFES, 2, "vec, mult"),
+  GVAR_FUNC(MULT_VECTOR_VECFFES, 2, "vec, mult"),
   GVAR_FUNC(IS_VECFFE, 1, "vec"),
   GVAR_FUNC(COMMON_FIELD_VECFFE, 1, "vec"),
   GVAR_FUNC(SMALLEST_FIELD_VECFFE, 1, "vec"),

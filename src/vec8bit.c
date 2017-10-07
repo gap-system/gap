@@ -1750,12 +1750,12 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
 
 /****************************************************************************
 **
-*F  FuncMULT_ROW_VECTOR( <self>, <vec>, <mul> )
+*F  FuncMULT_VECTOR( <self>, <vec>, <mul> )
 **
 **  In-place scalar multiply
 */
 
-Obj FuncMULT_ROWVECTOR_VEC8BITS( Obj self, Obj vec, Obj mul)
+Obj FuncMULT_VECTOR_VEC8BITS( Obj self, Obj vec, Obj mul)
 {
     UInt q;
     q = FIELD_VEC8BIT(vec);
@@ -5955,7 +5955,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(ADD_ROWVECTOR_VEC8BITS_5, 5, "gfqvecl, gfqvecr, mul, from, to"),
     GVAR_FUNC(ADD_ROWVECTOR_VEC8BITS_3, 3, "gfqvecl, gfqvecr, mul"),
     GVAR_FUNC(ADD_ROWVECTOR_VEC8BITS_2, 2, "gfqvecl, gfqvecr"),
-    GVAR_FUNC(MULT_ROWVECTOR_VEC8BITS, 2, "gfqvec, ffe"),
+    GVAR_FUNC(MULT_VECTOR_VEC8BITS, 2, "gfqvec, ffe"),
     GVAR_FUNC(POSITION_NONZERO_VEC8BIT, 2, "vec8bit, zero"),
     GVAR_FUNC(POSITION_NONZERO_VEC8BIT3, 3, "vec8bit, zero, from"),
     GVAR_FUNC(APPEND_VEC8BIT, 2, "vec8bitl, vec8bitr"),

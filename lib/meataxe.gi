@@ -420,7 +420,7 @@ SMTX_SpinnedBasis:=function( arg  )
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
             #w:=(w[j]^-1) * w;
-            MultRowVector(w,w[j]^-1);
+            MultVector(w,w[j]^-1);
             Add( ans, w );
             if subdim = dim then
                ans:=ImmutableMatrix(F,ans);

@@ -915,7 +915,7 @@ InstallMethod(InverseOp,
         s := t;
     od;
     Assert(1,Length(a) = 1);
-    MultRowVector(r,Inverse(a[1]));
+    MultVector(r,Inverse(a[1]));
     if AssertionLevel() >= 2 then
         t := ProductCoeffs(x![1],r);
         fam!.ConwayFldEltReducers[d](t);
