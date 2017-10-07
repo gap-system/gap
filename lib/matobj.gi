@@ -571,7 +571,7 @@ end );
 ############################################################################
 # Arithmetical operations:
 ############################################################################
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
   "generic method for a mutable vector, and an object",
   [ IsVectorObj and IsMutable, IsObject ],
   function( v, s )
@@ -581,7 +581,7 @@ InstallMethod( MultRowVectorLeft,
     od;
   end );
 
-InstallMethod( MultRowVectorRight,
+InstallMethod( MultVectorRight,
   "generic method for a mutable vector, and an object",
   [ IsVectorObj and IsMutable, IsObject ],
   function( v, s )
@@ -591,7 +591,7 @@ InstallMethod( MultRowVectorRight,
     od;
   end );
 
-InstallMethod( MultRowVectorLeft,
+InstallMethod( MultVectorLeft,
   "generic method for a mutable vector, an object, an int, \
 and an int",
   [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
@@ -602,7 +602,7 @@ and an int",
     od;
   end );
 
-InstallMethod( MultRowVectorRight,
+InstallMethod( MultVectorRight,
   "generic method for a mutable vector, an object, an int, \
 and an int",
   [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],

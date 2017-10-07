@@ -410,10 +410,10 @@ BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
 
         if piv <=d  then
             x := Inverse(w[piv]);
-            MultRowVector(p, x);
+            MultVector(p, x);
             MakeImmutable(p);
             pols[piv] := p;
-            MultRowVector(w, x );
+            MultVector(w, x );
             MakeImmutable(w);
             vecs[piv] := w;
             vec := vec*mat;
@@ -537,7 +537,7 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
                             piv := PositionNonZero(w, piv);
                         until piv > n or not IsBound(base[piv]);
                         if piv <= n then
-                            MultRowVector(w,Inverse(w[piv]));
+                            MultVector(w,Inverse(w[piv]));
                             MakeImmutable(w);
                             base[piv] := w;
                             dim := dim+1;
@@ -1347,11 +1347,11 @@ InstallMethod( DeterminantMatDestructive,
                 row2 := mat[j];
                 mult := -row2[k];
                 if  mult <> zero then
-                    MultRowVector( row2, piv );
+                    MultVector( row2, piv );
                     AddRowVector( row2, row, mult, k, m );
-                    MultRowVector( row2, Inverse(det) );
+                    MultVector( row2, Inverse(det) );
                 else
-                    MultRowVector( row2, piv/det);
+                    MultVector( row2, piv/det);
                 fi;
             od;
 
@@ -1429,7 +1429,7 @@ function( mat )
             # ... and normalize the row.
             x := row[k];
             det := det * x;
-            MultRowVector( mat[k], Inverse(x) );
+            MultVector( mat[k], Inverse(x) );
 
             # clear all entries in this column, adjust only columns > k
             # (Note that we need not clear the rows from 'k+1' to 'j'.)
@@ -1703,11 +1703,11 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   end;
 
   multrow:=function(a,m)
-    MultRowVector(M[a],m);
+    MultVector(M[a],m);
     if transform then
-      MultRowVector(left[a],m);
+      MultVector(left[a],m);
       if basmat<>fail then
-	MultRowVector(basmat[a],1/m);
+	MultVector(basmat[a],1/m);
       fi;
     fi;
   end;
@@ -2304,7 +2304,7 @@ InstallMethod( SemiEchelonMatDestructive,
             if inv = fail then
               return fail;
             fi;
-            MultRowVector( row, inv );
+            MultVector( row, inv );
             Add( vectors, row );
             Add( nzheads, j );
             heads[j]:= Length( vectors );
@@ -2952,7 +2952,7 @@ InstallMethod( TriangulizeMat,
                if x = fail then
                  TryNextMethod();
                fi;
-               MultRowVector( row, x );
+               MultVector( row, x );
                mat[i] := row;
 
                # clear all entries in this column

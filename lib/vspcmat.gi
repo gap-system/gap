@@ -1072,7 +1072,7 @@ InstallMethod( CloseMutableBasis,
         if j <= n then
           scalar:= Inverse( v[i][j] );
           for k in [ 1 .. m ] do
-            MultRowVector( v[k], scalar );
+            MultVector( v[k], scalar );
           od;
           Add( basisvectors, v );
           heads[i][j]:= Length( basisvectors );

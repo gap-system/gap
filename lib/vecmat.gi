@@ -1590,13 +1590,13 @@ end);
 
 #############################################################################
 ##
-#M  MultRowVector( <vl>, <mul>)
+#M  MultVector( <vl>, <mul>)
 ##
 
-InstallOtherMethod( MultRowVector, "for GF(2) vector and char 2 scalar",
+InstallOtherMethod( MultVector, "for GF(2) vector and char 2 scalar",
         IsCollsElms, [IsGF2VectorRep and IsRowVector and IsMutable,
                 IsFFE], 0,
-        MULT_ROW_VECTOR_GF2VECS_2);
+        MULT_VECTOR_GF2VECS_2);
 
 #############################################################################
 ##
@@ -2155,7 +2155,7 @@ InstallMethod( Randomize, "for a mutable gf2 vector",
   [ IsGF2VectorRep and IsMutable ],
   function( v ) 
     local i;
-    MultRowVector(v,0);
+    MultVector(v,0);
     for i in [1..Length(v)] do 
         if Random(0,1) = 1 then v[i] := Z(2); fi;
     od;
@@ -2165,7 +2165,7 @@ InstallMethod( Randomize, "for a mutable gf2 vector and a random source",
   [ IsGF2VectorRep and IsMutable, IsRandomSource ],
   function( v, rs ) 
     local i;
-    MultRowVector(v,0);
+    MultVector(v,0);
     for i in [1..Length(v)] do 
         if Random(rs,0,1) = 1 then v[i] := Z(2); fi;
     od;

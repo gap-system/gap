@@ -502,7 +502,7 @@ InstallMethod( Random,
     local m;
     m:= RandomInvertibleMat( DimensionOfMatrixGroup( G ),
                 FieldOfMatrixGroup( G ) );
-    MultRowVector(m[1], DeterminantMat(m)^-1);
+    MultVector(m[1], DeterminantMat(m)^-1);
     MakeImmutable(m);
     ConvertToMatrixRep(m, FieldOfMatrixGroup(G));
     return m;
