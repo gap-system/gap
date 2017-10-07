@@ -103,6 +103,10 @@ InstallMethod(MinimalGeneratingSet,"solvable group via pc",true,
 function(G)
 local i;
   if not IsSolvableGroup(G) then
+    if IsGroup(G) and HasGeneratorsOfGroup(G)
+        and Length(GeneratorsOfGroup(G)) = 2 then
+      return GeneratorsOfGroup(G);
+    fi;
     TryNextMethod();
   fi;
   i:=IsomorphismPcGroup(G);
@@ -122,9 +126,10 @@ function(G)
     TryNextMethod();
   else
     Error(
-  "`MinimalGeneratingSet' currently assumes that the group must be solvable.\n",
+  "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
+  "already possesses a generating set of size 2.\n",
   "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
-  "set that is small but not of guarateed smallest cardinality");
+  "set that is small but not of guaranteed smallest cardinality");
   fi;
 end);
 

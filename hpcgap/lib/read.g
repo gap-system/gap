@@ -28,35 +28,36 @@ fi;
 
 #############################################################################
 ##
-#X  Read transitive groups library
+#X  Checking transitive groups library
 ##
+## Assign TransitiveGroupsAvailable to a dummy function to make it
+## callable, even if the library is unavailable.
+if TestPackageAvailability("transgrp")=fail then
+  InstallGlobalFunction(TransitiveGroupsAvailable,deg->false);
+fi;
 
-# first assign TransitiveGroupsAvailable to a dummy function to make it
-# callable, even if the library is unavailable.
-InstallGlobalFunction(TransitiveGroupsAvailable,deg->false);
-
-TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
-                                        "transitive groups" );
-TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
-                                        "transitive groups" );
-
-if TRANS_AVAILABLE then
-  ReadLib("galois.gd"); # the Galois group identification relies on the list
-                        # of transitive groups
-  ReadLib("galois.gi");
+# Only load component if not available as package
+# (to be removed together with the `trans` directory)
+if TestPackageAvailability("transgrp")=fail then
+  TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
+					  "transitive groups" );
+  TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.gi",
+					  "transitive groups" );
 fi;
 
 #############################################################################
 ##
-#X  Read primitive groups library
+#X  Checking primitive groups library
 ##
+## Assign PrimitiveGroupsAvailable to a dummy function to make it
+## callable, even if the library is unavailable.
+if TestPackageAvailability("primgrp")=fail then
+  InstallGlobalFunction(PrimitiveGroupsAvailable,deg->false);
+fi;
 
-# first assign PrimitiveGroupsAvailable to a dummy function to make it
-# callable, even if the library is unavailable.
-InstallGlobalFunction(PrimitiveGroupsAvailable,deg->false);
-
-# only load component if not available as package
+# Only load component if not available as package
+# (to be removed together with the `prim` directory)
 if TestPackageAvailability("primgrp")=fail then
   PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
   PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.gd","irreducible solvable groups" );

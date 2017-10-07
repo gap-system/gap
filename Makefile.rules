@@ -926,9 +926,11 @@ coverage:
 # Bootstrap rules
 ########################################################################
 
+# change PKG_BRANCH to stable-X.Y in the stable branch
+PKG_BRANCH = master
 PKG_BOOTSTRAP_URL = https://www.gap-system.org/pub/gap/gap4pkgs/
-PKG_MINIMAL = bootstrap-pkg-minimal.tar.gz
-PKG_FULL = bootstrap-pkg-full.tar.gz
+PKG_MINIMAL = packages-required-$(PKG_BRANCH).tar.gz
+PKG_FULL = packages-$(PKG_BRANCH).tar.gz
 WGET = wget -N
 
 bootstrap-pkg-minimal:

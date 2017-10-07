@@ -1724,6 +1724,8 @@ gap> S := InverseSemigroup(
 > PartialPerm( [ 1, 2, 4, 5 ], [ 3, 1, 4, 2 ] ) );;
 gap> IsMonoid(S); 
 false
+gap> Size(S);
+508
 gap> iso := IsomorphismPartialPermMonoid(S);
 MappingByFunction( <inverse partial perm semigroup of size 508, 
  rank 5 with 2 generators>, <inverse partial perm monoid of size 508, 

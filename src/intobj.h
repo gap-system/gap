@@ -60,6 +60,18 @@ static inline Int IS_POS_INTOBJ(Obj o)
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
 
+/****************************************************************************
+**
+*F  IS_NONNEG_INTOBJ( <o> )  . .  test if an object is a non-negative integer object
+**
+**  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
+**  object encoding a non-negative integer, and 0 otherwise.
+*/
+static inline Int IS_NONNEG_INTOBJ(Obj o)
+{
+    return ((Int)o & 0x01) && ((Int)o > 0);
+}
+
 
 /****************************************************************************
 **

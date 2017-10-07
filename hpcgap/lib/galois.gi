@@ -550,7 +550,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
   Info(InfoPerformance,2,"Using Transitive Groups Library");
   f:=arg[1];
   f:=f/LeadingCoefficient(f);
-  if not(IsIrreducible(f)) then
+  if not IsIrreducibleRingElement(f) then
     Error("f must be irreducible");
   fi;
   n:=DegreeOfUnivariateLaurentPolynomial(f);

@@ -165,11 +165,15 @@ extern UInt completion_gvar (
 **
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
 *F  MakeReadWriteGVar( <gvar> ) . . . . . . make a global variable read-write
+*F  MakeConstantGVar( <gvar> ) . . . . . . make a global variable constant
 */
 extern void MakeReadOnlyGVar (
     UInt                gvar );
 
 extern void MakeReadWriteGVar (
+    UInt                gvar );
+
+extern void MakeConstantGVar (
     UInt                gvar );
 
 /****************************************************************************
@@ -184,6 +188,9 @@ extern void MakeThreadLocalVar (
 
 extern Int IsReadOnlyGVar (
     UInt                gvar );
+
+extern Int IsConstantGVar(UInt gvar);
+
 
 /****************************************************************************
 **

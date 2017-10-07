@@ -23,3 +23,12 @@ ReadLib( "string.gi"   ); # since StringFile is needed early
 # for dealing with test files and manual examples
 ReadLib("test.gd");
 ReadLib("test.gi");
+
+# Galois group identification relies on the list of transitive groups
+if IsBound(HPCGAP) then
+  BindGlobal("TRANSREGION", NewLibraryRegion("transitive groups region"));
+else
+  BindGlobal("TRANSREGION", fail);
+fi;
+ReadLib("galois.gd");
+ReadLib("galois.gi");

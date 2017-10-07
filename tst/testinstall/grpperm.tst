@@ -72,4 +72,9 @@ gap> Length(MaximalSubgroupClassReps(g));
 gap> g:=PSL(8,2);;
 gap> Length(MaximalSubgroupClassReps(g));
 10
+gap> G := SymmetricGroup(6);;
+gap> IsSolvable(G);
+false
+gap> Length(MinimalGeneratingSet(G));
+2
 gap> STOP_TEST( "grpperm.tst", 1);

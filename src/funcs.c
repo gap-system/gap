@@ -1718,6 +1718,10 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
     return 0;
 }
 
+Obj FuncGetRecursionDepth( Obj self )
+{
+    return INTOBJ_INT(STATE(RecursionDepth));
+}
 
 /****************************************************************************
 **
@@ -1731,7 +1735,9 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(SetRecursionTrapInterval, 1, "interval"),
+    GVAR_FUNC(GetRecursionDepth, 0, ""),
     { 0, 0, 0, 0, 0 }
+
 
 };
 
