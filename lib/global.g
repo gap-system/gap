@@ -145,6 +145,22 @@ BIND_GLOBAL := function( name, val)
 end;
 MAKE_READ_ONLY_GLOBAL("BIND_GLOBAL");
 
+BIND_CONSTANT := function( name, val)
+    # Ignore attempts to reassign an identical value, to simplify
+    # rereading files
+    if ISBOUND_GLOBAL( name ) and 
+       IS_IDENTICAL_OBJ( val, VAL_GVAR( name ) ) then
+       return;
+    fi;
+
+    # Even when REREADING we do not allow constants to be changed, as
+    # they are substituted in at parsing time
+    ASS_GVAR(name, val);
+    MAKE_CONSTANT_GLOBAL(name);
+    return val;
+end;
+MAKE_READ_ONLY_GLOBAL("BIND_CONSTANT");
+
 #############################################################################
 ##
 #E  global.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
