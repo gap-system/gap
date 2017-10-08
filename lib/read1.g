@@ -34,7 +34,7 @@ ReadLib( "string.g"    );
 ReadLib( "cyclotom.g"  );
 ReadLib( "set.gd"      );
 
-ReadLib( "record.g"    );
+ReadLib( "record.gd"   );
 
 ReadLib( "coll.gi"     );
 ReadLib( "queue.g"     );
@@ -57,6 +57,8 @@ ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 ReadLib( "show.gd"     );
+
+ReadLib( "record.gi"   );
 
 ReadLib( "matobj1.gd"   );
 ReadLib( "vecmat.gd"   );
