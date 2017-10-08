@@ -135,6 +135,77 @@ InstallMethod( ViewObj,
     Print(" \<\<\<\<)");
 end);
 
+InstallMethod( ViewObjStream,
+               "for a record",
+               [ IsOutputStream, IsRecord ],
+function(stream, record)
+    local nam, com, i, snam, names, order;
+
+    PrintTo(stream, "\>\>rec( \>\>");
+
+    com := false;
+    names := List(RecNames(record));
+    order := [1..Length(names)];
+    SortParallel(names, order);
+
+    for i in [1..Length(names)] do
+        nam := names[i];
+        if com then
+            PrintTo(stream, "\<,\< \>\>");
+        else
+            com := true;
+        fi;
+        SET_PRINT_OBJ_INDEX(order[i]);
+        # easy if nam is integer or valid identifier:
+        if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
+            PrintTo(stream, nam, " := ");
+        else
+            # otherwise we use (...) syntax:
+            snam := String(nam);
+            PrintTo(stream, "(");
+            ViewObjStream(stream, snam);
+            PrintTo(stream, ") := ");
+        fi;
+        ViewObjStream(stream, record.(nam));
+    od;
+    PrintTo(stream, " \<\<\<\<)");
+end);
+
+InstallMethod( CodeObjStream,
+               "for a record",
+               [ IsOutputStream, IsRecord ],
+function( stream, record )
+    local com, i, snam, nam, names, order;
+
+    PrintTo(stream, "\>\>rec(\n\>\>");
+    com := false;
+
+    names := List(RecNames(record));
+    order := [1..Length(names)];
+    SortParallel(names, order);
+
+    for i in [1..Length(names)] do
+        nam := names[i];
+        if com then
+            PrintTo(stream, "\<\<,\n\>\>");
+        else
+            com := true;
+        fi;
+        SET_PRINT_OBJ_INDEX(order[i]);
+        # easy if nam is integer or valid identifier:
+        if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
+            PrintTo(stream, nam, "\< := \>");
+        else
+            # otherwise we use (...) syntax:
+            snam := String(nam);
+            PrintTo(stream, "(");
+            CodeObjStream(stream, snam);
+            PrintTo(stream, ")\< := \>");
+        fi;
+        CodeObjStream(stream, record.(nam));
+    od;
+    PrintTo(stream, " \<\<\<\<)");
+end);
 
 # methods to catch error cases
 
