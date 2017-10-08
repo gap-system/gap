@@ -169,3 +169,21 @@ gap> (function() if boolfalsevar then return 1; elif booltruevar then return 2; 
 2
 gap> (function() if boolfalsevar then return 1; elif boolfalsevar then return 2; else return 3; fi; end)();
 3
+gap> BindConstant("constx", 3);
+gap> constx;
+3
+gap> BindConstant("constx", 3);
+gap> BindConstant("constx", 4);
+Error, Variable: 'constx' is constant
+gap> BindConstant("constx", true);
+Error, Variable: 'constx' is constant
+gap> BindConstant("consty", true);
+gap> consty;
+true
+gap> BindConstant("constz", false);
+gap> constz;
+false
+gap> BindConstant(23, 3);
+Error, CheckGlobalName: the argument must be a string
+gap> BindConstant( (1,2), 3);
+Error, CheckGlobalName: the argument must be a string
