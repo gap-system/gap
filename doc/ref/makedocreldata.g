@@ -152,7 +152,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/randiso.gd",
     "../../lib/random.gd",
     "../../lib/ratfun.gd",
-    "../../lib/record.g",
+    "../../lib/record.gd",
     "../../lib/reesmat.gd",
     "../../lib/relation.gd",
     "../../lib/reread.g",
