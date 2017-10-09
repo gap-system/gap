@@ -236,8 +236,9 @@ extern Obj TRY_NEXT_METHOD;
 **  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
 **  have side effects.
 **
-**  C_ELM_FLAGS returns a result more convenient for use inside the kernel
-**  since the C compiler can't know that True != False.
+**  C_ELM_FLAGS returns a result which it is better to use inside the kernel
+**  since the C compiler can't know that True != False. Using C_ELM_FLAGS
+**  gives slightly nicer C code and potential for a little more optimisation.
 */
 #define C_ELM_FLAGS(list, pos)                                               \
     ((BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) ? 1 : 0)
