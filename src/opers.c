@@ -478,6 +478,12 @@ static Obj UncheckedIS_SUBSET_FLAGS(Obj flags1, Obj flags2)
         if (len2 == 0) {
             return True;
         }
+
+        /* If flags2 has only a "few" set bits then the best way is to
+           simply check if those bits are set in flags1. The optimal
+           value of "few" depends on compilers, hardware and the
+           length of flags1. Experiments in 2017 suggest that it is
+           somewhere between 10 and 20 for current setups. */
         if (len2 < 16) {
 #ifdef COUNT_OPERS
             IsSubsetFlagsCalls2++;
@@ -1865,7 +1871,7 @@ static inline Obj TYPE_OBJ_FEO (
    The effectiveness of this cache is vital for GAP's performance */
 
 
-/* THe next few functions deal with finding and allocating if necessary the cache 
+/* The next few functions deal with finding and allocating if necessary the cache 
    for a given operation and number of arguments, and some locking in HPCGAP */
 
 
@@ -1956,28 +1962,37 @@ static inline Obj CacheOper(Obj oper, UInt i)
 #endif
 
 /* This function actually searches the cache. Normally it should be called
-   with
-   n a compile-time constant to allow the optimiser to tidy things up */
+   with n a compile-time constant to allow the optimiser to tidy things up */
 
+#ifdef COUNT_OPERS
+static UInt CacheHitStatistics[CACHE_SIZE][CACHE_SIZE][7];
+static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
+#endif
 
-static inline Obj __attribute__((always_inline))
-GetMethodCached(Obj oper, UInt n, Obj prec, Obj ids[])
+static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
+                                         UInt n,
+                                         Int  prec,
+                                         Obj  ids[])
 {
     UInt  typematch;
     Obj * cache;
     Obj   method = 0;
     UInt  i;
+    UInt  CacheEntrySize = n + 2;
 
     cache = 1 + ADDR_OBJ(CacheOper(oper, n));
 
     /* Up to CACHE_SIZE methods might be in the cache */
-    if (prec < INTOBJ_INT(CACHE_SIZE)) {
+    if (prec < CACHE_SIZE) {
         /* This loop runs through those */
-        for (i = 0; i < (n + 2) * CACHE_SIZE; i += n + 2) {
-            if (cache[i + 1] == prec) {
+        UInt target =
+            CacheEntrySize * prec; /* first place to look and also the place
+                                      we'll put the result */
+        for (i = target; i < CacheEntrySize * CACHE_SIZE;
+             i += CacheEntrySize) {
+            if (cache[i + 1] == INTOBJ_INT(prec)) {
                 typematch = 1;
-                /* This loop runs over the arguments, should be compiled away
-                 */
+                // This loop runs over the arguments, should be compiled away
                 for (UInt j = 0; j < n; j++) {
                     if (cache[i + j + 2] != ids[j]) {
                         typematch = 0;
@@ -1986,6 +2001,22 @@ GetMethodCached(Obj oper, UInt n, Obj prec, Obj ids[])
                 }
                 if (typematch) {
                     method = cache[i];
+#ifdef COUNT_OPERS
+                    CacheHitStatistics[prec][i / CacheEntrySize][n]++;
+#endif
+                    if (i > target) {
+
+                        /* We found the method, but it was further down the
+                           cache than we would like it to be, so move it up */
+                        Obj buf[CacheEntrySize];
+                        memcpy((void *)buf, (void *)(cache + i),
+                               sizeof(Obj) * CacheEntrySize);
+                        memmove((void *)(cache + target + CacheEntrySize),
+                                (void *)(cache + target),
+                                sizeof(Obj) * (i - target));
+                        memcpy((void *)(cache + target), (void *)buf,
+                               sizeof(Obj) * CacheEntrySize);
+                    }
                     break;
                 }
             }
@@ -1994,21 +2025,24 @@ GetMethodCached(Obj oper, UInt n, Obj prec, Obj ids[])
     return method;
 }
 
+/* Add a method to the cache -- called when a method is selected that is not
+   in the cache */
 static inline void
-CacheMethod(Obj oper, UInt n, Obj prec, Obj * ids, Obj method)
+CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
 {
-
-    if (prec >= INTOBJ_INT(CACHE_SIZE))
+    if (prec >= CACHE_SIZE)
         return;
+    /* We insert this method at position <prec> and move
+       the older methods down */
+    UInt  CacheEntrySize = n + 2;
     Bag   cacheBag = GET_METHOD_CACHE(oper, n);
-    Obj * cache = 1 + ADDR_OBJ(cacheBag);
-    UInt  index = STATE(CacheIndex);
-    STATE(CacheIndex) = (STATE(CacheIndex) + 1) % CACHE_SIZE;
-
-    cache[(n + 2) * index] = method;
-    cache[(n + 2) * index + 1] = prec;
+    Obj * cache = 1 + prec * CacheEntrySize + ADDR_OBJ(cacheBag);
+    memmove((void *)(cache + CacheEntrySize), (void *)cache,
+            sizeof(Obj) * (CACHE_SIZE - prec - 1) * CacheEntrySize);
+    cache[0] = method;
+    cache[1] = INTOBJ_INT(prec);
     for (UInt i = 0; i < n; i++)
-        cache[(n + 2) * index + 2 + i] = ids[i];
+        cache[2 + i] = ids[i];
     CHANGED_BAG(cacheBag);
 }
 
@@ -2016,13 +2050,13 @@ CacheMethod(Obj oper, UInt n, Obj prec, Obj * ids, Obj method)
 static Obj MethodSelectors[2][7];
 static Obj VerboseMethodSelectors[2][7];
 
-static inline Obj __attribute__((always_inline))
-GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
+static ALWAYS_INLINE Obj
+GetMethodUncached(UInt n, Obj oper, Int prec, Obj types[], Obj selectors[][7])
 {
     Obj  margs;
     Obj  method = 0;
     UInt i;
-    if (prec == INTOBJ_INT(0)) {
+    if (prec == 0) {
         switch (n) {
         case 0:
             method = CALL_1ARGS(selectors[0][0], oper);
@@ -2060,29 +2094,30 @@ GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
     else {
         switch (n) {
         case 0:
-            method = CALL_2ARGS(selectors[1][0], oper, prec);
+            method = CALL_2ARGS(selectors[1][0], oper, INTOBJ_INT(prec));
             break;
         case 1:
-            method = CALL_3ARGS(selectors[1][1], oper, prec, types[0]);
+            method =
+                CALL_3ARGS(selectors[1][1], oper, INTOBJ_INT(prec), types[0]);
             break;
         case 2:
-            method =
-                CALL_4ARGS(selectors[1][2], oper, prec, types[0], types[1]);
+            method = CALL_4ARGS(selectors[1][2], oper, INTOBJ_INT(prec),
+                                types[0], types[1]);
             break;
         case 3:
-            method = CALL_5ARGS(selectors[1][3], oper, prec, types[0],
-                                types[1], types[2]);
+            method = CALL_5ARGS(selectors[1][3], oper, INTOBJ_INT(prec),
+                                types[0], types[1], types[2]);
             break;
         case 4:
-            method = CALL_6ARGS(selectors[1][4], oper, prec, types[0],
-                                types[1], types[2], types[3]);
+            method = CALL_6ARGS(selectors[1][4], oper, INTOBJ_INT(prec),
+                                types[0], types[1], types[2], types[3]);
             break;
         case 5:
         case 6:
 
             margs = NEW_PLIST(T_PLIST, n + 2);
             SET_ELM_PLIST(margs, 1, oper);
-            SET_ELM_PLIST(margs, 2, prec);
+            SET_ELM_PLIST(margs, 2, INTOBJ_INT(prec));
             for (i = 0; i < n; i++)
                 SET_ELM_PLIST(margs, 3 + i, types[i]);
             SET_LEN_PLIST(margs, n + 2);
@@ -2102,8 +2137,7 @@ static Int OperationNext;
 #endif
 
 
-static inline Obj __attribute__((always_inline))
-DoOperationNArgs(Obj  oper,
+static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
                  UInt n,
                  Obj  selectors[2][7],
                  UInt verbose,
@@ -2117,7 +2151,7 @@ DoOperationNArgs(Obj  oper,
 {
     Obj types[n];
     Obj ids[n];
-    Obj prec;
+    Int prec;
     Obj method;
     Obj res;
 
@@ -2165,17 +2199,20 @@ DoOperationNArgs(Obj  oper,
         ids[i] = ID_TYPE(types[i]);
 
     /* outer loop deals with TryNextMethod */
-    prec = INTOBJ_INT(-1);
+    prec = -1;
     do {
-        prec = INTOBJ_INT(INT_INTOBJ(prec) + 1);
+        prec++;
         /* Is there a method in the cache */
         method = verbose ? 0 : GetMethodCached(oper, n, prec, ids);
 
 #ifdef COUNT_OPERS
         if (method)
             OperationHit++;
-        else
+        else {
             OperationMiss++;
+            CacheMissStatistics[(prec >= CACHE_SIZE) ? CACHE_SIZE : prec]
+                               [n]++;
+        }
 #endif
 
         /* otherwise try to find one in the list of methods */
@@ -2217,7 +2254,7 @@ DoOperationNArgs(Obj  oper,
             }
             while (method == Fail)
                 method = CallHandleMethodNotFound(oper, n, (Obj *)args,
-                                                  verbose, constructor, prec);
+                                                  verbose, constructor, INTOBJ_INT(prec));
         }
 
         /* call this method */
@@ -2299,6 +2336,7 @@ Obj DoOperation6Args(
 **
 **  DoOperationXArgs( <oper>, ... )
 */
+
 Obj DoOperationXArgs(Obj self, Obj args)
 {
     ErrorQuit("sorry: cannot yet have X argument operations", 0L, 0L);
@@ -3806,33 +3844,70 @@ Obj FuncOPERS_CACHE_INFO (
     Obj                        self )
 {
     Obj                 list;
-#ifndef COUNT_OPERS
     Int                 i;
-#endif
 
-    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 13 );
-    SET_LEN_PLIST( list, 13 );
+    list = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 15);
+    SET_LEN_PLIST(list, 15);
 #ifdef COUNT_OPERS
-    SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
-    SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
-    SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
-    SET_ELM_PLIST( list, 4, INTOBJ_INT(OperationHit)        );
-    SET_ELM_PLIST( list, 5, INTOBJ_INT(OperationMiss)       );
-    SET_ELM_PLIST( list, 6, INTOBJ_INT(IsSubsetFlagsCalls)  );
-    SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
-    SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
-    SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
-    SET_ELM_PLIST( list, 10, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT)  );
-    SET_ELM_PLIST( list, 11, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS) );
-    SET_ELM_PLIST( list, 12, INTOBJ_INT(WITH_IMPS_FLAGS_HIT)   );
-    SET_ELM_PLIST( list, 13, INTOBJ_INT(WITH_IMPS_FLAGS_MISS)  );
+    SET_ELM_PLIST(list, 1, INTOBJ_INT(AndFlagsCacheHit));
+    SET_ELM_PLIST(list, 2, INTOBJ_INT(AndFlagsCacheMiss));
+    SET_ELM_PLIST(list, 3, INTOBJ_INT(AndFlagsCacheLost));
+    SET_ELM_PLIST(list, 4, INTOBJ_INT(OperationHit));
+    SET_ELM_PLIST(list, 5, INTOBJ_INT(OperationMiss));
+    SET_ELM_PLIST(list, 6, INTOBJ_INT(IsSubsetFlagsCalls));
+    SET_ELM_PLIST(list, 7, INTOBJ_INT(IsSubsetFlagsCalls1));
+    SET_ELM_PLIST(list, 8, INTOBJ_INT(IsSubsetFlagsCalls2));
+    SET_ELM_PLIST(list, 9, INTOBJ_INT(OperationNext));
+    SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT));
+    SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS));
+    SET_ELM_PLIST(list, 12, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
+    SET_ELM_PLIST(list, 13, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
+    
+    /* Now we need to convert the 3d matrix of cache hit counts (by
+       precedence, location found and number of arguments) into a three
+       dimensional GAP matrix (tensor) */
+    Obj tensor = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE);
+    SET_LEN_PLIST(tensor, CACHE_SIZE);
+    for (i = 1; i <= CACHE_SIZE; i++) {
+        Obj mat = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE);
+        SET_LEN_PLIST(mat, CACHE_SIZE);
+        SET_ELM_PLIST(tensor, i, mat);
+        CHANGED_BAG(tensor);
+        for (Int j = 1; j <= CACHE_SIZE; j++) {
+            Obj vec = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 7);
+            SET_LEN_PLIST(vec, 7);
+            SET_ELM_PLIST(mat, j, vec);
+            CHANGED_BAG(mat);
+            for (Int k = 0; k <= 6; k++)
+                SET_ELM_PLIST(
+                    vec, k + 1,
+                    INTOBJ_INT(CacheHitStatistics[i - 1][j - 1][k]));
+        }
+    }
+    SET_ELM_PLIST(list, 14, tensor);
+    CHANGED_BAG(list);
+
+    /* and similarly the 2D matrix of cache miss information (by
+       precedence and number of arguments */
+    Obj mat = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE + 1);
+    SET_LEN_PLIST(mat, CACHE_SIZE + 1);
+    for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
+        Obj vec = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 7);
+        SET_LEN_PLIST(vec, 7);
+        SET_ELM_PLIST(mat, j, vec);
+        CHANGED_BAG(mat);
+        for (Int k = 0; k <= 6; k++)
+            SET_ELM_PLIST(vec, k + 1,
+                          INTOBJ_INT(CacheMissStatistics[j - 1][k]));
+    }
+    SET_ELM_PLIST(list, 15, mat);
+    CHANGED_BAG(list);
 #else
-    for (i = 1; i <= 13; i++)
-        SET_ELM_PLIST( list, i, INTOBJ_INT(0) );
+    for (i = 1; i <= 15; i++)
+        SET_ELM_PLIST(list, i, INTOBJ_INT(0));
 #endif
     return list;
 }
-
 
 
 /****************************************************************************
@@ -3856,6 +3931,8 @@ Obj FuncCLEAR_CACHE_INFO (
     WITH_HIDDEN_IMPS_MISS = 0;
     WITH_IMPS_FLAGS_HIT = 0;
     WITH_IMPS_FLAGS_MISS = 0;
+    memset((void *)CacheHitStatistics, 0, sizeof(CacheHitStatistics));
+    memset((void *)CacheMissStatistics, 0, sizeof(CacheMissStatistics));
 #endif
 
     return 0;
