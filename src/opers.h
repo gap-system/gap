@@ -120,7 +120,7 @@ extern Obj TRY_NEXT_METHOD;
 *F  SIZE_PLEN_FLAGS( <plen> ) . .  size for a flags list with physical length
 */
 #define SIZE_PLEN_FLAGS(plen) \
-  (4*sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(Obj))
+  (4*sizeof(Obj)+(((plen)+BIPEB-1) >> LBIPEB)*sizeof(Obj))
 
 
 
@@ -186,7 +186,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags lits
 */
-#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
+#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1) >> LBIPEB)
 
 
 
@@ -209,7 +209,7 @@ extern Obj TRY_NEXT_METHOD;
 **  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
 **  that have side effects.
 */
-#define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1)/BIPEB])
+#define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1) >> LBIPEB])
 
 
 /****************************************************************************
@@ -222,7 +222,7 @@ extern Obj TRY_NEXT_METHOD;
 **  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
 **  that have side effects.
 */
-#define MASK_POS_FLAGS(pos)             (((UInt) 1)<<((pos)-1)%BIPEB)
+#define MASK_POS_FLAGS(pos)             (((UInt) 1)<<(((pos)-1) & (BIPEB-1)))
 
 
 /****************************************************************************
@@ -235,9 +235,14 @@ extern Obj TRY_NEXT_METHOD;
 **
 **  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
 **  have side effects.
+**
+**  C_ELM_FLAGS returns a result more convenient for use inside the kernel
+**  since the C compiler can't know that True != False.
 */
-#define ELM_FLAGS(list,pos) \
-  ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
+#define C_ELM_FLAGS(list, pos)                                               \
+    ((BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) ? 1 : 0)
+
+#define ELM_FLAGS(list, pos) (C_ELM_FLAGS(list, pos) ? True : False)
 
 
 /****************************************************************************

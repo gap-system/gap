@@ -449,48 +449,46 @@ static Int IsSubsetFlagsCalls2;
 *F  UncheckedIS_SUBSET_FLAGS( <flags1>, <flags2> ) subset test with
 *F                                                         no safety check
 */
-static Obj UncheckedIS_SUBSET_FLAGS (
-    Obj                 flags1,
-    Obj                 flags2 )
+static Obj UncheckedIS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
-    Int                 len1;
-    Int                 len2;
-    UInt *              ptr1;
-    UInt *              ptr2;
-    Int                 i;
-    Obj                 trues;
+    Int    len1;
+    Int    len2;
+    UInt * ptr1;
+    UInt * ptr2;
+    Int    i;
+    Obj    trues;
 
-    /* do the real work                                                    */
+/* do the real work                                                    */
 #ifdef COUNT_OPERS
     IsSubsetFlagsCalls++;
 #endif
 
     /* first check the trues                                               */
     trues = TRUES_FLAGS(flags2);
-    if ( trues != 0 ) {
+    if (trues != 0) {
         len2 = LEN_PLIST(trues);
-	        if ( TRUES_FLAGS(flags1) != 0 ) {
-            if ( LEN_PLIST(TRUES_FLAGS(flags1)) < len2 ) {
+        if (TRUES_FLAGS(flags1) != 0) {
+            if (LEN_PLIST(TRUES_FLAGS(flags1)) < len2) {
 #ifdef COUNT_OPERS
                 IsSubsetFlagsCalls1++;
 #endif
                 return False;
             }
-	    } 
-        if ( len2 == 0 ) {
+        }
+        if (len2 == 0) {
             return True;
         }
-        if ( len2 < 3 ) {
+        if (len2 < 16) {
 #ifdef COUNT_OPERS
             IsSubsetFlagsCalls2++;
 #endif
-            if ( LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues,len2)) ) {
+            if (LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues, len2))) {
                 return False;
             }
-            for ( i = len2;  0 < i;  i-- ) {
-               if (ELM_FLAGS(flags1,INT_INTOBJ(ELM_PLIST(trues,i)))==False) {
-                   return False;
-               }
+            for (i = len2; 0 < i; i--) {
+                if (!C_ELM_FLAGS(flags1, INT_INTOBJ(ELM_PLIST(trues, i)))) {
+                    return False;
+                }
             }
             return True;
         }
@@ -502,22 +500,22 @@ static Obj UncheckedIS_SUBSET_FLAGS (
     ptr1 = BLOCKS_FLAGS(flags1);
     ptr2 = BLOCKS_FLAGS(flags2);
     if (len1 < len2) {
-      for (i = len2-1; i >= len1; i--) {
-	if (ptr2[i] != 0)
-	  return False;
-      }
-      for (i = len1-1; i >= 0; i--) {
-	UInt x = ptr2[i];
-	if ((x & ptr1[i]) != x)
-	  return False;
-      }
+        for (i = len2 - 1; i >= len1; i--) {
+            if (ptr2[i] != 0)
+                return False;
+        }
+        for (i = len1 - 1; i >= 0; i--) {
+            UInt x = ptr2[i];
+            if ((x & ptr1[i]) != x)
+                return False;
+        }
     }
     else {
-      for (i = len2-1; i >= 0; i--) {
-	UInt x = ptr2[i];
-	if ((x & ptr1[i]) != x)
-	  return False;
-      }
+        for (i = len2 - 1; i >= 0; i--) {
+            UInt x = ptr2[i];
+            if ((x & ptr1[i]) != x)
+                return False;
+        }
     }
     return True;
 }
@@ -1874,7 +1872,7 @@ static inline Obj TYPE_OBJ_FEO (
 #ifdef HPCGAP
 
 static pthread_mutex_t CacheLock;
-static UInt CacheSize;
+static UInt            CacheSize;
 
 static void LockCache(void)
 {
@@ -1890,25 +1888,23 @@ static void UnlockCache(void)
 
 #endif
 
-static inline Obj CacheOper (
-    Obj                 oper,
-    UInt                i )
+static inline Obj CacheOper(Obj oper, UInt i)
 {
-    Obj cache = CACHE_OPER( oper, i );
+    Obj  cache = CACHE_OPER(oper, i);
     UInt len;
 
 #ifdef HPCGAP
     UInt cacheIndex;
 
-    if ( cache == 0 ) {
+    if (cache == 0) {
         /* This is a safe form of double-checked locking, because
          * the cache value is not a reference. */
         LockCache();
-        cache = CACHE_OPER( oper, i );
-        if (cache == 0 ) {
+        cache = CACHE_OPER(oper, i);
+        if (cache == 0) {
             CacheSize++;
             cacheIndex = CacheSize;
-            CACHE_OPER( oper, i ) = INTOBJ_INT(cacheIndex);
+            CACHE_OPER(oper, i) = INTOBJ_INT(cacheIndex);
         }
         else
             cacheIndex = INT_INTOBJ(cache);
@@ -1931,17 +1927,17 @@ static inline Obj CacheOper (
     cache = ELM_PLIST(STATE(MethodCache), cacheIndex);
 #endif
 
-    if ( cache == 0 ) {
-        len = (i < 7 ? CACHE_SIZE * (i+2) : CACHE_SIZE * (1+2));
-        cache = NEW_PLIST( T_PLIST, len);
-        SET_LEN_PLIST( cache, len ); 
-#       ifdef HPCGAP
-            SET_ELM_PLIST( STATE(MethodCache), cacheIndex, cache );
-            CHANGED_BAG( STATE(MethodCache) );
-#       else
-            CACHE_OPER( oper, i ) = cache;
-            CHANGED_BAG( oper );
-#       endif
+    if (cache == 0) {
+        len = (i < 7 ? CACHE_SIZE * (i + 2) : CACHE_SIZE * (1 + 2));
+        cache = NEW_PLIST(T_PLIST, len);
+        SET_LEN_PLIST(cache, len);
+#ifdef HPCGAP
+        SET_ELM_PLIST(STATE(MethodCache), cacheIndex, cache);
+        CHANGED_BAG(STATE(MethodCache));
+#else
+        CACHE_OPER(oper, i) = cache;
+        CHANGED_BAG(oper);
+#endif
     }
 
     return cache;
@@ -1950,19 +1946,18 @@ static inline Obj CacheOper (
 
 #ifdef HPCGAP
 
-#define GET_METHOD_CACHE( oper, i ) \
-  ( STATE(MethodCacheItems)[INT_INTOBJ( CACHE_OPER ( oper, i ))] )
+#define GET_METHOD_CACHE(oper, i)                                            \
+    (STATE(MethodCacheItems)[INT_INTOBJ(CACHE_OPER(oper, i))])
 
 #else
 
-#define GET_METHOD_CACHE( oper, i ) \
-    CACHE_OPER( oper, i )
+#define GET_METHOD_CACHE(oper, i) CACHE_OPER(oper, i)
 
 #endif
 
-/* This function actually searches the cache. Normally it should be called with 
+/* This function actually searches the cache. Normally it should be called
+   with
    n a compile-time constant to allow the optimiser to tidy things up */
-
 
 
 static inline Obj __attribute__((always_inline))
@@ -2019,7 +2014,7 @@ CacheMethod(Obj oper, UInt n, Obj prec, Obj * ids, Obj method)
 
 /* These will contain the GAP method selection functions */
 static Obj MethodSelectors[2][7];
-static Obj VerboseMethodSelectors[2][7];					
+static Obj VerboseMethodSelectors[2][7];
 
 static inline Obj __attribute__((always_inline))
 GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
@@ -2039,15 +2034,15 @@ GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
             method = CALL_3ARGS(selectors[0][2], oper, types[0], types[1]);
             break;
         case 3:
-            method =
-                CALL_4ARGS(selectors[0][3], oper, types[0], types[1], types[2]);
+            method = CALL_4ARGS(selectors[0][3], oper, types[0], types[1],
+                                types[2]);
             break;
         case 4:
             method = CALL_5ARGS(selectors[0][4], oper, types[0], types[1],
                                 types[2], types[3]);
             break;
         case 5:
-	  method = CALL_6ARGS(selectors[0][5], oper, types[0], types[1],
+            method = CALL_6ARGS(selectors[0][5], oper, types[0], types[1],
                                 types[2], types[3], types[4]);
             break;
         case 6:
@@ -2079,7 +2074,7 @@ GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
                                 types[1], types[2]);
             break;
         case 4:
-	  method = CALL_6ARGS(selectors[1][4], oper, prec, types[0],
+            method = CALL_6ARGS(selectors[1][4], oper, prec, types[0],
                                 types[1], types[2], types[3]);
             break;
         case 5:
@@ -2091,8 +2086,7 @@ GetMethodUncached(UInt n, Obj oper, Obj prec, Obj types[], Obj selectors[][7])
             for (i = 0; i < n; i++)
                 SET_ELM_PLIST(margs, 3 + i, types[i]);
             SET_LEN_PLIST(margs, n + 2);
-            method =
-                CALL_XARGS(selectors[1][n], margs);
+            method = CALL_XARGS(selectors[1][n], margs);
             break;
         default:
             GAP_ASSERT(0);
@@ -2108,17 +2102,18 @@ static Int OperationNext;
 #endif
 
 
-static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
-                                                                  UInt n,
-								  Obj  selectors[2][7],
-								  UInt verbose,
-								  UInt constructor,
-                                                                  Obj  arg1,
-                                                                  Obj  arg2,
-                                                                  Obj  arg3,
-                                                                  Obj  arg4,
-                                                                  Obj  arg5,
-                                                                  Obj  arg6)
+static inline Obj __attribute__((always_inline))
+DoOperationNArgs(Obj  oper,
+                 UInt n,
+                 Obj  selectors[2][7],
+                 UInt verbose,
+                 UInt constructor,
+                 Obj  arg1,
+                 Obj  arg2,
+                 Obj  arg3,
+                 Obj  arg4,
+                 Obj  arg5,
+                 Obj  arg6)
 {
     Obj types[n];
     Obj ids[n];
@@ -2140,18 +2135,19 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
     case 2:
         types[1] = TYPE_OBJ_FEO(arg2);
     case 1:
-      if (constructor) {
-	while (!IS_OPERATION(arg1))
-	  {
-	    arg1 = ErrorReturnObj(
-				  "Constructor: the first argument must be a filter not a %s",
-				  (Int)TNAM_OBJ(arg1), 0L, 
-				  "you can replace the first argument <arg1> via 'return <arg1>;'");
-	  }
-	
-	types[0] = FLAGS_FILT( arg1 );
-      } else
-        types[0] = TYPE_OBJ_FEO(arg1);
+        if (constructor) {
+            while (!IS_OPERATION(arg1)) {
+                arg1 = ErrorReturnObj("Constructor: the first argument must "
+                                      "be a filter not a %s",
+                                      (Int)TNAM_OBJ(arg1), 0L,
+                                      "you can replace the first argument "
+                                      "<arg1> via 'return <arg1>;'");
+            }
+
+            types[0] = FLAGS_FILT(arg1);
+        }
+        else
+            types[0] = TYPE_OBJ_FEO(arg1);
     case 0:
         break;
     default:
@@ -2159,12 +2155,12 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
     }
 
     if (n > 0) {
-      if (constructor)
-	ids[0] = types[0];
-      else
-	ids[0] = ID_TYPE(types[0]);
+        if (constructor)
+            ids[0] = types[0];
+        else
+            ids[0] = ID_TYPE(types[0]);
     }
-    
+
     for (UInt i = 1; i < n; i++)
         ids[i] = ID_TYPE(types[i]);
 
@@ -2174,22 +2170,22 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
         prec = INTOBJ_INT(INT_INTOBJ(prec) + 1);
         /* Is there a method in the cache */
         method = verbose ? 0 : GetMethodCached(oper, n, prec, ids);
-	
+
 #ifdef COUNT_OPERS
-	if (method)
-	  OperationHit++;
-	else 
-	  OperationMiss++;
+        if (method)
+            OperationHit++;
+        else
+            OperationMiss++;
 #endif
 
         /* otherwise try to find one in the list of methods */
         if (!method) {
-	  method = GetMethodUncached(n, oper, prec, types, selectors);
-	          /* update the cache */
-	  if (!verbose && method)
-	    CacheMethod(oper, n, prec, ids, method);
-	}
-	
+            method = GetMethodUncached(n, oper, prec, types, selectors);
+            /* update the cache */
+            if (!verbose && method)
+                CacheMethod(oper, n, prec, ids, method);
+        }
+
         if (!method) {
             ErrorQuit("no method returned", 0L, 0L);
         }
@@ -2220,8 +2216,8 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
                 GAP_ASSERT(0);
             }
             while (method == Fail)
-                method = CallHandleMethodNotFound(oper, n, (Obj *)args, verbose, constructor,
-                                                  prec);
+                method = CallHandleMethodNotFound(oper, n, (Obj *)args,
+                                                  verbose, constructor, prec);
         }
 
         /* call this method */
@@ -2257,52 +2253,55 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
 
 Obj DoOperation0Args(Obj oper)
 {
-  return DoOperationNArgs(oper, 0, MethodSelectors, 0, 0, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 0, MethodSelectors, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 Obj DoOperation1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, MethodSelectors, 0, 0, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 1, MethodSelectors, 0, 0, arg1, 0, 0, 0, 0,
+                            0);
 }
 
 Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, MethodSelectors, 0, 0, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 2, MethodSelectors, 0, 0, arg1, arg2, 0, 0,
+                            0, 0);
 }
 
 Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, MethodSelectors, 0, 0, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs(oper, 3, MethodSelectors, 0, 0, arg1, arg2, arg3,
+                            0, 0, 0);
 }
 
 Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, MethodSelectors, 0, 0, arg1, arg2, arg3, arg4, 0, 0);
+    return DoOperationNArgs(oper, 4, MethodSelectors, 0, 0, arg1, arg2, arg3,
+                            arg4, 0, 0);
 }
 
 Obj DoOperation5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, MethodSelectors, 0, 0, arg1, arg2, arg3, arg4, arg5, 0);
+    return DoOperationNArgs(oper, 5, MethodSelectors, 0, 0, arg1, arg2, arg3,
+                            arg4, arg5, 0);
 }
 
 Obj DoOperation6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, MethodSelectors, 0, 0, arg1, arg2, arg3, arg4, arg5, arg6);
+    return DoOperationNArgs(oper, 6, MethodSelectors, 0, 0, arg1, arg2, arg3,
+                            arg4, arg5, arg6);
 }
-
 
 
 /****************************************************************************
 **
 **  DoOperationXArgs( <oper>, ... )
 */
-Obj DoOperationXArgs (
-    Obj                 self,
-    Obj                 args )
+Obj DoOperationXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument operations",0L,0L);
+    ErrorQuit("sorry: cannot yet have X argument operations", 0L, 0L);
     return 0;
 }
 
@@ -2311,82 +2310,58 @@ Obj DoOperationXArgs (
 **
 **  DoVerboseOperation0Args( <oper> )
 */
-Obj DoVerboseOperation0Args (
-    Obj                 oper )
+Obj DoVerboseOperation0Args(Obj oper)
 {
-  return DoOperationNArgs( oper, 0, VerboseMethodSelectors, 1, 0, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 0, VerboseMethodSelectors, 1, 0, 0, 0, 0, 0,
+                            0, 0);
 }
 
-Obj DoVerboseOperation1Args (
-			     Obj                 oper,
-			     Obj arg1)
+Obj DoVerboseOperation1Args(Obj oper, Obj arg1)
 {
-  return DoOperationNArgs( oper, 1, VerboseMethodSelectors, 1, 0, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 1, VerboseMethodSelectors, 1, 0, arg1, 0, 0,
+                            0, 0, 0);
 }
 
-Obj DoVerboseOperation2Args (
-			     Obj                 oper,
-			     Obj arg1,
-			     Obj arg2)
+Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-  return DoOperationNArgs( oper, 2, VerboseMethodSelectors, 1, 0, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 2, VerboseMethodSelectors, 1, 0, arg1, arg2,
+                            0, 0, 0, 0);
 }
 
-Obj DoVerboseOperation3Args (
-			     Obj                 oper,
-			     Obj arg1,
-			     Obj arg2,
-			     Obj arg3
-			     )
+Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-  return DoOperationNArgs( oper, 3, VerboseMethodSelectors, 1, 0, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs(oper, 3, VerboseMethodSelectors, 1, 0, arg1, arg2,
+                            arg3, 0, 0, 0);
 }
 
-Obj DoVerboseOperation4Args (
-			     Obj                 oper,
-			     Obj arg1,
-			     Obj arg2,
-			     Obj arg3,
-			     Obj arg4
-			    )
+Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-  return DoOperationNArgs( oper, 4, VerboseMethodSelectors, 1, 0, arg1, arg2, arg3, arg4, 0, 0);
+    return DoOperationNArgs(oper, 4, VerboseMethodSelectors, 1, 0, arg1, arg2,
+                            arg3, arg4, 0, 0);
 }
 
-Obj DoVerboseOperation5Args (
-			     Obj                 oper,
-			     Obj arg1,
-			     Obj arg2,
-			     Obj arg3,
-			     Obj arg4,
-			     Obj arg5
-			     )
+Obj DoVerboseOperation5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-  return DoOperationNArgs( oper, 5, VerboseMethodSelectors, 1, 0, arg1, arg2, arg3, arg4, arg5, 0);
+    return DoOperationNArgs(oper, 5, VerboseMethodSelectors, 1, 0, arg1, arg2,
+                            arg3, arg4, arg5, 0);
 }
 
-Obj DoVerboseOperation6Args (Obj oper,
-			     Obj arg1,
-			     Obj arg2,
-			     Obj arg3,
-			     Obj arg4,
-			     Obj arg5,
-			     Obj arg6)
+Obj DoVerboseOperation6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-  return DoOperationNArgs( oper, 6, VerboseMethodSelectors, 1, 0, arg1, arg2, arg3, arg4, arg5, arg6);
+    return DoOperationNArgs(oper, 6, VerboseMethodSelectors, 1, 0, arg1, arg2,
+                            arg3, arg4, arg5, arg6);
 }
-
 
 
 /****************************************************************************
 **
 **  DoVerboseOperationXArgs( <oper>, ... )
 */
-Obj DoVerboseOperationXArgs (
-    Obj                 self,
-    Obj                 args )
+Obj DoVerboseOperationXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument operations",0L,0L);
+    ErrorQuit("sorry: cannot yet have X argument operations", 0L, 0L);
     return 0;
 }
 
@@ -2395,16 +2370,12 @@ Obj DoVerboseOperationXArgs (
 **
 *F  NewOperation( <name>, <narg>, <nams>, <hdlr> )
 */
-Obj NewOperation (
-    Obj                 name,
-    Int                 narg,
-    Obj                 nams,
-    ObjFunc             hdlr )
+Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 {
-    Obj                 oper;
+    Obj oper;
 
     /* create the function                                                 */
-    oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
+    oper = NewFunctionT(T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr);
 
     /* enter the handlers                                                  */
     SET_HDLR_FUNC(oper, 0, DoOperation0Args);
@@ -2418,7 +2389,7 @@ Obj NewOperation (
 
     /* reenter the given handler */
     if (narg != -1)
-      SET_HDLR_FUNC(oper, narg, hdlr);
+        SET_HDLR_FUNC(oper, narg, hdlr);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
     FLAG1_FILT(oper) = INTOBJ_INT(0);
@@ -2426,7 +2397,7 @@ Obj NewOperation (
     FLAGS_FILT(oper) = False;
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
-    
+
     /* This isn't an attribute (yet) */
     SET_ENABLED_ATTR(oper, 0);
 
@@ -2451,85 +2422,58 @@ Obj VerboseConstructorSelectors[2][7];
 */
 
 
-
-Obj DoConstructor0Args (
-    Obj                 oper )
+Obj DoConstructor0Args(Obj oper)
 {
-  return DoOperationNArgs(oper, 0, ConstructorSelectors, 0, 1, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 0, ConstructorSelectors, 0, 1, 0, 0, 0, 0,
+                            0, 0);
 }
 
-Obj DoConstructor1Args (
-			Obj                 oper,
-			Obj arg1 )
+Obj DoConstructor1Args(Obj oper, Obj arg1)
 {
-  return DoOperationNArgs(oper, 1, ConstructorSelectors, 0, 1, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 1, ConstructorSelectors, 0, 1, arg1, 0, 0,
+                            0, 0, 0);
 }
 
-Obj DoConstructor2Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2 )
+Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-  return DoOperationNArgs(oper, 2, ConstructorSelectors, 0, 1, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 2, ConstructorSelectors, 0, 1, arg1, arg2,
+                            0, 0, 0, 0);
 }
 
-Obj DoConstructor3Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3
-			)
+Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-  return DoOperationNArgs(oper, 3, ConstructorSelectors, 0, 1, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs(oper, 3, ConstructorSelectors, 0, 1, arg1, arg2,
+                            arg3, 0, 0, 0);
 }
 
-Obj DoConstructor4Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4
-			)
+Obj DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-  return DoOperationNArgs(oper, 4, ConstructorSelectors, 0, 1, arg1, arg2, arg3, arg4, 0, 0);
+    return DoOperationNArgs(oper, 4, ConstructorSelectors, 0, 1, arg1, arg2,
+                            arg3, arg4, 0, 0);
 }
 
-Obj DoConstructor5Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4,
-			Obj arg5
-			)
+Obj DoConstructor5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-  return DoOperationNArgs(oper, 5, ConstructorSelectors, 0, 1, arg1, arg2, arg3, arg4, arg5, 0);
+    return DoOperationNArgs(oper, 5, ConstructorSelectors, 0, 1, arg1, arg2,
+                            arg3, arg4, arg5, 0);
 }
 
-Obj DoConstructor6Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4,
-			Obj arg5,
-			Obj arg6
-			)
+Obj DoConstructor6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-  return DoOperationNArgs(oper, 6, ConstructorSelectors, 0, 1, arg1, arg2, arg3, arg4, arg5, arg6);
+    return DoOperationNArgs(oper, 6, ConstructorSelectors, 0, 1, arg1, arg2,
+                            arg3, arg4, arg5, arg6);
 }
-
 
 
 /****************************************************************************
 **
 **  DoConstructorXArgs( <oper>, ... )
 */
-Obj DoConstructorXArgs (
-    Obj                 self,
-    Obj                 args )
+Obj DoConstructorXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument constructors",0L,0L);
+    ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
     return 0;
 }
 
@@ -2538,84 +2482,59 @@ Obj DoConstructorXArgs (
 **  DoVerboseConstructor0Args( <oper> )
 */
 
-Obj DoVerboseConstructor0Args (
-    Obj                 oper )
+Obj DoVerboseConstructor0Args(Obj oper)
 {
-  return DoOperationNArgs(oper, 0, VerboseConstructorSelectors, 1, 1, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 0, VerboseConstructorSelectors, 1, 1, 0, 0,
+                            0, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor1Args (
-			Obj                 oper,
-			Obj arg1 )
+Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
 {
-  return DoOperationNArgs(oper, 1, VerboseConstructorSelectors, 1, 1, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 1, VerboseConstructorSelectors, 1, 1, arg1,
+                            0, 0, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor2Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2 )
+Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-  return DoOperationNArgs(oper, 2, VerboseConstructorSelectors, 1, 1, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 2, VerboseConstructorSelectors, 1, 1, arg1,
+                            arg2, 0, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor3Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3
-			)
+Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-  return DoOperationNArgs(oper, 3, VerboseConstructorSelectors, 1, 1, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs(oper, 3, VerboseConstructorSelectors, 1, 1, arg1,
+                            arg2, arg3, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor4Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4
-			)
+Obj DoVerboseConstructor4Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-  return DoOperationNArgs(oper, 4, VerboseConstructorSelectors, 1, 1, arg1, arg2, arg3, arg4, 0, 0);
+    return DoOperationNArgs(oper, 4, VerboseConstructorSelectors, 1, 1, arg1,
+                            arg2, arg3, arg4, 0, 0);
 }
 
-Obj DoVerboseConstructor5Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4,
-			Obj arg5
-			)
+Obj DoVerboseConstructor5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-  return DoOperationNArgs(oper, 5, VerboseConstructorSelectors, 1, 1, arg1, arg2, arg3, arg4, arg5, 0);
+    return DoOperationNArgs(oper, 5, VerboseConstructorSelectors, 1, 1, arg1,
+                            arg2, arg3, arg4, arg5, 0);
 }
 
-Obj DoVerboseConstructor6Args (
-			Obj                 oper,
-			Obj arg1,
-			Obj arg2,
-			Obj arg3,
-			Obj arg4,
-			Obj arg5,
-			Obj arg6
-			)
+Obj DoVerboseConstructor6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-  return DoOperationNArgs(oper, 6, VerboseConstructorSelectors, 1, 1, arg1, arg2, arg3, arg4, arg5, arg6);
+    return DoOperationNArgs(oper, 6, VerboseConstructorSelectors, 1, 1, arg1,
+                            arg2, arg3, arg4, arg5, arg6);
 }
-
 
 
 /****************************************************************************
 **
 **  DoVerboseConstructorXArgs( <oper>, ... )
 */
-Obj DoVerboseConstructorXArgs (
-    Obj                 self,
-    Obj                 args )
+Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument constructors",0L,0L);
+    ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
     return 0;
 }
 
