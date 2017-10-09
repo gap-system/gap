@@ -469,14 +469,14 @@ static Obj UncheckedIS_SUBSET_FLAGS (
     trues = TRUES_FLAGS(flags2);
     if ( trues != 0 ) {
         len2 = LEN_PLIST(trues);
-        if ( TRUES_FLAGS(flags1) != 0 ) {
+	        if ( TRUES_FLAGS(flags1) != 0 ) {
             if ( LEN_PLIST(TRUES_FLAGS(flags1)) < len2 ) {
 #ifdef COUNT_OPERS
                 IsSubsetFlagsCalls1++;
 #endif
                 return False;
             }
-        }
+	    } 
         if ( len2 == 0 ) {
             return True;
         }
@@ -501,33 +501,23 @@ static Obj UncheckedIS_SUBSET_FLAGS (
     len2 = NRB_FLAGS(flags2);
     ptr1 = BLOCKS_FLAGS(flags1);
     ptr2 = BLOCKS_FLAGS(flags2);
-    if ( len1 <= len2 ) {
-        ptr2 += len2-1;
-        for (i = len1+1 ; i <= len2; i++ ) {
-            if ( 0 != *ptr2 ) {
-                return False;
-            }
-            ptr2--;
-        }
-        
-        ptr1 += len1-1;
-        for ( i = 1; i <= len1; i++ ) {
-            if ( (*ptr1 & *ptr2) != *ptr2 ) {
-                return False;
-            }
-            ptr1--;  ptr2--;
-        }
-
+    if (len1 < len2) {
+      for (i = len2-1; i >= len1; i--) {
+	if (ptr2[i] != 0)
+	  return False;
+      }
+      for (i = len1-1; i >= 0; i--) {
+	UInt x = ptr2[i];
+	if ((x & ptr1[i]) != x)
+	  return False;
+      }
     }
     else {
-        ptr1 += len2-1;
-        ptr2 += len2-1;
-        for ( i = 1; i <= len2; i++ ) {
-            if ( (*ptr1 & *ptr2) != *ptr2 ) {
-                return False;
-            }
-            ptr1--;  ptr2--;
-        }
+      for (i = len2-1; i >= 0; i--) {
+	UInt x = ptr2[i];
+	if ((x & ptr1[i]) != x)
+	  return False;
+      }
     }
     return True;
 }
@@ -2193,8 +2183,13 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
 #endif
 
         /* otherwise try to find one in the list of methods */
-        if (!method)
+        if (!method) {
 	  method = GetMethodUncached(n, oper, prec, types, selectors);
+	          /* update the cache */
+	  if (!verbose && method)
+	    CacheMethod(oper, n, prec, ids, method);
+	}
+	
         if (!method) {
             ErrorQuit("no method returned", 0L, 0L);
         }
@@ -2228,11 +2223,6 @@ static inline Obj __attribute__((always_inline)) DoOperationNArgs(Obj  oper,
                 method = CallHandleMethodNotFound(oper, n, (Obj *)args, verbose, constructor,
                                                   prec);
         }
-
-        /* update the cache */
-        if (!verbose && method)
-	  CacheMethod(oper, n, prec, ids, method);
-
 
         /* call this method */
         switch (n) {
