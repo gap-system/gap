@@ -4343,20 +4343,30 @@ void            IntrInfoBegin( void )
 
 }
 
+Obj InfoDecisionFast;
 Obj InfoDecision;
-static Obj InfoDecisionFast;
 static Obj IsInfoClassListRep;
 
 Obj InfoCheckLevel(Obj selectors, Obj level)
 {
-    if (IS_POS_INTOBJ(level) &&
-        CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
+    // Fast-path the most common failing case.
+    // The fast-path only deals with the case where all arguments are of the
+    // correct type, and were False is returned. In the True case,
+    // InfoData.LastClass and InfoData.LastLevel need to be set.
+    if (CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
+#if defined(HPCGAP)
+        Obj index = ElmAList(selectors, 1);
+#else
         Obj index = ELM_PLIST(selectors, 1);
-        return CALL_3ARGS(InfoDecisionFast, index, selectors, level);
+#endif
+        if (IS_INTOBJ(index) && IS_INTOBJ(level)) {
+            // < on INTOBJs compares the represented integers.
+            if (index < level) {
+                return False;
+            }
+        }
     }
-    else {
-        return CALL_2ARGS(InfoDecision, selectors, level);
-    }
+    return CALL_2ARGS(InfoDecision, selectors, level);
 }
 
 
@@ -4556,7 +4566,6 @@ static Int InitKernel (
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
-    ImportFuncFromLibrary("InfoDecisionFast", &InfoDecisionFast);
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
     ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
 
