@@ -1178,7 +1178,7 @@ Obj             PowPerm2Int (
 {
     Obj                 pow;            /* handle of the power (result)    */
     UInt2 *             ptP;            /* pointer to the power            */
-    UInt2 *             ptL;            /* pointer to the permutation      */
+    const UInt2 *             ptL;            /* pointer to the permutation      */
     UInt2 *             ptKnown;        /* pointer to temporary bag        */
     UInt                deg;            /* degree of the permutation       */
     Int                 exp,  e;        /* exponent (right operand)        */
@@ -1186,11 +1186,13 @@ Obj             PowPerm2Int (
     UInt                p,  q,  r;      /* loop variables                  */
 
     
-    /* handle zeroth and first powers separately */
+    /* handle zeroth and first powers and stored inverses separately */
     if ( opR == INTOBJ_INT(0)) 
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
+    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
+      return STOREDINV_PERM(opL);
 
     /* get the operands and allocate a result bag                          */
     deg = DEG_PERM2(opL);
@@ -1202,7 +1204,7 @@ Obj             PowPerm2Int (
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = ADDR_PERM2(opL);
+        ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
         /* loop over the points of the permutation                         */
@@ -1228,7 +1230,7 @@ Obj             PowPerm2Int (
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = ADDR_PERM2(opL);
+        ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
         /* loop over all cycles                                            */
@@ -1273,7 +1275,7 @@ Obj             PowPerm2Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        ptL = ADDR_PERM2(opL);
+        ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
         /* loop over all cycles                                            */
@@ -1310,7 +1312,7 @@ Obj             PowPerm2Int (
     else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
-        ptL = ADDR_PERM2(opL);
+        ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
         /* invert the permutation                                          */
@@ -1439,18 +1441,21 @@ Obj             PowPerm4Int (
 {
     Obj                 pow;            /* handle of the power (result)    */
     UInt4 *             ptP;            /* pointer to the power            */
-    UInt4 *             ptL;            /* pointer to the permutation      */
+    const UInt4 *       ptL;            /* pointer to the permutation      */
     UInt4 *             ptKnown;        /* pointer to temporary bag        */
     UInt                deg;            /* degree of the permutation       */
     Int                 exp,  e;        /* exponent (right operand)        */
     UInt                len;            /* length of cycle (result)        */
     UInt                p,  q,  r;      /* loop variables                  */
 
-    /* handle zeroth and first powers separately */
+    /* handle zeroth and first powers separately  and stored inverses */
     if ( opR == INTOBJ_INT(0)) 
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
+    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
+      return STOREDINV_PERM(opL);
+
 
     /* get the operands and allocate a result bag                          */
     deg = DEG_PERM4(opL);
@@ -1462,7 +1467,7 @@ Obj             PowPerm4Int (
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over the points of the permutation                         */
@@ -1489,7 +1494,7 @@ Obj             PowPerm4Int (
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over all cycles                                            */
@@ -1534,7 +1539,7 @@ Obj             PowPerm4Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over all cycles                                            */
@@ -1571,7 +1576,7 @@ Obj             PowPerm4Int (
     else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* invert the permutation                                          */
@@ -1586,7 +1591,7 @@ Obj             PowPerm4Int (
 
         /* get pointer to the permutation and the power                    */
         exp = -INT_INTOBJ(opR);
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over the points                                            */
@@ -1612,7 +1617,7 @@ Obj             PowPerm4Int (
 
         /* get pointer to the permutation and the power                    */
         exp = -INT_INTOBJ(opR);
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over all cycles                                            */
@@ -1658,7 +1663,7 @@ Obj             PowPerm4Int (
 
         /* get pointer to the permutation and the power                    */
         opR = ProdInt( INTOBJ_INT(-1), opR );
-        ptL = ADDR_PERM4(opL);
+        ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
         /* loop over all cycles                                            */
@@ -1703,7 +1708,12 @@ Obj             PowPerm4Int (
 Obj InvPerm (
     Obj             perm )
 {
-    return POW( perm, INTOBJ_INT(-1) );
+  Obj inv = STOREDINV_PERM(perm);
+  if (inv != 0)
+    return inv;
+  inv =  POW( perm, INTOBJ_INT(-1) );
+  SET_STOREDINV_PERM(perm,inv);
+  return inv;
 }
 
 
@@ -1792,9 +1802,9 @@ Obj             QuoIntPerm2 (
     Obj                 opL,
     Obj                 opR )
 {
-    Int                 pre;            /* preimage (result)               */
+    UInt2                 pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
-    UInt2 *             ptR;            /* pointer to the permutation      */
+    const UInt2 *             ptR;            /* pointer to the permutation      */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
     if ( TNUM_OBJ(opL) == T_INTPOS )
@@ -1810,25 +1820,29 @@ Obj             QuoIntPerm2 (
         return QUO( opL, opR );
     }
 
+    Obj inv = STOREDINV_PERM(opR);
+    if ( inv != 0)
+      return INTOBJ_INT(IMAGE(img-1, CONST_ADDR_PERM2(inv), DEG_PERM2(inv))+1);
+    
     /* compute the preimage                                                */
-    pre = img;
-    ptR = ADDR_PERM2(opR);
     if ( img <= DEG_PERM2(opR) ) {
-        while ( ptR[ pre-1 ] != img-1 )
-            pre = ptR[ pre-1 ] + 1;
-    }
-
-    /* return it                                                           */
-    return INTOBJ_INT(pre);
+      pre = (UInt2) img-1;
+      ptR = CONST_ADDR_PERM2(opR);
+      while ( ptR[ pre ] != img-1 )
+	pre = ptR[ pre ];
+      /* return it                                                           */
+      return INTOBJ_INT(pre+1);
+    } else
+      return INTOBJ_INT(img);    
 }
 
 Obj             QuoIntPerm4 (
     Obj                 opL,
     Obj                 opR )
 {
-    Int                 pre;            /* preimage (result)               */
+    UInt4                 pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
-    UInt4 *             ptR;            /* pointer to the permutation      */
+    const UInt4 *             ptR;            /* pointer to the permutation      */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
     if ( TNUM_OBJ(opL) == T_INTPOS )
@@ -1844,16 +1858,22 @@ Obj             QuoIntPerm4 (
         return QUO( opL, opR );
     }
 
-    /* compute the preimage                                                */
-    pre = img;
-    ptR = ADDR_PERM4(opR);
-    if ( img <= DEG_PERM4(opR) ) {
-        while ( ptR[ pre-1 ] != img-1 )
-            pre = ptR[ pre-1 ] + 1;
-    }
+    Obj inv = STOREDINV_PERM(opR);
+    if ( inv != 0)
+      return INTOBJ_INT(IMAGE(img-1, CONST_ADDR_PERM4(inv), DEG_PERM4(inv))+1);
 
-    /* return it                                                           */
-    return INTOBJ_INT(pre);
+    /* compute the preimage                                                */
+    if ( img <= DEG_PERM4(opR) ) {
+      pre = (UInt4)img -1;
+      ptR = CONST_ADDR_PERM4(opR);
+        while ( ptR[ pre ] != img-1 )
+            pre = ptR[ pre];
+	/* return it                                                           */
+	return INTOBJ_INT((Int)(pre+1));
+    } else
+      return INTOBJ_INT(img);
+    
+
 }
 
 
@@ -1873,9 +1893,9 @@ Obj             PowPerm22 (
     UInt                degC;           /* degree of the conjugation       */
     UInt2 *             ptC;            /* pointer to the conjugation      */
     UInt                degL;           /* degree of the left operand      */
-    UInt2 *             ptL;            /* pointer to the left operand     */
+    const UInt2 *       ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
+    const UInt2 *       ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
@@ -1885,8 +1905,8 @@ Obj             PowPerm22 (
     cnj = NEW_PERM2( degC );
 
     /* set up the pointers                                                 */
-    ptL = ADDR_PERM2(opL);
-    ptR = ADDR_PERM2(opR);
+    ptL = CONST_ADDR_PERM2(opL);
+    ptR = CONST_ADDR_PERM2(opR);
     ptC = ADDR_PERM2(cnj);
 
     /* its faster if the both permutations have the same size              */
@@ -1913,9 +1933,9 @@ Obj             PowPerm24 (
     UInt                degC;           /* degree of the conjugation       */
     UInt4 *             ptC;            /* pointer to the conjugation      */
     UInt                degL;           /* degree of the left operand      */
-    UInt2 *             ptL;            /* pointer to the left operand     */
+    const UInt2 *       ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
+    const UInt4 *       ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
@@ -1925,8 +1945,8 @@ Obj             PowPerm24 (
     cnj = NEW_PERM4( degC );
 
     /* set up the pointers                                                 */
-    ptL = ADDR_PERM2(opL);
-    ptR = ADDR_PERM4(opR);
+    ptL = CONST_ADDR_PERM2(opL);
+    ptR = CONST_ADDR_PERM4(opR);
     ptC = ADDR_PERM4(cnj);
 
     /* its faster if the both permutations have the same size              */
@@ -1953,9 +1973,9 @@ Obj             PowPerm42 (
     UInt                degC;           /* degree of the conjugation       */
     UInt4 *             ptC;            /* pointer to the conjugation      */
     UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
+    const UInt4 *       ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
+    const UInt2 *       ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
@@ -1965,8 +1985,8 @@ Obj             PowPerm42 (
     cnj = NEW_PERM4( degC );
 
     /* set up the pointers                                                 */
-    ptL = ADDR_PERM4(opL);
-    ptR = ADDR_PERM2(opR);
+    ptL = CONST_ADDR_PERM4(opL);
+    ptR = CONST_ADDR_PERM2(opR);
     ptC = ADDR_PERM4(cnj);
 
     /* its faster if the both permutations have the same size              */
@@ -1993,9 +2013,9 @@ Obj             PowPerm44 (
     UInt                degC;           /* degree of the conjugation       */
     UInt4 *             ptC;            /* pointer to the conjugation      */
     UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
+    const UInt4 *       ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
+    const UInt4 *       ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
@@ -2005,8 +2025,8 @@ Obj             PowPerm44 (
     cnj = NEW_PERM4( degC );
 
     /* set up the pointers                                                 */
-    ptL = ADDR_PERM4(opL);
-    ptR = ADDR_PERM4(opR);
+    ptL = CONST_ADDR_PERM4(opL);
+    ptR = CONST_ADDR_PERM4(opR);
     ptC = ADDR_PERM4(cnj);
 
     /* its faster if the both permutations have the same size              */
@@ -2281,7 +2301,7 @@ Obj             FuncPermList (
         degPerm = LEN_LIST( list );
 
         /* make sure that the global buffer bag is large enough for checkin*/
-	UseTmpPerm(degPerm*sizeof(UInt2)); 
+	UseTmpPerm(SIZEBAG_PERM2(degPerm)); 
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM2( degPerm );
@@ -2350,7 +2370,7 @@ Obj             FuncPermList (
 		       degPerm, MAX_DEG_PERM4);
 
         /* make sure that the global buffer bag is large enough for checkin*/
-	UseTmpPerm(degPerm*sizeof(UInt4));
+	UseTmpPerm(SIZEBAG_PERM4(degPerm));
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM4( degPerm );
@@ -3632,12 +3652,12 @@ Obj             FuncTRIM_PERM (
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
       rdeg = deg < DEG_PERM2(perm) ? deg : DEG_PERM2(perm);
-      ResizeBag( perm, sizeof(UInt2)*rdeg);
+      ResizeBag( perm, SIZEBAG_PERM2(rdeg));
     }
     else {
       rdeg = deg < DEG_PERM4(perm) ? deg : DEG_PERM4(perm);
       if (rdeg > 65536UL ) {
-	ResizeBag( perm, sizeof(UInt4)*rdeg);
+	ResizeBag( perm, SIZEBAG_PERM4(rdeg));
       }
       else {
 	/* Convert to 2Byte rep: move the points up */
@@ -3646,7 +3666,7 @@ Obj             FuncTRIM_PERM (
 	  ((UInt2*)addr)[i]=(UInt2)addr[i];
 	}
 	RetypeBag( perm, T_PERM2 );
-	ResizeBag( perm, sizeof(UInt2)*rdeg);
+	ResizeBag( perm, SIZEBAG_PERM2(rdeg));
       }
     }
 
@@ -4262,10 +4282,10 @@ Obj Array2Perm (
 			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
-            if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
-                ResizeBag( perm, (c + 1023) / 1024 * 1024 * sizeof(UInt4) );
+            if ( DEG_PERM4(perm) < c ) {
+	      ResizeBag( perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024) );
                 ptr4 = ADDR_PERM4( perm );
-                for ( k = m+1; k <= SIZE_OBJ(perm)/sizeof(UInt4); k++ ) {
+                for ( k = m+1; k <= DEG_PERM4(perm); k++ ) {
                     ptr4[k-1] = k-1;
                 }
             }
@@ -4305,12 +4325,12 @@ Obj Array2Perm (
             ptr2[k-1] = ptr4[k-1];
         };
         RetypeBag( perm, T_PERM2 );
-        ResizeBag( perm, m * sizeof(UInt2) );
+        ResizeBag( perm, SIZEBAG_PERM2(m) );
     }
 
     /* otherwise just shorten the permutation                              */
     else {
-        ResizeBag( perm, m * sizeof(UInt4) );
+      ResizeBag( perm, SIZEBAG_PERM4(m) );
     }
 
     /* return the permutation                                              */
@@ -4834,9 +4854,9 @@ static Int InitKernel (
 {
     /* install the marking function                                        */
     InfoBags[           T_PERM2         ].name = "permutation (small)";
-    InitMarkFuncBags(   T_PERM2         , MarkNoSubBags );
+    InitMarkFuncBags(   T_PERM2         , MarkOneSubBags );
     InfoBags[           T_PERM4         ].name = "permutation (large)";
-    InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
+    InitMarkFuncBags(   T_PERM4         , MarkOneSubBags );
 
     MakeBagTypePublic( T_PERM2);
     MakeBagTypePublic( T_PERM4);

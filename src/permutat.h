@@ -23,12 +23,60 @@
 *F  DEG_PERM4(<perm>) . . . . . . . . . . . . . degree of (large) permutation
 *F  ADDR_PERM4(<perm>)  . . . . . . . absolute address of (large) permutation
 */
-#define NEW_PERM2(deg)          NewBag( T_PERM2, (deg) * sizeof(UInt2))
-#define DEG_PERM2(perm)         (SIZE_OBJ(perm) / sizeof(UInt2))
-#define ADDR_PERM2(perm)        ((UInt2*)ADDR_OBJ(perm))
-#define NEW_PERM4(deg)          NewBag( T_PERM4, (deg) * sizeof(UInt4))
-#define DEG_PERM4(perm)         (SIZE_OBJ(perm) / sizeof(UInt4))
-#define ADDR_PERM4(perm)        ((UInt4*)ADDR_OBJ(perm))
+
+static inline UInt SIZEBAG_PERM2(UInt deg) {
+  return sizeof(Obj) + deg*sizeof(UInt2);
+}
+
+static inline Obj NEW_PERM2(UInt deg) {
+  return NewBag( T_PERM2, SIZEBAG_PERM2(deg));
+}
+
+static inline UInt DEG_PERM2(Obj perm)  {
+  return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt2);
+}
+
+static inline UInt2 *ADDR_PERM2(Obj perm) {
+  return (UInt2*)(ADDR_OBJ(perm) + 1);
+}
+
+static inline const UInt2* CONST_ADDR_PERM2(Obj perm) {
+  return (const UInt2*)(CONST_ADDR_OBJ(perm) + 1);
+}
+
+static inline UInt SIZEBAG_PERM4(UInt deg) {
+  return sizeof(Obj) + deg*sizeof(UInt4);
+}
+
+static inline Obj NEW_PERM4(UInt deg) {
+  return NewBag( T_PERM4, SIZEBAG_PERM4(deg));
+}
+
+static inline UInt DEG_PERM4(Obj perm)   {
+  return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt4);
+}
+
+static inline UInt4* ADDR_PERM4(Obj perm) {
+  return (UInt4*)(ADDR_OBJ(perm)+1);
+}
+
+static inline const UInt4* CONST_ADDR_PERM4(Obj perm) {
+  return (const UInt4*)(CONST_ADDR_OBJ(perm)+1);
+}
+
+static inline Obj STOREDINV_PERM(Obj perm) {
+  return ADDR_OBJ(perm)[0];
+}
+
+static inline void SET_STOREDINV_PERM(Obj perm, Obj inv) {
+  if (TNUM_OBJ(inv) == TNUM_OBJ(perm)) {
+    ADDR_OBJ(perm)[0] = inv;
+    CHANGED_BAG(perm);
+    ADDR_OBJ(inv)[0] = perm;
+    CHANGED_BAG(inv);
+  }
+}
+
 
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
