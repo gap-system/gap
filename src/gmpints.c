@@ -889,6 +889,93 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 }
 
 
+Obj IntStringInternal(Obj string, const Char *str)
+{
+    Obj     val;  // value = <upp> * <pow> + <low>
+    Obj     upp;  // upper part
+    Int     pow;  // power
+    Int     low;  // lower part
+    Int     sign; // is the integer negative
+    UInt    i;    // loop variable
+
+    // if <string> is given, then we ignore <str>
+    if (string)
+        str = CSTR_STRING(string);
+
+    // get the signs, if any
+    sign = 1;
+    i = 0;
+    while (str[i] == '-') {
+        sign = -sign;
+        i++;
+    }
+
+    // reject empty string (resp. string consisting only of minus signs)
+    if (str[i] == '\0')
+        return Fail;
+
+    // collect the digits in groups of 8, for improved performance
+    // note that 2^26 < 10^8 < 2^27, so the intermediate
+    // values always fit into an immediate integer
+    low = 0;
+    pow = 1;
+    upp = INTOBJ_INT(0);
+    while (str[i] != '\0') {
+        if (str[i] < '0' || str[i] > '9') {
+            return Fail;
+        }
+        low = 10 * low + str[i] - '0';
+        pow = 10 * pow;
+        if (pow == 100000000L) {
+            upp = ProdInt(upp, INTOBJ_INT(pow));
+            upp = SumInt(upp, INTOBJ_INT(sign*low));
+            // refresh 'str', in case the arithmetic operations triggered
+            // a garbage collection
+            if (string)
+                str = CSTR_STRING(string);
+            pow = 1;
+            low = 0;
+        }
+        i++;
+    }
+
+    // compose the integer value
+    if (upp == INTOBJ_INT(0)) {
+        val = INTOBJ_INT(sign * low);
+    }
+    else if (pow == 1) {
+        val = upp;
+    }
+    else {
+        upp = ProdInt(upp, INTOBJ_INT(pow));
+        val = SumInt(upp, INTOBJ_INT(sign * low));
+    }
+
+    // return the integer value
+    return val;
+}
+
+/****************************************************************************
+**
+*F  FuncINT_STRING( <self>, <string> ) . . . .  convert a string to an integer
+**
+**  `FuncINT_STRING' returns an integer representing the string, or
+**  fail if the string is not a valid integer.
+**
+*/
+Obj FuncINT_STRING ( Obj self, Obj string )
+{
+    if( !IS_STRING(string) ) {
+        return Fail;
+    }
+
+    if( !IS_STRING_REP(string) ) {
+        string = CopyToStringRep(string);
+    }
+
+    return IntStringInternal(string, 0);
+}
+
 /****************************************************************************
 **
 *F  EqInt( <gmpL>, <gmpR> ) . . . . . . . . .  test if two integers are equal
@@ -2339,6 +2426,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(IntHexString, 1, "string"),
   GVAR_FUNC(Log2Int, 1, "gmp"),
   GVAR_FUNC(STRING_INT, 1, "gmp"),
+  GVAR_FUNC(INT_STRING, 1, "string"),
   GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),
   { 0, 0, 0, 0, 0 }
 
