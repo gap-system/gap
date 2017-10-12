@@ -250,13 +250,15 @@ end);
 #O  GreensHClassOfElement(<semigroup>, <representative>)
 ##
 
-InstallMethod(GreensRClassOfElement, "for a semigroup and object",
-[IsSemigroup and HasIsFinite and IsFinite, IsObject],
+InstallMethod(GreensRClassOfElement, "for a semigroup and object", 
+IsCollsElms,
+[IsSemigroup and HasIsFinite and IsFinite, IsObject], 
 function(s,e)
   return EquivalenceClassOfElementNC( GreensRRelation(s), e );
 end);
 
 InstallMethod(GreensLClassOfElement, "for a semigroup and object",
+IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensLRelation(s), e );
@@ -264,6 +266,7 @@ end);
 
 
 InstallMethod(GreensHClassOfElement, "for a semigroup and object",
+IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensHRelation(s), e );
@@ -271,12 +274,14 @@ end);
 
 
 InstallMethod(GreensDClassOfElement, "for a semigroup and object", 
+IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensDRelation(s), e );
 end);
 
 InstallMethod(GreensJClassOfElement, "for a semigroup and object", 
+IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensJRelation(s), e );
