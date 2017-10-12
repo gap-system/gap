@@ -91,6 +91,16 @@ extern Obj GMP_NORMALIZE( Obj gmp );
 extern void PrintInt( Obj op );
 
 
+// Parse a string containing a decimal integer into a GAP integer
+// object. Returns 'fail' if the input is not a valid decimal.
+// This function handles signs.
+//
+// If <string> is non-NULL, then <str> is ignored, and <string>
+// must reference a GAP string object. If <string> is NULL, then
+// <str> must point to a C string.
+Obj IntStringInternal(Obj string, const Char *str);
+
+
 /****************************************************************************
 **
 *F  EqInt( <gmpL>, <gmpR> ) . . . . . test if two integers are equal
