@@ -1917,6 +1917,7 @@ void IntrIntExpr(Char * str)
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     
     Obj val = IntStringInternal(0, str);
+    GAP_ASSERT(val != Fail);
 
     if (STATE(IntrCoding) > 0) {
         CodeIntExpr(val);
@@ -1941,6 +1942,7 @@ void IntrLongIntExpr(Obj string)
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     Obj val = IntStringInternal(string, 0);
+    GAP_ASSERT(val != Fail);
 
     if (STATE(IntrCoding) > 0) {
         CodeIntExpr(val);
