@@ -1978,6 +1978,25 @@ local A;
   return A;
 end);
 
+#############################################################################
+##
+#M  AutomorphismGroup(<G>) . . abelian case
+##
+InstallMethod(AutomorphismGroup,"test abelian",true,[IsGroup and IsFinite],
+  RankFilter(IsSolvableGroup and IsFinite),
+function(G)
+local A;
+  if not IsAbelian(G) then
+    TryNextMethod();
+  fi;
+  A:=AutomorphismGroupAbelianGroup(G);
+  SetIsAutomorphismGroup(A,true);
+  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
+  SetIsFinite(A,true);
+  SetAutomorphismDomain(A,G);
+  return A;
+end);
+
 # just in case it does not know to be finite
 RedispatchOnCondition(AutomorphismGroup,true,[IsGroup],
     [IsGroup and IsFinite],0);
