@@ -33,7 +33,6 @@ SOURCES += src/ariths.c
 SOURCES += src/backtrace.c
 SOURCES += src/blister.c
 SOURCES += src/bool.c
-SOURCES += src/c_filter1.c
 SOURCES += src/c_methsel1.c
 SOURCES += src/c_oper1.c
 SOURCES += src/c_type1.c
@@ -405,7 +404,7 @@ else
 DOCOMP_PREFIX = $(abs_top_srcdir)
 endif
 docomp: #gap$(EXEEXT)
-	@for file in filter1 methsel1 oper1 type1 ; do \
+	@for file in methsel1 oper1 type1 ; do \
 	  if test -e $(DOCOMP_PREFIX)/lib/$$file ; then \
 	    "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
 	  fi \

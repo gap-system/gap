@@ -65,7 +65,8 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
         IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
         INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-        RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        # 1 is default
+        #RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
@@ -108,7 +109,6 @@ BIND_GLOBAL( "NewCategory", function ( arg )
 
     # Create the filter.
     cat:= NEW_FILTER( arg[1] );
-    InstallTrueMethodNewFilter( arg[2], cat );
 
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
@@ -122,10 +122,12 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     fi;
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
 
+    # Do not call this before adding 'cat' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], cat );
+
     # Return the filter.
     return cat;
 end );
-
 
 #############################################################################
 ##
@@ -179,7 +181,8 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    # 1 is default
+    #RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
@@ -261,7 +264,6 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     else
         Error("usage:NewRepresentation(<name>,<super>,<slots>[,<req>])");
     fi;
-    InstallTrueMethodNewFilter( arg[2], rep );
 
     # Do some administrational work.
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
@@ -270,10 +272,12 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
 
+    # Do not call this before adding 'rep' to 'FILTERS'.
+    InstallTrueMethodNewFilter( arg[2], rep );
+
     # Return the filter.
     return rep;
 end );
-
 
 #############################################################################
 ##

@@ -15,16 +15,6 @@
 
 #############################################################################
 ##
-#V  "forward declarations that will be picked up in filter1.g
-##
-
-IMPLICATIONS := fail;
-CLEAR_IMP_CACHE := fail;
-
-
-
-#############################################################################
-##
 #V  FILTERS . . . . . . . . . . . . . . . . . . . . . . . list of all filters
 ##
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
@@ -39,8 +29,8 @@ BIND_GLOBAL( "FILTERS", [] );
 ##
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
 ##  filter with number <i> resp.  its rank.
-##
-BIND_GLOBAL( "RANK_FILTERS", [] );
+##  <RANK_FILTERS> is created in the kernel and we store the rank in this
+##  list only when it is different from the default value 1.
 
 
 #############################################################################
@@ -99,18 +89,16 @@ BIND_GLOBAL( "Setter", SETTER_FILTER );
 ##
 BIND_GLOBAL( "Tester", TESTER_FILTER );
 
-
-
 #############################################################################
 ##
-#F  InstallTrueMethodNewFilter( <to>, <from> )
+#F  InstallTrueMethodNewFilter( <tofilt>, <from> )
 ##
 ##  If <from> is a new filter then  it cannot occur in  the cache.  Therefore
 ##  we do not flush the cache.  <from> should a basic  filter not an `and' of
 ##  from. This should only be used in the file "type.g".
 ##
 BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
-    local   imp;
+    local   imp, found, imp2;
 
     # Check that no filter implies `IsMutable'.
     # (If this would be allowed then `Immutable' would be able
@@ -121,13 +109,48 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
       Error( "filter <from> must not imply `IsMutable'" );
     fi;
 
+    # If 'tofilt' equals 'IsObject' then do nothing.
+    if IS_IDENTICAL_OBJ( tofilt, IS_OBJECT ) then
+      return;
+    fi;
+
+    # Apply the available implications from 'tofilt and from' to 'tofilt'.
     imp := [];
-    imp[1] := FLAGS_FILTER( tofilt );
+    imp[1] := WITH_IMPS_FLAGS( AND_FLAGS( FLAGS_FILTER( tofilt ),
+                                          FLAGS_FILTER( from ) ) );
     imp[2] := FLAGS_FILTER( from );
-    ADD_LIST( IMPLICATIONS, imp );
+
+    # Extend available implications by the new one if applicable.
+    found:= false;
+    for imp2 in IMPLICATIONS_SIMPLE do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+         or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
+        imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+        if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+          found:= true;
+        fi;
+      fi;
+    od;
+    for imp2 in IMPLICATIONS_COMPOSED do
+      if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+         or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
+        imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+        if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+          found:= true;
+        fi;
+      fi;
+    od;
+
+    if not found then
+      # Extend the list of implications.
+      if from in FILTERS then
+        IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
+      else
+        ADD_LIST( IMPLICATIONS_COMPOSED, imp );
+      fi;
+    fi;
     InstallHiddenTrueMethod( tofilt, from );
 end );
-
 
 #############################################################################
 ##
@@ -228,16 +251,19 @@ BIND_GLOBAL( "NewFilter", function( arg )
 
     # Create the filter.
     filter := NEW_FILTER( name );
-    if implied <> 0 then
-      InstallTrueMethodNewFilter( implied, filter );
-    fi;
 
     # Do some administrational work.
     FILTERS[ FLAG1_FILTER( filter ) ] := filter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
-    RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+    if rank <> 1 then
+      RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+    fi;
     INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
 
+    if implied <> 0 then
+      InstallTrueMethodNewFilter( implied, filter );
+    fi;
+    
     # Return the filter.
     return filter;
 end );

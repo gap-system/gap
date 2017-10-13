@@ -271,31 +271,40 @@ end);
 ##  <Func Name="ShowImpliedFilters" Arg='filter'/>
 ##
 ##  <Description>
-##  Displays information about the filters that may be implied by 
-##  <A>filter</A>. They are given by their names. <C>ShowImpliedFilters</C> first
-##  displays the names of all filters that are unconditionally implied by
-##  <A>filter</A>. It then displays implications that require further filters to
-##  be present (indicating by <C>+</C> the required further filters).
-##  The function displays only first-level implications, implications that
-##  follow in turn are not displayed (though &GAP; will do these).
+##  Displays information about the filters that may be
+##  implied by <A>filter</A>. They are given by their names.
+##  <C>ShowImpliedFilters</C> first displays the names of all filters
+##  that are unconditionally implied by <A>filter</A>. It then displays
+##  implications that require further filters to be present (indicating
+##  by <C>+</C> the required further filters).
 ##  <Example><![CDATA[
-##  gap> ShowImpliedFilters(IsMatrix);
+##  gap> ShowImpliedFilters(IsNilpotentGroup);
 ##  Implies:
-##     IsGeneralizedRowVector
-##     IsNearAdditiveElementWithInverse
-##     IsAdditiveElement
-##     IsMultiplicativeElement
+##     IsNilpotentGroup
+##     HasIsNilpotentGroup
+##     IsSupersolvableGroup
+##     HasIsSupersolvableGroup
+##     IsSolvableGroup
+##     HasIsSolvableGroup
+##     IsNilpotentByFinite
+##     HasIsNilpotentByFinite
 ##  
 ##  
 ##  May imply with:
-##  +IsGF2MatrixRep
-##     IsOrdinaryMatrix
-##  
-##  +CategoryCollections(CategoryCollections(IsAdditivelyCommutativeElement))
-##     IsAdditivelyCommutativeElement
-##  
-##  +IsInternalRep
-##     IsOrdinaryMatrix
+##  +IsFinitelyGeneratedGroup
+##  +HasIsFinitelyGeneratedGroup
+##     IsFinitelyGeneratedGroup
+##     HasIsFinitelyGeneratedGroup
+##     IsNilpotentGroup
+##     HasIsNilpotentGroup
+##     IsSupersolvableGroup
+##     HasIsSupersolvableGroup
+##     IsSolvableGroup
+##     HasIsSolvableGroup
+##     IsPolycyclicGroup
+##     HasIsPolycyclicGroup
+##     IsNilpotentByFinite
+##     HasIsNilpotentByFinite
 ##  
 ##  ]]></Example>
 ##  </Description>
@@ -305,7 +314,8 @@ end);
 BIND_GLOBAL("ShowImpliedFilters",function(fil)
 local flags,f,i,j,l,m,n;
   flags:=FLAGS_FILTER(fil);
-  f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
+  f:=Filtered(IMPLICATIONS_SIMPLE, x->IS_SUBSET_FLAGS(x[2],flags));
+  Append(f, Filtered(IMPLICATIONS_COMPOSED, x->IS_SUBSET_FLAGS(x[2],flags)));
   l:=[];
   m:=[];
   for i in f do
