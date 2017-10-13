@@ -763,6 +763,13 @@ InstallMethod( DistancePerms, "for general permutations",
         function(x,y)
     return NrMovedPoints(x/y); end);
 
+#############################################################################
+##
+#V  PERM_INVERSE_THRESHOLD . . . . cut off for when inverses are computed 
+##                                 eagerly
+##
+
+BIND_GLOBAL( "PERM_INVERSE_THRESHOLD", 10000 );
 
 
 #############################################################################
