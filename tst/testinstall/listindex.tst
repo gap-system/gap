@@ -276,6 +276,18 @@ Error, Lists Assignment: <list> must be a mutable list
 gap> l;
 [ [ 3, 4 ] ]
 
+# Indexing into plain lists
+gap> l := [[]];;
+gap> l[1,2] := 4;
+4
+gap> l;
+[ [ , 4 ] ]
+gap> l[1,1] := 3;;
+gap> l;
+[ [ 3, 4 ] ]
+gap> l[2,1];
+Error, List Element: <list>[2] must have an assigned value
+
 # that's all, folks
 gap> STOP_TEST( "listindex.tst", 1);
 
