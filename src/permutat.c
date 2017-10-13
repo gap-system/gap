@@ -3987,6 +3987,7 @@ void SavePerm2( Obj perm)
   UInt i;
   UInt2 *ptr;
   UInt len;
+  SaveSubObj(STOREDINV_PERM(perm));
   len = DEG_PERM2(perm);
   ptr = ADDR_PERM2(perm);
   for (i = 0; i < len; i++)
@@ -4004,6 +4005,7 @@ void SavePerm4( Obj perm)
   UInt i;
   UInt4 *ptr;
   UInt len;
+  SaveSubObj(STOREDINV_PERM(perm));
   len = DEG_PERM4(perm);
   ptr = ADDR_PERM4(perm);
   for (i = 0; i < len; i++)
@@ -4021,6 +4023,7 @@ void LoadPerm2( Obj perm)
   UInt i;
   UInt2 *ptr;
   UInt len;
+  ADDR_OBJ(perm)[0] = LoadSubObj(); // stored inverse
   len = DEG_PERM2(perm);
   ptr = ADDR_PERM2(perm);
   for (i = 0; i < len; i++)
@@ -4038,6 +4041,7 @@ void LoadPerm4( Obj perm)
   UInt i;
   UInt4 *ptr;
   UInt len;
+  ADDR_OBJ(perm)[0] = LoadSubObj(); // stored inverse
   len = DEG_PERM4(perm);
   ptr = ADDR_PERM4(perm);
   for (i = 0; i < len; i++)
@@ -4677,10 +4681,11 @@ static Int InitKernel (
     MakeBagTypePublic( T_PERM2);
     MakeBagTypePublic( T_PERM4);
 
-
+ 
     /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
+
 
     TypeObjFuncs[ T_PERM2 ] = TypePerm2;
     TypeObjFuncs[ T_PERM4 ] = TypePerm4;
