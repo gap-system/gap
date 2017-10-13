@@ -781,197 +781,13 @@ Obj             ProdPerm44 (
 **  Unfortunatly this can not be done in <degree> steps, we need 2 * <degree>
 **  steps.
 */
-Obj             QuoPerm22 (
+Obj InvPerm(Obj);
+
+Obj             QuoPerm (
     Obj                 opL,
     Obj                 opR )
 {
-    Obj                 quo;            /* handle of the quotient (result) */
-    UInt                degQ;           /* degree of the quotient          */
-    UInt2 *             ptQ;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    UInt2 *             ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
-    UInt2 *             ptI;            /* pointer to the inverse          */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
-    degQ = degL < degR ? degR : degL;
-    quo  = NEW_PERM2( degQ );
-
-    /* make sure that the buffer bag is large enough to hold the inverse   */
-    UseTmpPerm(SIZE_OBJ(opR));
-
-    /* invert the right permutation into the buffer bag                    */
-    ptI = ADDR_PERM2(TmpPerm);
-    ptR = ADDR_PERM2(opR);
-    for ( p = 0; p < degR; p++ )
-        ptI[ *ptR++ ] = p;
-
-    /* multiply the left permutation with the inverse                      */
-    ptL = ADDR_PERM2(opL);
-    ptI = ADDR_PERM2(TmpPerm);
-    ptQ = ADDR_PERM2(quo);
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = ptI[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptQ++) = ptI[ p ];
-    }
-    else {
-        for ( p = 0; p < degL; p++ )
-
-            *(ptQ++) = IMAGE( ptL[ p ], ptI, degR );
-    }
-
-    /* return the result                                                   */
-    return quo;
-}
-
-Obj             QuoPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 quo;            /* handle of the quotient (result) */
-    UInt                degQ;           /* degree of the quotient          */
-    UInt4 *             ptQ;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    UInt2 *             ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
-    UInt4 *             ptI;            /* pointer to the inverse          */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-    degQ = degL < degR ? degR : degL;
-    quo  = NEW_PERM4( degQ );
-
-    /* make sure that the buffer bag is large enough to hold the inverse   */
-    UseTmpPerm(SIZE_OBJ(opR));
-
-    /* invert the right permutation into the buffer bag                    */
-    ptI = ADDR_PERM4(TmpPerm);
-    ptR = ADDR_PERM4(opR);
-    for ( p = 0; p < degR; p++ )
-        ptI[ *ptR++ ] = p;
-
-    /* multiply the left permutation with the inverse                      */
-    ptL = ADDR_PERM2(opL);
-    ptI = ADDR_PERM4(TmpPerm);
-    ptQ = ADDR_PERM4(quo);
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = ptI[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptQ++) = ptI[ p ];
-    }
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = IMAGE( ptL[ p ], ptI, degR );
-    }
-
-    /* return the result                                                   */
-    return quo;
-}
-
-Obj             QuoPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 quo;            /* handle of the quotient (result) */
-    UInt                degQ;           /* degree of the quotient          */
-    UInt4 *             ptQ;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    UInt2 *             ptR;            /* pointer to the right operand    */
-    UInt2 *             ptI;            /* pointer to the inverse          */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-    degQ = degL < degR ? degR : degL;
-    quo  = NEW_PERM4( degQ );
-
-    /* make sure that the buffer bag is large enough to hold the inverse   */
-    UseTmpPerm(SIZE_OBJ(opR));
-
-    /* invert the right permutation into the buffer bag                    */
-    ptI = ADDR_PERM2(TmpPerm);
-    ptR = ADDR_PERM2(opR);
-    for ( p = 0; p < degR; p++ )
-        ptI[ *ptR++ ] = p;
-
-    /* multiply the left permutation with the inverse                      */
-    ptL = ADDR_PERM4(opL);
-    ptI = ADDR_PERM2(TmpPerm);
-    ptQ = ADDR_PERM4(quo);
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = ptI[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptQ++) = ptI[ p ];
-    }
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = IMAGE( ptL[ p ], ptI, degR );
-    }
-
-    /* return the result                                                   */
-    return quo;
-}
-
-Obj             QuoPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 quo;            /* handle of the quotient (result) */
-    UInt                degQ;           /* degree of the quotient          */
-    UInt4 *             ptQ;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    UInt4 *             ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    UInt4 *             ptR;            /* pointer to the right operand    */
-    UInt4 *             ptI;            /* pointer to the inverse          */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degQ = degL < degR ? degR : degL;
-    quo  = NEW_PERM4( degQ );
-
-    /* make sure that the buffer bag is large enough to hold the inverse   */
-    UseTmpPerm(SIZE_OBJ(opR));
-
-    /* invert the right permutation into the buffer bag                    */
-    ptI = ADDR_PERM4(TmpPerm);
-    ptR = ADDR_PERM4(opR);
-    for ( p = 0; p < degR; p++ )
-        ptI[ *ptR++ ] = p;
-
-    /* multiply the left permutation with the inverse                      */
-    ptL = ADDR_PERM4(opL);
-    ptI = ADDR_PERM4(TmpPerm);
-    ptQ = ADDR_PERM4(quo);
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = ptI[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptQ++) = ptI[ p ];
-    }
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptQ++) = IMAGE( ptL[ p ], ptI, degR );
-    }
-
-    /* return the result                                                   */
-    return quo;
+  return PROD(opL, InvPerm(opR));
 }
 
 
@@ -1826,9 +1642,9 @@ Obj             QuoIntPerm2 (
     
     /* compute the preimage                                                */
     if ( img <= DEG_PERM2(opR) ) {
-      pre = (UInt2) img-1;
+      pre = (UInt2) (img-1);
       ptR = CONST_ADDR_PERM2(opR);
-      while ( ptR[ pre ] != img-1 )
+      while ( ptR[ pre ] != (UInt2)(img-1) )
 	pre = ptR[ pre ];
       /* return it                                                           */
       return INTOBJ_INT(pre+1);
@@ -1864,9 +1680,9 @@ Obj             QuoIntPerm4 (
 
     /* compute the preimage                                                */
     if ( img <= DEG_PERM4(opR) ) {
-      pre = (UInt4)img -1;
+      pre = (UInt4)(img -1);
       ptR = CONST_ADDR_PERM4(opR);
-        while ( ptR[ pre ] != img-1 )
+      while ( ptR[ pre ] != (UInt4)(img-1) )
             pre = ptR[ pre];
 	/* return it                                                           */
 	return INTOBJ_INT((Int)(pre+1));
@@ -4906,10 +4722,10 @@ static Int InitKernel (
     ProdFuncs[ T_PERM2  ][ T_PERM4  ] = ProdPerm24;
     ProdFuncs[ T_PERM4  ][ T_PERM2  ] = ProdPerm42;
     ProdFuncs[ T_PERM4  ][ T_PERM4  ] = ProdPerm44;
-    QuoFuncs [ T_PERM2  ][ T_PERM2  ] = QuoPerm22;
-    QuoFuncs [ T_PERM2  ][ T_PERM4  ] = QuoPerm24;
-    QuoFuncs [ T_PERM4  ][ T_PERM2  ] = QuoPerm42;
-    QuoFuncs [ T_PERM4  ][ T_PERM4  ] = QuoPerm44;
+    QuoFuncs [ T_PERM2  ][ T_PERM2  ] = QuoPerm;
+    QuoFuncs [ T_PERM2  ][ T_PERM4  ] = QuoPerm;
+    QuoFuncs [ T_PERM4  ][ T_PERM2  ] = QuoPerm;
+    QuoFuncs [ T_PERM4  ][ T_PERM4  ] = QuoPerm;
     LQuoFuncs[ T_PERM2  ][ T_PERM2  ] = LQuoPerm22;
     LQuoFuncs[ T_PERM2  ][ T_PERM4  ] = LQuoPerm24;
     LQuoFuncs[ T_PERM4  ][ T_PERM2  ] = LQuoPerm42;
