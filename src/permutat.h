@@ -56,25 +56,39 @@ static inline UInt DEG_PERM4(Obj perm)   {
   return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt4);
 }
 
-static inline UInt4* ADDR_PERM4(Obj perm) {
-  return (UInt4*)(ADDR_OBJ(perm)+1);
+static inline UInt4 * ADDR_PERM4(Obj perm)
+{
+    return (UInt4 *)(ADDR_OBJ(perm) + 1);
 }
 
-static inline const UInt4* CONST_ADDR_PERM4(Obj perm) {
-  return (const UInt4*)(CONST_ADDR_OBJ(perm)+1);
+static inline const UInt4 * CONST_ADDR_PERM4(Obj perm)
+{
+    return (const UInt4 *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
-static inline Obj STOREDINV_PERM(Obj perm) {
-  return ADDR_OBJ(perm)[0];
+static inline Obj STOREDINV_PERM(Obj perm)
+{
+    return ADDR_OBJ(perm)[0];
 }
 
-static inline void SET_STOREDINV_PERM(Obj perm, Obj inv) {
-  if (TNUM_OBJ(inv) == TNUM_OBJ(perm)) {
-    ADDR_OBJ(perm)[0] = inv;
-    CHANGED_BAG(perm);
-    ADDR_OBJ(inv)[0] = perm;
-    CHANGED_BAG(inv);
-  }
+/* SET_STOREDINV_PERM should only be used in neither perm, nor inv has
+ a stored inverse already.  It's OK (although inefficient) if perm and
+ inv are identical */
+
+static inline void SET_STOREDINV_PERM(Obj perm, Obj inv)
+{
+
+    /* check for the possibility that inv is in a different representation to
+       perm. It could be that perm actually acts on < 2^16 points but is in PERM4
+       representation and some clever code has represented the inverse as PERM2. It could be
+       that someone introduces a new representation altogether */
+    if (TNUM_OBJ(inv) == TNUM_OBJ(perm)) {
+        GAP_ASSERT(STOREDINV_PERM(perm) == 0 && STOREDINV_PERM(inv) == 0);
+        ADDR_OBJ(perm)[0] = inv;
+        CHANGED_BAG(perm);
+        ADDR_OBJ(inv)[0] = perm;
+        CHANGED_BAG(inv);
+    }
 }
 
 

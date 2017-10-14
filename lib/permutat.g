@@ -768,8 +768,24 @@ InstallMethod( DistancePerms, "for general permutations",
 #V  PERM_INVERSE_THRESHOLD . . . . cut off for when inverses are computed 
 ##                                 eagerly
 ##
+##  <#GAPDoc Label="PERM_INVERSE_THRESHOLD">
+##  <ManSection>
+##  <Var Name="PERM_INVERSE_THRESHOLD"/>
+##
+##  <Description>
+##  For permutations of degree up to <C>PERM_INVERSE_THRESHOLD</C> whenever
+##  the inverse image of a point under a permutations is needed, the entire
+##  inverse is computed and stored. Otherwise, if the inverse is not stored, 
+##  the point is traced around the cycle it is part of to find the inverse image.
+##  This takes time when it happens, and uses
+##  memory, but saves time on a variety of subsequent computations. This threshold
+##  can be adjusted by simply assigning to the variable. The default is 10000.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 
-BIND_GLOBAL( "PERM_INVERSE_THRESHOLD", 10000 );
+PERM_INVERSE_THRESHOLD := 10000;
+
 
 
 #############################################################################
