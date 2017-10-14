@@ -140,8 +140,10 @@ static inline UInt * BLOCKS_BLIST(Obj list)
     return BLOCKS_BLIST_UNSAFE(list);
 }
 
-static inline const UInt * CONST_BLOCKS_BLIST(Obj list) {
-  return (const UInt *)BLOCKS_BLIST(list);
+static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
+    return ((const UInt *)(CONST_ADDR_OBJ(list) + 1));
 }
 
 /****************************************************************************
@@ -371,7 +373,7 @@ extern void ConvBlist (
 */
 
 /* constructs a mask that selects bits <from> to <to> inclusive of a UInt */
-static inline UInt mask(UInt from, UInt to)
+static inline UInt MaskForCopyBits(UInt from, UInt to)
 {
     return ((to == BIPEB - 1) ? 0 : (1L << (to + 1))) - (1L << from);
 }
@@ -385,7 +387,7 @@ static inline UInt mask(UInt from, UInt to)
 static inline void
 CopyInWord(UInt * to, UInt startbit, UInt endbit, UInt from, Int shift)
 {
-    UInt m = mask(startbit + shift, endbit + shift);
+    UInt m = MaskForCopyBits(startbit + shift, endbit + shift);
     *to &= ~m;
     if (shift >= 0)
         *to |= ((from << shift) & m);
@@ -394,11 +396,11 @@ CopyInWord(UInt * to, UInt startbit, UInt endbit, UInt from, Int shift)
 }
 
 
-static inline  __attribute__((always_inline)) void CopyBits(const UInt * fromblock,
-              UInt         frombit,
-              UInt *       toblock,
-              UInt         tobit,
-              UInt         nbits)
+static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
+                                   UInt         frombit,
+                                   UInt *       toblock,
+                                   UInt         tobit,
+                                   UInt         nbits)
 {
     UInt tailbits;
     UInt x;
@@ -427,7 +429,7 @@ static inline  __attribute__((always_inline)) void CopyBits(const UInt * fromblo
         }
         /* Now move whole words */
         if ((wholeblocks = nbits / BIPEB))
-            memcpy((void *)toblock, (void *)fromblock,
+            memcpy((void *)toblock, (const void *)fromblock,
                    sizeof(UInt) * wholeblocks);
         toblock += wholeblocks;
         fromblock += wholeblocks;
@@ -465,16 +467,17 @@ static inline  __attribute__((always_inline)) void CopyBits(const UInt * fromblo
         nbits -= tailbits;
         tobit = 0;
     }
+    
     /* Main loop for long copies fills whole blocks of destination */
-    UInt m1 = mask(frombit, BIPEB - 1);
+    UInt m1 = MaskForCopyBits(frombit, BIPEB - 1);
     while (nbits >= BIPEB) {
         x = (*fromblock++ & m1) >> frombit;
         x |= (*fromblock & ~m1) << (BIPEB - frombit);
         *toblock++ = x;
         nbits -= BIPEB;
     }
-    /* Finally we may need to fill up a partial block at destination */
 
+    /* Finally we may need to fill up a partial block at destination */
     if (nbits) {
         if (frombit + nbits <= BIPEB) {
             CopyInWord(toblock, frombit, frombit + nbits - 1, *fromblock,
