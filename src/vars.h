@@ -248,20 +248,14 @@ static inline void SwitchToOldLVars(Obj old, const char *file, int line)
 
 static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 {
-#ifdef TRACEFRAMES
-  if (STEVES_TRACING == True) {
-    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)STATE(CurrLVars),(UInt)old);
-  }
-#endif
   // remove the link to the calling function, in case this values bag stays
   // alive due to higher variable reference
   PARENT_LVARS_PTR(STATE(PtrLVars)) = 0;
 
-  CHANGED_BAG( STATE(CurrLVars) );
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
-  SET_CURR_LVARS(old);
+
+  SwitchToOldLVars(old, file, line);
 }
 
 
