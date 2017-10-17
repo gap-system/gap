@@ -2469,7 +2469,8 @@ Obj FuncParentLVars( Obj self, Obj lvars )
                (Int)TNAM_OBJ(lvars), 0L );
     return 0;
   }
-  return PARENT_LVARS(lvars);
+  Obj parent = PARENT_LVARS(lvars);
+  return parent ? parent : Fail;
 }
 
 Obj FuncContentsLVars (Obj self, Obj lvars )
