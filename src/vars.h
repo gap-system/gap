@@ -276,6 +276,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
 #define ASS_LVAR(lvar,val)      (STATE(PtrLVars)[(lvar)+2] = (val))
+#define ASS_LVAR_WITH_CONTEXT(context,lvar,val)      (ADDR_OBJ(context)[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -285,6 +286,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
 #define OBJ_LVAR(lvar)          (STATE(PtrLVars)[(lvar)+2])
+#define OBJ_LVAR_WITH_CONTEXT(context,lvar)          (CONST_ADDR_OBJ(context)[(lvar)+2])
 
 
 /****************************************************************************
@@ -294,6 +296,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
 */
 #define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
+#define NAME_LVAR_WITH_CONTEXT(context,lvar)         NAMI_FUNC( FUNC_LVARS(context), lvar )
 
 
 /****************************************************************************
@@ -318,15 +321,13 @@ extern  Obj             ObjLVar (
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
 */
-extern  void            ASS_HVAR (
-            UInt                hvar,
-            Obj                 val );
+extern void   ASS_HVAR(UInt hvar, Obj val);
+extern Obj    OBJ_HVAR(UInt hvar);
+extern Char * NAME_HVAR(UInt hvar);
 
-extern  Obj             OBJ_HVAR (
-            UInt                hvar );
-
-extern  Char *          NAME_HVAR (
-            UInt                hvar );
+extern void   ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
+extern Obj    OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+extern Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 
 
 /****************************************************************************
