@@ -125,6 +125,8 @@ enum STAT_TNUMS {
         T_PROCCALL_6ARGS,
         T_PROCCALL_XARGS,
 
+        T_PROCCALL_OPTS,
+
         // The statement types between FIRST_NON_INTERRUPT_STAT
         // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
         // the user interrupted, e.g. via ctrl-c; or memory run full).
@@ -217,8 +219,6 @@ enum STAT_TNUMS {
         T_INFO,
         T_ASSERT_2ARGS,
         T_ASSERT_3ARGS,
-
-        T_PROCCALL_OPTS,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };
@@ -378,6 +378,8 @@ enum EXPR_TNUM {
     T_FUNCCALL_XARGS,
     T_FUNC_EXPR,
 
+    T_FUNCCALL_OPTS,
+
     T_OR,
     T_AND,
     T_NOT,
@@ -411,11 +413,15 @@ enum EXPR_TNUM {
     T_REC_EXPR,
     T_REC_TILDE_EXPR,
 
-    T_REFLVAR,
+    T_FLOAT_EXPR_EAGER,
+    T_FLOAT_EXPR_LAZY,
 
+    T_REFLVAR,
     T_ISB_LVAR,
+
     T_REF_HVAR,
     T_ISB_HVAR,
+
     T_REF_GVAR,
     T_ISB_GVAR,
 
@@ -426,23 +432,22 @@ enum EXPR_TNUM {
     T_ELM_LIST_LEV,
     T_ELMS_LIST_LEV,
     T_ISB_LIST,
+
     T_ELM_REC_NAME,
     T_ELM_REC_EXPR,
     T_ISB_REC_NAME,
     T_ISB_REC_EXPR,
+
     T_ELM_POSOBJ,
     T_ELMS_POSOBJ,
     T_ELM_POSOBJ_LEV,
     T_ELMS_POSOBJ_LEV,
     T_ISB_POSOBJ,
+
     T_ELM_COMOBJ_NAME,
     T_ELM_COMOBJ_EXPR,
     T_ISB_COMOBJ_NAME,
     T_ISB_COMOBJ_EXPR,
-
-    T_FUNCCALL_OPTS,
-    T_FLOAT_EXPR_EAGER,
-    T_FLOAT_EXPR_LAZY,
 
     END_ENUM_RANGE(LAST_EXPR_TNUM)
 };
