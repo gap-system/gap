@@ -218,10 +218,7 @@ void            PrintUnbLVar (
 void            PrintRefLVar (
     Expr                expr )
 {
-    if ( IS_REFLVAR(expr) )
-        Pr( "%I", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
-    else
-        Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%I", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
 }
 
 void            PrintIsbLVar (
