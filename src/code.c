@@ -1816,7 +1816,7 @@ void CodeListExprEnd (
         list = NewExpr( T_LIST_EXPR,      INT_INTEXPR(pos) * sizeof(Expr) );
     }
     else if ( ! range && (top && tilde) ) {
-        list = NewExpr( T_LIST_TILD_EXPR, INT_INTEXPR(pos) * sizeof(Expr) );
+        list = NewExpr( T_LIST_TILDE_EXPR, INT_INTEXPR(pos) * sizeof(Expr) );
     }
     else /* if ( range && ! (top && tilde) ) */ {
         list = NewExpr( T_RANGE_EXPR,     INT_INTEXPR(pos) * sizeof(Expr) );
@@ -2083,7 +2083,7 @@ void CodeRecExprEnd (
         record = NewExpr( T_REC_EXPR,      nr * 2 * sizeof(Expr) );
     }
     else /* if ( (top && tilde) ) */ {
-        record = NewExpr( T_REC_TILD_EXPR, nr * 2 * sizeof(Expr) );
+        record = NewExpr( T_REC_TILDE_EXPR, nr * 2 * sizeof(Expr) );
     }
 
     /* enter the entries                                                   */
