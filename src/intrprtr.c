@@ -2906,7 +2906,7 @@ void            IntrAssDVar (
     UInt                depth )
 {
     Obj                 rhs;            /* right hand side                 */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -2924,12 +2924,10 @@ void            IntrAssDVar (
     rhs = PopObj();
 
     /* assign the right hand side                                          */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    ASS_HVAR( dvar, rhs );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    ASS_HVAR_WITH_CONTEXT(context, dvar, rhs);
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -2939,7 +2937,7 @@ void            IntrUnbDVar (
     UInt                dvar,
     UInt                depth )
 {
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -2953,12 +2951,10 @@ void            IntrUnbDVar (
     }
 
     /* assign the right hand side                                          */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    ASS_HVAR( dvar, (Obj)0 );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    ASS_HVAR_WITH_CONTEXT(context, dvar, (Obj)0);
 
     /* push void                                                           */
     PushVoidObj();
@@ -2974,7 +2970,7 @@ void            IntrRefDVar (
     UInt                depth )
 {
     Obj                 val;            /* value, result                   */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -2988,12 +2984,10 @@ void            IntrRefDVar (
     }
 
     /* get and check the value                                             */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    val = OBJ_HVAR( dvar );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
     if ( val == 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
                    dvar >> 10, dvar & 0xFFFF );
@@ -3008,7 +3002,7 @@ void            IntrIsbDVar (
     UInt                depth )
 {
     Obj                 val;            /* value, result                   */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3017,12 +3011,10 @@ void            IntrIsbDVar (
 
 
     /* get the value                                                       */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    val = OBJ_HVAR( dvar );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
 
     /* push the value                                                      */
     PushObj( (val != 0 ? True : False) );
