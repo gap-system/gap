@@ -73,12 +73,18 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 }
 
 
+typedef struct {
+    Obj func;
+    Expr stat;
+    Obj parent;
+} LVarsHeader;
+
 /****************************************************************************
 **
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-#define FUNC_LVARS_PTR(lvars_ptr)   (lvars_ptr[0])
+#define FUNC_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->func)
 #define FUNC_LVARS(lvars_obj)       FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -87,7 +93,7 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-#define STAT_LVARS_PTR(lvars_ptr)   (lvars_ptr[1])
+#define STAT_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->stat)
 #define STAT_LVARS(lvars_obj)       STAT_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -96,7 +102,7 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-#define PARENT_LVARS_PTR(lvars_ptr) (lvars_ptr[2])
+#define PARENT_LVARS_PTR(lvars_ptr) (((LVarsHeader *)lvars_ptr)->parent)
 #define PARENT_LVARS(lvars_obj)     PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -136,11 +142,11 @@ static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
             (int)expr, (int)STATE(CurrLVars), file, line);
   }
 #endif
-  STAT_LVARS_PTR(STATE(PtrLVars)) = (Obj)expr;
+  STAT_LVARS_PTR(STATE(PtrLVars)) = expr;
 }
 
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)STAT_LVARS_PTR(STATE(PtrLVars)))
+#define BRK_CALL_TO()                   STAT_LVARS_PTR(STATE(PtrLVars))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #else
 #define BRK_CALL_TO()                   /* do nothing */
