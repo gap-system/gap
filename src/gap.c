@@ -950,7 +950,7 @@ void DownEnvInner( Int depth )
       depth = 0;
     }
     /* ... then go back to the top, and later go down to the appropriate level. */
-    STATE(ErrorLVars) = STATE(ErrorLVars0);
+    STATE(ErrorLVars) = STATE(BaseShellContext);
     STATE(ErrorLLevel) = 0;
     STATE(ShellContext) = STATE(BaseShellContext);
   }

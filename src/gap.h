@@ -201,9 +201,6 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
-/* TL: extern Obj ErrorLVars;
-   TL: extern Obj ErrorLVars0;
- */
 
 /****************************************************************************
 **
