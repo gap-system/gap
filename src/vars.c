@@ -56,6 +56,7 @@
 
 #include <src/gaputils.h>
 
+#include <stdio.h>
 
 /****************************************************************************
 **
@@ -2611,22 +2612,12 @@ static Int InitKernel (
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &STATE(BottomLVars), "src/vars.c:BottomLVars" );
 
-    InitGlobalBag( &STATE(LVarsPool[ 0]), "src/vars.c:LVarsPool0" );
-    InitGlobalBag( &STATE(LVarsPool[ 1]), "src/vars.c:LVarsPool1" );
-    InitGlobalBag( &STATE(LVarsPool[ 2]), "src/vars.c:LVarsPool2" );
-    InitGlobalBag( &STATE(LVarsPool[ 3]), "src/vars.c:LVarsPool3" );
-    InitGlobalBag( &STATE(LVarsPool[ 4]), "src/vars.c:LVarsPool4" );
-    InitGlobalBag( &STATE(LVarsPool[ 5]), "src/vars.c:LVarsPool5" );
-    InitGlobalBag( &STATE(LVarsPool[ 6]), "src/vars.c:LVarsPool6" );
-    InitGlobalBag( &STATE(LVarsPool[ 7]), "src/vars.c:LVarsPool7" );
-    InitGlobalBag( &STATE(LVarsPool[ 8]), "src/vars.c:LVarsPool8" );
-    InitGlobalBag( &STATE(LVarsPool[ 9]), "src/vars.c:LVarsPool9" );
-    InitGlobalBag( &STATE(LVarsPool[10]), "src/vars.c:LVarsPool10" );
-    InitGlobalBag( &STATE(LVarsPool[11]), "src/vars.c:LVarsPool11" );
-    InitGlobalBag( &STATE(LVarsPool[12]), "src/vars.c:LVarsPool12" );
-    InitGlobalBag( &STATE(LVarsPool[13]), "src/vars.c:LVarsPool13" );
-    InitGlobalBag( &STATE(LVarsPool[14]), "src/vars.c:LVarsPool14" );
-    InitGlobalBag( &STATE(LVarsPool[15]), "src/vars.c:LVarsPool15" );
+    enum { count = ARRAY_SIZE(STATE(LVarsPool)) };
+    static char cookies[count][24];
+    for (int i = 0; i < count; i++) {
+      snprintf(cookies[i], sizeof(cookies[i]), "src/vars.c:LVarsPool%d", i);
+      InitGlobalBag(&STATE(LVarsPool[i]), cookies[i]);
+    }
 #endif
 
     /* install the marking functions for local variables bag               */
