@@ -165,7 +165,7 @@ void FreeLVarsBag(Bag bag);
 static inline void MakeHighVars( Bag bag ) {
   while (bag && TNUM_OBJ(bag) == T_LVARS) {
     RetypeBag(bag, T_HVARS);
-    bag = ADDR_OBJ(bag)[2];
+    bag = PARENT_LVARS(bag);
   }
 }
 
