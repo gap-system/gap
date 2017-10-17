@@ -1943,6 +1943,8 @@ static Int InitKernel (
     InstallEvalExprFunc( T_TILDE_EXPR     , EvalTildeExpr);
     InstallEvalExprFunc( T_CHAR_EXPR      , EvalCharExpr);
     InstallEvalExprFunc( T_PERM_EXPR      , EvalPermExpr);
+    InstallEvalExprFunc( T_FLOAT_EXPR_LAZY  , EvalFloatExprLazy);
+    InstallEvalExprFunc( T_FLOAT_EXPR_EAGER , EvalFloatExprEager);
 
     /* install the evaluators for list and record expressions              */
     InstallEvalExprFunc( T_LIST_EXPR      , EvalListExpr);
@@ -1951,8 +1953,6 @@ static Int InitKernel (
     InstallEvalExprFunc( T_STRING_EXPR    , EvalStringExpr);
     InstallEvalExprFunc( T_REC_EXPR       , EvalRecExpr);
     InstallEvalExprFunc( T_REC_TILDE_EXPR , EvalRecTildeExpr);
-    InstallEvalExprFunc( T_FLOAT_EXPR_LAZY  , EvalFloatExprLazy);
-    InstallEvalExprFunc( T_FLOAT_EXPR_EAGER , EvalFloatExprEager);
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {
@@ -1990,6 +1990,8 @@ static Int InitKernel (
     InstallPrintExprFunc( T_TILDE_EXPR     , PrintTildeExpr);
     InstallPrintExprFunc( T_CHAR_EXPR      , PrintCharExpr);
     InstallPrintExprFunc( T_PERM_EXPR      , PrintPermExpr);
+    InstallPrintExprFunc( T_FLOAT_EXPR_LAZY  , PrintFloatExprLazy);
+    InstallPrintExprFunc( T_FLOAT_EXPR_EAGER , PrintFloatExprEager);
 
     /* install the printers for list and record expressions                */
     InstallPrintExprFunc( T_LIST_EXPR      , PrintListExpr);
@@ -1998,8 +2000,6 @@ static Int InitKernel (
     InstallPrintExprFunc( T_STRING_EXPR    , PrintStringExpr);
     InstallPrintExprFunc( T_REC_EXPR       , PrintRecExpr);
     InstallPrintExprFunc( T_REC_TILDE_EXPR , PrintRecExpr);
-    InstallPrintExprFunc( T_FLOAT_EXPR_LAZY  , PrintFloatExprLazy);
-    InstallPrintExprFunc( T_FLOAT_EXPR_EAGER , PrintFloatExprEager);
 
     /* return success                                                      */
     return 0;
