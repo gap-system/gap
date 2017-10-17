@@ -2511,7 +2511,7 @@ CVar CompListExpr (
 
 /****************************************************************************
 **
-*F  CompListTildeExpr( <expr> ) . . . . . . . . . . . . . .  T_LIST_TILD_EXPR
+*F  CompListTildeExpr( <expr> ) . . . . . . . . . . . . . . T_LIST_TILDE_EXPR
 */
 CVar CompListTildeExpr (
     Expr                expr )
@@ -2727,7 +2727,7 @@ CVar CompRecExpr (
 
 /****************************************************************************
 **
-*F  CompRecTildeExpr( <expr> )  . . . . . . . . . . . . . . . T_REC_TILD_EXPR
+*F  CompRecTildeExpr( <expr> )  . . . . . . . . . . . . . .  T_REC_TILDE_EXPR
 */
 CVar CompRecTildeExpr (
     Expr                expr )
@@ -5915,11 +5915,11 @@ static Int InitKernel (
     CompExprFuncs[ T_PERM_EXPR       ] = CompPermExpr;
     CompExprFuncs[ T_PERM_CYCLE      ] = CompUnknownExpr;
     CompExprFuncs[ T_LIST_EXPR       ] = CompListExpr;
-    CompExprFuncs[ T_LIST_TILD_EXPR  ] = CompListTildeExpr;
+    CompExprFuncs[ T_LIST_TILDE_EXPR ] = CompListTildeExpr;
     CompExprFuncs[ T_RANGE_EXPR      ] = CompRangeExpr;
     CompExprFuncs[ T_STRING_EXPR     ] = CompStringExpr;
     CompExprFuncs[ T_REC_EXPR        ] = CompRecExpr;
-    CompExprFuncs[ T_REC_TILD_EXPR   ] = CompRecTildeExpr;
+    CompExprFuncs[ T_REC_TILDE_EXPR  ] = CompRecTildeExpr;
 
     CompExprFuncs[ T_REFLVAR         ] = CompRefLVar;
     CompExprFuncs[ T_ISB_LVAR        ] = CompIsbLVar;
