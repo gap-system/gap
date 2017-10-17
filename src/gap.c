@@ -238,8 +238,10 @@ Obj Shell ( Obj context,
   STATE(ShellContext) = context;
   oldBaseShellContext = STATE(BaseShellContext);
   STATE(BaseShellContext) = context;
+  Int oldErrorLLevel = STATE(ErrorLLevel);
+  STATE(ErrorLLevel) = 0;
   oldRecursionDepth = STATE(RecursionDepth);
-  
+
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
@@ -353,6 +355,7 @@ Obj Shell ( Obj context,
   CloseOutput();
   STATE(BaseShellContext) = oldBaseShellContext;
   STATE(ShellContext) = oldShellContext;
+  STATE(ErrorLLevel) = oldErrorLLevel;
   STATE(RecursionDepth) = oldRecursionDepth;
   if (STATE(UserHasQUIT))
     {
