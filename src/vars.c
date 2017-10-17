@@ -2644,12 +2644,12 @@ static Int InitKernel (
     /* install executors, evaluators, and printers for local variables     */
     InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
     InstallExecStatFunc( T_UNB_LVAR       , ExecUnbLVar);
+    // no EvalExprFunc for T_REFLVAR, it is handled immediately by EVAL_EXPR
     InstallEvalExprFunc( T_ISB_LVAR       , EvalIsbLVar);
-    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
 
+    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
     InstallPrintStatFunc( T_UNB_LVAR       , PrintUnbLVar);
     InstallPrintExprFunc( T_REFLVAR        , PrintRefLVar);
-
     InstallPrintExprFunc( T_ISB_LVAR       , PrintIsbLVar);
 
     /* install executors, evaluators, and printers for higher variables    */
