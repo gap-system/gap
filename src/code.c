@@ -1105,7 +1105,7 @@ void CodeForEndBody (
     
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
-      && TNUM_EXPR(var)  == T_REFLVAR ) {
+      && IS_REFLVAR(var) ) {
         type = T_FOR_RANGE + (nr-1);
     }
     else {
