@@ -130,7 +130,7 @@ void InstallPrintExprFunc(Int pos, void (*expr)(Expr))
     HashUnlock(&activeHooks);
 }
 
-UInt ProfileStatPassthrough(Stat stat)
+UInt ProfileExecStatPassthrough(Stat stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);
     return OriginalExecStatFuncsForHook[TNUM_STAT(stat)](stat);
@@ -181,7 +181,7 @@ Int ActivateHooks(struct InterpreterHooks * hook)
     }
 
     for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
-        ExecStatFuncs[i] = ProfileStatPassthrough;
+        ExecStatFuncs[i] = ProfileExecStatPassthrough;
         EvalExprFuncs[i] = ProfileEvalExprPassthrough;
         EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
@@ -211,11 +211,9 @@ Int DeactivateHooks(struct InterpreterHooks * hook)
     }
 
     if (HookActiveCount == 0) {
-        for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
-            ExecStatFuncs[i] = OriginalExecStatFuncsForHook[i];
-            EvalExprFuncs[i] = OriginalEvalExprFuncsForHook[i];
-            EvalBoolFuncs[i] = OriginalEvalBoolFuncsForHook[i];
-        }
+        memcpy(ExecStatFuncs, OriginalExecStatFuncsForHook, sizeof(ExecStatFuncs));
+        memcpy(EvalExprFuncs, OriginalEvalExprFuncsForHook, sizeof(EvalExprFuncs));
+        memcpy(EvalBoolFuncs, OriginalEvalBoolFuncsForHook, sizeof(EvalBoolFuncs));
     }
 
     HashUnlock(&activeHooks);
@@ -304,16 +302,12 @@ void ActivatePrintHooks(struct PrintHooks * hook)
 
 void DeactivatePrintHooks(struct PrintHooks * hook)
 {
-    Int i;
-
     if (!PrintHookActive) {
         return;
     }
     PrintHookActive = 0;
-    for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
-        PrintStatFuncs[i] = OriginalPrintStatFuncsForHook[i];
-        PrintExprFuncs[i] = OriginalPrintExprFuncsForHook[i];
-    }
+    memcpy(PrintStatFuncs, OriginalPrintStatFuncsForHook, sizeof(PrintStatFuncs));
+    memcpy(PrintExprFuncs, OriginalPrintExprFuncsForHook, sizeof(PrintExprFuncs));
 }
 
 /****************************************************************************
