@@ -2755,7 +2755,6 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     volatile UInt                readTilde;
     volatile UInt                currLHSGVar;
     volatile Obj                 errorLVars;
-    volatile Obj                 errorLVars0;
     syJmp_buf           readJmpError;
 #ifdef HPCGAP
     int                 lockSP;
@@ -2792,9 +2791,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     STATE(CurrLHSGVar) = 0;
     RecreateStackNams(context);
     errorLVars = STATE(ErrorLVars);
-    errorLVars0 = STATE(ErrorLVars0);
     STATE(ErrorLVars) = context;
-    STATE(ErrorLVars0) = STATE(ErrorLVars);
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2862,7 +2859,6 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     STATE(ReadTilde)   = readTilde;
     STATE(CurrLHSGVar) = currLHSGVar;
     STATE(ErrorLVars) = errorLVars;
-    STATE(ErrorLVars0) = errorLVars0;
 
     /* copy the result (if any)                                            */
     STATE(ReadEvalResult) = STATE(IntrResult);

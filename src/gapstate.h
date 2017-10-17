@@ -141,9 +141,8 @@ typedef struct GAPState {
     UInt UserHasQUIT;
     Obj  ShellContext;
     Obj  BaseShellContext;
-    Obj  ErrorLVars0;       // the initial ErrorLVars value, i.e. for the lvars were the break occurred
     Obj  ErrorLVars;        // ErrorLVars as modified by DownEnv / UpEnv
-    Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top, i.e. ErrorLVars0
+    Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top, i.e. BaseShellContext
 
     /* From objects.c */
     Obj PrintObjThis;
