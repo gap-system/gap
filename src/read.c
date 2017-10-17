@@ -415,7 +415,7 @@ void ReadCallVarAss (
       lvars = lvars0;
       nest = 0;
       while ( type == ' ' && lvars != 0 && lvars != STATE(BottomLVars) ) {
-        nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
+        nams = NAMS_FUNC(FUNC_LVARS(lvars));
         if (nams != (Obj) 0)
           {
             indx = LEN_LIST( nams );
@@ -436,7 +436,7 @@ void ReadCallVarAss (
               }
             }
         }
-        lvars = ENVI_FUNC( PTR_BAG( lvars )[0] );
+        lvars = ENVI_FUNC( FUNC_LVARS( lvars ) );
         nest++;
         if (nest >= 65536)
           {
@@ -2728,11 +2728,11 @@ void RecreateStackNams( Obj context )
 {
     Obj lvars = context;
     while (lvars != STATE(BottomLVars) && lvars != (Obj)0)  {
-        Obj nams = NAMS_FUNC(PTR_BAG(lvars)[0]);
+        Obj nams = NAMS_FUNC(FUNC_LVARS(lvars));
         if (nams != (Obj) 0) {
             PushPlist( STATE(StackNams), nams);
         }
-        lvars = ENVI_FUNC(PTR_BAG(lvars)[0]);
+        lvars = ENVI_FUNC(FUNC_LVARS(lvars));
     }
 
     // At this point we have the stack upside down, so invert it
