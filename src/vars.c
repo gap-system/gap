@@ -242,70 +242,58 @@ void            PrintIsbLVar (
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
 */
-void            ASS_HVAR (
-    UInt                hvar,
-    Obj                 val )
+void ASS_HVAR(UInt hvar, Obj val)
 {
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
-
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
-    }
-
-    /* assign the value                                                    */
-    ASS_LVAR( hvar & 0xFFFF, val );
-    /* CHANGED_BAG( STATE(CurrLVars) ); is done in the switch below               */
-
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
+    ASS_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar, val);
 }
 
-Obj             OBJ_HVAR (
-    UInt                hvar )
+Obj OBJ_HVAR(UInt hvar)
 {
-    Obj                 val;            /* value, result                   */
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
+    return OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
+}
 
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
+Char * NAME_HVAR(UInt hvar)
+{
+    return NAME_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
+}
+
+void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
+{
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
-    /* get the value                                                       */
-    val = OBJ_LVAR( hvar & 0xFFFF );
+    // assign the value
+    ASS_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF, val);
+    CHANGED_BAG(context);
+}
 
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
+Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+{
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
+    }
 
-    /* return the value                                                    */
+    // get the value
+    Obj val = OBJ_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
+
+    // return the value
     return val;
 }
 
-Char *          NAME_HVAR (
-    UInt                hvar )
+Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
-    Char *              name;           /* name, result                    */
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
-
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
-    /* get the name                                                        */
-    name = NAME_LVAR( hvar & 0xFFFF );
+    // get the name
+    Char * name = NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
 
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
-
-    /* return the name                                                     */
+    // return the name
     return name;
 }
 
