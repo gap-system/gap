@@ -2802,7 +2802,7 @@ GVarDescriptor GVarTHREAD_INIT;
 GVarDescriptor GVarTHREAD_EXIT;
 
 void ThreadedInterpreter(void *funcargs) {
-  Obj tmp, func;
+  Obj tmp, func, body;
   int i;
 
   /* intialize everything and begin an interpreter                       */
@@ -2815,10 +2815,10 @@ void ThreadedInterpreter(void *funcargs) {
   STATE(NrError) = 0;
   STATE(ThrownObject) = 0;
   STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
-  tmp = NewFunctionC( "bottom", 0, "", 0 );
-  PTR_BAG(STATE(BottomLVars))[0] = tmp;
-  tmp = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0], tmp );
+  func = NewFunctionC( "bottom", 0, "", 0 );
+  FUNC_LVARS(STATE(BottomLVars)) = func;
+  body = NewBag( T_BODY, sizeof(BodyHeader) );
+  SET_BODY_FUNC( func, body );
   STATE(CurrLVars) = STATE(BottomLVars);
 
   IntrBegin( STATE(BottomLVars) );

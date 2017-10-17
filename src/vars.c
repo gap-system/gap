@@ -2525,7 +2525,7 @@ void SaveLVars( Obj lvars )
   UInt len,i;
   Obj *ptr;
   SaveSubObj(FUNC_LVARS(lvars));
-  SaveUInt((UInt)ADDR_OBJ(lvars)[1]);
+  SaveUInt(STAT_LVARS(lvars));
   SaveSubObj(PARENT_LVARS(lvars));
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
@@ -2544,7 +2544,7 @@ void LoadLVars( Obj lvars )
   UInt len,i;
   Obj *ptr;
   FUNC_LVARS(lvars) = LoadSubObj();
-  ((UInt *)ADDR_OBJ(lvars))[1] = LoadUInt();
+  STAT_LVARS(lvars) = LoadUInt();
   PARENT_LVARS(lvars) = LoadSubObj();
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
