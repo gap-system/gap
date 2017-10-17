@@ -794,12 +794,6 @@ void CodeFuncExprBegin (
     SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
     (void) old; /* please picky compilers. */
 
-#ifdef HPCGAP
-    /* Make the function expression bag immutable and public               */
-    /* TODO: Check if that's actually correct. */
-    RetypeBag(fexs, T_PLIST + IMMUTABLE);
-#endif
-
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
     assert( stat1 == OFFSET_FIRST_STAT );
@@ -857,6 +851,9 @@ void CodeFuncExprEnd (
         stat1 = PopStat();
         ADDR_STAT(OFFSET_FIRST_STAT)[nr-i] = stat1;
     }
+
+    // make the function expression list immutable
+    MakeImmutable( FEXS_FUNC( fexp ) );
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), STATE(OffsBody) );
