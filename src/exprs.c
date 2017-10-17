@@ -59,73 +59,6 @@
 
 /****************************************************************************
 **
-*F  OBJ_REFLVAR(<expr>) . . . . . . . . . . . value of a reference to a local
-**
-**  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
-**  <expr>.
-**
-**  'OBJ_REFLVAR'  is defined  in the  declaration  part of  this  package as
-**  follows
-**
-#ifdef  NO_LVAR_CHECKS
-#define OBJ_REFLVAR(expr)       \
-                        OBJ_LVAR( LVAR_REFLVAR( (expr) ) )
-#endif
-#ifndef NO_LVAR_CHECKS
-#define OBJ_REFLVAR(expr)       \
-                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
-                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
-                         ObjLVar( LVAR_REFLVAR( expr ) ) )
-#endif
-*/
-
-
-/****************************************************************************
-**
-*F  OBJ_INTEXPR(<expr>) . . . . . . . . . . .  value of an integer expression
-**
-**  'OBJ_INTEXPR' returns the (immediate)  integer  value of the  (immediate)
-**  integer expression <expr>.
-**
-**  'OBJ_INTEXPR(<expr>)'  should  be 'OBJ_INT(INT_INTEXPR(<expr>))', but for
-**  performance  reasons we implement  it   as '(Obj)(<expr>)'.  This is   of
-**  course    highly  dependent  on    (immediate)  integer   expressions and
-**  (immediate) integer values having the same representation.
-**
-**  'OBJ_INTEXPR' is  defined in  the declaration  part  of  this package  as
-**  follow
-**
-#define OBJ_INTEXPR(expr)       \
-                        ((Obj)(Int)(Int4)(expr))
-*/
-
-
-/****************************************************************************
-**
-*F  EVAL_EXPR(<expr>) . . . . . . . . . . . . . . . .  evaluate an expression
-**
-**  'EVAL_EXPR' evaluates the expression <expr>.
-**
-**  'EVAL_EXPR' returns the value of <expr>.
-**
-**  'EVAL_EXPR'  causes  the   evaluation of   <expr> by  dispatching  to the
-**  evaluator, i.e., to  the function that evaluates  expressions of the type
-**  of <expr>.
-**
-**  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
-**  two special cases that 'TNUM_EXPR' handles.
-**
-**  'EVAL_EXPR' is defined in the declaration part of this package as follows:
-**
-#define EVAL_EXPR(expr) \
-                        (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
-                         (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TNUM_STAT(expr) ])( expr ) ))
-*/
-
-
-/****************************************************************************
-**
 *V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
 **
 **  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
@@ -134,25 +67,6 @@
 **  type.
 */
 Obj             (* EvalExprFuncs [256]) ( Expr expr );
-
-
-/****************************************************************************
-**
-*F  EVAL_BOOL_EXPR(<expr>)  . . . . evaluate an expression to a boolean value
-**
-**  'EVAL_BOOL_EXPR' evaluates   the expression  <expr> and  checks  that the
-**  value is either  'true' or 'false'.  If the  expression does not evaluate
-**  to 'true' or 'false', then an error is signalled.
-**
-**  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
-**  'false').
-**
-**  'EVAL_BOOL_EXPR' is defined  in the declaration part  of this package  as
-**  follows
-**
-#define EVAL_BOOL_EXPR(expr) \
-                        ( (*EvalBoolFuncs[ TNUM_EXPR( expr ) ])( expr ) )
-*/
 
 
 /****************************************************************************
