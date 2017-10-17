@@ -870,7 +870,6 @@ void CodeFuncExprEnd (
     PopLoopNesting();
     
     /* restore the remembered offset                                       */
-    STATE(OffsBody) = BRK_CALL_TO();
     PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
