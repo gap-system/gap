@@ -934,7 +934,7 @@ end );
 
 BindGlobal( "ShowPackageInformation", function()
   local linelen, indent, btop, vert, bbot, print_info,
-        libs, cmpdist, ld, f;
+        libs, cmpdist, ld, f, packagenames;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -987,9 +987,10 @@ BindGlobal( "ShowPackageInformation", function()
   fi;
 
   # For each loaded package, print name and version number.
-  if GAPInfo.PackagesLoaded <> rec() then
+  packagenames := SortedList( RecNames( GAPInfo.PackagesLoaded ) );
+  if not IsEmpty(packagenames) then
     print_info( " Packages:   ",
-                List( SortedList( RecNames( GAPInfo.PackagesLoaded ) ),
+                List( packagenames,
                       name -> Concatenation(
                                   GAPInfo.PackagesLoaded.( name )[3], " ",
                                   GAPInfo.PackagesLoaded.( name )[2] ) ),
