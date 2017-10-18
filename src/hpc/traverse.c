@@ -491,6 +491,12 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
     TraversalState traversal;
     UInt           len, i;
     if (!IS_BAG_REF(obj) || REGION(obj) == NULL) {
+        UInt tnum = TNUM_OBJ(obj);
+
+        if (tnum >= FIRST_ATOMIC_TNUM && tnum <= LAST_ATOMIC_TNUM) {
+            ErrorQuit("atomic objects cannot be copied", 0, 0);
+        }
+
         if (asList) {
             copyList = NewList(1);
             SET_ELM_PLIST(copyList, 1, obj);

@@ -1909,6 +1909,35 @@ static StructGVarFunc GVarFuncs[] = {
 
 };
 
+// Forbid comparision and copying of atomic objects, because they
+// cannot be done in a thread-safe manner
+Int AtomicRecordErrorNoCompare(Obj arg1, Obj arg2)
+{
+    ErrorQuit("atomic records cannot be compared with other records", 0, 0);
+    // Make compiler happy
+    return 0;
+}
+
+Int AtomicListErrorNoCompare(Obj arg1, Obj arg2)
+{
+    ErrorQuit("atomic lists cannot be compared with other lists", 0, 0);
+    // Make compiler happy
+    return 0;
+}
+
+Obj AtomicErrorNoShallowCopy(Obj arg1)
+{
+    ErrorQuit("atomic objects cannot be copied", 0, 0);
+    // Make compiler happy
+    return 0;
+}
+
+Obj AtomicErrorNoCopy(Obj arg1, Int arg2)
+{
+    ErrorQuit("atomic objects cannot be copied", 0, 0);
+    // Make compiler happy
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1978,39 +2007,28 @@ static Int InitKernel (
   MakeBagTypePublic(T_TLREC);
   MakeBagTypePublic(T_TLREC_INNER);
   /* install list functions */
-  /* install list functions */
-  IsListFuncs[T_FIXALIST] = AlwaysYes;
-  IsSmallListFuncs[T_FIXALIST] = AlwaysYes;
-  LenListFuncs[T_FIXALIST] = LenListAList;
-  LengthFuncs[T_FIXALIST] = LengthAList;
-  Elm0ListFuncs[T_FIXALIST] = Elm0AList;
-  ElmDefListFuncs[T_FIXALIST] = ElmDefAList;
-  Elm0vListFuncs[T_FIXALIST] = Elm0AList;
-  ElmListFuncs[T_FIXALIST] = ElmAList;
-  ElmvListFuncs[T_FIXALIST] = ElmAList;
-  ElmwListFuncs[T_FIXALIST] = ElmAList;
+
+  for (UInt type = T_FIXALIST; type <= T_ALIST; type++) {
+      IsListFuncs[type] = AlwaysYes;
+      IsSmallListFuncs[type] = AlwaysYes;
+      LenListFuncs[type] = LenListAList;
+      LengthFuncs[type] = LengthAList;
+      Elm0ListFuncs[type] = Elm0AList;
+      ElmDefListFuncs[type] = ElmDefAList;
+      Elm0vListFuncs[type] = Elm0AList;
+      ElmListFuncs[type] = ElmAList;
+      ElmvListFuncs[type] = ElmAList;
+      ElmwListFuncs[type] = ElmAList;
+      UnbListFuncs[type] = UnbAList;
+      IsbListFuncs[type] = IsbAList;
+      CopyObjFuncs[type] = CopyAList;
+      CleanObjFuncs[type] = CleanAList;
+  }
+
   AssListFuncs[T_FIXALIST] = AssFixAList;
-  UnbListFuncs[T_FIXALIST] = UnbAList;
-  IsbListFuncs[T_FIXALIST] = IsbAList;
-  CopyObjFuncs[ T_FIXALIST ] = CopyAList;
-  CleanObjFuncs[ T_FIXALIST ] = CleanAList;
-  IsListFuncs[T_ALIST] = AlwaysYes;
-  IsSmallListFuncs[T_ALIST] = AlwaysYes;
-  LenListFuncs[T_ALIST] = LenListAList;
-  LengthFuncs[T_ALIST] = LengthAList;
-  Elm0ListFuncs[T_ALIST] = Elm0AList;
-  ElmDefListFuncs[T_ALIST] = ElmDefAList;
-  Elm0vListFuncs[T_ALIST] = Elm0AList;
-  ElmListFuncs[T_ALIST] = ElmAList;
-  ElmvListFuncs[T_ALIST] = ElmAList;
-  ElmwListFuncs[T_ALIST] = ElmAList;
   AssListFuncs[T_ALIST] = AssAList;
-  UnbListFuncs[T_ALIST] = UnbAList;
-  IsbListFuncs[T_ALIST] = IsbAList;
-  CopyObjFuncs[ T_ALIST ] = CopyAList;
-  CleanObjFuncs[ T_ALIST ] = CleanAList;
-  CopyObjFuncs[ T_APOSOBJ ] = CopyAList;
-  CleanObjFuncs[ T_APOSOBJ ] = CleanAList;
+
+
   /* AsssListFuncs[T_ALIST] = AsssAList; */
   /* install record functions */
   ElmRecFuncs[ T_AREC ] = ElmARecord;
@@ -2029,6 +2047,54 @@ static Int InitKernel (
   AssRecFuncs[ T_TLREC ] = AssTLRecord;
   IsRecFuncs[ T_TLREC ] = AlwaysYes;
   UnbRecFuncs[ T_TLREC ] = UnbTLRecord;
+
+  // Forbit various operations on atomic lists and records we can't
+  // perform thread-safely.
+
+  // Ensure that atomic objects cannot be copied
+  for (UInt type = FIRST_ATOMIC_TNUM; type <= LAST_ATOMIC_TNUM; type++) {
+      ShallowCopyObjFuncs[type] = AtomicErrorNoShallowCopy;
+      CopyObjFuncs[type] = AtomicErrorNoCopy;
+      // Do not error on CleanObj, just leave it as a no-op
+  }
+
+
+  // Ensure atomic lists can't be compared with other lists
+  for (UInt type = FIRST_ATOMIC_LIST_TNUM; type <= LAST_ATOMIC_LIST_TNUM;
+       type++) {
+      for (UInt t2 = FIRST_LIST_TNUM; t2 <= LAST_LIST_TNUM; ++t2) {
+          EqFuncs[type][t2] = AtomicListErrorNoCompare;
+          EqFuncs[t2][type] = AtomicListErrorNoCompare;
+          LtFuncs[type][t2] = AtomicListErrorNoCompare;
+          LtFuncs[t2][type] = AtomicListErrorNoCompare;
+      }
+      for (UInt t2 = FIRST_ATOMIC_LIST_TNUM; t2 <= LAST_ATOMIC_LIST_TNUM;
+           ++t2) {
+          EqFuncs[type][t2] = AtomicListErrorNoCompare;
+          EqFuncs[t2][type] = AtomicListErrorNoCompare;
+          LtFuncs[type][t2] = AtomicListErrorNoCompare;
+          LtFuncs[t2][type] = AtomicListErrorNoCompare;
+      }
+  }
+
+  // Ensure atomic records can't be compared with other records
+  for (UInt type = FIRST_ATOMIC_RECORD_TNUM; type <= LAST_ATOMIC_RECORD_TNUM;
+       type++) {
+      for (UInt t2 = FIRST_RECORD_TNUM; t2 <= LAST_RECORD_TNUM; ++t2) {
+          EqFuncs[type][t2] = AtomicRecordErrorNoCompare;
+          EqFuncs[t2][type] = AtomicRecordErrorNoCompare;
+          LtFuncs[type][t2] = AtomicRecordErrorNoCompare;
+          LtFuncs[t2][type] = AtomicRecordErrorNoCompare;
+      }
+      for (UInt t2 = FIRST_ATOMIC_RECORD_TNUM; t2 <= LAST_ATOMIC_RECORD_TNUM;
+           ++t2) {
+          EqFuncs[type][t2] = AtomicRecordErrorNoCompare;
+          EqFuncs[t2][type] = AtomicRecordErrorNoCompare;
+          LtFuncs[type][t2] = AtomicRecordErrorNoCompare;
+          LtFuncs[t2][type] = AtomicRecordErrorNoCompare;
+      }
+  }
+
   /* return success                                                      */
   return 0;
 }
