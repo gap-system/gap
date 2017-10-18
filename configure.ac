@@ -134,6 +134,8 @@ AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],
     [define as 1 if >> for long int behaves like an arithmetic right shift for negative numbers])
 
 dnl function attributes
+AX_GCC_FUNC_ATTRIBUTE([always_inline])
+AX_GCC_FUNC_ATTRIBUTE([noinline])
 AX_GCC_FUNC_ATTRIBUTE([noreturn])
 
 dnl compiler builtins

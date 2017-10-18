@@ -99,9 +99,21 @@ enum {
 
 /****************************************************************************
 **
-*T  Set NORETURN to suitable compiler attribute.
+*T  Wrappers for various compiler attributes
 **
 */
+#ifdef HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE
+#define ALWAYS_INLINE __attribute__((always_inline)) inline
+#else
+#define ALWAYS_INLINE inline
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_NOINLINE
+#define NOINLINE __attribute__((noinline))
+#else
+#define NOINLINE
+#endif
+
 #ifdef HAVE_FUNC_ATTRIBUTE_NORETURN
 #define NORETURN __attribute__((noreturn))
 #else
