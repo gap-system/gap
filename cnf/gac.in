@@ -329,7 +329,6 @@ make_compstat () {
     echo     "#ifndef AVOID_PRECOMPILED"                         >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__type1 ( void );"     >> ${gactmp}/$$compstat.c
-    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> ${gactmp}/$$compstat.c
     echo     "extern StructInitInfo * Init__oper1( void );"      >> ${gactmp}/$$compstat.c
     echo     "#endif"                                            >> ${gactmp}/$$compstat.c
 
@@ -343,7 +342,6 @@ make_compstat () {
     echo     "    Init__methsel1,"                       >> ${gactmp}/$$compstat.c
     echo     "    Init__type1,"                          >> ${gactmp}/$$compstat.c
     echo     "    Init__oper1,"                          >> ${gactmp}/$$compstat.c
-    echo     "    Init__filter1,"                        >> ${gactmp}/$$compstat.c
     echo     "#endif"                                    >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
