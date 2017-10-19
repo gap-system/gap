@@ -422,20 +422,29 @@ InstallMethod(DisplaySemigroup, "for finite semigroups",
     [IsTransformationSemigroup],
 function(S)
 
-    local dc, i, len, sh, D, layer, displayDClass;
+    local dc, i, len, sh, D, layer, displayDClass, n;
 
     displayDClass:= function(D)
-        local h, sh;
+        local h, nrL, nrR;
         h:= GreensHClassOfElement(AssociatedSemigroup(D),Representative(D));
         if IsRegularDClass(D) then
             Print("*");
+        else
+            Print(" ");
         fi;
-        Print("[H size = ", Size(h),", ",
-        Size(GreensRClassOfElement(AssociatedSemigroup(D),
-            Representative(h)))/Size(h), " L classes, ",
-        Size(GreensLClassOfElement(AssociatedSemigroup(D),
-            Representative(h)))/Size(h)," R classes]");
-        Print("\n");
+        nrL := Size(GreensRClassOfElement(AssociatedSemigroup(D),
+                                          Representative(h))) / Size(h);
+        nrR := Size(GreensLClassOfElement(AssociatedSemigroup(D),
+                                          Representative(h))) / Size(h);
+        Print("[H size = ", Size(h), ", ", nrL, " L-class");
+        if nrL > 1 then
+            Print("es");
+        fi;
+        Print(", ", nrR, " R-class");
+        if nrR > 1 then
+            Print("es");
+        fi;
+        Print("]\n");
     end;
 
     #########################################################################
@@ -446,13 +455,22 @@ function(S)
 
     # check finiteness
     if not IsFinite(S) then
-      TryNextMethod();
+        TryNextMethod();
     fi;
 
     # determine D classes and sort according to rank.
-    layer:= List([1..DegreeOfTransformationSemigroup(S)], x->[]);
+    n := DegreeOfTransformationSemigroup(S);
+
+    if n = 0 then
+        # special case for the full transformation monoid on one point
+        Print("Rank 0: ");
+        displayDClass(GreensDClasses(S)[1]);
+        return;
+    fi;
+
+    layer:= List([1 .. n], x->[]);
     for D in GreensDClasses(S) do
-        Add(layer[RankOfTransformation(Representative(D))], D);
+        Add(layer[RankOfTransformation(Representative(D), n)], D);
     od;
 
     # loop over the layers.
