@@ -19,6 +19,12 @@ false
 gap> [] = l;
 false
 
+# ListWithIdenticalEntries: errors
+gap> ListWithIdenticalEntries(fail, true);
+Error, <n> must be a non-negative integer (not a boolean or fail)
+gap> ListWithIdenticalEntries(-1, fail);
+Error, <n> must be a non-negative integer (not a integer)
+
 # ListWithIdenticalEntries: 0 length
 gap> l := ListWithIdenticalEntries(0, 'w');
 ""
@@ -27,7 +33,7 @@ true
 gap> l := ListWithIdenticalEntries(0, true);
 [  ]
 gap> IsBlistRep(l);
-false
+true
 gap> l := ListWithIdenticalEntries(0, fail);
 [  ]
 gap> IsPlistRep(l);
@@ -55,11 +61,11 @@ true
 gap> l := ListWithIdenticalEntries(2, true);
 [ true, true ]
 gap> IsBlistRep(l);
-false
+true
 gap> l := ListWithIdenticalEntries(3, true);
 [ true, true, true ]
 gap> IsBlistRep(l);
-false
+true
 gap> ForAll([1 .. 100],
 >           i -> ForAll(ListWithIdenticalEntries(i, true), x -> x));
 true
@@ -70,11 +76,11 @@ true
 gap> l := ListWithIdenticalEntries(2, false);
 [ false, false ]
 gap> IsBlistRep(l);
-false
+true
 gap> l := ListWithIdenticalEntries(3, false);
 [ false, false, false ]
 gap> IsBlistRep(l);
-false
+true
 gap> ForAny([1 .. 100],
 >           i -> ForAny(ListWithIdenticalEntries(i, false), x -> x));
 false
@@ -88,11 +94,11 @@ gap> IsIdenticalObj(l[1], l[2]);
 true
 gap> l := ListWithIdenticalEntries(10, "GAP");;
 gap> TNUM_OBJ(l)[2];
-"list (plain)"
+"list (plain,hom)"
 gap> l;
 [ "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP" ]
 gap> TNUM_OBJ(l)[2];
-"list (plain,dense)"
+"list (plain,table)"
 gap> l := ListWithIdenticalEntries(10, PrimitiveRoot(GF(5)));
 [ Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5) ]
 gap> TNUM_OBJ(l)[2];
@@ -119,18 +125,18 @@ gap> TNUM_OBJ(l)[2];
 "list (plain,hom)"
 gap> l := ListWithIdenticalEntries(4, []);;
 gap> TNUM_OBJ(l)[2];
-"list (plain)"
+"list (plain,hom)"
 gap> l;
 [ [  ], [  ], [  ], [  ] ]
 gap> TNUM_OBJ(l)[2];
-"list (plain,dense)"
+"list (plain,rect table)"
 gap> l := ListWithIdenticalEntries(4, [5]);;
 gap> TNUM_OBJ(l)[2];
-"list (plain)"
+"list (plain,hom)"
 gap> l;
 [ [ 5 ], [ 5 ], [ 5 ], [ 5 ] ]
 gap> TNUM_OBJ(l)[2];
-"list (plain,dense)"
+"list (plain,rect table)"
 
 # String, for a range
 gap> l := [5 .. 10];
