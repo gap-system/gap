@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-2276314"
+#define FILE_CRC  "-96523708"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -89,7 +89,6 @@ static GVar G_InstallOtherMethod;
 static Obj  GF_InstallOtherMethod;
 static GVar G_IsAttributeStoringRep;
 static Obj  GC_IsAttributeStoringRep;
-static Obj  GF_IsAttributeStoringRep;
 static GVar G_GETTER__FLAGS;
 static Obj  GC_GETTER__FLAGS;
 static GVar G_LENGTH__SETTER__METHODS__2;
@@ -171,20 +170,11 @@ static GVar G_IsReadOnlyPositionalObjectRep;
 static Obj  GC_IsReadOnlyPositionalObjectRep;
 static GVar G_SetTypeObj;
 static Obj  GC_SetTypeObj;
-static GVar G_ChangeTypeObj;
-static Obj  GC_ChangeTypeObj;
-static Obj  GF_ChangeTypeObj;
 static GVar G_IGNORE__IMMEDIATE__METHODS;
 static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_ResetFilterObj;
 static Obj  GC_ResetFilterObj;
 static Obj  GF_ResetFilterObj;
-static GVar G_Tester;
-static Obj  GF_Tester;
-static GVar G_Setter;
-static Obj  GF_Setter;
-static GVar G_FamilyType;
-static Obj  GF_FamilyType;
 static GVar G_Ignore;
 static Obj  GC_Ignore;
 static GVar G_MAKE__READ__WRITE__GLOBAL;
@@ -195,6 +185,12 @@ static GVar G_INFO__OWA;
 static Obj  GF_INFO__OWA;
 static GVar G_Objectify;
 static Obj  GF_Objectify;
+static GVar G_Tester;
+static Obj  GF_Tester;
+static GVar G_Setter;
+static Obj  GF_Setter;
+static GVar G_FamilyType;
+static Obj  GF_FamilyType;
 
 /* record names used in handlers */
 static RNam R_TYPES__LIST__FAM;
@@ -206,7 +202,7 @@ static RNam R_nTYPES;
 static RNam R_HASH__SIZE;
 
 /* information for the functions */
-static Obj  NameFunc[34];
+static Obj  NameFunc[32];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -2436,116 +2432,6 @@ static Obj  HdlrFunc27 (
 /* handler for function 28 */
 static Obj  HdlrFunc28 (
  Obj  self,
- Obj  a_type,
- Obj  a_obj )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* if not IsType( type ) then */
- t_4 = GF_IsType;
- t_3 = CALL_1ARGS( t_4, a_type );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* Error( "<type> must be a type" ); */
-  t_1 = GF_Error;
-  t_2 = MakeString( "<type> must be a type" );
-  CALL_1ARGS( t_1, t_2 );
-  
- }
- /* fi */
- 
- /* if IS_POSOBJ( obj ) then */
- t_3 = GF_IS__POSOBJ;
- t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
- if ( t_1 ) {
-  
-  /* SET_TYPE_POSOBJ( obj, type ); */
-  t_1 = GF_SET__TYPE__POSOBJ;
-  CALL_2ARGS( t_1, a_obj, a_type );
-  
- }
- 
- /* elif IS_COMOBJ( obj ) then */
- else {
-  t_3 = GF_IS__COMOBJ;
-  t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
-  t_1 = (Obj)(UInt)(t_2 != False);
-  if ( t_1 ) {
-   
-   /* SET_TYPE_COMOBJ( obj, type ); */
-   t_1 = GF_SET__TYPE__COMOBJ;
-   CALL_2ARGS( t_1, a_obj, a_type );
-   
-  }
-  
-  /* elif IS_DATOBJ( obj ) then */
-  else {
-   t_3 = GF_IS__DATOBJ;
-   t_2 = CALL_1ARGS( t_3, a_obj );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
-   t_1 = (Obj)(UInt)(t_2 != False);
-   if ( t_1 ) {
-    
-    /* SET_TYPE_DATOBJ( obj, type ); */
-    t_1 = GF_SET__TYPE__DATOBJ;
-    CALL_2ARGS( t_1, a_obj, a_type );
-    
-   }
-  }
- }
- /* fi */
- 
- /* if not IsNoImmediateMethodsObject( obj ) then */
- t_4 = GF_IsNoImmediateMethodsObject;
- t_3 = CALL_1ARGS( t_4, a_obj );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* RunImmediateMethods( obj, type![2] ); */
-  t_1 = GF_RunImmediateMethods;
-  C_ELM_POSOBJ_NLE( t_2, a_type, 2 );
-  CALL_2ARGS( t_1, a_obj, t_2 );
-  
- }
- /* fi */
- 
- /* return obj; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return a_obj;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 29 */
-static Obj  HdlrFunc29 (
- Obj  self,
  Obj  a_obj,
  Obj  a_filter )
 {
@@ -2820,8 +2706,8 @@ static Obj  HdlrFunc29 (
  return 0;
 }
 
-/* handler for function 30 */
-static Obj  HdlrFunc30 (
+/* handler for function 29 */
+static Obj  HdlrFunc29 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -3005,8 +2891,8 @@ static Obj  HdlrFunc30 (
  return 0;
 }
 
-/* handler for function 31 */
-static Obj  HdlrFunc31 (
+/* handler for function 30 */
+static Obj  HdlrFunc30 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter,
@@ -3053,390 +2939,8 @@ static Obj  HdlrFunc31 (
  return 0;
 }
 
-/* handler for function 32 */
-static Obj  HdlrFunc32 (
- Obj  self,
- Obj  a_arg )
-{
- Obj l_obj = 0;
- Obj l_type = 0;
- Obj l_flags = 0;
- Obj l_attr = 0;
- Obj l_val = 0;
- Obj l_i = 0;
- Obj l_extra = 0;
- Obj l_nfilt = 0;
- Obj l_nflags = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Obj t_10 = 0;
- Obj t_11 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* obj := arg[1]; */
- C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(1) )
- l_obj = t_1;
- 
- /* if IsAttributeStoringRep( obj ) then */
- t_3 = GF_IsAttributeStoringRep;
- t_2 = CALL_1ARGS( t_3, l_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
- if ( t_1 ) {
-  
-  /* extra := [  ]; */
-  t_1 = NEW_PLIST( T_PLIST, 0 );
-  SET_LEN_PLIST( t_1, 0 );
-  l_extra = t_1;
-  
-  /* type := TypeObj( obj ); */
-  t_2 = GF_TypeObj;
-  t_1 = CALL_1ARGS( t_2, l_obj );
-  CHECK_FUNC_RESULT( t_1 )
-  l_type = t_1;
-  
-  /* flags := FlagsType( type ); */
-  t_2 = GF_FlagsType;
-  t_1 = CALL_1ARGS( t_2, l_type );
-  CHECK_FUNC_RESULT( t_1 )
-  l_flags = t_1;
-  
-  /* nfilt := IS_OBJECT; */
-  t_1 = GC_IS__OBJECT;
-  CHECK_BOUND( t_1, "IS_OBJECT" )
-  l_nfilt = t_1;
-  
-  /* for i in [ 2, 4 .. LEN_LIST( arg ) - 1 ] do */
-  t_7 = GF_LEN__LIST;
-  t_6 = CALL_1ARGS( t_7, a_arg );
-  CHECK_FUNC_RESULT( t_6 )
-  C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
-  t_4 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), t_5 );
-  if ( IS_SMALL_LIST(t_4) ) {
-   t_3 = (Obj)(UInt)1;
-   t_1 = INTOBJ_INT(1);
-  }
-  else {
-   t_3 = (Obj)(UInt)0;
-   t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
-  }
-  while ( 1 ) {
-   if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
-    t_1 = (Obj)(((UInt)t_1)+4);
-    if ( t_2 == 0 )  continue;
-   }
-   else {
-    if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
-    t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
-   }
-   l_i = t_2;
-   
-   /* attr := arg[i]; */
-   CHECK_INT_POS( l_i )
-   C_ELM_LIST_FPL( t_5, a_arg, l_i )
-   l_attr = t_5;
-   
-   /* val := arg[i + 1]; */
-   C_SUM_FIA( t_6, l_i, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_6 )
-   C_ELM_LIST_FPL( t_5, a_arg, t_6 )
-   l_val = t_5;
-   
-   /* if 0 <> FLAG1_FILTER( attr ) then */
-   t_7 = GF_FLAG1__FILTER;
-   t_6 = CALL_1ARGS( t_7, l_attr );
-   CHECK_FUNC_RESULT( t_6 )
-   t_5 = (Obj)(UInt)( ! EQ( INTOBJ_INT(0), t_6 ));
-   if ( t_5 ) {
-    
-    /* if val then */
-    CHECK_BOOL( l_val )
-    t_5 = (Obj)(UInt)(l_val != False);
-    if ( t_5 ) {
-     
-     /* nfilt := nfilt and attr; */
-     if ( l_nfilt == False ) {
-      t_5 = l_nfilt;
-     }
-     else if ( l_nfilt == True ) {
-      CHECK_BOOL( l_attr )
-      t_5 = l_attr;
-     }
-     else {
-      CHECK_FUNC( l_nfilt )
-      CHECK_FUNC( l_attr )
-      t_5 = NewAndFilter( l_nfilt, l_attr );
-     }
-     l_nfilt = t_5;
-     
-    }
-    
-    /* else */
-    else {
-     
-     /* nfilt := nfilt and Tester( attr ); */
-     if ( l_nfilt == False ) {
-      t_5 = l_nfilt;
-     }
-     else if ( l_nfilt == True ) {
-      t_7 = GF_Tester;
-      t_6 = CALL_1ARGS( t_7, l_attr );
-      CHECK_FUNC_RESULT( t_6 )
-      CHECK_BOOL( t_6 )
-      t_5 = t_6;
-     }
-     else {
-      CHECK_FUNC( l_nfilt )
-      t_8 = GF_Tester;
-      t_7 = CALL_1ARGS( t_8, l_attr );
-      CHECK_FUNC_RESULT( t_7 )
-      CHECK_FUNC( t_7 )
-      t_5 = NewAndFilter( l_nfilt, t_7 );
-     }
-     l_nfilt = t_5;
-     
-    }
-    /* fi */
-    
-   }
-   
-   /* elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12 then */
-   else {
-    t_7 = GF_LEN__LIST;
-    t_9 = GF_METHODS__OPERATION;
-    t_11 = GF_Setter;
-    t_10 = CALL_1ARGS( t_11, l_attr );
-    CHECK_FUNC_RESULT( t_10 )
-    t_8 = CALL_2ARGS( t_9, t_10, INTOBJ_INT(2) );
-    CHECK_FUNC_RESULT( t_8 )
-    t_6 = CALL_1ARGS( t_7, t_8 );
-    CHECK_FUNC_RESULT( t_6 )
-    t_5 = (Obj)(UInt)( ! EQ( t_6, INTOBJ_INT(12) ));
-    if ( t_5 ) {
-     
-     /* ADD_LIST( extra, attr ); */
-     t_5 = GF_ADD__LIST;
-     CALL_2ARGS( t_5, l_extra, l_attr );
-     
-     /* ADD_LIST( extra, val ); */
-     t_5 = GF_ADD__LIST;
-     CALL_2ARGS( t_5, l_extra, l_val );
-     
-    }
-    
-    /* else */
-    else {
-     
-     /* obj!.(NAME_FUNC( attr )) := IMMUTABLE_COPY_OBJ( val ); */
-     t_6 = GF_NAME__FUNC;
-     t_5 = CALL_1ARGS( t_6, l_attr );
-     CHECK_FUNC_RESULT( t_5 )
-     t_7 = GF_IMMUTABLE__COPY__OBJ;
-     t_6 = CALL_1ARGS( t_7, l_val );
-     CHECK_FUNC_RESULT( t_6 )
-     if ( TNUM_OBJ(l_obj) == T_COMOBJ ) {
-      AssPRec( l_obj, RNamObj(t_5), t_6 );
-#ifdef HPCGAP
-     } else if ( TNUM_OBJ(l_obj) == T_ACOMOBJ ) {
-      AssARecord( l_obj, RNamObj(t_5), t_6 );
-#endif
-     }
-     else {
-      ASS_REC( l_obj, RNamObj(t_5), t_6 );
-     }
-     
-     /* nfilt := nfilt and Tester( attr ); */
-     if ( l_nfilt == False ) {
-      t_5 = l_nfilt;
-     }
-     else if ( l_nfilt == True ) {
-      t_7 = GF_Tester;
-      t_6 = CALL_1ARGS( t_7, l_attr );
-      CHECK_FUNC_RESULT( t_6 )
-      CHECK_BOOL( t_6 )
-      t_5 = t_6;
-     }
-     else {
-      CHECK_FUNC( l_nfilt )
-      t_8 = GF_Tester;
-      t_7 = CALL_1ARGS( t_8, l_attr );
-      CHECK_FUNC_RESULT( t_7 )
-      CHECK_FUNC( t_7 )
-      t_5 = NewAndFilter( l_nfilt, t_7 );
-     }
-     l_nfilt = t_5;
-     
-    }
-   }
-   /* fi */
-   
-  }
-  /* od */
-  
-  /* nflags := FLAGS_FILTER( nfilt ); */
-  t_2 = GF_FLAGS__FILTER;
-  t_1 = CALL_1ARGS( t_2, l_nfilt );
-  CHECK_FUNC_RESULT( t_1 )
-  l_nflags = t_1;
-  
-  /* if not IS_SUBSET_FLAGS( flags, nflags ) then */
-  t_4 = GF_IS__SUBSET__FLAGS;
-  t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
-  CHECK_FUNC_RESULT( t_3 )
-  CHECK_BOOL( t_3 )
-  t_2 = (Obj)(UInt)(t_3 != False);
-  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
-  if ( t_1 ) {
-   
-   /* flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) ); */
-   t_2 = GF_WITH__IMPS__FLAGS;
-   t_4 = GF_AND__FLAGS;
-   t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
-   CHECK_FUNC_RESULT( t_3 )
-   t_1 = CALL_1ARGS( t_2, t_3 );
-   CHECK_FUNC_RESULT( t_1 )
-   l_flags = t_1;
-   
-   /* ChangeTypeObj( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ) ), obj ); */
-   t_1 = GF_ChangeTypeObj;
-   t_3 = GF_NEW__TYPE;
-   t_4 = GC_TypeOfTypes;
-   CHECK_BOUND( t_4, "TypeOfTypes" )
-   t_6 = GF_FamilyType;
-   t_5 = CALL_1ARGS( t_6, l_type );
-   CHECK_FUNC_RESULT( t_5 )
-   t_7 = GF_DataType;
-   t_6 = CALL_1ARGS( t_7, l_type );
-   CHECK_FUNC_RESULT( t_6 )
-   t_2 = CALL_4ARGS( t_3, t_4, t_5, l_flags, t_6 );
-   CHECK_FUNC_RESULT( t_2 )
-   CALL_2ARGS( t_1, t_2, l_obj );
-   
-  }
-  /* fi */
-  
-  /* for i in [ 2, 4 .. LEN_LIST( extra ) ] do */
-  t_6 = GF_LEN__LIST;
-  t_5 = CALL_1ARGS( t_6, l_extra );
-  CHECK_FUNC_RESULT( t_5 )
-  t_4 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), t_5 );
-  if ( IS_SMALL_LIST(t_4) ) {
-   t_3 = (Obj)(UInt)1;
-   t_1 = INTOBJ_INT(1);
-  }
-  else {
-   t_3 = (Obj)(UInt)0;
-   t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
-  }
-  while ( 1 ) {
-   if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
-    t_1 = (Obj)(((UInt)t_1)+4);
-    if ( t_2 == 0 )  continue;
-   }
-   else {
-    if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
-    t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
-   }
-   l_i = t_2;
-   
-   /* Setter( extra[i - 1] )( obj, extra[i] ); */
-   t_6 = GF_Setter;
-   C_DIFF_FIA( t_8, l_i, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_extra, t_8 )
-   t_5 = CALL_1ARGS( t_6, t_7 );
-   CHECK_FUNC_RESULT( t_5 )
-   CHECK_FUNC( t_5 )
-   CHECK_INT_POS( l_i )
-   C_ELM_LIST_FPL( t_6, l_extra, l_i )
-   CALL_2ARGS( t_5, l_obj, t_6 );
-   
-  }
-  /* od */
-  
- }
- 
- /* else */
- else {
-  
-  /* extra := arg; */
-  l_extra = a_arg;
-  
-  /* for i in [ 2, 4 .. LEN_LIST( extra ) ] do */
-  t_6 = GF_LEN__LIST;
-  t_5 = CALL_1ARGS( t_6, l_extra );
-  CHECK_FUNC_RESULT( t_5 )
-  t_4 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), t_5 );
-  if ( IS_SMALL_LIST(t_4) ) {
-   t_3 = (Obj)(UInt)1;
-   t_1 = INTOBJ_INT(1);
-  }
-  else {
-   t_3 = (Obj)(UInt)0;
-   t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
-  }
-  while ( 1 ) {
-   if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
-    t_1 = (Obj)(((UInt)t_1)+4);
-    if ( t_2 == 0 )  continue;
-   }
-   else {
-    if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
-    t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
-   }
-   l_i = t_2;
-   
-   /* Setter( extra[i] )( obj, extra[i + 1] ); */
-   t_6 = GF_Setter;
-   CHECK_INT_POS( l_i )
-   C_ELM_LIST_FPL( t_7, l_extra, l_i )
-   t_5 = CALL_1ARGS( t_6, t_7 );
-   CHECK_FUNC_RESULT( t_5 )
-   CHECK_FUNC( t_5 )
-   C_SUM_FIA( t_7, l_i, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_7 )
-   C_ELM_LIST_FPL( t_6, l_extra, t_7 )
-   CALL_2ARGS( t_5, l_obj, t_6 );
-   
-  }
-  /* od */
-  
- }
- /* fi */
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 33 */
-static Obj  HdlrFunc33 (
+/* handler for function 31 */
+static Obj  HdlrFunc31 (
  Obj  self,
  Obj  a_arg )
 {
@@ -4410,41 +3914,6 @@ static Obj  HdlrFunc1 (
  CHECK_BOUND( t_3, "SetTypeObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
-      if not IsType( type ) then
-          Error( "<type> must be a type" );
-      fi;
-      if IS_POSOBJ( obj ) then
-          SET_TYPE_POSOBJ( obj, type );
-      elif IS_COMOBJ( obj ) then
-          SET_TYPE_COMOBJ( obj, type );
-      elif IS_DATOBJ( obj ) then
-          SET_TYPE_DATOBJ( obj, type );
-      fi;
-      if not IsNoImmediateMethodsObject( obj ) then
-          RunImmediateMethods( obj, type![2] );
-      fi;
-      return obj;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "ChangeTypeObj" );
- t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 656);
- SET_ENDLINE_BODY(t_4, 671);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* BIND_GLOBAL( "ReObjectify", ChangeTypeObj ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "ReObjectify" );
- t_3 = GC_ChangeTypeObj;
- CHECK_BOUND( t_3, "ChangeTypeObj" )
- CALL_2ARGS( t_1, t_2, t_3 );
- 
  /* Unbind( SetFilterObj ); */
  AssGVar( G_SetFilterObj, 0 );
  
@@ -4486,11 +3955,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
- t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 695);
- SET_ENDLINE_BODY(t_4, 733);
+ SET_STARTLINE_BODY(t_4, 664);
+ SET_ENDLINE_BODY(t_4, 702);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4528,11 +3997,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[30], 2, 0, HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 755);
- SET_ENDLINE_BODY(t_4, 777);
+ SET_STARTLINE_BODY(t_4, 724);
+ SET_ENDLINE_BODY(t_4, 746);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4555,64 +4024,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFeatureObj" );
- t_3 = NewFunction( NameFunc[31], 3, 0, HdlrFunc31 );
+ t_3 = NewFunction( NameFunc[30], 3, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 793);
- SET_ENDLINE_BODY(t_4, 799);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
- /* BIND_GLOBAL( "SetMultipleAttributes", function ( arg... )
-      local obj, type, flags, attr, val, i, extra, nfilt, nflags;
-      obj := arg[1];
-      if IsAttributeStoringRep( obj ) then
-          extra := [  ];
-          type := TypeObj( obj );
-          flags := FlagsType( type );
-          nfilt := IS_OBJECT;
-          for i in [ 2, 4 .. LEN_LIST( arg ) - 1 ] do
-              attr := arg[i];
-              val := arg[i + 1];
-              if 0 <> FLAG1_FILTER( attr ) then
-                  if val then
-                      nfilt := nfilt and attr;
-                  else
-                      nfilt := nfilt and Tester( attr );
-                  fi;
-              elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2 ) ) <> 12 then
-                  ADD_LIST( extra, attr );
-                  ADD_LIST( extra, val );
-              else
-                  obj!.(NAME_FUNC( attr )) := IMMUTABLE_COPY_OBJ( val );
-                  nfilt := nfilt and Tester( attr );
-              fi;
-          od;
-          nflags := FLAGS_FILTER( nfilt );
-          if not IS_SUBSET_FLAGS( flags, nflags ) then
-              flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
-              ChangeTypeObj( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ) ), obj );
-          fi;
-          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
-              Setter( extra[i - 1] )( obj, extra[i] );
-          od;
-      else
-          extra := arg;
-          for i in [ 2, 4 .. LEN_LIST( extra ) ] do
-              Setter( extra[i] )( obj, extra[i + 1] );
-          od;
-      fi;
-      return;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SetMultipleAttributes" );
- t_3 = NewFunction( NameFunc[32], -1, 0, HdlrFunc32 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 820);
- SET_ENDLINE_BODY(t_4, 872);
+ SET_STARTLINE_BODY(t_4, 762);
+ SET_ENDLINE_BODY(t_4, 768);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4687,11 +4103,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[33], -1, 0, HdlrFunc33 );
+ t_3 = NewFunction( NameFunc[31], -1, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 919);
- SET_ENDLINE_BODY(t_4, 984);
+ SET_STARTLINE_BODY(t_4, 816);
+ SET_ENDLINE_BODY(t_4, 881);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4795,17 +4211,16 @@ static Int PostRestore ( StructInitInfo * module )
  G_IsAtomicPositionalObjectRep = GVarName( "IsAtomicPositionalObjectRep" );
  G_IsReadOnlyPositionalObjectRep = GVarName( "IsReadOnlyPositionalObjectRep" );
  G_SetTypeObj = GVarName( "SetTypeObj" );
- G_ChangeTypeObj = GVarName( "ChangeTypeObj" );
  G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_ResetFilterObj = GVarName( "ResetFilterObj" );
- G_Tester = GVarName( "Tester" );
- G_Setter = GVarName( "Setter" );
- G_FamilyType = GVarName( "FamilyType" );
  G_Ignore = GVarName( "Ignore" );
  G_MAKE__READ__WRITE__GLOBAL = GVarName( "MAKE_READ_WRITE_GLOBAL" );
  G_IsAttributeStoringRepFlags = GVarName( "IsAttributeStoringRepFlags" );
  G_INFO__OWA = GVarName( "INFO_OWA" );
  G_Objectify = GVarName( "Objectify" );
+ G_Tester = GVarName( "Tester" );
+ G_Setter = GVarName( "Setter" );
+ G_FamilyType = GVarName( "FamilyType" );
  
  /* record names used in handlers */
  R_TYPES__LIST__FAM = RNamName( "TYPES_LIST_FAM" );
@@ -4848,8 +4263,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[29] = 0;
  NameFunc[30] = 0;
  NameFunc[31] = 0;
- NameFunc[32] = 0;
- NameFunc[33] = 0;
  
  /* return success */
  return 0;
@@ -4905,7 +4318,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
  InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
  InitCopyGVar( "IsAttributeStoringRep", &GC_IsAttributeStoringRep );
- InitFopyGVar( "IsAttributeStoringRep", &GF_IsAttributeStoringRep );
  InitCopyGVar( "GETTER_FLAGS", &GC_GETTER__FLAGS );
  InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
  InitCopyGVar( "SetFilterObj", &GC_SetFilterObj );
@@ -4947,19 +4359,17 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "IsAtomicPositionalObjectRep", &GC_IsAtomicPositionalObjectRep );
  InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
  InitCopyGVar( "SetTypeObj", &GC_SetTypeObj );
- InitCopyGVar( "ChangeTypeObj", &GC_ChangeTypeObj );
- InitFopyGVar( "ChangeTypeObj", &GF_ChangeTypeObj );
  InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
  InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
- InitFopyGVar( "Tester", &GF_Tester );
- InitFopyGVar( "Setter", &GF_Setter );
- InitFopyGVar( "FamilyType", &GF_FamilyType );
  InitCopyGVar( "Ignore", &GC_Ignore );
  InitFopyGVar( "MAKE_READ_WRITE_GLOBAL", &GF_MAKE__READ__WRITE__GLOBAL );
  InitCopyGVar( "IsAttributeStoringRepFlags", &GC_IsAttributeStoringRepFlags );
  InitFopyGVar( "INFO_OWA", &GF_INFO__OWA );
  InitFopyGVar( "Objectify", &GF_Objectify );
+ InitFopyGVar( "Tester", &GF_Tester );
+ InitFopyGVar( "Setter", &GF_Setter );
+ InitFopyGVar( "FamilyType", &GF_FamilyType );
  
  /* information for the functions */
  InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName("FILE_CRC")" );
@@ -5025,10 +4435,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -5067,7 +4473,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -2276314,
+ /* crc         = */ -96523708,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
