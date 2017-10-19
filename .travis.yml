@@ -94,8 +94,8 @@ matrix:
     # run bugfix regression tests
     - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
 
-    # test error reporting (quickest job in this test suite)
-    - env: TEST_SUITE=testerror CONFIGFLAGS="--enable-debug"
+    # test error reporting and compiling (quickest job in this test suite)
+    - env: TEST_SUITE=testspecial CONFIGFLAGS="--enable-debug"
 
 script:
   - gcov --version

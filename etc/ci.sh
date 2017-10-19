@@ -28,10 +28,12 @@ then
     exit 0
 fi
 
-if [[ "${TEST_SUITE}" == testerror ]]
+if [[ "${TEST_SUITE}" == testspecial ]]
 then
     cd $SRCDIR/tst/test-error
     ./run_error_tests.sh
+    cd ../test-compile
+    ./run_compile_tests.sh
     exit 0
 fi
 
