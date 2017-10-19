@@ -2057,7 +2057,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
         return INTOBJ_INT(0);
     }
     else {
-        return FuncHANDLE_OBJ(self, o);
+        return QuoInt(FuncHANDLE_OBJ(self, o), INTOBJ_INT(sizeof(Obj)));
     }
 #else
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
