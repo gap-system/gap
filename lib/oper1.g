@@ -560,6 +560,10 @@ InstallAttributeFunction(
             fi;
         od;
 
+        # Because the getter function may be called from other
+        # threads, <props> needs to be immutable or atomic.
+        MakeImmutable(props);
+
         if 0 < LEN_LIST( props ) then
 
           # It might be that an object fits to the *first* declaration

@@ -1151,7 +1151,7 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
 
 
 BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, setter, tester, rank;
+    local   name, filter, flags, mutflag, getter, rank;
 
     # construct getter, setter and tester
     name   := arg[1];
@@ -1179,7 +1179,7 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     STORE_OPER_FLAGS(getter, [ flags ]);
 
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
-    # store the information about the filtera
+
     # And return the getter
     return getter;
 end );
