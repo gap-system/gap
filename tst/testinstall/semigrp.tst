@@ -481,6 +481,24 @@ s3*s1
 gap> Random(GlobalRandomSource, S);
 s3*s2^2
 
+#T# Test DisplaySemigroup
+gap> DisplaySemigroup(FullTransformationSemigroup(1));
+Rank 0: *[H size = 1, 1 L-class, 1 R-class]
+gap> DisplaySemigroup(FullTransformationSemigroup(2));
+Rank 2: *[H size = 2, 1 L-class, 1 R-class]
+Rank 1: *[H size = 1, 2 L-classes, 1 R-class]
+gap> DisplaySemigroup(FullTransformationSemigroup(3));
+Rank 3: *[H size = 6, 1 L-class, 1 R-class]
+Rank 2: *[H size = 2, 3 L-classes, 3 R-classes]
+Rank 1: *[H size = 1, 3 L-classes, 1 R-class]
+gap> S := Semigroup([
+>  Transformation([1, 1, 1, 2]),
+>  Transformation([1, 1, 2, 1])]);;
+gap> DisplaySemigroup(S);
+Rank 2:  [H size = 1, 1 L-class, 1 R-class]
+Rank 2:  [H size = 1, 1 L-class, 1 R-class]
+Rank 1: *[H size = 1, 1 L-class, 1 R-class]
+
 #
 gap> STOP_TEST( "semigrp.tst", 1);
 

@@ -537,24 +537,26 @@ DeclareProperty("IsInverseSemigroup", IsSemigroup);
 ##
 #O  DisplaySemigroup( <S> )
 ##
+##  <#GAPDoc Label="DisplaySemigroup">
 ##  <ManSection>
 ##  <Oper Name="DisplaySemigroup" Arg='S'/>
 ##
 ##  <Description>
-##  Produces a convenient display of a semigroup's DClass
-##  structure.   Let <A>S</A> have degree <M>n</M>.   Then for each <M>r\leq n</M>, we
-##  show all D classes of rank <M>n</M>.   
+##  Produces a convenient display of a transformation semigroup's D-Class
+##  structure.   Let <A>S</A> be a transformation semigroup of degree
+##  <M>n</M>. Then for each <M>r\leq n</M>, we show all D-classes of
+##  rank <M>r</M>.   
 ##  <P/>
-##  A regular D class with a single H class of size 120 appears as
-##  <Example><![CDATA[
-##  *[H size = 120, 1 L classes, 1 R classes] 
-##  ]]></Example>
+##  A regular D-class with a single H-class of size 120 appears as
+##  <Log><![CDATA[
+##  *[H size = 120, 1 L-class, 1 R-class] 
+##  ]]></Log>
 ##  (the <C>*</C> denoting regularity).
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareOperation("DisplaySemigroup", 
-    [IsSemigroup]);
+DeclareOperation("DisplaySemigroup", [IsSemigroup]);
 
 # Everything from here...
 
