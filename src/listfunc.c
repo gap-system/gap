@@ -49,6 +49,9 @@
 #include <src/hpc/guards.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */
 
+#include <src/blister.h>
+
+
 #include <string.h>
 #include <stdlib.h> 
 
@@ -1729,6 +1732,63 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 
 }
 
+
+Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
+{
+    if (!IS_NONNEG_INTOBJ(n)) {
+        ErrorQuit("<n> must be a non-negative integer (not a %s)",
+                  (Int)TNAM_OBJ(n), 0L);
+    }
+
+    Obj  list = 0;
+    Int  len = INT_INTOBJ(n);
+    UInt tnum = TNUM_OBJ(obj);
+
+    if (tnum == T_CHAR) {
+        list = NEW_STRING(len);
+        memset(CHARS_STRING(list), CHAR_VALUE(obj), len);
+    }
+    else if (obj == True || obj == False) {
+        list = NewBag(T_BLIST, SIZE_PLEN_BLIST(len));
+        SET_LEN_BLIST(list, len);
+        if (obj == True) {
+            UInt * ptrBlist = BLOCKS_BLIST(list);
+            for (; len >= BIPEB; len -= BIPEB)
+                *ptrBlist++ = ~(UInt)0;
+            if (len > 0)
+                *ptrBlist |= (1UL << len) - 1;
+        }
+    }
+    else if (len == 0) {
+        list = NEW_PLIST(T_PLIST_EMPTY, 0);
+    }
+    else {
+        switch (tnum) {
+        case T_INT:
+        case T_INTPOS:
+        case T_INTNEG:
+        case T_RAT:
+        case T_CYC:
+            tnum = T_PLIST_CYC;
+            break;
+        case T_FFE:
+            tnum = T_PLIST_FFE;
+            break;
+        default:
+            tnum = T_PLIST_HOM;
+            break;
+        }
+        list = NEW_PLIST(tnum, len);
+        for (int i = 1; i <= len; i++) {
+            SET_ELM_PLIST(list, i, obj);
+        }
+        CHANGED_BAG(list);
+        SET_LEN_PLIST(list, len);
+    }
+
+    return list;
+}
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -1780,6 +1840,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(OnLeftInverse, 2, "pnt, elm"),
     GVAR_FUNC(COPY_LIST_ENTRIES, -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
     GVAR_FUNC(STRONGLY_CONNECTED_COMPONENTS_DIGRAPH, 1, "digraph"),
+    GVAR_FUNC(LIST_WITH_IDENTICAL_ENTRIES, 2, "n, obj"),
     { 0, 0, 0, 0, 0 }
 
 };
