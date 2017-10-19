@@ -5,7 +5,6 @@
 ##
 ReadLib( "hpc/thread1.g" );
 ReadLib( "filter.g"    );
-ReadLib( "filter1.g"   );
 ReadLib( "oper.g"      );
 ReadLib( "oper1.g"     );
 ReadLib( "type.g"      );

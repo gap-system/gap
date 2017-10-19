@@ -9,8 +9,7 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file deals with filters. Some speed-critical functions are in 
-##  filter1.g, which is compiled
+##  This file deals with filters.
 ##
 
 #############################################################################
@@ -332,6 +331,32 @@ BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,30));
 ##  `CanonicalBasis'.
 ##
 BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
+
+
+#############################################################################
+##
+#F  RankFilter( <filter> )  . . . . . . . . . . . . . . . .  rank of a filter
+##
+##  Compute the rank including the hidden implications.
+##
+BIND_GLOBAL( "RankFilter", function( filter )
+    local   rank,  flags,  i;
+
+    rank  := 0;
+    if IS_FUNCTION(filter)  then
+        flags := FLAGS_FILTER(filter);
+    else
+        flags := filter;
+    fi;
+    for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
+        if IsBound(RANK_FILTERS[i])  then
+            rank := rank + RANK_FILTERS[i];
+        else
+            rank := rank + 1;
+        fi;
+    od;
+    return rank;
+end );
 
 
 #############################################################################

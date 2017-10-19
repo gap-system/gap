@@ -116,7 +116,6 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  field.gi
  files.gd
  files.gi
- filter1.g
  filter.g
  flag.g
  fldabnum.gd  Cyclotomics  Thomas Breuer
