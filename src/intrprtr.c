@@ -4533,7 +4533,7 @@ void            IntrInfoBegin( void )
 
 }
 
-static Obj InfoDecision;
+Obj InfoDecision;
 static Obj InfoDecisionFast;
 static Obj IsInfoClassListRep;
 
