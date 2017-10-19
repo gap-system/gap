@@ -151,20 +151,16 @@ BIND_GLOBAL( "OPERATIONS", [] );
 BIND_GLOBAL( "OPER_FLAGS", rec() );
 BIND_GLOBAL( "STORE_OPER_FLAGS",
 function(oper, flags)
-  local nr, flist, locs;
+  local nr, info;
   nr := MASTER_POINTER_NUMBER(oper);
-  if IsBound(OPER_FLAGS.(nr)) then
-    flist := OPER_FLAGS.(nr)[2];
-    locs := OPER_FLAGS.(nr)[3];
-  else
+  if not IsBound(OPER_FLAGS.(nr)) then
+    # we need a back link to oper for the post-restore function
+    OPER_FLAGS.(nr) := [oper, [], []];
     ADD_LIST(OPERATIONS, oper);
-    flist := [];
-    locs := [];
   fi;
-  ADD_LIST(flist, flags);
-  ADD_LIST(locs, [INPUT_FILENAME(), INPUT_LINENUMBER()]);
-  # we need a back link to oper for the post-restore function
-  OPER_FLAGS.(nr) := [oper, flist, locs];
+  info := OPER_FLAGS.(nr);
+  ADD_LIST(info[2], MakeImmutable(flags));
+  ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]));
 end);
 
 BIND_GLOBAL( "GET_OPER_FLAGS", function(oper)
@@ -192,7 +188,7 @@ ADD_LIST(GAPInfo.PostRestoreFuncs, function()
     ADD_LIST(tmp, OPER_FLAGS.(a));
     Unbind(OPER_FLAGS.(a));
   od;
-  for a in tmp do 
+  for a in tmp do
     OPER_FLAGS.(MASTER_POINTER_NUMBER(a[1])) := a;
   od;
 end);
@@ -1006,7 +1002,8 @@ BIND_GLOBAL( "RUN_ATTR_FUNCS",
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
-    ADD_LIST( ATTRIBUTES, [ name, filter, getter, setter, tester, mutflag ] );
+    ADD_LIST( ATTRIBUTES,
+        MakeImmutable( [ name, filter, getter, setter, tester, mutflag ] ) );
 end );
 
 
