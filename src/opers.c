@@ -802,7 +802,7 @@ Obj FuncAND_FLAGS (
 
 Obj HIDDEN_IMPS;
 Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
-static const Int hidden_imps_cache_length = 2003;
+enum { HIDDEN_IMPS_CACHE_LENGTH = 2003 };
 
 /* Forward declaration of FuncFLAGS_FILTER */
 Obj FuncFLAGS_FILTER(Obj self, Obj oper);
@@ -841,7 +841,7 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 #ifdef HPCGAP
   RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
-  for(i = 1; i < hidden_imps_cache_length * 2 - 1; i += 2)
+  for(i = 1; i < HIDDEN_IMPS_CACHE_LENGTH * 2 - 1; i += 2)
   {
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
        FuncIS_SUBSET_FLAGS(0, ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags) == True)
@@ -865,7 +865,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     Int changed, i;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
-    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % hidden_imps_cache_length;
+    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
     Int hash = base_hash;
     Int hash_loop = 0;
     Obj cacheval;
@@ -893,7 +893,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #endif
         return ret;
       }
-      hash = (hash * 311 + 61) % hidden_imps_cache_length;
+      hash = (hash * 311 + 61) % HIDDEN_IMPS_CACHE_LENGTH;
     }
     
     changed = 1;
@@ -934,7 +934,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       {
         new_flags = old_flags;
         new_with = old_with;
-        hash = (hash * 311 + 61) % hidden_imps_cache_length;
+        hash = (hash * 311 + 61) % HIDDEN_IMPS_CACHE_LENGTH;
       }
     }
     
@@ -6367,8 +6367,8 @@ static Int InitLibrary (
 {
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
-    WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, hidden_imps_cache_length * 2);
-    SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hidden_imps_cache_length * 2);
+    WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, HIDDEN_IMPS_CACHE_LENGTH * 2);
+    SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, HIDDEN_IMPS_CACHE_LENGTH * 2);
 
 #ifdef HPCGAP
     REGION(HIDDEN_IMPS) = NewRegion();
