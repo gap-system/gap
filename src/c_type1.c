@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "49519056"
+#define FILE_CRC  "-2276314"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -5067,7 +5067,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 49519056,
+ /* crc         = */ -2276314,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

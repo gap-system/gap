@@ -565,7 +565,7 @@ end );
 ##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
 ##  lies in the filter <A>args-filts</A><M>[i]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
@@ -608,19 +608,95 @@ end );
 ##  <Ref Func="NewConstructor"/> returns a constructor <A>cons</A> with name
 ##  <A>name</A>.
 ##  The list <A>args-filts</A> describes requirements about the arguments
-##  of <A>constr</A>, namely the number of arguments must be equal to the length
-##  of <A>args-filts</A>, and the <M>i</M>-th argument must lie in the filter
-##  <A>args-filts</A><M>[i]</M>. Additionally a constructor expects the first
-##  argument to be a filter to then select a method to construct an object.
+##  of <A>cons</A>. Namely the number of arguments must be equal to the length
+##  of <A>args-filts</A>, and the <M>i</M>-th argument
+##  must lie in the filter <A>args-filts</A><M>[i]</M> for <M>i \neq 1</M>.
+##  A constructor expects the first argument to be a <E>filter</E> instead
+##  of an object and it must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
 ##  Each method that is installed for <A>cons</A> via
-##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
-##  lies in the filter <A>args-filts</A><M>[i]</M>.
+##  <Ref Func="InstallMethod"/> must require that
+##  the <M>i</M>-th argument lies in the filter <A>args-filts</A><M>[i]</M>
+##  for <M>i \neq 1</M>.
+##  Its first argument is a filter and must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
+##  <P/>
+##  Note that the method selection for constructors works slightly differently
+##  than for usual operations.
+##  As stated above, applicabilty to the first argument in an argument tuple
+##  is tested by determining whether the argument-filter is a <E>subset</E> of
+##  <A>args-filts</A><M>[1]</M>.
+##  <P/>
+##  The rank of a method installed for a constructor is determined solely by
+##  <A>args-filts</A><M>[1]</M> of the method.
+##  Instead of taking the sum of the ranks of filters involved in its
+##  <A>args-filts</A><M>[1]</M>, the sum of <M>-1</M> times these values
+##  is taken.
+##  The result is added to the number <A>val</A> used in the call of
+##  <Ref Func="InstallMethod"/>.
+##  <P/>
+##  This has the following effects on the method selection for constructors.
+##  If <A>cons</A> is called with an argument tuple whose first argument is
+##  the filter <A>filt</A>, any method whose first argument is
+##  <E>more</E> specific than <A>filt</A> is applicable
+##  (if its other <A>args-filts</A> also match).
+##  Then the method with the <Q>most general</Q> filter <A>args-filts</A><M>[1]</M>
+##  is chosen, since the rank is computed by taking <M>-1</M> times the ranks
+##  of the involved filters.
+##  Thus, a constructor is chosen which returns an object in <A>filt</A> using
+##  as few extra filters as possible, which presumably is both more flexible
+##  to use and easier to construct.
+##  <P/>
+##  The following example showcases this behaviour.
+##  Note that the argument <A>filter</A> is only used for method dispatch.
+##  <Log><![CDATA[
+##  DeclareFilter( "IsMyObj" );
+##  DeclareFilter( "IsMyFilter" );
+##  DeclareFilter( "IsMyOtherFilter" );
+##  BindGlobal( "MyFamily", NewFamily( "MyFamily" ) );
+##  
+##  DeclareConstructor( "NewMyObj", [ IsMyObj ] );
+##  
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj ],
+##  function( filter )
+##      local type;
+##      Print("General constructor\n");
+##      type := NewType( MyFamily, IsMyObj );
+##      return Objectify( type, [] );
+##  end );
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj and IsMyFilter and IsMyOtherFilter ],
+##  function( filter )
+##      local type;
+##      Print("Special constructor\n");
+##      type := NewType( MyFamily, IsMyObj and IsMyFilter and IsMyOtherFilter );
+##      return Objectify( type, [] );
+##  end );
+##  ]]></Log>
+##  If only IsMyObj is given, both methods are applicable and the general
+##  constructor is called.
+##  If also IsMyFilter is given, only the special constructor is applicable.
+##  <Log><![CDATA[
+##  gap> a := NewMyObj( IsMyObj );;
+##  General constructor
+##  gap> IsMyOtherFilter(a);
+##  false
+##  gap> b := NewMyObj( IsMyObj and IsMyFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(b);
+##  true
+##  gap> c := NewMyObj( IsMyObj and IsMyFilter and IsMyOtherFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(c);
+##  true
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -801,6 +877,10 @@ end );
 ##  <Description>
 ##  does the same as <Ref Func="NewConstructor"/> and
 ##  additionally makes the variable <A>name</A> read-only.
+##  <P/>
+##  Note that for operations which are constructors special rules with respect
+##  to applicability and rank of the corresponding methods apply
+##  (see section <Ref Func="NewConstructor"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1084,7 +1164,7 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
 
 
 BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, setter, tester, rank;
+    local   name, filter, flags, mutflag, getter, rank;
 
     # construct getter, setter and tester
     name   := arg[1];
@@ -1104,49 +1184,19 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         getter := NEW_ATTRIBUTE( name );
     fi;
+    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
+        rank := arg[3];
+    else
+        rank := 1;
+    fi;
 
-    # store the information about the filter
-    atomic FILTER_REGION do
-        INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
-    od;
-
-    # add getter, setter and tester to the list of operations
-    setter := SETTER_FILTER( getter );
-    tester := TESTER_FILTER( getter );
-
-    atomic readwrite OPERATIONS_REGION do
+    atomic FILTER_REGION, OPERATIONS_REGION do
     ADD_LIST( OPERATIONS, getter );
     ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    od;
-    
-    # install the default functions
-    atomic FILTER_REGION do
-	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    od;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-
-    # the <tester> is newly made, therefore  the cache cannot contain a  flag
-    # list involving <tester>
-    InstallHiddenTrueMethod( filter, tester );
-    # CLEAR_HIDDEN_IMP_CACHE();
-
-    # run the attribute functions
-    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
-
-    # store the rank
-    atomic FILTER_REGION do
-	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
-	else
-	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-	fi;
+    OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
     od;
 
-    # and return the getter
+    # And return the getter
     return getter;
 end );
 

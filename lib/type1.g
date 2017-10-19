@@ -230,7 +230,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
                         return cached;
                     fi;
                 fi;
-                # if there is a parent type, make sure the any extra data in it
+                # if there is a parent type, make sure that any extra data in it
                 # matches what is in the cache
                 if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then
                     match := true;
