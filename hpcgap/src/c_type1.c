@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-60384578"
+#define FILE_CRC  "-120993155"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -192,10 +192,6 @@ static GVar G_TypeObj;
 static Obj  GF_TypeObj;
 static GVar G_DataType;
 static Obj  GF_DataType;
-static GVar G_IsNoImmediateMethodsObject;
-static Obj  GF_IsNoImmediateMethodsObject;
-static GVar G_RunImmediateMethods;
-static Obj  GF_RunImmediateMethods;
 static GVar G_IsNonAtomicComponentObjectRep;
 static Obj  GC_IsNonAtomicComponentObjectRep;
 static GVar G_IsAtomicPositionalObjectRep;
@@ -207,6 +203,10 @@ static GVar G_IsAtomicPositionalObjectRepFlags;
 static Obj  GC_IsAtomicPositionalObjectRepFlags;
 static GVar G_IsNonAtomicComponentObjectRepFlags;
 static Obj  GC_IsNonAtomicComponentObjectRepFlags;
+static GVar G_IsNoImmediateMethodsObject;
+static Obj  GF_IsNoImmediateMethodsObject;
+static GVar G_RunImmediateMethods;
+static Obj  GF_RunImmediateMethods;
 static GVar G_IGNORE__IMMEDIATE__METHODS;
 static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_ResetFilterObj;
@@ -239,7 +239,7 @@ static RNam R_nTYPES;
 static RNam R_HASH__SIZE;
 
 /* information for the functions */
-static Obj  NameFunc[33];
+static Obj  NameFunc[32];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -2446,100 +2446,6 @@ static Obj  HdlrFunc27 (
  Obj  a_type,
  Obj  a_obj )
 {
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Bag oldFrame;
- OLD_BRK_CURR_STAT
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
- 
- /* if not IsType( type ) then */
- t_4 = GF_IsType;
- t_3 = CALL_1ARGS( t_4, a_type );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* Error( "<type> must be a type" ); */
-  t_1 = GF_Error;
-  t_2 = MakeString( "<type> must be a type" );
-  CALL_1ARGS( t_1, t_2 );
-  
- }
- /* fi */
- 
- /* if IS_LIST( obj ) then */
- t_3 = GF_IS__LIST;
- t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
- if ( t_1 ) {
-  
-  /* SET_TYPE_POSOBJ( obj, type ); */
-  t_1 = GF_SET__TYPE__POSOBJ;
-  CALL_2ARGS( t_1, a_obj, a_type );
-  
- }
- 
- /* elif IS_REC( obj ) then */
- else {
-  t_3 = GF_IS__REC;
-  t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
-  t_1 = (Obj)(UInt)(t_2 != False);
-  if ( t_1 ) {
-   
-   /* SET_TYPE_COMOBJ( obj, type ); */
-   t_1 = GF_SET__TYPE__COMOBJ;
-   CALL_2ARGS( t_1, a_obj, a_type );
-   
-  }
- }
- /* fi */
- 
- /* if not IsNoImmediateMethodsObject( obj ) then */
- t_4 = GF_IsNoImmediateMethodsObject;
- t_3 = CALL_1ARGS( t_4, a_obj );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* RunImmediateMethods( obj, type![2] ); */
-  t_1 = GF_RunImmediateMethods;
-  C_ELM_POSOBJ_NLE( t_2, a_type, 2 );
-  CALL_2ARGS( t_1, a_obj, t_2 );
-  
- }
- /* fi */
- 
- /* return obj; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return a_obj;
- 
- /* return; */
- RES_BRK_CURR_STAT();
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 28 */
-static Obj  HdlrFunc28 (
- Obj  self,
- Obj  a_type,
- Obj  a_obj )
-{
  Obj l_flags = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
@@ -2724,8 +2630,8 @@ static Obj  HdlrFunc28 (
  return 0;
 }
 
-/* handler for function 29 */
-static Obj  HdlrFunc29 (
+/* handler for function 28 */
+static Obj  HdlrFunc28 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -3001,8 +2907,8 @@ static Obj  HdlrFunc29 (
  return 0;
 }
 
-/* handler for function 30 */
-static Obj  HdlrFunc30 (
+/* handler for function 29 */
+static Obj  HdlrFunc29 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -3186,8 +3092,8 @@ static Obj  HdlrFunc30 (
  return 0;
 }
 
-/* handler for function 31 */
-static Obj  HdlrFunc31 (
+/* handler for function 30 */
+static Obj  HdlrFunc30 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter,
@@ -3234,8 +3140,8 @@ static Obj  HdlrFunc31 (
  return 0;
 }
 
-/* handler for function 32 */
-static Obj  HdlrFunc32 (
+/* handler for function 31 */
+static Obj  HdlrFunc31 (
  Obj  self,
  Obj  a_arg )
 {
@@ -4164,32 +4070,6 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "SetTypeObj", function ( type, obj )
-      if not IsType( type ) then
-          Error( "<type> must be a type" );
-      fi;
-      if IS_LIST( obj ) then
-          SET_TYPE_POSOBJ( obj, type );
-      elif IS_REC( obj ) then
-          SET_TYPE_COMOBJ( obj, type );
-      fi;
-      if not IsNoImmediateMethodsObject( obj ) then
-          RunImmediateMethods( obj, type![2] );
-      fi;
-      return obj;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SetTypeObj" );
- t_3 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 629);
- SET_ENDLINE_BODY(t_4, 642);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
  /* BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", FLAGS_FILTER( IsNonAtomicComponentObjectRep ) ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "IsNonAtomicComponentObjectRepFlags" );
@@ -4251,11 +4131,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Objectify" );
- t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
+ t_3 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 652);
- SET_ENDLINE_BODY(t_4, 681);
+ SET_STARTLINE_BODY(t_4, 636);
+ SET_ENDLINE_BODY(t_4, 665);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4302,11 +4182,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
- t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 703);
- SET_ENDLINE_BODY(t_4, 741);
+ SET_STARTLINE_BODY(t_4, 687);
+ SET_ENDLINE_BODY(t_4, 725);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4344,11 +4224,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[30], 2, 0, HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 763);
- SET_ENDLINE_BODY(t_4, 785);
+ SET_STARTLINE_BODY(t_4, 747);
+ SET_ENDLINE_BODY(t_4, 769);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4371,11 +4251,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFeatureObj" );
- t_3 = NewFunction( NameFunc[31], 3, 0, HdlrFunc31 );
+ t_3 = NewFunction( NameFunc[30], 3, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 801);
- SET_ENDLINE_BODY(t_4, 807);
+ SET_STARTLINE_BODY(t_4, 785);
+ SET_ENDLINE_BODY(t_4, 791);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4450,11 +4330,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[32], -1, 0, HdlrFunc32 );
+ t_3 = NewFunction( NameFunc[31], -1, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 855);
- SET_ENDLINE_BODY(t_4, 920);
+ SET_STARTLINE_BODY(t_4, 839);
+ SET_ENDLINE_BODY(t_4, 904);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4569,13 +4449,13 @@ static Int PostRestore ( StructInitInfo * module )
  G_FlagsType = GVarName( "FlagsType" );
  G_TypeObj = GVarName( "TypeObj" );
  G_DataType = GVarName( "DataType" );
- G_IsNoImmediateMethodsObject = GVarName( "IsNoImmediateMethodsObject" );
- G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
  G_IsNonAtomicComponentObjectRep = GVarName( "IsNonAtomicComponentObjectRep" );
  G_IsAtomicPositionalObjectRep = GVarName( "IsAtomicPositionalObjectRep" );
  G_IsReadOnlyPositionalObjectRep = GVarName( "IsReadOnlyPositionalObjectRep" );
  G_IsAtomicPositionalObjectRepFlags = GVarName( "IsAtomicPositionalObjectRepFlags" );
  G_IsNonAtomicComponentObjectRepFlags = GVarName( "IsNonAtomicComponentObjectRepFlags" );
+ G_IsNoImmediateMethodsObject = GVarName( "IsNoImmediateMethodsObject" );
+ G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
  G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_ResetFilterObj = GVarName( "ResetFilterObj" );
  G_Ignore = GVarName( "Ignore" );
@@ -4628,7 +4508,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[29] = 0;
  NameFunc[30] = 0;
  NameFunc[31] = 0;
- NameFunc[32] = 0;
  
  /* return success */
  return 0;
@@ -4736,14 +4615,14 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "FlagsType", &GF_FlagsType );
  InitFopyGVar( "TypeObj", &GF_TypeObj );
  InitFopyGVar( "DataType", &GF_DataType );
- InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
- InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
  InitCopyGVar( "IsNonAtomicComponentObjectRep", &GC_IsNonAtomicComponentObjectRep );
  InitCopyGVar( "IsAtomicPositionalObjectRep", &GC_IsAtomicPositionalObjectRep );
  InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
  InitFopyGVar( "IsReadOnlyPositionalObjectRep", &GF_IsReadOnlyPositionalObjectRep );
  InitCopyGVar( "IsAtomicPositionalObjectRepFlags", &GC_IsAtomicPositionalObjectRepFlags );
  InitCopyGVar( "IsNonAtomicComponentObjectRepFlags", &GC_IsNonAtomicComponentObjectRepFlags );
+ InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
+ InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
  InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
  InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
@@ -4820,8 +4699,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -4860,7 +4737,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -60384578,
+ /* crc         = */ -120993155,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

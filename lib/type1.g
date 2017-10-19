@@ -605,18 +605,25 @@ BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 
+BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags",
+        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
+BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
+        FLAGS_FILTER(IsAtomicPositionalObjectRep));
+BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags",
+        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+
 #############################################################################
 ##
-#F  SetTypeObj( <type>, <obj> )
+#F  Objectify( <type>, <obj> )
 ##
 ##  <ManSection>
-##  <Func Name="SetTypeObj" Arg='type, obj'/>
+##  <Func Name="Objectify" Arg='type, obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "SetTypeObj", function ( type, obj )
+BIND_GLOBAL( "Objectify", function ( type, obj )
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
@@ -630,16 +637,6 @@ BIND_GLOBAL( "SetTypeObj", function ( type, obj )
     fi;
     return obj;
 end );
-
-
-BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", 
-        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
-BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", 
-        FLAGS_FILTER(IsAtomicPositionalObjectRep));
-BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
-        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
-
-BIND_GLOBAL( "Objectify", SetTypeObj );
 
 
 #############################################################################
