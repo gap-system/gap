@@ -87,7 +87,22 @@ ReadLib( "objset.g" );
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 
-ReadLib( "hpc/tasks.g" );
+if IsBound(HPCGAP) then
+  ReadLib( "hpc/serialize.g" );
+  ReadLib( "hpc/thread.g" );
+  ReadLib( "hpc/smallrgn.g"  );
+  ReadLib( "hpc/altview.g" );
+
+  if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+    ReadLib( "hpc/tasks.g" );
+  else
+    ReadLib( "hpc/stdtasks.g" );
+  fi;
+
+  ReadLib( "hpc/actor.g" );
+else
+  ReadLib( "hpc/tasks.g" );
+fi;
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
