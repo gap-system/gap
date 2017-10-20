@@ -87,7 +87,7 @@ ReadLib( "hpc/thread.g" );
 ReadLib( "objset.g" );
 ReadLib( "hpc/smallrgn.g"  );
 
-if not IsBound(MPI_Initialized) and not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+if not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "hpc/stdtasks.g" );
 fi;
 
@@ -95,13 +95,11 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "hpc/altview.g" );
 
-if not IsBound(MPI_Initialized) and IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
+if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "hpc/tasks.g" );
 fi;
 
-if not IsBound(MPI_Initialized) then
-  ReadLib( "hpc/actor.g" );
-fi;
+ReadLib( "hpc/actor.g" );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
