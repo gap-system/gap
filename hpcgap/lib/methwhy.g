@@ -281,20 +281,20 @@ end);
 ##  <Example><![CDATA[
 ##  gap> ShowImpliedFilters(IsMatrix);
 ##  Implies:
-##     IsGeneralizedRowVector
 ##     IsNearAdditiveElementWithInverse
 ##     IsAdditiveElement
 ##     IsMultiplicativeElement
+##     IsGeneralizedRowVector
 ##  
 ##  
 ##  May imply with:
-##  +IsGF2MatrixRep
+##  +IsInternalRep
 ##     IsOrdinaryMatrix
 ##  
 ##  +CategoryCollections(CategoryCollections(IsAdditivelyCommutativeElement))
 ##     IsAdditivelyCommutativeElement
 ##  
-##  +IsInternalRep
+##  +IsGF2MatrixRep
 ##     IsOrdinaryMatrix
 ##  
 ##  ]]></Example>
