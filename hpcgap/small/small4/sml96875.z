@@ -1,9 +1,0 @@
-#############################################################################
-##
-#W  sml96875.z             GAP library of groups           Hans Ulrich Besche
-##                                               Bettina Eick, Eamonn O'Brien
-##
-
-SMALL_GROUP_LIB[ 96875 ].pnil := AtomicRecord( `rec( syl :=
-[ 71, 77 ], oper :=
-[ 59794396822442540, 59780323202989169 ] ) );
