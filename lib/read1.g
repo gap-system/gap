@@ -87,7 +87,7 @@ ReadLib( "objset.g" );
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 
+ReadLib( "hpc/tasks.g" );
+
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
-
-ReadLib( "hpc/tasks.g" );

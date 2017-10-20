@@ -82,21 +82,20 @@ ReadLib( "userpref.g"  );
 
 ReadLib( "cmdledit.g"  );
 
-ReadLib( "hpc/serialize.g" );
-ReadLib( "hpc/thread.g" );
 ReadLib( "objset.g" );
-ReadLib( "hpc/smallrgn.g"  );
-
-if not IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
-  ReadLib( "hpc/stdtasks.g" );
-fi;
 
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
+
+ReadLib( "hpc/serialize.g" );
+ReadLib( "hpc/thread.g" );
+ReadLib( "hpc/smallrgn.g"  );
 ReadLib( "hpc/altview.g" );
 
 if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
   ReadLib( "hpc/tasks.g" );
+else
+  ReadLib( "hpc/stdtasks.g" );
 fi;
 
 ReadLib( "hpc/actor.g" );
