@@ -1,8 +1,9 @@
+function(  ) ... end
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `+' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
-1 + "abc" at bad-add.g:2 called from
+1 + "abc" at *stdin*:2 called from
 <function "f">( <arguments> )
- called from read-eval loop at bad-add.g:4
+ called from read-eval loop at *stdin*:4
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> 

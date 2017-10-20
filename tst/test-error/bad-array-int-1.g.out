@@ -1,6 +1,7 @@
+function(  ) ... end
 Error, List Element: <list> must be a list (not a integer) in
-  return 1[1]; at bad-array-int-1.g:2 called from 
+  return 1[1]; at *stdin*:2 called from 
 <function "f">( <arguments> )
- called from read-eval loop at bad-array-int-1.g:4
+ called from read-eval loop at *stdin*:4
 you can replace <list> via 'return <list>;'
 brk> 
