@@ -16,4 +16,14 @@ brk> 7
 brk> 6
 brk> 3
 brk> 5
+brk> All is well
+brk> 5
+brk> Error, foo called from
+not in any function at top-level-error.g:1
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk_2> not in any function at *errin*:1
+brk_2> Error, Variable: 'lvl' must have a value
+not in any function at *errin*:2
+brk_2> brk> 5
 brk> 
