@@ -1,6 +1,7 @@
+function(  ) ... end
 Error, Variable: 'l' must have an assigned value in
-  return l[1]; at bad-array-undef-0.g:3 called from 
+  return l[1]; at *stdin*:3 called from 
 <function "f">( <arguments> )
- called from read-eval loop at bad-array-undef-0.g:5
+ called from read-eval loop at *stdin*:5
 you can 'return;' after assigning a value
 brk> 

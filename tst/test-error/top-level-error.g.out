@@ -1,5 +1,5 @@
 Error, foo called from
-not in any function at top-level-error.g:1
+not in any function at *stdin*:1
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
-brk> 
+brk> brk> 
