@@ -43,6 +43,9 @@ gap> SCRSift(S,(1,2));
 (8,11)(9,21)(12,23)(14,16)(17,22)(18,24)(19,20)
 gap> SCRSift(S,GeneratorsOfGroup(m)[1]);
 ()
+
+# Unbind variables so we can GC memory
+gap> Unbind(G); Unbind(S); Unbind(it); Unbind(it2); Unbind(l); Unbind(m);
 gap> STOP_TEST( "stabchain.tst", 1);
 
 #############################################################################
