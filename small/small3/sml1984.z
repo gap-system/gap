@@ -1,9 +1,0 @@
-#############################################################################
-##
-#W  sml1984.z              GAP library of groups           Hans Ulrich Besche
-##                                               Bettina Eick, Eamonn O'Brien
-##
-
-SMALL_GROUP_LIB[ 1984 ].pnil := rec( 2syl :=
-[ 267 ], oper :=
-[ 73447047637 ] );

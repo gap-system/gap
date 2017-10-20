@@ -208,7 +208,6 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/zlattice.gd",
     "../../lib/zmodnz.gd",
     "../../grp/simple.gd",
-    "../../small/small.gd",
     "../../tst/teststandard.g",
     "../../tst/testinstall.g",
   ],

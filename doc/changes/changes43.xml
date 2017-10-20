@@ -35,7 +35,7 @@ The most important changes between &GAP; 4.1 and &GAP; 4.2 were:
 <List>
 <Item>
 A much extended and improved library of small groups as well as
-associated <Ref Attr="IdGroup" BookName="ref"/> routines.
+associated <Ref Attr="IdGroup" BookName="smallgrp"/> routines.
 </Item>
 <Item>
 The primitive groups library has been made more independent of the

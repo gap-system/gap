@@ -566,7 +566,7 @@ presentations by integers. To decode a given code the size of the
 underlying pc group is needed as well. For the full definition and
 the coding and decoding
 procedures see <Cite Key="BescheEick98"/>. This method is used with the small
-groups library, see Section <Ref Sect="Small Groups"/>.
+groups library (see <Ref BookName="smallgrp" Chap="The Small Groups Library"/>.
 
 <#Include Label="CodePcgs">
 <#Include Label="CodePcGroup">

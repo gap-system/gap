@@ -1,9 +1,0 @@
-#############################################################################
-##
-#W  sml3968.z              GAP library of groups           Hans Ulrich Besche
-##                                               Bettina Eick, Eamonn O'Brien
-##
-
-SMALL_GROUP_LIB[ 3968 ].pnil := rec( 2syl :=
-[ 2319, 2328 ], oper :=
-[ 387354579233285, 362474756770601 ] );

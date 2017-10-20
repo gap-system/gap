@@ -30,7 +30,7 @@ initially knows the following groups:
     (see&nbsp;<Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>),
 </Item>
 <Item>
- a library of groups of small order (see&nbsp;<Ref Sect="Small Groups"/>),
+ a library of groups of small order (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
 </Item>
 <Item>
   the  finite perfect  groups of   size  at most <M>10^6</M>
@@ -204,7 +204,7 @@ properties.
 <!-- %ends with <C>Groups</C>. In between is a  name that hints at the nature of the -->
 <!-- %group library.  -->
 Currently, the library selection functions provided, of  this  type,  are
-<Ref Func="AllSmallGroups"/>,
+<Ref BookName="smallgrp" Func="AllSmallGroups"/>,
 <Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
 <Ref BookName="transgrp" Func="AllTransitiveGroups"/>,
 and <Ref BookName="primgrp" Func="AllPrimitiveGroups"/>.
@@ -217,10 +217,11 @@ of arguments. The first argument in such a pair is a function that can be
 applied to the groups in the library, and the second argument is either a
 single value that this function must return in order to have  this  group
 included in the selection, or a list of such  values.  For  the  function
-<Ref Func="AllSmallGroups"/> the first such function must be
+<Ref BookName="smallgrp" Func="AllSmallGroups"/> the first such function must be
 <Ref Attr="Size"/>, and, unlike  the
 other library selection functions,  it  supports  an  alternative  syntax
-where <Ref Func="Size"/> is omitted (see&nbsp;<Ref Func="AllSmallGroups"/>).
+where <Ref Func="Size"/> is omitted
+(see&nbsp;<Ref BookName="smallgrp" Func="AllSmallGroups"/>).
 Also, see <Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
 for details pertaining to this function.
 <P/>
@@ -278,7 +279,7 @@ list the properties that are stored for this library.
 For each <C>All<A>Library</A>Groups</C> function (see above) there is
 a corresponding function <C>One<A>Library</A>Group</C> on exactly the same
 arguments, i.e., there are
-<C>OneSmallGroup</C>,
+<Ref BookName="smallgrp" Func="OneSmallGroup"/>,
 <Ref BookName="primgrp" Func="OneIrreducibleSolvableGroup"/>,
 <Ref BookName="transgrp" Func="OneTransitiveGroup"/>,
 and <Ref BookName="primgrp" Func="OnePrimitiveGroup"/>.
@@ -288,153 +289,6 @@ instead of <E>all</E> such groups.
 It returns <K>fail</K> if no such group exists in the library.
 
 </Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Small Groups">
-<Heading>Small Groups</Heading>
-
-The Small Groups library gives access to all groups of certain <Q>small</Q>
-orders. The groups are sorted by their orders and they are listed up to
-isomorphism; that is, for each of the available orders a complete and
-irredundant list of isomorphism type representatives of groups is given.
-Currently, the library contains the following groups:
-<P/>
-<List>
-<Item>
- those of order at most 2000 except 1024 &nbsp; (<M>423\;164\;062</M> groups);
-</Item>
-<Item>
- those of cubefree order at most 50 000 &nbsp; (<M>395 \; 703</M> groups);
-</Item>
-<Item>
- those of order <M>p^7</M> for the primes <M>p = 3,5,7,11</M>
- &nbsp; (<M>907 \; 489</M> groups);
-</Item>
-<Item>
- those of order <M>p^n</M> for <M>n \leq 6</M> and all primes <M>p</M> 
-</Item>
-<Item>
- those of order <M>q^n \cdot p</M> for <M>q^n</M> dividing <M>2^8</M>, 
-                   <M>3^6</M>, <M>5^5</M> or <M>7^4</M> and all primes <M>p</M> with <M>p \neq q</M>;
-</Item>
-<Item>
- those of squarefree order;
-</Item>
-<Item>
- those whose order factorises into at most 3 primes.
-</Item>
-</List>
-<P/>
-The first three items in this list cover an explicit range of orders; the 
-last four provide access to infinite families of groups having orders of 
-certain types.
-<P/>
-The library also has an identification function: it returns the library 
-number of a given group. This function determines library numbers using
-invariants of groups. The function is available for all orders in the 
-library except for the orders 512 and 1536 and except for the orders
-<M>p^5</M>, <M>p^6</M> and <M>p^7</M> above 2000.
-<P/>
-The library is organised in 11 layers. Each layer contains the groups of
-certain orders and their corresponding group identification routines. It
-is possible to install the first <M>n</M> layers of the group library and the
-first <M>m</M> layers of the group identification for each <M>1 \leq m \leq n
-\leq 11</M>. This might be useful to save disk space. There is an extensive
-<F>README</F> file for the Small Groups library available in the <C>small</C> directory
-of the &GAP; distribution containing detailed information on the layers.
-A brief description of the layers is given here:
-<List>
-<Mark>(1)</Mark>
-<Item>
- the groups whose order factorises into at most 3 primes.
-</Item>
-<Mark>(2)</Mark>
-<Item>
- the remaining groups of order at most 1000 except 512 and 768.
-</Item>
-<Mark>(3)</Mark>
-<Item>
- the remaining groups of order <M>2^n \cdot p</M> with <M>n \leq 8</M> and
-              <M>p</M> an odd prime.
-</Item>
-<Mark>(4)</Mark>
-<Item>
- the remaining groups of order <M>5^5</M>, <M>7^4</M> and of order 
-              <M>q^n \cdot p</M> for <M>q^n</M> dividing <M>3^6</M>, <M>5^5</M> or <M>7^4</M> and 
-              <M>p \neq q</M> a prime.
-</Item>
-<Mark>(5)</Mark>
-<Item>
- the remaining groups of order at most 2000 except 1024,
-              1152, 1536 and 1920.
-</Item>
-<Mark>(6)</Mark>
-<Item>
- the groups of orders 1152 and 1920.
-</Item>
-<Mark>(7)</Mark>
-<Item>
- the groups of order 512.
-</Item>
-<Mark>(8)</Mark>
-<Item>
- the groups of order 1536.
-</Item>
-<Mark>(9)</Mark>
-<Item>
- the remaining groups of order <M>p^n</M> for <M>4 \leq n \leq 6</M>.
-</Item>
-<Mark>(10)</Mark>
-<Item>
- the remaining groups of cubefree order at most 50 000 and
-               of squarefree order.
-</Item>
-<Mark>(11)</Mark>
-<Item>
- the remaining groups of order <M>p^7</M> for <M>p = 3,5,7,11</M>.
-</Item>
-</List>
-<P/>
-The data in this library has been carefully checked and cross-checked.
-It is believed to be reliable. However, no absolute guarantees are given
-and users should, as always, make their own checks in critical cases.
-<P/>
-The data occupies about 30 MB (storing over 400 million groups in about
-200 megabits). The group identification occupies about 47 MB of which
-18 MB is used for the groups in layer (6). More information on the Small 
-Groups library can be found on
-<URL>http://www.icm.tu-bs.de/ag_algebra/software/small/</URL>
-<P/>
-This library has been constructed by Hans Ulrich Besche, Bettina Eick and 
-E.&nbsp;A.&nbsp;O'Brien. A survey on this topic and an account of the history of 
-group constructions can be found in <Cite Key="BEO01"/>. Further detailed 
-information on the construction of this library is available in <Cite Key="New77"/>, 
-<Cite Key="OBr90"/>, <Cite Key="OBr91"/>, <Cite Key="BescheEick98"/>, <Cite Key="BescheEick1000"/>, 
-<Cite Key="BescheEick768"/>, <Cite Key="BEO00"/>, <Cite Key="EOB99"/>, <Cite Key="EOB98"/>, <Cite Key="NOV04"/>, 
-<Cite Key="Gir03"/>, <Cite Key="DEi05"/>, <Cite Key="OV05"/>.
- 
-<Index Key="TwoGroup library"><C>TwoGroup</C> library</Index>
-<Index Key="ThreeGroup library"><C>ThreeGroup</C> library</Index>
-The Small Groups library incorporates the &GAP;&nbsp;3 libraries <C>TwoGroup</C> and
-<C>ThreeGroup</C>. The data from these libraries was directly included into the
-Small Groups library, and the ordering there was preserved. The Small
-Groups library replaces the Gap 3 library of solvable groups of order at
-most 100. However, both the organisation and data descriptions of these
-groups has changed in the Small Groups library.
-<P/>
-<#Include Label="SmallGroup">
-<#Include Label="AllSmallGroups">
-<#Include Label="OneSmallGroup">
-<#Include Label="NumberSmallGroups">
-<#Include Label="IdSmallGroup">
-<#Include Label="IdsOfAllSmallGroups">
-<#Include Label="IdGap3SolvableGroup">
-<#Include Label="SmallGroupsInformation">
-<#Include Label="UnloadSmallGroupsData">
-
-</Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Finite Perfect Groups">
