@@ -1,0 +1,19 @@
+function( lvl ) ... end
+Error, Rational operations: <divisor> must not be zero in
+  return 1 / lvl + f( (lvl - 1) ); at *stdin*:1 called from 
+f( lvl - 1 ) at *stdin*:1 called from
+f( lvl - 1 ) at *stdin*:1 called from
+f( lvl - 1 ) at *stdin*:1 called from
+f( lvl - 1 ) at *stdin*:1 called from
+f( lvl - 1 ) at *stdin*:1 called from
+...  at *stdin*:2
+you can replace <divisor> via 'return <divisor>;'
+brk> 0
+brk> 1
+brk> 2
+brk> 1
+brk> 7
+brk> 6
+brk> 3
+brk> 5
+brk> 
