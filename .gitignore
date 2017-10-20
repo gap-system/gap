@@ -34,7 +34,7 @@
 *.ind
 *.lab
 *.log
-*.out
+main.out
 *.pdf
 *.pnr
 *.six
