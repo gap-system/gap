@@ -601,7 +601,17 @@ Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
     if (retcode)
         Pr("Strange close return code %d\n", retcode, 0);
     kill(PtyIOStreams[pty].childPID, SIGTERM);
-    retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
+    retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);
+    if (retcode == 0) {
+        // Give process a second to quit
+        SySleep(1);
+        retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);
+    }
+    if (retcode == 0) {
+        // Hard kill process
+        kill(PtyIOStreams[pty].childPID, SIGKILL);
+        retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
+    }
     FreeStream(pty);
     HashUnlock(PtyIOStreams);
     return 0;
