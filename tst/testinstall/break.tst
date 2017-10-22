@@ -1,3 +1,4 @@
+#@local f, i
 gap> START_TEST("break.tst");
 
 #

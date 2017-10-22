@@ -1,3 +1,4 @@
+#@local x,x2,y,y2
 ## Test SWITCH_OBJ and FORCE_SWITCH_OBJ
 gap> START_TEST("switch.tst");
 

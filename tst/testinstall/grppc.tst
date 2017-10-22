@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1997
 ##
+#@local F,G,S,c,cl,f,g,g1,g10,g3,gens,h,hh,i,m,n,pcgs,r,rws,sys,u,v,x,y
 gap> START_TEST("grppc.tst");
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;

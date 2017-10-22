@@ -1,3 +1,4 @@
+#@local fname,stream,tmpdir,res
 gap> START_TEST("streams.tst");
 
 #

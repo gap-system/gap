@@ -1,3 +1,4 @@
+#@local f
 gap> START_TEST("varargs.tst");
 gap> f := function(a,b...) return [a,b]; end;
 function( a, b... ) ... end

@@ -1,3 +1,4 @@
+#@local F,G,N,cube,g,s,x,y
 gap> START_TEST("grpperm.tst");
 gap> G := Group((1,2),(1,2,3,4));;
 gap> HasAbelianFactorGroup(G,G);

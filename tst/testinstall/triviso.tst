@@ -4,7 +4,7 @@
 #Y  Bernhard Reinke
 ##
 #############################################################################
-##
+#@local G,inv,phi
 gap> START_TEST("triviso.tst");
 gap> G := Group(());
 Group(())

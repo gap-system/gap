@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local a,b,c,g,l
 gap> START_TEST("set.tst");
 gap> a:=Set([(1,3,2),(4,5)]);;
 gap> b:=[(1,2),(5,9,7)];;

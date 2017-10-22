@@ -5,6 +5,10 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local a,f,f1,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f2,f20,f21,f22,f23,f24
+#@local f25,f26,f27,f28,f29,f3,f30,f31,f32,f33,f34,f35,f36,f37,f38,f39,f4,f40
+#@local f41,f42,f43,f44,f45,f46,f47,f48,f49,f5,f50,f51,f52,f53,f54,f55,f56
+#@local f57,f58,f59,f6,f60,f61,f7,f8,f9,g,l,p,r,rws,w,x
 gap> START_TEST("rwspcsng.tst");
 
 #############################################################################

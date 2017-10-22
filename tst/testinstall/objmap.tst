@@ -1,3 +1,4 @@
+#@local MAPvals,a,b,c,p,x,i
 gap> START_TEST("objmap.tst");
 gap> OBJ_MAP([]);
 OBJ_MAP([  ])

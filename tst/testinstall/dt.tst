@@ -5,6 +5,7 @@
 ##  Test the (undocumented!) deep thought collector code implemented by
 ##  src/dt.{c,h}, src/dteval.{c,h}, lib/dt.g, lib/rwsdt.gi, lib/rwspcclt.gd
 ##
+#@local g,UnitriangularPcGroup,G,H,iso,k,famG,collG,famH,collH,i,h
 gap> START_TEST("dt.tst");
 
 # simple function to create a pc group isomorphic to an unitriangular group,

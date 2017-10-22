@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  2017, The GAP Group
 ##
+#@local D,F,R,S,T,U,enum,inv,iso,x,z
 gap> START_TEST("reesmat.tst");
 
 # IsFinite: ImmediateMethod, for IsReesZeroMatrixSubsemigroup, 1

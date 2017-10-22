@@ -5,6 +5,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local A,checkCompatible,Fam7,Fam8,Famp,G,R,enum,l,len,m,m2,m3,m4,one,p
+#@local rings,x,z0,z1,z2,z3,i,a,b,y
 gap> START_TEST("zmodnz.tst");
 
 #

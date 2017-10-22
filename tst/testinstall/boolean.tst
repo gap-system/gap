@@ -6,6 +6,8 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##
+# No local variables
+#@local
 gap> START_TEST("boolean.tst");
 gap> not true;
 false

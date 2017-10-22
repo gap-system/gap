@@ -4,7 +4,8 @@
 #Y  James D. Mitchell
 ##
 #############################################################################
-##
+#@local BruteForceAntiIsoCheck,BruteForceInverseCheck,BruteForceIsoCheck
+#@local G,H,I,S,T,enum,inv,map
 gap> START_TEST("semitran.tst");
 
 # Test that the inverse of an isomorphism from a partial perm monoid to a

@@ -1,3 +1,4 @@
+#@local f,g,h,l,mh,r,x,makeCounter
 gap> START_TEST("function.tst");
 gap> IsKernelFunction(IsKernelFunction);
 true

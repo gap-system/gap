@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local S4,V4,irr,l
 gap> START_TEST("ctblfuns.tst");
 gap> S4:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )

@@ -5,6 +5,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local A,B,C,M,anticomp,com,comp,conj,d,g,g2,i,i2,inv,j,map,map1,map2,nice
+#@local res,t,t1,t2,tuples
 gap> START_TEST("mapping.tst");
 gap> M:= GF(3);
 GF(3)

@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local a,b,c,ec,f,gns,n,rel,s,s1,sgns,sng,sng1,x
 gap> START_TEST("semicong.tst");
 gap> #######################################################################
 gap> ##

@@ -1,3 +1,4 @@
+#@local
 gap> START_TEST("hashkeybag.tst");
 gap> HashKeyBag((1,2),0,0,0);
 0

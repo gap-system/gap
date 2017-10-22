@@ -1,3 +1,4 @@
+#@local bf,i,j,vals,x,y,z
 gap> START_TEST("bitfields.tst");
 
 # Test correct behaviour for a variety of numbers of fields

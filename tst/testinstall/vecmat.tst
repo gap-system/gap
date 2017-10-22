@@ -1,3 +1,5 @@
+#@local F,F9,TestReadMatEntry,dim,m,v,w,checkShift,testlens,types,vecs,i,j
+#@local v1,v2
 gap> START_TEST("vecmat.tst");
 
 #

@@ -1,3 +1,4 @@
+#@local checklens,n,permAll,permBig,permSml,x,y
 gap> START_TEST("perm.tst");
 
 # Permutations come in two flavors in GAP, with two TNUMs: T_PERM2 for

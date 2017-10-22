@@ -1,3 +1,4 @@
+#@local a,f,func,g
 gap> f := function()
 > local a,b,c;
 > if IsBound(a) then Print("1"); fi;

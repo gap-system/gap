@@ -1,3 +1,4 @@
+#@local test,filters
 #
 gap> test := x -> List([IsFilter, IsCategory, IsRepresentation, IsAttribute, IsProperty, IsOperation], f -> f(x));;
 gap> test(IsFinite);

@@ -1,3 +1,4 @@
+#@local badbase,baddirbase,base,dirTest,dirbase,dirs
 gap> START_TEST("dir.tst");
 gap> base := Filename( DirectoriesLibrary( "tst" ), "example-dir");;
 gap> dirbase := Directory(base);;

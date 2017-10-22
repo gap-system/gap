@@ -12,6 +12,7 @@
 ##  To be extended with similar tests for all the cases of float and long-float 
 ##  parsing when I have a reliable way of testing them.
 ##
+#@local x
 gap> START_TEST("longnumber.tst");
 
 # integers

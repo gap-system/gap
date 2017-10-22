@@ -1,8 +1,9 @@
+#@local aqq,bool,f,l,list1,list2,r,rec1,rec2,rem,i
 gap> START_TEST("tilde.tst");
 
 #
 gap> aqq~ := 1;
-Error, Variable: 'aqq' must have a value
+Error, Variable: 'aqq' must have an assigned value
 Syntax error: ; expected in stream:1
 aqq~ := 1;
    ^

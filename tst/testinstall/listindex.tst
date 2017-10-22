@@ -5,6 +5,7 @@
 ##
 ##
 ##
+#@local foo,l,o,r,res,s,t,x
 gap> START_TEST("listindex.tst");
 gap> r := NewCategory("ListTestObject",IsList and HasLength and HasIsFinite);
 <Category "ListTestObject">

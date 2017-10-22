@@ -1,3 +1,4 @@
+#@local A,D,F,G,fine,p,x,y,pi
 gap> START_TEST("sylowhall.tst");
 gap> G := GL(3,4);; PrimeDivisors(Size(G));
 [ 2, 3, 5, 7 ]

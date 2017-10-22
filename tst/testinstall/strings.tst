@@ -4,6 +4,8 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
+#@local OldCopyToStringRep,a2000,a3000,at2000,at3000,cp1,cp2,cp3
+#@local ret2000,ret3000,s,tmp,x,tmpdir,fname,dir
 gap> START_TEST("strings.tst");
 
 # FFE

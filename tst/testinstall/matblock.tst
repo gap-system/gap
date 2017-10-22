@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local dim,m1,m2,m3,mm,o1,o2,p1,p2,p3,p4,tmp,z
 gap> START_TEST("matblock.tst");
 gap> m1 := BlockMatrix( [ [ 1, 1, [[1,1],[0,1]] ],
 >                         [ 1, 3, [[1,0],[0,1]] ],

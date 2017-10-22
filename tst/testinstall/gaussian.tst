@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local
 gap> START_TEST("gaussian.tst");
 gap> 257 in GaussianIntegers;
 true

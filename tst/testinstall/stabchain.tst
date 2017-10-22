@@ -1,3 +1,4 @@
+#@local TestGens,m
 gap> START_TEST("stabchain.tst");
 gap> TestGens := function(g)
 > local m;

@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local S4,Sl23,chi,cln,n,test,g,irr
+#@local TestMonomialUseLattice_Orig,g1,g2,g3,g4,g5,g6
 gap> START_TEST("ctblmono.tst");
 
 ##
