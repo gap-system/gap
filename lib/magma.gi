@@ -418,7 +418,7 @@ InstallGlobalFunction( MagmaWithOne, function( arg )
       return MagmaWithOneByGenerators( arg[1] );
 
     # family plus list of generators
-    elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[1] ) then
+    elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[2] ) then
       return MagmaWithOneByGenerators( arg[1], arg[2] );
 
     # generators
@@ -495,7 +495,7 @@ InstallGlobalFunction( MagmaWithInverses, function( arg )
       return MagmaWithInversesByGenerators( arg[1] );
 
     # family plus list of generators
-    elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[1] ) then
+    elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[2] ) then
       return MagmaWithInversesByGenerators( arg[1], arg[2] );
 
     # generators
