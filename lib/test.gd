@@ -13,4 +13,5 @@ DeclareGlobalFunction("RunTests");
 DeclareGlobalFunction("Test");
 DeclareGlobalFunction("TestDirectory");
 DeclareGlobalFunction("TestPackage");
+DeclareGlobalFunction("CREATE_LOCAL_VARIABLES_BAG");
 
