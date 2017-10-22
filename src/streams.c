@@ -379,7 +379,7 @@ Obj READ_AS_FUNC ( void )
 }
 
 
-static void READ_TEST_OR_LOOP(void)
+static void READ_TEST_OR_LOOP(Obj context)
 {
     UInt                type;
     UInt                oldtime;
@@ -394,7 +394,7 @@ static void READ_TEST_OR_LOOP(void)
         /* read and evaluate the command                                   */
         ClearError();
         Obj evalResult;
-        type = ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
+        type = ReadEvalCommand(context, &evalResult, &dualSemicolon);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
@@ -1032,10 +1032,11 @@ Obj FuncREAD_STREAM (
 **  Read data from <instream> in a read-eval-view loop and write all output
 **  to <outstream>.
 */
-Obj FuncREAD_STREAM_LOOP (
+Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT (
     Obj                 self,
     Obj                 instream,
-    Obj                 outstream )
+    Obj                 outstream,
+    Obj context )
 {
     Int res;
 
@@ -1058,7 +1059,7 @@ Obj FuncREAD_STREAM_LOOP (
     }
 
     LockCurrentOutput(1);
-    READ_TEST_OR_LOOP();
+    READ_TEST_OR_LOOP(context);
     LockCurrentOutput(0);
 
     res = CloseInput();
@@ -1070,7 +1071,14 @@ Obj FuncREAD_STREAM_LOOP (
     return res ? True : False;
 }
 
-
+Obj FuncREAD_STREAM_LOOP (
+    Obj                 self,
+    Obj                 stream,
+    Obj                 catcherrstdout)
+{
+    return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout,
+                                             STATE(BottomLVars));
+}
 /****************************************************************************
 **
 *F  FuncREAD_AS_FUNC( <self>, <filename> )  . . . . . . . . . . . read a file
@@ -1979,6 +1987,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(READ_COMMAND_REAL, 2, "stream, echo"),
     GVAR_FUNC(READ_STREAM, 1, "stream"),
     GVAR_FUNC(READ_STREAM_LOOP, 2, "stream, catchstderrout"),
+    GVAR_FUNC(READ_STREAM_LOOP_WITH_CONTEXT, 3, "stream, catchstderrout, context"),
     GVAR_FUNC(READ_AS_FUNC, 1, "filename"),
     GVAR_FUNC(READ_AS_FUNC_STREAM, 1, "stream"),
     GVAR_FUNC(READ_GAP_ROOT, 1, "filename"),
