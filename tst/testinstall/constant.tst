@@ -1,3 +1,8 @@
+#@local f
+#@exec boolfalsevar := 0;
+#@exec booltruevar := 0;
+#@exec newtestvar := 0;
+#@exec testvar := 0;
 # create a plain global var and perform some test
 gap> testvar := 2;
 2

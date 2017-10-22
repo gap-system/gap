@@ -1,3 +1,4 @@
+#@local S,f,r
 gap> START_TEST("bound.tst");
 gap> S := SymmetricGroup(2);;
 gap> IsBound(S!.cheese);

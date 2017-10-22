@@ -10,6 +10,7 @@
 ##  (This holds also for minor changes such as the removal of whitespace or
 ##  the correction of typos.)
 ##
+#@local a,cyc,gm,i,l1,l2,l3,mat,n,r,x,y,z,sets
 gap> START_TEST("cyclotom.tst");
 
 # Check basic arithmetic operations.

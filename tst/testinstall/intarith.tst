@@ -3,6 +3,9 @@
 #W  intarith.tst                  GAP library
 ##
 ##
+#@local POWERMODINT_GAP,b,bigPos,bigNeg,checkPValuationInt,data,dataHex
+#@local dataInv,dataNonZero,e,f,g,i,k,m,mysource,pow,r,smlNeg,smlPos,x,y
+#@local naivQM,ps,checkROOT_INT,P,a,n,p
 gap> START_TEST("intarith.tst");
 gap> 1 + 1;
 2

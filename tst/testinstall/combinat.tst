@@ -7,6 +7,7 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
+#@local i,iter,list,n,pn,it
 gap> START_TEST("combinat.tst");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer

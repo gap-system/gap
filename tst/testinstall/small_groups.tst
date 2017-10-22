@@ -1,3 +1,4 @@
+#@local
 gap> START_TEST("small_groups.tst");
 gap> 
 gap> List(SmallGroup(1,1), Order);

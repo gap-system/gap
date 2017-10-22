@@ -1,3 +1,4 @@
+#@local
 gap> START_TEST("flush.tst");
 gap> DeclareGlobalVariable("cheesefun");
 gap> DeclareGlobalVariable("cheeseval");

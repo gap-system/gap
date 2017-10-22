@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  2014,  GAP Group
 ##
+#@local dir,name,p,x
 gap> START_TEST("read.tst");
 gap> name := Filename( DirectoriesLibrary("tst"), "example.txt" );;
 gap> x := InputTextFile(name);;

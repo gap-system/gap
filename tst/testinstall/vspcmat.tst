@@ -7,6 +7,7 @@
 ##
 ##  (The test file 'vspcrow.tst' should contain the same tests.)
 ##
+#@local b,bv,c,c1,c2,f,lc,mb,n,u,uu,uuu,uuuu,v,w,ww,z
 gap> START_TEST("vspcmat.tst");
 
 #############################################################################

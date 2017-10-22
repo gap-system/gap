@@ -5,6 +5,7 @@
 ##
 #Y  Copyright 2005,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
+#@local a,b,c2,e,f,g,iter,l,s,F,rels
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;

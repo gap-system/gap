@@ -1,3 +1,4 @@
+#@local
 gap> START_TEST("startendwith.tst");
 gap> StartsWith("abc", "a");
 true

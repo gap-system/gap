@@ -1,3 +1,4 @@
+#@local fam,cat,type,a
 gap> START_TEST("trace.tst");
 
 #

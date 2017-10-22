@@ -1,3 +1,4 @@
+#@local a,b,c,p,setvals,x,i
 gap> START_TEST("objset.tst");
 
 # basic constructor

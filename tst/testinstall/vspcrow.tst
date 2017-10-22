@@ -8,6 +8,8 @@
 ##  (The test file `vspcmat.tst' should contain the same tests,
 ##  applied to matrix spaces.)
 ##
+#@local A,F,b,c,c1,c2,dims,erg,f,i,im,iter,l,lc,m,mb,n,nv,p,subsp
+#@local u,uu,uuu,uuuu,v,w,ww,z
 gap> START_TEST("vspcrow.tst");
 
 #############################################################################

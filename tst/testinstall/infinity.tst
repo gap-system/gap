@@ -6,6 +6,7 @@
 #Y  Copyright (C) 2014,  University of St Andrews, Scotland
 ##
 ##
+#@local cycls,i,j,op
 gap> START_TEST("infinity.tst");
 
 # unary minus

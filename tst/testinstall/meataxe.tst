@@ -1,3 +1,4 @@
+#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs
 gap> START_TEST("meataxe.tst");
 
 #

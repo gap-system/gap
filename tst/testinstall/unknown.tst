@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local u
 gap> START_TEST("unknown.tst");
 gap> LargestUnknown:= 0;;
 gap> u:= Unknown();

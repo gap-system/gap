@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local br,c,d,dom,e,ec,el,er,er1,er2,g,j1,j2,m,m1,m2,n,r,rc,rel,sc,sgs,tc,tup
 gap> START_TEST("relation.tst");
 gap> ##################################################
 gap> ##

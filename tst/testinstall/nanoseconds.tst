@@ -1,3 +1,4 @@
+#@local f,t,t2
 gap> START_TEST( "nanoseconds.tst" );
 gap> t := NanosecondsSinceEpoch();;
 gap> f := function(t)

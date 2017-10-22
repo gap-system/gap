@@ -1,3 +1,4 @@
+#@local JACOBI_INT_GAP,c,d,jac,m,n,oldLevel,t
 gap> START_TEST("numtheor.tst");
 
 # RootMod, RootsMod

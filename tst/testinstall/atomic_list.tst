@@ -1,3 +1,4 @@
+#@local EqualLists,a,l,s
 gap> START_TEST("atomic_list.tst");
 
 # Lists we can run in GAP and HPCGAP

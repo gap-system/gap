@@ -5,6 +5,7 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##
+#@local det,mat,p0,p1,p2,q0,q1,q2,t,y1,y2,y3,u,f,g,data
 gap> START_TEST("ratfun.tst");
 
 #

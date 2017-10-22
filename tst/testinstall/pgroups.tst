@@ -1,3 +1,4 @@
+#@local A,B,C,D,F,G,H,H1,H2,H3,H4,K,L,N,Q,g,hom,myList,newList,r,s
 gap> START_TEST("pgroups.tst");
 gap> A := Group((1,2),(3,4),(5,6));
 Group([ (1,2), (3,4), (5,6) ])

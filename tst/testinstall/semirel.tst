@@ -5,6 +5,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local H,L,R,S,a,b,f,gjp,gjp1,glp,glp1,grp,grp1,rels,s1,s2,s3,sc,t1,t2,t20
+#@local t3,t4,t5,D
 gap> START_TEST("semirel.tst");
 
 ##

@@ -8,6 +8,7 @@
 ##  This test checks the 'atomic' statement for compatability with original
 ##  GAP. It does not do any interesting thread-safe behaviour
 ##
+#@local L,M,f,g,h,h2,h3,h4,h5,x
 gap> START_TEST("atomic_basic.tst");
 gap> L := [];; M := [];;
 gap> x := 1;;

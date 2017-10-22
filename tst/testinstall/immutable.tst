@@ -6,6 +6,7 @@
 #Y  Copyright (C) 2017,  University of St Andrews, Scotland
 ##
 ##
+#@local v,x
 gap> START_TEST("immutable.tst");
 gap> IS_IDENTICAL_OBJ(Immutable, MakeImmutable);
 false

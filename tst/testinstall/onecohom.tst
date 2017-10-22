@@ -7,6 +7,7 @@
 ##
 ##  This  file  tests the automorphism routines
 ##
+#@local b,com,g,n,ocr
 gap> START_TEST("onecohom.tst");
 gap> g:=Group((16,18,17),(14,15)(17,18),(17,18),(13,14,15),
 > (11,12)(13,15)(16,18,17),

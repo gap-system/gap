@@ -7,6 +7,7 @@
 ##
 ##  This  file  tests  the large finite fields.
 ##
+#@local fieldpairs,fieldsizes,iF,iPI,iW,izs,zs,iFI,x
 gap> START_TEST("ffeconway.tst");
 
 #

@@ -1,3 +1,5 @@
+#@local A,B,C,ExampleRing,I,O,P,Q,R,T,b,coker,f,gensq,id,ker,m1,m2,map,pols
+#@local pr,q,x,y,z
 #############################################################################
 ##
 #W  alghom.tst                  GAP library                     Thomas Breuer

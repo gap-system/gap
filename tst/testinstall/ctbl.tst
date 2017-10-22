@@ -5,6 +5,7 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
+#@local g,t
 gap> START_TEST("ctbl.tst");
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)

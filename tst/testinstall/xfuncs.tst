@@ -1,3 +1,4 @@
+#@local list,set,sum,sumlim,testXfuncs
 gap> START_TEST("xfuncs.tst");
 gap> testXfuncs := function(list, args...)
 >      local set, sum, prod;

@@ -1,3 +1,4 @@
+#@local curdepth,dive
 gap> START_TEST("depth.tst");
 
 # We don't know what the recursion depth will be when the test starts,

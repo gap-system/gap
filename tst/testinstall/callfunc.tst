@@ -1,3 +1,4 @@
+#@local cat,cat2,f,fam,l,o,o2,result,swallow,type,type2
 gap> START_TEST("callfunc.tst");
 
 #
