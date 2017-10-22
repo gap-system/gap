@@ -2091,6 +2091,8 @@ void            PrintIsbComObjExpr (
 
 Obj FuncGetCurrentLVars( Obj self )
 {
+  // Need to promote to High Vars, else bag will be freed when function exits
+  MakeHighVars(STATE(CurrLVars));
   return STATE(CurrLVars);
 }
 
