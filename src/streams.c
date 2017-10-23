@@ -98,31 +98,37 @@ Int READ_COMMAND ( void )
  * This function reads all code from the stream and returns either `fail` if the stream
  * cannot be opened, or a list of lists of length at most two, where the first entry is
  * either `true` or `false` depending on whether the statement was successfuly executed
- * and the second entry is the result of the statement if there was one.
+ * and the second entry is an immutable copy of the result of the statement if there was
+ * one.
  *
  * This function is curently used in interactive tools such as the GAP Jupyter kernel to
  * execute cells and is likely to be replaced by a function that can read a single command
  * from a stream without losing the rest of its content.
+ *
+ * It is potentially expensive to copy results, but currently there is no better way to
+ * inspect and print intermediate outputs from the Jupyter Kernel.
+ *
  */
-Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
+Obj FuncREAD_ALL_COMMANDS(Obj self, Obj stream, Obj echo)
 {
     ExecStatus status;
-    Int resultCount, resultCapacity;
-    Obj result, resultList;
+    Int        resultCount, resultCapacity;
+    Obj        result, resultList;
 
     /* try to open the stream */
-    if (!OpenInputStream(stream) ) {
-      return Fail;
+    if (!OpenInputStream(stream)) {
+        return Fail;
     }
 
     resultCount = 0;
     resultCapacity = 16;
-    resultList = NEW_PLIST( T_PLIST, resultCapacity );
+    resultList = NEW_PLIST(T_PLIST, resultCapacity);
     SET_LEN_PLIST(resultList, resultCount);
 
     if (echo == True) {
         STATE(Input)->echo = 1;
-    } else {
+    }
+    else {
         STATE(Input)->echo = 0;
     }
 
@@ -130,27 +136,29 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
         ClearError();
         status = ReadEvalCommand(STATE(BottomLVars), 0);
 
-        if(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
+        if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             resultCount++;
             if (resultCount > resultCapacity) {
                 resultCapacity += 16;
                 GROW_PLIST(resultList, resultCapacity);
             }
-            result = NEW_PLIST( T_PLIST, 2 );
+            result = NEW_PLIST(T_PLIST, 2);
             SET_LEN_PLIST(result, 1);
             SET_ELM_PLIST(result, 1, False);
-            SET_ELM_PLIST(resultList, resultCount, result );
-            SET_LEN_PLIST(resultList, resultCount );
+            SET_ELM_PLIST(resultList, resultCount, result);
+            SET_LEN_PLIST(resultList, resultCount);
+            CHANGED_BAG(resultList);
 
-            if(!(status & STATUS_ERROR)) {
+            if (!(status & STATUS_ERROR)) {
                 SET_ELM_PLIST(result, 1, True);
                 if (STATE(ReadEvalResult)) {
                     SET_LEN_PLIST(result, 2);
-                    SET_ELM_PLIST(result, 2, STATE(ReadEvalResult));
+                    SET_ELM_PLIST(result, 2,
+                                  CopyObj(STATE(ReadEvalResult), 0));
                 }
             }
         }
-    } while(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
+    } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
     CloseInput();
     ClearError();
 
