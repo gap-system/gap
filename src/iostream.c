@@ -105,6 +105,12 @@ enum {
     MAX_ARGS = 1000
 };
 
+#if defined(LIBGAP) || defined(HPCGAP)
+Int SIGCHLDHandlerDisabled = 1;
+#else
+Int SIGCHLDHandlerDisabled = 0;
+#endif
+
 static PtyIOStream PtyIOStreams[MAX_PTYS];
 
 // FreePtyIOStreams is the index of the first unused slot of the PtyIOStreams
@@ -271,7 +277,9 @@ static void ChildStatusChanged(int whichsig)
             Pr("#E Unexpected waitpid error %d\n", errno, 0);
     } while (retcode != 0 && retcode != -1);
 
-    signal(SIGCHLD, ChildStatusChanged);
+    if(!SIGCHLDHandlerDisabled) {
+        signal(SIGCHLD, ChildStatusChanged);
+    }
 #endif
 }
 
@@ -684,10 +692,10 @@ static Int InitKernel(StructInitInfo * module)
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable(GVarFuncs);
 
-#if !defined(HPCGAP)
-    /* Set up the trap to detect future dying children */
-    signal(SIGCHLD, ChildStatusChanged);
-#endif
+    if(!SIGCHLDHandlerDisabled) {
+        /* Set up the trap to detect future dying children */
+        signal(SIGCHLD, ChildStatusChanged);
+    }
 
     return 0;
 }
