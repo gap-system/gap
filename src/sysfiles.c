@@ -1642,7 +1642,13 @@ Int SyGetch (
 UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
 UInt   syESCN;                          /* number of '<Esc>-N' pending     */
 
+UInt FreezeStdin;    // When true, ignore if any new input from stdin
+                     // This is used to stop HPC-GAP from reading stdin while
+                     // forked subprocesses are running.
+
+
 #ifdef HAVE_SELECT
+
 Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
 Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
 Obj OnCharReadHookInFuncs = 0; /* a list of GAP functions with 0 args */
@@ -1650,6 +1656,11 @@ Obj OnCharReadHookOutFds = 0;  /* a list of UNIX file descriptors for writing */
 Obj OnCharReadHookOutFuncs = 0;/* a list of GAP functions with 0 args */
 Obj OnCharReadHookExcFds = 0;  /* a list of UNIX file descriptors */
 Obj OnCharReadHookExcFuncs = 0;/* a list of GAP functions with 0 args */
+
+Int OnCharReadHookActiveCheck(void)
+{
+    return OnCharReadHookActive != 0 || FreezeStdin != 0;
+}
 
 
 void HandleCharReadHook(int stdinfd)
@@ -1772,9 +1783,11 @@ void HandleCharReadHook(int stdinfd)
         }
       }
 
-      if (FD_ISSET(stdinfd,&infds)) {
-        WeAreAlreadyInHere = 0;
-        break;
+      // Return if there is input to read from stdin,
+      // and FreezeStdin is false.
+      if (FD_ISSET(stdinfd, &infds) && !FreezeStdin) {
+          WeAreAlreadyInHere = 0;
+          break;
       }
     } else
       break;
@@ -2054,8 +2067,8 @@ Int current_rl_fid;
 int charreadhook_rl ( void )
 {
 #ifdef HAVE_SELECT
-  if (OnCharReadHookActive != (Obj) 0)
-    HandleCharReadHook(syBuf[current_rl_fid].fp);
+    if (OnCharReadHookActiveCheck())
+        HandleCharReadHook(syBuf[current_rl_fid].fp);
 #endif
   return 0;
 }
@@ -2101,7 +2114,7 @@ Char * readlineFgets (
   rl_num_chars_to_read = length-2;
 #ifdef HAVE_SELECT
   /* hook to read from other channels */
-  rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
+  rl_event_hook = (OnCharReadHookActiveCheck()) ? charreadhook_rl : 0;
 #endif
   /* now do the real work */
   doingReadline = 1;
@@ -2247,8 +2260,8 @@ Char * syFgets (
             else if ( syCTRO != 0 ) { ch = CTR('O'); rep = syCTRO / 2; }
             else {
 #ifdef HAVE_SELECT
-              if (OnCharReadHookActive != (Obj) 0)
-                HandleCharReadHook(syBuf[fid].fp);
+                if (OnCharReadHookActiveCheck())
+                    HandleCharReadHook(syBuf[fid].fp);
 #endif
               ch = syGetch(fid);
             }
@@ -2899,6 +2912,7 @@ UInt SyExecuteProcess (
         fcntl( 1, F_SETFD, 0 );
     }
 
+    FreezeStdin = 1;
     /* now try to execute the program                                  */
     res = spawnve( _P_WAIT, prg, (const char * const *) args,
                                  (const char * const *) environ );
@@ -2916,6 +2930,8 @@ UInt SyExecuteProcess (
     }
     if (out == -1) close(tout);
     if (in == -1) close(tin);
+
+    FreezeStdin = 0;
 
     /* Report result: */
     if (res < 0) return -1;
@@ -2961,12 +2977,15 @@ UInt SyExecuteProcess (
 
     /* we are the parent                                                   */
     if ( pid != 0 ) {
+        // Stop trying to read input
+        FreezeStdin = 1;
 
         /* ignore a CTRL-C                                                 */
         func = signal( SIGINT, SIG_IGN );
 
         /* wait for some action                                            */
         wait_pid = waitpid( pid, &status, 0 );
+        FreezeStdin = 0;
         if ( wait_pid == -1 ) {
             signal( SIGINT, func );
             (*func2)(SIGCHLD);
