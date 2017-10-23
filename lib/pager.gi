@@ -85,7 +85,12 @@ leave the 'Pager' and 'PagerOptions' preferences empty."
         return [ pager, options ];
       fi;
     fi;
-    return [ "builtin", [] ];
+    # The builtin pager does not work in HPCGAP
+    if IsHPCGAP then
+      return [ "less" , ["-f","-r","-a","-i","-M","-j2"] ];
+    else
+      return [ "builtin", [] ];
+    fi;
   end,
   ) );
 ## HACKUSERPREF  temporary until all packages are adjusted
