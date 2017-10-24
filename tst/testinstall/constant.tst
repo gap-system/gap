@@ -1,3 +1,4 @@
+# create a plain global var and perform some test
 gap> testvar := 2;
 2
 gap> IsReadOnlyGlobal(testvar);
@@ -6,6 +7,8 @@ gap> IsReadOnlyGlobal("testvar");
 false
 gap> IsConstantGlobal("testvar");
 false
+
+# make the global var readonly and perform some test
 gap> MakeReadOnlyGlobal("testvar");
 gap> IsReadOnlyGlobal("testvar");
 true
@@ -13,6 +16,8 @@ gap> IsConstantGlobal("testvar");
 false
 gap> testvar := 3;
 Error, Variable: 'testvar' is read only
+
+# make the global var readwrite again and perform some test
 gap> MakeReadWriteGlobal("testvar");
 gap> IsReadOnlyGlobal("testvar");
 false
@@ -20,21 +25,28 @@ gap> IsConstantGlobal("testvar");
 false
 gap> testvar := 3;
 3
+
+# make the global var constant and perform some test
 gap> MakeConstantGlobal("testvar");
 gap> testvar := 4;
-Syntax error: ; expected in stream:1
-testvar := 4;
-         ^
-4
+Error, Variable: 'testvar' is constant
 gap> IsReadOnlyGlobal("testvar");
 false
 gap> IsConstantGlobal("testvar");
 true
+gap> IsBound(testvar);
+true
+gap> Unbind(testvar);
+Error, Variable: 'testvar' is constant
+
+# Try making a global var constants whose value is not eligible
 gap> newtestvar := fail;;
 gap> MakeConstantGlobal("newtestvar");
 Error, Variable: 'newtestvar' must be assigned a small integer, true or false
 gap> IsConstantGlobal("newtestvar");
 false
+
+# some more tests with constant gvars with boolean value
 gap> booltruevar := true;;
 gap> boolfalsevar := false;;
 gap> f := function()
