@@ -2402,9 +2402,7 @@ void ReadAtomic (
       return; }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
-#ifdef HPCGAP
     TRY_READ { IntrAtomicBegin(); }
-#endif
 
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
