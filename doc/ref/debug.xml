@@ -423,11 +423,14 @@ should be treated as an estimate.
 </ManSection>
 
 <ManSection>
-<Var Name="time"/>
+  <Var Name="time"/>
+  <Var Name="memory_allocated"/>
 
 <Description>
 In the read-eval-print loop,
-<Ref Var="time"/> stores the number of milliseconds the last command took.
+<Ref Var="time"/> stores the number of milliseconds the last command
+took. and <Ref Var="memory_allocated"/> stored the number of bytes of
+memory it allocated.
 </Description>
 </ManSection>
 
@@ -444,6 +447,27 @@ in nanoseconds.
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Tracking Memory Usage">
+  <Heading>Tracking Memory Usage</Heading>
+
+  <ManSection>
+    <Func Name="TotalMemoryAllocated" Arg=""/>
+    <Description> <Ref Func="TotalMemoryAllocated"/> returns the total amount of memory
+    in bytes allocated by the &GAP; memory manager since &GAP; started.
+    </Description>
+  </ManSection>
+  <ManSection>
+  <Var Name="memory_allocated"/>
+
+<Description>
+In the read-eval-print loop,
+<Ref Var="memory_allocated"/> stores the number of bytes of
+memoryallocated by the last completed statement.
+</Description>
+</ManSection>
+
+</Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Profiling">
