@@ -651,7 +651,7 @@ void ReadCallVarAss (
     }
 
     /* if we need a reference                                              */
-    if ( mode == 'r' || (mode == 'x' && !IS_IN(STATE(Symbol), S_ASSIGN)) ) {
+    if ( mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN) ) {
       TRY_READ {
              if ( type == 'l' ) { IntrRefLVar( var );             }
         else if ( type == 'h' ) { IntrRefHVar( var );             }
@@ -680,19 +680,10 @@ void ReadCallVarAss (
       } /* end TRY_READ */
     }
 
-#ifdef HPCGAP
-#define ASSIGN_ERROR_MESSAGE ":= or ::="
-#else
-#define ASSIGN_ERROR_MESSAGE ":="
-#endif
-
     /* if we need a statement                                              */
-    else if ( mode == 's' || (mode == 'x' && IS_IN(STATE(Symbol), S_ASSIGN)) ) {
+    else if ( mode == 's' || (mode == 'x' && STATE(Symbol) == S_ASSIGN) ) {
         if ( type != 'c' && type != 'C') {
-            if (STATE(Symbol) != S_ASSIGN)
-              Match( S_INCORPORATE, ASSIGN_ERROR_MESSAGE, follow);
-            else
-              Match( S_ASSIGN, ASSIGN_ERROR_MESSAGE, follow );
+            Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
               STATE(CurrLHSGVar) = (type == 'g' ? var : 0);
             }
