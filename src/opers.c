@@ -6377,12 +6377,12 @@ static Int InitLibrary (
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
-    AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
+    AssReadOnlyGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
     TRY_NEXT_METHOD = MakeImmString("TRY_NEXT_METHOD");
-    AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
+    AssReadOnlyGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

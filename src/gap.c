@@ -2185,8 +2185,7 @@ void InitGVarFiltsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2204,8 +2203,7 @@ void InitGVarAttrsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2222,8 +2220,7 @@ void InitGVarPropsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2241,8 +2238,7 @@ void InitGVarOpersFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
-        AssGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
     }
 }
 
@@ -2295,8 +2291,7 @@ void InitGVarFuncsFromTable (
         Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
         Obj func = NewFunction( name, tab[i].nargs, args, tab[i].handler );
         SetupFuncInfo( func, tab[i].cookie );
-        AssGVar( gvar, func );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, func );
     }
 }
 
@@ -2998,19 +2993,12 @@ static Int InitLibrary (
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
 
-    UInt isvar = GVarName( "IsHPCGAP" );
-
 #ifdef HPCGAP
-    UInt var = GVarName( "HPCGAP" );
-    AssGVar( var, True );
-    MakeConstantGVar( var );
-
-    AssGVar( isvar, True );
+    AssConstantGVar( GVarName( "HPCGAP" ), True );
+    AssConstantGVar( GVarName( "IsHPCGAP" ), True );
 #else
-    AssGVar( isvar, False );
+    AssConstantGVar( GVarName( "IsHPCGAP" ), False );
 #endif
-
-    MakeConstantGVar(isvar);
 
     /* return success                                                      */
     return PostRestore( module );

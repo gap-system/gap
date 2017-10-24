@@ -434,7 +434,6 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt            gvar;
     Obj             tmp;
 
     /* init filters and functions                                          */
@@ -446,15 +445,11 @@ static Int InitLibrary (
     Fail  = NewBag( T_BOOL, 0L );
 
     /* `fail' is a variable not a language construct                       */
-    gvar = GVarName( "fail" );
-    AssGVar( gvar, Fail );
-    MakeReadOnlyGVar(gvar);
+    AssReadOnlyGVar( GVarName( "fail" ), Fail );
 
     /* `SuPeRfail' ditto                       */
     SuPeRfail  = NewBag( T_BOOL, 0L );
-    gvar = GVarName( "SuPeRfail" );
-    AssGVar( gvar, SuPeRfail );
-    MakeReadOnlyGVar(gvar);
+    AssReadOnlyGVar( GVarName( "SuPeRfail" ), SuPeRfail );
 
     /* Undefined is an internal value */
     Undefined = NewBag( T_BOOL, 0 );
@@ -464,21 +459,21 @@ static Int InitLibrary (
     SET_HDLR_FUNC( tmp, 1, ReturnTrue1);
     SET_HDLR_FUNC( tmp, 2, ReturnTrue2);
     SET_HDLR_FUNC( tmp, 3, ReturnTrue3);
-    AssGVar( GVarName("RETURN_TRUE"), tmp );
+    AssReadOnlyGVar( GVarName("RETURN_TRUE"), tmp );
 
     /* make and install the 'RETURN_FALSE' function                        */
     tmp = NewFunctionC("RETURN_FALSE",-1L,"arg",ReturnFalse1);
     SET_HDLR_FUNC( tmp, 1, ReturnFalse1);
     SET_HDLR_FUNC( tmp, 2, ReturnFalse2);
     SET_HDLR_FUNC( tmp, 3, ReturnFalse3);
-    AssGVar( GVarName( "RETURN_FALSE" ), tmp );
+    AssReadOnlyGVar( GVarName( "RETURN_FALSE" ), tmp );
 
     /* make and install the 'RETURN_FAIL' function                        */
     tmp = NewFunctionC("RETURN_FAIL", -1L, "arg", ReturnFail1);
     SET_HDLR_FUNC( tmp, 1, ReturnFail1);
     SET_HDLR_FUNC( tmp, 2, ReturnFail2);
     SET_HDLR_FUNC( tmp, 3, ReturnFail3);
-    AssGVar( GVarName( "RETURN_FAIL" ), tmp );
+    AssReadOnlyGVar( GVarName( "RETURN_FAIL" ), tmp );
 
     /* return success                                                      */
     return 0;

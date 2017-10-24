@@ -381,46 +381,27 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
-             INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
-    AssGVar( GVarName( "PC_GENERATORS" ),
-             INTOBJ_INT( PC_GENERATORS ) );
-    AssGVar( GVarName( "PC_INVERSES" ),
-             INTOBJ_INT( PC_INVERSES ) );
-    AssGVar( GVarName( "PC_COMMUTE" ),
-             INTOBJ_INT( PC_COMMUTE ) );
-    AssGVar( GVarName( "PC_POWERS" ),
-             INTOBJ_INT( PC_POWERS ) );
-    AssGVar( GVarName( "PC_INVERSEPOWERS" ),
-             INTOBJ_INT( PC_INVERSEPOWERS ) );
-    AssGVar( GVarName( "PC_EXPONENTS" ),
-             INTOBJ_INT( PC_EXPONENTS ) );
-    AssGVar( GVarName( "PC_CONJUGATES" ),
-             INTOBJ_INT( PC_CONJUGATES ) );
-    AssGVar( GVarName( "PC_INVERSECONJUGATES" ),
-             INTOBJ_INT( PC_INVERSECONJUGATES ) );
-    AssGVar( GVarName( "PC_CONJUGATESINVERSE" ),
-             INTOBJ_INT( PC_CONJUGATESINVERSE ) );
-    AssGVar( GVarName( "PC_INVERSECONJUGATESINVERSE" ),
-             INTOBJ_INT( PC_INVERSECONJUGATESINVERSE ) );
-    AssGVar( GVarName( "PC_DEEP_THOUGHT_POLS" ),
-             INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
-    AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
-             INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
-    AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
-    AssGVar( GVarName( "PC_WORD_STACK" ),
-             INTOBJ_INT( PC_WORD_STACK ) );
-    AssGVar( GVarName( "PC_STACK_SIZE" ),
-             INTOBJ_INT( PC_STACK_SIZE ) );
-    AssGVar( GVarName( "PC_WORD_EXPONENT_STACK" ),
-             INTOBJ_INT( PC_WORD_EXPONENT_STACK ) );
-    AssGVar( GVarName( "PC_SYLLABLE_STACK" ),
-             INTOBJ_INT( PC_SYLLABLE_STACK ) );
-    AssGVar( GVarName( "PC_EXPONENT_STACK" ),
-             INTOBJ_INT( PC_EXPONENT_STACK ) );
-    AssGVar( GVarName( "PC_STACK_POINTER" ),
-             INTOBJ_INT( PC_STACK_POINTER ) );
-    AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
+    ExportAsConstantGVar(PC_NUMBER_OF_GENERATORS);
+    ExportAsConstantGVar(PC_GENERATORS);
+    ExportAsConstantGVar(PC_INVERSES);
+    ExportAsConstantGVar(PC_COMMUTE);
+    ExportAsConstantGVar(PC_POWERS);
+    ExportAsConstantGVar(PC_INVERSEPOWERS);
+    ExportAsConstantGVar(PC_EXPONENTS);
+    ExportAsConstantGVar(PC_CONJUGATES);
+    ExportAsConstantGVar(PC_INVERSECONJUGATES);
+    ExportAsConstantGVar(PC_CONJUGATESINVERSE);
+    ExportAsConstantGVar(PC_INVERSECONJUGATESINVERSE);
+    ExportAsConstantGVar(PC_DEEP_THOUGHT_POLS);
+    ExportAsConstantGVar(PC_DEEP_THOUGHT_BOUND);
+    ExportAsConstantGVar(PC_ORDERS);
+    ExportAsConstantGVar(PC_WORD_STACK);
+    ExportAsConstantGVar(PC_STACK_SIZE);
+    ExportAsConstantGVar(PC_WORD_EXPONENT_STACK);
+    ExportAsConstantGVar(PC_SYLLABLE_STACK);
+    ExportAsConstantGVar(PC_EXPONENT_STACK);
+    ExportAsConstantGVar(PC_STACK_POINTER);
+    ExportAsConstantGVar(PC_DEFAULT_TYPE);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

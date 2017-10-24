@@ -658,14 +658,10 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* export position numbers 'PCWP_SOMETHING'                            */
-    AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
-             INTOBJ_INT(PCWP_FIRST_ENTRY) );
-    AssGVar( GVarName( "PCWP_NAMES" ),
-             INTOBJ_INT(PCWP_NAMES) );
-    AssGVar( GVarName( "PCWP_COLLECTOR" ),
-             INTOBJ_INT(PCWP_COLLECTOR) );
-    AssGVar( GVarName( "PCWP_FIRST_FREE" ),
-             INTOBJ_INT(PCWP_FIRST_FREE) );
+    ExportAsConstantGVar(PCWP_FIRST_ENTRY);
+    ExportAsConstantGVar(PCWP_NAMES);
+    ExportAsConstantGVar(PCWP_COLLECTOR);
+    ExportAsConstantGVar(PCWP_FIRST_FREE);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

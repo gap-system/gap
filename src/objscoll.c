@@ -814,52 +814,38 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* export position numbers 'SCP_SOMETHING'                             */
-    AssGVar( GVarName( "SCP_UNDERLYING_FAMILY" ),
-             INTOBJ_INT(SCP_UNDERLYING_FAMILY) );
-    AssGVar( GVarName( "SCP_RWS_GENERATORS" ),
-             INTOBJ_INT(SCP_RWS_GENERATORS) );
-    AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
-             INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
-    AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
-             INTOBJ_INT(SCP_DEFAULT_TYPE) );
-    AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
-             INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
-    AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
-             INTOBJ_INT(SCP_RELATIVE_ORDERS) );
-    AssGVar( GVarName( "SCP_POWERS" ),
-             INTOBJ_INT(SCP_POWERS) );
-    AssGVar( GVarName( "SCP_CONJUGATES" ),
-             INTOBJ_INT(SCP_CONJUGATES) );
-    AssGVar( GVarName( "SCP_INVERSES" ),
-             INTOBJ_INT(SCP_INVERSES) );
-    AssGVar( GVarName( "SCP_COLLECTOR" ),
-             INTOBJ_INT(SCP_COLLECTOR) );
-    AssGVar( GVarName( "SCP_AVECTOR" ),
-             INTOBJ_INT(SCP_AVECTOR) );
-    AssGVar( GVarName( "SCP_WEIGHTS" ),
-             INTOBJ_INT(SCP_WEIGHTS) );
-    AssGVar( GVarName( "SCP_CLASS" ),
-             INTOBJ_INT(SCP_CLASS) );
-    AssGVar( GVarName( "SCP_AVECTOR2" ),
-             INTOBJ_INT(SCP_AVECTOR2) );
+    ExportAsConstantGVar(SCP_UNDERLYING_FAMILY);
+    ExportAsConstantGVar(SCP_RWS_GENERATORS);
+    ExportAsConstantGVar(SCP_NUMBER_RWS_GENERATORS);
+    ExportAsConstantGVar(SCP_DEFAULT_TYPE);
+    ExportAsConstantGVar(SCP_IS_DEFAULT_TYPE);
+    ExportAsConstantGVar(SCP_RELATIVE_ORDERS);
+    ExportAsConstantGVar(SCP_POWERS);
+    ExportAsConstantGVar(SCP_CONJUGATES);
+    ExportAsConstantGVar(SCP_INVERSES);
+    ExportAsConstantGVar(SCP_COLLECTOR);
+    ExportAsConstantGVar(SCP_AVECTOR);
+    ExportAsConstantGVar(SCP_WEIGHTS);
+    ExportAsConstantGVar(SCP_CLASS);
+    ExportAsConstantGVar(SCP_AVECTOR2);
 
 #ifndef HPCGAP
     SetupCollectorStacks();
 #endif
 
     /* export collector number                                             */
-    AssGVar( GVarName( "8Bits_SingleCollector" ),
+    AssConstantGVar( GVarName( "8Bits_SingleCollector" ),
              INTOBJ_INT(C8Bits_SingleCollectorNo) );
-    AssGVar( GVarName( "16Bits_SingleCollector" ),
+    AssConstantGVar( GVarName( "16Bits_SingleCollector" ),
              INTOBJ_INT(C16Bits_SingleCollectorNo) );
-    AssGVar( GVarName( "32Bits_SingleCollector" ),
+    AssConstantGVar( GVarName( "32Bits_SingleCollector" ),
              INTOBJ_INT(C32Bits_SingleCollectorNo) );
 
-    AssGVar( GVarName( "8Bits_CombiCollector" ),
+    AssConstantGVar( GVarName( "8Bits_CombiCollector" ),
              INTOBJ_INT(C8Bits_CombiCollectorNo) );
-    AssGVar( GVarName( "16Bits_CombiCollector" ),
+    AssConstantGVar( GVarName( "16Bits_CombiCollector" ),
              INTOBJ_INT(C16Bits_CombiCollectorNo) );
-    AssGVar( GVarName( "32Bits_CombiCollector" ),
+    AssConstantGVar( GVarName( "32Bits_CombiCollector" ),
              INTOBJ_INT(C32Bits_CombiCollectorNo) );
 
     /* init filters and functions                                          */

@@ -194,6 +194,26 @@ extern Int IsConstantGVar(UInt gvar);
 
 /****************************************************************************
 **
+**  Some convenient helpers
+*/
+static inline void AssReadOnlyGVar(UInt gvar, Obj val)
+{
+    AssGVar(gvar, val);
+    MakeReadOnlyGVar(gvar);
+}
+
+static inline void AssConstantGVar(UInt gvar, Obj val)
+{
+    AssGVar(gvar, val);
+    MakeConstantGVar(gvar);
+}
+
+#define ExportAsConstantGVar(symbol) \
+    AssConstantGVar(GVarName(#symbol), INTOBJ_INT(symbol))
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * copies and fopies  * * * * * * * * * * * * * * *
 */
 
