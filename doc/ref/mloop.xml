@@ -27,6 +27,8 @@ interactive environment in which you use &GAP;.
 <Index Key="last"><C>last</C></Index>
 <Index Key="last2"><C>last2</C></Index>
 <Index Key="last3"><C>last3</C></Index>
+<Index Key="time"><C>time</C></Index>
+<Index Key="memory_allocated"><C>memory_allocated</C></Index>
 <Index>previous result</Index>
 The normal interaction with &GAP; happens in the so-called
 <E>read-eval-print</E> loop.
@@ -154,8 +156,10 @@ gap> last3 + last2 * last;
 ]]></Example>
 <P/>
 Also in each statement the time spent by the last statement, whether it
-produced a value or not, is available in the variable <Ref Var="time"/>.
-This is an integer that holds the number of milliseconds.
+produced a value or not, is available in the variable <Ref
+Var="time"/>. This is an integer that holds the number of
+milliseconds. Similarly the amount of memory allocated during that
+statement (in bytes) is stored in the variable <Ref Var="memory_allocated"/>.
 
 </Section>
 
