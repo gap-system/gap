@@ -396,6 +396,33 @@ Stat PopSeqStat (
     return body;
 }
 
+static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
+{
+    // fix up the case of no statements
+    if (0 == nr) {
+        PushStat(NewStat(T_EMPTY, 0));
+        nr = 1;
+    }
+
+    // collect the statements into a statement sequence if necessary
+    else if (3 < nr) {
+        PushStat(PopSeqStat(nr));
+        nr = 1;
+    }
+
+    // allocate the compound statement
+    Stat stat = NewStat(baseType + (nr - 1),
+                        extra * sizeof(Expr) + nr * sizeof(Stat));
+
+    // enter the statements
+    for (UInt i = nr; 1 <= i; i--) {
+        Stat stat1 = PopStat();
+        ADDR_STAT(stat)[i + extra - 1] = stat1;
+    }
+
+    return stat;
+}
+
 
 /****************************************************************************
 **
@@ -1075,20 +1102,6 @@ void CodeForEndBody (
     UInt                type;           /* type of for-statement           */
     Expr                var;            /* variable                        */
     Expr                list;           /* list                            */
-    Stat                stat1;          /* single statement of body        */
-    UInt                i;              /* loop variable                   */
-
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
 
     /* get the list expression                                             */
     list = PopExpr();
@@ -1102,20 +1115,14 @@ void CodeForEndBody (
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
       && IS_REFLVAR(var) ) {
-        type = T_FOR_RANGE + (nr-1);
+        type = T_FOR_RANGE;
     }
     else {
-        type = T_FOR + (nr-1);
+        type = T_FOR;
     }
 
     /* allocate the for-statement                                          */
-    stat = NewStat( type, 2*sizeof(Expr) + nr * sizeof(Stat) );
-
-    /* enter the body statements                                           */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i+1] = stat1;
-    }
+    stat = PopLoopStat(type, 2, nr);
 
     /* enter the list expression                                           */
     ADDR_STAT(stat)[1] = list;
@@ -1262,30 +1269,9 @@ void CodeWhileEndBody (
 {
     Stat                stat;           /* while-statement, result         */
     Expr                cond;           /* condition                       */
-    Stat                stat1;          /* single statement of body        */
-    UInt                i;              /* loop variable                   */
-
-
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-    
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
 
     /* allocate the while-statement                                        */
-    stat = NewStat( T_WHILE + (nr-1), sizeof(Expr) + nr * sizeof(Stat) );
-
-    /* enter the statements                                                */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i] = stat1;
-    }
+    stat = PopLoopStat(T_WHILE, 1, nr);
 
     /* enter the condition                                                 */
     cond = PopExpr();
@@ -1348,9 +1334,7 @@ void CodeRepeatEnd ( void )
     Stat                stat;           /* repeat-statement, result        */
     UInt                nr;             /* number of statements in body    */
     Expr                cond;           /* condition                       */
-    Stat                stat1;          /* single statement of body        */
     Expr                tmp;            /* temporary                       */
-    UInt                i;              /* loop variable                   */
 
     /* get the condition                                                   */
     cond = PopExpr();
@@ -1360,28 +1344,11 @@ void CodeRepeatEnd ( void )
     tmp = PopExpr();
     nr = INT_INTEXPR( tmp );
 
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
-
     /* allocate the repeat-statement                                       */
-    stat = NewStat( T_REPEAT + (nr-1), sizeof(Expr) + nr * sizeof(Stat) );
+    stat = PopLoopStat(T_REPEAT, 1, nr);
 
     /* enter the condition                                                 */
     ADDR_STAT(stat)[0] = cond;
-
-    /* enter the statements                                                */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i] = stat1;
-    }
 
     /* push the repeat-statement                                           */
     PushStat( stat );
