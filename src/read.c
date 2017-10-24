@@ -483,7 +483,9 @@ void ReadCallVarAss (
         var = GVarName( varname );
 
         // Check if the variable is a constant
-        if (mode != 'i' && ValGVar(var) && IsConstantGVar(var)) {
+        if (mode != 'i' && mode != 's' &&  mode != 'u'
+          && !(mode == 'x' && STATE(Symbol) == S_ASSIGN)
+          && ValGVar(var) && IsConstantGVar(var)) {
             Obj val = ValAutoGVar(var);
             if (val == True)
                 IntrTrueExpr();
