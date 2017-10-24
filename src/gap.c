@@ -84,6 +84,7 @@
 #include <src/intrprtr.h>               /* interpreter */
 
 #include <src/compiler.h>               /* compiler */
+#include <src/syntaxtree.h>             /* syntax tree */ 
 
 #include <src/compstat.h>               /* statically linked modules */
 
@@ -3070,6 +3071,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoOpers,
     InitInfoIntrprtr,
     InitInfoCompiler,
+    InitInfoSyntaxTree,
 
     /* arithmetic operations                                               */
     InitInfoAriths,
