@@ -899,147 +899,55 @@ void IntrQualifiedExprEnd( void )
 */
 void            IntrAtomicBegin ( void )
 {
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeAtomicBegin(); return; }
-    /* nothing to do here */
-  
-}
-
-void            IntrAtomicBeginBody ( UInt nrexprs )
-{
-    /* ignore    or code                                                          */
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)++; CodeAtomicBeginBody(nrexprs); return; }
-
-    /* leave the expressions and qualifiers on the stack, switch to coding to process the body
-       of the Atomic expression */
-    PushObj(INTOBJ_INT(nrexprs));
 
     if (STATE(IntrCoding) == 0)
         StartFakeFuncExpr(STATE(Input)->number);
 
     STATE(IntrCoding)++;
+
+    CodeAtomicBegin();
+}
+
+void            IntrAtomicBeginBody ( UInt nrexprs )
+{
+    /* ignore                                                              */
+    if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 0 ) { return; }
+
+    /* otherwise must be coding                                            */
+    assert(STATE(IntrCoding) > 0);
+    CodeAtomicBeginBody(nrexprs);
 }
 
 void            IntrAtomicEndBody (
     Int                nrstats )
 {
-  Obj body;
-
     /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
-    if (STATE(IntrCoding) == 1) {
-      /* This is the case where we are really immediately interpreting an atomic
-	 statement, but we switched to coding to store the body until we have it all */
-
-    /* If we are in a break loop, then we will have created a "dummy" local
-       variable names list to get the counts right. Remove it */
-      const UInt len = LEN_PLIST(STATE(StackNams));
-      if (len > 0)
-          PopPlist(STATE(StackNams));
-
-      /* Code the body as a function expression */
-      CodeFuncExprEnd( nrstats, 0UL );
-    
-
-      /* switch back to immediate mode, get the function                     */
-      STATE(IntrCoding) = 0;
-      CodeEnd( 0 );
-      body = STATE(CodeResult);
-      PushObj(body);
-    } else {
-      
-        assert( STATE(IntrCoding) > 0 );
-        CodeAtomicEndBody( nrstats );
-    }
+    // must be coding
+    assert(STATE(IntrCoding) > 0);
+    CodeAtomicEndBody(nrstats);
 }
-
 
 void            IntrAtomicEnd ( void )
 {
-    Obj                 body;           /* the function, result            */
-    UInt                nrexprs;
-    UInt                i;
-
-#ifdef HPCGAP
-    UInt                mode,j;
-    Obj tolock[MAX_ATOMIC_OBJS];
-    int locktypes[MAX_ATOMIC_OBJS];
-    int lockstatus[MAX_ATOMIC_OBJS];
-    int lockSP;
-    Obj o;
-#endif
-
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)--; CodeAtomicEnd(); return; }
-    /* Now we need to recover the objects to lock, and go to work */
 
-    body = PopObj();
+    /* otherwise must be coding                                            */
+    assert(STATE(IntrCoding) > 0);
 
-    nrexprs = INT_INTOBJ(PopObj());
+    STATE(IntrCoding)--;
+    CodeAtomicEnd();
 
-#ifdef HPCGAP
-    j = 0;
-    for (i = 0; i < nrexprs; i++) {
-      o = PopObj();
-      mode = INT_INTOBJ(PopObj());
-      if (!((Int)o & 0x3)) {
-        tolock[j] =  o;
-        locktypes[j++] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
-      }
-    }
-    nrexprs = j;
-
-    GetLockStatus(nrexprs, tolock, lockstatus);
-
-    j = 0;
-    for (i = 0; i < nrexprs; i++) {
-      switch (lockstatus[i]) {
-      case 0:
-        tolock[j] = tolock[i];
-        locktypes[j] = locktypes[i];
-        j++;
-        break;
-      case 2:
-        if (locktypes[i] == 1)
-          ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
-        break;
-      case 1:
-          break;
-      default:
-        assert(0);
-      }
-    }
-    lockSP = LockObjects(j, tolock, locktypes);
-    /* Push at least one empty region on the stack so we can tell
-     * that we are inside an atomic section. */
-    if (j == 0)
-      PushRegionLock((Region *) 0);
-    if (lockSP >= 0) {
-      CALL_0ARGS( body );
-      PopRegionLocks(lockSP);
-    } else {
-      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
-    }
-#else
-    for (i = 0; i < nrexprs; i++) {
-      PopObj(); /* pop object */
-      PopObj(); /* pop mode */
-    }
-    
-    CALL_0ARGS( body );
-#endif
-
-    /* push void                                                           */
-    PushVoidObj();
+    if (STATE(IntrCoding) == 0)
+        FinishAndCallFakeFuncExpr();
 }
 
 
