@@ -429,6 +429,7 @@ local S;
 #    return S;
 #  fi;
 
+  Assert(1,Length(GeneratorsOfGroup(Q))=Length(GeneratorsOfGroup(fam!.wholeGroup)));
   S := Objectify(NewType(fam, IsGroup and
     IsSubgroupOfWholeGroupByQuotientRep and IsAttributeStoringRep ),
         rec(quot:=Q,sub:=U) ); 
@@ -1970,7 +1971,7 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)
     or NrMovedPoints(s)>1000) then
     d:=SmallerDegreePermutationRepresentation(s);
-    A:=Image(d,s);
+    A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
     if NrMovedPoints(A)<NrMovedPoints(s) then
       Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
            NrMovedPoints(A));
