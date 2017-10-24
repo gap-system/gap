@@ -2349,7 +2349,7 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
     TryNextMethod();
   fi;
   uind:=IndexNC(G,U);
-  if uind<200 then
+  if uind<200 and ValueOption("usemaximals")<>true then
     TryNextMethod();
   fi;
   subs:=[G]; #subgroups so far
