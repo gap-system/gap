@@ -150,7 +150,7 @@ UInt Time;
 
 /****************************************************************************
 **
-*V  MemoryAllocated. . . . . . . . . . .  global variable  'memory_allocated'
+*V  MemoryAllocated . . . . . . . . . . . global variable  'memory_allocated'
 **
 **  'MemoryAllocated' is the global variable 'memory_allocated', 
 **  which is automatically assigned the amount of memory allocated while

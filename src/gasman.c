@@ -1251,9 +1251,7 @@ UInt ResizeBag (
 #ifdef COUNT_BAGS
     /* update the statistics                                               */
     InfoBags[type].sizeLive += new_size - old_size;
-    //    InfoBags[type].sizeAll  += new_size - old_size;
 #endif
-    //    SizeAllBags             += new_size - old_size;
     
     const Int diff = WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
@@ -1303,8 +1301,7 @@ UInt ResizeBag (
             YoungBags += diff;
         AllocBags += diff;
 
-        /* In this case we increase the total amount allocated by the
-           difference */
+        // and increase the total amount allocated by the difference 
 #ifdef COUNT_BAGS
         InfoBags[type].sizeAll  += new_size - old_size;
 #endif
