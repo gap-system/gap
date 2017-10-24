@@ -25,4 +25,16 @@
 #define GAP_ASSERT(x)
 #endif
 
+// Portable compile time assertion.
+#if defined(static_assert) && !defined(WARD_ENABLED)
+// If available, use _Static_assert resp. static_assert from C11.
+// However, ward currently cannot deal with it.
+#define GAP_STATIC_ASSERT(cond, msg)    static_assert(cond, msg)
+#else
+// If the compiler does not support _Static_assert resp. static_assert,
+// fall back to a hack (the error message is a bit ugly in that case).
+#define GAP_STATIC_ASSERT(cond, msg) \
+    typedef char static_assertion_##__LINE__[(cond)? 1 : -1]
+#endif
+
 #endif
