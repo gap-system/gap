@@ -197,6 +197,55 @@ static Obj PopVoidObj(void)
     return val;
 }
 
+static inline void StartFakeFuncExpr(Int startLine)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // switch to coding mode now
+    CodeBegin();
+
+    // code a function expression (with no arguments and locals)
+    Obj nams = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(nams, 0);
+
+    // If we are in the break loop, then a local variable context may well
+    // exist, and we have to create an empty local variable names list to
+    // match the function expression that we are creating.
+    //
+    // If we are not in a break loop, then this would be a waste of time and
+    // effort
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
+    }
+
+    CodeFuncExprBegin(0, 0, nams, startLine);
+}
+
+static inline void FinishAndCallFakeFuncExpr(void)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // code a function expression (with one statement in the body)
+    CodeFuncExprEnd(1, 0);
+
+    // switch back to immediate mode
+    CodeEnd(0);
+
+    // If we are in a break loop, then we will have created a "dummy" local
+    // variable names list to get the counts right. Remove it.
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+        PopPlist(STATE(StackNams));
+
+    // get the function
+    Obj func = STATE(CodeResult);
+
+    // call the function
+    CALL_0ARGS(func);
+
+    // push void
+    PushVoidObj();
+}
 
 /****************************************************************************
 **
@@ -446,15 +495,11 @@ void            IntrFuncExprBegin (
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) {
-        STATE(IntrCoding)++;
-        CodeFuncExprBegin( narg, nloc, nams, startLine );
-        return;
-    }
 
-    /* switch to coding mode now                                           */
-    CodeBegin();
-    STATE(IntrCoding) = 1;
+    if (STATE(IntrCoding) == 0) {
+        CodeBegin();
+    }
+    STATE(IntrCoding)++;
 
     /* code a function expression                                          */
     CodeFuncExprBegin( narg, nloc, nams, startLine );
@@ -464,30 +509,26 @@ void            IntrFuncExprEnd (
     UInt                nr,
     UInt                mapsto )
 {
-    Obj                 func;           /* the function, result            */
-
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 1 ) {
-        STATE(IntrCoding)--;
-        CodeFuncExprEnd( nr, mapsto );
-        return;
+
+    /* otherwise must be coding                                            */
+    assert(STATE(IntrCoding) > 0);
+
+    STATE(IntrCoding)--;
+    CodeFuncExprEnd(nr, mapsto);
+
+    if (STATE(IntrCoding) == 0) {
+        // switch back to immediate mode
+        CodeEnd(0);
+
+        // get the function
+        Obj func = STATE(CodeResult);
+
+        // push the function
+        PushObj(func);
     }
-
-    /* must be coding                                                      */
-    assert( STATE(IntrCoding) > 0 );
-
-    /* code a function expression                                          */
-    CodeFuncExprEnd( nr, mapsto );
-
-    /* switch back to immediate mode, get the function                     */
-    CodeEnd(0);
-    STATE(IntrCoding) = 0;
-    func = STATE(CodeResult);
-
-    /* push the function                                                   */
-    PushObj(func);
 }
 
 
@@ -658,33 +699,14 @@ void            IntrIfEnd (
 */
 void IntrForBegin ( void )
 {
-    Obj                 nams;           /* (empty) list of names           */
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)++; CodeForBegin(); return; }
 
+    if (STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(0);
 
-    /* switch to coding mode now                                           */
-    CodeBegin();
-    STATE(IntrCoding) = 1;
-
-    /* code a function expression (with no arguments and locals)           */
-    nams = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( nams, 0 );
-
-    /* If we are in the break loop, then a local variable context may well exist,
-       and we have to create an empty local variable names list to match the
-       function expression that we are creating.
-
-       If we are not in a break loop, then this would be a waste of time and effort */
-
-    if (LEN_PLIST(STATE(StackNams)) > 0) {
-        PushPlist(STATE(StackNams), nams);
-    }
-
-    CodeFuncExprBegin( 0, 0, nams, 0 );
+    STATE(IntrCoding)++;
 
     /* code a for loop                                                     */
     CodeForBegin();
@@ -696,7 +718,6 @@ void IntrForIn ( void )
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
-
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
     CodeForIn();
@@ -707,7 +728,6 @@ void IntrForBeginBody ( void )
     /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
@@ -722,45 +742,24 @@ void IntrForEndBody (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( STATE(IntrCoding) != 0 ) {
-        CodeForEndBody( nr );
-    }
+    assert(STATE(IntrCoding) > 0);
+    CodeForEndBody(nr);
 }
 
 void IntrForEnd ( void )
 {
-    Obj                 func;           /* the function, result            */
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 1 ) { STATE(IntrCoding)--; CodeForEnd(); return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
+
+    STATE(IntrCoding)--;
     CodeForEnd();
 
-    /* code a function expression (with one statement in the body)         */
-    CodeFuncExprEnd( 1UL, 0UL );
-
-    /* switch back to immediate mode, get the function                     */
-    STATE(IntrCoding) = 0;
-    CodeEnd( 0 );
-
-    /* If we are in a break loop, then we will have created a "dummy" local
-       variable names list to get the counts right. Remove it */
-    const UInt len = LEN_PLIST(STATE(StackNams));
-    if (len > 0)
-        PopPlist(STATE(StackNams));
-
-    func = STATE(CodeResult);
-
-    /* call the function                                                   */
-    CALL_0ARGS( func );
-
-    /* push void                                                           */
-    PushVoidObj();
+    if (STATE(IntrCoding) == 0)
+        FinishAndCallFakeFuncExpr();
 }
 
 
@@ -792,33 +791,14 @@ void IntrForEnd ( void )
 */
 void            IntrWhileBegin ( void )
 {
-    Obj                 nams;           /* (empty) list of names           */
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)++; CodeWhileBegin(); return; }
 
+    if (STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(0);
 
-    /* switch to coding mode now                                           */
-    CodeBegin();
-    STATE(IntrCoding) = 1;
-
-    /* code a function expression (with no arguments and locals)           */
-    nams = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( nams, 0 );
-
-    /* If we are in the break loop, then a local variable context may well exist,
-       and we have to create an empty local variable names list to match the
-       function expression that we are creating.
-
-       If we are not in a break loop, then this would be a waste of time and effort */
-
-    if (LEN_PLIST(STATE(StackNams)) > 0) {
-        PushPlist(STATE(StackNams), nams);
-    }
-
-    CodeFuncExprBegin( 0, 0, nams, 0 );
+    STATE(IntrCoding)++;
 
     /* code a while loop                                                   */
     CodeWhileBegin();
@@ -829,7 +809,6 @@ void            IntrWhileBeginBody ( void )
     /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
@@ -850,38 +829,18 @@ void            IntrWhileEndBody (
 
 void            IntrWhileEnd ( void )
 {
-    Obj                 func;           /* the function, result            */
-
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 1 ) { STATE(IntrCoding)--; CodeWhileEnd(); return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
+
+    STATE(IntrCoding)--;
     CodeWhileEnd();
 
-    /* code a function expression (with one statement in the body)         */
-    CodeFuncExprEnd( 1UL, 0UL );
-
-    /* switch back to immediate mode, get the function                     */
-    STATE(IntrCoding) = 0;
-    CodeEnd( 0 );
-
-    /* If we are in a break loop, then we will have created a "dummy" local
-       variable names list to get the counts right. Remove it */
-    const UInt len = LEN_PLIST(STATE(StackNams));
-    if (len > 0)
-        PopPlist(STATE(StackNams));
-
-    func = STATE(CodeResult);
-
-    /* call the function                                                   */
-    CALL_0ARGS( func );
-
-    /* push void                                                           */
-    PushVoidObj();
+    if (STATE(IntrCoding) == 0)
+        FinishAndCallFakeFuncExpr();
 }
 
 
@@ -951,35 +910,19 @@ void            IntrAtomicBegin ( void )
 
 void            IntrAtomicBeginBody ( UInt nrexprs )
 {
-  Obj nams;
-
     /* ignore    or code                                                          */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)++; CodeAtomicBeginBody(nrexprs); return; }
 
-
     /* leave the expressions and qualifiers on the stack, switch to coding to process the body
        of the Atomic expression */
     PushObj(INTOBJ_INT(nrexprs));
-    CodeBegin();
-    STATE(IntrCoding) = 1;
 
-    /* code a function expression (with no arguments and locals)           */
-    nams = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( nams, 0 );
-    
-    /* If we are in the break loop, then a local variable context may well exist,
-       and we have to create an empty local variable names list to match the
-       function expression that we are creating.
-       
-       If we are not in a break loop, then this would be a waste of time and effort */
-    
-    if (LEN_PLIST(STATE(StackNams)) > 0) {
-        PushPlist(STATE(StackNams), nams);
-    }
-    
-    CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
+    if (STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(STATE(Input)->number);
+
+    STATE(IntrCoding)++;
 }
 
 void            IntrAtomicEndBody (
@@ -1128,33 +1071,14 @@ void            IntrAtomicEnd ( void )
 */
 void            IntrRepeatBegin ( void )
 {
-    Obj                 nams;           /* (empty) list of names           */
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { STATE(IntrCoding)++; CodeRepeatBegin(); return; }
 
+    if (STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(STATE(Input)->number);
 
-    /* switch to coding mode now                                           */
-    CodeBegin();
-    STATE(IntrCoding) = 1;
-
-    /* code a function expression (with no arguments and locals)           */
-    nams = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( nams, 0 );
-
-    /* If we are in the break loop, then a local variable context may well exist,
-       and we have to create an empty local variable names list to match the
-       function expression that we are creating.
-
-       If we are not in a break loop, then this would be a waste of time and effort */
-
-    if (LEN_PLIST(STATE(StackNams)) > 0) {
-        PushPlist(STATE(StackNams), nams);
-    }
-
-    CodeFuncExprBegin( 0, 0, nams, STATE(Input)->number );
+    STATE(IntrCoding)++;
 
     /* code a repeat loop                                                  */
     CodeRepeatBegin();
@@ -1165,7 +1089,6 @@ void            IntrRepeatBeginBody ( void )
     /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
@@ -1186,38 +1109,18 @@ void            IntrRepeatEndBody (
 
 void            IntrRepeatEnd ( void )
 {
-    Obj                 func;           /* the function, result            */
-
-    /* ignore or code                                                      */
+    /* ignore                                                              */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 1 ) { STATE(IntrCoding)--; CodeRepeatEnd(); return; }
-
 
     /* otherwise must be coding                                            */
     assert( STATE(IntrCoding) > 0 );
+
+    STATE(IntrCoding)--;
     CodeRepeatEnd();
 
-    /* code a function expression (with one statement in the body)         */
-    CodeFuncExprEnd( 1UL, 0UL );
-
-    /* switch back to immediate mode, get the function                     */
-    STATE(IntrCoding) = 0;
-    CodeEnd( 0 );
-
-    /* If we are in a break loop, then we will have created a "dummy" local
-       variable names list to get the counts right. Remove it */
-    const UInt len = LEN_PLIST(STATE(StackNams));
-    if (len > 0)
-        PopPlist(STATE(StackNams));
-
-    func = STATE(CodeResult);
-
-    /* call the function                                                   */
-    CALL_0ARGS( func );
-
-    /* push void                                                           */
-    PushVoidObj();
+    if (STATE(IntrCoding) == 0)
+        FinishAndCallFakeFuncExpr();
 }
 
 
