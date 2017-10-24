@@ -1202,6 +1202,37 @@ function(a,b)
     Error("concatenating strings via + is not supported, use Concatenation(<a>,<b>) instead");
 end);
 
+#############################################################################
+##
+#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string 
+##                        representation of <m> bytes
+##
+
+InstallGlobalFunction(StringOfMemoryAmount, function(m)
+    local  whole, frac, shift, s, units;
+    whole := m;
+    frac := 0;
+    shift := 0;
+    while whole >= 1024 do
+        frac := whole mod 1024;
+        whole := Int(whole / 1024);
+        shift := shift+1;
+    od;
+    s := ShallowCopy(String(whole));
+    if whole < 100 then
+        Append(s,".");
+        Append(s,String(Int(frac/102.4)));
+        if whole < 10 then
+            Append(s, String(Int(frac/10.24) mod 10));
+        fi;
+    fi;
+    units := ["B","KB","MB","GB","TB","PB","EB","YB","ZB"];    
+    Append(s, units[shift+1]);
+    return s;
+end);
+
+        
+    
 
 #############################################################################
 ##
