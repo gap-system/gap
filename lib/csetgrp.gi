@@ -239,8 +239,8 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
         fi;
       od;
     else
-      t:=DoConjugateInto(G,c,U,true:intersize:=intersize);
-      if t<>fail then 
+      t:=DoConjugateInto(G,c,U,true:intersize:=intersize,onlyone:=true);
+      if t<>fail and t<>[] then 
 	Info(InfoCoset,2,"Found Size ",Size(c),"\n");
         return c^(Inverse(t));
       fi;
@@ -256,7 +256,7 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
   if IsInt(c) then
     hardlimit:=c;
   else
-    hardlimit:=100000;
+    hardlimit:=1000000;
   fi;
 
   if Index(G,U)>hardlimit then return fail;fi;
@@ -428,10 +428,25 @@ end);
 
 InstallMethod(\=,"DoubleCosets",IsIdenticalObj,[IsDoubleCoset,IsDoubleCoset],0,
 function(a,b)
-   return LeftActingGroup(a)=LeftActingGroup(b) and
-          RightActingGroup(a)=RightActingGroup(b) and
-          RepresentativesContainedRightCosets(a)
+  if LeftActingGroup(a)<>LeftActingGroup(b) or
+          RightActingGroup(a)<>RightActingGroup(b) then
+    return false;
+  fi;
+  # avoid forcing RepresentativesContainedRightCosets on both if one has
+  if HasRepresentativesContainedRightCosets(b) then
+    if HasRepresentativesContainedRightCosets(a) then
+      return RepresentativesContainedRightCosets(a)
 	  =RepresentativesContainedRightCosets(b);
+    else
+      return CanonicalRightCosetElement(LeftActingGroup(a),
+         Representative(a)) in
+	 RepresentativesContainedRightCosets(b);
+    fi;
+  else
+    return CanonicalRightCosetElement(LeftActingGroup(b),
+	Representative(b)) in
+	RepresentativesContainedRightCosets(a);
+  fi;
 end);
 
 InstallMethod(ViewString,"DoubleCoset",true,[IsDoubleCoset],0,
