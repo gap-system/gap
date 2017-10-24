@@ -27,7 +27,7 @@
 ##  <P/>
 ##  The <C>full</C> component will be present if a full garbage collection
 ##  has taken place since &GAP; started. It contains information about
-##  the most recent full garbage collection. It is a record, with six
+##  the most recent full garbage collection. It is a record, with eight
 ##  components: <C>livebags</C> contains the number of bags which survived
 ##  the garbage collection; <C>livekb</C> contains the total number of
 ##  kilobytes occupied by those bags; <C>deadbags</C> contains the total
@@ -36,7 +36,10 @@
 ##  previous full garbage collection; <C>deadkb</C> contains the total
 ##  number of kilobytes occupied by those bags; <C>freekb</C> reports the
 ##  total number of kilobytes available in the &GAP; workspace for new
-##  objects and <C>totalkb</C> the actual size of the workspace.
+##  objects; <C>totalkb</C> reports the actual size of the workspace;
+##  <C>time</C> reports the CPU time in milliseconds spent on the last garbage
+##  collection and <C>cumulative</C> the total CPU time in milliseconds spent
+##  on that type of garbage collection since &GAP; started.
 ##  <P/>
 ##  These figures should be viewed with some caution. They are
 ##  stored internally in fixed length integer formats, and <C>deadkb</C>
