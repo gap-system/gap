@@ -40,112 +40,113 @@
 **  The possible values for 'Symbol' are defined in the  definition  file  of
 **  this package as follows:
 */
-#define S_ILLEGAL       (0UL)
+enum {
+    S_ILLEGAL           = 0UL,
 
-#define S_IDENT         ((1UL<< 3))
-#define S_UNBIND        ((1UL<< 3)+1)
-#define S_ISBOUND       ((1UL<< 3)+2)
-#define S_TRYNEXT       ((1UL<< 3)+3)
-#define S_INFO          ((1UL<< 3)+4)
-#define S_ASSERT        ((1UL<< 3)+5)
-#define S_LBRACK        ((1UL<< 4)+0)
-#define S_LBRACE        ((1UL<< 4)+1)
-#define S_BLBRACK       ((1UL<< 4)+2)
-#define S_BLBRACE       ((1UL<< 4)+3)
-#define S_RBRACK        ((1UL<< 5)+0)
-#define S_RBRACE        ((1UL<< 5)+1)
-#define S_DOT           ((1UL<< 6)+0)
-#define S_BDOT          ((1UL<< 6)+1)
-#define S_LPAREN        ((1UL<< 7))
-#define S_RPAREN        ((1UL<< 8))
-#define S_COMMA         ((1UL<< 9)+0)
-#define S_DOTDOT        ((1UL<< 9)+1)
-#define S_COLON         ((1UL<< 9)+2)
-#define S_READWRITE     ((1UL<< 9)+3)
-#define S_READONLY      ((1UL<< 9)+4)
-#define S_DOTDOTDOT     ((1UL<< 9)+5)
+    S_IDENT             = (1UL<< 3),
+    S_UNBIND            = (1UL<< 3)+1,
+    S_ISBOUND           = (1UL<< 3)+2,
+    S_TRYNEXT           = (1UL<< 3)+3,
+    S_INFO              = (1UL<< 3)+4,
+    S_ASSERT            = (1UL<< 3)+5,
+    S_LBRACK            = (1UL<< 4)+0,
+    S_LBRACE            = (1UL<< 4)+1,
+    S_BLBRACK           = (1UL<< 4)+2,
+    S_BLBRACE           = (1UL<< 4)+3,
+    S_RBRACK            = (1UL<< 5)+0,
+    S_RBRACE            = (1UL<< 5)+1,
+    S_DOT               = (1UL<< 6)+0,
+    S_BDOT              = (1UL<< 6)+1,
+    S_LPAREN            = (1UL<< 7),
+    S_RPAREN            = (1UL<< 8),
+    S_COMMA             = (1UL<< 9)+0,
+    S_DOTDOT            = (1UL<< 9)+1,
+    S_COLON             = (1UL<< 9)+2,
+    S_READWRITE         = (1UL<< 9)+3,
+    S_READONLY          = (1UL<< 9)+4,
+    S_DOTDOTDOT         = (1UL<< 9)+5,
 
-#define S_PARTIALINT    ((1UL<<10)+0) /* Some digits */
-#define S_INT           ((1UL<<10)+1)
-#define S_FLOAT         ((1UL<<10)+2)
+    S_PARTIALINT        = (1UL<<10)+0, // Some digits
+    S_INT               = (1UL<<10)+1,
+    S_FLOAT             = (1UL<<10)+2,
 
-/* A decimal point only, but in a context where we know it's the start of a
-   number */
-#define S_PARTIALFLOAT1  ((1UL<<10)+3)
+    // A decimal point only, but in a context where we know it's the start of
+    // a number
+    S_PARTIALFLOAT1     = (1UL<<10)+3,
 
-/* Some digits and a decimal point */
-#define S_PARTIALFLOAT2  ((1UL<<10)+4)
+    // Some digits and a decimal point
+    S_PARTIALFLOAT2     = (1UL<<10)+4,
 
-/* Some digits and a decimal point and an exponent indicator and maybe a
-   sign, but no digits*/
-#define S_PARTIALFLOAT3  ((1UL<<10)+5)
+    // Some digits and a decimal point and an exponent indicator and maybe a
+    // sign, but no digits
+    S_PARTIALFLOAT3     = (1UL<<10)+5,
 
-/* Some digits and a decimal point and an exponent indicator and maybe a
-   sign, and at least one digit*/
-#define S_PARTIALFLOAT4  ((1UL<<10)+6)
+    // Some digits and a decimal point and an exponent indicator and maybe a
+    // sign, and at least one digit
+    S_PARTIALFLOAT4     = (1UL<<10)+6,
 
-#define S_TRUE          ((1UL<<11)+0)
-#define S_FALSE         ((1UL<<11)+1)
-#define S_CHAR          ((1UL<<11)+2)
-#define S_STRING        ((1UL<<11)+3)
-#define S_PARTIALSTRING ((1UL<<11)+4)
-#define S_PARTIALTRIPSTRING   ((1UL<<11)+5)
-#define S_TILDE         ((1UL<< 3)+6)
+    S_TRUE              = (1UL<<11)+0,
+    S_FALSE             = (1UL<<11)+1,
+    S_CHAR              = (1UL<<11)+2,
+    S_STRING            = (1UL<<11)+3,
+    S_PARTIALSTRING     = (1UL<<11)+4,
+    S_PARTIALTRIPSTRING = (1UL<<11)+5,
+    S_TILDE             = (1UL<< 3)+6,
 
-#define S_REC           ((1UL<<12)+0)
-#define S_BACKQUOTE     ((1UL<<12)+1)
+    S_REC               = (1UL<<12)+0,
+    S_BACKQUOTE         = (1UL<<12)+1,
 
-#define S_FUNCTION      ((1UL<<13))
-#define S_LOCAL         ((1UL<<14))
-#define S_END           ((1UL<<15))
-#define S_MAPTO         ((1UL<<16))
+    S_FUNCTION          = (1UL<<13),
+    S_LOCAL             = (1UL<<14),
+    S_END               = (1UL<<15),
+    S_MAPTO             = (1UL<<16),
 
-#define S_MULT          ((1UL<<17)+0)
-#define S_DIV           ((1UL<<17)+1)
-#define S_MOD           ((1UL<<17)+2)
-#define S_POW           ((1UL<<17)+3)
+    S_MULT              = (1UL<<17)+0,
+    S_DIV               = (1UL<<17)+1,
+    S_MOD               = (1UL<<17)+2,
+    S_POW               = (1UL<<17)+3,
 
-#define S_PLUS          ((1UL<<18)+0)
-#define S_MINUS         ((1UL<<18)+1)
+    S_PLUS              = (1UL<<18)+0,
+    S_MINUS             = (1UL<<18)+1,
 
-#define S_EQ            ((1UL<<19)+0)
-#define S_LT            ((1UL<<19)+1)
-#define S_GT            ((1UL<<19)+2)
-#define S_NE            ((1UL<<19)+3)
-#define S_LE            ((1UL<<19)+4)
-#define S_GE            ((1UL<<19)+5)
-#define S_IN            ((1UL<<19)+6)
+    S_EQ                = (1UL<<19)+0,
+    S_LT                = (1UL<<19)+1,
+    S_GT                = (1UL<<19)+2,
+    S_NE                = (1UL<<19)+3,
+    S_LE                = (1UL<<19)+4,
+    S_GE                = (1UL<<19)+5,
+    S_IN                = (1UL<<19)+6,
 
-#define S_NOT           ((1UL<<20)+0)
-#define S_AND           ((1UL<<20)+1)
-#define S_OR            ((1UL<<20)+2)
+    S_NOT               = (1UL<<20)+0,
+    S_AND               = (1UL<<20)+1,
+    S_OR                = (1UL<<20)+2,
 
-#define S_ASSIGN        ((1UL<<21))
+    S_ASSIGN            = (1UL<<21),
 
-#define S_IF            ((1UL<<22)+0)
-#define S_FOR           ((1UL<<22)+1)
-#define S_WHILE         ((1UL<<22)+2)
-#define S_REPEAT        ((1UL<<22)+3)
-#define S_ATOMIC        ((1UL<<22)+4)
+    S_IF                = (1UL<<22)+0,
+    S_FOR               = (1UL<<22)+1,
+    S_WHILE             = (1UL<<22)+2,
+    S_REPEAT            = (1UL<<22)+3,
+    S_ATOMIC            = (1UL<<22)+4,
 
-#define S_THEN          ((1UL<<23))
-#define S_ELIF          ((1UL<<24)+0)
-#define S_ELSE          ((1UL<<24)+1)
-#define S_FI            ((1UL<<25))
-#define S_DO            ((1UL<<26))
-#define S_OD            ((1UL<<27))
-#define S_UNTIL         ((1UL<<28))
+    S_THEN              = (1UL<<23),
+    S_ELIF              = (1UL<<24)+0,
+    S_ELSE              = (1UL<<24)+1,
+    S_FI                = (1UL<<25),
+    S_DO                = (1UL<<26),
+    S_OD                = (1UL<<27),
+    S_UNTIL             = (1UL<<28),
 
-#define S_BREAK         ((1UL<<29)+0)
-#define S_RETURN        ((1UL<<29)+1)
-#define S_QUIT          ((1UL<<29)+2)
-#define S_QQUIT         ((1UL<<29)+3)
-#define S_CONTINUE      ((1UL<<29)+4)
+    S_BREAK             = (1UL<<29)+0,
+    S_RETURN            = (1UL<<29)+1,
+    S_QUIT              = (1UL<<29)+2,
+    S_QQUIT             = (1UL<<29)+3,
+    S_CONTINUE          = (1UL<<29)+4,
 
-#define S_SEMICOLON     ((1UL<<30))
+    S_SEMICOLON         = (1UL<<30),
 
-#define S_EOF           ((1UL<<31))
-
+    S_EOF               = (1UL<<31),
+};
 /* TL: extern  UInt            Symbol; */
 
 
