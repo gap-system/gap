@@ -120,8 +120,7 @@
 #define S_AND           ((1UL<<20)+1)
 #define S_OR            ((1UL<<20)+2)
 
-#define S_ASSIGN        ((1UL<<21)+0)
-#define S_INCORPORATE   ((1UL<<21)+1)
+#define S_ASSIGN        ((1UL<<21))
 
 #define S_IF            ((1UL<<22)+0)
 #define S_FOR           ((1UL<<22)+1)
