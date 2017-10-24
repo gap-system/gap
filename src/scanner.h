@@ -91,7 +91,7 @@ enum {
     S_STRING            = (1UL<<11)+3,
     S_PARTIALSTRING     = (1UL<<11)+4,
     S_PARTIALTRIPSTRING = (1UL<<11)+5,
-    S_TILDE             = (1UL<< 3)+6,
+    S_TILDE             = (1UL<<11)+6,
 
     S_REC               = (1UL<<12)+0,
     S_BACKQUOTE         = (1UL<<12)+1,
