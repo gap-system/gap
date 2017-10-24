@@ -96,6 +96,12 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **  'NAMI_FUNC(<func>,<i>)' is the name of the <i>-th local variable.
 **
 **  'PROF_FUNC(<func>)' is the profiling information bag.
+**  'RETURNS_FUNC(<func>)' is space used during coding to detect
+**                      functions that contain both return and return <obj>;
+**                      it's actually the same space as PROF_FUNC since that
+**                      is never needed at coding time
+**  'FUNC_RETURNS_OBJ'  and 'FUNCS_RETURNS_VOID' are two different bits used
+**                       for this
 **
 **  'NLOC_FUNC(<func>)' is the number of local variables of  the  interpreted
 **  function <func>.
@@ -163,6 +169,11 @@ static inline Obj PROF_FUNC(Obj func)
     return FUNC_HEADER(func)->prof;
 }
 
+static inline UInt RETURNS_FUNC(Obj func)
+{
+    return (UInt)FUNC_HEADER(func)->prof;
+}
+
 static inline UInt NLOC_FUNC(Obj func)
 {
     return FUNC_HEADER(func)->nloc;
@@ -215,6 +226,11 @@ static inline void SET_PROF_FUNC(Obj func, Obj prof)
     FUNC_HEADER(func)->prof = prof;
 }
 
+static inline void SET_RETURNS_FUNC(Obj func, UInt val)
+{
+    FUNC_HEADER(func)->prof = (Obj)val;
+}
+
 static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
 {
     FUNC_HEADER(func)->nloc = nloc;
@@ -245,6 +261,11 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 
 
 #define SIZE_FUNC               sizeof(FunctionHeader)
+
+enum {
+    FUNC_RETURNS_OBJ       = 1L,
+    FUNC_RETURNS_VOID      = 2L,
+};
 
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
 #define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))

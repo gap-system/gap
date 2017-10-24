@@ -774,6 +774,7 @@ void CodeFuncExprBegin (
     /* give it a body                                                      */
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
     SET_BODY_FUNC( fexp, body );
+    SET_RETURNS_FUNC( fexp, 0 );
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
@@ -813,7 +814,13 @@ void CodeFuncExprEnd (
     /* get the function expression                                         */
     fexp = CURR_FUNC();
     assert(!STATE(LoopNesting));
-    
+
+    if ((RETURNS_FUNC(fexp) & (FUNC_RETURNS_OBJ | FUNC_RETURNS_VOID)) ==
+                              (FUNC_RETURNS_OBJ | FUNC_RETURNS_VOID)) {
+        SyntaxWarning("Function contains both 'return <obj>;' and 'return;'");
+    }
+    SET_RETURNS_FUNC(fexp, 0);
+
     /* get the body of the function                                        */
     /* push an additional return-void-statement if neccessary              */
     /* the function interpreters depend on each function ``returning''     */
@@ -1451,6 +1458,12 @@ void CodeReturnObj ( void )
     expr = PopExpr();
     ADDR_STAT(stat)[0] = expr;
 
+    // record that this function returned an object at least once, unless
+    // this is actually a 'TryNextMethod()' in disguise
+    if ( ! (TNUM_EXPR(expr) == T_REF_GVAR &&
+            ADDR_EXPR(expr)[0] == (Expr)GVarName( "TRY_NEXT_METHOD" )) )
+        SET_RETURNS_FUNC(CURR_FUNC(), RETURNS_FUNC(CURR_FUNC()) | FUNC_RETURNS_OBJ);
+
     /* push the return-statement                                           */
     PushStat( stat );
 }
@@ -1474,6 +1487,9 @@ void CodeReturnVoid ( void )
     /* allocate the return-statement                                       */
     stat = NewStat( T_RETURN_VOID, 0 * sizeof(Expr) );
 
+    // record that this function returned void at least once
+    SET_RETURNS_FUNC(CURR_FUNC(), RETURNS_FUNC(CURR_FUNC()) | FUNC_RETURNS_VOID);
+
     /* push the return-statement                                           */
     PushStat( stat );
 }
@@ -1483,8 +1499,10 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
     Stat                stat;           /* return-statement, result        */
 
     /* allocate the return-statement, without profile information          */
-
     stat = NewStatWithProf( T_RETURN_VOID, 0 * sizeof(Expr), 0, 0 );
+
+    // record that this function returned void at least once
+    SET_RETURNS_FUNC(CURR_FUNC(), RETURNS_FUNC(CURR_FUNC()) | FUNC_RETURNS_VOID);
 
     /* push the return-statement                                           */
     PushStat( stat );
