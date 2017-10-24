@@ -267,6 +267,8 @@ enum {
     T_BODY                  = 254,
 };
 
+GAP_STATIC_ASSERT(LAST_COPYING_TNUM <= 253, "LAST_COPYING_TNUM is too large");
+
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
