@@ -836,4 +836,31 @@ BindGlobal("BHINT", MakeImm("\>\<"));
 
 #############################################################################
 ##
+#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string 
+##                        representation of <m> bytes
+##
+##
+##  <#GAPDoc Label="StringOfMemoryAmount">
+##  <ManSection>
+##  <Func Name="StringOfMemoryAmount" Arg='numbytes'/>
+##
+##  <Description>
+##  This function returns a human-readable string representing 
+##  <Arg>numbytes</Arg> of memory. It is used in printing amounts of memory
+##  allocated by tests and benchmarks. Binary prefixes (representing powers of
+##  1024) are used.
+##  </Description>
+##  </ManSection>
+##  <Example><![CDATA[
+##  gap> StringOfMemoryAmount(123456789);
+##  "117MB"
+##  ]]></Example>
+##  <#/GAPDoc>
+
+
+DeclareGlobalFunction("StringOfMemoryAmount");
+
+
+#############################################################################
+##
 #E
