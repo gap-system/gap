@@ -83,10 +83,6 @@ typedef struct GAPState {
     TypOutputFile   OutputLogFileOrStream;
     Int             HELPSubsOn;
     Int             NoSplitLine;
-    KOutputStream   TheStream;
-    Char *          TheBuffer;
-    UInt            TheCount;
-    UInt            TheLimit;
 
     /* From stats.c */
     Stat CurrStat;
