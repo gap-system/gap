@@ -913,20 +913,13 @@ Obj FuncMakeImmutable( Obj self, Obj obj)
 **  recursion works nicely.
 */
 
-/* These macros and the in-line function are used to keep track of
-which objects are already being prted or viewed to trigger the use of
-~ when needed. The names (and the no-op macros) are hangovers from an
-earlier version in which the bags themselves were marked, rather than
-checking the list. This had to be changed to ensure that the method
-selection process (for ViewObj) only sees "pristine" bags"   SL 9/4/98 */
-
-#define IS_MARKABLE(obj)    (FIRST_RECORD_TNUM <= TNUM_OBJ(obj) \
-                            && TNUM_OBJ(obj) <= LAST_LIST_TNUM)
-
-static inline UInt IS_MARKED( Obj obj )
+// This function is used to keep track of which objects are already
+// being printed or viewed to trigger the use of ~ when needed.
+static inline UInt IS_ON_PRINT_STACK( Obj obj )
 {
   UInt i;
-  if (!IS_MARKABLE(obj))
+  if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj)
+        && TNUM_OBJ(obj) <= LAST_LIST_TNUM))
     return 0;
   for (i = 0; i < STATE(PrintObjDepth)-1; i++)
     if (STATE(PrintObjThiss)[i] == obj)
@@ -959,9 +952,6 @@ static void PrintInaccessibleObject(Obj obj)
 }
 #endif
      
-#define MARK(obj)     do {} while (0)
-#define UNMARK(obj)   do {} while (0)
-
 /* This variable is used to allow a ViewObj method to call PrintObj on
    the same object without triggering use of ~ */
 
@@ -1025,7 +1015,6 @@ void            PrintObj (
 #endif
 
     if ( !fromview  && 0 < STATE(PrintObjDepth) ) {
-        if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
         STATE(PrintObjThiss)[STATE(PrintObjDepth)-1]   = STATE(PrintObjThis);
         STATE(PrintObjIndices)[STATE(PrintObjDepth)-1] = STATE(PrintObjIndex);
     }
@@ -1039,7 +1028,7 @@ void            PrintObj (
       }
 
     /* dispatch to the appropriate printing function                       */
-    if ( (! IS_MARKED( STATE(PrintObjThis) )) ) {
+    if ( (! IS_ON_PRINT_STACK( STATE(PrintObjThis) )) ) {
       if (STATE(PrintObjDepth) < MAXPRINTDEPTH) {
         (*PrintObjFuncs[ TNUM_OBJ(STATE(PrintObjThis)) ])( STATE(PrintObjThis) );
       }
@@ -1068,7 +1057,6 @@ void            PrintObj (
 	if ( 0 < STATE(PrintObjDepth) ) {
 	  STATE(PrintObjThis)  = STATE(PrintObjThiss)[STATE(PrintObjDepth)-1];
 	  STATE(PrintObjIndex) = STATE(PrintObjIndices)[STATE(PrintObjDepth)-1];
-	  if ( IS_MARKED(STATE(PrintObjThis)) )  UNMARK( STATE(PrintObjThis) );
 	}
       }
     LastPV = lastPV;
@@ -1159,7 +1147,6 @@ void            ViewObj (
 #endif
 
     if ( 0 < STATE(PrintObjDepth) ) {
-        if ( IS_MARKABLE(STATE(PrintObjThis)) )  MARK( STATE(PrintObjThis) );
         STATE(PrintObjThiss)[STATE(PrintObjDepth)-1]   = STATE(PrintObjThis);
         STATE(PrintObjIndices)[STATE(PrintObjDepth)-1] =  STATE(PrintObjIndex);
     }
@@ -1171,7 +1158,7 @@ void            ViewObj (
 
     /* dispatch to the appropriate viewing function                       */
 
-    if ( ! IS_MARKED( STATE(PrintObjThis) ) ) {
+    if ( ! IS_ON_PRINT_STACK( STATE(PrintObjThis) ) ) {
       if (STATE(PrintObjDepth) < MAXPRINTDEPTH) {
         DoOperation1Args( ViewObjOper, obj );
       }
@@ -1197,7 +1184,6 @@ void            ViewObj (
     if ( 0 < STATE(PrintObjDepth) ) {
         STATE(PrintObjThis)  = STATE(PrintObjThiss)[STATE(PrintObjDepth)-1];
         STATE(PrintObjIndex) = STATE(PrintObjIndices)[STATE(PrintObjDepth)-1];
-        if ( IS_MARKED(STATE(PrintObjThis)) )  UNMARK( STATE(PrintObjThis) );
     }
 
     LastPV = lastPV;
