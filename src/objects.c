@@ -2182,18 +2182,119 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* export certain TNUM values as global variable */
-    ExportAsConstantGVar(FIRST_CONSTANT_TNUM);
-    ExportAsConstantGVar(LAST_CONSTANT_TNUM);
-    ExportAsConstantGVar(FIRST_RECORD_TNUM);
-    ExportAsConstantGVar(LAST_RECORD_TNUM);
-    ExportAsConstantGVar(FIRST_LIST_TNUM);
-    ExportAsConstantGVar(LAST_LIST_TNUM);
-    ExportAsConstantGVar(FIRST_EXTERNAL_TNUM);
-    ExportAsConstantGVar(LAST_EXTERNAL_TNUM);
     ExportAsConstantGVar(FIRST_REAL_TNUM);
     ExportAsConstantGVar(LAST_REAL_TNUM);
+
+    ExportAsConstantGVar(FIRST_CONSTANT_TNUM);
+    ExportAsConstantGVar(LAST_CONSTANT_TNUM);
+
     ExportAsConstantGVar(FIRST_IMM_MUT_TNUM);
     ExportAsConstantGVar(LAST_IMM_MUT_TNUM);
+
+    ExportAsConstantGVar(FIRST_RECORD_TNUM);
+    ExportAsConstantGVar(LAST_RECORD_TNUM);
+
+    ExportAsConstantGVar(FIRST_LIST_TNUM);
+    ExportAsConstantGVar(LAST_LIST_TNUM);
+
+    ExportAsConstantGVar(FIRST_PLIST_TNUM);
+    ExportAsConstantGVar(LAST_PLIST_TNUM);
+
+    ExportAsConstantGVar(FIRST_OBJSET_TNUM);
+    ExportAsConstantGVar(LAST_OBJSET_TNUM);
+
+    ExportAsConstantGVar(FIRST_EXTERNAL_TNUM);
+    ExportAsConstantGVar(LAST_EXTERNAL_TNUM);
+
+    ExportAsConstantGVar(FIRST_PACKAGE_TNUM);
+    ExportAsConstantGVar(LAST_PACKAGE_TNUM);
+
+#ifdef HPCGAP
+    ExportAsConstantGVar(FIRST_SHARED_TNUM);
+    ExportAsConstantGVar(LAST_SHARED_TNUM);
+#endif
+
+    ExportAsConstantGVar(FIRST_COPYING_TNUM);
+    ExportAsConstantGVar(LAST_COPYING_TNUM);
+
+    ExportAsConstantGVar(T_INT);
+    ExportAsConstantGVar(T_INTPOS);
+    ExportAsConstantGVar(T_INTNEG);
+    ExportAsConstantGVar(T_RAT);
+    ExportAsConstantGVar(T_CYC);
+    ExportAsConstantGVar(T_FFE);
+    ExportAsConstantGVar(T_PERM2);
+    ExportAsConstantGVar(T_PERM4);
+    ExportAsConstantGVar(T_TRANS2);
+    ExportAsConstantGVar(T_TRANS4);
+    ExportAsConstantGVar(T_PPERM2);
+    ExportAsConstantGVar(T_PPERM4);
+    ExportAsConstantGVar(T_BOOL);
+    ExportAsConstantGVar(T_CHAR);
+    ExportAsConstantGVar(T_FUNCTION);
+    ExportAsConstantGVar(T_BODY);
+    ExportAsConstantGVar(T_FLAGS);
+    ExportAsConstantGVar(T_MACFLOAT);
+    ExportAsConstantGVar(T_LVARS);
+    ExportAsConstantGVar(T_HVARS);
+
+    ExportAsConstantGVar(T_PREC);
+
+    ExportAsConstantGVar(T_PLIST);
+    ExportAsConstantGVar(T_PLIST_NDENSE);
+    ExportAsConstantGVar(T_PLIST_DENSE);
+    ExportAsConstantGVar(T_PLIST_DENSE_NHOM);
+    ExportAsConstantGVar(T_PLIST_DENSE_NHOM_SSORT);
+    ExportAsConstantGVar(T_PLIST_DENSE_NHOM_NSORT);
+    ExportAsConstantGVar(T_PLIST_EMPTY);
+    ExportAsConstantGVar(T_PLIST_HOM);
+    ExportAsConstantGVar(T_PLIST_HOM_NSORT);
+    ExportAsConstantGVar(T_PLIST_HOM_SSORT);
+    ExportAsConstantGVar(T_PLIST_TAB);
+    ExportAsConstantGVar(T_PLIST_TAB_NSORT);
+    ExportAsConstantGVar(T_PLIST_TAB_SSORT);
+    ExportAsConstantGVar(T_PLIST_TAB_RECT);
+    ExportAsConstantGVar(T_PLIST_TAB_RECT_NSORT);
+    ExportAsConstantGVar(T_PLIST_TAB_RECT_SSORT);
+    ExportAsConstantGVar(T_PLIST_CYC);
+    ExportAsConstantGVar(T_PLIST_CYC_NSORT);
+    ExportAsConstantGVar(T_PLIST_CYC_SSORT);
+    ExportAsConstantGVar(T_PLIST_FFE);
+
+    ExportAsConstantGVar(T_RANGE_NSORT);
+    ExportAsConstantGVar(T_RANGE_SSORT);
+    ExportAsConstantGVar(T_BLIST);
+    ExportAsConstantGVar(T_BLIST_NSORT);
+    ExportAsConstantGVar(T_BLIST_SSORT);
+    ExportAsConstantGVar(T_STRING);
+    ExportAsConstantGVar(T_STRING_NSORT);
+    ExportAsConstantGVar(T_STRING_SSORT);
+
+    ExportAsConstantGVar(T_OBJSET);
+    ExportAsConstantGVar(T_OBJMAP);
+
+    ExportAsConstantGVar(T_COMOBJ);
+    ExportAsConstantGVar(T_POSOBJ);
+    ExportAsConstantGVar(T_DATOBJ);
+    ExportAsConstantGVar(T_WPOBJ);
+#ifdef HPCGAP
+    ExportAsConstantGVar(T_APOSOBJ);
+    ExportAsConstantGVar(T_ACOMOBJ);
+
+    ExportAsConstantGVar(T_THREAD);
+    ExportAsConstantGVar(T_MONITOR);
+    ExportAsConstantGVar(T_REGION);
+    ExportAsConstantGVar(T_SEMAPHORE);
+    ExportAsConstantGVar(T_CHANNEL);
+    ExportAsConstantGVar(T_BARRIER);
+    ExportAsConstantGVar(T_SYNCVAR);
+    ExportAsConstantGVar(T_FIXALIST);
+    ExportAsConstantGVar(T_ALIST);
+    ExportAsConstantGVar(T_AREC);
+    ExportAsConstantGVar(T_AREC_INNER);
+    ExportAsConstantGVar(T_TLREC);
+    ExportAsConstantGVar(T_TLREC_INNER);
+#endif
 
     /* return success                                                      */
     return 0;
