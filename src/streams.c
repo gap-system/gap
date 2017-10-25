@@ -63,12 +63,12 @@
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
-Int READ_COMMAND ( void )
+static Int READ_COMMAND(Obj *evalResult)
 {
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(STATE(BottomLVars), 0);
+    status = ReadEvalCommand(STATE(BottomLVars), evalResult, 0);
     if( status == STATUS_EOF )
         return 0;
 
@@ -109,6 +109,7 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
     ExecStatus status;
     Int resultCount, resultCapacity;
     Obj result, resultList;
+    Obj evalResult;
 
     /* try to open the stream */
     if (!OpenInputStream(stream) ) {
@@ -128,7 +129,7 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
 
     do {
         ClearError();
-        status = ReadEvalCommand(STATE(BottomLVars), 0);
+        status = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
 
         if(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             resultCount++;
@@ -144,9 +145,9 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
 
             if(!(status & STATUS_ERROR)) {
                 SET_ELM_PLIST(result, 1, True);
-                if (STATE(ReadEvalResult)) {
+                if (evalResult) {
                     SET_LEN_PLIST(result, 2);
-                    SET_ELM_PLIST(result, 2, STATE(ReadEvalResult));
+                    SET_ELM_PLIST(result, 2, evalResult);
                 }
             }
         }
@@ -168,6 +169,7 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
 {
     Int status;
     Obj result;
+    Obj evalResult;
 
     result = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST(result, 1);
@@ -183,7 +185,7 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     else
       STATE(Input)->echo = 0;
 
-    status = READ_COMMAND();
+    status = READ_COMMAND(&evalResult);
     
     CloseInput();
 
@@ -199,9 +201,9 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     }
     
     SET_ELM_PLIST(result, 1, True);
-    if (STATE(ReadEvalResult)) {
+    if (evalResult) {
         SET_LEN_PLIST(result, 2);
-        SET_ELM_PLIST(result, 2, STATE(ReadEvalResult));
+        SET_ELM_PLIST(result, 2, evalResult);
     }
     return result;
 }
@@ -228,8 +230,6 @@ static UInt LastReadValueGVar;
 
 static Int READ_INNER ( UInt UseUHQ )
 {
-    ExecStatus                status;
-
     if (STATE(UserHasQuit))
       {
         Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
@@ -246,7 +246,8 @@ static Int READ_INNER ( UInt UseUHQ )
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        status = ReadEvalCommand(STATE(BottomLVars), 0);
+        Obj evalResult;
+        ExecStatus status = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
 	if (STATE(UserHasQuit) || STATE(UserHasQUIT))
 	  break;
         /* handle return-value or return-void command                      */
@@ -268,10 +269,10 @@ static Int READ_INNER ( UInt UseUHQ )
           STATE(UserHasQUIT) = 1;
           break;
         }
-        if (STATE(ReadEvalResult))
+        if (evalResult)
           {
             MakeReadWriteGVar(LastReadValueGVar);
-            AssGVar( LastReadValueGVar, STATE(ReadEvalResult));
+            AssGVar( LastReadValueGVar, evalResult);
             MakeReadOnlyGVar(LastReadValueGVar);
           }
         
@@ -311,20 +312,13 @@ static Int READ_NORECOVERY( void ) {
 */
 Obj READ_AS_FUNC ( void )
 {
-    Obj                 func;
-    UInt                type;
-
     /* now do the reading                                                  */
     ClearError();
-    type = ReadEvalFile();
+    Obj evalResult;
+    UInt type = ReadEvalFile(&evalResult);
 
     /* get the function                                                    */
-    if ( type == 0 ) {
-        func = STATE(ReadEvalResult);
-    }
-    else {
-        func = Fail;
-    }
+    Obj func = (type == 0) ? evalResult : Fail;
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
@@ -353,23 +347,24 @@ static void READ_TEST_OR_LOOP(void)
 
         /* read and evaluate the command                                   */
         ClearError();
-        type = ReadEvalCommand(STATE(BottomLVars), &dualSemicolon);
+        Obj evalResult;
+        type = ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && STATE(ReadEvalResult) != 0 ) {
+        if ( type == 0 && evalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, ValGVarTL( Last2 ) );
             AssGVar( Last2, ValGVarTL( Last  ) );
-            AssGVar( Last,  STATE(ReadEvalResult)   );
+            AssGVar( Last, evalResult );
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {
                 Bag currLVars = STATE(CurrLVars); /* in case view runs into error */
-                ViewObjHandler( STATE(ReadEvalResult) );
+                ViewObjHandler( evalResult );
                 SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
@@ -479,7 +474,8 @@ Int READ_GAP_ROOT ( const Char * filename )
           SySetBuffering(STATE(Input)->file);
             while ( 1 ) {
                 ClearError();
-                type = ReadEvalCommand(STATE(BottomLVars), 0);
+                Obj evalResult;
+                type = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
                 if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {

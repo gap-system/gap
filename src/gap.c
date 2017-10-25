@@ -227,6 +227,7 @@ Obj Shell ( Obj context,
 {
   UInt time = 0;
   UInt status;
+  Obj evalResult;
   UInt dualSemicolon;
   UInt oldindent;
   UInt oldPrintDepth;
@@ -286,13 +287,13 @@ Obj Shell ( Obj context,
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(STATE(ShellContext), &dualSemicolon);
+    status = ReadEvalCommand(STATE(ShellContext), &evalResult, &dualSemicolon);
     if (STATE(UserHasQUIT))
       break;
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && STATE(ReadEvalResult) != 0 ) {
+    if ( status == STATUS_END && evalResult != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -300,11 +301,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
         AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
-        AssGVar( Last,  STATE(ReadEvalResult)   );
+        AssGVar( Last, evalResult );
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
-        ViewObjHandler( STATE(ReadEvalResult) );
+        ViewObjHandler( evalResult );
       }
             
     }
@@ -385,7 +386,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,STATE(ReadEvalResult));
+      SET_ELM_PLIST(res,1,evalResult);
       return res;
     }
   assert(0); 

@@ -2700,13 +2700,6 @@ UInt ReadStats (
 
 /****************************************************************************
 **
-*V  ReadEvalResult  . . . . . . . . result of reading one command immediately
-*/
-/* TL: Obj ReadEvalResult; */
-
-
-/****************************************************************************
-**
 *F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
 **
 **  'ReadEvalCommand' reads one command and interprets it immediately.
@@ -2740,7 +2733,7 @@ void RecreateStackNams( Obj context )
 }
 
 
-ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
+ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 {
     volatile ExecStatus          type;
     volatile Obj                 stackNams;
@@ -2854,7 +2847,7 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
     STATE(ErrorLVars) = errorLVars;
 
     /* copy the result (if any)                                            */
-    STATE(ReadEvalResult) = STATE(IntrResult);
+    *evalResult = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2864,13 +2857,13 @@ ExecStatus ReadEvalCommand ( Obj context, UInt *dualSemicolon )
 **
 *F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
 **
-**  'ReadEvalFile' reads an entire file and returns (in 'ReadEvalResult') the
+**  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
 **  entire file as thunk, i.e., as function of no argument.
 **
 **  It does not expect the  first symbol of its input  already read and  wont
 **  reads to the end of the input (unless an error happens).
 */
-UInt ReadEvalFile ( void )
+UInt ReadEvalFile(Obj *evalResult)
 {
     volatile ExecStatus type;
     volatile Obj        stackNams;
@@ -2988,7 +2981,7 @@ UInt ReadEvalFile ( void )
     STATE(CurrLHSGVar) = currLHSGVar;
 
     /* copy the result (if any)                                            */
-    STATE(ReadEvalResult) = STATE(IntrResult);
+    *evalResult = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -3160,7 +3153,6 @@ static Int InitKernel (
     STATE(ErrorLVars) = (UInt **)0;
     STATE(CurrentGlobalForLoopDepth) = 0;
 #if !defined(HPCGAP)
-    InitGlobalBag( &STATE(ReadEvalResult), "src/read.c:ReadEvalResult" );
     InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
 #endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
