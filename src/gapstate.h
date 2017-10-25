@@ -44,7 +44,9 @@ typedef struct GAPState {
 
     /* From read.c */
     syJmp_buf ReadJmpError;
+#if defined(HPCGAP)
     syJmp_buf threadExit;
+#endif
     Obj       StackNams;
     UInt      ReadTop;
     UInt      ReadTilde;
