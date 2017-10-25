@@ -37,6 +37,12 @@
 ##             (measuring CPU-time has a higher overhead).
 ##      </Item>
 ##
+##  <Mark>recordMem</Mark>
+##      <Item> Boolean (defaults to false). Instead of recording the
+##             CPU time taken by statements, record the total size of all
+##             new objects created by each line.
+##      </Item>
+##
 ##  <Mark>resolution</Mark>
 ##      <Item> Integer (defaults to 0). By default profiling will record a trace
 ##             of all executed code. When <A>resolution</A> non-zero, GAP
@@ -57,7 +63,8 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
     fi;
 
     optRec := rec(coverage := false,
-                  wallTime := true, 
+                  wallTime := true,
+                  recordMem := false,
                   resolution := 0);
     if Length(arg) = 2 then
       if not(IsRecord(arg[2])) then
@@ -76,8 +83,8 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
        arg[1]{[Length(arg[1])-2..Length(arg[1])]} <> ".gz" then
       Info(InfoWarning, 1, "Profile filenames must end in .gz to enable compression");
     fi;
-    return ACTIVATE_PROFILING(arg[1], optRec.coverage,
-                                      optRec.wallTime, optRec.resolution);
+    return ACTIVATE_PROFILING(arg[1], optRec.coverage, optRec.wallTime,
+                                      optRec.recordMem, optRec.resolution);
 end);
 
 ##  <#GAPDoc Label="IsLineByLineProfileActive">
