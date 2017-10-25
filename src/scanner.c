@@ -2617,7 +2617,10 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
  **  must pass 0L if you don't make use of an argument to please lint.
  */
 
-void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
+static inline void FormatOutput(
+    void (*put_a_char)(void *state, Char c),
+    void *state, const Char *format, Int arg1, Int arg2 )
+{
   const Char *        p;
   Char *              q;
   Int                 prec,  n;
@@ -2628,7 +2631,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* not a '%' character, simply print it                            */
     if ( *p != '%' ) {
-      put_a_char( *p );
+      put_a_char(state, *p);
       continue;
     }
 
@@ -2645,12 +2648,12 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* handle the case of a missing argument                     */
     if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
-      put_a_char('<');
-      put_a_char('n');
-      put_a_char('u');
-      put_a_char('l');
-      put_a_char('l');
-      put_a_char('>');
+      put_a_char(state, '<');
+      put_a_char(state, 'n');
+      put_a_char(state, 'u');
+      put_a_char(state, 'l');
+      put_a_char(state, 'l');
+      put_a_char(state, '>');
 
       /* on to the next argument                                 */
       arg1 = arg2;
@@ -2668,14 +2671,14 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       for ( n = 1; n <= arg1/10; n*=10 ) {
         prec--;
       }
-      while ( --prec > 0 )  put_a_char(fill);
+      while ( --prec > 0 )  put_a_char(state, fill);
 
       if ( is_neg ) {
-        put_a_char('-');
+        put_a_char(state, '-');
       }
 
       for ( ; n > 0; n /= 10 )
-        put_a_char( (Char)(((arg1/n)%10) + '0') );
+        put_a_char(state, (Char)(((arg1/n)%10) + '0') );
 
       /* on to the next argument                                 */
       arg1 = arg2;
@@ -2690,7 +2693,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       /* must be careful that line breaks don't go inside
@@ -2704,7 +2707,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
         }
         else if (STATE(NoSplitLine) > 0)
           STATE(NoSplitLine)--;
-        put_a_char( *q );
+        put_a_char(state, *q);
       }
 
       /* on to the next argument                                 */
@@ -2729,20 +2732,20 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
-        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
-        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
-        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-        else                    { put_a_char( *q );               }
+        if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
+        else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
+        else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
+        else if ( *q == '\b'  ) { put_a_char(state, '\\'); put_a_char(state, 'b');  }
+        else if ( *q == '\01' ) { put_a_char(state, '\\'); put_a_char(state, '>');  }
+        else if ( *q == '\02' ) { put_a_char(state, '\\'); put_a_char(state, '<');  }
+        else if ( *q == '\03' ) { put_a_char(state, '\\'); put_a_char(state, 'c');  }
+        else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
+        else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
+        else                    { put_a_char(state, *q);               }
       }
 
       /* on to the next argument                                 */
@@ -2767,23 +2770,23 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('1');                }
-        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('2');                }
-        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('3');                }
-        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-        else                    { put_a_char( *q );               }
+        if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
+        else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
+        else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
+        else if ( *q == '\b'  ) { put_a_char(state, '\\'); put_a_char(state, 'b');  }
+        else if ( *q == '\01' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '1');                }
+        else if ( *q == '\02' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '2');                }
+        else if ( *q == '\03' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '3');                }
+        else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
+        else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
+        else                    { put_a_char(state, *q);               }
       }
 
       /* on to the next argument                                 */
@@ -2816,17 +2819,17 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 ) { put_a_char(' '); }
+      while ( prec-- > 0 ) { put_a_char(state, ' '); }
 
       /* print the identifier                                    */
       if ( found_keyword ) {
-        put_a_char( '\\' );
+        put_a_char(state, '\\');
       }
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
         if ( !IsIdent(*q) && !IsDigit(*q) ) {
-          put_a_char( '\\' );
+          put_a_char(state, '\\');
         }
-        put_a_char( *q );
+        put_a_char(state, *q);
       }
 
       /* on to the next argument                                 */
@@ -2835,33 +2838,33 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* '%c' print a character                                      */
     else if ( *p == 'c' ) {
-      put_a_char( (Char)arg1 );
+      put_a_char(state, (Char)arg1);
       arg1 = arg2;
     }
 
     /* '%%' print a '%' character                                  */
     else if ( *p == '%' ) {
-      put_a_char( '%' );
+      put_a_char(state, '%');
     }
 
     /* '%>' increment the indentation level                        */
     else if ( *p == '>' ) {
-      put_a_char( '\01' );
+      put_a_char(state, '\01');
       while ( --prec > 0 )
-        put_a_char( '\01' );
+        put_a_char(state, '\01');
     }
 
     /* '%<' decrement the indentation level                        */
     else if ( *p == '<' ) {
-      put_a_char( '\02' );
+      put_a_char(state, '\02');
       while ( --prec > 0 )
-        put_a_char( '\02' );
+        put_a_char(state, '\02');
     }
 
     /* else raise an error                                         */
     else {
       for ( p = "%format error"; *p != '\0'; p++ )
-        put_a_char( *p );
+        put_a_char(state, *p);
     }
 
   }
@@ -2869,10 +2872,8 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-/* TL: static KOutputStream TheStream; */
-
-static void putToTheStream( Char c) {
-  PutChrTo(STATE(TheStream), c);
+static void putToTheStream(void *state, Char c) {
+  PutChrTo((KOutputStream)state, c);
 }
 
 void PrTo (
@@ -2881,10 +2882,7 @@ void PrTo (
            Int                 arg1,
            Int                 arg2 )
 {
-  KOutputStream savedStream = STATE(TheStream);
-  STATE(TheStream) = stream;
-  FormatOutput( putToTheStream, format, arg1, arg2);
-  STATE(TheStream) = savedStream;
+  FormatOutput( putToTheStream, stream, format, arg1, arg2);
 }
 
 void Pr (
@@ -2895,29 +2893,24 @@ void Pr (
   PrTo(GetCurrentOutput(), format, arg1, arg2);
 }
 
-/* TL: static Char *theBuffer; */
-/* TL: static UInt theCount; */
-/* TL: static UInt theLimit; */
+typedef struct {
+    Char * TheBuffer;
+    UInt   TheCount;
+    UInt   TheLimit;
+} BufferState;
 
-static void putToTheBuffer( Char c)
+static void putToTheBuffer(void *state, Char c)
 {
-  if (STATE(TheCount) < STATE(TheLimit))
-    STATE(TheBuffer)[STATE(TheCount)++] = c;
+  BufferState *buf = (BufferState *)state;
+  if (buf->TheCount < buf->TheLimit)
+    buf->TheBuffer[buf->TheCount++] = c;
 }
 
 void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 {
-  Char *savedBuffer = STATE(TheBuffer);
-  UInt savedCount = STATE(TheCount);
-  UInt savedLimit = STATE(TheLimit);
-  STATE(TheBuffer) = buffer;
-  STATE(TheCount) = 0;
-  STATE(TheLimit) = maxlen;
-  FormatOutput(putToTheBuffer, format, arg1, arg2);
-  putToTheBuffer('\0');
-  STATE(TheBuffer) = savedBuffer;
-  STATE(TheCount) = savedCount;
-  STATE(TheLimit) = savedLimit;
+  BufferState buf = { buffer, 0, maxlen };
+  FormatOutput(putToTheBuffer, &buf, format, arg1, arg2);
+  putToTheBuffer(&buf, '\0');
 }
 
 
