@@ -10,13 +10,10 @@
 ##
 
 
+PERFRec := fail; # indicator that perf0.grp is not loaded
 if IsBound(HPCGAP) then
-    PERFRec := rec();
-    ShareSpecialObj(PERFRec);
-    BindThreadLocal("PERFLoaded", false);
     BindThreadLocal("PERFGRP", []);
 else
-    PERFRec := fail; # indicator that perf0.grp is not loaded
     PERFGRP := [];
 fi;
 

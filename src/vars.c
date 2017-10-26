@@ -56,6 +56,7 @@
 
 #include <src/gaputils.h>
 
+#include <stdio.h>
 
 /****************************************************************************
 **
@@ -217,10 +218,7 @@ void            PrintUnbLVar (
 void            PrintRefLVar (
     Expr                expr )
 {
-    if ( IS_REFLVAR(expr) )
-        Pr( "%I", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
-    else
-        Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%I", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
 }
 
 void            PrintIsbLVar (
@@ -244,70 +242,58 @@ void            PrintIsbLVar (
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
 */
-void            ASS_HVAR (
-    UInt                hvar,
-    Obj                 val )
+void ASS_HVAR(UInt hvar, Obj val)
 {
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
-
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
-    }
-
-    /* assign the value                                                    */
-    ASS_LVAR( hvar & 0xFFFF, val );
-    /* CHANGED_BAG( STATE(CurrLVars) ); is done in the switch below               */
-
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
+    ASS_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar, val);
 }
 
-Obj             OBJ_HVAR (
-    UInt                hvar )
+Obj OBJ_HVAR(UInt hvar)
 {
-    Obj                 val;            /* value, result                   */
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
+    return OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
+}
 
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
+Char * NAME_HVAR(UInt hvar)
+{
+    return NAME_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
+}
+
+void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
+{
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
-    /* get the value                                                       */
-    val = OBJ_LVAR( hvar & 0xFFFF );
+    // assign the value
+    ASS_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF, val);
+    CHANGED_BAG(context);
+}
 
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
+Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+{
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
+    }
 
-    /* return the value                                                    */
+    // get the value
+    Obj val = OBJ_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
+
+    // return the value
     return val;
 }
 
-Char *          NAME_HVAR (
-    UInt                hvar )
+Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
-    Char *              name;           /* name, result                    */
-    Bag                 currLVars;      /* old current local variables     */
-    UInt                i;              /* loop variable                   */
-
-    /* walk up the environment chain to the correct values bag             */
-    currLVars = STATE(CurrLVars);
-    for ( i = 1; i <= (hvar >> 16); i++ ) {
-        SWITCH_TO_OLD_LVARS( ENVI_FUNC( CURR_FUNC() ) );
+    // walk up the environment chain to the correct values bag
+    for (UInt i = 1; i <= (hvar >> 16); i++) {
+        context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
-    /* get the name                                                        */
-    name = NAME_LVAR( hvar & 0xFFFF );
+    // get the name
+    Char * name = NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
 
-    /* switch back to current local variables bag                          */
-    SWITCH_TO_OLD_LVARS( currLVars );
-
-    /* return the name                                                     */
+    // return the name
     return name;
 }
 
@@ -944,9 +930,9 @@ Obj             EvalElm2List (
 
 /****************************************************************************
 **
-*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+*F  EvalElmXList(<expr>) . . . . . . . . . . . . select an element of a list
 **
-**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
+**  'EvalElmXList' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<pos1>,<pos2>,<pos3>,....]'.
 */
 Obj             EvalElmXList (
@@ -1284,7 +1270,7 @@ void PrintElmXList (
     PrintExpr( ADDR_EXPR(expr)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[2] );
+      PrintExpr( ADDR_EXPR(expr)[i] );
     }
     Pr("%<]",0L,0L);
 }
@@ -1300,7 +1286,7 @@ void PrintElmListLevel (
     PrintExpr( ADDR_EXPR(expr)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[2] );
+      PrintExpr( ADDR_EXPR(expr)[i] );
     }
     Pr("%<]",0L,0L);
 }
@@ -2483,7 +2469,8 @@ Obj FuncParentLVars( Obj self, Obj lvars )
                (Int)TNAM_OBJ(lvars), 0L );
     return 0;
   }
-  return PARENT_LVARS(lvars);
+  Obj parent = PARENT_LVARS(lvars);
+  return parent ? parent : Fail;
 }
 
 Obj FuncContentsLVars (Obj self, Obj lvars )
@@ -2539,7 +2526,7 @@ void SaveLVars( Obj lvars )
   UInt len,i;
   Obj *ptr;
   SaveSubObj(FUNC_LVARS(lvars));
-  SaveUInt((UInt)ADDR_OBJ(lvars)[1]);
+  SaveUInt(STAT_LVARS(lvars));
   SaveSubObj(PARENT_LVARS(lvars));
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
@@ -2558,7 +2545,7 @@ void LoadLVars( Obj lvars )
   UInt len,i;
   Obj *ptr;
   FUNC_LVARS(lvars) = LoadSubObj();
-  ((UInt *)ADDR_OBJ(lvars))[1] = LoadUInt();
+  STAT_LVARS(lvars) = LoadUInt();
   PARENT_LVARS(lvars) = LoadSubObj();
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
@@ -2611,22 +2598,12 @@ static Int InitKernel (
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &STATE(BottomLVars), "src/vars.c:BottomLVars" );
 
-    InitGlobalBag( &STATE(LVarsPool[ 0]), "src/vars.c:LVarsPool0" );
-    InitGlobalBag( &STATE(LVarsPool[ 1]), "src/vars.c:LVarsPool1" );
-    InitGlobalBag( &STATE(LVarsPool[ 2]), "src/vars.c:LVarsPool2" );
-    InitGlobalBag( &STATE(LVarsPool[ 3]), "src/vars.c:LVarsPool3" );
-    InitGlobalBag( &STATE(LVarsPool[ 4]), "src/vars.c:LVarsPool4" );
-    InitGlobalBag( &STATE(LVarsPool[ 5]), "src/vars.c:LVarsPool5" );
-    InitGlobalBag( &STATE(LVarsPool[ 6]), "src/vars.c:LVarsPool6" );
-    InitGlobalBag( &STATE(LVarsPool[ 7]), "src/vars.c:LVarsPool7" );
-    InitGlobalBag( &STATE(LVarsPool[ 8]), "src/vars.c:LVarsPool8" );
-    InitGlobalBag( &STATE(LVarsPool[ 9]), "src/vars.c:LVarsPool9" );
-    InitGlobalBag( &STATE(LVarsPool[10]), "src/vars.c:LVarsPool10" );
-    InitGlobalBag( &STATE(LVarsPool[11]), "src/vars.c:LVarsPool11" );
-    InitGlobalBag( &STATE(LVarsPool[12]), "src/vars.c:LVarsPool12" );
-    InitGlobalBag( &STATE(LVarsPool[13]), "src/vars.c:LVarsPool13" );
-    InitGlobalBag( &STATE(LVarsPool[14]), "src/vars.c:LVarsPool14" );
-    InitGlobalBag( &STATE(LVarsPool[15]), "src/vars.c:LVarsPool15" );
+    enum { count = ARRAY_SIZE(STATE(LVarsPool)) };
+    static char cookies[count][24];
+    for (int i = 0; i < count; i++) {
+      snprintf(cookies[i], sizeof(cookies[i]), "src/vars.c:LVarsPool%d", i);
+      InitGlobalBag(&STATE(LVarsPool[i]), cookies[i]);
+    }
 #endif
 
     /* install the marking functions for local variables bag               */
@@ -2656,12 +2633,12 @@ static Int InitKernel (
     /* install executors, evaluators, and printers for local variables     */
     InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
     InstallExecStatFunc( T_UNB_LVAR       , ExecUnbLVar);
+    // no EvalExprFunc for T_REFLVAR, it is handled immediately by EVAL_EXPR
     InstallEvalExprFunc( T_ISB_LVAR       , EvalIsbLVar);
-    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
 
+    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
     InstallPrintStatFunc( T_UNB_LVAR       , PrintUnbLVar);
     InstallPrintExprFunc( T_REFLVAR        , PrintRefLVar);
-
     InstallPrintExprFunc( T_ISB_LVAR       , PrintIsbLVar);
 
     /* install executors, evaluators, and printers for higher variables    */

@@ -5687,8 +5687,7 @@ static Int InitLibrary(StructInitInfo * module)
     // kernel module, and so we introduce the next transformation for testing
     // purposes.
     Obj ID_TRANS4 = NEW_TRANS4(0);
-    AssGVar(GVarName("ID_TRANS4"), ID_TRANS4);
-    MakeReadOnlyGVar(GVarName("ID_TRANS4"));
+    AssReadOnlyGVar(GVarName("ID_TRANS4"), ID_TRANS4);
 
     /* return success                                                      */
     return 0;

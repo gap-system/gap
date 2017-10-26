@@ -153,8 +153,53 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");
-BIND_GLOBAL( "OPERATIONS", LockAndMigrateObj( [], OPERATIONS_REGION) );
+OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");  # FIXME: remove
+BIND_GLOBAL( "OPERATIONS", MakeStrictWriteOnceAtomic([]) );
+BIND_GLOBAL( "OPER_FLAGS", MakeStrictWriteOnceAtomic(rec()) );
+BIND_GLOBAL( "STORE_OPER_FLAGS",
+function(oper, flags)
+  local nr, info;
+  nr := MASTER_POINTER_NUMBER(oper);
+  if not IsBound(OPER_FLAGS.(nr)) then
+    # we need a back link to oper for the post-restore function
+    OPER_FLAGS.(nr) := FixedAtomicList([oper,
+        MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([])]);
+    ADD_LIST(OPERATIONS, oper);
+  fi;
+  info := OPER_FLAGS.(nr);
+  ADD_LIST(info[2], MakeImmutable(flags));
+  ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]));
+end);
+
+BIND_GLOBAL( "GET_OPER_FLAGS", function(oper)
+  local nr;
+  nr := MASTER_POINTER_NUMBER(oper);
+  if not IsBound(OPER_FLAGS.(nr)) then
+    return fail;
+  fi;
+  return OPER_FLAGS.(nr)[2];
+end);
+BIND_GLOBAL( "GET_DECLARATION_LOCATIONS", function(oper)
+  local nr;
+  nr := MASTER_POINTER_NUMBER(oper);
+  if not IsBound(OPER_FLAGS.(nr)) then
+    return fail;
+  fi;
+  return OPER_FLAGS.(nr)[3];
+end);
+
+# the object handles change after loading a workspace
+ADD_LIST(GAPInfo.PostRestoreFuncs, function()
+  local tmp, a;
+  tmp := [];
+  for a in REC_NAMES(OPER_FLAGS) do
+    ADD_LIST(tmp, OPER_FLAGS.(a));
+    Unbind(OPER_FLAGS.(a));
+  od;
+  for a in tmp do
+    OPER_FLAGS.(MASTER_POINTER_NUMBER(a[1])) := a;
+  od;
+end);
 
 #############################################################################
 ##
@@ -565,7 +610,7 @@ end );
 ##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
 ##  lies in the filter <A>args-filts</A><M>[i]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
@@ -588,10 +633,7 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    atomic readwrite OPERATIONS_REGION do
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, MigrateObj([ filt ], OPERATIONS_REGION ) );
-    od;
+    STORE_OPER_FLAGS(oper, filt);
     return oper;
 end );
 
@@ -608,19 +650,95 @@ end );
 ##  <Ref Func="NewConstructor"/> returns a constructor <A>cons</A> with name
 ##  <A>name</A>.
 ##  The list <A>args-filts</A> describes requirements about the arguments
-##  of <A>constr</A>, namely the number of arguments must be equal to the length
-##  of <A>args-filts</A>, and the <M>i</M>-th argument must lie in the filter
-##  <A>args-filts</A><M>[i]</M>. Additionally a constructor expects the first
-##  argument to be a filter to then select a method to construct an object.
+##  of <A>cons</A>. Namely the number of arguments must be equal to the length
+##  of <A>args-filts</A>, and the <M>i</M>-th argument
+##  must lie in the filter <A>args-filts</A><M>[i]</M> for <M>i \neq 1</M>.
+##  A constructor expects the first argument to be a <E>filter</E> instead
+##  of an object and it must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
 ##  Each method that is installed for <A>cons</A> via
-##  <Ref Func="InstallMethod"/> must require that the <M>i</M>-th argument
-##  lies in the filter <A>args-filts</A><M>[i]</M>.
+##  <Ref Func="InstallMethod"/> must require that
+##  the <M>i</M>-th argument lies in the filter <A>args-filts</A><M>[i]</M>
+##  for <M>i \neq 1</M>.
+##  Its first argument is a filter and must be a subset of the filter
+##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
-##  One can install methods for other arguments tuples via
+##  One can install methods for other argument tuples via
 ##  <Ref Func="InstallOtherMethod"/>,
 ##  this way it is also possible to install methods for a different number
 ##  of arguments than the length of <A>args-filts</A>.
+##  <P/>
+##  Note that the method selection for constructors works slightly differently
+##  than for usual operations.
+##  As stated above, applicabilty to the first argument in an argument tuple
+##  is tested by determining whether the argument-filter is a <E>subset</E> of
+##  <A>args-filts</A><M>[1]</M>.
+##  <P/>
+##  The rank of a method installed for a constructor is determined solely by
+##  <A>args-filts</A><M>[1]</M> of the method.
+##  Instead of taking the sum of the ranks of filters involved in its
+##  <A>args-filts</A><M>[1]</M>, the sum of <M>-1</M> times these values
+##  is taken.
+##  The result is added to the number <A>val</A> used in the call of
+##  <Ref Func="InstallMethod"/>.
+##  <P/>
+##  This has the following effects on the method selection for constructors.
+##  If <A>cons</A> is called with an argument tuple whose first argument is
+##  the filter <A>filt</A>, any method whose first argument is
+##  <E>more</E> specific than <A>filt</A> is applicable
+##  (if its other <A>args-filts</A> also match).
+##  Then the method with the <Q>most general</Q> filter <A>args-filts</A><M>[1]</M>
+##  is chosen, since the rank is computed by taking <M>-1</M> times the ranks
+##  of the involved filters.
+##  Thus, a constructor is chosen which returns an object in <A>filt</A> using
+##  as few extra filters as possible, which presumably is both more flexible
+##  to use and easier to construct.
+##  <P/>
+##  The following example showcases this behaviour.
+##  Note that the argument <A>filter</A> is only used for method dispatch.
+##  <Log><![CDATA[
+##  DeclareFilter( "IsMyObj" );
+##  DeclareFilter( "IsMyFilter" );
+##  DeclareFilter( "IsMyOtherFilter" );
+##  BindGlobal( "MyFamily", NewFamily( "MyFamily" ) );
+##  
+##  DeclareConstructor( "NewMyObj", [ IsMyObj ] );
+##  
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj ],
+##  function( filter )
+##      local type;
+##      Print("General constructor\n");
+##      type := NewType( MyFamily, IsMyObj );
+##      return Objectify( type, [] );
+##  end );
+##  InstallMethod( NewMyObj,
+##  [ IsMyObj and IsMyFilter and IsMyOtherFilter ],
+##  function( filter )
+##      local type;
+##      Print("Special constructor\n");
+##      type := NewType( MyFamily, IsMyObj and IsMyFilter and IsMyOtherFilter );
+##      return Objectify( type, [] );
+##  end );
+##  ]]></Log>
+##  If only IsMyObj is given, both methods are applicable and the general
+##  constructor is called.
+##  If also IsMyFilter is given, only the special constructor is applicable.
+##  <Log><![CDATA[
+##  gap> a := NewMyObj( IsMyObj );;
+##  General constructor
+##  gap> IsMyOtherFilter(a);
+##  false
+##  gap> b := NewMyObj( IsMyObj and IsMyFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(b);
+##  true
+##  gap> c := NewMyObj( IsMyObj and IsMyFilter and IsMyOtherFilter );;
+##  Special constructor
+##  gap> IsMyOtherFilter(c);
+##  true
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -643,10 +761,7 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
     atomic readwrite CONSTRUCTORS do
     ADD_LIST( CONSTRUCTORS, oper );
     od;
-    atomic readwrite OPERATIONS_REGION do
-    ADD_LIST( OPERATIONS,   oper );
-        ADD_LIST( OPERATIONS,   MigrateObj([ filt ], OPERATIONS_REGION ) );
-    od;    
+    STORE_OPER_FLAGS(oper, filt);
     return oper;
 end );
 
@@ -667,7 +782,7 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareOperation", function ( name, filters )
-    local gvar, pos, filt, filter;
+    local gvar, pos, req, filt, filter;
 
     if   GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
@@ -727,20 +842,17 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
       
-      atomic readwrite OPERATIONS_REGION do
-      
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      if filt in OPERATIONS[ pos+1 ] then
+      req := GET_OPER_FLAGS(gvar);
+      req := FromAtomicList(req);  # so that we can search in it
+      if filt in req then
         if not REREADING then
           INFO_DEBUG( 1, "equal requirements in multiple declarations ",
               "for operation `", name, "'\n" );
         fi;
       else
-        ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
+        STORE_OPER_FLAGS( gvar, filt );
       fi;
 
-      od;
-      
     else
 
       # The operation is new.
@@ -783,10 +895,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    atomic readwrite OPERATIONS_REGION do
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, MigrateObj( [ filt ], OPERATIONS_REGION ) );
-    od;
+    STORE_OPER_FLAGS(oper, filt);
 end );
 
 
@@ -801,13 +910,17 @@ end );
 ##  <Description>
 ##  does the same as <Ref Func="NewConstructor"/> and
 ##  additionally makes the variable <A>name</A> read-only.
+##  <P/>
+##  Note that for operations which are constructors special rules with respect
+##  to applicability and rank of the corresponding methods apply
+##  (see section <Ref Func="NewConstructor"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
-    local gvar, pos, filt, filter;
+    local gvar, req, filt, filter;
 
     if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
@@ -837,10 +950,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
 
-      atomic readwrite OPERATIONS_REGION do
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( filt, OPERATIONS_REGION) );
-      od;
+      STORE_OPER_FLAGS( gvar, filt );
 
     else
 
@@ -884,11 +994,10 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    atomic readwrite CONSTRUCTORS, OPERATIONS_REGION do
+    atomic readwrite CONSTRUCTORS do
     ADD_LIST( CONSTRUCTORS, oper );
-    ADD_LIST( OPERATIONS,   oper );
-    ADD_LIST( OPERATIONS,   MigrateObj( [ filt ], OPERATIONS_REGION) );
     od;
+    STORE_OPER_FLAGS(oper, filt);
 end );
 
 
@@ -925,7 +1034,8 @@ BIND_GLOBAL( "RUN_ATTR_FUNCS",
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
-    ADD_LIST( ATTRIBUTES, `[ name, filter, getter, setter, tester, mutflag ] );
+    ADD_LIST( ATTRIBUTES,
+        MakeImmutable( [ name, filter, getter, setter, tester, mutflag ] ) );
 end );
 
 
@@ -953,16 +1063,10 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
 
-    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, MigrateObj( [ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, MigrateObj(
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, MigrateObj( [ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
-    od;
+    STORE_OPER_FLAGS(getter, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_OBJECT) ]);
+    STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
 
     # store the information about the filter
     atomic FILTER_REGION do
@@ -1056,12 +1160,8 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
 
-          atomic readwrite OPERATIONS_REGION do
-          ADD_LIST( OPERATIONS, setter );
-          ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
-          ADD_LIST( OPERATIONS, tester );
-          ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-          od;
+          STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
+          STORE_OPER_FLAGS(tester, [ flags ]);
 
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1084,7 +1184,7 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
 
 
 BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, setter, tester, rank;
+    local   name, filter, flags, mutflag, getter, rank;
 
     # construct getter, setter and tester
     name   := arg[1];
@@ -1104,49 +1204,18 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         getter := NEW_ATTRIBUTE( name );
     fi;
+    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
+        rank := arg[3];
+    else
+        rank := 1;
+    fi;
 
-    # store the information about the filter
+    STORE_OPER_FLAGS(getter, [ flags ]);
     atomic FILTER_REGION do
-        INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+    OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
     od;
 
-    # add getter, setter and tester to the list of operations
-    setter := SETTER_FILTER( getter );
-    tester := TESTER_FILTER( getter );
-
-    atomic readwrite OPERATIONS_REGION do
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    od;
-    
-    # install the default functions
-    atomic FILTER_REGION do
-	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    od;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-
-    # the <tester> is newly made, therefore  the cache cannot contain a  flag
-    # list involving <tester>
-    InstallHiddenTrueMethod( filter, tester );
-    # CLEAR_HIDDEN_IMP_CACHE();
-
-    # run the attribute functions
-    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
-
-    # store the rank
-    atomic FILTER_REGION do
-	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
-	else
-	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-	fi;
-    od;
-
-    # and return the getter
+    # And return the getter
     return getter;
 end );
 
@@ -1172,14 +1241,14 @@ end );
 ##
 
 BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local   name,  gvar,  pos,  reqs,  filter,  setter,  tester,  
+    local   name,  gvar,  req,  reqs,  filter,  setter,  tester,  
               attr,  nname, mutflag, flags, rank;
 
     name:= arg[1];
 
     if ISB_GVAR( name ) then
 
-      atomic FILTER_REGION, OPERATIONS_REGION do
+      atomic FILTER_REGION do
       # The variable exists already.
       gvar:= VALUE_GLOBAL( name );
 
@@ -1201,8 +1270,8 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
           
           # if `gvar' has no one argument declarations we can turn it into 
           # an attribute
-          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-          for reqs in OPERATIONS[pos+1] do
+          req := GET_OPER_FLAGS(gvar);
+          for reqs in req do
               if LENGTH(reqs)  = 1 then
                   Error( "operation `", name, "' has been declared as a one ",
                          "argument Operation and cannot also be an Attribute");
@@ -1217,8 +1286,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
           fi;
           
           flags := FLAGS_FILTER(filter);
-          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-          ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+          STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
           
           # kernel magic for the conversion
           if mutflag then
@@ -1251,13 +1319,11 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       if not IS_OPERATION( filter ) then
         Error( "<filter> must be an operation" );
       fi;
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj( [ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
+      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
 
       # also set the extended range for the setter
-      pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
-      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj(
-                [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ], OPERATIONS_REGION ) );
+      req := GET_OPER_FLAGS( Setter(gvar) );
+      STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
 
       od;
     else
@@ -1321,25 +1387,17 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
-    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, MigrateObj(
-              [ [ FLAGS_FILTER( filter ), FLAGS_FILTER( IS_BOOL ) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ FLAGS_FILTER(filter) ] ], OPERATIONS_REGION ) );
-    od;
+    STORE_OPER_FLAGS(getter, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ]);
+    STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
 
     # install the default functions
-    atomic FILTER_REGION do
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
-    od;
 
     # clear the cache because <filter> is something old
     InstallHiddenTrueMethod( tester, getter );
@@ -1351,10 +1409,8 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
-    atomic FILTER_REGION do
     RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
     RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
-    od;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1403,15 +1459,10 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
 
-    atomic readwrite OPERATIONS_REGION do
     # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags, FLAGS_FILTER( IS_BOOL ) ] ], OPERATIONS_REGION ) );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, MigrateObj([ [ flags ] ], OPERATIONS_REGION ) );
-    od;
+    STORE_OPER_FLAGS(getter, [ flags ]);
+    STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER(IS_BOOL) ]);
+    STORE_OPER_FLAGS(tester, [ flags ]);
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
@@ -1470,13 +1521,11 @@ end );
 ##
 BIND_GLOBAL( "DeclareProperty", function ( arg )
 
-    local prop, name, nname, gvar, pos, filter;
+    local prop, name, nname, gvar, req, filter;
 
     name:= arg[1];
 
     if ISB_GVAR( name ) then
-    
-      atomic readwrite OPERATIONS_REGION do
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -1504,10 +1553,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
         Error( "<filter> must be an operation" );
       fi;
 
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], MigrateObj([ FLAGS_FILTER( filter ) ], OPERATIONS_REGION ) );
-
-      od;
+      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
 
     else
 
@@ -1662,7 +1708,7 @@ end );
 ##
 BIND_GLOBAL( "TraceAllMethods", function( arg )
     local   fun;
-    TraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+    TraceMethods(OPERATIONS);
 end );
 
 
@@ -1724,7 +1770,7 @@ end );
 ##
 BIND_GLOBAL( "UntraceAllMethods", function( arg )
     local   fun;
-    UntraceMethods(OPERATIONS{[ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]});
+    UntraceMethods(OPERATIONS);
 end );
 
 #############################################################################
@@ -1822,13 +1868,11 @@ end );
 
 
 BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
-    local i,j;
-    atomic readonly OPERATIONS_REGION do
-    for i in [1,3..LEN_LIST(OPERATIONS)-1] do
+    local oper,j;
+    for oper in OPERATIONS do
         for j in [1..6] do
-            CHANGED_METHODS_OPERATION(OPERATIONS[i],j);
+            CHANGED_METHODS_OPERATION(oper,j);
         od;
-    od;
     od;
 end);
         

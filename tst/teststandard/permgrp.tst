@@ -26,6 +26,9 @@ gap> p:=Image(IsomorphismPermGroup(g));;
 gap> s:=SylowSubgroup(p,7);;
 gap> Length(IntermediateSubgroups(p,s).subgroups);
 71
+
+# Unbind variables so we can GC memory
+gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
 gap> STOP_TEST( "permgrp.tst", 1);
 
 #############################################################################

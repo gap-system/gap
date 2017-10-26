@@ -1910,61 +1910,22 @@ void            IntrPow ( void )
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
-void            IntrIntExpr (
-    Char *              str )
+void IntrIntExpr(Char * str)
 {
-    Obj                 val;            /* value = <upp> * <pow> + <low>   */
-    Obj                 upp;            /* upper part                      */
-    Int                 pow;            /* power                           */
-    Int                 low;            /* lower part                      */
-    Int                 sign;           /* is the integer negative         */
-    UInt                i;              /* loop variable                   */
-
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeIntExpr( str ); return; }
-
     
-    /* get the signs, if any                                                */
-    sign = 1;
-    i = 0;
-    while ( str[i] == '-' ) {
-        sign = - sign;
-        i++;
-    }
+    Obj val = IntStringInternal(0, str);
+    GAP_ASSERT(val != Fail);
 
-    /* collect the digits in groups of 8                                   */
-    low = 0;
-    pow = 1;
-    upp = INTOBJ_INT(0);
-    while ( str[i] != '\0' ) {
-        low = 10 * low + str[i] - '0';
-        pow = 10 * pow;
-        if ( pow == 100000000L ) {
-            upp = PROD(upp,INTOBJ_INT(pow) );
-            upp = SUM(upp  , INTOBJ_INT(sign*low) );
-            pow = 1;
-            low = 0;
-        }
-        i++;
-    }
-
-    /* compose the integer value                                           */
-    val = 0;
-    if ( upp == INTOBJ_INT(0) ) {
-        val = INTOBJ_INT(sign*low);
-    }
-    else if ( pow == 1 ) {
-        val = upp;
+    if (STATE(IntrCoding) > 0) {
+        CodeIntExpr(val);
     }
     else {
-        upp =  PROD( upp, INTOBJ_INT(pow) );
-        val = SUM( upp , INTOBJ_INT(sign*low) );
+        // push the integer value
+        PushObj(val);
     }
-
-    /* push the integer value                                              */
-    PushObj( val );
 }
 
 
@@ -1975,24 +1936,21 @@ void            IntrIntExpr (
 **  'IntrLongIntExpr' is the action to  interpret a long literal integer
 **  expression whose digits are stored in a string GAP object.
 */
-void            IntrLongIntExpr (
-    Obj               string )
+void IntrLongIntExpr(Obj string)
 {
-    Obj                 ret;            /* integer encoded as GAP obj      */
-    /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeLongIntExpr( string ); return; }
 
-    ret = IntStringInternal(string);
-    
-    if ( ret == Fail ) {
-        /* This should never happen */
-        ErrorQuit("Int: Invalid parsing (internal error)", 0, 0);
+    Obj val = IntStringInternal(string, 0);
+    GAP_ASSERT(val != Fail);
+
+    if (STATE(IntrCoding) > 0) {
+        CodeIntExpr(val);
     }
-
-    /* push the integer value                                              */
-    PushObj( ret );
+    else {
+        // push the integer value
+        PushObj(val);
+    }
 }
 
 /****************************************************************************
@@ -2070,7 +2028,7 @@ void IntrIntObjExpr(Obj val)
         return;
     }
     if (STATE(IntrCoding) > 0) {
-        CodeGAPSmallInt(val);
+        CodeIntExpr(val);
         return;
     }
 
@@ -2948,7 +2906,7 @@ void            IntrAssDVar (
     UInt                depth )
 {
     Obj                 rhs;            /* right hand side                 */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -2966,12 +2924,10 @@ void            IntrAssDVar (
     rhs = PopObj();
 
     /* assign the right hand side                                          */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    ASS_HVAR( dvar, rhs );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    ASS_HVAR_WITH_CONTEXT(context, dvar, rhs);
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -2981,7 +2937,7 @@ void            IntrUnbDVar (
     UInt                dvar,
     UInt                depth )
 {
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -2995,12 +2951,10 @@ void            IntrUnbDVar (
     }
 
     /* assign the right hand side                                          */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    ASS_HVAR( dvar, (Obj)0 );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    ASS_HVAR_WITH_CONTEXT(context, dvar, (Obj)0);
 
     /* push void                                                           */
     PushVoidObj();
@@ -3016,7 +2970,7 @@ void            IntrRefDVar (
     UInt                depth )
 {
     Obj                 val;            /* value, result                   */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3030,12 +2984,10 @@ void            IntrRefDVar (
     }
 
     /* get and check the value                                             */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    val = OBJ_HVAR( dvar );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
     if ( val == 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
                    dvar >> 10, dvar & 0xFFFF );
@@ -3050,7 +3002,7 @@ void            IntrIsbDVar (
     UInt                depth )
 {
     Obj                 val;            /* value, result                   */
-    Obj                 currLVars;
+    Obj                 context;
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3059,12 +3011,10 @@ void            IntrIsbDVar (
 
 
     /* get the value                                                       */
-    currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS( STATE(ErrorLVars) );
+    context = STATE(ErrorLVars);
     while (depth--)
-      SWITCH_TO_OLD_LVARS( PARENT_LVARS(STATE(CurrLVars)) );
-    val = OBJ_HVAR( dvar );
-    SWITCH_TO_OLD_LVARS( currLVars  );
+      context = PARENT_LVARS(context);
+    val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
 
     /* push the value                                                      */
     PushObj( (val != 0 ? True : False) );
@@ -3171,6 +3121,10 @@ void            IntrAssList ( Int narg )
     Obj                 pos;            /* position                        */
     Obj                 rhs;            /* right hand side                 */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("[]:= only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3200,9 +3154,6 @@ void            IntrAssList ( Int narg )
       list = PopObj();
 
       ASS2_LIST(list, pos1, pos2, rhs);
-    }
-    else {
-      SyntaxError("[]:= only supports 1 or 2 indices");
     }
 
     /* push the right hand side again                                      */
@@ -3331,6 +3282,10 @@ void            IntrUnbList ( Int narg )
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("Unbind[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3346,7 +3301,8 @@ void            IntrUnbList ( Int narg )
       /* unbind the element                                                  */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
-      } else {
+      }
+      else {
         UNBB_LIST(list, pos);
       }
     }
@@ -3356,9 +3312,6 @@ void            IntrUnbList ( Int narg )
       list = PopObj();
 
       UNB2_LIST(list, pos1, pos2);
-    }
-    else {
-      SyntaxError("Unbind[] only supports 1 or 2 indices");
     }
 
     /* push void                                                           */
@@ -3379,13 +3332,14 @@ void            IntrElmList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeElmList( narg ); return; }
-
-    if (narg <= 0)
-      SyntaxError("This should never happen");
 
     if (narg == 1) {
       /* get the position                                                    */
@@ -3402,16 +3356,12 @@ void            IntrElmList ( Int narg )
         elm = ELMB_LIST( list, pos );
       }
     }
-    else if (narg == 2) {
+    else /*if (narg == 2)*/ {
       Obj pos2 = PopObj();
       Obj pos1 = PopObj();
       list = PopObj();
 
       elm = ELM2_LIST(list, pos1, pos2);
-    }
-    else {
-      SyntaxError("[] only supports 1 or 2 indices");
-      return;
     }
 
     /* push the element                                                    */
@@ -3526,6 +3476,10 @@ void            IntrIsbList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
+    if (narg != 1 && narg != 2) {
+      SyntaxError("IsBound[] only supports 1 or 2 indices");
+    }
+
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
@@ -3541,20 +3495,17 @@ void            IntrIsbList ( Int narg )
       /* get the result                                                      */
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
-      } else {
+      }
+      else {
         isb = ISBB_LIST( list, pos ) ? True : False;
       }
     }
-    else if (narg == 2) {
+    else /*if (narg == 2)*/ {
       Obj pos2 = PopObj();
       Obj pos1 = PopObj();
       list = PopObj();
 
       isb = ISB2_LIST(list, pos1, pos2) ? True : False;
-    }
-    else {
-      SyntaxError("IsBound[] only supports 1 or 2 indices");
-      isb = Fail;
     }
 
     /* push the result                                                     */

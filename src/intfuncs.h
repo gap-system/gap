@@ -47,8 +47,6 @@ Int HASHKEY_WHOLE_BAG_NC (Obj obj, UInt4 seed);
 // Does NOT perform bounds checking
 Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int read);
 
-Obj IntStringInternal( Obj string );
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *

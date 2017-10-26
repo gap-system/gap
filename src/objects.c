@@ -2182,41 +2182,18 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* export certain TNUM values as global variable */
-    AssGVar(GVarName("FIRST_CONSTANT_TNUM"), INTOBJ_INT(FIRST_CONSTANT_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_CONSTANT_TNUM"));
-
-    AssGVar(GVarName("LAST_CONSTANT_TNUM"), INTOBJ_INT(LAST_CONSTANT_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_CONSTANT_TNUM"));
-    
-    AssGVar(GVarName("FIRST_RECORD_TNUM"), INTOBJ_INT(FIRST_RECORD_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_RECORD_TNUM"));
-
-    AssGVar(GVarName("LAST_RECORD_TNUM"), INTOBJ_INT(LAST_RECORD_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_RECORD_TNUM"));
-
-    AssGVar(GVarName("FIRST_LIST_TNUM"), INTOBJ_INT(FIRST_LIST_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_LIST_TNUM"));
-
-    AssGVar(GVarName("LAST_LIST_TNUM"), INTOBJ_INT(LAST_LIST_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_LIST_TNUM"));
-    
-    AssGVar(GVarName("FIRST_EXTERNAL_TNUM"), INTOBJ_INT(FIRST_EXTERNAL_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_EXTERNAL_TNUM"));
-
-    AssGVar(GVarName("LAST_EXTERNAL_TNUM"), INTOBJ_INT(LAST_EXTERNAL_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_EXTERNAL_TNUM"));
-    
-    AssGVar(GVarName("FIRST_REAL_TNUM"), INTOBJ_INT(FIRST_REAL_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_REAL_TNUM"));
-
-    AssGVar(GVarName("LAST_REAL_TNUM"), INTOBJ_INT(LAST_REAL_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_REAL_TNUM"));
-    
-    AssGVar(GVarName("FIRST_IMM_MUT_TNUM"), INTOBJ_INT(FIRST_IMM_MUT_TNUM));
-    MakeReadOnlyGVar(GVarName("FIRST_IMM_MUT_TNUM"));
-
-    AssGVar(GVarName("LAST_IMM_MUT_TNUM"), INTOBJ_INT(LAST_IMM_MUT_TNUM));
-    MakeReadOnlyGVar(GVarName("LAST_IMM_MUT_TNUM"));
+    ExportAsConstantGVar(FIRST_CONSTANT_TNUM);
+    ExportAsConstantGVar(LAST_CONSTANT_TNUM);
+    ExportAsConstantGVar(FIRST_RECORD_TNUM);
+    ExportAsConstantGVar(LAST_RECORD_TNUM);
+    ExportAsConstantGVar(FIRST_LIST_TNUM);
+    ExportAsConstantGVar(LAST_LIST_TNUM);
+    ExportAsConstantGVar(FIRST_EXTERNAL_TNUM);
+    ExportAsConstantGVar(LAST_EXTERNAL_TNUM);
+    ExportAsConstantGVar(FIRST_REAL_TNUM);
+    ExportAsConstantGVar(LAST_REAL_TNUM);
+    ExportAsConstantGVar(FIRST_IMM_MUT_TNUM);
+    ExportAsConstantGVar(LAST_IMM_MUT_TNUM);
 
     /* return success                                                      */
     return 0;

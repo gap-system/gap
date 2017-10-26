@@ -125,6 +125,8 @@ enum STAT_TNUMS {
         T_PROCCALL_6ARGS,
         T_PROCCALL_XARGS,
 
+        T_PROCCALL_OPTS,
+
         // The statement types between FIRST_NON_INTERRUPT_STAT
         // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
         // the user interrupted, e.g. via ctrl-c; or memory run full).
@@ -191,6 +193,8 @@ enum STAT_TNUMS {
         T_UNB_GVAR,
 
         T_ASS_LIST,
+        T_ASS2_LIST,
+        T_ASSX_LIST,
         T_ASSS_LIST,
         T_ASS_LIST_LEV,
         T_ASSS_LIST_LEV,
@@ -215,8 +219,6 @@ enum STAT_TNUMS {
         T_INFO,
         T_ASSERT_2ARGS,
         T_ASSERT_3ARGS,
-
-        T_PROCCALL_OPTS,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };
@@ -376,6 +378,8 @@ enum EXPR_TNUM {
     T_FUNCCALL_XARGS,
     T_FUNC_EXPR,
 
+    T_FUNCCALL_OPTS,
+
     T_OR,
     T_AND,
     T_NOT,
@@ -403,46 +407,47 @@ enum EXPR_TNUM {
     T_PERM_EXPR,
     T_PERM_CYCLE,
     T_LIST_EXPR,
-    T_LIST_TILD_EXPR,
+    T_LIST_TILDE_EXPR,
     T_RANGE_EXPR,
     T_STRING_EXPR,
     T_REC_EXPR,
-    T_REC_TILD_EXPR,
+    T_REC_TILDE_EXPR,
+
+    T_FLOAT_EXPR_EAGER,
+    T_FLOAT_EXPR_LAZY,
 
     T_REFLVAR,
-
     T_ISB_LVAR,
+
     T_REF_HVAR,
     T_ISB_HVAR,
+
     T_REF_GVAR,
     T_ISB_GVAR,
+
     T_ELM_LIST,
+    T_ELM2_LIST,
+    T_ELMX_LIST,
     T_ELMS_LIST,
     T_ELM_LIST_LEV,
     T_ELMS_LIST_LEV,
     T_ISB_LIST,
+
     T_ELM_REC_NAME,
     T_ELM_REC_EXPR,
     T_ISB_REC_NAME,
     T_ISB_REC_EXPR,
+
     T_ELM_POSOBJ,
     T_ELMS_POSOBJ,
     T_ELM_POSOBJ_LEV,
     T_ELMS_POSOBJ_LEV,
     T_ISB_POSOBJ,
+
     T_ELM_COMOBJ_NAME,
     T_ELM_COMOBJ_EXPR,
     T_ISB_COMOBJ_NAME,
     T_ISB_COMOBJ_EXPR,
-
-    T_FUNCCALL_OPTS,
-    T_FLOAT_EXPR_EAGER,
-    T_FLOAT_EXPR_LAZY,
-
-    T_ELM2_LIST,
-    T_ELMX_LIST,
-    T_ASS2_LIST,
-    T_ASSX_LIST,
 
     END_ENUM_RANGE(LAST_EXPR_TNUM)
 };
@@ -966,16 +971,12 @@ extern  void            CodePow ( void );
 
 /****************************************************************************
 **
-*F  CodeIntExpr(<str>)  . . . . . . . . . . . code literal integer expression
+*F  CodeIntExpr(<val>)  . . . . . . . . . . . code literal integer expression
 **
-**  'CodeIntExpr' is the action to code a literal integer expression.  <str>
-**  is the integer as a (null terminated) C character string.
+**  'CodeIntExpr' is the action to code a literal integer expression.  <val>
+**  is the integer as a GAP object.
 */
-extern void             CodeGAPSmallInt(Obj obj);
-extern  void            CodeIntExpr (
-            Char *              str );
-extern  void            CodeLongIntExpr (
-            Obj                 string ); 
+extern void CodeIntExpr(Obj val);
 
 /****************************************************************************
 **

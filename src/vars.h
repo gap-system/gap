@@ -73,12 +73,18 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 }
 
 
+typedef struct {
+    Obj func;
+    Expr stat;
+    Obj parent;
+} LVarsHeader;
+
 /****************************************************************************
 **
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-#define FUNC_LVARS_PTR(lvars_ptr)   (lvars_ptr[0])
+#define FUNC_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->func)
 #define FUNC_LVARS(lvars_obj)       FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -87,7 +93,7 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-#define STAT_LVARS_PTR(lvars_ptr)   (lvars_ptr[1])
+#define STAT_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->stat)
 #define STAT_LVARS(lvars_obj)       STAT_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -96,7 +102,7 @@ static inline int IS_LVARS_OR_HVARS(Obj obj)
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-#define PARENT_LVARS_PTR(lvars_ptr) (lvars_ptr[2])
+#define PARENT_LVARS_PTR(lvars_ptr) (((LVarsHeader *)lvars_ptr)->parent)
 #define PARENT_LVARS(lvars_obj)     PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj))
 
 
@@ -136,11 +142,11 @@ static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
             (int)expr, (int)STATE(CurrLVars), file, line);
   }
 #endif
-  STAT_LVARS_PTR(STATE(PtrLVars)) = (Obj)expr;
+  STAT_LVARS_PTR(STATE(PtrLVars)) = expr;
 }
 
 #ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   ((Expr)STAT_LVARS_PTR(STATE(PtrLVars)))
+#define BRK_CALL_TO()                   STAT_LVARS_PTR(STATE(PtrLVars))
 #define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
 #else
 #define BRK_CALL_TO()                   /* do nothing */
@@ -165,7 +171,7 @@ void FreeLVarsBag(Bag bag);
 static inline void MakeHighVars( Bag bag ) {
   while (bag && TNUM_OBJ(bag) == T_LVARS) {
     RetypeBag(bag, T_HVARS);
-    bag = ADDR_OBJ(bag)[2];
+    bag = PARENT_LVARS(bag);
   }
 }
 
@@ -248,20 +254,14 @@ static inline void SwitchToOldLVars(Obj old, const char *file, int line)
 
 static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 {
-#ifdef TRACEFRAMES
-  if (STEVES_TRACING == True) {
-    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)STATE(CurrLVars),(UInt)old);
-  }
-#endif
   // remove the link to the calling function, in case this values bag stays
   // alive due to higher variable reference
   PARENT_LVARS_PTR(STATE(PtrLVars)) = 0;
 
-  CHANGED_BAG( STATE(CurrLVars) );
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
-  SET_CURR_LVARS(old);
+
+  SwitchToOldLVars(old, file, line);
 }
 
 
@@ -276,6 +276,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
 #define ASS_LVAR(lvar,val)      (STATE(PtrLVars)[(lvar)+2] = (val))
+#define ASS_LVAR_WITH_CONTEXT(context,lvar,val)      (ADDR_OBJ(context)[(lvar)+2] = (val))
 
 
 /****************************************************************************
@@ -285,6 +286,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
 #define OBJ_LVAR(lvar)          (STATE(PtrLVars)[(lvar)+2])
+#define OBJ_LVAR_WITH_CONTEXT(context,lvar)          (CONST_ADDR_OBJ(context)[(lvar)+2])
 
 
 /****************************************************************************
@@ -294,6 +296,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
 */
 #define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
+#define NAME_LVAR_WITH_CONTEXT(context,lvar)         NAMI_FUNC( FUNC_LVARS(context), lvar )
 
 
 /****************************************************************************
@@ -318,15 +321,13 @@ extern  Obj             ObjLVar (
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
 */
-extern  void            ASS_HVAR (
-            UInt                hvar,
-            Obj                 val );
+extern void   ASS_HVAR(UInt hvar, Obj val);
+extern Obj    OBJ_HVAR(UInt hvar);
+extern Char * NAME_HVAR(UInt hvar);
 
-extern  Obj             OBJ_HVAR (
-            UInt                hvar );
-
-extern  Char *          NAME_HVAR (
-            UInt                hvar );
+extern void   ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
+extern Obj    OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+extern Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 
 
 /****************************************************************************

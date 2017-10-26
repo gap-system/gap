@@ -148,6 +148,7 @@ enum {
         T_BOOL,
         T_CHAR,
         T_FUNCTION,
+        T_BODY,     // the type of function body bags
         T_FLAGS,
         T_MACFLOAT,
         T_LVARS,
@@ -228,7 +229,7 @@ enum {
 #ifdef HPCGAP
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 41,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 49,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
 #endif
 
     END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
@@ -262,10 +263,9 @@ enum {
         // we use LAST_EXTERNAL_TNUM+1 instead of LAST_REAL_TNUM to
         // skip over the shared TNUMs in HPC-GAP
     LAST_COPYING_TNUM       = LAST_EXTERNAL_TNUM + COPYING,
-
-    // the type of function body bags
-    T_BODY                  = 254,
 };
+
+GAP_STATIC_ASSERT(LAST_COPYING_TNUM <= 254, "LAST_COPYING_TNUM is too large");
 
 /****************************************************************************
 **

@@ -38,31 +38,6 @@
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * * *  boxed objects * * * * * * * * * * * * * * *
-*/
-
-/****************************************************************************
-**
-*F  FuncLessBoxedObj( <self>, <left>, <right> )
-*/
-Obj FuncLessBoxedObj ( Obj self, Obj left, Obj right )
-{
-    return LT( ADDR_OBJ(left)[1], ADDR_OBJ(right)[1] ) ? False : True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncEqualBoxedObj( <self>, <left>, <right> )
-*/
-Obj FuncEqualBoxedObj ( Obj self, Obj left, Obj right )
-{
-    return EQ( ADDR_OBJ(left)[1], ADDR_OBJ(right)[1] ) ? False : True;
-}
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * * * pc word aspect * * * * * * * * * * * * * * *
 */
 
@@ -610,8 +585,6 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(LessBoxedObj, 2, "lobj, lobj"),
-    GVAR_FUNC(EqualBoxedObj, 2, "lobj, lobj"),
     GVAR_FUNC(NBitsPcWord_Comm, 2, "n_bits_pcword, n_bits_pcword"),
     GVAR_FUNC(NBitsPcWord_Conjugate, 2, "n_bits_pcword, n_bits_pcword"),
     GVAR_FUNC(NBitsPcWord_LeftQuotient, 2, "n_bits_pcword, n_bits_pcword"),
@@ -658,14 +631,10 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* export position numbers 'PCWP_SOMETHING'                            */
-    AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
-             INTOBJ_INT(PCWP_FIRST_ENTRY) );
-    AssGVar( GVarName( "PCWP_NAMES" ),
-             INTOBJ_INT(PCWP_NAMES) );
-    AssGVar( GVarName( "PCWP_COLLECTOR" ),
-             INTOBJ_INT(PCWP_COLLECTOR) );
-    AssGVar( GVarName( "PCWP_FIRST_FREE" ),
-             INTOBJ_INT(PCWP_FIRST_FREE) );
+    ExportAsConstantGVar(PCWP_FIRST_ENTRY);
+    ExportAsConstantGVar(PCWP_NAMES);
+    ExportAsConstantGVar(PCWP_COLLECTOR);
+    ExportAsConstantGVar(PCWP_FIRST_FREE);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

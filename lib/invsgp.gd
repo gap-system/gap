@@ -9,6 +9,7 @@
 ##  This file contains the declaration of operations for inverse semigroups.
 ##
 
+# IsInverseMonoid is documented with IsInverseSemigroup in semigrp.gd
 DeclareSynonym("IsInverseMonoid", IsMonoid and IsInverseSemigroup);
 
 DeclareOperation("IsInverseSubsemigroup", [IsSemigroup, IsSemigroup]);
@@ -25,14 +26,10 @@ DeclareAttribute("GeneratorsOfInverseSemigroup", IsInverseSemigroup);
 DeclareOperation("InverseMonoidByGenerators", [IsCollection]);
 DeclareOperation("InverseSemigroupByGenerators", [IsCollection]);
 
-DeclareOperation("InverseSubsemigroup",
-[IsInverseSemigroup, IsCollection]);
-DeclareOperation("InverseSubsemigroupNC",
-[IsInverseSemigroup, IsCollection]);
-DeclareOperation("InverseSubmonoid",
-[IsInverseMonoid, IsCollection]);
-DeclareOperation("InverseSubmonoidNC",
-[IsInverseMonoid, IsCollection]);
+DeclareOperation("InverseSubsemigroup", [IsInverseSemigroup, IsCollection]);
+DeclareOperation("InverseSubsemigroupNC", [IsInverseSemigroup, IsCollection]);
+DeclareOperation("InverseSubmonoid", [IsInverseMonoid, IsCollection]);
+DeclareOperation("InverseSubmonoidNC", [IsInverseMonoid, IsCollection]);
 
 DeclareAttribute("AsInverseSemigroup", IsCollection);
 DeclareAttribute("AsInverseMonoid", IsCollection);

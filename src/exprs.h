@@ -24,17 +24,10 @@
 **  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
 **  <expr>.
 */
-#ifdef  NO_LVAR_CHECKS
-#define OBJ_REFLVAR(expr)       \
-                        OBJ_LVAR( LVAR_REFLVAR( (expr) ) )
-#else
-
 #define OBJ_REFLVAR(expr)       \
                         (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
                          OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
-
-#endif
 
 /****************************************************************************
 **
@@ -43,19 +36,14 @@
 **  'OBJ_INTEXPR' returns the (immediate)  integer  value of the  (immediate)
 **  integer expression <expr>.
 **
-**  'OBJ_INTEXPR(<expr>)'  should  be 'OBJ_INT(INT_INTEXPR(<expr>))', but for
-**  performance  reasons we implement  it   as '(Obj)(<expr>)'.  This is   of
+**  'OBJ_INTEXPR(<expr>)' should be 'INTOBJ_INT(INT_INTEXPR(<expr>))', but
+**  for performance  reasons we implement  it as '(Obj)(<expr>)'.  This is of
 **  course    highly  dependent  on    (immediate)  integer   expressions and
 **  (immediate) integer values having the same representation.
 */
 
-#ifndef SYS_IS_64_BIT
-#define OBJ_INTEXPR(expr)       \
-                        ((Obj)(Int)(Int4)(expr))
-#else
-#define OBJ_INTEXPR(expr)       \
-                        (INTOBJ_INT(INT_INTEXPR((expr))))
-#endif
+#define OBJ_INTEXPR(expr)   ((Obj)(expr))
+
 
 /****************************************************************************
 **

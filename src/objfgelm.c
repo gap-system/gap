@@ -3348,22 +3348,14 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     /* export position numbers 'AWP_SOMETHING'                             */
-    AssGVar( GVarName( "AWP_FIRST_ENTRY" ),
-             INTOBJ_INT(AWP_FIRST_ENTRY) );
-    AssGVar( GVarName( "AWP_PURE_TYPE" ),
-             INTOBJ_INT(AWP_PURE_TYPE) );
-    AssGVar( GVarName( "AWP_NR_BITS_EXP" ),
-             INTOBJ_INT(AWP_NR_BITS_EXP) );
-    AssGVar( GVarName( "AWP_NR_GENS" ),
-             INTOBJ_INT(AWP_NR_GENS) );
-    AssGVar( GVarName( "AWP_NR_BITS_PAIR" ),
-             INTOBJ_INT(AWP_NR_BITS_PAIR) );
-    AssGVar( GVarName( "AWP_FUN_OBJ_BY_VECTOR" ),
-             INTOBJ_INT(AWP_FUN_OBJ_BY_VECTOR) );
-    AssGVar( GVarName( "AWP_FUN_ASSOC_WORD" ),
-             INTOBJ_INT(AWP_FUN_ASSOC_WORD) );
-    AssGVar( GVarName( "AWP_FIRST_FREE" ),
-             INTOBJ_INT(AWP_FIRST_FREE) );
+    ExportAsConstantGVar(AWP_FIRST_ENTRY);
+    ExportAsConstantGVar(AWP_PURE_TYPE);
+    ExportAsConstantGVar(AWP_NR_BITS_EXP);
+    ExportAsConstantGVar(AWP_NR_GENS);
+    ExportAsConstantGVar(AWP_NR_BITS_PAIR);
+    ExportAsConstantGVar(AWP_FUN_OBJ_BY_VECTOR);
+    ExportAsConstantGVar(AWP_FUN_ASSOC_WORD);
+    ExportAsConstantGVar(AWP_FIRST_FREE);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

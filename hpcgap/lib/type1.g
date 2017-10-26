@@ -615,41 +615,25 @@ BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 
+BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags",
+        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
+BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
+        FLAGS_FILTER(IsAtomicPositionalObjectRep));
+BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags",
+        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+
 #############################################################################
 ##
-#F  SetTypeObj( <type>, <obj> )
+#F  Objectify( <type>, <obj> )
 ##
 ##  <ManSection>
-##  <Func Name="SetTypeObj" Arg='type, obj'/>
+##  <Func Name="Objectify" Arg='type, obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "SetTypeObj", function ( type, obj )
-    if not IsType( type )  then
-        Error("<type> must be a type");
-    fi;
-    if IS_LIST( obj )  then
-        SET_TYPE_POSOBJ( obj, type );
-    elif IS_REC( obj )  then
-        SET_TYPE_COMOBJ( obj, type );
-    fi;
-    if not IsNoImmediateMethodsObject(obj) then
-      RunImmediateMethods( obj, type![2] );
-    fi;
-    return obj;
-end );
-
-
-BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", 
-        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
-BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", 
-        FLAGS_FILTER(IsAtomicPositionalObjectRep));
-BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
-        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
-        
-BIND_GLOBAL( "Objectify", function(type, obj)
+BIND_GLOBAL( "Objectify", function ( type, obj )
     local flags;
     if not IsType( type )  then
         Error("<type> must be a type");
@@ -679,37 +663,6 @@ BIND_GLOBAL( "Objectify", function(type, obj)
     fi;
     return obj;
 end );
-
-
-#############################################################################
-##
-#F  ChangeTypeObj( <type>, <obj> )
-##
-##  <ManSection>
-##  <Func Name="ChangeTypeObj" Arg='type, obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
-    if not IsType( type )  then
-        Error("<type> must be a type");
-    fi;
-    if IS_POSOBJ( obj )  then
-        SET_TYPE_POSOBJ( obj, type );
-    elif IS_COMOBJ( obj )  then
-        SET_TYPE_COMOBJ( obj, type );
-    elif IS_DATOBJ( obj )  then
-        SET_TYPE_DATOBJ( obj, type );
-    fi;
-    if not IsNoImmediateMethodsObject(obj) then
-      RunImmediateMethods( obj, type![2] );
-    fi;
-    return obj;
-end );
-
-BIND_GLOBAL( "ReObjectify", ChangeTypeObj );
 
 
 #############################################################################
@@ -837,78 +790,6 @@ BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
     fi;
 end );
 
-
-#############################################################################
-##
-#F  SetMultipleAttributes( <obj>, <attr1>, <val1>, <attr2>, <val2> ... )
-##
-##  <ManSection>
-##  <Func Name="SetMultipleAttributes" Arg='obj, attr1, val1, attr2, val2 ...'/>
-##
-##  <Description>
-##  This function should have the same net effect as 
-##  <P/>
-##  Setter( <A>attr1</A> )( <A>obj</A>, <A>val1</A> )
-##  Setter( <A>attr2</A> )( <A>obj</A>, <A>val2</A> )
-##   . . .
-##  <P/>
-##  but hopefully be faster, by amalgamating all the type changes
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SetMultipleAttributes", function (arg)
-    local obj, type, flags, attr, val, i, extra, nfilt, nflags;
-    obj := arg[1];
-    if IsAttributeStoringRep(obj) then
-        extra := [];
-        type := TypeObj(obj);
-        flags := FlagsType( type);
-        nfilt := IS_OBJECT;
-        for i in [2,4..LEN_LIST(arg)-1] do
-            attr := arg[i];
-            val := arg[i+1];
-            if 0 <> FLAG1_FILTER(attr) then
-
-                # `attr' is a property.
-                if val then
-                  nfilt:= nfilt and attr;  # (implies the property tester)
-                else
-                  nfilt:= nfilt and Tester( attr );
-                fi;
-
-            elif LEN_LIST(METHODS_OPERATION( Setter(attr) , 2)) <> 12 then
-
-                # There are special setter methods for `attr',
-                # we have to call the setter explicitly.
-                ADD_LIST(extra, attr);
-                ADD_LIST(extra, val);
-
-            else
-
-                # We set the attribute value.
-                obj!.(NAME_FUNC(attr)) := IMMUTABLE_COPY_OBJ(val);
-                nfilt := nfilt and Tester(attr);
-
-            fi;
-        od;
-        nflags := FLAGS_FILTER(nfilt);
-        if not IS_SUBSET_FLAGS(flags, nflags) then
-            flags := WITH_IMPS_FLAGS(AND_FLAGS(flags, nflags));
-            ChangeTypeObj(NEW_TYPE(TypeOfTypes, 
-                    FamilyType(type), 
-                    flags , 
-                    DataType(type)),obj);
-        fi;
-        for i in [2,4..LEN_LIST(extra)] do
-            Setter(extra[i-1])(obj,extra[i]);
-        od;
-    else
-        extra := arg;
-        for i in [2,4..LEN_LIST(extra)] do
-            Setter(extra[i])(obj,extra[i+1]);
-        od;
-    fi;
-end);
 
 #############################################################################
 ##

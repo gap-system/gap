@@ -1,4 +1,3 @@
-Revision.tasks_g := "2011-05-12 16:37:00 +0000";
 BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnly (rec ( 
         BLOCK_ME := 1,
         RESUME_IDLE_WORKER := 2,

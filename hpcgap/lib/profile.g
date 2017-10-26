@@ -759,9 +759,7 @@ BIND_GLOBAL("ProfileOperationsOn",function()
     local   prof;
 
     # Note that the list of operations may have grown since the last call.
-    atomic readonly OPERATIONS_REGION do
-    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    od;
+    prof := MakeImmutable(FromAtomicList(OPERATIONS));
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof );
@@ -819,9 +817,8 @@ end);
 ##
 BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     local   prof;
-    atomic readonly OPERATIONS_REGION do
-    prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    od;
+
+    prof := MakeImmutable(FromAtomicList(OPERATIONS));
     PROFILED_OPERATIONS := prof;
     ProfileFunctions( prof );
     ProfileMethods(prof);

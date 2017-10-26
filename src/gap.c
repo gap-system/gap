@@ -238,8 +238,10 @@ Obj Shell ( Obj context,
   STATE(ShellContext) = context;
   oldBaseShellContext = STATE(BaseShellContext);
   STATE(BaseShellContext) = context;
+  Int oldErrorLLevel = STATE(ErrorLLevel);
+  STATE(ErrorLLevel) = 0;
   oldRecursionDepth = STATE(RecursionDepth);
-  
+
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
@@ -353,6 +355,7 @@ Obj Shell ( Obj context,
   CloseOutput();
   STATE(BaseShellContext) = oldBaseShellContext;
   STATE(ShellContext) = oldShellContext;
+  STATE(ErrorLLevel) = oldErrorLLevel;
   STATE(RecursionDepth) = oldRecursionDepth;
   if (STATE(UserHasQUIT))
     {
@@ -489,14 +492,6 @@ int realmain( int argc, char * argv[], char * environ[] )
   UInt                type;                   /* result of compile       */
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
-
-  // verify our TNUM enum does not overflow; note that TNUM 254 is T_BODY,
-  // and 255 is reserved for internal use by GASMAN.
-  if (LAST_COPYING_TNUM > 253) {
-    fprintf(stderr, "LAST_COPYING_TNUM = %d > 253 !\n", LAST_COPYING_TNUM);
-    SyExit(1);
-    return 1;
-  }
 
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
@@ -947,7 +942,7 @@ void DownEnvInner( Int depth )
       depth = 0;
     }
     /* ... then go back to the top, and later go down to the appropriate level. */
-    STATE(ErrorLVars) = STATE(ErrorLVars0);
+    STATE(ErrorLVars) = STATE(BaseShellContext);
     STATE(ErrorLLevel) = 0;
     STATE(ShellContext) = STATE(BaseShellContext);
   }
@@ -2057,7 +2052,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
         return INTOBJ_INT(0);
     }
     else {
-        return FuncHANDLE_OBJ(self, o);
+        return QuoInt(FuncHANDLE_OBJ(self, o), INTOBJ_INT(sizeof(Obj)));
     }
 #else
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
@@ -2185,8 +2180,7 @@ void InitGVarFiltsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2204,8 +2198,7 @@ void InitGVarAttrsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2222,8 +2215,7 @@ void InitGVarPropsFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
     }
 }
 
@@ -2241,8 +2233,7 @@ void InitGVarOpersFromTable (
         UInt gvar = GVarName( tab[i].name );
         Obj name = NameGVarObj( gvar );
         Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
-        AssGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
     }
 }
 
@@ -2295,8 +2286,7 @@ void InitGVarFuncsFromTable (
         Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
         Obj func = NewFunction( name, tab[i].nargs, args, tab[i].handler );
         SetupFuncInfo( func, tab[i].cookie );
-        AssGVar( gvar, func );
-        MakeReadOnlyGVar( gvar );
+        AssReadOnlyGVar( gvar, func );
     }
 }
 
@@ -2802,7 +2792,7 @@ GVarDescriptor GVarTHREAD_INIT;
 GVarDescriptor GVarTHREAD_EXIT;
 
 void ThreadedInterpreter(void *funcargs) {
-  Obj tmp, func;
+  Obj tmp, func, body;
   int i;
 
   /* intialize everything and begin an interpreter                       */
@@ -2815,10 +2805,10 @@ void ThreadedInterpreter(void *funcargs) {
   STATE(NrError) = 0;
   STATE(ThrownObject) = 0;
   STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
-  tmp = NewFunctionC( "bottom", 0, "", 0 );
-  PTR_BAG(STATE(BottomLVars))[0] = tmp;
-  tmp = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_BODY_FUNC( PTR_BAG(STATE(BottomLVars))[0], tmp );
+  func = NewFunctionC( "bottom", 0, "", 0 );
+  FUNC_LVARS(STATE(BottomLVars)) = func;
+  body = NewBag( T_BODY, sizeof(BodyHeader) );
+  SET_BODY_FUNC( func, body );
   STATE(CurrLVars) = STATE(BottomLVars);
 
   IntrBegin( STATE(BottomLVars) );
@@ -2998,19 +2988,12 @@ static Int InitLibrary (
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
 
-    UInt isvar = GVarName( "IsHPCGAP" );
-
 #ifdef HPCGAP
-    UInt var = GVarName( "HPCGAP" );
-    AssGVar( var, True );
-    MakeConstantGVar( var );
-
-    AssGVar( isvar, True );
+    AssConstantGVar( GVarName( "HPCGAP" ), True );
+    AssConstantGVar( GVarName( "IsHPCGAP" ), True );
 #else
-    AssGVar( isvar, False );
+    AssConstantGVar( GVarName( "IsHPCGAP" ), False );
 #endif
-
-    MakeConstantGVar(isvar);
 
     /* return success                                                      */
     return PostRestore( module );

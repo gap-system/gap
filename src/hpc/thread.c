@@ -150,11 +150,6 @@ void RemoveGCRoots(void)
 }
 #endif /* DISABLE_GC */
 
-#ifdef __GNUC__
-static void SetupTLS(void) __attribute__((noinline));
-static void GrowStack(void) __attribute__((noinline));
-#endif
-
 #ifndef HAVE_NATIVE_TLS
 
 /* In order to safely use thread-local memory on the main stack, we have
@@ -172,7 +167,7 @@ static void GrowStack(void) __attribute__((noinline));
  * allocated in private memory-mapped storage.
  */
 
-static void GrowStack(void)
+static NOINLINE void GrowStack(void)
 {
     char * tls = (char *)realTLS;
     size_t pagesize = getpagesize();
@@ -187,7 +182,7 @@ static void GrowStack(void)
 }
 #endif
 
-static void SetupTLS(void)
+static NOINLINE void SetupTLS(void)
 {
 #ifndef HAVE_NATIVE_TLS
     GrowStack();
@@ -211,14 +206,10 @@ void InitMainThread(void)
     TLS(threadObject) = NewThreadObject(0);
 }
 
-static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
+static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
                              int     argc,
                              char ** argv,
-                             char ** environ)
-#ifdef __GNUC__
-    __attribute__((noinline))
-#endif
-    ;
+                             char ** environ);
 
 void RunThreadedMain(int (*mainFunction)(int, char **, char **),
                      int     argc,

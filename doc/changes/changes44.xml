@@ -1,7 +1,288 @@
-<Chapter Label="HistoryOfGAP44"> 
-<Heading>Overview of updates for &GAP; 4.4</Heading>
+<Chapter Label="ChangesGAP43toGAP44"> 
+<Heading>Changes between &GAP; 4.3 and &GAP; 4.4</Heading>
 
-This chapter lists changes in the main system (excluding packages) 
+This chapter contains an overview of most important changes 
+introduced in &GAP; 4.4. It also contains information about 
+subsequent update releases of &GAP; 4.4.
+
+<Section Label="Changes in the core GAP44 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.4</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Potentially Incompatible Changes">
+<Heading>Potentially Incompatible Changes</Heading>
+
+<List>
+<Item>
+  The mechanism for the loading of Packages has changed to allow easier
+  updates independent of main &GAP; releases. Packages require a
+  file <F>PackageInfo.g</F> now. The new <F>PackageInfo.g</F> files are 
+  available for all packages with the new version of GAP
+  (see <Ref BookName="Example" Label="PackageInfo.g"/>).
+</Item>
+<Item>
+  <Ref Oper="IsSimpleGroup" BookName="ref"/> returns false now for the trivial group.
+</Item>
+<Item>
+  <Ref Oper="PrimeBlocks" BookName="ref"/>: The output format has changed.
+</Item>
+<Item>
+  Division rings (see <Ref Filt="IsDivisionRing" BookName="ref"/>) 
+  are now implemented as <Ref Filt="IsRingWithOne" BookName="ref"/>.
+</Item>
+<Item>
+  <Ref Oper="DirectSumOfAlgebras" Label="for two algebras" BookName="ref"/>: 
+  <M>p</M>-th power maps are compatible with the input now.
+</Item>
+<Item>
+  The print order for polynomials has been changed.
+</Item>
+</List>
+These changes are, in some respects, departures from our policy of
+maintaining upward compatibility of documented functions between
+releases. In the first case, we felt that the old behavior was
+sufficiently inconsistent, illogical, and impossible to document that
+we had no alternative but to change it. In the case of the package
+interface, the change
+was necessary to introduce new functionality. The planned and phased
+removal of a few unnecessary functions or synonyms is needed to avoid
+becoming buried in <Q>legacy</Q> interfaces, but we remain committed to
+our policy of maintaining upward compatibility whenever sensibly possible.
+<P/>
+
+<List>
+<Item>
+  Groebner Bases:
+<P/>
+    Buchberger's algorithm to compute Groebner Bases has been implemented
+    in GAP. (A. Hulpke)
+</Item>
+<Item>
+    For large scale Groebner Basis computations there also is an interface
+    to the Singular system available in the
+    <URL>
+    <Link>https://www.gap-system.org/Packages/singular.html</Link>
+    <LinkText><Package>Singular</Package></LinkText>
+    </URL>
+    package. (M. Costantini and W. de Graaf)
+</Item>
+<Item>
+    New methods for factorizing polynomials over algebraic extensions of
+    the rationals have been implemented in GAP. (A. Hulpke)
+</Item>
+<Item>
+    For more functionality to compute with algebraic number fields there
+    is an interface to the Kant system available in the 
+    <URL>
+    <Link>https://www.gap-system.org/Packages/alnuth.html</Link>
+    <LinkText><Package>Alnuth</Package></LinkText>
+    </URL>
+    package. (B. Assmann and B. Eick)
+</Item>
+<Item>
+    A new functionality to compute the minimal normal subgroups
+    of a finite group, as well as its socle, has been installed. 
+    (B. Höfling)
+</Item>
+<Item>
+    A fast method for recognizing whether a permutation group is symmetric
+    or alternating is available now (A. Seress)
+</Item>
+<Item>
+    A method for computing the Galois group of a rational polynomial is
+    available again.  (A. Hulpke)
+</Item>
+<Item>
+    The algorithm for <Ref Attr="BrauerCharacterValue" BookName="ref"/> 
+    has been extended to the case where the splitting field is not 
+    supported in &GAP;. (T. Breuer)
+</Item>
+<Item>
+    Brauer tables of direct products can now be constructed from the
+    known Brauer tables of the direct factors. (T. Breuer)
+</Item>
+<Item>
+    Basic support for vector spaces of rational functions and of uea
+    elements is available now in &GAP;. (T. Breuer and W. de Graaf)
+</Item>
+<Item>
+    Various new functions for computations with integer matrices are
+    available, such as methods for computing normal forms of integer
+    matrices as well as nullspaces or solutions systems of equations.
+    (W. Nickel and F. Gähler)
+</Item>
+</List>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="New Packages">
+<Heading>New Packages</Heading>
+
+The following new Packages have been accepted.
+<P/>
+<List>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/alnuth.html</Link>
+    <LinkText>
+    <Package>Alnuth</Package>: Algebraic Number Theory and an interface to the Kant system.
+    </LinkText>
+    </URL>
+    By B. Assmann and B. Eick.
+</Item>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/laguna.html</Link>
+    <LinkText>
+    <Package>LAGUNA</Package>: Computing with Lie Algebras and Units of Group Algebras.
+    </LinkText>
+    </URL>
+    By V. Bovdi, A. Konovalov, R. Rossmanith, C. Schneider.
+</Item>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/nq.html</Link>
+    <LinkText>
+    <Package>NQ</Package>: The ANU Nilpotent Quotient Algorithm.
+    </LinkText>
+    </URL>
+    By W. Nickel.
+</Item>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/kbmag.html</Link>
+    <LinkText>
+    <Package>KBMAG</Package>: Knuth-Bendix for Monoids and Groups.
+    </LinkText>
+    </URL>
+    By D. Holt.
+</Item>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/polycyclic.html</Link>
+    <LinkText>
+    <Package>Polycyclic</Package>: Computation with polycyclic groups.
+    </LinkText>
+    </URL>
+    By B. Eick and W. Nickel.
+</Item>
+<Item>
+    <URL>
+    <Link>https://www.gap-system.org/Packages/quagroup.html</Link>
+    <LinkText>
+    <Package>QuaGroup</Package>: Computing with Quantized Enveloping Algebras.
+    </LinkText>
+    </URL>
+    By W. de Graaf.
+</Item>
+</List>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Performance Enhancements">
+<Heading>Performance Enhancements</Heading>
+
+<List>
+<Item>
+    The computation of irreducible representations and irreducible
+    characters using the Baum-Clausen algorithm and the implementation of
+    the Dixon-Schneider algorithm have been speeded up.
+</Item>
+<Item>
+    The algorithm for <Ref Oper="PossibleClassFusions" BookName="ref"/> 
+    has been changed: the efficiency is improved and a new criterion is used. 
+    The algorithm for <Ref Oper="PossibleFusionsCharTableTom" BookName="ref"/> 
+    has been speeded up. The method for <Ref Oper="PrimeBlocks" BookName="ref"/> 
+    has been improved following a suggestion of H. Pahlings.
+</Item>
+<Item>
+    New improved methods for normalizer and subgroup conjugation in <M>S_n</M> 
+    have been installed and new improved methods for 
+    <Ref Filt="IsNaturalSymmetricGroup" BookName="ref"/> and 
+    <Ref Filt="IsNaturalAlternatingGroup" BookName="ref"/> have been 
+    implemented. These improve the available methods when groups of large 
+    degrees are given.
+</Item>
+<Item>
+    The partition split method used in the permutation backtrack is now
+    in the kernel. Transversal computations in large permutation groups
+    are improved. Homomorphisms from free groups into permutation groups
+    now give substantially shorter words for preimages.
+</Item>
+<Item>
+    The membership test in 
+    <Ref Func="SP" Label="for dimension and field size" BookName="ref"/> 
+    and <Ref Func="SU" BookName="ref"/> groups has been improved using 
+    the invariant forms underlying these groups.
+</Item>
+<Item>
+    An improvement for the cyclic extension method for the computation of
+    subgroup lattices has been implemented.
+</Item>
+<Item>
+    A better method for <Ref Oper="MinimalPolynomial" BookName="ref"/> for 
+    finite field matrices has been implemented.
+</Item>
+<Item>
+    The display has changed and the arithmetic of multivariate polynomials
+    has been improved.
+</Item>
+<Item>
+    The <Ref Func="LogMod" BookName="ref"/> function now uses Pollard's rho method 
+    combined with the Pohlig/Hellmann approach.
+</Item>
+<Item>
+    Various functions for sets and lists have been improved following
+    suggestions of L. Teirlinck. These include: <Ref Oper="Sort" BookName="ref"/>, 
+    <Ref Oper="Sortex" BookName="ref"/>, <Ref Oper="SortParallel" BookName="ref"/>,
+    <Ref Attr="SortingPerm" BookName="ref"/>, <Ref Func="NrArrangements" BookName="ref"/>.
+</Item>
+<Item>
+    The methods for <Ref Attr="StructureConstantsTable" BookName="ref"/> and 
+    <Ref Func="GapInputSCTable" BookName="ref"/> have been improved in the case of a
+    known (anti-) symmetry following a suggestion of M. Costantini.
+</Item>
+</List>
+<P/>
+The improvements listed in this Section have been implemented by T. Breuer
+and A. Hulpke.
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="New Programming and User Features">
+<Heading>New Programming and User Features</Heading>
+
+<List>
+<Item>
+The 2GB limit for workspace size has been removed and version numbers for
+saved workspaces have been introduced. (S. Linton and B. Höfling)
+</Item>
+<Item>
+  The limit on the total number of types created in a session
+           has been removed. (S. Linton)
+</Item>
+<Item>
+  There is a new mechanism for loading packages available.
+              Packages need a file <F>PackageInfo.g</F> now. (T. Breuer and
+              F. Lübeck; see <Ref BookName="Example" Label="PackageInfo.g"/>).
+</Item>
+</List>
+<P/>
+Finally, as always, a number of bugs have been fixed. This release thus 
+incorporates the contents of all the bug fixes which were released for 
+&GAP; 4.3. It also fixes a number of bugs discovered since the last bug fix.
+
+</Subsection>
+
+</Section>
+
+Below we list changes in the main system (excluding packages) 
 that have been corrected or added in bugfixes and updates for 
 &GAP; 4.4.
 

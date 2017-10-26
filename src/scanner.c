@@ -2182,9 +2182,6 @@ void GetSymbol ( void )
         { GET_CHAR(); }
     }
     if ( *STATE(In) == '=' ) { STATE(Symbol) = S_ASSIGN;  GET_CHAR(); break; }
-    if ( STATE(In)[0] == ':' && STATE(In)[1] == '=') {
-      STATE(Symbol) = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
-    }
     break;
 
   case ';':   STATE(Symbol) = S_SEMICOLON;                   GET_CHAR();  break;

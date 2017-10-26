@@ -823,6 +823,7 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 1, imp);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 2, imps);
+    CHANGED_BAG(HIDDEN_IMPS);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
@@ -6353,7 +6354,7 @@ static Int postRestore (
     StructInitInfo *    module )
 {
 
-  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")))+1;
+  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")));
   return 0;
 }
 
@@ -6376,12 +6377,12 @@ static Int InitLibrary (
 
     /* make the 'true' operation                                           */  
     ReturnTrueFilter = NewReturnTrueFilter();
-    AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
+    AssReadOnlyGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
     TRY_NEXT_METHOD = MakeImmString("TRY_NEXT_METHOD");
-    AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
+    AssReadOnlyGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

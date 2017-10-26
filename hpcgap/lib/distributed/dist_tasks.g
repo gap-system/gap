@@ -1,5 +1,3 @@
-Revision.tasks_g := "2011-05-12 16:37:00 +0000";
-
 TaskStats := ShareObj ( rec (tasksCreated := 0,
                      tasksStolen := 0,
                      tasksExecuted := 0,
