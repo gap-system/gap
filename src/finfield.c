@@ -144,36 +144,9 @@ typedef UInt2       FF;
 */
 
 
-/****************************************************************************
-**
-*F  SUCC_FF(<ff>) . . . . . . . . . . . successor table of small finite field
-**
-**  'SUCC_FF' returns a pointer to the successor table of  the  small  finite
-**  field <ff>.
-**
-**  Note that 'SUCC_FF' is a macro, so do not call  it  with  arguments  that
-**  side effects.
-**
-**  'SUCC_FF' is defined in the declaration part of this package as follows
-**
-#define SUCC_FF(ff)             ((FFV*)ADDR_OBJ( ELM_PLIST( SuccFF, ff ) ))
-*/
 Obj             SuccFF;
 
 
-/****************************************************************************
-**
-*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  type of a small finite field
-**
-**  'TYPE_FF' returns the type of elements of the small finite field <ff>.
-**
-**  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
-**  have side effects.
-**
-**  'TYPE_FF' is defined in the declaration part of this package as follows
-**
-#define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
-*/
 Obj             TypeFF;
 Obj             TypeFF0;
 
@@ -500,6 +473,9 @@ unsigned long   PolsFF [] = {
 };
 
 
+// used for successor bags
+static Obj TYPE_KERNEL_OBJECT;
+
 /****************************************************************************
 **
 *F  FiniteField(<p>,<d>)  . . . make the small finite field with <q> elements
@@ -569,10 +545,12 @@ FF              FiniteField (
 #endif
 
     /* allocate a bag for the finite field and one for a temporary         */
-    bag1  = NewBag( T_PERM2, q * sizeof(FFV) );
-    bag2  = NewBag( T_PERM2, q * sizeof(FFV) );
-    indx = (FFV*)ADDR_OBJ( bag1 );
-    succ = (FFV*)ADDR_OBJ( bag2 );
+    bag1  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
+    SET_TYPE_DATOBJ(bag1, TYPE_KERNEL_OBJECT );
+    bag2  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
+    SET_TYPE_DATOBJ(bag2, TYPE_KERNEL_OBJECT );
+    indx = (FFV*)(1+ADDR_OBJ( bag1 ));
+    succ = (FFV*)(1+ADDR_OBJ( bag2 ));
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
     /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
@@ -2036,6 +2014,8 @@ static Int InitKernel (
     ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
     ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
+    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
+    
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );

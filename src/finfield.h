@@ -116,7 +116,7 @@ typedef UInt2       FF;
 **  Note that 'SUCC_FF' is a macro, so do not call  it  with  arguments  that
 **  side effects.
 */
-#define SUCC_FF(ff)             ((FFV*)ADDR_OBJ( ELM_PLIST( SuccFF, ff ) ))
+#define SUCC_FF(ff)             ((FFV*)(1+ADDR_OBJ( ELM_PLIST( SuccFF, ff ) )))
 
 extern  Obj             SuccFF;
 
