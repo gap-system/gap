@@ -30,7 +30,6 @@ default: all
 ########################################################################
 SOURCES =
 SOURCES += src/ariths.c
-SOURCES += src/backtrace.c
 SOURCES += src/blister.c
 SOURCES += src/bool.c
 SOURCES += src/c_methsel1.c
@@ -42,6 +41,7 @@ SOURCES += src/compiler.c
 SOURCES += src/compstat.c
 SOURCES += src/costab.c
 SOURCES += src/cyclotom.c
+SOURCES += src/debug.c
 SOURCES += src/dt.c
 SOURCES += src/dteval.c
 SOURCES += src/exprs.c
