@@ -131,7 +131,9 @@ UInt ExecProccallOpts(
 **
 **  'ExecProccall<i>args'  executes  a  procedure   call   to the    function
 **  'FUNC_CALL(<call>)'   with   the   arguments   'ARGI_CALL(<call>,1)'   to
-**  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
+**  'ARGI_CALL(<call>,<i>)'.  It discards the value returned by the function
+**  and returns the statement execution status (as per EXEC_STAT, q.v.)
+**  resulting from the procedure call, which in fact is always 0.
 */
 
 static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
@@ -201,10 +203,10 @@ UInt            ExecProccall1args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
  
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_1ARGS( func, arg1 );
     } 
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -231,10 +233,10 @@ UInt            ExecProccall2args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_2ARGS( func, arg1, arg2 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -263,10 +265,10 @@ UInt            ExecProccall3args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_3ARGS( func, arg1, arg2, arg3 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -297,10 +299,10 @@ UInt            ExecProccall4args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -333,10 +335,10 @@ UInt            ExecProccall5args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -371,10 +373,10 @@ UInt            ExecProccall6args (
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -408,10 +410,10 @@ UInt            ExecProccallXargs (
     }
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       DoOperation2Args(CallFuncListOper, func, args);
     } else {
-      SET_BRK_CALL_TO( call );
       CALL_XARGS( func, args );
     }
 
@@ -474,12 +476,12 @@ Obj             EvalFunccall0args (
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -506,12 +508,12 @@ Obj             EvalFunccall1args (
       /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -541,12 +543,12 @@ Obj             EvalFunccall2args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_2ARGS( func, arg1, arg2 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -578,12 +580,12 @@ Obj             EvalFunccall3args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_3ARGS( func, arg1, arg2, arg3 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -616,12 +618,12 @@ Obj             EvalFunccall4args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -657,12 +659,12 @@ Obj             EvalFunccall5args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -700,12 +702,12 @@ Obj             EvalFunccall6args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
@@ -741,12 +743,12 @@ Obj             EvalFunccallXargs (
         CHANGED_BAG( args );
     }
 
+    /* call the function and return the result                             */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
     result = CALL_XARGS( func, args );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
