@@ -129,7 +129,7 @@ enum {
 **  then the record types, then the list types,  then the external types, and
 **  finally the virtual types.
 */
-enum {
+enum TNUM {
     START_ENUM_RANGE(FIRST_REAL_TNUM),
 
     START_ENUM_RANGE(FIRST_CONSTANT_TNUM),
