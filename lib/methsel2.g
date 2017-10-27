@@ -43,7 +43,7 @@ ApplicableMethod := fail;
 ##  </ManSection>
 ##
 HANDLE_METHOD_NOT_FOUND := function ( INF )
-  local no_method_found, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
+  local no_method_found, linebreak, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
              ShowOtherMethods, i;
 
 
@@ -223,21 +223,30 @@ end;
 
 # Remember, we are in the function `HANDLE_METHOD_NOT_FOUND'!
 
-PRINT_TO( "*errout*",
-        "Error, no method found! For debugging hints type ?Recovery from NoMethodFound\n" ); # should go to errout
-  no_method_found:="no ";
-  for i in [ 1 .. LENGTH(INF.Arguments) ] do
-    if INF.Arguments[i] = fail then
-      PRINT_TO( "*errout*",
-                "The ", Ordinal(i), " argument is 'fail' which might point to an earlier problem\n" ); # should go to errout
-    fi;
-  od;
+  no_method_found := "";
+  APPEND_LIST(no_method_found, 
+        "no method found! For debugging hints type ?Recovery from NoMethodFound\n" );
+
+  APPEND_LIST(no_method_found, "Error, no ");
   APPEND_LIST(no_method_found,Ordinal(INF.Precedence+1));
   APPEND_LIST(no_method_found," choice method found for `");
   APPEND_LIST(no_method_found,NAME_FUNC(INF.Operation));
   APPEND_LIST(no_method_found,"' on ");
   APPEND_LIST(no_method_found,STRING_INT(LENGTH(INF.Arguments)));
   APPEND_LIST(no_method_found," arguments");
+
+  linebreak := true;
+  for i in [ 1 .. LENGTH(INF.Arguments) ] do
+    if INF.Arguments[i] = fail then
+      if linebreak then
+        APPEND_LIST(no_method_found, "\n");
+        linebreak := false;
+      fi; 
+      APPEND_LIST(no_method_found, "The ");
+      APPEND_LIST(no_method_found, Ordinal(i));
+      APPEND_LIST(no_method_found, " argument is 'fail' which might point to an earlier problem\n" );
+    fi;
+  od;
   Error(no_method_found);
 end;
 
