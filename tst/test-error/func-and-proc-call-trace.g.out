@@ -1,0 +1,129 @@
+function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l(  ); at *stdin*:3 called from
+<function "informproc0">( <arguments> )
+ called from read-eval loop at *stdin*:5
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1 ); at *stdin*:7 called from
+<function "informproc1">( <arguments> )
+ called from read-eval loop at *stdin*:9
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2 ); at *stdin*:11 called from
+<function "informproc2">( <arguments> )
+ called from read-eval loop at *stdin*:13
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3 ); at *stdin*:15 called from
+<function "informproc3">( <arguments> )
+ called from read-eval loop at *stdin*:17
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4 ); at *stdin*:19 called from
+<function "informproc4">( <arguments> )
+ called from read-eval loop at *stdin*:21
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5 ); at *stdin*:23 called from
+<function "informproc5">( <arguments> )
+ called from read-eval loop at *stdin*:25
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5, 6 ); at *stdin*:27 called from
+<function "informproc6">( <arguments> )
+ called from read-eval loop at *stdin*:29
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5, 6, 7 ); at *stdin*:31 called from
+<function "informprocmore">( <arguments> )
+ called from read-eval loop at *stdin*:33
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l(  ) at *stdin*:35 called from
+<function "informfunc0">( <arguments> )
+ called from read-eval loop at *stdin*:37
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1 ) at *stdin*:39 called from
+<function "informfunc1">( <arguments> )
+ called from read-eval loop at *stdin*:41
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2 ) at *stdin*:43 called from
+<function "informfunc2">( <arguments> )
+ called from read-eval loop at *stdin*:45
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3 ) at *stdin*:47 called from
+<function "informfunc3">( <arguments> )
+ called from read-eval loop at *stdin*:49
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4 ) at *stdin*:51 called from
+<function "informfunc4">( <arguments> )
+ called from read-eval loop at *stdin*:53
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5 ) at *stdin*:55 called from
+<function "informfunc5">( <arguments> )
+ called from read-eval loop at *stdin*:57
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5, 6 ) at *stdin*:59 called from
+<function "informfunc6">( <arguments> )
+ called from read-eval loop at *stdin*:61
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> function( l ) ... end
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:241 called from
+l( 1, 2, 3, 4, 5, 6, 7 ) at *stdin*:63 called from
+<function "informfuncmore">( <arguments> )
+ called from read-eval loop at *stdin*:65
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> 
