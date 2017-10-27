@@ -686,6 +686,29 @@ function( obj,str )
   TryNextMethod();
 end );
 
+#############################################################################
+##
+#V  TYPE_KERNEL_OBJECT  
+##
+##
+##
+##  TYPE_KERNEL_OBJECT is the type of data objects used internally in the 
+##  kernel which have no significant &GAP; callable methods and should not
+##  normally be seen at &GAP; level. These are typically lookup tables or
+##  buffers created and used within the kernel and containing binary data only
+##
+
+
+DeclareRepresentation( "IsKernelDataObjectRep", IsDataObjectRep, []);
+
+
+BIND_GLOBAL( "TYPE_KERNEL_OBJECT",
+          NewType(NewFamily("KernelObjectFamily", IsObject),
+          IsObject and IsKernelDataObjectRep));
+
+
+InstallMethod( String, [IsKernelDataObjectRep], o->MakeImmutable("<kernel object>"));
+
 
 #############################################################################
 ##
