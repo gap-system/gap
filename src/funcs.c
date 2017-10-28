@@ -479,10 +479,10 @@ Obj             EvalFunccall0args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_0ARGS( func );
     }
-
-    result = CALL_0ARGS( func );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -511,10 +511,10 @@ Obj             EvalFunccall1args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_1ARGS( func, arg1 );
     }
-
-    result = CALL_1ARGS( func, arg1 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -546,10 +546,10 @@ Obj             EvalFunccall2args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_2ARGS( func, arg1, arg2 );
     }
-
-    result = CALL_2ARGS( func, arg1, arg2 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -583,10 +583,10 @@ Obj             EvalFunccall3args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_3ARGS( func, arg1, arg2, arg3 );
     }
-
-    result = CALL_3ARGS( func, arg1, arg2, arg3 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -621,10 +621,10 @@ Obj             EvalFunccall4args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }
-
-    result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -662,10 +662,10 @@ Obj             EvalFunccall5args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
+      result = DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
+    } else {
+      result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
-
-    result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -705,10 +705,10 @@ Obj             EvalFunccall6args (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
+      result = DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
+    } else {
+      result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     }
-
-    result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -746,10 +746,10 @@ Obj             EvalFunccallXargs (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_XARGS( func, args );
     }
-
-    result = CALL_XARGS( func, args );
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */

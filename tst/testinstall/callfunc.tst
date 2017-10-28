@@ -102,5 +102,27 @@ gap> CALL_FUNC_LIST(o, [1,2,3,4,5,6]);
 gap> CALL_FUNC_LIST(o, [1,2,3,4,5,6,7]);
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
-#
+# test overloading CallFuncList with a procedure call
+gap> cat2 := NewCategory("IsXYZ2",IsObject);;
+gap> type2 := NewType(fam, cat2 and IsPositionalObjectRep);;
+gap> InstallMethod(CallFuncList,[cat2,IsList],function(func,args) result:=args; end);
+gap> o2 := Objectify(type2,[]);;
+
+# test edge case: expecting a func call, but doing a proc call
+gap> f := function() return o2(); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2,3); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2,3,4); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2,3,4,5); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2,3,4,6,7); end;; f();
+Error, Function Calls: <func> must return a value
+gap> f := function() return o2(1,2,3,4,5,6,7); end;; f();
+Error, Function Calls: <func> must return a value
 gap> STOP_TEST( "callfunc.tst", 1);
