@@ -145,25 +145,48 @@ InstallOtherMethod( DirectProductElement,
     return DirectProductElementNC( fam, objlist );
     end );
 
-
 #############################################################################
 ##
-#M  PrintObj( <dpelm> )  . . . . . . . . . . . print a direct product element
+#M  String( <dpelm> )  . . . . . . convert a direct product element to string
 ##
-InstallMethod( PrintObj,
+InstallMethod( String,
     "for a direct product element",
     [ IsDirectProductElement ],
     function( dpelm )
-    local i;
-    Print( "DirectProductElement( [ " );
-    for i in [ 1 .. Length( dpelm )-1 ] do
-      Print( dpelm[i], ", " );
-    od;
-    if Length( dpelm ) <> 0 then
-      Print( dpelm[ Length( dpelm ) ] );
+    local i, str;
+    str := "DirectProductElement( [ ";
+    if Length( dpelm ) > 0 then
+      Append( str, String( dpelm[1] ) );
     fi;
-    Print(" ] )");
+    for i in [ 2 .. Length( dpelm ) ] do
+      Append( str, ", " );
+      Append( str, String( dpelm[i] ) );
+    od;
+    Append( str, " ] )" );
+    return str;
     end );
+
+#############################################################################
+##
+#M  PrintString( <dpelm> ) . convert a direct product element to print string
+##
+InstallMethod( PrintString,
+    "for a direct product element",
+    [ IsDirectProductElement ],
+    function( dpelm )
+    local i, str;
+    str := "DirectProductElement( [ ";
+    if Length( dpelm ) > 0 then
+      Append( str, PrintString( dpelm[1] ) );
+    fi;
+    for i in [ 2 .. Length( dpelm ) ] do
+      Append( str, ",\<\> " );
+      Append( str, PrintString( dpelm[i] ) );
+    od;
+    Append( str, " ] )" );
+    return str;
+    end );
+
 
 #############################################################################
 ##

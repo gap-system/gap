@@ -10,13 +10,12 @@ gap> M:= GF(3);
 GF(3)
 gap> tuples:= List( Tuples( AsList( M ), 2 ), DirectProductElement );;
 gap> Print(tuples,"\n");
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
-  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0, 
+  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0,
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ), 
-  DirectProductElement( [ Z(3), 0*Z(3) ] ), 
-  DirectProductElement( [ Z(3), Z(3)^0 ] ), 
-  DirectProductElement( [ Z(3), Z(3) ] ) ]
+  DirectProductElement( [ Z(3), 0*Z(3) ] ), DirectProductElement( [ Z(3),
+    Z(3)^0 ] ), DirectProductElement( [ Z(3), Z(3) ] ) ]
 gap> map:= GeneralMappingByElements( M, M, [] );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -40,7 +39,7 @@ true
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( inv ) ),"\n");
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
   DirectProductElement( [ Z(3)^0, 0*Z(3) ] ) ]
 gap> IsInjective( inv );
@@ -56,13 +55,12 @@ CompositionMapping(
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ),
  <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( comp ) ),"\n");
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
-  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0, 
+  DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), DirectProductElement( [ Z(3)^0,
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ), 
-  DirectProductElement( [ Z(3), 0*Z(3) ] ), 
-  DirectProductElement( [ Z(3), Z(3)^0 ] ), 
-  DirectProductElement( [ Z(3), Z(3) ] ) ]
+  DirectProductElement( [ Z(3), 0*Z(3) ] ), DirectProductElement( [ Z(3),
+    Z(3)^0 ] ), DirectProductElement( [ Z(3), Z(3) ] ) ]
 gap> IsInjective( comp );
 false
 gap> IsSingleValued( comp );
@@ -75,7 +73,7 @@ gap> anticomp:= CompositionMapping( map, inv );
 CompositionMapping( <general mapping: GF(3) -> GF(3) >,
  InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
 gap> Print(AsList( UnderlyingRelation( anticomp ) ),"\n");
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), 
   DirectProductElement( [ Z(3)^0, Z(3)^0 ] ) ]
 gap> IsInjective( anticomp );
@@ -201,7 +199,7 @@ gap> (0*Z(3)) ^ map;
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
-[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3),
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ) ]
 gap> IsInjective( map );
 true
@@ -244,7 +242,7 @@ gap> ImagesRepresentative( map, Z(3) );
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
-[ DirectProductElement( [ 0*Z(3), Z(3) ] ), DirectProductElement( [ Z(3)^0, 
+[ DirectProductElement( [ 0*Z(3), Z(3) ] ), DirectProductElement( [ Z(3)^0,
     0*Z(3) ] ), DirectProductElement( [ Z(3), Z(3)^0 ] ) ]
 gap> IsInjective( map );
 true
