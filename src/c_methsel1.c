@@ -11,7 +11,6 @@ static GVar G_METHOD__3ARGS;
 static GVar G_METHOD__4ARGS;
 static GVar G_METHOD__5ARGS;
 static GVar G_METHOD__6ARGS;
-static GVar G_METHOD__XARGS;
 static GVar G_NEXT__METHOD__0ARGS;
 static GVar G_NEXT__METHOD__1ARGS;
 static GVar G_NEXT__METHOD__2ARGS;
@@ -19,7 +18,6 @@ static GVar G_NEXT__METHOD__3ARGS;
 static GVar G_NEXT__METHOD__4ARGS;
 static GVar G_NEXT__METHOD__5ARGS;
 static GVar G_NEXT__METHOD__6ARGS;
-static GVar G_NEXT__METHOD__XARGS;
 static GVar G_CONSTRUCTOR__0ARGS;
 static GVar G_CONSTRUCTOR__1ARGS;
 static GVar G_CONSTRUCTOR__2ARGS;
@@ -27,7 +25,6 @@ static GVar G_CONSTRUCTOR__3ARGS;
 static GVar G_CONSTRUCTOR__4ARGS;
 static GVar G_CONSTRUCTOR__5ARGS;
 static GVar G_CONSTRUCTOR__6ARGS;
-static GVar G_CONSTRUCTOR__XARGS;
 static GVar G_NEXT__CONSTRUCTOR__0ARGS;
 static GVar G_NEXT__CONSTRUCTOR__1ARGS;
 static GVar G_NEXT__CONSTRUCTOR__2ARGS;
@@ -35,7 +32,6 @@ static GVar G_NEXT__CONSTRUCTOR__3ARGS;
 static GVar G_NEXT__CONSTRUCTOR__4ARGS;
 static GVar G_NEXT__CONSTRUCTOR__5ARGS;
 static GVar G_NEXT__CONSTRUCTOR__6ARGS;
-static GVar G_NEXT__CONSTRUCTOR__XARGS;
 static GVar G_Error;
 static Obj  GF_Error;
 static GVar G_IS__IDENTICAL__OBJ;
@@ -50,11 +46,15 @@ static GVar G_fail;
 static Obj  GC_fail;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
+static GVar G_METHOD__XARGS;
+static GVar G_NEXT__METHOD__XARGS;
 static GVar G_AttributeValueNotSet;
 static GVar G_TypeObj;
 static Obj  GF_TypeObj;
 static GVar G_FamilyObj;
 static Obj  GF_FamilyObj;
+static GVar G_CONSTRUCTOR__XARGS;
+static GVar G_NEXT__CONSTRUCTOR__XARGS;
 
 /* record names used in handlers */
 
@@ -5396,7 +5396,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_METHOD__4ARGS = GVarName( "METHOD_4ARGS" );
  G_METHOD__5ARGS = GVarName( "METHOD_5ARGS" );
  G_METHOD__6ARGS = GVarName( "METHOD_6ARGS" );
- G_METHOD__XARGS = GVarName( "METHOD_XARGS" );
  G_NEXT__METHOD__0ARGS = GVarName( "NEXT_METHOD_0ARGS" );
  G_NEXT__METHOD__1ARGS = GVarName( "NEXT_METHOD_1ARGS" );
  G_NEXT__METHOD__2ARGS = GVarName( "NEXT_METHOD_2ARGS" );
@@ -5404,7 +5403,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_NEXT__METHOD__4ARGS = GVarName( "NEXT_METHOD_4ARGS" );
  G_NEXT__METHOD__5ARGS = GVarName( "NEXT_METHOD_5ARGS" );
  G_NEXT__METHOD__6ARGS = GVarName( "NEXT_METHOD_6ARGS" );
- G_NEXT__METHOD__XARGS = GVarName( "NEXT_METHOD_XARGS" );
  G_CONSTRUCTOR__0ARGS = GVarName( "CONSTRUCTOR_0ARGS" );
  G_CONSTRUCTOR__1ARGS = GVarName( "CONSTRUCTOR_1ARGS" );
  G_CONSTRUCTOR__2ARGS = GVarName( "CONSTRUCTOR_2ARGS" );
@@ -5412,7 +5410,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_CONSTRUCTOR__4ARGS = GVarName( "CONSTRUCTOR_4ARGS" );
  G_CONSTRUCTOR__5ARGS = GVarName( "CONSTRUCTOR_5ARGS" );
  G_CONSTRUCTOR__6ARGS = GVarName( "CONSTRUCTOR_6ARGS" );
- G_CONSTRUCTOR__XARGS = GVarName( "CONSTRUCTOR_XARGS" );
  G_NEXT__CONSTRUCTOR__0ARGS = GVarName( "NEXT_CONSTRUCTOR_0ARGS" );
  G_NEXT__CONSTRUCTOR__1ARGS = GVarName( "NEXT_CONSTRUCTOR_1ARGS" );
  G_NEXT__CONSTRUCTOR__2ARGS = GVarName( "NEXT_CONSTRUCTOR_2ARGS" );
@@ -5420,7 +5417,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_NEXT__CONSTRUCTOR__4ARGS = GVarName( "NEXT_CONSTRUCTOR_4ARGS" );
  G_NEXT__CONSTRUCTOR__5ARGS = GVarName( "NEXT_CONSTRUCTOR_5ARGS" );
  G_NEXT__CONSTRUCTOR__6ARGS = GVarName( "NEXT_CONSTRUCTOR_6ARGS" );
- G_NEXT__CONSTRUCTOR__XARGS = GVarName( "NEXT_CONSTRUCTOR_XARGS" );
  G_Error = GVarName( "Error" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
  G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
@@ -5428,9 +5424,13 @@ static Int PostRestore ( StructInitInfo * module )
  G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
  G_fail = GVarName( "fail" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
+ G_METHOD__XARGS = GVarName( "METHOD_XARGS" );
+ G_NEXT__METHOD__XARGS = GVarName( "NEXT_METHOD_XARGS" );
  G_AttributeValueNotSet = GVarName( "AttributeValueNotSet" );
  G_TypeObj = GVarName( "TypeObj" );
  G_FamilyObj = GVarName( "FamilyObj" );
+ G_CONSTRUCTOR__XARGS = GVarName( "CONSTRUCTOR_XARGS" );
+ G_NEXT__CONSTRUCTOR__XARGS = GVarName( "NEXT_CONSTRUCTOR_XARGS" );
  
  /* record names used in handlers */
  
