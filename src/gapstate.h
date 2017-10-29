@@ -75,12 +75,8 @@ typedef struct GAPState {
     TypOutputFile * InputLog;
     TypOutputFile * OutputLog;
     TypOutputFile * IgnoreStdoutErrout;
-    TypOutputFile   LogFile;
-    TypOutputFile   LogStream;
-    TypOutputFile   InputLogFile;
-    TypOutputFile   InputLogStream;
-    TypOutputFile   OutputLogFile;
-    TypOutputFile   OutputLogStream;
+    TypOutputFile   InputLogFileOrStream;
+    TypOutputFile   OutputLogFileOrStream;
     Int             HELPSubsOn;
     Int             NoSplitLine;
     KOutputStream   TheStream;
