@@ -554,8 +554,6 @@ void FlushRestOfInputLine( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile LogFile; */
-
 UInt OpenLog (
     const Char *        filename )
 {
@@ -565,13 +563,13 @@ UInt OpenLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(LogFile).file = SyFopen( filename, "w" );
-    STATE(LogFile).isstream = 0;
-    if ( STATE(LogFile).file == -1 )
+    STATE(OutputLogFileOrStream).file = SyFopen( filename, "w" );
+    STATE(OutputLogFileOrStream).isstream = 0;
+    if ( STATE(OutputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(InputLog)  = &STATE(LogFile);
-    STATE(OutputLog) = &STATE(LogFile);
+    STATE(InputLog)  = &STATE(OutputLogFileOrStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -584,8 +582,6 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-/* TL: static TypOutputFile LogStream; */
-
 UInt OpenLogStream (
     Obj             stream )
 {
@@ -595,12 +591,12 @@ UInt OpenLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(LogStream).isstream = 1;
-    STATE(LogStream).stream = stream;
-    STATE(LogStream).file = -1;
+    STATE(OutputLogFileOrStream).isstream = 1;
+    STATE(OutputLogFileOrStream).stream = stream;
+    STATE(OutputLogFileOrStream).file = -1;
 
-    STATE(InputLog)  = &STATE(LogStream);
-    STATE(OutputLog) = &STATE(LogStream);
+    STATE(InputLog)  = &STATE(OutputLogFileOrStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -651,7 +647,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile InputLogFile; */
+/* TL: static TypOutputFile InputLogFileOrStream; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -662,12 +658,12 @@ UInt OpenInputLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(InputLogFile).file = SyFopen( filename, "w" );
-    STATE(InputLogFile).isstream = 0;
-    if ( STATE(InputLogFile).file == -1 )
+    STATE(InputLogFileOrStream).file = SyFopen( filename, "w" );
+    STATE(InputLogFileOrStream).isstream = 0;
+    if ( STATE(InputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(InputLog) = &STATE(InputLogFile);
+    STATE(InputLog) = &STATE(InputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -680,7 +676,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-/* TL: static TypOutputFile InputLogStream; */
+/* TL: static TypOutputFile InputLogFileOrStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -691,11 +687,11 @@ UInt OpenInputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(InputLogStream).isstream = 1;
-    STATE(InputLogStream).stream = stream;
-    STATE(InputLogStream).file = -1;
+    STATE(InputLogFileOrStream).isstream = 1;
+    STATE(InputLogFileOrStream).stream = stream;
+    STATE(InputLogFileOrStream).file = -1;
 
-    STATE(InputLog) = &STATE(InputLogStream);
+    STATE(InputLog) = &STATE(InputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -750,7 +746,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile OutputLogFile; */
+/* TL: static TypOutputFile OutputLogFileOrStream; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -761,12 +757,13 @@ UInt OpenOutputLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(OutputLogFile).file = SyFopen( filename, "w" );
-    STATE(OutputLogFile).isstream = 0;
-    if ( STATE(OutputLogFile).file == -1 )
+    memset(&STATE(OutputLogFileOrStream), 0, sizeof(TypOutputFile));
+    STATE(OutputLogFileOrStream).isstream = 0;
+    STATE(OutputLogFileOrStream).file = SyFopen( filename, "w" );
+    if ( STATE(OutputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(OutputLog) = &STATE(OutputLogFile);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -790,11 +787,12 @@ UInt OpenOutputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(OutputLogStream).isstream = 1;
-    STATE(OutputLogStream).stream = stream;
-    STATE(OutputLogStream).file = -1;
+    memset(&STATE(OutputLogFileOrStream), 0, sizeof(TypOutputFile));
+    STATE(OutputLogFileOrStream).isstream = 1;
+    STATE(OutputLogFileOrStream).stream = stream;
+    STATE(OutputLogFileOrStream).file = -1;
 
-    STATE(OutputLog) = &STATE(OutputLogStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -3051,10 +3049,8 @@ static Int InitKernel (
     }
 
     /* tell GASMAN about the global bags                                   */
-    InitGlobalBag(&(STATE(LogFile).stream),        "src/scanner.c:LogFile"        );
-    InitGlobalBag(&(STATE(LogStream).stream),      "src/scanner.c:LogStream"      );
-    InitGlobalBag(&(STATE(InputLogStream).stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(STATE(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
+    InitGlobalBag(&(STATE(InputLogFileOrStream).stream), "src/scanner.c:InputLogFileOrStream" );
+    InitGlobalBag(&(STATE(OutputLogFileOrStream).stream),"src/scanner.c:OutputLogFileOrStream");
 #endif
 
     /* import functions from the library                                   */
