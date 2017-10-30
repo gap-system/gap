@@ -29,9 +29,9 @@
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "POS_DATA_TYPE", 3 );
-BIND_GLOBAL( "POS_NUMB_TYPE", 4 );
-BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
+BIND_CONSTANT( "POS_DATA_TYPE", 3 );
+BIND_CONSTANT( "POS_NUMB_TYPE", 4 );
+BIND_CONSTANT( "POS_FIRST_FREE_TYPE", 5 );
 
 
 #############################################################################
@@ -47,11 +47,10 @@ BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
 ##
 if TNUM_OBJ(2^30) = 0 then
     NEW_TYPE_NEXT_ID := -(2^60);
-    NEW_TYPE_ID_LIMIT:= 2^60-1;
+    NEW_TYPE_ID_LIMIT := 2^60-1;
 else
     NEW_TYPE_NEXT_ID := -(2^28);
     NEW_TYPE_ID_LIMIT := 2^28-1;
-#    NEW_TYPE_ID_LIMIT := NEW_TYPE_NEXT_ID + 1000000;
 fi;
 
 
