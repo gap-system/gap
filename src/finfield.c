@@ -1020,7 +1020,7 @@ Obj             SumFFEInt (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
@@ -1052,7 +1052,7 @@ Obj             SumIntFFE (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opR );
@@ -1104,7 +1104,7 @@ Obj             AInvFFE (
 {
     FFV                 v, vX;          /* value of operand, result        */
     FF                  fX;             /* field of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( op );
@@ -1189,7 +1189,7 @@ Obj             DiffFFEInt (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
@@ -1222,7 +1222,7 @@ Obj             DiffIntFFE (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opR );
@@ -1318,7 +1318,7 @@ Obj             ProdFFEInt (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
@@ -1350,7 +1350,7 @@ Obj             ProdIntFFE (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opR );
@@ -1402,7 +1402,7 @@ Obj             InvFFE (
 {
     FFV                 v, vX;          /* value of operand, result        */
     FF                  fX;             /* field of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( op );
@@ -1494,7 +1494,7 @@ Obj             QuoFFEInt (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
@@ -1533,7 +1533,7 @@ Obj             QuoIntFFE (
     FFV                 vL, vR, vX;     /* value of left, right, result    */
     FF                  fX;             /* field of result                 */
     Int                 pX;             /* char. of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opR );
@@ -1584,7 +1584,7 @@ Obj             PowFFEInt (
     FFV                 vL, vX;         /* value of left, result           */
     Int                 vR;             /* value of right                  */
     FF                  fX;             /* field of result                 */
-    FF*                 sX;             /* successor table of result field */
+    const FFV*          sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
@@ -1785,7 +1785,7 @@ Obj INT_FF (
     Obj                 conv;           /* conversion table, result        */
     Int                 q;              /* size of finite field            */
     Int                 p;              /* char of finite field            */
-    FFV *               succ;           /* successor table of finite field */
+    const FFV *         succ;           /* successor table of finite field */
     FFV                 z;              /* one element of finite field     */
     UInt                i;              /* loop variable                   */
 

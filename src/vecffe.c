@@ -69,7 +69,7 @@ Obj             SumFFEVecFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valL;           /* the value of elmL               */
 
     /* get the field and check that elmL and vecR have the same field      */
@@ -130,7 +130,7 @@ Obj             SumVecFFEFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmR               */
     FFV                 valL;           /* the value of an element in vecL */
     FFV                 valS;           /* the value of a sum              */
@@ -197,7 +197,7 @@ Obj             SumVecFFEVecFFE (
     UInt                lenmin;
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST(vecL);
@@ -274,7 +274,7 @@ Obj             DiffFFEVecFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmL               */
     FFV                 valL;           /* the value of an element in vecR */
     FFV                 valD;           /* the value of a difference       */
@@ -340,7 +340,7 @@ Obj             DiffVecFFEFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmR               */
 
     /* get the field and check that vecL and elmR have the same field      */
@@ -407,7 +407,7 @@ Obj             DiffVecFFEVecFFE (
     UInt                lenmin;
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST(vecL);
@@ -491,7 +491,7 @@ Obj             ProdFFEVecFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valL;           /* the value of elmL               */
 
     /* get the field and check that elmL and vecR have the same field      */
@@ -553,7 +553,7 @@ Obj             ProdVecFFEFFE (
     UInt                len;            /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
     FFV                 valR;           /* the value of elmR               */
 
     /* get the field and check that vecL and elmR have the same field      */
@@ -617,7 +617,7 @@ Obj             ProdVecFFEVecFFE (
     UInt                lenL, lenR, len; /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
-    FF *                succ;           /* successor table                 */
+    const FFV *         succ;           /* successor table                 */
 
     /* check the lengths                                                   */
     lenL = LEN_PLIST(vecL);
@@ -673,7 +673,7 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
     FFV  valL;
     FFV  valR;
     FF  fld;
-    FFV *succ;
+    const FFV *succ;
     UInt len;
     UInt xtype;
     UInt i;
@@ -777,7 +777,7 @@ Obj FuncMULT_ROWVECTOR_VECFFES( Obj self, Obj vec, Obj mult )
     FFV  valS;
     FFV  val;
     FF  fld;
-    FFV *succ;
+    const FFV *succ;
     UInt len;
     UInt xtype;
     UInt i;
@@ -852,7 +852,7 @@ Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
     FFV  valL;
     FFV  valR;
     FF  fld;
-    FFV *succ;
+    const FFV *succ;
     UInt len;
     UInt xtype;
     UInt i;
@@ -930,7 +930,7 @@ Obj             ProdVecFFEMatFFE (
     UInt                col;            /* length of the rows in matR      */
     UInt                i, k;           /* loop variables                  */
     FF                  fld;            /* the common finite field         */
-    FF *                succ;           /* the successor table             */
+    const FFV *         succ;           /* the successor table             */
 
     /* check the lengths                                                   */
     len = LEN_PLIST(vecL);
