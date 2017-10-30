@@ -20,6 +20,12 @@ static inline UInt2 * ADDR_TRANS2(Obj f)
     return ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 3));
 }
 
+static inline const UInt2 * CONST_ADDR_TRANS2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
+    return ((const UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
+}
+
 static inline UInt DEG_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
@@ -39,6 +45,12 @@ static inline UInt4 * ADDR_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
     return ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 3));
+}
+
+static inline const UInt4 * CONST_ADDR_TRANS4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
+    return ((const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
 }
 
 static inline UInt DEG_TRANS4(Obj f)
@@ -103,7 +115,7 @@ extern Obj IdentityTrans;
 **
 **  The actual equality checking function for Perm2 and Trans2.
 */
-Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart);
+Int EqPermTrans22(UInt degL, UInt degR, const UInt2 * ptLstart, const UInt2 * ptRstart);
 
 /****************************************************************************
 **
@@ -111,7 +123,7 @@ Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart);
 **
 **  The actual equality checking function for Perm4 and Trans4.
 */
-Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart);
+Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * ptRstart);
 
 /****************************************************************************
 **

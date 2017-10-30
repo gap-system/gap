@@ -89,7 +89,7 @@ static inline void ResizeTmpPPerm(UInt len)
 static inline UInt GET_CODEG_PPERM2(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return (*(UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2));
+    return (*(UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2));
 }
 
 static inline void SET_CODEG_PPERM2(Obj f, UInt2 codeg)
@@ -119,7 +119,7 @@ UInt CODEG_PPERM2(Obj f)
 static inline UInt GET_CODEG_PPERM4(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return (*(UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2));
+    return (*(const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2));
 }
 
 static inline void SET_CODEG_PPERM4(Obj f, UInt4 codeg)
@@ -161,13 +161,13 @@ Obj NEW_PPERM4(UInt deg)
 static inline Obj IMG_PPERM(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return ADDR_OBJ(f)[0];
+    return CONST_ADDR_OBJ(f)[0];
 }
 
 static inline Obj DOM_PPERM(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return ADDR_OBJ(f)[1];
+    return CONST_ADDR_OBJ(f)[1];
 }
 
 static inline void SET_IMG_PPERM(Obj f, Obj img)
@@ -313,10 +313,10 @@ static Obj SORT_PLIST_CYC(Obj res)
         h = 3 * h + 1;
     while (0 < h) {
         for (i = h + 1; i <= len; i++) {
-            tmp = ADDR_OBJ(res)[i];
+            tmp = CONST_ADDR_OBJ(res)[i];
             k = i;
-            while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
+                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
                 k -= h;
             }
             ADDR_OBJ(res)[k] = tmp;
@@ -969,7 +969,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find chains
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((UInt4 *)(ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
+            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
@@ -988,7 +988,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find cycles
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((UInt4 *)(ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
+            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
@@ -1011,7 +1011,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find chains
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((UInt4 *)(ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
+            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
@@ -1030,7 +1030,7 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find cycles
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((UInt4 *)(ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
+            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
@@ -6271,7 +6271,8 @@ Obj OnSetsPPerm(Obj set, Obj f)
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    deg;
-    Obj *   ptset, *ptres, tmp, res;
+    const Obj * ptset;
+    Obj *   ptres, tmp, res;
     UInt    i, isint, k, h, len;
 
     if (LEN_LIST(set) == 0)
@@ -6281,7 +6282,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
                     LEN_LIST(set));
 
     /* get the pointer                                                 */
-    ptset = ADDR_OBJ(set) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
     ptres = ADDR_OBJ(res) + 1;
     len = 0;
 
@@ -6342,10 +6343,10 @@ Obj OnSetsPPerm(Obj set, Obj f)
         h = 3 * h + 1;
     while (0 < h) {
         for (i = h + 1; i <= len; i++) {
-            tmp = ADDR_OBJ(res)[i];
+            tmp = CONST_ADDR_OBJ(res)[i];
             k = i;
-            while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
+                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
                 k -= h;
             }
             ADDR_OBJ(res)[k] = tmp;
@@ -6367,7 +6368,8 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    deg;
-    Obj *   pttup, *ptres, res;
+    const Obj * pttup;
+    Obj *   ptres, res;
     UInt    i, k, lentup, len;
 
     if (LEN_LIST(tup) == 0)
@@ -6378,7 +6380,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
                     LEN_LIST(tup));
 
     /* get the pointer                                                 */
-    pttup = ADDR_OBJ(tup) + 1;
+    pttup = CONST_ADDR_OBJ(tup) + 1;
     ptres = ADDR_OBJ(res) + 1;
     len = 0;
 
@@ -6431,7 +6433,8 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    deg;
-    Obj *   ptset, *ptres, tmp, res;
+    const Obj * ptset;
+    Obj *   ptres, tmp, res;
     UInt    i, k, h, len;
 
     if (LEN_LIST(set) == 0)
@@ -6447,7 +6450,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
                     LEN_LIST(set));
 
     /* get the pointer                                                 */
-    ptset = ADDR_OBJ(set) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
     ptres = ADDR_OBJ(res) + 1;
     len = 0;
 
@@ -6492,10 +6495,10 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
         h = 3 * h + 1;
     while (0 < h) {
         for (i = h + 1; i <= len; i++) {
-            tmp = ADDR_OBJ(res)[i];
+            tmp = CONST_ADDR_OBJ(res)[i];
             k = i;
-            while (h < k && ((Int)tmp < (Int)(ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = ADDR_OBJ(res)[k - h];
+            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
+                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
                 k -= h;
             }
             ADDR_OBJ(res)[k] = tmp;
