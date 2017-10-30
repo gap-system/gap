@@ -390,7 +390,7 @@ void MakeFieldInfo8Bit( UInt q)
     UInt val;                     /* used to build up some answers */
     UInt val0;
     UInt elt, el1, el2;           /* used to build up some answers */
-    FFV *succ;
+    const FFV *succ;
     UInt1* setelt_info; /* Cache a value, mainly to get around a bug in xcode 5.0 */
     UInt1* getelt_info; /* ditto */
     Int iej_cache;      /* ditto */
