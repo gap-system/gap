@@ -14,6 +14,12 @@ static inline UInt2 * ADDR_PPERM2(Obj f)
     return ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2) + 1);
 }
 
+static inline const UInt2 * CONST_ADDR_PPERM2(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    return ((const UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2) + 1);
+}
+
 static inline UInt DEG_PPERM2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
@@ -30,6 +36,12 @@ static inline UInt4 * ADDR_PPERM4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     return ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2) + 1);
+}
+
+static inline const UInt4 * CONST_ADDR_PPERM4(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    return ((const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2) + 1);
 }
 
 static inline UInt DEG_PPERM4(Obj f)
