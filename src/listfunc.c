@@ -124,8 +124,8 @@ void            AddPlist3 (
     if (pos <= len) {
       GROW_PLIST(list, len+1);
       SET_LEN_PLIST(list, len+1);
-      memmove((void *)(ADDR_OBJ(list) + pos+1),
-              (const void *)(ADDR_OBJ(list) + pos),
+      memmove(ADDR_OBJ(list) + pos+1,
+              CONST_ADDR_OBJ(list) + pos,
               (size_t)(sizeof(Obj)*(len - pos + 1)));
     }
     ASS_LIST( list, pos, obj);
@@ -291,7 +291,7 @@ Obj             FuncAPPEND_LIST_INTR (
     UInt                len1;           /* length of the first list        */
     UInt                len2;           /* length of the second list       */
     Obj *               ptr1;           /* pointer into the first list     */
-    Obj *               ptr2;           /* pointer into the second list    */
+    const Obj *         ptr2;           /* pointer into the second list    */
     Obj                 elm;            /* one element of the second list  */
     Int                 i;              /* loop variable                   */
 
@@ -356,7 +356,7 @@ Obj             FuncAPPEND_LIST_INTR (
     /* add the elements                                                    */
     if ( IS_PLIST(list2) ) {
         ptr1 = ADDR_OBJ(list1) + len1;
-        ptr2 = ADDR_OBJ(list2);
+        ptr2 = CONST_ADDR_OBJ(list2);
         for ( i = 1; i <= len2; i++ ) {
             ptr1[i] = ptr2[i];
             /* 'CHANGED_BAG(list1);' not needed, ELM_PLIST does not NewBag */
@@ -1474,7 +1474,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
   frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));  
   for (k = 1; k <= n; k++)
     {
-      if (((UInt *)ADDR_OBJ(val))[k] == 0)
+      if (((const UInt *)CONST_ADDR_OBJ(val))[k] == 0)
         {
           level = 1;
           adj = ELM_LIST(digraph, k);
@@ -1492,7 +1492,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
           while (level > 0 ) {
             if (fptr[2] > LEN_PLIST((Obj)fptr[3]))
               {
-                if (fptr[1] == ((UInt *)ADDR_OBJ(val))[fptr[0]])
+                if (fptr[1] == ((const UInt *)CONST_ADDR_OBJ(val))[fptr[0]])
                   {
                     l = LEN_PLIST(stack);
                     i = l;
@@ -1503,8 +1503,8 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
                     } while (x != fptr[0]);
                     comp = NEW_PLIST(T_PLIST_CYC, l-i);
                     SET_LEN_PLIST(comp, l-i);
-                    memcpy( (void *)((char *)(ADDR_OBJ(comp)) + sizeof(Obj)), 
-                            (void *)((char *)(ADDR_OBJ(stack)) + (i+1)*sizeof(Obj)), 
+                    memcpy( (char *)(ADDR_OBJ(comp)) + sizeof(Obj),
+                            (const char *)(CONST_ADDR_OBJ(stack)) + (i+1)*sizeof(Obj),
                             (size_t)((l - i )*sizeof(Obj)));
                     SET_LEN_PLIST(stack, i);
                     l = LEN_PLIST(comps);
@@ -1522,7 +1522,8 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
               {
                 adj = (Obj)fptr[3];
                 t = INT_INTOBJ(ELM_PLIST(adj, (fptr[2])++));
-                if (0 ==(m =  ((UInt *)ADDR_OBJ(val))[t]))
+                m = ((const UInt *)CONST_ADDR_OBJ(val))[t];
+                if (0 == m)
                   {
                     level++;
                     adj = ELM_LIST(digraph, t);
@@ -1587,7 +1588,8 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   UInt number;
   UInt srcmax;
   UInt dstmax;
-  Obj *sptr, *dptr;
+  const Obj *sptr;
+  Obj *dptr;
   UInt ct;
 
   if (!IS_PLIST(args))
@@ -1645,13 +1647,13 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   GROW_PLIST(srclist, srcmax);
   if (srcinc == 1 && dstinc == 1)
     {
-      memmove((void *) (ADDR_OBJ(dstlist) + dststart),
-              (void *) (ADDR_OBJ(srclist) + srcstart),
+      memmove(ADDR_OBJ(dstlist) + dststart,
+              CONST_ADDR_OBJ(srclist) + srcstart,
               (size_t) number*sizeof(Obj));
     }
   else if (srclist != dstlist)
     {
-      sptr = ADDR_OBJ(srclist) + srcstart;
+      sptr = CONST_ADDR_OBJ(srclist) + srcstart;
       dptr = ADDR_OBJ(dstlist) + dststart;
       for (ct = 0; ct < number ; ct++)
         {
@@ -1668,7 +1670,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
         {
           if ((srcstart > dststart) == (srcinc > 0))
             {
-              sptr = ADDR_OBJ(srclist) + srcstart;
+              sptr = CONST_ADDR_OBJ(srclist) + srcstart;
               dptr = ADDR_OBJ(srclist) + dststart;
               for (ct = 0; ct < number ; ct++)
                 {
@@ -1679,7 +1681,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
             }
           else
             {
-              sptr = ADDR_OBJ(srclist) + srcstart + number*srcinc;
+              sptr = CONST_ADDR_OBJ(srclist) + srcstart + number*srcinc;
               dptr = ADDR_OBJ(srclist) + dststart + number*srcinc;
               for (ct = 0; ct < number; ct++)
                 {
@@ -1695,32 +1697,32 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   else
     {
       Obj tmplist = NEW_PLIST(T_PLIST,number);
-      Obj *tptr = ADDR_OBJ(tmplist)+1;
-      sptr = ADDR_OBJ(srclist)+srcstart;
+      sptr = CONST_ADDR_OBJ(srclist)+srcstart;
+      dptr = ADDR_OBJ(tmplist)+1;
       for (ct = 0; ct < number; ct++)
         {
-          *tptr = *sptr;
-          tptr++;
+          *dptr = *sptr;
+          dptr++;
           sptr += srcinc;
         }
-      tptr = ADDR_OBJ(tmplist)+1;
+      sptr = CONST_ADDR_OBJ(tmplist)+1;
       dptr = ADDR_OBJ(srclist)+dststart;
       for (ct = 0; ct < number; ct++)
         {
-          *dptr = *tptr;
-          tptr++;
+          *dptr = *sptr;
+          sptr++;
           dptr += dstinc;
         }
     }
 
   if (dstmax > LEN_PLIST(dstlist))
     {
-      dptr = ADDR_OBJ(dstlist)+dstmax;
+      sptr = CONST_ADDR_OBJ(dstlist)+dstmax;
       ct = dstmax;
-      while (!*dptr)
+      while (!*sptr)
         {
           ct--;
-          dptr--;
+          sptr--;
         }
       SET_LEN_PLIST(dstlist, ct);
     }
