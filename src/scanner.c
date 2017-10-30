@@ -2394,7 +2394,7 @@ void PutChrTo (
   /* '\02', decrement indentation level                                  */
   else if ( ch == '\02' ) {
 
-    if (!stream -> format)
+    if (!stream->format)
       return;
 
     /* if this is a better place to split the line remember it         */
@@ -2430,7 +2430,7 @@ void PutChrTo (
 
     /* and dump it from the buffer */
     stream->pos = 0;
-    if (stream -> format)
+    if (stream->format)
       {
         /* indent for next line                                         */
         for ( i = 0;  i < stream->indent; i++ )
