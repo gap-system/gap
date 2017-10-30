@@ -1830,16 +1830,18 @@ Obj FuncCOMPACT_TYPE_IDS( Obj self )
 
 /****************************************************************************
 **
-*F  DoOperation<N>Args( <oper>, ... ) . . . . . . . . . . .Operation Handlers
+*F  DoOperation<N>Args( <oper>, ... ) . . . . . . . . . .  Operation Handlers
 **
-**  This section of the file provides handlers for operations. The main ones are
-**  DoOperation0Args..DoOperation6Args and the DoVerboseOperation tracing
-**  variants. Then there are variants for constructors. In the following section
-**  are handlers for attributes, properties and the operations related to them.
+**  This section of the file provides handlers for operations. The main ones
+**  are DoOperation0Args ... DoOperation6Args and the DoVerboseOperation
+**  tracing variants. Then there are variants for constructors. In the
+**  following section are handlers for attributes, properties and the
+**  operations related to them.
 **
-**  This code is being refactored (Oct 2017) to reduce repetition. It's efficiency
-**  now depends on the C compiler inlining some quite large functions and then doing
-**  constant folding to effectively produce a specialised version of the main function
+**  This code has been refactored to reduce repetition. Its efficiency now
+**  depends on the C compiler inlining some quite large functions and then
+**  doing constant folding to effectively produce a specialised version of
+**  the main function
 */
 /* TL: UInt CacheIndex; */
 
@@ -1872,7 +1874,7 @@ static inline Obj TYPE_OBJ_FEO (
 
 
 /* The next few functions deal with finding and allocating if necessary the cache 
-   for a given operation and number of arguments, and some locking in HPCGAP */
+   for a given operation and number of arguments, and some locking in HPC-GAP */
 
 
 #ifdef HPCGAP
@@ -1978,7 +1980,7 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
     Obj * cache;
     Obj   method = 0;
     UInt  i;
-    UInt  CacheEntrySize = n + 2;
+    const UInt cacheEntrySize = n + 2;
 
     cache = 1 + ADDR_OBJ(CacheOper(oper, n));
 
@@ -1986,10 +1988,10 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
     if (prec < CACHE_SIZE) {
         /* This loop runs through those */
         UInt target =
-            CacheEntrySize * prec; /* first place to look and also the place
+            cacheEntrySize * prec; /* first place to look and also the place
                                       we'll put the result */
-        for (i = target; i < CacheEntrySize * CACHE_SIZE;
-             i += CacheEntrySize) {
+        for (i = target; i < cacheEntrySize * CACHE_SIZE;
+             i += cacheEntrySize) {
             if (cache[i + 1] == INTOBJ_INT(prec)) {
                 typematch = 1;
                 // This loop runs over the arguments, should be compiled away
@@ -2002,20 +2004,20 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
                 if (typematch) {
                     method = cache[i];
 #ifdef COUNT_OPERS
-                    CacheHitStatistics[prec][i / CacheEntrySize][n]++;
+                    CacheHitStatistics[prec][i / cacheEntrySize][n]++;
 #endif
                     if (i > target) {
 
                         /* We found the method, but it was further down the
                            cache than we would like it to be, so move it up */
-                        Obj buf[CacheEntrySize];
+                        Obj buf[cacheEntrySize];
                         memcpy((void *)buf, (void *)(cache + i),
-                               sizeof(Obj) * CacheEntrySize);
-                        memmove((void *)(cache + target + CacheEntrySize),
+                               sizeof(Obj) * cacheEntrySize);
+                        memmove((void *)(cache + target + cacheEntrySize),
                                 (void *)(cache + target),
                                 sizeof(Obj) * (i - target));
                         memcpy((void *)(cache + target), (void *)buf,
-                               sizeof(Obj) * CacheEntrySize);
+                               sizeof(Obj) * cacheEntrySize);
                     }
                     break;
                 }
@@ -2034,11 +2036,11 @@ CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
         return;
     /* We insert this method at position <prec> and move
        the older methods down */
-    UInt  CacheEntrySize = n + 2;
+    UInt  cacheEntrySize = n + 2;
     Bag   cacheBag = GET_METHOD_CACHE(oper, n);
-    Obj * cache = 1 + prec * CacheEntrySize + ADDR_OBJ(cacheBag);
-    memmove((void *)(cache + CacheEntrySize), (void *)cache,
-            sizeof(Obj) * (CACHE_SIZE - prec - 1) * CacheEntrySize);
+    Obj * cache = 1 + prec * cacheEntrySize + ADDR_OBJ(cacheBag);
+    memmove((void *)(cache + cacheEntrySize), (void *)cache,
+            sizeof(Obj) * (CACHE_SIZE - prec - 1) * cacheEntrySize);
     cache[0] = method;
     cache[1] = INTOBJ_INT(prec);
     for (UInt i = 0; i < n; i++)
@@ -3888,7 +3890,7 @@ Obj FuncOPERS_CACHE_INFO (
     CHANGED_BAG(list);
 
     /* and similarly the 2D matrix of cache miss information (by
-       precedence and number of arguments */
+       precedence and number of arguments) */
     Obj mat = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE + 1);
     SET_LEN_PLIST(mat, CACHE_SIZE + 1);
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
