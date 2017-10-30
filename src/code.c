@@ -109,24 +109,22 @@ static inline void PopLoopNesting( void ) {
 
 static inline void SetupGapname(TypInputFile* i)
 {
-  if (!i->gapname) {
-    i->gapname = MakeImmString(i->name);
+    if (i->gapnameid == 0) {
+        Obj filename = MakeImmString(i->name);
 #ifdef HPCGAP
-    i->gapnameid = AddAList(FilenameCache, i->gapname);
-    // TODO/FIXME: adjust this code to work more like the corresponding
-    // code below for GAP?!?
+        // TODO/FIXME: adjust this code to work more like the corresponding
+        // code below for GAP?!?
+        i->gapnameid = AddAList(FilenameCache, filename);
 #else
-    Obj pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
-    if (pos == Fail) {
-        i->gapnameid = PushPlist(FilenameCache, i->gapname);;
-    }
-    else {
-        i->gapnameid = INT_INTOBJ(pos);
-        // Use string from FilenameCache as we know it will not get GCed
-        i->gapname = ELM_LIST( FilenameCache, i->gapnameid );
-    }
+        Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
+        if (pos == Fail) {
+            i->gapnameid = PushPlist(FilenameCache, filename);
+        }
+        else {
+            i->gapnameid = INT_INTOBJ(pos);
+        }
 #endif
-  }
+    }
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
@@ -793,7 +791,8 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     SetupGapname(STATE(Input));
-    SET_FILENAME_BODY(body, STATE(Input)->gapname);
+    Obj filename = ELM_LIST(FilenameCache, STATE(Input)->gapnameid);
+    SET_FILENAME_BODY(body, filename);
     SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
