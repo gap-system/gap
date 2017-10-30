@@ -115,7 +115,7 @@ void SaveFlags (
 
     SaveSubObj(TRUES_FLAGS(flags));
     SaveSubObj(HASH_FLAGS(flags));
-    SaveSubObj(ADDR_OBJ(flags)[2]); /* length, as an object */
+    SaveSubObj(CONST_ADDR_OBJ(flags)[2]); /* length, as an object */
     SaveSubObj(AND_CACHE_FLAGS(flags));
 
     len = NRB_FLAGS(flags);
@@ -3304,23 +3304,14 @@ void InstallGlobalFunction (
     Obj                 oper,
     Obj                 func )
 {
-    Obj                 name;
-    Int                 i;
+    // get the name
+    Obj name = NAME_FUNC(oper);
 
-    /* get the name                                                        */
-    name = NAME_FUNC(oper);
-
-    /* clone the function                                                  */
+    // clone the function
     if ( SIZE_OBJ(oper) != SIZE_OBJ(func) ) {
         ErrorQuit( "size mismatch of function bags", 0L, 0L );
     }
-
-    /* clone the functions                                                 */
-    else {
-        for ( i = 0;  i < SIZE_OBJ(func)/sizeof(Obj);  i++ ) {
-            ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
-        }
-    }
+    memcpy(ADDR_OBJ(oper), CONST_ADDR_OBJ(func), SIZE_OBJ(func));
 
     SET_NAME_FUNC(oper, ConvImmString(name));
     CHANGED_BAG(oper);
