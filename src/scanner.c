@@ -411,7 +411,7 @@ UInt OpenInput (
     else
       STATE(Input)->echo = 1;
     strlcpy( STATE(Input)->name, filename, sizeof(STATE(Input)->name) );
-    STATE(Input)->gapname = (Obj) 0;
+    STATE(Input)->gapnameid = 0;
 
     /* start with an empty line and no symbol                              */
     STATE(In) = STATE(Input)->line;
@@ -469,6 +469,7 @@ UInt OpenInputStream (
     STATE(Input)->file = -1;
     STATE(Input)->echo = 0;
     strlcpy( STATE(Input)->name, "stream", sizeof(STATE(Input)->name) );
+    STATE(Input)->gapnameid = 0;
 
     /* start with an empty line and no symbol                              */
     STATE(In) = STATE(Input)->line;
@@ -508,8 +509,7 @@ UInt CloseInput ( void )
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    STATE(Input)->gapname = 0;
-    STATE(Input)->sline = 0;
+    memset(STATE(Input), 0, sizeof(TypInputFile));
 
     /* revert to last file                                                 */
 #ifdef HPCGAP
@@ -2994,7 +2994,6 @@ static Int InitLibrary (
 #if !defined(HPCGAP)
 static Char Cookie[ARRAY_SIZE(STATE(InputFiles))][9];
 static Char MoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
-static Char StillMoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
 #endif
 
 static Int InitKernel (
@@ -3033,12 +3032,6 @@ static Int InitKernel (
       MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
       MoreCookie[i][8] = '\0';
       InitGlobalBag(&(STATE(InputFiles)[i].sline), &(MoreCookie[i][0]));
-
-      StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
-      StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
-      StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
-      StillMoreCookie[i][8] = '\0';
-      InitGlobalBag(&(STATE(InputFiles)[i].gapname), &(StillMoreCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */
