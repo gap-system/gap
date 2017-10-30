@@ -368,14 +368,14 @@ extern  void            SyntaxWarning (
 **      'Match( Symbol, "", 0L );'.
 **
 **  This is used if the parser knows that the current  symbol is correct, for
-**  example in 'RdReturn'  the   first symbol must be 'S_RETURN',   otherwise
-**  'RdReturn' would not have been  called.  Called this  way 'Match' will of
-**  course never raise a syntax error,  therefore <msg>  and <skipto> are of
-**  no concern, they are passed nevertheless  to please  lint.  The effect of
-**  this call is merely to read the next symbol from input.
+**  example in 'ReadReturn'  the  first symbol must be 'S_RETURN',  otherwise
+**  'ReadReturn' would not have been called. Called this  way 'Match' will of
+**  course never raise a syntax error, therefore <msg> and <skipto> are of no
+**  concern.  The effect of this call is  merely to read the next symbol from
+**  input.
 **
-**  Another typical 'Match' call is in 'RdIf' after we read the if symbol and
-**  the condition following, and now expect to see the 'then' symbol:
+**  Another typical 'Match' call is in 'ReadIf' after we read the if symbol
+**  and the condition following, and now expect to see the 'then' symbol:
 **
 **      Match( S_THEN, "then", STATBEGIN|S_ELIF|S_ELSE|S_FI|follow );
 **
@@ -384,10 +384,10 @@ extern  void            SyntaxWarning (
 **  message: '^ syntax error, then expected'.  Then 'Match' skips all symbols
 **  until finding either  a symbol  that can begin  a statment,  an 'elif' or
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
-**  which is passed to  'RdIf' and contains  all symbols allowing  one of the
-**  calling functions to resynchronize, for example 'S_OD' if 'RdIf' has been
-**  called from 'RdFor'.  <follow>  always contain 'S_EOF', which 'Read' uses
-**  to resynchronise.
+**  which is passed to 'ReadIf' and contains all symbols allowing  one of the
+**  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has
+**  been called from 'ReadFor'.  <follow> always contain 'S_EOF', which 'Read'
+**  uses to resynchronise.
 **
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
