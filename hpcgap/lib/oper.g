@@ -358,9 +358,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 
     # We install the method for the requirements in `relev'.
     # 'pos' is saved for modifying 'imm' below.
-    # TODO: this way of changing IMMEDIATE_METHODS should be atomic
-    pos:=LEN_LIST( IMMEDIATE_METHODS )+1;
-    IMMEDIATE_METHODS[pos]:=method;
+    pos:=AddAtomicList( IMMEDIATE_METHODS, method );
 
     for j  in relev  do
 
