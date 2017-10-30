@@ -1165,7 +1165,7 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-extern void PutLine2(
+static void PutLine2(
     TypOutputFile *         output,
     const Char *            line,
     UInt                    len   );
