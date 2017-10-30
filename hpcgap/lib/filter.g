@@ -54,11 +54,11 @@ BIND_GLOBAL( "RANK_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 ##
 BIND_GLOBAL( "INFO_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 
-BIND_GLOBAL( "FNUM_CATS", `[ 1,  2 ] );
-BIND_GLOBAL( "FNUM_REPS", `[ 3,  4 ] );
-BIND_GLOBAL( "FNUM_ATTS", `[ 5,  6 ] );
-BIND_GLOBAL( "FNUM_PROS", `[ 7,  9 ] );
-BIND_GLOBAL( "FNUM_TPRS", `[ 8, 10 ] );
+BIND_GLOBAL( "FNUM_CATS", MakeImmutable([ 1,  2 ]) );
+BIND_GLOBAL( "FNUM_REPS", MakeImmutable([ 3,  4 ]) );
+BIND_GLOBAL( "FNUM_ATTS", MakeImmutable([ 5,  6 ]) );
+BIND_GLOBAL( "FNUM_PROS", MakeImmutable([ 7,  9 ]) );
+BIND_GLOBAL( "FNUM_TPRS", MakeImmutable([ 8, 10 ]) );
 
 
 #############################################################################
@@ -111,11 +111,11 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
     fi;
 
     atomic IMPLICATIONS do
-	imp := [];
-	imp[1] := FLAGS_FILTER( tofilt );
-	imp[2] := FLAGS_FILTER( from );
-	MIGRATE_RAW(imp, IMPLICATIONS);
-	ADD_LIST( IMPLICATIONS, imp );
+    imp := [];
+    imp[1] := FLAGS_FILTER( tofilt );
+    imp[2] := FLAGS_FILTER( from );
+    MIGRATE_RAW(imp, IMPLICATIONS);
+    ADD_LIST( IMPLICATIONS, imp );
     od;
     InstallHiddenTrueMethod( tofilt, from );
 end );
@@ -226,10 +226,10 @@ BIND_GLOBAL( "NewFilter", function( arg )
 
     # Do some administrational work.
     atomic FILTER_REGION do
-	FILTERS[ FLAG1_FILTER( filter ) ] := filter;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
-        RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
-	    INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
+    FILTERS[ FLAG1_FILTER( filter ) ] := filter;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
+    RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+    INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
     od;
 
     # Return the filter.
@@ -273,13 +273,13 @@ BIND_GLOBAL( "NamesFilter", function( flags )
         bn := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
     fi;
     atomic readonly FILTER_REGION do
-	for i  in  [ 1 .. LEN_LIST(bn) ]  do
-	    if not IsBound(FILTERS[ bn[i] ])  then
-		bn[i] := STRING_INT( bn[i] );
-	    else
-		bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
-	    fi;
-	od;
+    for i  in  [ 1 .. LEN_LIST(bn) ]  do
+        if not IsBound(FILTERS[ bn[i] ])  then
+            bn[i] := STRING_INT( bn[i] );
+        else
+            bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
+        fi;
+    od;
     od;
     return bn;
 
@@ -293,6 +293,8 @@ end );
 ##
 ##  function to test whether <x> is a filter.
 ##  (This is *not* a filter itself!.)
+##  We handle IsObject as a special case, as it is equal to ReturnTrue,
+##  as all objects satisfy IsObject!
 ##
 BIND_GLOBAL( "IS_FILTER_ATOMIC", function(x)
     atomic readonly FILTER_REGION do
@@ -302,9 +304,9 @@ end);
 
 BIND_GLOBAL( "IsFilter",
     x -> IS_IDENTICAL_OBJ(x, IS_OBJECT)
-         or (IS_OPERATION( x )
-             and ( ( FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
-                   or IS_FILTER_ATOMIC(x) ) ) );
+         or ( IS_OPERATION( x )
+              and ( (FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
+                    or IS_FILTER_ATOMIC(x) ) ) );
 
 
 ## Global Rank declarations
