@@ -600,6 +600,7 @@ FF              FiniteField (
 
     /* enter the finite field in the tables                                */
 #ifdef HPCGAP
+    MakeBagReadOnly(bag2);
     ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, bag2 );
     CHANGED_BAG(SuccFF);
     bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
