@@ -121,7 +121,7 @@ Bag NewLVarsBag(UInt slots) {
   if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
     result = STATE(LVarsPool)[slots];
     if (result) {
-      STATE(LVarsPool)[slots] = ADDR_OBJ(result)[0];
+      STATE(LVarsPool)[slots] = CONST_ADDR_OBJ(result)[0];
       return result;
     }
   }
@@ -2483,8 +2483,8 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
   if (lvars == STATE(BottomLVars))
     return False;
   AssPRec(contents, RNamName("func"), func);
-  AssPRec(contents,RNamName("names"), nams);
-  memcpy((void *)(1+ADDR_OBJ(values)), (void *)(3+ADDR_OBJ(lvars)), len*sizeof(Obj));
+  AssPRec(contents, RNamName("names"), nams);
+  memcpy(1+ADDR_OBJ(values), 3+CONST_ADDR_OBJ(lvars), len*sizeof(Obj));
   while (len > 0 && ELM_PLIST(values, len) == 0)
       len--;
   SET_LEN_PLIST(values, len);
@@ -2524,12 +2524,12 @@ void VarsAfterCollectBags ( void )
 void SaveLVars( Obj lvars )
 {
   UInt len,i;
-  Obj *ptr;
+  const Obj *ptr;
   SaveSubObj(FUNC_LVARS(lvars));
   SaveUInt(STAT_LVARS(lvars));
   SaveSubObj(PARENT_LVARS(lvars));
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
-  ptr = ADDR_OBJ(lvars)+3;
+  ptr = CONST_ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
     SaveSubObj(*ptr++);
 }

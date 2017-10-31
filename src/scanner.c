@@ -460,8 +460,8 @@ UInt OpenInputStream (
     STATE(Input)->stream = stream;
     STATE(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     if (STATE(Input)->isstringstream) {
-        STATE(Input)->sline = ADDR_OBJ(stream)[2];
-        STATE(Input)->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
+        STATE(Input)->sline = CONST_ADDR_OBJ(stream)[2];
+        STATE(Input)->spos = INT_INTOBJ(CONST_ADDR_OBJ(stream)[1]);
     }
     else {
         STATE(Input)->sline = 0;
@@ -2263,7 +2263,7 @@ void PutLine2(
   if ( output->isstream ) {
     /* special handling of string streams, where we can copy directly */
     if (output->isstringstream) {
-      str = ADDR_OBJ(output->stream)[1];
+      str = CONST_ADDR_OBJ(output->stream)[1];
       lstr = GET_LEN_STRING(str);
       GROW_STRING(str, lstr+len);
       memcpy(CHARS_STRING(str) + lstr, line, len);
