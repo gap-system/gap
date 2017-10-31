@@ -462,7 +462,7 @@ struct InterpreterHooks profileHooks = {
  "line-by-line profiling"};
 
 
-void enableAtStartup(char* filename, Int repeats)
+void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
     if(profileState_Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
@@ -485,14 +485,8 @@ void enableAtStartup(char* filename, Int repeats)
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
+    profileState.tickMethod = tickMethod;
     profileState.lastNotOutputted.line = -1;
-#ifdef HAVE_GETTIMEOFDAY
-    profileState.tickMethod = Tick_WallTime;
-#else
-#ifdef HAVE_GETRUSAGE
-    profileState.tickMethod = Tick_CPUTime;
-#endif
-#endif
     profileState.lastOutputtedTime = getTicks();
 
     outputVersionInfo();
@@ -503,7 +497,7 @@ void enableAtStartup(char* filename, Int repeats)
 // we quit straight away.
 Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
 {
-    enableAtStartup(argv[0], 0);
+    enableAtStartup(argv[0], 0, Tick_Mem);
     return 1;
 }
 
@@ -512,7 +506,21 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
 // we quit straight away.
 Int enableProfilingAtStartup( Char **argv, void * dummy)
 {
-    enableAtStartup(argv[0], 1);
+    TickMethod tickMethod = Tick_WallTime;
+#ifdef HAVE_GETTIMEOFDAY
+    tickMethod = Tick_WallTime;
+#else
+#ifdef HAVE_GETRUSAGE
+    tickMethod = Tick_CPUTime;
+#endif
+#endif
+    enableAtStartup(argv[0], 1, tickMethod);
+    return 1;
+}
+
+Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
+{
+    enableAtStartup(argv[0], 1, Tick_Mem);
     return 1;
 }
 

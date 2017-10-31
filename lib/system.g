@@ -104,6 +104,8 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short := "z", default := "20" ),
       rec( long := "prof", default := "", arg := "<file>",
            help := [ "Run ProfileLineByLine(<filename>) on GAP start"] ),
+      rec( long := "memprof", default := "", arg := "<file>",
+           help := [ "Run ProfileLineByLine(<filename>) with recordMem := true on GAP start"] ),
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
           ],
