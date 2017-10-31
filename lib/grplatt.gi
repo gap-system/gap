@@ -885,7 +885,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   pcgs:=ser[2];
   ser:=ser[1];
   if Index(G,ser[1])=1 then
-    Info(InfoWarning,1,"group is solvable");
+    Info(InfoWarning,3,"group is solvable");
     hom:=NaturalHomomorphismByNormalSubgroup(G,G);
     hom:=hom*IsomorphismFpGroup(Image(hom));
     u:=[[G],[G],[hom]];
@@ -1373,7 +1373,9 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
          Length(ConjugacyClasses(G))," to consider");
 
     if Length(un)>0 and ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
-      Error("Cannot get perfect subgroups without data library!");
+      Info(InfoWarning,1,
+      "Using (despite option) data library of perfect groups, as the perfect\n",
+      "#I  subgroups otherwise cannot be obtained!");
     elif Length(un)>0 then
       Info(InfoPerformance,2,"Using Perfect Groups Library");
     fi;
