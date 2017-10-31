@@ -1185,12 +1185,14 @@ Obj             PowPerm2Int (
     UInt                len;            /* length of cycle (result)        */
     UInt                p,  q,  r;      /* loop variables                  */
 
-    
-    /* handle zeroth and first powers separately */
+
+    /* handle zeroth and first powers and stored inverses separately */
     if ( opR == INTOBJ_INT(0)) 
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
+    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
+        return STOREDINV_PERM(opL);
 
     /* get the operands and allocate a result bag                          */
     deg = DEG_PERM2(opL);
@@ -1446,11 +1448,14 @@ Obj             PowPerm4Int (
     UInt                len;            /* length of cycle (result)        */
     UInt                p,  q,  r;      /* loop variables                  */
 
-    /* handle zeroth and first powers separately */
+    /* handle zeroth and first powers separately  and stored inverses */
     if ( opR == INTOBJ_INT(0)) 
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
+    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
+        return STOREDINV_PERM(opL);
+
 
     /* get the operands and allocate a result bag                          */
     deg = DEG_PERM4(opL);
@@ -1703,7 +1708,12 @@ Obj             PowPerm4Int (
 Obj InvPerm (
     Obj             perm )
 {
-    return POW( perm, INTOBJ_INT(-1) );
+    Obj inv = STOREDINV_PERM(perm);
+    if (inv != 0)
+        return inv;
+    inv = POW(perm, INTOBJ_INT(-1));
+    SET_STOREDINV_PERM(perm, inv);
+    return inv;
 }
 
 
@@ -1792,7 +1802,7 @@ Obj             QuoIntPerm2 (
     Obj                 opL,
     Obj                 opR )
 {
-    Int                 pre;            /* preimage (result)               */
+    UInt2               pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
     const UInt2 *       ptR;            /* pointer to the permutation      */
 
@@ -1810,23 +1820,30 @@ Obj             QuoIntPerm2 (
         return QUO( opL, opR );
     }
 
-    /* compute the preimage                                                */
-    pre = img;
-    ptR = ADDR_PERM2(opR);
-    if ( img <= DEG_PERM2(opR) ) {
-        while ( ptR[ pre-1 ] != img-1 )
-            pre = ptR[ pre-1 ] + 1;
-    }
+    Obj inv = STOREDINV_PERM(opR);
 
-    /* return it                                                           */
-    return INTOBJ_INT(pre);
+    if (inv != 0)
+        return INTOBJ_INT(
+            IMAGE(img - 1, CONST_ADDR_PERM2(inv), DEG_PERM2(inv)) + 1);
+
+    /* compute the preimage                                                */
+    if ( img <= DEG_PERM2(opR) ) {
+        pre = (UInt2)(img - 1);
+        ptR = CONST_ADDR_PERM2(opR);
+        while (ptR[pre] != (UInt2)(img - 1))
+            pre = ptR[pre];
+        /* return it */
+        return INTOBJ_INT(pre + 1);
+    }
+    else
+        return INTOBJ_INT(img);
 }
 
 Obj             QuoIntPerm4 (
     Obj                 opL,
     Obj                 opR )
 {
-    Int                 pre;            /* preimage (result)               */
+    UInt4               pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
     const UInt4 *       ptR;            /* pointer to the permutation      */
 
@@ -1844,16 +1861,23 @@ Obj             QuoIntPerm4 (
         return QUO( opL, opR );
     }
 
-    /* compute the preimage                                                */
-    pre = img;
-    ptR = ADDR_PERM4(opR);
-    if ( img <= DEG_PERM4(opR) ) {
-        while ( ptR[ pre-1 ] != img-1 )
-            pre = ptR[ pre-1 ] + 1;
-    }
+    Obj inv = STOREDINV_PERM(opR);
 
-    /* return it                                                           */
-    return INTOBJ_INT(pre);
+    if (inv != 0)
+        return INTOBJ_INT(
+            IMAGE(img - 1, CONST_ADDR_PERM4(inv), DEG_PERM4(inv)) + 1);
+
+    /* compute the preimage                                                */
+    if ( img <= DEG_PERM4(opR) ) {
+        pre = (UInt4)(img - 1);
+        ptR = CONST_ADDR_PERM4(opR);
+        while (ptR[pre] != (UInt4)(img - 1))
+            pre = ptR[pre];
+        /* return it */
+        return INTOBJ_INT((Int)(pre + 1));
+    }
+    else
+        return INTOBJ_INT(img);
 }
 
 
@@ -4151,6 +4175,7 @@ void SavePerm2( Obj perm)
   UInt i;
   UInt2 *ptr;
   UInt len;
+  SaveSubObj(STOREDINV_PERM(perm));
   len = DEG_PERM2(perm);
   ptr = ADDR_PERM2(perm);
   for (i = 0; i < len; i++)
@@ -4168,6 +4193,7 @@ void SavePerm4( Obj perm)
   UInt i;
   UInt4 *ptr;
   UInt len;
+  SaveSubObj(STOREDINV_PERM(perm));
   len = DEG_PERM4(perm);
   ptr = ADDR_PERM4(perm);
   for (i = 0; i < len; i++)
@@ -4185,6 +4211,7 @@ void LoadPerm2( Obj perm)
   UInt i;
   UInt2 *ptr;
   UInt len;
+  ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
   len = DEG_PERM2(perm);
   ptr = ADDR_PERM2(perm);
   for (i = 0; i < len; i++)
@@ -4202,6 +4229,7 @@ void LoadPerm4( Obj perm)
   UInt i;
   UInt4 *ptr;
   UInt len;
+  ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
   len = DEG_PERM4(perm);
   ptr = ADDR_PERM4(perm);
   for (i = 0; i < len; i++)
@@ -4834,9 +4862,9 @@ static Int InitKernel (
 {
     /* install the marking function                                        */
     InfoBags[           T_PERM2         ].name = "permutation (small)";
-    InitMarkFuncBags(   T_PERM2         , MarkNoSubBags );
+    InitMarkFuncBags(T_PERM2, MarkOneSubBags);
     InfoBags[           T_PERM4         ].name = "permutation (large)";
-    InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
+    InitMarkFuncBags(T_PERM4, MarkOneSubBags);
 
     MakeBagTypePublic( T_PERM2);
     MakeBagTypePublic( T_PERM4);
@@ -4845,6 +4873,7 @@ static Int InitKernel (
     /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
+
 
     TypeObjFuncs[ T_PERM2 ] = TypePerm2;
     TypeObjFuncs[ T_PERM4 ] = TypePerm4;
