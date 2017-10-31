@@ -2281,7 +2281,7 @@ Obj             FuncPermList (
         degPerm = LEN_LIST( list );
 
         /* make sure that the global buffer bag is large enough for checkin*/
-	UseTmpPerm(degPerm*sizeof(UInt2)); 
+        UseTmpPerm(SIZEBAG_PERM2(degPerm));
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM2( degPerm );
@@ -2350,7 +2350,7 @@ Obj             FuncPermList (
 		       degPerm, MAX_DEG_PERM4);
 
         /* make sure that the global buffer bag is large enough for checkin*/
-	UseTmpPerm(degPerm*sizeof(UInt4));
+        UseTmpPerm(SIZEBAG_PERM4(degPerm));
 
         /* allocate the bag for the permutation and get pointer            */
         perm    = NEW_PERM4( degPerm );
@@ -3632,12 +3632,12 @@ Obj             FuncTRIM_PERM (
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
       rdeg = deg < DEG_PERM2(perm) ? deg : DEG_PERM2(perm);
-      ResizeBag( perm, sizeof(UInt2)*rdeg);
+      ResizeBag(perm, SIZEBAG_PERM2(rdeg));
     }
     else {
       rdeg = deg < DEG_PERM4(perm) ? deg : DEG_PERM4(perm);
       if (rdeg > 65536UL ) {
-	ResizeBag( perm, sizeof(UInt4)*rdeg);
+          ResizeBag(perm, SIZEBAG_PERM4(rdeg));
       }
       else {
 	/* Convert to 2Byte rep: move the points up */
@@ -3646,7 +3646,7 @@ Obj             FuncTRIM_PERM (
 	  ((UInt2*)addr)[i]=(UInt2)addr[i];
 	}
 	RetypeBag( perm, T_PERM2 );
-	ResizeBag( perm, sizeof(UInt2)*rdeg);
+        ResizeBag(perm, SIZEBAG_PERM2(rdeg));
       }
     }
 
@@ -4262,10 +4262,10 @@ Obj Array2Perm (
 			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
-            if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
-                ResizeBag( perm, (c + 1023) / 1024 * 1024 * sizeof(UInt4) );
+            if (DEG_PERM4(perm) < c) {
+                ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
                 ptr4 = ADDR_PERM4( perm );
-                for ( k = m+1; k <= SIZE_OBJ(perm)/sizeof(UInt4); k++ ) {
+                for (k = m + 1; k <= DEG_PERM4(perm); k++) {
                     ptr4[k-1] = k-1;
                 }
             }
@@ -4305,12 +4305,12 @@ Obj Array2Perm (
             ptr2[k-1] = ptr4[k-1];
         };
         RetypeBag( perm, T_PERM2 );
-        ResizeBag( perm, m * sizeof(UInt2) );
+        ResizeBag(perm, SIZEBAG_PERM2(m));
     }
 
     /* otherwise just shorten the permutation                              */
     else {
-        ResizeBag( perm, m * sizeof(UInt4) );
+        ResizeBag(perm, SIZEBAG_PERM4(m));
     }
 
     /* return the permutation                                              */
