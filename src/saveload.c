@@ -407,7 +407,7 @@ void SaveDouble( Double d)
 {
   UInt i;
   UInt1 buf[sizeof(Double)];
-  memcpy((void *) buf, (void *)&d, sizeof(Double));
+  memcpy(buf, &d, sizeof(Double));
   for (i = 0; i < sizeof(Double); i++)
     SAVE_BYTE(buf[i]);
 }
@@ -419,7 +419,7 @@ Double LoadDouble( void )
   Double d;
   for (i = 0; i < sizeof(Double); i++)
     buf[i] = LOAD_BYTE();
-  memcpy((void *)&d, (void *)buf, sizeof(Double));
+  memcpy(&d, buf, sizeof(Double));
   return d;
 }
 

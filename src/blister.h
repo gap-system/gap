@@ -429,8 +429,7 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
         }
         /* Now move whole words */
         if ((wholeblocks = nbits / BIPEB))
-            memcpy((void *)toblock, (const void *)fromblock,
-                   sizeof(UInt) * wholeblocks);
+            memcpy(toblock, fromblock, sizeof(UInt) * wholeblocks);
         toblock += wholeblocks;
         fromblock += wholeblocks;
         nbits %= BIPEB;

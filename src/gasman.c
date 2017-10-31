@@ -1890,7 +1890,7 @@ again:
 
             /* Otherwise do the default thing */
             else if ( dst != DATA(header) ) {
-                memmove((void *)dst, (void *)DATA(header), (end - DATA(header))*sizeof(Bag));
+                memmove(dst, DATA(header), (end - DATA(header))*sizeof(Bag));
                 dst += end - DATA(header);
             }
             else {
@@ -1912,7 +1912,7 @@ again:
     AllocBags = YoungBags = dst;
 
     /* clear the new free area                                             */
-    memset((void *)dst, 0, ((Char *)src)-((Char *)dst));
+    memset(dst, 0, ((Char *)src)-((Char *)dst));
 
     /* information after the sweep phase                                   */
     NrDeadBags += nrDeadBags;
@@ -2030,7 +2030,7 @@ again:
             i = SpaceBetweenPointers(EndBags,stopBags)/7 - (SizeMptrsArea-NrLiveBags);
 
             /* move the bags area                                          */
-            memmove((void *)(OldBags+i), (void *)OldBags, SizeAllBagsArea*sizeof(*OldBags));
+            memmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
             for ( p = MptrBags; p < OldBags; p++ ) {

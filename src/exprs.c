@@ -756,7 +756,7 @@ Obj             EvalIntExpr (
     
     /* allocate the integer                                                */
     val = NewBag( ((UInt *)ADDR_EXPR(expr))[0], SIZE_EXPR(expr)-sizeof(UInt));
-    memcpy((void *)ADDR_OBJ(val), (void *)(((UInt *)ADDR_EXPR(expr))+1), (size_t) (SIZE_EXPR(expr)-sizeof(UInt)));
+    memcpy(ADDR_OBJ(val), ((UInt *)ADDR_EXPR(expr))+1, SIZE_EXPR(expr)-sizeof(UInt));
 
     /* return the value                                                    */
     return val;
@@ -1197,8 +1197,7 @@ Obj             EvalStringExpr (
     
     len = *((UInt *)ADDR_EXPR(expr));
     string = NEW_STRING(len);
-    memcpy((void *)ADDR_OBJ(string), (void *)ADDR_EXPR(expr), 
-                      SIZEBAG_STRINGLEN(len) );
+    memcpy(ADDR_OBJ(string), ADDR_EXPR(expr), SIZEBAG_STRINGLEN(len) );
 
     /* return the string                                                   */
     return string;
@@ -1255,8 +1254,8 @@ Obj             EvalFloatExprLazy (
     }
     len = *((UInt *)ADDR_EXPR(expr));
     string = NEW_STRING(len);
-    memcpy((void *)CHARS_STRING(string), 
-           (void *)((char *)ADDR_EXPR(expr) + 2*sizeof(UInt)), 
+    memcpy(CHARS_STRING(string), 
+           (char *)ADDR_EXPR(expr) + 2*sizeof(UInt),
            len );
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
