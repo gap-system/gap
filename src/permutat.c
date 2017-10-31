@@ -1798,6 +1798,8 @@ Obj             PowIntPerm4 (
 **  point and so on, until we come  back to  <opL>.  The  last point  is  the
 **  preimage of <opL>.  This is faster because the cycles are  usually short.
 */
+static Obj PERM_INVERSE_THRESHOLD;
+
 Obj             QuoIntPerm2 (
     Obj                 opL,
     Obj                 opR )
@@ -1821,6 +1823,11 @@ Obj             QuoIntPerm2 (
     }
 
     Obj inv = STOREDINV_PERM(opR);
+
+    if (inv == 0 && PERM_INVERSE_THRESHOLD != 0 &&
+        IS_INTOBJ(PERM_INVERSE_THRESHOLD) &&
+        DEG_PERM2(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
+        inv = InvPerm(opR);
 
     if (inv != 0)
         return INTOBJ_INT(
@@ -1862,6 +1869,11 @@ Obj             QuoIntPerm4 (
     }
 
     Obj inv = STOREDINV_PERM(opR);
+
+    if (inv == 0 && PERM_INVERSE_THRESHOLD != 0 &&
+        IS_INTOBJ(PERM_INVERSE_THRESHOLD) &&
+        DEG_PERM2(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
+        inv = InvPerm(opR);
 
     if (inv != 0)
         return INTOBJ_INT(
@@ -4869,6 +4881,7 @@ static Int InitKernel (
     MakeBagTypePublic( T_PERM2);
     MakeBagTypePublic( T_PERM4);
 
+    ImportGVarFromLibrary("PERM_INVERSE_THRESHOLD", &PERM_INVERSE_THRESHOLD);
 
     /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
