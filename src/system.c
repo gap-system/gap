@@ -73,6 +73,7 @@
 **  of the GAP type system
 */    
 Int enableProfilingAtStartup( Char **argv, void * dummy);
+Int enableMemoryProfilingAtStartup( Char **argv, void * dummy );
 Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 
 /****************************************************************************
@@ -1735,6 +1736,7 @@ struct optInfo options[] = {
 #endif
   /* The following three options must be handled in the kernel so they happen early enough */
   { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
+  { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, /* enable memory profiling at startup */
   { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
   { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
   { 0, "", 0, 0, 0}};
