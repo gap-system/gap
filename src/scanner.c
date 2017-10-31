@@ -2266,7 +2266,7 @@ void PutLine2(
       str = ADDR_OBJ(output->stream)[1];
       lstr = GET_LEN_STRING(str);
       GROW_STRING(str, lstr+len);
-      memcpy((void *) (CHARS_STRING(str) + lstr), line, len);
+      memcpy(CHARS_STRING(str) + lstr, line, len);
       SET_LEN_STRING(str, lstr + len);
       *(CHARS_STRING(str) + lstr + len) = '\0';
       CHANGED_BAG(str);

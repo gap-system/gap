@@ -2011,12 +2011,12 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
                         /* We found the method, but it was further down the
                            cache than we would like it to be, so move it up */
                         Obj buf[cacheEntrySize];
-                        memcpy((void *)buf, (void *)(cache + i),
+                        memcpy(buf, cache + i,
                                sizeof(Obj) * cacheEntrySize);
-                        memmove((void *)(cache + target + cacheEntrySize),
-                                (void *)(cache + target),
+                        memmove(cache + target + cacheEntrySize,
+                                cache + target,
                                 sizeof(Obj) * (i - target));
-                        memcpy((void *)(cache + target), (void *)buf,
+                        memcpy(cache + target, buf,
                                sizeof(Obj) * cacheEntrySize);
                     }
                     break;
@@ -2039,7 +2039,7 @@ CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
     UInt  cacheEntrySize = n + 2;
     Bag   cacheBag = GET_METHOD_CACHE(oper, n);
     Obj * cache = 1 + prec * cacheEntrySize + ADDR_OBJ(cacheBag);
-    memmove((void *)(cache + cacheEntrySize), (void *)cache,
+    memmove(cache + cacheEntrySize, cache,
             sizeof(Obj) * (CACHE_SIZE - prec - 1) * cacheEntrySize);
     cache[0] = method;
     cache[1] = INTOBJ_INT(prec);
@@ -3924,8 +3924,8 @@ Obj FuncCLEAR_CACHE_INFO (
     WITH_HIDDEN_IMPS_MISS = 0;
     WITH_IMPS_FLAGS_HIT = 0;
     WITH_IMPS_FLAGS_MISS = 0;
-    memset((void *)CacheHitStatistics, 0, sizeof(CacheHitStatistics));
-    memset((void *)CacheMissStatistics, 0, sizeof(CacheMissStatistics));
+    memset(CacheHitStatistics, 0, sizeof(CacheHitStatistics));
+    memset(CacheMissStatistics, 0, sizeof(CacheMissStatistics));
 #endif
 
     return 0;

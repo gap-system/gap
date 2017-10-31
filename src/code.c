@@ -1596,7 +1596,7 @@ void CodeIntExpr(Obj val)
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-        memcpy(((UInt *)ADDR_EXPR(expr)+1), CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        memcpy((UInt *)ADDR_EXPR(expr)+1, CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1797,7 +1797,7 @@ void CodeStringExpr (
     string = NewExpr( T_STRING_EXPR, SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* copy the string                                                     */
-    memcpy( (void *)ADDR_EXPR(string), CONST_ADDR_OBJ(str),
+    memcpy( ADDR_EXPR(string), CONST_ADDR_OBJ(str),
                         SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* push the string                                                     */
@@ -1887,7 +1887,7 @@ static void CodeLazyFloatExpr( Char *str, UInt len) {
     /* Lazy case, store the string for conversion at run time */
     Expr fl = NewExpr( T_FLOAT_EXPR_LAZY, 2*sizeof(UInt) +len+1  );
     /* copy the string                                                     */
-    memcpy( (void *)((char *)ADDR_EXPR(fl)+2*sizeof(UInt)), (void *)str, 
+    memcpy( (char *)ADDR_EXPR(fl)+2*sizeof(UInt), str, 
             len+1 );
       
     *(UInt *)ADDR_EXPR(fl) = len;
@@ -1918,7 +1918,7 @@ static void CodeEagerFloatExpr( Obj str, Char mark ) {
   ADDR_EXPR(fl)[0] = ix;
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
-  memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
+  memcpy(ADDR_EXPR(fl)+3, CHARS_STRING(str), l+1);
   PushExpr(fl);
 }
 
