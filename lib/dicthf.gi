@@ -208,7 +208,7 @@ function(d,pe)
            if IsPerm4Rep(p) then
              # is it a proper 4byte perm?
              if l>65536 then
-               return HashKeyBag(p,255,0,4*l);
+               return HashKeyBag(p,255,GAPInfo.BytesPerVariable,4*l);
              else
                # the permutation does not require 4 bytes. Trim in two
                # byte representation (we need to do this to get consistent
@@ -217,7 +217,7 @@ function(d,pe)
              fi;
             fi;
             # now we have a Perm2Rep:
-            return HashKeyBag(p,255,0,2*l);
+            return HashKeyBag(p,255,GAPInfo.BytesPerVariable,2*l);
           end;
 end);
 
