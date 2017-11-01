@@ -96,7 +96,6 @@ Obj             EndLineHook = 0;
 
 /* TL: TypOutputFile * OutputLog; */
 
-
 #ifdef HPCGAP
 #define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
 #else
@@ -412,7 +411,7 @@ UInt OpenInput (
     else
       STATE(Input)->echo = 1;
     strlcpy( STATE(Input)->name, filename, sizeof(STATE(Input)->name) );
-    STATE(Input)->gapname = (Obj) 0;
+    STATE(Input)->gapnameid = 0;
 
     /* start with an empty line and no symbol                              */
     STATE(In) = STATE(Input)->line;
@@ -470,6 +469,7 @@ UInt OpenInputStream (
     STATE(Input)->file = -1;
     STATE(Input)->echo = 0;
     strlcpy( STATE(Input)->name, "stream", sizeof(STATE(Input)->name) );
+    STATE(Input)->gapnameid = 0;
 
     /* start with an empty line and no symbol                              */
     STATE(In) = STATE(Input)->line;
@@ -509,8 +509,7 @@ UInt CloseInput ( void )
     }
 
     /* don't keep GAP objects alive unnecessarily */
-    STATE(Input)->gapname = 0;
-    STATE(Input)->sline = 0;
+    memset(STATE(Input), 0, sizeof(TypInputFile));
 
     /* revert to last file                                                 */
 #ifdef HPCGAP
@@ -555,8 +554,6 @@ void FlushRestOfInputLine( void )
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile LogFile; */
-
 UInt OpenLog (
     const Char *        filename )
 {
@@ -566,13 +563,13 @@ UInt OpenLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(LogFile).file = SyFopen( filename, "w" );
-    STATE(LogFile).isstream = 0;
-    if ( STATE(LogFile).file == -1 )
+    STATE(OutputLogFileOrStream).file = SyFopen( filename, "w" );
+    STATE(OutputLogFileOrStream).isstream = 0;
+    if ( STATE(OutputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(InputLog)  = &STATE(LogFile);
-    STATE(OutputLog) = &STATE(LogFile);
+    STATE(InputLog)  = &STATE(OutputLogFileOrStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -585,8 +582,6 @@ UInt OpenLog (
 **
 **  The same as 'OpenLog' but for streams.
 */
-/* TL: static TypOutputFile LogStream; */
-
 UInt OpenLogStream (
     Obj             stream )
 {
@@ -596,12 +591,12 @@ UInt OpenLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(LogStream).isstream = 1;
-    STATE(LogStream).stream = stream;
-    STATE(LogStream).file = -1;
+    STATE(OutputLogFileOrStream).isstream = 1;
+    STATE(OutputLogFileOrStream).stream = stream;
+    STATE(OutputLogFileOrStream).file = -1;
 
-    STATE(InputLog)  = &STATE(LogStream);
-    STATE(OutputLog) = &STATE(LogStream);
+    STATE(InputLog)  = &STATE(OutputLogFileOrStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -652,7 +647,7 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile InputLogFile; */
+/* TL: static TypOutputFile InputLogFileOrStream; */
 
 UInt OpenInputLog (
     const Char *        filename )
@@ -663,12 +658,12 @@ UInt OpenInputLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(InputLogFile).file = SyFopen( filename, "w" );
-    STATE(InputLogFile).isstream = 0;
-    if ( STATE(InputLogFile).file == -1 )
+    STATE(InputLogFileOrStream).file = SyFopen( filename, "w" );
+    STATE(InputLogFileOrStream).isstream = 0;
+    if ( STATE(InputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(InputLog) = &STATE(InputLogFile);
+    STATE(InputLog) = &STATE(InputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -681,7 +676,7 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-/* TL: static TypOutputFile InputLogStream; */
+/* TL: static TypOutputFile InputLogFileOrStream; */
 
 UInt OpenInputLogStream (
     Obj                 stream )
@@ -692,11 +687,11 @@ UInt OpenInputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(InputLogStream).isstream = 1;
-    STATE(InputLogStream).stream = stream;
-    STATE(InputLogStream).file = -1;
+    STATE(InputLogFileOrStream).isstream = 1;
+    STATE(InputLogFileOrStream).stream = stream;
+    STATE(InputLogFileOrStream).file = -1;
 
-    STATE(InputLog) = &STATE(InputLogStream);
+    STATE(InputLog) = &STATE(InputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -751,7 +746,7 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile OutputLogFile; */
+/* TL: static TypOutputFile OutputLogFileOrStream; */
 
 UInt OpenOutputLog (
     const Char *        filename )
@@ -762,12 +757,13 @@ UInt OpenOutputLog (
         return 0;
 
     /* try to open the file                                                */
-    STATE(OutputLogFile).file = SyFopen( filename, "w" );
-    STATE(OutputLogFile).isstream = 0;
-    if ( STATE(OutputLogFile).file == -1 )
+    memset(&STATE(OutputLogFileOrStream), 0, sizeof(TypOutputFile));
+    STATE(OutputLogFileOrStream).isstream = 0;
+    STATE(OutputLogFileOrStream).file = SyFopen( filename, "w" );
+    if ( STATE(OutputLogFileOrStream).file == -1 )
         return 0;
 
-    STATE(OutputLog) = &STATE(OutputLogFile);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -791,11 +787,12 @@ UInt OpenOutputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    STATE(OutputLogStream).isstream = 1;
-    STATE(OutputLogStream).stream = stream;
-    STATE(OutputLogStream).file = -1;
+    memset(&STATE(OutputLogFileOrStream), 0, sizeof(TypOutputFile));
+    STATE(OutputLogFileOrStream).isstream = 1;
+    STATE(OutputLogFileOrStream).stream = stream;
+    STATE(OutputLogFileOrStream).file = -1;
 
-    STATE(OutputLog) = &STATE(OutputLogStream);
+    STATE(OutputLog) = &STATE(OutputLogFileOrStream);
 
     /* otherwise indicate success                                          */
     return 1;
@@ -2617,7 +2614,10 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
  **  must pass 0L if you don't make use of an argument to please lint.
  */
 
-void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
+static inline void FormatOutput(
+    void (*put_a_char)(void *state, Char c),
+    void *state, const Char *format, Int arg1, Int arg2 )
+{
   const Char *        p;
   Char *              q;
   Int                 prec,  n;
@@ -2628,7 +2628,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* not a '%' character, simply print it                            */
     if ( *p != '%' ) {
-      put_a_char( *p );
+      put_a_char(state, *p);
       continue;
     }
 
@@ -2645,12 +2645,12 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* handle the case of a missing argument                     */
     if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
-      put_a_char('<');
-      put_a_char('n');
-      put_a_char('u');
-      put_a_char('l');
-      put_a_char('l');
-      put_a_char('>');
+      put_a_char(state, '<');
+      put_a_char(state, 'n');
+      put_a_char(state, 'u');
+      put_a_char(state, 'l');
+      put_a_char(state, 'l');
+      put_a_char(state, '>');
 
       /* on to the next argument                                 */
       arg1 = arg2;
@@ -2668,14 +2668,14 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       for ( n = 1; n <= arg1/10; n*=10 ) {
         prec--;
       }
-      while ( --prec > 0 )  put_a_char(fill);
+      while ( --prec > 0 )  put_a_char(state, fill);
 
       if ( is_neg ) {
-        put_a_char('-');
+        put_a_char(state, '-');
       }
 
       for ( ; n > 0; n /= 10 )
-        put_a_char( (Char)(((arg1/n)%10) + '0') );
+        put_a_char(state, (Char)(((arg1/n)%10) + '0') );
 
       /* on to the next argument                                 */
       arg1 = arg2;
@@ -2690,7 +2690,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       /* must be careful that line breaks don't go inside
@@ -2704,7 +2704,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
         }
         else if (STATE(NoSplitLine) > 0)
           STATE(NoSplitLine)--;
-        put_a_char( *q );
+        put_a_char(state, *q);
       }
 
       /* on to the next argument                                 */
@@ -2729,20 +2729,20 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
-        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
-        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
-        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-        else                    { put_a_char( *q );               }
+        if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
+        else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
+        else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
+        else if ( *q == '\b'  ) { put_a_char(state, '\\'); put_a_char(state, 'b');  }
+        else if ( *q == '\01' ) { put_a_char(state, '\\'); put_a_char(state, '>');  }
+        else if ( *q == '\02' ) { put_a_char(state, '\\'); put_a_char(state, '<');  }
+        else if ( *q == '\03' ) { put_a_char(state, '\\'); put_a_char(state, 'c');  }
+        else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
+        else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
+        else                    { put_a_char(state, *q);               }
       }
 
       /* on to the next argument                                 */
@@ -2767,23 +2767,23 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 )  put_a_char(' ');
+      while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('1');                }
-        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('2');                }
-        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
-          put_a_char('3');                }
-        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-        else                    { put_a_char( *q );               }
+        if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
+        else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
+        else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
+        else if ( *q == '\b'  ) { put_a_char(state, '\\'); put_a_char(state, 'b');  }
+        else if ( *q == '\01' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '1');                }
+        else if ( *q == '\02' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '2');                }
+        else if ( *q == '\03' ) { put_a_char(state, '\\'); put_a_char(state, '0');
+                                  put_a_char(state, '3');                }
+        else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
+        else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
+        else                    { put_a_char(state, *q);               }
       }
 
       /* on to the next argument                                 */
@@ -2816,17 +2816,17 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       }
 
       /* if wanted push an appropriate number of <space>-s       */
-      while ( prec-- > 0 ) { put_a_char(' '); }
+      while ( prec-- > 0 ) { put_a_char(state, ' '); }
 
       /* print the identifier                                    */
       if ( found_keyword ) {
-        put_a_char( '\\' );
+        put_a_char(state, '\\');
       }
       for ( q = (Char*)arg1; *q != '\0'; q++ ) {
         if ( !IsIdent(*q) && !IsDigit(*q) ) {
-          put_a_char( '\\' );
+          put_a_char(state, '\\');
         }
-        put_a_char( *q );
+        put_a_char(state, *q);
       }
 
       /* on to the next argument                                 */
@@ -2835,33 +2835,33 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 
     /* '%c' print a character                                      */
     else if ( *p == 'c' ) {
-      put_a_char( (Char)arg1 );
+      put_a_char(state, (Char)arg1);
       arg1 = arg2;
     }
 
     /* '%%' print a '%' character                                  */
     else if ( *p == '%' ) {
-      put_a_char( '%' );
+      put_a_char(state, '%');
     }
 
     /* '%>' increment the indentation level                        */
     else if ( *p == '>' ) {
-      put_a_char( '\01' );
+      put_a_char(state, '\01');
       while ( --prec > 0 )
-        put_a_char( '\01' );
+        put_a_char(state, '\01');
     }
 
     /* '%<' decrement the indentation level                        */
     else if ( *p == '<' ) {
-      put_a_char( '\02' );
+      put_a_char(state, '\02');
       while ( --prec > 0 )
-        put_a_char( '\02' );
+        put_a_char(state, '\02');
     }
 
     /* else raise an error                                         */
     else {
       for ( p = "%format error"; *p != '\0'; p++ )
-        put_a_char( *p );
+        put_a_char(state, *p);
     }
 
   }
@@ -2869,10 +2869,8 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
 }
 
 
-/* TL: static KOutputStream TheStream; */
-
-static void putToTheStream( Char c) {
-  PutChrTo(STATE(TheStream), c);
+static void putToTheStream(void *state, Char c) {
+  PutChrTo((KOutputStream)state, c);
 }
 
 void PrTo (
@@ -2881,10 +2879,7 @@ void PrTo (
            Int                 arg1,
            Int                 arg2 )
 {
-  KOutputStream savedStream = STATE(TheStream);
-  STATE(TheStream) = stream;
-  FormatOutput( putToTheStream, format, arg1, arg2);
-  STATE(TheStream) = savedStream;
+  FormatOutput( putToTheStream, stream, format, arg1, arg2);
 }
 
 void Pr (
@@ -2895,29 +2890,24 @@ void Pr (
   PrTo(GetCurrentOutput(), format, arg1, arg2);
 }
 
-/* TL: static Char *theBuffer; */
-/* TL: static UInt theCount; */
-/* TL: static UInt theLimit; */
+typedef struct {
+    Char * TheBuffer;
+    UInt   TheCount;
+    UInt   TheLimit;
+} BufferState;
 
-static void putToTheBuffer( Char c)
+static void putToTheBuffer(void *state, Char c)
 {
-  if (STATE(TheCount) < STATE(TheLimit))
-    STATE(TheBuffer)[STATE(TheCount)++] = c;
+  BufferState *buf = (BufferState *)state;
+  if (buf->TheCount < buf->TheLimit)
+    buf->TheBuffer[buf->TheCount++] = c;
 }
 
 void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 {
-  Char *savedBuffer = STATE(TheBuffer);
-  UInt savedCount = STATE(TheCount);
-  UInt savedLimit = STATE(TheLimit);
-  STATE(TheBuffer) = buffer;
-  STATE(TheCount) = 0;
-  STATE(TheLimit) = maxlen;
-  FormatOutput(putToTheBuffer, format, arg1, arg2);
-  putToTheBuffer('\0');
-  STATE(TheBuffer) = savedBuffer;
-  STATE(TheCount) = savedCount;
-  STATE(TheLimit) = savedLimit;
+  BufferState buf = { buffer, 0, maxlen };
+  FormatOutput(putToTheBuffer, &buf, format, arg1, arg2);
+  putToTheBuffer(&buf, '\0');
 }
 
 
@@ -3004,7 +2994,6 @@ static Int InitLibrary (
 #if !defined(HPCGAP)
 static Char Cookie[ARRAY_SIZE(STATE(InputFiles))][9];
 static Char MoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
-static Char StillMoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
 #endif
 
 static Int InitKernel (
@@ -3043,19 +3032,11 @@ static Int InitKernel (
       MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
       MoreCookie[i][8] = '\0';
       InitGlobalBag(&(STATE(InputFiles)[i].sline), &(MoreCookie[i][0]));
-
-      StillMoreCookie[i][0] = 'g';  StillMoreCookie[i][1] = 'a';  StillMoreCookie[i][2] = 'p';
-      StillMoreCookie[i][3] = 'n';  StillMoreCookie[i][4] = 'a';  StillMoreCookie[i][5] = 'm';
-      StillMoreCookie[i][6] = 'e';  StillMoreCookie[i][7] = '0'+i;
-      StillMoreCookie[i][8] = '\0';
-      InitGlobalBag(&(STATE(InputFiles)[i].gapname), &(StillMoreCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */
-    InitGlobalBag(&(STATE(LogFile).stream),        "src/scanner.c:LogFile"        );
-    InitGlobalBag(&(STATE(LogStream).stream),      "src/scanner.c:LogStream"      );
-    InitGlobalBag(&(STATE(InputLogStream).stream), "src/scanner.c:InputLogStream" );
-    InitGlobalBag(&(STATE(OutputLogStream).stream),"src/scanner.c:OutputLogStream");
+    InitGlobalBag(&(STATE(InputLogFileOrStream).stream), "src/scanner.c:InputLogFileOrStream" );
+    InitGlobalBag(&(STATE(OutputLogFileOrStream).stream),"src/scanner.c:OutputLogFileOrStream");
 #endif
 
     /* import functions from the library                                   */
@@ -3071,6 +3052,10 @@ static Int InitKernel (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(HELPSubsOn) = 1;
+}
 
 /****************************************************************************
  **
@@ -3091,16 +3076,11 @@ static StructInitInfo module = {
   0                                   /* postRestore                    */
 };
 
+
 StructInitInfo * InitInfoScanner ( void )
 {
-  return &module;
+    RegisterModuleState(0, InitModuleState, 0);
+    return &module;
 }
 
-void InitScannerState(GAPState * state)
-{
-    state->HELPSubsOn = 1;
-}
 
-void DestroyScannerState(GAPState * state)
-{
-}

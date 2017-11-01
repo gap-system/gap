@@ -356,7 +356,11 @@ function(G)
   local dom, S;
 
   dom := MovedPoints(G);
-  S := InverseMonoid(List(GeneratorsOfGroup(G), p -> AsPartialPerm(p, dom)));
+  if IsEmpty(GeneratorsOfGroup(G)) then
+    S := InverseMonoid(EmptyPartialPerm());
+  else
+    S := InverseMonoid(List(GeneratorsOfGroup(G), p -> AsPartialPerm(p, dom)));
+  fi;
   UseIsomorphismRelation(G, S);
   SetIsGroupAsSemigroup(S, true);
 
@@ -373,8 +377,12 @@ function(G)
   local dom, S;
 
   dom := MovedPoints(G);
-  S := InverseSemigroup(List(GeneratorsOfGroup(G), 
-                             p -> AsPartialPerm(p, dom)));
+  if IsEmpty(GeneratorsOfGroup(G)) then
+    S := InverseSemigroup(EmptyPartialPerm());
+  else
+    S := InverseSemigroup(List(GeneratorsOfGroup(G),
+                               p -> AsPartialPerm(p, dom)));
+  fi;
   UseIsomorphismRelation(G, S);
   SetIsGroupAsSemigroup(S, true);
 

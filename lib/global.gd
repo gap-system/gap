@@ -196,18 +196,21 @@ DeclareGlobalFunction("MakeConstantGlobal");
 ##  <#GAPDoc Label="BindGlobal">
 ##  <ManSection>
 ##  <Func Name="BindGlobal" Arg='name, val'/>
+##  <Func Name="BindConstant" Arg='name, val'/>
 ##
 ##  <Description>
-##  sets the global variable named by the string <A>name</A> to the value
-##  <A>val</A>, provided it is writable, and makes it read-only.
+##  <Ref Func="BindGlobal"/> and <Ref Func="BindConstant"/> set the global
+##  variable named by the string <A>name</A> to the value <A>val</A>,
+##  provided that variable is writable. <Ref Func="BindGlobal"/> makes
+##  the resulting variable read-only, while <Ref Func="BindConstant"/> makes
+##  it constant.
 ##  If <A>name</A> already had a value, a warning message is printed.
 ##  <P/>
 ##  This is intended to be the normal way to create and set <Q>official</Q>
-##  global variables (such as operations and filters).
+##  global variables (such as operations, filters and constants).
 ##  <P/>
 ##  Caution should be exercised in using these functions, especially
-##  <Ref Func="BindGlobal"/> and <Ref Func="UnbindGlobal"/>
-##  as unexpected changes
+##  <Ref Func="UnbindGlobal"/> as unexpected changes
 ##  in global variables can be very confusing for the user.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -233,7 +236,7 @@ DeclareGlobalFunction("MakeConstantGlobal");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("BindGlobal");
-
+DeclareGlobalFunction("BindConstant");
 
 #############################################################################
 ##

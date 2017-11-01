@@ -26,8 +26,7 @@ Permutations in &GAP; are  entered and displayed in cycle notation,
 such as <C>(1,2,3)(4,5)</C>.
 <P/>
 The preimage of the point <M>i</M> under the permutation <M>p</M> can be
-computed as <M>i</M><C>/</C><M>p</M>,
-without constructing the inverse of <M>p</M>.
+computed as <M>i</M><C>/</C><M>p</M>, see <Ref Var="PERM_INVERSE_THRESHOLD"/>.
 <P/>
 For arithmetic operations for permutations and their precedence,
 see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
@@ -47,6 +46,7 @@ the category test function for permutations is <Ref Func="IsPerm"/>.
 <#Include Label="IsPerm">
 <#Include Label="IsPermCollection">
 <#Include Label="PermutationsFamily">
+<#Include Label="PERM_INVERSE_THRESHOLD">
 
 </Section>
 

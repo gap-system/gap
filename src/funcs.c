@@ -57,6 +57,39 @@
 
 #include <src/hookintrprtr.h>
 
+static ModuleStateOffset funcsStateOffset;
+typedef struct {
+    Int RecursionDepth;
+    Obj ExecState;
+} funcsModuleState;
+
+void IncRecursionDepth(void)
+{
+    MODULE_STATE(funcs, RecursionDepth)++;
+}
+
+void DecRecursionDepth(void)
+{
+    MODULE_STATE(funcs, RecursionDepth)--;
+    /* FIXME: According to a comment in the function
+              RecursionDepthTrap below, RecursionDepth
+              can become "slightly" negative. This
+              needs some investigation.
+    GAP_ASSERT(MODULE_STATE(RecursionDepth) >= 0);
+    */
+}
+
+Int GetRecursionDepth(void)
+{
+    return MODULE_STATE(funcs, RecursionDepth);
+}
+
+void SetRecursionDepth(Int depth)
+{
+    GAP_ASSERT(depth >= 0);
+    MODULE_STATE(funcs, RecursionDepth) = depth;
+}
+
 /****************************************************************************
 **
 *F ExecProccallOpts( <call> ). . execute a procedure call with options
@@ -98,7 +131,9 @@ UInt ExecProccallOpts(
 **
 **  'ExecProccall<i>args'  executes  a  procedure   call   to the    function
 **  'FUNC_CALL(<call>)'   with   the   arguments   'ARGI_CALL(<call>,1)'   to
-**  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
+**  'ARGI_CALL(<call>,<i>)'.  It discards the value returned by the function
+**  and returns the statement execution status (as per EXEC_STAT, q.v.)
+**  resulting from the procedure call, which in fact is always 0.
 */
 
 static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
@@ -168,10 +203,10 @@ UInt            ExecProccall1args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
  
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_1ARGS( func, arg1 );
     } 
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -198,10 +233,10 @@ UInt            ExecProccall2args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_2ARGS( func, arg1, arg2 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -230,10 +265,10 @@ UInt            ExecProccall3args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_3ARGS( func, arg1, arg2, arg3 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -264,10 +299,10 @@ UInt            ExecProccall4args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -300,10 +335,10 @@ UInt            ExecProccall5args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -338,10 +373,10 @@ UInt            ExecProccall6args (
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION)
       DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);
     else {
-      SET_BRK_CALL_TO( call );
       CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
@@ -375,10 +410,10 @@ UInt            ExecProccallXargs (
     }
 
     /* call the function                                                   */
+    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
       DoOperation2Args(CallFuncListOper, func, args);
     } else {
-      SET_BRK_CALL_TO( call );
       CALL_XARGS( func, args );
     }
 
@@ -441,13 +476,13 @@ Obj             EvalFunccall0args (
     /* evaluate the function                                               */
     func = EVAL_EXPR( FUNC_CALL( call ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_0ARGS( func );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_0ARGS( func );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -473,13 +508,13 @@ Obj             EvalFunccall1args (
       /* evaluate the arguments                                              */
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_1ARGS( func, arg1 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_1ARGS( func, arg1 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -508,13 +543,13 @@ Obj             EvalFunccall2args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_2ARGS( func, arg1, arg2 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_2ARGS( func, arg1, arg2 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -545,13 +580,13 @@ Obj             EvalFunccall3args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_3ARGS( func, arg1, arg2, arg3 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_3ARGS( func, arg1, arg2, arg3 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -583,13 +618,13 @@ Obj             EvalFunccall4args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -624,13 +659,13 @@ Obj             EvalFunccall5args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
+    } else {
+      result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -667,13 +702,13 @@ Obj             EvalFunccall6args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
+    } else {
+      result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -708,13 +743,13 @@ Obj             EvalFunccallXargs (
         CHANGED_BAG( args );
     }
 
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    }
-
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
-    result = CALL_XARGS( func, args );
+    if (TNUM_OBJ(func) != T_FUNCTION) {
+      result = DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+    } else {
+      result = CALL_XARGS( func, args );
+    }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
@@ -770,16 +805,16 @@ void RecursionDepthTrap( void )
      * when quit-ting a higher level brk-loop to a lower level one.
      * Therefore we don't do anything if  RecursionDepth <= 0
     */
-    if (STATE(RecursionDepth) > 0) {
-        recursionDepth = STATE(RecursionDepth);
-        STATE(RecursionDepth) = 0;
+    if (GetRecursionDepth() > 0) {
+        recursionDepth = GetRecursionDepth();
+        SetRecursionDepth(0);
         ErrorReturnVoid( "recursion depth trap (%d)",
                          (Int)recursionDepth, 0L,
                          "you may 'return;'" );
-        STATE(RecursionDepth) = recursionDepth;
+        SetRecursionDepth(recursionDepth);
     }
 }
-     
+
 #ifdef TRACEFRAMES
 Obj STEVES_TRACING;
 #endif
@@ -789,7 +824,7 @@ Obj STEVES_TRACING;
             HookedLineIntoFunction(func);
 
 #define CHECK_RECURSION_AFTER \
-            STATE(RecursionDepth)--; \
+            DecRecursionDepth(); \
             HookedLineOutFunction(func);
 
 #ifdef HPCGAP
@@ -1672,12 +1707,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NEW_PLIST(T_PLIST, 3);
     SET_LEN_PLIST(execState, 3);
-    SET_ELM_PLIST(execState, 1, STATE(ExecState));
+    SET_ELM_PLIST(execState, 1, MODULE_STATE(funcs, ExecState));
     SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
     SET_ELM_PLIST(execState, 3, INTOBJ_INT((Int)STATE(CurrStat)));
-    STATE(ExecState) = execState;
+    MODULE_STATE(funcs, ExecState) = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1696,9 +1731,9 @@ void            ExecEnd (
     }
 
     /* switch back to the old state                                    */
-    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(STATE(ExecState), 3)));
-    SWITCH_TO_OLD_LVARS( ELM_PLIST(STATE(ExecState), 2) );
-    STATE(ExecState) = ELM_PLIST(STATE(ExecState), 1);
+    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(MODULE_STATE(funcs, ExecState), 3)));
+    SWITCH_TO_OLD_LVARS( ELM_PLIST(MODULE_STATE(funcs, ExecState), 2) );
+    MODULE_STATE(funcs, ExecState) = ELM_PLIST(MODULE_STATE(funcs, ExecState), 1);
 }
 
 /****************************************************************************
@@ -1720,7 +1755,7 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 
 Obj FuncGetRecursionDepth( Obj self )
 {
-    return INTOBJ_INT(STATE(RecursionDepth));
+    return INTOBJ_INT(GetRecursionDepth());
 }
 
 /****************************************************************************
@@ -1771,7 +1806,7 @@ static Int InitKernel (
 
 #if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &STATE(ExecState), "src/funcs.c:ExecState" );
+    InitGlobalBag( &MODULE_STATE(funcs, ExecState), "src/funcs.c:ExecState" );
 #endif
 
     /* Register the handler for our exported function                      */
@@ -1853,6 +1888,11 @@ static Int InitKernel (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    MODULE_STATE(funcs, ExecState) = 0;
+    MODULE_STATE(funcs, RecursionDepth) = 0;
+}
 
 /****************************************************************************
 **
@@ -1875,5 +1915,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFuncs ( void )
 {
+    funcsStateOffset = RegisterModuleState(sizeof(funcsModuleState), InitModuleState, 0);
     return &module;
 }

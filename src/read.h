@@ -46,9 +46,9 @@
 
 #define TRY_READ \
     if (!STATE(NrError)) { \
-        volatile Int recursionDepth = STATE(RecursionDepth); \
+        volatile Int recursionDepth = GetRecursionDepth();  \
         if (sySetjmp(STATE(ReadJmpError))) { \
-            STATE(RecursionDepth) = recursionDepth; \
+            SetRecursionDepth(recursionDepth);  \
             STATE(NrError)++; \
         }\
     }\
@@ -66,13 +66,6 @@
 
 /****************************************************************************
 **
-*V  ReadEvalResult  . . . . . . . . result of reading one command immediately
-*/
-/* TL: extern Obj ReadEvalResult; */
-
-
-/****************************************************************************
-**
 *F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
 **
 **  'ReadEvalCommand' reads one command and interprets it immediately.
@@ -86,20 +79,20 @@
 **  pass 0 for dualSemicolon, in this case it is ignore.
 **
 */
-extern UInt ReadEvalCommand ( Obj context, UInt *dualSemicolon );
+extern UInt ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon);
 
 
 /****************************************************************************
 **
 *F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
 **
-**  'ReadEvalFile' reads an entire file and returns (in 'ReadEvalResult') the
+**  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
 **  entire file as thunk, i.e., as function of no argument.
 **
 **  It does not expect the  first symbol of its input  already read and  wont
 **  reads to the end of the input (unless an error happens).
 */
-extern UInt ReadEvalFile ( void );
+extern UInt ReadEvalFile(Obj *evalResult);
 
 
 /****************************************************************************

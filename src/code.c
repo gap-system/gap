@@ -97,18 +97,6 @@ static inline void PopOffsBody( void ) {
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
-static void SetupOffsBodyStackAndLoopStack( void ) {
-#ifdef HPCGAP
-  STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-  STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
-#else
-  static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-  static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
-  STATE(OffsBodyStack) = MainOffsBodyStack;
-  STATE(LoopStack) = MainLoopStack;
-#endif
-}
-
 static inline void PushLoopNesting( void ) {
   assert(STATE(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
   STATE(LoopStack)[STATE(LoopStackCount)++] = STATE(LoopNesting);
@@ -121,24 +109,22 @@ static inline void PopLoopNesting( void ) {
 
 static inline void SetupGapname(TypInputFile* i)
 {
-  if (!i->gapname) {
-    i->gapname = MakeImmString(i->name);
+    if (i->gapnameid == 0) {
+        Obj filename = MakeImmString(i->name);
 #ifdef HPCGAP
-    i->gapnameid = AddAList(FilenameCache, i->gapname);
-    // TODO/FIXME: adjust this code to work more like the corresponding
-    // code below for GAP?!?
+        // TODO/FIXME: adjust this code to work more like the corresponding
+        // code below for GAP?!?
+        i->gapnameid = AddAList(FilenameCache, filename);
 #else
-    Obj pos = POS_LIST( FilenameCache, i->gapname, INTOBJ_INT(1) );
-    if (pos == Fail) {
-        i->gapnameid = PushPlist(FilenameCache, i->gapname);;
-    }
-    else {
-        i->gapnameid = INT_INTOBJ(pos);
-        // Use string from FilenameCache as we know it will not get GCed
-        i->gapname = ELM_LIST( FilenameCache, i->gapnameid );
-    }
+        Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
+        if (pos == Fail) {
+            i->gapnameid = PushPlist(FilenameCache, filename);
+        }
+        else {
+            i->gapnameid = INT_INTOBJ(pos);
+        }
 #endif
-  }
+    }
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
@@ -394,6 +380,33 @@ Stat PopSeqStat (
 
     /* return the sequence                                                 */
     return body;
+}
+
+static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
+{
+    // fix up the case of no statements
+    if (0 == nr) {
+        PushStat(NewStat(T_EMPTY, 0));
+        nr = 1;
+    }
+
+    // collect the statements into a statement sequence if necessary
+    else if (3 < nr) {
+        PushStat(PopSeqStat(nr));
+        nr = 1;
+    }
+
+    // allocate the compound statement
+    Stat stat = NewStat(baseType + (nr - 1),
+                        extra * sizeof(Expr) + nr * sizeof(Stat));
+
+    // enter the statements
+    for (UInt i = nr; 1 <= i; i--) {
+        Stat stat1 = PopStat();
+        ADDR_STAT(stat)[i + extra - 1] = stat1;
+    }
+
+    return stat;
 }
 
 
@@ -778,7 +791,8 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     SetupGapname(STATE(Input));
-    SET_FILENAME_BODY(body, STATE(Input)->gapname);
+    Obj filename = ELM_LIST(FilenameCache, STATE(Input)->gapnameid);
+    SET_FILENAME_BODY(body, filename);
     SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
@@ -1075,20 +1089,6 @@ void CodeForEndBody (
     UInt                type;           /* type of for-statement           */
     Expr                var;            /* variable                        */
     Expr                list;           /* list                            */
-    Stat                stat1;          /* single statement of body        */
-    UInt                i;              /* loop variable                   */
-
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
 
     /* get the list expression                                             */
     list = PopExpr();
@@ -1102,20 +1102,14 @@ void CodeForEndBody (
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
       && IS_REFLVAR(var) ) {
-        type = T_FOR_RANGE + (nr-1);
+        type = T_FOR_RANGE;
     }
     else {
-        type = T_FOR + (nr-1);
+        type = T_FOR;
     }
 
     /* allocate the for-statement                                          */
-    stat = NewStat( type, 2*sizeof(Expr) + nr * sizeof(Stat) );
-
-    /* enter the body statements                                           */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i+1] = stat1;
-    }
+    stat = PopLoopStat(type, 2, nr);
 
     /* enter the list expression                                           */
     ADDR_STAT(stat)[1] = list;
@@ -1262,30 +1256,9 @@ void CodeWhileEndBody (
 {
     Stat                stat;           /* while-statement, result         */
     Expr                cond;           /* condition                       */
-    Stat                stat1;          /* single statement of body        */
-    UInt                i;              /* loop variable                   */
-
-
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-    
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
 
     /* allocate the while-statement                                        */
-    stat = NewStat( T_WHILE + (nr-1), sizeof(Expr) + nr * sizeof(Stat) );
-
-    /* enter the statements                                                */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i] = stat1;
-    }
+    stat = PopLoopStat(T_WHILE, 1, nr);
 
     /* enter the condition                                                 */
     cond = PopExpr();
@@ -1348,9 +1321,7 @@ void CodeRepeatEnd ( void )
     Stat                stat;           /* repeat-statement, result        */
     UInt                nr;             /* number of statements in body    */
     Expr                cond;           /* condition                       */
-    Stat                stat1;          /* single statement of body        */
     Expr                tmp;            /* temporary                       */
-    UInt                i;              /* loop variable                   */
 
     /* get the condition                                                   */
     cond = PopExpr();
@@ -1360,28 +1331,11 @@ void CodeRepeatEnd ( void )
     tmp = PopExpr();
     nr = INT_INTEXPR( tmp );
 
-    /* fix up the case of no statements */
-    if ( 0 == nr ) {
-      PushStat( NewStat( T_EMPTY, 0) );
-      nr = 1;
-    }
-    /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
-        PushStat( PopSeqStat( nr ) );
-        nr = 1;
-    }
-
     /* allocate the repeat-statement                                       */
-    stat = NewStat( T_REPEAT + (nr-1), sizeof(Expr) + nr * sizeof(Stat) );
+    stat = PopLoopStat(T_REPEAT, 1, nr);
 
     /* enter the condition                                                 */
     ADDR_STAT(stat)[0] = cond;
-
-    /* enter the statements                                                */
-    for ( i = nr; 1 <= i; i-- ) {
-        stat1 = PopStat();
-        ADDR_STAT(stat)[i] = stat1;
-    }
 
     /* push the repeat-statement                                           */
     PushStat( stat );
@@ -3378,19 +3332,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 };
 
-void InitCoderState(GAPState * state)
-{
-    state->OffsBodyCount = 0;
-    state->LoopNesting = 0;
-    state->LoopStackCount = 0;
-    state->StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    state->StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
-}
-
-void DestroyCoderState(GAPState * state)
-{
-}
-
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3422,11 +3363,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
-#ifdef HPCGAP
-    InstallTLSHandler(SetupOffsBodyStackAndLoopStack, NULL);
-#else
-    SetupOffsBodyStackAndLoopStack();
-#endif
 
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -3510,7 +3446,24 @@ static Int PreSave (
   return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(OffsBodyCount) = 0;
+    STATE(LoopNesting) = 0;
+    STATE(LoopStackCount) = 0;
+    STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
+    STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
 
+#ifdef HPCGAP
+    STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+    STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
+#else
+    static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
+    static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
+    STATE(OffsBodyStack) = MainOffsBodyStack;
+    STATE(LoopStack) = MainLoopStack;
+#endif
+}
 
 /****************************************************************************
 **
@@ -3533,5 +3486,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

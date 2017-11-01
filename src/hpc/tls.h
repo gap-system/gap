@@ -10,8 +10,6 @@
 #include <src/scanner.h>
 #include <src/gasman.h>
 
-#define TLS_NUM_EXTRA 256
-
 typedef struct ThreadLocalStorage
 {
   int threadID;
@@ -47,26 +45,9 @@ typedef struct ThreadLocalStorage
   UInt LocksContended;
 
   GAPState state;
-
-  /* Extra storage */
-  void *Extra[TLS_NUM_EXTRA];
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
-
-typedef struct TLSHandler
-{
-  void (*constructor)(void);
-  void (*destructor)(void);
-} TLSHandler;
-
-void InstallTLSHandler(
-	void (*constructor)(void),
-	void (*destructor)(void)
-);
-
-void RunTLSConstructors(void);
-void RunTLSDestructors(void);
 
 #ifdef HAVE_NATIVE_TLS
 
@@ -105,8 +86,6 @@ static inline int IsMainThread(void)
 }
 
 void InitializeTLS(void);
-
-Int AllocateExtraTLSSlot(void);
 
 void InitTLS(void);
 void DestroyTLS(void);

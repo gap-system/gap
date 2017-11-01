@@ -259,6 +259,14 @@ InstallGlobalFunction( BindGlobal,
     BIND_GLOBAL( name, value );
 end);
 
+
+InstallGlobalFunction( BindConstant, 
+        function (name, value)
+    CheckGlobalName( name );
+    Info( InfoGlobal, 2, "BindConstant: called to set ", name, " to ", value);
+    BIND_CONSTANT( name, value );
+end);
+
 #############################################################################
 ##
 #F  TemporaryGlobalVarName( [<prefix>] )   name of an unbound global variable

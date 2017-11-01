@@ -113,7 +113,7 @@ enum {
 **  For every type  of statements there is  a symbolic name  defined for this
 **  type.
 */
-enum STAT_TNUMS {
+enum STAT_TNUM {
     START_ENUM_RANGE(FIRST_STAT_TNUM),
 
         T_PROCCALL_0ARGS,

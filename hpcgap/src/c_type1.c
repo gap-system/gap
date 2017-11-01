@@ -8,6 +8,8 @@ static GVar G_NAME__FUNC;
 static Obj  GF_NAME__FUNC;
 static GVar G_IsType;
 static Obj  GF_IsType;
+static GVar G_FLUSH__ALL__METHOD__CACHES;
+static Obj  GF_FLUSH__ALL__METHOD__CACHES;
 static GVar G_IS__REC;
 static Obj  GF_IS__REC;
 static GVar G_IS__LIST;
@@ -61,6 +63,8 @@ static GVar G_HASH__FLAGS;
 static Obj  GF_HASH__FLAGS;
 static GVar G_IS__EQUAL__FLAGS;
 static Obj  GF_IS__EQUAL__FLAGS;
+static GVar G_WITH__IMPS__FLAGS;
+static Obj  GF_WITH__IMPS__FLAGS;
 static GVar G_IS__SUBSET__FLAGS;
 static Obj  GF_IS__SUBSET__FLAGS;
 static GVar G_FLAG1__FILTER;
@@ -134,8 +138,6 @@ static GVar G_ShareSpecialObj;
 static Obj  GF_ShareSpecialObj;
 static GVar G_BIND__GLOBAL;
 static Obj  GF_BIND__GLOBAL;
-static GVar G_WITH__IMPS__FLAGS;
-static Obj  GF_WITH__IMPS__FLAGS;
 static GVar G_CATEGORIES__FAMILY;
 static Obj  GC_CATEGORIES__FAMILY;
 static GVar G_NEW__FAMILY;
@@ -164,8 +166,6 @@ static GVar G_NEW__TYPE__NEXT__ID;
 static Obj  GC_NEW__TYPE__NEXT__ID;
 static GVar G_NEW__TYPE__ID__LIMIT;
 static Obj  GC_NEW__TYPE__ID__LIMIT;
-static GVar G_FLUSH__ALL__METHOD__CACHES;
-static Obj  GF_FLUSH__ALL__METHOD__CACHES;
 static GVar G_POS__NUMB__TYPE;
 static Obj  GC_POS__NUMB__TYPE;
 static GVar G_NEW__TYPE;
@@ -4358,6 +4358,7 @@ static Int PostRestore ( StructInitInfo * module )
  /* global variables used in handlers */
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
  G_IsType = GVarName( "IsType" );
+ G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_IS__REC = GVarName( "IS_REC" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
@@ -4384,6 +4385,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
  G_HASH__FLAGS = GVarName( "HASH_FLAGS" );
  G_IS__EQUAL__FLAGS = GVarName( "IS_EQUAL_FLAGS" );
+ G_WITH__IMPS__FLAGS = GVarName( "WITH_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
@@ -4420,7 +4422,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_DS__TYPE__CACHE = GVarName( "DS_TYPE_CACHE" );
  G_ShareSpecialObj = GVarName( "ShareSpecialObj" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
- G_WITH__IMPS__FLAGS = GVarName( "WITH_IMPS_FLAGS" );
  G_CATEGORIES__FAMILY = GVarName( "CATEGORIES_FAMILY" );
  G_NEW__FAMILY = GVarName( "NEW_FAMILY" );
  G_EMPTY__FLAGS = GVarName( "EMPTY_FLAGS" );
@@ -4435,7 +4436,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_NEW__TYPE__NEXT__ID = GVarName( "NEW_TYPE_NEXT_ID" );
  G_NEW__TYPE__ID__LIMIT = GVarName( "NEW_TYPE_ID_LIMIT" );
- G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_POS__NUMB__TYPE = GVarName( "POS_NUMB_TYPE" );
  G_NEW__TYPE = GVarName( "NEW_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
@@ -4522,6 +4522,7 @@ static Int InitKernel ( StructInitInfo * module )
  /* global variables used in handlers */
  InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
  InitFopyGVar( "IsType", &GF_IsType );
+ InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitFopyGVar( "IS_REC", &GF_IS__REC );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
@@ -4549,6 +4550,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "SUB_FLAGS", &GF_SUB__FLAGS );
  InitFopyGVar( "HASH_FLAGS", &GF_HASH__FLAGS );
  InitFopyGVar( "IS_EQUAL_FLAGS", &GF_IS__EQUAL__FLAGS );
+ InitFopyGVar( "WITH_IMPS_FLAGS", &GF_WITH__IMPS__FLAGS );
  InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
  InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
  InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
@@ -4586,7 +4588,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "DS_TYPE_CACHE", &GC_DS__TYPE__CACHE );
  InitFopyGVar( "ShareSpecialObj", &GF_ShareSpecialObj );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
- InitFopyGVar( "WITH_IMPS_FLAGS", &GF_WITH__IMPS__FLAGS );
  InitCopyGVar( "CATEGORIES_FAMILY", &GC_CATEGORIES__FAMILY );
  InitFopyGVar( "NEW_FAMILY", &GF_NEW__FAMILY );
  InitCopyGVar( "EMPTY_FLAGS", &GC_EMPTY__FLAGS );
@@ -4601,7 +4602,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
  InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
  InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
- InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitCopyGVar( "POS_NUMB_TYPE", &GC_POS__NUMB__TYPE );
  InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
  InitFopyGVar( "IsFamily", &GF_IsFamily );

@@ -134,6 +134,8 @@ struct StatementLocation
     int line;
 };
 
+typedef enum { Tick_WallTime, Tick_CPUTime, Tick_Mem } TickMethod;
+
 struct ProfileState
 {
   // C steam we are writing to
@@ -156,7 +158,7 @@ struct ProfileState
 
   Int8 lastOutputtedTime;
 
-  int useGetTimeOfDay;
+  TickMethod tickMethod;
 
   int minimumProfileTick;
 #ifdef HPCGAP
@@ -307,6 +309,20 @@ static inline Int8 CPUmicroseconds(void)
 #endif
 }
 
+static inline Int8 getTicks(void)
+{
+    switch (profileState.tickMethod) {
+    case Tick_CPUTime:
+        return CPUmicroseconds();
+    case Tick_WallTime:
+        return SyNanosecondsSinceEpoch() / 1000;
+    case Tick_Mem:
+        return SizeAllBags;
+    default:
+        return 0;
+    }
+}
+
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
 static inline void outputStat(Stat stat, int exec, int visited)
@@ -342,36 +358,34 @@ static inline void outputStat(Stat stat, int exec, int visited)
      profileState.lastOutputtedExec != exec)
   {
 
-    if(profileState.OutputRepeats) {
-      if(profileState.useGetTimeOfDay) {
-        newticks = SyNanosecondsSinceEpoch() / 1000;
-      }
-      else {
-        newticks = CPUmicroseconds();
-      }
+    if (profileState.OutputRepeats) {
+        newticks = getTicks();
 
-      ticks = newticks - profileState.lastOutputtedTime;
+        ticks = newticks - profileState.lastOutputtedTime;
 
-      // Basic sanity check
-      if(ticks < 0)
-        ticks = 0;
-      if((profileState.minimumProfileTick == 0)
-         || (ticks > profileState.minimumProfileTick)
-         || (!visited)) {
-        int ticksDone;
-        if(profileState.minimumProfileTick == 0) {
-          ticksDone = ticks;
-        } else {
-          ticksDone = (ticks/profileState.minimumProfileTick) * profileState.minimumProfileTick;
-        }
-        ticks -= ticksDone;
-        fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
+        // Basic sanity check
+        if (ticks < 0)
+            ticks = 0;
+        if ((profileState.minimumProfileTick == 0) ||
+            (ticks > profileState.minimumProfileTick) || (!visited)) {
+            int ticksDone;
+            if (profileState.minimumProfileTick == 0) {
+                ticksDone = ticks;
+            }
+            else {
+                ticksDone = (ticks / profileState.minimumProfileTick) *
+                            profileState.minimumProfileTick;
+            }
+            ticks -= ticksDone;
+            fprintf(
+                profileState.Stream,
+                "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
                 exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
-        profileState.lastOutputtedTime = newticks;
-        profileState.lastNotOutputted.line = -1;
-        profileState.lastOutputted.line = line;
-        profileState.lastOutputted.fileID = nameid;
-        profileState.lastOutputtedExec = exec;
+            profileState.lastOutputtedTime = newticks;
+            profileState.lastNotOutputted.line = -1;
+            profileState.lastOutputted.line = line;
+            profileState.lastOutputted.fileID = nameid;
+            profileState.lastOutputtedExec = exec;
       }
       else {
         profileState.lastNotOutputted.line = line;
@@ -416,12 +430,12 @@ void visitStat(Stat stat)
 
 void outputVersionInfo(void)
 {
-    fprintf(profileState.Stream, 
+    const char timeTypeNames[3][10] = { "WallTime", "CPUTime", "Memory" };
+    fprintf(profileState.Stream,
             "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
-            "  \"TimeType\": \"%s\"}\n", 
-            profileState.OutputRepeats?"false":"true",
-            profileState.useGetTimeOfDay?"Wall":"CPU");
-  
+            "  \"TimeType\": \"%s\"}\n",
+            profileState.OutputRepeats ? "false" : "true",
+            timeTypeNames[profileState.tickMethod]);
 }
 
 /****************************************************************************
@@ -448,7 +462,7 @@ struct InterpreterHooks profileHooks = {
  "line-by-line profiling"};
 
 
-void enableAtStartup(char* filename, Int repeats)
+void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
     if(profileState_Active) {
         fprintf(stderr, "-P or -C can only be passed once\n");
@@ -471,16 +485,9 @@ void enableAtStartup(char* filename, Int repeats)
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
+    profileState.tickMethod = tickMethod;
     profileState.lastNotOutputted.line = -1;
-#ifdef HAVE_GETTIMEOFDAY
-    profileState.useGetTimeOfDay = 1;
-    profileState.lastOutputtedTime = SyNanosecondsSinceEpoch() / 1000;
-#else
-#ifdef HAVE_GETRUSAGE
-    profileState.useGetTimeOfDay = 0;
-    profileState.lastOutputtedTime = CPUmicroseconds();
-#endif
-#endif
+    profileState.lastOutputtedTime = getTicks();
 
     outputVersionInfo();
 }
@@ -490,7 +497,7 @@ void enableAtStartup(char* filename, Int repeats)
 // we quit straight away.
 Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
 {
-    enableAtStartup(argv[0], 0);
+    enableAtStartup(argv[0], 0, Tick_Mem);
     return 1;
 }
 
@@ -499,16 +506,30 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
 // we quit straight away.
 Int enableProfilingAtStartup( Char **argv, void * dummy)
 {
-    enableAtStartup(argv[0], 1);
+    TickMethod tickMethod = Tick_WallTime;
+#ifdef HAVE_GETTIMEOFDAY
+    tickMethod = Tick_WallTime;
+#else
+#ifdef HAVE_GETRUSAGE
+    tickMethod = Tick_CPUTime;
+#endif
+#endif
+    enableAtStartup(argv[0], 1, tickMethod);
     return 1;
 }
 
-Obj FuncACTIVATE_PROFILING (
-    Obj                 self,
-    Obj                 filename, /* filename to write to */
-    Obj                 coverage,
-    Obj                 wallTime,
-    Obj                 resolution)
+Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
+{
+    enableAtStartup(argv[0], 1, Tick_Mem);
+    return 1;
+}
+
+Obj FuncACTIVATE_PROFILING(Obj self,
+                           Obj filename, /* filename to write to */
+                           Obj coverage,
+                           Obj wallTime,
+                           Obj recordMem,
+                           Obj resolution)
 {
     if(profileState_Active) {
       return Fail;
@@ -546,7 +567,15 @@ Obj FuncACTIVATE_PROFILING (
     }
 #endif
 
-    profileState.useGetTimeOfDay = (wallTime == True);
+    if (recordMem == True) {
+        profileState.tickMethod = Tick_Mem;
+    }
+    else {
+        profileState.tickMethod =
+            (wallTime == True) ? Tick_WallTime : Tick_CPUTime;
+    }
+
+    profileState.lastOutputtedTime = getTicks();
 
     if( ! IS_INTOBJ(resolution) ) {
       ErrorMayQuit("<resolution> must be an integer",0,0);
@@ -586,13 +615,6 @@ Obj FuncACTIVATE_PROFILING (
     profileState.profiledThread = TLS(threadID);
 #endif
     profileState.lastNotOutputted.line = -1;
-
-    if(wallTime == True) {
-        profileState.lastOutputtedTime = SyNanosecondsSinceEpoch() / 1000;
-    }
-    else {
-        profileState.lastOutputtedTime = CPUmicroseconds();
-    }
 
     outputVersionInfo();
     HashUnlock(&profileState);
@@ -764,12 +786,14 @@ Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(ACTIVATE_PROFILING, 4, "string,boolean,boolean,integer"),
+    GVAR_FUNC(ACTIVATE_PROFILING,
+              5,
+              "filename,coverage,wallTime,recordMem,resolution"),
     GVAR_FUNC(DEACTIVATE_PROFILING, 0, ""),
     GVAR_FUNC(IsLineByLineProfileActive, 0, ""),
-    GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "bool"),
+    GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "arg"),
     { 0, 0, 0, 0, 0 }
 };
 

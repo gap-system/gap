@@ -579,7 +579,6 @@ Obj ElmsBlist (
     }
 
     /* special code for ranges                                             */
-    /*N 1992/12/15 martin special code for ranges with increment 1         */
     else {
 
         /* get the length of <list>                                        */
@@ -610,27 +609,31 @@ Obj ElmsBlist (
         elms = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenPoss ) );
         SET_LEN_BLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
-        block = 0;  bit = 1;
-        for ( i = 1; i <= lenPoss; i++, pos += inc ) {
-
-            /* select the element                                          */
-            elm = ELM_BLIST( list, pos );
-
-            /* assign the element to <elms>                                */
-            if ( elm == True )
-                block |= bit;
-            bit <<= 1;
-            if ( bit == 0 || i == lenPoss ) {
-                BLOCK_ELM_BLIST(elms, i) =  block;
-                block = 0;
-                bit = 1;
-            }
-
+        if (inc == 1) {
+            CopyBits(CONST_BLOCKS_BLIST(list) + ((pos - 1) / BIPEB),
+                     (pos - 1) % BIPEB, BLOCKS_BLIST(elms), 0, lenPoss);
         }
+        else {
+            /* loop over the entries of <positions> and select */
+            block = 0;
+            bit = 1;
+            for (i = 1; i <= lenPoss; i++, pos += inc) {
 
+                /* select the element */
+                elm = ELM_BLIST(list, pos);
+
+                /* assign the element to <elms> */
+                if (elm == True)
+                    block |= bit;
+                bit <<= 1;
+                if (bit == 0 || i == lenPoss) {
+                    BLOCK_ELM_BLIST(elms, i) = block;
+                    block = 0;
+                    bit = 1;
+                }
+            }
+	}
     }
-
     /* return the result                                                   */
     return elms;
 }

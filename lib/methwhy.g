@@ -281,20 +281,20 @@ end);
 ##  <Example><![CDATA[
 ##  gap> ShowImpliedFilters(IsMatrix);
 ##  Implies:
-##     IsGeneralizedRowVector
 ##     IsNearAdditiveElementWithInverse
 ##     IsAdditiveElement
 ##     IsMultiplicativeElement
+##     IsGeneralizedRowVector
 ##  
 ##  
 ##  May imply with:
-##  +IsGF2MatrixRep
+##  +IsInternalRep
 ##     IsOrdinaryMatrix
 ##  
 ##  +CategoryCollections(CategoryCollections(IsAdditivelyCommutativeElement))
 ##     IsAdditivelyCommutativeElement
 ##  
-##  +IsInternalRep
+##  +IsGF2MatrixRep
 ##     IsOrdinaryMatrix
 ##  
 ##  ]]></Example>
@@ -305,17 +305,19 @@ end);
 BIND_GLOBAL("ShowImpliedFilters",function(fil)
 local flags,f,i,j,l,m,n;
   flags:=FLAGS_FILTER(fil);
-  f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
-  l:=[];
-  m:=[];
-  for i in f do
-    n:=SUB_FLAGS(i[2],flags); # the additional requirements
-    if SIZE_FLAGS(n)=0 then
-      Add(l,i[1]);
-    else
-      Add(m,[n,i[1]]);
-    fi;
-  od;
+  atomic readonly IMPLICATIONS do
+    f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
+    l:=[];
+    m:=[];
+    for i in f do
+      n:=SUB_FLAGS(i[2],flags); # the additional requirements
+      if SIZE_FLAGS(n)=0 then
+        Add(l,i[1]);
+      else
+        Add(m,[n,i[1]]);
+      fi;
+    od;
+  od; # end atomic
   if Length(l)>0 then
     Print("Implies:\n");
     for i in l do
@@ -409,7 +411,7 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
           if l <> fail then
               l := Maximum(l-5, 1);
           elif IsKernelFunction(fun) then
-              # page correct C source file and try to find line in C 
+              # page correct C source file and try to find line in C
               # source starting `Obj Func<fun>`
               s := String(fun);
               ss:=SplitString(s,""," <>");

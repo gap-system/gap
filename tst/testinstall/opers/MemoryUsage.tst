@@ -15,7 +15,7 @@ gap> MemoryUsage(Z(2)) / GAPInfo.BytesPerVariable;
 gap> MemoryUsage(Z(3)) / GAPInfo.BytesPerVariable;
 1
 gap> g := (1,2,3);;
-gap> MemoryUsage(g) - MU_MemBagHeader - MU_MemPointer;
+gap> MemoryUsage(g) - MU_MemBagHeader - MU_MemPointer - GAPInfo.BytesPerVariable;
 6
 
 #

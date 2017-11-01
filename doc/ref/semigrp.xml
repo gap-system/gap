@@ -134,6 +134,7 @@ The following functions deal with quotient semigroups in &GAP;.
 <#Include Label="GroupHClassOfGreensDClass">
 <#Include Label="IsGroupHClass">
 <#Include Label="IsRegularDClass">
+<#Include Label="DisplaySemigroup">
 
 </Section>
 

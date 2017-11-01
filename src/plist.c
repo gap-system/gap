@@ -1091,13 +1091,13 @@ Int             EqPlist (
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
         if ( ( (elmL == 0 ) != (elmR == 0) ) || ! EQ( elmL, elmR ) ) {
-            STATE(RecursionDepth)--;
+            DecRecursionDepth();
             return 0L;
         }
     }
 
     /* no differences found, the lists are equal                           */
-    STATE(RecursionDepth)--;
+    DecRecursionDepth();
     return 1L;
 }
 
@@ -1148,7 +1148,7 @@ Int             LtPlist (
     }
 
     /* reached the end of at least one list                                */
-    STATE(RecursionDepth)--;
+    DecRecursionDepth();
     return res;
 }
 

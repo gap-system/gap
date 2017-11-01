@@ -227,6 +227,7 @@ Obj Shell ( Obj context,
 {
   UInt time = 0;
   UInt status;
+  Obj evalResult;
   UInt dualSemicolon;
   UInt oldindent;
   UInt oldPrintDepth;
@@ -240,8 +241,8 @@ Obj Shell ( Obj context,
   STATE(BaseShellContext) = context;
   Int oldErrorLLevel = STATE(ErrorLLevel);
   STATE(ErrorLLevel) = 0;
-  oldRecursionDepth = STATE(RecursionDepth);
-
+  oldRecursionDepth = GetRecursionDepth();
+  
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
@@ -268,7 +269,7 @@ Obj Shell ( Obj context,
     ClearError();
     STATE(PrintObjDepth) = 0;
     STATE(Output)->indent = 0;
-    STATE(RecursionDepth) = 0;
+    SetRecursionDepth(0);
       
     /* here is a hook: */
     if (preCommandHook) {
@@ -286,13 +287,13 @@ Obj Shell ( Obj context,
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(STATE(ShellContext), &dualSemicolon);
+    status = ReadEvalCommand(STATE(ShellContext), &evalResult, &dualSemicolon);
     if (STATE(UserHasQUIT))
       break;
 
 
     /* handle ordinary command                                         */
-    if ( status == STATUS_END && STATE(ReadEvalResult) != 0 ) {
+    if ( status == STATUS_END && evalResult != 0 ) {
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
@@ -300,11 +301,11 @@ Obj Shell ( Obj context,
       if (lastDepth >= 2)
         AssGVar( Last2, ValGVarTL( Last  ) );
       if (lastDepth >= 1)
-        AssGVar( Last,  STATE(ReadEvalResult)   );
+        AssGVar( Last, evalResult );
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
-        ViewObjHandler( STATE(ReadEvalResult) );
+        ViewObjHandler( evalResult );
       }
             
     }
@@ -326,7 +327,7 @@ Obj Shell ( Obj context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      STATE(RecursionDepth) = 0;
+      SetRecursionDepth(0);
       STATE(UserHasQuit) = 1;
       break;
     }
@@ -356,7 +357,8 @@ Obj Shell ( Obj context,
   STATE(BaseShellContext) = oldBaseShellContext;
   STATE(ShellContext) = oldShellContext;
   STATE(ErrorLLevel) = oldErrorLLevel;
-  STATE(RecursionDepth) = oldRecursionDepth;
+  SetRecursionDepth(oldRecursionDepth);
+
   if (STATE(UserHasQUIT))
     {
       if (catchQUIT)
@@ -385,7 +387,7 @@ Obj Shell ( Obj context,
     {
       res = NEW_PLIST(T_PLIST_HOM,1);
       SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,STATE(ReadEvalResult));
+      SET_ELM_PLIST(res,1,evalResult);
       return res;
     }
   assert(0); 
@@ -1092,7 +1094,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError), sizeof(syJmp_buf));
     currLVars = STATE(CurrLVars);
     currStat = STATE(CurrStat);
-    recursionDepth = STATE(RecursionDepth);
+    recursionDepth = GetRecursionDepth();
     tilde = STATE(Tilde);
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
 #ifdef HPCGAP
@@ -1107,7 +1109,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
       STATE(ThrownObject) = 0;
       SET_CURR_LVARS(currLVars);
       STATE(CurrStat) = currStat;
-      STATE(RecursionDepth) = recursionDepth;
+      SetRecursionDepth(recursionDepth);
 #ifdef HPCGAP
       STATE(Tilde) = tilde;
       PopRegionLocks(lockSP);
@@ -1152,7 +1154,7 @@ Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
   STATE(UserHasQuit) = INT_INTOBJ(value);
   if (STATE(UserHasQuit))
-    STATE(RecursionDepth) = 0;
+    SetRecursionDepth(0);
   return 0;
 }
 

@@ -868,10 +868,10 @@ Obj             EvalPermExpr (
 			    c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
-            if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
-                ResizeBag( perm, (c + 1023) / 1024 * 1024 * sizeof(UInt4) );
-                ptr4 = ADDR_PERM4( perm );
-                for ( k = m+1; k <= SIZE_OBJ(perm)/sizeof(UInt4); k++ ) {
+            if (DEG_PERM4(perm) < c) {
+                ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
+                ptr4 = ADDR_PERM4(perm);
+                for (k = m + 1; k <= DEG_PERM4(perm); k++) {
                     ptr4[k-1] = k-1;
                 }
             }
@@ -911,12 +911,12 @@ Obj             EvalPermExpr (
             ptr2[k-1] = ptr4[k-1];
         };
         RetypeBag( perm, T_PERM2 );
-        ResizeBag( perm, m * sizeof(UInt2) );
+        ResizeBag(perm, SIZEBAG_PERM2(m));
     }
 
     /* otherwise just shorten the permutation                              */
     else {
-        ResizeBag( perm, m * sizeof(UInt4) );
+        ResizeBag(perm, SIZEBAG_PERM4(m));
     }
 
     /* return the permutation                                              */
@@ -2006,19 +2006,10 @@ static Int InitKernel (
 }
 
 
-static Int InitLibrary (
-    StructInitInfo *    module )
+static Int InitLibrary(StructInitInfo * module)
 {
     GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
     return 0;
-}
-
-void InitExprState(GAPState * state)
-{
-}
-
-void DestroyExprState(GAPState * state)
-{
 }
 
 /****************************************************************************

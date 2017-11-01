@@ -954,10 +954,6 @@ BIND_GLOBAL("DisplayCacheStats",function()
 
     cache := ShallowCopy(OPERS_CACHE_INFO());
     Append( cache, [
-        WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT,
-        WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS,
-        WITH_IMPS_FLAGS_CACHE_HIT,
-        WITH_IMPS_FLAGS_CACHE_MISS,
         NEW_TYPE_CACHE_HIT,
         NEW_TYPE_CACHE_MISS,
     ] );
@@ -1014,10 +1010,6 @@ end);
 ##
 BIND_GLOBAL("ClearCacheStats",function()
     CLEAR_CACHE_INFO();
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := 0;
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
-    WITH_IMPS_FLAGS_CACHE_HIT := 0;
-    WITH_IMPS_FLAGS_CACHE_MISS := 0;
     NEW_TYPE_CACHE_HIT := 0;
     NEW_TYPE_CACHE_MISS := 0;
 end);

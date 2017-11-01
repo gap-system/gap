@@ -211,11 +211,10 @@ typedef Bag Obj;
 **
 **  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
 **  which must be the same size as a bag identifier.
+**  'LBIPEB' is the log to the base 2 of BIPEB
 **
 */
-enum {
-    BIPEB =  sizeof(UInt) * 8L
-};
+enum { BIPEB = sizeof(UInt) * 8L, LBIPEB = (BIPEB == 64) ? 6L : 5L };
 
 
 /****************************************************************************

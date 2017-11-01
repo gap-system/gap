@@ -29,9 +29,9 @@
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "POS_DATA_TYPE", 3 );
-BIND_GLOBAL( "POS_NUMB_TYPE", 4 );
-BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
+BIND_CONSTANT( "POS_DATA_TYPE", 3 );
+BIND_CONSTANT( "POS_NUMB_TYPE", 4 );
+BIND_CONSTANT( "POS_FIRST_FREE_TYPE", 5 );
 
 
 #############################################################################
@@ -47,11 +47,10 @@ BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
 ##
 if TNUM_OBJ(2^30) = 0 then
     NEW_TYPE_NEXT_ID := -(2^60);
-    NEW_TYPE_ID_LIMIT:= 2^60-1;
+    NEW_TYPE_ID_LIMIT := 2^60-1;
 else
     NEW_TYPE_NEXT_ID := -(2^28);
     NEW_TYPE_ID_LIMIT := 2^28-1;
-#    NEW_TYPE_ID_LIMIT := NEW_TYPE_NEXT_ID + 1000000;
 fi;
 
 
@@ -62,12 +61,12 @@ fi;
 BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
         atomic readwrite FILTER_REGION, CATS_AND_REPS do
-            ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-	    FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-	    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-	    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-            RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-	od;
+        ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
+        FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+        IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
+        INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        od;
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
@@ -114,18 +113,18 @@ BIND_GLOBAL( "NewCategory", function ( arg )
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS do
-        ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
+    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
     od;
     atomic FILTER_REGION do
-	FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
+    FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
 
-	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-	  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
-	else
-	  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
-	fi;
-	INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
+    else
+      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
+    fi;
+    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
     od;
 
     # Return the filter.
@@ -168,37 +167,37 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     local   rep, filt;
     if REREADING then
         atomic readonly CATS_AND_REPS, FILTER_REGION do
-            for filt in CATS_AND_REPS do
-                if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                    Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
-                          Print("Change of Super-rep not handled\n");
-                    return FILTERS[filt];
-                fi;
-            od;
+        for filt in CATS_AND_REPS do
+            if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
+                Print("Change of Super-rep not handled\n");
+                return FILTERS[filt];
+            fi;
+        od;
         od;
     fi;
-    atomic CATS_AND_REPS, FILTER_REGION do
-	if REREADING then
-            for filt in CATS_AND_REPS do
-                if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                    Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
-                          Print("Change of Super-rep not handled\n");
-                    return FILTERS[filt];
-                fi;
-            od;
-	fi;
-	if LEN_LIST(arg) = 4  then
-	    rep := arg[4];
-	elif LEN_LIST(arg) = 5  then
-	    rep := arg[5];
-	else
-	    Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
-	fi;
-        ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-	FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
-	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
+    atomic readwrite CATS_AND_REPS, FILTER_REGION do
+    if REREADING then
+        for filt in CATS_AND_REPS do
+            if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
+                Print("Change of Super-rep not handled\n");
+                return FILTERS[filt];
+            fi;
+        od;
+    fi;
+    if LEN_LIST(arg) = 4  then
+        rep := arg[4];
+    elif LEN_LIST(arg) = 5  then
+        rep := arg[5];
+    else
+        Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
+    fi;
+    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
+    FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
+    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     od;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
@@ -264,13 +263,13 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     # Do *not* create a new representation when the file is reread.
     if REREADING then
         atomic readonly CATS_AND_REPS, readwrite FILTER_REGION do
-            for filt in CATS_AND_REPS do
-                if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                    Print("#W NewRepresentation \"",arg[1],"\" in Reread. ");
-                          Print("Change of Super-rep not handled\n");
-                    return FILTERS[filt];
-                fi;
-            od;
+        for filt in CATS_AND_REPS do
+            if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                Print("#W NewRepresentation \"",arg[1],"\" in Reread. ");
+                Print("Change of Super-rep not handled\n");
+                return FILTERS[filt];
+            fi;
+        od;
         od;
     fi;
 
@@ -286,11 +285,11 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
-        ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-      FILTERS[ FLAG1_FILTER( rep ) ] := rep;
-      IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
+    FILTERS[ FLAG1_FILTER( rep ) ] := rep;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
+    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
     od;
 
     # Return the filter.
@@ -435,7 +434,6 @@ BIND_GLOBAL( "TypeOfTypes", [
     false,
     NEW_TYPE_NEXT_ID ] );
 
-
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
 FamilyOfTypes!.REQ_FLAGS        := FLAGS_FILTER( IsType   );
 FamilyOfTypes!.IMP_FLAGS        := EMPTY_FLAGS;
@@ -508,34 +506,36 @@ BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
 
     # Check whether the desired family category is already defined.
     atomic readonly CATEGORIES_FAMILY do
-        for pair in CATEGORIES_FAMILY do
-            if pair[1] = elms_filter then
-                return pair[2];
-            fi;
-        od;
+    for pair in CATEGORIES_FAMILY do
+      if pair[1] = elms_filter then
+        return pair[2];
+      fi;
+    od;
     od;
     
     atomic readwrite CATEGORIES_FAMILY do
-        for pair in CATEGORIES_FAMILY do
-            if pair[1] = elms_filter then
-                return pair[2];
-            fi;
-        od;
-    
-        # Find the super category among the known family categories.
-        super := IsFamily;
-        flags := WITH_IMPS_FLAGS( elms_filter );
-        for pair in CATEGORIES_FAMILY do
-            if IS_SUBSET_FLAGS( flags, pair[1] ) then
-                super := super and pair[2];
-            fi;
-        od;
-        
-        # Construct the family category.
-        fam_filter:= NewCategory( name, super );
-        ADD_LIST( CATEGORIES_FAMILY, 
-                MIGRATE_RAW([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
-        return fam_filter;
+    # Check again whether category is already defined (necessary
+    # since we released and re-acquired locks)
+    for pair in CATEGORIES_FAMILY do
+      if pair[1] = elms_filter then
+        return pair[2];
+      fi;
+    od;
+
+    # Find the super category among the known family categories.
+    super := IsFamily;
+    flags := WITH_IMPS_FLAGS( elms_filter );
+    for pair in CATEGORIES_FAMILY do
+      if IS_SUBSET_FLAGS( flags, pair[1] ) then
+        super := super and pair[2];
+      fi;
+    od;
+
+    # Construct the family category.
+    fam_filter:= NewCategory( name, super );
+    ADD_LIST( CATEGORIES_FAMILY, 
+            MIGRATE_RAW([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
+    return fam_filter;
     od;
 end );
 

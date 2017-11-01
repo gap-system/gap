@@ -272,7 +272,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
             ignore,
             j,
             k,
-            replace;
+            replace,
+            pos,
+            imm;
 
     # Check whether <oper> really is an operation.
     if not IS_OPERATION(oper)  then
@@ -382,19 +384,19 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       fi;
       
       # push the other functions back
+      imm:=IMMEDIATES[j];
       if not REREADING or not replace then
-          IMMEDIATES[j]{[i+8..7+LEN_LIST(IMMEDIATES[j])]}
-            := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
+          imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
       fi;
 
       # install the new method
-      IMMEDIATES[j][i+1] := oper;
-      IMMEDIATES[j][i+2] := SETTER_FILTER( oper );
-      IMMEDIATES[j][i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
-      IMMEDIATES[j][i+4] := FLAGS_FILTER( filter );
-      IMMEDIATES[j][i+5] := rank;
-      IMMEDIATES[j][i+6] := LEN_LIST( IMMEDIATE_METHODS );
-      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(info);
+      imm[i+1] := oper;
+      imm[i+2] := SETTER_FILTER( oper );
+      imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
+      imm[i+4] := FLAGS_FILTER( filter );
+      imm[i+5] := rank;
+      imm[i+6] := LEN_LIST( IMMEDIATE_METHODS );
+      imm[i+7] := IMMUTABLE_COPY_OBJ(info);
 
     od;
 
@@ -785,7 +787,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
           # `gvar' is an attribute.
           Error( "operation `", name,
-                 "' was created as an attribute, use`DeclareAttribute'" );
+                 "' was created as an attribute, use `DeclareAttribute'" );
 
         elif    INFO_FILTERS[ pos ] in FNUM_TPRS
              or INFO_FILTERS[ pos ] in FNUM_ATTS then
@@ -798,7 +800,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
           # `gvar' is a property.
           Error( "operation `", name,
-                 "' was created as a property, use`DeclareProperty'" );
+                 "' was created as a property, use `DeclareProperty'" );
 
         fi;
 
