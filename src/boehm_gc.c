@@ -221,25 +221,29 @@ static void TLAllocatorInit(void)
 **/
 void * AllocateBagMemory(int gc_type, int type, UInt size)
 {
+    assert(gc_type >= -1);
     void * result = NULL;
     if (size <= TL_GC_SIZE) {
         UInt alloc_seg, alloc_size;
         alloc_size = (size + GRANULE_SIZE - 1) / GRANULE_SIZE;
         alloc_seg = TLAllocatorSeg[alloc_size];
         alloc_size = TLAllocatorSize[alloc_seg];
-        if (!STATE(FreeList)[gc_type + 1])
-            STATE(FreeList)
-            [gc_type + 1] = GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
-        if (!(result = STATE(FreeList)[gc_type + 1][alloc_seg])) {
-            if (gc_type < 0)
-                STATE(FreeList)[0][alloc_seg] = GC_malloc_many(alloc_size);
-            else
-                GC_generic_malloc_many(
-                    alloc_size, GCMKind[gc_type],
-                    &STATE(FreeList)[gc_type + 1][alloc_seg]);
-            result = STATE(FreeList)[gc_type + 1][alloc_seg];
+        void *** freeList = STATE(FreeList);
+        if (!freeList[gc_type + 1]) {
+            freeList[gc_type + 1] =
+                GC_malloc(sizeof(void *) * TLAllocatorMaxSeg);
         }
-        STATE(FreeList)[gc_type + 1][alloc_seg] = *(void **)result;
+        void ** freeListForType = freeList[gc_type + 1];
+        result = freeListForType[alloc_seg];
+        if (!result) {
+            if (gc_type < 0)
+                freeListForType[alloc_seg] = GC_malloc_many(alloc_size);
+            else
+                GC_generic_malloc_many(alloc_size, GCMKind[gc_type],
+                                       &freeListForType[alloc_seg]);
+            result = freeListForType[alloc_seg];
+        }
+        freeListForType[alloc_seg] = *(void **)result;
         memset(result, 0, alloc_size);
     }
     else {
