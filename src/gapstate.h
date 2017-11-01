@@ -183,9 +183,15 @@ typedef struct GAPState {
 #else
 
 extern GAPState MainGAPState;
-#define STATE(x) (MainGAPState.x)
+
+static inline GAPState * ActiveGAPState(void)
+{
+    return &MainGAPState;
+}
 
 #endif
+
+#define STATE(x) (ActiveGAPState()->x)
 
 /* Access a module's registered state */
 #define MODULE_STATE(module, var) \

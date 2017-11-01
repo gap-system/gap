@@ -56,6 +56,7 @@ void InstallBacktraceHandlers(void) {
 // gdb or lldb.
 typedef void (* VoidFunc)(void);
 VoidFunc debug_func_pointers[] = {
+   (VoidFunc)ActiveGAPState,
    (VoidFunc)ADDR_OBJ,
    (VoidFunc)ADDR_PPERM2,
    (VoidFunc)ADDR_PPERM4,
