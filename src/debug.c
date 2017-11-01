@@ -115,6 +115,9 @@ VoidFunc debug_func_pointers[] = {
    (VoidFunc)FibHash,
    (VoidFunc)FillInVersion ,
    (VoidFunc)FUNC_HEADER,
+#ifdef HPCGAP
+   (VoidFunc)GetTLS,
+#endif
    (VoidFunc)GET_ELM_PREC,
    (VoidFunc)GET_ELM_RANGE,
    (VoidFunc)GET_ELM_STRING,

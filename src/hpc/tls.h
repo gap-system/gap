@@ -55,6 +55,11 @@ extern __thread ThreadLocalStorage TLSInstance;
 
 #define realTLS (&TLSInstance)
 
+static inline ThreadLocalStorage *GetTLS(void)
+{
+    return &TLSInstance;
+}
+
 #else
 
 #if defined(VERBOSE_GUARDS)
