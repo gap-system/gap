@@ -428,6 +428,16 @@ ffdata: ffgen
 
 
 ########################################################################
+# The "tags" target regenerates the tags file using Exuberant Ctags
+########################################################################
+
+tags:
+	cd $(abs_top_srcdir) && ctags --recurse lib hpcgap/lib src
+
+.PHONY: tags
+
+
+########################################################################
 # Rules for 'make clean'
 ########################################################################
 distclean: clean
@@ -437,6 +447,7 @@ distclean: clean
 	rm -rf gen
 	rm -rf dev/log
 	rm -rf coverage
+	rm -rf tags
 	rmdir bin cnf dev doc src 2>/dev/null || : # remove dirs if they are now empty
 
 clean:
