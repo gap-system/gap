@@ -928,9 +928,7 @@ BIND_GLOBAL( "RedispatchOnCondition", function(arg)
 
     # force value 0 (unless offset).
     for i in reqs do
-      # when completing, `RankFilter' is redefined. Thus we must use
-      # SIZE_FLAGS.
-      val:=val-SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(i)));
+      val:=val-RankFilter(i);
     od;
 
     InstallOtherMethod( oper,

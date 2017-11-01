@@ -3096,7 +3096,7 @@ InstallMethod(LowIndexSubgroups, "FpFroups, using LowIndexSubgroupsFpGroup",
   true,
   [IsSubgroupFpGroup,IsPosInt],
   # rank higher than method for finit groups using maximal subgroups
-  SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsGroup and IsFinite))),
+  RankFilter(IsGroup and IsFinite),
   LowIndexSubgroupsFpGroup );
 
 InstallOtherMethod(LowIndexSubgroupsFpGroup,
