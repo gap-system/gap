@@ -487,7 +487,8 @@ FF              FiniteField (
     UInt                d )
 {
     FF                  ff;             /* finite field, result            */
-    Obj                 bag1, bag2;     /* successor table bags            */
+    Obj                 tmp;            /* temporary bag                   */
+    Obj                 succBag;        /* successor table bag             */
     FFV *               succ;           /* successor table                 */
     FFV *               indx;           /* index table                     */
     UInt                q;              /* size of finite field            */
@@ -544,13 +545,15 @@ FF              FiniteField (
       return ff;
 #endif
 
-    /* allocate a bag for the finite field and one for a temporary         */
-    bag1  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
-    SET_TYPE_DATOBJ(bag1, TYPE_KERNEL_OBJECT );
-    bag2  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
-    SET_TYPE_DATOBJ(bag2, TYPE_KERNEL_OBJECT );
-    indx = (FFV*)(1+ADDR_OBJ( bag1 ));
-    succ = (FFV*)(1+ADDR_OBJ( bag2 ));
+    /* allocate a bag for the successor table and one for a temporary         */
+    tmp  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
+    SET_TYPE_DATOBJ(tmp, TYPE_KERNEL_OBJECT );
+
+    succBag = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
+    SET_TYPE_DATOBJ(succBag, TYPE_KERNEL_OBJECT );
+
+    indx = (FFV*)(1+ADDR_OBJ( tmp ));
+    succ = (FFV*)(1+ADDR_OBJ( succBag ));
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
     /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
@@ -600,23 +603,23 @@ FF              FiniteField (
 
     /* enter the finite field in the tables                                */
 #ifdef HPCGAP
-    MakeBagReadOnly(bag2);
-    ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, bag2 );
+    MakeBagReadOnly(succBag);
+    ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, succBag );
     CHANGED_BAG(SuccFF);
-    bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
-    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF, ff, bag1 );
+    tmp = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF, ff, tmp );
     CHANGED_BAG(TypeFF);
-    bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
-    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF0, ff, bag1 );
+    tmp = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
+    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF0, ff, tmp );
     CHANGED_BAG(TypeFF0);
 #else
-    ASS_LIST( SuccFF, ff, bag2 );
+    ASS_LIST( SuccFF, ff, succBag );
     CHANGED_BAG(SuccFF);
-    bag1 = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
-    ASS_LIST( TypeFF, ff, bag1 );
+    tmp = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF, ff, tmp );
     CHANGED_BAG(TypeFF);
-    bag1 = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
-    ASS_LIST( TypeFF0, ff, bag1 );
+    tmp = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
+    ASS_LIST( TypeFF0, ff, tmp );
     CHANGED_BAG(TypeFF0);
 #endif
 
