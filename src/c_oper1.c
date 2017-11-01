@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "46861067"
+#define FILE_CRC  "130680522"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -52,8 +52,6 @@ static GVar G_IS__SUBSET__FLAGS;
 static Obj  GF_IS__SUBSET__FLAGS;
 static GVar G_TRUES__FLAGS;
 static Obj  GF_TRUES__FLAGS;
-static GVar G_SIZE__FLAGS;
-static Obj  GF_SIZE__FLAGS;
 static GVar G_LEN__FLAGS;
 static Obj  GF_LEN__FLAGS;
 static GVar G_ELM__FLAGS;
@@ -3457,10 +3455,6 @@ static Obj  HdlrFunc17 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Obj t_8 = 0;
- Obj t_9 = 0;
- Obj t_10 = 0;
- Obj t_11 = 0;
- Obj t_12 = 0;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3572,17 +3566,11 @@ static Obj  HdlrFunc17 (
   }
   ASS_LVAR( 5, t_2 );
   
-  /* val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) ); */
+  /* val := val - RankFilter( i ); */
   CHECK_BOUND( l_val, "val" )
-  t_7 = GF_SIZE__FLAGS;
-  t_9 = GF_WITH__HIDDEN__IMPS__FLAGS;
-  t_11 = GF_FLAGS__FILTER;
-  t_12 = OBJ_LVAR( 5 );
-  CHECK_BOUND( t_12, "i" )
-  t_10 = CALL_1ARGS( t_11, t_12 );
-  CHECK_FUNC_RESULT( t_10 )
-  t_8 = CALL_1ARGS( t_9, t_10 );
-  CHECK_FUNC_RESULT( t_8 )
+  t_7 = GF_RankFilter;
+  t_8 = OBJ_LVAR( 5 );
+  CHECK_BOUND( t_8, "i" )
   t_6 = CALL_1ARGS( t_7, t_8 );
   CHECK_FUNC_RESULT( t_6 )
   C_DIFF_FIA( t_5, l_val, t_6 )
@@ -3613,8 +3601,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_5, 940);
- SET_ENDLINE_BODY(t_5, 956);
+ SET_STARTLINE_BODY(t_5, 938);
+ SET_ENDLINE_BODY(t_5, 954);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4204,7 +4192,7 @@ static Obj  HdlrFunc1 (
           Error( "Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)" );
       fi;
       for i in reqs do
-          val := val - SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) );
+          val := val - RankFilter( i );
       od;
       InstallOtherMethod( oper, info, fampred, reqs, val, function ( arg... )
             re := false;
@@ -4226,7 +4214,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 908);
- SET_ENDLINE_BODY(t_4, 957);
+ SET_ENDLINE_BODY(t_4, 955);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4288,7 +4276,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
- G_SIZE__FLAGS = GVarName( "SIZE_FLAGS" );
  G_LEN__FLAGS = GVarName( "LEN_FLAGS" );
  G_ELM__FLAGS = GVarName( "ELM_FLAGS" );
  G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
@@ -4397,7 +4384,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
  InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
- InitFopyGVar( "SIZE_FLAGS", &GF_SIZE__FLAGS );
  InitFopyGVar( "LEN_FLAGS", &GF_LEN__FLAGS );
  InitFopyGVar( "ELM_FLAGS", &GF_ELM__FLAGS );
  InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
@@ -4524,7 +4510,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 46861067,
+ /* crc         = */ 130680522,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

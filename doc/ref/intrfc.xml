@@ -217,8 +217,8 @@ So we have &GAP; compute the extra rank of this:
 InstallMethod(Exponent,"test abelianity", [IsGroup],
   # enforced absolute rank of `IsGroup and IsAbelian' installation: Subtract
   # the rank of `IsGroup' and add the rank of `IsGroup and IsAbelian':
-  SIZE_FLAGS(FLAGS_FILTER(IsGroup and IsAbelian))
-  -SIZE_FLAGS(FLAGS_FILTER(IsGroup)),
+  RankFilter(IsGroup and IsAbelian)
+  -RankFilter(IsGroup),
 function(G)
 ]]></Log>
 the slightly complicated construction of addition and subtraction is

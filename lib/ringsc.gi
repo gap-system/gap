@@ -878,7 +878,7 @@ end);
 
 InstallOtherMethod(One,"for finite SC Rings",
   [IsRing],0,
-  #-SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsRing))),
+  #-RankFilter(IsRing),
 function(R)
   if not (IsSubringSCRing(R) and IsFinite(R)) then
     TryNextMethod();
@@ -906,7 +906,7 @@ end);
 
 InstallOtherMethod(OneOp,"for finite SC Rings family",
   [IsSCRingObjFamily],0,
-  #-SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsRing))),
+  #-RankFilter(IsRing),
 function(fam)
 local R;
   R:=fam!.fullSCRing;
