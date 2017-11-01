@@ -607,21 +607,47 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
     fi;
 
     blockacttest:=function()
-    local a,b,g,p;
-      D:=List(D,Immutable); # to store sorted
-      if not ForAll( D, IsList and IsSSortedList ) then
-        return false;
-      fi;
-      for b in D do
-	for g in GeneratorsOfGroup(G) do
-	  a:=b[1]^g;
-	  p:=PositionProperty(D,x->a in x);
-	  if OnSets(b,g)<>D[p] then
-	    return false;
-	  fi;
-	od;
-      od;
-      return true;
+        #
+        # Test if D is a block system for G
+        #
+        local  x, l1, i, b, y, a, p, g;
+        D:=List(D,Immutable); 
+        if Length(D) = 0 then
+            return false;
+        fi;
+        #
+        # x will map from points to blocks
+        #
+        x := [];
+        l1 := Length(D[1]);     
+        if l1 = 0 then
+            return false;
+        fi;        
+        for i in [1..Length(D)] do
+            b := D[i];
+            if not IsSSortedList(b) or Length(b) <> l1 then
+                # putative blocks not sets or not all the same size
+                return false;
+            fi;
+            for y in b do
+                if not IsPosInt(y) or IsBound(x[y]) then
+                    # bad block entry or blocks overlap
+                    return false;
+                fi;
+                x[y] := i;
+            od;
+        od;
+        for b in D do
+            for g in GeneratorsOfGroup(G) do
+                a:=b[1]^g;
+                p:=x[a];          
+                if OnSets(b,g)<>D[p] then
+                    # blocks not preserved by group action
+                    return false;
+                fi;
+            od;
+        od;
+        return true;
     end;
 
     hom := rec(  );
@@ -682,9 +708,6 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
          and IsPermGroup( G )
          and IsList( D )
          and act = OnSets
-	 and Length(D)>0 and Length(D[1])>0 and IsInt(D[1][1])
-	 and Length(Set(List(D,Length)))=1 # all same length
-	 and Length(Set(Concatenation(D)))=Sum(List(D,Length)) # disjoint
 	 # preserved test
 	 and blockacttest()
 	 then
