@@ -77,30 +77,6 @@
 
 /****************************************************************************
 **
-*F  NEW_PERM2(<deg>)  . . . . . . . . . . . .  make a new (small) permutation
-*F  DEG_PERM2(<perm>) . . . . . . . . . . . . . degree of (small) permutation
-*F  ADDR_PERM2(<perm>)  . . . . . . . absolute address of (small) permutation
-*F  NEW_PERM4(<deg>)  . . . . . . . . . . . .  make a new (large) permutation
-*F  DEG_PERM4(<perm>) . . . . . . . . . . . . . degree of (large) permutation
-*F  ADDR_PERM4(<perm>)  . . . . . . . absolute address of (large) permutation
-**
-**  'NEW_PERM2', 'DEG_PERM2',  'ADDR_PERM2',   'NEW_PERM4', 'DEG_PERM4',  and
-**  'ADDR_PERM4'  are defined in  the declaration  part   of this package  as
-**  follows
-**
-#define NEW_PERM2(deg)          NewBag( T_PERM2, (deg) * sizeof(UInt2))
-#define DEG_PERM2(perm)         (SIZE_OBJ(perm) / sizeof(UInt2))
-#define ADDR_PERM2(perm)        ((UInt2*)ADDR_OBJ(perm))
-#define NEW_PERM4(deg)          NewBag( T_PERM4, (deg) * sizeof(UInt4))
-#define DEG_PERM4(perm)         (SIZE_OBJ(perm) / sizeof(UInt4))
-#define ADDR_PERM4(perm)        ((UInt4*)ADDR_OBJ(perm))
-*/
-
-
-
-
-/****************************************************************************
-**
 *F  IMAGE(<i>,<pt>,<dg>)  . . . . . .  image of <i> under <pt> of degree <dg>
 **
 **  'IMAGE'  returns the  image of the   point <i> under  the permutation  of
