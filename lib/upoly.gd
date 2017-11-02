@@ -116,25 +116,6 @@ DeclareOperation("FactorsSquarefree",[IsPolynomialRing,
 ##
 DeclareGlobalFunction("RootsOfUPol");
 
-#############################################################################
-##
-#V  CYCLOTOMICPOLYNOMIALS . . . . . . . . . .  list of cyclotomic polynomials
-##
-##  <ManSection>
-##  <Var Name="CYCLOTOMICPOLYNOMIALS"/>
-##
-##  <Description>
-##  global list encoding cyclotomic polynomials by their coefficients lists
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable( "CYCLOTOMICPOLYNOMIALS",
-    "list, at position n the coefficient list of the n-th cycl. pol." );
-InstallFlushableValue( CYCLOTOMICPOLYNOMIALS, [] );
-
-if IsBound(HPCGAP) then
-    ShareSpecialObj(CYCLOTOMICPOLYNOMIALS);
-fi;
 
 #############################################################################
 ##
