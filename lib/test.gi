@@ -697,7 +697,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     totalGcTime := totalGcTime + gctime;    
     
     if opts.showProgress then
-        Print( String( time, 8 ), " msec (",String(gctime),"ms GC) and ", 
+        Print( String( time, 8 ), " ms (",String(gctime)," ms GC) and ", 
                StringOfMemoryAmount( mem ), 
                " allocated for ", files[i].shortName, "\n" );
     fi;
@@ -707,7 +707,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   Print("-----------------------------------\n");
   Print( "total",
-         String( totalTime, 10 ), " msec (",String( totalGcTime ),"ms GC) and ", 
+         String( totalTime, 10 ), " ms (",String( totalGcTime )," ms GC) and ", 
          StringOfMemoryAmount( totalMem )," allocated\n\n" );
 
   if not opts.suppressStatusMessage then
