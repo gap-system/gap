@@ -1091,7 +1091,7 @@ Obj NewFunction (
     Obj                 nams,
     ObjFunc             hdlr )
 {
-    return NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, hdlr );
+    return NewFunctionT( T_FUNCTION, sizeof(FunctionHeader), name, narg, nams, hdlr );
 }
     
 
@@ -1108,7 +1108,7 @@ Obj NewFunctionC (
     const Char *        nams,
     ObjFunc             hdlr )
 {
-    return NewFunctionCT( T_FUNCTION, SIZE_FUNC, name, narg, nams, hdlr );
+    return NewFunctionCT( T_FUNCTION, sizeof(FunctionHeader), name, narg, nams, hdlr );
 }
     
 
@@ -1931,7 +1931,7 @@ void SaveFunction ( Obj func )
   SaveSubObj(header->body);
   SaveSubObj(header->envi);
   SaveSubObj(header->fexs);
-  if (SIZE_OBJ(func) != SIZE_FUNC)
+  if (SIZE_OBJ(func) != sizeof(FunctionHeader))
     SaveOperationExtras( func );
 }
 
@@ -1953,7 +1953,7 @@ void LoadFunction ( Obj func )
   header->body = LoadSubObj();
   header->envi = LoadSubObj();
   header->fexs = LoadSubObj();
-  if (SIZE_OBJ(func) != SIZE_FUNC)
+  if (SIZE_OBJ(func) != sizeof(FunctionHeader))
     LoadOperationExtras( func );
 }
 
