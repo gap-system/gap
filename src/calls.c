@@ -82,9 +82,6 @@ Char * NAMI_FUNC(Obj func, Int i)
 }
 
 
-Obj FuncIsKernelFunction(Obj self, Obj func);
-
-
 /****************************************************************************
 **
 *F * * * * wrapper for functions with variable number of arguments  * * * * *
@@ -1363,7 +1360,7 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if (FuncIsKernelFunction(0L, func) == True) {
+        if (IsKernelFunction(func)) {
             UInt outputtedfunc = 0;
             if ( BODY_FUNC(func) ) {
                 Obj body = BODY_FUNC(func);
@@ -1879,21 +1876,26 @@ Obj FuncUNPROFILE_FUNC(
     return (Obj)0;
 }
 
+
 /****************************************************************************
 *
-*F  FuncIsKernelFunction( <self>, <func> ) . . . . . . . .  print a function
+*F  FuncIsKernelFunction( <self>, <func> )
 **
 **  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
-**  <func> is a function, and is installed as a kernel function, and False
-**  otherwise.
+**  <func> is a kernel function, and False otherwise.
 */
-Obj FuncIsKernelFunction(Obj self, Obj func) {
-  if (!IS_FUNC(func))
-    return Fail;
-  else 
-    return ((BODY_FUNC(func) == 0) ||
-            (SIZE_OBJ(BODY_FUNC(func))
-             == sizeof(BodyHeader))) ? True : False;
+Obj FuncIsKernelFunction(Obj self, Obj func)
+{
+    if (!IS_FUNC(func))
+        return Fail;
+    return IsKernelFunction(func) ? True : False;
+}
+
+Int IsKernelFunction(Obj func)
+{
+    GAP_ASSERT(IS_FUNC(func));
+    return (BODY_FUNC(func) == 0) ||
+           (SIZE_OBJ(BODY_FUNC(func)) == sizeof(BodyHeader));
 }
 
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
