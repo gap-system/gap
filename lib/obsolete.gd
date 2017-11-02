@@ -207,6 +207,25 @@ BindGlobal( "Revision", rec() );
 
 #############################################################################
 ##
+#V  TRANSDEGREES - used by CTblLib (11/2017)
+##
+##  This variable was used by the GAP Transitive Groups Library before it
+##  became a separate TransGrp package. It denoted the maximal degree of
+##  transitive permutation groups provided by that library.
+##
+##  In the TransGrp package, this information is provided by the boolean
+##  list TRANSAVAILABLE, which indicates availability for each possible
+##  degree (this is necessary because the data for some degrees may have
+##  to be downloaded separately).
+##
+##  At the time of writing this comment, the TransGrp package contained
+##  representatives for all transitive permutation groups of degree at
+##  most 47, with degree 32 needing to be downloaded separately.
+##
+BindGlobal( "TRANSDEGREES", 30 );
+
+#############################################################################
+##
 #A  NormedVectors( <V> )
 ##
 ##  Moved to obsoletes in May 2003. 
