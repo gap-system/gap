@@ -1030,22 +1030,29 @@ Obj FuncUpEnv (
 
 Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
-    Obj  currLVars = STATE(CurrLVars);
-    Expr call;
-    Int  line;
-    Obj  filename;
-    Obj  retlist;
-    retlist = Fail;
     if (context == STATE(BottomLVars))
         return Fail;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        return Fail;
+    }
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+        return Fail;
+    }
+
+    Obj currLVars = STATE(CurrLVars);
     SWITCH_TO_OLD_LVARS(context);
-    call = BRK_CALL_TO();
-    if ((/*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
-         TNUM_STAT(call) <= LAST_STAT_TNUM) ||
-        (FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
-         TNUM_EXPR(call) <= LAST_EXPR_TNUM)) {
-        line = LINE_STAT(call);
-        filename = FILENAME_STAT(call);
+    GAP_ASSERT(call == BRK_CALL_TO());
+
+    Obj retlist = Fail;
+    Int type = TNUM_STAT(call);
+    if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
+        (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
+        Int line = LINE_STAT(call);
+        Obj filename = FILENAME_STAT(call);
         retlist = NEW_PLIST(T_PLIST, 2);
         SET_LEN_PLIST(retlist, 2);
         SET_ELM_PLIST(retlist, 1, filename);
@@ -1058,29 +1065,37 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 
 Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
 {
-    Obj  currLVars = STATE(CurrLVars);
-    Expr call;
     if (context == STATE(BottomLVars))
-        return (Obj)0;
-    SWITCH_TO_OLD_LVARS(context);
-    call = BRK_CALL_TO();
-    if (call == 0) {
-        Pr("<compiled or corrupted statement> ", 0L, 0L);
+        return 0;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        Pr("<compiled statement> ", 0L, 0L);
     }
-    else if (/*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
-             TNUM_STAT(call) <= LAST_STAT_TNUM) {
-        PrintStat(call);
-        Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
-           LINE_STAT(call));
+    else if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+        Pr("<corrupted statement> ", 0L, 0L);
     }
-    else if (FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
-             TNUM_EXPR(call) <= LAST_EXPR_TNUM) {
-        PrintExpr(call);
-        Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
-           LINE_STAT(call));
+    else {
+        Obj currLVars = STATE(CurrLVars);
+        SWITCH_TO_OLD_LVARS(context);
+        GAP_ASSERT(call == BRK_CALL_TO());
+
+        Int type = TNUM_STAT(call);
+        if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+            PrintStat(call);
+            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
+               LINE_STAT(call));
+        }
+        else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+            PrintExpr(call);
+            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
+               LINE_STAT(call));
+        }
+        SWITCH_TO_OLD_LVARS(currLVars);
     }
-    SWITCH_TO_OLD_LVARS(currLVars);
-    return (Obj)0;
+    return 0;
 }    
 
 /****************************************************************************
