@@ -35,6 +35,9 @@ function(func, defaults...)
 
     return function(val)
         local v, boundcpy;
+        if not IsPosInt(val) then
+            Error("<val> must be a positive integer");
+        fi;
         # Make a copy of the reference to boundvals, in case the cache
         # is flushed, which will causes boundvals to be bound to a new list.
         boundcpy := boundvals;
