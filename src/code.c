@@ -54,6 +54,9 @@
 #include <src/vars.h>                   /* variables */
 #include <src/hookintrprtr.h>
 
+
+GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
+
 /****************************************************************************
 **
 *V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
