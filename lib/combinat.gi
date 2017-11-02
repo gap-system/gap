@@ -2713,42 +2713,41 @@ end);
 ##
 #F  Bernoulli( <n> )  . . . . . . . . . . . . value of the Bernoulli sequence
 ##
-BindGlobal( "Bernoulli2",
-    [-1/2,1/6,0,-1/30,0,1/42,0,-1/30,0,5/66,0,-691/2730,0,7/6] );
-
-InstallGlobalFunction(Bernoulli,function ( n )
-    local   brn, bin, i, j;
-    if   n < 0  then
-        Error("Bernoulli: <n> must be nonnegative");
-    elif n = 0  then
-        brn := 1;
-    elif n = 1  then
-        brn := -1/2;
-    elif n mod 2 = 1  then
-        brn := 0;
-    elif n <= Length(Bernoulli2)  then
-        brn := Bernoulli2[n];
-    else
-        for i  in [Length(Bernoulli2)+1..n]  do
-            if i mod 2 = 1  then
-                Bernoulli2[i] := 0;
-            else
-                bin := 1;
-                brn := 1;
-                for j  in [1..i-1]  do
-                    bin := (i+2-j)/j * bin;
-                    brn := brn + bin * Bernoulli2[j];
-                od;
-                Bernoulli2[i] := - brn / (i+1);
+InstallGlobalFunction(Bernoulli,
+    MemoizePosIntFunction(
+    function ( n )
+        local   brn, bin, j;
+        if   n < 0  then
+            Error("Bernoulli: <n> must be nonnegative");
+        elif n = 0  then
+            brn := 1;
+        elif n = 1  then
+            brn := -1/2;
+        elif n mod 2 = 1  then
+            brn := 0;
+        else
+            bin := 1;
+            brn := 1;
+            for j  in [1..n-1]  do
+                bin := (n+2-j)/j * bin;
+                brn := brn + bin * Bernoulli(j);
+            od;
+            brn := - brn / (n+1);
+        fi;
+        return brn;
+    end,
+    rec(errorHandler :=
+        function ( n )
+            if n <> 0 then
+                Error("Bernoulli: <n> must be a nonnegative integer");
             fi;
-        od;
-        brn := Bernoulli2[n];
-    fi;
-    return brn;
-end);
+            return 1;
+        end
+    )
+));
+
 
 #############################################################################
 ##
 #E  combinat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
