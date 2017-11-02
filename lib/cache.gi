@@ -30,6 +30,7 @@ function(func, defaults...)
     InstallMethod(FlushCaches, [],
         function()
             boundvals := MakeWriteOnceAtomic(AtomicList(original));
+            TryNextMethod();
         end);
 
     return function(val)
