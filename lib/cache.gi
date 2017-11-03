@@ -13,30 +13,45 @@
 ##
 
 InstallGlobalFunction(MemoizePosIntFunction,
-function(func, defaults...)
-    local boundvals, original, uniqueobj;
+function(func, extra...)
+    local boundvals, original, uniqueobj, options, r;
 
     # This is an object which cannot exist anywhere else
     uniqueobj := "";
 
-    if LEN_LIST(defaults) = 0 then
-        original := AtomicList([]);
-    else
-        original := AtomicList(defaults[1]);
+    options := rec(
+        defaults := [],
+        flush := true,
+        errorHandler := function(x)
+            ErrorNoReturn("<val> must be a positive integer");
+        end);
+
+    if LEN_LIST(extra) > 0 then
+        for r in REC_NAMES(extra[1]) do
+            if IsBound(options.(r)) then
+                options.(r) := extra[1].(r);
+            else
+                ErrorNoReturn("Invalid option: ", r);
+            fi;
+        od;
     fi;
 
+    original := AtomicList(options.defaults);
+    
     boundvals := MakeWriteOnceAtomic(AtomicList(original));
 
-    InstallMethod(FlushCaches, [],
-        function()
-            boundvals := MakeWriteOnceAtomic(AtomicList(original));
-            TryNextMethod();
-        end);
+    if options.flush then
+        InstallMethod(FlushCaches, [],
+            function()
+                boundvals := MakeWriteOnceAtomic(AtomicList(original));
+                TryNextMethod();
+            end);
+    fi;
 
     return function(val)
         local v, boundcpy;
         if not IsPosInt(val) then
-            Error("<val> must be a positive integer");
+            return options.errorHandler(val);
         fi;
         # Make a copy of the reference to boundvals, in case the cache
         # is flushed, which will causes boundvals to be bound to a new list.

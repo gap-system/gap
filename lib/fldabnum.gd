@@ -314,7 +314,7 @@ BindGlobal( "CYCLOTOMIC_FIELDS",
             return AbelianNumberFieldByReducedGaloisStabilizerInfo( Rationals,
                    xtension, [ 1 ] );
         end,
-    [ Rationals, Rationals,, GaussianRationals ] )
+    rec( defaults := [ Rationals, Rationals,, GaussianRationals ] ) )
 );
 
 #############################################################################

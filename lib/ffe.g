@@ -41,7 +41,7 @@ BIND_GLOBAL( "TYPE_FFE", MemoizePosIntFunction(
         SetIsUFDFamily( fam, true );
         SetCharacteristic( fam, p );
         return NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
-    end ));
+    end, rec(flush := false) ));
 
 
 #############################################################################
@@ -57,7 +57,7 @@ BIND_GLOBAL( "TYPE_FFE0", MemoizePosIntFunction(
         fam:= FamilyType(TYPE_FFE(p));
         return NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
                             and HasDegreeFFE );
-    end ));
+    end, rec(flush := false) ));
 
 
 #############################################################################
