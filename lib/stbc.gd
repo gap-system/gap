@@ -171,7 +171,7 @@
 ##
 DeclareGlobalFunction( "StabChain" );
 DeclareOperation( "StabChainOp", [ IsGroup, IsRecord ] );
-DeclareAttribute( "StabChainMutable", IsObject, "mutable" );
+DeclareThreadLocalAttribute( "StabChainMutable", IsObject, "mutable" );
 DeclareAttribute( "StabChainImmutable", IsObject );
 
 
@@ -192,7 +192,7 @@ DeclareAttribute( "StabChainImmutable", IsObject );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "StabChainOptions", IsPermGroup, "mutable" );
+DeclareThreadLocalAttribute( "StabChainOptions", IsPermGroup, "mutable" );
 
 
 #############################################################################

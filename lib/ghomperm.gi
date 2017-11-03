@@ -639,9 +639,12 @@ end;
 ##
 #M  StabChainMutable( <hom> ) . . . . . . . . . . . . . . for perm group homs
 ##
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. HPCGAP_TLStabChainMutable
+##  is equal to StabChainMutable in non-HPC GAP.
+##
 # new 
-InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
-        [ IsPermGroupGeneralMappingByImages ], 0,
+InstallOtherMethod( HPCGAP_TLStabChainMutable, "perm mapping by images",
+        true, [ IsPermGroupGeneralMappingByImages ], 0,
     function( hom )
     local   S,
             rnd,        # list of random elements of '<hom>.source'
@@ -1360,7 +1363,10 @@ end );
 ##
 #M  StabChainMutable( <hom> ) . . . . . . . . . . for perm to perm group homs
 ##
-InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. HPCGAP_TLStabChainMutable
+##  is equal to StabChainMutable in non-HPC GAP.
+##
+InstallMethod( HPCGAP_TLStabChainMutable, "perm to perm mapping by images",true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
         StabChainPermGroupToPermGroupGeneralMappingByImages );
@@ -1420,11 +1426,10 @@ end );
 ##
 #M  ImagesSet( <hom>, <H> ) . . . . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( ImagesSet,"constituent homomorphism", CollFamSourceEqFamElms,
-        # this method should *not* be applied if the group to be mapped has
-        # no stabilizer chain (for example because it is very big).
-        [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
-function( hom, H )
+
+# this method should *not* be applied if the group to be mapped has
+# no stabilizer chain (for example because it is very big).
+_ImagesSet_HasStabChainMutable := function( hom, H )
 local   D,  I,G;
   
   D := Enumerator( UnderlyingExternalSet( hom ) );
@@ -1442,7 +1447,28 @@ local   D,  I,G;
     SetStabChainMutable(G,I);
     return G;
   fi;
-end );
+end;
+
+if IsBound(HPCGAP) then
+# In HPC-GAP we can't filter on HasStabChainMutable because it is a
+# thread-local attribute and therefore not a filter.
+    InstallMethod( ImagesSet,"constituent homomorphism",
+        CollFamSourceEqFamElms, [ IsConstituentHomomorphism, IsPermGroup], 
+        # Adjust rank for missing HasStabChainMutable
+        1,
+        function( hom, H )
+            if HasStabChainMutable(H) then
+                return _ImagesSet_HasStabChainMutable( hom, H );
+            else
+                TryNextMethod();
+            fi;
+        end);
+else
+    InstallMethod( ImagesSet,"constituent homomorphism",
+        CollFamSourceEqFamElms,
+        [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
+        _ImagesSet_HasStabChainMutable);
+fi;
 
 #############################################################################
 ##
@@ -1545,7 +1571,10 @@ end );
 ##
 #M  StabChainMutable( <hom> ) . . . . . . . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( StabChainMutable,
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. HPCGAP_TLStabChainMutable
+##  is equal to StabChainMutable in non-HPC GAP.
+##
+InstallMethod( HPCGAP_TLStabChainMutable,
     "for blocks homomorphism",
     true, [ IsBlocksHomomorphism ], 0,
     function( hom )

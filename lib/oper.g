@@ -1301,6 +1301,92 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
     fi;
 end );
 
+##############################################################################
+##
+##  DeclareThreadLocalAttribute adds thread-local attributes, which behave
+##  similarly to normal attributes but can take a different value in each
+##  thread.
+##
+##  Thread-local attributes do not support all functionality of traditional
+##  attributes. Thread-local attributes are not filters, so can not be used in
+##  method selection. This is because filters are not stored thread-locally.
+##
+##  Thread-local attributes are mainly useful for mutable attributes
+##  such as StabChainMutable, which must not be shared between threads.
+##
+##  Thread-local attributes where introduced to make existing
+##  GAP mutable attributes safe to use in a multi-threaded way, without
+##  significant code changes. The long-time goal is to remove all
+##  thread-local attributes.
+##
+##  Thread local attributes are always be mutable. The mutflag option is kept
+##  to keep the arguments lists of DeclareAttribute and
+##  DeclareThreadLocalAttribute the same.
+##
+##  This function takes <name> and <filter> and <mutflag>, like DeclareAttribute,
+##  and creates functions called <name>, Set<name> and Has<name>, 
+##  like normal Attributes.
+##
+##  The major incompatibility between normal and thread-local attributes is that
+##  the first argument of InstallMethod is HPCGAP_TL<name> rather than <name>.
+
+if IsBound(HPCGAP) then
+    BIND_GLOBAL("DeclareThreadLocalAttribute", 
+        function(name, filter, mutflag)
+            local nname, checkList, findmethod;
+
+            if mutflag <> "mutable" then
+                ErrorNoReturn("Thread local attributes must be mutable");
+            fi;
+
+            name := IMMUTABLE_COPY_OBJ(name);
+            checkList := function(obj)
+                if not IsBound(obj!.(name)) then
+                    obj!.(name) := AtomicList(1);
+                fi;
+            end;
+
+            nname := "HPCGAP_TL"; APPEND_LIST_INTR( nname, name );
+            DeclareOperation( nname, [ filter ] );
+            findmethod := VAL_GVAR(nname);
+
+            BIND_GLOBAL(name,
+                function(obj)
+                    local val;
+                    checkList(obj);
+                    if IsBound(obj!.(name)[ThreadID(CurrentThread())+1]) then
+                    return obj!.(name)[ThreadID(CurrentThread())+1];
+                    fi;
+                    val := findmethod(obj);
+                    obj!.(name)[ThreadID(CurrentThread())+1] := val;
+                    return val;
+                end);
+
+            nname:= "Set"; APPEND_LIST_INTR( nname, name );
+            BIND_GLOBAL( nname,
+                function(obj, val)
+                    checkList(obj);
+                    obj!.(name)[ThreadID(CurrentThread())+1] := val;
+                end);
+
+            nname:= "Has"; APPEND_LIST_INTR( nname, name );
+            BIND_GLOBAL( nname,
+                function(obj)
+                    checkList(obj);
+                    return IsBound(obj!.(name)[ThreadID(CurrentThread())+1]);
+                end);
+        end);
+else
+    BIND_GLOBAL("DeclareThreadLocalAttribute",
+        function(name, filter, mutflag)
+            local nname;
+            DeclareAttribute(name, filter, mutflag);
+            nname := "HPCGAP_TL";
+            APPEND_LIST_INTR(nname, name);
+            BIND_GLOBAL(nname, VAL_GVAR(name));
+        end);
+fi;
+
 
 #############################################################################
 ##

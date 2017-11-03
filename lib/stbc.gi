@@ -24,7 +24,9 @@ end );
 InstallMethod( StabChainImmutable,"use StabChainMutable",
   true, [ IsObject ], 0, StabChainMutable );
 
-InstallMethod( StabChainMutable,"call StabChainOp", true, [ IsGroup ], 0,
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. HPCGAP_TLStabChainMutable
+##  is equal to StabChainMutable in non-HPC GAP.
+InstallMethod( HPCGAP_TLStabChainMutable,"call StabChainOp", true, [ IsGroup ], 0,
     G -> StabChainOp( G, rec(  ) ) );
 
 InstallOtherMethod( StabChainOp,"with base", true, [ IsPermGroup,
@@ -308,7 +310,10 @@ end);
 ##
 #M  StabChainOptions( <G> ) . . . . . . . . . . . . . for a permutation group
 ##
-InstallMethod( StabChainOptions, true, [ IsPermGroup ], 0,
+##  The 'HPCGAP_TL' prefix below is required for HPC-GAP. HPCGAP_TLStabChainOptions
+##  is equal to StabChainOptions in non-HPC GAP.
+##
+InstallMethod( HPCGAP_TLStabChainOptions, true, [ IsPermGroup ], 0,
     G -> rec(  ) );
 
 #############################################################################
