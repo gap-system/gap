@@ -1642,6 +1642,11 @@ Int SyGetch (
 UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
 UInt   syESCN;                          /* number of '<Esc>-N' pending     */
 
+Obj StandardInput = 0;
+Obj StandardOutput = 0;
+Obj StandardError = 0;
+
+
 #ifdef HAVE_SELECT
 Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
 Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
