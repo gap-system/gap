@@ -13,7 +13,11 @@
 #ifndef GAP_IOSTREAM_H
 #define GAP_IOSTREAM_H
 
+// Provide a feature macro to let libraries check if GAP supports
+// CheckChildStatusChanged.
+#define GAP_HasCheckChildStatusChanged
 
+int CheckChildStatusChanged(int childPID, int status);
 
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
