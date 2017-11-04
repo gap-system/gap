@@ -1814,19 +1814,6 @@ BindGlobal( "BANNER", false );
 
     GAPInfo.delayedImplementationParts:= [];
 
-    # Ensure GAP loads PrimGrp, SmallGrp and TransGrp packages
-    # To be migrated to lib/system.g after the replacement of
-    # prim, small and trans directories by these packages
-    if TestPackageAvailability("primgrp") <> fail then
-      Add( GAPInfo.Dependencies.NeededOtherPackages, [ "primgrp", ">= 3.1.0" ] );
-    fi;
-    if TestPackageAvailability("smallgrp") <> fail then
-      Add( GAPInfo.Dependencies.NeededOtherPackages, [ "smallgrp", ">= 1.0" ] );
-    fi;
-    if TestPackageAvailability("transgrp") <> fail then
-      Add( GAPInfo.Dependencies.NeededOtherPackages, [ "transgrp", ">= 1.0" ] );
-    fi;
-
     # Load the needed other packages (suppressing banners)
     # that are not yet loaded.
     if ForAny( GAPInfo.Dependencies.NeededOtherPackages,

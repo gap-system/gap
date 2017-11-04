@@ -30,8 +30,13 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     Dependencies := rec(
       NeededOtherPackages := `[
         [ "gapdoc", ">= 1.2" ],
+        [ "primgrp", ">= 3.1.0" ],
+        [ "smallgrp", ">= 1.0" ],
+        [ "transgrp", ">= 1.0" ],
       ],
     ),
+# There is no SuggestedOtherPackages here because the default value of
+# the user preference PackagesToLoad does the job      
 
     HasReadGAPRC:= false,
 
