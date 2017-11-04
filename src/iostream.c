@@ -242,6 +242,31 @@ static UInt OpenPty(int * master, int * slave)
 **  Start a subprocess using ptys. Returns the stream number of the IOStream
 **  that is connected to the new processs
 */
+
+
+// Clean up a signalled or exited child process
+// CheckChildStatusChanged must be called by libraries which replace GAP's
+// signal handler, or call 'waitpid'.
+// The function should be passed a PID, and the return value of waitpid.
+// Returns 1 if that PID was a child owned by GAP, or 0 otherwise.
+int CheckChildStatusChanged(int childPID, int status)
+{
+    GAP_ASSERT(childPID > 0);
+    GAP_ASSERT((WIFEXITED(status) || WIFSIGNALED(status)));
+    HashLock(PtyIOStreams);
+    for (UInt i = 0; i < MAX_PTYS; i++) {
+        if (PtyIOStreams[i].inuse && PtyIOStreams[i].childPID == childPID) {
+            PtyIOStreams[i].changed = 1;
+            PtyIOStreams[i].status = status;
+            PtyIOStreams[i].blocked = 0;
+            HashUnlock(PtyIOStreams);
+            return 1;
+        }
+    }
+    HashUnlock(PtyIOStreams);
+    return 0;
+}
+
 static void ChildStatusChanged(int whichsig)
 {
     UInt i;
