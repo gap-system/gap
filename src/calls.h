@@ -79,7 +79,6 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 *F  BODY_FUNC(<func>) . . . . . . . . . . . . . . . . . .  body of a function
 *F  ENVI_FUNC(<func>) . . . . . . . . . . . . . . . environment of a function
 *F  FEXS_FUNC(<func>) . . . . . . . . . . . .  func. expr. list of a function
-*V  SIZE_FUNC . . . . . . . . . . . . . . . . . size of the bag of a function
 **
 **  These macros  make it possible  to access  the  various components  of  a
 **  function.
@@ -243,8 +242,15 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 }
 #endif
 
+/****************************************************************************
+*
+*F  IsKernelFunction( <func> )
+**
+**  'IsKernelFunction' returns 1 if <func> is a kernel function (i.e.
+**  compiled from C code), and 0 otherwise.
+*/
+extern Int IsKernelFunction(Obj func);
 
-#define SIZE_FUNC               sizeof(FunctionHeader)
 
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
 #define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))

@@ -43,6 +43,12 @@ several arguments</Heading>
 
 </Section>
 
+<Section Label="Memoizing a function">
+<Heading>Wrapping a function, so the values produced are cached</Heading>
+
+<#Include Label="MemoizePosIntFunction">
+
+</Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Functions that do nothing">

@@ -80,14 +80,10 @@ InstallMethod( IsWholeFamily,
 ##  if we set $M' = M - \sum_{i=1}^{l-1} N^i \cdot C(i-1)$ then
 ##  $q = (M'-1) \bmod C(l-1)$ and $p = (M'-q-1 ) / C(l-1)$.
 ##  
-BindGlobal( "SHIFTED_CATALAN", [ 1 ] );
-
-BindGlobal( "ShiftedCatalan", function( n )
-    if not IsBound( SHIFTED_CATALAN[n] ) then
-      SHIFTED_CATALAN[n]:= Binomial( 2*n-2, n-1 ) / n;
-    fi;
-    return SHIFTED_CATALAN[n];
-end );
+BindGlobal( "ShiftedCatalan", MemoizePosIntFunction(
+function( n )
+    return Binomial( 2*n-2, n-1 ) / n;
+end ));
 
 BindGlobal( "ElementNumber_FreeMagma", function( enum, nr )
     local WordFromInfo, n, l, summand, NB, q, p;

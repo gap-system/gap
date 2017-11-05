@@ -521,6 +521,7 @@ vice versa. They are useful for examples of text encryption.
 <#Include Label="NumbersString">
 <#Include Label="StringNumbers">
 
+<#Include Label="StringOfMemoryAmount">
 </Section>
 
 

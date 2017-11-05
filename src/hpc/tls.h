@@ -55,6 +55,11 @@ extern __thread ThreadLocalStorage TLSInstance;
 
 #define realTLS (&TLSInstance)
 
+static inline ThreadLocalStorage *GetTLS(void)
+{
+    return &TLSInstance;
+}
+
 #else
 
 #if defined(VERBOSE_GUARDS)
@@ -78,7 +83,11 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS(void)
 #endif /* HAVE_NATIVE_TLS */
 
 #define TLS(x) realTLS->x
-#define STATE(x) TLS(state).x
+
+static inline GAPState * ActiveGAPState(void)
+{
+    return &TLS(state);
+}
 
 static inline int IsMainThread(void)
 {

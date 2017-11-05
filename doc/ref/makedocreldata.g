@@ -31,6 +31,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/bitfields.gd",
     "../../lib/boolean.g",
     "../../lib/clas.gd",
+    "../../lib/cache.gd",
     "../../lib/cmdledit.g",
     "../../lib/coll.gd",
     "../../lib/colorprompt.g",

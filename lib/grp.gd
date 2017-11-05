@@ -444,12 +444,12 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  <Prop Name="IsPowerfulPGroup" Arg='G'/>
 ##
 ##  <Description>
-##  <Index Key="PowerfulPGroup">Powerful <M> p</M>-group</Index>
-##  A finite p-group <A>G</A> is said to be a Powerful <M>p</M>-group if the 
-##  commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
+##  <Index Key="PowerfulPGroup">Powerful <M>p</M>-group</Index>
+##  A finite p-group <A>G</A> is said to be a <E>powerful <M>p</M>-group</E>
+##  if the commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
 ##  <M><A>G</A>^{p}</M> if the prime <M>p</M> is odd, or if
 ##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M> 
-##  if<M> p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first 
+##  if <M>p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first 
 ##  Agemo subgroup, (see&nbsp;<Ref Func="Agemo"/>).
 ##  <Ref Prop="IsPowerfulPGroup"/> returns <K>true</K> if <A>G</A> is a 
 ##  powerful <M>p</M>-group, and <K>false</K> otherwise. 
@@ -465,7 +465,8 @@ DeclareProperty( "IsPowerfulPGroup", IsGroup );
 InstallFactorMaintenance( IsPowerfulPGroup,
     IsPowerfulPGroup, IsGroup, IsGroup );
 #abelian p-groups are powerful
-InstallTrueMethod( IsPowerfulPGroup, IsPGroup and IsAbelian );
+InstallTrueMethod( IsPowerfulPGroup, IsFinite and IsPGroup and IsAbelian );
+InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 
 #############################################################################
 ##
@@ -567,7 +568,7 @@ InstallFactorMaintenance( IsNilpotentGroup,
 
 InstallTrueMethod( IsNilpotentGroup, IsGroup and IsCommutative );
 
-InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup );
+InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
 
 
 #############################################################################

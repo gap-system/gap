@@ -838,7 +838,7 @@ static UInt appendToString(Obj string, UInt len)
 {
        UInt len1 = strlen(STATE(Value));
        GROW_STRING(string, len+len1+1);
-       memcpy(CHARS_STRING(string) + len, (void *)STATE(Value), len1+1);
+       memcpy(CHARS_STRING(string) + len, STATE(Value), len1+1);
        SET_LEN_STRING(string, len+len1);
        return len + len1;
 }
@@ -1062,13 +1062,13 @@ void ReadString(
      Obj  string;
      UInt len;
 
-     C_NEW_STRING( string, STATE(ValueLen), (void *)STATE(Value) );
+     C_NEW_STRING( string, STATE(ValueLen), STATE(Value) );
      len = STATE(ValueLen);
 
      while (STATE(Symbol) == S_PARTIALSTRING || STATE(Symbol) == S_PARTIALTRIPSTRING) {
          Match(STATE(Symbol), "", follow);
          GROW_STRING(string, len + STATE(ValueLen));
-         memcpy(CHARS_STRING(string) + len, (void *)STATE(Value),
+         memcpy(CHARS_STRING(string) + len, STATE(Value),
                                         STATE(ValueLen));
          len += STATE(ValueLen);
      }

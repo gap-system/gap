@@ -187,6 +187,7 @@ local hom,gp,f;
     f:=Factors(Size(gp));
     if Length(Set(f))=1 then
       SetIsPGroup(gp,true);
+      SetPrimePGroup(gp,f[1]);
     elif Length(Set(f))=2 then
       SetIsSolvableGroup(gp,true);
     fi;
@@ -3096,7 +3097,7 @@ InstallMethod(LowIndexSubgroups, "FpFroups, using LowIndexSubgroupsFpGroup",
   true,
   [IsSubgroupFpGroup,IsPosInt],
   # rank higher than method for finit groups using maximal subgroups
-  SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsGroup and IsFinite))),
+  RankFilter(IsGroup and IsFinite),
   LowIndexSubgroupsFpGroup );
 
 InstallOtherMethod(LowIndexSubgroupsFpGroup,

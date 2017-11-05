@@ -175,7 +175,7 @@ static inline UInt4 * ResizeInitTmpTrans(UInt len)
 UInt INIT_TRANS2(Obj f)
 {
     UInt    deg, rank, i, j;
-    UInt2 * ptf;
+    const UInt2 * ptf;
     UInt4 * pttmp;
     Obj     img, ker;
 
@@ -196,7 +196,7 @@ UInt INIT_TRANS2(Obj f)
     SET_LEN_PLIST(ker, (Int)deg);
 
     pttmp = ResizeInitTmpTrans(deg);
-    ptf = ADDR_TRANS2(f);
+    ptf = CONST_ADDR_TRANS2(f);
 
     rank = 0;
     for (i = 0; i < deg; i++) {
@@ -223,7 +223,7 @@ UInt INIT_TRANS2(Obj f)
 UInt INIT_TRANS4(Obj f)
 {
     UInt    deg, rank, i, j;
-    UInt4 * ptf;
+    const UInt4 * ptf;
     UInt4 * pttmp;
     Obj     img, ker;
 
@@ -249,7 +249,7 @@ UInt INIT_TRANS4(Obj f)
     SET_LEN_PLIST(ker, (Int)deg);
 
     pttmp = ResizeInitTmpTrans(deg);
-    ptf = ADDR_TRANS4(f);
+    ptf = CONST_ADDR_TRANS4(f);
 
     rank = 0;
     for (i = 0; i < deg; i++) {
@@ -695,13 +695,13 @@ Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
 Obj FuncDegreeOfTransformation(Obj self, Obj f)
 {
     UInt    n, i, deg;
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         if (EXT_TRANS(f) == NULL) {
             n = DEG_TRANS2(f);
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             if (ptf2[n - 1] != n - 1) {
                 SET_EXT_TRANS(f, INTOBJ_INT(n));
             }
@@ -723,7 +723,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
     else if (TNUM_OBJ(f) == T_TRANS4) {
         if (EXT_TRANS(f) == NULL) {
             n = DEG_TRANS4(f);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             if (ptf4[n - 1] != n - 1) {
                 SET_EXT_TRANS(f, INTOBJ_INT(n));
             }
@@ -773,8 +773,9 @@ Obj FuncRANK_TRANS(Obj self, Obj f)
 Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 {
     UInt    rank, i, m;
-    UInt2 * ptf2;
-    UInt4 * pttmp, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * pttmp;
 
     if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
         ErrorQuit("RANK_TRANS_INT: <n> must be a non-negative integer", 0L,
@@ -789,7 +790,7 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
         }
         else {
             pttmp = ResizeInitTmpTrans(DEG_TRANS2(f));
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             rank = 0;
             for (i = 0; i < m; i++) {
                 if (pttmp[ptf2[i]] == 0) {
@@ -806,7 +807,7 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
         }
         else {
             pttmp = ResizeInitTmpTrans(DEG_TRANS4(f));
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             rank = 0;
             for (i = 0; i < m; i++) {
                 if (pttmp[ptf4[i]] == 0) {
@@ -830,8 +831,9 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
 {
     UInt    rank, i, j, len, def;
-    UInt2 * ptf2;
-    UInt4 * pttmp, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * pttmp;
     Obj     pt;
 
     if (!IS_LIST(list)) {
@@ -844,7 +846,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
     if (TNUM_OBJ(f) == T_TRANS2) {
         def = DEG_TRANS2(f);
         pttmp = ResizeInitTmpTrans(def);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
@@ -871,7 +873,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
     else if (TNUM_OBJ(f) == T_TRANS4) {
         def = DEG_TRANS4(f);
         pttmp = ResizeInitTmpTrans(def);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
@@ -1130,14 +1132,14 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         for (j = 0; j < deg; j++) {
-            if ((ADDR_TRANS2(f))[j] == i) {
+            if ((CONST_ADDR_TRANS2(f))[j] == i) {
                 AssPlist(out, ++nr, INTOBJ_INT(j + 1));
             }
         }
     }
     else {
         for (j = 0; j < deg; j++) {
-            if ((ADDR_TRANS4(f))[j] == i) {
+            if ((CONST_ADDR_TRANS4(f))[j] == i) {
                 AssPlist(out, ++nr, INTOBJ_INT(j + 1));
             }
         }
@@ -1204,8 +1206,9 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
     UInt    deg, m, len, i, j, rank;
     Obj *   ptnew;
     const Obj *ptim;
-    UInt4 * pttmp, *ptf4;
-    UInt2 * ptf2;
+    UInt4 * pttmp;
+    const UInt4 * ptf4;
+    const UInt2 * ptf2;
 
     if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
         ErrorQuit("IMAGE_SET_TRANS_INT: the second argument must be a "
@@ -1235,7 +1238,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         pttmp = ADDR_TRANS4(TmpTrans);
 
         if (TNUM_OBJ(f) == T_TRANS2) {
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             rank = 0;
             for (i = 0; i < m; i++) {
                 j = ptf2[i];
@@ -1246,7 +1249,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
             }
         }
         else {
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             rank = 0;
             for (i = 0; i < m; i++) {
                 j = ptf4[i];
@@ -1288,8 +1291,8 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 
 Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    i, deg, m;
     Obj     out;
 
@@ -1315,14 +1318,14 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
     out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, m);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = MIN(DEG_TRANS2(f), m);
         for (i = 0; i < deg; i++) {
             SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptf2[i] + 1));
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = MIN(DEG_TRANS4(f), m);
         for (i = 0; i < deg; i++) {
             SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptf4[i] + 1));
@@ -1342,12 +1345,12 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 
 Obj FuncIS_ID_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    deg, i;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (ptf2[i] != i) {
@@ -1357,7 +1360,7 @@ Obj FuncIS_ID_TRANS(Obj self, Obj f)
         return True;
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (ptf4[i] != i) {
@@ -1377,13 +1380,13 @@ Obj FuncIS_ID_TRANS(Obj self, Obj f)
 
 Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    deg, i;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (ptf2[ptf2[i]] != ptf2[i]) {
                 return False;
@@ -1393,7 +1396,7 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
         deg = DEG_TRANS4(f);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (ptf4[ptf4[i]] != ptf4[i]) {
                 return False;
@@ -1416,8 +1419,9 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
 
 Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * seen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * seen;
     UInt    deg, i, pt, dist, pow, len, last_pt;
     Obj     ord, out;
     Int     s, t, gcd, cyc;
@@ -1453,7 +1457,7 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
     ord = INTOBJ_INT(1);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 len = 0;
@@ -1502,7 +1506,7 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 len = 0;
@@ -1585,9 +1589,9 @@ Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
 {
     UInt    n, i, j;
-    UInt2 * ptt2;
+    const UInt2 * ptt2;
+    const UInt4 * ptt4;
     UInt4 * pttmp = 0L;
-    UInt4 * ptt4;
     Obj     val;
 
     if (!IS_LIST(l)) {
@@ -1604,7 +1608,7 @@ Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
     pttmp = ResizeInitTmpTrans(n);
 
     if (TNUM_OBJ(t) == T_TRANS2) {
-        ptt2 = ADDR_TRANS2(t);
+        ptt2 = CONST_ADDR_TRANS2(t);
         for (i = LEN_LIST(l); i >= 1; i--) {
             val = ELM_LIST(l, i);
             if (!IS_POS_INTOBJ(val)) {
@@ -1623,7 +1627,7 @@ Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
         }
     }
     else if (TNUM_OBJ(t) == T_TRANS4) {
-        ptt4 = ADDR_TRANS4(t);
+        ptt4 = CONST_ADDR_TRANS4(t);
         for (i = LEN_LIST(l); i >= 1; i--) {
             val = ELM_LIST(l, i);
             if (!IS_POS_INTOBJ(val)) {
@@ -1683,8 +1687,10 @@ Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
 
 Obj FuncInverseOfTransformation(Obj self, Obj f)
 {
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt2 * ptg2;
+    UInt4 * ptg4;
     UInt   deg, i;
     Obj    g;
 
@@ -1700,7 +1706,7 @@ Obj FuncInverseOfTransformation(Obj self, Obj f)
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
         g = NEW_TRANS2(deg);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         ptg2 = ADDR_TRANS2(g);
         for (i = 0; i < deg; i++) {
             ptg2[i] = 0;
@@ -1714,7 +1720,7 @@ Obj FuncInverseOfTransformation(Obj self, Obj f)
     else {
         deg = DEG_TRANS4(f);
         g = NEW_TRANS4(deg);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         ptg4 = ADDR_TRANS4(g);
         for (i = 0; i < deg; i++) {
             ptg4[i] = 0;
@@ -1743,8 +1749,9 @@ Obj FuncInverseOfTransformation(Obj self, Obj f)
 
 Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4, *pttmp;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * pttmp;
     UInt    deg, i, j, rank, len;
     Obj     out;
 
@@ -1769,7 +1776,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
             out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
             SET_LEN_PLIST(out, len);
             pttmp = ResizeInitTmpTrans(len);
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             for (i = 0; i < deg; i++) {
                 // <f> then <g> with ker(<g>) = <ker>
                 j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1;    // f first!
@@ -1805,7 +1812,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
             out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
             SET_LEN_PLIST(out, len);
             pttmp = ResizeInitTmpTrans(len);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             for (i = 0; i < deg; i++) {
                 // <f> then <g> with ker(<g>) = <ker>
                 j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1;    // f first!
@@ -1848,8 +1855,10 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
 
 Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
 {
-    UInt2 *ptp2, *ptf2;
-    UInt4 *ptp4, *ptf4;
+    const UInt2 *ptp2;
+    UInt2 *ptf2;
+    const UInt4 *ptp4;
+    UInt4 *ptf4;
     Obj    f;
     UInt   def, dep, i, min, n;
 
@@ -1877,7 +1886,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
     if (def < dep) {
         min = def;
         if (TNUM_OBJ(p) == T_PERM2) {
-            ptp2 = ADDR_PERM2(p);
+            ptp2 = CONST_ADDR_PERM2(p);
             for (i = 0; i < n; i++) {
                 if (ptp2[i] + 1 > def) {
                     def = ptp2[i] + 1;
@@ -1885,7 +1894,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
             }
         }
         else {
-            ptp4 = ADDR_PERM4(p);
+            ptp4 = CONST_ADDR_PERM4(p);
             for (i = 0; i < n; i++) {
                 if (ptp4[i] + 1 > def) {
                     def = ptp4[i] + 1;
@@ -1904,13 +1913,13 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
         ptf2 = ADDR_TRANS2(f);
 
         if (TNUM_OBJ(p) == T_PERM2) {
-            ptp2 = ADDR_PERM2(p);
+            ptp2 = CONST_ADDR_PERM2(p);
             for (i = 0; i < min; i++) {
                 ptf2[i] = ptp2[i];
             }
         }
         else {    // TNUM_OBJ(p) == T_PERM4
-            ptp4 = ADDR_PERM4(p);
+            ptp4 = CONST_ADDR_PERM4(p);
             for (i = 0; i < min; i++) {
                 ptf2[i] = ptp4[i];
             }
@@ -1923,7 +1932,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
         f = NEW_TRANS4(def);
         ptf4 = ADDR_TRANS4(f);
         assert(TNUM_OBJ(p) == T_PERM4);
-        ptp4 = ADDR_PERM4(p);
+        ptp4 = CONST_ADDR_PERM4(p);
         for (i = 0; i < min; i++) {
             ptf4[i] = ptp4[i];
         }
@@ -1940,8 +1949,8 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
 
 Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 {
-    UInt2 * ptPerm2;
-    UInt4 * ptPerm4;
+    const UInt2 * ptPerm2;
+    const UInt4 * ptPerm4;
     UInt    sup;
 
     if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
@@ -1952,7 +1961,7 @@ Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 
     // find largest moved point
     if (TNUM_OBJ(p) == T_PERM2) {
-        ptPerm2 = ADDR_PERM2(p);
+        ptPerm2 = CONST_ADDR_PERM2(p);
         for (sup = DEG_PERM2(p); 1 <= sup; sup--) {
             if (ptPerm2[sup - 1] != sup - 1) {
                 break;
@@ -1961,7 +1970,7 @@ Obj FuncAS_TRANS_PERM(Obj self, Obj p)
         return FuncAS_TRANS_PERM_INT(self, p, INTOBJ_INT(sup));
     }
     else {
-        ptPerm4 = ADDR_PERM4(p);
+        ptPerm4 = CONST_ADDR_PERM4(p);
         for (sup = DEG_PERM4(p); 1 <= sup; sup--) {
             if (ptPerm4[sup - 1] != sup - 1) {
                 break;
@@ -1981,8 +1990,10 @@ Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 
 Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 {
-    UInt2 *ptf2, *ptp2;
-    UInt4 *ptf4, *ptp4;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptp2;
+    UInt4 *ptp4;
     UInt   deg, i;
     Obj    p;
 
@@ -1994,7 +2005,7 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 
         p = NEW_PERM2(deg);
         ptp2 = ADDR_PERM2(p);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
 
         for (i = 0; i < deg; i++) {
             ptp2[i] = ptf2[i];
@@ -2009,7 +2020,7 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 
         p = NEW_PERM4(deg);
         ptp4 = ADDR_PERM4(p);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
 
         for (i = 0; i < deg; i++) {
             ptp4[i] = ptf4[i];
@@ -2027,8 +2038,10 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 
 Obj FuncPermutationOfImage(Obj self, Obj f)
 {
-    UInt2 *ptf2, *ptp2;
-    UInt4 *ptf4, *ptp4, *pttmp;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptp2;
+    UInt4 *ptp4, *pttmp;
     UInt   deg, rank, i, j;
     Obj    p, img;
 
@@ -2046,7 +2059,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
             ptp2[i] = i;
         }
 
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         img = IMG_TRANS(f);
         assert(img != NULL);    // should be installed by RANK_TRANS2
 
@@ -2074,7 +2087,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
             ptp4[i] = i;
         }
 
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         img = IMG_TRANS(f);
         assert(img != NULL);    // should be installed by RANK_TRANS2
 
@@ -2099,8 +2112,9 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
 
 Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
 {
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4, *ptp;
+    const UInt2 *ptf2, *ptg2;
+    const UInt4 *ptf4, *ptg4;
+    UInt4 *ptp;
     UInt   def, deg, i, min, max;
     Obj    perm;
 
@@ -2120,8 +2134,8 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
     ptp = ADDR_PERM4(perm);
 
     if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
-        ptg2 = ADDR_TRANS2(g);
+        ptf2 = CONST_ADDR_TRANS2(f);
+        ptg2 = CONST_ADDR_TRANS2(g);
 
         for (i = 0; i < max; i++) {
             ptp[i] = i;
@@ -2137,8 +2151,8 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
-        ptf2 = ADDR_TRANS2(f);
-        ptg4 = ADDR_TRANS4(g);
+        ptf2 = CONST_ADDR_TRANS2(f);
+        ptg4 = CONST_ADDR_TRANS4(g);
 
         for (i = 0; i < max; i++) {
             ptp[i] = i;
@@ -2159,8 +2173,8 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
-        ptf4 = ADDR_TRANS4(f);
-        ptg2 = ADDR_TRANS2(g);
+        ptf4 = CONST_ADDR_TRANS4(f);
+        ptg2 = CONST_ADDR_TRANS2(g);
 
         for (i = 0; i < max; i++) {
             ptp[i] = i;
@@ -2181,8 +2195,8 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
-        ptg4 = ADDR_TRANS4(g);
+        ptf4 = CONST_ADDR_TRANS4(f);
+        ptg4 = CONST_ADDR_TRANS4(g);
 
         for (i = 0; i < max; i++) {
             ptp[i] = i;
@@ -2211,8 +2225,10 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
 Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 {
     UInt   deg, i, k, len;
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptg2;
+    UInt4 *ptg4;
     Obj    g, j;
 
     if (!IS_LIST(list)) {
@@ -2228,7 +2244,7 @@ Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
         deg = DEG_TRANS2(f);
         g = NEW_TRANS2(deg);
 
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         ptg2 = ADDR_TRANS2(g);
 
         // g fixes every point
@@ -2256,7 +2272,7 @@ Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
         deg = DEG_TRANS4(f);
         g = NEW_TRANS4(deg);
 
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         ptg4 = ADDR_TRANS4(g);
 
         // g fixes every point
@@ -2296,8 +2312,10 @@ Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 
 Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
 {
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptg2;
+    UInt4 *ptg4;
     UInt   i, n, def;
     Obj    g;
 
@@ -2317,7 +2335,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
         }
 
         g = NEW_TRANS2(n);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         ptg2 = ADDR_TRANS2(g);
         for (i = 0; i < n; i++) {
             if (ptf2[i] > n - 1) {
@@ -2336,7 +2354,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
         if (n > 65536) {
             // g is T_TRANS4
             g = NEW_TRANS4(n);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             ptg4 = ADDR_TRANS4(g);
             for (i = 0; i < n; i++) {
                 if (ptf4[i] > n - 1) {
@@ -2349,7 +2367,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
             //  f is T_TRANS4 but n <= 65536 < def and so g will be T_TRANS2 *
             //  /
             g = NEW_TRANS2(n);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             ptg2 = ADDR_TRANS2(g);
             for (i = 0; i < n; i++) {
                 if (ptf4[i] > n - 1) {
@@ -2464,12 +2482,12 @@ Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
 
 Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    i;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = DEG_TRANS2(f); 1 <= i; i--) {
             if (ptf2[i - 1] != i - 1) {
                 break;
@@ -2478,7 +2496,7 @@ Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
         return INTOBJ_INT(i);
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = DEG_TRANS4(f); 1 <= i; i--) {
             if (ptf4[i - 1] != i - 1) {
                 break;
@@ -2496,14 +2514,14 @@ Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
 
 Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    i, max, def;
 
     max = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
         def = DEG_TRANS2(f);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = DEG_TRANS2(f); 1 <= i; i--) {
             if (ptf2[i - 1] != i - 1) {
                 break;
@@ -2521,7 +2539,7 @@ Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
         def = DEG_TRANS4(f);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = DEG_TRANS4(f); 1 <= i; i--) {
             if (ptf4[i - 1] != i - 1) {
                 break;
@@ -2549,8 +2567,8 @@ Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
 
 Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    i, deg;
 
     if (!IS_TRANS(f)) {
@@ -2564,7 +2582,7 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
     }
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         for (i = 1; i <= deg; i++) {
             if (ptf2[i - 1] != i - 1) {
@@ -2573,7 +2591,7 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = 1; i <= deg; i++) {
             if (ptf4[i - 1] != i - 1) {
@@ -2591,8 +2609,8 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
 
 Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    i, min, deg;
 
     if (!IS_TRANS(f)) {
@@ -2606,7 +2624,7 @@ Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
     }
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         min = deg;
         for (i = 0; i < deg; i++) {
@@ -2617,7 +2635,7 @@ Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
         return INTOBJ_INT(min + 1);
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         min = deg;
         for (i = 0; i < deg; i++) {
@@ -2635,12 +2653,12 @@ Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
 Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
 {
     UInt    nr, i, deg;
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
 
     nr = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (ptf2[i] != i) {
@@ -2650,7 +2668,7 @@ Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
         return INTOBJ_INT(nr);
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (ptf4[i] != i) {
@@ -2672,8 +2690,8 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
 {
     UInt    len, deg, i;
     Obj     out;
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("MOVED_PTS_TRANS: the first argument must be a "
@@ -2686,7 +2704,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
         out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (ptf2[i] != i) {
                 AssPlist(out, ++len, INTOBJ_INT(i + 1));
@@ -2696,7 +2714,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
     else {
         deg = DEG_TRANS4(f);
         out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (ptf4[i] != i) {
                 AssPlist(out, ++len, INTOBJ_INT(i + 1));
@@ -2725,8 +2743,9 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 {
     UInt    deg, i, nr, pt, index;
     Obj     img, out, comp;
-    UInt2 * ptf2;
-    UInt4 * seen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * seen;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("COMPONENT_REPS_TRANS: the argument must be a "
@@ -2752,7 +2771,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
     }
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         nr = 1;
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
@@ -2769,7 +2788,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 
                 if (index != nr + 1) {
                     // pt belongs to a component we've seen before
-                    ptf2 = ADDR_TRANS2(f);
+                    ptf2 = CONST_ADDR_TRANS2(f);
                     pt = i;
                     do {
                         seen[pt] = index;
@@ -2785,7 +2804,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                     SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                     AssPlist(out, nr++, comp);
                 }
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
                 seen = ADDR_TRANS4(TmpTrans);
             }
         }
@@ -2799,13 +2818,13 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                 SET_LEN_PLIST(comp, 1);
                 SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                 AssPlist(out, nr++, comp);
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
                 seen = ADDR_TRANS4(TmpTrans);
             }
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         nr = 1;
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
@@ -2837,7 +2856,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                     SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                     AssPlist(out, nr++, comp);
                 }
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
                 seen = ADDR_TRANS4(TmpTrans);
             }
         }
@@ -2851,7 +2870,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                 SET_LEN_PLIST(comp, 1);
                 SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                 AssPlist(out, nr++, comp);
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
                 seen = ADDR_TRANS4(TmpTrans);
             }
         }
@@ -2865,8 +2884,9 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
 {
     UInt    nr, m, i, j, deg;
-    UInt2 * ptf2;
-    UInt4 * ptseen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * ptseen;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("NR_COMPONENTS_TRANS: the argument must be a "
@@ -2880,7 +2900,7 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
     m = 0;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (ptseen[i] == 0) {
                 m++;
@@ -2894,7 +2914,7 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (ptseen[i] == 0) {
                 m++;
@@ -2915,8 +2935,9 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
 
 Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * seen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * seen;
     UInt    deg, i, pt, csize, nr, index, pos;
     Obj     out, comp;
 
@@ -2939,7 +2960,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
     nr = 0;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -2970,7 +2991,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
                     AssPlist(out, nr, comp);
                 }
                 seen = ADDR_TRANS4(TmpTrans);
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
 
                 pt = i;
                 while (seen[pt] == deg + 1) {
@@ -2983,7 +3004,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -3014,7 +3035,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
                     AssPlist(out, nr, comp);
                 }
                 seen = ADDR_TRANS4(TmpTrans);
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
 
                 pt = i;
                 while (seen[pt] == deg + 1) {
@@ -3036,8 +3057,9 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
 {
     UInt    deg, cpt, len;
     Obj     out;
-    UInt2 * ptf2;
-    UInt4 * ptseen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * ptseen;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("COMPONENT_TRANS_INT: the first argument must be a "
@@ -3069,7 +3091,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
         do {
             AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
             ptseen = ADDR_TRANS4(TmpTrans);
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             ptseen[cpt] = 1;
             cpt = ptf2[cpt];
         } while (ptseen[cpt] == 0);
@@ -3078,7 +3100,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
         do {
             AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
             ptseen = ADDR_TRANS4(TmpTrans);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             ptseen[cpt] = 1;
             cpt = ptf4[cpt];
         } while (ptseen[cpt] == 0);
@@ -3098,8 +3120,9 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
 {
     UInt    deg, cpt, len, i;
     Obj     out;
-    UInt2 * ptf2;
-    UInt4 * ptseen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * ptseen;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("CYCLE_TRANS_INT: the first argument must be a "
@@ -3127,7 +3150,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
     len = 0;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         // find component
         do {
             ptseen[cpt] = 1;
@@ -3141,7 +3164,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
         } while (i != cpt);
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         // find component
         do {
             ptseen[cpt] = 1;
@@ -3162,8 +3185,9 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
 
 Obj FuncCYCLES_TRANS(Obj self, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * seen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * seen;
     UInt    deg, i, pt, nr;
     Obj     out, comp;
 
@@ -3186,7 +3210,7 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
     nr = 0;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -3201,14 +3225,14 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
                     AssPlist(out, ++nr, comp);
 
                     seen = ADDR_TRANS4(TmpTrans);
-                    ptf2 = ADDR_TRANS2(f);
+                    ptf2 = CONST_ADDR_TRANS2(f);
 
                     for (; seen[pt] == 1; pt = ptf2[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
                         seen = ADDR_TRANS4(TmpTrans);
-                        ptf2 = ADDR_TRANS2(f);
+                        ptf2 = CONST_ADDR_TRANS2(f);
                     }
                 }
                 for (pt = i; seen[pt] == 1; pt = ptf2[pt]) {
@@ -3218,7 +3242,7 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             if (seen[i] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -3233,14 +3257,14 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
                     AssPlist(out, ++nr, comp);
 
                     seen = ADDR_TRANS4(TmpTrans);
-                    ptf4 = ADDR_TRANS4(f);
+                    ptf4 = CONST_ADDR_TRANS4(f);
 
                     for (; seen[pt] == 1; pt = ptf4[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
                         seen = ADDR_TRANS4(TmpTrans);
-                        ptf4 = ADDR_TRANS4(f);
+                        ptf4 = CONST_ADDR_TRANS4(f);
                     }
                 }
                 for (pt = i; seen[pt] == 1; pt = ptf4[pt]) {
@@ -3257,8 +3281,9 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
 
 Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 {
-    UInt2 * ptf2;
-    UInt4 * seen, *ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    UInt4 * seen;
     UInt    deg, i, j, pt, nr;
     Obj     out, comp, list_i;
 
@@ -3287,7 +3312,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     seen = ResizeInitTmpTrans(deg);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
             if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
@@ -3302,7 +3327,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                 SET_ELM_PLIST(comp, 1, list_i);
                 AssPlist(out, ++nr, comp);
                 seen = ADDR_TRANS4(TmpTrans);
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
             }
             else if (seen[j] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -3317,14 +3342,14 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                     AssPlist(out, ++nr, comp);
 
                     seen = ADDR_TRANS4(TmpTrans);
-                    ptf2 = ADDR_TRANS2(f);
+                    ptf2 = CONST_ADDR_TRANS2(f);
 
                     for (; seen[pt] == 1; pt = ptf2[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
                         seen = ADDR_TRANS4(TmpTrans);
-                        ptf2 = ADDR_TRANS2(f);
+                        ptf2 = CONST_ADDR_TRANS2(f);
                     }
                 }
                 for (pt = j; seen[pt] == 1; pt = ptf2[pt]) {
@@ -3334,7 +3359,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
             if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
@@ -3349,7 +3374,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                 SET_ELM_PLIST(comp, 1, list_i);
                 AssPlist(out, ++nr, comp);
                 seen = ADDR_TRANS4(TmpTrans);
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
             }
             else if (seen[j] == 0) {
                 // repeatedly apply f to pt until we see something we've seen
@@ -3364,14 +3389,14 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                     AssPlist(out, ++nr, comp);
 
                     seen = ADDR_TRANS4(TmpTrans);
-                    ptf4 = ADDR_TRANS4(f);
+                    ptf4 = CONST_ADDR_TRANS4(f);
 
                     for (; seen[pt] == 1; pt = ptf4[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
                         seen = ADDR_TRANS4(TmpTrans);
-                        ptf4 = ADDR_TRANS4(f);
+                        ptf4 = CONST_ADDR_TRANS4(f);
                     }
                 }
                 for (pt = j; seen[pt] == 1; pt = ptf4[pt]) {
@@ -3393,8 +3418,10 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 
 Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
 {
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptg2;
+    UInt4 *ptg4;
     UInt   deg, i, j;
     Obj    g, k;
 
@@ -3407,7 +3434,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
         g = NEW_TRANS2(deg);
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         ptg2 = ADDR_TRANS2(g);
 
         for (j = 0; j < deg; j++) {
@@ -3431,7 +3458,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
     else if (TNUM_OBJ(f) == T_TRANS4) {
         deg = DEG_TRANS4(f);
         g = NEW_TRANS4(deg);
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         ptg4 = ADDR_TRANS4(g);
 
         i = INT_INTOBJ(ELM_LIST(list, 1)) - 1;
@@ -3475,8 +3502,9 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
 Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
 {
     Obj    perm;
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptsrc, *ptdst, *ptp, *ptf4, *ptg4;
+    const UInt2 *ptf2, *ptg2;
+    const UInt4 *ptf4, *ptg4;
+    UInt4 *ptsrc, *ptdst, *ptp;
     UInt   def, deg, i, j, max, min;
 
     if (!IS_TRANS(f) || !IS_TRANS(g)) {
@@ -3500,8 +3528,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
     ptp = ADDR_PERM4(perm);
 
     if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
-        ptg2 = ADDR_TRANS2(g);
+        ptf2 = CONST_ADDR_TRANS2(f);
+        ptg2 = CONST_ADDR_TRANS2(g);
 
         for (i = 0; i < min; i++) {
             ptsrc[ptf2[i]] = 1;
@@ -3524,8 +3552,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS2 && TNUM_OBJ(g) == T_TRANS4) {
-        ptf2 = ADDR_TRANS2(f);
-        ptg4 = ADDR_TRANS4(g);
+        ptf2 = CONST_ADDR_TRANS2(f);
+        ptg4 = CONST_ADDR_TRANS4(g);
 
         for (i = 0; i < min; i++) {
             ptsrc[ptf2[i]] = 1;
@@ -3553,8 +3581,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS2) {
-        ptf4 = ADDR_TRANS4(f);
-        ptg2 = ADDR_TRANS2(g);
+        ptf4 = CONST_ADDR_TRANS4(f);
+        ptg2 = CONST_ADDR_TRANS2(g);
 
         for (i = 0; i < min; i++) {
             ptsrc[ptf4[i]] = 1;
@@ -3582,8 +3610,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4 && TNUM_OBJ(g) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
-        ptg4 = ADDR_TRANS4(g);
+        ptf4 = CONST_ADDR_TRANS4(f);
+        ptg4 = CONST_ADDR_TRANS4(g);
 
         for (i = 0; i < min; i++) {
             ptsrc[ptf4[i]] = 1;
@@ -3629,8 +3657,9 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 {
     UInt    len, rank, i, dep;
     Obj     out;
-    UInt4 * ptcnj, *ptlkp, *ptp4;
-    UInt2 * ptp2;
+    UInt4 * ptcnj, *ptlkp;
+    const UInt4 * ptp4;
+    const UInt2 * ptp2;
 
     len = LEN_LIST(ker);
 
@@ -3651,7 +3680,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 
     if (TNUM_OBJ(p) == T_PERM2) {
         dep = DEG_PERM2(p);
-        ptp2 = ADDR_PERM2(p);
+        ptp2 = CONST_ADDR_PERM2(p);
 
         if (dep <= len) {
             // form the conjugate in ptcnj and init the lookup
@@ -3688,7 +3717,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
     }
     else if (TNUM_OBJ(p) == T_PERM4) {
         dep = DEG_PERM4(p);
-        ptp4 = ADDR_PERM4(p);
+        ptp4 = CONST_ADDR_PERM4(p);
 
         if (dep <= len) {
             // form the conjugate in ptcnj and init the lookup
@@ -3740,8 +3769,10 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 {
     Obj    g;
-    UInt2 *ptf2, *ptg2;
-    UInt4 *pttmp, *ptf4, *ptg4;
+    const UInt2 *ptf2;
+    const UInt4 *ptf4;
+    UInt2 *ptg2;
+    UInt4 *pttmp, *ptg4;
     UInt   deg, i, len;
 
     len = LEN_LIST(X);
@@ -3753,7 +3784,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             // deg(g) <= 65536 and g is T_TRANS2
             g = NEW_TRANS2(len);
             pttmp = ADDR_TRANS4(TmpTrans);
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             ptg2 = ADDR_TRANS2(g);
             if (deg >= len) {
                 // calculate a transversal of f ^ ker(x) = ker(fx)
@@ -3782,7 +3813,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             // deg(g) = len > 65536 >= deg and g is T_TRANS4
             g = NEW_TRANS4(len);
             pttmp = ADDR_TRANS4(TmpTrans);
-            ptf2 = ADDR_TRANS2(f);
+            ptf2 = CONST_ADDR_TRANS2(f);
             ptg4 = ADDR_TRANS4(g);
             for (i = 0; i < deg; i++) {
                 pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
@@ -3802,7 +3833,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             // deg(g) <= 65536 and g is T_TRANS2
             g = NEW_TRANS2(len);
             pttmp = ADDR_TRANS4(TmpTrans);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             ptg2 = ADDR_TRANS2(g);
             // calculate a transversal of f ^ ker(x) = ker(fx)
             for (i = 0; i < len; i++) {
@@ -3818,7 +3849,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             // deg(g) = len > 65536 >= deg and g is T_TRANS4
             g = NEW_TRANS4(len);
             pttmp = ADDR_TRANS4(TmpTrans);
-            ptf4 = ADDR_TRANS4(f);
+            ptf4 = CONST_ADDR_TRANS4(f);
             ptg4 = ADDR_TRANS4(g);
             for (i = 0; i < deg; i++) {
                 pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i] + 1)) - 1] = i;
@@ -3845,10 +3876,11 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 
 Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
+    const Obj * ptset;
     UInt    deg;
-    Obj *   ptset, *ptres, res;
+    Obj *   ptres, res;
     UInt    i, k;
 
     if (LEN_LIST(set) == 0) {
@@ -3863,13 +3895,13 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
                                           : T_PLIST_CYC_SSORT + IMMUTABLE,
                     LEN_LIST(set));
-    ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
+    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(set)[0];
 
-    ptset = ADDR_OBJ(set) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
     ptres = ADDR_OBJ(res) + LEN_LIST(set);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
             k = INT_INTOBJ(*ptset);
@@ -3883,7 +3915,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
         return res;
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
             k = INT_INTOBJ(*ptset);
@@ -3922,12 +3954,12 @@ Obj OneTrans(Obj f)
 // The following function is used to check equality of both permutations and
 // transformations, it is written by Chris Jefferson in pull request #280.
 
-Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart)
+Int EqPermTrans22(UInt degL, UInt degR, const UInt2 * ptLstart, const UInt2 * ptRstart)
 {
 
-    UInt2 * ptL;    // pointer to the left operand
-    UInt2 * ptR;    // pointer to the right operand
-    UInt    p;      // loop variable
+    const UInt2 * ptL;  // pointer to the left operand
+    const UInt2 * ptR;  // pointer to the right operand
+    UInt    p;          // loop variable
 
     // if perms/trans are different sizes, check final element as an early
     // check
@@ -3973,12 +4005,12 @@ Int EqPermTrans22(UInt degL, UInt degR, UInt2 * ptLstart, UInt2 * ptRstart)
     return 1L;
 }
 
-Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart)
+Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * ptRstart)
 {
 
-    UInt4 * ptL;    // pointer to the left operand
-    UInt4 * ptR;    // pointer to the right operand
-    UInt    p;      // loop variable
+    const UInt4 * ptL;  // pointer to the left operand
+    const UInt4 * ptR;  // pointer to the right operand
+    UInt    p;          // loop variable
 
     // if perms/trans are different sizes, check final element as an early
     // check
@@ -4026,24 +4058,24 @@ Int EqPermTrans44(UInt degL, UInt degR, UInt4 * ptLstart, UInt4 * ptRstart)
 
 Int EqTrans22(Obj opL, Obj opR)
 {
-    return EqPermTrans22(DEG_TRANS2(opL), DEG_TRANS2(opR), ADDR_TRANS2(opL),
-                         ADDR_TRANS2(opR));
+    return EqPermTrans22(DEG_TRANS2(opL), DEG_TRANS2(opR),
+                         CONST_ADDR_TRANS2(opL), CONST_ADDR_TRANS2(opR));
 }
 
 Int EqTrans44(Obj opL, Obj opR)
 {
-    return EqPermTrans44(DEG_TRANS4(opL), DEG_TRANS4(opR), ADDR_TRANS4(opL),
-                         ADDR_TRANS4(opR));
+    return EqPermTrans44(DEG_TRANS4(opL), DEG_TRANS4(opR),
+                         CONST_ADDR_TRANS4(opL), CONST_ADDR_TRANS4(opR));
 }
 
 Int EqTrans24(Obj f, Obj g)
 {
     UInt    i, def, deg;
-    UInt2 * ptf;
-    UInt4 * ptg;
+    const UInt2 * ptf;
+    const UInt4 * ptg;
 
-    ptf = ADDR_TRANS2(f);
-    ptg = ADDR_TRANS4(g);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptg = CONST_ADDR_TRANS4(g);
     def = DEG_TRANS2(f);
     deg = DEG_TRANS4(g);
 
@@ -4082,11 +4114,11 @@ Int EqTrans24(Obj f, Obj g)
 Int EqTrans42(Obj f, Obj g)
 {
     UInt    i, def, deg;
-    UInt4 * ptf;
-    UInt2 * ptg;
+    const UInt4 * ptf;
+    const UInt2 * ptg;
 
-    ptf = ADDR_TRANS4(f);
-    ptg = ADDR_TRANS2(g);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptg = CONST_ADDR_TRANS2(g);
     def = DEG_TRANS4(f);
     deg = DEG_TRANS2(g);
 
@@ -4129,10 +4161,10 @@ Int EqTrans42(Obj f, Obj g)
 Int LtTrans22(Obj f, Obj g)
 {
     UInt   i, def, deg;
-    UInt2 *ptf, *ptg;
+    const UInt2 *ptf, *ptg;
 
-    ptf = ADDR_TRANS2(f);
-    ptg = ADDR_TRANS2(g);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptg = CONST_ADDR_TRANS2(g);
     def = DEG_TRANS2(f);
     deg = DEG_TRANS2(g);
 
@@ -4187,11 +4219,11 @@ Int LtTrans22(Obj f, Obj g)
 Int LtTrans24(Obj f, Obj g)
 {
     UInt    i, def, deg;
-    UInt2 * ptf;
-    UInt4 * ptg;
+    const UInt2 * ptf;
+    const UInt4 * ptg;
 
-    ptf = ADDR_TRANS2(f);
-    ptg = ADDR_TRANS4(g);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptg = CONST_ADDR_TRANS4(g);
     def = DEG_TRANS2(f);
     deg = DEG_TRANS4(g);
 
@@ -4249,11 +4281,11 @@ Int LtTrans24(Obj f, Obj g)
 Int LtTrans42(Obj f, Obj g)
 {
     UInt    i, def, deg;
-    UInt4 * ptf;
-    UInt2 * ptg;
+    const UInt4 * ptf;
+    const UInt2 * ptg;
 
-    ptf = ADDR_TRANS4(f);
-    ptg = ADDR_TRANS2(g);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptg = CONST_ADDR_TRANS2(g);
     def = DEG_TRANS4(f);
     deg = DEG_TRANS2(g);
 
@@ -4311,10 +4343,10 @@ Int LtTrans42(Obj f, Obj g)
 Int LtTrans44(Obj f, Obj g)
 {
     UInt   i, def, deg;
-    UInt4 *ptf, *ptg;
+    const UInt4 *ptf, *ptg;
 
-    ptf = ADDR_TRANS4(f);
-    ptg = ADDR_TRANS4(g);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptg = CONST_ADDR_TRANS4(g);
     def = DEG_TRANS4(f);
     deg = DEG_TRANS4(g);
 
@@ -4371,7 +4403,8 @@ Int LtTrans44(Obj f, Obj g)
 
 Obj ProdTrans22(Obj f, Obj g)
 {
-    UInt2 *ptf, *ptg, *ptfg;
+    const UInt2 *ptf, *ptg;
+    UInt2 *ptfg;
     UInt   i, def, deg;
     Obj    fg;
 
@@ -4380,8 +4413,8 @@ Obj ProdTrans22(Obj f, Obj g)
     fg = NEW_TRANS2(MAX(def, deg));
 
     ptfg = ADDR_TRANS2(fg);
-    ptf = ADDR_TRANS2(f);
-    ptg = ADDR_TRANS2(g);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptg = CONST_ADDR_TRANS2(g);
 
     if (def <= deg) {
         for (i = 0; i < def; i++) {
@@ -4401,8 +4434,9 @@ Obj ProdTrans22(Obj f, Obj g)
 
 Obj ProdTrans24(Obj f, Obj g)
 {
-    UInt2 * ptf;
-    UInt4 * ptg, *ptfg;
+    const UInt2 * ptf;
+    const UInt4 * ptg;
+    UInt4 * ptfg;
     UInt    i, def, deg;
     Obj     fg;
 
@@ -4412,8 +4446,8 @@ Obj ProdTrans24(Obj f, Obj g)
     fg = NEW_TRANS4(MAX(def, deg));
 
     ptfg = ADDR_TRANS4(fg);
-    ptf = ADDR_TRANS2(f);
-    ptg = ADDR_TRANS4(g);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptg = CONST_ADDR_TRANS4(g);
 
     if (def <= deg) {
         for (i = 0; i < def; i++) {
@@ -4438,8 +4472,9 @@ Obj ProdTrans24(Obj f, Obj g)
 
 Obj ProdTrans42(Obj f, Obj g)
 {
-    UInt4 * ptf, *ptfg;
-    UInt2 * ptg;
+    const UInt4 * ptf;
+    UInt4 * ptfg;
+    const UInt2 * ptg;
     UInt    i, def, deg;
     Obj     fg;
 
@@ -4449,8 +4484,8 @@ Obj ProdTrans42(Obj f, Obj g)
     fg = NEW_TRANS4(MAX(def, deg));
 
     ptfg = ADDR_TRANS4(fg);
-    ptf = ADDR_TRANS4(f);
-    ptg = ADDR_TRANS2(g);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptg = CONST_ADDR_TRANS2(g);
 
     if (def <= deg) {
         // The only transformation created within this file that is of type
@@ -4475,7 +4510,8 @@ Obj ProdTrans42(Obj f, Obj g)
 
 Obj ProdTrans44(Obj f, Obj g)
 {
-    UInt4 *ptf, *ptg, *ptfg;
+    const UInt4 *ptf, *ptg;
+    UInt4 *ptfg;
     UInt   i, def, deg;
     Obj    fg;
 
@@ -4484,8 +4520,8 @@ Obj ProdTrans44(Obj f, Obj g)
     fg = NEW_TRANS4(MAX(def, deg));
 
     ptfg = ADDR_TRANS4(fg);
-    ptf = ADDR_TRANS4(f);
-    ptg = ADDR_TRANS4(g);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptg = CONST_ADDR_TRANS4(g);
 
     if (def <= deg) {
         for (i = 0; i < def; i++) {
@@ -4509,7 +4545,8 @@ Obj ProdTrans44(Obj f, Obj g)
 
 Obj ProdTrans2Perm2(Obj f, Obj p)
 {
-    UInt2 *ptf, *ptp, *ptfp;
+    const UInt2 *ptf, *ptp;
+    UInt2 *ptfp;
     UInt   i, def, dep;
     Obj    fp;
 
@@ -4518,8 +4555,8 @@ Obj ProdTrans2Perm2(Obj f, Obj p)
     fp = NEW_TRANS2(MAX(def, dep));
 
     ptfp = ADDR_TRANS2(fp);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (def <= dep) {
         for (i = 0; i < def; i++) {
@@ -4539,8 +4576,9 @@ Obj ProdTrans2Perm2(Obj f, Obj p)
 
 Obj ProdTrans2Perm4(Obj f, Obj p)
 {
-    UInt2 * ptf;
-    UInt4 * ptp, *ptfp;
+    const UInt2 * ptf;
+    const UInt4 * ptp;
+    UInt4 * ptfp;
     UInt    i, def, dep;
     Obj     fp;
 
@@ -4549,8 +4587,8 @@ Obj ProdTrans2Perm4(Obj f, Obj p)
     fp = NEW_TRANS4(MAX(def, dep));
 
     ptfp = ADDR_TRANS4(fp);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (def <= dep) {
         for (i = 0; i < def; i++) {
@@ -4573,8 +4611,9 @@ Obj ProdTrans2Perm4(Obj f, Obj p)
 
 Obj ProdTrans4Perm2(Obj f, Obj p)
 {
-    UInt4 * ptf, *ptfp;
-    UInt2 * ptp;
+    const UInt4 * ptf;
+    UInt4 * ptfp;
+    const UInt2 * ptp;
     UInt    i, def, dep;
     Obj     fp;
 
@@ -4583,8 +4622,8 @@ Obj ProdTrans4Perm2(Obj f, Obj p)
     fp = NEW_TRANS4(MAX(def, dep));
 
     ptfp = ADDR_TRANS4(fp);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (def <= dep) {
         // The only transformation created within this file that is of type
@@ -4607,7 +4646,8 @@ Obj ProdTrans4Perm2(Obj f, Obj p)
 
 Obj ProdTrans4Perm4(Obj f, Obj p)
 {
-    UInt4 *ptf, *ptp, *ptfp;
+    const UInt4 *ptf, *ptp;
+    UInt4 *ptfp;
     UInt   i, def, dep;
     Obj    fp;
 
@@ -4616,8 +4656,8 @@ Obj ProdTrans4Perm4(Obj f, Obj p)
     fp = NEW_TRANS4(MAX(def, dep));
 
     ptfp = ADDR_TRANS4(fp);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (def <= dep) {
         for (i = 0; i < def; i++) {
@@ -4641,7 +4681,8 @@ Obj ProdTrans4Perm4(Obj f, Obj p)
 
 Obj ProdPerm2Trans2(Obj p, Obj f)
 {
-    UInt2 *ptf, *ptp, *ptpf;
+    const UInt2 *ptf, *ptp;
+    UInt2 *ptpf;
     UInt   i, def, dep;
     Obj    pf;
 
@@ -4650,8 +4691,8 @@ Obj ProdPerm2Trans2(Obj p, Obj f)
     pf = NEW_TRANS2(MAX(def, dep));
 
     ptpf = ADDR_TRANS2(pf);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (dep <= def) {
         for (i = 0; i < dep; i++) {
@@ -4671,8 +4712,9 @@ Obj ProdPerm2Trans2(Obj p, Obj f)
 
 Obj ProdPerm2Trans4(Obj p, Obj f)
 {
-    UInt4 * ptf, *ptpf;
-    UInt2 * ptp;
+    const UInt4 * ptf;
+    UInt4 * ptpf;
+    const UInt2 * ptp;
     UInt    i, def, dep;
     Obj     pf;
 
@@ -4681,8 +4723,8 @@ Obj ProdPerm2Trans4(Obj p, Obj f)
     pf = NEW_TRANS4(MAX(def, dep));
 
     ptpf = ADDR_TRANS4(pf);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (dep <= def) {
         for (i = 0; i < dep; i++) {
@@ -4705,8 +4747,9 @@ Obj ProdPerm2Trans4(Obj p, Obj f)
 
 Obj ProdPerm4Trans2(Obj p, Obj f)
 {
-    UInt2 * ptf;
-    UInt4 * ptp, *ptpf;
+    const UInt2 * ptf;
+    const UInt4 * ptp;
+    UInt4 * ptpf;
     UInt    i, def, dep;
     Obj     pf;
 
@@ -4715,8 +4758,8 @@ Obj ProdPerm4Trans2(Obj p, Obj f)
     pf = NEW_TRANS4(MAX(def, dep));
 
     ptpf = ADDR_TRANS4(pf);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (dep <= def) {
         // I don't know how to create a permutation of type T_PERM4 with
@@ -4739,7 +4782,8 @@ Obj ProdPerm4Trans2(Obj p, Obj f)
 
 Obj ProdPerm4Trans4(Obj p, Obj f)
 {
-    UInt4 *ptf, *ptp, *ptpf;
+    const UInt4 *ptf, *ptp;
+    UInt4 *ptpf;
     UInt   i, def, dep;
     Obj    pf;
 
@@ -4748,8 +4792,8 @@ Obj ProdPerm4Trans4(Obj p, Obj f)
     pf = NEW_TRANS4(MAX(def, dep));
 
     ptpf = ADDR_TRANS4(pf);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (dep <= def) {
         for (i = 0; i < dep; i++) {
@@ -4773,7 +4817,8 @@ Obj ProdPerm4Trans4(Obj p, Obj f)
 
 Obj PowTrans2Perm2(Obj f, Obj p)
 {
-    UInt2 *ptf, *ptp, *ptcnj;
+    const UInt2 *ptf, *ptp;
+    UInt2 *ptcnj;
     UInt   i, def, dep, decnj;
     Obj    cnj;
 
@@ -4783,8 +4828,8 @@ Obj PowTrans2Perm2(Obj f, Obj p)
     cnj = NEW_TRANS2(decnj);
 
     ptcnj = ADDR_TRANS2(cnj);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (def == dep) {
         for (i = 0; i < decnj; i++) {
@@ -4801,8 +4846,9 @@ Obj PowTrans2Perm2(Obj f, Obj p)
 
 Obj PowTrans2Perm4(Obj f, Obj p)
 {
-    UInt2 * ptf;
-    UInt4 * ptp, *ptcnj;
+    const UInt2 * ptf;
+    const UInt4 * ptp;
+    UInt4 * ptcnj;
     UInt    i, def, dep, decnj;
     Obj     cnj;
 
@@ -4812,8 +4858,8 @@ Obj PowTrans2Perm4(Obj f, Obj p)
     cnj = NEW_TRANS4(decnj);
 
     ptcnj = ADDR_TRANS4(cnj);
-    ptf = ADDR_TRANS2(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS2(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (def == dep) {
         // I don't know how to create a permutation of type T_PERM4 with
@@ -4833,8 +4879,9 @@ Obj PowTrans2Perm4(Obj f, Obj p)
 
 Obj PowTrans4Perm2(Obj f, Obj p)
 {
-    UInt2 * ptp;
-    UInt4 * ptf, *ptcnj;
+    const UInt2 * ptp;
+    const UInt4 * ptf;
+    UInt4 * ptcnj;
     UInt    i, def, dep, decnj;
     Obj     cnj;
 
@@ -4844,8 +4891,8 @@ Obj PowTrans4Perm2(Obj f, Obj p)
     cnj = NEW_TRANS4(decnj);
 
     ptcnj = ADDR_TRANS4(cnj);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM2(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM2(p);
 
     if (def == dep) {
         // The only transformation created within this file that is of type
@@ -4865,7 +4912,8 @@ Obj PowTrans4Perm2(Obj f, Obj p)
 
 Obj PowTrans4Perm4(Obj f, Obj p)
 {
-    UInt4 *ptf, *ptp, *ptcnj;
+    const UInt4 *ptf, *ptp;
+    UInt4 *ptcnj;
     UInt   i, def, dep, decnj;
     Obj    cnj;
 
@@ -4875,8 +4923,8 @@ Obj PowTrans4Perm4(Obj f, Obj p)
     cnj = NEW_TRANS4(decnj);
 
     ptcnj = ADDR_TRANS4(cnj);
-    ptf = ADDR_TRANS4(f);
-    ptp = ADDR_PERM4(p);
+    ptf = CONST_ADDR_TRANS4(f);
+    ptp = CONST_ADDR_PERM4(p);
 
     if (def == dep) {
         for (i = 0; i < decnj; i++) {
@@ -4898,7 +4946,8 @@ Obj PowTrans4Perm4(Obj f, Obj p)
 Obj QuoTrans2Perm2(Obj f, Obj p)
 {
     UInt    def, dep, i;
-    UInt2 * ptf, *ptquo, *ptp;
+    const UInt2 * ptf, *ptp;
+    UInt2 * ptquo;
     UInt4 * pttmp;
     Obj     quo;
 
@@ -4909,12 +4958,12 @@ Obj QuoTrans2Perm2(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     pttmp = ADDR_TRANS4(TmpTrans);
-    ptp = ADDR_PERM2(p);
+    ptp = CONST_ADDR_PERM2(p);
     for (i = 0; i < dep; i++) {
         pttmp[*ptp++] = i;
     }
 
-    ptf = ADDR_TRANS2(f);
+    ptf = CONST_ADDR_TRANS2(f);
     ptquo = ADDR_TRANS2(quo);
 
     if (def <= dep) {
@@ -4936,8 +4985,9 @@ Obj QuoTrans2Perm2(Obj f, Obj p)
 Obj QuoTrans2Perm4(Obj f, Obj p)
 {
     UInt    def, dep, i;
-    UInt2 * ptf;
-    UInt4 * ptquo, *ptp, *pttmp;
+    const UInt2 * ptf;
+    const UInt4 * ptp;
+    UInt4 * ptquo, *pttmp;
     Obj     quo;
 
     def = DEG_TRANS2(f);
@@ -4947,12 +4997,12 @@ Obj QuoTrans2Perm4(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     pttmp = ADDR_TRANS4(TmpTrans);
-    ptp = ADDR_PERM4(p);
+    ptp = CONST_ADDR_PERM4(p);
     for (i = 0; i < dep; i++) {
         pttmp[*ptp++] = i;
     }
 
-    ptf = ADDR_TRANS2(f);
+    ptf = CONST_ADDR_TRANS2(f);
     ptquo = ADDR_TRANS4(quo);
 
     if (def <= dep) {
@@ -4977,8 +5027,9 @@ Obj QuoTrans2Perm4(Obj f, Obj p)
 Obj QuoTrans4Perm2(Obj f, Obj p)
 {
     UInt    def, dep, i;
-    UInt4 * ptf, *ptquo, *pttmp;
-    UInt2 * ptp;
+    const UInt4 * ptf;
+    const UInt2 * ptp;
+    UInt4 * ptquo, *pttmp;
     Obj     quo;
 
     def = DEG_TRANS4(f);
@@ -4989,12 +5040,12 @@ Obj QuoTrans4Perm2(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     pttmp = ADDR_TRANS4(TmpTrans);
-    ptp = ADDR_PERM2(p);
+    ptp = CONST_ADDR_PERM2(p);
     for (i = 0; i < dep; i++) {
         pttmp[*ptp++] = i;
     }
 
-    ptf = ADDR_TRANS4(f);
+    ptf = CONST_ADDR_TRANS4(f);
     ptquo = ADDR_TRANS4(quo);
 
     if (def <= dep) {
@@ -5019,7 +5070,8 @@ Obj QuoTrans4Perm2(Obj f, Obj p)
 Obj QuoTrans4Perm4(Obj f, Obj p)
 {
     UInt   def, dep, i;
-    UInt4 *ptf, *pttmp, *ptquo, *ptp;
+    const UInt4 *ptf, *ptp;
+    UInt4 *pttmp, *ptquo;
     Obj    quo;
 
     def = DEG_TRANS4(f);
@@ -5030,12 +5082,12 @@ Obj QuoTrans4Perm4(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     pttmp = ADDR_TRANS4(TmpTrans);
-    ptp = ADDR_PERM4(p);
+    ptp = CONST_ADDR_PERM4(p);
     for (i = 0; i < dep; i++) {
         pttmp[*ptp++] = i;
     }
 
-    ptf = ADDR_TRANS4(f);
+    ptf = CONST_ADDR_TRANS4(f);
     ptquo = ADDR_TRANS4(quo);
 
     if (def <= dep) {
@@ -5062,15 +5114,17 @@ Obj LQuoPerm2Trans2(Obj opL, Obj opR)
 {
     UInt   degL, degR, degM, p;
     Obj    mod;
-    UInt2 *ptL, *ptR, *ptM;
+    const UInt2 *ptL;
+    const UInt2 *ptR;
+    UInt2 *ptM;
 
     degL = DEG_PERM2(opL);
     degR = DEG_TRANS2(opR);
     degM = degL < degR ? degR : degL;
     mod = NEW_TRANS2(degM);
 
-    ptL = ADDR_PERM2(opL);
-    ptR = ADDR_TRANS2(opR);
+    ptL = CONST_ADDR_PERM2(opL);
+    ptR = CONST_ADDR_TRANS2(opR);
     ptM = ADDR_TRANS2(mod);
 
     if (degL <= degR) {
@@ -5097,16 +5151,17 @@ Obj LQuoPerm2Trans4(Obj opL, Obj opR)
 {
     UInt    degL, degR, degM, p;
     Obj     mod;
-    UInt2 * ptL;
-    UInt4 * ptR, *ptM;
+    const UInt2 *ptL;
+    const UInt4 *ptR;
+    UInt4 *ptM;
 
     degL = DEG_PERM2(opL);
     degR = DEG_TRANS4(opR);
     degM = degL < degR ? degR : degL;
     mod = NEW_TRANS4(degM);
 
-    ptL = ADDR_PERM2(opL);
-    ptR = ADDR_TRANS4(opR);
+    ptL = CONST_ADDR_PERM2(opL);
+    ptR = CONST_ADDR_TRANS4(opR);
     ptM = ADDR_TRANS4(mod);
 
     if (degL <= degR) {
@@ -5136,16 +5191,17 @@ Obj LQuoPerm4Trans2(Obj opL, Obj opR)
 {
     UInt    degL, degR, degM, p;
     Obj     mod;
-    UInt4 * ptL, *ptM;
-    UInt2 * ptR;
+    const UInt4 *ptL;
+    const UInt2 *ptR;
+    UInt4 *ptM;
 
     degL = DEG_PERM4(opL);
     degR = DEG_TRANS2(opR);
     degM = degL < degR ? degR : degL;
     mod = NEW_TRANS4(degM);
 
-    ptL = ADDR_PERM4(opL);
-    ptR = ADDR_TRANS2(opR);
+    ptL = CONST_ADDR_PERM4(opL);
+    ptR = CONST_ADDR_TRANS2(opR);
     ptM = ADDR_TRANS4(mod);
 
     if (degL <= degR) {
@@ -5175,15 +5231,17 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR)
 {
     UInt   degL, degR, degM, p;
     Obj    mod;
-    UInt4 *ptL, *ptR, *ptM;
+    const UInt4 *ptL;
+    const UInt4 *ptR;
+    UInt4 *ptM;
 
     degL = DEG_PERM4(opL);
     degR = DEG_TRANS4(opR);
     degM = degL < degR ? degR : degL;
     mod = NEW_TRANS4(degM);
 
-    ptL = ADDR_PERM4(opL);
-    ptR = ADDR_TRANS4(opR);
+    ptL = CONST_ADDR_PERM4(opL);
+    ptR = CONST_ADDR_TRANS4(opR);
     ptM = ADDR_TRANS4(mod);
 
     if (degL <= degR) {
@@ -5227,7 +5285,7 @@ Obj PowIntTrans2(Obj i, Obj f)
     }
 
     if ((UInt)img <= DEG_TRANS2(f)) {
-        img = (ADDR_TRANS2(f))[img - 1] + 1;
+        img = (CONST_ADDR_TRANS2(f))[img - 1] + 1;
     }
 
     return INTOBJ_INT(img);
@@ -5250,7 +5308,7 @@ Obj PowIntTrans4(Obj i, Obj f)
     }
 
     if ((UInt)img <= DEG_TRANS4(f)) {
-        img = (ADDR_TRANS4(f))[img - 1] + 1;
+        img = (CONST_ADDR_TRANS4(f))[img - 1] + 1;
     }
 
     return INTOBJ_INT(img);
@@ -5264,21 +5322,22 @@ Obj PowIntTrans4(Obj i, Obj f)
 
 Obj OnSetsTrans(Obj set, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    deg;
-    Obj *   ptset, *ptres, tmp, res;
+    const Obj *   ptset;
+    Obj *   ptres, tmp, res;
     UInt    i, isint, k;
 
     res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
                     LEN_LIST(set));
 
-    ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
+    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(set)[0];
 
-    ptset = ADDR_OBJ(set) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
     ptres = ADDR_OBJ(res) + LEN_LIST(set);
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         // loop over the entries of the tuple
         isint = 1;
@@ -5293,16 +5352,16 @@ Obj OnSetsTrans(Obj set, Obj f)
             else {
                 isint = 0;
                 tmp = POW(*ptset, f);
-                ptset = ADDR_OBJ(set) + i;
+                ptset = CONST_ADDR_OBJ(set) + i;
                 ptres = ADDR_OBJ(res) + i;
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
                 *ptres = tmp;
                 CHANGED_BAG(res);
             }
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
@@ -5318,9 +5377,9 @@ Obj OnSetsTrans(Obj set, Obj f)
             else {
                 isint = 0;
                 tmp = POW(*ptset, f);
-                ptset = ADDR_OBJ(set) + i;
+                ptset = CONST_ADDR_OBJ(set) + i;
                 ptres = ADDR_OBJ(res) + i;
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
                 *ptres = tmp;
                 CHANGED_BAG(res);
             }
@@ -5347,21 +5406,22 @@ Obj OnSetsTrans(Obj set, Obj f)
 
 Obj OnTuplesTrans(Obj tup, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    const UInt2 * ptf2;
+    const UInt4 * ptf4;
     UInt    deg, i, k;
-    Obj *   pttup, *ptres, res, tmp;
+    const Obj *   pttup;
+    Obj *   ptres, res, tmp;
 
     res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
                     LEN_LIST(tup));
 
-    ADDR_OBJ(res)[0] = ADDR_OBJ(tup)[0];
+    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(tup)[0];
 
-    pttup = ADDR_OBJ(tup) + LEN_LIST(tup);
+    pttup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
     ptres = ADDR_OBJ(res) + LEN_LIST(tup);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = ADDR_TRANS2(f);
+        ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
 
         // loop over the entries of the tuple
@@ -5380,16 +5440,16 @@ Obj OnTuplesTrans(Obj tup, Obj f)
                               0L, 0L);
                 }
                 tmp = POW(*pttup, f);
-                pttup = ADDR_OBJ(tup) + i;
+                pttup = CONST_ADDR_OBJ(tup) + i;
                 ptres = ADDR_OBJ(res) + i;
-                ptf2 = ADDR_TRANS2(f);
+                ptf2 = CONST_ADDR_TRANS2(f);
                 *ptres = tmp;
                 CHANGED_BAG(res);
             }
         }
     }
     else {
-        ptf4 = ADDR_TRANS4(f);
+        ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
@@ -5408,9 +5468,9 @@ Obj OnTuplesTrans(Obj tup, Obj f)
                               0L, 0L);
                 }
                 tmp = POW(*pttup, f);
-                pttup = ADDR_OBJ(tup) + i;
+                pttup = CONST_ADDR_OBJ(tup) + i;
                 ptres = ADDR_OBJ(res) + i;
-                ptf4 = ADDR_TRANS4(f);
+                ptf4 = CONST_ADDR_TRANS4(f);
                 *ptres = tmp;
                 CHANGED_BAG(res);
             }
@@ -5426,9 +5486,9 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 // Save and load
 void SaveTrans2(Obj f)
 {
-    UInt2 * ptr;
+    const UInt2 * ptr;
     UInt    len, i;
-    ptr = ADDR_TRANS2(f);    // save the image list
+    ptr = CONST_ADDR_TRANS2(f);    // save the image list
     len = DEG_TRANS2(f);
     for (i = 0; i < len; i++) {
         SaveUInt2(*ptr++);
@@ -5448,9 +5508,9 @@ void LoadTrans2(Obj f)
 
 void SaveTrans4(Obj f)
 {
-    UInt4 * ptr;
+    const UInt4 * ptr;
     UInt    len, i;
-    ptr = ADDR_TRANS4(f);    // save the image list
+    ptr = CONST_ADDR_TRANS4(f);    // save the image list
     len = DEG_TRANS4(f);
     for (i = 0; i < len; i++) {
         SaveUInt4(*ptr++);

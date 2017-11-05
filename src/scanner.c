@@ -208,14 +208,14 @@ void            SyntaxWarning (
 **      'Match( Symbol, "", 0L );'.
 **
 **  This is used if the parser knows that the current  symbol is correct, for
-**  example in 'RdReturn'  the   first symbol must be 'S_RETURN',   otherwise
-**  'RdReturn' would not have been  called.  Called this  way 'Match' will of
-**  course never raise a syntax error,  therefore <msg>  and <skipto> are of
-**  no concern, they are passed nevertheless  to please  lint.  The effect of
-**  this call is merely to read the next symbol from input.
+**  example in 'ReadReturn'  the  first symbol must be 'S_RETURN',  otherwise
+**  'ReadReturn' would not have been called. Called this  way 'Match' will of
+**  course never raise a syntax error, therefore <msg> and <skipto> are of no
+**  concern.  The effect of this call is  merely to read the next symbol from
+**  input.
 **
-**  Another typical 'Match' call is in 'RdIf' after we read the if symbol and
-**  the condition following, and now expect to see the 'then' symbol:
+**  Another typical 'Match' call is in 'ReadIf' after we read the if symbol
+**  and the condition following, and now expect to see the 'then' symbol:
 **
 **      Match( S_THEN, "then", STATBEGIN|S_ELIF|S_ELSE|S_FI|follow );
 **
@@ -224,10 +224,10 @@ void            SyntaxWarning (
 **  message: '^ syntax error, then expected'.  Then 'Match' skips all symbols
 **  until finding either  a symbol  that can begin  a statment,  an 'elif' or
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
-**  which is passed to  'RdIf' and contains  all symbols allowing  one of the
-**  calling functions to resynchronize, for example 'S_OD' if 'RdIf' has been
-**  called from 'RdFor'.  <follow>  always contain 'S_EOF', which 'Read' uses
-**  to resynchronise.
+**  which is passed to 'ReadIf' and contains all symbols allowing  one of the
+**  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has
+**  been called from 'ReadFor'.  <follow> always contain 'S_EOF', which 'Read'
+**  uses to resynchronise.
 **
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
@@ -460,8 +460,8 @@ UInt OpenInputStream (
     STATE(Input)->stream = stream;
     STATE(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     if (STATE(Input)->isstringstream) {
-        STATE(Input)->sline = ADDR_OBJ(stream)[2];
-        STATE(Input)->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
+        STATE(Input)->sline = CONST_ADDR_OBJ(stream)[2];
+        STATE(Input)->spos = INT_INTOBJ(CONST_ADDR_OBJ(stream)[1]);
     }
     else {
         STATE(Input)->sline = 0;
@@ -1165,7 +1165,7 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-extern void PutLine2(
+static void PutLine2(
     TypOutputFile *         output,
     const Char *            line,
     UInt                    len   );
@@ -2263,10 +2263,10 @@ void PutLine2(
   if ( output->isstream ) {
     /* special handling of string streams, where we can copy directly */
     if (output->isstringstream) {
-      str = ADDR_OBJ(output->stream)[1];
+      str = CONST_ADDR_OBJ(output->stream)[1];
       lstr = GET_LEN_STRING(str);
       GROW_STRING(str, lstr+len);
-      memcpy((void *) (CHARS_STRING(str) + lstr), line, len);
+      memcpy(CHARS_STRING(str) + lstr, line, len);
       SET_LEN_STRING(str, lstr + len);
       *(CHARS_STRING(str) + lstr + len) = '\0';
       CHANGED_BAG(str);
@@ -2394,7 +2394,7 @@ void PutChrTo (
   /* '\02', decrement indentation level                                  */
   else if ( ch == '\02' ) {
 
-    if (!stream -> format)
+    if (!stream->format)
       return;
 
     /* if this is a better place to split the line remember it         */
@@ -2430,7 +2430,7 @@ void PutChrTo (
 
     /* and dump it from the buffer */
     stream->pos = 0;
-    if (stream -> format)
+    if (stream->format)
       {
         /* indent for next line                                         */
         for ( i = 0;  i < stream->indent; i++ )

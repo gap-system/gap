@@ -3672,21 +3672,8 @@ end );
 ##
 #F  ListWithIdenticalEntries( <n>, <obj> )
 ##
-InstallGlobalFunction( ListWithIdenticalEntries, function( n, obj )
-    local list, i;
-    if IsChar(obj) then
-      list := "";
-      for i in [ 1 .. n ] do
-        list[i]:= obj;
-      od;
-    else
-      list:= [];
-      for i in [ n, n-1 .. 1 ] do
-        list[i]:= obj;
-      od;
-    fi;
-    return list;
-end );
+InstallGlobalFunction( ListWithIdenticalEntries,
+LIST_WITH_IDENTICAL_ENTRIES );
 
 
 #############################################################################

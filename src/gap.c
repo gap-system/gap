@@ -148,6 +148,16 @@ UInt Last3;
 */
 UInt Time;
 
+/****************************************************************************
+**
+*V  MemoryAllocated . . . . . . . . . . . global variable  'memory_allocated'
+**
+**  'MemoryAllocated' is the global variable 'memory_allocated', 
+**  which is automatically assigned the amount of memory allocated while
+**  executing the last command.
+*/
+UInt MemoryAllocated;
+
 
 /****************************************************************************
 **
@@ -226,6 +236,7 @@ Obj Shell ( Obj context,
             Char *outFile)
 {
   UInt time = 0;
+  UInt mem = 0;
   UInt status;
   Obj evalResult;
   UInt dualSemicolon;
@@ -261,8 +272,10 @@ Obj Shell ( Obj context,
   while ( 1 ) {
 
     /* start the stopwatch                                             */
-    if (setTime)
-      time = SyTime();
+    if (setTime) {
+          time = SyTime();
+          mem = SizeAllBags;
+    }
 
     /* read and evaluate one command                                   */
     STATE(Prompt) = prompt;
@@ -339,8 +352,14 @@ Obj Shell ( Obj context,
     }
         
     /* stop the stopwatch                                          */
-    if (setTime)
+    if (setTime) {
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+      /* This should be correct for small allocated totals at least, 
+         even on 32 bits, but this functionality will never be very useful
+         on 32 bits */         
+      AssGVar(MemoryAllocated,
+              INTOBJ_INT((SizeAllBags - mem) % (1L << NR_SMALL_INT_BITS)));
+    }
 
     if (STATE(UserHasQuit))
       {
@@ -1011,55 +1030,72 @@ Obj FuncUpEnv (
 
 Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
-  Obj currLVars = STATE(CurrLVars);
-  Expr call;
-  Int line;
-  Obj filename;
-  Obj retlist;
-  retlist = Fail;
-  if (context == STATE(BottomLVars))
-    return Fail;
-  SWITCH_TO_OLD_LVARS(context);
-  call = BRK_CALL_TO();
-  if ( ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
-         TNUM_STAT(call) <= LAST_STAT_TNUM ) ||
-       ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
-         TNUM_EXPR(call) <= LAST_EXPR_TNUM ) ) {
-    line = LINE_STAT(call);
-    filename = FILENAME_STAT(call);
-    retlist = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(retlist, 2);
-    SET_ELM_PLIST(retlist, 1, filename);
-    SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
-    CHANGED_BAG(retlist);
-  }
-  SWITCH_TO_OLD_LVARS( currLVars );
-  return retlist;
+    if (context == STATE(BottomLVars))
+        return Fail;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        return Fail;
+    }
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+        return Fail;
+    }
+
+    Obj currLVars = STATE(CurrLVars);
+    SWITCH_TO_OLD_LVARS(context);
+    GAP_ASSERT(call == BRK_CALL_TO());
+
+    Obj retlist = Fail;
+    Int type = TNUM_STAT(call);
+    if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
+        (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
+        Int line = LINE_STAT(call);
+        Obj filename = FILENAME_STAT(call);
+        retlist = NEW_PLIST(T_PLIST, 2);
+        SET_LEN_PLIST(retlist, 2);
+        SET_ELM_PLIST(retlist, 1, filename);
+        SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
+        CHANGED_BAG(retlist);
+    }
+    SWITCH_TO_OLD_LVARS(currLVars);
+    return retlist;
 }
 
 Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
 {
-  Obj currLVars = STATE(CurrLVars);
-  Expr call;
-  if (context == STATE(BottomLVars))
-    return (Obj) 0;
-  SWITCH_TO_OLD_LVARS(context);
-  call = BRK_CALL_TO();
-  if ( call == 0 ) {
-    Pr( "<compiled or corrupted statement> ", 0L, 0L );
-  }
-    else if ( /*FIRST_STAT_TNUM <= TNUM_STAT(call) &&*/
-              TNUM_STAT(call) <= LAST_STAT_TNUM ) {
-      PrintStat( call );
-      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
+    if (context == STATE(BottomLVars))
+        return 0;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        Pr("<compiled statement> ", 0L, 0L);
     }
-    else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call) &&
-              TNUM_EXPR(call) <= LAST_EXPR_TNUM ) {
-      PrintExpr( call );
-      Pr(" at %s:%d",(UInt)CSTR_STRING(FILENAME_STAT(call)),LINE_STAT(call));
+    else if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+        Pr("<corrupted statement> ", 0L, 0L);
     }
-    SWITCH_TO_OLD_LVARS( currLVars );
-    return (Obj) 0;
+    else {
+        Obj currLVars = STATE(CurrLVars);
+        SWITCH_TO_OLD_LVARS(context);
+        GAP_ASSERT(call == BRK_CALL_TO());
+
+        Int type = TNUM_STAT(call);
+        if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+            PrintStat(call);
+            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
+               LINE_STAT(call));
+        }
+        else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+            PrintExpr(call);
+            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
+               LINE_STAT(call));
+        }
+        SWITCH_TO_OLD_LVARS(currLVars);
+    }
+    return 0;
 }    
 
 /****************************************************************************
@@ -1944,6 +1980,14 @@ Obj FuncSHALLOW_SIZE (
     return ObjInt_UInt( SIZE_BAG( obj ) );
 }
 
+/****************************************************************************
+**
+*F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
+*/
+
+Obj FuncTotalMemoryAllocated( Obj self ) {
+    return INTOBJ_INT(SizeAllBags);
+}
 
 /****************************************************************************
 **
@@ -2871,6 +2915,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GASMAN_MESSAGE_STATUS, 0, ""),
     GVAR_FUNC(GASMAN_LIMITS, 0, ""),
     GVAR_FUNC(SHALLOW_SIZE, 1, "object"),
+    GVAR_FUNC(TotalMemoryAllocated, 0, ""),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
     GVAR_FUNC(TNUM_OBJ_INT, 1, "object"),
     GVAR_FUNC(OBJ_HANDLE, 1, "object"),
@@ -2969,7 +3014,9 @@ static Int PostRestore (
     Last2             = GVarName( "last2" );
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
+    MemoryAllocated   = GVarName( "memory_allocated"  );
     AssGVar(Time, INTOBJ_INT(0));
+    AssGVar(MemoryAllocated, INTOBJ_INT(0));
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */

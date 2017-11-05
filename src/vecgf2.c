@@ -1074,7 +1074,7 @@ Obj ShallowCopyVecGF2( Obj vec )
   NEW_GF2VEC( copy, TYPE_LIST_GF2VEC, len);
   ptrS = BLOCKS_GF2VEC(vec);
   ptrD = BLOCKS_GF2VEC(copy);
-  memcpy((void *) ptrD, (void *) ptrS, NUMBER_BLOCKS_GF2VEC(vec)*sizeof(UInt));
+  memcpy(ptrD, ptrS, NUMBER_BLOCKS_GF2VEC(vec)*sizeof(UInt));
   return copy;
 }
 
@@ -4099,7 +4099,7 @@ Obj FuncQUOTREM_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
      }
 
      NEW_GF2VEC(remv, TYPE_LIST_GF2VEC, len1a);
-     memcpy((void *)BLOCKS_GF2VEC(remv), (void *)BLOCKS_GF2VEC(vec1),
+     memcpy(BLOCKS_GF2VEC(remv), BLOCKS_GF2VEC(vec1),
 	    ((len1a + BIPEB-1)/BIPEB)*sizeof(UInt));
      
      NEW_GF2VEC(quotv, TYPE_LIST_GF2VEC, len1a-len2a+1);

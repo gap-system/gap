@@ -33,7 +33,9 @@ BIND_GLOBAL("AtomicList", function(arg)
   if LEN_LIST(arg) = 1 and IS_LIST(arg[1]) then
     l := [];
     for i in [1..LEN_LIST(arg[1])] do
-      l[i] := arg[1][i];
+      if IsBound(arg[1][i]) then
+        l[i] := arg[1][i];
+      fi;
     od;
     return l;
   fi;

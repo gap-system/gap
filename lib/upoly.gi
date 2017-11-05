@@ -98,7 +98,8 @@ RedispatchOnCondition(IsIrreducibleRingElement,true,[IsRing,IsPolynomial],
 ##
 #F  CyclotomicPol( <n> )  . . .  coefficients of <n>-th cyclotomic polynomial
 ##
-InstallGlobalFunction( CyclotomicPol, function( n )
+InstallGlobalFunction( CyclotomicPol, MemoizePosIntFunction(
+function( n )
 
     local f,   # result (after stripping off other cyclotomic polynomials)
           div, # divisors of 'n'
@@ -111,44 +112,37 @@ InstallGlobalFunction( CyclotomicPol, function( n )
           c,
           k;
 
-    if not IsBound( CYCLOTOMICPOLYNOMIALS[ n ] ) then
+    # We have to compute the polynomial. Start with 'X^n - 1' ...
+    f := List( [ 1 .. n ], x -> 0 );
+    f[1]     := -1;
+    f[ n+1 ] :=  1;
 
-      # We have to compute the polynomial. Start with 'X^n - 1' ...
-      f := List( [ 1 .. n ], x -> 0 );
-      f[1]     := -1;
-      f[ n+1 ] :=  1;
+    div:= ShallowCopy( DivisorsInt( n ) );
+    RemoveSet( div, n );
 
-      div:= ShallowCopy( DivisorsInt( n ) );
-      RemoveSet( div, n );
-
-      # ... and divide by all 'd'-th cyclotomic polynomials
-      # for proper divisors 'd' of 'n'.
-      for d in div do
-        q := [];
-        g := CyclotomicPol( d );
-        l := Length( g );
-        m := Length( f ) - l;
-        for i  in [ 0 .. m ]  do
-          c := f[ m - i + l ] / g[ l ];
-          for k  in [ 1 .. l ]  do
-            f[ m - i + k ] := f[ m - i + k ] - c * g[k];
-          od;
-          q[ m - i + 1 ] := c;
+    # ... and divide by all 'd'-th cyclotomic polynomials
+    # for proper divisors 'd' of 'n'.
+    for d in div do
+      q := [];
+      g := CyclotomicPol( d );
+      l := Length( g );
+      m := Length( f ) - l;
+      for i  in [ 0 .. m ]  do
+        c := f[ m - i + l ] / g[ l ];
+        for k  in [ 1 .. l ]  do
+          f[ m - i + k ] := f[ m - i + k ] - c * g[k];
         od;
-        f:= q;
+        q[ m - i + 1 ] := c;
       od;
+      f:= q;
+    od;
 
-      # store the coefficients list
-      CYCLOTOMICPOLYNOMIALS[n]:= Immutable( f );
-    else
-
-      # just fetch the coefficients list
-      f := CYCLOTOMICPOLYNOMIALS[n];
-    fi;
+    # make the coefficients list immutable
+    MakeImmutable( f );
 
     # return the coefficients list
     return f;
-end );
+end ) );
 
 
 ############################################################################

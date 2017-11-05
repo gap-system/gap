@@ -59,7 +59,7 @@ end);
 ##
 ##  `HasPcgs' implies  `CanEasilyComputePcgs',  which implies `IsSolvable',
 ##  so a  pcgs cannot be set for insoluble permutation groups.
-##  As Pcgs may return 'fail' for insolvable permutation groups, this method
+##  As Pcgs may return 'fail' for non-solvable permutation groups, this method
 ##  is necessary.
 ##
 InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], 0,
@@ -1449,7 +1449,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
   # workaround for old code 
   InstallMethod(series,"compatibility only",true,
     [IsPcgs and HasIndicesNormalSteps],
-     -SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(HasIndicesNormalSteps))),
+     -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
   local p,l,g,h,i,ipcgs,home;
     home:=ParentPcgs(pcgs);
@@ -1471,7 +1471,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
 
   InstallMethod(indices,"compatibility only",true,
     [IsPcgs and HasIndicesNormalSteps],
-     -SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(HasIndicesNormalSteps))),
+     -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
   local p,l,g,h,i,ipcgs,home;
     home:=ParentPcgs(pcgs);

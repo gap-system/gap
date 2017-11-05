@@ -9,8 +9,7 @@
 ##
 
 BindGlobal("OVERRIDENICE",Maximum(NICE_FLAGS,
-	       RankFilter(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(IsMatrixGroup
-	       and IsFinite)))));
+	       RankFilter(IsMatrixGroup and IsFinite)));
 
 #############################################################################
 ##

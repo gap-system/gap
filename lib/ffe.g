@@ -22,15 +22,6 @@ BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^16 );
 
 #############################################################################
 ##
-#V  TYPES_FFE . . . . . . . . . . . . .  list of known types of internal ffes
-##
-#T TYPES_FFE := WeakPointerObj( [] );
-BIND_GLOBAL( "TYPES_FFE", [] );
-BIND_GLOBAL( "TYPES_FFE0", [] );
-
-
-#############################################################################
-##
 #F  TYPE_FFE( <p> ) . . . . . . . . . . . type of a ffe in characteristic <p>
 ##
 ##  <p> must be a small prime integer
@@ -42,26 +33,15 @@ BIND_GLOBAL( "TYPES_FFE0", [] );
 ##  which in turn would call `TYPE_FFE' and thus would lead to an infinite
 ##  recursion.
 ##
-BIND_GLOBAL( "TYPE_FFE", function ( p )
-    local type, fam;
-    if IsBound( TYPES_FFE[p] ) then
-      return TYPES_FFE[p];
-    fi;
-#T     if IsBoundElmWPObj( TYPES_FFE, p ) then
-#T       type:= ElmWPObj( TYPES_FFE, p );
-#T       if type <> fail then
-#T         return type;
-#T       fi;
-#T     fi;
-    fam:= NewFamily( "FFEFamily",
-    IS_FFE,CanEasilySortElements,CanEasilySortElements );
-    SetIsUFDFamily( fam, true );
-    SetCharacteristic( fam, p );
-    type:= NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
-    TYPES_FFE[p]:= type;
-#T     SetElmWPObj( TYPES_FFE, p, type );
-    return type;
-end );
+BIND_GLOBAL( "TYPE_FFE", MemoizePosIntFunction(
+    function( p )
+        local fam;
+        fam:= NewFamily( "FFEFamily",
+        IS_FFE,CanEasilySortElements,CanEasilySortElements );
+        SetIsUFDFamily( fam, true );
+        SetCharacteristic( fam, p );
+        return NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
+    end, rec(flush := false) ));
 
 
 #############################################################################
@@ -70,24 +50,14 @@ end );
 ##
 ##  see also "ffe.gi"
 ##
-BIND_GLOBAL( "TYPE_FFE0", function ( p )
-    local type, fam;
-    if IsBound( TYPES_FFE0[p] ) then
-      return TYPES_FFE0[p];
-    fi;
-#T     if IsBoundElmWPObj( TYPES_FFE, p ) then
-#T       type:= ElmWPObj( TYPES_FFE, p );
-#T       if type <> fail then
-#T         return type;
-#T       fi;
-#T     fi;
-    fam:= FamilyType(TYPE_FFE(p));
-    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
-                   and HasDegreeFFE );
-    TYPES_FFE0[p]:= type;
-#T     SetElmWPObj( TYPES_FFE, p, type );
-    return type;
-end );
+BIND_GLOBAL( "TYPE_FFE0", MemoizePosIntFunction(
+    function ( p )
+        local fam;
+
+        fam:= FamilyType(TYPE_FFE(p));
+        return NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
+                            and HasDegreeFFE );
+    end, rec(flush := false) ));
 
 
 #############################################################################

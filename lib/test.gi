@@ -567,14 +567,24 @@ end);
 ##
 
 InstallGlobalFunction( "TestDirectory", function(arg)
-  local basedirs, nopts, opts, files, newfiles, filetimes,
-        f, c, i, recurseFiles,
-        startTime, time, testResult, testTotal,
-        totalTime, STOP_TEST_CPY;
+    local  testTotal, totalTime, totalMem, STOP_TEST_CPY, 
+           basedirs, nopts, opts, testOptions, earlyStop, 
+           showProgress, suppressStatusMessage, exitGAP, c, files, 
+           filetimes, filemems, recurseFiles, f, i, startTime, 
+           startMem, testResult, time, mem, startGcTime, gctime,
+           totalGcTime, filegctimes, GcTime;
 
   testTotal := true;
   totalTime := 0;
+  totalMem := 0;
+  totalGcTime := 0;
   
+  GcTime := function()
+      local g;
+      g := GASMAN_STATS();    
+      return g[1][8] + g[2][8];    
+  end;
+        
   STOP_TEST_CPY := STOP_TEST;
   STOP_TEST := function(arg) end;
   
@@ -609,6 +619,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   files := [];
   filetimes := [];
+  filemems := [];  
+  filegctimes := [];  
   
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
@@ -658,6 +670,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     fi;
     
     startTime := Runtime();
+    startMem := TotalMemoryAllocated();    
+    startGcTime := GcTime();    
     testResult := Test(files[i].name, opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
@@ -673,11 +687,19 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     testTotal := testTotal and testResult;
     
     time := Runtime() - startTime;
+    mem := TotalMemoryAllocated() - startMem;    
+    gctime := GcTime() - startGcTime;    
     filetimes[i] := time;
+    filemems[i] := mem;    
+    filegctimes[i] := gctime;    
     totalTime := totalTime + time;
+    totalMem := totalMem + mem;    
+    totalGcTime := totalGcTime + gctime;    
     
     if opts.showProgress then
-      Print( String( time, 8 ), " msec for ", files[i].shortName, "\n" );
+        Print( String( time, 8 ), " ms (",String(gctime)," ms GC) and ", 
+               StringOfMemoryAmount( mem ), 
+               " allocated for ", files[i].shortName, "\n" );
     fi;
   od;       
   
@@ -685,7 +707,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   
   Print("-----------------------------------\n");
   Print( "total",
-         String( totalTime, 10 ), " msec\n\n" );
+         String( totalTime, 10 ), " ms (",String( totalGcTime )," ms GC) and ", 
+         StringOfMemoryAmount( totalMem )," allocated\n\n" );
 
   if not opts.suppressStatusMessage then
     if testTotal then
