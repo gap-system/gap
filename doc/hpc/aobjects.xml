@@ -42,12 +42,13 @@ list may be non-deterministic.
 
 It is faster to write to fixed atomic lists than to a resizable atomic list.
 
-    <Subsection Label="AtomicList">
-      <Heading>AtomicList(list | count, obj)</Heading>
-
-<C>AtomicList</C> is used to create a new atomic list. It takes either a plain list as an argument, in which case it
+<ManSection>
+    <Func Name="AtomicList" Arg='list'/>
+    <Func Name="AtomicList" Arg='count, obj' Label="for a count and an object"/>
+<Description>
+<Ref Func="AtomicList"/> is used to create a new atomic list. It takes either a plain list as an argument, in which case it
 will create a new atomic list of the same size, populated by the same elements; or it takes a count and an object
-argument. In that case, it creates an atomic list with <C>count</C> elements, each set to the value of <C>obj</C>.
+argument. In that case, it creates an atomic list with <A>count</A> elements, each set to the value of <A>obj</A>.
 
 <Example><![CDATA[
 gap> al := AtomicList([3, 1, 4]);
@@ -62,18 +63,24 @@ gap> WaitTask(RunTask(function() al[3] := `"beta"; end));
 gap> al[3];
 "beta"
 ]]></Example>
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="FixedAtomicList">
-      <Heading>FixedAtomicList(list | count, obj)</Heading>
+<ManSection>
+    <Func Name="FixedAtomicList" Arg='list'/>
+    <Func Name="FixedAtomicList" Arg='count, obj' Label="for a count and an object"/>
 
-<C>FixedAtomicList</C> works like <Ref Func="AtomicList"/> except that the resulting list cannot be resized.
+<Description>
+<Ref Func="FixedAtomicList"/> works like <Ref Func="AtomicList"/> except that the resulting list cannot be resized.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="MakeFixedAtomicList">
-      <Heading>MakeFixedAtomicList(list)</Heading>
+<ManSection>
+    <Func Name="MakeFixedAtomicList"
+      Arg='list'/>
 
-<C>MakeFixedAtomicList</C> turns a resizable atomic list into a fixed atomic list.
+<Description>
+<Ref Func="MakeFixedAtomicList"/> turns a resizable atomic list into a fixed atomic list.
 
 <Example><![CDATA[
 gap> a := AtomicList([99]);
@@ -85,12 +92,15 @@ gap> MakeFixedAtomicList(a);
 gap> a[3] := 101;
 Error, Atomic List Element: <pos>=3 is an invalid index for <list>
 ]]></Example>
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="FromAtomicList">
-      <Heading>FromAtomicList(atomic_list)</Heading>
+<ManSection>
+    <Func Name="FromAtomicList"
+      Arg='atomic_list'/>
 
-<C>FromAtomicList</C> returns a plain list containing the same elements as <C>atomic_list</C> at the time of the call.
+<Description>
+<Ref Func="FromAtomicList"/> returns a plain list containing the same elements as <A>atomic_list</A> at the time of the call.
 Because other threads can write concurrently to that list, the result is not guaranteed to be deterministic.
 
 <Example><![CDATA[
@@ -99,13 +109,16 @@ gap> WaitTask(RunTask(function() al[2] := 40; end));
 gap> FromAtomicList(al);
 [ 10, 40, 30 ]
 ]]></Example>
-    </Subsection>
-  </Section>
-  <Section Label="ATOMIC_ADDITION">
-    <Heading>ATOMIC_ADDITION(atomic_list, index, value)</Heading>
+</Description>
+</ManSection>
+     
+<ManSection>
+    <Func Name="ATOMIC_ADDITION"
+      Arg='atomic_list, index, value'/>
 
-<C>ATOMIC_ADDITION</C> is a low-level operation that atomically adds <C>value</C> to <C>atomic_list[index]</C>. It
-returns the value of atomic_list[index] after the addition has been performed.
+<Description>
+<Ref Func="ATOMIC_ADDITION"/> is a low-level operation that atomically adds <A>value</A> to <A>atomic_list[index]</A>. It
+returns the value of <A>atomic_list[index]</A> after the addition has been performed.
 
 <Example><![CDATA[
 gap> al := FixedAtomicList([4,5,6]);;
@@ -114,36 +127,44 @@ gap> ATOMIC_ADDITION(al, 2, 7);
 gap> FromAtomicList(al);
 [ 4, 12, 6 ]
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="COMPARE_AND_SWAP">
-    <Heading>COMPARE_AND_SWAP(atomic_list, index, old, new)</Heading>
+<ManSection>
+    <Func Name="COMPARE_AND_SWAP"
+      Arg='atomic_list, index, old, new'/>
 
-<C>COMPARE_AND_SWAP</C> is an atomic operation. It atomically compares <C>atomic_list[index]</C> to <C>old</C> and, if
-they are identical,  replaces the value (in the same atomic step) with <C>new</C>. It returns true if the replacement
+<Description>
+<Ref Func="COMPARE_AND_SWAP"/> is an atomic operation. It atomically compares <A>atomic_list[index]</A> to <A>old</A> and, if
+they are identical,  replaces the value (in the same atomic step) with <A>new</A>. It returns true if the replacement
 took place, false otherwise.
-
-The primary use of <C>COMPARE_AND_SWAP</C> is to implement certain concurrency primitives; most programmers will not
+<P/>
+The primary use of <Ref Func="COMPARE_AND_SWAP"/> is to implement certain concurrency primitives; most programmers will not
 need to use it.
+</Description>
+</ManSection>
 
   </Section>
+
   <Section Label="Atomic records and component objects">
     <Heading>Atomic records and component objects</Heading>
 
 Atomic records are atomic counterparts to plain records. They support assignment to individual record fields, and
 conversion to and from plain records.
-
+<P/>
 Assignment semantics can be specified on a per-record basis if the assigned record field is already populated, allowing
 either an overwrite, keeping the existing value, or raising an error.
-
+<P/>
 It is not possible to unbind atomic record elements.
-
+<P/>
 Like plain records, atomic records can be converted to component objects using <C>Objectify</C>.
 
-    <Subsection Label="AtomicRecord">
-      <Heading>AtomicRecord([capacity|record])</Heading>
+<ManSection>
+    <Func Name="AtomicRecord" Arg='capacity'/>
+    <Func Name="AtomicRecord" Arg='record' Label="for a record"/>
 
-<C>AtomicRecord</C> is used to create a new atomic record. Its single optional argument is either a positive integer,
+<Description>
+<Ref Func="AtomicRecord"/> is used to create a new atomic record. Its single optional argument is either a positive integer,
 denoting the intended capacity (i.e., number of elements to be held) of the record, in which case a new empty atomic
 record with that initial capacity will be created. Alternatively, the caller can provide a plain record with which to
 initially populate the atomic record.
@@ -161,13 +182,16 @@ gap> [ r.x, r.y ];
 
 Any atomic record can later grow beyond its initial capacity. There is no limit to the number of elements it can hold
 other than available memory.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="FromAtomicRecord">
-      <Heading>FromAtomicRecord(record)</Heading>
+<ManSection>
+    <Func Name="FromAtomicRecord"
+      Arg='record'/>
 
-<C>FromAtomicRecord</C> returns a plain record copy of the atomic record <C>record</C>. This copy is shallow; elements
-of <C>record</C> will not also be copied.
+<Description>
+<Ref Func="FromAtomicRecord"/> returns a plain record copy of the atomic record <A>record</A>. This copy is shallow; elements
+of <A>record</A> will not also be copied.
 
 <Example><![CDATA[
 gap> r := AtomicRecord();;
@@ -176,39 +200,52 @@ gap> FromAtomicRecord(r);
 rec( x := 1, y := 2, z := 3 )
 ]]></Example>
 
-    </Subsection>
+</Description>
+</ManSection>
+
   </Section>
   <Section Label="Replacement policy functions">
     <Heading>Replacement policy functions</Heading>
 
 There are three functions that set the replacement policy of an atomic object. All three can also be used with plain
 lists and records, in which case an atomic version of the list or record is first created. This allows programmers to
-elide <C>AtomicList</C> and <C>AtomicRecord</C> calls when the next step is to change their policy.
+elide <Ref Func="AtomicList"/> and <Ref Func="AtomicRecord"/> calls when the next step is to change their policy.
 
-    <Subsection Label="MakeWriteOnceAtomic">
-      <Heading>MakeWriteOnceAtomic(obj)</Heading>
+<ManSection>
+    <Func Name="MakeWriteOnceAtomic"
+      Arg='obj'/>
 
-<C>MakeWriteOnceAtomic</C> takes a list, record, atomic list, atomic record, atomic positional object, or atomic
+<Description>
+<Ref Func="MakeWriteOnceAtomic"/> takes a list, record, atomic list, atomic record, atomic positional object, or atomic
 component object as its argument. If the argument is a non-atomic list or record, then the function first creates an
 atomic copy of the argument. The function then changes the replacement policy of the object to write-once: if an element
 of the object is already bound, then further attempts to assign to it will be ignored.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="MakeStrictWriteOnceAtomic">
-      <Heading>MakeStrictWriteOnceAtomic(obj)</Heading>
+<ManSection>
+    <Func Name="MakeStrictWriteOnceAtomic"
+      Arg='obj'/>
 
-<C>MakeStrictWriteOnceAtomic</C> works like <C>MakeWriteOnceAtomic</C>, except that the replacement policy is being
+<Description>
+<Ref Func="MakeStrictWriteOnceAtomic"/> works like <Ref Func="MakeWriteOnceAtomic"/>, except that the replacement policy is being
 changed to being strict write-once: if an element is already bound, then further attempts to assign to it will raise an
 error.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="MakeReadWriteAtomic">
-      <Heading>MakeReadWriteAtomic(obj)</Heading>
+<ManSection>
+    <Func Name="MakeReadWriteAtomic"
+      Arg='obj'/>
 
-<C>MakeReadWriteAtomic</C> is the inverse of <C>MakeWriteOnceAtomic</C> and <C>MakeStrictWriteOnceAtomic</C> in that the
+<Description>
+<Ref Func="MakeReadWriteAtomic"/> is the inverse of <Ref Func="MakeWriteOnceAtomic"/> 
+and <Ref Func="MakeStrictWriteOnceAtomic"/> in that the
 replacement policy is being changed to being rewritable: Elements can be replaced even if they are already bound.
-    </Subsection>
+</Description>
+</ManSection>
   </Section>
+
   <Section Label="Thread-local records">
     <Heading>Thread-local records</Heading>
 
@@ -230,10 +267,12 @@ gap> r.x;
 As can be seen above, even though <C>r.x</C> is overwritten in the second thread, it does not affect the value of
 <C>r.x| in the first thread</C>
 
-    <Subsection Label="ThreadLocalRecord">
-      <Heading>ThreadLocalRecord([defaults [, constructors]])</Heading>
+<ManSection>
+    <Func Name="ThreadLocalRecord"
+      Arg='[defaults [, constructors]]'/>
 
-<C>ThreadLocalRecord</C> creates a new thread-local record. It accepts up to two initial arguments. The <C>defaults</C>
+<Description>
+<Ref Func="ThreadLocalRecord"/> creates a new thread-local record. It accepts up to two initial arguments. The <A>defaults</A>
 argument is a record of default values with which each thread-local copy is initially populated (this happens on demand,
 so values are not actually read until needed).
 
@@ -253,13 +292,16 @@ gap> TaskResult(RunTask(function() return r.x; end));
 gap> TaskResult(RunTask(function() return r.y; end));
 101
 ]]></Example>
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="SetTLDefault">
-      <Heading>SetTLDefault(record, name, value)</Heading>
+<ManSection>
+    <Func Name="SetTLDefault"
+      Arg='record, name, value'/>
 
-<C>SetTLDefault</C> can be used to set the default value of a record field after its creation. Here, <C>record</C> is an
-atomic record, <C>name</C> is the string of the field name, and <C>value</C> is the value.
+<Description>
+<Ref Func="SetTLDefault"/> can be used to set the default value of a record field after its creation. Here, <A>record</A> is an
+atomic record, <A>name</A> is the string of the field name, and <A>value</A> is the value.
 
 <Example><![CDATA[
 gap> r := ThreadLocalRecord();;
@@ -269,13 +311,16 @@ gap> r.x;
 gap> TaskResult(RunTask(function() return r.x; end));
 314
 ]]></Example>
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="SetTLConstructor">
-      <Heading>SetTLConstructor(record, name, func)</Heading>
+<ManSection>
+    <Func Name="SetTLConstructor"
+      Arg='record, name, func'/>
 
-<C>SetTLConstructor</C> can be used to set the constructor of a thread-local record field after its creation, similar to
-<C>SetTLDefault</C>.
+<Description>
+<Ref Func="SetTLConstructor"/> can be used to set the constructor of a thread-local record field after its creation, similar to
+<Ref Func="SetTLDefault"/>.
 
 <Example><![CDATA[
 gap> r := ThreadLocalRecord();;
@@ -285,6 +330,8 @@ gap> r.x;
 gap> TaskResult(RunTask(function() return r.x; end));
 2718
 ]]></Example>
-    </Subsection>
+</Description>
+</ManSection>
+
   </Section>
   </Chapter>

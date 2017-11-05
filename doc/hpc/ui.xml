@@ -10,7 +10,7 @@ the <C>-S</C> option.
 
 The console user interface provides the user with the option to control threads by commands prefixed with an exclamation
 mark (&quot;!&quot;). Those commands are listed below.
-
+<P/>
 For ease of use, users only need to type as many letters of each commands so that it can be unambiguously selected.
 Thus, the shell will recognize <C>!l</C> as an abbreviation for <C>!list</C>.
 
@@ -188,67 +188,92 @@ Calls the function with name <C>function</C>, passing it the single argument <C>
 
 There are several functions to access the basic functionality of the shell user interface. Other than <Ref
 Func="TextUIRegisterCommand"/>, they can only be called from within a registered command.
-
+<P/>
 Threads can be specified either by their numerical identifier or by their name (as a string). The empty string can be
 used to specify the current foreground thread.
 
-    <Subsection Label="TextUIRegisterCommand">
-      <Heading>TextUIRegisterCommand(name, func)</Heading>
+<ManSection>
+    <Func Name="TextUIRegisterCommand"
+      Arg='name, func'/>
 
+<Description>
 Registers the command <C>!name</C> with the shell UI. It will call &lt;func&gt; with the rest of the command line passed
 as a string argument when typed.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUIForegroundThread">
-      <Heading>TextUIForegroundThread()</Heading>
+<ManSection>
+    <Func Name="TextUIForegroundThread"
+      Arg=''/>
 
+<Description>
 Returns the numerical identifier of the current foreground thread.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUIForegroundThreadName">
-      <Heading>TextUIForegroundThreadName()</Heading>
+<ManSection>
+    <Func Name="TextUIForegroundThreadName"
+      Arg=''/>
 
-Returns the name of the current foreground thread or <C>fail</C> if the current foreground thread has no name.
+<Description>
+Returns the name of the current foreground thread or <K>fail</K> if the current foreground thread has no name.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUISelectThread">
-      <Heading>TextUISelectThread(id)</Heading>
+<ManSection>
+    <Func Name="TextUISelectThread"
+      Arg='id'/>
 
-Makes <C>id</C> the current foreground thread. Returns <C>true</C> or <C>false</C> to indicate success.
+<Description>
+Makes <A>id</A> the current foreground thread. Returns <K>true</K> or <K>false</K> to indicate success.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUIOutputHistory">
-      <Heading>TextUIOutputHistory(id, count)</Heading>
+<ManSection>
+    <Func Name="TextUIOutputHistory" Arg='id, count'/>
 
-Returns the last <C>count</C> lines of the thread specified by <C>id</C> (which can be a numerical identifier or a
-name). Returns <C>fail</C> if there is no such thread.
+<Description>
+Returns the last <A>count</A> lines of the thread specified by <A>id</A> (which can be a numerical identifier or a
+name). Returns <K>fail</K> if there is no such thread.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUISetOutputHistoryLength">
-      <Heading>TextUISetOutputHistoryLength(length)</Heading>
+<ManSection>
+    <Func Name="TextUISetOutputHistoryLength"
+      Arg='length'/>
 
-By default, retain <C>length</C> lines of output history from each thread.
+<Description>
+By default, retain <A>length</A> lines of output history from each thread.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUINewSession">
-      <Heading>TextUINewSession(foreground, name)</Heading>
+<ManSection>
+    <Func Name="TextUINewSession"
+      Arg='foreground, name'/>
 
-Creates a new shell thread. Here, <C>foreground</C> is a boolean variable specifying whether it should be made the new
-foreground thread and <C>name</C> is the name of the thread. The empty string can be used to leave the thread without a
+<Description>
+Creates a new shell thread. Here, <A>foreground</A> is a boolean variable specifying whether it should be made the new
+foreground thread and <A>name</A> is the name of the thread. The empty string can be used to leave the thread without a
 name.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUIRunCommand">
-      <Heading>TextUIRunCommand(command)</Heading>
+<ManSection>
+    <Func Name="TextUIRunCommand"
+      Arg='command'/>
 
-Run the command denoted by <C>command</C> as though a user had typed it. The command must not contain a newline
+<Description>
+Run the command denoted by <A>command</A> as though a user had typed it. The command must not contain a newline
 character.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="TextUIWritePrompt">
-      <Heading>TextUIWritePrompt()</Heading>
+<ManSection>
+    <Func Name="TextUIWritePrompt" Arg=''/>
 
+<Description>
 Display a prompt for the current thread.
-    </Subsection>
+</Description>
+</ManSection>
   </Section>
 </Chapter>

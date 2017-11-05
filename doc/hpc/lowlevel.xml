@@ -3,49 +3,60 @@
 
 The functionality described in this section should only be used by experts, and even by those only with caution
 (especially the parts that relate to the memory model).
-
+<P/>
 Not only is it possible to crash or hang the GAP kernel, it can happen in ways that are very difficult to reproduce,
 leading to software defects that are discovered only long after deployment of a package and then become difficult to
 correct.
-
+<P/>
 The performance benefit of using these primitives is generally minimal; while concurrency can induce some overhead, the
 benefit from micromanaging concurrency in an interpreted language such as GAP is likely to be small.
-
+<P/>
 These low-level primitives exist primarily for the benefit of kernel programmers; it allows them to prototype new kernel
 functionality in GAP before implementing it in C.
 
   <Section Label="Explicit lock and unlock primitives">
     <Heading>Explicit lock and unlock primitives</Heading>
 
-The <C>LOCK</C> operation combined with <C>UNLOCK</C> is a low-level interface for the functionality of the  statement.
+The <Ref Func="LOCK"/> operation combined with <Ref Func="UNLOCK"/>
+is a low-level interface for the functionality of the  statement.
 
-  <Subsection Label="LOCK">
-    <Heading>LOCK([arg_1, ..., arg_n])</Heading>
+<ManSection>
+    <Func Name="LOCK"
+      Arg='[arg_1, ..., arg_n]'/>
 
-<C>LOCK</C> takes zero or more pairs of parameters, where each is either an object or a boolean value. If an argument is
-an object, the region containing it will be locked. If an argument is the boolean value <C>false</C>, all subsequent
-locks will be read locks; if it is the boolean value <C>true</C>, all subsequent locks will be write locks. If the first
+<Description>
+<Ref Func="LOCK"/> takes zero or more pairs of parameters, where each is either an object or a boolean value. If an argument is
+an object, the region containing it will be locked. If an argument is the boolean value <K>false</K>, all subsequent
+locks will be read locks; if it is the boolean value <K>true</K>, all subsequent locks will be write locks. If the first
 argument is not a boolean value, all locks until the first boolean value will be write locks.
+<P/>
+Locks are managed internally as a stack of locked regions; <Ref Func="LOCK"/> returns an integer indicating a pointer to the
+top of the stack; this integer is used later by the <Ref Func="UNLOCK"/> operation to unlock locks on the stack up to that
+position. If <Ref Func="LOCK"/> should fail for some reason, it will return <K>fail</K>.
+<P/>
+Calling <Ref Func="LOCK"/> with no parameters returns the current lock stack pointer.
+</Description>
+</ManSection>
 
-Locks are managed internally as a stack of locked regions; <C>LOCK</C> returns an integer indicating a pointer to the
-top of the stack; this integer is used later by the <C>UNLOCK</C> operation to unlock locks on the stack up to that
-position. If <C>LOCK</C> should fail for some reason, it will return <C>fail</C>.
+<ManSection>
+    <Func Name="TRYLOCK"
+      Arg='[arg_1, ..., arg_n]'/>
 
-Calling <C>LOCK()</C> with no parameters returns the current lock stack pointer.
+<Description>
+<Ref Func="TRYLOCK"/> works similarly to <Ref Func="LOCK"/>. If it cannot acquire
+all region locks, it returns <K>fail</K> and does not lock any regions. Otherwise,
+its semantics are identical to <Ref Func="LOCK"/>.
+</Description>
+</ManSection>
 
-  </Subsection>
-  <Subsection Label="TRYLOCK">
-    <Heading>TRYLOCK([arg_1, ..., arg_n])</Heading>
 
-<C>TRYLOCK</C> works similarly to <C>LOCK</C>. If it cannot acquire all region locks, it returns <C>fail</C> and does
-not lock any regions. Otherwise, its semantics are identical to <C>LOCK</C>.
+<ManSection>
+    <Func Name="UNLOCK"
+      Arg='stackpos'/>
 
-  </Subsection>
-  <Subsection Label="UNLOCK">
-    <Heading>UNLOCK(stackpos)</Heading>
-
-<C>UNLOCK</C> unlocks all regions on the stack at <C>stackpos</C> or higher and sets the stack pointer to
-<C>stackpos</C>.
+<Description>
+<Ref Func="UNLOCK"/> unlocks all regions on the stack at <A>stackpos</A>
+or higher and sets the stack pointer to <A>stackpos</A>.
 
 <Example><![CDATA[
 gap> l1 := ShareObj([1,2,3]);;
@@ -58,7 +69,9 @@ gap> UNLOCK(p); # unlock both RegionOf(l1) and RegionOf(l2)
 gap> LOCK(); # current stack pointer
 0
 ]]></Example>
-  </Subsection>
+</Description>
+</ManSection>
+
   </Section>
   <Section Label="Hash locks">
     <Heading>Hash locks</Heading>
@@ -78,71 +91,95 @@ gap> HASH_UNLOCK(l); # unlock 'l'
 
 Hash locks should only be used for very short operations, since there is a chance that two concurrently locked objects
 map to the same hash value, leading to unnecessary contention.
+<P/>
+Hash locks are unrelated to the locks used by the <C>atomic</C> statements and
+the <Ref Func="LOCK"/> and <Ref Func="UNLOCK"/> primitives.
 
-Hash locks are unrelated to the locks used by the <C>atomic</C> statements and the <C>LOCK</C> and <C>UNLOCK</C>
-primitives.
+<ManSection>
+    <Func Name="HASH_LOCK"
+      Arg='obj'/>
 
-    <Subsection Label="HASH_LOCK">
-      <Heading>HASH_LOCK(obj)</Heading>
+<Description>
+<Ref Func="HASH_LOCK"/> obtains the read-write lock for the hash value associated with <C>obj</C>.
+</Description>
+</ManSection>
 
-<C>HASH_LOCK</C> obtains the read-write lock for the hash value associated with <C>obj</C>.
+<ManSection>
+    <Func Name="HASH_UNLOCK"
+      Arg='obj'/>
 
-    </Subsection>
-    <Subsection Label="HASH_UNLOCK">
-      <Heading>HASH_UNLOCK(obj)</Heading>
+<Description>
+<Ref Func="HASH_UNLOCK"/> releases the read-write lock for the hash value associated with <C>obj</C>.
+</Description>
+</ManSection>
 
-<C>HASH_UNLOCK</C> releases the read-write lock for the hash value associated with <C>obj</C>.
+<ManSection>
+    <Func Name="HASH_LOCK_SHARED"
+      Arg='obj'/>
 
-    </Subsection>
-    <Subsection Label="HASH_LOCK_SHARED">
-      <Heading>HASH_LOCK_SHARED(obj)</Heading>
+<Description>
+<Ref Func="HASH_LOCK_SHARED"/> obtains the read-only lock for the hash value associated with <C>obj</C>.
+</Description>
+</ManSection>
 
-<C>HASH_LOCK_SHARED</C> obtains the read-only lock for the hash value associated with <C>obj</C>.
+<ManSection>
+    <Func Name="HASH_UNLOCK_SHARED"
+      Arg='obj'/>
 
-    </Subsection>
-    <Subsection Label="HASH_UNLOCK_SHARED">
-      <Heading>HASH_UNLOCK_SHARED(obj)</Heading>
+<Description>
+<Ref Func="HASH_UNLOCK_SHARED"/> releases the read-only lock for the hash value associated with <C>obj</C>.
+</Description>
+</ManSection>
 
-<C>HASH_UNLOCK_SHARED</C> releases the read-only lock for the hash value associated with <C>obj</C>.
-    </Subsection>
   </Section>
+  
   <Section Label="Migration to the public region">
     <Heading>Migration to the public region</Heading>
 
 HPC-GAP allows migration of arbitrary objects to the public region. This functionality is potentially dangerous; for
 example, if two threads try resize a plain list simultaneously, this can result in memory corruption.
-
+<P/>
 Accordingly, such data should never be accessed except through operations that protect accesses through locks, memory
 barriers, or other mechanisms.
 
-    <Subsection Label="MAKE_PUBLIC">
-      <Heading>MAKE_PUBLIC(obj)</Heading>
+<ManSection>
+    <Func Name="MAKE_PUBLIC"
+      Arg='obj'/>
 
-<C>MAKE_PUBLIC</C> makes <C>obj</C> and all its subobjects members of the public region.
+<Description>
+<Ref Func="MAKE_PUBLIC"/> makes <A>obj</A> and all its subobjects members of the public region.
+</Description>
+</ManSection>
 
-    </Subsection>
-    <Subsection Label="MAKE_PUBLIC_NORECURSE">
-      <Heading>MAKE_PUBLIC_NORECURSE(obj)</Heading>
 
-<C>MAKE_PUBLIC_NORECURSE</C> makes <C>obj</C>, but not any of its subobjects members of the public region.
-    </Subsection>
+<ManSection>
+    <Func Name="MAKE_PUBLIC_NORECURSE"
+      Arg='obj'/>
+
+<Description>
+<Ref Func="MAKE_PUBLIC_NORECURSE"/> makes <A>obj</A>, but not any of its subobjects members of the public region.
+</Description>
+</ManSection>
   </Section>
+  
   <Section Label="Memory barriers">
     <Heading>Memory barriers</Heading>
 
 The memory models of some processors do no guarantee that read and writes reflect accesses to main memory in the same
-order in which the processor performed them; for example, code may write variable v1 first, and v2 second; but the cache
-line containing v2 is flushed to main memory first so that other processors see the change to v2 before the change to
-v1.
-
+order in which the processor performed them; for example, code may write variable <C>v1</C> first, and <C>v2</C> second; but the cache
+line containing <C>v2</C> is flushed to main memory first so that other processors see the change to <C>v2</C> before the change to
+<C>v1</C>.
+<P/>
 Memory barriers can be used to prevent such counter-intuitive reordering of memory accesses.
 
-    <Subsection Label="ORDERED_WRITE">
-      <Heading>ORDERED_WRITE(expr)</Heading>
+<ManSection>
+    <Func Name="ORDERED_WRITE"
+      Arg='expr'/>
 
-The <C>ORDERED_WRITE</C> function guarantees that all writes that occur prior to its execution or during the evaluation
-of <C>expr</C> become visible to other processors before any of the code executed after.
-
+<Description>
+The <Ref Func="ORDERED_WRITE"/> function guarantees that all writes that occur prior to its execution or during the evaluation
+of <A>expr</A> become visible to other processors before any of the code executed after.
+<P/>
 Example:
 
 <Example><![CDATA[
@@ -153,7 +190,7 @@ gap> x := ORDERED_WRITE(f());
 
 Here, the write barrier ensure that the assignment to <C>y</C> that occurs during the call of <C>f()</C> becomes visible
 to other processors before or at the same time as the assignment to <C>x</C>.
-
+<P/>
 This can also be done differently, with the same semantics:
 
 <Example><![CDATA[
@@ -163,24 +200,35 @@ gap> x := t;
 2
 ]]></Example>
 
-    </Subsection>
-    <Subsection Label="ORDERED_READ">
-      <Heading>ORDERED_READ(expr)</Heading>
+</Description>
+</ManSection>
 
-Conversely, the <C>ORDERED_READ</C> function ensures that reads that occur before its call or during the evaluation of
-<C>expr</C> are not reordered with respects to memory reads occurring after it.
-    </Subsection>
+
+<ManSection>
+    <Func Name="ORDERED_READ"
+      Arg='expr'/>
+
+<Description>
+Conversely, the <Ref Func="ORDERED_READ"/> function ensures that reads that occur before its call or during the evaluation of
+<A>expr</A> are not reordered with respects to memory reads occurring after it.
+</Description>
+</ManSection>
   </Section>
+  
+  
+  
   <Section Label="Object manipulation">
     <Heading>Object manipulation</Heading>
 
 There are two new functions to exchange a pair of objects.
 
-    <Subsection Label="SWITCH_OBJ">
-      <Heading>SWITCH_OBJ(obj1, obj2)</Heading>
+<ManSection>
+    <Func Name="SWITCH_OBJ"
+      Arg='obj1, obj2'/>
 
-<C>SWITCH_OBJ</C> exchanges its two arguments. All variables currently referencing <C>obj1</C> will reference
-<C>obj2</C> instead after the operation completes, and vice versa. Both objects stay within their previous regions.
+<Description>
+<Ref Func="SWITCH_OBJ"/> exchanges its two arguments. All variables currently referencing <A>obj1</A> will reference
+<A>obj2</A> instead after the operation completes, and vice versa. Both objects stay within their previous regions.
 
 <Example><![CDATA[
 gap> a := [ 1, 2, 3];;
@@ -204,11 +252,15 @@ gap> atomic readonly b do Display(b); od;
 [ 1, 2, 3 ]
 ]]></Example>
 
-    </Subsection>
-    <Subsection Label="FORCE_SWITCH_OBJ">
-      <Heading>FORCE_SWITCH_OBJ(obj1, obj2)</Heading>
+</Description>
+</ManSection>
 
-<C>FORCE_SWITCH_OBJ</C> works like <Ref Func="SWITCH_OBJ"/>, except that it can also exchange objects in the public
+<ManSection>
+    <Func Name="FORCE_SWITCH_OBJ"
+      Arg='obj1, obj2'/>
+
+<Description>
+<Ref Func="FORCE_SWITCH_OBJ"/> works like <Ref Func="SWITCH_OBJ"/>, except that it can also exchange objects in the public
 region:
 
 <Example><![CDATA[
@@ -223,6 +275,7 @@ This function should be used with extreme caution and only with public objects f
 reference. Otherwise, undefined behavior and crashes can result from other threads accessing the public object
 concurrently.
 
-    </Subsection>
+</Description>
+</ManSection>
   </Section>
 </Chapter>
