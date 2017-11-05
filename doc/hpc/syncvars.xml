@@ -1,9 +1,12 @@
 <Chapter Label="Synchronization variables">
   <Heading>Synchronization variables</Heading>
 
+<Section Label="section:Synchronization variables">
+  <Heading>Synchronization variables</Heading>
+  
 Synchronization variables (also often called dataflow variables in the literature) are variables that can be written
 only once; attempts to read the variable block until it has been written to.
-
+<P/>
 Synchronization variables are created with <Ref Func="CreateSyncVar"/>, written with <Ref Func="SyncWrite"/> and read
 with <Ref Func="SyncRead"/>.
 
@@ -17,29 +20,37 @@ gap> SyncRead(sv);
 [ 1, 2, 3 ]
 ]]></Example>
 
-  <Section Label="CreateSyncVar">
-    <Heading>CreateSyncVar()</Heading>
+<ManSection>
+    <Func Name="CreateSyncVar"
+      Arg=''/>
 
-The function <C>CreateSyncVar</C> takes no arguments. It returns a new synchronization variable. There is no need to
+<Description>
+The function <Ref Func="CreateSyncVar"/> takes no arguments. It returns a new synchronization variable. There is no need to
 deallocate it; the garbage collector will free the memory and all related resources when it is no longer accessible.
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="SyncWrite">
-    <Heading>SyncWrite(syncvar, obj)</Heading>
+<ManSection>
+    <Func Name="SyncWrite"
+      Arg='syncvar, obj'/>
 
-<C>SyncWrite</C> attempts to assign the value <C>obj</C> to <C>syncvar</C>. If <C>syncvar</C> has been previously
-assigned a value, the call will fail with a runtime error; otherwise, <C>obj</C> will be assigned to <C>syncvar</C>.
-
-In order to make sure that the recipient can read the result, the <C>obj</C> argument should not be a thread-local
+<Description>
+<Ref Func="SyncWrite"/> attempts to assign the value <A>obj</A> to <A>syncvar</A>. If <A>syncvar</A> has been previously
+assigned a value, the call will fail with a runtime error; otherwise, <A>obj</A> will be assigned to <A>syncvar</A>.
+<P/>
+In order to make sure that the recipient can read the result, the <A>obj</A> argument should not be a thread-local
 object; it should be public, read-only, or shared.
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="SyncRead">
-    <Heading>SyncRead(syncvar)</Heading>
+<ManSection>
+    <Func Name="SyncRead"
+      Arg='syncvar'/>
 
-<C>SyncRead</C> reads the value previously assigned to <C>syncvar</C> with <C>SyncWrite</C>. If no value has been
+<Description>
+<Ref Func="SyncRead"/> reads the value previously assigned to <A>syncvar</A> with <Ref Func="SyncWrite"/>. If no value has been
 assigned yet, it blocks. It returns the assigned value.
-
-
+</Description>
+</ManSection>
   </Section>
 </Chapter>
