@@ -190,8 +190,8 @@ DeclareOperation( "Extensions", [ CanEasilyComputePcgs, IsObject ] );
 ##  gap> M := GModuleByMats( mats, GF(2) );;
 ##  gap> A := AutomorphismGroup( G );;
 ##  gap> B := GL( 1, 2 );;
-##  gap> D := DirectProduct( A, B );
-##  <group of size 6 with 4 generators>
+##  gap> D := DirectProduct( A, B );; Size(D);
+##  6
 ##  gap> P := CompatiblePairs( G, M, D );
 ##  <group of size 6 with 2 generators>
 ##  gap> ExtensionRepresentatives( G, M, P );

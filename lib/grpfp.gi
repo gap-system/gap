@@ -351,13 +351,18 @@ local gens, lim, n, r, l, w, a,la,f,up;
     if not IsBound(grp!.randomrange) or lim<>grp!.randlim then
       # there are 1+(n+1)(1+n+n^2+...+n^(lim-1))=(n^lim*(n+1)-2)/(n-1)
       # words of length up to lim in the free group on |gens| generators
-      up:=(n^lim*(n+1)-2)/(n-1);
-      if up>=2^28 then
-	f:=Int(up/2^28+1);
-	grp!.randomrange:=[1..2^28-1];
+      if n=1 then
+        grp!.randomrange:=[1..Minimum(lim,2^28-1)];
+        f:=1;
       else
-	grp!.randomrange:=[1..up];
-	f:=1;
+        up:=(n^lim*(n+1)-2)/(n-1);
+        if up>=2^28 then
+          f:=Int(up/2^28+1);
+          grp!.randomrange:=[1..2^28-1];
+        else
+          grp!.randomrange:=[1..up];
+          f:=1;
+        fi;
       fi;
       l:=[Int(1/f),Int((n+2)/f)];
       a:=n+1;
@@ -424,6 +429,7 @@ local S;
 #    return S;
 #  fi;
 
+  Assert(1,Length(GeneratorsOfGroup(Q))=Length(GeneratorsOfGroup(fam!.wholeGroup)));
   S := Objectify(NewType(fam, IsGroup and
     IsSubgroupOfWholeGroupByQuotientRep and IsAttributeStoringRep ),
         rec(quot:=Q,sub:=U) ); 
@@ -1965,7 +1971,7 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)
     or NrMovedPoints(s)>1000) then
     d:=SmallerDegreePermutationRepresentation(s);
-    A:=Image(d,s);
+    A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
     if NrMovedPoints(A)<NrMovedPoints(s) then
       Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
            NrMovedPoints(A));

@@ -191,8 +191,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> au:=DerivedSubgroup(AutomorphismGroup(n));;
 ##  gap> Size(au);
 ##  120
-##  gap> p:=SemidirectProduct(au,n);
-##  <permutation group with 5 generators>
+##  gap> p:=SemidirectProduct(au,n);;
 ##  gap> Size(p);
 ##  3000
 ##  gap> n:=Group((1,2),(3,4));;
@@ -206,16 +205,11 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  <pc group with 3 generators>
 ##  gap> n:=AbelianGroup(IsPcGroup,[2,2]);
 ##  <pc group of size 4 with 2 generators>
-##  gap> au:=AutomorphismGroup(n);
-##  <group of size 6 with 2 generators>
-##  gap> apc:=IsomorphismPcGroup(au);
-##  CompositionMapping( Pcgs([ (2,3), (1,2,3) ]) -> 
-##  [ f1, f2 ], <action isomorphism> )
+##  gap> au:=AutomorphismGroup(n);;
+##  gap> apc:=IsomorphismPcGroup(au);;
 ##  gap> g:=Image(apc);
 ##  Group([ f1, f2 ])
-##  gap> apci:=InverseGeneralMapping(apc);
-##  [ f1*f2^2, f1*f2 ] -> [ Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], 
-##    Pcgs([ f1, f2 ]) -> [ f2, f1 ] ]
+##  gap> apci:=InverseGeneralMapping(apc);;
 ##  gap> IsGroupHomomorphism(apci);
 ##  true
 ##  gap> p:=SemidirectProduct(g,apci,n);

@@ -2202,7 +2202,7 @@ local t,j;
     t:=rec(isNewAugmentedTable:=true);
     for j in 
       [ "A", "aug", "ct", "defcount", "from", "homgenims", "homgens",
-      "index", "n", "offset", "primaryImages", "rels",
+      "index", "n", "offset", "primaryImages", "rels","one","useAddition",
       "secondary", "secount", "secondaryImages", "subgens" ] do
       if IsBound(aug.(j)) then
         t.(j):=aug.(j);
