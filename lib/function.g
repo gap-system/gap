@@ -608,9 +608,13 @@ BIND_GLOBAL( "IdFunc", ID_FUNC );
 ##
 InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         function ( func )
-    local nams, narg, i, isvarg;
+    local  locks, nams, narg, i, isvarg;
     Print("function( ");
     isvarg := false;
+    locks := LOCKS_FUNC(func);
+    if locks <> fail then
+        Print("atomic ");
+    fi;
     nams := NAMS_FUNC(func);
     narg := NARG_FUNC(func);
     if narg < 0 then
@@ -624,8 +628,22 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         if nams = fail then
             Print( "<",narg," unnamed arguments>" );
         else
+            if locks <> fail then
+                if locks[1] = '\001' then
+                    Print("readonly ");
+                elif locks[1] = '\002' then
+                    Print("readwrite ");
+                fi;
+            fi;
             Print(nams[1]);
             for i in [2..narg] do
+                if locks <> fail then
+                    if locks[i] = '\001' then
+                        Print("readonly ");
+                    elif locks[i] = '\002' then
+                        Print("readwrite ");
+                    fi;
+                fi;
                 Print(", ",nams[i]);
             od;
         fi;

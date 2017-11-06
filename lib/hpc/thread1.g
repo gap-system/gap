@@ -214,7 +214,3 @@ end);
 BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
   Unbind(record.(field));
 end);
-
-# From calls.c
-
-BIND_GLOBAL("LOCKS_FUNC", RETURN_FAIL);
