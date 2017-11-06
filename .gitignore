@@ -51,6 +51,7 @@ doc/*/*.css
 doc/*/*.js
 doc/*/*.idx
 doc/*/*.tex
+/doc/*/*.out
 doc/gapmacrodoc.example-1.tst
 doc/gapmacrodoc.idx
 
