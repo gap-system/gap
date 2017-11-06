@@ -224,6 +224,8 @@ end);
 #T Still to do: Permutation values based on base images: Method if the
 #T domain given is a permgroup.
 
+BindConstant( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
+
 InstallMethod(SparseIntKey,"kernel pc group elements",true,
   [IsObject,
     IsElementFinitePolycyclicGroup and IsDataObjectRep and IsNBitsPcWordRep],0,

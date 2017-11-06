@@ -121,11 +121,9 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 #############################################################################
 ##
 #V  GAPInfo.BytesPerVariable
-#V  DOUBLE_OBJLEN
 ##
 ##  <ManSection>
 ##  <Var Name="GAPInfo.BytesPerVariable"/>
-##  <Var Name="DOUBLE_OBJLEN"/>
 ##
 ##  <Description>
 ##  <Ref Var="GAPInfo.BytesPerVariable"/> is the number of bytes used for one
@@ -141,7 +139,6 @@ while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
     = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
   GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
 od;
-BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 
 
 #############################################################################
