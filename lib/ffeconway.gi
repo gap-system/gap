@@ -63,79 +63,85 @@ BindGlobal("FFECONWAY", rec());
 ##
 
 FFECONWAY.SetUpConwayStuff := function(p,d)
-    local   fam,  cp,  cps,  i;
+    local   fam,  cp,  cps,  i, reducer;
     fam := FFEFamily(p);
     if not IsBound(fam!.ConwayPolCoeffs) then
         fam!.ConwayPolCoeffs := [];
         fam!.ConwayFldEltReducers := [];
     fi;
-    if not IsBound(fam!.ConwayPolCoeffs[d]) then
-        if not IsCheapConwayPolynomial(p,d) then
-            Error("Conway Polynomial ",p,"^",d,
-                  " will need to computed and might be slow\n", "return to continue");
-        fi;  
-        cp := CoefficientsOfUnivariatePolynomial(ConwayPolynomial(p,d));
-        fam!.ConwayPolCoeffs[d] := cp;
-        #
-        # various cases for reducers 
-        #
-        if p = 2 then
-            fam!.ConwayFldEltReducers[d] := function(v)
-                REDUCE_COEFFS_GF2VEC(v,Length(v),cp,d+1);
-                RESIZE_GF2VEC(v,d);
-            end;
-        elif p <= 256 then
-            #
-            # We can save time on repeated reductions using
-            # pre-computed shifts
-            #
-            cps := MAKE_SHIFTED_COEFFS_VEC8BIT(cp,d+1);
-            fam!.ConwayFldEltReducers[d] := function(v)
-                REDUCE_COEFFS_VEC8BIT(v,Length(v),cps);
-                RESIZE_VEC8BIT(v,d);
-            end;
-        else
-            #
-            # Need to adjust the length "by hand"
-            #
-            fam!.ConwayFldEltReducers[d] := function(v)
-                ReduceCoeffs(v,Length(v),cp,d+1);
-                if Length(v) < d then
-                    PadCoeffs(v,d);
-                elif Length(v) > d then
-                    for i in [d+1..Length(v)] do
-                        Unbind(v[i]);
-                    od;
-                fi;
-            end;
-        fi;
-        
+
+    if IsBound(fam!.ConwayPolCoeffs[d]) then
+        return;
     fi;
-end;    
+
+    if not IsCheapConwayPolynomial(p,d) then
+        Error("Conway Polynomial ",p,"^",d,
+              " will need to computed and might be slow\n", "return to continue");
+    fi;
+    cp := CoefficientsOfUnivariatePolynomial(ConwayPolynomial(p,d));
+
+    #
+    # various cases for reducers
+    #
+    if p = 2 then
+        reducer := function(v)
+            REDUCE_COEFFS_GF2VEC(v,Length(v),cp,d+1);
+            RESIZE_GF2VEC(v,d);
+        end;
+    elif p <= 256 then
+        #
+        # We can save time on repeated reductions using
+        # pre-computed shifts
+        #
+        cps := MAKE_SHIFTED_COEFFS_VEC8BIT(cp,d+1);
+        reducer := function(v)
+            REDUCE_COEFFS_VEC8BIT(v,Length(v),cps);
+            RESIZE_VEC8BIT(v,d);
+        end;
+    else
+        #
+        # Need to adjust the length "by hand"
+        #
+        reducer := function(v)
+            ReduceCoeffs(v,Length(v),cp,d+1);
+            if Length(v) < d then
+                PadCoeffs(v,d);
+            elif Length(v) > d then
+                for i in [d+1..Length(v)] do
+                    Unbind(v[i]);
+                od;
+            fi;
+        end;
+    fi;
+
+    fam!.ConwayPolCoeffs[d] := cp;
+    fam!.ConwayFldEltReducers[d] := reducer;
+end;
 
 
 FFECONWAY.ZNC := function(p,d)
     local   fam,  zc,  v;
     fam := FFEFamily(p);
+
     if not IsBound(fam!.ZCache) then
         fam!.ZCache := [];
     fi;
-    zc := fam!.ZCache;
-    if not IsBound(zc[d]) then
-        if not IsBound(fam!.ConwayFldEltDefaultType) then
-            fam!.ConwayFldEltDefaultType := NewType(fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
-        fi;
-        FFECONWAY.SetUpConwayStuff(p,d);
-        #
-        # Finally make the element 
-        # 'false' in the third component because we know it is 
-        # irreducible
-        #
-        v := ListWithIdenticalEntries(d,0*Z(p));
-        v[2] := Z(p)^0;
-        ConvertToVectorRep(v,p);
-        zc[d] := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false]);
+
+    if IsBound(fam!.ZCache[d]) then
+        return fam!.ZCache[d];
     fi;
+
+    zc := fam!.ZCache;
+    if not IsBound(fam!.ConwayFldEltDefaultType) then
+        fam!.ConwayFldEltDefaultType := NewType(fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
+    fi;
+    FFECONWAY.SetUpConwayStuff(p,d);
+    v := ListWithIdenticalEntries(d,0*Z(p));
+    v[2] := Z(p)^0;
+    ConvertToVectorRep(v,p);
+
+    # put 'false' in the third component because we know it is irreducible
+    zc[d] := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false]);
     return zc[d];
 end;
 
@@ -173,7 +179,6 @@ InstallMethod(ZOp,
     TryNextMethod();
 end);
 
-        
 
 #############################################################################
 ##
