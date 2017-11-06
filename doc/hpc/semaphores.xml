@@ -1,26 +1,33 @@
 <Chapter Label="Semaphores">
   <Heading>Semaphores</Heading>
 
+<Section Label="section:Semaphores">
+  <Heading>Semaphores</Heading>
   Semaphores are synchronized counters; they can also be used to simulate locks.
 
-  <Section Label="CreateSemaphore">
-    <Heading>CreateSemaphore([value])</Heading>
+<ManSection>
+    <Func Name="CreateSemaphore"
+      Arg='[value]'/>
 
-The function <C>CreateSemaphore</C> takes an optional argument, which defaults to zero. It is the counter with which the
+<Description>
+The function <Ref Func="CreateSemaphore"/> takes an optional argument, which defaults to zero. It is the counter with which the
 semaphore is initialized.
 
 <Example><![CDATA[
 gap> sem := CreateSemaphore(1);
 <semaphore 0x1108e81c0: count = 1>
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="WaitSemaphore">
-    <Heading>WaitSemaphore(sem);</Heading>
+<ManSection>
+    <Func Name="WaitSemaphore"
+      Arg='sem'/>
 
-<C>WaitSemaphore</C> receives a previously created semaphore as its argument. If the semaphore&#39;s counter is greater
+<Description>
+<Ref Func="WaitSemaphore"/> receives a previously created semaphore as its argument. If the semaphore&#39;s counter is greater
 than zero, it decrements the counter and returns; if the counter is zero, it waits until another thread increases it via
-<C>SignalSemaphore</C>, then decrements the counter and returns.
+<Ref Func="SignalSemaphore"/>, then decrements the counter and returns.
 
 <Example><![CDATA[
 gap> sem := CreateSemaphore(1);
@@ -29,12 +36,15 @@ gap> WaitSemaphore(sem);
 gap> sem;
 <semaphore 0x1108e81c0: count = 0>
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="SignalSemaphore">
-    <Heading>SignalSemaphore(sem)</Heading>
+<ManSection>
+    <Func Name="SignalSemaphore"
+      Arg='sem'/>
 
-<C>SignalSemaphore</C> receives a previously created semaphore as its argument. It increments the semaphore&#39;s
+<Description>
+<Ref Func="SignalSemaphore"/> receives a previously created semaphore as its argument. It increments the semaphore&#39;s
 counter and returns.
 
 <Example><![CDATA[
@@ -47,12 +57,14 @@ gap> SignalSemaphore(sem);
 gap> sem;
 <semaphore 0x1108e81c0: count = 1>
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="Simulating locks">
+  <Subsection Label="Simulating locks">
     <Heading>Simulating locks</Heading>
 
-In order to use semaphores to simulate locks, create a semaphore with an initial value of 1. <C>WaitSemaphore</C> is
-then equivalent to a lock operation, <C>SignalSemaphore</C> is equivalent to an unlock operation.
+In order to use semaphores to simulate locks, create a semaphore with an initial value of 1. <Ref Func="WaitSemaphore"/> is
+then equivalent to a lock operation, <Ref Func="SignalSemaphore"/> is equivalent to an unlock operation.
+  </Subsection>
   </Section>
 </Chapter>

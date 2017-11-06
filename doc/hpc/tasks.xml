@@ -6,7 +6,7 @@
     Tasks provide mid- to high-level functionality for programmers to describe asynchronous workflows. A task is an
     asynchronously or synchronously executing job; functions exist to create tasks that are executed concurrently, on
     demand, or in the current thread; to wait for their completion, check their status, and retrieve any results.
-
+    <P/>
     Here is a simple example of sorting a list in the background:
 
 <Example><![CDATA[
@@ -19,7 +19,7 @@ gap> TaskResult(task);
 <Ref Func="RunTask"/> dispatches a task to run in the background; a task is described by a function and zero or more
 arguments that are passed to <Ref Func="RunTask"/>. <Ref Func="WaitTask"/> waits for the task to complete; and
 <C>TaskResult</C> returns the result of the task.
-
+<P/>
 <Ref Func="TaskResult"/> does an implicit <Ref Func="WaitTask"/>, so the second line above can actually be omitted:
 
 <Example><![CDATA[
@@ -50,10 +50,10 @@ true
 
 Note that <Ref Func="WaitTask"/> is used here to start execution of both tasks; otherwise, <C>task2</C> would not be
 started until <C>TaskResult(task1)</C> has been evaluated.
-
+<P/>
 To start execution of a delayed task, you can also use <C>ExecuteTask</C>. This has no effect if a task has already been
 running.
-
+<P/>
 For convenience, you can also use <Ref Func="ImmediateTask"/> to execute a task synchronously (i.e., the task is started
 immediately and the call does not return until the task has completed).
 
@@ -64,7 +64,7 @@ gap> TaskResult(task);
 ]]></Example>
 
 This is indistinguishable from calling the function directly, but provides the same interface as normal tasks.
-
+<P/>
 Sometimes it can be useful to ignore the result of a task. The <C>RunAsyncTask</C> provides the necessary functionality.
 
 <Example><![CDATA[
@@ -73,11 +73,11 @@ Hello, world!
 ]]></Example>
 
 Such a task cannot be waited for and its result (if any) is ignored.
-
+<P/>
 Task arguments are generally copied so that both the task that created them and the task that uses them can access the
 data concurrently without fear of race conditions. To avoid copying, arguments should be made shared or public (see the
 relevant parts of the section on ); shared and public arguments will not be copied.
-
+<P/>
 HPC-GAP currently has multiple implementations of the task API. To enable the reference implementation, set the
 environment variable <C>GAP_STDTASKS</C> to a non-empty value before starting GAP.
   </Section>
@@ -167,7 +167,6 @@ gap> TaskResult(t);
 
     <ManSection>
       <Func Name="WaitTask" Arg='task1,...,taskn'/>
-      <Func Name="WaitTask" Arg='condition'/>
       <Func Name="WaitTask" Arg='condition' Label="with a condition" />
       <Func Name="WaitTasks" Arg='task1,...,taskn'/>
 

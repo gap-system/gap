@@ -1,15 +1,20 @@
 <Chapter Label="Channels">
   <Heading>Channels</Heading>
 
+<Section Label="section:Channels">
+  <Heading>Channels</Heading>
+  
   Channels are FIFO queues that threads can use to coordinate their activities.
 
-  <Section Label="CreateChannel">
-    <Heading>CreateChannel([capacity])</Heading>
+<ManSection>
+    <Func Name="CreateChannel"
+      Arg='[capacity]'/>
 
-CreateChannel() returns a FIFO communication channel that can be used to exchange information between threads. Its
+<Description>
+<Ref Func="CreateChannel"/> returns a FIFO communication channel that can be used to exchange information between threads. Its
 optional argument is a capacity (positive integer). If insufficient resources are available to create a channel, it
 returns -1. If the capacity is not a positive integer, an error will be raised.
-
+<P/>
 If a capacity is not provided, by default the channel can hold an indefinite number of objects. Otherwise, attempts to
 store objects in the channel beyond its capacity will block.
 
@@ -19,20 +24,23 @@ gap> ch1:=CreateChannel();
 gap> ch2:=CreateChannel(5);
 <channel 0x460324c: 0/5 elements, 0 waiting>
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="SendChannel">
-    <Heading>SendChannel(channel, obj)</Heading>
+<ManSection>
+    <Func Name="SendChannel"
+      Arg='channel, obj'/>
 
-<C>SendChannel</C> accepts two arguments, a channel object returned by <C>CreateChannel</C>, and an arbitrary GAP
-object. It stores <C>obj</C> in <C>channel</C>. If <C>channel</C> has a finite capacity and is currently full, then
-<C>SendChannel</C> will block until at least one element has been removed from the channel, e.g. using <Ref
+<Description>
+<Ref Func="SendChannel"/> accepts two arguments, a channel object returned by <Ref Func="CreateChannel"/>, and an arbitrary GAP
+object. It stores <A>obj</A> in <A>channel</A>. If <A>channel</A> has a finite capacity and is currently full, then
+<Ref Func="SendChannel"/> will block until at least one element has been removed from the channel, e.g. using <Ref
 Func="ReceiveChannel"/>.
-
-<C>SendChannel</C> performs automatic region migration for thread-local objects. If <C>obj</C> is thread-local for the
+<P/>
+<Ref Func="SendChannel"/> performs automatic region migration for thread-local objects. If <A>obj</A> is thread-local for the
 current thread, it will be migrated (along with all subobjects contained in the same region) to the receiving
-thread&#39;s thread-local data space. In between sending and receiving, <C>obj</C> cannot be accessed by either thread.
-
+thread&#39;s thread-local data space. In between sending and receiving, <A>obj</A> cannot be accessed by either thread.
+<P/>
 This example demonstrates sending messages across a channel.
 
 <Example><![CDATA[
@@ -69,12 +77,17 @@ gap> ReceiveChannel(ch3); # the thread is blocked until we read from ch3
 Thread finished
 gap> WaitThread(t);
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TransmitChannel">
-    <Heading>TransmitChannel(channel, obj)</Heading>
 
-<C>TransmitChannel</C> is identical to <C>SendChannel</C>, except that it does not perform automatic region migration of
+<ManSection>
+    <Func Name="TransmitChannel"
+      Arg='channel, obj'/>
+
+<Description>
+<Ref Func="TransmitChannel"/> is identical to <Ref Func="SendChannel"/>,
+except that it does not perform automatic region migration of
 thread-local objects.
 
 <Example><![CDATA[
@@ -96,12 +109,17 @@ gap> WaitThread(CreateThread(function()
 >    end));
 true
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TrySendChannel">
-    <Heading>TrySendChannel(channel, obj)</Heading>
 
-<C>TrySendChannel</C> is identical to <C>SendChannel</C>, except that it returns if the channel is full instead of
+<ManSection>
+    <Func Name="TrySendChannel"
+      Arg='channel, obj'/>
+
+<Description>
+<Ref Func="TrySendChannel"/> is identical to <Ref Func="SendChannel"/>,
+except that it returns if the channel is full instead of
 blocking. It returns true if the send was successful and false otherwise.
 
 <Example><![CDATA[
@@ -111,29 +129,43 @@ true
 gap> TrySendChannel(ch, 99);
 false
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TryTransmitChannel">
-    <Heading>TryTransmitChannel(channel, obj)</Heading>
 
-<C>TryTransmitChannel</C> is identical to <C>TrySendChannel</C>, except that it does not perform automatic region
-migration of thread-local objects.
+<ManSection>
+    <Func Name="TryTransmitChannel"
+      Arg='channel, obj'/>
 
-  </Section>
-  <Section Label="ReceiveChannel">
-    <Heading>ReceiveChannel(channel)</Heading>
+<Description>
+<Ref Func="TryTransmitChannel"/> is identical to <Ref Func="TrySendChannel"/>,
+except that it does not perform automatic region migration of thread-local objects.
+</Description>
+</ManSection>
 
-<C>ReceiveChannel</C> is used to retrieve elements from a channel. If <C>channel</C> is empty, the call will block until
-an element has been added to the channel via <C>SendChannel</C> or a similar primitive.
 
+<ManSection>
+    <Func Name="ReceiveChannel"
+      Arg='channel'/>
+
+<Description>
+<Ref Func="ReceiveChannel"/> is used to retrieve elements from a channel.
+If <A>channel</A> is empty, the call will block until an element has been
+added to the channel via <Ref Func="SendChannel"/> or a similar primitive.
+<P/>
 See <Ref Func="SendChannel"/> for an example.
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TryReceiveChannel">
-    <Heading>TryReceiveChannel(channel, default)</Heading>
 
-<C>TryReceiveChannel</C>, like <C>ReceiveChannel</C>, attempts to retrieve an object from <C>channel</C>. If it does not
-succeed, however, it will return <C>default</C> rather than blocking.
+<ManSection>
+    <Func Name="TryReceiveChannel"
+      Arg='channel, default'/>
+
+<Description>
+<Ref Func="TryReceiveChannel"/>, like <Ref Func="ReceiveChannel"/>,
+attempts to retrieve an object from <A>channel</A>. If it does not
+succeed, however, it will return <A>default</A> rather than blocking.
 
 <Example><![CDATA[
 gap> ch := CreateChannel();;
@@ -143,37 +175,53 @@ gap> TryReceiveChannel(ch, fail);
 gap> TryReceiveChannel(ch, fail);
 fail
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="MultiSendChannel">
-    <Heading>MultiSendChannel(channel, list)</Heading>
 
-<C>MultiSendChannel</C> allows the sending of all the objects contained in the list <C>list</C> to <C>channel</C> as a
+<ManSection>
+    <Func Name="MultiSendChannel"
+      Arg='channel, list'/>
+
+<Description>
+<Ref Func="MultiSendChannel"/> allows the sending of all the objects contained in the list <A>list</A> to <A>channel</A> as a
 single operation. The list must be dense and is not modified by the call. The function will send elements starting at
 index 1 until all elements have been sent. If a channel with finite capacity is full, then the operation will block
 until all elements can be sent.
-
-The operation is designed to be more efficient than sending all elements individually via <C>SendChannel</C> by
+<P/>
+The operation is designed to be more efficient than sending all elements individually via <Ref Func="SendChannel"/> by
 minimizing potentially expensive concurrency operations.
-
+<P/>
 See <Ref Func="MultiReceiveChannel"/> for an example.
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TryMultiSendChannel">
-    <Heading>TryMultiSendChannel(channel, list)</Heading>
 
-<C>TryMultiSendChannel</C> operates like <C>MultiSendChannel</C>, except that it returns rather than blocking if it
-cannot send any more elements if the channel is full. It returns the number of elements it has sent. If <C>channel</C>
-does not have finite capacity, <C>TryMultiSendChannel</C> will always send all elements in the list.
+<ManSection>
+    <Func Name="TryMultiSendChannel"
+      Arg='channel, list'/>
 
-  </Section>
-  <Section Label="MultiReceiveChannel">
-    <Heading>MultiReceiveChannel(channel, amount)</Heading>
+<Description>
+<Ref Func="TryMultiSendChannel"/> operates like <Ref Func="MultiSendChannel"/>,
+except that it returns rather than blocking if it
+cannot send any more elements if the channel is full. 
+It returns the number of elements it has sent. If <A>channel</A>
+does not have finite capacity, <Ref Func="TryMultiSendChannel"/>
+will always send all elements in the list.
+</Description>
+</ManSection>
 
-<C>MultiReceiveChannel</C> is the receiving counterpart to <C>MultiSendChannel</C>. It will try to receive up to
-<C>amount</C> objects from <C>channel</C>. If the channel contains less than <C>amount</C> objects, it will return
-rather than blocking.
 
+<ManSection>
+    <Func Name="MultiReceiveChannel"
+      Arg='channel, amount'/>
+
+<Description>
+<Ref Func="MultiReceiveChannel"/> is the receiving counterpart to
+<Ref Func="MultiSendChannel"/>.It will try to receive up to
+<A>amount</A> objects from <A>channel</A>. If the channel contains less
+than <A>amount</A> objects, it will return rather than blocking.
+<P/>
 The function returns a list of all the objects received.
 
 <Example><![CDATA[
@@ -186,13 +234,17 @@ gap> MultiReceiveChannel(ch,7);
 gap> MultiReceiveChannel(ch,7);
 [  ]
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="ReceiveAnyChannel">
-    <Heading>ReceiveAnyChannel(channel_1, ..., channel_n | channel_list)</Heading>
 
-<C>ReceiveAnyChannel</C> is a multiplexing variant of <C>ReceiveChannel</C>. It blocks until at least one of the
-channels provided contains an object. It will then retrieve that object from the channel and return it.
+<ManSection>
+    <Func Name="ReceiveAnyChannel" Arg='channel_1, ..., channel_n'/>
+    <Func Name="ReceiveAnyChannel" Arg='channel_list' Label="for a list of channels"/>
+<Description>
+<Ref Func="ReceiveAnyChannel"/> is a multiplexing variant of<Ref Func="ReceiveChannel"/>.
+It blocks until at least one of the channels provided contains an object.
+It will then retrieve that object from the channel and return it.
 
 <Example><![CDATA[
 gap> ch1 := CreateChannel();;
@@ -201,14 +253,18 @@ gap> SendChannel(ch2, [1, 2, 3]);;
 gap> ReceiveAnyChannel(ch1, ch2);
 [ 1, 2, 3 ]
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="ReceiveAnyChannelWithIndex">
-    <Heading>ReceiveAnyChannelWithIndex(channel_1, ..., channel_n | channel_list)</Heading>
 
-<C>ReceiveAnyChannelWithIndex</C> works like <C>ReceiveAnyChannel</C>, except that it returns a list with two elements,
-the first being the object being received, the second being the number of the channel from which the object has been
-retrieved.
+<ManSection>
+    <Func Name="ReceiveAnyChannelWithIndex" Arg='channel_1, ..., channel_n'/>
+    <Func Name="ReceiveAnyChannelWithIndex" Arg='channel_list' Label="for a list of channels"/>
+<Description>
+<Ref Func="ReceiveAnyChannelWithIndex"/> works like <Ref Func="ReceiveAnyChannel"/>,
+except that it returns a list with two elements, the first being the object
+being received, the second being the number of the channel from which the
+object has been retrieved.
 
 <Example><![CDATA[
 gap> ch1 := CreateChannel();;
@@ -217,12 +273,16 @@ gap> SendChannel(ch2, [1, 2, 3]);;
 gap> ReceiveAnyChannelWithIndex(ch1, ch2);
 [ [ 1, 2, 3 ], 2 ]
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="TallyChannel">
-    <Heading>TallyChannel(channel)</Heading>
 
-<C>TallyChannel</C> returns the number of objects that a channel contains. This number can increase or decrease, as data
+<ManSection>
+    <Func Name="TallyChannel"
+      Arg='channel'/>
+
+<Description>
+<Ref Func="TallyChannel"/> returns the number of objects that a channel contains. This number can increase or decrease, as data
 is sent to or received from this channel. Send operations will only ever increase and receive operations will only ever
 decrease this count. Thus, if there is only one thread receiving data from the channel, it can use the result as a lower
 bound for the number of elements that will be available in the channel.
@@ -235,12 +295,16 @@ gap> SendChannel(ch, 5);
 gap> TallyChannel(ch);
 3
 ]]></Example>
+</Description>
+</ManSection>
 
-  </Section>
-  <Section Label="InspectChannel">
-    <Heading>InspectChannel(channel)</Heading>
 
-<C>InspectChannel</C> returns a list of the objects that a channel contains. Note that objects that are not in the
+<ManSection>
+    <Func Name="InspectChannel"
+      Arg='channel'/>
+
+<Description>
+<Ref Func="InspectChannel"/> returns a list of the objects that a channel contains. Note that objects that are not in the
 shared, public, or read-only region will be temporarily stored in the so-called limbo region while in transit and will
 be inaccessible through normal means until they have been received.
 
@@ -254,5 +318,7 @@ gap> InspectChannel(ch);
 ]]></Example>
 
 This function is primarly intended for debugging purposes.
+</Description>
+</ManSection>
   </Section>
 </Chapter>

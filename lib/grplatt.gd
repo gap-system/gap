@@ -469,6 +469,7 @@ DeclareGlobalFunction("LowLayerSubgroups");
 ##  <#/GAPDoc>
 ##
 DeclareOperation("ContainedConjugates",[IsGroup,IsGroup,IsGroup]);
+DeclareSynonym("EmbeddedConjugates",ContainedConjugates);
 
 #############################################################################
 ##
@@ -493,6 +494,7 @@ DeclareOperation("ContainedConjugates",[IsGroup,IsGroup,IsGroup]);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("ContainingConjugates",[IsGroup,IsGroup,IsGroup]);
+DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 
 #############################################################################
 ##

@@ -190,6 +190,8 @@ gap> Length(MaximalSubgroupClassReps(g));
 gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7)));
 96
 gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7):NoPrecomputedData));
+#I  Using (despite option) data library of perfect groups, as the perfect
+#I  subgroups otherwise cannot be obtained!
 96
 
 # thats all, folks
