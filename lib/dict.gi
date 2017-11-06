@@ -586,7 +586,7 @@ local Rec,T,len;
               ValueArray := [],
               LengthArray := len,
               NumberKeys := 0,
-              HashRange := len - 2);
+              ProbingDepth := len - 2);
 
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
@@ -610,7 +610,7 @@ InstallMethod(ShallowCopy, [IsSparseHashRep and IsCopyable],
               ValueArray := ShallowCopy(t!.ValueArray),
               LengthArray := t!.LengthArray,
               NumberKeys := t!.NumberKeys,
-              HashRange := t!.HashRange,
+              ProbingDepth := t!.ProbingDepth,
               LengthArrayHalf := t!.LengthArrayHalf);
     return Objectify( DefaultSparseHashRepType and IsMutable, r);
 end);
@@ -622,7 +622,7 @@ InstallMethod(ShallowCopy, [IsSparseHashRep and TableHasIntKeyFun and IsCopyable
               ValueArray := ShallowCopy(t!.ValueArray),
               LengthArray := t!.LengthArray,
               NumberKeys := t!.NumberKeys,
-              HashRange := t!.HashRange,
+              ProbingDepth := t!.ProbingDepth,
               intKeyFun := t!.intKeyFun,
               LengthArrayHalf := t!.LengthArrayHalf);
     return Objectify( DefaultSparseHashWithIKRepType and IsMutable, r);
@@ -754,7 +754,7 @@ local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
 #  cnt:=0;
   repeat
-    for i in [0..hash!.HashRange] do
+    for i in [0..hash!.ProbingDepth] do
       index:=HashClashFct(intkey,i,hash!.LengthArray);
       if hash!.KeyArray[index] = fail then
 #if cnt>MAXCLASH then MAXCLASH:=cnt;
@@ -775,8 +775,8 @@ local index,intkey,i,cnt;
 #      cnt:=cnt+1;
     od;
     # failed: Double size
-    #Error("Failed/double ",intkey," ",key," ",hash!.HashRange,"\n");
-    hash!.HashRange := hash!.HashRange * 2;
+    #Error("Failed/double ",intkey," ",key," ",hash!.ProbingDepth,"\n");
+    hash!.ProbingDepth := hash!.ProbingDepth * 2;
     DoubleHashDictSize( hash );
   until false;
 end );
@@ -791,7 +791,7 @@ InstallOtherMethod(AddDictionary,"for hash tables",true,
 function(hash,key,value)
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in [0..hash!.HashRange] do
+  for i in [0..hash!.ProbingDepth] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
 
     if hash!.KeyArray[index] = fail then
@@ -895,7 +895,7 @@ InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
 function( hash, key )
 local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  for i in [0..hash!.HashRange] do
+  for i in [0..hash!.ProbingDepth] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
       #LastHashIndex := index;
@@ -917,7 +917,7 @@ InstallMethod(LookupDictionary,"for hash tables",true,
 function( hash, key )
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in [0..hash!.HashRange] do
+  for i in [0..hash!.ProbingDepth] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
         #LastHashIndex := index;
