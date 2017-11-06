@@ -278,9 +278,8 @@ DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
 
 DeclareSynonym("GetHashEntry",LookupDictionary);
 
-
 IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
-  IsDictionary and IsComponentObjectRep,[]);
+  IsDictionary and IsNonAtomicComponentObjectRep,[]);
 
 #############################################################################
 ##
@@ -501,7 +500,7 @@ DeclareGlobalFunction( "DenseHashTable", [] );
 DeclareRepresentation( "IsSparseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
     # table may not be attribute storing.
-    IsComponentObjectRep and IsHash,
+    IsNonAtomicComponentObjectRep and IsHash,
     ["KeyArray", "ValueArray", "HashFunct", "LengthArray",
      "LengthArrayHalf", # so we dont need to *2 to see overflow
      "NumberKeys"] );

@@ -95,13 +95,15 @@ the other hand, if we have an explicit, sorted element list, direct indexing
 is to be used.
 <Example><![CDATA[
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+[ "IsComponentObjectRep", "IsNonAtomicComponentObjectRep", 
+  "IsDictionaryDefaultRep", "IsListDictionary", 
+  "IsListLookupDictionary", "IsSortDictionary", 
   "IsSortLookupDictionary" ]
 gap> d:=NewDictionary((1,2,3),true,Elements(SymmetricGroup(5)));;
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsPositionDictionary", "IsPositionLookupDictionary" ]
+[ "IsComponentObjectRep", "IsNonAtomicComponentObjectRep", 
+  "IsDictionaryDefaultRep", "IsPositionDictionary", 
+  "IsPositionLookupDictionary" ]
 ]]></Example>
 (Just indicating <C>SymmetricGroup(5)</C> as a third parameter would still keep
 the first storage method, as indexing would be too expensive if no explicit
@@ -116,13 +118,15 @@ the use of hashing (which will be faster).
 gap> v:=GF(2)^7;;
 gap> d:=NewDictionary(Zero(v),true);;                            
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+[ "IsComponentObjectRep", "IsNonAtomicComponentObjectRep", 
+  "IsDictionaryDefaultRep", "IsListDictionary", 
+  "IsListLookupDictionary", "IsSortDictionary", 
   "IsSortLookupDictionary" ]
 gap> d:=NewDictionary(Zero(v),true,v);;
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
-  "IsPositionDictionary", "IsPositionLookupDictionary" ]
+[ "IsComponentObjectRep", "IsNonAtomicComponentObjectRep", 
+  "IsDictionaryDefaultRep", "IsPositionDictionary", 
+  "IsPositionLookupDictionary" ]
 ]]></Example>
 
 </Section>

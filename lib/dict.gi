@@ -565,7 +565,9 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##  Default starting hash table size
 ##
 DefaultHashLength := 2^8;
-BindGlobal("HASH_RANGE",[0..2^7-2]);
+if IsHPCGAP then
+  MakeThreadLocal("DefaultHashLength");
+fi;
 
 #############################################################################
 ##
@@ -580,9 +582,11 @@ local Rec,T,len;
     len:=arg[2];
   fi;
 
-
   Rec := rec( KeyArray := ListWithIdenticalEntries( len, fail ),
-          ValueArray := [], LengthArray := len, NumberKeys := 0 );
+              ValueArray := [],
+              LengthArray := len,
+              NumberKeys := 0,
+              HashRange := len - 2);
 
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
@@ -606,6 +610,7 @@ InstallMethod(ShallowCopy, [IsSparseHashRep and IsCopyable],
               ValueArray := ShallowCopy(t!.ValueArray),
               LengthArray := t!.LengthArray,
               NumberKeys := t!.NumberKeys,
+              HashRange := t!.HashRange,
               LengthArrayHalf := t!.LengthArrayHalf);
     return Objectify( DefaultSparseHashRepType and IsMutable, r);
 end);
@@ -617,6 +622,7 @@ InstallMethod(ShallowCopy, [IsSparseHashRep and TableHasIntKeyFun and IsCopyable
               ValueArray := ShallowCopy(t!.ValueArray),
               LengthArray := t!.LengthArray,
               NumberKeys := t!.NumberKeys,
+              HashRange := t!.HashRange,
               intKeyFun := t!.intKeyFun,
               LengthArrayHalf := t!.LengthArrayHalf);
     return Objectify( DefaultSparseHashWithIKRepType and IsMutable, r);
@@ -748,7 +754,7 @@ local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
 #  cnt:=0;
   repeat
-    for i in HASH_RANGE do
+    for i in [0..hash!.HashRange] do
       index:=HashClashFct(intkey,i,hash!.LengthArray);
       if hash!.KeyArray[index] = fail then
 #if cnt>MAXCLASH then MAXCLASH:=cnt;
@@ -769,10 +775,8 @@ local index,intkey,i,cnt;
 #      cnt:=cnt+1;
     od;
     # failed: Double size
-    #Error("Failed/double ",intkey," ",key," ",Maximum(HASH_RANGE),"\n");
-    MakeReadWriteGlobal("HASH_RANGE");
-    HASH_RANGE:=[1..2*Maximum(HASH_RANGE)];
-    MakeReadOnlyGlobal("HASH_RANGE");
+    #Error("Failed/double ",intkey," ",key," ",hash!.HashRange,"\n");
+    hash!.HashRange := hash!.HashRange * 2;
     DoubleHashDictSize( hash );
   until false;
 end );
@@ -787,7 +791,7 @@ InstallOtherMethod(AddDictionary,"for hash tables",true,
 function(hash,key,value)
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
 
     if hash!.KeyArray[index] = fail then
@@ -837,6 +841,10 @@ function( hash )
   hash!.KeyArray:=0; # old one away
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
   hash!.ValueArray := [];
+  if IsHPCGAP then
+    MigrateObj(hash!.KeyArray, hash);
+    MigrateObj(hash!.ValueArray, hash);
+  fi;
   hash!.NumberKeys := 0;
   l:=Length(oldKeyArray);
   if IsBound(hash!.intKeyFun) then
@@ -887,7 +895,7 @@ InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
 function( hash, key )
 local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
       #LastHashIndex := index;
@@ -909,7 +917,7 @@ InstallMethod(LookupDictionary,"for hash tables",true,
 function( hash, key )
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
-  for i in HASH_RANGE do
+  for i in [0..hash!.HashRange] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
         #LastHashIndex := index;
