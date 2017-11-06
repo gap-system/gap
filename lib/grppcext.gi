@@ -1045,7 +1045,6 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                 # compute tails of relators in H
                 k := 0;
                 tails := [];
-		ConvertToVectorRepNC(tails,field);
                 for i in [1..Length(pcgs)] do
                     for j in [1..i] do
 
@@ -1066,18 +1065,28 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                         fi;
                         tail := ExponentsOfPcElement(pcgsH,tail,[n+1..n+d]);
                         tail := tail * g[2];
-			ConvertToVectorRepNC(tail,field);
-                        Append( tails, tail );
+                        # convert tail to compressed format ...
+                        if IsHPCGAP then
+                          if Size(field)<=256 then
+                            tail := CopyToVectorRepNC(tail,Size(field));
+                          fi;
+                        else
+                          ConvertToVectorRepNC(tail,field);
+                        fi;
+                        # ... and append tail to tails; we have to
+                        # treat the case that tails is still empty separately,
+                        # because right now, GAP does not support empty
+                        # compressed vectors; hence tails is an empty plist,
+                        # and Append will leave it at that.
+                        if Length(tails) = 0 then
+                          tails := tail;
+                        else
+                          Append( tails, tail );
+                        fi;
                     od;
                 od;
             else
               Error("not yet done");
-	      tails := List( [1..Length(fprels)], 
-			      x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
-              for i in tails do
-		ConvertToVectorRepNC(i,field);
-		Append(tails,i);
-	      od;
             fi;
             tails := Image( cc.cohom, tails );
             Add( mats[l], tails );
