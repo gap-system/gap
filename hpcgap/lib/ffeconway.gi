@@ -75,15 +75,15 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
             return;
         fi;
     od;
-    
+
     if not IsCheapConwayPolynomial(p,d) then
         Error("Conway Polynomial ",p,"^",d,
               " will need to computed and might be slow\n", "return to continue");
-    fi;  
+    fi;
     cp := CoefficientsOfUnivariatePolynomial(ConwayPolynomial(p,d));
 
     #
-    # various cases for reducers 
+    # various cases for reducers
     #
     if p = 2 then
         reducer := function(v)
@@ -92,7 +92,8 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
         end;
     elif p <= 256 then
         #
-        # We can save time on repeated reductions using pre-computed shifts
+        # We can save time on repeated reductions using
+        # pre-computed shifts
         #
         cps := MAKE_SHIFTED_COEFFS_VEC8BIT(cp,d+1);
         reducer := function(v)
@@ -115,31 +116,31 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
         end;
     fi;
 
-    atomic readwrite fam!.ConwayPolCoeffs do    
+    atomic readwrite fam!.ConwayPolCoeffs do
       if not IsBound(fam!.ConwayPolCoeffs[d]) then
         fam!.ConwayPolCoeffs[d] := MakeReadOnly(cp);
         fam!.ConwayFldEltReducers[d] := reducer;
-      fi;  
+      fi;
     od;
-end;    
+end;
 
 
 FFECONWAY.ZNC := function(p,d)
     local   fam,  zpd,  v;
     fam := FFEFamily(p);
-    
+
     if not IsBound(fam!.ZCache) then
         fam!.ZCache := MakeWriteOnceAtomic([]);
     fi;
-    
+
     if IsBound(fam!.ZCache[d]) then
         return fam!.ZCache[d];
     fi;
-    
-    # because MakeWriteOnceAtomic was applied to fam when it was created, 
+
+    # because MakeWriteOnceAtomic was applied to fam when it was created,
     # it should be safe to assign fam!.ConwayFldEltDefaultType as below
     if not IsBound(fam!.ConwayFldEltDefaultType) then
-      fam!.ConwayFldEltDefaultType := NewType(fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
+        fam!.ConwayFldEltDefaultType := NewType(fam, IsCoeffsModConwayPolRep and IsLexOrderedFFE);
     fi;
     FFECONWAY.SetUpConwayStuff(p,d);
     v := ListWithIdenticalEntries(d,0*Z(p));
@@ -149,12 +150,12 @@ FFECONWAY.ZNC := function(p,d)
     fi;
     # put 'false' in the third component because we know it is irreducible
     zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false] );
-    
+
     if not IsBound(fam!.ZCache[d]) then
         fam!.ZCache[d] := MakeReadOnly(zpd);
     fi;
     return fam!.ZCache[d];
-    
+
 end;
 
 #############################################################################
@@ -191,7 +192,6 @@ InstallMethod(ZOp,
     TryNextMethod();
 end);
 
-        
 
 #############################################################################
 ##
