@@ -424,13 +424,12 @@ should be treated as an estimate.
 
 <ManSection>
   <Var Name="time"/>
-  <Var Name="memory_allocated"/>
 
 <Description>
 In the read-eval-print loop,
 <Ref Var="time"/> stores the number of milliseconds the last command
-took. and <Ref Var="memory_allocated"/> stored the number of bytes of
-memory it allocated.
+took (see also <Ref Var="memory_allocated"/> for the number of bytes of
+memory it allocated).
 </Description>
 </ManSection>
 
@@ -457,15 +456,14 @@ in nanoseconds.
     in bytes allocated by the &GAP; memory manager since &GAP; started.
     </Description>
   </ManSection>
+  
   <ManSection>
-  <Var Name="memory_allocated"/>
-
-<Description>
-In the read-eval-print loop,
-<Ref Var="memory_allocated"/> stores the number of bytes of
-memoryallocated by the last completed statement.
-</Description>
-</ManSection>
+    <Var Name="memory_allocated"/>
+    <Description> In the read-eval-print loop, <Ref Var="memory_allocated"/>
+    stores the number of bytes of memory allocated by the last completed statement
+    (see also <Ref Var="time"/> for the number of milliseconds it took).
+  </Description>
+  </ManSection>
 
 </Section>
 
