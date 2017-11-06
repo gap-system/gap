@@ -39,7 +39,11 @@
 ##  Objects in this representation are defined by a single data entry, an
 ##  integer at first position.
 ##
+if IsHPCGAP then
+DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep, [ 1 ] );
+else
 DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep, [ 1 ] );
+fi;
 
 
 #############################################################################

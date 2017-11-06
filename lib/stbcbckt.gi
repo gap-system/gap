@@ -16,19 +16,19 @@
 if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
 
 # set some global variables
-BindGlobal("STBBCKT_STRING_CENTRALIZER","Centralizer");
-BindGlobal("STBBCKT_STRING_REGORB1","_RegularOrbit1");
-BindGlobal("STBBCKT_STRING_REGORB2","RegularOrbit2");
-BindGlobal("STBBCKT_STRING_REGORB3","RegularOrbit3");
-BindGlobal("STBBCKT_STRING_SPLITOFF","SplitOffBlock");
-BindGlobal("STBBCKT_STRING_INTERSECTION","Intersection");
-BindGlobal("STBBCKT_STRING_PROCESSFIX","ProcessFixpoint");
-BindGlobal("STBBCKT_STRING_MAKEBLOX","_MakeBlox");
-BindGlobal("STBBCKT_STRING_SUBORBITS0","Suborbits0");
-BindGlobal("STBBCKT_STRING_SUBORBITS1","Suborbits1");
-BindGlobal("STBBCKT_STRING_SUBORBITS2","Suborbits2");
-BindGlobal("STBBCKT_STRING_SUBORBITS3","Suborbits3");
-BindGlobal("STBBCKT_STRING_TWOCLOSURE","TwoClosure");
+BindGlobal("STBBCKT_STRING_CENTRALIZER",MakeImmutable("Centralizer"));
+BindGlobal("STBBCKT_STRING_REGORB1",MakeImmutable("_RegularOrbit1"));
+BindGlobal("STBBCKT_STRING_REGORB2",MakeImmutable("RegularOrbit2"));
+BindGlobal("STBBCKT_STRING_REGORB3",MakeImmutable("RegularOrbit3"));
+BindGlobal("STBBCKT_STRING_SPLITOFF",MakeImmutable("SplitOffBlock"));
+BindGlobal("STBBCKT_STRING_INTERSECTION",MakeImmutable("Intersection"));
+BindGlobal("STBBCKT_STRING_PROCESSFIX",MakeImmutable("ProcessFixpoint"));
+BindGlobal("STBBCKT_STRING_MAKEBLOX",MakeImmutable("_MakeBlox"));
+BindGlobal("STBBCKT_STRING_SUBORBITS0",MakeImmutable("Suborbits0"));
+BindGlobal("STBBCKT_STRING_SUBORBITS1",MakeImmutable("Suborbits1"));
+BindGlobal("STBBCKT_STRING_SUBORBITS2",MakeImmutable("Suborbits2"));
+BindGlobal("STBBCKT_STRING_SUBORBITS3",MakeImmutable("Suborbits3"));
+BindGlobal("STBBCKT_STRING_TWOCLOSURE",MakeImmutable("TwoClosure"));
 
 # #############################################################################
 # ##
@@ -1881,6 +1881,13 @@ function( rbase, image, G, f, Q, strat )
     return MeetPartitionStrat( rbase, image, Q, t, strat );
 end);
 Refinements.(STBBCKT_STRING_TWOCLOSURE):=Refinements_TwoClosure;
+
+#############################################################################
+##
+## After construction, make Refinements immutable for thread-safety
+##
+MakeImmutable(Refinements);
+
 
 #############################################################################
 ##

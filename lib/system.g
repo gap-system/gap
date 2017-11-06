@@ -22,9 +22,9 @@ BIND_GLOBAL( "GAPInfo", rec(
 
 # do not edit the following three lines. Occurences of `4.dev' and `today'
 # will be replaced by string matching by distribution wrapping scripts.
-    Version := "4.dev",
-    Date := "today",
-    NeedKernelVersion := "4.dev",
+    Version := MakeImmutable("4.dev"),
+    Date := MakeImmutable("today"),
+    NeedKernelVersion := MakeImmutable("4.dev"),
 
 # Without the needed packages, GAP does not start.
     Dependencies := rec(
@@ -34,14 +34,14 @@ BIND_GLOBAL( "GAPInfo", rec(
         [ "smallgrp", ">= 1.0" ],
         [ "transgrp", ">= 1.0" ],
       ],
-           ),
+    ),
 # There is no SuggestedOtherPackages here because the default value of
 # the user preference PackagesToLoad does the job      
 
     HasReadGAPRC:= false,
 
     # list of all reserved keywords
-    Keywords:=ALL_KEYWORDS(),
+    Keywords:=MakeImmutable(ALL_KEYWORDS()),
 
     # the maximal number of arguments a method can have
     MaxNrArgsMethod:= 6,

@@ -1741,6 +1741,7 @@ BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elm )
         return NumberElement_ExtendedVectors( enum, elm );
       fi;
     fi;
+
     # Problem with GF(4) vectors over GF(2)
     if ( IsGF2VectorRep( elm ) and enum!.q <> 2 )
        or ( Is8BitVectorRep( elm ) and enum!.q = 2 ) then
