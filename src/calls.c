@@ -1621,8 +1621,6 @@ Obj FuncNAMS_FUNC (
     }
 }
 
-#ifdef HPCGAP
-
 /****************************************************************************
 **
 *F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
@@ -1630,24 +1628,24 @@ Obj FuncNAMS_FUNC (
 */
 Obj LOCKS_FUNC_Oper;
 
-Obj FuncLOCKS_FUNC (
-    Obj                 self,
-    Obj                 func )
+Obj FuncLOCKS_FUNC(Obj self, Obj func)
 {
-  Obj locks;
-    if ( TNUM_OBJ(func) == T_FUNCTION ) {
-      locks = LCKS_FUNC(func);
-      if ( locks == (Obj)0) 
-	return Fail;
-      else
-	return locks;
+#ifdef HPCGAP
+    Obj locks;
+    if (TNUM_OBJ(func) == T_FUNCTION) {
+        locks = LCKS_FUNC(func);
+        if (locks == (Obj)0)
+            return Fail;
+        else
+            return locks;
     }
     else {
-        return DoOperation1Args( self, func );
+        return DoOperation1Args(self, func);
     }
-}
-
+#else
+    return Fail;
 #endif
+}
 
 
 /****************************************************************************
@@ -1989,9 +1987,7 @@ static StructGVarOper GVarOpers [] = {
     GVAR_OPER(SET_NAME_FUNC, 2, "func, name", &SET_NAME_FUNC_Oper),
     GVAR_OPER(NARG_FUNC, 1, "func", &NARG_FUNC_Oper),
     GVAR_OPER(NAMS_FUNC, 1, "func", &NAMS_FUNC_Oper),
-#ifdef HPCGAP
     GVAR_OPER(LOCKS_FUNC, 1, "func", &LOCKS_FUNC_Oper),
-#endif
     GVAR_OPER(PROF_FUNC, 1, "func", &PROF_FUNC_Oper),
     { 0, 0, 0, 0, 0, 0 }
 
