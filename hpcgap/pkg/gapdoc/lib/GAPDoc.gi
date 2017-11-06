@@ -38,7 +38,7 @@ Add(GAPDOCDTDINFO, rec(name := "WHOLEDOCUMENT", attr := [  ],
             reqattr := [  ], type := "elements", content := ["Book"]));
 BindGlobal("GAPDOCDTDINFOELS", List(GAPDOCDTDINFO, a-> a.name));
 InstallGlobalFunction(CheckAndCleanGapDocTree, function(arg)
-  local r, str, name, pos, type, namc, l, i, namattr, typ, c;
+  local r, str, name, pos, type, namc, l, ml, i, namattr, typ, c;
   # we save orignal XML input string if available (as r.input on top
   # level and as second argument in recursive calls of this function)
   # This allows to browse the input if an error occurs.
@@ -140,6 +140,15 @@ InstallGlobalFunction(CheckAndCleanGapDocTree, function(arg)
     in List(r.content, a-> a.name) then
     ParseError(str, r.start, 
                     "Chapter, Section or Subsection must have a heading");
+  elif name = "ManSection" then
+    l := List(r.content, a-> a.name);
+    ml := ["Func", "Oper", "Meth", "Filt", "Prop", "Attr", "Constr",
+           "Var", "Fam", "InfoClass"];
+    if ForAll(ml, a-> not a in l) then
+      ParseError(str, r.start, Concatenation(
+         "ManSection must contain at least one of the following ",
+         "elements:\n", JoinStringsWithSeparator(ml, ", ")));
+    fi;
   fi;
   
   if r.content = EMPTYCONTENT then
@@ -176,8 +185,8 @@ InstallGlobalFunction(AddParagraphNumbersGapDocTree, function(r)
   
   # these elements are paragraphs  
   parels := [ "List", "Enum", "Table", "Item", "Heading", "Attr", "Fam", 
-              "Filt", "Func", "InfoClass", "Meth", "Oper", "Prop", "Var",
-              "Display", "Example", "Listing", "Log", "Verb", "Address", 
+              "Filt", "Func", "InfoClass", "Meth", "Oper", "Constr", "Prop",
+              "Var", "Display", "Example", "Listing", "Log", "Verb", "Address",
               "TitleComment"];
   # reset counter
   cssp := [0, 0, 0, 1];
@@ -376,7 +385,7 @@ BindGlobal("TEXTMTRANSLATIONS",
 # unicode characters which do not yet have a simplification, we add their
 # LaTeX code as simplification to SimplifiedUnicodeTable (sometimes without
 # the leading backslash)
-CallFuncList( function()
+CallFuncList(function()
   local hash, s, str, pos, a;
   hash := List(SimplifiedUnicodeTable, a-> a[1]);
   # the candidates to add are found in the LaTeXUnicodeTable
@@ -709,6 +718,7 @@ GAPDocTexts.english := rec(
   # variable types, should these be translated?
   Func := "function",
   Oper := "operation",
+  Constr := "constructor",
   Meth := "method",
   Filt := "filter",
   Prop := "property",
@@ -772,6 +782,7 @@ GAPDocTexts.russian := rec(
   # variable types, should these be translated?
   Func := "функция",
   Oper := "операция",
+  Constr := "конструктор",
   Meth := "метод",
   Filt := "фильтр",
   Prop := "свойство",
@@ -816,6 +827,7 @@ GAPDocTexts.ukrainian := rec(
   # variable types, should these be translated?
   Func := "функція",
   Oper := "операція",
+  Constr := "конструктор",
   Meth := "метод",
   Filt := "фільтр",
   Prop := "властивість",
@@ -857,6 +869,7 @@ GAPDocTexts.german := rec(
   # variable types, should these be translated?
   Func := "Funktion",
   Oper := "Operation",
+  Constr := "Konstruktor",
   Meth := "Methode",
   Filt := "Filter",
   Prop := "Eigenschaft",

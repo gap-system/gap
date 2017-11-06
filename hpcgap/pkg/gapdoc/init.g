@@ -93,5 +93,27 @@ GAPInfo.tmpfunc := function()
 end;
 GAPInfo.tmpfunc();
 Add(GAPInfo.PostRestoreFuncs, GAPInfo.tmpfunc);
-GAPInfo.tmpfunc := fail;
+Unbind(GAPInfo.tmpfunc);
 
+# In HPCGAP some help system functionality is made available through a
+# region `HELP_REGION`. To avoid warnings in GAP4 we bind this variable.
+if not IsBound(HELP_REGION) then
+  BindGlobal("HELP_REGION", fail);
+fi;
+
+# A helper interface function to the GAP help system,
+# used for resolving references to other help books.
+BindGlobal("GetHelpDataRef", function(info, i)
+  local res;
+  # the `atomic` wrapper is only relevant in HPCGAP, the lock
+  # is needed because the HelpData handler may write some information
+  # into the data structures of the help system
+  atomic readwrite HELP_REGION do
+    res := HELP_BOOK_HANDLER.(info.handler).HelpData(info, i, "ref");
+  od;
+  return res;
+end);
+# This is make GAPDoc work with GAP < 4.9, despite the HPCGAP specific code
+if not IsBound(CopyToRegion) then
+  BindGlobal("CopyToRegion", Immutable("notexisting"));
+fi;

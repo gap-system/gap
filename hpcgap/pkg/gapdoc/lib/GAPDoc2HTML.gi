@@ -97,7 +97,7 @@ GAPDoc2HTMLProcs.ParEls :=
   "Colophon", "TableOfContents", "Bibliography", "TheIndex",
   "Subsection", "ManSection", "Description", "Returns", "Section",
   "Chapter", "Appendix", "Body", "Book", "WHOLEDOCUMENT", "Attr", "Fam",
-  "Filt", "Func", "InfoClass", "Meth", "Oper", "Prop", "Var", "Verb" ];
+  "Filt", "Func", "InfoClass", "Meth", "Oper", "Constr", "Prop", "Var", "Verb"];
 
 ##  arg: a list of strings
 ##  for now only ??????
@@ -1615,6 +1615,10 @@ GAPDoc2HTMLProcs.Oper := function(r, str)
   GAPDoc2HTMLProcs.LikeFunc(r, str, GAPDocTexts.d.Oper);
 end;
 
+GAPDoc2HTMLProcs.Constr := function(r, str)
+  GAPDoc2HTMLProcs.LikeFunc(r, str, GAPDocTexts.d.Constr);
+end;
+
 GAPDoc2HTMLProcs.Meth := function(r, str)
   GAPDoc2HTMLProcs.LikeFunc(r, str, GAPDocTexts.d.Meth);
 end;
@@ -1659,12 +1663,9 @@ GAPDoc2HTMLProcs.ResolveExternalRef := function(bookname,  label, nr)
   if Length(match) < nr then
     return fail;
   fi;
-
-  atomic readwrite HELP_REGION do
-  res := HELP_BOOK_HANDLER.(info.handler).HelpData(info, match[nr][2], "ref");
+  res := GetHelpDataRef(info, match[nr][2]);
   res[1] := SubstitutionSublist(res[1], " (not loaded): ", ": ", "one");
   return res;
-  od;
 end;
 
 ##  helper for external URLs, remove GAPDocStyle part and maybe add "_mj"
@@ -1764,8 +1765,8 @@ GAPDoc2HTMLProcs.Ref := function(r, str)
       ref := Concatenation(rattr[1], "???", rattr[2]);
     fi;
   fi;
-  if Length(int)>0 and int[1] in [ "Func", "Oper", "Meth", "Filt", "Prop", 
-                                   "Attr", "Var", "Fam", "InfoClass" ] then
+  if Length(int)>0 and int[1] in [ "Func", "Oper", "Constr", "Meth", "Filt",
+                               "Prop", "Attr", "Var", "Fam", "InfoClass" ] then
     attr := GAPDoc2HTMLProcs.TextAttr.Func;
     txt := Concatenation(attr[1], 
              GAPDoc2HTMLProcs.EscapeAttrVal(r.attributes.(int[1])), attr[2]);
@@ -1818,8 +1819,8 @@ GAPDoc2HTMLProcs.ManSection := function(r, par)
   fi;
   strn := "";
   # function like elements
-  funclike := [ "Func", "Oper", "Meth", "Filt", "Prop", "Attr", "Var", 
-                "Fam", "InfoClass" ];
+  funclike := [ "Func", "Oper", "Constr", "Meth", "Filt", "Prop", "Attr", 
+                "Var", "Fam", "InfoClass" ];
   
   # heading comes from name of first function like element
   i := 1;

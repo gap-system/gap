@@ -1,5 +1,11 @@
                        CHANGES of the GAPDoc package
 
+1.6 -> 1.6.1
+- Added an element <Constr> to be used in ManSection's on construtors.
+
+- Minimal changes to make GAPDoc (translation of manual, and handler
+  functions for the help system) work in any single thread in HPCGAP.
+
 1.5.1 -> 1.6
 - Changed and documented the handling of <Alt Only="LaTeX"> elements;
   its content is not reformatted.

@@ -23,7 +23,7 @@ Persons := [
   IsAuthor := true,
   IsMaintainer := true,
   Email := "Frank.Luebeck@Math.RWTH-Aachen.De",
-  WWWHome := "http://www.math.rwth-aachen.de:8001/~Frank.Luebeck",
+  WWWHome := "http://www.math.rwth-aachen.de/~Frank.Luebeck",
   Place := "Aachen",
   Institution := "Lehrstuhl D für Mathematik, RWTH Aachen",
   PostalAddress := "Dr. Frank Lübeck\nLehrstuhl D für Mathematik\nRWTH Aachen\nTemplergraben 64\n52062 Aachen\nGERMANY\n"
@@ -33,10 +33,10 @@ Persons := [
   FirstNames := "Max",
   IsAuthor := true,
   IsMaintainer := false,
-  Email := "neunhoef at mcs.st-and.ac.uk",
+  #Email := "neunhoef at mcs.st-and.ac.uk",
   WWWHome := "http://www-groups.mcs.st-and.ac.uk/~neunhoef/",
-  Place := "St Andrews",
-  Institution := "School of Mathematics and Statistics, St Andrews",
+  #Place := "St Andrews",
+  #Institution := "School of Mathematics and Statistics, St Andrews",
   )
 ],
 Status := "accepted",
@@ -72,9 +72,8 @@ Dependencies := rec(
   NeededOtherPackages := [],
   SuggestedOtherPackages := [["IO", ">= 2.3"]],
   ExternalConditions := 
-            [["(La)TeX installation for converting documents to PDF",
-              "http://www.latex-project.org"], 
-              ["BibTeX installation to produce unified labels for refs"]]
+            ["(La)TeX installation for converting documents to PDF",
+              "BibTeX installation to produce unified labels for refs"]
 ),
 AvailabilityTest := ReturnTrue,
 Keywords := ["GAP documentation", "help system", "XML", "pdf", "hyperlink",

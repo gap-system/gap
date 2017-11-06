@@ -203,6 +203,7 @@
 <!ELEMENT Ref EMPTY>
 <!ATTLIST Ref Func      CDATA #IMPLIED
               Oper      CDATA #IMPLIED
+              Constr    CDATA #IMPLIED
               Meth      CDATA #IMPLIED
               Filt      CDATA #IMPLIED
               Prop      CDATA #IMPLIED
@@ -321,6 +322,7 @@
                       ((Func, Returns?) | (Oper, Returns?) | 
                        (Meth, Returns?) | (Filt, Returns?) | 
                        (Prop, Returns?) | (Attr, Returns?) |
+                       (Constr, Returns?) |
                        Var | Fam | InfoClass)+, Description )>
 <!ATTLIST ManSection Label CDATA #IMPLIED> <!-- For reference purposes -->
 
@@ -351,7 +353,13 @@
                Label CDATA #IMPLIED
                Arg   CDATA #REQUIRED
                Comm  CDATA #IMPLIED>
-             
+
+<!ELEMENT Constr EMPTY>
+<!ATTLIST Constr Name  CDATA #REQUIRED
+                 Label CDATA #IMPLIED
+                 Arg   CDATA #REQUIRED
+                 Comm  CDATA #IMPLIED>
+
 <!ELEMENT Meth EMPTY>
 <!ATTLIST Meth Name  CDATA #REQUIRED
                Label CDATA #IMPLIED

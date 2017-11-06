@@ -118,6 +118,14 @@
   </ManSection>
 
   <ManSection>
+   <Constr Name="MyConstructor" Arg="filt, x" Comm="constructs something"/>
+   <Description>
+    The constructor <Ref Oper="MyConstructor"/> constructs from <Arg>x</Arg>
+    an object in <A>filt</A>.
+   </Description>
+  </ManSection>
+
+  <ManSection>
    <Filt Name="IsBla" Arg="obj" Comm="representation bla"
          Type="representation"/>
    <Description>
@@ -649,6 +657,14 @@ This is an appendix.
     <Ref Oper="MyOperation"/> if the argument <A>x</A> is in the
     representation <Ref Filt="IsBla"/>. It will become even faster if
     the optional argument <A>good_hint</A> is given.
+   </Description>
+  </ManSection>
+
+  <ManSection>
+   <Constr Name="MyConstructor" Arg="filt, x" Comm="constructs something"/>
+   <Description>
+    The constructor <Ref Oper="MyConstructor"/> constructs from <Arg>x</Arg>
+    an object in <A>filt</A>.
    </Description>
   </ManSection>
 
