@@ -37,7 +37,6 @@ end;
 #V  IRR_POLS_OVER_GF_CACHE:  a cache for the following function
 ##  
 IRR_POLS_OVER_GF_CACHE := [];
-##  RedCoeffDirectFun := ApplicableMethod(ReduceCoeffs,[[Z(3)],1,[Z(3)],1]);
 AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
   local   l,  zero,  i,  r,  p, new, neverdiv;
   if not IsBound(IRR_POLS_OVER_GF_CACHE[q]) then
@@ -56,9 +55,7 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
     lp := Length(p);
     for rr in r do
       pp := ShallowCopy(p);
-      # here we go around method selection which gives a 10% speedup
       ReduceCoeffs(pp, lp, rr, lr);
-##        RedCoeffDirectFun(pp, lp, rr, lr);
       ShrinkRowVector(pp);
       if Length(pp)=0 then
         return false;
@@ -79,6 +76,7 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
     od;
     l := new;
   od;
+  
   IRR_POLS_OVER_GF_CACHE[q][n] := Immutable(l);
   return IRR_POLS_OVER_GF_CACHE[q][n];  
 end;

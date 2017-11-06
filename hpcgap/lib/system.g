@@ -22,9 +22,9 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
 # do not edit the following three lines. Occurences of `4.dev' and `today'
 # will be replaced by string matching by distribution wrapping scripts.
-    Version := `"4.dev",
-    Date := `"today",
-    NeedKernelVersion := `"4.dev",
+    Version := MakeImmutable("4.dev"),
+    Date := MakeImmutable("today"),
+    NeedKernelVersion := MakeImmutable("4.dev"),
 
 # Without the needed packages, GAP does not start.
     Dependencies := rec(
@@ -116,7 +116,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
           ],
     ) ));
-  
+
 
 #############################################################################
 ##

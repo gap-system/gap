@@ -1883,8 +1883,8 @@ end);
 Refinements.(STBBCKT_STRING_TWOCLOSURE):=Refinements_TwoClosure;
 
 #############################################################################
-##  
-## After construction, made Refinements immutable for thread-safety 
+##
+## After construction, make Refinements immutable for thread-safety
 ##
 MakeImmutable(Refinements);
 

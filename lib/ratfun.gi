@@ -737,7 +737,7 @@ function( efam )
 	  HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
-  fam!.threeLaurentPolynomialTypes := 
+  fam!.threeLaurentPolynomialTypes := MakeImmutable(
     [ NewType( fam,
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
@@ -755,7 +755,7 @@ function( efam )
 	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
-	    IsUnivariatePolynomial)];
+	    IsUnivariatePolynomial)] );
 	      
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
@@ -771,11 +771,11 @@ function( efam )
   fi;
 
   # functions to add zipped lists
-  fam!.zippedSum := [ MONOM_GRLEX, \+ ];
+  fam!.zippedSum := MakeImmutable([ MONOM_GRLEX, \+ ]);
 
   # functions to multiply zipped lists
-  fam!.zippedProduct := [ MONOM_PROD,
-			  MONOM_GRLEX, \+, \* ];
+  fam!.zippedProduct := MakeImmutable([ MONOM_PROD,
+			  MONOM_GRLEX, \+, \* ]);
 
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(efam);

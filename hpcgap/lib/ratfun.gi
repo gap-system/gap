@@ -777,11 +777,11 @@ function( efam )
   fi;
 
   # functions to add zipped lists
-  fam!.zippedSum := `[ MONOM_GRLEX, \+ ];
+  fam!.zippedSum := MakeImmutable([ MONOM_GRLEX, \+ ]);
 
   # functions to multiply zipped lists
-  fam!.zippedProduct := `[ MONOM_PROD,
-			  MONOM_GRLEX, \+, \* ];
+  fam!.zippedProduct := MakeImmutable([ MONOM_PROD,
+			  MONOM_GRLEX, \+, \* ]);
 
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(efam);
