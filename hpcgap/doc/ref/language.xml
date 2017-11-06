@@ -536,9 +536,36 @@ Certain special facilities are provided for manipulating global
 variables which are not available for other types of variable (such as 
 local variables or function arguments).
 <P/>
-First, such variables may be marked <E>read-only</E>. In which case
+First, such variables may be marked <E>read-only</E> using
+<Ref Func="MakeReadOnlyGlobal"/>. In which case
 attempts to change them will fail. Most of the global variables
-defined in the &GAP; library are so marked.
+defined in the &GAP; library are so marked. <E>read-only</E> variables
+can be made read-write again by calling <Ref Func="MakeReadWriteGlobal"/>.
+GAP also features <E>constant</E> variables, which are created by calling
+<Ref Func="MakeConstantGlobal"/>. Constant variables can never be changed.
+In some cases, GAP can optimise code which uses <E>constant</E> variables,
+as their value never changes. In this version GAP these optimisations can be
+observed by printing the function back out, but this behaviour may change
+in future.
+<Example><![CDATA[
+gap> globali := 1 + 2;;
+gap> globalb := true;;
+gap> MakeConstantGlobal("globali");
+gap> MakeConstantGlobal("globalb");
+gap> f := function()
+>     if globalb then
+>         return globali + 1;
+>     else
+>         return globali + 2;
+>     fi;
+> end;;
+gap> Print(f);
+function (  )
+    return 3 + 1;
+end
+]]></Example>
+
+
 <P/>
 Second, a group of functions are supplied for accessing and altering the
 values assigned to global variables. Use of these functions differs
@@ -613,6 +640,7 @@ false
 </Description>
 </ManSection>
 
+<#Include Label="MakeConstantGlobal">
 
 <ManSection>
 <Func Name="ValueGlobal" Arg='name'/>
