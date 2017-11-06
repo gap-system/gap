@@ -8,13 +8,13 @@ found in the main directory of the  &GAPDoc; package and it is reproduced in
 Appendix&nbsp;<Ref Appendix="GAPDocdtd" />.<P/>
 
 We do  not give many examples  in this chapter  which is more intended  as a
-formal  reference for  all &GAPDoc;  elements. Instead  we provide  an extra
-document with book name <C>GAPDocExample</C> (also accessible from the &GAP;
-online  help). This  uses  all  the constructs  introduced  in this  chapter
-and  you can  easily  compare the  source  code  and how  it  looks like  in
-the  different output  formats. Furthermore  recall that  many basic  things
-about  XML markup  were already  explained  by example  in the  introductory
-chapter&nbsp;<Ref Chap="ch:intro" />.
+formal reference for  all &GAPDoc; elements. Instead, we  provide a separate
+help book, see&nbsp;<Ref BookName="GAPDoc Example" Label=""/>. This uses all
+the constructs  introduced in this  chapter and  you can easily  compare the
+source  code  and  how  it  looks like  in  the  different  output  formats.
+Furthermore  recall that  many basic  things about  XML markup  were already
+explained by  example in the introductory  chapter&nbsp;<Ref Chap="ch:intro"
+/>.
 
 <Section><Heading>What is a DTD?</Heading>
 
@@ -571,6 +571,7 @@ in the UNIX environment.
                       ((Func, Returns?) | (Oper, Returns?) | 
                        (Meth, Returns?) | (Filt, Returns?) | 
                        (Prop, Returns?) | (Attr, Returns?) |
+                       (Constr, Returns?) |
                        Var | Fam | InfoClass)+, Description )>
 <!ATTLIST ManSection Label CDATA #IMPLIED> <!-- For reference purposes -->
 
@@ -585,16 +586,17 @@ the elements <C>Func</C> and so  on (explained below) generate automatically
 labels for cross referencing.<P/>
 
 The  content  of  a  <C>ManSection</C>  element  is  one  or  more  elements
-describing  certain  items  in  &GAP;,  each  of  them  optionally  followed
-by  a  <C>Returns</C> element,  followed  by  a <C>Description</C>  element,
-which contains  <C>%Text;</C> (see <Ref  Label="Text" Text="here"/>)
-describing it. (Remember to include examples  in the description as often as
-possible,  see&nbsp;<Ref Subsect="Log"  />). The  classes of  items &GAPDoc;
-knows  of are:  functions (<C>Func</C>),  operations (<C>Oper</C>),  methods
-(<C>Meth</C>), filters  (<C>Filt</C>), properties  (<C>Prop</C>), attributes
-(<C>Attr</C>),  variables  (<C>Var</C>),  families  (<C>Fam</C>),  and  info
-classes  (<C>InfoClass</C>).  One  <C>ManSection</C>  should  only  describe
-several of such items when these are very closely related. <P/>
+describing certain  items in &GAP;,  each of  them optionally followed  by a
+<C>Returns</C>  element, followed  by  a  <C>Description</C> element,  which
+contains <C>%Text;</C> (see <Ref  Label="Text" Text="here"/>) describing it.
+(Remember  to include  examples in  the  description as  often as  possible,
+see&nbsp;<Ref  Subsect="Log"  />).  The  classes  of  items  &GAPDoc;  knows
+of  are:  functions  (<C>Func</C>), operations  (<C>Oper</C>),  constructors
+(<C>Constr</C>),  methods (<C>Meth</C>),  filters (<C>Filt</C>),  properties
+(<C>Prop</C>),  attributes (<C>Attr</C>),  variables (<C>Var</C>),  families
+(<C>Fam</C>),  and info  classes  (<C>InfoClass</C>). One  <C>ManSection</C>
+should  only describe  several of  such items  when these  are very  closely
+related. <P/>
 
 Each element for  an item corresponding to a &GAP;  function can be followed
 by a <C>Returns</C>  element. In output versions of the  document the string
@@ -678,6 +680,30 @@ of an operation. The  attributes are used exactly in the same  way as in the
 Note  that multiple  descriptions  of  the same  operation  may  occur in  a
 document because  there may  be several  declarations in  &GAP;. Furthermore
 there  may  be several  <C>ManSection</C>s  for  methods of  this  operation
+(see&nbsp;<Ref  Subsect="Meth"  />)  which  also  use  the  same  name.  For
+reference  purposes these  must be  distinguished by  different <C>Label</C>
+attributes.
+
+</Subsection>
+
+<Subsection><Heading><C>&lt;Constr></C></Heading>
+<Index Key="Constr"><C>Constr</C></Index>
+
+<Listing Type="From gapdoc.dtd">
+<![CDATA[<!ELEMENT Constr EMPTY>
+<!ATTLIST Constr Name  CDATA #REQUIRED
+                 Label CDATA #IMPLIED
+                 Arg   CDATA #REQUIRED
+                 Comm  CDATA #IMPLIED>]]>
+</Listing>
+
+This element is used within a <C>ManSection</C> element to specify the usage
+of a constructor. The attributes are used exactly in the same  way as in the
+<C>Func</C> element (see <Ref Subsect="Func"/>). <P/>
+
+Note  that multiple  descriptions  of  the same constructor may  occur in  a
+document because  there may  be several  declarations in  &GAP;. Furthermore
+there  may  be several  <C>ManSection</C>s  for  methods of this constructor
 (see&nbsp;<Ref  Subsect="Meth"  />)  which  also  use  the  same  name.  For
 reference  purposes these  must be  distinguished by  different <C>Label</C>
 attributes.
@@ -840,6 +866,7 @@ Referencing is done with the <C>Ref</C> element:
 <![CDATA[<!ELEMENT Ref EMPTY>
 <!ATTLIST Ref Func      CDATA #IMPLIED
               Oper      CDATA #IMPLIED
+              Constr    CDATA #IMPLIED
               Meth      CDATA #IMPLIED
               Filt      CDATA #IMPLIED
               Prop      CDATA #IMPLIED
@@ -858,15 +885,16 @@ Referencing is done with the <C>Ref</C> element:
               Style (Text | Number) #IMPLIED>  <!-- normally automatic -->]]>
 </Listing>
 
-The  <C>Ref</C>  element is  defined  to  be  <C>EMPTY</C>.  If one  of  the
-attributes <C>Func</C>, <C>Oper</C>,  <C>Meth</C>, <C>Prop</C>, <C>Attr</C>,
-<C>Var</C>,   <C>Fam</C>,    <C>InfoClass</C>,   <C>Chap</C>,   <C>Sect</C>,
-<C>Subsect</C>,  <C>Appendix</C> is  given then  there must  be exactly  one
-of  these,  making  the  reference  one to  the  corresponding  object.  The
-<C>Label</C> attribute  can be specified  in addition to make  the reference
-unique, for example  if more than one  method with a given  name is present.
-(Note that  there is no way  to specify in the  DTD that exactly one  of the
-first listed attributes must be given, this is an additional rule.)<P/>
+The  <C>Ref</C>   element  is  defined   to  be  <C>EMPTY</C>.  If   one  of
+the   attributes  <C>Func</C>,   <C>Oper</C>,  <C>Constr</C>,   <C>Meth</C>,
+<C>Prop</C>,   <C>Attr</C>,    <C>Var</C>,   <C>Fam</C>,   <C>InfoClass</C>,
+<C>Chap</C>,  <C>Sect</C>,  <C>Subsect</C>,  <C>Appendix</C> is  given  then
+there  must  be exactly  one  of  these, making  the  reference  one to  the
+corresponding  object.  The  <C>Label</C>  attribute  can  be  specified  in
+addition to make  the reference unique, for example if  more than one method
+with a given name  is present. (Note that there is no way  to specify in the
+DTD that exactly one  of the first listed attributes must  be given, this is
+an additional rule.)<P/>
 
 A   reference  to   a   <C>Label</C>  element   defined   below  (see   <Ref
 Subsect="Label"/>)  is  done  by   giving  the  <C>Label</C>  attribute  and

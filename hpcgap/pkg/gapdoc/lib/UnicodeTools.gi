@@ -1018,9 +1018,6 @@ end);
 UNICODE_RECODE.f := function()
   local nam, i;
   for i in Concatenation([1..11],[13..15]) do
-    # 'nam' is a high variable for the Encoder function
-    # that belongs to the main thread, but must be accessible
-    # by all threads.
     nam := MakeImmutable(Concatenation("ISO-8859-", String(i)));
     UNICODE_RECODE.Encoder.(nam) := function(ustr)
       local t, s, res, pos, c;
@@ -1248,6 +1245,4 @@ function(s)
   fi;
 end);
 
-if IsBound(HPCGAP) then
-    MakeThreadLocal("UNICODE_RECODE");
-fi;
+

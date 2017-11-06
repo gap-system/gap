@@ -688,6 +688,11 @@ end);
 ##  <#/GAPDoc>
 ##  
 BindGlobal("SPACESTRINGS", [" "]);
+# only relevant for HPCGAP, to allow for formatting of help pages in any thread
+if IsBound(HPCGAP) then
+  MakeThreadLocal("SPACESTRINGS");                                             
+fi;                                                                            
+
 InstallGlobalFunction(FormatParagraph, function(arg)
   local   str,  len,  flush,  attr, width, i, words, esc, l, j, k, lw,  
           lines,  s,  ss,  nsp,  res,  a,  new,  qr,  b;
