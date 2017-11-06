@@ -136,8 +136,9 @@ function(pcgs, G )
   return igs;
 end );
 
+atomic readwrite OPERATIONS_REGION do
 ADD_LIST(WRAPPER_OPERATIONS, InducedPcgs);
-
+od;
 
 #############################################################################
 ##
