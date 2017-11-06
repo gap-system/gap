@@ -2233,7 +2233,7 @@ Char * syFgets (
         return p;
       else
         return line;
-    } else {
+    }
 #endif
 
     /* In line editing mode 'length' is not allowed bigger than the
@@ -2327,15 +2327,17 @@ Char * syFgets (
                SET_ELM_PLIST(args,2,INTOBJ_INT(ch));
                res = Call1ArgsInNewReader(LineEditKeyHandler, args);
             }
-            linestr = ELM_PLIST(res,1);
-            len = GET_LEN_STRING(linestr);
-            memcpy(line,CHARS_STRING(linestr),len);
-            line[len] = '\0';
-            p = line + (INT_INTOBJ(ELM_PLIST(res,2)) - 1);
-            yankstr = ELM_PLIST(res,3);
-            len = GET_LEN_STRING(yankstr);
-            memcpy(yank,CHARS_STRING(yankstr),len);
-            yank[len] = '\0';
+            if (IS_BAG_REF(res) && IS_LIST(res) && LEN_LIST(res) == 3) {
+              linestr = ELM_LIST(res,1);
+              len = GET_LEN_STRING(linestr);
+              memcpy(line,CHARS_STRING(linestr),len);
+              line[len] = '\0';
+              p = line + (INT_INTOBJ(ELM_LIST(res,2)) - 1);
+              yankstr = ELM_LIST(res,3);
+              len = GET_LEN_STRING(yankstr);
+              memcpy(yank,CHARS_STRING(yankstr),len);
+              yank[len] = '\0';
+            }
           }
           else {
             switch ( ch ) {
@@ -2737,10 +2739,6 @@ Char * syFgets (
     if ( *line == '\0' )
         return (Char*)0;
     return line;
-
-#ifdef HAVE_LIBREADLINE
-}
-#endif
 }
 
 Char * SyFgets (
