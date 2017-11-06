@@ -73,5 +73,50 @@ BindGlobal("POST_RESTORE", function()
     SESSION();
 end);
 
+if IsHPCGAP then
+
+    BIND_GLOBAL("THREAD_SESSION",
+        function()
+        local   f, prompt;
+
+        if GAPInfo.CommandLineOptions.q then
+            prompt := "";
+        else
+            prompt := "gap> ";
+        fi;
+
+        SHELL( GetBottomLVars(), # in global context
+            false, # no return
+            false, # no return  obj
+            3,     # set last, last2 and last3 each command
+            true,  # set time after each command
+            prompt,
+            function()
+                if IsBound(OnGAPPromptHook) and IsFunction(OnGAPPromptHook) then
+                    OnGAPPromptHook();
+                else
+                    return;
+                fi;
+            end,
+            "*defin*",
+            "*defout*",
+            true);
+
+        BreakOnError := false;
+    end);
 
 
+
+    DEFAULT_INPUT_STREAM := function()
+        if CurrentThread() = 0 then
+            return "*stdin*";
+        else
+            return InputTextNone();
+        fi;
+    end;
+
+    DEFAULT_OUTPUT_STREAM := function()
+        return "*stdout*";
+    end;
+
+fi;
