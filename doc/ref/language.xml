@@ -643,6 +643,7 @@ false
 </Description>
 </ManSection>
 
+<#Include Label="MakeConstantGlobal">
 
 <ManSection>
 <Func Name="ValueGlobal" Arg='name'/>

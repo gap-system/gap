@@ -172,6 +172,7 @@ DeclareGlobalFunction("MakeReadWriteGlobal");
 ##
 #F  MakeConstantGlobal( <name> )   . . . . .  make a global variable constant
 ##
+##  <#GAPDoc Label="MakeConstantGlobal">
 ##  <ManSection>
 ##  <Func Name="MakeConstantGlobal" Arg='name'/>
 ##
@@ -185,6 +186,7 @@ DeclareGlobalFunction("MakeReadWriteGlobal");
 ##  A warning is given if <A>name</A> is already constant.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("MakeConstantGlobal");
 
