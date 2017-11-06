@@ -39,29 +39,19 @@ InstallMethod( FamiliesOfGeneralMappingsAndRanges,
 ##
 InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
 
-    local info, i, len, entry, Fam,first,test;
+    local info, i, len, entry, Fam, freepos;
 
     # Check whether this family was already constructed.
     info:= FamiliesOfGeneralMappingsAndRanges( FS );
     len:= LengthWPObj( info );
-    if len mod 2 = 1 then
-      len:= len - 1;
-    fi;
-    first:=fail;
-    for i in [ 2, 4 .. len ] do
-      test:=ElmWPObj( info, i-1 );
-      if test=fail and first=fail then 
-	if  ElmWPObj(info,i)=fail then
-	  first:=i-1; # note that this is a free position
-	fi;
-      elif IsIdenticalObj( test, FR ) then
-        entry:= ElmWPObj( info, i );
-        if entry <> fail then
-          return entry;
-        else
-          UnbindElmWPObj( info, i-1 );
-          break;
+    for i in [ 1.. len+1 ] do
+      entry:=ElmWPObj( info, i );
+      if entry=fail then
+        if not IsBound( freepos ) then
+          freepos:= i;
         fi;
+      elif IsIdenticalObj( FamilyRange(entry), FR ) then
+        return entry;
       fi;
     od;
 
@@ -77,15 +67,8 @@ InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
     SetFamilyRange(  Fam, FR );
     SetFamilySource( Fam, FS );
 
-    if first<>fail then
-      # Store the family in free spot.
-      SetElmWPObj( info, first, FR  );
-      SetElmWPObj( info, first+1, Fam );
-    else
-      # no free spot -- store at end
-      SetElmWPObj( info, len+1, FR  );
-      SetElmWPObj( info, len+2, Fam );
-    fi;
+    # Store the family in free spot.
+    SetElmWPObj( info, freepos, Fam );
 
     # Return the family.
     return Fam;
