@@ -433,7 +433,7 @@ end
 );
 
 if IsBound(HPCGAP) then
-    MakeReadOnly(HELP_VIEWER_INFO);
+    MakeReadOnlyObj(HELP_VIEWER_INFO);
 fi;
 
 #############################################################################

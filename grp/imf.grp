@@ -3592,7 +3592,7 @@ od;
 end,[]);
 
 if IsBound(HPCGAP) then
-  MakeReadOnly( IMFList );
+  MakeReadOnlyObj( IMFList );
 fi;
 
 #############################################################################

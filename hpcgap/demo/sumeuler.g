@@ -36,7 +36,7 @@ end;
 MakeReadWriteGlobal( "Primes" );
 Primes := Filtered( [ 1 .. 32000 ], IsPrimeInt );;
 MakeReadOnlyGlobal( "Primes" );
-MakeReadOnly( Primes );;
+MakeReadOnlyObj( Primes );;
 
 LiouvilleFunction:=function( n )
 #
@@ -172,7 +172,7 @@ duration:=runtime(curtime1,curtime2);
 MakeReadWriteGlobal( "Primes" );
 Primes := Filtered( [ 1 .. 1000 ], IsPrimeInt );;
 MakeReadOnlyGlobal( "Primes" );
-MakeReadOnly( Primes );;
+MakeReadOnlyObj( Primes );;
 Compare( NumberOfPrimes, 1, 10^7, 10^4);
 Compare( NumberOfProbablePrimes, 1, 10^7, 10^4);
 

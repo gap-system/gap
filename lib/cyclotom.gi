@@ -2007,7 +2007,7 @@ BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
 
 if IsBound(HPCGAP) then
     MakeReadOnlySingleObj(CompareCyclotomicCollectionHelper_Semirings);
-    MakeReadOnly(CompareCyclotomicCollectionHelper_Filters);
+    MakeReadOnlyObj(CompareCyclotomicCollectionHelper_Filters);
     MakeImmutable(CompareCyclotomicCollectionHelper_Proxies);
 fi;
 

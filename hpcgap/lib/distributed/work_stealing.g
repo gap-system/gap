@@ -22,7 +22,7 @@ SendTaskWithHandle := atomic function (readonly task, readonly handle, dest)
   # create a handle for result and create a wrapper for it
   #handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
   #handle!.localId := HANDLE_OBJ(handle);
-  #MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+  #MyInsertHashTable (GAMap, MakeReadOnlyObj(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
   #atomic task do
   #  task.offloaded := true;
   #  task.result := handle;
@@ -55,7 +55,7 @@ SendTask := function(task, dest)
   local handle;
   handle := GlobalObjHandles.CreateHandle(processId,dest,false,ACCESS_TYPES.READ_WRITE);
   handle!.localId := HANDLE_OBJ(handle);
-  MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+  MyInsertHashTable (GAMap, MakeReadOnlyObj(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
   atomic task do
     task.offloaded := true;
     task.result := ShareSpecialObj(handle);
@@ -69,7 +69,7 @@ ProcessScheduleMsg := function(message)
   local source, taskdata, taskDataList, handle, task, taskArg, argHandleWrapper, argHandle, p, maybeHandle;
   source := message.source;
   handle := message.content[1];
-  MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId )), handle);
+  MyInsertHashTable (GAMap, MakeReadOnlyObj(rec ( pe := handle!.pe, localId := handle!.localId )), handle);
   if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
   ShareSpecialObj(handle);
   taskdata := rec (func := message.content[2],
@@ -81,7 +81,7 @@ ProcessScheduleMsg := function(message)
     if IsGlobalObjectHandle(taskArg) then
       maybeHandle := MyLookupHashTable(GAMap, rec ( pe := taskArg!.pe, localId := taskArg!.localId ));
       if IsIdenticalObj(fail, maybeHandle) then
-        MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := taskArg!.pe, localId := taskArg!.localId )), taskArg);
+        MyInsertHashTable (GAMap, MakeReadOnlyObj(rec ( pe := taskArg!.pe, localId := taskArg!.localId )), taskArg);
         if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
         ShareSpecialObj(taskArg);
         Add (taskDataList, taskArg);
@@ -154,7 +154,7 @@ ProcessSteal := function (msg, source)
       atomic task do
         handle := GlobalObjHandles.CreateHandle(processId,orig,false,ACCESS_TYPES.READ_WRITE);
         handle!.localId := HANDLE_OBJ(handle);
-        MyInsertHashTable (GAMap, MakeReadOnly(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
+        MyInsertHashTable (GAMap, MakeReadOnlyObj(rec ( pe := handle!.pe, localId := handle!.localId)), handle);
         task.offloaded := true;
         task.result := ShareSpecialObj(handle);
         SendTaskWithHandle(task, handle, orig);

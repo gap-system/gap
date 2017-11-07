@@ -57,7 +57,7 @@ ProcessGlobalObjHandleMsg := function (message)
       if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
       ShareSpecialObj(handle);
       MyInsertHashTable(GAMap, 
-              MakeReadOnly (rec ( pe := pe, localId := localId )), 
+              MakeReadOnlyObj (rec ( pe := pe, localId := localId )), 
                                         handle);
     fi;
     if not IsIdenticalObj(name, fail) then

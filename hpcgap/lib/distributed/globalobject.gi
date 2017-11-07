@@ -18,13 +18,13 @@ MyHandles := [ [], [] ];
 MakeThreadLocal("MyHandles");
 
 # access types for handles. basically, just a list of constants
-BindGlobal ("ACCESS_TYPES", MakeReadOnly ( rec (
+BindGlobal ("ACCESS_TYPES", MakeReadOnlyObj ( rec (
         READ_ONLY := 1,
         READ_WRITE := 2,
         VOLATILE := 3 )));
 
 # types of non-blocking requests with handles
-BindGlobal ("REQUEST_TYPES", MakeReadOnly( rec (
+BindGlobal ("REQUEST_TYPES", MakeReadOnlyObj( rec (
         GET_OBJ := 1,
         CLONE_OBJ := 2,
         PULL_OBJ := 3,
@@ -152,7 +152,7 @@ GlobalObjHandles.CreateHandle := function (arg)
     if accessType = ACCESS_TYPES.READ_ONLY then
       if not IsReadOnlyObj(obj) then
         atomic readwrite obj do
-          MakeReadOnly(obj);
+          MakeReadOnlyObj(obj);
         od;
       fi;
     fi;
@@ -196,7 +196,7 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
   handle!.localId := HANDLE_OBJ(handle);
   atomic readwrite GAMap do
     if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
-    MyInsertHashTable(GAMap, MakeReadOnly(rec ( pe := processId, localId := handle!.localId )), handle);
+    MyInsertHashTable(GAMap, MakeReadOnlyObj(rec ( pe := processId, localId := handle!.localId )), handle);
   od;
   if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_CREATION, handle); fi;
   ShareSpecialObj(handle);

@@ -18,7 +18,7 @@
 # Mock functions from thread1.g
 
 BIND_GLOBAL("MakeThreadLocal", ID_FUNC);
-BIND_GLOBAL("MakeReadOnly", ID_FUNC);
+BIND_GLOBAL("MakeReadOnlyObj", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlyRaw", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlySingleObj", ID_FUNC);
 

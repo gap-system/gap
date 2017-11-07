@@ -48,7 +48,7 @@ local f,typ,lc;
       ConvertToVectorRep(coeff);
       if IS_DATOBJ(coeff) then
         coeff := ShallowCopy(coeff);
-        MakeReadOnly(coeff);
+        MakeReadOnlyObj(coeff);
       fi;
     fi;
   fi;
@@ -59,7 +59,7 @@ local f,typ,lc;
 
   # note that `IndNum.LaurentPol. is IndnumUnivRatFun !
   f := rec(IndeterminateNumberOfUnivariateRationalFunction:=inum,
-           CoefficientsOfLaurentPolynomial:=MakeReadOnly(CopyRegion([coeff,val])));
+           CoefficientsOfLaurentPolynomial:=MakeReadOnlyObj(CopyRegion([coeff,val])));
   Objectify(typ,f);
 
 #  ObjectifyWithAttributes(f,typ,
