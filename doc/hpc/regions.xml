@@ -671,18 +671,18 @@ returns <A>obj</A>.
 </ManSection>
 
 <ManSection>
-    <Func Name="IsReadOnly"
+    <Func Name="IsReadOnlyObj"
       Arg='obj'/>
 
 <Description>
-The <Ref Func="IsReadOnly"/> function returns <K>true</K> if <A>obj</A> is in the read-only region, <K>false</K> otherwise.
+The <Ref Func="IsReadOnlyObj"/> function returns <K>true</K> if <A>obj</A> is in the read-only region, <K>false</K> otherwise.
 
 <Example><![CDATA[
-gap> IsReadOnly([1,2,3]);
+gap> IsReadOnlyObj([1,2,3]);
 false
-gap> IsReadOnly(MakeImmutable([1,2,3]));
+gap> IsReadOnlyObj(MakeImmutable([1,2,3]));
 false
-gap> IsReadOnly(MakeReadOnly([1,2,3]));
+gap> IsReadOnlyObj(MakeReadOnly([1,2,3]));
 true
 ]]></Example>
 </Description>

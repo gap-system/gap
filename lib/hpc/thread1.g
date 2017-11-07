@@ -22,7 +22,7 @@ BIND_GLOBAL("MakeReadOnly", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlyRaw", ID_FUNC);
 BIND_GLOBAL("MakeReadOnlySingleObj", ID_FUNC);
 
-BIND_GLOBAL("IsReadOnly", RETURN_FALSE);
+BIND_GLOBAL("IsReadOnlyObj", RETURN_FALSE);
 
 BIND_GLOBAL("AtomicList", function(arg)
   local l, i;

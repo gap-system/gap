@@ -150,7 +150,7 @@ GlobalObjHandles.CreateHandle := function (arg)
       handle!.obj := obj;
     fi;
     if accessType = ACCESS_TYPES.READ_ONLY then
-      if not IsReadOnly(obj) then
+      if not IsReadOnlyObj(obj) then
         atomic readwrite obj do
           MakeReadOnly(obj);
         od;

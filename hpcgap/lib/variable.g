@@ -209,7 +209,7 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
 	fi;
       fi;
       FORCE_SWITCH_OBJ (gvar, value);
-    elif IsType(value) and IsReadOnly(value) then
+    elif IsType(value) and IsReadOnlyObj(value) then
       value := CopyRegion(value);
       FORCE_SWITCH_OBJ(gvar, value);
       MakeReadOnlySingleObj(gvar);
