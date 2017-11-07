@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+abs_top_builddir=/Applications/gap/gapdev
+abs_top_srcdir=/Applications/gap/gapdev
+
+GAP=$abs_top_builddir/bin/gap.sh
+GAPARGS="-b -m 1g -x 80 -q -r --quitonbreak"
+
+echo "--------------------"
+echo "Building GAP manuals"
+echo "--------------------"
+
+"$GAP" $GAPARGS -A <<EOF
+if LoadPackage("io") = fail then
+  Error("Could not load IO package");
+fi;
+base:="$abs_top_srcdir";;
+books:=["ref", "tut", "changes", "hpc"];;
+for run in [1,2] do
+  for book in books do
+    dir := Concatenation(base, "/doc/", book);
+
+    Print("----------------------------\n");
+    Print("Building GAP manual '",book,"' at ",dir,"\n");
+    Print("Run ",run," of 2\n");
+    Print("----------------------------\n");
+    ChangeDirectoryCurrent(dir);
+    Read( "makedocrel.g" );
+  od;
+od;
+EOF

@@ -9,31 +9,32 @@
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="GAP Packages">
-<Heading>Using GAP Packages</Heading>
+<Heading>Using and Developing GAP Packages</Heading>
 
 <Index>package</Index>
 The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;
 packages. 
-&GAP; distribution already contains all currently redistributed with 
-&GAP; packages in the <F>&GAPDIRNAME;/pkg</F> directory.
+The &GAP; distribution contains, in the <F>&GAPDIRNAME;/pkg</F> 
+directory, all currently available &GAP; packages.
+<P/> 
+&GAP; packages are written by (groups  of) &GAP; users who may not
+be  members  of the  &GAP;  developer  team. 
+The responsibility and copyright of a &GAP; package remains with the 
+original author(s).
 <P/>
-&GAP; packages are written by (groups  of) &GAP; users which may not
-be  members  of the  &GAP;  developer  team. The  responsibility  and
-copyright of a &GAP; package remains with the original author(s).
-<P/>
-&GAP;  packages  have  their  own  documentation  which  is  smoothly
+&GAP; packages  have  their  own  documentation  which  is  smoothly
 integrated into the &GAP; help system.
 <P/>
 All  &GAP;  users   who  develop  new  code  are   invited  to  share
 the  results  of their  efforts  with  other  &GAP; users  by  making
-the  code  and its  documentation  available  in  form of  a  package.
-Information how  to do  this is  available from  the &GAP;  Web pages
+the  code  and its  documentation available  in  form of  a  package.
+Information on how to do this is available from  the &GAP;  Web pages
 (<URL>https://www.gap-system.org</URL>)
 and in the &GAP; package <Package>Example</Package>
 (see <URL>https://www.gap-system.org/Packages/example.html</URL>).
-There  are  possibilities  to get  a  package  distributed together  with
-&GAP;  and it  is possible  to submit  a package  to a formal refereeing
-process.
+The &GAP; development team will assist in making such a new package 
+suitable for distributed together with &GAP;.   
+It is possible to submit a package to a formal refereeing process.
 <P/>
 In this chapter we describe how to use existing packages.
 
@@ -42,27 +43,29 @@ In this chapter we describe how to use existing packages.
 <Section Label="Installing a GAP Package">
 <Heading>Installing a GAP Package</Heading>
 
-Before a  package can be  used it must  be installed. With  a standard
-installation of  &GAP; there should  be all currently redistributed with 
-&GAP; packages already available. But since &GAP; packages are released 
-independently of the main  &GAP; system  it  may be  sensible to  upgrade  
+Before a  package can be  used it must  be installed. 
+With  a standard installation of  &GAP; all the packages currently 
+distributed should be available. 
+However, since &GAP; packages are released independently of the main 
+&GAP; system  it  may be  sensible to  upgrade  
 or install new packages between upgrades of your &GAP; installation.
 <P/>
 A package consists of a collection  of files within a single directory
-that must  be a subdirectory of  the <F>pkg</F>  directory   in one  of the
-&GAP; root directories, see <Ref Sect="GAP Root Directories"/>. (If you don't
-have access  to the <F>pkg</F>  directory in your main  &GAP; installation
-you can add private root directories as explained in that section.)
+that must  be a subdirectory of  the <F>pkg</F> directory in one of the
+&GAP; root directories (see <Ref Sect="GAP Root Directories"/>_. 
+If you don't have access to the <F>pkg</F> directory in your main &GAP; installation, you can add private root directories as explained in that 
+section. 
 <P/>
-Whenever  you  get from  somewhere  an  archive  of a  &GAP;  package
-it  should be  accompanied  with  a <F>README</F>  file  that explains  its
-installation.  Some packages  just  consist  of  &GAP;  code and  the
+Whenever you download an archive of a &GAP; package, it will contain a  
+<F>README</F> file that explains how it should be installed.  
+Some packages  just  consist  of  &GAP;  code, so the
 installation  is  done  by  unpacking   the  archive  in  one  of  the
 places  described above.  There are  also packages  that need  further
-installation steps,  there may be  for example some  external programs
-which  have  to  be  compiled  (this is  often  done  by  just  saying
-<C>./configure; make</C>  inside the unpacked package  directory, but check
-the individual <F>README</F> files). Note that if you use Windows you may not 
+installation steps. There may be, for example, some  external programs
+which  have  to  be  compiled.  This is  often  done  by executing 
+<C>./configure; make</C>  inside the unpacked package  directory, 
+but check the individual <F>README</F> files). 
+Note that if you use Windows you may not 
 be able to use some or all external binaries.
 </Section>
 
@@ -71,14 +74,18 @@ be able to use some or all external binaries.
 <Section Label="Loading a GAP Package">
 <Heading>Loading a GAP Package</Heading>
 
-<Index>automatic loading of GAP packages</Index>
-<Index>disable automatic loading</Index>
-Some &GAP; packages are prepared for <E>automatic loading</E>,
-that is they will be loaded automatically with &GAP;,
-others must in each case be separately loaded by a call to
-<Ref Func="LoadPackage"/>.
+Most packages are loaded separately by a call to <Ref Func="LoadPackage"/>.
+A few &GAP; packages, deemed essential for running &GAP;, 
+are prepared for <E>automatic loading</E>,
+that is they will be loaded automatically with &GAP;
+(see <Ref Subsect="LoadPackageAutomatic"/>).  
 
 <#Include Label="LoadPackage">
+
+<Index>automatic loading of GAP packages</Index>
+<Index>disable automatic loading</Index>
+<#Include Label="LoadPackageAutomatic">
+
 <#Include Label="SetPackagePath">
 <#Include Label="ExtendRootDirectories">
 <#Include Label="DisplayPackageLoadingLog">

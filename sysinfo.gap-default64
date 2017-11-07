@@ -1,0 +1,3 @@
+GAParch=x86_64-apple-darwin16.3.0-gcc-default64
+GAParch_system=x86_64-apple-darwin16.3.0-gcc-default64
+GAParch_abi=64-bit

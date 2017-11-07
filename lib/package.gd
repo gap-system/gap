@@ -705,18 +705,22 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  The package name may be appropriately abbreviated. For example,
 ##  <C>LoadPackage("semi");</C> will load the <Package>Semigroups</Package>
 ##  package, and <C>LoadPackage("d");</C> will load the
-##  <Package>DESIGN</Package> package. If the abbreviation can not be uniquely
-##  completed, further suggestions will be offered.
+##  <Package>DESIGN</Package> package. 
+##  If the abbreviation cannot be uniquely completed, 
+##  a list of available completions will be offered, 
+##  and <Ref Func="LoadPackage"/> returns <K>fail</K>.
+##  Thus the names of <E>all</E> installed packages can be shown by calling
+##  <Ref Func="LoadPackage"/> with an empty string.
 ##  <P/>
 ##  If the optional version string <A>version</A> is given,
-##  the package will only be loaded in a version number at least as large as
-##  <A>version</A>,
-##  or equal to <A>version</A> if its first character is <C>=</C>
+##  the package will only be loaded in a version number 
+##  equal to or greater than <A>version</A> 
 ##  (see&nbsp;<Ref Func="CompareVersionNumbers"/>).
+##  If the first character is <C>=</C> then only that version will be loaded. 
 ##  The argument <A>name</A> is case insensitive.
 ##  <P/>
 ##  <Ref Func="LoadPackage"/> will return <K>true</K> if the package has been
-##  successfully loaded
+##  successfully loaded,
 ##  and will return <K>fail</K> if the package could not be loaded.
 ##  The latter may be the case if the package is not installed, if necessary
 ##  binaries have not been compiled, or if the version number of the
@@ -730,28 +734,24 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  for details.
 ##  <P/>
 ##  If the package <A>name</A> has already been loaded in a version number
-##  at least or equal to <A>version</A>, respectively,
-##  <Ref Func="LoadPackage"/> returns <K>true</K> without doing anything
-##  else.
-##  <P/>
-##  The argument <A>name</A> may be the prefix of a package name.
-##  If no package with name <A>name</A> is installed,
-##  the behaviour is as follows.
-##  If <A>name</A> is the prefix of exactly one name of an installed package
-##  then <Ref Func="LoadPackage"/> is called with this name;
-##  if the names of several installed packages start with <A>name</A> then
-##  the these names are printed, and <Ref Func="LoadPackage"/> returns
-##  <K>fail</K>.
-##  Thus the names of <E>all</E> installed packages can be shown by calling
-##  <Ref Func="LoadPackage"/> with an empty string.
+##  at least or equal to <A>version</A>, 
+##  then <Ref Func="LoadPackage"/> returns <K>true</K> 
+##  without doing anything else.
 ##  <P/>
 ##  If the optional argument <A>banner</A> is present then it must be either
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
-##  After a package has been loaded its code and documentation should be
-##  available as other parts of the &GAP; library are.
+##  After a package has been loaded, all its code and documentation becomes 
+##  available to use with the rest of the &GAP; library.
 ##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+##  <#GAPDoc Label="LoadPackageAutomatic">
+##  <Subsection Label="LoadPackageAutomatic">
+##  <Heading>Automatic loading of &GAP; packages</Heading> 
 ##  When &GAP; is started then some packages are loaded automatically.
 ##  These are the packages listed in
 ##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> and
@@ -786,15 +786,14 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <P/>
 ##  In any of the above three cases, the packages listed in
 ##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> are still loaded
-##  automatically, and an error is signalled if not all of these packages
-##  are available.
+##  automatically, and an error is signalled if any of these packages
+##  is unavailable.
 ##  <P/>
-##  See <Ref Func="SetPackagePath"/> for a possibility to force that a
-##  prescribed package version will be loaded.
-##  See also <Ref Func="ExtendRootDirectories"/> for a possibility to
-##  add directories containing packages after &GAP; has been started.
-##  </Description>
-##  </ManSection>
+##  See <Ref Func="SetPackagePath"/> for a way to force the loading of a 
+##  prescribed version of a package.
+##  See also <Ref Func="ExtendRootDirectories"/> for a method of adding 
+##  directories containing packages after &GAP; has been started. 
+##  </Subsection> 
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LoadPackage" );
@@ -825,6 +824,9 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  <Func Name="SetPackagePath" Arg='pkgname, pkgpath'/>
 ##
 ##  <Description>
+##  This function can be used to force &GAP; to load a particular version of
+##  a package, even though newer versions of the package are available.
+##  <P/>
 ##  Let <A>pkgname</A> and <A>pkgpath</A> be strings denoting the name of a
 ##  &GAP; package and the path to a directory where a version of this package
 ##  can be found (i.&nbsp;e., calling <Ref Func="Directory"/> with the
@@ -840,9 +842,6 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  contained in the <F>PackageInfo.g</F> file at <A>pkgpath</A> instead,
 ##  such that only the version installed at <A>pkgpath</A> can be loaded
 ##  with <Ref Func="LoadPackage"/>.
-##  <P/>
-##  This function can be used to force &GAP; to load a particular version of
-##  a package, although newer versions of the package might be available.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
