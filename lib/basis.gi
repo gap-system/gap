@@ -399,6 +399,11 @@ BindGlobal( "NumberElement_Basis", function( enum, elm )
     return elm;
     end );
 
+BindGlobal( "Membership_Basis", function( enum, elm )
+    elm:= Coefficients( enum!.basis, elm );
+    return elm <> fail;
+    end );
+
 InstallMethod( EnumeratorByBasis,
     "for basis of a finite dimensional left module",
     [ IsBasis ],
@@ -414,6 +419,7 @@ InstallMethod( EnumeratorByBasis,
     return EnumeratorByFunctions( V,
                rec( ElementNumber  := ElementNumber_Basis,
                     NumberElement  := NumberElement_Basis,
+                    Membership     := Membership_Basis,
 
                     basis          := B,
                     coeffspaceenum := EnumeratorByBasis( CanonicalBasis(
