@@ -38,7 +38,8 @@ gap> CategoryByName("IsMagma");
 <Category "IsMagma">
 
 #
-gap> ForAll([1..Length(FILTERS)], id -> id = IdOfFilter(FILTERS[id]));
+gap> atomic readonly FILTER_REGION do filters := Immutable(FILTERS); od;
+gap> ForAll([1..Length(filters)], id -> id = IdOfFilter(filters[id]));
 true
 
 #
