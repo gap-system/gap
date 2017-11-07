@@ -208,9 +208,9 @@ ParallelOrbit := function (gens, pt, op, opt)
   if not IsBound(opt.chunksize) then opt.chunksize := 1000; fi;
   if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
   if IsMutable(gens) then MakeImmutable(gens); fi;
-  if not(IsReadOnly(gens)) then MakeReadOnlySingleObj(gens); fi;
+  if not(IsReadOnlyObj(gens)) then MakeReadOnlySingleObj(gens); fi;
   if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
-  if not(IsReadOnly(pt)) then MakeReadOnlySingleObj(pt); fi;
+  if not(IsReadOnlyObj(pt)) then MakeReadOnlySingleObj(pt); fi;
   
   if not IsBound(opt.tracing) then opt.tracing := false; fi;
   

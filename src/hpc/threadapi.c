@@ -2386,7 +2386,7 @@ Obj FuncMakeReadOnlySingleObj(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncIsReadOnly(Obj self, Obj obj)
+Obj FuncIsReadOnlyObj(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return (region == ReadOnlyRegion) ? True : False;
@@ -2711,7 +2711,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(MakeReadOnly, 1, "obj"),
     GVAR_FUNC(MakeReadOnlyRaw, 1, "obj"),
     GVAR_FUNC(MakeReadOnlySingleObj, 1, "obj"),
-    GVAR_FUNC(IsReadOnly, 1, "obj"),
+    GVAR_FUNC(IsReadOnlyObj, 1, "obj"),
     GVAR_FUNC(ENABLE_AUTO_RETYPING, 0, ""),
     GVAR_FUNC(ORDERED_READ, 1, "obj"),
     GVAR_FUNC(ORDERED_WRITE, 1, "obj"),
