@@ -88,7 +88,7 @@ true
 
 # general unitary groups
 gap> grps:=[];;
-gap> for d in [2..6] do
+gap> for d in [1..6] do
 >   for q in [2,3,4,5,7,8,9] do
 >     Add(grps, GU(d,q));
 >   od;
@@ -98,15 +98,9 @@ true
 gap> ForAll(grps, CheckSesquilinearForm);
 true
 
-# TODO: dimension 1 does not have InvariantSesquilinearForm set
-gap> GU(1,2);
-GU(1,2)
-gap> GU(1,5);
-GU(1,5)
-
 # special unitary groups
 gap> grps:=[];;
-gap> for d in [2..6] do
+gap> for d in [1..6] do
 >   for q in [2,3,4,5,7,8,9] do
 >     Add(grps, SU(d,q));
 >   od;
@@ -115,12 +109,6 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckSesquilinearForm);
 true
-
-# TODO: dimension 1 does not have InvariantSesquilinearForm set
-gap> SU(1,2);
-SL(1,2)
-gap> SU(1,5);
-SL(1,5)
 
 #
 gap> STOP_TEST("classic-forms.tst", 1);

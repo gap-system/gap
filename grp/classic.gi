@@ -133,25 +133,23 @@ InstallMethod( GeneralUnitaryGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, n, q )
-     local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
+     local g, i, e, f, z, o, mat1, mat2, gens, size, qi, eps, c;
 
      f:= GF( q^2 );
-
-     # Handle the trivial case first.
-     if n = 1 then
-       g:= GroupWithGenerators( [ [ [ PrimitiveRoot( f ) ^ (q-1) ] ] ] );
-       SetName( g, Concatenation("GU(1,",String(q),")") );
-#T no form?
-       return g;
-     fi;
-
-     # Construct the generators.
      z:= PrimitiveRoot( f );
      o:= One( f );
-     mat1:= IdentityMat( n, f );
-     mat2:= List( 0 * mat1, ShallowCopy );
 
-     if   n = 2 then
+     # Construct the generators.
+
+     if n > 1 then
+       mat1:= IdentityMat( n, f );
+       mat2:= List( 0 * mat1, ShallowCopy );
+     fi;
+
+     if   n = 1 then
+       mat1:= [ [ z ^ (q-1) ] ];
+
+     elif n = 2 then
 
        # We use the isomorphism of 'SU(2,q)' and 'SL(2,q)':
        # 'e' is mapped to '-e' under the Frobenius mapping.
@@ -194,9 +192,15 @@ InstallMethod( GeneralUnitaryGroupCons,
      fi;
 
      mat1:=ImmutableMatrix(f,mat1,true);
-     mat2:=ImmutableMatrix(f,mat2,true);
+     if n = 1 then
+       gens := [ mat1 ];
+     else
+       mat2:=ImmutableMatrix(f,mat2,true);
+       gens := [ mat1, mat2 ];
+     fi;
+
      # Avoid to call 'Group' because this would check invertibility ...
-     g:= GroupWithGenerators( [ mat1, mat2 ] );
+     g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("GU(",String(n),",",String(q),")") );
      SetDimensionOfMatrixGroup( g, Length( mat1 ) );
      SetFieldOfMatrixGroup( g, f );
@@ -233,21 +237,13 @@ InstallMethod( SpecialUnitaryGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, n, q )
-     local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
+     local g, i, e, f, z, o, mat1, mat2, gens, size, qi, eps, c;
 
      f:= GF( q^2 );
-
-     # Handle the trivial case first.
-     if n = 1 then
-       g:= GroupWithGenerators( [ [ [ One( f ) ] ] ] );
-       SetName( g, Concatenation("SL(1,",String(q),")") );
-#T no form?
-       return g;
-     fi;
-
-     # Construct the generators.
      z:= PrimitiveRoot( f );
      o:= One( f );
+
+     # Construct the generators.
      if n = 3 and q = 2 then
 
        mat1:= [ [o,z,z], [0,o,z^2], [0,0,o] ] * o;
@@ -290,7 +286,7 @@ InstallMethod( SpecialUnitaryGroupCons,
          mat2[n-1][n/2]:= e^-1;
          mat2[n][ n/2 ]:= -e^-1;
 
-       else
+       elif n <> 1 then
 
          mat1[  (n-1)/2  ][  (n-1)/2  ]:= z;
          mat1[ (n-1)/2+1 ][ (n-1)/2+1 ]:= z^q/z;
@@ -309,9 +305,15 @@ InstallMethod( SpecialUnitaryGroupCons,
      fi;
 
      mat1:=ImmutableMatrix(f,mat1,true);
-     mat2:=ImmutableMatrix(f,mat2,true);
+     if n = 1 then
+       gens := [ mat1 ];
+     else
+       mat2:=ImmutableMatrix(f,mat2,true);
+       gens := [ mat1, mat2 ];
+     fi;
+
      # Avoid to call 'Group' because this would check invertibility ...
-     g:= GroupWithGenerators( [ mat1, mat2 ] );
+     g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("SU(",String(n),",",String(q),")") );
      SetDimensionOfMatrixGroup( g, Length( mat1 ) );
      SetFieldOfMatrixGroup( g, f );
