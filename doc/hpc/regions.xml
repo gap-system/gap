@@ -81,7 +81,7 @@ region.
 Finally, <Ref Func="AdoptObj"/> and <Ref Func="AdoptSingleObj"/> are special cases of <Ref Func="MigrateObj"/> and
 <Ref Func="MigrateSingleObj"/>, where the target region is the thread-local region of the current thread.
 <P/>
-To migrate objects to the read-only region, one can use <Ref Func="MakeReadOnly"/> and <Ref Func="MakeReadOnlyObj"/>.
+To migrate objects to the read-only region, one can use <Ref Func="MakeReadOnly"/> and <Ref Func="MakeReadOnlySingleObj"/>.
 The first migrates its argument and all its subjobjects that are within the same region to the read-only region; the
 second migrates only the argument itself, but not its subobjects.
 <P/>
@@ -661,11 +661,11 @@ The <Ref Func="MakeReadOnly"/> function migrates <A>obj</A> and all its subobjec
 </ManSection>
 
 <ManSection>
-    <Func Name="MakeReadOnlyObj"
+    <Func Name="MakeReadOnlySingleObj"
       Arg='obj'/>
 
 <Description>
-The <Ref Func="MakeReadOnlyObj"/> function migrates <A>obj</A>, but not any of its subobjects, to the read-only region. It
+The <Ref Func="MakeReadOnlySingleObj"/> function migrates <A>obj</A>, but not any of its subobjects, to the read-only region. It
 returns <A>obj</A>.
 </Description>
 </ManSection>

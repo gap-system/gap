@@ -245,7 +245,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
 
     # flush the cache
-    SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj(methods) );
+    SET_METHODS_OPERATION( opr, narg, MakeReadOnlySingleObj(methods) );
     UNLOCK(lk);
 end );
 

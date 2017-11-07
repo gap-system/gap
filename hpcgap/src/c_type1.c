@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-120993155"
+#define FILE_CRC  "-60626247"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -101,8 +101,8 @@ static GVar G_MIGRATE__RAW;
 static Obj  GF_MIGRATE__RAW;
 static GVar G_MakeReadOnly;
 static Obj  GF_MakeReadOnly;
-static GVar G_MakeReadOnlyObj;
-static Obj  GF_MakeReadOnlyObj;
+static GVar G_MakeReadOnlySingleObj;
+static Obj  GF_MakeReadOnlySingleObj;
 static GVar G_AtomicList;
 static Obj  GF_AtomicList;
 static GVar G_FixedAtomicList;
@@ -1628,8 +1628,8 @@ static Obj  HdlrFunc11 (
   ASS_REC( a_family, R_nTYPES, t_1 );
  }
  
- /* MakeReadOnlyObj( type ); */
- t_1 = GF_MakeReadOnlyObj;
+ /* MakeReadOnlySingleObj( type ); */
+ t_1 = GF_MakeReadOnlySingleObj;
  CALL_1ARGS( t_1, l_type );
  
  /* UNLOCK( lock ); */
@@ -2612,8 +2612,8 @@ static Obj  HdlrFunc27 (
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
-  /* MakeReadOnlyObj( obj ); */
-  t_1 = GF_MakeReadOnlyObj;
+  /* MakeReadOnlySingleObj( obj ); */
+  t_1 = GF_MakeReadOnlySingleObj;
   CALL_1ARGS( t_1, a_obj );
   
  }
@@ -3781,7 +3781,7 @@ static Obj  HdlrFunc1 (
           cache[hash] := type;
       fi;
       family!.nTYPES := family!.nTYPES + 1;
-      MakeReadOnlyObj( type );
+      MakeReadOnlySingleObj( type );
       UNLOCK( lock );
       return type;
   end ); */
@@ -4125,7 +4125,7 @@ static Obj  HdlrFunc1 (
           RunImmediateMethods( obj, type![2] );
       fi;
       if IsReadOnlyPositionalObjectRep( obj ) then
-          MakeReadOnlyObj( obj );
+          MakeReadOnlySingleObj( obj );
       fi;
       return obj;
   end ); */
@@ -4404,7 +4404,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_UNLOCK = GVarName( "UNLOCK" );
  G_MIGRATE__RAW = GVarName( "MIGRATE_RAW" );
  G_MakeReadOnly = GVarName( "MakeReadOnly" );
- G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
+ G_MakeReadOnlySingleObj = GVarName( "MakeReadOnlySingleObj" );
  G_AtomicList = GVarName( "AtomicList" );
  G_FixedAtomicList = GVarName( "FixedAtomicList" );
  G_AtomicRecord = GVarName( "AtomicRecord" );
@@ -4569,7 +4569,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "UNLOCK", &GF_UNLOCK );
  InitFopyGVar( "MIGRATE_RAW", &GF_MIGRATE__RAW );
  InitFopyGVar( "MakeReadOnly", &GF_MakeReadOnly );
- InitFopyGVar( "MakeReadOnlyObj", &GF_MakeReadOnlyObj );
+ InitFopyGVar( "MakeReadOnlySingleObj", &GF_MakeReadOnlySingleObj );
  InitFopyGVar( "AtomicList", &GF_AtomicList );
  InitFopyGVar( "FixedAtomicList", &GF_FixedAtomicList );
  InitFopyGVar( "AtomicRecord", &GF_AtomicRecord );
@@ -4737,7 +4737,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -120993155,
+ /* crc         = */ -60626247,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

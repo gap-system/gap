@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "77349961"
+#define FILE_CRC  "81317498"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -90,8 +90,8 @@ static GVar G_READ__LOCK;
 static Obj  GF_READ__LOCK;
 static GVar G_UNLOCK;
 static Obj  GF_UNLOCK;
-static GVar G_MakeReadOnlyObj;
-static Obj  GF_MakeReadOnlyObj;
+static GVar G_MakeReadOnlySingleObj;
+static Obj  GF_MakeReadOnlySingleObj;
 static GVar G_RUN__IMMEDIATE__METHODS__CHECKS;
 static Obj  GC_RUN__IMMEDIATE__METHODS__CHECKS;
 static GVar G_RUN__IMMEDIATE__METHODS__HITS;
@@ -1166,9 +1166,9 @@ static Obj  HdlrFunc3 (
  CHECK_FUNC_RESULT( t_2 )
  C_ASS_LIST_FPL( l_methods, t_1, t_2 )
  
- /* SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj( methods ) ); */
+ /* SET_METHODS_OPERATION( opr, narg, MakeReadOnlySingleObj( methods ) ); */
  t_1 = GF_SET__METHODS__OPERATION;
- t_3 = GF_MakeReadOnlyObj;
+ t_3 = GF_MakeReadOnlySingleObj;
  t_2 = CALL_1ARGS( t_3, l_methods );
  CHECK_FUNC_RESULT( t_2 )
  CALL_3ARGS( t_1, a_opr, l_narg, t_2 );
@@ -3879,7 +3879,7 @@ static Obj  HdlrFunc1 (
       fi;
       methods[i + (narg + 3)] := rank;
       methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info );
-      SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj( methods ) );
+      SET_METHODS_OPERATION( opr, narg, MakeReadOnlySingleObj( methods ) );
       UNLOCK( lk );
       return;
   end ); */
@@ -4397,7 +4397,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
  G_READ__LOCK = GVarName( "READ_LOCK" );
  G_UNLOCK = GVarName( "UNLOCK" );
- G_MakeReadOnlyObj = GVarName( "MakeReadOnlyObj" );
+ G_MakeReadOnlySingleObj = GVarName( "MakeReadOnlySingleObj" );
  G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
  G_RUN__IMMEDIATE__METHODS__HITS = GVarName( "RUN_IMMEDIATE_METHODS_HITS" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
@@ -4514,7 +4514,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
  InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
  InitFopyGVar( "UNLOCK", &GF_UNLOCK );
- InitFopyGVar( "MakeReadOnlyObj", &GF_MakeReadOnlyObj );
+ InitFopyGVar( "MakeReadOnlySingleObj", &GF_MakeReadOnlySingleObj );
  InitCopyGVar( "RUN_IMMEDIATE_METHODS_CHECKS", &GC_RUN__IMMEDIATE__METHODS__CHECKS );
  InitCopyGVar( "RUN_IMMEDIATE_METHODS_HITS", &GC_RUN__IMMEDIATE__METHODS__HITS );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
@@ -4630,7 +4630,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 77349961,
+ /* crc         = */ 81317498,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

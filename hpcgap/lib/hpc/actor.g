@@ -10,7 +10,7 @@ BindGlobal("ACTOR_HANDLER", function(actor_state, func)
     # the same region; similarly, MigrateObj() will only
     # migrate objects in the same (thread-local) region.
     atomic queue do
-      Add(queue, MakeReadOnlyObj(rec(
+      Add(queue, MakeReadOnlySingleObj(rec(
 	func := func,
 	args := MigrateObj(CopyRegion(arg), queue)
       )) );

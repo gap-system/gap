@@ -12,11 +12,11 @@ Read("Lydata.g");   # actually reads Lydata.g.gz
 # The following works on my machine and uses about 1730 seconds and
 # 4 GB main memory:
 
-if IsBound(MakeReadOnlyObj) then
+if IsBound(MakeReadOnlySingleObj) then
     OnSubspacesByCanonicalBasisRO := function(x,g)
       local y;
       y := OnSubspacesByCanonicalBasis(x,g);
-      MakeReadOnlyObj(y);
+      MakeReadOnlySingleObj(y);
       return y;
     end;
 else

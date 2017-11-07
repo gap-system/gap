@@ -240,7 +240,7 @@ BIND_GLOBAL( "TYPES_STRING",
           ]);
 
 if IsBound(HPCGAP) then
-    MakeReadOnlyObj( TYPES_STRING );
+    MakeReadOnlySingleObj( TYPES_STRING );
 fi;
 
 #############################################################################

@@ -7,11 +7,11 @@ LoadPackage("orb");
 
 Read("J4data.g");   # actually reads J4data.g.gz
 
-if IsBound(MakeReadOnlyObj) then
+if IsBound(MakeReadOnlySingleObj) then
     OnRightRO := function(x,g)
       local y;
       y := x*g;
-      MakeReadOnlyObj(y);
+      MakeReadOnlySingleObj(y);
       return y;
     end;
 else

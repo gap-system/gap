@@ -23,7 +23,7 @@ DoWork := function (work, nrTasks, op, gens, distHashFun, results)
   for i in [1..nrTasks] do
     for g in gens do 
       x := op (work[i], g);
-      MakeReadOnlyObj(x);
+      MakeReadOnlySingleObj(x);
       Add(results[distHashFun(x)],x);
     od;
   od;
@@ -208,9 +208,9 @@ ParallelOrbit := function (gens, pt, op, opt)
   if not IsBound(opt.chunksize) then opt.chunksize := 1000; fi;
   if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
   if IsMutable(gens) then MakeImmutable(gens); fi;
-  if not(IsReadOnly(gens)) then MakeReadOnlyObj(gens); fi;
+  if not(IsReadOnly(gens)) then MakeReadOnlySingleObj(gens); fi;
   if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
-  if not(IsReadOnly(pt)) then MakeReadOnlyObj(pt); fi;
+  if not(IsReadOnly(pt)) then MakeReadOnlySingleObj(pt); fi;
   
   if not IsBound(opt.tracing) then opt.tracing := false; fi;
   
@@ -226,7 +226,7 @@ ParallelOrbit := function (gens, pt, op, opt)
   atomic TaskPool do
     TaskPool.nrChunks := 0;
     TaskPool.currentChunk := MigrateObj(EmptyPlist(opt.chunksize), TaskPool);
-    Add(TaskPool.currentChunk, MakeReadOnlyObj(pt));
+    Add(TaskPool.currentChunk, MakeReadOnlySingleObj(pt));
     if opt.tracing then
       Tracing.TraceTaskCreated();
     fi;
@@ -249,14 +249,14 @@ end;
 OnRightRO := function(x,g)
   local y;
   y := x*g;
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
 OnSubspacesByCanonicalBasisRO := function(x,g)
   local y;
   y := OnSubspacesByCanonicalBasis(x,g);
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
@@ -264,16 +264,16 @@ MakeDistributionHF := function(x,n)
   local hf,data;
   hf := ChooseHashFunction(x,n);
   data := hf.data;
-  MakeReadOnlyObj(data);
+  MakeReadOnlySingleObj(data);
   hf := hf.func;
   return y->hf(y,data);
 end;
 
-if IsBound(MakeReadOnlyObj) then
+if IsBound(MakeReadOnlySingleObj) then
     OnRightRO := function(x,g)
       local y;
       y := x*g;
-      MakeReadOnlyObj(y);
+      MakeReadOnlySingleObj(y);
       return y;
     end;
 else

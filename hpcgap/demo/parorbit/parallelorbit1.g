@@ -249,14 +249,14 @@ end;
 OnRightRO := function(x,g)
   local y;
   y := x*g;
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
 OnSubspacesByCanonicalBasisRO := function(x,g)
   local y;
   y := OnSubspacesByCanonicalBasis(x,g);
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 

@@ -8,11 +8,11 @@ LoadPackage("orb");
 Read("HNdata.g");  # actually reads HNdata.g.gz
 Read("../bench.g");
 
-if IsBound(MakeReadOnlyObj) then
+if IsBound(MakeReadOnlySingleObj) then
     OnRightRO := function(x,g)
       local y;
       y := x*g;
-      MakeReadOnlyObj(y);
+      MakeReadOnlySingleObj(y);
       return y;
     end;
 else
