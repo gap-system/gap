@@ -40,7 +40,7 @@ BindGlobal("StartHandShake", CreateSyncVar);
 
 BindGlobal("AcknowledgeHandShake", function(syncvar, obj)
   if (IsThreadLocal(obj)) then
-    MakeReadOnly(obj);
+    MakeReadOnlyObj(obj);
   fi;
   SyncWrite(syncvar, obj);
   return obj;

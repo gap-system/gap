@@ -1,7 +1,7 @@
 MPISendLock := ShareObj ( rec ( dummy := 0 ) );
 
 MakeReadWriteGVar("MESSAGE_TYPES");
-MESSAGE_TYPES := MakeReadOnly ( rec ( 
+MESSAGE_TYPES := MakeReadOnlyObj ( rec ( 
                          # global objects/handles messages
                          GLOBAL_OBJ_HANDLE_MSG := 1500,
                          SET_BY_HANDLE_MSG := 1501,

@@ -392,7 +392,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := MakeReadOnly(sc);
+    fam!.rewritingSystem := MakeReadOnlyObj(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -414,7 +414,7 @@ function( sc )
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
-    MakeReadOnly(sc);
+    MakeReadOnlyObj(sc);
     StrictBindOnce( fam!.8BitsType, PCWP_COLLECTOR, sc );
 
     # store the identity
@@ -564,7 +564,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := MakeReadOnly(sc);
+    fam!.rewritingSystem := MakeReadOnlyObj(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -586,7 +586,7 @@ function( sc )
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
-    MakeReadOnly(sc);
+    MakeReadOnlyObj(sc);
     StrictBindOnce( fam!.16BitsType, PCWP_COLLECTOR, sc );
     
     # store the identity
@@ -736,7 +736,7 @@ function( sc )
       CanEasilySortElements);
 
     # store the rewriting system
-    fam!.rewritingSystem := MakeReadOnly(sc);
+    fam!.rewritingSystem := MakeReadOnlyObj(sc);
 
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
@@ -758,7 +758,7 @@ function( sc )
     # force the single collector to return elements of that type
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.32BitsType;
-    MakeReadOnly(sc);
+    MakeReadOnlyObj(sc);
     StrictBindOnce( fam!.32BitsType, PCWP_COLLECTOR, sc );
 
     # store the identity

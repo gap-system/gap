@@ -37,7 +37,7 @@ newSplitHashTableDict := function(hash1, hash2, npieces, magic)
     for t in r.tables do
         ShareObj(t);
     od;
-    MakeReadOnly(r);
+    MakeReadOnlyObj(r);
     return r;
 end;
 
@@ -228,7 +228,7 @@ actionViaParOrb := function(seeds, gens, action, hash)
     d := newSplitHashTableDict(hash, hash, NHASHTABLES, 100);
     ngens := Length(gens);
     acts := List([1..ngens], i->MakeWriteOnceAtomic([]));
-    MakeReadOnly(acts);
+    MakeReadOnlyObj(acts);
     Print("Task count ",parorb(seeds, gens, action, d, SHTaddOrLookup, function(parentid, genno, id)
         if parentid <> fail then
             acts[genno][parentid] := id;

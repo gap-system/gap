@@ -17,9 +17,9 @@ BindGlobal ("MPI_DEBUG", rec (
                               GA_MAP := false,
                               OBJECT_TRANSFER := false,
                               TASKS := false));
-MakeReadOnly(MPI_DEBUG);
+MakeReadOnlyObj(MPI_DEBUG);
                            
-BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnly ( rec (
+BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnlyObj ( rec (
         HANDLE_CREATION := 1,
                                    GA_MAP := 2,
                                    CHANGE_COUNT := 3,

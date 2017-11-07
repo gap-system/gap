@@ -28,7 +28,7 @@
 
 if IsBound(HPCGAP) then
     InstallValue(TYPES_MAT8BIT, [ FixedAtomicList(256), FixedAtomicList(256) ]);
-    MakeReadOnly(TYPES_MAT8BIT);
+    MakeReadOnlyObj(TYPES_MAT8BIT);
 else
     InstallValue(TYPES_MAT8BIT, [[],[]]);
     TYPES_MAT8BIT[1][257] := 1;

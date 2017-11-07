@@ -163,7 +163,7 @@ IEEE754FLOAT.constants.MAX := LDEXP_MACFLOAT(NewFloat(IsIEEE754FloatRep,2^IEEE75
 IEEE754FLOAT.constants.MIN := LDEXP_MACFLOAT(MACFLOAT_INT(1),IEEE754FLOAT.constants.MIN_EXP-1);
 
 if IsBound(HPCGAP) then
-    MakeReadOnly( IEEE754FLOAT );
+    MakeReadOnlyObj( IEEE754FLOAT );
 fi;
 
 # finally install the default floateans

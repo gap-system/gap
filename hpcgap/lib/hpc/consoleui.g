@@ -132,7 +132,7 @@ BindGlobal("FindThread@", function(id)
 end);
 
 BindGlobal("SendControl@", function(type, data)
-  SendChannel(ControlChannel@, MakeReadOnly([ type, ThreadID@(), data ]) );
+  SendChannel(ControlChannel@, MakeReadOnlyObj([ type, ThreadID@(), data ]) );
 end);
 
 BindGlobal("RegisterThread@", function()

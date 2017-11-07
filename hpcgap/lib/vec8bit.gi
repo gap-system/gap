@@ -35,7 +35,7 @@ TYPES_VEC8BIT[2][257] := 1;
 TYPES_VEC8BIT[3][257] := 1;
 TYPES_VEC8BIT[4][257] := 1;
 
-MakeReadOnly(TYPES_VEC8BIT);
+MakeReadOnlyObj(TYPES_VEC8BIT);
 
 
 #############################################################################

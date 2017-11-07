@@ -81,7 +81,7 @@ region.
 Finally, <Ref Func="AdoptObj"/> and <Ref Func="AdoptSingleObj"/> are special cases of <Ref Func="MigrateObj"/> and
 <Ref Func="MigrateSingleObj"/>, where the target region is the thread-local region of the current thread.
 <P/>
-To migrate objects to the read-only region, one can use <Ref Func="MakeReadOnly"/> and <Ref Func="MakeReadOnlySingleObj"/>.
+To migrate objects to the read-only region, one can use <Ref Func="MakeReadOnlyObj"/> and <Ref Func="MakeReadOnlySingleObj"/>.
 The first migrates its argument and all its subjobjects that are within the same region to the read-only region; the
 second migrates only the argument itself, but not its subobjects.
 <P/>
@@ -545,7 +545,7 @@ The <Ref Func="CopyRegion"/> function performs a structural copy of <A>obj</A>. 
 current thread&#39;s thread-local region. The function returns the copy as its result.
 
 <Example><![CDATA[
-gap> l := MakeReadOnly([1,2,3]);
+gap> l := MakeReadOnlyObj([1,2,3]);
 [ 1, 2, 3 ]
 gap> l2 := CopyRegion(l);
 [ 1, 2, 3 ]
@@ -651,11 +651,11 @@ true
 </ManSection>
 
 <ManSection>
-    <Func Name="MakeReadOnly"
+    <Func Name="MakeReadOnlyObj"
       Arg='obj'/>
 
 <Description>
-The <Ref Func="MakeReadOnly"/> function migrates <A>obj</A> and all its subobjects that are within the same region as
+The <Ref Func="MakeReadOnlyObj"/> function migrates <A>obj</A> and all its subobjects that are within the same region as
 <A>obj</A> to the read-only region. It returns <A>obj</A>.
 </Description>
 </ManSection>
@@ -682,7 +682,7 @@ gap> IsReadOnlyObj([1,2,3]);
 false
 gap> IsReadOnlyObj(MakeImmutable([1,2,3]));
 false
-gap> IsReadOnlyObj(MakeReadOnly([1,2,3]));
+gap> IsReadOnlyObj(MakeReadOnlyObj([1,2,3]));
 true
 ]]></Example>
 </Description>

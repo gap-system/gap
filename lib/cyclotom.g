@@ -474,7 +474,7 @@ BIND_GLOBAL( "infinity",
     Objectify( NewType( CyclotomicsFamily, IsInfinity
                         and IsPositionalObjectRep ), [] ) );
 if IsBound(HPCGAP) then
-    MakeReadOnly(infinity);
+    MakeReadOnlyObj(infinity);
 fi;
 
 InstallMethod( PrintObj,
@@ -504,7 +504,7 @@ BIND_GLOBAL( "Ninfinity",
     Objectify( NewType( CyclotomicsFamily, IsNegInfinity
                         and IsPositionalObjectRep ), [] ) );
 if IsBound(HPCGAP) then
-    MakeReadOnly(Ninfinity);
+    MakeReadOnlyObj(Ninfinity);
 fi;
 
 InstallMethod( PrintObj,

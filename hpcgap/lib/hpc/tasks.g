@@ -1,4 +1,4 @@
-BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnly (rec ( 
+BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnlyObj (rec ( 
         BLOCK_ME := 1,
         RESUME_IDLE_WORKER := 2,
         RESUME_BLOCKED_WORKER := 3,
@@ -174,7 +174,7 @@ Tasks.StartNewWorkerThread := function()
   toworker := CreateChannel(1);
   fromworker := CreateChannel(1);
   channels := rec(toworker := toworker, fromworker := fromworker);
-  MakeReadOnly(channels);
+  MakeReadOnlyObj(channels);
   worker := CreateThread(Tasks.Worker, channels);
   return worker;
 end;

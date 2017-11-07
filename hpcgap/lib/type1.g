@@ -273,7 +273,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     # make the new type
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     type := [ family, flags ];
-    type[POS_DATA_TYPE] := MakeReadOnly(data);
+    type[POS_DATA_TYPE] := MakeReadOnlyObj(data);
     type[POS_NUMB_TYPE] := NEW_TYPE_NEXT_ID;
 
     if not IS_IDENTICAL_OBJ(parent, fail) then

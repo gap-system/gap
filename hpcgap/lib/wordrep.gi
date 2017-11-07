@@ -1186,7 +1186,7 @@ InstallGlobalFunction( InfiniteListOfNames, function( arg )
                       [ string, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
-    MakeReadOnly( list );    
+    MakeReadOnlyObj( list );    
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;
@@ -1322,7 +1322,7 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
                       [ F, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
-    MakeReadOnly(list);
+    MakeReadOnlyObj(list);
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;

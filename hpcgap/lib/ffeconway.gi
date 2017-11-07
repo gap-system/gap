@@ -117,7 +117,7 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
 
     atomic readwrite fam!.ConwayPolCoeffs do    
       if not IsBound(fam!.ConwayPolCoeffs[d]) then
-        fam!.ConwayPolCoeffs[d] := MakeReadOnly(cp);
+        fam!.ConwayPolCoeffs[d] := MakeReadOnlyObj(cp);
         fam!.ConwayFldEltReducers[d] := reducer;
       fi;  
     od;
@@ -151,7 +151,7 @@ FFECONWAY.ZNC := function(p,d)
     zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false] );
     
     if not IsBound(fam!.ZCache[d]) then
-        fam!.ZCache[d] := MakeReadOnly(zpd);
+        fam!.ZCache[d] := MakeReadOnlyObj(zpd);
     fi;
     return fam!.ZCache[d];
     
@@ -407,7 +407,7 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
             fi;
         od;
         Assert(2,d1 = 1 or res.relations = []);
-        MakeReadOnly(r);
+        MakeReadOnlyObj(r);
         fam!.embeddingRecords[d2][d1] := r;
     fi;
     return fam!.embeddingRecords[d2][d1];
@@ -964,7 +964,7 @@ InstallMethod(InverseOp,
     else
         y := Inverse(x![3]);
     fi;
-    return MakeReadOnly( Objectify(fam!.ConwayFldEltDefaultType,[r,d,y]) );
+    return MakeReadOnlyObj( Objectify(fam!.ConwayFldEltDefaultType,[r,d,y]) );
 end);
 
 InstallMethod(QUO_FFE_LARGE,
@@ -1021,7 +1021,7 @@ FFECONWAY.Zero := function(x)
     fi;
     d := x![2];
     if not IsBound(fam!.ZeroConwayFFEs[d]) then
-        fam!.ZeroConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[ZeroMutable(x![1]),d, 
+        fam!.ZeroConwayFFEs[d] := MakeReadOnlyObj(Objectify(fam!.ConwayFldEltDefaultType,[ZeroMutable(x![1]),d, 
                                           0*Z(fam!.Characteristic)]));
     fi;
     return fam!.ZeroConwayFFEs[d];
@@ -1053,7 +1053,7 @@ FFECONWAY.One := function(x)
     if not IsBound(fam!.OneConwayFFEs[d]) then
         v := ZeroMutable(x![1]);
         v[1] := Z(fam!.Characteristic)^0;
-        fam!.OneConwayFFEs[d] := MakeReadOnly(Objectify(fam!.ConwayFldEltDefaultType,[v,d, 
+        fam!.OneConwayFFEs[d] := MakeReadOnlyObj(Objectify(fam!.ConwayFldEltDefaultType,[v,d, 
                                          Z(fam!.Characteristic)^0]));
     fi;
     return fam!.OneConwayFFEs[d];
