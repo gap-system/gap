@@ -3464,9 +3464,6 @@ InstallMethod( DirectSumOfAlgebraModules,
     fi;
 
     gens:= List( gens, x -> ObjByExtRep( fam, x ) );
-    for i in [1..Length(gens)] do
-        gens[i]![2]:= true;
-    od;
 
     # Now we make the direct sum, we need to consider a few cases...
 
