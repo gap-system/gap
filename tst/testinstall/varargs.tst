@@ -81,13 +81,13 @@ gap> Display(RETURN_FIRST);
 function ( object... )
     <<kernel code from src/gap.c:RETURN_FIRST>>
 end
-gap> Print(INSTALL_METHOD,"\n");
+gap> Print(NEXT_METHOD_0ARGS,"\n");
 function ( <<arg-1>>, <<arg-2>> )
-    <<compiled GAP code from GAPROOT/lib/oper1.g:322>>
+    <<compiled GAP code from GAPROOT/lib/methsel1.g:189>>
 end
-gap> Display(InstallMethod);
+gap> Display(METHOD_XARGS);
 function ( <<arg-1>>... )
-    <<compiled GAP code from GAPROOT/lib/oper1.g:282>>
+    <<compiled GAP code from GAPROOT/lib/methsel1.g:172>>
 end
 gap> [1..2];
 [ 1, 2 ]
