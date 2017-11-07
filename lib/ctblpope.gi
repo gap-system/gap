@@ -1599,7 +1599,7 @@ end );
 #############################################################################
 ##
 #F  PermCandidatesFaithful( <tbl>, <chars>, <norm\_subgrp>, <nonfaithful>,
-#F                           <lower>, <upper>, <torso> )'
+#F                           <lower>, <upper>, <torso>[, <all>] )
 ##
 # `PermCandidatesFaithful'\\
 # `      ( tbl, chars, norm\_subgrp, nonfaithful, lower, upper, torso )'
@@ -1815,9 +1815,10 @@ end );
 # `evaluate', but for `erase' it is global (realized as `[ rest ]').
 ##
 InstallGlobalFunction( PermCandidatesFaithful,
-    function( tbl, chars, norm_subgrp, nonfaithful, upper, lower, torso )
-
-    local tbl_classes,       # attribute of `tbl'
+    function( tbl, chars, norm_subgrp, nonfaithful, upper, lower, torso,
+              arg... )
+    local ratirr,
+          tbl_classes,       # attribute of `tbl'
           tbl_size,          # attribute of `tbl'
           tbl_orders,        # attribute of `tbl'
           tbl_centralizers,  # attribute of `tbl'
@@ -1830,6 +1831,15 @@ InstallGlobalFunction( PermCandidatesFaithful,
           ncha, pos, fusionperm, shrink, ppart, myset, newfaithful,
           min_class, evaluate, step, first, descendclass, oldrows, newmatrix,
           row;
+
+    chars:= List( chars, ValuesOfClassFunction );
+    if Length( arg ) = 1 and arg[1] = true then
+      # The given list contains all rational irreducible characters.
+      ratirr:= chars;
+    else
+      # The given list is not known to be complete.
+      ratirr:= RationalizedMat( List( Irr( tbl ), ValuesOfClassFunction ) );
+    fi;
 
     #
     # step 1: Try to improve the input data
@@ -2109,7 +2119,7 @@ InstallGlobalFunction( PermCandidatesFaithful,
       local cand;
       cand:= List( [ 1 .. Length( gencharacter ) ],
                    i -> gencharacter[i] * tbl_classes[i] );
-      return ForAll( chars, chi -> 0 <= cand * chi );
+      return ForAll( ratirr, chi -> 0 <= cand * chi );
     end;
     #
     # and a bigger function:
@@ -2469,7 +2479,8 @@ InstallGlobalFunction( PermChars, function( arg )
         lower:= 0;
       fi;
       return PermCandidatesFaithful( tbl, chars, arec.normalsubgroup,
-            arec.nonfaithful, upper, lower, arec.torso);
+                 arec.nonfaithful, upper, lower, arec.torso,
+                 not "chars" in names );
 
    elif "torso" in names then
 
