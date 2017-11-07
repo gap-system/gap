@@ -405,7 +405,7 @@ BindGlobal("ScheduleTask", function(arg)
     fi;
   od;
   task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
-  task.conditions := MakeReadOnlyObj(cond);
+  task.conditions := MakeReadOnlySingleObj(cond);
   ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
@@ -423,7 +423,7 @@ BindGlobal("ScheduleAsyncTask", function(arg)
   od;
   task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
   task.async := true;
-  task.conditions := MakeReadOnlyObj(cond);
+  task.conditions := MakeReadOnlySingleObj(cond);
   ShareSpecialObj(task);
   TASKS.QueueTask(task);
   return task;
@@ -448,7 +448,7 @@ BindGlobal("WAIT_TASK", function(conditions, is_conjunction)
   od;
   atomic task do
     suspend := not IsIdenticalObj(task.body, fail);
-    task.conditions := MakeReadOnlyObj(conditions);
+    task.conditions := MakeReadOnlySingleObj(conditions);
     semaphore := task.worker.semaphore;
     trigger := TASKS.BuildTrigger(task, is_conjunction);
   od;

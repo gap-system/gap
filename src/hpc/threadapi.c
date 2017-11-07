@@ -2375,13 +2375,13 @@ Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
+Obj FuncMakeReadOnlySingleObj(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (!region || region == ReadOnlyRegion)
         return obj;
     if (!MigrateObjects(1, &obj, ReadOnlyRegion, 0))
-        return ArgumentError("MakeReadOnlyObj: Thread does not have "
+        return ArgumentError("MakeReadOnlySingleObj: Thread does not have "
                              "exclusive access to object");
     return obj;
 }
@@ -2710,7 +2710,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(MakeThreadLocal, 1, "var"),
     GVAR_FUNC(MakeReadOnly, 1, "obj"),
     GVAR_FUNC(MakeReadOnlyRaw, 1, "obj"),
-    GVAR_FUNC(MakeReadOnlyObj, 1, "obj"),
+    GVAR_FUNC(MakeReadOnlySingleObj, 1, "obj"),
     GVAR_FUNC(IsReadOnly, 1, "obj"),
     GVAR_FUNC(ENABLE_AUTO_RETYPING, 0, ""),
     GVAR_FUNC(ORDERED_READ, 1, "obj"),

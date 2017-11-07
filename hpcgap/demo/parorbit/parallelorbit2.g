@@ -22,10 +22,10 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
       fi;
       if IsStringRep(r) then
           if r = "exit" then 
-              MakeReadOnlyObj(ht!.els);
-              MakeReadOnlyObj(ht!.vals);
+              MakeReadOnlySingleObj(ht!.els);
+              MakeReadOnlySingleObj(ht!.vals);
               SendChannel(outch,ht);
-              MakeReadOnlyObj(pts);
+              MakeReadOnlySingleObj(pts);
               SendChannel(outch,pts);
               SendChannel(outch,sizes);
               return true;
@@ -60,7 +60,7 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
                       for i in [sent+1..sent+chunksize] do
                           Add(tosend,pts[i]);
                       od;
-                      MakeReadOnlyObj(tosend);
+                      MakeReadOnlySingleObj(tosend);
                       running := running + 1;
                       SendChannel(outch,tosend);
                       sent := sent + chunksize;
@@ -78,7 +78,7 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
                   Add(tosend,pts[i]);
               od;
               running := running + 1;
-              MakeReadOnlyObj(tosend);
+              MakeReadOnlySingleObj(tosend);
               SendChannel(outch,tosend);
               Add(sizes,Length(pts)-sent);
               #Print("HS ",id," scheduled ",Length(pts)-sent,"\n");
@@ -112,7 +112,7 @@ Worker := function(gens,op,hashins,hashout,status,f)
           for j in [1..n] do
               if Length(res[j]) > 0 then
                   SendChannel(status,-j);   # hashserver not ready
-                  MakeReadOnlyObj(res[j]);
+                  MakeReadOnlySingleObj(res[j]);
                   SendChannel(hashins[j],res[j]);
                   #Print("Worker sent result to HS ",j,"\n");
               fi;
@@ -137,9 +137,9 @@ ParallelOrbit := function(gens,pt,op,opt)
     if not IsBound(opt.chunksize) then opt.chunksize := 1000; fi;
     if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
     if IsMutable(gens) then MakeImmutable(gens); fi;
-    if not(IsReadOnly(gens)) then MakeReadOnlyObj(gens); fi;
+    if not(IsReadOnly(gens)) then MakeReadOnlySingleObj(gens); fi;
     if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
-    if not(IsReadOnly(pt)) then MakeReadOnlyObj(pt); fi;
+    if not(IsReadOnly(pt)) then MakeReadOnlySingleObj(pt); fi;
 
     ti := IO_gettimeofday();
     ptcopy := StructuralCopy(pt);
@@ -296,14 +296,14 @@ end;
 OnRightRO := function(x,g)
   local y;
   y := x*g;
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
 OnSubspacesByCanonicalBasisRO := function(x,g)
   local y;
   y := OnSubspacesByCanonicalBasis(x,g);
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
@@ -312,7 +312,7 @@ MakeDistributionHF := function(x,n)
   if n = 1 then return x->1; fi;
   hf := ChooseHashFunction(x,n);
   data := hf.data;
-  MakeReadOnlyObj(data);
+  MakeReadOnlySingleObj(data);
   hf := hf.func;
   return y->hf(y,data);
 end;

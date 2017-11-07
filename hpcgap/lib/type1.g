@@ -300,7 +300,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
-    MakeReadOnlyObj(type);
+    MakeReadOnlySingleObj(type);
     UNLOCK(lock);
 
     # return the type
@@ -659,7 +659,7 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
       RunImmediateMethods( obj, type![2] );
     fi;
     if IsReadOnlyPositionalObjectRep(obj) then
-        MakeReadOnlyObj(obj);
+        MakeReadOnlySingleObj(obj);
     fi;
     return obj;
 end );

@@ -35,10 +35,10 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
           if r = fail then return false; fi;
       fi;
       if IsStringRep(r) and r = "exit" then
-          MakeReadOnlyObj(ht!.els);
-          MakeReadOnlyObj(ht!.vals);
+          MakeReadOnlySingleObj(ht!.els);
+          MakeReadOnlySingleObj(ht!.vals);
           SendChannel(status,ht);
-          MakeReadOnlyObj(pts);
+          MakeReadOnlySingleObj(pts);
           SendChannel(status,pts);
           #SendChannel(status,sizes);
           return true;
@@ -67,7 +67,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
       for i in [sent+1..e] do
           Add(tosend,pts[i]);
       od;
-      MakeReadOnlyObj(tosend);
+      MakeReadOnlySingleObj(tosend);
       SendChannel(work,tosend);
       #Add(sizes,e-sent);
       sent := e;
@@ -147,7 +147,7 @@ Worker := function(id,gens,op,hashins,myqueue,status,f)
       for j in [1..n] do
           if Length(res[j]) > 0 then
               SendChannel(status,-j);   # hashserver not ready
-              MakeReadOnlyObj(res[j]);
+              MakeReadOnlySingleObj(res[j]);
               SendChannel(hashins[j],res[j]);
               #Print("Worker sent result to HS ",j,"\n");
           fi;
@@ -171,17 +171,17 @@ ParallelOrbit := function(gens,pt,op,opt)
     if not IsBound(opt.queuesize) then opt.queuesize := 3; fi;
     if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
     if IsMutable(gens) then MakeImmutable(gens); fi;
-    if not(IsReadOnly(gens)) then MakeReadOnlyObj(gens); fi;
+    if not(IsReadOnly(gens)) then MakeReadOnlySingleObj(gens); fi;
     if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
-    if not(IsReadOnly(pt)) then MakeReadOnlyObj(pt); fi;
+    if not(IsReadOnly(pt)) then MakeReadOnlySingleObj(pt); fi;
 
     ti := IO_gettimeofday();
     ptcopy := StructuralCopy(pt);
     ShareObj(ptcopy);
     i := List([1..opt.nrhash],k->CreateChannel());
-    MakeReadOnlyObj(i);
+    MakeReadOnlySingleObj(i);
     q := List([1..opt.nrwork],k->CreateChannel());
-    MakeReadOnlyObj(q);
+    MakeReadOnlySingleObj(q);
     s := CreateChannel();
     h := List([1..opt.nrhash],k->RunTask(HashServer,k,ptcopy,i[k],q,s,
                   opt.hashlen,opt.chunksize,opt.queuesize));
@@ -330,14 +330,14 @@ end;
 OnRightRO := function(x,g)
   local y;
   y := x*g;
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
 OnSubspacesByCanonicalBasisRO := function(x,g)
   local y;
   y := OnSubspacesByCanonicalBasis(x,g);
-  MakeReadOnlyObj(y);
+  MakeReadOnlySingleObj(y);
   return y;
 end;
 
@@ -346,7 +346,7 @@ MakeDistributionHF := function(x,n)
   if n = 1 then return x->1; fi;
   hf := ChooseHashFunction(x,n);
   data := hf.data;
-  MakeReadOnlyObj(data);
+  MakeReadOnlySingleObj(data);
   hf := hf.func;
   return y->hf(y,data);
 end;

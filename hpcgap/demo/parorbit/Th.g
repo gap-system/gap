@@ -7,11 +7,11 @@ LoadPackage("orb");
 
 Read("Thdata.g");   # actually reads Thdata.g.gz
 
-if IsBound(MakeReadOnlyObj) then
+if IsBound(MakeReadOnlySingleObj) then
     OnSubspacesByCanonicalBasisRO := function(x,g)
       local y;
       y := OnSubspacesByCanonicalBasis(x,g);
-      MakeReadOnlyObj(y);
+      MakeReadOnlySingleObj(y);
       return y;
     end;
 else
