@@ -1135,6 +1135,11 @@ DeclareCategoryFamily( "IsSparseRowSpaceElement" );
 #T TB, January 12th, 2000.
 
 
+#
+DeclareHandlingByNiceBasis( "IsSparseVectorSpace",
+    "for free left modules of sparse vectors");
+
+
 ##############################################################################
 ##
 #O  FullSparseRowSpace( <R>, <n> )
