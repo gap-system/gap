@@ -2790,103 +2790,143 @@ Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
 static StructBagNames BagNames[] = {
   { T_PLIST,                                "list (plain)" },
   { T_PLIST            +IMMUTABLE,          "list (plain,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST                       +COPYING, "list (plain,copied)" },
   { T_PLIST            +IMMUTABLE +COPYING, "list (plain,imm,copied)" },
+#endif
 
   { T_PLIST_NDENSE,                         "list (plain,ndense)" },
   { T_PLIST_NDENSE     +IMMUTABLE,          "list (plain,ndense,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_NDENSE                +COPYING, "list (plain,ndense,copied)" },
   { T_PLIST_NDENSE     +IMMUTABLE +COPYING, "list (plain,ndense,imm,copied)" },
+#endif
 
   { T_PLIST_DENSE,                          "list (plain,dense)" },
   { T_PLIST_DENSE      +IMMUTABLE,          "list (plain,dense,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_DENSE                 +COPYING, "list (plain,dense,copied)" },
   { T_PLIST_DENSE      +IMMUTABLE +COPYING, "list (plain,dense,imm,copied)" },
+#endif
 
   { T_PLIST_DENSE_NHOM,                     "list (plain,dense,nhom)" },
   { T_PLIST_DENSE_NHOM +IMMUTABLE,          "list (plain,dense,nhom,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_DENSE_NHOM            +COPYING, "list (plain,dense,nhom,copied)" },
   { T_PLIST_DENSE_NHOM +IMMUTABLE +COPYING, "list (plain,dense,nhom,imm,copied)" },
+#endif
 
   { T_PLIST_DENSE_NHOM_SSORT,                     "list (plain,dense,nhom,ssort)" },
   { T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE,          "list (plain,dense,nhom,ssort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_DENSE_NHOM_SSORT            +COPYING, "list (plain,dense,nhom,ssort,copied)" },
   { T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE +COPYING, "list (plain,dense,nhom,ssort,imm,copied)" },
+#endif
 
   { T_PLIST_DENSE_NHOM_NSORT,                     "list (plain,dense,nhom,nsort)" },
   { T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE,          "list (plain,dense,nhom,nsort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_DENSE_NHOM_NSORT            +COPYING, "list (plain,dense,nhom,nsort,copied)" },
   { T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE +COPYING, "list (plain,dense,nhom,nsort,imm,copied)" },
+#endif
 
   { T_PLIST_EMPTY,                          "list (plain,empty)" },
   { T_PLIST_EMPTY      +IMMUTABLE,          "list (plain,empty,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_EMPTY                 +COPYING, "list (plain,empty,copied)" },
   { T_PLIST_EMPTY      +IMMUTABLE +COPYING, "list (plain,empty,imm,copied)" },
+#endif
 
   { T_PLIST_HOM,                            "list (plain,hom)" },
   { T_PLIST_HOM        +IMMUTABLE,          "list (plain,hom,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_HOM                   +COPYING, "list (plain,hom,copied)" },
   { T_PLIST_HOM        +IMMUTABLE +COPYING, "list (plain,hom,imm,copied)" },
+#endif
 
   { T_PLIST_HOM_NSORT,                      "list (plain,hom,nsort)" },
   { T_PLIST_HOM_NSORT  +IMMUTABLE,          "list (plain,hom,nsort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_HOM_NSORT             +COPYING, "list (plain,hom,nsort,copied)" },
   { T_PLIST_HOM_NSORT  +IMMUTABLE +COPYING, "list (plain,hom,nsort,imm,copied)" },
+#endif
 
   { T_PLIST_HOM_SSORT,                      "list (plain,hom,ssort)" },
   { T_PLIST_HOM_SSORT +IMMUTABLE,           "list (plain,hom,ssort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_HOM_SSORT            +COPYING,  "list (plain,hom,ssort,copied)" },
   { T_PLIST_HOM_SSORT +IMMUTABLE +COPYING,  "list (plain,hom,ssort,imm,copied)" },
+#endif
 
   { T_PLIST_TAB,                            "list (plain,table)" },
   { T_PLIST_TAB       +IMMUTABLE,           "list (plain,table,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB                  +COPYING,  "list (plain,table,copied)" },
   { T_PLIST_TAB       +IMMUTABLE +COPYING,  "list (plain,table,imm,copied)" },
+#endif
 
   { T_PLIST_TAB_NSORT,                      "list (plain,table,nsort)" },
   { T_PLIST_TAB_NSORT +IMMUTABLE,           "list (plain,table,nsort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB_NSORT            +COPYING,  "list (plain,table,nsort,copied)" },
   { T_PLIST_TAB_NSORT +IMMUTABLE +COPYING,  "list (plain,table,nsort,imm,copied)" },
+#endif
 
   { T_PLIST_TAB_SSORT,                      "list (plain,table,ssort)" },
   { T_PLIST_TAB_SSORT +IMMUTABLE,           "list (plain,table,ssort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB_SSORT            +COPYING,  "list (plain,table,ssort,copied)" },
   { T_PLIST_TAB_SSORT +IMMUTABLE +COPYING,  "list (plain,table,ssort,imm,copied)" },
+#endif
 
   { T_PLIST_TAB_RECT,                            "list (plain,rect table)" },
   { T_PLIST_TAB_RECT       +IMMUTABLE,           "list (plain,rect table,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB_RECT                  +COPYING,  "list (plain,rect table,copied)" },
   { T_PLIST_TAB_RECT       +IMMUTABLE +COPYING,  "list (plain,rect table,imm,copied)" },
+#endif
 
   { T_PLIST_TAB_RECT_NSORT,                      "list (plain,rect table,nsort)" },
   { T_PLIST_TAB_RECT_NSORT +IMMUTABLE,           "list (plain,rect table,nsort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB_RECT_NSORT            +COPYING,  "list (plain,rect table,nsort,copied)" },
   { T_PLIST_TAB_RECT_NSORT +IMMUTABLE +COPYING,  "list (plain,rect table,nsort,imm,copied)" },
+#endif
 
   { T_PLIST_TAB_RECT_SSORT,                      "list (plain,rect table,ssort)" },
   { T_PLIST_TAB_RECT_SSORT +IMMUTABLE,           "list (plain,rect table,ssort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_TAB_RECT_SSORT            +COPYING,  "list (plain,rect table,ssort,copied)" },
   { T_PLIST_TAB_RECT_SSORT +IMMUTABLE +COPYING,  "list (plain,rect table,ssort,imm,copied)" },
+#endif
 
   { T_PLIST_CYC,                            "list (plain,cyc)" },
   { T_PLIST_CYC       +IMMUTABLE,           "list (plain,cyc,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_CYC                  +COPYING,  "list (plain,cyc,copied)" },
   { T_PLIST_CYC       +IMMUTABLE +COPYING,  "list (plain,cyc,imm,copied)" },
+#endif
 
   { T_PLIST_CYC_NSORT,                      "list (plain,cyc,nsort)" },
   { T_PLIST_CYC_NSORT +IMMUTABLE,           "list (plain,cyc,nsort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_CYC_NSORT            +COPYING,  "list (plain,cyc,nsort,copied)" },
   { T_PLIST_CYC_NSORT +IMMUTABLE +COPYING,  "list (plain,cyc,nsort,imm,copied)" },
+#endif
 
   { T_PLIST_CYC_SSORT,                      "list (plain,cyc,ssort)" },
   { T_PLIST_CYC_SSORT +IMMUTABLE,           "list (plain,cyc,ssort,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_CYC_SSORT            +COPYING,  "list (plain,cyc,ssort,copied)" },
   { T_PLIST_CYC_SSORT +IMMUTABLE +COPYING,  "list (plain,cyc,ssort,imm,copied)" },
+#endif
 
   { T_PLIST_FFE,                     "list (sml fin fld elms)" },
   { T_PLIST_FFE +IMMUTABLE,          "list (sml fin fld elms,imm)" },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PLIST_FFE            +COPYING, "list (sml fin fld elms,copied)" },
   { T_PLIST_FFE +IMMUTABLE +COPYING, "list (sml fin fld elms,imm,copied)" },
+#endif
 
   { -1,                                     "" }
 };
@@ -3686,14 +3726,18 @@ static Int InitKernel (
     for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkAllSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllSubBags );
+#if !defined(USE_THREADSAFE_COPYING)
         InitMarkFuncBags( t1            +COPYING , MarkAllSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkAllSubBags );
+#endif
     }
 
     InitMarkFuncBags( T_PLIST_FFE                     , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE          , MarkNoSubBags );
+#if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags( T_PLIST_FFE            +COPYING , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE +COPYING , MarkNoSubBags );
+#endif
 
 #ifdef CHECK_NDENSE_BAGS
     InitSweepFuncBags( T_PLIST_NDENSE, SweepAndCheckNonDensePlist);

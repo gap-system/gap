@@ -2257,16 +2257,18 @@ void MakeImmutableBlist( Obj blist )
 static StructBagNames BagNames[] = {
   { T_BLIST,                           "list (boolean)"                  },
   { T_BLIST       +IMMUTABLE,          "list (boolean,imm)"              },
-  { T_BLIST                  +COPYING, "list (boolean,copied)"           },
-  { T_BLIST       +IMMUTABLE +COPYING, "list (boolean,imm,copied)"       },
   { T_BLIST_NSORT,                     "list (boolean,nsort)"            },
   { T_BLIST_NSORT +IMMUTABLE,          "list (boolean,nsort,imm)"        },
-  { T_BLIST_NSORT            +COPYING, "list (boolean,nsort,copied)"     },
-  { T_BLIST_NSORT +IMMUTABLE +COPYING, "list (boolean,nsort,imm,copied)" },
   { T_BLIST_SSORT,                     "list (boolean,ssort)"            },
   { T_BLIST_SSORT +IMMUTABLE,          "list (boolean,ssort,imm)"        },
+#if !defined(USE_THREADSAFE_COPYING)
+  { T_BLIST                  +COPYING, "list (boolean,copied)"           },
+  { T_BLIST       +IMMUTABLE +COPYING, "list (boolean,imm,copied)"       },
+  { T_BLIST_NSORT            +COPYING, "list (boolean,nsort,copied)"     },
+  { T_BLIST_NSORT +IMMUTABLE +COPYING, "list (boolean,nsort,imm,copied)" },
   { T_BLIST_SSORT            +COPYING, "list (boolean,ssort,copied)"     },
   { T_BLIST_SSORT +IMMUTABLE +COPYING, "list (boolean,ssort,imm,copied)" },
+#endif
   { -1,                                ""                                }
 };
 
@@ -2462,8 +2464,10 @@ static Int InitKernel (
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags  );
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags  );
+#if !defined(USE_THREADSAFE_COPYING)
         InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
+#endif
     }
 
     /* Make immutable blists public					   */

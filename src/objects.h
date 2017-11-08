@@ -268,15 +268,21 @@ enum TNUM {
 
     END_ENUM_RANGE(LAST_REAL_TNUM),
 
+#if !defined(USE_THREADSAFE_COPYING)
     // virtual TNUMs for copying objects
     START_ENUM_RANGE_EVEN(FIRST_COPYING_TNUM),
         COPYING             = FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM,
         // we use LAST_EXTERNAL_TNUM+1 instead of LAST_REAL_TNUM to
         // skip over the shared TNUMs in HPC-GAP
     LAST_COPYING_TNUM       = LAST_EXTERNAL_TNUM + COPYING,
+#endif
 };
 
+#if defined(USE_THREADSAFE_COPYING)
+GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
+#else
 GAP_STATIC_ASSERT(LAST_COPYING_TNUM <= 254, "LAST_COPYING_TNUM is too large");
+#endif
 
 /****************************************************************************
 **

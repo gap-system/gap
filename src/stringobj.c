@@ -2105,16 +2105,18 @@ static StructBagNames BagNames[] = {
   { T_CHAR,                           "character"                      },
   { T_STRING,                         "list (string)"                  },
   { T_STRING              +IMMUTABLE, "list (string,imm)"              },
-  { T_STRING      +COPYING,           "list (string,copied)"           },
-  { T_STRING      +COPYING+IMMUTABLE, "list (string,imm,copied)"       },
   { T_STRING_SSORT,                   "list (string,ssort)"            },
   { T_STRING_SSORT        +IMMUTABLE, "list (string,ssort,imm)"        },
-  { T_STRING_SSORT+COPYING,           "list (string,ssort,copied)"     },
-  { T_STRING_SSORT+COPYING+IMMUTABLE, "list (string,ssort,imm,copied)" },
   { T_STRING_NSORT,                   "list (string,nsort)"            },
   { T_STRING_NSORT        +IMMUTABLE, "list (string,nsort,imm)"        },
+#if !defined(USE_THREADSAFE_COPYING)
+  { T_STRING      +COPYING,           "list (string,copied)"           },
+  { T_STRING      +COPYING+IMMUTABLE, "list (string,imm,copied)"       },
+  { T_STRING_SSORT+COPYING,           "list (string,ssort,copied)"     },
+  { T_STRING_SSORT+COPYING+IMMUTABLE, "list (string,ssort,imm,copied)" },
   { T_STRING_NSORT+COPYING,           "list (string,nsort,copied)"     },
   { T_STRING_NSORT+COPYING+IMMUTABLE, "list (string,nsort,imm,copied)" },
+#endif
   { -1,                               ""                               }
 };
 
@@ -2330,8 +2332,10 @@ static Int InitKernel (
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags );
         InitMarkFuncBags( t1          +IMMUTABLE , MarkNoSubBags );
+#if !defined(USE_THREADSAFE_COPYING)
         InitMarkFuncBags( t1 +COPYING            , MarkNoSubBags );
         InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkNoSubBags );
+#endif
     }
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
       MakeBagTypePublic( t1 + IMMUTABLE );

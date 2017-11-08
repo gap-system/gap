@@ -1141,10 +1141,12 @@ static StructBagNames BagNames[] = {
   { T_RANGE_NSORT +IMMUTABLE,          "list (range,nsort,imm)"        },
   { T_RANGE_SSORT,                     "list (range,ssort)"            },
   { T_RANGE_SSORT +IMMUTABLE,          "list (range,ssort,imm)"        },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_RANGE_NSORT            +COPYING, "list (range,nsort,copied)"     },
   { T_RANGE_NSORT +IMMUTABLE +COPYING, "list (range,nsort,imm,copied)" },
   { T_RANGE_SSORT            +COPYING, "list (range,ssort,copied)"     },
   { T_RANGE_SSORT +IMMUTABLE +COPYING, "list (range,ssort,imm,copied)" },
+#endif
   { -1,                                ""                              }
 };
 
@@ -1296,10 +1298,12 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE          , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT                     , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE          , MarkAllSubBags );
+#if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags(   T_RANGE_NSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
+#endif
 
     /* Make immutable bags public                                          */
     MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
