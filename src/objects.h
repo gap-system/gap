@@ -228,11 +228,20 @@ enum TNUM {
 #endif
 
         // package TNUMs, for use by kernel extensions
-        // note that LAST_COPYING_TNUM must not exceed 253, which restricts
-        // the value for LAST_PACKAGE_TNUM indirectly
+        //
+        // The largest TNUM (which, depending on USE_THREADSAFE_COPYING, is
+        // either LAST_REAL_TNUM or LAST_COPYING_TNUM) must not exceed 253.
+        // This restricts the value for LAST_PACKAGE_TNUM indirectly. It is
+        // difficult to describe the largest possible value with a formula, as
+        // LAST_COPYING_TNUM itself changes depending LAST_PACKAGE_TNUM, and
+        // the fact that some TNUMs are forced to be even causes additional
+        // jumps; so increasing LAST_PACKAGE_TNUM by 1 can lead to
+        // LAST_COPYING_TNUM growing by 2, 3 or even 4. So we simply hand-pick
+        // LAST_PACKAGE_TNUM as the largest value that does not trigger the
+        // GAP_STATIC_ASSERT following this enum.
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 41,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 153,
 #else
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
 #endif
