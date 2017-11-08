@@ -144,6 +144,8 @@ Obj TypeRangeSSortMutable (
     return TYPE_RANGE_SSORT_MUTABLE;
 }
     
+#if !defined(USE_THREADSAFE_COPYING)
+
 /****************************************************************************
 **
 *F  CopyRange( <list>, <mut> )  . . . . . . . . . . . . . . . .  copy a range
@@ -234,6 +236,8 @@ void CleanRangeCopy (
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
+
+#endif // !defined(USE_THREADSAFE_COPYING)
 
 
 /****************************************************************************
@@ -1334,6 +1338,7 @@ static Int InitKernel (
     LoadObjFuncs[T_RANGE_SSORT            ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = LoadRange;
 
+#if !defined(USE_THREADSAFE_COPYING)
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE          ] = CopyRange;
@@ -1351,6 +1356,7 @@ static Int InitKernel (
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
     CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
+#endif
 
     /* Make immutable methods */
     MakeImmutableObjFuncs[ T_RANGE_NSORT ] = MakeImmutableRange;

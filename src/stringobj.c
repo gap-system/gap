@@ -565,6 +565,8 @@ Obj TypeString (
 *F * * * * * * * * * * * * * * copy functions * * * * * * * * * * * * * * * *
 */
 
+#if !defined(USE_THREADSAFE_COPYING)
+
 /****************************************************************************
 **
 *F  CopyString( <list>, <mut> ) . . . . . . . . . . . . . . . . copy a string
@@ -655,6 +657,8 @@ void CleanStringCopy (
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
+
+#endif //!defined(USE_THREADSAFE_COPYING)
 
 
 /****************************************************************************
@@ -2386,6 +2390,7 @@ static Int InitKernel (
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadString;
     }
 
+#if !defined(USE_THREADSAFE_COPYING)
     /* install the copy method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyString;
@@ -2397,6 +2402,7 @@ static Int InitKernel (
         CleanObjFuncs[ t1 +COPYING            ] = CleanStringCopy;
         CleanObjFuncs[ t1 +COPYING +IMMUTABLE ] = CleanStringCopy;
     }
+#endif
 
     /* install the print method                                            */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {

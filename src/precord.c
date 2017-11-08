@@ -149,6 +149,9 @@ Int             GrowPRec (
     return 1L;
 }
 
+
+#if !defined(USE_THREADSAFE_COPYING)
+
 /****************************************************************************
 **
 *F  CopyPRec( <rec> ) . . . . . . . . . . . . . . . . . . copy a plain record
@@ -239,6 +242,9 @@ void CleanPRecCopy (
         CLEAN_OBJ( GET_ELM_PREC( rec, i ) );
     }
 }
+
+#endif //!defined(USE_THREADSAFE_COPYING)
+
 
 /****************************************************************************
 **
@@ -913,6 +919,7 @@ static Int InitKernel (
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
+#if !defined(USE_THREADSAFE_COPYING)
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
     CopyObjFuncs [ T_PREC +IMMUTABLE          ] = CopyPRec;
@@ -922,6 +929,7 @@ static Int InitKernel (
     CleanObjFuncs[ T_PREC +IMMUTABLE          ] = CleanPRec;
     CleanObjFuncs[ T_PREC            +COPYING ] = CleanPRecCopy;
     CleanObjFuncs[ T_PREC +IMMUTABLE +COPYING ] = CleanPRecCopy;
+#endif // !defined(USE_THREADSAFE_COPYING)
 
     /* install printer                                                     */
     PrintObjFuncs[  T_PREC            ] = PrintPRec;

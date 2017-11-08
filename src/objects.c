@@ -44,7 +44,9 @@
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
+#if defined(USE_THREADSAFE_COPYING)
 #include <src/hpc/traverse.h>           /* object traversal */
+#endif
 #include <src/hpc/guards.h>
 
 #include <src/gaputils.h>
@@ -376,7 +378,7 @@ Obj CopyObj (
     Obj                 obj,
     Int                 mut )
 {
-#ifdef HPCGAP
+#ifdef USE_THREADSAFE_COPYING
     return CopyReachableObjectsFrom(obj, 0, 0, !mut);
 #else
     Obj                 new;            /* copy of <obj>                   */
@@ -392,6 +394,8 @@ Obj CopyObj (
 #endif
 }
 
+
+#if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
 **
@@ -754,6 +758,7 @@ void CleanObjDatObjCopy (
     RetypeBag( obj, TNUM_OBJ(obj) - COPYING );
 }
 
+#endif // !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
 **
@@ -2083,6 +2088,7 @@ static Int InitKernel (
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjObject;
 
     /* make and install the 'COPY_OBJ' function                            */
+#if !defined(USE_THREADSAFE_COPYING)
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(CopyObjFuncs [ t ] == 0);
         CopyObjFuncs [ t ] = CopyObjError;
@@ -2105,6 +2111,7 @@ static Int InitKernel (
     CopyObjFuncs[  T_DATOBJ + COPYING ] = CopyObjDatObjCopy;
     CleanObjFuncs[ T_DATOBJ           ] = CleanObjDatObj;
     CleanObjFuncs[ T_DATOBJ + COPYING ] = CleanObjDatObjCopy;
+#endif
 
     /* make and install the 'PRINT_OBJ' operation                          */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
