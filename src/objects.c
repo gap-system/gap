@@ -1902,10 +1902,9 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
         START_SYMBOLIC_TNUM(FIRST_COPYING_TNUM);
         START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM + COPYING);
 #endif
-        if (InfoBags[k].name != 0) {
-            Pr("%3d: %s", k, (Int)indentStr);
-            Pr("%s%s\n", (Int)indentStr, (Int)InfoBags[k].name);
-        }
+        const char *name = InfoBags[k].name;
+        Pr("%3d: %s", k, (Int)indentStr);
+        Pr("%s%s\n", (Int)indentStr, (Int)(name ? name : "."));
         STOP_SYMBOLIC_TNUM(LAST_CONSTANT_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_RECORD_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_PLIST_TNUM);
