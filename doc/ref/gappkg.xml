@@ -4,10 +4,10 @@
 <Index>package</Index>
 The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;
 packages. 
-&GAP; distribution already contains all currently redistributed with 
-&GAP; packages in the <F>&GAPDIRNAME;/pkg</F> directory.
+The &GAP; distribution contains, in the <F>&GAPDIRNAME;/pkg</F> 
+directory, all currently available &GAP; packages.
 <P/>
-&GAP; packages are written by (groups  of) &GAP; users which may not
+&GAP; packages are written by (groups  of) &GAP; users who may not
 be  members  of the  &GAP;  developer  team. The  responsibility  and
 copyright of a &GAP; package remains with the original author(s).
 <P/>
@@ -17,14 +17,14 @@ integrated into the &GAP; help system.
 All  &GAP;  users   who  develop  new  code  are   invited  to  share
 the  results  of their  efforts  with  other  &GAP; users  by  making
 the  code  and its  documentation  available  in  form of  a  package.
-Information how  to do  this is  available from  the &GAP; website
+Guidance on how  to do  this is  available from  the &GAP; website
 (<URL>https://www.gap-system.org</URL>)
 and in the &GAP; package <Package>Example</Package>
 (see <URL>https://www.gap-system.org/Packages/example.html</URL>).
 <P/>
-There  are  possibilities  to get  a  package  distributed together  with
-&GAP;  and it  is possible  to submit  a package  to a formal refereeing
-process.
+The &GAP; development team will assist in making any new package 
+suitable for distribution with &GAP;.   
+It is possible to submit a package to a formal refereeing process.
 <P/>
 In this chapter we first describe how to use existing packages,
 and then provide guidelines for writing a &GAP; package.
@@ -34,37 +34,41 @@ and then provide guidelines for writing a &GAP; package.
 <Section Label="Installing a GAP Package">
 <Heading>Installing a GAP Package</Heading>
 
-Before a  package can be  used it must  be installed. A standard installation
-of &GAP; already contains all &GAP; packages currently redistributed with 
-&GAP;. This set of packages is checked for compatibility
-with the system and other packages during release preparation. Most of
-the packages can be used immediately, but some of them may require further
-installation steps such as compilation or installing additional software
-to satisfy their dependencies. Most of the packages that require compilation
-can be compiled in a single step by changing to the <F>pkg</F> directory of
-your &GAP; installation and calling the <C>../bin/BuildPackages.sh</C> script.
+Before a  package can be  used it must  be installed. 
+A standard distribution of &GAP; already contains all the packages 
+currently available with &GAP;. 
+This set of packages has been checked for compatibility
+with the system and with each other during release preparation.  
+Most of the packages can be used immediately, but some of them may require further installation steps (see below). 
 <P/>
 Also, since &GAP; packages are released independently of the main &GAP; system,
-sometimes it may be useful to upgrade or install new packages between
+it may sometimes be useful to upgrade or install new packages between
 upgrades of your &GAP; installation, e.g. if a new version of a package adds
 new capabilities or bug fixes that you need.
 <P/>
 A package consists of a collection  of files within a single directory
 that must  be a subdirectory of  the <F>pkg</F>  directory   in one  of the
-&GAP; root directories, see <Ref Sect="GAP Root Directories"/>. (If you don't
-have access  to the <F>pkg</F>  directory in your main  &GAP; installation
-you can add private root directories as explained in that section.)
+&GAP; root directories (see <Ref Sect="GAP Root Directories"/>). 
+If you don't have access  to the <F>pkg</F>  directory in your main  &GAP; installation you can add private root directories as explained in that section. 
 <P/>
-Whenever  you  get from  somewhere  an  archive  of a  &GAP;  package
-it  should be  accompanied  with  a <F>README</F>  file  that explains  its
-installation.  Some packages  just  consist  of  &GAP;  code and  the
-installation  is  done  by  unpacking   the  archive  in  one  of  the
-places  described above.  There are  also packages  that need  further
-installation steps,  there may be  for example some  external programs
-which  have  to  be  compiled  (this is  often  done  by  just  saying
-<C>./configure; make</C>  inside the unpacked package  directory, but check
-the individual <F>README</F> files). Note that if you use Windows you may not 
-be able to use some or all external binaries.
+Whenever you download an  archive  of a  &GAP;  package, it will contain a 
+<F>README</F>  file  that explains how it should be installed.  
+Some packages just consist of &GAP; code and the installation is done by 
+unpacking the archive in one of the places described above.  
+There are  also packages  that need  further installation steps,  
+such as compilation or installing additional software
+to satisfy their dependencies. 
+If there are some  external programs which have to be compiled, 
+this is often done by executing <C>./configure; make</C> 
+inside the unpacked package directory 
+(but check the individual <F>README</F> files). 
+<P/> 
+Most of the packages that require compilation can be compiled 
+in a single step by changing to the <F>pkg</F> directory of your &GAP; 
+installation and calling the <C>../bin/BuildPackages.sh</C> script.
+<P/> 
+Note that if you use Windows you may not be able to use some or all 
+external binaries.
 </Section>
 
 
@@ -72,30 +76,24 @@ be able to use some or all external binaries.
 <Section Label="Loading a GAP Package">
 <Heading>Loading a GAP Package</Heading>
 
-<Index>automatic loading of GAP packages</Index>
-<Index>disable automatic loading</Index>
-If a package is not loaded, it may be loaded using 
+If a package is not already loaded, it may be loaded using 
 the function <Ref Func="LoadPackage"/>.
 <P/>
-Some &GAP; packages are loaded automatically with &GAP;. Those belong to
-two categories: packages which are needed to start &GAP; (as of this writing,
-the only such package is &GAPDoc;; their list is contained in 
-<C>GAPInfo.Dependencies.NeededOtherPackages</C>), and packages which are
-loaded during &GAP; startup by default. The latter list may be obtained by
-calling <C>UserPreference("PackagesToLoad")</C> and is customisable as
-described in Section <Ref BookName="ref" Sect="Configuring User preferences"/>.
-<P/>
-While &GAP; will not start if any of the packages from the former group is
-missing, loading of the packages from the latter group may be suppressed by
-using the <C>-A</C> command line option (see <Ref Sect="Command Line Options" />).
+Some &GAP; packages are prepared for automatic loading, 
+that is they will be loaded automatically when &GAP; starts 
+(see <Ref Subsect="LoadPackageAutomatic"/>).  
 
 <#Include Label="LoadPackage">
+
+<Index>automatic loading of GAP packages</Index>
+<Index>disable automatic loading</Index>
+<#Include Label="LoadPackageAutomatic">
+
 <#Include Label="SetPackagePath">
 <#Include Label="ExtendRootDirectories">
 <#Include Label="DisplayPackageLoadingLog">
 
 </Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Functions for GAP Packages">

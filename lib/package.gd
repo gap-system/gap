@@ -702,21 +702,24 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  true
 ##  ]]></Log>
 ##  <P/>
-##  The package name may be appropriately abbreviated. For example, at the time
-##  of writing, <C>LoadPackage("semi");</C> will load the 
-##  <Package>Semigroups</Package> package, and <C>LoadPackage("j");</C> will
-##  load the <Package>json</Package> package. If the abbreviation can not be
-##  uniquely completed, further suggestions will be offered.
+##  The package name is case insensitive and may be appropriately abbreviated. 
+##  At the time of writing, for example, <C>LoadPackage("semi");</C> 
+##  will load the <Package>Semigroups</Package> package, and 
+##  <C>LoadPackage("j");</C> will load the <Package>json</Package> package. 
+##  If the abbreviation cannot be uniquely completed, 
+##  a list of available completions will be offered, 
+##  and <Ref Func="LoadPackage"/> returns <K>fail</K>.
+##  Thus the names of <E>all</E> installed packages can be shown by calling
+##  <C>LoadPackage("");</C>.
 ##  <P/>
-##  If the optional version string <A>version</A> is given,
-##  the package will only be loaded in a version number at least as large as
-##  <A>version</A>,
-##  or equal to <A>version</A> if its first character is <C>=</C>
+##  When the optional argument string <A>version</A> is present,
+##  the package will only be loaded in a version number 
+##  equal to or greater than <A>version</A> 
 ##  (see&nbsp;<Ref Func="CompareVersionNumbers"/>).
-##  The argument <A>name</A> is case insensitive.
+##  If the first character is <C>=</C> then only that version will be loaded. 
 ##  <P/>
 ##  <Ref Func="LoadPackage"/> will return <K>true</K> if the package has been
-##  successfully loaded
+##  successfully loaded, 
 ##  and will return <K>fail</K> if the package could not be loaded.
 ##  The latter may be the case if the package is not installed, if necessary
 ##  binaries have not been compiled, or if the version number of the
@@ -724,48 +727,55 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  If the package cannot be loaded, <Ref Func="TestPackageAvailability"/>
 ##  can be used to find the reasons. Also,
 ##  <Ref Func="DisplayPackageLoadingLog"/> can be used to find out more
-##  about the failure reasons. To see the problems directly, one can
+##  about the failure. To see the problems directly, one can
 ##  change the verbosity using the user preference
 ##  <C>InfoPackageLoadingLevel</C>, see <Ref InfoClass="InfoPackageLoading"/>
 ##  for details.
 ##  <P/>
 ##  If the package <A>name</A> has already been loaded in a version number
-##  at least or equal to <A>version</A>, respectively,
-##  <Ref Func="LoadPackage"/> returns <K>true</K> without doing anything
-##  else.
-##  <P/>
-##  The argument <A>name</A> may be the prefix of a package name.
-##  If no package with name <A>name</A> is installed,
-##  the behaviour is as follows.
-##  If <A>name</A> is the prefix of exactly one name of an installed package
-##  then <Ref Func="LoadPackage"/> is called with this name;
-##  if the names of several installed packages start with <A>name</A> then
-##  the these names are printed, and <Ref Func="LoadPackage"/> returns
-##  <K>fail</K>.
-##  Thus the names of <E>all</E> installed packages can be shown by calling
-##  <Ref Func="LoadPackage"/> with an empty string.
+##  equal to or greater than <A>version</A>,  <Ref Func="LoadPackage"/> 
+##  returns <K>true</K> without doing anything else.
 ##  <P/>
 ##  If the optional argument <A>banner</A> is present then it must be either
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
-##  After a package has been loaded its code and documentation should be
-##  available as other parts of the &GAP; library are.
+##  After a package has been loaded, all its code and documentation becomes 
+##  available to use with the rest of the &GAP; library.
 ##  <P/>
-##  When &GAP; is started then some packages are loaded automatically.
-##  These are the packages listed in
-##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> and
-##  (if this is not disabled, see below)
-##  <C>UserPreference( "PackagesToLoad" )</C>.
 ##  <P/>
-##  A &GAP; package may also install only its documentation automatically
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+DeclareGlobalFunction( "LoadPackage" );
+
+##  <#GAPDoc Label="LoadPackageAutomatic">
+##  <Subsection Label="LoadPackageAutomatic">
+##  <Heading>Automatic loading of &GAP; packages</Heading> 
+##  When &GAP; is started some packages are loaded automatically,  
+##  and these belong to two categories. 
+##  The first are those packages which are needed to start &GAP; 
+##  (at the present time, the only such package is &GAPDoc;).  
+##  Their list is contained in 
+##  <C>GAPInfo.Dependencies.NeededOtherPackages</C>. 
+##  The second are packages which are loaded during &GAP; startup by default. 
+##  The latter list may be obtained by calling 
+##  <C>UserPreference("PackagesToLoad")</C> and is customisable as described 
+##  in Section <Ref BookName="ref" Sect="Configuring User preferences"/>.
+##  <P/>
+##  While &GAP; will not start if any of the packages from the former group 
+##  is missing, loading of the packages from the latter group may be 
+##  suppressed by using the <C>-A</C> command line option 
+##  (see <Ref Sect="Command Line Options" />).
+##  <P/>
+##  A &GAP; package may also automatically install just its documentation, 
 ##  but still need loading by <Ref Func="LoadPackage"/>.
 ##  In this situation the online
 ##  help displays <C>(not loaded)</C> in the header lines of the manual
 ##  pages belonging to this &GAP; package.
 ##  <P/>
 ##  If for some reason you don't want certain packages to be automatically
-##  loaded, &GAP; provides three levels for disabling autoloading:
+##  loaded, &GAP; provides three levels for disabling autoloading. 
 ##  <P/>
 ##  <Index Key="NOAUTO"><C>NOAUTO</C></Index>
 ##  The autoloading of specific packages can be overwritten <E>for the whole
@@ -779,25 +789,23 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  for example in the user's <F>gap.ini</F> file
 ##  (see&nbsp;<Ref Subsect="subsect:gap.ini file"/>).
 ##  <P/>
-##  Using the <C>-A</C> command line option when starting up &GAP;
+##  Using the <C>-A</C> command line option when starting &GAP;
 ##  (see&nbsp;<Ref Sect="Command Line Options"/>),
 ##  automatic loading of packages is switched off
 ##  <E>for this &GAP; session</E>.
 ##  <P/>
 ##  In any of the above three cases, the packages listed in
 ##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> are still loaded
-##  automatically, and an error is signalled if not all of these packages
-##  are available.
+##  automatically, and an error is signalled if any of these packages
+##  is unavailable.
 ##  <P/>
-##  See <Ref Func="SetPackagePath"/> for a possibility to force that a
-##  prescribed package version will be loaded.
-##  See also <Ref Func="ExtendRootDirectories"/> for a possibility to
-##  add directories containing packages after &GAP; has been started.
-##  </Description>
-##  </ManSection>
+##  See <Ref Func="SetPackagePath"/> for a way to force the loading of a
+##  prescribed package version.
+##  See also <Ref Func="ExtendRootDirectories"/> for a method of adding 
+##  directories containing packages <E>after</E> &GAP; has been started.
+##  </Subsection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "LoadPackage" );
 
 
 #############################################################################
@@ -825,6 +833,9 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  <Func Name="SetPackagePath" Arg='pkgname, pkgpath'/>
 ##
 ##  <Description>
+##  This function can be used to force &GAP; to load a particular version of
+##  a package, even though newer versions of the package are available.
+##  <P/>
 ##  Let <A>pkgname</A> and <A>pkgpath</A> be strings denoting the name of a
 ##  &GAP; package and the path to a directory where a version of this package
 ##  can be found (i.&nbsp;e., calling <Ref Func="Directory"/> with the
@@ -840,9 +851,6 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  contained in the <F>PackageInfo.g</F> file at <A>pkgpath</A> instead,
 ##  such that only the version installed at <A>pkgpath</A> can be loaded
 ##  with <Ref Func="LoadPackage"/>.
-##  <P/>
-##  This function can be used to force &GAP; to load a particular version of
-##  a package, although newer versions of the package might be available.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
