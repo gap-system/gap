@@ -855,8 +855,10 @@ void LoadPRec( Obj prec )
 static StructBagNames BagNames[] = {
   { T_PREC,                     "record (plain)"            },
   { T_PREC +IMMUTABLE,          "record (plain,imm)"        },
+#if !defined(USE_THREADSAFE_COPYING)
   { T_PREC            +COPYING, "record (plain,copied)"     },
   { T_PREC +IMMUTABLE +COPYING, "record (plain,imm,copied)" },
+#endif
   { -1,                         ""                          }
 };
 
@@ -888,8 +890,10 @@ static Int InitKernel (
 
     InitMarkFuncBags( T_PREC                     , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkAllSubBags );
+#if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
+#endif
 
     /* Immutable records are public                                        */
     MakeBagTypePublic( T_PREC +IMMUTABLE );

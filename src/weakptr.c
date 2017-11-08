@@ -833,17 +833,23 @@ static Int InitKernel (
 {
     /* install the marking and sweeping methods                            */
     InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
+#if !defined(USE_THREADSAFE_COPYING)
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
+#endif
 
 #ifdef BOEHM_GC
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
+  #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
+  #endif
 #else
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
+  #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
+  #endif
   #ifdef HPCGAP
     InitFreeFuncBag( T_WPOBJ, FinalizeWeakPointerObj );
     InitFreeFuncBag( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
