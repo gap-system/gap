@@ -948,6 +948,8 @@ Obj FuncIS_PLIST_REP (
 }
 
 
+#if !defined(USE_THREADSAFE_COPYING)
+
 /****************************************************************************
 **
 *F  CopyPlist( <list>, <mut> )  . . . . . . . . . . . . . . copy a plain list
@@ -1055,6 +1057,9 @@ void CleanPlistCopy (
     }
 
 }
+
+
+#endif // !defined(USE_THREADSAFE_COPYING)
 
 
 /****************************************************************************
@@ -3789,7 +3794,7 @@ static Int InitKernel (
         ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyPlist;
     }
 
-
+#if !defined(USE_THREADSAFE_COPYING)
     /* install the copy list methods                                       */
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyPlist;
@@ -3801,7 +3806,7 @@ static Int InitKernel (
         CleanObjFuncs[ t1            +COPYING ] = CleanPlistCopy;
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanPlistCopy;
     }
-
+#endif
 
     /* install the comparison methods                                      */
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {

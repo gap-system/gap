@@ -20,6 +20,11 @@
 #include <src/debug.h>
 #include <src/intobj.h>
 
+#ifdef HPCGAP
+#define USE_THREADSAFE_COPYING
+#endif
+
+
 /****************************************************************************
 **
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
@@ -566,8 +571,10 @@ extern Obj CopyObj (
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
 **  arguments that have side effects.
 */
+#if !defined(USE_THREADSAFE_COPYING)
 #define COPY_OBJ(obj,mut) \
                         ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
+#endif
 
 
 /****************************************************************************
@@ -580,9 +587,10 @@ extern Obj CopyObj (
 **  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
 **  arguments that have side effects.
 */
+#if !defined(USE_THREADSAFE_COPYING)
 #define CLEAN_OBJ(obj) \
                         ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-
+#endif
 
 
 /****************************************************************************
@@ -605,15 +613,18 @@ extern Obj CopyObj (
 **  then call 'CLEAN_OBJ'  for all subobjects recursively.  If called for an
 **  already unmarked object, it should simply return.
 */
+#if !defined(USE_THREADSAFE_COPYING)
 extern Obj (*CopyObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj, Int mut );
-
+#endif
 
 
 /****************************************************************************
 **
 *V  CleanObjFuncs[<type>] . . . . . . . . . . . . table of cleaning functions
 */
+#if !defined(USE_THREADSAFE_COPYING)
 extern void (*CleanObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj );
+#endif
 
 
 extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );

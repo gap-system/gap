@@ -1031,6 +1031,8 @@ Obj ShallowCopyARecord(Obj obj)
   return copy;
 }
 
+#if !defined(USE_THREADSAFE_COPYING)
+
 Obj CopyARecord(Obj obj, Int mutable)
 {
   return obj;
@@ -1048,6 +1050,9 @@ void CleanARecord(Obj obj)
 void CleanAList(Obj obj)
 {
 }
+
+#endif // !defined(USE_THREADSAFE_COPYING)
+
 
 static void UpdateThreadRecord(Obj record, Obj tlrecord)
 {
@@ -2020,8 +2025,10 @@ static Int InitKernel (
       ElmwListFuncs[type] = ElmAList;
       UnbListFuncs[type] = UnbAList;
       IsbListFuncs[type] = IsbAList;
+#if !defined(USE_THREADSAFE_COPYING)
       CopyObjFuncs[type] = CopyAList;
       CleanObjFuncs[type] = CleanAList;
+#endif
   }
 
   AssListFuncs[T_FIXALIST] = AssFixAList;
@@ -2033,13 +2040,17 @@ static Int InitKernel (
   ElmRecFuncs[ T_AREC ] = ElmARecord;
   IsbRecFuncs[ T_AREC ] = IsbARecord;
   AssRecFuncs[ T_AREC ] = AssARecord;
-  CopyObjFuncs[ T_AREC ] = CopyARecord;
   ShallowCopyObjFuncs[ T_AREC ] = ShallowCopyARecord;
+#if !defined(USE_THREADSAFE_COPYING)
+  CopyObjFuncs[ T_AREC ] = CopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
+#endif // !defined(USE_THREADSAFE_COPYING)
   IsRecFuncs[ T_AREC ] = AlwaysYes;
   UnbRecFuncs[ T_AREC ] = UnbARecord;
+#if !defined(USE_THREADSAFE_COPYING)
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
+#endif // !defined(USE_THREADSAFE_COPYING)
   IsRecFuncs[ T_ACOMOBJ ] = AlwaysNo;
   ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
@@ -2053,8 +2064,10 @@ static Int InitKernel (
   // Ensure that atomic objects cannot be copied
   for (UInt type = FIRST_ATOMIC_TNUM; type <= LAST_ATOMIC_TNUM; type++) {
       ShallowCopyObjFuncs[type] = AtomicErrorNoShallowCopy;
+#if !defined(USE_THREADSAFE_COPYING)
       CopyObjFuncs[type] = AtomicErrorNoCopy;
       // Do not error on CleanObj, just leave it as a no-op
+#endif // !defined(USE_THREADSAFE_COPYING)
   }
 
 

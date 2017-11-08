@@ -276,6 +276,8 @@ Obj DoCopyBlist(Obj list, Int mut)
   
 }
 
+#if !defined(USE_THREADSAFE_COPYING)
+
 Obj CopyBlistImm(Obj list, Int mut)
 {
     GAP_ASSERT(!IS_MUTABLE_OBJ(list));
@@ -306,12 +308,16 @@ Obj CopyBlist (
     return copy;
 }
 
+#endif // !defined(USE_THREADSAFE_COPYING)
+
+
 Obj ShallowCopyBlist ( Obj list)
 {
   return DoCopyBlist(list, 1);
 }
 
 
+#if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
 **
@@ -345,6 +351,8 @@ void CleanBlistCopy(Obj list)
     /* now it is cleaned */
     RetypeBag(list, TNUM_OBJ(list) - COPYING);
 }
+
+#endif // !defined(USE_THREADSAFE_COPYING)
 
 
 /****************************************************************************
@@ -2487,6 +2495,7 @@ static Int InitKernel (
 
     /* install the copy functions                                          */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
+#if !defined(USE_THREADSAFE_COPYING)
         CopyObjFuncs [ t1                     ] = CopyBlist;
         CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlistImm;
         CopyObjFuncs [ t1            +COPYING ] = CopyBlistCopy;
@@ -2495,6 +2504,7 @@ static Int InitKernel (
         CleanObjFuncs[ t1 +IMMUTABLE          ] = CleanBlist;
         CleanObjFuncs[ t1            +COPYING ] = CleanBlistCopy;
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
+#endif
         ShallowCopyObjFuncs[ t1               ] = ShallowCopyBlist;
         ShallowCopyObjFuncs[ t1 +IMMUTABLE    ] = ShallowCopyBlist;
     }

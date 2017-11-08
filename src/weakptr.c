@@ -568,6 +568,8 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 #endif
 
 
+#if !defined(USE_THREADSAFE_COPYING)
+
 /****************************************************************************
 **
 *F  CopyObjWPObj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
@@ -623,6 +625,9 @@ Obj CopyObjWPObj (
     return copy;
 }
 
+#endif // !defined(USE_THREADSAFE_COPYING)
+
+
 /****************************************************************************
 **
 *F  MakeImmutableWPObj( <obj> ) . . . . . . . . . . make immutable in place
@@ -663,6 +668,8 @@ void MakeImmutableWPObj( Obj obj )
   SET_PTR_BAG(obj, PTR_BAG(copy));
 #endif
 }
+
+#if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
 **
@@ -711,6 +718,9 @@ void CleanObjWPObjCopy (
     }
 
 }
+
+#endif //!defined(USE_THREADSAFE_COPYING)
+
 
 /****************************************************************************
 **
@@ -854,11 +864,13 @@ static Int InitKernel (
     // List functions
     ElmDefListFuncs[T_WPOBJ] = ElmDefWPList;
 
+#if !defined(USE_THREADSAFE_COPYING)
     /* copying functions                                                   */
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
     CopyObjFuncs[  T_WPOBJ + COPYING ] = CopyObjWPObjCopy;
     CleanObjFuncs[ T_WPOBJ           ] = CleanObjWPObj;
     CleanObjFuncs[ T_WPOBJ + COPYING ] = CleanObjWPObjCopy;
+#endif
 
     MakeImmutableObjFuncs[ T_WPOBJ ] = MakeImmutableWPObj;
     /* return success                                                      */
