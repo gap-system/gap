@@ -2343,11 +2343,7 @@ InstallMethod( ExteriorPower,
 
     combs:= Combinations( [1..Dimension(V)], n );
     gens:= List( combs, x -> Basis(V){x} );
-    if gens = [ ]  then
-        gens[1] :=  ObjByExtRep( fam, [ [] , Zero(F) ] );
-    else
-        gens:= List( gens, x -> ObjByExtRep( fam, [ x , One(F) ] ) );
-    fi;
+    gens:= List( gens, x -> ObjByExtRep( fam, [ x , One(F) ] ) );
     
     for i in [1..Length(gens)] do
         gens[i]![2]:= true;
@@ -2357,7 +2353,11 @@ InstallMethod( ExteriorPower,
     
     # we know a basis of VT:
     
-    VT:= VectorSpace( F, gens );
+    if gens = [ ]  then
+        VT := VectorSpace( F, [ ObjByExtRep( fam, [] ) ] );
+    else
+        VT:= VectorSpace( F, gens );
+    fi;
     BT:= BasisOfMonomialSpace( VT, gens );
     BT!.echelonBasis:= gens;
     BT!.baseChange:= List( [ 1..Length(gens)], x -> [ [ x, One(F) ] ] );
