@@ -142,7 +142,6 @@ Obj ENVI_FUNC(Obj);
 ObjFunc HDLR_FUNC(Obj, UInt);
 Obj CURR_FUNC();
 Char *CSTR_STRING(Obj);
-ThreadLocalStorage *realTLS();
 """)
 
 emit("")

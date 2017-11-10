@@ -1791,9 +1791,9 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 #ifdef HPCGAP
     Region *ds1 = REGION(obj1);
     Region *ds2 = REGION(obj2);
-    if (!ds1 || ds1->owner != realTLS)
+    if (!ds1 || ds1->owner != GetTLS())
         ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
-    if (!ds2 || ds2->owner != realTLS)
+    if (!ds2 || ds2->owner != GetTLS())
         ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
     REGION(obj1) = ds2;
@@ -1836,9 +1836,9 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     ptr2 = PTR_BAG(obj2);
     ds1 = REGION(obj1);
     ds2 = REGION(obj2);
-    if (ds1 && ds1->owner != realTLS)
+    if (ds1 && ds1->owner != GetTLS())
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
-    if (ds2 && ds2->owner != realTLS)
+    if (ds2 && ds2->owner != GetTLS())
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     REGION(obj2) = ds1;
     SET_PTR_BAG(obj2, ptr1);
