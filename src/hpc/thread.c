@@ -187,15 +187,6 @@ static NOINLINE void SetupTLS(void)
     TLS(threadID) = 0;
 }
 
-Obj NewThreadObject(UInt id)
-{
-    Obj result = NewBag(T_THREAD, 3 * sizeof(UInt));
-    ADDR_OBJ(result)[0] = (Bag)0;
-    ADDR_OBJ(result)[1] = (Bag)id;
-    ADDR_OBJ(result)[2] = (Bag)0;
-    return result;
-}
-
 void InitMainThread(void)
 {
     TLS(threadObject) = NewThreadObject(0);
@@ -327,11 +318,13 @@ void * DispatchThread(void * arg)
     SetRegionName(region, this_thread->region_name);
     TLS(threadObject) = this_thread->thread_object;
     pthread_mutex_lock(this_thread->lock);
-    *(ThreadLocalStorage **)(ADDR_OBJ(TLS(threadObject))) = GetTLS();
+
+    ThreadObject *thread = (ThreadObject *)ADDR_OBJ(TLS(threadObject));
+    thread->tls = GetTLS();
     pthread_cond_broadcast(this_thread->cond);
     pthread_mutex_unlock(this_thread->lock);
     this_thread->start(this_thread->arg);
-    *(UInt *)(ADDR_OBJ(TLS(threadObject)) + 2) |= THREAD_TERMINATED;
+    thread->status |= THREAD_TERMINATED;
     region->fixed_owner = 0;
     RegionWriteUnlock(region);
     DestroyGAPState(ActiveGAPState());
@@ -448,17 +441,6 @@ int JoinThread(int id)
 #endif
     return 1;
 }
-
-Int ThreadID(Obj thread)
-{
-    return *(UInt *)(ADDR_OBJ(thread) + 1);
-}
-
-void * ThreadTLS(Obj thread)
-{
-    return *(ThreadLocalStorage **)(ADDR_OBJ(thread) + 1);
-}
-
 
 static UInt LockID(void * object)
 {
