@@ -42,7 +42,7 @@ static ALWAYS_INLINE Bag WriteGuard(Bag bag)
   if (!IS_BAG_REF(bag))
     return bag;
   region = REGION(bag);
-  if (region && region->owner != realTLS && region->alt_owner != realTLS)
+  if (region && region->owner != GetTLS() && region->alt_owner != GetTLS())
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -62,7 +62,7 @@ static inline int CheckWriteAccess(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = REGION(bag);
-  return !(region && region->owner != realTLS && region->alt_owner != realTLS)
+  return !(region && region->owner != GetTLS() && region->alt_owner != GetTLS())
     || TLS(DisableGuards) >= 2;
 }
 
@@ -74,7 +74,7 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   region = REGION(bag);
   if (!region)
     return 0;
-  return region->owner == realTLS || region->alt_owner == realTLS
+  return region->owner == GetTLS() || region->alt_owner == GetTLS()
     || TLS(DisableGuards) >= 2;
 }
 
@@ -90,8 +90,8 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
   if (!IS_BAG_REF(bag))
     return bag;
   region = REGION(bag);
-  if (region && region->owner != realTLS &&
-      !region->readers[TLS(threadID)] && region->alt_owner != realTLS)
+  if (region && region->owner != GetTLS() &&
+      !region->readers[TLS(threadID)] && region->alt_owner != GetTLS())
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -113,8 +113,8 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = REGION(bag);
-  return !(region && region->owner != realTLS &&
-    !region->readers[TLS(threadID)] && region->alt_owner != realTLS)
+  return !(region && region->owner != GetTLS() &&
+    !region->readers[TLS(threadID)] && region->alt_owner != GetTLS())
     || TLS(DisableGuards) >= 2;
 }
 

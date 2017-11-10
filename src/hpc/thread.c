@@ -165,7 +165,7 @@ void RemoveGCRoots(void)
 
 static NOINLINE void GrowStack(void)
 {
-    char * tls = (char *)realTLS;
+    char * tls = (char *)GetTLS();
     size_t pagesize = getpagesize();
     /* p needs to be a volatile pointer so that the memory writes are not
      * removed by the optimizer */
@@ -184,7 +184,7 @@ static NOINLINE void SetupTLS(void)
     GrowStack();
 #endif
     InitializeTLS();
-    MainThreadTLS = realTLS;
+    MainThreadTLS = GetTLS();
     TLS(threadID) = 0;
 }
 
@@ -272,7 +272,7 @@ static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
     thread_data[0].lock = TLS(threadLock);
     thread_data[0].cond = TLS(threadSignal);
     thread_data[0].state = TSTATE_RUNNING;
-    thread_data[0].tls = realTLS;
+    thread_data[0].tls = GetTLS();
     InitSignals();
     if (sySetjmp(TLS(threadExit)))
         exit(0);
@@ -328,7 +328,7 @@ void * DispatchThread(void * arg)
     SetRegionName(region, this_thread->region_name);
     TLS(threadObject) = this_thread->thread_object;
     pthread_mutex_lock(this_thread->lock);
-    *(ThreadLocalStorage **)(ADDR_OBJ(TLS(threadObject))) = realTLS;
+    *(ThreadLocalStorage **)(ADDR_OBJ(TLS(threadObject))) = GetTLS();
     pthread_cond_broadcast(this_thread->cond);
     pthread_mutex_unlock(this_thread->lock);
     this_thread->start(this_thread->arg);
@@ -513,7 +513,7 @@ void HashUnlockShared(void * object)
 void RegionWriteLock(Region * region)
 {
     int result = 0;
-    assert(region->owner != realTLS);
+    assert(region->owner != GetTLS());
 
     if (region->count_active || TLS(CountActive)) {
         result = !pthread_rwlock_trywrlock(region->lock);
@@ -536,13 +536,13 @@ void RegionWriteLock(Region * region)
         pthread_rwlock_wrlock(region->lock);
     }
 
-    region->owner = realTLS;
+    region->owner = GetTLS();
 }
 
 int RegionTryWriteLock(Region * region)
 {
     int result;
-    assert(region->owner != realTLS);
+    assert(region->owner != GetTLS());
     result = !pthread_rwlock_trywrlock(region->lock);
 
     if (result) {
@@ -550,7 +550,7 @@ int RegionTryWriteLock(Region * region)
             region->locks_acquired++;
         if (TLS(CountActive))
             TLS(LocksAcquired)++;
-        region->owner = realTLS;
+        region->owner = GetTLS();
     }
     else {
         if (region->count_active)
@@ -563,7 +563,7 @@ int RegionTryWriteLock(Region * region)
 
 void RegionWriteUnlock(Region * region)
 {
-    assert(region->owner == realTLS);
+    assert(region->owner == GetTLS());
     region->owner = NULL;
     pthread_rwlock_unlock(region->lock);
 }
@@ -571,7 +571,7 @@ void RegionWriteUnlock(Region * region)
 void RegionReadLock(Region * region)
 {
     int result = 0;
-    assert(region->owner != realTLS);
+    assert(region->owner != GetTLS());
     assert(region->readers[TLS(threadID)] == 0);
 
     if (region->count_active || TLS(CountActive)) {
@@ -600,7 +600,7 @@ void RegionReadLock(Region * region)
 int RegionTryReadLock(Region * region)
 {
     int result = !pthread_rwlock_rdlock(region->lock);
-    assert(region->owner != realTLS);
+    assert(region->owner != GetTLS());
     assert(region->readers[TLS(threadID)] == 0);
 
     if (result) {
@@ -628,8 +628,8 @@ void RegionReadUnlock(Region * region)
 
 void RegionUnlock(Region * region)
 {
-    assert(region->owner == realTLS || region->readers[TLS(threadID)]);
-    if (region->owner == realTLS)
+    assert(region->owner == GetTLS() || region->readers[TLS(threadID)]);
+    if (region->owner == GetTLS())
         region->owner = NULL;
     region->readers[TLS(threadID)] = 0;
     pthread_rwlock_unlock(region->lock);
@@ -639,7 +639,7 @@ int IsLocked(Region * region)
 {
     if (!region)
         return 0; /* public region */
-    if (region->owner == realTLS)
+    if (region->owner == GetTLS())
         return 1;
     if (region->readers[TLS(threadID)])
         return 2;

@@ -200,20 +200,20 @@ void UnlockMonitor(Monitor * monitor)
 void WaitForMonitor(Monitor * monitor)
 {
     struct WaitList node;
-    node.thread = realTLS;
+    node.thread = GetTLS();
     AddWaitList(monitor, &node);
     UnlockMonitor(monitor);
-    LockThread(realTLS);
+    LockThread(GetTLS());
     while (!TLS(acquiredMonitor))
         WaitThreadSignal();
     if (!TryLockMonitor(monitor)) {
-        UnlockThread(realTLS);
+        UnlockThread(GetTLS());
         LockMonitor(monitor);
-        LockThread(realTLS);
+        LockThread(GetTLS());
     }
     TLS(acquiredMonitor) = NULL;
     RemoveWaitList(monitor, &node);
-    UnlockThread(realTLS);
+    UnlockThread(GetTLS());
 }
 
 static int MonitorOrder(const void * r1, const void * r2)
@@ -291,16 +291,16 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
     assert(MonitorsAreSorted(count, monitors));
     nodes = alloca(sizeof(struct WaitList) * count);
     for (i = 0; i < count; i++)
-        nodes[i].thread = realTLS;
+        nodes[i].thread = GetTLS();
     for (i = 0; i < count; i++)
         AddWaitList(monitors[i], &nodes[i]);
     for (i = 0; i < count; i++)
         UnlockMonitor(monitors[i]);
-    LockThread(realTLS);
+    LockThread(GetTLS());
     while (!TLS(acquiredMonitor))
         WaitThreadSignal();
     monitor = TLS(acquiredMonitor);
-    UnlockThread(realTLS);
+    UnlockThread(GetTLS());
 
     // The following loops will initialize <result>, but the compiler
     // cannot know this; to avoid warnings, we set result to an
@@ -318,9 +318,9 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
             UnlockMonitor(monitors[i]);
         }
     }
-    LockThread(realTLS);
+    LockThread(GetTLS());
     TLS(acquiredMonitor) = NULL;
-    UnlockThread(realTLS);
+    UnlockThread(GetTLS());
     return result;
 }
 
@@ -710,7 +710,7 @@ Obj FuncIsPublic(Obj self, Obj obj)
 Obj FuncIsThreadLocal(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
-    return (region && region->fixed_owner && region->owner == realTLS)
+    return (region && region->fixed_owner && region->owner == GetTLS())
                ? True
                : False;
 }
@@ -725,7 +725,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (region != NULL &&
-        (region->owner == realTLS || region->alt_owner == realTLS))
+        (region->owner == GetTLS() || region->alt_owner == GetTLS()))
         return True;
     else
         return False;
@@ -1051,7 +1051,7 @@ static void AddToChannel(Channel * channel, Obj obj, int migrate)
     Region * region = REGION(channel->queue);
     UInt     i, len;
     if (migrate && IS_BAG_REF(obj) && REGION(obj) &&
-        REGION(obj)->owner == realTLS && REGION(obj)->fixed_owner) {
+        REGION(obj)->owner == GetTLS() && REGION(obj)->fixed_owner) {
         children = ReachableObjectsFrom(obj);
         len = children ? LEN_PLIST(children) : 0;
     }
@@ -2112,12 +2112,12 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
 {
     int i;
     if (count && retype && IS_BAG_REF(objects[0]) &&
-        REGION(objects[0])->owner == realTLS && AutoRetyping) {
+        REGION(objects[0])->owner == GetTLS() && AutoRetyping) {
         for (i = 0; i < count; i++)
-            if (REGION(objects[i])->owner == realTLS)
+            if (REGION(objects[i])->owner == GetTLS())
                 CLEAR_OBJ_FLAG(objects[i], TESTED);
         for (i = 0; i < count; i++) {
-            if (REGION(objects[i])->owner == realTLS &&
+            if (REGION(objects[i])->owner == GetTLS() &&
                 IS_PLIST(objects[i])) {
                 if (!TEST_OBJ_FLAG(objects[i], TESTED))
                     TYPE_OBJ(objects[i]);
@@ -2130,7 +2130,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
         Region * region;
         if (IS_BAG_REF(objects[i])) {
             region = (Region *)(REGION(objects[i]));
-            if (!region || region->owner != realTLS)
+            if (!region || region->owner != GetTLS())
                 return 0;
         }
     }

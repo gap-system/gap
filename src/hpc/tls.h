@@ -44,15 +44,8 @@ typedef struct ThreadLocalStorage
 extern ThreadLocalStorage *MainThreadTLS;
 
 #ifdef HAVE_NATIVE_TLS
-
 extern __thread ThreadLocalStorage *TLSInstance;
-
-static inline ThreadLocalStorage *GetTLS(void)
-{
-    return TLSInstance;
-}
-
-#else
+#endif
 
 #if defined(VERBOSE_GUARDS)
 static inline ThreadLocalStorage *GetTLS(void)
@@ -60,26 +53,22 @@ static inline ThreadLocalStorage *GetTLS(void)
 static ALWAYS_INLINE ThreadLocalStorage *GetTLS(void)
 #endif
 {
-  void *stack;
-#ifdef __GNUC__
-  stack = __builtin_frame_address(0);
+#ifdef HAVE_NATIVE_TLS
+    return TLSInstance;
 #else
-  int dummy[1];
-  stack = dummy;
+    void *stack;
+  #ifdef __GNUC__
+    stack = __builtin_frame_address(0);
+  #else
+    int dummy[1];
+    stack = dummy;
+  #endif
+    return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);
 #endif
-  return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);
 }
 
-
-#endif /* HAVE_NATIVE_TLS */
-
-
-// TODO: get rid of realTLS
-#define realTLS (GetTLS())
-
+// Convenience helper for accessing TLS members
 #define TLS(x) GetTLS()->x
-
-
 
 static inline int IsMainThread(void)
 {
