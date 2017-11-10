@@ -51,10 +51,22 @@ function(cong)
     SetOne(Q, One(S)^QuotientSemigroupHomomorphism(Q));
   fi;
 
-  if HasGeneratorsOfSemigroup(S) then
-    Qgens:= List( GeneratorsOfSemigroup( S ),
-     s -> s^QuotientSemigroupHomomorphism(Q));
-    SetGeneratorsOfSemigroup( Q, Qgens );
+  # Set the semigroup generators of the quotient if possible.
+  #
+  # It is not sufficient to check HasGeneratorsOfSemigroup
+  # by itself, because groups for example only have
+  # GeneratorsOfMagmaWithInverses.
+  #
+  # The code below is safe, because GeneratorsOfSemigroup
+  # is synonymous with GeneratorsOfMagma, and there is a
+  # method for GeneratorsOfMagma, if we know
+  # GeneratorsOfMagmaWithInverses.
+  if HasGeneratorsOfMagma(S) or
+     HasGeneratorsOfMagmaWithInverses(S) or 
+     HasGeneratorsOfSemigroup(S) then
+      Qgens := List( GeneratorsOfSemigroup(S),
+                     s -> s^QuotientSemigroupHomomorphism(Q));
+      SetGeneratorsOfSemigroup( Q, Qgens );
   fi;
 
   return QuotientSemigroupHomomorphism(Q);
