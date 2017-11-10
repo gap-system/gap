@@ -43,7 +43,7 @@ static inline void SET_VAL_MACFLOAT(Obj obj, Double val)
     memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
 }
 
-static inline  Int IS_MACFLOAT(Obj obj)
+static inline BOOL IS_MACFLOAT(Obj obj)
 {
     return TNUM_OBJ(obj) == T_MACFLOAT;
 }

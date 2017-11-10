@@ -48,7 +48,7 @@ a
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-static inline Int IS_INTOBJ(Obj o)
+static inline BOOL IS_INTOBJ(Obj o)
 {
     return (Int)o & 0x01;
 }
@@ -61,7 +61,7 @@ static inline Int IS_INTOBJ(Obj o)
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-static inline Int IS_POS_INTOBJ(Obj o)
+static inline BOOL IS_POS_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
@@ -73,7 +73,7 @@ static inline Int IS_POS_INTOBJ(Obj o)
 **  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a non-negative integer, and 0 otherwise.
 */
-static inline Int IS_NONNEG_INTOBJ(Obj o)
+static inline BOOL IS_NONNEG_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0);
 }

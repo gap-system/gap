@@ -250,7 +250,7 @@ static Obj DeserializeBinary(UInt tnum)
     return result;
 }
 
-static inline int IsBasicObj(Obj obj)
+static inline BOOL IsBasicObj(Obj obj)
 {
     // FIXME: hard coding T_MACFLOAT like this seems like a bad idea
     return !obj || TNUM_OBJ(obj) <= T_MACFLOAT;

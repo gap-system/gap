@@ -187,10 +187,9 @@ extern void MakeThreadLocalVar (
     UInt		rnam );
 #endif
 
-extern Int IsReadOnlyGVar (
-    UInt                gvar );
+extern BOOL IsReadOnlyGVar(UInt gvar);
 
-extern Int IsConstantGVar(UInt gvar);
+extern BOOL IsConstantGVar(UInt gvar);
 
 
 /****************************************************************************

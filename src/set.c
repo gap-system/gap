@@ -50,8 +50,7 @@
 ** 
 */
 
-Int IsSet ( 
-    Obj                 list )
+BOOL IsSet(Obj list)
 {
     Int                 isSet;          /* result                          */
 

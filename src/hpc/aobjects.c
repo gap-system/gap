@@ -944,7 +944,7 @@ void UnbARecord(Obj record, UInt rnam) {
    SetARecordField(record, rnam, Undefined);
 }
 
-Int IsbARecord(Obj record, UInt rnam)
+BOOL IsbARecord(Obj record, UInt rnam)
 {
   return GetARecordField(record, rnam) != (Obj) 0;
 }
@@ -1106,7 +1106,7 @@ void UnbTLRecord(Obj record, UInt rnam)
 }
 
 
-Int IsbTLRecord(Obj record, UInt rnam)
+BOOL IsbTLRecord(Obj record, UInt rnam)
 {
   return GetTLRecordField(record, rnam) != (Obj) 0;
 }
@@ -1335,7 +1335,8 @@ Obj ElmAList(Obj list, Int pos)
   }
 }
 
-Int IsbAList(Obj list, Int pos) {
+BOOL IsbAList(Obj list, Int pos)
+{
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();

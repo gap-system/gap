@@ -404,9 +404,7 @@ Int LenBlist (
 **
 **  'IsbBlist' is the function in 'IsbListFuncs' for boolean lists.
 */
-Int IsbBlist (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbBlist(Obj list, Int pos)
 {
     return (pos <= LEN_BLIST(list));
 }
@@ -903,8 +901,7 @@ void PlainBlist (
 **  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
 **  boolean list is a positions list if and only if it is empty.
 */
-Int IsPossBlist (
-    Obj                 list )
+BOOL IsPossBlist(Obj list)
 {
     return LEN_BLIST(list) == 0;
 }
@@ -914,8 +911,7 @@ Int IsPossBlist (
 **
 *F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
 */
-Int IsHomogBlist (
-    Obj                 list )
+BOOL IsHomogBlist(Obj list)
 {
     return (0 < LEN_BLIST(list));
 }
@@ -925,8 +921,7 @@ Int IsHomogBlist (
 **
 *F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
 */
-Int IsSSortBlist (
-    Obj                 list )
+BOOL IsSSortBlist(Obj list)
 {
     Int                 isSort;
 
@@ -993,8 +988,7 @@ void ConvBlist (
 **  list that   has no holes  and contains  only  'true' and  'false',  and 0
 **  otherwise.
 */
-Int IsBlist (
-    Obj                 list )
+BOOL IsBlist(Obj list)
 {
     UInt                isBlist;        /* result of the test              */
     Int                 len;            /* logical length of the list      */
@@ -1041,8 +1035,7 @@ Int IsBlist (
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
-Int IsBlistConv (
-    Obj                 list )
+BOOL IsBlistConv(Obj list)
 {
     UInt                isBlist;        /* result of the test              */
     Int                 len;            /* logical length of the list      */

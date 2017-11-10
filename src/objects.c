@@ -184,12 +184,11 @@ Obj FuncSET_TYPE_OBJ (
 **
 **  'IS_MUTABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj IsMutableObjFilt;
 
-Int IsMutableObjError (
-    Obj                 obj )
+BOOL IsMutableObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to test mutability of unsupported type '%s'",
@@ -197,8 +196,7 @@ Int IsMutableObjError (
     return 0;
 }
 
-Int IsMutableObjObject (
-    Obj                 obj )
+BOOL IsMutableObjObject(Obj obj)
 {
 #ifdef HPCGAP
     if (RegionBag(obj) == ReadOnlyRegion)
@@ -237,7 +235,8 @@ Obj IsInternallyMutableObjHandler (
       DoFilter( IsInternallyMutableObjFilt, obj) == True) ? True : False;
 }
 
-Int IsInternallyMutableObj(Obj obj) {
+BOOL IsInternallyMutableObj(Obj obj)
+{
     return TNUM_OBJ(obj) == T_DATOBJ &&
       RegionBag(obj) != ReadOnlyRegion &&
       DoFilter( IsInternallyMutableObjFilt, obj) == True;
@@ -255,12 +254,11 @@ Int IsInternallyMutableObj(Obj obj) {
 **
 **  'IS_COPYABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj IsCopyableObjFilt;
 
-Int IsCopyableObjError (
-    Obj                 obj )
+BOOL IsCopyableObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to test copyability of unsupported type '%s'",
@@ -268,8 +266,7 @@ Int IsCopyableObjError (
     return 0L;
 }
 
-Int IsCopyableObjObject (
-    Obj                 obj )
+BOOL IsCopyableObjObject(Obj obj)
 {
     return (DoFilter( IsCopyableObjFilt, obj ) == True);
 }
@@ -894,16 +891,16 @@ Obj FuncMakeImmutable( Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline UInt IS_ON_PRINT_STACK( Obj obj )
+static inline BOOL IS_ON_PRINT_STACK(Obj obj)
 {
   UInt i;
   if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj)
         && TNUM_OBJ(obj) <= LAST_LIST_TNUM))
-    return 0;
+      return FALSE;
   for (i = 0; i < STATE(PrintObjDepth)-1; i++)
     if (MODULE_STATE(Objects).PrintObjThiss[i] == obj)
-      return 1;
-  return 0;
+        return TRUE;
+  return FALSE;
 }
 
 #ifdef HPCGAP

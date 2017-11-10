@@ -45,7 +45,7 @@
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-static inline Int IS_FFE(Obj o)
+static inline BOOL IS_FFE(Obj o)
 {
     return (Int)o & 0x02;
 }
@@ -514,7 +514,7 @@ extern void CheckedMakeImmutable( Obj obj );
 #define IS_MUTABLE_OBJ(obj) \
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 /****************************************************************************
 **
@@ -527,7 +527,7 @@ extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 */
 
 #ifdef HPCGAP
-extern Int IsInternallyMutableObj(Obj obj);
+extern BOOL IsInternallyMutableObj(Obj obj);
 #endif
 
 /****************************************************************************
@@ -579,7 +579,7 @@ extern void LoadObjError( Obj obj );
 #define IS_COPYABLE_OBJ(obj) \
                         ((IsCopyableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 
 /****************************************************************************

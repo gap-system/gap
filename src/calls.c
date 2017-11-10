@@ -1916,7 +1916,7 @@ Obj FuncIsKernelFunction(Obj self, Obj func)
     return IsKernelFunction(func) ? True : False;
 }
 
-Int IsKernelFunction(Obj func)
+BOOL IsKernelFunction(Obj func)
 {
     GAP_ASSERT(IS_FUNC(func));
     return (BODY_FUNC(func) == 0) ||

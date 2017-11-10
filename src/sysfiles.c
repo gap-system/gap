@@ -81,7 +81,7 @@ typedef void sig_handler_t ( int );
 #endif
 
 #ifdef SYS_IS_DARWIN
-#include <mach-o/dyld.h>
+// #include <mach-o/dyld.h>
 #endif
 
 

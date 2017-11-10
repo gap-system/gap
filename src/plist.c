@@ -1165,16 +1165,12 @@ Int             LenPlistEmpty (
 **  and 0 otherwise.  It is the responsibility of the caller to  ensure  that
 **  <pos> is a positive integer.
 */
-Int             IsbPlist (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbPlist(Obj list, Int pos)
 {
     return (pos <= LEN_PLIST( list ) && ELM_PLIST( list, pos ) != 0);
 }
 
-Int             IsbPlistDense (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbPlistDense(Obj list, Int pos)
 {
     return (pos <= LEN_PLIST( list ));
 }
@@ -2122,8 +2118,7 @@ void            AsssPlistImm (
 **
 **  'IsDensePlist' is the function in 'IsDenseListFuncs' for plain lists.
 */
-Int             IsDensePlist (
-    Obj                 list )
+BOOL IsDensePlist(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Int                 i;              /* loop variable                   */
@@ -2160,8 +2155,7 @@ Int             IsDensePlist (
 **
 **  'IsHomogPlist' is the function in 'IsHomogListFuncs' for plain lists.
 */
-Int             IsHomogPlist (
-    Obj                 list )
+BOOL IsHomogPlist(Obj list)
 {
     Int                 tnum;
     tnum = KTNumPlist( list, (Obj *)0 );
@@ -2178,8 +2172,7 @@ Int             IsHomogPlist (
 **
 **  'IsTablePlist' is the function in 'IsTableListFuncs' for plain lists.
 */
-Int             IsTablePlist (
-    Obj                 list )
+BOOL IsTablePlist(Obj list)
 {
     Int                 tnum;
     tnum = KTNumPlist( list, (Obj *)0 );
@@ -2197,8 +2190,7 @@ Int             IsTablePlist (
 **  'IsSSortPlist' is the function in 'IsSSortListFuncs' for plain lists.
 */
 
-Int             IsSSortPlist (
-    Obj                 list )
+BOOL IsSSortPlist(Obj list)
 {
     Int                 lenList;
     Obj elm1;
@@ -2285,8 +2277,7 @@ Int             IsSSortPlist (
     return 0L;
 }
 
-Int             IsSSortPlistDense (
-    Obj                 list )
+BOOL IsSSortPlistDense(Obj list)
 {
     Int                 lenList;
     Obj elm1;
@@ -2356,8 +2347,7 @@ Int             IsSSortPlistDense (
 
 }
 
-Int             IsSSortPlistHom (
-    Obj                 list )
+BOOL IsSSortPlistHom(Obj list)
 {
     Int                 lenList;
     Obj elm1;
@@ -2421,8 +2411,7 @@ Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 **
 **  'IsPossPlist' is the function in 'IsPossListFuncs' for plain lists.
 */
-Int             IsPossPlist (
-    Obj                 list )
+BOOL IsPossPlist(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */

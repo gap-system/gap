@@ -75,7 +75,7 @@ extern  UInt            RNamObj (
 */
 #define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 
-extern  Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 
 /****************************************************************************
@@ -109,7 +109,7 @@ extern  Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 #define ISB_REC(rec,rnam) \
                         ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
-extern  Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
+extern BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
 
 /****************************************************************************

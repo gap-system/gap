@@ -69,7 +69,7 @@
 *F  IS_LVARS_OR_HVARS()
 **
 */
-static inline int IS_LVARS_OR_HVARS(Obj obj)
+static inline BOOL IS_LVARS_OR_HVARS(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_LVARS || tnum == T_HVARS;

@@ -1023,7 +1023,7 @@ Obj ZeroVecFFE( Obj vec )
     return res;
 }
 
-UInt IsVecFFE(Obj vec)
+BOOL IsVecFFE(Obj vec)
 {
     UInt tn;
     tn = TNUM_OBJ(vec);

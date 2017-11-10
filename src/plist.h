@@ -47,7 +47,7 @@ static inline Obj NEW_PLIST(UInt type, Int plen)
 **
 *F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
 */
-static inline Int IS_PLIST(Obj list)
+static inline BOOL IS_PLIST(Obj list)
 {
     return FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -66,7 +66,7 @@ static inline Int IS_PLIST(Obj list)
 **  (which have the same memory layout as plists), as the plist APIs using it
 **  for assertion checks are in practice invoked on such objects, too.
 */
-static inline Int IS_PLIST_OR_POSOBJ(Obj list)
+static inline BOOL IS_PLIST_OR_POSOBJ(Obj list)
 {
     UInt tnum = TNUM_OBJ(list);
 #if !defined(USE_THREADSAFE_COPYING)
@@ -216,7 +216,7 @@ static inline Obj * BASE_PTR_PLIST(Obj list)
 ** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST
 ** instead.
 */
-static inline Int IS_DENSE_PLIST(Obj list)
+static inline BOOL IS_DENSE_PLIST(Obj list)
 {
     return T_PLIST_DENSE <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -226,7 +226,7 @@ static inline Int IS_DENSE_PLIST(Obj list)
 **
 *F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-static inline Int IS_MUTABLE_PLIST(Obj list)
+static inline BOOL IS_MUTABLE_PLIST(Obj list)
 {
     return !((TNUM_OBJ(list) - T_PLIST) % 2);
 }

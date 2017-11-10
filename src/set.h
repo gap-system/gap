@@ -49,8 +49,7 @@ extern  Obj             SetList (
 **  to 'T_SET'.  If  it is not  then 'SetList' is  called to  make a copy  of
 **  'list', remove the holes, sort the copy, and remove the duplicates.
 */
-extern  Int             IsSet ( 
-            Obj                 list );
+extern BOOL IsSet(Obj list);
 
 
 /****************************************************************************
