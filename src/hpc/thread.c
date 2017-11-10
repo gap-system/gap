@@ -1,22 +1,18 @@
-#include <src/hpc/systhread.h>          /* system thread primitives */
 #include <src/system.h>
 #include <src/gapstate.h>
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/bool.h>
+
 #include <src/gvars.h>
-#include <src/scanner.h>
-#include <src/code.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
-#include <src/precord.h>
 #include <src/stats.h>
 #include <src/gap.h>
+#include <src/fibhash.h>
+
 #include <src/hpc/misc.h>
 #include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
-#include <src/fibhash.h>
+#include <src/hpc/systhread.h>          /* system thread primitives */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -104,7 +100,7 @@ void * AllocateTLS(void)
     void * result;
     size_t pagesize = getpagesize();
     size_t tlssize =
-        (sizeof(ThreadLocalStorage) + pagesize - 1) & ~(pagesize - 1);
+        (sizeof(GAPState) + pagesize - 1) & ~(pagesize - 1);
     addr = mmap(0, 2 * TLS_SIZE, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     result = (void *)((((uintptr_t)addr) + (TLS_SIZE - 1)) & TLS_MASK);
@@ -135,17 +131,17 @@ void FreeTLS(void * address)
 #ifndef DISABLE_GC
 void AddGCRoots(void)
 {
-    void * p = realTLS;
-    GC_add_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+    void * p = ActiveGAPState();
+    GC_add_roots(p, (char *)p + sizeof(GAPState));
 }
 
 void RemoveGCRoots(void)
 {
-    void * p = realTLS;
+    void * p = ActiveGAPState();
 #if defined(__CYGWIN__) || defined(__CYGWIN32__)
-    memset(p, '\0', sizeof(ThreadLocalStorage));
+    memset(p, '\0', sizeof(GAPState));
 #else
-    GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+    GC_remove_roots(p, (char *)p + sizeof(GAPState));
 #endif
 }
 #endif /* DISABLE_GC */
@@ -338,7 +334,7 @@ void * DispatchThread(void * arg)
     region->fixed_owner = 0;
     RegionWriteUnlock(region);
     DestroyTLS();
-    memset(realTLS, 0, sizeof(ThreadLocalStorage));
+    memset(ActiveGAPState(), 0, sizeof(GAPState));
 #ifndef DISABLE_GC
     RemoveGCRoots();
 #endif
@@ -352,9 +348,9 @@ Obj RunThread(void (*start)(void *), void * arg)
     ThreadData * result;
 #ifndef HAVE_NATIVE_TLS
     void * tls;
+    size_t         pagesize = getpagesize();
 #endif
     pthread_attr_t thread_attr;
-    size_t         pagesize = getpagesize();
     LockThreadControl(1);
     PreThreadCreation = 0;
     /* allocate a new thread id */
@@ -783,7 +779,7 @@ static void SetInterrupt(int threadID)
 {
     ThreadLocalStorage * tls = thread_data[threadID].tls;
     MEMBAR_FULL();
-    tls->state.CurrExecStatFuncs = IntrExecStatFuncs;
+    ((GAPState *)tls)->CurrExecStatFuncs = IntrExecStatFuncs;
 }
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState)
