@@ -4,15 +4,18 @@
 <Index>package</Index>
 The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;
 packages. 
-The &GAP; distribution contains, in the <F>&GAPDIRNAME;/pkg</F> 
-directory, all currently available &GAP; packages.
+The &GAP; distribution already contains all currently redistributed 
+&GAP; packages in the <F>&GAPDIRNAME;/pkg</F> directory.
 <P/>
-&GAP; packages are written by (groups  of) &GAP; users who may not
-be  members  of the  &GAP;  developer  team. The  responsibility  and
-copyright of a &GAP; package remains with the original author(s).
+&GAP; packages are written by (groups of) &GAP; users who may not
+necessarily be  members of the  &GAP; developer team. 
+The responsibility and copyright of a &GAP; package remains 
+with the original author(s).
 <P/>
 &GAP;  packages  have  their  own  documentation  which  is  smoothly
-integrated into the &GAP; help system.
+integrated into the &GAP; help system. 
+(When &GAP; is started, <C>LoadPackageDocumentation</C> is called 
+for all packages.) 
 <P/>
 All  &GAP;  users   who  develop  new  code  are   invited  to  share
 the  results  of their  efforts  with  other  &GAP; users  by  making
@@ -24,7 +27,7 @@ and in the &GAP; package <Package>Example</Package>
 <P/>
 The &GAP; development team will assist in making any new package 
 suitable for distribution with &GAP;.   
-It is possible to submit a package to a formal refereeing process.
+It is also possible to submit a package to a formal refereeing process.
 <P/>
 In this chapter we first describe how to use existing packages,
 and then provide guidelines for writing a &GAP; package.
@@ -36,7 +39,7 @@ and then provide guidelines for writing a &GAP; package.
 
 Before a  package can be  used it must  be installed. 
 A standard distribution of &GAP; already contains all the packages 
-currently available with &GAP;. 
+currently redistributed with &GAP;. 
 This set of packages has been checked for compatibility
 with the system and with each other during release preparation.  
 Most of the packages can be used immediately, but some of them may require further installation steps (see below). 
@@ -49,10 +52,12 @@ new capabilities or bug fixes that you need.
 A package consists of a collection  of files within a single directory
 that must  be a subdirectory of  the <F>pkg</F>  directory   in one  of the
 &GAP; root directories (see <Ref Sect="GAP Root Directories"/>). 
-If you don't have access  to the <F>pkg</F>  directory in your main  &GAP; installation you can add private root directories as explained in that section. 
+If you don't have access  to the <F>pkg</F>  directory in your main  &GAP; installation you can add private root directories as explained in section 
+<Ref Sect="GAP Root Directories"/>. 
 <P/>
-Whenever you download an  archive  of a  &GAP;  package, it will contain a 
-<F>README</F>  file  that explains how it should be installed.  
+Whenever you download or clone an archive of a &GAP; package, 
+it will contain a <F>README</F> file (or <F>README.md</F> etc.) 
+that explains how it should be installed.  
 Some packages just consist of &GAP; code and the installation is done by 
 unpacking the archive in one of the places described above.  
 There are  also packages  that need  further installation steps,  

@@ -716,7 +716,8 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  the package will only be loaded in a version number 
 ##  equal to or greater than <A>version</A> 
 ##  (see&nbsp;<Ref Func="CompareVersionNumbers"/>).
-##  If the first character is <C>=</C> then only that version will be loaded. 
+##  If the first character of <A>version</A> is <C>=</C> 
+##  then only that version will be loaded. 
 ##  <P/>
 ##  <Ref Func="LoadPackage"/> will return <K>true</K> if the package has been
 ##  successfully loaded, 
@@ -740,7 +741,7 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
-##  After a package has been loaded, all its code and documentation becomes 
+##  After a package has been loaded, all its code becomes 
 ##  available to use with the rest of the &GAP; library.
 ##  <P/>
 ##  <P/>
@@ -767,12 +768,6 @@ DeclareGlobalFunction( "LoadPackage" );
 ##  is missing, loading of the packages from the latter group may be 
 ##  suppressed by using the <C>-A</C> command line option 
 ##  (see <Ref Sect="Command Line Options" />).
-##  <P/>
-##  A &GAP; package may also automatically install just its documentation, 
-##  but still need loading by <Ref Func="LoadPackage"/>.
-##  In this situation the online
-##  help displays <C>(not loaded)</C> in the header lines of the manual
-##  pages belonging to this &GAP; package.
 ##  <P/>
 ##  If for some reason you don't want certain packages to be automatically
 ##  loaded, &GAP; provides three levels for disabling autoloading. 
