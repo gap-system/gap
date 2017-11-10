@@ -1582,6 +1582,26 @@ InstallOtherMethod( \/,
     0,
     FactorFreeGroupByRelators );
 
+InstallOtherMethod( \/,
+    "for fp groups and relators",
+    IsIdenticalObj,
+    [ IsFpGroup, IsCollection ],
+    0,
+    FactorGroupFpGroupByRels );
+
+InstallOtherMethod( \/,
+    "for free groups and a list of equations",
+    IsElmsColls,
+    [ IsFreeGroup, IsCollection ],
+    0,
+    {F, rels} -> FactorFreeGroupByRelators(F, List(rels, r -> r[1] / r[2]))); 
+
+InstallOtherMethod( \/,
+    "for fp groups and a list of equations",
+    IsElmsColls,
+    [ IsFpGroup, IsCollection ],
+    0,
+    {F, rels} -> FactorGroupFpGroupByRels(F, List(rels, r -> r[1] / r[2]))); 
 
 #############################################################################
 ##
@@ -1593,7 +1613,6 @@ InstallOtherMethod( \/,
     [ IsFreeGroup, IsEmpty ],
     0,
     FactorFreeGroupByRelators );
-
 
 #############################################################################
 ##
