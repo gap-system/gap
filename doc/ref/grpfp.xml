@@ -24,9 +24,15 @@ accordingly.
 <P/>
 So to create a finitely presented group you first have to generate a free
 group (see&nbsp;<Ref Func="FreeGroup" Label="for given rank"/> for details).
-Then a list of relators is constructed as words in the generators of the
-free group and is factored out to obtain the finitely presented group.
-Its generators <E>are</E> the images of the free generators.
+
+There are two ways to specify a quotient of the free group: either by giving
+a list of relators or by giving a list of equations.
+
+Relators are just words in the generators of the free group. Equations are 
+represented as pairs of words in the generators of the free group. 
+
+In either case the generators of the quotient are <E>the images</E> of the free
+generators under the canonical homomorphism from the free group onto the quotient.
 So for example to create the group
 <Display Mode="M">
 \langle a, b \mid a^2, b^3, (a b)^5 \rangle
@@ -35,6 +41,8 @@ you can use the following commands:
 <Example><![CDATA[
 gap> f := FreeGroup( "a", "b" );;
 gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
+<fp group on the generators [ a, b ]>
+gap> h := f / [ [f.1^2, f.1^0], [f.2^3, f.1^0], [(f.1*f.2)^4, f.2^-1*f.1^-1] ];
 <fp group on the generators [ a, b ]>
 ]]></Example>
 <P/>
@@ -119,16 +127,20 @@ See also <Ref Func="SetReducedMultiplication"/>.
 <ManSection>
 <Meth Name="\/" Arg="F, rels"
  Label="for a free group and a list of elements"/>
+<Meth Name="\/" Arg="F, eqns"
+ Label="for a free group and a list of pairs of elements"/>
 
 <Description>
 <Index Subkey="for finitely presented groups">quotient</Index>
 creates a finitely presented group given by the presentation
-<M>\langle gens \mid <A>rels</A> \rangle</M>
+<M>\langle gens \mid <A>rels</A> \rangle</M> or
+<M>\langle gens \mid <A>eqns</A> \rangle</M>, respectively
 where <M>gens</M> are the free generators of the free group <A>F</A>.
-Note that relations are entered as <E>relators</E>, i.e., as words in the
-generators of the free group.  To enter an equation use the quotient
-operator, i.e., for the relation <M>a^b = ab</M> one has to enter
-<M>a^b / (a b)</M>.
+Relations can be entered either as words or
+as pairs of words in the generators of <A>F</A>. In the former case
+we refer to the words given as <E>relators</E>, in the latter we
+refer to the pairs of words as <E>equations</E>.
+The two methods can currently not be mixed.
 <P/>
 The same result is obtained with the infix operator <C>/</C>,
 i.e., as <A>F</A> <C>/</C> <A>rels</A>.
@@ -136,6 +148,8 @@ i.e., as <A>F</A> <C>/</C> <A>rels</A>.
 <Example><![CDATA[
 gap> f := FreeGroup( 3 );;
 gap> f / [ f.1^4, f.2^3, f.3^5, f.1*f.2*f.3 ];
+<fp group on the generators [ f1, f2, f3 ]>
+gap> f / [ [ f.1^4, f.1^0 ], [ f.2^3, f.1^0 ], [ f.1, f.2^-1*f.3^-1 ] ];
 <fp group on the generators [ f1, f2, f3 ]>
 ]]></Example>
 </Description>
