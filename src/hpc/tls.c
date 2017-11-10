@@ -17,14 +17,3 @@ void InitializeTLS(void)
 #endif
     memset(ActiveGAPState(), 0, sizeof(GAPState));
 }
-
-void InitTLS(void)
-{
-    InitGAPState(ActiveGAPState());
-    TLS(CountActive) = 1;
-}
-
-void DestroyTLS(void)
-{
-    DestroyGAPState(ActiveGAPState());
-}

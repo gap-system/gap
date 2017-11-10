@@ -200,6 +200,7 @@ Obj NewThreadObject(UInt id)
 void InitMainThread(void)
 {
     TLS(threadObject) = NewThreadObject(0);
+    TLS(CountActive) = 1;
 }
 
 static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
@@ -310,7 +311,8 @@ void * DispatchThread(void * arg)
 #ifndef DISABLE_GC
     AddGCRoots();
 #endif
-    InitTLS();
+    InitGAPState(ActiveGAPState());
+    TLS(CountActive) = 1;
     TLS(currentRegion) = region = NewRegion();
     TLS(threadRegion) = TLS(currentRegion);
     TLS(threadLock) = this_thread->lock;
@@ -333,7 +335,7 @@ void * DispatchThread(void * arg)
     *(UInt *)(ADDR_OBJ(TLS(threadObject)) + 2) |= THREAD_TERMINATED;
     region->fixed_owner = 0;
     RegionWriteUnlock(region);
-    DestroyTLS();
+    DestroyGAPState(ActiveGAPState());
     memset(ActiveGAPState(), 0, sizeof(GAPState));
 #ifndef DISABLE_GC
     RemoveGCRoots();
