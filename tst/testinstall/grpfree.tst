@@ -58,6 +58,24 @@ gap> ForAll([0,1,2,3], n -> (n < 2) = IsSolvableGroup(DerivedSubgroup(FreeGroup(
 true
 
 #
+gap> F := FreeGroup(2);;
+gap> G := F / [ [ F.1^2, F.2^2 ] ];
+<fp group of size infinity on the generators [ f1, f2 ]>
+gap> H := G / [ G.1 ];
+<fp group on the generators [ f1, f2 ]>
+gap> rho := SemigroupCongruenceByGeneratingPairs(F, [[F.1, F.2]]);;
+gap> IsSemigroupCongruence(rho);
+true
+gap> Length(GeneratingPairsOfSemigroupCongruence(rho));
+1
+gap> G := F / rho;;
+gap> IsQuotientSemigroup(G);
+true
+gap> H / rho;
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `FactorSemigroup' on 2 arguments
+
+#
 gap> STOP_TEST( "grpfree.tst", 1);
 
 #############################################################################
