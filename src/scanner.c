@@ -113,12 +113,10 @@ Obj             EndLineHook = 0;
 **  'GET_CHAR' supports a single character pushback (via 'UNGET_CHAR').
 */
 
-static Char   Pushback = '\0';
-static Char * RealIn;
 
 static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
 {
-    return STATE(In) != &Pushback;
+    return STATE(In) != &STATE(Pushback);
 }
 
 // Forward declaration
@@ -126,8 +124,8 @@ Char GetLine(void);
 
 static inline void GET_CHAR(void)
 {
-    if (STATE(In) == &Pushback) {
-        STATE(In) = RealIn;
+    if (STATE(In) == &STATE(Pushback)) {
+        STATE(In) = STATE(RealIn);
     }
     else
         STATE(In)++;
@@ -138,9 +136,9 @@ static inline void GET_CHAR(void)
 static inline void UNGET_CHAR(Char c)
 {
     assert(IS_CHAR_PUSHBACK_EMPTY());
-    Pushback = c;
-    RealIn = STATE(In);
-    STATE(In) = &Pushback;
+    STATE(Pushback) = c;
+    STATE(RealIn) = STATE(In);
+    STATE(In) = &STATE(Pushback);
 }
 
 // Get current line position. In the case where we pushed back the last
@@ -148,9 +146,9 @@ static inline void UNGET_CHAR(Char c)
 // current line, as we cannot retrieve the previous line.
 static Int GetLinePosition(void)
 {
-    if (STATE(In) == &Pushback) {
+    if (STATE(In) == &STATE(Pushback)) {
         // Subtract 2 as a value was pushed back
-        Int pos = RealIn - STATE(Input)->line - 2;
+        Int pos = STATE(RealIn) - STATE(Input)->line - 2;
         if (pos < 0)
             pos = 0;
         return pos;
