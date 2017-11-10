@@ -3,6 +3,22 @@
 
 #include <pthread.h>
 
+
+enum ThreadObjectStatus {
+    THREAD_TERMINATED   = 1,
+    THREAD_JOINED       = 2,
+};
+
+// Memory layout of T_THREAD bags.
+typedef struct ThreadObject {
+    void *tls;
+    UInt id;
+    UInt status;
+} ThreadObject;
+
+Obj NewThreadObject(UInt id);
+
+
 typedef struct {
   pthread_mutex_t lock;
   struct WaitList *head, *tail;

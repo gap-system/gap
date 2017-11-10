@@ -135,6 +135,21 @@ static inline void * ObjPtr(Obj obj)
     return PTR_BAG(obj);
 }
 
+Obj NewThreadObject(UInt id)
+{
+    Obj result = NewBag(T_THREAD, sizeof(ThreadObject));
+    ThreadObject *thread = (ThreadObject *)ADDR_OBJ(result);
+    thread->id = id;
+    return result;
+}
+
+static inline Int ThreadID(Obj obj)
+{
+    GAP_ASSERT(TNUM_OBJ(obj) == T_THREAD);
+    const ThreadObject *thread = (const ThreadObject *)CONST_ADDR_OBJ(obj);
+    return thread->id;
+}
+
 Obj NewMonitor(void)
 {
     Bag       monitorBag;
@@ -440,23 +455,20 @@ Obj FuncCreateThread(Obj self, Obj funcargs)
 ** The function waits for an existing thread to finish.
 */
 
-Obj FuncWaitThread(Obj self, Obj thread)
+Obj FuncWaitThread(Obj self, Obj obj)
 {
-    UInt         thread_num;
-    UInt         thread_status;
     const char * error = NULL;
-    if (TNUM_OBJ(thread) != T_THREAD)
+    if (TNUM_OBJ(obj) != T_THREAD)
         return ArgumentError("WaitThread: Argument must be a thread object");
     LockThreadControl(1);
-    thread_num = *(UInt *)(ADDR_OBJ(thread) + 1);
-    thread_status = *(UInt *)(ADDR_OBJ(thread) + 2);
-    if (thread_status & THREAD_JOINED)
-        error = "Thread is already being waited for";
-    *(UInt *)(ADDR_OBJ(thread) + 2) |= THREAD_JOINED;
+    ThreadObject *thread = (ThreadObject *)ADDR_OBJ(obj);
+    if (thread->status & THREAD_JOINED)
+        error = "ThreadObject is already being waited for";
+    thread->status |= THREAD_JOINED;
     UnlockThreadControl();
     if (error)
         ErrorQuit("WaitThread: %s", (UInt)error, 0L);
-    if (!JoinThread(thread_num))
+    if (!JoinThread(thread->id))
         ErrorQuit("WaitThread: Invalid thread id", 0L, 0L);
     return (Obj)0;
 }
@@ -1866,12 +1878,9 @@ static void PrintThread(Obj obj)
 {
     char         buf[100];
     const char * status_message;
-    Int          status;
-    Int          id;
     LockThreadControl(0);
-    id = *(UInt *)(ADDR_OBJ(obj) + 1);
-    status = *(UInt *)(ADDR_OBJ(obj) + 2);
-    switch (status) {
+    const ThreadObject *thread = (const ThreadObject *)CONST_ADDR_OBJ(obj);
+    switch (thread->status) {
     case 0:
         status_message = "running";
         break;
@@ -1888,7 +1897,7 @@ static void PrintThread(Obj obj)
         status_message = "unknown status";
         break;
     }
-    sprintf(buf, "<thread #%ld: %s>", (long)id, status_message);
+    sprintf(buf, "<thread #%ld: %s>", (long)thread->id, status_message);
     UnlockThreadControl();
     Pr("%s", (Int)buf, 0L);
 }

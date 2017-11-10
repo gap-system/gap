@@ -20,9 +20,6 @@
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023
 
-#define THREAD_TERMINATED 1
-#define THREAD_JOINED 2
-
 extern int PreThreadCreation;
 
 #ifndef HAVE_NATIVE_TLS
@@ -43,8 +40,6 @@ void RunThreadedMain(
 void CreateMainRegion(void);
 Obj RunThread(void (*start)(void *), void *arg);
 int JoinThread(int id);
-Int ThreadID(Obj thread);
-void *ThreadTLS(Obj thread);
 
 void RegionWriteLock(Region *region);
 int RegionTryWriteLock(Region *region);
