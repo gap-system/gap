@@ -88,9 +88,6 @@ static inline int IsMainThread(void)
 
 void InitializeTLS(void);
 
-void InitTLS(void);
-void DestroyTLS(void);
-
 #endif // HPCGAP
 
 #endif // GAP_TLS_H

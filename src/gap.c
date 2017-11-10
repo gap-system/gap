@@ -3328,10 +3328,8 @@ void InitializeGap (
 
 #ifdef HPCGAP
     InitMainThread();
-    InitTLS();
-#else
-    InitGAPState(&MainGAPState);
 #endif
+    InitGAPState(ActiveGAPState());
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
