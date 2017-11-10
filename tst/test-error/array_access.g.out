@@ -1,0 +1,3 @@
+Syntax error: identifier expected
+a{{1..1}};
+   ^

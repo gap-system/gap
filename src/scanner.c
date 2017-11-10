@@ -105,6 +105,63 @@ Obj             EndLineHook = 0;
 
 /****************************************************************************
 **
+*F  GET_CHAR()  . . . . . . . . . . . . . . . . get the next character, local
+**
+**  'GET_CHAR' returns the next character from  the current input file.  This
+**  character is afterwards also available as '*In'.
+**
+**  'GET_CHAR' supports a single character pushback (via 'UNGET_CHAR').
+*/
+
+static Char   Pushback = '\0';
+static Char * RealIn;
+
+static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
+{
+    return STATE(In) != &Pushback;
+}
+
+// Forward declaration
+Char GetLine(void);
+
+static inline void GET_CHAR(void)
+{
+    if (STATE(In) == &Pushback) {
+        STATE(In) = RealIn;
+    }
+    else
+        STATE(In)++;
+    if (!*STATE(In))
+        GetLine();
+}
+
+static inline void UNGET_CHAR(Char c)
+{
+    assert(IS_CHAR_PUSHBACK_EMPTY());
+    Pushback = c;
+    RealIn = STATE(In);
+    STATE(In) = &Pushback;
+}
+
+// Get current line position. In the case where we pushed back the last
+// character on the previous line we return the first character of the
+// current line, as we cannot retrieve the previous line.
+static Int GetLinePosition(void)
+{
+    if (STATE(In) == &Pushback) {
+        // Subtract 2 as a value was pushed back
+        Int pos = RealIn - STATE(Input)->line - 2;
+        if (pos < 0)
+            pos = 0;
+        return pos;
+    }
+    else {
+        return STATE(In) - STATE(Input)->line - 1;
+    }
+}
+
+/****************************************************************************
+**
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
 **
 */
@@ -135,9 +192,12 @@ void            SyntaxError (
         Pr( "%s", (Int)STATE(Input)->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < STATE(In) - STATE(Input)->line - 1; i++ ) {
-          if ( STATE(Input)->line[i] == '\t' )  Pr("\t",0L,0L);
-          else  Pr(" ",0L,0L);
+        Int pos = GetLinePosition();
+        for (i = 0; i < pos; i++) {
+            if (STATE(Input)->line[i] == '\t')
+                Pr("\t", 0L, 0L);
+            else
+                Pr(" ", 0L, 0L);
         }
         Pr( "^\n", 0L, 0L );
       }
@@ -176,9 +236,12 @@ void            SyntaxWarning (
         Pr( "%s", (Int)STATE(Input)->line, 0L );
 
         /* print a '^' pointing to the current position                        */
-        for ( i = 0; i < STATE(In) - STATE(Input)->line - 1; i++ ) {
-          if ( STATE(Input)->line[i] == '\t' )  Pr("\t",0L,0L);
-          else  Pr(" ",0L,0L);
+        Int pos = GetLinePosition();
+        for (i = 0; i < pos; i++) {
+            if (STATE(Input)->line[i] == '\t')
+                Pr("\t", 0L, 0L);
+            else
+                Pr(" ", 0L, 0L);
         }
         Pr( "^\n", 0L, 0L );
       }
@@ -386,6 +449,7 @@ UInt OpenInput (
 
     /* remember the current position in the current file                   */
     if ( STACK_SIZE(Input) > 0 ) {
+        GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         STATE(Input)->ptr    = STATE(In);
         STATE(Input)->symbol = STATE(Symbol);
     }
@@ -441,6 +505,7 @@ UInt OpenInputStream (
 
     /* remember the current position in the current file                   */
     if ( STACK_SIZE(Input) > 0 ) {
+        GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         STATE(Input)->ptr    = STATE(In);
         STATE(Input)->symbol = STATE(Symbol);
     }
@@ -1246,39 +1311,6 @@ Char GetLine ( void )
 
     /* return the current character                                        */
     return *STATE(In);
-}
-
-
-/****************************************************************************
-**
-*F  GET_CHAR()  . . . . . . . . . . . . . . . . get the next character, local
-**
-**  'GET_CHAR' returns the next character from  the current input file.  This
-**  character is afterwords also available as '*In'.
-**
-**  For efficiency  reasons 'GET_CHAR' is a  macro that  just  increments the
-**  pointer 'In'  and checks that  there is another  character.  If  not, for
-**  example at the end a line, 'GET_CHAR' calls 'GetLine' to fetch a new line
-**  from the input file.
-*/
-
-static Char Pushback = '\0';
-static Char *RealIn;
-
-static inline void GET_CHAR( void ) {
-  if (STATE(In) == &Pushback) {
-      STATE(In) = RealIn;
-  } else
-    STATE(In)++;
-  if (!*STATE(In))
-    GetLine();
-}
-
-static inline void UNGET_CHAR( Char c ) {
-  assert(STATE(In) != &Pushback);
-  Pushback = c;
-  RealIn = STATE(In);
-  STATE(In) = &Pushback;
 }
 
 
