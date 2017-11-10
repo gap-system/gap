@@ -1,7 +1,5 @@
 #include <src/gapstate.h>
 
-ThreadLocalStorage * MainThreadTLS;
-
 #ifdef HAVE_NATIVE_TLS
 
 __thread GAPState TLSGAPtate;

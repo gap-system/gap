@@ -184,7 +184,6 @@ static NOINLINE void SetupTLS(void)
     GrowStack();
 #endif
     InitializeTLS();
-    MainThreadTLS = GetTLS();
     TLS(threadID) = 0;
 }
 

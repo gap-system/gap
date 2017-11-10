@@ -41,8 +41,6 @@ typedef struct ThreadLocalStorage
   UInt LocksContended;
 } ThreadLocalStorage;
 
-extern ThreadLocalStorage *MainThreadTLS;
-
 #ifdef HAVE_NATIVE_TLS
 extern __thread ThreadLocalStorage *TLSInstance;
 #endif
@@ -69,11 +67,6 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS(void)
 
 // Convenience helper for accessing TLS members
 #define TLS(x) GetTLS()->x
-
-static inline int IsMainThread(void)
-{
-  return TLS(threadID) == 0;
-}
 
 void InitializeTLS(void);
 
