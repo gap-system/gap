@@ -20,6 +20,7 @@
 
 #if defined(HPCGAP)
 #include <src/hpc/serialize.h>
+#include <src/hpc/tls.h>
 #endif
 
 enum { STATE_MAX_HANDLERS = 256,
@@ -28,6 +29,12 @@ enum { STATE_MAX_HANDLERS = 256,
 #define MAXPRINTDEPTH 1024L
 
 typedef struct GAPState {
+#ifdef HPCGAP
+    // TLS data -- this *must* come first, so that we can safely
+    // cast a GAPState pointer into a ThreadLocalStorage pointer
+    ThreadLocalStorage tls;
+#endif
+
     /* From intrprtr.c */
     Obj  IntrResult;
     UInt IntrIgnoring;
@@ -178,7 +185,10 @@ typedef struct GAPState {
 
 #if defined(HPCGAP)
 
-#include <src/hpc/tls.h>
+static inline GAPState * ActiveGAPState(void)
+{
+    return (GAPState *)GetTLS();
+}
 
 #else
 

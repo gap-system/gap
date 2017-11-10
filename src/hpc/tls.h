@@ -3,12 +3,8 @@
 
 #ifdef HPCGAP
 
-#include <stdint.h>
-#include <src/gapstate.h>
-#include <src/code.h>
+#include <src/system.h>
 #include <src/hpc/tlsconfig.h>
-#include <src/scanner.h>
-#include <src/gasman.h>
 
 typedef struct ThreadLocalStorage
 {
@@ -43,21 +39,17 @@ typedef struct ThreadLocalStorage
   UInt CountActive;
   UInt LocksAcquired;
   UInt LocksContended;
-
-  GAPState state;
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
 
 #ifdef HAVE_NATIVE_TLS
 
-extern __thread ThreadLocalStorage TLSInstance;
-
-#define realTLS (&TLSInstance)
+extern __thread ThreadLocalStorage *TLSInstance;
 
 static inline ThreadLocalStorage *GetTLS(void)
 {
-    return &TLSInstance;
+    return TLSInstance;
 }
 
 #else
@@ -78,16 +70,16 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS(void)
   return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);
 }
 
-#define realTLS (GetTLS())
 
 #endif /* HAVE_NATIVE_TLS */
 
-#define TLS(x) realTLS->x
 
-static inline GAPState * ActiveGAPState(void)
-{
-    return &TLS(state);
-}
+// TODO: get rid of realTLS
+#define realTLS (GetTLS())
+
+#define TLS(x) GetTLS()->x
+
+
 
 static inline int IsMainThread(void)
 {

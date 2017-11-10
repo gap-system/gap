@@ -14,6 +14,7 @@
 
 #else
 
+#include <src/hpc/tlsconfig.h>
 #include <src/hpc/region.h>
 
 /* Maximum number of threads excluding the main thread */
