@@ -1520,8 +1520,43 @@ static void SySetGapRootPath( const Char * string )
         n++;
 #endif
     }
+    return;
 }
 
+/****************************************************************************
+**
+*F  SySetInitialGapRootPaths( <string> )  . . . . .  set the root directories
+**
+**  Setup GAP's initial root paths, based on the location of the
+**  GAP executable.
+*/
+static void SySetInitialGapRootPaths(void)
+{
+    if (GAPExecLocation[0] != 0) {
+        /* GAPExecLocation might be a subdirectory of GAP root,
+         * so we will go and search for the true GAP root.
+         * We try stepping back 2 levels */
+        char pathbuf[LONG_PATH_SIZE];
+        char initgbuf[LONG_PATH_SIZE];
+        strxcpy(pathbuf, GAPExecLocation, sizeof(pathbuf));
+        for (Int i = 0; i < 3; ++i) {
+            strxcpy(initgbuf, pathbuf, sizeof(pathbuf));
+            strxcat(initgbuf, "lib/init.g", sizeof(pathbuf));
+
+            if (SyIsReadableFile(initgbuf) == 0) {
+                SySetGapRootPath(pathbuf);
+                /* escape from loop */
+                return;
+            }
+            // Try up a directory level
+            strxcat(pathbuf, "../", sizeof(pathbuf));
+        }
+    }
+
+    // Set GAP root path to current directory, if we have no other
+    // idea, and for backwards compatibility
+    SySetGapRootPath("./");
+}
 
 /****************************************************************************
 **
@@ -1797,6 +1832,7 @@ void InitSystem (
       }
     }
 
+
 #ifdef HAVE_VM_ALLOCATE
     syBase = 0;
     syWorksize = 0;
@@ -1864,7 +1900,7 @@ void InitSystem (
 #elif defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
 #else
-    SySetGapRootPath("./");
+    SySetInitialGapRootPaths();
 #endif
 
     /* save the original command line for export to GAP */

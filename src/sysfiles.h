@@ -78,6 +78,35 @@ extern Int SyLoadModule( const Char * name, InitInfoFunc * func );
 
 /****************************************************************************
 **
+*F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
+*/
+
+/* On some OSes PATH_MAX is unreliable, so we make our buffer longer.
+** No buffer size is perfect, but we need to use a hard-code size.
+** We need to make the buffer PATH_MAX (or larger) as POSIX functions
+** we pass the buffer to assume the buffer is at least this big.
+*/
+
+#ifdef PATH_MAX
+#define LONG_PATH_SIZE_1 (PATH_MAX < 4096 ? 4096 : PATH_MAX)
+#else
+#define LONG_PATH_SIZE_1 4096
+#endif
+
+#define LONG_PATH_SIZE                                                       \
+    (LONG_PATH_SIZE_1 < GAP_PATH_MAX ? GAP_PATH_MAX : LONG_PATH_SIZE_1)
+
+// Contains the directory containing the running GAP executable
+// or contains the empty string is it could not be detect.
+extern char GAPExecLocation[LONG_PATH_SIZE];
+
+// Fills in GAPExecLocation. Is called straight after 'main' starts.
+void SetupGAPLocation(int argc, char ** argv);
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
 
