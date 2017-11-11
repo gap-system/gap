@@ -451,8 +451,8 @@ extern Int SyIsExistingFile(
 **
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
-**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
-**  otherwise. <name> is a system dependent description of the file.
+**  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and
+**  -1 otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsReadableFile(
             const Char * name );
