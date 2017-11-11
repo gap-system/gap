@@ -440,6 +440,8 @@ int realmain( int argc, char * argv[], char * environ[] )
   Obj                 func;                   /* function (compiler)     */
   Int4                crc;                    /* crc of file to compile  */
 
+  SetupGAPLocation(argc, argv);
+
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv, environ );
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
