@@ -77,13 +77,6 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
- *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
- ** do not edit the following line. Occurrences of `gap4dev'
- ** will be replaced by string matching by distribution wrapping scripts.
- */
-const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
-
-/****************************************************************************
 **
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
@@ -1847,9 +1840,7 @@ void InitSystem (
     
     SyInstallAnswerIntr();
 
-#ifdef SYS_IS_CYGWIN32
-    SySetGapRootPath(SyWindowsPath);
-#elif defined(SYS_DEFAULT_PATHS)
+#if defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
 #else
     SySetInitialGapRootPaths();
