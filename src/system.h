@@ -331,48 +331,6 @@ extern Char DotGapPath[GAP_PATH_MAX];
 
 /****************************************************************************
 **
-*V  SyInitfiles[] . . . . . . . . . . .  list of filenames to be read in init
-**
-**  'SyInitfiles' is a list of file to read upon startup of GAP.
-**
-**  It contains the 'init.g' file and a user specific init file if it exists.
-**  It also contains all names all the files specified on the  command  line.
-**
-**  This is used in 'InitGap' which tries to read those files  upon  startup.
-**
-**  Put in this package because the command line processing takes place here.
-**
-**  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
-*/
-extern Char SyInitfiles[32][GAP_PATH_MAX];
-
-/****************************************************************************
-**
-*V  SyPkgnames[] . . . . . . . . . . .  list of package names
-**
-**  'SyPkgnames' is a list of names of entries of the `pkg' directory. It is
-**  used for autoloading.
-*/
-#define SY_MAX_PKGNR 100
-extern Char SyPkgnames [SY_MAX_PKGNR][16];
-
-/****************************************************************************
-**
-*V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
-*/
-extern Char SyGapRCFilename[GAP_PATH_MAX];
-
-/****************************************************************************
-**
-*V  SyHasUserHome . . . . . . . . . .  true if user has HOME in environment
-*V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
-*/
-extern Int SyHasUserHome;
-extern Char SyUserHome[GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
 *V  SyLineEdit  . . . . . . . . . . . . . . . . . . . .  support line editing
 **
 **  0: no line editing
@@ -1118,7 +1076,6 @@ typedef void (*voidfunc)(void);
 Int RegisterSyLongjmpObserver(voidfunc);
 
 
-
 /****************************************************************************
 **
 *F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
@@ -1127,9 +1084,9 @@ Int RegisterSyLongjmpObserver(voidfunc);
 **  It is passed the command line array  <argc>, <argv>  to look for options.
 **
 **  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
-**  installs the handler 'syAnsIntr' to answer the user interrupts '<ctr>-C',
-**  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
-**  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
+**  installs the handler 'syAnswerIntr' to answer the user interrupts
+**  '<ctr>-C', scans the command line for options, sets up the GAP root paths,
+**  locates the '.gaprc' file (if any), and more.
 */
 extern void InitSystem (
             Int                 argc,

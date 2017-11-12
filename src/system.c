@@ -205,14 +205,6 @@ Int IgnoreGapRC;
 
 /****************************************************************************
 **
-*V  SyHasUserHome . . . . . . . . . .  true if user has HOME in environment
-*V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
-*/
-Int SyHasUserHome;
-Char SyUserHome[GAP_PATH_MAX];
-
-/****************************************************************************
-**
 *V  SyLineEdit  . . . . . . . . . . . . . . . . . . . .  support line editing
 **
 **  0: no line editing
@@ -1565,9 +1557,9 @@ void syLongjmp(syJmp_buf* buf, int val)
 **  It is passed the command line array  <argc>, <argv>  to look for options.
 **
 **  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
-**  installs the handler 'syAnsIntr' to answer the user interrupts '<ctr>-C',
-**  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
-**  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
+**  installs the handler 'syAnswerIntr' to answer the user interrupts
+**  '<ctr>-C', scans the command line for options, sets up the GAP root paths,
+**  locates the '.gaprc' file (if any), and more.
 */
 
 typedef struct { Char symbol; UInt value; } sizeMultiplier;
@@ -1759,7 +1751,6 @@ void InitSystem (
     SyCTRD = 1;             
     SyCompilePlease = 0;
     SyDebugLoading = 0;
-    SyHasUserHome = 0;
     SyLineEdit = 1;
 #ifdef HPCGAP
     SyUseReadline = 0;
@@ -1995,9 +1986,6 @@ void InitSystem (
 #ifdef HAVE_DOTGAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
-        strxcpy(SyUserHome, getenv("HOME"), sizeof(SyUserHome));
-        SyHasUserHome = 1;
-
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
 # if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
         /* On Darwin, add .gap to the sys roots, but leave */
@@ -2022,13 +2010,17 @@ void InitSystem (
         
         /* and in this case we can also expand paths which start
            with a tilde ~ */
+        Char userhome[GAP_PATH_MAX];
+        strxcpy(userhome, getenv("HOME"), sizeof(userhome));
+        const UInt userhomelen = strlen(userhome);
         for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-          if (SyGapRootPaths[i][0] == '~' && 
-              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < sizeof(SyGapRootPaths[i])) {
-            memmove(SyGapRootPaths[i]+strlen(SyUserHome),
-                    /* don't copy the ~ but the trailing '\0' */
-                    SyGapRootPaths[i]+1, strlen(SyGapRootPaths[i]));
-            memcpy(SyGapRootPaths[i], SyUserHome, strlen(SyUserHome));
+            const UInt pathlen = strlen(SyGapRootPaths[i]);
+            if (SyGapRootPaths[i][0] == '~' &&
+                userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
+                memmove(SyGapRootPaths[i] + userhomelen,
+                        /* don't copy the ~ but the trailing '\0' */
+                        SyGapRootPaths[i] + 1, pathlen);
+                memcpy(SyGapRootPaths[i], userhome, userhomelen);
           }
         }
     }
