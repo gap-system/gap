@@ -67,7 +67,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/hpc/guards.h>

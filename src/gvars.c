@@ -37,7 +37,6 @@
 
 #include <src/gap.h>                    /* error handling, initialisation */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/gvars.h>                  /* global variables */
 

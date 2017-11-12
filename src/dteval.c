@@ -50,7 +50,6 @@
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
 
-#include <src/code.h>                   /* coder */
 #include <src/hpc/guards.h>
 
 static int             evlist, evlistvec;

@@ -35,7 +35,6 @@
 
 #include <src/lists.h>                  /* generic lists */
 
-#include <src/code.h>                   /* coder */
 
 
 /****************************************************************************

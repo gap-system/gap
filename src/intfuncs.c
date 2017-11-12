@@ -44,7 +44,6 @@
 
 #include <src/saveload.h>               /* saving and loading */
 
-#include <src/code.h>                   /* coder */
 
 
 #include <stdio.h>

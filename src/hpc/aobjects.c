@@ -39,7 +39,6 @@
 #include <src/listfunc.h>               /* functions for generic lists */
 #include <src/plist.h>                  /* plain lists */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/exprs.h>                  /* expressions */
 #include <src/stats.h>                  /* statements */

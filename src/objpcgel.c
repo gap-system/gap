@@ -28,7 +28,6 @@
 #include <src/ariths.h>                 /* basic arithmetic */
 #include <src/bool.h>                   /* booleans */
 
-#include <src/code.h>                   /* coder */
 #include <src/objfgelm.h>               /* objects of free groups */
 #include <src/objscoll.h>               /* single collector */
 

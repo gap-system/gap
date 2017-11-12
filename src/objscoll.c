@@ -44,7 +44,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/stringobj.h>              /* strings */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/objfgelm.h>               /* objects of free groups */
 

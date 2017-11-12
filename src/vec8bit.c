@@ -36,7 +36,6 @@
 #include <src/vecgf2.h>              /* needed for the conversion to
              GF(2^n) n>1) */
 
-#include <src/code.h>                   /* for TakeInterrupt */
 #include <src/stats.h> 
 
 #include <src/hpc/aobjects.h>           /* atomic objects */

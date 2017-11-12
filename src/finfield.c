@@ -77,7 +77,6 @@
 #include <src/lists.h>                  /* generic lists */
 #include <src/plist.h>                  /* plain lists */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/hpc/aobjects.h>           /* atomic access to plists */
 

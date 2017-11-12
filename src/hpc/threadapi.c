@@ -47,7 +47,6 @@
 #include <src/set.h>                    /* set */
 #include <src/stringobj.h>              /* strings */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/exprs.h>                  /* expressions */
 #include <src/stats.h>                  /* statements */

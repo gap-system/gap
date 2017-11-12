@@ -11,7 +11,6 @@
 **  This file contains the functions for computing with finite presentations.
 */
 #include <src/system.h>                 /* system dependent part */
-#include <src/code.h>
 #include <src/stats.h>                  /* for TakeInterrupt */
 
 
@@ -34,7 +33,6 @@
 
 #include <src/tietze.h>                 /* tietze helper functions */
 
-#include <src/code.h>                   /* coder */
 #include <src/hpc/guards.h>
 
 

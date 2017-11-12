@@ -58,7 +58,6 @@
 
 #include <src/sctable.h>                /* structure constant table */
 
-#include <src/code.h>                   /* coder */
 
 
 /****************************************************************************

@@ -37,7 +37,6 @@
 #include <src/opers.h>                  /* generic operations */
 
 #include <src/scanner.h>                /* scanner */
-#include <src/code.h>                   /* coder */
 #include <src/hpc/guards.h>
 
 #ifdef BOEHM_GC

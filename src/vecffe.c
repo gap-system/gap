@@ -41,7 +41,6 @@
 #include <src/calls.h>                  /* needed for opers.h */
 #include <src/opers.h>                  /* for TRY_NEXT_METHOD */
 
-#include <src/code.h>                   /* coder */
 
 #include <assert.h>
 
