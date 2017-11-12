@@ -26,10 +26,11 @@
 */
 #include <gen/config.h>
 
-/* include C library stdlib.h to ensure size_t etc. is defined. */
+#include <ctype.h>
+#include <setjmp.h>
+#include <stdint.h>
 #include <stdlib.h>
-
-#include <string.h>     // memcpy etc.
+#include <string.h>
 
 
 /****************************************************************************
@@ -134,10 +135,6 @@ enum {
 **  '(U)Int' should be the same length as a bag identifier
 */
 
-
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
 
 typedef char              Char;
 
@@ -607,7 +604,6 @@ extern UInt SyTimeChildrenSys ( void );
 **  'IsAlpha' returns 1 if its character argument is a normal character  from
 **  the range 'a..zA..Z' and 0 otherwise.
 */
-#include <ctype.h>
 #define IsAlpha(ch)     (isalpha((unsigned int)ch))
 
 
@@ -1093,8 +1089,6 @@ extern Char *getOptionArg(Char key, UInt which);
  ** 
  **   macros and functions, defining our selected longjump mechanism
  */
-
-#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
 
 
 #if defined(HAVE_SIGSETJMP)
