@@ -27,6 +27,7 @@
 #include <gen/config.h>
 
 #include <ctype.h>
+#include <limits.h>
 #include <setjmp.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -91,8 +92,36 @@
 #endif
 
 
+/****************************************************************************
+**
+*S  GAP_PATH_MAX . . . . . . . . . . . .  size for buffers storing file paths
+**
+**  'GAP_PATH_MAX' is the default buffer size GAP uses internally to store
+**  most paths. If any longer paths are encountered, they will be either
+**  truncated, or GAP aborts.
+**
+**  Note that no fixed buffer size is sufficient to store arbitrary paths
+**  on contemporary operation systems, as paths can have arbitrary length.
+**  This also means that the POSIX constant PATH_MAX does not really do the
+**  job its name would suggest (nor do MAXPATHLEN, MAX_PATH etc.).
+**
+**  Writing POSIX compliant code without a hard coded buffer size is rather
+**  challenging, as often there is no way to find out in advance how large a
+**  buffer may need to be. So you have to start with some buffer size, then
+**  check for errors; if 'errno' equals 'ERANGE', double the buffer size and
+**  repeated, until you succeed or run out of memory.
+**
+**  Instead of going down this road, we use a fixed buffer size after all.
+**  This way, at least our code stays simple. Also, this is what most (?)
+**  code out there does, too, so if somebody actually uses such long paths,
+**  at least GAP won't be the only program to run into problems.
+*/
 enum {
-    GAP_PATH_MAX = 512
+#ifdef PATH_MAX
+    GAP_PATH_MAX = 4096 > PATH_MAX ? 4096 : PATH_MAX,
+#else
+    GAP_PATH_MAX = 4096,
+#endif
 };
 
 
@@ -322,7 +351,7 @@ extern Int SyDebugLoading;
 **  Put in this package because the command line processing takes place here.
 */
 enum {
-    MAX_GAP_DIRS = 128
+    MAX_GAP_DIRS = 16
 };
 extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 #ifdef HAVE_DOTGAPRC
