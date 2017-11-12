@@ -541,6 +541,10 @@ end);
 ##  <Item>suppress displaying status messages <C>#I  Errors detected while testing</C> and
 ##  <C>#I  No errors detected while testing</C> after the test (defaults to <K>false</K>).
 ##  </Item>
+##  <Mark><C>rewriteToFile</C></Mark>
+##  <Item>If <K>true</K>, then rewrite each test file to disc, with the output substituted
+##  by the results of running the test (defaults to <K>false</K>).
+##  </Item>
 ##  <Mark><C>exitGAP</C></Mark>
 ##  <Item>Rather than returning <K>true</K> or <K>false</K>, exit GAP with the return value
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
@@ -589,6 +593,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     earlyStop := false,
     showProgress := true,
     suppressStatusMessage := false,
+    rewriteToFile := false,
     exitGAP := false,
   );
   
@@ -655,7 +660,11 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     
     startTime := Runtime();
     startMem := TotalMemoryAllocated();    
-    startGcTime := GcTime();    
+    startGcTime := GcTime();
+
+    if opts.rewriteToFile then
+      opts.testOptions.rewriteToFile := files[i].name;
+    fi;
     testResult := Test(files[i].name, opts.testOptions);
     if not(testResult) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
