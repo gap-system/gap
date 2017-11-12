@@ -26,7 +26,8 @@
 #ifndef GAP_PLIST_H
 #define GAP_PLIST_H
 
-#include <src/debug.h> /* for GAP_ASSERT */
+#include <src/debug.h>      // for GAP_ASSERT
+#include <src/objects.h>    // for TNUMs
 
 /****************************************************************************
 **
