@@ -13,10 +13,9 @@
 
 #include <stdint.h>
 
-#include <src/code.h>
+#include <src/system.h>
 #include <src/gasman.h>
 #include <src/scanner.h>
-#include <src/system.h>
 
 #if defined(HPCGAP)
 #include <src/hpc/serialize.h>
