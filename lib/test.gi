@@ -527,7 +527,7 @@ end);
 ##  If the optional argument <Arg>optrec</Arg> is given it must be a record.
 ##  The following components of <Arg>optrec</Arg> are recognized and can change
 ##  the default behaviour of <Ref Func="TestDirectory" />:
-##  <List >
+##  <List>
 ##  <Mark><C>testOptions</C></Mark>
 ##  <Item>A record which will be passed on as the second argument of <Ref Func="Test" />
 ##  if present.</Item>
@@ -550,22 +550,6 @@ end);
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-
-###################################
-##
-## TestDirectory(<files> [, <options> ])
-## <files>: A directory (or filename) or list of filenames and directories
-## <options>: Optional record of options (with defaults)
-## 
-##    testOptions := rec()   : Options to pass on to Test
-##    earlyStop := false     : Stop once one test fails
-##    showProgress := "some" : Show some progress
-##    suppressStatusMessage := false: do not print status messages after the test
-##    recursive := true      : Search through directories recursively
-##    exitGAP := false       : Exit GAP, setting exit value depending on if tests succeeded
-##
-##
-
 InstallGlobalFunction( "TestDirectory", function(arg)
     local  testTotal, totalTime, totalMem, STOP_TEST_CPY, 
            basedirs, nopts, opts, testOptions, earlyStop, 
