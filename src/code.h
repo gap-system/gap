@@ -22,15 +22,9 @@
 
 /****************************************************************************
 **
-*T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
+*T  StatHeader
 **
-**  'Stat' is the type of statements.
-**
-**  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
-**  break.
 */
-typedef UInt Stat;
-
 typedef struct {
     unsigned int visited : 1;
     unsigned int fileid : 15;
@@ -292,18 +286,6 @@ Obj FILENAME_STAT(Stat stat);
 **  statement <stat>.
 */
 #define ADDR_STAT(stat) ((Stat*)(((char*)STATE(PtrBody))+(stat)))
-
-
-/****************************************************************************
-**
-*T  Expr  . . . . . . . . . . . . . . . . . . . . . . . . type of expressions
-**
-**  'Expr' is the type of expressions.
-**
-**  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
-**  break.
-*/
-typedef Stat Expr;
 
 
 /****************************************************************************

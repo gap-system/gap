@@ -207,6 +207,30 @@ typedef Bag Obj;
 
 /****************************************************************************
 **
+*T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
+**
+**  'Stat' is the type of statements.
+**
+**  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
+**  break.
+*/
+typedef UInt Stat;
+
+
+/****************************************************************************
+**
+*T  Expr  . . . . . . . . . . . . . . . . . . . . . . . . type of expressions
+**
+**  'Expr' is the type of expressions.
+**
+**  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
+**  break.
+*/
+typedef Stat Expr;
+
+
+/****************************************************************************
+**
 *V  BIPEB . . . . . . . . . . . . . . . . . . . . . . . . . .  bits per block
 **
 **  'BIPEB' is the  number of bits  per  block, where a  block  fills a UInt,
