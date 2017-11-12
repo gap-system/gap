@@ -27,7 +27,6 @@
 
 #include <src/calls.h>                  /* generic call mechanism */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/opers.h>                  /* generic operations */
 

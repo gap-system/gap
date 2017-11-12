@@ -35,7 +35,6 @@
 
 #include <src/plist.h>                  /* plain lists */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/objfgelm.h>               /* objects of free groups */
 

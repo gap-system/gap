@@ -32,7 +32,6 @@
 
 #include <src/vec8bit.h>                /* vectors over bigger small fields */
 
-#include <src/code.h>                   /* Needed for TakeInterrupt */
 #include <src/stats.h>
 
 #include <src/hpc/guards.h>

@@ -42,7 +42,6 @@
 #include <src/stringobj.h>
 #include <assert.h>
 
-#include <src/code.h>                   /* coder */
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */

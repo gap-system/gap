@@ -46,7 +46,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
 
-#include <src/code.h>                   /* coder */
 
 
 /****************************************************************************

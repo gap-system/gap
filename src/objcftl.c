@@ -37,7 +37,6 @@
 
 #include <src/objcftl.h>                /* from the left collect */
 
-#include <src/code.h>
 #include <src/hpc/guards.h>
 
 

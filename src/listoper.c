@@ -40,7 +40,6 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/opers.h>                  /* TRY_NEXT_METHOD */
 #include <src/range.h>                  /* Ranges */
-#include <src/code.h>                   /* Coder */
 
 
 #ifndef HPCGAP

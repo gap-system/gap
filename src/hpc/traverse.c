@@ -7,7 +7,6 @@
 #include <src/bool.h>
 #include <src/gvars.h>
 #include <src/scanner.h>
-#include <src/code.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
 #include <src/precord.h>

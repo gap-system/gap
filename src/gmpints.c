@@ -81,7 +81,6 @@
 #include <src/bool.h>                   /* booleans */
 
 #include <src/gap.h>                    /* error handling, initialisation */
-#include <src/code.h>                   /* needed by stats.h */
 #include <src/stats.h>                  /* for TakeInterrupt */
 
 #include <src/records.h>                /* generic records */

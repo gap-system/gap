@@ -95,7 +95,6 @@
 
 #include <src/bool.h>                   /* booleans */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/objfgelm.h>               /* objects of free groups */
 

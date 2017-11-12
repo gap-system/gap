@@ -43,7 +43,6 @@
 
 #include <src/scanner.h>                /* scanner */
 
-#include <src/code.h>                   /* coder */
 
 #include <src/gap.h>                    /* error handling, initialisation */
 

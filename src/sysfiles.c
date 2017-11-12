@@ -39,7 +39,6 @@
 #include <src/records.h>                /* generic records */
 #include <src/bool.h>                   /* Global True and False */
 
-#include <src/code.h>                   /* coder */
 #include <src/hpc/thread.h>             /* threads */
 
 #include <src/read.h>                   /* reader */

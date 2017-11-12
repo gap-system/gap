@@ -30,7 +30,6 @@
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
 #include <src/scanner.h>                /* scanner */
-#include <src/code.h>                   /* coder */
 
 #include <src/gap.h>                    /* error handling, initialisation */
 #include <src/read.h>                   /* reader */
@@ -52,7 +51,6 @@
 
 #include <src/streams.h>                /* streams package */
 
-#include <src/code.h>
 
 
 #include <src/vars.h>                   /* STATE(BottomLVars) for execution contexts */

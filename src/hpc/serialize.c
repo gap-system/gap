@@ -1,7 +1,6 @@
 #include <src/system.h>
 #include <src/gapstate.h>
 #include <src/gasman.h>
-#include <src/code.h>
 #include <src/objects.h>
 #include <src/calls.h>
 #include <src/gvars.h>
