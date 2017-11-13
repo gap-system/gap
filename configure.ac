@@ -328,7 +328,7 @@ dnl Now check if we can find GNU readline. We go to some extra efforts to
 dnl ensure it is GNU readline, and not e.g. BSD editline wrappers for
 dnl readline, which do not suffice for GAP.
 AS_IF([test "x$with_readline" != xno],[
-  READLINE_LIBS="-lreadline -lncurses"
+  READLINE_LIBS="-lreadline"
   AS_CASE([x"$with_readline"],
     [xyes|x],[
       READLINE_CPPFLAGS=
@@ -342,7 +342,7 @@ AS_IF([test "x$with_readline" != xno],[
 
   dnl We check for the symbol rl_ding to distinguish GNU readline
   dnl from other readline implementation.
-  AX_CHECK_LIBRARY([READLINE], [readline/readline.h], [readline], [rl_ding], [], [], [-lncurses])
+  AX_CHECK_LIBRARY([READLINE], [readline/readline.h], [readline], [rl_ding], [], [], [])
 
   AS_IF([test $ax_cv_have_READLINE = yes],[
     AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have libreadline])
