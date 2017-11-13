@@ -106,22 +106,30 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 program_transform_name = @program_transform_name@
 target_alias = @target_alias@
 
-# paths
-abs_builddir = @abs_builddir@
-abs_srcdir = @abs_srcdir@
-abs_top_builddir = @abs_top_builddir@
-abs_top_srcdir = @abs_top_srcdir@
-bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
 build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
+
+# build paths
+abs_builddir = @abs_builddir@
+abs_srcdir = @abs_srcdir@
 builddir = @builddir@
+srcdir = @srcdir@
+
+# for compatibility: top_builddir is used by libtool for LIBTOOL variable;
+# keeping the others makes it easier to "git bisect" back and forth
+top_builddir = @builddir@
+top_srcdir = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+abs_top_srcdir = @abs_top_srcdir@
+
+# install paths
+bindir = @bindir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
-dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 htmldir = @htmldir@
 includedir = @includedir@
@@ -131,17 +139,12 @@ libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
-oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
 prefix = @prefix@
 psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
-srcdir = @srcdir@
 sysconfdir = @sysconfdir@
-top_build_prefix = @top_build_prefix@
-top_builddir = @top_builddir@
-top_srcdir = @top_srcdir@
 
 
 #

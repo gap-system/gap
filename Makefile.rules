@@ -132,8 +132,8 @@ GAP_CPPFLAGS =
 # If this is an out-of-tree build, then first add the builddir to the list of
 # include directories, so that the correct gen/config.h is picked up (even if
 # the user also has an active in-tree build)
-ifneq ($(top_builddir),$(srcdir))
-  GAP_CPPFLAGS += -I$(top_builddir)
+ifneq ($(builddir),$(srcdir))
+  GAP_CPPFLAGS += -I$(builddir)
 endif
 
 # Finally look into srcdir
@@ -402,14 +402,14 @@ endif
 # replaces the old "etc/docomp" script.
 ########################################################################
 ifeq ($(HPCGAP),yes)
-DOCOMP_PREFIX = $(abs_top_srcdir)/hpcgap
+DOCOMP_PREFIX = $(abs_srcdir)/hpcgap
 else
-DOCOMP_PREFIX = $(abs_top_srcdir)
+DOCOMP_PREFIX = $(abs_srcdir)
 endif
 docomp: #gap$(EXEEXT)
 	@for file in methsel1 oper1 type1 ; do \
 	  if test -e $(DOCOMP_PREFIX)/lib/$$file.g ; then \
-	    "$(abs_top_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
+	    "$(abs_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
 	  fi \
 	done
 
@@ -424,8 +424,8 @@ ffgen: etc/ffgen.c
 	$(QUIET_CC)$(CC) -Wall -Wextra $< -o $@
 
 ffdata: ffgen
-	./ffgen -h > $(abs_top_srcdir)/src/ffdata.h
-	./ffgen -c > $(abs_top_srcdir)/src/ffdata.c
+	./ffgen -h > $(abs_srcdir)/src/ffdata.h
+	./ffgen -c > $(abs_srcdir)/src/ffdata.c
 
 .PHONY: ffdata
 
@@ -435,10 +435,10 @@ ffdata: ffgen
 ########################################################################
 
 tags:
-	cd $(abs_top_srcdir) && etc/tags.sh --recurse lib hpcgap/lib src
+	cd $(abs_srcdir) && etc/tags.sh --recurse lib hpcgap/lib src
 
 etags:
-	cd $(abs_top_srcdir) && etc/tags.sh -e --recurse lib hpcgap/lib src
+	cd $(abs_srcdir) && etc/tags.sh -e --recurse lib hpcgap/lib src
 
 .PHONY: tags etags
 
@@ -523,7 +523,7 @@ EXTERN_FILES += $(GMP_FILES)
 # to building only a static library.
 gmp: $(GMP_FILES)
 $(GMP_FILES):
-	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_top_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
+	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
 
 .PHONY: gmp
 
@@ -555,7 +555,7 @@ EXTERN_FILES += $(LIBATOMIC_OPS_FILES)
 libatomic_ops: $(LIBATOMIC_OPS_FILES)
 $(LIBATOMIC_OPS_FILES):
 	MAKE=$(MAKE) CFLAGS=$(ABI_CFLAGS) LDFLAGS=$(ABI_CFLAGS) \
-	$(srcdir)/cnf/build-extern.sh libatomic_ops "$(abs_top_srcdir)/hpcgap/extern/libatomic_ops" --disable-static --enable-shared
+	$(srcdir)/cnf/build-extern.sh libatomic_ops "$(abs_srcdir)/hpcgap/extern/libatomic_ops" --disable-static --enable-shared
 
 # TODO: MAKEFLAGS=-j1
 
@@ -597,7 +597,7 @@ $(BOEHM_GC_FILES):
 	LDFLAGS=$(ABI_CFLAGS) \
 	ATOMIC_OPS_CFLAGS=$(LIBATOMIC_OPS_CPPFLAGS) \
 	ATOMIC_OPS_LIBS=$(LIBATOMIC_OPS_LDFLAGS) \
-	$(srcdir)/cnf/build-extern.sh gc "$(abs_top_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared
+	$(srcdir)/cnf/build-extern.sh gc "$(abs_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared
 
 ifeq ($(BUILD_LIBATOMIC_OPS),yes)
 $(BOEHM_GC_FILES): $(LIBATOMIC_OPS_FILES)
@@ -645,7 +645,7 @@ all: symlinks
 symlinks: FORCE
 	@$(MKDIR_P) bin/$(GAPARCH)
 	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-default$(ABI)
-	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_top_srcdir)/src bin/$(GAPARCH)/src
+	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_srcdir)/src bin/$(GAPARCH)/src
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gen/config.h bin/$(GAPARCH)/config.h
@@ -659,8 +659,8 @@ endif
 ########################################################################
 
 GAPARGS=
-TESTGAP = $(abs_top_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r -A $(GAPARGS)
-TESTGAPauto = $(abs_top_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
+TESTGAP = $(abs_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r -A $(GAPARGS)
+TESTGAPauto = $(abs_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
 
 ########################################################################
 # Documentation rules
@@ -1062,11 +1062,11 @@ GVF = $(srcdir)/cnf/GAP-VERSION-FILE
 
 # the GAP-VERSION-FILE contains the raw version, nothing else
 $(GVF): FORCE
-	@cd $(top_srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
+	@cd $(srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
 -include $(GVF)
 
 # generate gen/gap_version.c
-gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
+gen/gap_version.c: $(srcdir)/src/gap_version.c.in $(GVF)
 	@$(MKDIR_P) $(@D)
 	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" < $< > $@
 
@@ -1077,15 +1077,15 @@ gen/gap_version.c: $(top_srcdir)/src/gap_version.c.in $(GVF)
 # and in parts on an example in the autoconf manual.
 ########################################################################
 
-ACLOCAL_M4 = $(top_srcdir)/aclocal.m4 $(wildcard $(top_srcdir)/cnf/m4/*.m4)
-configure_deps = $(top_srcdir)/configure.ac $(ACLOCAL_M4)
+ACLOCAL_M4 = $(srcdir)/aclocal.m4 $(wildcard $(srcdir)/cnf/m4/*.m4)
+configure_deps = $(srcdir)/configure.ac $(ACLOCAL_M4)
 
-config.status: $(top_srcdir)/configure
+config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
 
-$(top_srcdir)/configure: $(configure_deps)
+$(srcdir)/configure: $(configure_deps)
 	cd $(srcdir) && autoconf
-#$(ACLOCAL_M4): $(top_srcdir)/configure.ac $(wildcard $(srcdir)/cnf/m4/*.m4)
+#$(ACLOCAL_M4): $(srcdir)/configure.ac $(wildcard $(srcdir)/cnf/m4/*.m4)
 #	cd $(srcdir) && $(ACLOCAL) -I cnf/m4
 
 gen/config.h: gen/stamp-h
@@ -1098,7 +1098,7 @@ gen/stamp-h: $(srcdir)/src/config.h.in config.status
 	echo > $@
 
 $(srcdir)/src/config.h.in: $(configure_deps) 
-	cd $(top_srcdir) && autoheader
+	cd $(srcdir) && autoheader
 	rm -f gen/stamp-h
 	touch $@
 
