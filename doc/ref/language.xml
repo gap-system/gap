@@ -294,6 +294,7 @@ assigned to other variables or passed to functions. These keywords are
 <Ref Func="Unbind" Label="unbind a variable"/>, 
 <Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
 <P/>
+<!-- Update the next paragraph to reference HPC-GAP suitably -->
 Keywords <C>atomic</C>, <C>readonly</C>, <C>readwrite</C> are not used
 at the moment. They are reserved for the future version of GAP to prevent
 their accidental use as identifiers.
