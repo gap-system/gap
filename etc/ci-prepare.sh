@@ -35,14 +35,22 @@ echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
 
 # download packages; instruct wget to retry several times if the
 # connection is refused, to work around intermittent failures
-make bootstrap-pkg-full WGET="wget -N --no-check-certificate --tries=5 --waitretry=5 --retry-connrefused"
+WGET="wget -N --no-check-certificate --tries=5 --waitretry=5 --retry-connrefused"
+if [[ $(uname) == Darwin ]]
+then
+    # Travis OSX builders seem to have very small download bandwidth,
+    # so as a workaround, we only test the minimal set of packages there.
+    # On the upside, it's good to test that, too!
+    make bootstrap-pkg-minimal WGET="$WGET"
+else
+    make bootstrap-pkg-full WGET="$WGET"
+fi
 
 # TEMPORARY FIX : factint is not HPC-GAP compatible
 if [[ $HPCGAP = yes ]]
 then
     rm -rf pkg/factint*
-fi;
-
+fi
 
 # packages must be placed inside SRCDIR, as only that
 # is a GAP root, while BUILDDIR is not.
