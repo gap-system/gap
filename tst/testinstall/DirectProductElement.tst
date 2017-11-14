@@ -1,5 +1,7 @@
 # Embryonic test for DirectProductElement objects, could be expanded.
 gap> START_TEST("DirectProductElement.tst");
+
+#
 gap> numdpe1 := DirectProductElement([1,2]);
 DirectProductElement( [ 1, 2 ] )
 gap> numdpe2 := DirectProductElement([3,4]);
@@ -22,4 +24,11 @@ gap> PrintString(adpe);
 "DirectProductElement( [ Group( \>[ (1,2,3), (1,2) ]\<\> )\<,\<\> 1 ] )"
 gap> Display(adpe);
 DirectProductElement( [ Group( [ (1,2,3), (1,2) ] ), 1 ] )
+
+# verify bug #1824 (2) is fixed
+gap> elt := DirectProductElement([1,1]);;
+gap> IsFinite(elt);
+true
+
+#
 gap> STOP_TEST("DirectProductElement.tst");

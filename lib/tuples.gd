@@ -31,6 +31,7 @@ DeclareInfoClass( "InfoDirectProductElements" );
 ##  <Description>
 ##  <Ref Func="IsDirectProductElement"/> is a subcategory of the meet of
 ##  <Ref Func="IsDenseList"/>,
+##  <Ref Func="IsSmallList"/>,
 ##  <Ref Func="IsMultiplicativeElementWithInverse"/>,
 ##  <Ref Func="IsAdditiveElementWithInverse"/>,
 ##  and <Ref Func="IsCopyable"/>,
@@ -55,6 +56,7 @@ DeclareInfoClass( "InfoDirectProductElements" );
 ##
 DeclareCategory( "IsDirectProductElement",
         IsDenseList
+    and IsSmallList
     and IsCopyable
     and IsMultiplicativeElementWithInverse
     and IsAdditiveElementWithInverse );
