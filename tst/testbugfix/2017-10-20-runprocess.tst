@@ -1,6 +1,10 @@
 # This is based on an older fragile test - 2006/01/11 (MC)
 # We want to check two cases:
 # Firstly we ensure we read a whole line, by using a while loop
+# If IO is loaded, disable its signal handler
+gap> if IsBoundGlobal("IO_RestoreSIGCHLDHandler") then
+> ValueGlobal("IO_RestoreSIGCHLDHandler")();
+> fi;
 gap> d := DirectoryCurrent();;
 gap> f := Filename(DirectoriesSystemPrograms(), "rev");;
 gap> func1 := function()
