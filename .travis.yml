@@ -23,8 +23,8 @@ addons:
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
-    - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testtravis ABI=32
+#    - env: TEST_SUITE=testtravis CONFIGFLAGS="--enable-debug"
+#    - env: TEST_SUITE=testtravis ABI=32
 
     # compiler packages and run package tests
     - env: TEST_SUITE=testpackages CONFIGFLAGS="--enable-debug"
@@ -59,43 +59,43 @@ matrix:
           - pari-gp:i386            # for alnuth
           - libzmq3-dev:i386        # for ZeroMQInterface
 
-    # OS X builds: since those are slow and limited on Travis, we only run testinstall
-    - env: TEST_SUITE=testinstall
-      os: osx
-      compiler: clang
-
-    # test creating the manual
-    - env: TEST_SUITE=makemanuals CONFIGFLAGS="--enable-debug"
-      addons:
-        apt_packages:
-          - texlive-latex-base
-          - texlive-latex-recommended
-          - texlive-latex-extra
-          - texlive-extra-utils
-          - texlive-fonts-recommended
-          - texlive-fonts-extra
-
-    # run tests contained in the manual
-    - env: TEST_SUITE=testmanuals CONFIGFLAGS="--enable-debug"
-
-    # HPC-GAP builds (for efficiency, we don't build all combinations)
-    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
-    - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
-
-    # out of tree builds -- these are mainly done to verify that the build
-    # system work in this scenario. Since we don't expect the test results to
-    # vary compared to the in-tree builds, we turn off coverage reporting by
-    # setting NO_COVERAGE=1; this has the extra benefit of also running the
-    # tests at least once with the ReproducibleBehaviour option turned off.
-    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build
-
-    # run bugfix regression tests
-    - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
-
-    # test error reporting and compiling (quickest job in this test suite)
-    - env: TEST_SUITE=testspecial CONFIGFLAGS="--enable-debug"
+#    # OS X builds: since those are slow and limited on Travis, we only run testinstall
+#    - env: TEST_SUITE=testinstall
+#      os: osx
+#      compiler: clang
+#
+#    # test creating the manual
+#    - env: TEST_SUITE=makemanuals CONFIGFLAGS="--enable-debug"
+#      addons:
+#        apt_packages:
+#          - texlive-latex-base
+#          - texlive-latex-recommended
+#          - texlive-latex-extra
+#          - texlive-extra-utils
+#          - texlive-fonts-recommended
+#          - texlive-fonts-extra
+#
+#    # run tests contained in the manual
+#    - env: TEST_SUITE=testmanuals CONFIGFLAGS="--enable-debug"
+#
+#    # HPC-GAP builds (for efficiency, we don't build all combinations)
+#    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
+#    - env: TEST_SUITE=testinstall ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
+#    - env: TEST_SUITE=testinstall ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
+#
+#    # out of tree builds -- these are mainly done to verify that the build
+#    # system work in this scenario. Since we don't expect the test results to
+#    # vary compared to the in-tree builds, we turn off coverage reporting by
+#    # setting NO_COVERAGE=1; this has the extra benefit of also running the
+#    # tests at least once with the ReproducibleBehaviour option turned off.
+#    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
+#    - env: TEST_SUITE=testinstall NO_COVERAGE=1 ABI=32 BUILDDIR=build
+#
+#    # run bugfix regression tests
+#    - env: TEST_SUITE=testbugfix CONFIGFLAGS="--enable-debug"
+#
+#    # test error reporting and compiling (quickest job in this test suite)
+#    - env: TEST_SUITE=testspecial CONFIGFLAGS="--enable-debug"
 
 script:
   - gcov --version

@@ -771,14 +771,14 @@ InstallGlobalFunction( "TestPackage", function(pkgname)
 local testfile, str;
 if not IsBound( GAPInfo.PackagesInfo.(pkgname) ) then
     Print("#I  No package with the name ", pkgname, " is available\n");
-    return;
+    return fail;
 elif LoadPackage( pkgname ) = fail then
     Print( "#I ", pkgname, " package can not be loaded\n" );
-    return;
+    return fail;
 elif not IsBound( GAPInfo.PackagesInfo.(pkgname)[1].TestFile ) then
     Print("#I No standard tests specified in ", pkgname, " package, version ",
           GAPInfo.PackagesInfo.(pkgname)[1].Version,  "\n");
-    return;
+    return false;   # false to indicate this is neither a failing nor a passing tests
 else
     testfile := Filename( DirectoriesPackageLibrary( pkgname, "" ), 
                           GAPInfo.PackagesInfo.(pkgname)[1].TestFile );
@@ -786,21 +786,30 @@ else
     if not IsString( str ) then
         Print( "#I Test file `", testfile, "' for package `", pkgname, 
         " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, " is not readable\n" );
-        return;
+        return fail;
     fi;
     if EndsWith(testfile,".tst") then
         if Test( testfile, rec(compareFunction := "uptowhitespace") ) then
             Print( "#I  No errors detected while testing package ", pkgname,
                    " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
                    "\n#I  using the test file `", testfile, "'\n");
+            return true;
         else
             Print( "#I  Errors detected while testing package ", pkgname, 
                    " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
                    "\n#I  using the test file `", testfile, "'\n");
+            return fail;
         fi;
     elif not READ( testfile ) then
         Print( "#I Test file `", testfile, "' for package `", pkgname,
         " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, " is not readable\n" );
+        return fail;
     fi;
+    # If we got here, then READ did not produce an error, but also did not
+    # exit GAP with a suitable exit code. Hence we cannot determine the status
+    # of the test.
+    # HACK: treat this as a failure for now, to see which packages are affected
+    # (probably a lot)
+    return fail;
 fi;
 end);
