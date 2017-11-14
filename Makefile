@@ -7,6 +7,8 @@
 #    Thus, if the user has BSD make, it will run this Makefile instead -- and we inform
 #    them that they need to use GNU make to compile GAP.
 #
+# To learn more about the GAP build system, see README.buildsys.md
+#
 .DEFAULT:
 	@if test -f GNUmakefile ; then \
 	    printf "Please use GNU make to build GAP (try 'gmake' or 'gnumake')" ; \

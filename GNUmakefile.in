@@ -3,6 +3,8 @@
 # This file is the part of the GAP build system. It is the first file
 # processed by GNU make when build GAP. If you want to understand the
 # build system, you can begin tracing it from here.
+#
+# To learn more about the GAP build system, see README.buildsys.md
 
 
 #
