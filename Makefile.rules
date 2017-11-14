@@ -5,6 +5,8 @@
 #
 # This requires GNU make!!! You have been warned.
 #
+# To learn more about the GAP build system, see README.buildsys.md
+#
 ########################################################################
 
 
