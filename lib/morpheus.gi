@@ -1568,7 +1568,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       all:=true;
     fi;
 
-  elif id.series in ["L","2A","C"] then
+  elif id.series in ["L","2A"] or (id.series="C" and id.parameter[1]>2) then
     hom:=EpimorphismFromClassical(G);
     if hom=fail then return fail;fi;
     field:=FieldOfMatrixGroup(Source(hom));
