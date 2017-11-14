@@ -343,7 +343,7 @@ static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
 {
   Obj obj = fake->obj;
   if ( fake->v->_mp_size == 0 ) {
-    return INTOBJ_INT(0);
+    obj = INTOBJ_INT(0);
   }
   else if ( obj != 0 ) {
     if ( fake->v->_mp_size < 0 ) {
@@ -361,6 +361,36 @@ static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
       obj = ObjInt_UInt( fake->tmp );
     else
       obj = ObjInt_UIntInv( fake->tmp );
+  }
+  return obj;
+}
+
+/****************************************************************************
+**
+*F  GMPorINTOBJ_MPZ( <fake> )
+**
+**  This function converts an mpz_t into a GAP integer object.
+*/
+static Obj GMPorINTOBJ_MPZ( mpz_t v )
+{
+  Int size = v->_mp_size;
+  Obj obj;
+  if ( size == 0 )
+    obj = INTOBJ_INT(0);
+  else if ( size == 1 )
+    obj = ObjInt_UInt( v->_mp_d[0] );
+  else if ( size == -1 )
+    obj = ObjInt_UIntInv( v->_mp_d[0] );
+  else {
+    Int sign = size > 0 ? 1 : -1;
+    if (size < 0)
+      size = -size;
+    obj = NewBag(sign == 1 ? T_INTPOS : T_INTNEG, size * sizeof(mp_limb_t));
+    memcpy(ADDR_INT(obj), v->_mp_d, size * sizeof(mp_limb_t));
+
+    // FIXME: necessary to normalize and reduce???
+    obj = GMP_NORMALIZE( obj );
+    obj = GMP_REDUCE( obj );
   }
   return obj;
 }
@@ -1224,7 +1254,7 @@ static Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
 *F  SumInt( <gmpL>, <gmpR> ) . . . . . . . . . . . .  sum of two GMP integers
 **
 */
-Obj SumInt ( Obj gmpL, Obj gmpR )
+inline Obj SumInt ( Obj gmpL, Obj gmpR )
 {
   Obj sum;
 
@@ -1242,7 +1272,7 @@ Obj SumInt ( Obj gmpL, Obj gmpR )
 *F  DiffInt( <gmpL>, <gmpR> ) . . . . . . . .  difference of two GMP integers
 **
 */
-Obj DiffInt ( Obj gmpL, Obj gmpR )
+inline Obj DiffInt ( Obj gmpL, Obj gmpR )
 {
   Obj dif;
   
@@ -2198,6 +2228,105 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 /****************************************************************************
 **
 */
+Obj BinomialInt ( Obj n, Obj k )
+{
+    Int negate_result = 0;
+
+    if (!IS_INT(n) || !IS_INT(k))
+        return Fail;
+
+    // deal with k <= 1
+    if (k == INTOBJ_INT(0))
+        return INTOBJ_INT(1);
+    if (k == INTOBJ_INT(1))
+        return n;
+    if (IS_NEG_INT(k))
+        return INTOBJ_INT(0);
+
+    // deal with n < 0
+    if (IS_NEG_INT(n)) {
+        // use the identity Binomial(n,k) = (-1)^k * Binomial(-n+k-1, k)
+        negate_result = IS_ODD_INT(k);
+        n = DiffInt(DiffInt(k,n), INTOBJ_INT(1));
+    }
+
+    // deal with n <= k
+    if (n == k)
+        return negate_result ? INTOBJ_INT(-1) : INTOBJ_INT(1);
+    if (LtInt(n, k))
+        return INTOBJ_INT(0);
+
+    // deal with n-k < k   <=>  n < 2k
+    Obj k2 = DiffInt(n, k);
+    if (LtInt(k2, k))
+        k = k2;
+
+    // From here on, we only support single limb integers for k. Anything else
+    // would lead to output too big for storage anyway, at least on a 64 bit
+    // system. To be specific, in that case n >= 2k and k >= 2^60. Thus, in
+    // the *best* case, we are trying to compute the central binomial
+    // coefficient Binomial(2k k) for k = 2^60. This value is approximately
+    // (4^k / sqrt(pi*k)); taking the logarithm and dividing by 8 yields that
+    // we need about k/4 = 2^58 bytes to store this value. No computer in the
+    // foreseeable future will be able to store the result (and much less
+    // compute it in a reasonable time).
+    //
+    // On 32 bit systems, the limit is k = 2^28, and then the central binomial
+    // coefficient Binomial(2k,k) takes up about 64 MB, so that would still be
+    // feasible. However, GMP does not support computing binomials when k is
+    // larger than a single limb, so we'd have to implement this on our own.
+    //
+    // Since GAP previously was effectively unable to compute such binomial
+    // coefficients (unless you were willing to wait for a few days or so), we
+    // simply do not implement this on 32bit systems, and instead return Fail,
+    // jut as we do on 64 bit. If somebody complains about this, we can still
+    // look into implementing this (and in the meantime, tell the user to use
+    // the old GAP version of this function).
+
+    if (SIZE_INT_OR_INTOBJ(k) > 1)
+        return Fail;
+
+    UInt K = IS_INTOBJ(k) ? INT_INTOBJ(k) : VAL_LIMB0(k);
+    mpz_t mpzResult;
+    mpz_init( mpzResult );
+
+    if (SIZE_INT_OR_INTOBJ(n) == 1) {
+        UInt N = IS_INTOBJ(n) ? INT_INTOBJ(n) : VAL_LIMB0(n);
+        mpz_bin_uiui(mpzResult, N, K);
+    } else {
+        fake_mpz_t mpzN;
+        FAKEMPZ_GMPorINTOBJ( mpzN, n );
+        mpz_bin_ui(mpzResult, MPZ_FAKEMPZ(mpzN), K);
+    }
+
+    // adjust sign of result
+    if (negate_result)
+        mpzResult->_mp_size = -mpzResult->_mp_size;
+
+    // convert mpzResult into a GAP integer object.
+    Obj result = GMPorINTOBJ_MPZ(mpzResult);
+
+    // free mpzResult
+    mpz_clear( mpzResult );
+
+    return result;
+}
+
+
+/****************************************************************************
+**
+*/
+Obj FuncBINOMIAL_INT ( Obj self, Obj opN, Obj opK )
+{
+  REQUIRE_INT_ARG( "BinomialInt", "n", opN );
+  REQUIRE_INT_ARG( "BinomialInt", "k", opK );
+  return BinomialInt( opN, opK );
+}
+
+
+/****************************************************************************
+**
+*/
 Obj JacobiInt ( Obj opL, Obj opR )
 {
   fake_mpz_t mpzL, mpzR;
@@ -2534,6 +2663,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
   GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
   GVAR_FUNC(JACOBI_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
   GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
   GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
   GVAR_FUNC(IS_PROBAB_PRIME_INT, 2, "n, reps"),

@@ -60,32 +60,7 @@ end);
 ##
 #F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
 ##
-InstallGlobalFunction(Binomial,function ( n, k )
-    local   bin, i, j;
-    if   k < 0  then
-        bin := 0;
-    elif k = 0  then
-        bin := 1;
-    elif n < 0  then
-        bin := (-1)^k * Binomial( -n+k-1, k );
-    elif n < k  then
-        bin := 0;
-    elif n = k  then
-        bin := 1;
-    elif n-k < k  then
-        bin := Binomial( n, n-k );
-    else
-        bin := 1;  j := 1;
-        # note that all intermediate results are binomial coefficients itself
-        # hence integers!
-        # slight improvement by Frank and Max.
-        for i  in [0..k-1]  do
-            bin := bin * (n-i) / j;
-            j := j + 1;
-        od;
-    fi;
-    return bin;
-end);
+InstallGlobalFunction(Binomial, BINOMIAL_INT);
 
 
 #############################################################################
