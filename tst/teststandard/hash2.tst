@@ -9,9 +9,9 @@
 ##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("hash2.tst");
-gap> g:=GL(20,2);;
+gap> g:=GL(18,2);;
 gap> Length(Orbit(g,g.1[1],OnRight));
-1048575
+262143
 gap> g:=GL(8,2);;
 gap> Length(Orbit(g,g.1,OnPoints));
 32385

@@ -16,6 +16,14 @@ error:= Print;;
 
 #############################################################################
 ##
+##  How many times to repeat the same tests? Large values result in longer
+##  test runs, but with a higher probability of finding bugs
+##
+ARITH_LST_REPS := 5;
+
+
+#############################################################################
+##
 ##  Define auxiliary functions.
 ##
 RandomSquareArray := function( dim, D )
@@ -519,14 +527,14 @@ TestOfAdditiveListArithmetic := function( R, dim )
   if IsGeneralizedRowVector( r ) then
 
     # tests of kind 1.
-    for i in [ 1 .. 10 ] do
+    for i in [ 1 .. ARITH_LST_REPS ] do
       RunTest( ZeroTest, Random( R ) );
       RunTest( AdditiveInverseTest, Random( R ) );
       RunTest( AdditionTest, Random( R ), Random( R ) );
     od;
 
     # tests of kind 2.
-    for i in [ 1 .. 10 ] do
+    for i in [ 1 .. ARITH_LST_REPS ] do
       RunTest( AdditionTest, Random( R ), [] );
       RunTest( AdditionTest, [], Random( R ) );
       r:= Random( R );
@@ -542,7 +550,7 @@ TestOfAdditiveListArithmetic := function( R, dim )
   fi;
 
   # tests of kind 3.
-  for i in [ 1 .. 10 ] do
+  for i in [ 1 .. ARITH_LST_REPS ] do
 
     vec1:= List( [ 1 .. dim ], x -> Random( R ) );
     vec2:= List( [ 1 .. dim ], x -> Random( R ) );
@@ -628,14 +636,14 @@ TestOfMultiplicativeListArithmetic := function( R, dim )
   if IsMultiplicativeGeneralizedRowVector( r ) then
 
     # tests of kind 1.
-    for i in [ 1 .. 10 ] do
+    for i in [ 1 .. ARITH_LST_REPS ] do
       RunTest( OneTest, Random( R ) );
       RunTest( InverseTest, Random( R ) );
       RunTest( MultiplicationTest, Random( R ), Random( R ) );
     od;
 
     # tests of kind 2.
-    for i in [ 1 .. 10 ] do
+    for i in [ 1 .. ARITH_LST_REPS ] do
       r:= Random( R );
       intlist:= List( [ 1 .. Length( r ) + Random( [ -1 .. 1 ] ) ],
                       x -> Random( Integers ) );
@@ -649,7 +657,7 @@ TestOfMultiplicativeListArithmetic := function( R, dim )
   fi;
 
   # tests of kind 3.
-  for i in [ 1 .. 10 ] do
+  for i in [ 1 .. ARITH_LST_REPS ] do
 
     vec1:= List( [ 1 .. dim ], x -> Random( R ) );
     vec2:= List( [ 1 .. dim ], x -> Random( R ) );

@@ -60,7 +60,7 @@ gap> for i in [0..500] do CheckSort([1..i],[1..i]); od;
 gap> for i in [0..500] do CheckSort(List([1..i],x->x),[1..i]); od;
 gap> for i in [0..500] do CheckSort([-i..i],[-i..i]); od;
 gap> for i in [0..500] do CheckSort([i,i-1..-i],[-i..i]); od;
-gap> for i in [0..500] do
+gap> for i in [0..50] do
 >      for j in [0..10] do
 >        CheckSort(Shuffle([1..i]), [1..i]);
 >        CheckFilters([1..i], true, true, i <= 1, i <= 1);
@@ -77,7 +77,7 @@ gap> for i in [0..100] do
 >    od;
 
 # Need to test something which are not plists. Strings are a good choice.
-gap> for i in [0..100] do
+gap> for i in [0..50] do
 >      for j in [0..10] do
 >        l := "";
 >        for a in [1..j] do for b in [1..i] do
@@ -94,7 +94,7 @@ gap> for i in [0..100] do
 >    od;
 
 # Let test bool lists too!
-gap> for i in [0..100] do
+gap> for i in [0..50] do
 >      for j in [0..10] do
 >        l := BlistList([1..i+j],[1..i]);
 >        l2 := Shuffle(List(l));
