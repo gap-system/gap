@@ -50,13 +50,14 @@ make
 
 * `Makefile`: This is a placeholder file, and serves two purposes:
    1. If the user runs `make` before `configure`, it prints a warning.
-   2. If `configure` did ru, but `make` is not GNU make, it 
+   2. If `configure` did run, but `make` is not GNU make, it produces
+      a corresponding error message.
 
 * `Makefile.rules`: This is the core of the build system. If you want
   to add or remove a kernel C source file, you need to add or remove
   its name here and only here.
 
-* `bin/`: This directory is created for compatibility mode (see below)
+* `bin/`: This directory is created for compatibility mode (see below).
 
 * `cnf/`: All files in this directory are part of the build system.
 
@@ -78,7 +79,7 @@ make
 
 ## Out-of-tree builds
 
-The old GAP buildsystem had a concept of "configs" and "CONFIGNAMEs", which
+The old GAP build system had a concept of "configs" and "CONFIGNAME", which
 allowed you to build GAP in different configurations from a single set of
 sources. This is gone in the current build system. However, a similar goal can
 be achieved by using so-called "out-of-tree builds".
@@ -133,14 +134,14 @@ Compatibility mode does the following things:
 * create a symlink `sysinfo.gap-default$ABI` pointing at `sysinfo.gap`
 * create a `bin/$GAPARCH/config.h` symlink pointing at `gen/config.h`
 * create a `bin/$GAPARCH/gac` symlink pointing at `gac`
-* create a `bin/$GAPARCH/src` symlink pointing at eithr `$srcdir/src`
+* create a `bin/$GAPARCH/src` symlink pointing at either `$srcdir/src`
   or (for HPC-GAP build) at `$srcdir/hpcgap/src`
 * for out-of-tree builds, it creates a `${builddir}/src/compiled.h` file
 * ...
 
 For now, using compatibility mode is required if one wants to build the
 kernel extension for most packages which have one. In the future, we will
-provide an alternative way to do this, and also will extend gac to
+provide an alternative way to do this, and also will extend `gac` to
 cleanly supported building kernel extensions.
 
 
