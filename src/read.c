@@ -140,6 +140,14 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
   return 0;
 }
 
+// match either a semicolon or a dual semicolon
+static void MatchSemicolon(TypSymbolSet skipto)
+{
+    Match(STATE(Symbol) == S_DUALSEMICOLON ? S_DUALSEMICOLON
+                                           : S_SEMICOLON,
+          ";", skipto);
+}
+
 /****************************************************************************
 **
 *F * * * * * * * * * * read symbols and call interpreter  * * * * * * * * * *
@@ -674,7 +682,7 @@ void ReadCallVarAss (
         else if ( type == '!' ) { IntrElmComObjName( rnam );      }
         else if ( type == '|' ) { IntrElmComObjExpr();            }
         else if ( type == 'c' || type == 'C') {
-            if ( mode == 'x' && STATE(Symbol) == S_SEMICOLON ) {
+            if (mode == 'x' && IS_IN(STATE(Symbol), S_SEMICOLON)) {
                 IntrFuncCallEnd( 0UL, type == 'C', narg );
             }
             else {
@@ -1483,7 +1491,7 @@ void ReadFuncExpr (
             PushPlist(args.nams, MakeImmString(STATE(Value)));
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         }
-        Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
+        MatchSemicolon(STATBEGIN | S_END | follow);
     }
 
     ReadFuncExprBody(follow, 0, nloc, args, startLine);
@@ -2475,7 +2483,7 @@ void ReadReturn (
     Match( S_RETURN, "return", follow );
 
     /* 'return' with no expression following                               */
-    if ( STATE(Symbol) == S_SEMICOLON ) {
+    if (IS_IN(STATE(Symbol), S_SEMICOLON)) {
         TRY_READ { IntrReturnVoid(); }
     }
 
@@ -2597,8 +2605,7 @@ UInt ReadStats (
         else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
         else                           ReadEmpty(     follow    );
         nr++;
-        Match( S_SEMICOLON, ";", follow );
-
+        MatchSemicolon(follow);
     }
 
     /* return the number of statements                                     */
@@ -2726,7 +2733,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     else                           { ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); }
 
     /* every statement must be terminated by a semicolon                  */
-    if ( STATE(Symbol) != S_SEMICOLON ) {
+    if (!IS_IN(STATE(Symbol), S_SEMICOLON)) {
         SyntaxError( "; expected");
     }
 
@@ -2738,12 +2745,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
         type = IntrEnd( 0UL );
 
         /* check for dual semicolon */
-        if ( *STATE(In) == ';' ) {
-            GetSymbol();
-            if (dualSemicolon) *dualSemicolon = 1;
-        } else {
-            if (dualSemicolon) *dualSemicolon = 0;
-        }
+        if (dualSemicolon)
+            *dualSemicolon = (STATE(Symbol) == S_DUALSEMICOLON);
     }
     CATCH_READ_ERROR {
         IntrEnd( 1UL );
@@ -2848,7 +2851,7 @@ UInt ReadEvalFile(Obj *evalResult)
             PushPlist(nams, MakeImmString(STATE(Value)));
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
         }
-        Match( S_SEMICOLON, ";", STATBEGIN|S_END );
+        MatchSemicolon(STATBEGIN | S_END);
     }
 
     /* fake the 'function ()'                                              */

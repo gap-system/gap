@@ -1098,7 +1098,11 @@ void GetSymbol ( void )
     if ( *STATE(In) == '=' ) { STATE(Symbol) = S_ASSIGN;  GET_CHAR(); break; }
     break;
 
-  case ';':   STATE(Symbol) = S_SEMICOLON;                   GET_CHAR();  break;
+  case ';':   STATE(Symbol) = S_SEMICOLON;                   GET_CHAR();
+    if ( *STATE(In) == ';' ) {
+        STATE(Symbol) = S_DUALSEMICOLON; GET_CHAR();
+    }
+    break;
 
   case '=':   STATE(Symbol) = S_EQ;                          GET_CHAR();  break;
   case '<':   STATE(Symbol) = S_LT;                          GET_CHAR();
