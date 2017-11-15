@@ -144,7 +144,8 @@ enum {
     S_QQUIT             = (1UL<<29)+3,
     S_CONTINUE          = (1UL<<29)+4,
 
-    S_SEMICOLON         = (1UL<<30),
+    S_SEMICOLON         = (1UL<<30)+0,
+    S_DUALSEMICOLON     = (1UL<<30)+1,
 
     S_EOF               = (1UL<<31),
 };
