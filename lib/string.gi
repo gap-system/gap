@@ -1210,6 +1210,9 @@ end);
 
 InstallGlobalFunction(StringOfMemoryAmount, function(m)
     local  whole, frac, shift, s, units;
+    if not IsInt(m) or m < 0 then
+        Error("StringOfMemoryAmount: amount must be a non-negative integer number of bytes");
+    fi;
     whole := m;
     frac := 0;
     shift := 0;
