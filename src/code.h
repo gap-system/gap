@@ -27,8 +27,7 @@
 */
 typedef struct {
     unsigned int visited : 1;
-    unsigned int fileid : 15;
-    unsigned int line : 16;
+    unsigned int line : 31;
     unsigned int size : 24;
     unsigned int type : 8;
 } StatHeader;
@@ -45,7 +44,7 @@ typedef struct {
 
 /****************************************************************************
 **
-** Function headers
+** Function body headers
 **
 ** 'FILENAME_BODY' is a string containing the file of a function
 ** 'STARTLINE_BODY' is the line number where a function starts.
@@ -61,11 +60,19 @@ typedef struct {
 */
 
 typedef struct {
-    Obj filename;
-    union {
-        Obj startline;
-        Obj location;
-    };
+    // if non-zero, this is either a string containing the name of the
+    // file of a function, or an immediate integer containing the index
+    // of the filename inside FilenameCache
+    Obj filename_or_id;
+
+    // if non-zero, this is either an immediate integer encoding the
+    // line number where a function starts, or string describing the
+    // location of a function. Typically this will be the name of a C
+    // function implementing it.
+    Obj startline_or_location;
+
+    // if non-zero, this is an immediate integer encoding the line
+    // number where a function ends
     Obj endline;
 } BodyHeader;
 
@@ -77,6 +84,10 @@ static inline BodyHeader *BODY_HEADER(Obj body)
 
 Obj GET_FILENAME_BODY(Obj body);
 void SET_FILENAME_BODY(Obj body, Obj val);
+
+UInt GET_GAPNAMEID_BODY(Obj body);
+void SET_GAPNAMEID_BODY(Obj body, UInt val);
+
 Obj GET_LOCATION_BODY(Obj body);
 void SET_LOCATION_BODY(Obj body, Obj val);
 
@@ -248,24 +259,6 @@ enum STAT_TNUM {
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
 #define LINE_STAT(stat) (STAT_HEADER(stat)->line)
-
-/****************************************************************************
-**
-*F  FILENAMEID_STAT(<stat>) . . . . . . . . . . . . file name of a statement
-**
-**  'FILENAMEID_STAT' returns the file the statement <stat> was read from.
-**  This should be looked up in the FilenameCache variable
-*/
-#define FILENAMEID_STAT(stat) (STAT_HEADER(stat)->fileid)
-
-/****************************************************************************
-**
-*F  FILENAME_STAT(<stat>) . . . . . . . . . . . . .  file name of a statement
-**
-**  'FILENAME_STAT' returns a gap string containing the file where the statement
-**  <stat> was read from.
-*/
-Obj FILENAME_STAT(Stat stat);
 
 /****************************************************************************
 **

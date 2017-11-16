@@ -57,9 +57,6 @@ static Int HookActiveCount;
 /* If a print hook is current active */
 static Int PrintHookActive;
 
-/* Forward declaration */
-void CheckPrintOverflowWarnings(void);
-
 /****************************************************************************
 **
 ** Store the true values of each function we wrap for hooking. These always
@@ -166,8 +163,6 @@ Int ActivateHooks(struct InterpreterHooks * hook)
 {
     Int i;
 
-    CheckPrintOverflowWarnings();
-
     if (HookActiveCount == HookCount) {
         return 0;
     }
@@ -220,68 +215,6 @@ Int DeactivateHooks(struct InterpreterHooks * hook)
     return 1;
 }
 
-/****************************************************************************
-**
-** These variables store if we have overflowed either 2^16 lines, or files.
-** In this case GAP will stop marking the line and file of statements.
-** We print a warning to tell users that this happens, either immediately
-** (if hooking is active) or when hooking is next activated if not.
-**/
-
-static Int HaveReportedLineProfileOverflow;
-static Int ShouldReportLineProfileOverflow;
-
-static Int HaveReportedFileProfileOverflow;
-static Int ShouldReportFileProfileOverflow;
-
-// This function only exists to allow testing of these overflow checks
-Obj FuncCLEAR_PROFILE_OVERFLOW_CHECKS(Obj self)
-{
-    HaveReportedLineProfileOverflow = 0;
-    ShouldReportLineProfileOverflow = 0;
-
-    HaveReportedFileProfileOverflow = 0;
-    ShouldReportFileProfileOverflow = 0;
-
-    return 0;
-}
-
-void CheckPrintOverflowWarnings(void)
-{
-    if (!HaveReportedLineProfileOverflow && ShouldReportLineProfileOverflow) {
-        HaveReportedLineProfileOverflow = 1;
-        Pr("#I Interpreter hooking only works on the first 65,535 lines\n"
-           "#I of each file (this warning will only appear once).\n"
-           "#I This will effect profiling and debugging.\n",
-           0L, 0L);
-    }
-
-    if (!HaveReportedFileProfileOverflow && ShouldReportFileProfileOverflow) {
-        HaveReportedFileProfileOverflow = 1;
-        Pr("#I Interpreter hooking only works on the first 65,535 read files\n"
-           "#I of each file (this warning will only appear once).\n"
-           "#I This will effect profiling and debugging.\n",
-           0L, 0L);
-    }
-}
-
-void ReportLineNumberOverflowOccured(void)
-{
-    ShouldReportLineProfileOverflow = 1;
-    if (HookActiveCount) {
-        CheckPrintOverflowWarnings();
-    }
-}
-
-void ReportFileNumberOverflowOccured(void)
-{
-    ShouldReportFileProfileOverflow = 1;
-    if (HookActiveCount) {
-        CheckPrintOverflowWarnings();
-    }
-}
-
-
 void ActivatePrintHooks(struct PrintHooks * hook)
 {
     Int i;
@@ -320,7 +253,6 @@ void DeactivatePrintHooks(struct PrintHooks * hook)
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(CLEAR_PROFILE_OVERFLOW_CHECKS, 0, ""),
     { 0, 0, 0, 0, 0 }
 };
 
