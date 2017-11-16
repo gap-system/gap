@@ -135,32 +135,44 @@ Obj FuncGET_FILENAME_CACHE(Obj self)
   return CopyObj(FilenameCache, 1);
 }
 
-Obj FILENAME_STAT(Stat stat)
-{
-  Obj filename;
-  UInt filenameid = FILENAMEID_STAT(stat);
-  if (filenameid == 0)
-      filename = NEW_STRING(0);
-  else
-      filename = ELM_LIST(FilenameCache, filenameid);
-  return filename;
-}
+// filename
 
 Obj GET_FILENAME_BODY(Obj body)
 {
-    return BODY_HEADER(body)->filename;
+    Obj val = BODY_HEADER(body)->filename_or_id;
+    if (IS_INTOBJ(val)) {
+        UInt gapnameid = INT_INTOBJ(val);
+        val = ELM_LIST(FilenameCache, gapnameid);
+    }
+
+    return val;
 }
 
 void SET_FILENAME_BODY(Obj body, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutableString(val);
-    BODY_HEADER(body)->filename = val;
+    BODY_HEADER(body)->filename_or_id = val;
 }
+
+// gapnameid
+
+UInt GET_GAPNAMEID_BODY(Obj body)
+{
+    Obj gapnameid = BODY_HEADER(body)->filename_or_id;
+    return IS_POS_INTOBJ(gapnameid) ? INT_INTOBJ(gapnameid) : 0;
+}
+
+void SET_GAPNAMEID_BODY(Obj body, UInt val)
+{
+    BODY_HEADER(body)->filename_or_id = INTOBJ_INT(val);
+}
+
+// location
 
 Obj GET_LOCATION_BODY(Obj body)
 {
-    Obj location = BODY_HEADER(body)->location;
+    Obj location = BODY_HEADER(body)->startline_or_location;
     return IS_STRING_REP(location) ? location : 0;
 }
 
@@ -168,19 +180,23 @@ void SET_LOCATION_BODY(Obj body, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutableString(val);
-    BODY_HEADER(body)->location = val;
+    BODY_HEADER(body)->startline_or_location = val;
 }
+
+// startline
 
 UInt GET_STARTLINE_BODY(Obj body)
 {
-    Obj line = BODY_HEADER(body)->startline;
+    Obj line = BODY_HEADER(body)->startline_or_location;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
 }
 
 void SET_STARTLINE_BODY(Obj body, UInt val)
 {
-    BODY_HEADER(body)->startline = val ? INTOBJ_INT(val) : 0;
+    BODY_HEADER(body)->startline_or_location = val ? INTOBJ_INT(val) : 0;
 }
+
+// endline
 
 UInt GET_ENDLINE_BODY(Obj body)
 {
@@ -192,27 +208,6 @@ void SET_ENDLINE_BODY(Obj body, UInt val)
 {
     BODY_HEADER(body)->endline = val ? INTOBJ_INT(val) : 0;
 }
-
-/****************************************************************************
-**
-** Fill in filename and line of a statement, checking we do not overflow
-** the space we have for storing information
-*/
-static StatHeader fillFilenameLine(Int fileid, Int line, Int size, Int type)
-{
-  if (fileid < 0 || fileid >= (1 << 15)) {
-    fileid = (1 << 15) - 1;
-    ReportFileNumberOverflowOccured();
-  }
-  if (line < 0 || line >= (1 << 16)) {
-    line = (1 << 16) - 1;
-    ReportLineNumberOverflowOccured();
-  }
-
-  StatHeader header = { 0, fileid, line, size, type };
-  return header;
-}
-
 
 
 /****************************************************************************
@@ -230,8 +225,7 @@ static StatHeader fillFilenameLine(Int fileid, Int line, Int size, Int type)
 static Stat NewStatWithProf (
     UInt                type,
     UInt                size,
-    UInt                line,
-    UInt                file)
+    UInt                line)
 {
     Stat                stat;           /* result                          */
 
@@ -252,7 +246,9 @@ static Stat NewStatWithProf (
     STATE(PtrBody) = (Stat*)PTR_BAG(body);
 
     /* enter type and size                                                 */
-    *STAT_HEADER(stat) = fillFilenameLine(file, line, size, type);
+    STAT_HEADER(stat)->line = line;
+    STAT_HEADER(stat)->size = size;
+    STAT_HEADER(stat)->type = type;
     RegisterStatWithHook(stat);
     /* return the new statement                                            */
     return stat;
@@ -262,8 +258,8 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    SetupGapname(STATE(Input));
-    return NewStatWithProf(type, size, STATE(Input)->number, STATE(Input)->gapnameid);
+    assert(STATE(Input)->gapnameid != 0);
+    return NewStatWithProf(type, size, STATE(Input)->number);
 }
 
 
@@ -794,8 +790,7 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     SetupGapname(STATE(Input));
-    Obj filename = ELM_LIST(FilenameCache, STATE(Input)->gapnameid);
-    SET_FILENAME_BODY(body, filename);
+    SET_GAPNAMEID_BODY(body, STATE(Input)->gapnameid);
     SET_STARTLINE_BODY(body, startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
           Pr(" Body id %d\n",(Int)(body),0L); */
@@ -858,12 +853,9 @@ void CodeFuncExprEnd (
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    *STAT_HEADER(OFFSET_FIRST_STAT)
-        = fillFilenameLine(
-            FILENAMEID_STAT(OFFSET_FIRST_STAT),
-            LINE_STAT(OFFSET_FIRST_STAT),
-            nr*sizeof(Stat),
-            T_SEQ_STAT+nr-1);
+    STAT_HEADER(OFFSET_FIRST_STAT)->line = LINE_STAT(OFFSET_FIRST_STAT);
+    STAT_HEADER(OFFSET_FIRST_STAT)->size = nr*sizeof(Stat);
+    STAT_HEADER(OFFSET_FIRST_STAT)->type = T_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         ADDR_STAT(OFFSET_FIRST_STAT)[nr-i] = stat1;
@@ -1441,7 +1433,7 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
 
     /* allocate the return-statement, without profile information          */
 
-    stat = NewStatWithProf( T_RETURN_VOID, 0 * sizeof(Expr), 0, 0 );
+    stat = NewStatWithProf( T_RETURN_VOID, 0 * sizeof(Expr), 0 );
 
     /* push the return-statement                                           */
     PushStat( stat );

@@ -1039,7 +1039,8 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     if (IsKernelFunction(func)) {
         return Fail;
     }
-    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+    Obj body = BODY_FUNC(func);
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(body) - sizeof(StatHeader)) {
         return Fail;
     }
 
@@ -1052,7 +1053,7 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
         (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
         Int line = LINE_STAT(call);
-        Obj filename = FILENAME_STAT(call);
+        Obj filename = GET_FILENAME_BODY(body);
         retlist = NEW_PLIST(T_PLIST, 2);
         SET_LEN_PLIST(retlist, 2);
         SET_ELM_PLIST(retlist, 1, filename);
@@ -1073,28 +1074,29 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
     Stat call = STAT_LVARS(context);
     if (IsKernelFunction(func)) {
         Pr("<compiled statement> ", 0L, 0L);
+        return 0;
     }
-    else if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(BODY_FUNC(func)) - sizeof(StatHeader)) {
+    Obj body = BODY_FUNC(func);
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(body) - sizeof(StatHeader)) {
         Pr("<corrupted statement> ", 0L, 0L);
+        return 0;
     }
-    else {
-        Obj currLVars = STATE(CurrLVars);
-        SWITCH_TO_OLD_LVARS(context);
-        GAP_ASSERT(call == BRK_CALL_TO());
 
-        Int type = TNUM_STAT(call);
-        if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
-            PrintStat(call);
-            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
-               LINE_STAT(call));
-        }
-        else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
-            PrintExpr(call);
-            Pr(" at %s:%d", (UInt)CSTR_STRING(FILENAME_STAT(call)),
-               LINE_STAT(call));
-        }
-        SWITCH_TO_OLD_LVARS(currLVars);
+    Obj currLVars = STATE(CurrLVars);
+    SWITCH_TO_OLD_LVARS(context);
+    GAP_ASSERT(call == BRK_CALL_TO());
+
+    Int type = TNUM_STAT(call);
+    Obj filename = GET_FILENAME_BODY(body);
+    if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+        PrintStat(call);
+        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
     }
+    else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+        PrintExpr(call);
+        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
+    }
+    SWITCH_TO_OLD_LVARS(currLVars);
     return 0;
 }    
 

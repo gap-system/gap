@@ -108,18 +108,6 @@ void DeactivatePrintHooks(struct PrintHooks * hook);
 
 /****************************************************************************
 **
-** We can only store a fixed number of files, and files, in statements.
-**
-** Whenever an overflow occurs we do not mark that statement with its line
-** or file, and call these functions to record the fact information is
-** missing, so we can inform users later.
-*/
-
-void ReportLineNumberOverflowOccured();
-void ReportFileNumberOverflowOccured();
-
-/****************************************************************************
-**
 ** We need the functions in the next three functions to be in the header,
 ** so they can be inlined away. The only functionality here which should
 ** be publicly used is 'VisitStatIfHooked',

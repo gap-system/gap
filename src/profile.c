@@ -282,7 +282,9 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 // This function checks if we have ever printed out the id of stat
 static inline UInt getFilenameId(Stat stat)
 {
-  UInt id = FILENAMEID_STAT(stat);
+  Obj func = CURR_FUNC();
+  Obj body = BODY_FUNC(func);
+  UInt id = GET_GAPNAMEID_BODY(body);
   if (id == 0) {
     return 0;
   }
@@ -290,7 +292,7 @@ static inline UInt getFilenameId(Stat stat)
       ELM_PLIST(OutputtedFilenameList, id) != True) {
     AssPlist(OutputtedFilenameList, id, True);
     fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
-                                  CSTR_STRING(FILENAME_STAT(stat)), (int)id);
+                                  CSTR_STRING(GET_FILENAME_BODY(body)), (int)id);
   }
   return id;
 }
@@ -335,25 +337,24 @@ static inline void outputStat(Stat stat, int exec, int visited)
   // Explicitly skip these two cases, as they are often specially handled
   // and also aren't really interesting statements (something else will
   // be executed whenever they are).
-  if(TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
+  if (TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
     return;
   }
 
   // Catch the case we arrive here and profiling is already disabled
-  if(!profileState_Active) {
+  if (!profileState_Active) {
     return;
   }
 
   nameid = getFilenameId(stat);
 
   // Statement not attached to a file
-  if(nameid == 0)
-  {
+  if (nameid == 0) {
     return;
   }
 
   line = LINE_STAT(stat);
-  if(profileState.lastOutputted.line != line ||
+  if (profileState.lastOutputted.line != line ||
      profileState.lastOutputted.fileID != nameid ||
      profileState.lastOutputtedExec != exec)
   {
