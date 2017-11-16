@@ -48,6 +48,7 @@
 #include <src/gap.h>
 #include <src/gaputils.h>
 #include <src/lists.h>
+#include <src/integer.h>
 
 
 /****************************************************************************
@@ -378,14 +379,24 @@ extern Obj NargError(Obj func, Int actual);
 #define COUNT_PROF(prof)            (INT_INTOBJ(ELM_PLIST(prof,1)))
 #define TIME_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,2)))
 #define TIME_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,3)))
-#define STOR_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,4)))
-#define STOR_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,5)))
+#define STOR_WITH_PROF(prof)        (UInt8_ObjInt(ELM_PLIST(prof,4)))
+#define STOR_WOUT_PROF(prof)        (UInt8_ObjInt(ELM_PLIST(prof,5)))
 
 #define SET_COUNT_PROF(prof,n)      SET_ELM_PLIST(prof,1,INTOBJ_INT(n))
 #define SET_TIME_WITH_PROF(prof,n)  SET_ELM_PLIST(prof,2,INTOBJ_INT(n))
 #define SET_TIME_WOUT_PROF(prof,n)  SET_ELM_PLIST(prof,3,INTOBJ_INT(n))
-#define SET_STOR_WITH_PROF(prof,n)  SET_ELM_PLIST(prof,4,INTOBJ_INT(n))
-#define SET_STOR_WOUT_PROF(prof,n)  SET_ELM_PLIST(prof,5,INTOBJ_INT(n))
+
+static inline void SET_STOR_WITH_PROF(Obj prof, UInt8 n)
+{
+    SET_ELM_PLIST(prof,4,ObjInt_Int8(n));
+    CHANGED_BAG(prof);
+}
+
+static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
+{
+    SET_ELM_PLIST(prof,5,ObjInt_Int8(n));
+    CHANGED_BAG(prof);
+}
 
 #define LEN_PROF                    5
 

@@ -572,7 +572,6 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       g := GASMAN_STATS();    
       return g[1][8] + g[2][8];    
   end;
-        
   STOP_TEST_CPY := STOP_TEST;
   STOP_TEST := function(arg) end;
   

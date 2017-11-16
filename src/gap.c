@@ -236,7 +236,7 @@ Obj Shell ( Obj context,
             Char *outFile)
 {
   UInt time = 0;
-  UInt mem = 0;
+  UInt8 mem = 0;
   UInt status;
   Obj evalResult;
   UInt dualSemicolon;
@@ -354,11 +354,7 @@ Obj Shell ( Obj context,
     /* stop the stopwatch                                          */
     if (setTime) {
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-      /* This should be correct for small allocated totals at least, 
-         even on 32 bits, but this functionality will never be very useful
-         on 32 bits */         
-      AssGVar(MemoryAllocated,
-              INTOBJ_INT((SizeAllBags - mem) % (1L << NR_SMALL_INT_BITS)));
+      AssGVar(MemoryAllocated, ObjInt_Int8(SizeAllBags - mem));
     }
 
     if (STATE(UserHasQuit))
@@ -1986,7 +1982,7 @@ Obj FuncSHALLOW_SIZE (
 */
 
 Obj FuncTotalMemoryAllocated( Obj self ) {
-    return INTOBJ_INT(SizeAllBags);
+    return ObjInt_UInt8(SizeAllBags);
 }
 
 /****************************************************************************

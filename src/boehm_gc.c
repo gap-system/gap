@@ -50,7 +50,7 @@ enum { NTYPES = 256 };
 
 TNumInfoBags InfoBags[NTYPES];
 
-UInt SizeAllBags;
+UInt8 SizeAllBags;
 
 static inline Bag * DATA(BagHeader * bag)
 {

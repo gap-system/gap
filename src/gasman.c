@@ -422,11 +422,11 @@ Bag                     MarkedBags;
 **                            but may still be weakly pointed to
 */
 UInt                    NrAllBags;
-UInt                    SizeAllBags;
+UInt8                   SizeAllBags;
 UInt                    NrLiveBags;
 UInt                    SizeLiveBags;
 UInt                    NrDeadBags;
-UInt                    SizeDeadBags;
+UInt8                   SizeDeadBags;
 UInt                    NrHalfDeadBags;
 
 
