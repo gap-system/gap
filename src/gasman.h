@@ -599,11 +599,11 @@ extern void SwapMasterPoint (
 */
 
 extern  UInt                    NrAllBags;
-extern  UInt                    SizeAllBags;
+extern  UInt8                   SizeAllBags;
 extern  UInt                    NrLiveBags;
 extern  UInt                    SizeLiveBags;
 extern  UInt                    NrDeadBags;
-extern  UInt                    SizeDeadBags;
+extern  UInt8                   SizeDeadBags;
 extern  UInt                    NrHalfDeadBags;
 
 

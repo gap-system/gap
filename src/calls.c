@@ -456,7 +456,7 @@ UInt TimeDone;
 **  'StorDone' is the amount of storage spent for all function call that have
 **  already been completed.
 */
-UInt StorDone;
+UInt8 StorDone;
 
 
 /****************************************************************************
@@ -476,8 +476,8 @@ Obj DoProf0args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -525,8 +525,8 @@ Obj DoProf1args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -575,8 +575,8 @@ Obj DoProf2args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -626,8 +626,8 @@ Obj DoProf3args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -678,8 +678,8 @@ Obj DoProf4args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -731,8 +731,8 @@ Obj DoProf5args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -785,8 +785,8 @@ Obj DoProf6args (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -834,8 +834,8 @@ Obj DoProfXargs (
     Obj                 prof;           /* profiling bag                   */
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt                storElse;       /* storage spent elsewhere         */
-    UInt                storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storElse;       /* storage spent elsewhere         */
+    UInt8               storCurr;       /* storage spent in current funcs. */ 
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );

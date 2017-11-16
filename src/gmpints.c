@@ -170,6 +170,9 @@ static Obj ObjInt_UIntInv( UInt i );
                          (Int)TNAM_OBJ(op), 0L ); \
     }
 
+GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(Int), "gmp limb size incompatible with GAP word size");
+
+    
 /* for fallbacks to library */
 static Obj String;
 static Obj OneAttr;
@@ -565,6 +568,128 @@ Obj ObjInt_Int8( Int8 i )
   ptr[0] = (UInt4)i;
   ptr[1] = ((UInt8)i) >> 32;
   return gmp;
+#endif
+}
+
+Obj ObjInt_UInt8( UInt8 i )
+{
+#ifdef SYS_IS_64_BIT
+  return ObjInt_UInt(i);
+#else
+  if (i == (UInt4)i) {
+    return ObjInt_UInt((UInt4)i);
+  }
+
+  /* we need two limbs to store this integer */
+  assert( sizeof(mp_limb_t) == 4 );
+  Obj gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
+  mp_limb_t *ptr = ADDR_INT(gmp);
+  ptr[0] = (UInt4)i;
+  ptr[1] = ((UInt8)i) >> 32;
+  return gmp;
+#endif
+}
+
+/**************************************************************************
+**
+** Convert GAP Integers to various C types -- see header file
+*/
+Int Int_ObjInt(Obj i)
+{
+    UInt sign = 0;
+    if (IS_INTOBJ(i))
+        return INT_INTOBJ(i);
+    // must be a single limb
+    if (TNUM_BAG(i) == T_INTPOS)
+        sign = 0;
+    else if (TNUM_BAG(i) == T_INTNEG)
+        sign = 1;
+    else
+        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
+                     (Int)TNAM_OBJ(i), 0);
+    if (SIZE_BAG(i) != sizeof(mp_limb_t))
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    UInt val = ADDR_INT(i)[0];
+// now check if val is small enough to fit in the signed Int type
+// that has a range from -2^N to 2^N-1 so we need to check both ends
+// Since -2^N is the same bit pattern as the UInt 2^N (N is 31 or 63)
+// we can do it as below which avoids some compiler warnings
+#ifdef SYS_IS_64_BIT
+    if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt)INT64_MIN)))
+#else
+    if ((!sign && (val > INT32_MAX)) || (sign && (val > (UInt)INT32_MIN)))
+#endif
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    return sign ? -(Int)val : (Int)val;
+}
+
+UInt UInt_ObjInt(Obj i)
+{
+    if (IS_NEGATIVE(i))
+        ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
+    if (IS_INTOBJ(i))
+        return (UInt)INT_INTOBJ(i);
+    if (TNUM_BAG(i) != T_INTPOS)
+        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
+                     (Int)TNAM_OBJ(i), 0);
+
+    // must be a single limb
+    if (SIZE_INT(i) != 1)
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    return ADDR_INT(i)[0];
+}
+
+Int8 Int8_ObjInt(Obj i)
+{
+#ifdef SYS_IS_64_BIT
+    // in this case Int8 is Int
+    return Int_ObjInt(i);
+#else
+    UInt sign = 0;
+    if (IS_INTOBJ(i))
+        return (Int8)INT_INTOBJ(i);
+    // must be at most two limbs
+    if (TNUM_BAG(i) == T_INTPOS)
+        sign = 0;
+    else if (TNUM_BAG(i) == T_INTNEG)
+        sign = 1;
+    else
+        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
+                     (Int)TNAM_OBJ(i), 0);
+
+    if (SIZE_INT(i) > 2)
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    UInt  vall = ADDR_INT(i)[0];
+    UInt  valh = (SIZE_INT(i) == 1) ? 0 : ADDR_INT(i)[1];
+    UInt8 val = (UInt8)vall + ((UInt8)valh << 32);
+    // now check if val is small enough to fit in the signed Int8 type
+    // that has a range from -2^63 to 2^63-1 so we need to check both ends
+    // Since -2^63 is the same bit pattern as the UInt8 2^63 we can do it
+    // this way which avoids some compiler warnings
+    if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt8)INT64_MIN)))
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    return sign ? -(Int8)val : (Int8)val;
+#endif
+}
+
+UInt8 UInt8_ObjInt(Obj i)
+{
+#ifdef SYS_IS_64_BIT
+    // in this case UInt8 is UInt
+    return UInt_ObjInt(i);
+#else
+    if (IS_NEGATIVE(i))
+        ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
+    if (IS_INTOBJ(i))
+        return (UInt8)INT_INTOBJ(i);
+    if (TNUM_BAG(i) != T_INTPOS)
+        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
+                     (Int)TNAM_OBJ(i), 0);
+    if (SIZE_INT(i) > 2)
+        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+    UInt vall = ADDR_INT(i)[0];
+    UInt valh = (SIZE_INT(i) == 1) ? 0 : ADDR_INT(i)[1];
+    return (UInt8)vall + ((UInt8)valh << 32);
 #endif
 }
 

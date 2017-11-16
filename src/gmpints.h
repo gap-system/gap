@@ -69,7 +69,19 @@ extern "C" {
 extern Obj ObjInt_Int(Int i);
 extern Obj ObjInt_UInt(UInt i);
 extern Obj ObjInt_Int8(Int8 i);
+extern Obj ObjInt_UInt8(UInt8 i);
 
+/**************************************************************************
+**
+** The following functions convert a GAP integer into an Int, UInt,
+** Int8 or UInt8 if it is in range. Otherwise it gives an error.
+*/
+extern Int Int_ObjInt(Obj i);    
+extern UInt UInt_ObjInt(Obj i);    
+extern Int8 Int8_ObjInt(Obj i);    
+extern UInt8 UInt8_ObjInt(Obj i);    
+
+    
 /****************************************************************************
 **
 ** Reduce and normalize the given large integer object if necessary.
