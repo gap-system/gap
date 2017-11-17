@@ -21,11 +21,6 @@
 #include <src/io.h>      /* for Pr */
 #include <src/plist.h>
 
-extern  Obj             TYPE_LIST_EMPTY_MUTABLE;
-extern  Obj             TYPE_LIST_EMPTY_IMMUTABLE;
-
-extern  Obj             TYPE_LIST_HOM;
-
 /****************************************************************************
 **
 *F  IS_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
