@@ -515,7 +515,7 @@ end );
 
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        libs, str, gap;
+        config, str, gap;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -562,25 +562,26 @@ BindGlobal( "ShowKernelInformation", function()
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
   fi;
-  # For each library, print the name.
-  libs:= [];
-  if "gmpints" in LoadedModules() then
+  # For each library or configuration setting, print some info.
+  config:= [];
+  # always mention GMP
+  if true then
     if IsBound( GAPInfo.KernelInfo.GMP_VERSION ) then
       str := "gmp ";
       Append(str, GAPInfo.KernelInfo.GMP_VERSION);
     else
       str := "gmp";
     fi;
-    Add( libs, str );
+    Add( config, str );
   fi;
   if IsBound( GAPInfo.UseReadline ) then
-    Add( libs, "readline" );
+    Add( config, "readline" );
   fi;
   if GAPInfo.KernelInfo.KernelDebug then
-    Add( libs, "KernelDebug" );
+    Add( config, "KernelDebug" );
   fi;
-  if libs <> [] then
-    print_info( " Configuration:  ", libs, "\n" );
+  if config <> [] then
+    print_info( " Configuration:  ", config, "\n" );
   fi;
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
@@ -934,7 +935,7 @@ end );
 
 BindGlobal( "ShowPackageInformation", function()
   local linelen, indent, btop, vert, bbot, print_info,
-        libs, cmpdist, ld, f, packagenames;
+        cmpdist, ld, f, packagenames;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
