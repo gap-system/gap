@@ -15,6 +15,10 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
+#include <src/system.h>
+#include <src/objects.h>    // for ADDR_OBJ, TNUM_OBJ etc.
+#include <src/intobj.h>     // for IS_INTOBJ etc.
+
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C
 }
@@ -54,10 +58,104 @@ extern "C" {
 #endif
 
 
-#define ADDR_INT(obj)          ((mp_limb_t *)ADDR_OBJ(obj))
-#define CONST_ADDR_INT(obj)    ((const mp_limb_t *)CONST_ADDR_OBJ(obj))
-#define SIZE_INT(obj)          ((mp_size_t)SIZE_OBJ(obj)/sizeof(mp_limb_t))
-/* SIZE_INT gives a result in limbs                                        */
+/**************************************************************************
+**
+**  'IS_LARGEINT' returns 1 if 'obj' is large positive or negative integer
+**  object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_LARGEINT(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return tnum == T_INTPOS || tnum == T_INTNEG;
+}
+
+
+/**************************************************************************
+**
+**  'IS_INT' returns 1 if 'obj' is either a large or an immediate integer
+**  object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_INT(Obj obj)
+{
+    return IS_INTOBJ(obj) || IS_LARGEINT(obj);
+}
+
+
+/**************************************************************************
+**
+**  'ADDR_INT' returns a pointer to the limbs of the large integer 'obj'.
+**  'CONST_ADDR_INT' does the same, but returns a const pointer.
+*/
+static inline mp_limb_t * ADDR_INT(Obj obj)
+{
+    GAP_ASSERT(IS_LARGEINT(obj));
+    return (mp_limb_t *)ADDR_OBJ(obj);
+}
+
+static inline const mp_limb_t * CONST_ADDR_INT(Obj obj)
+{
+    GAP_ASSERT(IS_LARGEINT(obj));
+    return (const mp_limb_t *)CONST_ADDR_OBJ(obj);
+}
+
+
+/**************************************************************************
+**
+**  'SIZE_INT returns the number of limbs in a large integer object.
+*/
+static inline UInt SIZE_INT(Obj obj)
+{
+    GAP_ASSERT(IS_LARGEINT(obj));
+    return SIZE_OBJ(obj) / sizeof(mp_limb_t);
+}
+
+
+/**************************************************************************
+**
+**  IS_NEG_INT' returns 1 if 'obj' is a negative large or immediate
+**  integer object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_NEG_INT(Obj obj)
+{
+    if (IS_INTOBJ(obj))
+        return (Int)obj < (Int)INTOBJ_INT(0);
+    return TNUM_OBJ(obj) == T_INTNEG;
+}
+
+/**************************************************************************
+**
+**  'IS_POS_INT' returns 1 if 'obj' is a positive large or immediate
+**  integer object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_POS_INT(Obj obj)
+{
+    if (IS_INTOBJ(obj))
+        return (Int)obj > (Int)INTOBJ_INT(0);
+    return TNUM_OBJ(obj) == T_INTPOS;
+}
+
+/**************************************************************************
+**
+**  'IS_ODD_INT' returns 1 if 'obj' is an odd large or immediate integer
+**  object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_ODD_INT(Obj obj)
+{
+    if (IS_INTOBJ(obj))
+        return ((Int)obj & 4) != 0;
+    return (*CONST_ADDR_INT(obj)) & 1;
+}
+
+
+/**************************************************************************
+**
+**  'IS_EVEN_INT' returns 1 if 'obj' is an even large or immediate integer
+**  object, and 0 for all other kinds of objects.
+*/
+static inline Int IS_EVEN_INT(Obj obj)
+{
+    return !IS_ODD_INT(obj);
+}
 
 
 /**************************************************************************

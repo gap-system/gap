@@ -153,14 +153,6 @@ static Obj ObjInt_UIntInv( UInt i );
 #define SET_VAL_LIMB0(obj,val)  do { *ADDR_INT(obj) = val; } while(0)
 #define IS_INTPOS(obj)          (TNUM_OBJ(obj) == T_INTPOS)
 #define IS_INTNEG(obj)          (TNUM_OBJ(obj) == T_INTNEG)
-#define IS_LARGEINT(obj)        (IS_INTPOS(obj) || IS_INTNEG(obj))
-
-#define IS_INT(obj)             (IS_INTOBJ(obj) || IS_LARGEINT(obj))
-
-#define IS_NEGATIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj < 0) : IS_INTNEG(obj))
-#define IS_POSITIVE(obj)        (IS_INTOBJ(obj) ? ((Int)obj > 1) : IS_INTPOS(obj))
-#define IS_ODD(obj)             (IS_INTOBJ(obj) ? ((Int)obj & 4) : (VAL_LIMB0(obj) & 1))
-#define IS_EVEN(obj)            (!IS_ODD(obj))
 
 #define SIZE_INT_OR_INTOBJ(obj) (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj))
 
@@ -625,7 +617,7 @@ Int Int_ObjInt(Obj i)
 
 UInt UInt_ObjInt(Obj i)
 {
-    if (IS_NEGATIVE(i))
+    if (IS_NEG_INT(i))
         ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt)INT_INTOBJ(i);
@@ -678,7 +670,7 @@ UInt8 UInt8_ObjInt(Obj i)
     // in this case UInt8 is UInt
     return UInt_ObjInt(i);
 #else
-    if (IS_NEGATIVE(i))
+    if (IS_NEG_INT(i))
         ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt8)INT_INTOBJ(i);
@@ -1496,7 +1488,7 @@ Obj ProdIntObj ( Obj n, Obj op )
   }
   
   /* if the integer is negative, invert the operand and the integer        */
-  else if ( IS_NEGATIVE(n) ) {
+  else if ( IS_NEG_INT(n) ) {
     res = AINV( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
@@ -1585,7 +1577,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
     pow = INTOBJ_INT(1);
   }
   else if ( gmpL == INTOBJ_INT(0) ) {
-    if ( IS_NEGATIVE( gmpR ) ) {
+    if ( IS_NEG_INT( gmpR ) ) {
       gmpL = ErrorReturnObj(
                             "Integer operands: <base> must not be zero",
                             0L, 0L,
@@ -1598,7 +1590,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
     pow = INTOBJ_INT(1);
   }
   else if ( gmpL == INTOBJ_INT(-1) ) {
-    pow = IS_EVEN(gmpR) ? INTOBJ_INT(1) : INTOBJ_INT(-1);
+    pow = IS_EVEN_INT(gmpR) ? INTOBJ_INT(1) : INTOBJ_INT(-1);
   }
 
   /* power with a large exponent */
@@ -1664,7 +1656,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   }
   
   /* if the integer is negative, invert the operand and the integer      */
-  else if ( IS_NEGATIVE(n) ) {
+  else if ( IS_NEG_INT(n) ) {
     res = INV_MUT( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
@@ -1827,7 +1819,7 @@ Obj ModInt ( Obj opL, Obj opR )
       else
         mod = SumOrDiffInt( opL, opR, -1 );
 #if DEBUG_GMP
-      assert( !IS_NEGATIVE(mod) );
+      assert( !IS_NEG_INT(mod) );
 #endif
       CHECK_INT(mod);
       return mod;
@@ -1848,7 +1840,7 @@ Obj ModInt ( Obj opL, Obj opR )
     mod = GMP_REDUCE( mod );
     
     /* make the representative positive                                    */
-    if ( IS_NEGATIVE(mod) ) {
+    if ( IS_NEG_INT(mod) ) {
       if ( IS_INTPOS(opR) )
         mod = SumOrDiffInt( mod, opR,  1 );
       else
@@ -1859,7 +1851,7 @@ Obj ModInt ( Obj opL, Obj opR )
   
   /* return the result                                                     */
 #if DEBUG_GMP
-  assert( !IS_NEGATIVE(mod) );
+  assert( !IS_NEG_INT(mod) );
 #endif
   CHECK_INT(mod);
   return mod;
@@ -2343,7 +2335,7 @@ Obj PowerModInt ( Obj base, Obj exp, Obj mod )
   if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
     return INTOBJ_INT(0);
 
-  if ( IS_NEGATIVE(exp) ) {
+  if ( IS_NEG_INT(exp) ) {
     base = InverseModInt( base, mod );
     if (base == Fail)
       ErrorMayQuit( "PowerModInt: negative <exp> but <base> is not invertible modulo <mod>", 0L, 0L  );
