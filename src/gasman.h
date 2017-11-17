@@ -129,39 +129,42 @@ static inline UInt TNUM_BAG(Bag bag) {
 
 /****************************************************************************
 **
-*F  TEST_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . test object flag
-*F  SET_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . . set object flag
-*F  CLEAR_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . clear object flag
+*F  TEST_BAG_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . .  test bag flag
+*F  SET_BAG_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . . .  set bag flag
+*F  CLEAR_BAG_FLAG(<bag>, <flag>) . . . . . . . . . . . . . .  clear bag flag
 **
-**  These three macros test, set, and clear object flags, respectively.
-**  Object flags are stored in the object header. Multiple flags can be ored
+**  These three macros test, set, and clear bag flags, respectively.
+**  Bag flags are stored in the bag header. Multiple flags can be ored
 **  together using '|' to set or clear multiple flags at once.
 **
-**  TEST_OBJ_FLAG() will return the ored version of all tested flags. To
+**  TEST_BAG_FLAG() will return the ored version of all tested flags. To
 **  test that one of them is set, check if the result is not equal to zero.
 **  To test that all of them are set, compare the result to the original
 **  flags, e.g.
 **
-** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
+** 	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
 **
 **  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
 **  use:
 **
-** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
+** 	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
 **
 **  Each flag must be a an integer with exactly one bit set, e.g. a value
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */
-static inline uint8_t TEST_OBJ_FLAG(Bag bag, uint8_t flag) {
+static inline uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
+{
     return BAG_HEADER(bag)->flags & flag;
 }
 
-static inline void SET_OBJ_FLAG(Bag bag, uint8_t flag) {
+static inline void SET_BAG_FLAG(Bag bag, uint8_t flag)
+{
     BAG_HEADER(bag)->flags |= flag;
 }
 
-static inline void CLEAR_OBJ_FLAG(Bag bag, uint8_t flag) {
+static inline void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
+{
     BAG_HEADER(bag)->flags &= ~flag;
 }
 

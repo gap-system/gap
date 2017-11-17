@@ -293,6 +293,40 @@ GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
 GAP_STATIC_ASSERT(LAST_COPYING_TNUM <= 254, "LAST_COPYING_TNUM is too large");
 #endif
 
+
+/****************************************************************************
+**
+*F  TEST_OBJ_FLAG(<obj>, <flag>) . . . . . . . . . . . . . . test object flag
+*F  SET_OBJ_FLAG(<obj>, <flag>) . . . . . . . . . . . . . . . set object flag
+*F  CLEAR_OBJ_FLAG(<obj>, <flag>) . . . . . . . . . . . . . clear object flag
+**
+**  These three macros test, set, and clear object flags, respectively.
+**  For non-immediate objects, these are simply the bag flags, see
+**  TEST_BAG_FLAG, SET_BAG_FLAG, CLEAR_BAG_FLAG.
+**
+**  For immediate objects, objects flags are always 0.
+*/
+static inline uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
+{
+    if (IS_BAG_REF(obj))
+        return TEST_BAG_FLAG(obj, flag);
+    else
+        return 0;
+}
+
+static inline void SET_OBJ_FLAG(Obj obj, uint8_t flag)
+{
+    if (IS_BAG_REF(obj))
+        SET_BAG_FLAG(obj, flag);
+}
+
+static inline void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
+{
+    if (IS_BAG_REF(obj))
+        CLEAR_BAG_FLAG(obj, flag);
+}
+
+
 /****************************************************************************
 **
 ** Object flags for use with SET_OBJ_FLAG() etc.
