@@ -43,6 +43,7 @@
 #include <src/vars.h>                   /* variables */
 
 #include <src/bool.h>
+#include <src/stats.h>                  /* for ClearError */
 
 #include <assert.h>
 

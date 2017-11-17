@@ -51,6 +51,7 @@
 
 #include <src/streams.h>                /* streams package */
 
+#include <src/stats.h>                  /* for ClearError() */
 
 
 #include <src/vars.h>                   /* STATE(BottomLVars) for execution contexts */
