@@ -150,6 +150,18 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 
 
 /****************************************************************************
+ **
+ *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
+ *
+ * FIXME: This function accesses NrError which is state of the scanner, so
+ *        scanner should have an API for this.
+ * 
+ */
+
+extern void ClearError ( void );
+
+
+/****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */

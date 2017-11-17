@@ -400,13 +400,6 @@ extern void Match (
 
 /****************************************************************************
 **
-*F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
-*/
-extern void ClearError ( void );
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
