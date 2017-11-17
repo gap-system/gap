@@ -31,7 +31,7 @@
 
 #include <src/saveload.h>               /* saving and loading */
 #include <src/opers.h>
-#include <src/gmpints.h>                /* integer functions needed for NUMBER_ */
+#include <src/integer.h>                /* integer functions needed for NUMBER_ */
 
 #include <src/vecgf2.h>              /* needed for the conversion to
              GF(2^n) n>1) */

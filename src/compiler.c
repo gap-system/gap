@@ -23,7 +23,7 @@
 #include <src/gvars.h>                  /* global variables */
 
 #include <src/ariths.h>                 /* basic arithmetic */
-#include <src/gmpints.h>
+#include <src/integer.h>
 
 #include <src/bool.h>                   /* booleans */
 

@@ -43,7 +43,7 @@
 
 #include <src/plist.h>                  /* plain lists */
 #include <src/set.h>                    /* plain sets */
-#include <src/gmpints.h>
+#include <src/integer.h>
 
 #include <src/hpc/guards.h>
 #include <src/hpc/aobjects.h>           /* atomic objects */

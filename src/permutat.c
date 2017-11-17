@@ -56,7 +56,7 @@
 
 #include <src/bool.h>                   /* booleans */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 
 #include <src/permutat.h>               /* permutations */
 

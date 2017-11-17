@@ -10,7 +10,7 @@
 *Y  Copyright (C) 2002 The GAP Group
 **
 ** This file contains integer related functions which are independent of the
-** large integer representation in use. See gmpints.c for other things.
+** large integer representation in use. See integer.c for other things.
 */
 
 
@@ -32,7 +32,7 @@
 
 #include <src/intfuncs.h>               /* integers */
 
-#include <src/gmpints.h>
+#include <src/integer.h>
 
 #include <src/gap.h>                    /* error handling, initialisation */
 

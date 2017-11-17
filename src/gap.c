@@ -35,7 +35,7 @@
 
 #include <src/ariths.h>                 /* basic arithmetic */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 #include <src/rational.h>               /* rationals */
 #include <src/cyclotom.h>               /* cyclotomics */
 #include <src/finfield.h>               /* finite fields and ff elements */

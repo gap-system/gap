@@ -25,7 +25,7 @@
 #include <src/calls.h>                  /* generic call mechanism */
 #include <src/opers.h>                  /* generic operations */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 #include <src/bool.h>                   /* booleans */
 
 #include <src/records.h>                /* generic records */
