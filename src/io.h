@@ -3,9 +3,9 @@
 #define GAP_IO_H
 
 
-Int GetLinePosition(void);
-void GET_CHAR();
-void UNGET_CHAR(Char c);
+extern Int  GetLinePosition(void);
+extern void GET_CHAR();
+extern void UNGET_CHAR(Char c);
 
 
 /****************************************************************************

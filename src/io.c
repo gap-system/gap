@@ -18,11 +18,21 @@
 #include <src/io.h>                     /* input/output for scanner */
 
 
+static Char GetLine(void);
+static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
+
+static Obj ReadLineFunc;
+static Obj WriteAllFunc;
+static Obj IsStringStream;
+static Obj PrintPromptHook = 0;
+Obj EndLineHook = 0;
+static Obj PrintFormattingStatus;
+
+/* TODO: Eliminate race condition in HPC-GAP */
+static Char promptBuf[81];
+
+
 /* TL: Char *          Prompt; */
-
-Obj             PrintPromptHook = 0;
-Obj             EndLineHook = 0;
-
 /* TL: TypInputFile    InputFiles [16]; */
 /* TL: TypInputFile *  Input; */
 /* TL: Char *          In; */
@@ -40,8 +50,6 @@ Obj             EndLineHook = 0;
 #define STACK_SIZE(sp)   (STATE(sp) ? (STATE(sp) - STATE(sp ## Files) + 1 ) : 0)
 #endif
 
-// Forward declaration
-Char GetLine(void);
 
 /****************************************************************************
 **
@@ -272,7 +280,6 @@ UInt OpenInput (
 **
 **  The same as 'OpenInput' but for streams.
 */
-Obj IsStringStream;
 
 UInt OpenInputStream (
     Obj                 stream )
@@ -766,7 +773,6 @@ UInt OpenOutput (
 **  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
 */
 
-Obj PrintFormattingStatus;
 
 UInt OpenOutputStream (
     Obj                 stream )
@@ -919,7 +925,6 @@ UInt OpenAppend (
 **
 *V  ReadLineFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'ReadLine'
 */
-Obj ReadLineFunc;
 
 
 /****************************************************************************
@@ -1007,10 +1012,6 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-static void PutLine2(
-    TypOutputFile *         output,
-    const Char *            line,
-    UInt                    len   );
 
 /* TL: Int HELPSubsOn = 1; */
 
@@ -1103,7 +1104,6 @@ Char GetLine ( void )
 
  *V  WriteAllFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'WriteAll'
  */
-Obj WriteAllFunc;
 
 
 /****************************************************************************
@@ -1426,8 +1426,6 @@ Obj FuncCPROMPT( Obj self)
  **  uses the content of <prompt> as `Prompt' (at most 80 characters).
  **  (important is the flush character without resetting the cursor column)
  */
-/* TODO: Eliminate race condition in HPC-GAP */
-Char promptBuf[81];
 
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 {
