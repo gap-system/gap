@@ -18,6 +18,7 @@ extern "C" {
 
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
+#include <src/io.h>                     /* input and output */
 #include <src/scanner.h>                /* scanner */
 
 #include <src/gap.h>                    /* error handling, initialisation */

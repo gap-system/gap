@@ -15,7 +15,8 @@
 
 #include <src/system.h>
 #include <src/gasman.h>
-#include <src/scanner.h>
+#include <src/io.h> // for TypInputFile and friends
+#include <src/scanner.h> // for MAX_VALUE_LEN
 
 #if defined(HPCGAP)
 #include <src/hpc/serialize.h>
