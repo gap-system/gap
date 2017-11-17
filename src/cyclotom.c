@@ -1575,9 +1575,7 @@ Obj FuncIS_CYC (
     Obj                 val )
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
-    if ( IS_INTOBJ(val)
-      || TNUM_OBJ(val) == T_CYC    || TNUM_OBJ(val) == T_RAT
-      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG )
+    if ( IS_INT(val) || TNUM_OBJ(val) == T_CYC || TNUM_OBJ(val) == T_RAT )
         return True;
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
@@ -1612,8 +1610,7 @@ Obj FuncIS_CYC_INT (
     UInt                i;              /* loop variable                   */
 
     /* return 'true' if <obj> is a cyclotomic integer and 'false' otherwise*/
-    if ( IS_INTOBJ(val)
-      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
+    if ( IS_INT(val) ) {
         return True;
     }
     else if ( TNUM_OBJ(val) == T_RAT ) {
@@ -1666,9 +1663,7 @@ Obj FuncCONDUCTOR (
     }
 
     /* check the argument                                                  */
-    while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
-         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
-         && TNUM_OBJ(cyc) != T_CYC
+    while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC
          && ! IS_SMALL_LIST(cyc) ) {
         cyc = ErrorReturnObj(
             "Conductor: <cyc> must be a cyclotomic or a small list (not a %s)",
@@ -1677,8 +1672,7 @@ Obj FuncCONDUCTOR (
     }
 
     /* handle cyclotomics                                                  */
-    if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
-      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
+    if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {
         n = 1;
     }
     else if ( TNUM_OBJ(cyc) == T_CYC ) {
@@ -1691,16 +1685,13 @@ Obj FuncCONDUCTOR (
         n = 1;
         for ( i = 1; i <= LEN_LIST( list ); i++ ) {
             cyc = ELMV_LIST( list, i );
-            while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
-                 && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
-                 && TNUM_OBJ(cyc) != T_CYC ) {
+            while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC ) {
                 cyc = ErrorReturnObj(
                     "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
                     (Int)i, (Int)TNAM_OBJ(cyc),
                     "you can replace the list element with <cyc> via 'return <cyc>;'" );
             }
-            if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
-              || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
+            if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {
                 m = 1;
             }
             else /* if ( TNUM_OBJ(cyc) == T_CYC ) */ {
@@ -1748,9 +1739,7 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* check the argument                                                  */
-    while ( !IS_INTOBJ(cyc)           && TNUM_OBJ(cyc) != T_RAT
-         && TNUM_OBJ(cyc) != T_INTPOS && TNUM_OBJ(cyc) != T_INTNEG
-         && TNUM_OBJ(cyc) != T_CYC ) {
+    while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC ) {
         cyc = ErrorReturnObj(
             "COEFFSCYC: <cyc> must be a cyclotomic (not a %s)",
             (Int)TNAM_OBJ(cyc), 0L,
@@ -1758,8 +1747,7 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
-    if ( IS_INTOBJ(cyc)            || TNUM_OBJ(cyc) == T_RAT
-      || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
+    if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {
         list = NEW_PLIST( T_PLIST, 1 );
         SET_LEN_PLIST( list, 1 );
         SET_ELM_PLIST( list, 1, cyc );
@@ -2007,10 +1995,7 @@ Obj FuncCycList (
     res = BASE_PTR_PLIST(STATE(ResultCyc));
     for ( i = 0; i < n; i++ ) {
         val = ELM_PLIST( list, i+1 );
-        if ( ! ( IS_INTOBJ(val) ||
-                 TNUM_OBJ(val) == T_RAT ||
-                 TNUM_OBJ(val) == T_INTPOS ||
-                 TNUM_OBJ(val) == T_INTNEG ) ) {
+        if ( !IS_INT(val) && TNUM_OBJ(val) != T_RAT ) {
             // reset ResultCyc, otherwise the next operation using it will see
             // our left-over garbage data
             SET_LEN_PLIST( STATE(ResultCyc), 0 );

@@ -78,7 +78,7 @@ void       MultGen(
     UInt  i, j, len, len2;
     Obj   copy, sum, sum1, sum2, prod, ord, help;
 
-    if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) == 0 )
+    if ( power == INTOBJ_INT(0) )
         return;
     sum = SumInt(ELM_PLIST(xk, gen),  power);
     if ( IS_INTOBJ( ELM_PLIST(dtpols, gen) ) )
@@ -102,7 +102,7 @@ void       MultGen(
     {
         /* evaluate the deep thought monomial <sum>[<i>],        */
         ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
-        if ( !IS_INTOBJ(ord)  ||  INT_INTOBJ(ord) != 0 )
+        if ( ord != INTOBJ_INT(0) )
         {
             help = ELM_PLIST(sum1, i);
             len2 = LEN_PLIST(help);
@@ -340,7 +340,7 @@ Obj      Power(
         return res;
     }
     /* if <n> is a negative integer compute ( <x>^-1 )^(-<n>)           */
-    if (  TNUM_OBJ(n) == T_INTNEG  ||  INT_INTOBJ(n) < 0  ) 
+    if ( IS_NEG_INT(n) )
     {
         y = NEW_PLIST( T_PLIST, 0);
         SET_LEN_PLIST(y, 0);
@@ -349,7 +349,7 @@ Obj      Power(
     }
     res = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(res, 0);
-    if ( IS_INTOBJ(n)  &&  INT_INTOBJ(n) == 0  )
+    if ( n == INTOBJ_INT(0) )
         return res;
     /* now use the russian peasant rule to get the result               */
     while( LtInt(INTOBJ_INT(0), n) )
