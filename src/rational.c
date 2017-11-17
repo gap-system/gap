@@ -98,22 +98,7 @@ Obj             TypeRat (
     Obj                 num;
     CHECK_RAT(rat);
     num = NUM_RAT(rat);
-    if ( IS_INTOBJ(num) ) {
-        if ( 0 < INT_INTOBJ(num) ) {
-            return TYPE_RAT_POS;
-        }
-        else {
-            return TYPE_RAT_NEG;
-        }
-    }
-    else {
-        if ( TNUM_OBJ(num) == T_INTPOS ) {
-            return TYPE_RAT_POS;
-        }
-        else {
-            return TYPE_RAT_NEG;
-        }
-    }
+    return IS_NEG_INT(num) ? TYPE_RAT_NEG : TYPE_RAT_POS;
 }
 
 
@@ -604,8 +589,7 @@ Obj             QuoRat (
 
     /* we multiply the left numerator with the right denominator           */
     /* so the right denominator should carry the sign of the right operand */
-    if ( (IS_INTOBJ(numR) && INT_INTOBJ(numR) < 0)
-      || TNUM_OBJ(numR) == T_INTNEG ) {
+    if ( IS_NEG_INT(numR) ) {
         numR = ProdInt( INTOBJ_INT( -1L ), numR );
         denR = ProdInt( INTOBJ_INT( -1L ), denR );
     }
@@ -675,8 +659,7 @@ Obj             ModRat (
     Obj                 a, aL, b, bL, c, cL, hdQ;
 
     /* make the integer positive                                           */
-    if ( (IS_INTOBJ(opR) && INT_INTOBJ(opR) < 0)
-      || TNUM_OBJ(opR) == T_INTNEG ) {
+    if ( IS_NEG_INT(opR) ) {
         opR = ProdInt( INTOBJ_INT( -1L ), opR );
     }
 
@@ -736,8 +719,7 @@ Obj             PowRat (
     }
 
     /* if <opR> is positive raise numerator and denominator seperately    */
-    else if ( (IS_INTOBJ(opR) && 0 < INT_INTOBJ(opR))
-           || TNUM_OBJ(opR) == T_INTPOS ) {
+    else if ( IS_POS_INT(opR) ) {
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
         pow = NewBag( T_RAT, 2 * sizeof(Obj) );
@@ -763,8 +745,7 @@ Obj             PowRat (
         numP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         denP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        if ( (IS_INTOBJ(denP) && 0 < INT_INTOBJ(denP))
-          || TNUM_OBJ(denP) == T_INTPOS ) {
+        if ( IS_POS_INT(denP) ) {
             SET_NUM_RAT(pow, numP);
             SET_DEN_RAT(pow, denP);
         }
@@ -799,8 +780,7 @@ Obj             IsRatHandler (
     Obj                 val )
 {
     /* return 'true' if <val> is a rational and 'false' otherwise          */
-    if ( TNUM_OBJ(val) == T_RAT    || IS_INTOBJ(val)
-      || TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG ) {
+    if ( TNUM_OBJ(val) == T_RAT || IS_INT(val)  ) {
         return True;
     }
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
@@ -827,8 +807,7 @@ Obj             FuncNUMERATOR_RAT (
     Obj                 rat )
 {
     /* check the argument                                                   */
-    while ( TNUM_OBJ(rat) != T_RAT    && !IS_INTOBJ(rat)
-         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT && !IS_INT(rat) ) {
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,
@@ -860,8 +839,7 @@ Obj             FuncDENOMINATOR_RAT (
     Obj                 rat )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rat) != T_RAT    && !IS_INTOBJ(rat)
-         && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
+    while ( TNUM_OBJ(rat) != T_RAT && !IS_INT(rat) ) {
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,

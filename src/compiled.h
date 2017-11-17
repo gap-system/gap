@@ -114,7 +114,7 @@ typedef UInt    RNam;
  if ( ! IS_POS_INTOBJ(obj) ) ErrorQuitIntSmallPos(obj);
 
 #define CHECK_INT_POS(obj) \
- if ( TNUM_OBJ(obj) != T_INTPOS && ( ! IS_POS_INTOBJ(obj)) ) ErrorQuitIntPos(obj);
+ if ( ! IS_POS_INT(obj) ) ErrorQuitIntPos(obj);
 
 #define CHECK_BOOL(obj) \
  if ( obj != True && obj != False ) ErrorQuitBool(obj);
