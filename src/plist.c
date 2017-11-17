@@ -216,10 +216,6 @@ Obj TYPE_LIST_EMPTY_MUTABLE;
 Obj TYPE_LIST_EMPTY_IMMUTABLE;
 Obj TYPE_LIST_HOM;
 
-#define IS_TESTING_PLIST(list) \
-    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
-
-
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
 
 Int KTNumPlist (
@@ -283,7 +279,7 @@ Int KTNumPlist (
       isTable = 0;
     }
 #endif
-    else if ( IS_TESTING_PLIST(elm) ) {
+    else if (TEST_OBJ_FLAG(elm, TESTING)) {
         isHom   = 0;
         areMut  = IS_MUTABLE_PLIST(elm);
         isTable = 0;
@@ -346,7 +342,7 @@ Int KTNumPlist (
 	    isRect = 0;
 	}
 #endif
-        else if ( IS_TESTING_PLIST(elm) ) {
+        else if (TEST_OBJ_FLAG(elm, TESTING)) {
             isHom   = 0;
             areMut  = (areMut || IS_MUTABLE_PLIST(elm));
             isTable = 0;
@@ -485,7 +481,7 @@ Int KTNumHomPlist (
     /* look at the first element                                           */
     elm = ELM_PLIST( list, 1 );
     assert(elm);
-    assert(!IS_TESTING_PLIST(elm));
+    assert(!TEST_OBJ_FLAG(elm, TESTING));
 
     isSSort = HAS_FILT_LIST(list, FN_IS_SSORT );
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
@@ -542,8 +538,8 @@ Int KTNumHomPlist (
 	for ( i = 2; isTable && i <= lenList; i++ ) {
 	  elm = ELM_PLIST( list, i );
 	  assert(elm);
-	  assert(!IS_TESTING_PLIST(elm));
-	  isTable = isTable && IS_LIST(elm); /* (isTable && IS_SMALL_LIST(elm) && LEN_LIST(elm) == len);*/
+          assert(!TEST_OBJ_FLAG(elm, TESTING));
+          isTable = isTable && IS_LIST(elm); /* (isTable && IS_SMALL_LIST(elm) && LEN_LIST(elm) == len);*/
 	  isRect = isRect && IS_PLIST(elm) && LEN_PLIST(elm) == len;
 	}
       }
