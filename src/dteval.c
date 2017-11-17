@@ -35,7 +35,7 @@
 #include <src/gvars.h>                  /* global variables */
 #include <src/precord.h>                /* plain records */
 #include <src/records.h>                /* generic records */
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 #include <src/dt.h>                     /* deep thought */
 #include <src/objcftl.h>                /* from the left collect */
 

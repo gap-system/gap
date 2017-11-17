@@ -46,7 +46,7 @@
 #include <src/saveload.h>               /* saving and loading */
 
 #include <src/listfunc.h>   
-#include <src/gmpints.h>   
+#include <src/integer.h>   
 
 #ifdef HPCGAP
 #include <src/hpc/guards.h>

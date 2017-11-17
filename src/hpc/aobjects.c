@@ -28,7 +28,7 @@
 #include <src/opers.h>                  /* generic operations */
 #include <src/ariths.h>                 /* basic arithmetic */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 #include <src/bool.h>                   /* booleans */
 
 #include <src/records.h>                /* generic records */

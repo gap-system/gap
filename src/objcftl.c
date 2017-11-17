@@ -24,7 +24,7 @@
 #include <src/calls.h>                  /* generic call mechanism */
 #include <src/gap.h>                    /* error handling, initialisation */
 #include <src/bool.h>                   /* booleans */
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 #include <src/ariths.h>                 /* fast integers */
 
 #include <src/records.h>                /* generic records */

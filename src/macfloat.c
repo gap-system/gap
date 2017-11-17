@@ -33,7 +33,7 @@
 
 #include <src/plist.h>                  /* lists */
 #include <src/ariths.h>                 /* basic arithmetic */
-#include <src/gmpints.h>                /* basic arithmetic */
+#include <src/integer.h>                /* basic arithmetic */
 
 #include <src/macfloat.h>               /* macfloateans */
 

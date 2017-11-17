@@ -46,7 +46,7 @@
 #include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
 #include <src/stringobj.h>              /* strings */
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 
 #include <src/hpc/aobjects.h>           /* atomic objects */
 

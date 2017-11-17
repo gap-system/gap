@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  gmpints.c                   GAP source                     John McDermott
+*W  integer.c                   GAP source                     John McDermott
 **
 **
 **
@@ -114,7 +114,7 @@
 extern "C" {
 #endif
 
-#include <src/gmpints.h>                /* GMP integers */
+#include <src/integer.h>                /* GMP integers */
 
 #ifdef SYS_IS_64_BIT
 #define SaveLimb SaveUInt8
@@ -2688,7 +2688,7 @@ static Int InitLibrary ( StructInitInfo *    module )
 */
 static StructInitInfo module = {
   MODULE_BUILTIN,                        /* type                           */
-  "gmpints",                             /* name                           */
+  "integer",                             /* name                           */
   0,                                     /* revision entry of c file       */
   0,                                     /* revision entry of h file       */
   0,                                     /* version                        */

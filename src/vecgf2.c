@@ -28,7 +28,7 @@
 
 #include <src/saveload.h>               /* saving and loading */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 
 #include <src/vec8bit.h>                /* vectors over bigger small fields */
 

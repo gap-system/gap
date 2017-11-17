@@ -29,7 +29,7 @@
 
 #include <src/bool.h>                   /* booleans */
 
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 
 #include <src/records.h>                /* generic records */
 #include <src/precord.h>                /* plain records */

@@ -62,7 +62,7 @@
 #include <src/calls.h>                  /* generic call mechanism */
 #include <src/gap.h>                    /* error handling, initialisation */
 #include <src/gvars.h>                  /* global variables */
-#include <src/gmpints.h>                /* integers */
+#include <src/integer.h>                /* integers */
 
 #include <src/dt.h>                     /* deep thought */
 
