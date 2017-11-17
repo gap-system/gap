@@ -200,7 +200,6 @@ BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
          local ret;
          ret := func();
          CLONE_OBJ(gvar, ret);
-         gvar := ret;
         TryNextMethod();
       end );
 end );
