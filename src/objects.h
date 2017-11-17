@@ -332,12 +332,12 @@ static inline void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
 ** Object flags for use with SET_OBJ_FLAG() etc.
 **
 */
-
-#define TESTING (1 << 0)
-
+enum {
+    TESTING = (1 << 0),
 #ifdef HPCGAP
-#define TESTED (1 << 1)
+    TESTED  = (1 << 1),
 #endif
+};
 
 
 /****************************************************************************
