@@ -3087,6 +3087,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoHookIntrprtr,
 
     /* scanner, reader, interpreter, coder, caller, compiler               */
+    InitInfoIO,
     InitInfoScanner,
     InitInfoRead,
     InitInfoCalls,

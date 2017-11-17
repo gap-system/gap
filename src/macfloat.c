@@ -38,7 +38,7 @@
 #include <src/macfloat.h>               /* macfloateans */
 
 #include <src/bool.h>
-#include <src/scanner.h>
+#include <src/io.h>
 #include <src/stringobj.h>
 #include <assert.h>
 

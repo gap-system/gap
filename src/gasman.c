@@ -116,7 +116,7 @@
 #include <src/gasman.h>                 /* garbage collector */
 
 #include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include <src/io.h>                     /* for Pr */
 
 #include <src/gaputils.h>
 
