@@ -1253,7 +1253,7 @@ typedef struct {
 
 /****************************************************************************
 **
-*F  ReadFuncArgList(<follow>, <is_atomic>, <is_block>, <symbol>, <symbolstr>)
+*F  ReadFuncArgList(<follow>, <is_atomic>, <symbol>, <symbolstr>)
 **  . . . . . . . . . .  read a function argument list.
 **
 **  'ReadFuncArgList' reads the argument list of a function. In case of an
@@ -1417,46 +1417,28 @@ void ReadFuncExpr (
     volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
     volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
     volatile Int        startLine;      /* line number of function keyword */
-    volatile int        is_block = 0;   /* is this a do ... od block?      */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
     volatile Int        narg;           /* number of arguments             */
     volatile Obj        nams;           /* list of local variables names   */
     volatile UInt       nloc = 0;       /* number of locals                */
-    volatile UInt       isvarg = 0;     /* is this function variadic?      */
-#ifdef HPCGAP
-    volatile Bag        locks = 0;      /* locks of the function */
-#endif
+    volatile ArgList    args;
 
     /* begin the function               */
     startLine = STATE(Input)->number;
-    if (STATE(Symbol) == S_DO) {
-        Match( S_DO, "do", follow );
-        is_block = 1;
-        /* make and push the new local variables list (args and locals)        */
-        narg = 0;
-        nams = NEW_PLIST( T_PLIST, narg );
-        SET_LEN_PLIST( nams, narg );
-        PushPlist( STATE(StackNams), nams );
-    } else {
-        if (STATE(Symbol) == S_ATOMIC) {
-            Match(S_ATOMIC, "atomic", follow);
-            is_atomic = 1;
-        } else if (mode == 'a') { /* in this case the atomic keyword
-                                     was matched away by ReadAtomic before
-                                     we realised we were reading an atomic function */
-            is_atomic = 1;
-        }
-        Match( S_FUNCTION, "function", follow );
-        Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
-        ArgList args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
-        narg = args.narg;
-        nams = args.nams;
-        isvarg = args.isvarg;
-#ifdef HPCGAP
-        locks = args.locks;
-#endif
+    if (STATE(Symbol) == S_ATOMIC) {
+        Match(S_ATOMIC, "atomic", follow);
+        is_atomic = 1;
+    } else if (mode == 'a') { /* in this case the atomic keyword
+                                 was matched away by ReadAtomic before
+                                 we realised we were reading an atomic function */
+        is_atomic = 1;
     }
+    Match( S_FUNCTION, "function", follow );
+    Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
 
+    args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
+    narg = args.narg;
+    nams = args.nams;
 
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
@@ -1502,9 +1484,9 @@ void ReadFuncExpr (
     nrError   = STATE(NrError);
 
     /* now finally begin the function                                      */
-    TRY_READ { IntrFuncExprBegin( isvarg ? -narg : narg, nloc, nams, startLine ); }
+    TRY_READ { IntrFuncExprBegin( args.isvarg ? -narg : narg, nloc, nams, startLine ); }
 #ifdef HPCGAP
-    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC(), locks);
+    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
 
     /* <Statments>                                                         */
@@ -1526,10 +1508,7 @@ void ReadFuncExpr (
     PopPlist(STATE(StackNams));
 
     /* 'end'                                                               */
-    if (is_block)
-        Match(S_OD, "od", follow );
-    else
-        Match( S_END, "end", follow );
+    Match( S_END, "end", follow );
 }
 
 
@@ -1731,9 +1710,6 @@ void ReadLiteral (
     /* <Function>                                                          */
     case S_FUNCTION:
     case S_ATOMIC:
-#ifdef HPCGAP
-    case S_DO:
-#endif
         ReadFuncExpr( follow, mode );
         break;
 
@@ -1775,9 +1751,6 @@ void ReadLiteral (
 static const UInt LiteralExprStateMask =
                           S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
                           S_TILDE|S_REC|S_FUNCTION|
-#ifdef HPCGAP
-                          S_DO|
-#endif
                           S_ATOMIC|S_FLOAT|S_DOT|S_MAPTO;
 
 void ReadAtom (
