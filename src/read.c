@@ -2739,6 +2739,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     volatile Obj                 stackNams;
     volatile UInt                readTop;
     volatile UInt                readTilde;
+    volatile Obj                 tilde;
     volatile UInt                currLHSGVar;
     volatile Obj                 errorLVars;
     syJmp_buf           readJmpError;
@@ -2767,6 +2768,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     stackNams   = STATE(StackNams);
     readTop     = STATE(ReadTop);
     readTilde   = STATE(ReadTilde);
+    tilde       = STATE(Tilde);
     currLHSGVar = STATE(CurrLHSGVar);
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
@@ -2774,6 +2776,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
     STATE(ReadTop)     = 0;
     STATE(ReadTilde)   = 0;
+    STATE(Tilde)       = 0;
     STATE(CurrLHSGVar) = 0;
     RecreateStackNams(context);
     errorLVars = STATE(ErrorLVars);
@@ -2843,6 +2846,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(StackNams)   = stackNams;
     STATE(ReadTop)     = readTop;
     STATE(ReadTilde)   = readTilde;
+    STATE(Tilde)       = tilde;
     STATE(CurrLHSGVar) = currLHSGVar;
     STATE(ErrorLVars) = errorLVars;
 
@@ -2869,6 +2873,7 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile Obj        stackNams;
     volatile UInt       readTop;
     volatile UInt       readTilde;
+    volatile Obj        tilde;
     volatile UInt       currLHSGVar;
     syJmp_buf           readJmpError;
     volatile UInt       nr;
@@ -2896,6 +2901,7 @@ UInt ReadEvalFile(Obj *evalResult)
     stackNams   = STATE(StackNams);
     readTop     = STATE(ReadTop);
     readTilde   = STATE(ReadTilde);
+    tilde       = STATE(Tilde);
     currLHSGVar = STATE(CurrLHSGVar);
 #ifdef HPCGAP
     lockSP      = RegionLockSP();
@@ -2906,6 +2912,7 @@ UInt ReadEvalFile(Obj *evalResult)
     STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
     STATE(ReadTop)     = 0;
     STATE(ReadTilde)   = 0;
+    STATE(Tilde)       = 0;
     STATE(CurrLHSGVar) = 0;
     IntrBegin(STATE(BottomLVars));
 
@@ -2978,6 +2985,7 @@ UInt ReadEvalFile(Obj *evalResult)
     STATE(StackNams)   = stackNams;
     STATE(ReadTop)     = readTop;
     STATE(ReadTilde)   = readTilde;
+    STATE(Tilde)       = tilde;
     STATE(CurrLHSGVar) = currLHSGVar;
 
     /* copy the result (if any)                                            */

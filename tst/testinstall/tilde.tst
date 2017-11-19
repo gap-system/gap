@@ -82,4 +82,7 @@ true
 gap> bool := (rec1 < rec2);;
 gap> ForAll([1..10000], q -> ( (rec1 < rec2) = bool) );
 true
+gap> i := InputTextString( "local a; a := 10; return rec(a := a*10, b := ~);" );;
+gap> r := rec(a := ~, b := ReadAsFunction(i)(), c := ~.b.a);
+rec( a := ~, b := rec( a := 100, b := ~.b ), c := 100 )
 gap> STOP_TEST( "tilde.tst", 1);
