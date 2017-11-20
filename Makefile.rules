@@ -123,9 +123,14 @@ endif
 
 ########################################################################
 # Preprocessor flags
+#
+# GAP_CPPFLAGS is for the GAP build system, while GAP_PKG_CPPFLAGS is
+# for use by gac, and for package build systems. The latter does not
+# contain warning flags, and uses absolute include paths.
 ########################################################################
 
 GAP_CPPFLAGS =
+GAP_PKG_CPPFLAGS =
 
 # First add include paths
 
@@ -134,13 +139,16 @@ GAP_CPPFLAGS =
 # the user also has an active in-tree build)
 ifneq ($(builddir),$(srcdir))
   GAP_CPPFLAGS += -I$(builddir)
+  GAP_PKG_CPPFLAGS += -I$(abs_builddir)
 endif
 
 # Finally look into srcdir
 GAP_CPPFLAGS += -I$(srcdir)
+GAP_PKG_CPPFLAGS += -I$(abs_srcdir)
 
 # Add DEFS (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(DEFS)
+GAP_PKG_CPPFLAGS += $(DEFS)
 
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
@@ -148,11 +156,17 @@ GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
 GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
-# Add flags controlling compiler warnings
+GAP_PKG_CPPFLAGS += $(GMP_CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(READLINE_CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
+
+# Add flags controlling compiler warnings (not for GAP_PKG_CPPFLAGS)
 GAP_CPPFLAGS += $(WARNING_CPPFLAGS)
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(CPPFLAGS)
 
 
 ########################################################################
