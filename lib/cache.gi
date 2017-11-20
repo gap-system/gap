@@ -14,10 +14,7 @@
 
 InstallGlobalFunction(MemoizePosIntFunction,
 function(func, extra...)
-    local boundvals, original, uniqueobj, options, r;
-
-    # This is an object which cannot exist anywhere else
-    uniqueobj := "";
+    local boundvals, original, options, r;
 
     options := rec(
         defaults := [],
@@ -36,34 +33,22 @@ function(func, extra...)
         od;
     fi;
 
-    original := AtomicList(options.defaults);
+    original := ShallowCopy(options.defaults);
     
-    boundvals := MakeWriteOnceAtomic(AtomicList(original));
+    boundvals := ShallowCopy(original);
 
     if options.flush then
         InstallMethod(FlushCaches, [],
             function()
-                boundvals := MakeWriteOnceAtomic(AtomicList(original));
+                boundvals := ShallowCopy(original);
                 TryNextMethod();
             end);
     fi;
 
     return function(val)
-        local v, boundcpy;
         if not IsPosInt(val) then
             return options.errorHandler(val);
         fi;
-        # Make a copy of the reference to boundvals, in case the cache
-        # is flushed, which will causes boundvals to be bound to a new list.
-        boundcpy := boundvals;
-        v := GetWithDefault(boundcpy, val, uniqueobj);
-        if IsIdenticalObj(v, uniqueobj) then
-            # As the list is WriteOnceAtomic, if two threads call
-            # func(val) at the same time they will still return the
-            # same value (the first assigned to the list).
-            boundcpy[val] := func(val);
-            v := boundcpy[val];
-        fi;
-        return v;
+        return BindOnceExpr(boundvals, val, {} -> func(val));
     end;
 end);

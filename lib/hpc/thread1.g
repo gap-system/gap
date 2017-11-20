@@ -214,3 +214,56 @@ end);
 BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
   Unbind(record.(field));
 end);
+
+
+BIND_GLOBAL("BindOnce", function(obj, index, val)
+  if TNUM_OBJ(obj) = T_POSOBJ then
+    if not IsBound(obj![index]) then
+      obj![index]:= val;
+    fi;
+    return obj![index];
+  elif IS_LIST(obj) then
+    if not IsBound(obj[index]) then
+      obj[index]:= val;
+    fi;
+    return obj[index];
+  elif TNUM_OBJ(obj) = T_COMOBJ then
+    if not IsBound(obj!.(index)) then
+      obj!.(index):= val;
+    fi;
+    return obj!.(index);
+  elif IS_REC(obj) then
+    if not IsBound(obj.(index)) then
+      obj.(index):= val;
+    fi;
+    return obj.(index);
+  else
+    Error("<obj> is not supported");
+  fi;
+end);
+
+BIND_GLOBAL("BindOnceExpr", function(obj, index, expr)
+  if TNUM_OBJ(obj) = T_POSOBJ then
+    if not IsBound(obj![index]) then
+      return BindOnce(obj, index, expr());
+    fi;
+    return obj![index];
+  elif IS_LIST(obj) then
+    if not IsBound(obj[index]) then
+      return BindOnce(obj, index, expr());
+    fi;
+    return obj[index];
+  elif TNUM_OBJ(obj) = T_COMOBJ then
+    if not IsBound(obj!.(index)) then
+      return BindOnce(obj, index, expr());
+    fi;
+    return obj!.(index);
+  elif IS_REC(obj) then
+    if not IsBound(obj.(index)) then
+      return BindOnce(obj, index, expr());
+    fi;
+    return obj.(index);
+  else
+    Error("<obj> is not supported");
+  fi;
+end);

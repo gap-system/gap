@@ -1822,9 +1822,12 @@ Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
 
 
 Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+  if (IS_PLIST(obj))
+    return BindOncePosObj(obj, index, new, eval, currFuncName);
   switch (TNUM_OBJ(obj)) {
     case T_POSOBJ:
       return BindOncePosObj(obj, index, new, eval, currFuncName);
+    case T_FIXALIST:
     case T_APOSOBJ:
       return BindOnceAPosObj(obj, index, new, eval, currFuncName);
     case T_COMOBJ:
