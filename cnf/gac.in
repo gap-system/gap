@@ -50,11 +50,11 @@
 ##   -l|--gap-binary
 ##
 
-SHELL=@SHELL@
-abs_top_builddir=@abs_top_builddir@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@libdir@
+SHELL="@SHELL@"
+abs_top_builddir="@abs_top_builddir@"
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
 
 # path of the directory in which GAP was compiled
 gap_bin="@abs_top_builddir@"
@@ -63,33 +63,35 @@ gap_bin="@abs_top_builddir@"
 gap_dir="@abs_top_srcdir@"
 
 # path to the GAP executable
-gap_compiler="${gap_bin}/gap"
+gap_compiler="${abs_top_builddir}/gap"
 
-# path of the directory containing the *.o files; the OBJECTS variables
+# path of the directory containing the *.o files; the GAP_OBJS variables
 # is evaluated relative to this
-gap_binary="${gap_bin}"
+gap_binary="${abs_top_builddir}"
 
 libtool="$SHELL $abs_top_builddir/libtool"
 CC="@CC@"
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="$libtool --mode=compile $CC"
-c_options="@DEFS@ @GMP_CPPFLAGS@ @CPPFLAGS@ @CFLAGS@"
 c_linker="$libtool --mode=link $CC"
-c_link_options="@ABI_CFLAGS@ @GMP_LDFLAGS@ @LDFLAGS@"
-c_libs="@LIBS@ @GMP_LIBS@"
+
+# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, GAP_LDFLAGS, GAP_LIBS
+. "${abs_top_builddir}/sysinfo.gap"
 
 # These will need special care
-c_dyn_options="@DEFS@ @GMP_CPPFLAGS@ @CPPFLAGS@ @CFLAGS@"
 c_dyn_linker="$libtool --mode=link $CC -module -avoid-version -rpath $libdir"
-c_dyn_link_options="@ABI_CFLAGS@ @GMP_LDFLAGS@ @LDFLAGS@"
-c_dynlibs=""
 c_addlibs=""
 
-# hardwire this for now. There is probably a nicer way 
-# note: compstat.o is omitted on purpose from this list
+GAPARCH=@GAPARCH@
+SYS_IS_CYGWIN32=@SYS_IS_CYGWIN32@
+if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
+    c_dyn_linker="$c_dyn_linker -no-undefined -version-info 0:0:0"
+    # FIXME: use correct DLL path (also after "make install")
+    c_dyn_linker="$c_dyn_linker -Wl,${abs_top_builddir}/bin/${GAPARCH}/gap.dll"
+fi
 
-OBJECTS="@OBJECTS@"
+GAP_OBJS=$(cat ${abs_top_builddir}/cnf/GAP-OBJS)
 
 
 #############################################################################
@@ -107,12 +109,8 @@ gap_compile () {
 #F  c_compile   <output> <input> <options>
 ##
 c_compile () {
-# FIXME: set correct -I flags (also for HPC-GAP, where
-# we may need different ones
-    echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2
-    ${c_compiler} $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2 || exit 1
+    echo ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
+    ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
@@ -121,10 +119,10 @@ c_compile () {
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
-    echo ${c_dyn_linker} ${c_dyn_link_options} -o $1 $2 ${c_addlibs}
+    echo ${c_dyn_linker} ${GAP_LDFLAGS} -o $1 $2 ${c_addlibs}
     output_la=${1%.so}.la
     output_dir=$(dirname $1)
-    ${c_dyn_linker} ${c_dyn_link_options} -o "$output_la" $2 ${c_addlibs} || exit 1
+    ${c_dyn_linker} ${GAP_LDFLAGS} -o "$output_la" $2 ${c_addlibs} || exit 1
     cp -r $output_dir/.libs/*.so $output_dir
 }
 
@@ -134,10 +132,8 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-# FIXM: get rid of the unconditional -lm 
-    echo ${c_linker} ${c_dynlibs}  -o $1 $2 ${c_link_options} -lm ${c_libs}
-    ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} \
-        -lm ${c_libs} || exit 1
+    echo ${c_linker} ${GAP_LDFLAGS} -o $1 $2 ${GAP_LIBS}
+    ${c_linker} ${GAP_LDFLAGS} -o $1 $2 ${GAP_LIBS} || exit 1
 }
 
 #############################################################################
@@ -181,12 +177,7 @@ process_c_file () {
     else 
        o_file=${name}.lo
     fi
-    if [ $comp_mode = "comp_static" ]; then
-       c_compile_opts=$c_options
-    else
-       c_compile_opts=$c_dyn_options
-    fi
-    c_compile $o_file $c_file "$c_compile_opts $extra_cflags"
+    c_compile $o_file $c_file "$GAP_CFLAGS $extra_cflags"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
     fi 
@@ -289,9 +280,9 @@ while [ $# -gt 0 ]; do
 
     -l|--gap-binary)      shift; gap_binary="$1";;
 
-    -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
+    -p)                   shift; GAP_CFLAGS="${GAP_CFLAGS} $1";;
 
-    -P)                   shift; c_link_options="${c_link_options} $1" c_dyn_link_options="${c_dyn_link_options} $1";;
+    -P)                   shift; GAP_LDFLAGS="${GAP_LDFLAGS} $1";;
 
     -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
@@ -350,7 +341,7 @@ make_compstat () {
     echo "    0"                                         >> ${gactmp}/$$compstat.c
     echo "};"                                            >> ${gactmp}/$$compstat.c
     temps_o="${gactmp}/$$compstat.o ${temps_o}"
-    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${c_options}"
+    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${GAP_CFLAGS}"
     if [ "$savetemps" = "true" ]; then
         echo "Leaving temp file " ${gactmp}/$$compstat.c
     else
@@ -420,7 +411,7 @@ if [ $comp_howfar = "link" ]; then
         # link everything together
         if [ "X${output}" = "X" ]; then output="gacout"; fi
 
-        for object in $OBJECTS;  do
+        for object in $GAP_OBJS;  do
             objects="${gap_binary}/${object} ${objects}"
         done
 
