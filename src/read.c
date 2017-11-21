@@ -1495,7 +1495,7 @@ void ReadFuncExpr (
 
     /* and end the function again                                          */
     TRY_READ {
-        IntrFuncExprEnd( nr, 0UL );
+        IntrFuncExprEnd(nr);
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
@@ -1549,7 +1549,7 @@ static void ReadFuncExprBody (
 
     /* end interpreting the function expression (with 1 statement)         */
     TRY_READ {
-        IntrFuncExprEnd( 1UL, 1UL );
+        IntrFuncExprEnd(1);
     }
     CATCH_READ_ERROR {
         /* an error has occured *after* the 'IntrFuncExprEnd'                  */
@@ -2929,7 +2929,7 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* fake the 'end;'                                                     */
     TRY_READ {
-        IntrFuncExprEnd( nr, 0UL );
+        IntrFuncExprEnd(nr);
     }
     CATCH_READ_ERROR {
         Obj fexp;

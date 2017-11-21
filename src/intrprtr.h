@@ -159,9 +159,7 @@ extern  void            IntrFuncExprBegin (
             Obj                 nams,
 	    Int                 startLine);
 
-extern  void            IntrFuncExprEnd (
-            UInt                nr,
-            UInt                mapsto );
+extern void IntrFuncExprEnd(UInt nr);
 
 
 /****************************************************************************

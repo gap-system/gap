@@ -625,9 +625,7 @@ extern void CodeFuncExprBegin (
             Obj                 nams,
             Int startLine);
 
-extern void CodeFuncExprEnd (
-            UInt                nr,
-            UInt                mapsto );
+extern void CodeFuncExprEnd(UInt nr);
 
 /****************************************************************************
 **
