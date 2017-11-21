@@ -1304,40 +1304,7 @@ ArgList ReadFuncArgList(
     SET_LEN_PLIST(nams, 0);
     PushPlist( STATE(StackNams), nams );
     if ( STATE(Symbol) != symbol ) {
-        lockmode = 0;
-        switch (STATE(Symbol)) {
-            case S_READWRITE:
-            if (!is_atomic) {
-                SyntaxError("'readwrite' argument of non-atomic function");
-                GetSymbol();
-                break;
-            }
-            lockmode++;
-            case S_READONLY:
-            if (!is_atomic) {
-                SyntaxError("'readonly' argument of non-atomic function");
-                GetSymbol();
-                break;
-            }
-            lockmode++;
-            CHARS_STRING(locks)[0] = lockmode;
-            SET_LEN_STRING(locks, 1);
-            GetSymbol();
-        }
-        if ( strcmp("~", STATE(Value)) == 0 ) {
-            SyntaxError("~ is not a valid name for an argument");
-        }
-        narg += 1;
-        PushPlist(nams, MakeImmString(STATE(Value)));
-        Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
-    }
-
-    if(STATE(Symbol) == S_DOTDOT) {
-        SyntaxError("Three dots required for variadic argument list");
-    }
-    if(STATE(Symbol) == S_DOTDOTDOT) {
-        isvarg = 1;
-        GetSymbol();
+        goto start;
     }
 
     while ( STATE(Symbol) == S_COMMA ) {
@@ -1346,6 +1313,7 @@ ArgList ReadFuncArgList(
         }
 
         Match( S_COMMA, ",", follow );
+    start:
         lockmode = 0;
         switch (STATE(Symbol)) {
             case S_READWRITE:
@@ -1367,16 +1335,8 @@ ArgList ReadFuncArgList(
             CHARS_STRING(locks)[narg] = lockmode;
             GetSymbol();
         }
-
-        if(STATE(Symbol) != S_IDENT) {
-            SyntaxError("Expect identifier");
-        }
-
-        if (findValueInNams(nams, 1, narg)) {
+        if (STATE(Symbol) == S_IDENT && findValueInNams(nams, 1, narg)) {
             SyntaxError("Name used for two arguments");
-        }
-        if ( strcmp("~", STATE(Value)) == 0 ) {
-            SyntaxError("~ is not a valid name for an argument");
         }
         narg += 1;
         PushPlist(nams, MakeImmString(STATE(Value)));
