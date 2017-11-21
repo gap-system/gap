@@ -1247,7 +1247,9 @@ typedef struct {
     Int        narg;           /* number of arguments             */
     Obj        nams;           /* list of local variables names   */
     UInt       isvarg;         /* does function have varargs?     */
+#ifdef HPCGAP
     Obj        locks;          /* locks of the function (HPC-GAP) */
+#endif
 } ArgList;
 
 // Search 'nams' for a string equal to STATE(Value) between (and including)
@@ -1292,11 +1294,15 @@ ArgList ReadFuncArgList(
     Int        narg;           /* number of arguments             */
     int        lockmode;       /* type of lock for current argument */
     Obj        nams;           /* list of local variables names   */
+#ifdef HPCGAP
     Bag        locks = 0;      /* locks of the function */
+#endif
     UInt       isvarg = 0;     /* does function have varargs?     */
 
+#ifdef HPCGAP
     if (is_atomic)
         locks = NEW_STRING(4);
+#endif
 
     /* make and push the new local variables list (args and locals)        */
     narg = 0;
@@ -1330,9 +1336,11 @@ ArgList ReadFuncArgList(
                 break;
             }
             lockmode++;
+#ifdef HPCGAP
             GrowString(locks, narg+1);
             SET_LEN_STRING(locks, narg+1);
             CHARS_STRING(locks)[narg] = lockmode;
+#endif
             GetSymbol();
         }
         if (STATE(Symbol) == S_IDENT && findValueInNams(nams, 1, narg)) {
@@ -1356,8 +1364,14 @@ ArgList ReadFuncArgList(
         isvarg = 1;
     }
 
-    ArgList ret = {narg, nams, isvarg, locks};
-    return ret;
+    ArgList args;
+    args.narg = narg;
+    args.nams = nams;
+    args.isvarg = isvarg;
+#ifdef HPCGAP
+    args.locks = locks;
+#endif
+    return args;
 }
 
 
@@ -1519,7 +1533,13 @@ void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 
     PushPlist( STATE(StackNams), nams );
 
-    ArgList args = { 1, nams, 0, 0 };
+    ArgList args;
+    args.narg = 1;
+    args.nams = nams;
+    args.isvarg = 0;
+#ifdef HPCGAP
+    args.locks = 0;
+#endif
 
     /* match away the '->'                                                 */
     Match(S_MAPTO, "->", follow);
