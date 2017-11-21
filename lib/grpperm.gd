@@ -528,6 +528,22 @@ DeclareGlobalFunction( "ReducedPermdegree" );
 
 DeclareGlobalFunction("MovedPointsPerms");
 
+#############################################################################
+##
+#F  LogPerm( <a>, <b> )
+##
+##  <ManSection>
+##  <Func Name="LogPerm" Arg='a,b'/>
+##
+##  <Description>
+##  For two permutations <A>a</A> and <A>b</A> this function returns a
+##  positive integer <A>e</A> such that <A>a^e=b</A>, or <K>false</A> if no such
+##  element exists.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("LogPerm");
+
 # use for pcgs conversion
 DeclareGlobalFunction("CreateIsomorphicPcGroup");
 
