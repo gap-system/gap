@@ -1822,6 +1822,69 @@ local l,m,i, one;
   return m;
 end );
 
+
+# return e is a^e=b or false otherwise
+InstallGlobalFunction("LogPerm",
+function(a,b)
+local oa,ob,q,ma,mb,tofix,locpow,i,c,l,divisor,step,goal,exp,nc,j,new,k,gcd;
+  oa:=Order(a);
+  ob:=Order(b);
+  if oa mod ob<>0 then Info(InfoGroup,20,"1"); return false;fi;
+  q:=oa/ob;
+  ma:=MovedPoints(a);
+  mb:=MovedPoints(b);
+  if not IsSubset(ma,mb) then Info(InfoGroup,20,"2"); return false;fi;
+  tofix:=Difference(ma,mb);
+  ma:=ShallowCopy(ma); # to allow removing elements
+  Sort(ma);
+  IsSet(ma);
+  locpow:=[];
+
+  # reversed, as subgroup constructions naturally pick stabilizers first
+  for i in [Maximum(ma),Maximum(ma)-1..Minimum(ma)] do
+    if i in ma then #we're removing from ma on the way
+      c:=Cycle(a,i);
+      l:=Length(c);
+      divisor:=l/Gcd(l,q); # length of cycles
+      step:=l/divisor; # resulting number of cycles
+      #nc:=[];
+      if i in tofix and divisor>1 or divisor=1 and not i in tofix 
+        then Info(InfoGroup,20,"3"); return false;fi;
+      if divisor=1 then # all fixed
+	if ForAny(c,x->x in mb) then
+          Info(InfoGroup,20,"4");return false;
+	fi;
+        #for j in c do
+        #  Add(nc,[j]);
+        #od;
+      else
+        for j in [1..step] do
+          new:=c{j+([0,q..(divisor-1)*q] mod l)}; # cycle for q-th power
+          goal:=new[1]^b;
+          exp:=Position(new,goal);
+          if exp=fail then Info(InfoGroup,20,"5");return false;fi;
+          exp:=exp-1;
+	  for k in locpow do
+	    gcd:=Gcd(k[1],Length(new));
+	    if k[2] mod gcd<>exp mod gcd then Info(InfoGroup,20,"6");return false;fi;# cannot both hold
+	  od;
+          AddSet(locpow,[Length(new),exp]);
+          new:=new{1+(exp*[0..divisor-1] mod divisor)};
+          if new<>Cycle(b,new[1]) then Info(InfoGroup,20,"7");return false;fi;
+          #Add(nc,new);
+        od;
+      fi;
+      SubtractSet(ma,c);
+    fi;
+  od;
+  if Length(locpow)=0 then exp:=0;
+  else
+    exp:=ChineseRem(List(locpow,x->x[1]),List(locpow,x->x[2])); # power afterwards
+  fi;
+  return q*exp mod oa;
+end);
+
+
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>) 
@@ -1836,21 +1899,21 @@ local  i, j, U, gens,o,v,a,sel,min;
   o:=List(gens,Order);
   SortParallel(o,gens,function(a,b) return a>b;end);
   sel:=Filtered([1..Length(gens)],x->o[x]>1);
+
   for i in [1..Length(gens)] do
     if i in sel then
-      U:=Filtered(sel,x->x>i and IsInt(o[i]/o[x])); # potential powers
-      v:=[];
-      for j in U do
-	a:=SmallestMovedPoint(gens[j]);
-	if IsSubset(OrbitPerms([gens[i]],a),OrbitPerms([gens[j]],a)) then
-	  Add(v,j);
-	fi;
-      od;
-      # v are the possible powers
-      for j in v do
-	a:=gens[i]^(o[i]/o[j]);
-	if ForAny(Filtered([1..o[j]],z->Gcd(z,o[j])=1),x->a^x=gens[j]) then
-	  RemoveSet(sel,j);
+      #Print(i," ",sel,"\n");
+      for j in sel do
+        if j>i then
+	  a:=LogPerm(gens[i],gens[j]);
+	  if a=false then
+	    #Assert(1,not gens[j] in Group(gens[i]));
+	    a:=a; # avoid empty case
+	  else
+	    #Assert(1,gens[i]^a=gens[j]);
+	    #Print("Remove ",j," by ",i,"\n");
+	    RemoveSet(sel,j);
+	  fi;
 	fi;
       od;
     fi;
@@ -1900,6 +1963,8 @@ local  i, j, U, gens,o,v,a,sel,min;
       gens:=Set(GeneratorsOfGroup(U));
     fi;
   od;
+#U:=Group(gens);
+#Assert(1,ForAll(GeneratorsOfGroup(G),x->x in U));
   return gens;
 end);
 
