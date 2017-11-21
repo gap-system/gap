@@ -41,7 +41,7 @@
 **  The possible values for 'Symbol' are defined in the  definition  file  of
 **  this package as follows:
 */
-enum {
+enum SCANNER_SYMBOLS {
     S_ILLEGAL           = 0UL,
 
     S_IDENT             = (1UL<< 3),
