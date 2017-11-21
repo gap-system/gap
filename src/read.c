@@ -1251,6 +1251,18 @@ typedef struct {
     Obj        locks;          /* locks of the function (HPC-GAP) */
 } ArgList;
 
+// Search 'nams' for a string equal to STATE(Value) between (and including)
+// index 'start' and 'end' and return its index; return 0 if not found.
+static UInt findValueInNams(Obj nams, UInt start, UInt end)
+{
+    for (UInt i = start; i <= end; i++) {
+        if (strcmp(CSTR_STRING(ELM_LIST(nams, i)), STATE(Value)) == 0) {
+            return i;
+        }
+    }
+    // not found
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1285,7 +1297,6 @@ ArgList ReadFuncArgList(
     Bag        locks = 0;      /* locks of the function */
     UInt       isvarg = 0;     /* does function have varargs?     */
 
-    UInt       i;              /* loop variable */
     if (is_atomic)
         locks = NEW_STRING(4);
 
@@ -1364,13 +1375,11 @@ ArgList ReadFuncArgList(
             SyntaxError("Expect identifier");
         }
 
-        for (i = 1; i <= narg; i++ ) {
-            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
-                SyntaxError("Name used for two arguments");
-            }
+        if (findValueInNams(nams, 1, narg)) {
+            SyntaxError("Name used for two arguments");
         }
         if ( strcmp("~", STATE(Value)) == 0 ) {
-                SyntaxError("~ is not a valid name for an argument");
+            SyntaxError("~ is not a valid name for an argument");
         }
         name = MakeImmString( STATE(Value) );
         narg += 1;
@@ -1465,7 +1474,6 @@ void ReadFuncExpr (
     Char mode)
 {
     volatile Obj        name;           /* one local variable name         */
-    volatile UInt       i;              /* loop variable                   */
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
     volatile UInt       nloc = 0;       /* number of locals                */
@@ -1488,10 +1496,8 @@ void ReadFuncExpr (
 
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
-        for (i = 1; i <= args.narg; i++) {
-            if (strcmp(CSTR_STRING(ELM_LIST(args.nams, i)), STATE(Value)) == 0) {
-                SyntaxError("Name used for argument and local");
-            }
+        if (findValueInNams(args.nams, 1, args.narg)) {
+            SyntaxError("Name used for argument and local");
         }
         if ( strcmp("~", STATE(Value)) == 0 ) {
             SyntaxError("~ is not a valid name for a local identifier");
@@ -1504,15 +1510,11 @@ void ReadFuncExpr (
             /* init to avoid strange message in case of empty string */
             STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", follow );
-            for ( i = 1; i <= args.narg; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(args.nams,i)),STATE(Value)) == 0 ) {
-                    SyntaxError("Name used for argument and local");
-                }
+            if (findValueInNams(args.nams, 1, args.narg)) {
+                SyntaxError("Name used for argument and local");
             }
-            for ( i = args.narg+1; i <= args.narg+nloc; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(args.nams,i)),STATE(Value)) == 0 ) {
-                    SyntaxError("Name used for two locals");
-                }
+            if (findValueInNams(args.nams, args.narg + 1, args.narg + nloc)) {
+                SyntaxError("Name used for two locals");
             }
             if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
@@ -2830,7 +2832,6 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile Obj        name;
     volatile Obj        nams;
     volatile Int        nloc;
-    volatile Int        i;
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
@@ -2880,10 +2881,8 @@ UInt ReadEvalFile(Obj *evalResult)
         while ( STATE(Symbol) == S_COMMA ) {
             STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", 0L );
-            for ( i = 1; i <= nloc; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
-                    SyntaxError("Name used for two locals");
-                }
+            if (findValueInNams(nams, 1, nloc)) {
+                SyntaxError("Name used for two locals");
             }
             name = MakeImmString( STATE(Value) );
             nloc += 1;
