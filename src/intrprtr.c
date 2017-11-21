@@ -226,7 +226,7 @@ static inline void FinishAndCallFakeFuncExpr(void)
     assert(STATE(IntrCoding) == 0);
 
     // code a function expression (with one statement in the body)
-    CodeFuncExprEnd(1, 0);
+    CodeFuncExprEnd(1);
 
     // switch back to immediate mode
     CodeEnd(0);
@@ -505,9 +505,7 @@ void            IntrFuncExprBegin (
     CodeFuncExprBegin( narg, nloc, nams, startLine );
 }
 
-void            IntrFuncExprEnd (
-    UInt                nr,
-    UInt                mapsto )
+void IntrFuncExprEnd(UInt nr)
 {
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -517,7 +515,7 @@ void            IntrFuncExprEnd (
     assert(STATE(IntrCoding) > 0);
 
     STATE(IntrCoding)--;
-    CodeFuncExprEnd(nr, mapsto);
+    CodeFuncExprEnd(nr);
 
     if (STATE(IntrCoding) == 0) {
         // switch back to immediate mode

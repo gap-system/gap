@@ -741,7 +741,7 @@ void CodeFuncCallEnd (
 /****************************************************************************
 **
 *F  CodeFuncExprBegin( <narg>, <nloc>, <nams> ) . . code function expr, begin
-*F  CodeFuncExprEnd( <nr>, <mapsto> )   . . . . code function expression, end
+*F  CodeFuncExprEnd( <nr> ) . . . . . . . . . . code function expression, end
 **
 **  'CodeFuncExprBegin'  is an action to code  a  function expression.  It is
 **  called when the reader encounters the beginning of a function expression.
@@ -816,9 +816,7 @@ void CodeFuncExprBegin (
     assert( stat1 == OFFSET_FIRST_STAT );
 }
 
-void CodeFuncExprEnd (
-    UInt                nr,
-    UInt                mapsto )
+void CodeFuncExprEnd(UInt nr)
 {
     Expr                expr;           /* function expression, result     */
     Stat                stat1;          /* single statement of body        */
