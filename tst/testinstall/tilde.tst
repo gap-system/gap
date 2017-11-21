@@ -23,7 +23,7 @@ Syntax error: identifier expected in stream:1
 f := function(~) local a; end;
               ^
 gap> f := function(a,~) local a; end;
-Syntax error: Expect identifier in stream:1
+Syntax error: identifier expected in stream:1
 f := function(a,~) local a; end;
                 ^
 gap> f := function(a,b) local ~; end;
