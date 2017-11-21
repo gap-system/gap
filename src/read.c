@@ -1484,7 +1484,9 @@ void ReadFuncExpr (
     nrError   = STATE(NrError);
 
     /* now finally begin the function                                      */
-    TRY_READ { IntrFuncExprBegin( args.isvarg ? -narg : narg, nloc, nams, startLine ); }
+    TRY_READ {
+        IntrFuncExprBegin( args.isvarg ? -narg : narg, nloc, nams, startLine );
+    }
 #ifdef HPCGAP
     if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
@@ -1496,12 +1498,13 @@ void ReadFuncExpr (
     TRY_READ {
         IntrFuncExprEnd(nr);
     }
-
-    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( nrError == 0 && STATE(IntrCoding) ) {
-        CodeEnd(1);
-        STATE(IntrCoding)--;
-        SET_CURR_LVARS(currLVars);
+    CATCH_READ_ERROR {
+        /* an error has occured *after* the 'IntrFuncExprEnd'              */
+        if ( nrError == 0 && STATE(IntrCoding) ) {
+            CodeEnd(1);
+            STATE(IntrCoding)--;
+            SET_CURR_LVARS(currLVars);
+        }
     }
 
     /* pop the new local variables list                                    */
@@ -1551,8 +1554,8 @@ static void ReadFuncExprBody (
         IntrFuncExprEnd(1);
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-        if ( nrError == 0  && STATE(IntrCoding) ) {
+        /* an error has occured *after* the 'IntrFuncExprEnd'              */
+        if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
             SET_CURR_LVARS(currLVars);
@@ -2461,7 +2464,7 @@ void ReadRepeat (
         IntrRepeatEnd();
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrFuncExprEnd'              */
+        /* an error has occured *after* the 'IntrRepeatEnd'                */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
