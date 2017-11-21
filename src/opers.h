@@ -15,6 +15,7 @@
 #define GAP_OPERS_H
 
 #include <src/system.h>
+#include <src/calls.h>  // for ObjFunc
 
 /****************************************************************************
 **

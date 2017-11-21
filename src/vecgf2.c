@@ -1,9 +1,7 @@
 #include <src/system.h>                 /* system dependent part */
 
-
 #include <src/gasman.h>                 /* garbage collector */
 #include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
 
 #include <src/gap.h>                    /* error handling, initialisation */
 
@@ -20,13 +18,10 @@
 #include <src/precord.h>                /* plain records */
 
 #include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
 #include <src/range.h>                  /* ranges */
 #include <src/blister.h>                /* boolean lists */
 
 #include <src/vecgf2.h>                 /* GF2 vectors */
-
-#include <src/saveload.h>               /* saving and loading */
 
 #include <src/integer.h>                /* integers */
 
@@ -37,6 +32,7 @@
 #include <src/hpc/guards.h>
 
 #include <assert.h>
+#include <string.h>
 
 /****************************************************************************
 **

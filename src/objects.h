@@ -19,6 +19,7 @@
 
 #include <src/debug.h>
 #include <src/intobj.h>
+#include <src/gasman.h>
 
 #ifdef HPCGAP
 #define USE_THREADSAFE_COPYING
