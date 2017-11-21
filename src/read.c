@@ -1395,6 +1395,58 @@ ArgList ReadFuncArgList(
 }
 
 
+static void ReadFuncExprBody(
+    TypSymbolSet follow, Int isAbbrev, Int nloc, ArgList args, Int startLine)
+{
+    volatile UInt nr;           // number of statements
+    volatile UInt nrError;      // copy of <STATE(NrError)>
+    volatile Bag  currLVars;    // copy of <STATE(CurrLVars)>
+
+    // remember the current variables in case of an error
+    currLVars = STATE(CurrLVars);
+    nrError = STATE(NrError);
+
+    // begin interpreting the function expression (with 1 argument)
+    TRY_READ {
+        IntrFuncExprBegin(args.isvarg ? -args.narg : args.narg, nloc,
+                          args.nams, startLine);
+    }
+
+    if (isAbbrev) {
+        // read the expression and turn it into a return-statement
+        ReadExpr(follow, 'r');
+        TRY_READ {
+            IntrReturnObj();
+        }
+        nr = 1;
+    }
+    else {
+#ifdef HPCGAP
+        if (nrError == 0)
+            SET_LCKS_FUNC(CURR_FUNC(), args.locks);
+#endif
+        // <Statments>
+        nr = ReadStats(S_END | follow);
+    }
+
+    // end interpreting the function expression
+    TRY_READ {
+        IntrFuncExprEnd(nr);
+    }
+    CATCH_READ_ERROR {
+        // an error has occured *after* the 'IntrFuncExprEnd'
+        if (nrError == 0 && STATE(IntrCoding)) {
+            CodeEnd(1);
+            STATE(IntrCoding)--;
+            SET_CURR_LVARS(currLVars);
+        }
+    }
+
+    // pop the new local variables list
+    PopPlist(STATE(StackNams));
+}
+
+
 /****************************************************************************
 **
 *F  ReadFuncExpr( <follow> )  . . . . . . . . . .  read a function definition
@@ -1412,14 +1464,9 @@ void ReadFuncExpr (
     Char mode)
 {
     volatile Obj        name;           /* one local variable name         */
-    volatile UInt       nr;             /* number of statements            */
     volatile UInt       i;              /* loop variable                   */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
-    volatile Int        narg;           /* number of arguments             */
-    volatile Obj        nams;           /* list of local variables names   */
     volatile UInt       nloc = 0;       /* number of locals                */
     volatile ArgList    args;
 
@@ -1437,13 +1484,11 @@ void ReadFuncExpr (
     Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
 
     args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
-    narg = args.narg;
-    nams = args.nams;
 
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
-        for ( i = 1; i <= narg; i++ ) {
-            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
+        for (i = 1; i <= args.narg; i++) {
+            if (strcmp(CSTR_STRING(ELM_LIST(args.nams, i)), STATE(Value)) == 0) {
                 SyntaxError("Name used for argument and local");
             }
         }
@@ -1452,19 +1497,19 @@ void ReadFuncExpr (
         }
         name = MakeImmString( STATE(Value) );
         nloc += 1;
-        ASS_LIST( nams, narg+nloc, name );
+        ASS_LIST(args.nams, args.narg + nloc, name);
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         while ( STATE(Symbol) == S_COMMA ) {
             /* init to avoid strange message in case of empty string */
             STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", follow );
-            for ( i = 1; i <= narg; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
+            for ( i = 1; i <= args.narg; i++ ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(args.nams,i)),STATE(Value)) == 0 ) {
                     SyntaxError("Name used for argument and local");
                 }
             }
-            for ( i = narg+1; i <= narg+nloc; i++ ) {
-                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),STATE(Value)) == 0 ) {
+            for ( i = args.narg+1; i <= args.narg+nloc; i++ ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(args.nams,i)),STATE(Value)) == 0 ) {
                     SyntaxError("Name used for two locals");
                 }
             }
@@ -1473,98 +1518,18 @@ void ReadFuncExpr (
             }
             name = MakeImmString( STATE(Value) );
             nloc += 1;
-            ASS_LIST( nams, narg+nloc, name );
+            ASS_LIST(args.nams, args.narg + nloc, name);
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         }
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
     }
 
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
-    nrError   = STATE(NrError);
-
-    /* now finally begin the function                                      */
-    TRY_READ {
-        IntrFuncExprBegin( args.isvarg ? -narg : narg, nloc, nams, startLine );
-    }
-#ifdef HPCGAP
-    if ( nrError == 0) SET_LCKS_FUNC(CURR_FUNC(), args.locks);
-#endif
-
-    /* <Statments>                                                         */
-    nr = ReadStats( S_END|follow );
-
-    /* and end the function again                                          */
-    TRY_READ {
-        IntrFuncExprEnd(nr);
-    }
-    CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrFuncExprEnd'              */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
-        }
-    }
-
-    /* pop the new local variables list                                    */
-    PopPlist(STATE(StackNams));
+    ReadFuncExprBody(follow, 0, nloc, args, startLine);
 
     /* 'end'                                                               */
     Match( S_END, "end", follow );
 }
 
-
-/****************************************************************************
-**
-*F  ReadFuncExprBodyAbbrev(<follow>) . . . . read body of abbrev. func. expr.
-**
-**  'ReadFuncExprBodyAbbrev reads an abbreviated function literal expression
-**  after the argument declaration. In case of an error it skips all symbols
-**  up to one contained in <follow>.
-**
-**      <FunctionBody>      := '->' <Expr>
-*/
-static void ReadFuncExprBodyAbbrev (
-    TypSymbolSet        follow,
-    Obj nams,
-    Int narg)
-{
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
-
-    /* match away the '->'                                                 */
-    Match( S_MAPTO, "->", follow );
-
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
-    nrError   = STATE(NrError);
-
-    /* begin interpreting the function expression (with 1 argument)        */
-    TRY_READ {
-        IntrFuncExprBegin( narg, 0L, nams, STATE(Input)->number );
-    }
-
-    /* read the expression and turn it into a return-statement             */
-    ReadExpr( follow, 'r' );
-    TRY_READ { IntrReturnObj(); }
-
-    /* end interpreting the function expression (with 1 statement)         */
-    TRY_READ {
-        IntrFuncExprEnd(1);
-    }
-    CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrFuncExprEnd'              */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
-        }
-    }
-
-    /* pop the new local variables list                                    */
-    PopPlist(STATE(StackNams));
-}
 
 /****************************************************************************
 **
@@ -1581,7 +1546,11 @@ void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
     Match( S_LBRACE, "{", follow );
 
     ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
-    ReadFuncExprBodyAbbrev(follow, args.nams, args.isvarg ? -args.narg : args.narg);
+
+    /* match away the '->'                                                 */
+    Match(S_MAPTO, "->", follow);
+
+    ReadFuncExprBody(follow, 1, 0, args, STATE(Input)->number);
 }
 
 /****************************************************************************
@@ -1606,7 +1575,12 @@ void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
     name = MakeImmString( STATE(Value) );
     ASS_LIST( nams, 1, name );
 
-    ReadFuncExprBodyAbbrev(follow, nams, 1);
+    ArgList args = { 1, nams, 0, 0 };
+
+    /* match away the '->'                                                 */
+    Match(S_MAPTO, "->", follow);
+
+    ReadFuncExprBody(follow, 1, 0, args, STATE(Input)->number);
 }
 
 /****************************************************************************
