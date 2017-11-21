@@ -1289,7 +1289,6 @@ ArgList ReadFuncArgList(
     UInt symbol,
     const Char * symbolstr)
 {
-    Obj        name;           /* one local variable name         */
     Int        narg;           /* number of arguments             */
     int        lockmode;       /* type of lock for current argument */
     Obj        nams;           /* list of local variables names   */
@@ -1301,8 +1300,8 @@ ArgList ReadFuncArgList(
 
     /* make and push the new local variables list (args and locals)        */
     narg = 0;
-    nams = NEW_PLIST( T_PLIST, narg );
-    SET_LEN_PLIST( nams, narg );
+    nams = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(nams, 0);
     PushPlist( STATE(StackNams), nams );
     if ( STATE(Symbol) != symbol ) {
         lockmode = 0;
@@ -1328,9 +1327,8 @@ ArgList ReadFuncArgList(
         if ( strcmp("~", STATE(Value)) == 0 ) {
             SyntaxError("~ is not a valid name for an argument");
         }
-        name = MakeImmString( STATE(Value) );
         narg += 1;
-        ASS_LIST( nams, narg, name );
+        PushPlist(nams, MakeImmString(STATE(Value)));
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
     }
 
@@ -1380,9 +1378,8 @@ ArgList ReadFuncArgList(
         if ( strcmp("~", STATE(Value)) == 0 ) {
             SyntaxError("~ is not a valid name for an argument");
         }
-        name = MakeImmString( STATE(Value) );
         narg += 1;
-        ASS_LIST( nams, narg, name );
+        PushPlist(nams, MakeImmString(STATE(Value)));
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
         if(STATE(Symbol) == S_DOTDOT) {
             SyntaxError("Three dots required for variadic argument list");
@@ -1472,7 +1469,6 @@ void ReadFuncExpr (
     TypSymbolSet        follow,
     Char mode)
 {
-    volatile Obj        name;           /* one local variable name         */
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_atomic = 0;  /* is this an atomic function?      */
     volatile UInt       nloc = 0;       /* number of locals                */
@@ -1501,9 +1497,8 @@ void ReadFuncExpr (
         if ( strcmp("~", STATE(Value)) == 0 ) {
             SyntaxError("~ is not a valid name for a local identifier");
         }
-        name = MakeImmString( STATE(Value) );
         nloc += 1;
-        ASS_LIST(args.nams, args.narg + nloc, name);
+        PushPlist(args.nams, MakeImmString(STATE(Value)));
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         while ( STATE(Symbol) == S_COMMA ) {
             /* init to avoid strange message in case of empty string */
@@ -1518,9 +1513,8 @@ void ReadFuncExpr (
             if ( strcmp("~", STATE(Value)) == 0 ) {
                 SyntaxError("~ is not a valid name for a local identifier");
             }
-            name = MakeImmString( STATE(Value) );
             nloc += 1;
-            ASS_LIST(args.nams, args.narg + nloc, name);
+            PushPlist(args.nams, MakeImmString(STATE(Value)));
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         }
         Match( S_SEMICOLON, ";", STATBEGIN|S_END|follow );
@@ -1567,15 +1561,12 @@ void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
 */
 void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 {
-    volatile Obj        nams;           /* list of local variables names   */
-    volatile Obj        name;           /* one local variable name         */
-
     /* make and push the new local variables list                          */
-    nams = NEW_PLIST( T_PLIST, 1 );
+    Obj nams = NEW_PLIST(T_PLIST, 1);
     SET_LEN_PLIST( nams, 0 );
+    PushPlist(nams, MakeImmString(STATE(Value)));
+
     PushPlist( STATE(StackNams), nams );
-    name = MakeImmString( STATE(Value) );
-    ASS_LIST( nams, 1, name );
 
     ArgList args = { 1, nams, 0, 0 };
 
@@ -2823,7 +2814,6 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile UInt       currLHSGVar;
     syJmp_buf           readJmpError;
     volatile UInt       nr;
-    volatile Obj        name;
     volatile Obj        nams;
     volatile Int        nloc;
 #ifdef HPCGAP
@@ -2866,9 +2856,8 @@ UInt ReadEvalFile(Obj *evalResult)
     PushPlist( STATE(StackNams), nams );
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = MakeImmString( STATE(Value) );
         nloc += 1;
-        ASS_LIST( nams, nloc, name );
+        PushPlist(nams, MakeImmString(STATE(Value)));
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
         while ( STATE(Symbol) == S_COMMA ) {
             STATE(Value)[0] = '\0';
@@ -2876,9 +2865,8 @@ UInt ReadEvalFile(Obj *evalResult)
             if (findValueInNams(nams, 1, nloc)) {
                 SyntaxError("Name used for two locals");
             }
-            name = MakeImmString( STATE(Value) );
             nloc += 1;
-            ASS_LIST( nams, nloc, name );
+            PushPlist(nams, MakeImmString(STATE(Value)));
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
         }
         Match( S_SEMICOLON, ";", STATBEGIN|S_END );
