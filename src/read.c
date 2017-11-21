@@ -104,7 +104,7 @@ void            ReadExpr (
 UInt            ReadStats (
     TypSymbolSet        follow );
 
-void            ReadFuncExpr1 (
+void            ReadFuncExprAbbrevSingle (
     TypSymbolSet        follow );
 
 void ReadAtom (
@@ -473,7 +473,7 @@ void ReadCallVarAss (
     if ( STATE(Symbol) == S_MAPTO ) {
       if (mode == 'r' || mode == 'x')
         {
-          ReadFuncExpr1( follow );
+          ReadFuncExprAbbrevSingle( follow );
           return;
         }
       else
@@ -1518,15 +1518,15 @@ void ReadFuncExpr (
 
 /****************************************************************************
 **
-*F  ReadFuncExprBody(<follow>) . . . . . . read the body function expression
+*F  ReadFuncExprBodyAbbrev(<follow>) . . . . read body of abbrev. func. expr.
 **
-**  'ReadFuncExprBody reads an abbreviated  function literal expression after
-**  the variable declaration. In case of an error it skips all symbols up to
-**  one contained in <follow>.
+**  'ReadFuncExprBodyAbbrev reads an abbreviated function literal expression
+**  after the argument declaration. In case of an error it skips all symbols
+**  up to one contained in <follow>.
 **
 **      <FunctionBody>      := '->' <Expr>
 */
-static void ReadFuncExprBody (
+static void ReadFuncExprBodyAbbrev (
     TypSymbolSet        follow,
     Obj nams,
     Int narg)
@@ -1569,33 +1569,33 @@ static void ReadFuncExprBody (
 
 /****************************************************************************
 **
-*F  ReadFuncExprLong(<follow>) . . . . . read a multi-arg function expression
+*F  ReadFuncExprAbbrevMulti(<follow>) . .  read multi-arg abbrev. func. expr.
 **
-**  'ReadFuncExprLong' reads  an abbreviated  function literal expression.  In
-**  case of an error it skips all symbols up to one contained in <follow>.
+**  'ReadFuncExprAbbrevMulti' reads a multi-argument abbreviated function
+**  literal expression. In case of an error it skips all symbols up to one
+**  contained in <follow>.
 **
 **      <Function>      := '{' <ArgList> '}' '->' <Expr>
 */
-void ReadFuncExprLong (
-    TypSymbolSet        follow )
+void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
 {
     Match( S_LBRACE, "{", follow );
 
     ArgList args = ReadFuncArgList(follow, 0, S_RBRACE, ")");
-    ReadFuncExprBody(follow, args.nams, args.isvarg ? -args.narg : args.narg);
+    ReadFuncExprBodyAbbrev(follow, args.nams, args.isvarg ? -args.narg : args.narg);
 }
 
 /****************************************************************************
 **
-*F  ReadFuncExpr1(<follow>) . . . . . . . . . . .  read a function expression
+*F  ReadFuncExprAbbrevSingle(<follow>) .  read single-arg abbrev. func. expr.
 **
-**  'ReadFuncExpr1' reads  an abbreviated  function literal   expression.  In
-**  case of an error it skips all symbols up to one contained in <follow>.
+**  'ReadFuncExprAbbrevSingle' reads a single-argumnt abbreviated function
+**  literal expression. In case of an error it skips all symbols up to one
+**  contained in <follow>.
 **
 **      <Function>      := <Var> '->' <Expr>
 */
-void ReadFuncExpr1 (
-    TypSymbolSet        follow )
+void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 {
     volatile Obj        nams;           /* list of local variables names   */
     volatile Obj        name;           /* one local variable name         */
@@ -1607,7 +1607,7 @@ void ReadFuncExpr1 (
     name = MakeImmString( STATE(Value) );
     ASS_LIST( nams, 1, name );
 
-    ReadFuncExprBody(follow, nams, 1);
+    ReadFuncExprBodyAbbrev(follow, nams, 1);
 }
 
 /****************************************************************************
@@ -1730,7 +1730,7 @@ void ReadLiteral (
         break;
 
     case S_LBRACE:
-        ReadFuncExprLong( follow );
+        ReadFuncExprAbbrevMulti( follow );
         break;
 
     /* signal an error, we want to see a literal                           */
