@@ -37,4 +37,9 @@
     typedef char static_assertion_##__LINE__[(cond)? 1 : -1]
 #endif
 
+
+#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
+extern void InstallBacktraceHandlers(void);
+#endif
+
 #endif
