@@ -5735,7 +5735,6 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
-    TmpTrans = 0;
     IdentityTrans = NEW_TRANS2(0);
 
     // We make the next transformation to allow testing of some parts of the
@@ -5750,6 +5749,11 @@ static Int InitLibrary(StructInitInfo * module)
 
     /* return success                                                      */
     return 0;
+}
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    TmpTrans = 0;
 }
 
 /****************************************************************************
@@ -5773,5 +5777,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoTrans(void)
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

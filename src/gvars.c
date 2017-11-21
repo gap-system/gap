@@ -1753,10 +1753,6 @@ static Int InitLibrary (
     MakeBagPublic(TableGVars);
 #endif
 
-    /* Create the current namespace: */
-    STATE(CurrNamespace) = NEW_STRING(0);
-    SET_LEN_STRING(STATE(CurrNamespace),0);
-    
     /* fix C vars                                                          */
     PostRestore( module );
 
@@ -1787,6 +1783,14 @@ static Int CheckInit (
 }
 
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    /* Create the current namespace: */
+    STATE(CurrNamespace) = NEW_STRING(0);
+    SET_LEN_STRING(STATE(CurrNamespace), 0);
+}
+
+
 /****************************************************************************
 **
 *F  InitInfoGVars() . . . . . . . . . . . . . . . . . table of init functions
@@ -1808,5 +1812,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGVars ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

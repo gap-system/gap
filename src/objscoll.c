@@ -761,22 +761,6 @@ static inline Obj NewPlist( UInt tnum, UInt len, UInt reserved )
     return obj;
 }
 
-/*
- * Setup the collector stacks etc.
- */
-static void SetupCollectorStacks(void)
-{
-    const UInt maxStackSize = 256;
-    STATE(SC_NW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    STATE(SC_LW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    STATE(SC_PW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    STATE(SC_EW_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    STATE(SC_GE_STACK) = NewPlist( T_PLIST_EMPTY, 0, maxStackSize );
-    STATE(SC_CW_VECTOR) = NEW_STRING( 0 );
-    STATE(SC_CW2_VECTOR) = NEW_STRING( 0 );
-    STATE(SC_MAX_STACK_SIZE) = maxStackSize;
-}
-
 
 /****************************************************************************
 **
@@ -816,10 +800,6 @@ static Int InitLibrary (
     ExportAsConstantGVar(SCP_CLASS);
     ExportAsConstantGVar(SCP_AVECTOR2);
 
-#ifndef HPCGAP
-    SetupCollectorStacks();
-#endif
-
     /* export collector number                                             */
     AssConstantGVar( GVarName( "8Bits_SingleCollector" ),
              INTOBJ_INT(C8Bits_SingleCollectorNo) );
@@ -844,9 +824,17 @@ static Int InitLibrary (
 
 static void InitModuleState(ModuleStateOffset offset)
 {
-#ifdef HPCGAP
-    SetupCollectorStacks();
-#else
+    const UInt maxStackSize = 256;
+    STATE(SC_NW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_LW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_PW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_EW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_GE_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_CW_VECTOR) = NEW_STRING(0);
+    STATE(SC_CW2_VECTOR) = NEW_STRING(0);
+    STATE(SC_MAX_STACK_SIZE) = maxStackSize;
+
+#ifndef HPCGAP
     InitGlobalBag( &STATE(SC_NW_STACK), "SC_NW_STACK" );
     InitGlobalBag( &STATE(SC_LW_STACK), "SC_LW_STACK" );
     InitGlobalBag( &STATE(SC_PW_STACK), "SC_PW_STACK" );

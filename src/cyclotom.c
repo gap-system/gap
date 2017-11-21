@@ -2131,9 +2131,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    STATE(LastECyc) = (Obj)0;
-    STATE(LastNCyc) = 0;
-  
     /* install the marking function                                        */
     InfoBags[ T_CYC ].name = "cyclotomic";
     InitMarkFuncBags( T_CYC, MarkCycSubBags );
@@ -2240,6 +2237,13 @@ static Int InitLibrary (
 }
 
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(LastECyc) = (Obj)0;
+    STATE(LastNCyc) = 0;
+}
+
+
 /****************************************************************************
 **
 *F  InitInfoCyc() . . . . . . . . . . . . . . . . . . table of init functions
@@ -2261,5 +2265,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCyc ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

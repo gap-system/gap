@@ -6767,13 +6767,19 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
-    TmpPPerm = 0;
 
     EmptyPartialPerm = NEW_PPERM2(0);
 
     /* return success                                                      */
     return 0;
 }
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    TmpPPerm = 0;
+}
+
 
 /**************************************************************************
  **
@@ -6796,5 +6802,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPPerm(void)
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }
