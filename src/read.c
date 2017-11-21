@@ -1452,27 +1452,18 @@ void ReadFuncExpr (
 
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
-        if (findValueInNams(args.nams, 1, args.narg)) {
-            SyntaxError("Name used for argument and local");
-        }
-        if ( strcmp("~", STATE(Value)) == 0 ) {
-            SyntaxError("~ is not a valid name for a local identifier");
-        }
-        nloc += 1;
-        PushPlist(args.nams, MakeImmString(STATE(Value)));
-        Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
+        goto start;
         while ( STATE(Symbol) == S_COMMA ) {
             /* init to avoid strange message in case of empty string */
             STATE(Value)[0] = '\0';
             Match( S_COMMA, ",", follow );
-            if (findValueInNams(args.nams, 1, args.narg)) {
-                SyntaxError("Name used for argument and local");
-            }
             if (findValueInNams(args.nams, args.narg + 1, args.narg + nloc)) {
                 SyntaxError("Name used for two locals");
             }
-            if ( strcmp("~", STATE(Value)) == 0 ) {
-                SyntaxError("~ is not a valid name for a local identifier");
+        start:
+            if (STATE(Symbol) == S_IDENT &&
+                findValueInNams(args.nams, 1, args.narg)) {
+                SyntaxError("Name used for argument and local");
             }
             nloc += 1;
             PushPlist(args.nams, MakeImmString(STATE(Value)));
