@@ -7,23 +7,11 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file declares the functions of the scanner, which is responsible for
-**  all input and output processing.
-**
-**  The scanner  exports two very  important abstractions.  The  first is the
-**  concept that an input file is  a stream of symbols,  such nasty things as
-**  <space>,  <tab>,  <newline> characters or  comments (they are worst  :-),
-**  characters making  up identifiers  or  digits that  make  up integers are
-**  hidden from the rest of GAP.
-**
-**  The second is  the concept of  a current input  and output file.   In the
-**  main   module   they are opened  and   closed  with the  'OpenInput'  and
-**  'CloseInput' respectively  'OpenOutput' and 'CloseOutput' calls.  All the
-**  other modules just read from the  current input  and write to the current
-**  output file.
-**
-**  The scanner relies on the functions  provided  by  the  operating  system
-**  dependent module 'system.c' for the low level input/output.
+**  This file declares the functions of the scanner, which provides a very
+**  abstractions, namely the concept that an input file is a stream of
+**  symbols, such nasty things as <space>, <tab>, <newline> characters or
+**  comments (they are worst :-), characters making up identifiers or digits
+**  that make up integers are hidden from the rest of GAP.
 */
 
 #ifndef GAP_SCANNER_H
