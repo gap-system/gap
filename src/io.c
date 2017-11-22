@@ -1654,16 +1654,10 @@ static inline void FormatOutput(
     /* '%I' print an identifier                                    */
     else if ( *p == 'I' ) {
       int found_keyword = 0;
-      int i;
 
       /* check if q matches a keyword    */
       q = (Char*)arg1;
-      for ( i = 0; i < ARRAY_SIZE(AllKeywords); i++ ) {
-        if ( strcmp(q, AllKeywords[i].name) == 0 ) {
-          found_keyword = 1;
-          break;
-        }
-      }
+      found_keyword = IsKeyword(q);
 
       /* compute how many characters this identifier requires    */
       if (found_keyword) {

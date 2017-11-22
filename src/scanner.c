@@ -1148,15 +1148,31 @@ void GetSymbol ( void )
   }
 }
 
-Obj FuncALL_KEYWORDS(Obj self) {
-    Obj l;
+static const char * AllKeywords[] = {
+    "and",     "atomic",   "break",         "continue", "do",     "elif",
+    "else",    "end",      "false",         "fi",       "for",    "function",
+    "if",      "in",       "local",         "mod",      "not",    "od",
+    "or",      "readonly", "readwrite",     "rec",      "repeat", "return",
+    "then",    "true",     "until",         "while",    "quit",   "QUIT",
+    "IsBound", "Unbind",   "TryNextMethod", "Info",     "Assert",
+};
 
-    Obj s;
-    UInt i;
-    l = NEW_PLIST(T_PLIST_EMPTY, 0);
+int IsKeyword(const char * str)
+{
+    for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
+        if (strcmp(str, AllKeywords[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+Obj FuncALL_KEYWORDS(Obj self)
+{
+    Obj l = NEW_PLIST(T_PLIST_EMPTY, 0);
     SET_LEN_PLIST(l,0);
-    for (i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
-        s = MakeImmString(AllKeywords[i].name);
+    for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
+        Obj s = MakeImmString(AllKeywords[i]);
         ASS_LIST(l, i+1, s);
     }
     MakeImmutable(l);
