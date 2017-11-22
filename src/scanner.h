@@ -151,46 +151,6 @@ enum SCANNER_SYMBOLS {
 };
 /* TL: extern  UInt            Symbol; */
 
-/* FIXME: This is here, because the formatted output function in
-   io.c refers to it */
-typedef struct {const Char *name; UInt sym;} s_keyword;
-
-static const s_keyword AllKeywords[] = {
-    {"and",       S_AND},
-    {"atomic",    S_ATOMIC},
-    {"break",     S_BREAK},
-    {"continue",  S_CONTINUE},
-    {"do",        S_DO},
-    {"elif",      S_ELIF},
-    {"else",      S_ELSE},
-    {"end",       S_END},
-    {"false",     S_FALSE},
-    {"fi",        S_FI},
-    {"for",       S_FOR},
-    {"function",  S_FUNCTION},
-    {"if",        S_IF},
-    {"in",        S_IN},
-    {"local",     S_LOCAL},
-    {"mod",       S_MOD},
-    {"not",       S_NOT},
-    {"od",        S_OD},
-    {"or",        S_OR},
-    {"readonly",  S_READONLY},
-    {"readwrite", S_READWRITE},
-    {"rec",       S_REC},
-    {"repeat",    S_REPEAT},
-    {"return",    S_RETURN},
-    {"then",      S_THEN},
-    {"true",      S_TRUE},
-    {"until",     S_UNTIL},
-    {"while",     S_WHILE},
-    {"quit",      S_QUIT},
-    {"QUIT",      S_QQUIT},
-    {"IsBound",   S_ISBOUND},
-    {"Unbind",    S_UNBIND},
-    {"TryNextMethod", S_TRYNEXT},
-    {"Info",      S_INFO},
-    {"Assert",    S_ASSERT}};
 
 /****************************************************************************
 **
@@ -318,6 +278,9 @@ static inline int IsIdent(char c)
 {
     return IsAlpha(c) || c == '_' || c == '@';
 }
+
+extern int IsKeyword(const char * str);
+
 
 /****************************************************************************
 **
