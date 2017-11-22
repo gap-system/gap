@@ -14,9 +14,6 @@ rings, vector spaces, algebras, combinatorial structures, and more.
 The system, including source, is distributed freely. You can study and easily
 modify or extend it for your special use.
 
-In July 2008, GAP was awarded the ACM/SIGSAM Richard Dimick Jenks Memorial Prize
-for Excellence in Software Engineering applied to Computer Algebra.
-
 # How to obtain GAP?
 
 The latest stable release of the GAP system together with all currently redistributed
