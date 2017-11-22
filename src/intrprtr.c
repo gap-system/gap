@@ -1183,6 +1183,45 @@ void            IntrQUIT ( void )
     STATE(IntrReturning) = STATUS_QQUIT;
 }
 
+/****************************************************************************
+ **
+ *F  IntrHelp()
+ **
+ **  'IntrHelp' is the action to interpret a help statement.
+ **
+ */
+void IntrHelp(Obj topic)
+{
+    UInt hgvar;
+    Obj  help;
+
+    if (STATE(IntrReturning) > 0) {
+        return;
+    }
+    if (STATE(IntrIgnoring) > 0) {
+        return;
+    }
+    if (STATE(IntrCoding) > 0) {
+        SyntaxError("'?' cannot be used in this context");
+        return;
+    }
+
+    /* FIXME: Hard coded function name */
+    hgvar = GVarName("HELP");
+    if (hgvar == 0) {
+        ErrorQuit( "Global function \"HELP\" is not declared. Cannot access help.",
+                   0L, 0L );
+    }
+    help = ValGVar(hgvar);
+    if (!help) {
+        ErrorQuit( "Global function \"HELP\" is not defined. Cannot access help.",
+                   0L, 0L );
+    }
+
+    CALL_1ARGS(help, topic);
+    PushVoidObj();
+}
+
 
 /****************************************************************************
 **

@@ -1000,10 +1000,6 @@ static Int GetLine2 (
 */
 Char GetLine ( void )
 {
-    Char            buf[200];
-    Char *          p;
-    Char *          q;
-
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
@@ -1041,28 +1037,6 @@ Char GetLine ( void )
     /* try to read a line                                              */
     if ( ! GetLine2( STATE(Input), STATE(Input)->line, sizeof(STATE(Input)->line) ) ) {
         STATE(In)[0] = '\377';  STATE(In)[1] = '\0';
-    }
-
-
-    /* convert '?' at the beginning into 'HELP'
-       (if not inside reading long string which may have line
-       or chunk from GetLine starting with '?')                        */
-
-    if ( STATE(In)[0] == '?' && STATE(HELPSubsOn) == 1) {
-        strlcpy( buf, STATE(In)+1, sizeof(buf) );
-        strcpy( STATE(In), "HELP(\"" );
-        for ( p = STATE(In)+6,  q = buf;  *q;  q++ ) {
-            if ( *q != '"' && *q != '\n' ) {
-                *p++ = *q;
-            }
-            else if ( *q == '"' ) {
-                *p++ = '\\';
-                *p++ = *q;
-            }
-        }
-        *p = '\0';
-        /* FIXME: We should do bounds checking, but don't know what 'In' points to */
-        strcat( STATE(In), "\");\n" );
     }
 
     /* if necessary echo the line to the logfile                      */
@@ -1850,7 +1824,6 @@ static Int InitKernel (
 
 static void InitModuleState(ModuleStateOffset offset)
 {
-    STATE(HELPSubsOn) = 1;
 }
 
 /****************************************************************************

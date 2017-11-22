@@ -589,6 +589,8 @@ extern  void            IntrFalseExpr ( void );
 */
 extern  void            IntrTildeExpr ( void );
 
+extern void IntrHelp( Obj topic );
+
 /****************************************************************************
 **
 *F  IntrCharExpr(<chr>) . . . . . . .  interpret literal character expression

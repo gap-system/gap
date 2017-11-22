@@ -769,9 +769,6 @@ void GetStr ( void )
 {
   Int                 i = 0, fetch;
 
-  /* Avoid substitution of '?' in beginning of GetLine chunks */
-  STATE(HELPSubsOn) = 0;
-
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *STATE(In) != '"'
            && *STATE(In) != '\n' && *STATE(In) != '\377'; i++ ) {
@@ -829,9 +826,6 @@ void GetStr ( void )
   }
   else
     STATE(Symbol) = S_PARTIALSTRING;
-
-  /* switching on substitution of '?' */
-  STATE(HELPSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -856,9 +850,6 @@ void GetTripStr ( void )
 {
   Int                 i = 0;
 
-  /* Avoid substitution of '?' in beginning of GetLine chunks */
-  STATE(HELPSubsOn) = 0;
-  
   /* print only a partial prompt while reading a triple string           */
   if ( !SyQuiet )
     STATE(Prompt) = "> ";
@@ -906,9 +897,6 @@ void GetTripStr ( void )
   }
   else
     STATE(Symbol) = S_PARTIALTRIPSTRING;
-
-  /* switching on substitution of '?' */
-  STATE(HELPSubsOn) = 1;
 }
 
 /****************************************************************************
@@ -921,9 +909,6 @@ void GetTripStr ( void )
 
 void GetMaybeTripStr ( void )
 {
-    /* Avoid substitution of '?' in beginning of GetLine chunks */
-    STATE(HELPSubsOn) = 0;
-    
     /* This is just a normal string! */
     if ( *STATE(In) != '"' ) {
         GetStr();
@@ -936,7 +921,6 @@ void GetMaybeTripStr ( void )
         STATE(Value)[0] = '\0';
         STATE(ValueLen) = 0;
         STATE(Symbol) = S_STRING;
-        STATE(HELPSubsOn) = 1;
         return;
     }
     
@@ -988,6 +972,24 @@ void GetChar ( void )
       SyntaxError("Missing single quote in character constant");
     }
   }
+}
+
+void GetHelp( void )
+{
+    Int i = 0;
+
+    /* Skip the first ? */
+    GET_CHAR();
+    while (i < SAFE_VALUE_SIZE-1 &&
+           *STATE(In) != '\n' &&
+           *STATE(In) != '\r' &&
+           *STATE(In) != '\377') {
+        STATE(Value)[i] = *STATE(In);
+        i++;
+        GET_CHAR();
+    }
+    STATE(Value)[i] = '\0';
+    STATE(ValueLen) = i;
 }
 
 /****************************************************************************
@@ -1107,6 +1109,7 @@ void GetSymbol ( void )
   case '_':                                           GetIdent();  break;
   case '@':                                           GetIdent();  break;
   case '~':   STATE(Symbol) = S_TILDE;                GET_CHAR();  break;
+  case '?':   STATE(Symbol) = S_HELP;                 GetHelp();   break;
 
   case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':
@@ -1186,7 +1189,6 @@ static Int InitKernel (
 
 static void InitModuleState(ModuleStateOffset offset)
 {
-    STATE(HELPSubsOn) = 1;
 }
 
 /****************************************************************************
