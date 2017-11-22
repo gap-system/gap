@@ -4757,14 +4757,19 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
-    /* make the buffer bag                                                 */
-    TmpPerm = 0;
 
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2(0);
 
     /* return success                                                      */
     return 0;
+}
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    /* make the buffer bag                                                 */
+    TmpPerm = 0;
 }
 
 
@@ -4789,5 +4794,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPermutat ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

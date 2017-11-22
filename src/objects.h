@@ -19,6 +19,7 @@
 
 #include <src/debug.h>
 #include <src/intobj.h>
+#include <src/gasman.h>
 
 #ifdef HPCGAP
 #define USE_THREADSAFE_COPYING
@@ -701,8 +702,6 @@ extern void PrintObj (
 
 /* TL: extern Int  PrintObjIndex; */
 /* TL: extern Int  PrintObjDepth; */
-
-/* TL: extern Int  PrintObjFull; */
 
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 

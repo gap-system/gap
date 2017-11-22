@@ -1796,13 +1796,15 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     STATE(Input) = 0;
+    STATE(Output) = 0;
+    STATE(InputLog) = 0;
+    STATE(OutputLog) = 0;
+
     (void)OpenInput(  "*stdin*"  );
     STATE(Input)->echo = 1; /* echo stdin */
 
-    STATE(Output) = 0;
     (void)OpenOutput( "*stdout*" );
 
-    STATE(InputLog)  = 0;  STATE(OutputLog)  = 0;
 
 #ifdef HPCGAP
     /* Initialize default stream functions */

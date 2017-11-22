@@ -11,6 +11,7 @@
 #ifndef GAP_VECFFE_H
 #define GAP_VECFFE_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **
