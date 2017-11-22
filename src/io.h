@@ -1,4 +1,20 @@
-// io.h
+/****************************************************************************
+**
+*W  io.h
+**
+**
+**  This file declares functions responsible for input and output processing.
+**
+**  These provide the concept of  a current input  and output file.   In the
+**  main   module   they are opened  and   closed  with the  'OpenInput'  and
+**  'CloseInput' respectively  'OpenOutput' and 'CloseOutput' calls.  All the
+**  other modules just read from the  current input  and write to the current
+**  output file.
+**
+**  This module relies on the functions  provided  by  the  operating  system
+**  dependent module 'system.c' for the low level input/output.
+*/
+
 #ifndef GAP_IO_H
 #define GAP_IO_H
 

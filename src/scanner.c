@@ -7,31 +7,13 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file contains the functions of the scanner, which is responsible for
-**  all input and output processing.
-**
-**  The scanner  exports two very  important abstractions.  The  first is the
-**  concept that an input file is  a stream of symbols,  such nasty things as
-**  <space>,  <tab>,  <newline> characters or  comments (they are worst  :-),
-**  characters making  up identifiers  or  digits that  make  up integers are
-**  hidden from the rest of GAP.
-**
-**  The second is  the concept of  a current input  and output file.   In the
-**  main   module   they are opened  and   closed  with the  'OpenInput'  and
-**  'CloseInput' respectively  'OpenOutput' and 'CloseOutput' calls.  All the
-**  other modules just read from the  current input  and write to the current
-**  output file.
-**
-**  SL 5/99 I now plan to break the second abstraction in regard of output
-**  streams. Instead of all Print/View/etc output going via Pr to PutLine, etc.
-**  they will go via PrTo and PutLineTo. The extra argument of these will be
-**  of type KOutputStream, a pointer to a C structure (using a GAP object would
-**  be difficult in the early bootstrap, and because writing to a string stream
-**  may cause a garbage collection, which can be a pain).
-**
-**  The scanner relies on the functions  provided  by  the  operating  system
-**  dependent module 'system.c' for the low level input/output.
+**  This file contains the functions of the scanner, which provides a very
+**  abstractions, namely the concept that an input file is a stream of
+**  symbols, such nasty things as <space>, <tab>, <newline> characters or
+**  comments (they are worst :-), characters making up identifiers or digits
+**  that make up integers are hidden from the rest of GAP.
 */
+
 #include <src/system.h>                 /* system dependent part */
 #include <src/gapstate.h>
 
