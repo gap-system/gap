@@ -31,6 +31,12 @@ gap> IsAtomicList(l);
 true
 gap> l[4];
 Error, Atomic List Element: <pos>=4 is an invalid index for <list>
+gap> Add(l, 7);
+gap> l;
+[ 1, 2, 3, 7 ]
+gap> Add(l, 7, 5);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Add' on 3 arguments
 gap> a := FixedAtomicList(5);
 [ ,,,, ]
 gap> EqualLists(a, []);
@@ -57,6 +63,12 @@ Error, COMPARE_AND_SWAP: Index out of range
 gap> a := FixedAtomicList(5);;
 gap> COMPARE_AND_SWAP(a, 10, 1, 2);
 Error, COMPARE_AND_SWAP: Index out of range
+gap> Add(l, 7);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Add' on 2 arguments
+gap> Add(l, 7, 5);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Add' on 3 arguments
 
 #
 gap> STOP_TEST("atomic_list.tst");
