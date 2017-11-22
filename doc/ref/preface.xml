@@ -127,7 +127,7 @@ technical architect of &GAP; 3 and &GAP; 4.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Copyright and License">
 <Heading>Copyright and License</Heading>
-<#Include SYSTEM "../ref/copyrigh.xml">
+<#Include SYSTEM "../ref/copyright.xml">
 </Section>
 
 
