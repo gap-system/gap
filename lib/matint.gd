@@ -35,7 +35,7 @@ DeclareInfoClass( "InfoMatInt" );
 ##
 ##  <Description>
 ##  Computes an upper triangular form of a matrix with integer entries.
-##  It returns a immutable matrix in upper triangular form.
+##  It returns a mutable matrix in upper triangular form.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
