@@ -31,19 +31,6 @@ static Obj PrintFormattingStatus;
 /* TODO: Eliminate race condition in HPC-GAP */
 static Char promptBuf[81];
 
-
-/* TL: Char *          Prompt; */
-/* TL: TypInputFile    InputFiles [16]; */
-/* TL: TypInputFile *  Input; */
-/* TL: Char *          In; */
-
-/* TL: TypOutputFile   OutputFiles [16]; */
-/* TL: TypOutputFile * Output; */
-
-/* TL: TypOutputFile * InputLog; */
-
-/* TL: TypOutputFile * OutputLog; */
-
 #ifdef HPCGAP
 #define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
 #else
@@ -496,8 +483,6 @@ UInt CloseLog ( void )
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile InputLogFileOrStream; */
-
 UInt OpenInputLog (
     const Char *        filename )
 {
@@ -525,8 +510,6 @@ UInt OpenInputLog (
 **
 **  The same as 'OpenInputLog' but for streams.
 */
-/* TL: static TypOutputFile InputLogFileOrStream; */
-
 UInt OpenInputLogStream (
     Obj                 stream )
 {
@@ -595,8 +578,6 @@ UInt CloseInputLog ( void )
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-/* TL: static TypOutputFile OutputLogFileOrStream; */
-
 UInt OpenOutputLog (
     const Char *        filename )
 {
@@ -625,8 +606,6 @@ UInt OpenOutputLog (
 **
 **  The same as 'OpenOutputLog' but for streams.
 */
-/* TL: static TypOutputFile outputLogStream; */
-
 UInt OpenOutputLogStream (
     Obj                 stream )
 {
@@ -679,8 +658,6 @@ UInt CloseOutputLog ( void )
     /* indicate success                                                    */
     return 1;
 }
-
-/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -923,12 +900,6 @@ UInt OpenAppend (
 
 /****************************************************************************
 **
-*V  ReadLineFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'ReadLine'
-*/
-
-
-/****************************************************************************
-**
 *F  GetLine2( <input>, <buffer>, <length> ) . . . . . . . . get a line, local
 */
 static Int GetLine2 (
@@ -1012,9 +983,6 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-
-/* TL: Int HELPSubsOn = 1; */
-
 Char GetLine ( void )
 {
     Char            buf[200];
@@ -1101,13 +1069,6 @@ Char GetLine ( void )
 
 /****************************************************************************
  **
-
- *V  WriteAllFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'WriteAll'
- */
-
-
-/****************************************************************************
- **
  *F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
  **
  **  Introduced  <len> argument. Actually in all cases where this is called one
@@ -1185,7 +1146,6 @@ void PutLineTo ( KOutputStream stream, UInt len )
  **  In the later case 'PutChrTo' has to decide where to  split the output line.
  **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
  */
-/* TL: Int NoSplitLine = 0; */
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */

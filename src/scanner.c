@@ -70,17 +70,6 @@
 #include <limits.h>
 #include <stdlib.h>
 
-/* the following global variables are documented in scanner.h */
-
-/* TL: UInt            Symbol; */
-
-/* TL: Char            Value [1030]; */
-/* TL: UInt            ValueLen; */
-
-/* TL: UInt            NrError; */
-/* TL: UInt            NrErrLine; */
-
-
 
 /****************************************************************************
 **
