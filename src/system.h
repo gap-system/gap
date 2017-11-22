@@ -847,13 +847,15 @@ extern void SyAbortBags(const Char * msg) NORETURN;
 ** functionality is added. The major version should be incremented when
 ** a backwards-incompatible change is made.
 **
+** The kernel version is a macro so it can be used by packages
+** to optionally compile support for new functionality.
+**
 */
 
-enum {
-    GAP_KERNEL_MAJOR_VERSION = 1,
-    GAP_KERNEL_MINOR_VERSION = 1,
-    GAP_KERNEL_API_VERSION = GAP_KERNEL_MAJOR_VERSION * 1000 + GAP_KERNEL_MINOR_VERSION
-};
+#define GAP_KERNEL_MAJOR_VERSION 1
+#define GAP_KERNEL_MINOR_VERSION 1
+#define GAP_KERNEL_API_VERSION                                               \
+    ((GAP_KERNEL_MAJOR_VERSION)*1000 + (GAP_KERNEL_MINOR_VERSION))
 
 enum {
     /** builtin module */
