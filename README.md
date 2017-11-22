@@ -83,3 +83,12 @@ Please tell us about your use of GAP in research or teaching. We maintain a
 [bibliography of publications citing GAP](https://www.gap-system.org/Doc/Bib/bib.html).
 Please [help us](https://www.gap-system.org/Contacts/publicationfeedback.html)
 keeping it up to date.
+
+# License
+
+GAP is free software; you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version. For details, please refer to the GAP reference manual, as well as the
+file `LICENSE` in the root directory of the GAP distribution or see
+<http://www.gnu.org/licenses/gpl.html>.
