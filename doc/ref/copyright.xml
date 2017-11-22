@@ -28,7 +28,7 @@ with &GAP; is usually with the package authors or their institutions.
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version. For details, see 
-the file <F>GPL</F> in the <F>etc</F> directory of the &GAP; distribution or see
+the file <F>LICENSE</F> in the root directory of the &GAP; distribution or see
 <URL>http://www.gnu.org/licenses/gpl.html</URL>.
 <P/>
 If you obtain &GAP; please send us a short notice to that effect, e.g.,
