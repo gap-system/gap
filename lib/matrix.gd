@@ -1172,7 +1172,7 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##
 ##  <Description>
 ##  Computes an upper triangular form of the matrix <A>mat</A> via
-##  the Gaussian Algorithm. It returns a immutable matrix in upper triangular form.
+##  the Gaussian Algorithm. It returns a mutable matrix in upper triangular form.
 ##  This is sometimes also  called <Q>Hermite normal form</Q> or <Q>Reduced Row Echelon
 ##  Form</Q>.
 ##  <C>RREF</C> is a synonym for <C>TriangulizedMat</C>.
