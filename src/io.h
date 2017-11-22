@@ -464,8 +464,6 @@ extern TypOutputFile *GetCurrentOutput ( void );
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 
-typedef TypOutputFile *KOutputStream;
-
 extern  void            Pr (
             const Char *    format,
             Int                 arg1,
@@ -473,7 +471,7 @@ extern  void            Pr (
 
 
 extern  void            PrTo (
-            KOutputStream   stream,
+            TypOutputFile *   stream,
             const Char *    format,
             Int                 arg1,
             Int                 arg2 );
