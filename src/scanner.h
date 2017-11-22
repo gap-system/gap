@@ -81,6 +81,7 @@ enum SCANNER_SYMBOLS {
     S_PARTIALSTRING     = (1UL<<11)+4,
     S_PARTIALTRIPSTRING = (1UL<<11)+5,
     S_TILDE             = (1UL<<11)+6,
+    S_HELP              = (1UL<<11)+7,
 
     S_REC               = (1UL<<12)+0,
     S_BACKQUOTE         = (1UL<<12)+1,
@@ -205,7 +206,7 @@ typedef UInt            TypSymbolSet;
                     |S_PLUS|S_MINUS|S_NOT|S_LPAREN)
 
 #define STATBEGIN  (S_IDENT|S_UNBIND|S_IF|S_FOR|S_WHILE|S_REPEAT \
-                    |S_BREAK|S_RETURN|S_QUIT)
+                    |S_BREAK|S_RETURN|S_HELP|S_QUIT)
 
 
 /****************************************************************************

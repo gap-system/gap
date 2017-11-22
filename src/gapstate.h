@@ -89,7 +89,6 @@ typedef struct GAPState {
     TypOutputFile * IgnoreStdoutErrout;
     TypOutputFile   InputLogFileOrStream;
     TypOutputFile   OutputLogFileOrStream;
-    Int             HELPSubsOn;
     Int             NoSplitLine;
     Char            Pushback;
     Char *          RealIn;

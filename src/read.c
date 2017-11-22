@@ -2516,6 +2516,13 @@ void ReadTryNext (
     }
 }
 
+void ReadHelp(TypSymbolSet follow)
+{
+    Obj topic;
+
+    C_NEW_STRING(topic, STATE(ValueLen), (void *)STATE(Value));
+    TRY_READ { IntrHelp(topic); };
+}
 
 /****************************************************************************
 **
@@ -2603,6 +2610,7 @@ UInt ReadStats (
         else if ( STATE(Symbol) == S_TRYNEXT) ReadTryNext(   follow    );
         else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
         else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
+        else if ( STATE(Symbol) == S_HELP   ) ReadHelp(      follow    );
         else                           ReadEmpty(     follow    );
         nr++;
         MatchSemicolon(follow);
@@ -2652,7 +2660,6 @@ void RecreateStackNams( Obj context )
         SET_ELM_PLIST(STATE(StackNams), j, tmpA);
     }
 }
-
 
 ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 {
@@ -2727,13 +2734,13 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     else if (STATE(Symbol)==S_QQUIT     ) { ReadQUIT(    S_SEMICOLON|S_EOF      ); }
     else if (STATE(Symbol)==S_SEMICOLON ) { ReadEmpty(   S_SEMICOLON|S_EOF      ); }
     else if (STATE(Symbol)==S_ATOMIC    ) { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
-
+    else if (STATE(Symbol)==S_HELP      ) { ReadHelp(    S_SEMICOLON|S_EOF      ); }
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
     else                           { ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); }
 
     /* every statement must be terminated by a semicolon                  */
-    if (!IS_IN(STATE(Symbol), S_SEMICOLON)) {
+    if (!IS_IN(STATE(Symbol), S_SEMICOLON) && STATE(Symbol) != S_HELP) {
         SyntaxError( "; expected");
     }
 
