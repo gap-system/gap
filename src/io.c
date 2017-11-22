@@ -1136,7 +1136,7 @@ void PutLine2(
  **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
  **
  */
-void PutLineTo ( KOutputStream stream, UInt len )
+void PutLineTo(TypOutputFile * stream, UInt len)
 {
   PutLine2( stream, stream->line, len );
 
@@ -1164,7 +1164,10 @@ void PutLineTo ( KOutputStream stream, UInt len )
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
-void addLineBreakHint( KOutputStream stream, Int pos, Int val, Int indentdiff )
+void addLineBreakHint(TypOutputFile * stream,
+                      Int             pos,
+                      Int             val,
+                      Int             indentdiff)
 {
   Int nr, i;
   /* find next free slot */
@@ -1191,7 +1194,7 @@ void addLineBreakHint( KOutputStream stream, Int pos, Int val, Int indentdiff )
 }
 /* helper function to find line break position,
    returns position nr in stream[hints] or -1 if none found */
-Int nrLineBreak( KOutputStream stream )
+Int nrLineBreak(TypOutputFile * stream)
 {
   Int nr=-1, min, i;
   for (i = 0, min = INT_MAX; stream->hints[3*i] != -1; i++)
@@ -1210,10 +1213,7 @@ Int nrLineBreak( KOutputStream stream )
 }
 
 
-
-void PutChrTo (
-         KOutputStream stream,
-         Char                ch )
+void PutChrTo(TypOutputFile * stream, Char ch)
 {
   Int                 i, hint, spos;
   Char                str [MAXLENOUTPUTLINE];
@@ -1700,14 +1700,10 @@ static inline void FormatOutput(
 
 
 static void putToTheStream(void *state, Char c) {
-  PutChrTo((KOutputStream)state, c);
+    PutChrTo((TypOutputFile *)state, c);
 }
 
-void PrTo (
-           KOutputStream     stream,
-           const Char *      format,
-           Int                 arg1,
-           Int                 arg2 )
+void PrTo(TypOutputFile * stream, const Char * format, Int arg1, Int arg2)
 {
   FormatOutput( putToTheStream, stream, format, arg1, arg2);
 }
