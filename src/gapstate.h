@@ -149,7 +149,6 @@ typedef struct GAPState {
     Obj PrintObjThis;
     Int PrintObjIndex;
     Int PrintObjDepth;
-    Int PrintObjFull;
 #if defined(HPCGAP)
     Obj   PrintObjThissObj;
     Obj * PrintObjThiss;

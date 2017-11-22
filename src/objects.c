@@ -898,8 +898,6 @@ Obj FuncMakeImmutable( Obj self, Obj obj)
 
 /* TL: Int PrintObjIndex; */
 
-/* TL: Int PrintObjFull; */
-
 /* TL: Int PrintObjDepth; */
 
 #define MAXPRINTDEPTH 1024L
