@@ -160,7 +160,8 @@ Obj FuncADD_LIST3 (
   } else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
     AddList3( list, obj, ipos );
 #ifdef HPCGAP
-  } else if ( TNUM_OBJ(list) == T_ALIST ) {
+  // Only support adding to end of atomic lists
+  } else if ( TNUM_OBJ(list) == T_ALIST && pos == (Obj)0 ) {
     AddAList( list, obj );
 #endif
   } else {
