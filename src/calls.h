@@ -513,8 +513,7 @@ extern Obj ArgStringToList(const Char *nams_c);
 **
 *F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
 **
-**  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
-**  'PrintObjFull' is false.
+**  'PrintFunction' prints  the   function  <func> .
 */
 extern void PrintFunction (
     Obj                 func );

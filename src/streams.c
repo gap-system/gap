@@ -786,9 +786,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
             PrintString1(arg);
         }
         else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
-            STATE(PrintObjFull) = 1;
             PrintFunction( arg );
-            STATE(PrintObjFull) = 0;
         }
         else {
             memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
@@ -848,9 +846,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                STATE(PrintObjFull) = 1;
                 PrintFunction( arg );
-                STATE(PrintObjFull) = 0;
             }
             else {
                 PrintObj( arg );

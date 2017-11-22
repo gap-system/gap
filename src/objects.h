@@ -703,8 +703,6 @@ extern void PrintObj (
 /* TL: extern Int  PrintObjIndex; */
 /* TL: extern Int  PrintObjDepth; */
 
-/* TL: extern Int  PrintObjFull; */
-
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
