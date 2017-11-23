@@ -583,7 +583,7 @@ require a C++ compiler.
 13 GAP for OS X
 ===============
 
-Currently we provide no precompiler binary distribution for OS X. However,
+Currently we provide no precompiled binary distribution for OS X. However,
 since OS X is an operating system in the Unix family, you can follow the
 Unix installation guidelines to compile GAP; then you will be able to use
 all features of GAP as well as all packages. However for installation you
@@ -595,15 +595,18 @@ First, note that you should get the Unix type GAP archives, i.e. one of
 `.zip`, `.tar.gz` or `.tar.bz2` archives, but not the `-win.zip` archive
 (you won't be able to compile the program as given in the `-win.zip` archive).
 
-Next, you will need a compiler and build tools like `make`. These tools are
-included in the "Xcode" application which is not installed by default on a
-new Mac. On all recent versions of OS X, you can install it for free via
-the App Store. For older versions for OS X, you may need to register with
-Apple as a developer and download it from <http://developer.apple.com>.
-
 To compile and run GAP you will have to open the Terminal application and
 type the necessary Unix commands into its window. The Terminal application
 can be found in the Utilities folder in the Applications folder.
+
+Next, you will need a compiler and build tools like `make`. These tools are
+included in the "Xcode" application which is not installed by default on a
+new Mac. On all recent versions of OS X, you can install it for free via
+the App Store. Afterwards, you also need to run the following command from
+a terminal in order to make all required tools available via the command line:
+
+     xcode-select --install
+
 Now simply follow the Unix installation instructions to compile and start
 GAP and then it will run in this Terminal window.
 
