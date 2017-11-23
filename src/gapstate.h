@@ -122,15 +122,6 @@ typedef struct GAPState {
 #endif
     UInt  CacheIndex;
 
-    /* From permutat.c */
-    Obj TmpPerm;
-
-    /* From trans.c */
-    Obj TmpTrans;
-
-    /* From pperm.c */
-    Obj TmpPPerm;
-
     /* From gap.c */
     Obj  ThrownObject;
     UInt UserHasQuit;

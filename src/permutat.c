@@ -105,6 +105,11 @@
 Obj             IdentityPerm;
 
 
+
+static ModuleStateOffset PermutatStateOffset = -1;
+
+typedef struct {
+
 /****************************************************************************
 **
 *V  TmpPerm . . . . . . . handle of the buffer bag of the permutation package
@@ -119,7 +124,12 @@ Obj             IdentityPerm;
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-#define  TmpPerm STATE(TmpPerm)
+Obj TmpPerm;
+
+} PermutatModuleState;
+
+#define  TmpPerm MODULE_STATE(Permutat).TmpPerm
+
 
 static void UseTmpPerm(UInt size)
 {
@@ -4757,14 +4767,19 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
-    /* make the buffer bag                                                 */
-    TmpPerm = 0;
 
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2(0);
 
     /* return success                                                      */
     return 0;
+}
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    /* make the buffer bag                                                 */
+    TmpPerm = 0;
 }
 
 
@@ -4789,5 +4804,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPermutat ( void )
 {
+    PermutatStateOffset = RegisterModuleState(sizeof(PermutatModuleState), InitModuleState, 0);
     return &module;
 }
