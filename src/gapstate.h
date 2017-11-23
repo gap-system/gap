@@ -122,11 +122,6 @@ typedef struct GAPState {
 #endif
     UInt  CacheIndex;
 
-    /* From cyclotom.c */
-    Obj  ResultCyc;
-    Obj  LastECyc;
-    UInt LastNCyc;
-
     /* From permutat.c */
     Obj TmpPerm;
 
