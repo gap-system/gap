@@ -24,6 +24,7 @@
 #include <src/bool.h>
 #include <src/stringobj.h>
 #include <src/read.h>
+#include <src/scanner.h>
 
 #include <src/sysfiles.h>               /* file input/output */
 
