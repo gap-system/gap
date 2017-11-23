@@ -54,6 +54,11 @@
 
 Obj EmptyPartialPerm;
 
+
+static ModuleStateOffset PPermStateOffset = -1;
+
+typedef struct {
+
 /**************************************************************************
 *
 *V TmpPPerm . . . . . . . handle of the buffer bag of the pperm package
@@ -66,8 +71,12 @@ Obj EmptyPartialPerm;
 * The buffer is *not* guaranteed to have any particular value, routines
 * that require a zero-initialization need to do this at the start.
 */
-/* TL: Obj TmpPPerm; */
-#define TmpPPerm STATE(TmpPPerm)
+Obj TmpPPerm;
+
+} PPermModuleState;
+
+
+#define TmpPPerm MODULE_STATE(PPerm).TmpPPerm
 
 static inline void ResizeTmpPPerm(UInt len)
 {
@@ -6767,13 +6776,19 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
-    TmpPPerm = 0;
 
     EmptyPartialPerm = NEW_PPERM2(0);
 
     /* return success                                                      */
     return 0;
 }
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    TmpPPerm = 0;
+}
+
 
 /**************************************************************************
  **
@@ -6796,5 +6811,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPPerm(void)
 {
+    PPermStateOffset = RegisterModuleState(sizeof(PPermModuleState), InitModuleState, 0);
     return &module;
 }

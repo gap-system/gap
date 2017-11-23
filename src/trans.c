@@ -82,8 +82,15 @@
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a < b ? b : a)
 
+
+static ModuleStateOffset TransStateOffset = -1;
+
+typedef struct {
+    Obj TmpTrans;
+} TransModuleState;
+
 // TmpTrans is the same as TmpPerm
-#define TmpTrans STATE(TmpTrans)
+#define TmpTrans MODULE_STATE(Trans).TmpTrans
 
 /* mp this will become a ReadOnly object? */
 Obj IdentityTrans;
@@ -5735,7 +5742,6 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
-    TmpTrans = 0;
     IdentityTrans = NEW_TRANS2(0);
 
     // We make the next transformation to allow testing of some parts of the
@@ -5750,6 +5756,11 @@ static Int InitLibrary(StructInitInfo * module)
 
     /* return success                                                      */
     return 0;
+}
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    TmpTrans = 0;
 }
 
 /****************************************************************************
@@ -5773,5 +5784,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoTrans(void)
 {
+    TransStateOffset = RegisterModuleState(sizeof(TransModuleState), InitModuleState, 0);
     return &module;
 }
