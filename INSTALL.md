@@ -76,20 +76,16 @@ common problems with the installation.
 2 Getting the Archive
 =====================
 
-You can get archives for the GAP distribution from the GAP website
-<https://www.gap-system.org>. You need to download one of the archives
-named in the format
+You can get archives for the GAP distribution from the GAP website at
+<https://www.gap-system.org/Releases/>. If you use Unix (including OS X),
+you need to download the GAP source distribution, that is, a file named
 
-	gap4rXpY_<timestamp>.<archive_type>
+    gap-4.X.Y.tar.bz2
 
-for GAP 4.X.Y. The `<timestamp>` is updated whenever there is a change
-to the GAP system or any package.
+for GAP 4.X.Y. Alternatively, you can also use the `.tar.gz` or `.zip`
+archives.
 
-If you use Unix (including OS X), you can use the `.tar.gz`, `.tar.bz2` or
-`.zip` archives containing the GAP source distribution. Such archives will
-unpack into a directory named `gap4rX`.
-
-If you use Windows, then use the `.exe` installer which contains binaries
+If you use Windows, then download the `.exe` installer which contains binaries
 for GAP and some packages and provides the standard installation procedure.
 
 
@@ -103,7 +99,8 @@ Unix (including OS X)
 ---------------------
 
 Under Unix style operating systems (such as Linux and OS X), unpack the
-archive `gap4rXpY_<timestamp>` in whatever place you want GAP to reside.
+archive `gap-4.X.Y.tar.bz2` in whatever place you want GAP to reside.
+It will expand into a directory named `gap-4.X.Y`.
 
 (If you unpack the archive as root user under Unix, make sure that you
 issue the command `umask 022` before, to ensure that users will have
@@ -116,11 +113,11 @@ If you are using the `.exe` installer, simply download and run it. It will
 offer a standard installation procedure, during which you will be able to
 select installation path.
 
-Note that the path to the GAP directory should not contain spaces.
-For example, you may install it in a directory named like `C:\gap4rX`
-(default), `D:\gap4rXpY` or `C:\Math\GAP\gap4rX`, but you must not install
-it in a directory named like `C:\Users\alice\My Documents\gap4rX` or
-`C:\Program files\gap4rX` etc.
+Note that the path to the GAP directory must not contain spaces.
+For example, you may install it in a directory named like `C:\gap-4.X.Y`
+(default), `D:\gap` or `C:\Math\GAP\my-gap-4.X.Y`, but you must not install
+it in a directory named like `C:\Users\alice\My Documents\gap-4.X.Y` or
+`C:\Program files\gap-4.X.Y` etc.
 
 
 4 Compilation
@@ -131,7 +128,7 @@ binaries in place. Under Unix you will have to compile such a binary
 yourself. (OS X users: please see section "GAP for OS X" below for
 additional information about compilation)
 
-Change to the directory `gap4rX` (which you just created by unpacking).
+Change to the directory `gap-4.X.Y` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
 by issuing the two commands
 
@@ -244,7 +241,7 @@ users (including those on OS X) should type
 
 Windows users should start GAP with the batch file
 
-    C:\gap4rX\bin\gap.bat
+    C:\gap-4.X.Y\bin\gap.bat
 
 GAP should start up with its banner and after a little while give you a
 command prompt
@@ -298,12 +295,12 @@ number of lines with output about the progress of the tests, for example:
 
     Architecture: SOMETHING-SOMETHING-gcc-default64
 
-    testing: ..../gap4rX/tst/testinstall/alghom.tst
+    testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst
          105 msec for alghom.tst
-    testing: ..../gap4rX/tst/testinstall/algmat.tst
+    testing: ..../gap-4.X.Y/tst/testinstall/algmat.tst
         1216 msec for algmat.tst
     [ further lines deleted ]
-    testing: ..../gap4rX/tst/testinstall/zmodnze.tst
+    testing: ..../gap-4.X.Y/tst/testinstall/zmodnze.tst
           90 msec for zmodnze.tst
     -----------------------------------
     total     52070 msec
@@ -332,7 +329,7 @@ to start GAP instead of `gapcmd.bat`.
 ==========
 
 The GAP distribution already contains all the GAP packages which we
-redistribute in the `gap4rX/pkg` directory, and for packages that consist
+redistribute in the `gap-4.X.Y/pkg` directory, and for packages that consist
 only of GAP code no further installation is necessary.
 
 Some packages however contain external binaries that will require separate
@@ -353,7 +350,7 @@ To help with this tedious process, we ship a shell script called
 `bin/BuildPackages.sh` that will compile most of the packages that require
 compilation on Unix systems (including Linux and OS X) with sufficiently
 many libraries, headers and tools available. To use it, change to the
-`gap4rX/pkg` directory and execute the script like this:
+`gap-4.X.Y/pkg` directory and execute the script like this:
 
     ../bin/BuildPackages.sh
 
@@ -401,7 +398,7 @@ viewed with an HTML browser, see Section "Changing the Help Viewer" of the
 GAP Reference manual.
 
 The manual is also available in pdf format. In the full distribution these
-files are included in the directory `gap4rX/doc` in the subdirectories
+files are included in the directory `gap-4.X.Y/doc` in the subdirectories
 `tut` (a beginner's tutorial), `ref` (the reference manual) and `changes`
 (changes from earlier versions).
 
@@ -621,19 +618,19 @@ there is no installation procedure and you may have to edit the `*.bat`
 files yourself.
 
 The `-win.zip archive` already contains `*.bat` files which will work if GAP
-is installed in the standard location, which is `C:\gap4rX`. To install GAP
+is installed in the standard location, which is `C:\gap-4.X.Y`. To install GAP
 there, the archive must be extracted to the main directory of the `C:` drive.
 (If you do not have permissions or sufficient free space to create directories
 there, see the section "Expert Windows Installation" below). Make sure that
 you specify extraction to the `C:\` folder (with no extra directory name --
-the directory `gap4rX` is part of the archive) to avoid extraction
+the directory `gap-4.X.Y` is part of the archive) to avoid extraction
 in a wrong place or in a separate directory.
 
 After extraction you can start GAP with one of the following files:
 
-    C:\gap4rX\bin\gap.bat       (recommended)
-    C:\gap4rX\bin\gaprxvt.bat
-    C:\gap4rX\bin\gapcmd.bat
+    C:\gap-4.X.Y\bin\gap.bat       (recommended)
+    C:\gap-4.X.Y\bin\gaprxvt.bat
+    C:\gap-4.X.Y\bin\gapcmd.bat
 
 The `gap.bat` file will start GAP in the `mintty` shell. It allows for
 convenient copying and pasting (e.g. using mouse) and flexible customisation.
@@ -647,12 +644,12 @@ If you need to install GAP in a non-standard directory under Windows, we advice
 to use the Windows `.exe` installers which will adjust all paths in batch files
 during the installation. Whenever you use a Windows installer or install GAP f
 rom the `-win.zip` archive, you should avoid paths with spaces, e.g. do not use
-`C:\My Programs\gap4rX`. If you need to install GAP on another logical drive,
-say `E:`, the easiest way would be just to use `E:\gap4rX`.
+`C:\My Programs\gap-4.X.Y`. If you need to install GAP on another logical drive,
+say `E:`, the easiest way would be just to use `E:\gap-4.X.Y`.
 
 If you need to edit a `*.bat` file to specify the path to your GAP installation
-manually, you will have to replace substrings `/c/gap4rX/` by the actual path
-to the GAP root directory in the Unix format, and substrings `C:\gap4rX\` by
+manually, you will have to replace substrings `/c/gap-4.X.Y/` by the actual path
+to the GAP root directory in the Unix format, and substrings `C:\gap-4.X.Y\` by
 the actual path to the GAP root directory in the Windows format. Please avoid
 introducing new line breaks when editing (i.e. do not use a text editor which
 automatically wraps long lines).
