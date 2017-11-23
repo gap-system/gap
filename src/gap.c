@@ -2868,7 +2868,7 @@ void ThreadedInterpreter(void *funcargs) {
 
   TRY_READ {
     Obj init, exit;
-    if (sySetjmp(STATE(threadExit)))
+    if (sySetjmp(TLS(threadExit)))
       return;
     init = GVarOptFunction(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);
