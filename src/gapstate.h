@@ -18,7 +18,6 @@
 #include <src/io.h>    // for TypInputFile and friends
 
 #if defined(HPCGAP)
-#include <src/hpc/serialize.h>
 #include <src/hpc/tls.h>
 #endif
 
@@ -143,11 +142,6 @@ typedef struct GAPState {
 #else
     Obj           PrintObjThiss[MAXPRINTDEPTH];
     Int           PrintObjIndices[MAXPRINTDEPTH];
-#endif
-
-#if defined(HPCGAP)
-    /* For serializer.c */
-    SerializationState Serialization;
 #endif
 
     /* For objscoll*, objccoll* */

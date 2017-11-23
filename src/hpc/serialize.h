@@ -1,14 +1,6 @@
 #ifndef GAP_SERIALIZE_H
 #define GAP_SERIALIZE_H
 
-typedef struct SerializationState {
-    Obj    obj;
-    UInt   index;
-    void * dispatcher;
-    Obj    registry;
-    Obj    stack;
-} SerializationState;
-
 typedef void (*SerializationFunction)(Obj obj);
 typedef Obj (*DeserializationFunction)(UInt tnum);
 
