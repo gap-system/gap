@@ -203,15 +203,21 @@ static inline GAPState * ActiveGAPState(void)
 
 #define STATE(x) (ActiveGAPState()->x)
 
-/* Access a module's registered state */
-#define MODULE_STATE(module, var) \
-    (((module ## ModuleState *)(&STATE(StateSlots)[module ## StateOffset]))->var)
-
 
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
 typedef void (*ModuleConstructor)(ModuleStateOffset offset);
 typedef void (*ModuleDestructor)();
+
+static inline void *StateSlotsAtOffset(ModuleStateOffset offset)
+{
+    GAP_ASSERT(0 <= offset && offset < STATE_SLOTS_SIZE);
+    return &STATE(StateSlots)[offset];
+}
+
+/* Access a module's registered state */
+#define MODULE_STATE(module) \
+    (*(module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))
 
 /*
  * Register global state for a module.
