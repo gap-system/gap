@@ -235,7 +235,6 @@ typedef UInt            TypSymbolSet;
 /* TL: extern  UInt            ValueLen; */
 
 #define         SAFE_VALUE_SIZE 1024
-#define MAX_VALUE_LEN 1025
 
 /****************************************************************************
 **

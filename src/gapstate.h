@@ -15,18 +15,21 @@
 
 #include <src/system.h>
 #include <src/gasman.h>
-#include <src/io.h> // for TypInputFile and friends
-#include <src/scanner.h> // for MAX_VALUE_LEN
+#include <src/io.h>    // for TypInputFile and friends
 
 #if defined(HPCGAP)
 #include <src/hpc/serialize.h>
 #include <src/hpc/tls.h>
 #endif
 
-enum { STATE_MAX_HANDLERS = 256,
-       STATE_SLOTS_SIZE = 32768 };
+enum {
+    STATE_MAX_HANDLERS = 256,
+    STATE_SLOTS_SIZE = 32768,
 
-#define MAXPRINTDEPTH 1024L
+    MAX_VALUE_LEN = 1030,
+
+    MAXPRINTDEPTH = 1024,
+};
 
 typedef struct GAPState {
 #ifdef HPCGAP
