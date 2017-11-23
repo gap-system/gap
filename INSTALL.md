@@ -565,19 +565,24 @@ using.
 The configure process also introduces some default compiler options. You can
 eliminate these by assigning the replacement options to the variable `CFLAGS`.
 
-The recommended C compiler for GAP is the GNU C compiler gcc. The clang
-compiler appears to compile GAP correctly but, just as for gcc, some
-versions have problems with the GMP library. If you cannot build GAP -
-with or without GMP - using a particular compiler, you may wish to try
-another compiler or different version of the same compiler.
+The recommended C compiler for GAP is the GNU C compiler gcc version 4.8
+or later. The Clang compiler version 3.0 and later also should work fine.
+If you use another compiler, please let us know your experience with using
+it to compile GAP.
 
-If you do wish to use another compiler, you should run the command
-`make clean` in the GAP root directory, set the environment variable `CC` to
-the name of your preferred compiler and then rerun configure and make.
+If you do wish to use GAP with a specific compiler, you can set the environment
+variable `CC` to the name of your preferred compiler and then rerun configure
+and make.
 
 We also recommend that you install a C++ compiler before compiling GAP;
 while GAP itself does not need it, there are GAP packages which do
 require a C++ compiler.
+
+As an example, here is how one can configure GAP to compile with Clang 5
+(assuming it is installed on your system), with custom CFLAGS and debug mode
+enabled:
+
+    ./configure CC=clang-5.0 CFLAGS="-g -Og" --enable-debug
 
 
 13 GAP for OS X
