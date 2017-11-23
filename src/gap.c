@@ -2814,24 +2814,14 @@ GVarDescriptor GVarTHREAD_INIT;
 GVarDescriptor GVarTHREAD_EXIT;
 
 void ThreadedInterpreter(void *funcargs) {
-  Obj tmp, func, body;
+  Obj tmp, func;
   int i;
 
-  /* intialize everything and begin an interpreter                       */
-  STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  STATE(ReadTop)     = 0;
-  STATE(ReadTilde)   = 0;
-  STATE(CurrLHSGVar) = 0;
+  /* initialize everything and begin an interpreter                       */
   STATE(IntrCoding) = 0;
   STATE(IntrIgnoring) = 0;
   STATE(NrError) = 0;
   STATE(ThrownObject) = 0;
-  STATE(BottomLVars) = NewBag( T_HVARS, 3*sizeof(Obj) );
-  func = NewFunctionC( "bottom", 0, "", 0 );
-  FUNC_LVARS(STATE(BottomLVars)) = func;
-  body = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_BODY_FUNC( func, body );
-  STATE(CurrLVars) = STATE(BottomLVars);
 
   IntrBegin( STATE(BottomLVars) );
   tmp = KEPTALIVE(funcargs);
@@ -3252,10 +3242,6 @@ void InitializeGap (
     InitMsgsFuncBags( SyMsgsBags );
 #endif
 
-    STATE(StackNams)    = NEW_PLIST( T_PLIST, 16 );
-    STATE(ReadTop)      = 0;
-    STATE(ReadTilde)    = 0;
-    STATE(CurrLHSGVar)  = 0;
     STATE(IntrCoding)   = 0;
     STATE(IntrIgnoring) = 0;
     STATE(NrError)      = 0;

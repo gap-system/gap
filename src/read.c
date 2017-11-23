@@ -3069,14 +3069,23 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    STATE(ErrorLVars) = (UInt **)0;
-    STATE(CurrentGlobalForLoopDepth) = 0;
 #if !defined(HPCGAP)
     InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
 #endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
     return 0;
+}
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    STATE(ErrorLVars) = (UInt **)0;
+    STATE(StackNams) = NEW_PLIST(T_PLIST, 16);
+    STATE(ReadTop) = 0;
+    STATE(ReadTilde) = 0;
+    STATE(CurrLHSGVar) = 0;
+    STATE(CurrentGlobalForLoopDepth) = 0;
 }
 
 
@@ -3101,5 +3110,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRead ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

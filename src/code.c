@@ -3374,9 +3374,6 @@ static Int InitLibrary (
     UInt gv;
     Obj cache;
 
-    /* allocate the statements and expressions stacks                      */
-    STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
-    STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
 #ifdef HPCGAP
     FilenameCache = NewAtomicList(T_ALIST, 0);
 #else
@@ -3444,6 +3441,8 @@ static void InitModuleState(ModuleStateOffset offset)
     STATE(OffsBodyCount) = 0;
     STATE(LoopNesting) = 0;
     STATE(LoopStackCount) = 0;
+
+    /* allocate the statements and expressions stacks                      */
     STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
 

@@ -2591,8 +2591,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    STATE(CurrLVars) = (Bag) 0;
-
 #if !defined(HPCGAP)
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
@@ -2775,20 +2773,26 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj tmpFunc, tmpBody;
-
-    STATE(BottomLVars) = NewBag( T_LVARS, 3*sizeof(Obj) );
-    tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
-    FUNC_LVARS( STATE(BottomLVars) ) = tmpFunc;
-    PARENT_LVARS(STATE(BottomLVars)) = Fail;
-    tmpBody = NewBag( T_BODY, sizeof(BodyHeader) );
-    SET_BODY_FUNC( tmpFunc, tmpBody );
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return PostRestore( module );
+}
+
+
+static void InitModuleState(ModuleStateOffset offset)
+{
+    Obj tmpFunc, tmpBody;
+
+    STATE(CurrLVars) = (Bag)0;
+
+    STATE(BottomLVars) = NewBag(T_HVARS, 3 * sizeof(Obj));
+    tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
+    FUNC_LVARS( STATE(BottomLVars) ) = tmpFunc;
+    PARENT_LVARS(STATE(BottomLVars)) = Fail;
+    tmpBody = NewBag( T_BODY, sizeof(BodyHeader) );
+    SET_BODY_FUNC( tmpFunc, tmpBody );
 }
 
 
@@ -2813,5 +2817,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVars ( void )
 {
+    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }
