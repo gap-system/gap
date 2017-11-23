@@ -26,8 +26,6 @@ enum {
     STATE_SLOTS_SIZE = 32768,
 
     MAX_VALUE_LEN = 1030,
-
-    MAXPRINTDEPTH = 1024,
 };
 
 typedef struct GAPState {
@@ -131,18 +129,8 @@ typedef struct GAPState {
     Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top, i.e. BaseShellContext
 
     /* From objects.c */
-    Obj PrintObjThis;
     Int PrintObjIndex;
     Int PrintObjDepth;
-#if defined(HPCGAP)
-    Obj   PrintObjThissObj;
-    Obj * PrintObjThiss;
-    Obj   PrintObjIndicesObj;
-    Int * PrintObjIndices;
-#else
-    Obj           PrintObjThiss[MAXPRINTDEPTH];
-    Int           PrintObjIndices[MAXPRINTDEPTH];
-#endif
 
     /* For objscoll*, objccoll* */
     Obj  SC_NW_STACK;
