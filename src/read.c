@@ -153,6 +153,7 @@ static void MatchSemicolon(TypSymbolSet skipto)
 // found.
 static UInt findValueInNams(Obj nams, UInt start, UInt end)
 {
+    GAP_ASSERT(LEN_PLIST(nams) < 65536);
     for (UInt i = start; i <= end; i++) {
         if (strcmp(CSTR_STRING(ELM_PLIST(nams, i)), STATE(Value)) == 0) {
             return i;
@@ -1357,6 +1358,9 @@ ArgList ReadFuncArgList(
         }
         narg += 1;
         PushPlist(nams, MakeImmString(STATE(Value)));
+        if (LEN_PLIST(nams) >= 65536) {
+            SyntaxError("Too many function arguments");
+        }
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);
         if(STATE(Symbol) == S_DOTDOT) {
             SyntaxError("Three dots required for variadic argument list");
@@ -1492,6 +1496,9 @@ void ReadFuncExpr (
             }
             nloc += 1;
             PushPlist(args.nams, MakeImmString(STATE(Value)));
+            if (LEN_PLIST(args.nams) >= 65536) {
+                SyntaxError("Too many function arguments and locals");
+            }
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         }
         MatchSemicolon(STATBEGIN | S_END | follow);
@@ -2840,10 +2847,10 @@ UInt ReadEvalFile(Obj *evalResult)
     IntrBegin(STATE(BottomLVars));
 
     /* check for local variables                                           */
-    nloc = 0;
-    nams = NEW_PLIST( T_PLIST, nloc );
-    SET_LEN_PLIST( nams, nloc );
+    nams = NEW_PLIST(T_PLIST, 0);
+    SET_LEN_PLIST(nams, 0);
     PushPlist( STATE(StackNams), nams );
+    nloc = 0;
     if ( STATE(Symbol) == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
         nloc += 1;
@@ -2857,6 +2864,9 @@ UInt ReadEvalFile(Obj *evalResult)
             }
             nloc += 1;
             PushPlist(nams, MakeImmString(STATE(Value)));
+            if (LEN_PLIST(nams) >= 65536) {
+                SyntaxError("Too many locals");
+            }
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
         }
         MatchSemicolon(STATBEGIN | S_END);
