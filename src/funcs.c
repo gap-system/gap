@@ -59,36 +59,41 @@
 
 static ModuleStateOffset FuncsStateOffset = -1;
 
-typedef struct {
+struct FuncsModuleState {
     Int RecursionDepth;
     Obj ExecState;
-} FuncsModuleState;
+};
+
+static inline struct FuncsModuleState *FuncsState(void)
+{
+    return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);
+}
 
 void IncRecursionDepth(void)
 {
-    MODULE_STATE(Funcs).RecursionDepth++;
+    FuncsState()->RecursionDepth++;
 }
 
 void DecRecursionDepth(void)
 {
-    MODULE_STATE(Funcs).RecursionDepth--;
+    FuncsState()->RecursionDepth--;
     /* FIXME: According to a comment in the function
               RecursionDepthTrap below, RecursionDepth
               can become "slightly" negative. This
               needs some investigation.
-    GAP_ASSERT(MODULE_STATE(RecursionDepth) >= 0);
+    GAP_ASSERT(FuncsState()->RecursionDepth >= 0);
     */
 }
 
 Int GetRecursionDepth(void)
 {
-    return MODULE_STATE(Funcs).RecursionDepth;
+    return FuncsState()->RecursionDepth;
 }
 
 void SetRecursionDepth(Int depth)
 {
     GAP_ASSERT(depth >= 0);
-    MODULE_STATE(Funcs).RecursionDepth = depth;
+    FuncsState()->RecursionDepth = depth;
 }
 
 /****************************************************************************
@@ -1708,12 +1713,12 @@ void            ExecBegin ( Obj frame )
     /* remember the old execution state                                    */
     execState = NEW_PLIST(T_PLIST, 3);
     SET_LEN_PLIST(execState, 3);
-    SET_ELM_PLIST(execState, 1, MODULE_STATE(Funcs).ExecState);
+    SET_ELM_PLIST(execState, 1, FuncsState()->ExecState);
     SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
     SET_ELM_PLIST(execState, 3, INTOBJ_INT((Int)STATE(CurrStat)));
-    MODULE_STATE(Funcs).ExecState = execState;
+    FuncsState()->ExecState = execState;
 
     /* set up new state                                                    */
     SWITCH_TO_OLD_LVARS( frame );
@@ -1732,9 +1737,9 @@ void            ExecEnd (
     }
 
     /* switch back to the old state                                    */
-    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(MODULE_STATE(Funcs).ExecState, 3)));
-    SWITCH_TO_OLD_LVARS( ELM_PLIST(MODULE_STATE(Funcs).ExecState, 2) );
-    MODULE_STATE(Funcs).ExecState = ELM_PLIST(MODULE_STATE(Funcs).ExecState, 1);
+    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(FuncsState()->ExecState, 3)));
+    SWITCH_TO_OLD_LVARS( ELM_PLIST(FuncsState()->ExecState, 2) );
+    FuncsState()->ExecState = ELM_PLIST(FuncsState()->ExecState, 1);
 }
 
 /****************************************************************************
@@ -1807,7 +1812,7 @@ static Int InitKernel (
 
 #if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &MODULE_STATE(Funcs).ExecState, "src/funcs.c:ExecState" );
+    InitGlobalBag( &FuncsState()->ExecState, "src/funcs.c:ExecState" );
 #endif
 
     /* Register the handler for our exported function                      */
@@ -1891,8 +1896,8 @@ static Int InitKernel (
 
 static void InitModuleState(ModuleStateOffset offset)
 {
-    MODULE_STATE(Funcs).ExecState = 0;
-    MODULE_STATE(Funcs).RecursionDepth = 0;
+    FuncsState()->ExecState = 0;
+    FuncsState()->RecursionDepth = 0;
 }
 
 /****************************************************************************
@@ -1916,6 +1921,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFuncs ( void )
 {
-    FuncsStateOffset = RegisterModuleState(sizeof(FuncsModuleState), InitModuleState, 0);
+    FuncsStateOffset = RegisterModuleState(sizeof(struct FuncsModuleState), InitModuleState, 0);
     return &module;
 }
