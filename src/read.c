@@ -2494,6 +2494,14 @@ void ReadReturn (
     }
 }
 
+void ReadPragma(TypSymbolSet follow)
+{
+    Obj  pragma;
+
+    C_NEW_STRING( pragma, STATE(ValueLen), (void *)STATE(Value) );
+    Match(S_PRAGMA, "pragma", follow);
+    IntrPragma( pragma );
+}
 
 /****************************************************************************
 **
@@ -2594,7 +2602,8 @@ UInt ReadStats (
     /* read the statements                                                 */
     nr = 0;
     while ( IS_IN( STATE(Symbol), STATBEGIN|S_SEMICOLON ) ) {
-
+        if      ( STATE(Symbol) == S_PRAGMA ) ReadPragma(follow);
+        else { 
         /* read a statement                                                */
         if      ( STATE(Symbol) == S_IDENT  ) ReadCallVarAss(follow,'s');
         else if ( STATE(Symbol) == S_UNBIND ) ReadUnbind(    follow    );
@@ -2611,9 +2620,11 @@ UInt ReadStats (
         else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
         else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
         else if ( STATE(Symbol) == S_HELP   ) ReadHelp(      follow    );
+        else if ( STATE(Symbol) == S_PRAGMA ) ReadPragma(    follow    );
         else                           ReadEmpty(     follow    );
-        nr++;
         MatchSemicolon(follow);
+        }
+        nr++;
     }
 
     /* return the number of statements                                     */

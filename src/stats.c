@@ -2009,6 +2009,16 @@ void            PrintAtomic (
     Pr( "%4<\nod;", 0L, 0L );
 }
 
+void PrintPragma(Stat stat)
+{
+    Char *pragma;
+
+    /* TODO: super ugly */
+    pragma = (Char *)((UInt *)(&ADDR_STAT(stat)[1]));
+
+    Pr("#@", 0L, 0L);
+    Pr("%s", (Int)(pragma), 0L);
+}
 
 /****************************************************************************
 **
@@ -2271,6 +2281,7 @@ static Int InitKernel (
     InstallExecStatFunc( T_RETURN_VOID    , ExecReturnVoid);
     InstallExecStatFunc( T_EMPTY          , ExecEmpty);
     InstallExecStatFunc( T_ATOMIC         , ExecAtomic);
+    InstallExecStatFunc( T_PRAGMA         , ExecEmpty);
 
     /* install printers for non-statements                                */
     for ( i = 0; i < ARRAY_SIZE(PrintStatFuncs); i++ ) {
@@ -2309,6 +2320,7 @@ static Int InitKernel (
     InstallPrintStatFunc( T_RETURN_VOID    , PrintReturnVoid);
     InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
     InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
+    InstallPrintStatFunc( T_PRAGMA         , PrintPragma);
 
     for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ )
         IntrExecStatFuncs[i] = ExecIntrStat;

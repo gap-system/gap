@@ -348,6 +348,15 @@ ExecStatus IntrEnd (
     return intrReturning;
 }
 
+/* Interpret a pragma, that is, if we're coding, code it, otherwise
+   ignore it */
+void IntrPragma(Obj pragma)
+{
+    /* ignore or code */
+    if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 0 ) { return; }
+    if ( STATE(IntrCoding)    > 0 ) { CodePragma(pragma); return; }
+}
 
 /****************************************************************************
 **

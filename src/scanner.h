@@ -135,6 +135,7 @@ enum SCANNER_SYMBOLS {
 
     S_SEMICOLON         = (1UL<<30)+0,
     S_DUALSEMICOLON     = (1UL<<30)+1,
+    S_PRAGMA            = (1UL<<30)+2,
 
     S_EOF               = (1UL<<31),
 };

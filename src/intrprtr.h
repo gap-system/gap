@@ -974,6 +974,8 @@ extern void              IntrSaveWSEnd ( void );
 */
 extern void            IntrContinue ( void );
 
+extern void IntrPragma(Obj pragma);
+
 /****************************************************************************
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 */

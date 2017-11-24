@@ -893,6 +893,17 @@ void CodeFuncExprEnd(UInt nr)
 
 }
 
+void CodePragma(Obj content)
+{
+    Stat pragma;
+
+    pragma = NewStat( T_PRAGMA, SIZEBAG_STRINGLEN(GET_LEN_STRING(content)) );
+    memcpy( (void *)ADDR_STAT(pragma), CONST_ADDR_OBJ(content),
+            SIZEBAG_STRINGLEN(GET_LEN_STRING(content)) );
+
+    PushStat( pragma );
+}
+
 
 /****************************************************************************
 **

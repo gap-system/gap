@@ -974,6 +974,22 @@ void GetChar ( void )
   }
 }
 
+void GetPragma(void)
+{
+    Int i = 0;
+
+    /* Skip @ */
+    GET_CHAR();
+    while (*STATE(In) != '\n' && *STATE(In) != '\r' &&
+           *STATE(In) != '\377') {
+        STATE(Value)[i] = *STATE(In);
+        i++;
+        GET_CHAR();
+    }
+    STATE(Value)[i] = '\0';
+    STATE(ValueLen) = i;
+}
+
 void GetHelp( void )
 {
     Int i = 0;
@@ -1024,13 +1040,22 @@ void GetSymbol ( void )
       GET_CHAR();
     }
 
-  /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-  while (*STATE(In)==' '||*STATE(In)=='\t'||*STATE(In)=='\n'||*STATE(In)=='\r'||*STATE(In)=='\f'||*STATE(In)=='#') {
-    if ( *STATE(In) == '#' ) {
-      while ( *STATE(In) != '\n' && *STATE(In) != '\r' && *STATE(In) != '\377' )
-        GET_CHAR();
-    }
-    GET_CHAR();
+  /* skip over <spaces>, <tabs>, <newlines> */
+  while (*STATE(In) == ' ' || *STATE(In) == '\t' || *STATE(In) == '\n' ||
+         *STATE(In) == '\r' || *STATE(In) == '\f' || *STATE(In) == '#') {
+      if (*STATE(In) == '#') {
+          GET_CHAR();
+          if (*STATE(In) == '@') {
+              STATE(Symbol) = S_PRAGMA;
+              GetPragma();
+              return;
+          } else {
+              while (*STATE(In) != '\n' && *STATE(In) != '\r' &&
+                     *STATE(In) != '\377')
+                  GET_CHAR();
+          }
+      }
+      GET_CHAR();
   }
 
   /* switch according to the character                                   */
