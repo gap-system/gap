@@ -148,6 +148,20 @@ static void MatchSemicolon(TypSymbolSet skipto)
           ";", skipto);
 }
 
+// Search the plist 'nams' for a string equal to STATE(Value) between and
+// including index 'start' and 'end' and return its index; return 0 if not
+// found.
+static UInt findValueInNams(Obj nams, UInt start, UInt end)
+{
+    for (UInt i = start; i <= end; i++) {
+        if (strcmp(CSTR_STRING(ELM_PLIST(nams, i)), STATE(Value)) == 0) {
+            return i;
+        }
+    }
+    // not found
+    return 0;
+}
+
 /****************************************************************************
 **
 *F * * * * * * * * * * read symbols and call interpreter  * * * * * * * * * *
@@ -1260,19 +1274,6 @@ typedef struct {
     Obj        locks;          /* locks of the function (HPC-GAP) */
 #endif
 } ArgList;
-
-// Search 'nams' for a string equal to STATE(Value) between (and including)
-// index 'start' and 'end' and return its index; return 0 if not found.
-static UInt findValueInNams(Obj nams, UInt start, UInt end)
-{
-    for (UInt i = start; i <= end; i++) {
-        if (strcmp(CSTR_STRING(ELM_LIST(nams, i)), STATE(Value)) == 0) {
-            return i;
-        }
-    }
-    // not found
-    return 0;
-}
 
 /****************************************************************************
 **
