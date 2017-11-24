@@ -154,29 +154,6 @@ static void MatchSemicolon(TypSymbolSet skipto)
 */
 
 
-/****************************************************************************
-**
-*F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
-**
-**  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
-**  symbols up to one contained in  <follow>.  The <mode>  must be one of the
-**  following:
-**
-**  'i':        check if variable, record component, list entry is bound
-**  'r':        reference to a variable
-**  's':        assignment via ':='
-**  'u':        unbind a variable
-**  'x':        either 'r' or 's' depending on <Symbol>
-**
-**  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
-**
-**  <Var> := <Ident>
-**        |  <Var> '[' <Expr> [,<Expr>]* ']'
-**        |  <Var> '{' <Expr> '}'
-**        |  <Var> '.' <Ident>
-**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
-*/
-
 /* This function reads the options part at the end of a function call
    The syntax is
 
@@ -369,6 +346,29 @@ void ReadReferenceModifiers( TypSymbolSet follow )
     } /* end TRY_READ */
   }
 }
+
+/****************************************************************************
+**
+*F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
+**
+**  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
+**  symbols up to one contained in  <follow>.  The <mode>  must be one of the
+**  following:
+**
+**  'i':        check if variable, record component, list entry is bound
+**  'r':        reference to a variable
+**  's':        assignment via ':='
+**  'u':        unbind a variable
+**  'x':        either 'r' or 's' depending on <Symbol>
+**
+**  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
+**
+**  <Var> := <Ident>
+**        |  <Var> '[' <Expr> [,<Expr>]* ']'
+**        |  <Var> '{' <Expr> '}'
+**        |  <Var> '.' <Ident>
+**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
+*/
 
 void ReadCallVarAss (
     TypSymbolSet        follow,
