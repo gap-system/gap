@@ -1317,7 +1317,6 @@ ArgList ReadFuncArgList(
     narg = 0;
     nams = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(nams, 0);
-    PushPlist( STATE(StackNams), nams );
     if ( STATE(Symbol) != symbol ) {
         goto start;
     }
@@ -1394,6 +1393,9 @@ static void ReadFuncExprBody(
     // remember the current variables in case of an error
     currLVars = STATE(CurrLVars);
     nrError = STATE(NrError);
+
+    // push the new local variables list
+    PushPlist(STATE(StackNams), args.nams);
 
     // begin interpreting the function expression (with 1 argument)
     TRY_READ {
@@ -1539,8 +1541,6 @@ void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
     Obj nams = NEW_PLIST(T_PLIST, 1);
     SET_LEN_PLIST( nams, 0 );
     PushPlist(nams, MakeImmString(STATE(Value)));
-
-    PushPlist( STATE(StackNams), nams );
 
     ArgList args;
     args.narg = 1;
