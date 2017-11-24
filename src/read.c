@@ -408,76 +408,60 @@ void ReadCallVarAss (
         return;
     }
 
-    /* try to look up the variable on the stack of local variables         */
-    nest = 0;
+    // try to look up the variable on the stack of local variables
     const UInt countNams = LEN_PLIST(STATE(StackNams));
-    while ( type == ' ' && nest < countNams ) {
-        nams = ELM_LIST( STATE(StackNams), countNams-nest );
-        for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
-                if ( nest == 0 ) {
-                    type = 'l';
-                    var = indx;
-                }
-                else {
-                    type = 'h';
-
-                    /* Ultrix 4.2 cc get's confused if the UInt is missing */
-                    var = ((UInt)nest << 16) + indx;
-                }
-                break;
-            }
+    for (nest = 0; nest < countNams; nest++) {
+#ifndef SYS_IS_64_BIT
+        // we store nest and indx together in var; if we are on a 32bit
+        // system, then this limits both to 16 bits, which we enforce here
+        if (nest >= 65536) {
+            Pr("Warning: abandoning search for %s at 65536th higher frame\n",
+               (Int)STATE(Value), 0L);
+            break;
         }
-        nest++;
+#endif
+        nams = ELM_LIST(STATE(StackNams), countNams - nest);
+        indx = findValueInNams(nams, 1, LEN_PLIST(nams));
+        if (indx != 0) {
+            type = (nest == 0) ? 'l' : 'h';
+            var = (nest << 16) + indx;
+            break;
+        }
     }
 
-    /* try to look up the variable on the error stack                      */
-    /* the outer loop runs up the calling stack, while the inner loop runs
-       up the static definition stack for each call function */
+    // try to look up the variable on the error stack;
+    // the outer loop runs up the calling stack, while the inner loop runs
+    // up the static definition stack for each call function
     lvars0 = STATE(ErrorLVars);
     nest0 = 0;
-    while ( type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
-      lvars = lvars0;
-      nest = 0;
-      while ( type == ' ' && lvars != 0 && lvars != STATE(BottomLVars) ) {
-        nams = NAMS_FUNC(FUNC_LVARS(lvars));
-        if (nams != (Obj) 0)
-          {
-            indx = LEN_LIST( nams );
-            if (indx >= 1024)
-              {
-                Pr("Warning; Ignoring local names after 1024th in search for %s\n",
-                   (Int) STATE(Value),
-                   0L);
-                indx = 1023;
-              }
-            for ( ; 1 <= indx; indx-- ) {
-              if ( strcmp( STATE(Value), CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
-                type = 'd';
-
-                /* Ultrix 4.2 cc get's confused if the UInt is missing     */
-                var = ((UInt)nest << 16) + indx;
-                break;
-              }
+    while (type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
+        lvars = lvars0;
+        nest = 0;
+        while (type == ' ' && lvars != 0 && lvars != STATE(BottomLVars)) {
+            nams = NAMS_FUNC(FUNC_LVARS(lvars));
+            if (nams != 0) {
+                indx = findValueInNams(nams, 1, LEN_PLIST(nams));
+                if (indx) {
+                    type = 'd';
+                    var = (nest << 16) + indx;
+                    break;
+                }
             }
+            lvars = ENVI_FUNC(FUNC_LVARS(lvars));
+            nest++;
+#ifndef SYS_IS_64_BIT
+            // we store nest and indx together in var; if we are on a 32bit
+            // system, then this limits both to 16 bits, which we enforce here
+            if (nest >= 65536) {
+                Pr("Warning: abandoning search for %s at 65536th higher "
+                   "frame\n",
+                   (Int)STATE(Value), 0L);
+                break;
+            }
+#endif
         }
-        lvars = ENVI_FUNC( FUNC_LVARS( lvars ) );
-        nest++;
-        if (nest >= 65536)
-          {
-            Pr("Warning: abandoning search for %s at 65536th higher frame\n",
-               (Int)STATE(Value),0L);
-            break;
-          }
-      }
-      lvars0 = PARENT_LVARS( lvars0 );
-      nest0++;
-        if (nest0 >= 65536)
-          {
-            Pr("Warning: abandoning search for %s 65536 frames up stack\n",
-               (Int)STATE(Value),0L);
-            break;
-          }
+        lvars0 = PARENT_LVARS(lvars0);
+        nest0++;
     }
 
     /* get the variable as a global variable                               */
