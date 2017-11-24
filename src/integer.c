@@ -2202,6 +2202,45 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
   return GcdInt( opL, opR );
 }
 
+Obj LcmInt(Obj opL, Obj opR)
+{
+    UInt       sizeL, sizeR;
+    fake_mpz_t mpzL, mpzR, mpzResult;
+    Obj        result;
+
+    CHECK_INT(opL);
+    CHECK_INT(opR);
+
+    if (opL == INTOBJ_INT(0))
+        return AbsInt(opR);
+    if (opR == INTOBJ_INT(0))
+        return AbsInt(opL);
+
+    sizeL = SIZE_INT_OR_INTOBJ(opL);
+    sizeR = SIZE_INT_OR_INTOBJ(opR);
+
+    NEW_FAKEMPZ(mpzResult, sizeL + sizeR);
+    FAKEMPZ_GMPorINTOBJ(mpzL, opL);
+    FAKEMPZ_GMPorINTOBJ(mpzR, opR);
+
+    /* compute the gcd */
+    mpz_lcm(MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR));
+
+    /* convert result to GAP object and return it */
+    CHECK_FAKEMPZ(mpzResult);
+    CHECK_FAKEMPZ(mpzL);
+    CHECK_FAKEMPZ(mpzR);
+    result = GMPorINTOBJ_FAKEMPZ(mpzResult);
+    CHECK_INT(result);
+    return result;
+}
+
+Obj FuncLCM_INT(Obj self, Obj opL, Obj opR)
+{
+    REQUIRE_INT_ARG("LcmInt", "left", opL);
+    REQUIRE_INT_ARG("LcmInt", "right", opR);
+    return LcmInt(opL, opR);
+}
 
 /****************************************************************************
 **
@@ -2614,29 +2653,30 @@ static StructGVarFilt GVarFilts [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
-  GVAR_FUNC(QUO_INT, 2, "gmp1, gmp2"),
-  GVAR_FUNC(ABS_INT, 1, "x"),
-  GVAR_FUNC(SIGN_INT, 1, "x"),
-  GVAR_FUNC(REM_INT, 2, "gmp1, gmp2"),
-  GVAR_FUNC(GCD_INT, 2, "gmp1, gmp2"),
-  GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
-  GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
-  GVAR_FUNC(JACOBI_INT, 2, "n, m"),
-  GVAR_FUNC(FACTORIAL_INT, 1, "n"),
-  GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
-  GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
-  GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
-  GVAR_FUNC(IS_PROBAB_PRIME_INT, 2, "n, reps"),
-  GVAR_FUNC(INVMODINT, 2, "base, mod"),
-  GVAR_FUNC(HexStringInt, 1, "gmp"),
-  GVAR_FUNC(IntHexString, 1, "string"),
-  GVAR_FUNC(Log2Int, 1, "gmp"),
-  GVAR_FUNC(STRING_INT, 1, "gmp"),
-  GVAR_FUNC(INT_STRING, 1, "string"),
-  GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),
-  { 0, 0, 0, 0, 0 }
+    GVAR_FUNC(QUO_INT, 2, "gmp1, gmp2"),
+    GVAR_FUNC(ABS_INT, 1, "x"),
+    GVAR_FUNC(SIGN_INT, 1, "x"),
+    GVAR_FUNC(REM_INT, 2, "gmp1, gmp2"),
+    GVAR_FUNC(GCD_INT, 2, "gmp1, gmp2"),
+    GVAR_FUNC(LCM_INT, 2, "gmp1, gmp2"),
+    GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
+    GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
+    GVAR_FUNC(JACOBI_INT, 2, "n, m"),
+    GVAR_FUNC(FACTORIAL_INT, 1, "n"),
+    GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
+    GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
+    GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
+    GVAR_FUNC(IS_PROBAB_PRIME_INT, 2, "n, reps"),
+    GVAR_FUNC(INVMODINT, 2, "base, mod"),
+    GVAR_FUNC(HexStringInt, 1, "gmp"),
+    GVAR_FUNC(IntHexString, 1, "string"),
+    GVAR_FUNC(Log2Int, 1, "gmp"),
+    GVAR_FUNC(STRING_INT, 1, "gmp"),
+    GVAR_FUNC(INT_STRING, 1, "string"),
+    GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),
+    { 0, 0, 0, 0, 0 }
 
 };
 

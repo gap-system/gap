@@ -1105,13 +1105,7 @@ InstallGlobalFunction( IsPrimePowerInt,
 ##
 #F  LcmInt( <m>, <n> )  . . . . . . . . . . least common multiple of integers
 ##
-InstallGlobalFunction(LcmInt,function ( n, m )
-    if m = 0  and n = 0  then
-        return 0;
-    else
-        return AbsInt( m / GcdInt( m, n ) * n );
-    fi;
-end);
+InstallGlobalFunction(LcmInt, LCM_INT);
 
 
 #############################################################################
