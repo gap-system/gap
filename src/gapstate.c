@@ -35,9 +35,11 @@ Int RegisterModuleState(UInt size, ModuleConstructor constructor, ModuleDestruct
 {
     StateDescriptor * handler;
 
-    if (!constructor && !destructor)
-        return -1;
+    // if not at least one of the three arguments is non-zero, it doesn't make
+    // sense to call this function
+    assert(size || constructor || destructor);
 
+    // check that we have enough free space
     assert((STATE_SLOTS_SIZE - StateNextFreeOffset) >= size);
     assert(StateDescriptorCount < STATE_MAX_HANDLERS);
 
