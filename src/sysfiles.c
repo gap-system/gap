@@ -443,53 +443,44 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 ** the MIT License : http://stackoverflow.com/a/34271901/928031
 */
 
-void find_yourself(const char * argv0, char * result, size_t size_of_result)
+void find_yourself(const char * argv0, char * result, size_t resultsize)
 {
-    char findyourself_save_path[GAP_PATH_MAX] = { 0 };
+    GAP_ASSERT(resultsize >= GAP_PATH_MAX);
 
-    strlcpy(findyourself_save_path, getenv("PATH"),
-            sizeof(findyourself_save_path));
+    char tmpbuf[GAP_PATH_MAX];
 
-    // + 256 gives us (lots) of slack to put the program name on the end
-    char newpath[GAP_PATH_MAX + 256];
-    char newpath2[GAP_PATH_MAX + 256];
-
-    result[0] = 0;
-
+    // absolute path, like '/usr/bin/gap'
     if (argv0[0] == '/') {
-        char * ret = realpath(argv0, newpath);
-        if (ret && !access(newpath, F_OK)) {
-            strlcpy(result, newpath, size_of_result);
+        if (realpath(argv0, result) && !access(result, F_OK)) {
+            return;    // success
         }
     }
+    // relative path, like 'bin/gap.sh'
     else if (strchr(argv0, '/')) {
-        char   findyourself_save_pwd[GAP_PATH_MAX] = { 0 };
-        char * retcwd =
-            getcwd(findyourself_save_pwd, sizeof(findyourself_save_pwd));
-        if (!retcwd)
+        if (!getcwd(tmpbuf, sizeof(tmpbuf)))
             return;
-        strlcpy(newpath2, findyourself_save_pwd, sizeof(newpath2));
-        strlcat(newpath2, "/", sizeof(newpath2));
-        strlcat(newpath2, argv0, sizeof(newpath2));
-        char * retpath = realpath(newpath2, newpath);
-        if (retpath && !access(newpath, F_OK)) {
-            strlcpy(result, newpath, size_of_result);
+        strlcat(tmpbuf, "/", sizeof(tmpbuf));
+        strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+        if (realpath(tmpbuf, result) && !access(result, F_OK)) {
+            return;    // success
         }
     }
+    // executable name, like 'gap'
     else {
-        char * saveptr;
-        char * pathitem;
-        for (pathitem = strtok_r(findyourself_save_path, ":", &saveptr);
-             pathitem; pathitem = strtok_r(NULL, ":", &saveptr)) {
-            strlcpy(newpath2, pathitem, sizeof(newpath2));
-            strlcat(newpath2, "/", sizeof(newpath2));
-            strlcat(newpath2, argv0, sizeof(newpath2));
-            char * ret = realpath(newpath2, newpath);
-            if (ret && !access(newpath, F_OK)) {
-                strlcpy(result, newpath, size_of_result);
+        char pathenv[GAP_PATH_MAX], *saveptr, *pathitem;
+        strlcpy(pathenv, getenv("PATH"), sizeof(pathenv));
+        pathitem = strtok_r(pathenv, ":", &saveptr);
+        for (; pathitem; pathitem = strtok_r(NULL, ":", &saveptr)) {
+            strlcpy(tmpbuf, pathitem, sizeof(tmpbuf));
+            strlcat(tmpbuf, "/", sizeof(tmpbuf));
+            strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+            if (realpath(tmpbuf, result) && !access(result, F_OK)) {
+                return;    // success
             }
         }
     }
+
+    *result = 0;    // reset buffer after error
 }
 
 
