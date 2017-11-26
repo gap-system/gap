@@ -420,7 +420,7 @@ void ReadCallVarAss (
             break;
         }
 #endif
-        nams = ELM_LIST(STATE(StackNams), countNams - nest);
+        nams = ELM_PLIST(STATE(StackNams), countNams - nest);
         indx = findValueInNams(nams, 1, LEN_PLIST(nams));
         if (indx != 0) {
             type = (nest == 0) ? 'l' : 'h';
@@ -1357,7 +1357,7 @@ ArgList ReadFuncArgList(
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
 
     // Special case for function(arg)
-    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams, narg) ) )) {
+    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_PLIST(nams, narg) ) )) {
         isvarg = 1;
     }
 
