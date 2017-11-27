@@ -347,62 +347,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-*F  COUNT_PROF( <prof> )  . . . . . . . . number of invocations of a function
-*F  TIME_WITH_PROF( <prof> )  . . . . . . time with    children in a function
-*F  TIME_WOUT_PROF( <prof> )  . . . . . . time without children in a function
-*F  STOR_WITH_PROF( <prof> )  . . . .  storage with    children in a function
-*F  STOR_WOUT_PROF( <prof> )  . . . .  storage without children in a function
-*V  LEN_PROF  . . . . . . . . . . .  length of a profiling bag for a function
-**
-**  With each  function we associate two  time measurements.  First the *time
-**  spent by this  function without its  children*, i.e., the amount  of time
-**  during which this  function was active.   Second the *time  spent by this
-**  function with its  children*, i.e., the amount  of time during which this
-**  function was either active or suspended.
-**
-**  Likewise with each  function  we associate the two  storage measurements,
-**  the storage spent by  this function without its  children and the storage
-**  spent by this function with its children.
-**
-**  These  macros  make it possible to  access   the various components  of a
-**  profiling information bag <prof> for a function <func>.
-**
-**  'COUNT_PROF(<prof>)' is the  number  of  calls  to the  function  <func>.
-**  'TIME_WITH_PROF(<prof>) is  the time spent  while the function <func> was
-**  either  active or suspended.   'TIME_WOUT_PROF(<prof>)' is the time spent
-**  while the function <func>   was active.  'STOR_WITH_PROF(<prof>)'  is the
-**  amount of  storage  allocated while  the  function  <func>  was active or
-**  suspended.  'STOR_WOUT_PROF(<prof>)' is  the amount  of storage allocated
-**  while the  function <func> was   active.  'LEN_PROF' is   the length of a
-**  profiling information bag.
-*/
-#define COUNT_PROF(prof)            (INT_INTOBJ(ELM_PLIST(prof,1)))
-#define TIME_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,2)))
-#define TIME_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,3)))
-#define STOR_WITH_PROF(prof)        (UInt8_ObjInt(ELM_PLIST(prof,4)))
-#define STOR_WOUT_PROF(prof)        (UInt8_ObjInt(ELM_PLIST(prof,5)))
-
-#define SET_COUNT_PROF(prof,n)      SET_ELM_PLIST(prof,1,INTOBJ_INT(n))
-#define SET_TIME_WITH_PROF(prof,n)  SET_ELM_PLIST(prof,2,INTOBJ_INT(n))
-#define SET_TIME_WOUT_PROF(prof,n)  SET_ELM_PLIST(prof,3,INTOBJ_INT(n))
-
-static inline void SET_STOR_WITH_PROF(Obj prof, UInt8 n)
-{
-    SET_ELM_PLIST(prof,4,ObjInt_Int8(n));
-    CHANGED_BAG(prof);
-}
-
-static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
-{
-    SET_ELM_PLIST(prof,5,ObjInt_Int8(n));
-    CHANGED_BAG(prof);
-}
-
-#define LEN_PROF                    5
-
-
-/****************************************************************************
-**
 *F  FuncFILENAME_FUNC(Obj self, Obj func) . . . . . . .  filename of function
 *F  FuncSTARTLINE_FUNC(Obj self, Obj func)  . . . . .  start line of function
 *F  FuncENDLINE_FUNC(Obj self, Obj func)  . . . . . . .  end line of function
