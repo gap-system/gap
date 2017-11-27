@@ -183,23 +183,17 @@ void HookedLineOutput(Obj func, char type)
   HashLock(&profileState);
   if(profileState_Active && profileState.OutputRepeats)
   {
-    int startline_i = 0, endline_i = 0;
-    Obj startline = FuncSTARTLINE_FUNC(0, func);
-    Obj endline = FuncENDLINE_FUNC(0, func);
-    if(IS_INTOBJ(startline)) {
-      startline_i = INT_INTOBJ(startline);
-    }
-    if(IS_INTOBJ(endline)) {
-      endline_i = INT_INTOBJ(endline);
-    }
+    Obj body = BODY_FUNC(func);
+    UInt startline = GET_STARTLINE_BODY(body);
+    UInt endline = GET_ENDLINE_BODY(body);
 
     Obj name = NAME_FUNC(func);
-    Char *name_c = ((UInt)name) ? (Char *)CHARS_STRING(name) : (Char *)"nameless";
+    const Char *name_c = name ? CSTR_STRING(name) : "nameless";
 
-    Obj filename = FuncFILENAME_FUNC(0, func);
-    Char *filename_c = (Char*)"<missing filename>";
+    Obj filename = GET_FILENAME_BODY(BODY_FUNC(func));
+    const Char *filename_c = "<missing filename>";
     if(filename != Fail && filename != NULL)
-      filename_c = (Char *)CHARS_STRING(filename);
+      filename_c = CSTR_STRING(filename);
 
     if(type == 'I' && profileState.lastNotOutputted.line != -1)
     {
@@ -210,7 +204,7 @@ void HookedLineOutput(Obj func, char type)
 
     fprintf(profileState.Stream,
             "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
-            type, name_c, startline_i, endline_i, filename_c);
+            type, name_c, (int)startline, (int)endline, filename_c);
   }
   HashUnlock(&profileState);
 }
