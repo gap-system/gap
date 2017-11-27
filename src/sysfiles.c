@@ -81,6 +81,13 @@ typedef void       sig_handler_t ( int );
 
 #ifdef SYS_IS_CYGWIN32
 #include <process.h>
+#include <stdlib.h>
+#endif
+
+#include <limits.h>
+
+#ifdef SYS_IS_DARWIN
+#include <mach-o/dyld.h>
 #endif
 
 
@@ -438,6 +445,119 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 }
 
 #endif
+
+/****************************************************************************
+**
+*F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+** The function 'find_yourself' is based on code (C) 2015 Mark Whitis, under
+** the MIT License : http://stackoverflow.com/a/34271901/928031
+*/
+
+void find_yourself(const char * argv0, char * result, size_t size_of_result)
+{
+    char findyourself_save_path[LONG_PATH_SIZE] = { 0 };
+
+
+    strlcpy(findyourself_save_path, getenv("PATH"),
+            sizeof(findyourself_save_path));
+
+    // + 256 gives us (lots) of slack to put the program name on the end
+    char newpath[LONG_PATH_SIZE + 256];
+    char newpath2[LONG_PATH_SIZE + 256];
+
+    result[0] = 0;
+
+    if (argv0[0] == '/') {
+        char * ret = realpath(argv0, newpath);
+        if (ret && !access(newpath, F_OK)) {
+            strlcpy(result, newpath, size_of_result);
+        }
+    }
+    else if (strchr(argv0, '/')) {
+        char   findyourself_save_pwd[LONG_PATH_SIZE] = { 0 };
+        char * retcwd =
+            getcwd(findyourself_save_pwd, sizeof(findyourself_save_pwd));
+        if (!retcwd)
+            return;
+        strlcpy(newpath2, findyourself_save_pwd, sizeof(newpath2));
+        strlcat(newpath2, "/", sizeof(newpath2));
+        strlcat(newpath2, argv0, sizeof(newpath2));
+        char * retpath = realpath(newpath2, newpath);
+        if (retpath && !access(newpath, F_OK)) {
+            strlcpy(result, newpath, size_of_result);
+        }
+    }
+    else {
+        char * saveptr;
+        char * pathitem;
+        for (pathitem = strtok_r(findyourself_save_path, ":", &saveptr);
+             pathitem; pathitem = strtok_r(NULL, ":", &saveptr)) {
+            strlcpy(newpath2, pathitem, sizeof(newpath2));
+            strlcat(newpath2, "/", sizeof(newpath2));
+            strlcat(newpath2, argv0, sizeof(newpath2));
+            char * ret = realpath(newpath2, newpath);
+            if (ret && !access(newpath, F_OK)) {
+                strlcpy(result, newpath, size_of_result);
+            }
+        }
+    }
+}
+
+
+char GAPExecLocation[LONG_PATH_SIZE] = { 0 };
+
+void SetupGAPLocation(int argc, char ** argv)
+{
+    char locBuf[LONG_PATH_SIZE] = { 0 };
+    Int4 length = 0;
+
+// Note: We keep cleaning exePath[0], as some of these methods
+// do not promise to leave the buffer empty on a failed return.
+
+#ifdef SYS_IS_DARWIN
+    char     exePath[PATH_MAX];
+    uint32_t len = sizeof(locBuf);
+    if (_NSGetExecutablePath(locBuf, &len) != 0) {
+        exePath[0] = '\0';    // buffer too small (!)
+    }
+#endif
+
+    // Try some generic techniques for BSDs, Linux and Cygwin
+
+    if (locBuf[0] == 0) {
+        ssize_t ret = readlink("/proc/self/exe", locBuf, sizeof(locBuf));
+        // If error returned, clear first character of buffer
+        if (!ret)
+            locBuf[0] = 0;
+    }
+
+    if (locBuf[0] == 0) {
+        ssize_t ret = readlink("/proc/curproc/exe", locBuf, sizeof(locBuf));
+        // If error returned, clear first character of buffer
+        if (!ret)
+            locBuf[0] = 0;
+    }
+
+    // If we are still failing, go and search the path
+    if (locBuf[0] == 0) {
+        find_yourself(argv[0], locBuf, LONG_PATH_SIZE);
+    }
+
+    // Remove symlinks (if present)
+    char * ret = realpath(locBuf, GAPExecLocation);
+    if (!ret)
+        locBuf[0] = 0;
+
+    // Now strip the executable name off
+    length = strlen(GAPExecLocation);
+    while (length > 0 && GAPExecLocation[length] != '/') {
+        GAPExecLocation[length] = 0;
+        length--;
+    }
+}
 
 
 /****************************************************************************
@@ -3081,8 +3201,8 @@ Int SyIsExistingFile ( const Char * name )
 **
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
-**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
-**  otherwise. <name> is a system dependent description of the file.
+**  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and
+**  -1 otherwise. <name> is a system dependent description of the file.
 */
 Int SyIsReadableFile ( const Char * name )
 {

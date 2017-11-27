@@ -337,7 +337,7 @@ Version numbers must be adjusted in the following files:
 <C>NeedKernelVersion</C>
 </Item>
 <Item>
-<F>src/system.c</F>, see <C>SyKernelVersion</C> and <C>SyWindowsPath</C>
+<F>src/system.c</F>, see <C>SyKernelVersion</C>
 </Item>
 <Item>
 <F>doc/versiondata</F>, see <C>VERSIONNUMBER</C>,
