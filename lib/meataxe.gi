@@ -2092,7 +2092,7 @@ SMTX_Distinguish:=function( cf, i )
          od;
          M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
          ngens:=orig_ngens;
-         mat:=Value(fact, M,idmat);
+         mat:=Value(fact, M, M^0);
          if RankMat(mat) < dim then
             found:=false;
             Info(InfoMeatAxe,2,"Current element failed on factor ", j);
@@ -2187,7 +2187,7 @@ SMTX_Distinguish:=function( cf, i )
                   mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
                od;
                M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
-               mat:=Value(fact, M,idmat);
+               mat:=Value(fact, M, M^0);
                if RankMat(mat) < dim then
                   found:=false;
                   Info(InfoMeatAxe,2,"Failed on factor ", j);

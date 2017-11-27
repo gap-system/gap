@@ -12,8 +12,6 @@ gap> MTX.ModuleAutomorphisms(M);
 <matrix group of size 1 with 4 generators>
 gap> MTX.IsIndecomposable(M);
 false
-gap> MTX.IsIndecomposable(M);
-false
 gap> MTX.IsAbsolutelyIrreducible(M);
 false
 gap> Display(MTX.IsomorphismModules(M,M));
@@ -122,7 +120,7 @@ rec( IsOverFiniteField := true, dimension := 10, field := GF(7^2),
 gap> SortedList(List(MTX.CompositionFactors(M5), m -> m.dimension));
 [ 4, 6 ]
 gap> cf:=MTX.CollectedFactors(M5);;
-gap> #MTX.Distinguish(cf,1);  # FIXME: this hangs in a loop
+gap> MTX.Distinguish(cf,1);
 gap> MTX.Distinguish(cf,2);
 gap> MTX.BasesSubmodules(M5);
 [ [  ], < immutable compressed matrix 4x10 over GF(49) >, 
