@@ -43,20 +43,18 @@
 #include <src/gaputils.h>
 
 
-/****************************************************************************
-**
-*F  NAME_RNAM(<rnam>) . . . . . . . . . . . . . . . .  name for a record name
-**
-**  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
-**
-**  Note that 'NAME_RNAM' is a  macro, so do not call  it with arguments that
-**  have side effects.
-**
-**  'NAME_RNAM' is defined in the declaration part of this package as follows
-**
-#define NAME_RNAM(rnam) CSTR_STRING( ELM_PLIST( NamesRNam, rnam ) )
-*/
-Obj             NamesRNam;
+
+static Obj NamesRNam;
+
+inline const Char *NAME_RNAM(UInt rnam)
+{
+    return CSTR_STRING(ELM_PLIST(NamesRNam, rnam));
+}
+
+inline extern Obj NAME_OBJ_RNAM(UInt rnam)
+{
+    return ELM_PLIST(NamesRNam, rnam);
+}
 
 
 #ifdef HPCGAP
@@ -555,7 +553,7 @@ UInt            iscomplete_rnam (
     Char *              name,
     UInt                len )
 {
-    Char *              curr;
+    const Char *        curr;
     UInt                i, k;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
@@ -571,8 +569,8 @@ UInt            completion_rnam (
     Char *              name,
     UInt                len )
 {
-    Char *              curr;
-    Char *              next;
+    const Char *        curr;
+    const Char *        next;
     UInt                i, k;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 

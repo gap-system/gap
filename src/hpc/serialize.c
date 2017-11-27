@@ -565,7 +565,7 @@ void SerializeRecord(Obj obj)
     WriteImmediateObj(INTOBJ_INT(len));
     for (i = 1; i <= len; i++) {
         UInt rnam = GET_RNAM_PREC(obj, i);
-        Obj  rnams = ELM_PLIST(NamesRNam, rnam);
+        Obj  rnams = NAME_OBJ_RNAM(rnam);
         WriteByteBlock(rnams, sizeof(UInt), GET_LEN_STRING(rnams));
     }
     for (i = 1; i <= len; i++) {
