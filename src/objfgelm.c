@@ -160,13 +160,13 @@ Obj Func8Bits_ExponentSums3 (
     UInt1 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
-    while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
+    while ( !IS_POS_INTOBJ(vstart) )
         vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
                                  "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
-    while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
+    while ( !IS_POS_INTOBJ(vend) )
         vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
                                "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
@@ -381,7 +381,6 @@ Obj Func8Bits_HeadByNumber (
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(l);
 
-
     /* get the generator mask                                              */
     genm = ((1UL << (8-ebits)) - 1) << ebits;
 
@@ -572,15 +571,12 @@ Obj Func8Bits_AssocWord (
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
-        nexp = INT_INTOBJ(vexp);
-        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "<exponent> must be a positive integer", 
+        while ( ! IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0) ) {
+            vexp = ErrorReturnObj( "<exponent> must be a non-zero integer", 
                                    0L, 0L,
                                    "you can replace <exponent> via 'return <exponent>;'" );
-            nexp = INT_INTOBJ(vexp);
-            ptr  = (UInt1*)DATA_WORD(obj) + (i-1);
         }
-        nexp = nexp & expm;
+        nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
         assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
@@ -620,7 +616,7 @@ Obj Func8Bits_ObjByVector (
         vexp = ELMW_LIST(data,i);
         while ( ! IS_INTOBJ(vexp) ) {
             vexp = ErrorReturnObj(
-                "%d element must be integer (not a %s)",
+                "%d element must be a small integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
                 "you can replace the element by <val> via 'return <val>;'" );
         }
@@ -1060,6 +1056,7 @@ Obj Func8Bits_LengthWord (
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
   UInt1 *data, pair;
+
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
   data = (UInt1*)DATA_WORD(w);
@@ -1142,13 +1139,13 @@ Obj Func16Bits_ExponentSums3 (
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
-    while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
+    while ( !IS_POS_INTOBJ(vstart) )
         vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
                                  "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
-    while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
+    while ( !IS_POS_INTOBJ(vend) )
         vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
                                "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
@@ -1292,9 +1289,9 @@ Obj Func16Bits_ExtRepOfObj (
 
     /* and unpack <obj> into <lst>                                         */
     ptr = (UInt2*)DATA_WORD(obj);
-    for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-        /* this will not cause a garbage collection                        */
+    /* this will not cause a garbage collection                            */
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
         SET_ELM_PLIST( lst, 2*i-1, INTOBJ_INT(((*ptr) >> ebits)+1) );
         if ( (*ptr) & exps )
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
@@ -1507,9 +1504,9 @@ Obj Func16Bits_AssocWord (
     UInt        expm;           /* unsigned exponent mask                  */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         vgen;           /* value of current exponent               */
+    Obj         vexp;           /* value of current exponent               */
     Int         nexp;           /* current exponent                        */
-    Obj         vexp;           /* value of current generator              */
+    Obj         vgen;           /* value of current generator              */
     Int         ngen;           /* current generator                       */
     Obj         obj;            /* result                                  */
     UInt2 *     ptr;            /* pointer into the data area of <obj>     */
@@ -1532,15 +1529,12 @@ Obj Func16Bits_AssocWord (
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
-        nexp = INT_INTOBJ(vexp);
-        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "<exponent> must be a positive integer", 
+        while ( ! IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0) ) {
+            vexp = ErrorReturnObj( "<exponent> must be a non-zero integer", 
                                    0L, 0L,
                                    "you can replace <exponent> via 'return <exponent>;'" );
-            nexp = INT_INTOBJ(vexp);
-            ptr = (UInt2*)DATA_WORD(obj) + (i-1);
         }
-        nexp = nexp & expm;
+        nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
         assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
@@ -1580,7 +1574,7 @@ Obj Func16Bits_ObjByVector (
         vexp = ELMW_LIST(data,i);
         while ( ! IS_INTOBJ(vexp) ) {
             vexp = ErrorReturnObj(
-                "%d element must be an integer (not a %s)",
+                "%d element must be a small integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
                 "you can replace the element by <val> via 'return <val>;'" );
         }
@@ -1881,7 +1875,7 @@ Obj Func16Bits_Product (
 
     /* look closely at the meeting point                                   */
     sr = 0;
-    pl = ((UInt2*)DATA_WORD(l))+(nl-1);
+    pl = (UInt2*)DATA_WORD(l)+(nl-1);
     pr = (UInt2*)DATA_WORD(r);
     while ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) == (*pr&exps) )
@@ -2103,13 +2097,13 @@ Obj Func32Bits_ExponentSums3 (
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
-    while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
+    while ( !IS_POS_INTOBJ(vstart) )
         vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
                                  "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
-    while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
+    while ( !IS_POS_INTOBJ(vend) )
         vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
                                "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
@@ -2253,9 +2247,9 @@ Obj Func32Bits_ExtRepOfObj (
 
     /* and unpack <obj> into <lst>                                         */
     ptr = (UInt4*)DATA_WORD(obj);
-    for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-        /* this will not cause a garbage collection                    */
+    /* this will not cause a garbage collection                            */
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
         SET_ELM_PLIST( lst, 2*i-1, INTOBJ_INT(((*ptr) >> ebits)+1) );
         if ( (*ptr) & exps )
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
@@ -2468,9 +2462,9 @@ Obj Func32Bits_AssocWord (
     UInt        expm;           /* unsigned exponent mask                  */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         vgen;           /* value of current exponent               */
+    Obj         vexp;           /* value of current exponent               */
     Int         nexp;           /* current exponent                        */
-    Obj         vexp;           /* value of current generator              */
+    Obj         vgen;           /* value of current generator              */
     Int         ngen;           /* current generator                       */
     Obj         obj;            /* result                                  */
     UInt4 *     ptr;            /* pointer into the data area of <obj>     */
@@ -2485,7 +2479,7 @@ Obj Func32Bits_AssocWord (
     num = LEN_LIST(data)/2;
     NEW_WORD( obj, type, num );
 
-    /* use UInt4 pointer for eight bits                                    */
+    /* use UInt4 pointer for thirty-two bits                               */
     ptr = (UInt4*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
@@ -2493,15 +2487,12 @@ Obj Func32Bits_AssocWord (
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
-        nexp = INT_INTOBJ(vexp);
-        while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "<exponent> must not be a positive integer",
+        while ( ! IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0) ) {
+            vexp = ErrorReturnObj( "<exponent> must be a non-zero integer", 
                                    0L, 0L,
                                    "you can replace <exponent> via 'return <exponent>;'" );
-            nexp = INT_INTOBJ(vexp);
-            ptr = (UInt4*)DATA_WORD(obj) + (i-1);
         }
-        nexp = nexp & expm;
+        nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
         assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
@@ -2541,7 +2532,7 @@ Obj Func32Bits_ObjByVector (
         vexp = ELMW_LIST(data,i);
         while ( ! IS_INTOBJ(vexp) ) {
             vexp = ErrorReturnObj(
-                "%d element must be an integer (not a %s)",
+                "%d element must be a small integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
                 "you can replace the element by <val> via 'return <val>;'" );
         }
@@ -2554,7 +2545,7 @@ Obj Func32Bits_ObjByVector (
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UInt4 pointer for thirteen bits                                 */
+    /* use UInt4 pointer for thirty-two bits                               */
     ptr = (UInt4*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
@@ -2594,7 +2585,6 @@ Obj Func32Bits_Power (
     UInt4 *     pr;             /* data area in <obj>                      */
     UInt4 *     pe;             /* end marker                              */
     Int         ex = 0;         /* meeting exponent                        */
-    Int         exs;            /* save <ex> for overflow test             */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
 
@@ -2657,7 +2647,7 @@ Obj Func32Bits_Power (
     if ( sl == sr ) {
         ex = (*pl&expm);
         if ( *pl & exps )  ex -= exps;
-        exs = ex;
+        Int exs = ex;   // save <ex> for overflow test
         ex  = (Int)((UInt)ex * (UInt)pow);
 
         /* check that n*pow fits into the exponent                         */
