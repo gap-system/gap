@@ -19,19 +19,14 @@
 
 /****************************************************************************
 **
-*F  NAME_RNAM(<rnam>) . . . . . . . . . . .name for a record name as C string
-*F  NAME_OBJ_RNAM(<rnam>) . . . . . . . . .name for a record name as an Obj
+*F  NAME_RNAM(<rnam>) . . . . . . . . . .  name for a record name as C string
+*F  NAME_OBJ_RNAM(<rnam>) . . . . . . . . .  name for a record name as an Obj
 **
 **  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
 **  'NAME_OBJ_RNAM' returns the name (as an Obj) for the record name <rnam>.
-**
-**  Note that 'NAME_RNAM' and 'NAME_OBJ_RNAM' are macros, so do not call them
-**  with arguments that have side effects.
 */
-#define NAME_RNAM(rnam) CSTR_STRING( ELM_PLIST( NamesRNam, rnam ) )
-#define NAME_OBJ_RNAM(rnam) ELM_PLIST( NamesRNam, rnam )
-
-extern  Obj             NamesRNam;
+extern const Char *NAME_RNAM(UInt rnam);
+extern Obj NAME_OBJ_RNAM(UInt rnam);
 
 
 /****************************************************************************
