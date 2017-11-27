@@ -3675,6 +3675,9 @@ Obj FuncPROD_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
     if (ql != qr)
         return TRY_NEXT_METHOD;
 
+    if (LEN_MAT8BIT(matr) != LEN_VEC8BIT(rowl))
+        return TRY_NEXT_METHOD;
+
     return ProdMat8BitMat8Bit(matl, matr);
 }
 
