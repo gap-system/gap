@@ -9,9 +9,9 @@
 **
 **  This file contains the functions for the macfloat package.
 **
-** macfloats are stored as bags containing a 64 bit value
+**  Machine floating point values, aka macfloats, are stored as bags
+**  containing a 64 bit value.
 */
-
 
 // glibc only declares exp10 in its headers if we define _GNU_SOURCE
 #ifndef _GNU_SOURCE

@@ -7,7 +7,7 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file declares the functions for the macfloating point package
+**  This file declares the functions for the macfloat package
 */
 #include <string.h>
 
@@ -21,7 +21,7 @@ typedef long double /* __float128 */ Double;
 #define PRINTFDIGITS 20
 #define PRINTFFORMAT "Lg"
 #define STRTOD strtold
-#define MATH(name) name ## l
+#define MATH(name) name##l
 #else
 typedef double Double;
 #define TOPRINTFFORMAT double
@@ -32,23 +32,35 @@ typedef double Double;
 #endif
 
 static inline Double VAL_MACFLOAT(Obj obj)
-{ Double __val; memcpy(&__val,CONST_ADDR_OBJ(obj),sizeof(Double)); return __val; }
+{
+    Double val;
+    memcpy(&val, CONST_ADDR_OBJ(obj), sizeof(Double));
+    return val;
+}
+
 static inline void SET_VAL_MACFLOAT(Obj obj, Double val)
-{ Double __val = (val); memcpy(ADDR_OBJ(obj),&__val,sizeof(Double)); }
+{
+    memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
+}
 
-#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
+static inline  Int IS_MACFLOAT(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_MACFLOAT;
+}
 
-extern Obj NEW_MACFLOAT( Double val);
+extern Obj NEW_MACFLOAT(Double val);
 
-
-
-/*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * **/
 
 /****************************************************************************
 **
-*F  InitInfoMacfloat()  . . . . . . . . . . . . . . . . . table of init functions
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
-StructInitInfo * InitInfoMacfloat ( void );
+
+/****************************************************************************
+**
+*F  InitInfoMacfloat() . . . . . . . . . . . . . . .  table of init functions
+*/
+StructInitInfo * InitInfoMacfloat(void);
 
 
-#endif // GAP_MACFLOAT_H
+#endif    // GAP_MACFLOAT_H
