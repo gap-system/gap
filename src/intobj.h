@@ -34,6 +34,11 @@ a
 
 #include <src/system.h>
 
+#ifdef SYS_IS_64_BIT
+#define NR_SMALL_INT_BITS  (64 - 4)
+#else
+#define NR_SMALL_INT_BITS  (32 - 4)
+#endif
 
 /****************************************************************************
 **
