@@ -347,18 +347,6 @@ extern Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
-*F  FuncFILENAME_FUNC(Obj self, Obj func) . . . . . . .  filename of function
-*F  FuncSTARTLINE_FUNC(Obj self, Obj func)  . . . . .  start line of function
-*F  FuncENDLINE_FUNC(Obj self, Obj func)  . . . . . . .  end line of function
-**
-**  These functions, usually exported to GAP, get information about GAP
-**  functions */
-Obj FuncFILENAME_FUNC(Obj self, Obj func);
-Obj FuncSTARTLINE_FUNC(Obj self, Obj func);
-Obj FuncENDLINE_FUNC(Obj self, Obj func);
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * *  create a new function * * * * * * * * * * * * *
 */
 
