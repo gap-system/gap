@@ -215,7 +215,6 @@ Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
     UInt        ebits;          /* number of exponent bits                 */
- /* UInt        npos;           / the wanted generator number             */
     UInt        num;            /* number of syllables in <w>              */
     UInt1 *     ptr;            /* pointer to the syllables of <w>         */
     UInt        i,j;            /* loop                                    */
@@ -368,7 +367,6 @@ Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
     UInt        ebits;          /* number of exponent bits                 */
- /* UInt        npos;           / the wanted generator number             */
     UInt        num;            /* number of syllables in <w>              */
     UInt2 *     ptr;            /* pointer to the syllables of <w>         */
     UInt        i,j;            /* loop                                    */
@@ -521,7 +519,6 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
     UInt        ebits;          /* number of exponent bits                 */
-/*  UInt        npos;           / the wanted generator number             */
     UInt        num;            /* number of syllables in <w>              */
     UInt4 *     ptr;            /* pointer to the syllables of <w>         */
     UInt        i,j;            /* loop                                    */

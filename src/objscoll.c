@@ -163,7 +163,7 @@ FinPowConjCol C32Bits_SingleCollector = {
 *F * * * * * * * * * * *  combinatorial collectors  * * * * * * * * * * * * *
 **
 **  Here the combinatorial collectors are setup.  They behave like single
-**  collectors and therefore can be used int the same way.
+**  collectors and therefore can be used in the same way.
 */
 
 /****************************************************************************
