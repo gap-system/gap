@@ -2738,9 +2738,6 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     }
 
     /* end the interpreter                                                 */
-    /* Note that GetSymbol below potentially calls into the interpreter
-       again, and if an error occurred the interpreter is not in the correct
-       state to execute ReadLine on an input stream, leading to crashes */
     TRY_READ {
         type = IntrEnd( 0UL );
 
