@@ -64,15 +64,6 @@
 #define SC_RWS_GENERATORS(sc) \
     (ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
 
-/* TL: extern Obj SC_NW_STACK; */
-/* TL: extern Obj SC_LW_STACK; */
-/* TL: extern Obj SC_PW_STACK; */
-/* TL: extern Obj SC_EW_STACK; */
-/* TL: extern Obj SC_GE_STACK; */
-/* TL: extern Obj SC_CW_VECTOR; */
-/* TL: extern Obj SC_CW2_VECTOR; */
-/* TL: extern UInt SC_MAX_STACK_SIZE; */
-
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_CollectWordOrFail( <self>, <sc>, <vv>, <w> )

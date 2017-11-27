@@ -56,15 +56,6 @@
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
-/* TL: Obj SC_NW_STACK; */
-/* TL: Obj SC_LW_STACK; */
-/* TL: Obj SC_PW_STACK; */
-/* TL: Obj SC_EW_STACK; */
-/* TL: Obj SC_GE_STACK; */
-/* TL: Obj SC_CW_VECTOR; */
-/* TL: Obj SC_CW2_VECTOR; */
-/* TL: UInt SC_MAX_STACK_SIZE; */
-
 /****************************************************************************
 **
 *T  FinPowConjCol
