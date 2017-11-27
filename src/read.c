@@ -1638,16 +1638,18 @@ void ReadLiteral (
         ReadRecExpr( follow );
         break;
 
+#ifdef HPCGAP
     /* `Literal                                                            */
     case S_BACKQUOTE:
         Match( S_BACKQUOTE, "`", follow );
         TRY_READ {
-          IntrRefGVar(GVarName("MakeLiteral"));
+          IntrRefGVar(GVarName("MakeImmutable"));
           IntrFuncCallBegin();
         }
         ReadAtom( follow, 'r' );
         TRY_READ { IntrFuncCallEnd(1, 0, 1); }
         break;
+#endif
 
     /* <Function>                                                          */
     case S_FUNCTION:
@@ -2629,7 +2631,6 @@ UInt ReadStats (
 **  read the  first symbol of the  next  input.
 **
 */
-
 
 void RecreateStackNams( Obj context )
 {

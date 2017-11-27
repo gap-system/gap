@@ -84,7 +84,9 @@ enum SCANNER_SYMBOLS {
     S_HELP              = (1UL<<11)+7,
 
     S_REC               = (1UL<<12)+0,
+#ifdef HPCGAP
     S_BACKQUOTE         = (1UL<<12)+1,
+#endif
 
     S_FUNCTION          = (1UL<<13),
     S_LOCAL             = (1UL<<14),
