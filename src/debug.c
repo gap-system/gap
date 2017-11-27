@@ -206,7 +206,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)RANK_PPERM,
     (VoidFunc)RANK_TRANS,
     (VoidFunc)RegisterStatWithHook,
-    (VoidFunc)RESIZE_WORD,
     (VoidFunc)SET_BODY_FUNC,
     (VoidFunc)SET_CHAR_VALUE,
     (VoidFunc)SET_DEN_RAT,

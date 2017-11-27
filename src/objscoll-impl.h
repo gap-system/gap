@@ -19,7 +19,7 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD_READ_WRITE( obj, type, num );
+    NEW_WORD( obj, type, num );
 
     /* clear <vv>                                                          */
     ptr = (UIntN*)DATA_WORD(obj);
@@ -33,9 +33,8 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    (void) RESIZE_WORD( obj, j );
-
-    MakeBagReadOnly( obj );
+    ResizeBag( obj, 2*sizeof(Obj) + j * BITS_WORD(obj)/8 );
+    ADDR_OBJ(obj)[1] = INTOBJ_INT(j);
 
     return obj;
 }

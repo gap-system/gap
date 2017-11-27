@@ -122,36 +122,22 @@
 */
 static inline Obj NewWord(Obj type, UInt npairs) {
   Obj word;
+#ifdef HPCGAP
+  ReadGuard(type);
+#endif
   word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(type)/8L);
-  (ADDR_OBJ(word)[1] = INTOBJ_INT(npairs));
+  ADDR_OBJ(word)[1] = INTOBJ_INT(npairs);
   SetTypeDatObj(word, type);
+#ifdef HPCGAP
+  MakeBagReadOnly( word );
+#endif
   return word;
 }
-
-#define NEW_WORD_READ_WRITE(word, type, npairs) \
-  do { \
-    ReadGuard(type); \
-    (word) = NewWord((type), (npairs)); \
-  } while(0)
 
 #define NEW_WORD(word, type, npairs) \
   do { \
-    NEW_WORD_READ_WRITE(word, type, npairs); \
-    MakeBagReadOnly( word ); \
+    (word) = NewWord((type), (npairs)); \
   } while(0)
-
-
-/****************************************************************************
-**
-*F  RESIZE_WORD( <word>, <npairs> )
-*/
-static inline Obj RESIZE_WORD( Obj word, UInt npairs )
-{
-  WriteGuard(word);
-  ResizeBag( (word), 2*sizeof(Obj)+((npairs)*BITS_WORD((word))/8L));
-  (ADDR_OBJ((word))[1] = INTOBJ_INT((npairs)));
-  return word;
-}
 
 
 /****************************************************************************
