@@ -80,12 +80,7 @@ ErrorInner := function(options, message)
     JUMP_TO_CATCH("early error");
 end;
 
-#############################################################################
-##
-#F  MakeLiteral(<obj>) . . . . . . make the argument a literal and return it.
-##
 
-MakeLiteral := MakeImmutable;
 #############################################################################
 ##
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
