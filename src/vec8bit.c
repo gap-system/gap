@@ -41,12 +41,6 @@
 #include <src/hpc/aobjects.h>           /* atomic objects */
 #include <src/hpc/guards.h>
 
-#ifndef DEBUG
-#ifndef NDEBUG
-#define NDEBUG 1
-#endif
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 
