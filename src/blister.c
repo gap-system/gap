@@ -198,11 +198,11 @@ void SaveBlist (
     Obj                 bl )
 {
     UInt                i;
-    UInt *              ptr;
+    const UInt *        ptr;
 
     /* logical length                                                      */
     SaveSubObj(CONST_ADDR_OBJ(bl)[0]);
-    ptr = BLOCKS_BLIST(bl);
+    ptr = CONST_BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         SaveUInt(*ptr++);
 }
@@ -223,7 +223,7 @@ void LoadBlist (
     ADDR_OBJ(bl)[0] = LoadSubObj(); 
   
     /* Now load the real data                                              */
-    ptr = (UInt *)BLOCKS_BLIST(bl);
+    ptr = BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         *ptr++ = LoadUInt();
 }
@@ -373,8 +373,8 @@ Int EqBlist (
 {
     long                lenL;           /* length of the left operand      */
     long                lenR;           /* length of the right operand     */
-    UInt *              ptrL;           /* pointer to the left operand     */
-    UInt *              ptrR;           /* pointer to the right operand    */
+    const UInt *        ptrL;           /* pointer to the left operand     */
+    const UInt *        ptrR;           /* pointer to the right operand    */
     UInt                i;              /* loop variable                   */
 
     /* get the lengths of the lists and compare them                       */
@@ -385,8 +385,8 @@ Int EqBlist (
     }
 
     /* test for equality blockwise                                         */
-    ptrL = BLOCKS_BLIST(listL);
-    ptrR = BLOCKS_BLIST(listR);
+    ptrL = CONST_BLOCKS_BLIST(listL);
+    ptrR = CONST_BLOCKS_BLIST(listR);
     for ( i = (lenL+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         if ( *ptrL++ != *ptrR++ )
             return 0L;
@@ -788,7 +788,7 @@ Obj PosBlist (
     Obj                 start )
 {
     Int                 len;            /* logical length of the list      */
-    UInt *              ptr;            /* pointer to the blocks           */
+    const UInt *        ptr;            /* pointer to the blocks           */
     UInt                i,  j;          /* loop variables                  */
     UInt                istart;
     UInt                firstblock, lastblock;
@@ -807,7 +807,7 @@ Obj PosBlist (
       return Fail;
     }
 
-    ptr = BLOCKS_BLIST(list);
+    ptr = CONST_BLOCKS_BLIST(list);
     firstblock = istart/BIPEB;
     lastblock = (len-1)/BIPEB;
     firstoffset = istart%BIPEB;
@@ -1114,12 +1114,12 @@ Int IsBlistConv (
 UInt SizeBlist (
     Obj                 blist )
 {
-    UInt *              ptr;            /* pointer to blist                */
+    const UInt *        ptr;            /* pointer to blist                */
     UInt                nrb;            /* number of blocks in blist       */
 
     /* get the number of blocks and a pointer                              */
     nrb = NUMBER_BLOCKS_BLIST(blist);
-    ptr = BLOCKS_BLIST( blist );
+    ptr = CONST_BLOCKS_BLIST(blist);
 
     return COUNT_TRUES_BLOCKS( ptr, nrb);
 }
@@ -1631,7 +1631,7 @@ Obj FuncPositionNthTrueBlist (
     UInt                nrb;
     Int                 nth,  pos,  i;
     UInt                m,  mask;
-    UInt  *             ptr;
+    const UInt *        ptr;
 
     /* Check the arguments. */    
     while ( ! IsBlistConv( blist ) ) {
@@ -1651,7 +1651,7 @@ Obj FuncPositionNthTrueBlist (
     if ( ! nrb )  return Fail;
     nth = INT_INTOBJ( Nth );
     pos = 0;
-    ptr = BLOCKS_BLIST( blist );
+    ptr = CONST_BLOCKS_BLIST(blist);
     i = 1;
     m = COUNT_TRUES_BLOCK(*ptr);
     while ( nth > m ) {
@@ -1689,8 +1689,8 @@ Obj FuncIS_SUB_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt *              ptr1;           /* pointer to the first argument   */
-    UInt *              ptr2;           /* pointer to the second argument  */
+    const UInt *        ptr1;           /* pointer to the first argument   */
+    const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1714,8 +1714,8 @@ Obj FuncIS_SUB_BLIST (
     }
 
     /* test for subset property blockwise                                  */
-    ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = BLOCKS_BLIST(list2);
+    ptr1 = CONST_BLOCKS_BLIST(list1);
+    ptr2 = CONST_BLOCKS_BLIST(list2);
 
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
         if ( *ptr1 != (*ptr1 | *ptr2) )
@@ -1746,7 +1746,7 @@ Obj FuncUNITE_BLIST (
     Obj                 list2 )
 {
     UInt *              ptr1;           /* pointer to the first argument   */
-    UInt *              ptr2;           /* pointer to the second argument  */
+    const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -1771,7 +1771,7 @@ Obj FuncUNITE_BLIST (
 
     /* compute the union by *or*-ing blockwise                             */
     ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = BLOCKS_BLIST(list2);
+    ptr2 = CONST_BLOCKS_BLIST(list2);
     for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         *ptr1++ |= *ptr2++;
     }
@@ -2081,8 +2081,8 @@ Obj FuncINTER_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt  *             ptr1;           /* pointer to the first argument   */
-    UInt  *             ptr2;           /* pointer to the second argument  */
+    UInt *              ptr1;           /* pointer to the first argument   */
+    const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -2107,7 +2107,7 @@ Obj FuncINTER_BLIST (
 
     /* compute the intersection by *and*-ing blockwise                     */
     ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = BLOCKS_BLIST(list2);
+    ptr2 = CONST_BLOCKS_BLIST(list2);
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
         *ptr1++ &= *ptr2++;
     }
@@ -2135,7 +2135,7 @@ Obj FuncSUBTR_BLIST (
     Obj                 list2 )
 {
     UInt *              ptr1;           /* pointer to the first argument   */
-    UInt *              ptr2;           /* pointer to the second argument  */
+    const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -2160,7 +2160,7 @@ Obj FuncSUBTR_BLIST (
 
     /* compute the difference by operating blockwise                       */
     ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = BLOCKS_BLIST(list2); 
+    ptr2 = CONST_BLOCKS_BLIST(list2);
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
       { 
         *ptr1++ &= ~ *ptr2++; 
@@ -2189,8 +2189,8 @@ Obj FuncMEET_BLIST (
     Obj                 list1,
     Obj                 list2 )
 {
-    UInt *              ptr1;           /* pointer to the first argument   */
-    UInt *              ptr2;           /* pointer to the second argument  */
+    const UInt *        ptr1;           /* pointer to the first argument   */
+    const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
@@ -2214,8 +2214,8 @@ Obj FuncMEET_BLIST (
     }
 
     /* compute the difference by operating blockwise                       */
-    ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = BLOCKS_BLIST(list2); 
+    ptr1 = CONST_BLOCKS_BLIST(list1);
+    ptr2 = CONST_BLOCKS_BLIST(list2);
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
       { 
 	if (*ptr1++ & *ptr2++) return True;
