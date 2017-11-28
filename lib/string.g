@@ -263,8 +263,6 @@ fi;
 ##  <!-- and <C>IsPlistRep</C> is <E>set</E>,-->
 ##  <!-- although <E>calling</E> <C>IsStringRep</C> for <C>[]</C> yields <K>false</K>,-->
 ##  <!-- and <E>calling</E> <C>IsPlistRep</C> for <C>""</C> yields <K>false</K>, too.-->
-##  <!-- Why is <C>TNUM_OBJ_INT</C> used here,-->
-##  <!-- calling <C>IsStringRep</C> would be enough, or?-->
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
@@ -289,13 +287,10 @@ fi;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "TNUM_EMPTY_STRING",
-    MakeImmutable( [ TNUM_OBJ_INT( "" ), TNUM_OBJ_INT( Immutable( "" ) ) ] ) );
-
 BIND_GLOBAL( "IsEmptyString",
     obj ->     IsString( obj )
            and IsEmpty( obj )
-           and TNUM_OBJ_INT( obj ) in TNUM_EMPTY_STRING );
+           and IsStringRep( obj ) );
 
 
 ############################################################################
