@@ -811,14 +811,12 @@ InstallGlobalFunction( RepresentationsOfMatrix,
         elif Is8BitVectorRep(m) then
             Print(" compressed over GF(",Q_VEC8BIT(m),") ");
         elif IsPlistRep(m) then
-            Print(" plain list, tnum: ",TNUM_OBJ(m)," ");
+            Print(" plain list, tnum: ",TNUM_OBJ_INT(m)," ");
             if TNUM_OBJ_INT(m) in [T_PLIST_FFE,T_PLIST_FFE+1] then
                 Print("known to be vecffe over GF(",CHAR_FFE_DEFAULT(m[1]),"^",
                       DEGREE_FFE_DEFAULT(m[1]),") ");
             elif TNUM_OBJ_INT(m) in [T_PLIST_CYC..T_PLIST_CYC_SSORT+1] then
                 Print("known to be vector of cyclotomics ");
-            else 
-                Print("TNUM: ",TNUM_OBJ(m), " ");
             fi;
         else
             Print(" not a compressed or plain list, representations: ", 
@@ -846,7 +844,7 @@ InstallGlobalFunction( RepresentationsOfMatrix,
         Print(" Compressed 8 bit rep over GF(",Q_VEC8BIT(m[1]),
               "), ");
     elif IsPlistRep(m) then
-        Print(" plain list of vectors, tnum: ",TNUM_OBJ(m)," ");
+        Print(" plain list of vectors, tnum: ",TNUM_OBJ_INT(m)," ");
         if ForAll(m, IsGF2VectorRep) then
             Print(" all rows GF2 compressed ");
         elif ForAll(m, Is8BitVectorRep) then
@@ -854,7 +852,7 @@ InstallGlobalFunction( RepresentationsOfMatrix,
                   Set(m,Q_VEC8BIT), " ");
         elif ForAll(m, IsPlistRep) then
             Print(" all rows plain lists, tnums: ", Set(m,
-                    TNUM_OBJ)," ");
+                    TNUM_OBJ_INT)," ");
         else
             Print(" mixed row representations or unusual row types ");
         fi;

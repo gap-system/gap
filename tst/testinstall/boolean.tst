@@ -51,7 +51,7 @@ gap> ViewString(true); ViewString(false); ViewString(fail);
 "true"
 "false"
 "fail"
-gap> TNUM_OBJ(fail)[2];
+gap> TNAM_OBJ(fail);
 "boolean or fail"
 gap> STOP_TEST( "boolean.tst", 1);
 
