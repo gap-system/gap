@@ -67,9 +67,15 @@
 ##  </Description>
 ##  </ManSection>
 ##
-GAPInfo.PackagesInfo := rec();
-GAPInfo.PackagesLoaded := rec();
-GAPInfo.PackageLoadingMessages := [];
+if IsHPCGAP then
+    GAPInfo.PackagesInfo := AtomicRecord( rec() );
+    GAPInfo.PackagesLoaded := AtomicRecord( rec() );
+    GAPInfo.PackageLoadingMessages := AtomicList( [] );
+else
+    GAPInfo.PackagesInfo := rec();
+    GAPInfo.PackagesLoaded := rec();
+    GAPInfo.PackageLoadingMessages := [];
+fi;
 
 
 #############################################################################
