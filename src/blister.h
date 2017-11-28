@@ -143,18 +143,21 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 
 /****************************************************************************
 **
-*F  BLOCK_ELM_BLIST( <list>, <pos> )  . . . . . . . . block of a boolean list
+*F  BLOCK_ELM_BLIST_PTR( <list>, <pos> ) . . ptr to a block of a boolean list
 **
-**  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of the
-**  boolean list <list> as   a UInt value, which  is  also a valid left  hand
-**  side.  <pos> must be a positive integer less than  or equal to the length
-**  of <list>.
-**
-**  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
-**  that have side effects.
+**  'BLOCK_ELM_BLIST_PTR' return a pointer to the block containing the
+**  <pos>-th element of the boolean list <list>. <pos> must be a positive
+**  integer less than or equal to the length of <list>.
 */
-#define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
+static inline UInt * BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+{
+    return BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
+}
 
+static inline const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+{
+    return CONST_BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
+}
 
 /****************************************************************************
 **
@@ -162,12 +165,11 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 **
 **  MASK_POS_BLIST(<pos>) returns a UInt with   a single set bit in  position
 **  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
-**
-**  Note that 'MASK_POS_BLIST' is a  macro, so do  not call it with arguments
-**  that have side effects.
 */
-#define MASK_POS_BLIST( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
-
+static inline UInt MASK_POS_BLIST(UInt pos)
+{
+    return ((UInt)1) << (pos - 1) % BIPEB;
+}
 
 /****************************************************************************
 **
@@ -179,7 +181,7 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 */
 static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
 {
-    return BLOCK_ELM_BLIST(list, pos) & MASK_POS_BLIST(pos);
+    return *CONST_BLOCK_ELM_BLIST_PTR(list, pos) & MASK_POS_BLIST(pos);
 }
 
 /****************************************************************************
@@ -206,12 +208,12 @@ static inline Obj ELM_BLIST(Obj list, UInt pos)
 */
 static inline void SET_BIT_BLIST(Obj list, UInt pos)
 {
-    BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos);
+    *BLOCK_ELM_BLIST_PTR(list, pos) |= MASK_POS_BLIST(pos);
 }
 
 static inline void CLEAR_BIT_BLIST(Obj list, UInt pos)
 {
-    BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos);
+    *BLOCK_ELM_BLIST_PTR(list, pos) &= ~MASK_POS_BLIST(pos);
 }
 
 /****************************************************************************

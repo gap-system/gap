@@ -572,7 +572,7 @@ Obj ElmsBlist (
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
-                BLOCK_ELM_BLIST( elms, i) =  block;
+                *BLOCK_ELM_BLIST_PTR(elms, i) = block;
                 block = 0;
                 bit = 1;
             }
@@ -627,7 +627,7 @@ Obj ElmsBlist (
                     block |= bit;
                 bit <<= 1;
                 if (bit == 0 || i == lenPoss) {
-                    BLOCK_ELM_BLIST(elms, i) = block;
+                    *BLOCK_ELM_BLIST_PTR(elms, i) = block;
                     block = 0;
                     bit = 1;
                 }
@@ -992,7 +992,7 @@ void ConvBlist (
             block |= bit;
         bit = bit << 1;
         if ( bit == 0 || i == len ) {
-            BLOCK_ELM_BLIST(list, i) = block;
+            *BLOCK_ELM_BLIST_PTR(list, i) = block;
             block = 0;
             bit = 1;
         }
@@ -1424,9 +1424,9 @@ Obj FuncBLIST_LIST (
                 /* if block is full add it to boolean list and start next  */
                 bit = bit << 1;
                 if ( bit == 0 || l == lenList ) {
-                  BLOCK_ELM_BLIST( blist, l) = block;
-                  block = 0;
-                  bit   = 1;
+                    *BLOCK_ELM_BLIST_PTR(blist, l) = block;
+                    block = 0;
+                    bit = 1;
                 }
 
             }
@@ -1482,7 +1482,7 @@ Obj FuncBLIST_LIST (
             /* if block is full add it to the boolean list and start next  */
             bit = bit << 1;
             if ( bit == 0 || l == lenList ) {
-                BLOCK_ELM_BLIST( blist, l) =  block;
+                *BLOCK_ELM_BLIST_PTR(blist, l) = block;
                 block = 0;
                 bit   = 1;
             }
@@ -1986,9 +1986,9 @@ Obj FuncUNITE_BLIST_LIST (
                 /* if block is full add it to boolean list and start next  */
                 bit = bit << 1;
                 if ( bit == 0 || l == lenList ) {
-                  BLOCK_ELM_BLIST( blist, l) |= block;
-                  block = 0;
-                  bit   = 1;
+                    *BLOCK_ELM_BLIST_PTR(blist, l) |= block;
+                    block = 0;
+                    bit = 1;
                 }
 
             }
@@ -2051,7 +2051,7 @@ Obj FuncUNITE_BLIST_LIST (
             /* if block is full add it to the boolean list and start next  */
             bit = bit << 1;
             if ( bit == 0 || l == lenList ) {
-                BLOCK_ELM_BLIST( blist,l) |= block;
+                *BLOCK_ELM_BLIST_PTR(blist, l) |= block;
                 block = 0;
                 bit   = 1;
             }
