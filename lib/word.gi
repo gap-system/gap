@@ -157,7 +157,7 @@ end);
 ##
 ##  This representation is equal to the external representation.
 ##
-if IsBound(HPCGAP) then
+if IsHPCGAP then
 DeclareRepresentation( "IsBracketRep", IsAtomicPositionalObjectRep, [] );
 else
 DeclareRepresentation( "IsBracketRep", IsPositionalObjectRep, [] );

@@ -68,7 +68,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-if IsBound(HPCGAP) then
+if IsHPCGAP then
 DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep, 
     [ 1, 2 ] );
 else

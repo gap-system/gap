@@ -20,7 +20,7 @@
 ##  but probably of independent interest.
 ##  
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
 
 InstallGlobalFunction(NewObjectMarker, function()
   return OBJ_SET([]);
@@ -93,7 +93,7 @@ fi;
 ##
 #M  MemoryUsage( <obj> ) . . . . . . . . . . . . .return fail in general
 ##
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     BindThreadLocalConstructor( "MEMUSAGECACHE", NewObjectMarker );
     BindThreadLocal("MEMUSAGECACHE_DEPTH", 0);
 else

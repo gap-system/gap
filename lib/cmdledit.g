@@ -289,7 +289,7 @@ if not IsBound(GAPInfo.CommandLineEditFunctions) then
   RLInitLines := [],
   RLKeysGAPHandler := []
   );
-  if IsBound(HPCGAP) then
+  if IsHPCGAP then
     GAPInfo.CommandLineEditFunctions :=
         AtomicRecord(GAPInfo.CommandLineEditFunctions);
   fi;

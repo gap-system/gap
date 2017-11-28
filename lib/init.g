@@ -204,7 +204,7 @@ ReadGapRoot( "lib/global.g" );
 ##
 ReadGapRoot( "lib/system.g" );
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   FILTER_REGION := NEW_REGION("filter region", -1);
 else
   BIND_GLOBAL("FILTER_REGION", "filter region");
@@ -213,7 +213,7 @@ fi;
 #############################################################################
 ##
 #V  ThreadVar  . . . . . . . . . . . . . . . . . . . . thread-local variables
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   BIND_GLOBAL("ThreadVar", ThreadLocalRecord());
   BIND_GLOBAL("BindThreadLocal", function(name, default)
     MakeThreadLocal(name);
@@ -254,7 +254,7 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
     UNBIND_GLOBAL( "TEACHING_MODE" );
     BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
-    if IsBound(HPCGAP) then
+    if IsHPCGAP then
       BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
       BindThreadLocal( "SilentErrors", false );
       BindThreadLocal( "LastErrorMessage", "" );
@@ -452,7 +452,7 @@ end);
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   ENABLE_AUTO_RETYPING();
 fi;
 
@@ -549,7 +549,7 @@ BindGlobal( "ShowKernelInformation", function()
   else
     btop := "*********"; vert := "*"; bbot := btop;
   fi;
-  if IsBound(HPCGAP) then
+  if IsHPCGAP then
     gap := "HPC-GAP";
   else
     gap := "GAP";
@@ -558,7 +558,7 @@ BindGlobal( "ShowKernelInformation", function()
          " of ", sysdate, "\n",
          " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
          " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
-  if IsBound(HPCGAP) then
+  if IsHPCGAP then
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
   fi;
@@ -586,7 +586,7 @@ BindGlobal( "ShowKernelInformation", function()
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
   fi;
-  if IsBound(HPCGAP) then
+  if IsHPCGAP then
     Print("\n",
           "#W <<< This is an alpha release.      >>>\n",
           "#W <<< Do not use for important work. >>>\n",
@@ -1075,7 +1075,7 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   HELP_ADD_BOOK("HPC-GAP", "HPC-GAP Reference Manual", "doc/hpc");
 fi;
 
@@ -1103,7 +1103,7 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-if IsBound(HPCGAP) and THREAD_UI() then
+if IsHPCGAP and THREAD_UI() then
   ReadLib("hpc/consoleui.g");
   MULTI_SESSION();
 else

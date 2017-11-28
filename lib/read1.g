@@ -90,7 +90,7 @@ ReadLib( "objset.g" );
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   ReadLib( "hpc/serialize.g" );
   ReadLib( "hpc/thread.g" );
   ReadLib( "hpc/smallrgn.g"  );

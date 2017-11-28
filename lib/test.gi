@@ -372,7 +372,7 @@ InstallGlobalFunction("Test", function(arg)
            subsWindowsLineBreaks := true,
          );
 
-  if IsBound(HPCGAP) then
+  if IsHPCGAP then
     # HPCGAP's window size varies in different threads
     opts.compareFunction := "uptowhitespace";
     # HPCGAP's output is not compatible with changing lines

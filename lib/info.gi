@@ -61,7 +61,7 @@ INFO_CLASSES := [];
 # successful Info statement
 InfoData := rec();
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     ShareInternalObj(INFO_CLASSES);
     MakeThreadLocal("InfoData");
 fi;

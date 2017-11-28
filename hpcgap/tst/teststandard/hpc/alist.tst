@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2017
 ##
 gap> START_TEST("alist.tst");
-gap> if IsBound(HPCGAP) and not ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
+gap> if IsHPCGAP and not ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
 gap> taskssum := (tasks*(tasks+1))/2;;
 gap> a := AtomicList([1,1,1,1]);
 gap> f := function(job)

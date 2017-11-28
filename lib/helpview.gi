@@ -432,7 +432,7 @@ show := function(file)
 end
 );
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     MakeReadOnlyObj(HELP_VIEWER_INFO);
 fi;
 
