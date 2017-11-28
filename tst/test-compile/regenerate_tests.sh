@@ -8,5 +8,5 @@ GAPDIR=${GAPDIR:-../..}
 
 gap="$GAPDIR/bin/gap.sh"
 for gfile in *.g; do
-    ./run_single_test.sh "${gap}" "${gfile}" > "${gfile}.out"
+    ./run_interpreted.sh "${gap}" "${gfile}" > "${gfile}.out"
 done

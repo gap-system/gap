@@ -91,8 +91,6 @@ if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
     c_dyn_linker="$c_dyn_linker -Wl,${abs_top_builddir}/bin/${GAPARCH}/gap.dll"
 fi
 
-GAP_OBJS=$(cat ${abs_top_builddir}/cnf/GAP-OBJS)
-
 
 #############################################################################
 ##
@@ -149,6 +147,10 @@ c_link () {
 process_o_file () {
   name=$1
   o_file=$2
+
+  # the GAP compiler replaces _ by __ in names, so adjust here, too
+  name="$(echo "$name" | sed 's/_/__/g')"
+
   # just remember for the linking stage later
   names="${names} ${name}"
   objects="${objects} $o_file"
@@ -340,7 +342,7 @@ make_compstat () {
     done
     echo "    0"                                         >> ${gactmp}/$$compstat.c
     echo "};"                                            >> ${gactmp}/$$compstat.c
-    temps_o="${gactmp}/$$compstat.o ${temps_o}"
+    temps_o="${gactmp}/$$compstat.lo ${temps_o}"
     c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${GAP_CFLAGS}"
     if [ "$savetemps" = "true" ]; then
         echo "Leaving temp file " ${gactmp}/$$compstat.c
@@ -348,7 +350,7 @@ make_compstat () {
         echo rm -f ${gactmp}/$$compstat.c
         rm -f ${gactmp}/$$compstat.c
     fi
-    objects="${gactmp}/$$compstat.o ${objects}"
+    objects="${gactmp}/$$compstat.lo ${objects}"
 }
 
 make_tmpdir () {
@@ -412,7 +414,9 @@ if [ $comp_howfar = "link" ]; then
         if [ "X${output}" = "X" ]; then output="gacout"; fi
 
         for object in $GAP_OBJS;  do
-            objects="${gap_binary}/${object} ${objects}"
+            if [ ${object} != "obj/compstat.lo" ]; then
+                objects="${gap_binary}/${object} ${objects}"
+            fi
         done
 
         c_link ${output} "${objects}"

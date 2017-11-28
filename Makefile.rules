@@ -651,11 +651,17 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "# do not edit manually!" >> $@
 	@echo "GAParch=$(GAPARCH)" >> $@
 	@echo "GAP_ABI=$(ABI)" >> $@
+	@echo "" >> $@
+	@echo "GAP_BIN_DIR=\"$(abs_builddir)\"" >> $@
+	@echo "GAP_LIB_DIR=\"$(abs_srcdir)\"" >> $@
+	@echo "" >> $@
 	@echo "GAP_CC=\"$(CC)\"" >> $@
 	@echo "GAP_CFLAGS=\"$(GAP_CFLAGS)\"" >> $@
 	@echo "GAP_CPPFLAGS=\"$(GAP_PKG_CPPFLAGS)\"" >> $@
 	@echo "GAP_LDFLAGS=\"$(GAP_LDFLAGS)\"" >> $@
 	@echo "GAP_LIBS=\"$(GAP_LIBS)\"" >> $@
+	@echo "" >> $@
+	@echo "GAP_OBJS=\"$(OBJS)\"" >> $@
 
 # regenerate bin/gap.sh if necessary
 all: bin/gap.sh
