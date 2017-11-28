@@ -2278,45 +2278,6 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
 #############################################################################
 ##
-#F  CheckPackageLoading( <pkgname> )
-##
-InstallGlobalFunction( CheckPackageLoading, function( pkgname )
-    local result, oldinfo, i;
-
-    result:= true;
-
-    # Check that loading the package does not change info levels that were
-    # defined before the package was loaded.
-    oldinfo:= rec( CurrentLevels := ShallowCopy( InfoData.CurrentLevels ),
-                   ClassNames := ShallowCopy( InfoData.ClassNames ) );
-    LoadPackage( pkgname );
-    for i in [ 1 .. Length( oldinfo.CurrentLevels ) ] do
-      if oldinfo.CurrentLevels[i] <> InfoData.CurrentLevels[
-             Position( InfoData.ClassNames, oldinfo.ClassNames[i] ) ] then
-        Print( "#E  package `", pkgname, "' modifies info level of `",
-               oldinfo.ClassNames[i], "'\n" );
-        result:= false;
-      fi;
-    od;
-
-    # Check the contents of the `PackageInfo.g' file of the package.
-    Unbind( GAPInfo.PackageInfoCurrent );
-    ReadPackage( pkgname, "PackageInfo.g" );
-    if IsBound( GAPInfo.PackageInfoCurrent ) then
-      result:= ValidatePackageInfo( GAPInfo.PackageInfoCurrent ) and result;
-    else
-      Print( "#E  missing or corrupted file `PackageInfo.g' for package `",
-             pkgname, "'\n" );
-      result:= false;
-    fi;
-    Unbind( GAPInfo.PackageInfoCurrent );
-
-    return result;
-    end );
-
-
-#############################################################################
-##
 #V  GAPInfo.PackagesRestrictions
 ##
 ##  <ManSection>

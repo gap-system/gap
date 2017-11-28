@@ -12,7 +12,6 @@
 ##
 #T TODO: document the utilities
 #T   `SuggestUpgrades'
-#T   `CheckPackageLoading'
 #T   `LoadAllPackages'
 #T   `PackageAvailabilityInfo'
 ##
@@ -1042,22 +1041,6 @@ DeclareGlobalFunction( "DeclareAutoreadableVariables" );
 #T  package and those needed only for submitted packages?
 ##
 DeclareGlobalFunction( "ValidatePackageInfo" );
-
-
-#############################################################################
-##
-#F  CheckPackageLoading( <pkgname> )
-##
-##  <ManSection>
-##  <Func Name="CheckPackageLoading" Arg='pkgname'/>
-##
-##  <Description>
-##  Start &GAP; with the command line option <C>-A</C>,
-##  then call this function once.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "CheckPackageLoading" );
 
 
 #############################################################################
