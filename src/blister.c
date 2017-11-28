@@ -533,7 +533,6 @@ Obj ElmsBlist (
 {
     Obj                 elms;           /* selected sublist, result        */
     Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element from <list>         */
     Int                 lenPoss;        /* length of <positions>           */
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
@@ -568,11 +567,8 @@ Obj ElmsBlist (
                 return ELMS_LIST( list, poss );
             }
 
-            /* select the element                                          */
-            elm = ELM_BLIST( list, pos );
-
             /* assign the element into <elms>                              */
-            if ( elm == True )
+            if (TEST_BIT_BLIST(list, pos))
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
@@ -626,11 +622,8 @@ Obj ElmsBlist (
             bit = 1;
             for (i = 1; i <= lenPoss; i++, pos += inc) {
 
-                /* select the element */
-                elm = ELM_BLIST(list, pos);
-
                 /* assign the element to <elms> */
-                if (elm == True)
+                if (TEST_BIT_BLIST(list, pos))
                     block |= bit;
                 bit <<= 1;
                 if (bit == 0 || i == lenPoss) {
@@ -671,13 +664,13 @@ void AssBlist (
 {
     /* if <pos> is less than the logical length and <elm> is 'true'        */
     if      ( pos <= LEN_BLIST(list) && val == True ) {
-        SET_ELM_BLIST( list, pos, True );
+        SET_BIT_BLIST(list, pos);
         CLEAR_FILTS_LIST(list);
     }
 
     /* if <i> is less than the logical length and <elm> is 'false'         */
     else if ( pos <= LEN_BLIST(list) && val == False ) {
-        SET_ELM_BLIST( list, pos, False );
+        CLEAR_BIT_BLIST(list, pos);
         CLEAR_FILTS_LIST(list);
     }
 
@@ -686,7 +679,7 @@ void AssBlist (
         if ( SIZE_OBJ(list) < SIZE_PLEN_BLIST(pos) )
             ResizeBag( list, SIZE_PLEN_BLIST(pos) );
         SET_LEN_BLIST( list, pos );
-        SET_ELM_BLIST( list, pos, True );
+        SET_BIT_BLIST(list, pos);
         CLEAR_FILTS_LIST(list);
     }
 
@@ -695,7 +688,7 @@ void AssBlist (
         if ( SIZE_OBJ(list) < SIZE_PLEN_BLIST(pos) )
             ResizeBag( list, SIZE_PLEN_BLIST(pos) );
         SET_LEN_BLIST( list, pos );
-        SET_ELM_BLIST( list, pos, False );
+        CLEAR_BIT_BLIST(list, pos);
         CLEAR_FILTS_LIST(list);
     }
 
@@ -959,7 +952,7 @@ Int IsSSortBlist (
         isSort = 1;
     }
     else if ( LEN_BLIST(list) == 2 ) {
-        isSort = (ELM_BLIST(list,1) == True && ELM_BLIST(list,2) == False);
+        isSort = (TEST_BIT_BLIST(list, 1) && !TEST_BIT_BLIST(list, 2));
     }
     else {
         isSort = 0;
@@ -1391,7 +1384,7 @@ Obj FuncBLIST_LIST (
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
                       && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
-                      SET_ELM_BLIST( blist, k, True);
+                        SET_BIT_BLIST(blist, k);
                 }
             }
 
@@ -1560,7 +1553,7 @@ Obj FuncLIST_BLIST (
     len = LEN_LIST( list );
     nn  = 1;
     for ( i = 1;  nn <= n && i <= len;  i++  ) {
-        if ( ELM_BLIST( blist, i ) == True ) {
+        if (TEST_BIT_BLIST(blist, i)) {
             SET_ELM_PLIST( sub, (Int)nn, ELMW_LIST( list, (Int)i ) );
             CHANGED_BAG( sub );
             nn++;
@@ -1610,7 +1603,7 @@ Obj FuncPositionsTrueBlist (
     len = LEN_BLIST( blist );
     nn  = 1;
     for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( ELM_BLIST( blist, i ) == True ) {
+        if (TEST_BIT_BLIST(blist, i)) {
             SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
             nn++;
         }
@@ -1957,7 +1950,7 @@ Obj FuncUNITE_BLIST_LIST (
                     /* set bit if <sub>[<l>] was found at position k       */
                     if ( k <= lenList
                       && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
-                      SET_ELM_BLIST( blist, k, True);
+                        SET_BIT_BLIST(blist, k);
                 }
             }
 
