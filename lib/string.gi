@@ -453,7 +453,7 @@ end);
 
 InstallMethod(ViewObj,"empty strings",true,[IsString and IsEmpty],0,
 function(e)
-  if TNUM_OBJ_INT(e) in TNUM_EMPTY_STRING then
+  if IsStringRep(e) then
     Print("\"\"");
   else
     Print("[  ]");
