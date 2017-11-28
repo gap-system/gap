@@ -44,7 +44,7 @@ do
     cd $SRCDIR/tst/test-error
     GAPDIR=$BUILDDIR ./run_error_tests.sh
     cd ../test-compile
-    GAPDIR=$BUILDDIR ./run_compile_tests.sh
+    GAPDIR=$BUILDDIR ./run_all.sh
     exit 0
     ;;
 

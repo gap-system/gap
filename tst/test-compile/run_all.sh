@@ -13,12 +13,16 @@ retvalue=0
 gap="$GAPDIR/bin/gap.sh"
 gac="$GAPDIR/gac"
 for gfile in *.g; do
-    if ! diff -b "${gfile}.out" <(./run_single_test.sh "${gap}" "${gfile}"); then
+    if ! diff -b "${gfile}.out" <(./run_interpreted.sh "${gap}" "${gfile}"); then
         echo "${gfile}" failed without compiling
         retvalue=1
     fi;
-        if ! diff -b "${gfile}.out" <(./run_single_compiled_test.sh "${gap}" "${gac}" "${gfile}"); then
-        echo "${gfile}" failed with compiling
+    if ! diff -b "${gfile}.out" <(./run_compiled_dynamic.sh "${gap}" "${gac}" "${gfile}"); then
+        echo "${gfile}" failed with compiling and dynamic linking
+        retvalue=1
+    fi;
+    if ! diff -b "${gfile}.out" <(./run_compiled_static.sh "${gac}" "${gfile}"); then
+        echo "${gfile}" failed with compiling and static linking
         retvalue=1
     fi;
 
