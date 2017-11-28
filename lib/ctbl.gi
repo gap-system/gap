@@ -2516,7 +2516,7 @@ InstallMethod( Identifier,
     function( tbl )
     local val;
     # Construct an identifier that is unique in the current session.
-    if IsBound(HPCGAP) then
+    if IsHPCGAP then
         val := ATOMIC_ADDITION( LARGEST_IDENTIFIER_NUMBER, 1, 1 );
     else
         LARGEST_IDENTIFIER_NUMBER[1] := LARGEST_IDENTIFIER_NUMBER[1] + 1;
@@ -5064,7 +5064,7 @@ InstallValue( CharacterTableDisplayDefaults, rec(
         Legend          := CharacterTableDisplayLegendDefault,
     ) ) );
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     MakeThreadLocal("CharacterTableDisplayDefaults");
 fi;
 

@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2017
 ##
 gap> START_TEST("threads.tst");
-gap> if IsBound(HPCGAP) or ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
+gap> if IsHPCGAP or ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
 gap> taskssum := (tasks*(tasks+1))/2;;
 gap> f := function(val) local x; MicroSleep(tasks*100); x := val; MicroSleep(tasks*100); return x; end;;
 gap> l := List([1..tasks], x -> RunTask(f, x));;

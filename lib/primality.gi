@@ -105,7 +105,7 @@ MakeImmutable(CompositeSPP2);
 ##
 ##############################################################################
 InstallFlushableValue(PrimesProofs,[]);
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     ShareSpecialObj(PrimesProofs);
 fi;
 

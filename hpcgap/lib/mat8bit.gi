@@ -26,7 +26,7 @@
 ##  without changing the kernel.
 ##
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     InstallValue(TYPES_MAT8BIT, [ FixedAtomicList(256), FixedAtomicList(256) ]);
     MakeReadOnlyObj(TYPES_MAT8BIT);
 else

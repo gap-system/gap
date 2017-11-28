@@ -301,7 +301,7 @@ InstallGlobalFunction( TemporaryGlobalVarName,
 end );
 
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     BindThreadLocal("HIDDEN_GVARS",[]);
 else
     HIDDEN_GVARS:=[];

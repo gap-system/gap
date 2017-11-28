@@ -125,7 +125,7 @@ LETTER_WORD_EREP_CACHE:=[1,1,1]; # initialization with dummys
 LETTER_WORD_EREP_CACHEVAL:=[1,1,1]; # initialization with dummys
 LETTER_WORD_EREP_CACHEPOS:=1;
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   MakeThreadLocal( "LETTER_WORD_EREP_CACHE" );
   MakeThreadLocal( "LETTER_WORD_EREP_CACHEVAL" );
   MakeThreadLocal( "LETTER_WORD_EREP_CACHEPOS" );

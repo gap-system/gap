@@ -183,7 +183,7 @@ InstallValue(GAPDocTextTheme, rec());
 
 # this is only relevant for HPCGAP, record is used by the handler functions
 # in the GAP help system
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   LockAndMigrateObj(GAPDocTextTheme, HELP_REGION);
 fi;
 

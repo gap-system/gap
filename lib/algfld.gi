@@ -112,7 +112,7 @@ local fam,i,cof,red,rchar,impattr,deg;
     cof:=ListWithIdenticalEntries(i,fam!.zeroCoefficient);
     Add(cof,fam!.oneCoefficient);
     if rchar>0 then
-      if IsBound(HPCGAP) then
+      if IsHPCGAP then
         cof := CopyToVectorRep(cof,rchar); # rchar is <= 256
       else
         ConvertToVectorRep(cof,rchar);

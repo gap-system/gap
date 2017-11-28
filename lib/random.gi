@@ -68,7 +68,7 @@ end);
 ############################################################################
 ##  We provide the "classical" GAP random generator via a random source.
 ##
-if IsBound(HPCGAP) then
+if IsHPCGAP then
 BindThreadLocalConstructor("GlobalRandomSource", {} ->
     Objectify(NewType(RandomSourcesFamily, IsGlobalRandomSource), rec()));
 else
@@ -224,7 +224,7 @@ end);
 
 # One global Mersenne twister random source, can be used to overwrite
 # the library Random(list) and Random(a,b) methods.
-if IsBound(HPCGAP) then
+if IsHPCGAP then
 BindThreadLocalConstructor("GlobalMersenneTwister", {} ->
     RandomSource(IsMersenneTwister, String(GET_RANDOM_SEED_COUNTER())));
 else

@@ -15,7 +15,7 @@
 ## don't replace it, so we can make it Read Only
 ##
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     BindThreadLocal("OptionsStack", [ ]);
 else
     OptionsStack := [];

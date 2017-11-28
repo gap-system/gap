@@ -752,7 +752,7 @@ return function(o,n)
 end;
 end);
 
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     MakeThreadLocal("NAMEDOBJECTS");
     MakeThreadLocal("EXECUTEOBJECTS");
     BindThreadLocal("NAMEDOBJECTS", []);

@@ -32,7 +32,7 @@ FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT_PSEUDOFIELD := fail;
 FLOAT := fail; # holds the constants
-if IsBound(HPCGAP) then
+if IsHPCGAP then
     BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", AtomicRecord());
 else
     BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());

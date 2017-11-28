@@ -689,7 +689,7 @@ end);
 ##  
 BindGlobal("SPACESTRINGS", [" "]);
 # only relevant for HPCGAP, to allow for formatting of help pages in any thread
-if IsBound(HPCGAP) then
+if IsHPCGAP then
   MakeThreadLocal("SPACESTRINGS");                                             
 fi;                                                                            
 
