@@ -75,8 +75,9 @@ syn match  gapParentheses	"[)(]"
 syn match  gapSublist	"[}{]"
 
 "hilite
-" this is very much dependent on personal taste, must add gui case if you
-" use gvim
+" this is very much dependent on personal taste, the gui* entries are for
+" gvim (see below for an alternative to link the layout to predefined
+" values, see `:highlight` for an overview of defined names).
 hi gapString ctermfg=2 guifg=Green
 hi gapFunction  ctermfg=1 guifg=Red
 hi gapDeclare  cterm=bold ctermfg=4 guifg=DarkBlue
@@ -96,6 +97,26 @@ hi gapListDelimiter ctermfg=8 guifg=Gray
 hi gapParentheses ctermfg=12 guifg=Blue
 hi gapSublist ctermfg=14 guifg=LightBlue
 hi gapFunLine ctermbg=3 ctermfg=0 guibg=LightBlue guifg=Black
+""""  alternatively, comment the `hi ...` lines above and uncomment below
+" hi link gapString                      String
+" hi link gapFunction                    Function
+" hi link gapDeclare                     Define
+" hi link gapMethsel                     Special
+" hi link gapOtherKey                    SpecialKey
+" hi link gapOperator                    Operator
+" hi link gapConditional                 Conditional
+" hi link gapRepeat                      Repeat
+" hi link gapComment                     Comment
+" hi link gapTodo                        Todo
+" hi link gapTTodoComment                gapTodo 
+" hi link gapTodoComment                 gapTodo
+" hi link gapNumber                      Number
+" hi link gapBool                        Boolean
+" hi link gapChar                        Character
+" hi link gapListDelimiter               Delimiter
+" hi link gapParentheses                 gapListDelimiter
+" hi link gapSublist                     gapListDelimiters
+" hi link gapFunLine                     TabLine
 
 syn sync maxlines=500
 
