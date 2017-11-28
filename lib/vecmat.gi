@@ -92,6 +92,31 @@ InstallValue( TYPE_LIST_GF2MAT_IMM,
 
 #############################################################################
 ##
+## HPC-GAP serialization
+##
+if IsHPCGAP then
+    InstallTypeSerializationTag(TYPE_LIST_GF2VEC,
+      SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 1);
+
+    InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM,
+      SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 2);
+
+    InstallTypeSerializationTag(TYPE_LIST_GF2VEC_IMM_LOCKED,
+      SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 3);
+
+    InstallTypeSerializationTag(TYPE_LIST_GF2VEC_LOCKED,
+      SERIALIZATION_BASE_GF2VEC + SERIALIZATION_TAG_BASE * 4);
+
+    InstallTypeSerializationTag(TYPE_LIST_GF2MAT,
+      SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 1);
+
+    InstallTypeSerializationTag(TYPE_LIST_GF2MAT_IMM,
+      SERIALIZATION_BASE_GF2MAT + SERIALIZATION_TAG_BASE * 2);
+fi;
+
+
+#############################################################################
+##
 #M  Length( <gf2vec> )  . . . . . . . . . . . . . . .  length of a GF2 vector
 ##
 InstallOtherMethod( Length,

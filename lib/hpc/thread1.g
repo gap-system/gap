@@ -155,6 +155,17 @@ BIND_GLOBAL("CopyFromRegion", ID_FUNC);
 BIND_GLOBAL("CopyToRegion", {x,y} -> x);
 
 
+# mock parts of serialize.g
+BIND_GLOBAL("InstallTypeSerializationTag", function(type, tag)
+    Error("InstallTypeSerializationTag is not supported");
+end);
+BIND_GLOBAL("SERIALIZATION_TAG_BASE", 1024);
+BIND_GLOBAL("SERIALIZATION_BASE_VEC8BIT", 1);
+BIND_GLOBAL("SERIALIZATION_BASE_MAT8BIT", 2);
+BIND_GLOBAL("SERIALIZATION_BASE_GF2VEC", 3);
+BIND_GLOBAL("SERIALIZATION_BASE_GF2MAT", 4);
+
+
 ###########################
 # C methods
 
@@ -214,3 +225,4 @@ end);
 BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
   Unbind(record.(field));
 end);
+
