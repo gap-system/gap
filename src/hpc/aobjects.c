@@ -154,138 +154,104 @@ static void ArgumentError(const char *message)
   ErrorQuit(message, 0, 0);
 }
 
-static Obj NewFixedAtomicList(UInt length)
+Obj NewAtomicList(UInt tnum, UInt capacity)
 {
-  Obj result = NewBag(T_FIXALIST, sizeof(AtomicObj) * (length + 2));
-  MEMBAR_WRITE();
-  return result;
+    Obj result = NewBag(tnum, sizeof(AtomicObj) * (capacity + 2));
+    MEMBAR_WRITE();
+    return result;
 }
 
-Obj NewAtomicList(UInt length)
+static Obj NewAtomicListInit(UInt tnum, UInt len, Obj init)
 {
-  Obj result = NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
-  MEMBAR_WRITE();
-  return result;
+    Obj         result = NewAtomicList(tnum, len);
+    AtomicObj * data = ADDR_ATOM(result);
+    data->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
+    for (UInt i = 1; i <= len; i++)
+        data[i + 1].obj = init;
+    CHANGED_BAG(result);
+    MEMBAR_WRITE();    // Should not be necessary, but better be safe.
+    return result;
 }
 
-static Obj NewAtomicListFrom(Obj list)
+static Obj NewAtomicListFrom(UInt tnum, Obj list)
 {
-  Obj result;
-  UInt len, i;
-  AtomicObj *data;
-  len = LEN_LIST(list);
-  result = NewAtomicList(len);
-  data = ADDR_ATOM(result);
-  data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-  data++->obj = NULL;
-  for (i=1; i<= len; i++)
-    data++->obj = ELM0_LIST(list, i);
-  MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-  CHANGED_BAG(result);
-  return result;
+    UInt        len = LEN_LIST(list);
+    Obj         result = NewAtomicList(tnum, len);
+    AtomicObj * data = ADDR_ATOM(result);
+    data->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
+    for (UInt i = 1; i <= len; i++)
+        data[i + 1].obj = ELM0_LIST(list, i);;
+    CHANGED_BAG(result);
+    MEMBAR_WRITE();    // Should not be necessary, but better be safe.
+    return result;
 }
 
 static Obj FuncAtomicList(Obj self, Obj args)
 {
   Obj init;
-  Obj result;
-  AtomicObj *data;
-  Int i, len;
+  Int len;
   switch (LEN_PLIST(args)) {
-    case 1:
+  case 0:
+      return NewAtomicList(T_ALIST, 0);
+  case 1:
       init = ELM_PLIST(args, 1);
-      if (!IS_LIST(init) && (!IS_INTOBJ(init) || INT_INTOBJ(init) <=0) )
-        ArgumentError("AtomicList: Argument must be list or positive integer");
       if (IS_LIST(init)) {
-	return NewAtomicListFrom(init);
-      } else {
-        len = INT_INTOBJ(init);
-	result = NewAtomicList(len);
-	data = ADDR_ATOM(result);
-	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-	data++->obj = NULL;
-	for (i=1; i<= len; i++)
-	  data++->obj = (Obj) 0;
-	CHANGED_BAG(result);
-	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-	return result;
+          return NewAtomicListFrom(T_ALIST, init);
+      }
+      else if (IS_INTOBJ(init) && INT_INTOBJ(init) >= 0) {
+          len = INT_INTOBJ(init);
+          return NewAtomicListInit(T_ALIST, len, 0);
+      }
+      else {
+          ArgumentError(
+              "AtomicList: Argument must be list or a non-negative integer");
       }
     case 2:
-      if (!IS_INTOBJ(ELM_PLIST(args, 1)))
-        ArgumentError("AtomicList: First argument must be a non-negative integer");
-      len = INT_INTOBJ(ELM_PLIST(args, 1));
-      if (len < 0)
-        ArgumentError("AtomicList: First argument must be a non-negative integer");
-      result = NewAtomicList(len);
-      init = ELM_PLIST(args, 2);
-      data = ADDR_ATOM(result);
-      data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-      data++->obj = NULL;
-      for (i=1; i<=len; i++)
-        data++->obj = init;
-      CHANGED_BAG(result);
-      MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-      return result;
+        init = ELM_PLIST(args, 1);
+        len = IS_INTOBJ(init) ? INT_INTOBJ(init) : -1;
+        if (len < 0)
+            ArgumentError(
+                "AtomicList: First argument must be a non-negative integer");
+        init = ELM_PLIST(args, 2);
+        return NewAtomicListInit(T_ALIST, len, init);
     default:
       ArgumentError("AtomicList: Too many arguments");
-      return (Obj) 0; /* flow control hint */
   }
+  return (Obj)0; /* flow control hint */
 }
 
 static Obj FuncFixedAtomicList(Obj self, Obj args)
 {
   Obj init;
-  Obj result;
-  AtomicObj *data;
-  Int i, len;
+  Int len;
   switch (LEN_PLIST(args)) {
-    case 1:
+  case 0:
+      return NewAtomicList(T_FIXALIST, 0);
+  case 1:
       init = ELM_PLIST(args, 1);
-      if (!IS_LIST(init) && (!IS_INTOBJ(init) || INT_INTOBJ(init) <=0) )
-        ArgumentError("FixedAtomicList: Argument must be list or positive integer");
       if (IS_LIST(init)) {
-	len = LEN_LIST(init);
-	result = NewFixedAtomicList(len);
-	data = ADDR_ATOM(result);
-	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-	data++->obj = NULL;
-	for (i=1; i<= len; i++)
-	  data++->obj = ELM0_LIST(init, i);
-	CHANGED_BAG(result);
-	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-	return result;
-      } else {
-        len = INT_INTOBJ(init);
-	result = NewFixedAtomicList(len);
-	data = ADDR_ATOM(result);
-	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-	data++->obj = NULL;
-	for (i=1; i<= len; i++)
-	  data++->obj = (Obj) 0;
-	CHANGED_BAG(result);
-	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-	return result;
+          return NewAtomicListFrom(T_FIXALIST, init);
+      }
+      else if (IS_INTOBJ(init) && INT_INTOBJ(init) >= 0) {
+          len = INT_INTOBJ(init);
+          return NewAtomicListInit(T_FIXALIST, len, 0);
+      }
+      else {
+          ArgumentError("FixedAtomicList: Argument must be list or a "
+                        "non-negative integer");
       }
     case 2:
-      if (!IS_INTOBJ(ELM_PLIST(args, 1)))
-        ArgumentError("FixedAtomicList: First argument must be a non-negative integer");
-      len = INT_INTOBJ(ELM_PLIST(args, 1));
-      if (len < 0)
-        ArgumentError("FixedAtomicList: First argument must be a non-negative integer");
-      result = NewFixedAtomicList(len);
-      init = ELM_PLIST(args, 2);
-      data = ADDR_ATOM(result);
-      data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-      data++->obj = NULL;
-      for (i=1; i<=len; i++)
-        data++->obj = init;
-      CHANGED_BAG(result);
-      MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-      return result;
+        init = ELM_PLIST(args, 1);
+        len = IS_INTOBJ(init) ? INT_INTOBJ(init) : -1;
+        if (len < 0)
+            ArgumentError("FixedAtomicList: First argument must be a "
+                          "non-negative integer");
+        init = ELM_PLIST(args, 2);
+        return NewAtomicListInit(T_FIXALIST, len, init);
     default:
       ArgumentError("FixedAtomicList: Too many arguments");
-      return (Obj) 0; /* flow control hint */
   }
+  return (Obj)0; /* flow control hint */
 }
 
 static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
@@ -1643,7 +1609,7 @@ void DestroyAObjectsState(void)
 
 Obj MakeAtomic(Obj obj) {
   if (IS_LIST(obj))
-    return NewAtomicListFrom(obj);
+      return NewAtomicListFrom(T_ALIST, obj);
   else if (TNUM_OBJ(obj) == T_PREC)
     return NewAtomicRecordFrom(obj);
   else

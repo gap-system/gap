@@ -3378,7 +3378,7 @@ static Int InitLibrary (
     STATE(StackStat) = NewBag( T_BODY, 64*sizeof(Stat) );
     STATE(StackExpr) = NewBag( T_BODY, 64*sizeof(Expr) );
 #ifdef HPCGAP
-    FilenameCache = NewAtomicList(0);
+    FilenameCache = NewAtomicList(T_ALIST, 0);
 #else
     FilenameCache = NEW_PLIST(T_PLIST, 0);
 #endif
@@ -3387,7 +3387,7 @@ static Int InitLibrary (
     
     gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
 #ifdef HPCGAP
-    cache = NewAtomicList(1);
+    cache = NewAtomicList(T_ALIST, 1);
 #else
     cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
     SET_LEN_PLIST(cache,0);

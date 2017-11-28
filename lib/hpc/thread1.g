@@ -26,10 +26,13 @@ BIND_GLOBAL("IsReadOnlyObj", RETURN_FALSE);
 
 BIND_GLOBAL("AtomicList", function(arg)
   local l, i;
-  if LEN_LIST(arg) = 0 or LEN_LIST(arg) > 2 then
+  if LEN_LIST(arg) > 2 then
     Error("Invalid AtomicList arguments");
   fi;
 
+  if LEN_LIST(arg) = 0 then
+    return [];
+  fi;
   if LEN_LIST(arg) = 1 and IS_LIST(arg[1]) then
     l := [];
     for i in [1..LEN_LIST(arg[1])] do
@@ -39,16 +42,10 @@ BIND_GLOBAL("AtomicList", function(arg)
     od;
     return l;
   fi;
-
   if LEN_LIST(arg) = 1 then
-    # For plists, we can't set a capacity
-    return [];
+    return EmptyPlist(arg[1]);
   else
-    l := [];
-    for i in [1..arg[1]] do
-        l[i] := arg[2];
-    od;
-    return l;
+    return LIST_WITH_IDENTICAL_ENTRIES(arg[1], arg[2]);
   fi;
 end);
 
