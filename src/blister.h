@@ -298,7 +298,7 @@ static inline UInt COUNT_TRUES_BLOCK( UInt block )  {
 *T  monitor this situation periodically. 
 */
 
-static inline UInt COUNT_TRUES_BLOCKS(UInt * ptr, UInt nblocks)
+static inline UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
 {
     UInt n = 0;
     while (nblocks >= 4) {
