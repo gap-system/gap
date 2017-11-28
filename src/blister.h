@@ -180,44 +180,59 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 
 /****************************************************************************
 **
+*F  TEST_BIT_BLIST( <list>, <pos> ) . . . . . .  test a bit of a boolean list
+**
+**  'TEST_BIT_BLIST' return a non-zero value if the <pos>-th element of the
+**  boolean list <list> is 1, and otherwise 0. <pos> must be a positive
+**  integer less than or equal to the length of <list>.
+*/
+static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
+{
+    return BLOCK_ELM_BLIST_UNSAFE(list, pos) & MASK_POS_BLIST(pos);
+}
+
+/****************************************************************************
+**
 *F  ELM_BLIST( <list>, <pos> ) . . . . . . . . . .  element of a boolean list
 **
-**  'ELM_BLIST' return the <pos>-th element of the boolean list <list>, which
-**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
-**  or equal to the length of <list>.
-**
-**  Note that 'ELM_BLIST' is a macro, so do not call it  with arguments  that
-**  have side effects.
+**  'ELM_BLIST' return the <pos>-th bit of the boolean list <list>, which is
+**  either 'true' or 'false'.  <pos> must  be a positive integer less than or
+**  equal to the length of <list>.
 */
-#define ELM_BLIST(list,pos) \
-  ((BLOCK_ELM_BLIST(list,pos) & MASK_POS_BLIST(pos)) ?  True : False)
+static inline Obj ELM_BLIST_UNSAFE(Obj list, UInt pos)
+{
+    return TEST_BIT_BLIST(list, pos) ? True : False;
+}
 
-#define ELM_BLIST_UNSAFE(list, pos)                                          \
-    ((BLOCK_ELM_BLIST_UNSAFE(list, pos) & MASK_POS_BLIST(pos)) ? True : False)
-
+static inline Obj ELM_BLIST(Obj list, UInt pos)
+{
+    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
+    return ELM_BLIST_UNSAFE(list, pos);
+}
 
 /****************************************************************************
 **
-*F  SET_ELM_BLIST( <list>, <pos>, <val> ) .  set an element of a boolean list
+*F  SET_BIT_BLIST( <list>, <pos> ) . . . . . . .  set a bit of a boolean list
+*F  CLEAR_BIT_BLIST( <list>, <pos> ) . . . . . clears a bit of a boolean list
 **
-**  'SET_ELM_BLIST' sets  the element at position <pos>   in the boolean list
-**  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <list>.  <val> must be either 'true' or 'false'.
-**
-**  Note that  'SET_ELM_BLIST' is  a macro, so do not  call it with arguments
-**  that have side effects.
+**  These function set the bit at position <pos> in the boolean list <list>
+**  to 1 resp. 0.  <pos> must be a positive integer less than or equal to
+**  the length of <list>.
 */
-#define SET_ELM_BLIST(list,pos,val)  \
- ((val) == True ? \
-  (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
-  (BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos)))
+static inline void SET_BIT_BLIST(Obj list, UInt pos)
+{
+    BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos);
+}
 
+static inline void CLEAR_BIT_BLIST(Obj list, UInt pos)
+{
+    BLOCK_ELM_BLIST(list, pos) &= ~MASK_POS_BLIST(pos);
+}
 
 /****************************************************************************
 **
-*F COUNT_TRUES_BLOCK( <block> ) . . . . . . . . . . . count number of
-*trues
-** 
+*F  COUNT_TRUES_BLOCK( <block> ) . . . . . . . . . . .  count number of trues
+**
 ** 'COUNT_TRUES_BLOCK( <block> )' returns the number of 1 bits in the
 **  UInt <block>. Two implementations are included below. One uses the
 **  gcc builtin __builtin_popcount which usually generates the popcntl
@@ -251,7 +266,7 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 **  'COUNT_TRUES_BLOCKS'.
 **
 */
-  
+
 static inline UInt COUNT_TRUES_BLOCK( UInt block )  {  
 #if USE_POPCNT && defined(HAVE___BUILTIN_POPCOUNTL)  
   return __builtin_popcountl(block);
