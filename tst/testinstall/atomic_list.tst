@@ -34,7 +34,7 @@ gap> EqualLists := function(l1, l2)
 >  return true;
 > end;;
 
-# variable sized list
+# variable sized atomic list
 gap> l:=AtomicList([1,2,3]);
 [ 1, 2, 3 ]
 gap> Length(l);
@@ -49,7 +49,11 @@ gap> l[4] := 23;
 23
 gap> l;
 [ 42, 2, 3, 23 ]
-gap> a := FixedAtomicList(5);;
+gap> EqualLists(AtomicList(), []);
+true
+gap> EqualLists(AtomicList(0), []);
+true
+gap> a := AtomicList(5);;
 gap> EqualLists(a, []);
 true
 gap> a[2] := 7;
@@ -119,7 +123,7 @@ false
 gap> EqualLists(a, []);
 true
 
-# fixed sized list
+# fixed sized atomic list
 gap> l:=FixedAtomicList([1,2,3]);
 [ 1, 2, 3 ]
 gap> Length(l);
@@ -130,6 +134,10 @@ gap> l[1]; l[2]; l[3];
 3
 gap> l[1] := 42;; l;
 [ 42, 2, 3 ]
+gap> EqualLists(FixedAtomicList(), []);
+true
+gap> EqualLists(FixedAtomicList(0), []);
+true
 gap> a := FixedAtomicList(5);;
 gap> EqualLists(a, []);
 true

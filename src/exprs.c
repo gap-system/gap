@@ -1235,7 +1235,7 @@ Obj             EvalFloatExprLazy (
       cache = FLOAT_LITERAL_CACHE;
 #ifdef HPCGAP
       if (!cache) {
-          cache = NewAtomicList(ix);
+          cache = NewAtomicList(T_ALIST, ix);
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
       }
       else
