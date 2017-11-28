@@ -2008,13 +2008,14 @@ Obj FuncTNUM_OBJ (
     return res;
 }
 
-Obj FuncTNUM_OBJ_INT (
-    Obj                 self,
-    Obj                 obj )
+Obj FuncTNUM_OBJ_INT(Obj self, Obj obj)
 {
+    return INTOBJ_INT(TNUM_OBJ(obj));
+}
 
-  
-    return  INTOBJ_INT( TNUM_OBJ(obj) ) ;
+Obj FuncTNAM_OBJ(Obj self, Obj obj)
+{
+    return MakeImmString(TNAM_OBJ(obj));
 }
 
 /****************************************************************************
@@ -2911,6 +2912,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(TotalMemoryAllocated, 0, ""),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
     GVAR_FUNC(TNUM_OBJ_INT, 1, "object"),
+    GVAR_FUNC(TNAM_OBJ, 1, "object"),
     GVAR_FUNC(OBJ_HANDLE, 1, "object"),
     GVAR_FUNC(HANDLE_OBJ, 1, "object"),
     GVAR_FUNC(LoadedModules, 0, ""),
