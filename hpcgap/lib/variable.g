@@ -181,8 +181,8 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
     fi;
-    if TNUM_OBJ_INT(value) <= LAST_CONSTANT_TNUM
-        and (TNUM_OBJ_INT(value) = TNUM_OBJ_INT(0)
+    if TNUM_OBJ(value) <= LAST_CONSTANT_TNUM
+        and (TNUM_OBJ(value) = TNUM_OBJ(0)
              or IS_FFE(value) or IS_BOOL(value)) then
        Error("InstallValue: value cannot be immediate, boolean or character");
     fi;

@@ -225,7 +225,7 @@ gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
 gap> a := -E(4)*2^(8*GAPInfo.BytesPerVariable-4);;
-gap> TNUM_OBJ_INT(COEFFS_CYC(-a)[2]) = T_INTPOS;
+gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) = T_INTPOS;
 true
 
 #

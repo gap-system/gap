@@ -150,7 +150,7 @@ InstallMethod( MemoryUsage, "generic fallback method",
     elif IS_DATOBJ(o) then
         # a DATOBJ cannot reference any subobjects (other than its type,
         # which we ignore for all kinds of objects)
-    elif TNUM_OBJ_INT(o) >= FIRST_EXTERNAL_TNUM then
+    elif TNUM_OBJ(o) >= FIRST_EXTERNAL_TNUM then
         # Since we are in the fallback method, clearly there is no
         # MemoryUsage method installed for the given object.
         Info(InfoWarning, 1, "No MemoryUsage method installed for ",

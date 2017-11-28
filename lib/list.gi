@@ -33,7 +33,7 @@ InstallMethod(NestingDepthM, [IsCyclotomicCollColl and
         IsOrdinaryMatrix and IsMultiplicativeGeneralizedRowVector],
         function( m )
     local t;
-    t := TNUM_OBJ_INT(m[1]);
+    t := TNUM_OBJ(m[1]);
     if FIRST_LIST_TNUM > t or LAST_LIST_TNUM < t then
         TryNextMethod();
     else
@@ -50,7 +50,7 @@ InstallMethod(NestingDepthA, [IsFFECollColl and IsGeneralizedRowVector],
 InstallMethod(NestingDepthM, [IsFFECollColl and IsOrdinaryMatrix and IsMultiplicativeGeneralizedRowVector],
            function(m)
     local t,row;
-    t := TNUM_OBJ_INT(m[1]);
+    t := TNUM_OBJ(m[1]);
     if FIRST_LIST_TNUM > t or LAST_LIST_TNUM < t then
         TryNextMethod();
     else
@@ -2097,7 +2097,7 @@ InstallMethod( Flat,
 InstallGlobalFunction( Reversed,
     function( list )
     local tnum, len;
-    tnum:= TNUM_OBJ_INT( list );
+    tnum:= TNUM_OBJ( list );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       len:= Length( list );
       return list{ [ len, len-1 .. 1 ] };
@@ -2767,7 +2767,7 @@ InstallMethod( Permuted,
 InstallGlobalFunction( First,
     function ( C, func )
     local tnum, elm;
-    tnum:= TNUM_OBJ_INT( C );
+    tnum:= TNUM_OBJ( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if func( elm ) then
@@ -3768,13 +3768,13 @@ InstallGlobalFunction(PlainListCopy, function( list )
     copy := ShallowCopy(list);
 
     # now do a cheap check on copy
-    tnum := TNUM_OBJ_INT(copy);
+    tnum := TNUM_OBJ(copy);
     if FIRST_LIST_TNUM > tnum or LAST_LIST_TNUM < tnum then
         copy := PlainListCopyOp( copy );
     fi;
     Assert(2, not IsIdenticalObj(list,copy));
-    Assert(2, TNUM_OBJ_INT(copy) >= FIRST_LIST_TNUM);
-    Assert(2, TNUM_OBJ_INT(copy) <= LAST_LIST_TNUM);
+    Assert(2, TNUM_OBJ(copy) >= FIRST_LIST_TNUM);
+    Assert(2, TNUM_OBJ(copy) <= LAST_LIST_TNUM);
     return copy;
 end);
 

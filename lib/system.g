@@ -131,8 +131,8 @@ BIND_GLOBAL( "GAPInfo", rec(
 ##
 GAPInfo.BytesPerVariable := 4;
 # are we a 64 (or more) bit system?
-while TNUM_OBJ_INT( 2^((GAPInfo.BytesPerVariable-1)*8) )
-    = TNUM_OBJ_INT( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
+while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
+    = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
   GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
 od;
 
