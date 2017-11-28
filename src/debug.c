@@ -80,7 +80,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)BAG_HEADER,
     (VoidFunc)BASE_PTR_PLIST,
     (VoidFunc)BLOCKS_BLIST,
-    (VoidFunc)BLOCKS_BLIST_UNSAFE,
     (VoidFunc)BODY_FUNC,
     (VoidFunc)BODY_HEADER,
     (VoidFunc)C_MAKE_MED_INT,

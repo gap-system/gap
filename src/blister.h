@@ -131,20 +131,13 @@ static inline void SET_LEN_BLIST(Obj list, Int len)
 **  returns a pointer to the start of the data of the Boolean list
 **
 */
-static inline UInt * BLOCKS_BLIST_UNSAFE(Obj list)
+static inline UInt * BLOCKS_BLIST(Obj list)
 {
     return ((UInt *)(ADDR_OBJ(list) + 1));
 }
 
-static inline UInt * BLOCKS_BLIST(Obj list)
-{
-    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
-    return BLOCKS_BLIST_UNSAFE(list);
-}
-
 static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 {
-    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
     return ((const UInt *)(CONST_ADDR_OBJ(list) + 1));
 }
 
@@ -161,8 +154,6 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 **  that have side effects.
 */
 #define BLOCK_ELM_BLIST(list, pos) (BLOCKS_BLIST( list )[((pos)-1)/BIPEB])
-#define BLOCK_ELM_BLIST_UNSAFE(list, pos)                                    \
-    (BLOCKS_BLIST_UNSAFE(list)[((pos)-1) / BIPEB])
 
 
 /****************************************************************************
@@ -188,7 +179,7 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 */
 static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
 {
-    return BLOCK_ELM_BLIST_UNSAFE(list, pos) & MASK_POS_BLIST(pos);
+    return BLOCK_ELM_BLIST(list, pos) & MASK_POS_BLIST(pos);
 }
 
 /****************************************************************************
@@ -199,15 +190,9 @@ static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
 **  either 'true' or 'false'.  <pos> must  be a positive integer less than or
 **  equal to the length of <list>.
 */
-static inline Obj ELM_BLIST_UNSAFE(Obj list, UInt pos)
-{
-    return TEST_BIT_BLIST(list, pos) ? True : False;
-}
-
 static inline Obj ELM_BLIST(Obj list, UInt pos)
 {
-    GAP_ASSERT(IS_BLIST_REP_WITH_COPYING(list));
-    return ELM_BLIST_UNSAFE(list, pos);
+    return TEST_BIT_BLIST(list, pos) ? True : False;
 }
 
 /****************************************************************************
