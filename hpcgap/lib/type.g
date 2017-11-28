@@ -45,7 +45,7 @@ BIND_CONSTANT( "POS_FIRST_FREE_TYPE", 5 );
 ##  </Description>
 ##  </ManSection>
 ##
-if TNUM_OBJ(2^30) = 0 then
+if TNUM_OBJ_INT(2^30) = T_INT then
     NEW_TYPE_NEXT_ID := -(2^60);
     NEW_TYPE_ID_LIMIT := 2^60-1;
 else
