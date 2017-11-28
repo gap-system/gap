@@ -1,3 +1,4 @@
 #!/bin/sh
 
-exec "@abs_top_builddir@/gap" -l "@abs_top_srcdir@" "$@"
+GAPDIR=$(cd "@abs_top_srcdir@" && pwd)
+exec "@abs_top_builddir@/gap" -l "$GAPDIR" "$@"
