@@ -22,7 +22,7 @@ SERIALIZATION_TAGS_NEED_UPDATE := false;
 
 BindGlobal("InstallTypeSerializationTag", function(type, tag)
   atomic SERIALIZATION_TAG_REGION do
-    if TNUM_OBJ_INT(tag) = T_INT then
+    if TNUM_OBJ(tag) = T_INT then
       ADD_OBJ_MAP(DESERIALIZATION_TAG_INT_NEW, tag, type);
       ADD_OBJ_MAP(SERIALIZATION_TAG_NEW, type, tag);
     elif IS_STRING(tag) then

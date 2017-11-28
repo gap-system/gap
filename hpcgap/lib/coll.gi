@@ -732,7 +732,7 @@ InstallGlobalFunction( List,
     if l = 0 or l > 2 then
       ErrorNoReturn( "usage: List( <C>[, <func>] )" );
     fi;
-    tnum:= TNUM_OBJ_INT( arg[1] );
+    tnum:= TNUM_OBJ( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1132,7 +1132,7 @@ InstallGlobalFunction( Sum,
     if l = 0 then
       Error( "usage: Sum( <C>[, <func>][, <init>] )" );
     fi;
-    tnum:= TNUM_OBJ_INT( arg[1] );
+    tnum:= TNUM_OBJ( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1265,7 +1265,7 @@ InstallGlobalFunction( Product,
     if l = 0 then
       Error( "usage: Product( <C>[, <func>][, <init>] )" );
     fi;
-    tnum:= TNUM_OBJ_INT( arg[1] );
+    tnum:= TNUM_OBJ( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1409,7 +1409,7 @@ end;
 InstallGlobalFunction( Filtered,
     function( C, func )
     local tnum, res, i, elm;
-    tnum:= TNUM_OBJ_INT( C );
+    tnum:= TNUM_OBJ( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       # start with empty list of same representation
       res := C{[]};
@@ -1497,7 +1497,7 @@ InstallGlobalFunction( Number,
     if l = 0 then
       Error( "usage: Number( <C>[, <func>] )" );
     fi;
-    tnum:= TNUM_OBJ_INT( arg[1] );
+    tnum:= TNUM_OBJ( arg[1] );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1609,7 +1609,7 @@ InstallOtherMethod( NumberOp,
 InstallGlobalFunction( ForAll,
     function( C, func )
     local tnum, elm;
-    tnum:= TNUM_OBJ_INT( C );
+    tnum:= TNUM_OBJ( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if not func( elm ) then
@@ -1680,7 +1680,7 @@ InstallOtherMethod( ForAllOp,
 InstallGlobalFunction( ForAny,
     function( C, func )
     local tnum, elm;
-    tnum:= TNUM_OBJ_INT( C );
+    tnum:= TNUM_OBJ( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if func( elm ) then

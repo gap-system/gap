@@ -3,17 +3,17 @@ gap> START_TEST("perm.tst");
 # Permutations come in two flavors in GAP, with two TNUMs: T_PERM2 for
 # permutations of degree up to 2^16, and T_PERM4 for permutations of degree up
 # to 2^32. Here is an example:
-gap> TNUM_OBJ_INT((1000,2^16)) = T_PERM2;
+gap> TNUM_OBJ((1000,2^16)) = T_PERM2;
 true
-gap> x:=(1000,2^16+1); TNUM_OBJ_INT(x) = T_PERM4;
+gap> x:=(1000,2^16+1); TNUM_OBJ(x) = T_PERM4;
 (1000,65537)
 true
 
 # Note that permutations are not necessarily stored with minimized degree, so
 # e.g. the transposition (1,2) can in principle be stored with either TNUM.
-gap> TNUM_OBJ_INT((1,2)) = T_PERM2;
+gap> TNUM_OBJ((1,2)) = T_PERM2;
 true
-gap> y:=(1,2)^x; TNUM_OBJ_INT(x) = T_PERM4;
+gap> y:=(1,2)^x; TNUM_OBJ(x) = T_PERM4;
 (1,2)
 true
 

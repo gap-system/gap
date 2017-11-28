@@ -1986,33 +1986,15 @@ Obj FuncTotalMemoryAllocated( Obj self ) {
 **
 *F  FuncTNUM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNUM_OBJ'
 */
-
-Obj FuncTNUM_OBJ (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 res;
-    Obj                 str;
-    const Char *        cst;
-
-    res = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( res, 2 );
-
-    /* set the type                                                        */
-    SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
-    cst = TNAM_OBJ(obj);
-    str = MakeImmString(cst);
-    SET_ELM_PLIST( res, 2, str );
-
-    /* and return                                                          */
-    return res;
-}
-
-Obj FuncTNUM_OBJ_INT(Obj self, Obj obj)
+Obj FuncTNUM_OBJ(Obj self, Obj obj)
 {
     return INTOBJ_INT(TNUM_OBJ(obj));
 }
 
+/****************************************************************************
+**
+*F  FuncTNAM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNAM_OBJ'
+*/
 Obj FuncTNAM_OBJ(Obj self, Obj obj)
 {
     return MakeImmString(TNAM_OBJ(obj));
@@ -2911,7 +2893,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SHALLOW_SIZE, 1, "object"),
     GVAR_FUNC(TotalMemoryAllocated, 0, ""),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
-    GVAR_FUNC(TNUM_OBJ_INT, 1, "object"),
     GVAR_FUNC(TNAM_OBJ, 1, "object"),
     GVAR_FUNC(OBJ_HANDLE, 1, "object"),
     GVAR_FUNC(HANDLE_OBJ, 1, "object"),

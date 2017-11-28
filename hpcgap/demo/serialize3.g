@@ -2,7 +2,7 @@ CheckSerialization := function(x)
   local err, x2;
   x2 := DeserializeNativeString(SerializeToNativeString(x));
   if DeserializeNativeString(SerializeToNativeString(x)) <> x or
-     TNUM_OBJ_INT(x) <> TNUM_OBJ_INT(x2) then
+     TNUM_OBJ(x) <> TNUM_OBJ(x2) then
     err := "Serialization error: ";
     Append(err, String(x));
   fi;
