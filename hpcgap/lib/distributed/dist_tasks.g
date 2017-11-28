@@ -192,7 +192,6 @@ Tasks.Worker := function(channels)
         fi;
         if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
           ShareSpecialObj(result);
-          #Print(TNUM_OBJ(result), "\n");
           task.result!.obj := result;
           #MigrateObj(result,task);
           task.result!.control.haveObject := true;

@@ -93,49 +93,49 @@ true
 gap> IsIdenticalObj(l[1], l[2]);
 true
 gap> l := ListWithIdenticalEntries(10, "GAP");;
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,hom)"
 gap> l;
 [ "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP" ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,table)"
 gap> l := ListWithIdenticalEntries(10, PrimitiveRoot(GF(5)));
 [ Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5) ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (sml fin fld elms)"
 gap> l := ListWithIdenticalEntries(10, 5 / 7);
 [ 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7 ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,cyc)"
 gap> l := ListWithIdenticalEntries(5, -1);
 [ -1, -1, -1, -1, -1 ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,cyc)"
 gap> l := ListWithIdenticalEntries(5, 8);
 [ 8, 8, 8, 8, 8 ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,cyc)"
 gap> l := ListWithIdenticalEntries(5, 0);
 [ 0, 0, 0, 0, 0 ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,cyc)"
 gap> l := ListWithIdenticalEntries(5, infinity);
 [ infinity, infinity, infinity, infinity, infinity ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,hom)"
 gap> l := ListWithIdenticalEntries(4, []);;
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,hom)"
 gap> l;
 [ [  ], [  ], [  ], [  ] ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,rect table)"
 gap> l := ListWithIdenticalEntries(4, [5]);;
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,hom)"
 gap> l;
 [ [ 5 ], [ 5 ], [ 5 ], [ 5 ] ]
-gap> TNUM_OBJ(l)[2];
+gap> TNAM_OBJ(l);
 "list (plain,rect table)"
 
 # String, for a range
