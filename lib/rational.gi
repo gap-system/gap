@@ -445,6 +445,9 @@ InstallMethod( PadicValuation,
     return -i;
   end );
 
+# If someone tries to convert a rational into
+# a rational, just return the number.
+InstallMethod( Rat, [ IsRat ], IdFunc );
 
 InstallMethod( ViewString, "for rationals", [IsRat], function(r)
   return Concatenation(ViewString(NumeratorRat(r)), "/\>\<",
