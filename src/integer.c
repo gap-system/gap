@@ -2228,6 +2228,33 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 /****************************************************************************
 **
 */
+Obj FuncFACTORIAL_INT(Obj self, Obj opN)
+{
+    REQUIRE_INT_ARG("Factorial", "n", opN);
+    if (!IS_INTOBJ(opN))
+        ErrorMayQuit("Factorial: <n> must be a small integer", 0L, 0L);
+
+    Int n = INT_INTOBJ(opN);
+    if (n < 0)
+        ErrorMayQuit("Factorial: <n> must be nonnegative", 0L, 0L);
+
+    mpz_t mpzResult;
+    mpz_init(mpzResult);
+    mpz_fac_ui(mpzResult, n);
+
+    // convert mpzResult into a GAP integer object.
+    Obj result = GMPorINTOBJ_MPZ(mpzResult);
+
+    // free mpzResult
+    mpz_clear(mpzResult);
+
+    return result;
+}
+
+
+/****************************************************************************
+**
+*/
 Obj BinomialInt ( Obj n, Obj k )
 {
     Int negate_result = 0;
@@ -2663,6 +2690,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
   GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
   GVAR_FUNC(JACOBI_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(FACTORIAL_INT, 1, "n"),
   GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
   GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
   GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
