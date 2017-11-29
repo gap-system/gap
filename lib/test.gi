@@ -545,6 +545,10 @@ end);
 ##  <Item>If <K>true</K>, then rewrite each test file to disc, with the output substituted
 ##  by the results of running the test (defaults to <K>false</K>).
 ##  </Item>
+##  <Mark><C>exclude</C></Mark>
+##  <Item>A list of file and directory names which will be excluded from
+##  testing (defaults to <K>[]</K>).
+##  </Item>
 ##  <Mark><C>exitGAP</C></Mark>
 ##  <Item>Rather than returning <K>true</K> or <K>false</K>, exit GAP with the return value
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
@@ -593,12 +597,14 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     showProgress := true,
     suppressStatusMessage := false,
     rewriteToFile := false,
+    exclude := [],
     exitGAP := false,
   );
   
   for c in RecNames(nopts) do
     opts.(c) := nopts.(c);
   od;
+  opts.exclude := Set(opts.exclude);
   
   
   if opts.exitGAP then
@@ -613,6 +619,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
     if Length(dirs) = 0 then return; fi;
+    if prefix in opts.exclude then return; fi;
     dircontents := Union(List(dirs, DirectoryContents));
     testfiles := Filtered(dircontents, x -> EndsWith(x, ".tst"));
     testrecs := [];
@@ -621,7 +628,9 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       if shortName[1] = '/' then
         shortName := shortName{[2..Length(shortName)]};
       fi;
-      Add(testrecs, rec(name := Filename(dirs, t), shortName := shortName));
+      if not shortName in opts.exclude then
+        Add(testrecs, rec(name := Filename(dirs, t), shortName := shortName));
+      fi;
     od;
     Append(files, testrecs);
 
