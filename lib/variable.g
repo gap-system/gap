@@ -262,7 +262,12 @@ BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
 #
 # Namespaces:
 #
-BIND_GLOBAL( "NAMESPACES_STACK", [] );
+if IsHPCGAP then
+  BindThreadLocalConstructor("NAMESPACES_STACK", {} -> []);
+  MAKE_READ_ONLY_GLOBAL("NAMESPACES_STACK");
+else
+  BIND_GLOBAL( "NAMESPACES_STACK", [] );
+fi;
 
 BIND_GLOBAL( "ENTER_NAMESPACE",
   function( namesp )
@@ -270,6 +275,7 @@ BIND_GLOBAL( "ENTER_NAMESPACE",
         Error( "<namesp> must be a string" );
         return;
     fi;
+    namesp := Immutable(namesp);
     NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
     SET_NAMESPACE(namesp);
   end );
@@ -277,12 +283,12 @@ BIND_GLOBAL( "ENTER_NAMESPACE",
 BIND_GLOBAL( "LEAVE_NAMESPACE",
   function( )
     if LEN_LIST(NAMESPACES_STACK) = 0 then
-        SET_NAMESPACE("");
+        SET_NAMESPACE(MakeImmutable(""));
         Error( "was not in any namespace" );
     else
         UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
         if LEN_LIST(NAMESPACES_STACK) = 0 then
-            SET_NAMESPACE("");
+            SET_NAMESPACE(MakeImmutable(""));
         else
             SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
         fi;
@@ -292,9 +298,9 @@ BIND_GLOBAL( "LEAVE_NAMESPACE",
 BIND_GLOBAL( "LEAVE_ALL_NAMESPACES",
   function( )
     local i;
-    SET_NAMESPACE("");
+    SET_NAMESPACE(MakeImmutable(""));
     for i in [1..LEN_LIST(NAMESPACES_STACK)] do
-         UNB_LIST(NAMESPACES_STACK,i);
+        UNB_LIST(NAMESPACES_STACK,i);
     od;
   end );
     
