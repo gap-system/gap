@@ -300,8 +300,8 @@ gap> TaskResult(RunTask(function() return r.y; end));
       Arg='record, name, value'/>
 
 <Description>
-<Ref Func="SetTLDefault"/> can be used to set the default value of a record field after its creation. Here, <A>record</A> is an
-atomic record, <A>name</A> is the string of the field name, and <A>value</A> is the value.
+<Ref Func="SetTLDefault"/> can be used to set the default value of a record field after its creation. Here, <A>record</A> is a
+thread-local record, <A>name</A> is the string of the field name, and <A>value</A> is the value.
 
 <Example><![CDATA[
 gap> r := ThreadLocalRecord();;
