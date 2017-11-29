@@ -168,10 +168,11 @@ end );
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
 
+if IsHPCGAP then
 BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
+fi;
 
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
-    local tmp;
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
@@ -184,7 +185,7 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if TNUM_OBJ_INT(value) <= LAST_CONSTANT_TNUM
         and (TNUM_OBJ_INT(value) = TNUM_OBJ_INT(0)
              or IS_FFE(value) or IS_BOOL(value)) then
-       Error("InstallValue: value cannot be immediate, boolean or character");
+       Error("InstallValue: <value> cannot be immediate, boolean or character");
     fi;
     if IsPublic(value) then
       # TODO: We need to handle those cases more cleanly.
@@ -196,17 +197,17 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
         value := FixedAtomicList(FromAtomicList(value));
       else
         if IS_COMOBJ(value) then
-	  # atomic component object
-	  value := Objectify(TypeObj(value), FromAtomicComObj(value));
-	elif IS_POSOBJ(value) then
-	  # atomic positional object
-	  CLONE_OBJ(gvar, value);
-	  return;
-	elif IS_MUTABLE_OBJ(value) then
-	  value := ShallowCopy(value);
-	else
-	  value := MakeImmutable(ShallowCopy(value));
-	fi;
+          # atomic component object
+          value := Objectify(TypeObj(value), FromAtomicComObj(value));
+        elif IS_POSOBJ(value) then
+          # atomic positional object
+          CLONE_OBJ(gvar, value);
+          return;
+        elif IS_MUTABLE_OBJ(value) then
+          value := ShallowCopy(value);
+        else
+          value := MakeImmutable(ShallowCopy(value));
+        fi;
       fi;
       FORCE_SWITCH_OBJ (gvar, value);
     elif IsType(value) and IsReadOnlyObj(value) then
@@ -215,9 +216,7 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
       MakeReadOnlySingleObj(gvar);
     elif IsShared(value) then
       atomic value do
-        tmp := CopyRegion(value);
-	MigrateObj(tmp, value);
-	FORCE_SWITCH_OBJ(gvar, tmp);
+        FORCE_SWITCH_OBJ(gvar, MigrateObj(CopyRegion(value), value));
       od;
     else
       value := CopyRegion(value);
@@ -274,11 +273,11 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     InstallMethod( FlushCaches,
       [],
       function()
-	  if HaveWriteAccess(gvar) then
-	    atomic gvar, initval do
-	      SWITCH_OBJ( gvar, MigrateObj(CopyRegion( initval ), gvar) );
-	    od;
-	  fi;
+          if HaveWriteAccess(gvar) then
+            atomic gvar, initval do
+              SWITCH_OBJ( gvar, MigrateObj(CopyRegion( initval ), gvar) );
+            od;
+          fi;
           TryNextMethod();
       end );
 end );
