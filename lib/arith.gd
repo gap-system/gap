@@ -1910,6 +1910,7 @@ DeclareAttribute( "Int", IsObject );
 ##  <M>\ldots</M>, <C>'9'</C> and <C>'-'</C> (at the first position),
 ##  <C>'/'</C> and the decimal dot <C>'.'</C> then <A>rat</A> is the rational
 ##  described by this string.
+##  If <A>elm</A> is a rational number, then <C>Rat</C> returns <A>elm</A>.
 ##  The operation <Ref Func="String"/> can be used to compute a string for
 ##  rational numbers, in fact for all cyclotomics.
 ##  <P/>
