@@ -168,6 +168,10 @@ end );
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
 
+if IsHPCGAP then
+BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewSpecialRegion("FLUSHABLE_VALUE_REGION"));
+fi;
+
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
