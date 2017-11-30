@@ -227,25 +227,21 @@ local mapi;
 end);
 
 
-# thanks to `MappingGeneratorsImages' this code is now obsolete.
-# #############################################################################
-# ##
-# #M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . .  via images
-# ##
-# InstallMethod( InverseGeneralMapping,
-#     "for PBG-Hom",
-#     true,
-#     [ IsPreimagesByAsGroupGeneralMappingByImages ], 0,
-# function(hom)
-#   return InverseGeneralMapping( AsGroupGeneralMappingByImages( hom ) );
-# end );
-
 InstallOtherMethod( SetInverseGeneralMapping,"transfer the AsGHBI", true,
      [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
        HasAsGroupGeneralMappingByImages,
        IsGeneralMapping ], 0,
 function( hom, inv )
    SetInverseGeneralMapping( AsGroupGeneralMappingByImages( hom ), inv );
+   TryNextMethod();
+end );
+
+InstallOtherMethod( SetRestrictedInverseGeneralMapping,"transfer the AsGHBI", true,
+     [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+       HasAsGroupGeneralMappingByImages,
+       IsGeneralMapping ], 0,
+function( hom, inv )
+   SetRestrictedInverseGeneralMapping( AsGroupGeneralMappingByImages( hom ), inv );
    TryNextMethod();
 end );
 
@@ -274,7 +270,7 @@ function( hom, elm )
   if HasIsHandledByNiceMonomorphism(Source(hom)) then
     # if we use the `AsGGMBI' directly, it will be a composite through a big
     # group
-    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
+    return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
   else
     return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
   fi;
@@ -665,7 +661,7 @@ InstallMethod( InverseGeneralMapping, "via generators/images", true,
 function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
-  mapi:=GroupGeneralMappingByImagesNC( Image( hom ),   Source( hom ),
+  mapi:=GroupGeneralMappingByImagesNC( Range( hom ),   Source( hom ),
                                       mapi[2], mapi[1] );
   if HasIsSurjective(hom) then
     SetIsTotal(mapi,IsSurjective(hom));
@@ -693,6 +689,45 @@ local mapi;
   SetIsBijective( mapi, true );
   return mapi;
 end );
+
+#############################################################################
+##
+#M  RestrictedInverseGeneralMapping( <hom> )  .. . . . . . . . . .  for GHBI
+##
+InstallMethod( RestrictedInverseGeneralMapping, "via generators/images", true,
+  [ IsGroupGeneralMapping ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  mapi:=GroupGeneralMappingByImagesNC( Image( hom ),   Source( hom ),
+                                      mapi[2], mapi[1]:noassert );
+  SetIsTotal(mapi,true);
+  if HasIsTotal(hom) then
+    SetIsSurjective(mapi, IsTotal(hom));
+  fi;
+  if HasIsSingleValued(hom) then
+    SetIsInjective(mapi, IsSingleValued(hom) );
+  fi;
+  if HasIsInjective(hom) then
+    SetIsSingleValued(mapi,IsInjective(hom));
+  fi;
+  SetRestrictedInverseGeneralMapping( mapi, hom );
+  return mapi;
+end );
+
+InstallMethod( RestrictedInverseGeneralMapping, "for surjective GHBI", true,
+  [ IsGroupGeneralMappingByImages and IsSurjective ], 0,
+  InverseGeneralMapping);
+
+InstallMethod( RestrictedInverseGeneralMapping, "inverse exists", true,
+  [ IsGroupGeneralMappingByImages and HasInverseGeneralMapping ], 0,
+function(hom)
+  if IsTotal(InverseGeneralMapping(hom)) then
+    return InverseGeneralMapping(hom);
+  else
+    TryNextMethod();
+  fi;
+end);
 
 
 #############################################################################
@@ -794,7 +829,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true,
     [ IsGroupGeneralMappingByImages ], 0,
     hom -> CoKernelOfMultiplicativeGeneralMapping(
-               InverseGeneralMapping( hom ) ) );
+               RestrictedInverseGeneralMapping( hom ) ) );
 
 #############################################################################
 ##
@@ -804,7 +839,7 @@ InstallMethod( IsInjective,
     "for GHBI",
     true,
     [ IsGroupGeneralMappingByImages ], 0,
-    hom -> IsSingleValued( InverseGeneralMapping( hom ) ) );
+    hom -> IsSingleValued( RestrictedInverseGeneralMapping( hom ) ) );
 
 #############################################################################
 ##
@@ -861,7 +896,7 @@ InstallMethod( PreImagesRepresentative,
     if IsBound( hom!.images )  and elm in hom!.images  then
         return hom!.elements[ Position( hom!.images, elm ) ];
     else
-        return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
+        return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
     fi;
 end );
 

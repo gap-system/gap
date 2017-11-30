@@ -1193,7 +1193,7 @@ local H,d,id,hom,field,C,dom,orbs;
   if d=fail then
     Error("inconsistent image 2");
   fi;
-  return hom*InverseGeneralMapping(d);
+  return hom*RestrictedInverseGeneralMapping(d);
 
 end);
 

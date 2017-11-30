@@ -753,13 +753,21 @@ end );
 ##
 #M  InverseGeneralMapping( <map> )  . . . . . . . . . for mapping by function
 ##
-InstallMethod( InverseGeneralMapping,
-    "for mapping by function",
-    true,
+InstallMethod( InverseGeneralMapping, "for mapping by function", true,
     [ IsMappingByFunctionWithInverseRep ], 0,
     function ( map )
     local inv;
     inv:= MappingByFunction( Range( map ), Source( map ),
+                             map!.invFun, map!.fun );
+    TransferMappingPropertiesToInverse( map, inv );
+    return inv;
+    end );
+
+InstallMethod( RestrictedInverseGeneralMapping, "for mapping by function", true,
+    [ IsMappingByFunctionWithInverseRep ], 0,
+    function ( map )
+    local inv;
+    inv:= MappingByFunction( Image( map ), Source( map ),
                              map!.invFun, map!.fun );
     TransferMappingPropertiesToInverse( map, inv );
     return inv;

@@ -619,7 +619,7 @@ local hom, sel, u, gens, i;
     r.permgroup:=Image(hom,r.permgroup);
     r.permgens:=List(r.permgens,i->Image(hom,i));
     if IsBound(r.isomorphism) then
-      r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
+      r.isomorphism:=RestrictedInverseGeneralMapping(hom)*r.isomorphism;
     fi;
   else
     hom:=SmallerDegreePermutationRepresentation(r.permgroup:cheap);
@@ -627,7 +627,7 @@ local hom, sel, u, gens, i;
       r.permgroup:=Image(hom,r.permgroup);
       r.permgens:=List(r.permgens,i->Image(hom,i));
       if IsBound(r.isomorphism) then
-	r.isomorphism:=InverseGeneralMapping(hom)*r.isomorphism;
+	r.isomorphism:=RestrictedInverseGeneralMapping(hom)*r.isomorphism;
       fi;
     fi;
 
