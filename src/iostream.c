@@ -211,7 +211,6 @@ static UInt OpenPty(int * master, int * slave)
         goto error;
     }
 
-    ttyname = ;
     *slave = open(ptsname(*master), O_RDWR, 0);
     if (*slave < 0) {
         Pr("OpenPty: opening slave tty failed\n", 0L, 0L);
