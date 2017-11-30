@@ -40,7 +40,7 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
     k:=ffs.pcgs;
   else
 
-    it:=CoKernelGensIterator(InverseGeneralMapping(rest));
+    it:=CoKernelGensIterator(RestrictedInverseGeneralMapping(rest));
     kpc:=TrivialSubgroup(Image(pcisom));
     while not IsDoneIterator(it) do
       x:=ImagesRepresentative(pcisom,NextIterator(it));
