@@ -541,7 +541,7 @@ AS_IF([test "x$ac_cv_search_openpty" = xno],[
 
 dnl check for input/output functions
 AC_CHECK_HEADERS([signal.h])
-AC_CHECK_FUNCS([ttyname select])
+AC_CHECK_FUNCS([select])
 
 dnl various functions to deal with child processes
 AC_HEADER_SYS_WAIT
