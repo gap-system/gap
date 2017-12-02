@@ -303,36 +303,36 @@ fi
 ##
 
 make_compstat () {
-# TODO: rewrite the following with heredocs?!
-
     # make 'compstat.c' and compile it
     temps_c="${temps_c} ${gactmp}/$$compstat.c"
-    echo     "/* made by 'gac', can be thrown away */"   >  ${gactmp}/$$compstat.c
-    echo     "#include <src/compiled.h>"                   >> ${gactmp}/$$compstat.c
+    (
+        echo     "/* made by 'gac', can be thrown away */"
+        echo     "#include <src/compiled.h>"
 
-    echo     "#ifndef AVOID_PRECOMPILED"                         >> ${gactmp}/$$compstat.c
-    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> ${gactmp}/$$compstat.c
-    echo     "extern StructInitInfo * Init__type1 ( void );"     >> ${gactmp}/$$compstat.c
-    echo     "extern StructInitInfo * Init__oper1( void );"      >> ${gactmp}/$$compstat.c
-    echo     "#endif"                                            >> ${gactmp}/$$compstat.c
+        echo     "#ifndef AVOID_PRECOMPILED"
+        echo     "extern StructInitInfo * Init__methsel1 ( void );"
+        echo     "extern StructInitInfo * Init__type1 ( void );"
+        echo     "extern StructInitInfo * Init__oper1( void );"
+        echo     "#endif"
 
-    for name in ${names}; do
-        echo "extern StructInitInfo * Init__${name} ( void );" \
-                                                         >> ${gactmp}/$$compstat.c
-    done
+        for name in ${names}; do
+            echo "extern StructInitInfo * Init__${name} ( void );"
+        done
 
-    echo     "InitInfoFunc CompInitFuncs [] = {"         >> ${gactmp}/$$compstat.c
-    echo     "#ifndef AVOID_PRECOMPILED"                 >> ${gactmp}/$$compstat.c
-    echo     "    Init__methsel1,"                       >> ${gactmp}/$$compstat.c
-    echo     "    Init__type1,"                          >> ${gactmp}/$$compstat.c
-    echo     "    Init__oper1,"                          >> ${gactmp}/$$compstat.c
-    echo     "#endif"                                    >> ${gactmp}/$$compstat.c
+        echo     "InitInfoFunc CompInitFuncs [] = {"
+        echo     "#ifndef AVOID_PRECOMPILED"
+        echo     "    Init__methsel1,"
+        echo     "    Init__type1,"
+        echo     "    Init__oper1,"
+        echo     "#endif"
 
-    for name in ${names}; do
-        echo "    Init__${name},"                        >> ${gactmp}/$$compstat.c
-    done
-    echo "    0"                                         >> ${gactmp}/$$compstat.c
-    echo "};"                                            >> ${gactmp}/$$compstat.c
+        for name in ${names}; do
+            echo "    Init__${name},"
+        done
+        echo "    0"
+        echo "};"
+    ) > ${gactmp}/$$compstat.c
+
     temps_o="${gactmp}/$$compstat.lo ${temps_o}"
     c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${GAP_CFLAGS}"
     if [ "$savetemps" = "true" ]; then
