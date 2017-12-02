@@ -345,16 +345,14 @@ make_compstat () {
 }
 
 make_tmpdir () {
-    basetmp=${TMPDIR:-/tmp}; #honor the TMPDIR environment variable.
-    gactmp="$basetmp/gac$$";
-    mkdir "$gactmp" || exit 1;
+    if command -v mktemp >/dev/null 2>&1 ; then
+        gactmp=$(mktemp -d -t "gacXXXXXXX")
+    else
+        basetmp=${TMPDIR:-/tmp}; #honor the TMPDIR environment variable.
+        gactmp="$basetmp/gac$$";
+        mkdir "$gactmp" || exit 1;
+    fi
 }
-
-#On systems with mktemp(1) this function is better:
-#make_tmpdir ()
-#{
-#    gactmp=`mktemp -d -t "gacXXXXXXX"`;
-#}
 
 #############################################################################
 ##
