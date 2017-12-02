@@ -193,7 +193,7 @@ process_gap_file () {
 
   if [ $comp_howfar != "c_code" ]; then
     c_file=${gactmp}/$$_${name}.c
-    temps_c="${temps_c} $gap_compile_to"
+    temps_c="${temps_c} $c_file"
   elif [ "X$output" = "X" ]; then
      c_file=${name}.c
   else
