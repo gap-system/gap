@@ -46,28 +46,21 @@
 ##
 ##  other options:
 ##   -k|--gap-compiler
-##   -i|--gap-include
-##   -l|--gap-binary
 ##
 
 SHELL="@SHELL@"
-abs_top_builddir="@abs_top_builddir@"
-prefix="@prefix@"
-exec_prefix="@exec_prefix@"
-libdir="@libdir@"
 
-# path of the directory in which GAP was compiled
-gap_bin="@abs_top_builddir@"
+# absolute path of the directory in which GAP was compiled
+abs_top_builddir="@abs_top_builddir@"
 
 # path of the directory the GAP sources contained in
-gap_dir="@abs_top_srcdir@"
+abs_top_srcdir="@abs_top_srcdir@"
+
+#
+libdir="@libdir@"
 
 # path to the GAP executable
 gap_compiler="${abs_top_builddir}/gap"
-
-# path of the directory containing the *.o files; the GAP_OBJS variables
-# is evaluated relative to this
-gap_binary="${abs_top_builddir}"
 
 libtool="$SHELL $abs_top_builddir/libtool"
 CC="@CC@"
@@ -211,7 +204,7 @@ process_gap_file () {
   if [ $comp_mode = "comp_static" ]; then
     gap_compile_id=Init_${name}
     if [ $comp_static_root_relative = "yes" ]; then
-        gap_compile_in=${gap_dir}/$input;
+        gap_compile_in=${abs_top_srcdir}/$input;
         gap_compile_name=GAPROOT/$input;
     fi
   else
@@ -249,7 +242,7 @@ trap "clean_up" 2 3
 ##  parse the arguments
 ##
 if [ $# = 0 ]; then
-    echo "usage: $0 [-d|-r] [-c|-C] [-o <output>] [-l <gap_binary>] <input>..."
+    echo "usage: $0 [-d|-r] [-c|-C] [-o <output>] <input>..."
     exit 1
 fi
 
@@ -279,8 +272,6 @@ while [ $# -gt 0 ]; do
                           exit 1;;
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
-
-    -l|--gap-binary)      shift; gap_binary="$1";;
 
     -p)                   shift; GAP_CFLAGS="${GAP_CFLAGS} $1";;
 
@@ -415,7 +406,7 @@ if [ $comp_howfar = "link" ]; then
 
         for object in $GAP_OBJS;  do
             if [ ${object} != "obj/compstat.lo" ]; then
-                objects="${gap_binary}/${object} ${objects}"
+                objects="${abs_top_builddir}/${object} ${objects}"
             fi
         done
 
