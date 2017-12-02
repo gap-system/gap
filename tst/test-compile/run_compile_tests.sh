@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
+set -ex
+
+# GAPDIR points to the directory containing the gap executable
+# (so for out-of-tree builds, builddir and not srcdir)
+GAPDIR=${GAPDIR:-../..}
+
 # Clean up any old compiled files before running tests
 rm -rf .libs
 
 retvalue=0
-gap="../../bin/gap.sh"
-gac="../../gac"
+gap="$GAPDIR/bin/gap.sh"
+gac="$GAPDIR/gac"
 for gfile in *.g; do
     if ! diff -b "${gfile}.out" <(./run_single_test.sh "${gap}" "${gfile}"); then
         echo "${gfile}" failed without compiling
