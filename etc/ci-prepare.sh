@@ -59,6 +59,9 @@ then
   mv pkg "$SRCDIR/"
 fi
 
+echo "ls $SRCDIR/pkg"
+ls $SRCDIR/pkg
+
 # compile IO and profiling package, unless NO_COVERAGE is given
 if [[ -z ${NO_COVERAGE} ]]
 then

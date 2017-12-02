@@ -21,24 +21,34 @@ then
 fi
 BUILDDIR=$PWD
 
-# If we don't care about code coverage, just run the test directly
-if [[ -n ${NO_COVERAGE} ]]
+# create dir for coverage results
+COVDIR=coverage
+mkdir -p $COVDIR
+
+
+# Compile edim, if present, to test gac (but not on HPC-GAP and not on Cygwin,
+# where gac is known to be broken)
+if [[ -d $SRCDIR/pkg/edim && $HPCGAP != yes && $OSTYPE = Cygwin* ]]
 then
-    $GAP $SRCDIR/tst/${TEST_SUITE}.g
-    exit 0
+  pushd $SRCDIR/pkg/edim
+  ./configure $BUILDDIR
+  make
+  popd
 fi
 
-if [[ "${TEST_SUITE}" == testspecial ]]
-then
+
+for TEST_SUITE in $TEST_SUITES
+do
+  case $TEST_SUITE in
+  testspecial)
     cd $SRCDIR/tst/test-error
     ./run_error_tests.sh
     cd ../test-compile
     ./run_compile_tests.sh
     exit 0
-fi
+    ;;
 
-if [[ "${TEST_SUITE}" == testpackages ]]
-then
+  testpackages)
     cd $SRCDIR/pkg
 
     # skip carat because building it leads to too much output which floods the log
@@ -80,38 +90,22 @@ then
     # TODO: actually run package tests
 
     exit 0
-fi
+    ;;
 
+  docomp)
+    # run gap compiler to verify the src/c_*.c files are up to date,
+    # and also get coverage on the compiler
+    make docomp
 
-# Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
-if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
-then
-    pushd $SRCDIR/pkg/edim
-    ./configure $BUILDDIR
-    make
-    popd
-fi
+    # detect if there are any diffs
+    git diff --exit-code -- src hpcgap/src
+    ;;
 
-
-# create dir for coverage results
-COVDIR=coverage
-mkdir -p $COVDIR
-
-
-# run gap compiler to verify the src/c_*.c files are up to date,
-# and also get coverage on the compiler
-make docomp
-
-# detect if there are any diffs
-git diff --exit-code -- src hpcgap/src
-
-
-case ${TEST_SUITE} in
-makemanuals)
+  makemanuals)
     make doc
     ;;
 
-testmanuals)
+  testmanuals)
     $GAP $SRCDIR/tst/extractmanuals.g
 
     $GAP <<GAPInput
@@ -129,11 +123,9 @@ GAPInput
         QUIT_GAP(0);
 GAPInput
     done
-    
-    if [[ $TESTMANUALSPASS = no ]]
-    then
-        exit 1
-    fi
+
+    # if there were any failures, abort now.
+    [[ $TESTMANUALSPASS = yes ]] || exit 1
 
     # while we are at it, also test the workspace code
     $GAP --cover $COVDIR/workspace.coverage <<GAPInput
@@ -143,15 +135,22 @@ GAPInput
 GAPInput
 
     ;;
-*)
+
+  *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
         echo "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
         exit 1
     fi
 
-
-    $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
+    if [[ -n ${NO_COVERAGE} ]]
+    then
+        $GAP $SRCDIR/tst/${TEST_SUITE}.g
+    else
+        $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
             <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
             $SRCDIR/tst/${TEST_SUITE}.g
-esac;
+    fi
+    ;;
+  esac
+done
