@@ -1,5 +1,7 @@
 #/usr/bin/env bash
 
+set -e
+
 # This script should be run as ./run_gap.sh gap gapfile.g
 # It provides the following features:
 # 1) Stop GAP from attaching to the terminal (which it will

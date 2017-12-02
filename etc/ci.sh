@@ -42,9 +42,9 @@ do
   case $TEST_SUITE in
   testspecial)
     cd $SRCDIR/tst/test-error
-    ./run_error_tests.sh
+    GAPDIR=$BUILDDIR ./run_error_tests.sh
     cd ../test-compile
-    ./run_compile_tests.sh
+    GAPDIR=$BUILDDIR ./run_compile_tests.sh
     exit 0
     ;;
 

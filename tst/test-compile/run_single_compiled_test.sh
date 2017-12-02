@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # This script should be run as ./compile_gap.sh gap gac gapfile.g
 # It compiles gapfile.g using gac, then runs the function 'runtest'
 

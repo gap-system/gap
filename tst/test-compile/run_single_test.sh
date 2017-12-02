@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # This script should be run as ./run_gap.sh gap gac gapfile.g
 # It reads gapfile.g, then runs the function 'runtest'
 
