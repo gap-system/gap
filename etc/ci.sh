@@ -37,11 +37,13 @@ then
     exit 0
 fi
 
-if [[ x"$ABI" == "x32" ]]
+# TODO: get rid of this hack (packages should set 32bit flags themselves)
+if [[ $ABI == 32 ]]
 then
   CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
 fi
 
+# TODO: get rid of this hack (packages should get include paths from sysinfo.gap resp. gac)
 if [[ $HPCGAP = yes ]]
 then
   # Add flags so that Boehm GC and libatomic headers are found
