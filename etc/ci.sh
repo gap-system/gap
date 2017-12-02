@@ -37,47 +37,10 @@ then
     exit 0
 fi
 
-# TODO: get rid of this hack (packages should set 32bit flags themselves)
-if [[ $ABI == 32 ]]
-then
-  CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-fi
-
-# TODO: get rid of this hack (packages should get include paths from sysinfo.gap resp. gac)
-if [[ $HPCGAP = yes ]]
-then
-  # Add flags so that Boehm GC and libatomic headers are found
-  CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
-  export CPPFLAGS
-fi
-
-# We need to compile the profiling package in order to generate coverage
-# reports; and also the IO package, as the profiling package depends on it.
-pushd $SRCDIR/pkg
-
-# HACK: io 4.4.6 (shipped with GAP 4.8.6) directly accesses some GAP internals
-# (for GASMAN), which we will remove in GAP 4.9. To ensure it works,
-# we simply grab the latest version from git.
-rm -rf io*
-git clone https://github.com/gap-packages/io
-cd io
-./autogen.sh
-./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
-make V=1
-cd ..
-
-# HACK: profiling 1.1.0 (shipped with GAP 4.8.6) is broken on 32 bit
-# systems, so we simply grab the latest profiling version
-rm -rf profiling*
-git clone https://github.com/gap-packages/profiling
-cd profiling
-./autogen.sh
-./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
-make V=1
-cd ..
-
 if [[ "${TEST_SUITE}" == testpackages ]]
 then
+    cd $SRCDIR/pkg
+
     # skip carat because building it leads to too much output which floods the log
     rm -rf carat*
     # skip linboxing because it hasn't compiled for years
@@ -123,15 +86,11 @@ fi
 # Compile edim to test gac (but not on HPC-GAP and not on Cygwin, where gac is known to be broken)
 if [[ $HPCGAP != yes && $OSTYPE = Cygwin* ]]
 then
-    cd edim
+    pushd $SRCDIR/pkg/edim
     ./configure $BUILDDIR
     make
-    cd ..
+    popd
 fi
-
-# return to base directory
-popd
-
 
 
 # create dir for coverage results

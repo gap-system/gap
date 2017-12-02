@@ -30,7 +30,7 @@ fi
 "$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
 make V=1 -j4
 
-# check that GAP is at least apple to start
+# check that GAP is at least able to start
 echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
 
 # download packages; instruct wget to retry several times if the
@@ -59,3 +59,50 @@ then
   mv pkg "$SRCDIR/"
 fi
 
+# compile IO and profiling package, unless NO_COVERAGE is given
+if [[ -z ${NO_COVERAGE} ]]
+then
+  # TODO: get rid of this hack (packages should set 32bit flags themselves)
+  if [[ $ABI == 32 ]]
+  then
+    CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
+  fi
+
+  # TODO: get rid of this hack (packages should get include paths from sysinfo.gap resp. gac)
+  if [[ $HPCGAP = yes ]]
+  then
+    # Add flags so that Boehm GC and libatomic headers are found
+    CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
+    export CPPFLAGS
+  fi
+
+  # We need to compile the profiling package in order to generate coverage
+  # reports; and also the IO package, as the profiling package depends on it.
+  pushd "$SRCDIR/pkg"
+
+  # HACK: io 4.4.6 (shipped with GAP 4.8.6) directly accesses some GAP internals
+  # (for GASMAN), which we will remove in GAP 4.9. To ensure it works,
+  # we simply grab the latest version from git.
+  # TODO: go back to using the io release on 4.5.0 is out
+  rm -rf io*
+  git clone https://github.com/gap-packages/io
+  cd io
+  # invoke autogen if configure does not exist or is not executable
+  [[ -x configure ]] || ./autogen.sh
+  ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
+  make V=1
+  cd ..
+
+  # HACK: grab the latest profiling version.
+  rm -rf profiling*
+  git clone https://github.com/gap-packages/profiling
+  cd profiling
+  # invoke autogen if configure does not exist or is not executable
+  [[ -x configure ]] || ./autogen.sh
+  ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
+  make V=1
+  cd ..
+
+  popd
+
+fi
