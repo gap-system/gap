@@ -105,8 +105,7 @@ matrix:
 
 script:
   - gcov --version
-  - bash etc/ci-prepare.sh
-  - bash etc/ci.sh
+  - bash etc/ci-prepare.sh && bash etc/ci.sh
 
 after_script:
   - bash etc/ci-gather-coverage.sh
