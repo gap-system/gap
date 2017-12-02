@@ -189,7 +189,7 @@ process_c_file () {
 ##
 
 process_gap_file () {
-  name=`basename $1 $2`
+  name=$(basename $1 $2)
 
   if [ $comp_howfar != "c_code" ]; then
     c_file=${gactmp}/$$_${name}.c
@@ -372,23 +372,23 @@ for input in ${inputs}; do
         *.gi) process_gap_file $input .gi;;
 
         *.c) # compile '.c' source files
-            name=`basename ${input} .c`
+            name=$(basename ${input} .c)
             process_c_file $name $input;;
 
         *.cc) # compile '.cc' source files (C++)
-            name=`basename ${input} .cc`
+            name=$(basename ${input} .cc)
             process_c_file $name $input "-x c++";;
 
         *.cpp) # compile '.cpp' source files (also C++)
-            name=`basename ${input} .cpp`
+            name=$(basename ${input} .cpp)
             process_c_file $name $input "-x c++";;
 
         *.o) # look over '.o' source files
-            name=`basename ${input} .o`
+            name=$(basename ${input} .o)
             process_o_file $name $input;;
 
         *.lo) # look over '.lo' source files
-            name=`basename ${input} .lo`
+            name=$(basename ${input} .lo)
             process_o_file $name $input;;
         esac
     done
