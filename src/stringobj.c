@@ -2140,7 +2140,6 @@ static Int ClearFiltsTab [] = {
 static Int HasFiltTab [] = {
 
     // string
-    T_STRING,                  FN_IS_EMPTY,   0,
     T_STRING,                  FN_IS_DENSE,   1,
     T_STRING,                  FN_IS_NDENSE,  0,
     T_STRING,                  FN_IS_HOMOG,   1,
@@ -2151,7 +2150,6 @@ static Int HasFiltTab [] = {
     T_STRING,                  FN_IS_NSORT,   0,
 
     // ssort string
-    T_STRING_SSORT,            FN_IS_EMPTY,   0,
     T_STRING_SSORT,            FN_IS_DENSE,   1,
     T_STRING_SSORT,            FN_IS_NDENSE,  0,
     T_STRING_SSORT,            FN_IS_HOMOG,   1,
@@ -2162,7 +2160,6 @@ static Int HasFiltTab [] = {
     T_STRING_SSORT,            FN_IS_NSORT,   0,
 
     // nsort string
-    T_STRING_NSORT,            FN_IS_EMPTY,   0,
     T_STRING_NSORT,            FN_IS_DENSE,   1,
     T_STRING_NSORT,            FN_IS_NDENSE,  0,
     T_STRING_NSORT,            FN_IS_HOMOG,   1,
@@ -2183,7 +2180,6 @@ static Int HasFiltTab [] = {
 static Int SetFiltTab [] = {
 
     // string
-    T_STRING,                  FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING,                  FN_IS_DENSE,   T_STRING,
     T_STRING,                  FN_IS_NDENSE,  -1,
     T_STRING,                  FN_IS_HOMOG,   T_STRING,
@@ -2194,7 +2190,6 @@ static Int SetFiltTab [] = {
     T_STRING,                  FN_IS_NSORT,   T_STRING_NSORT,
 
     // ssort string
-    T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NDENSE,  -1,
     T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
@@ -2205,7 +2200,6 @@ static Int SetFiltTab [] = {
     T_STRING_SSORT,            FN_IS_NSORT,   -1,
 
     // nsort string
-    T_STRING_NSORT,            FN_IS_EMPTY,   -1,
     T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NDENSE,  -1,
     T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,
@@ -2227,7 +2221,6 @@ static Int SetFiltTab [] = {
 static Int ResetFiltTab [] = {
 
     // string
-    T_STRING,                  FN_IS_EMPTY,   T_STRING,
     T_STRING,                  FN_IS_DENSE,   T_STRING,
     T_STRING,                  FN_IS_NDENSE,  T_STRING,
     T_STRING,                  FN_IS_HOMOG,   T_STRING,
@@ -2238,7 +2231,6 @@ static Int ResetFiltTab [] = {
     T_STRING,                  FN_IS_NSORT,   T_STRING,
 
     // ssort string
-    T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_NDENSE,  T_STRING_SSORT,
     T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
@@ -2249,7 +2241,6 @@ static Int ResetFiltTab [] = {
     T_STRING_SSORT,            FN_IS_NSORT,   T_STRING_SSORT,
 
     // nsort string
-    T_STRING_NSORT,            FN_IS_EMPTY,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_NDENSE,  T_STRING_NSORT,
     T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,

@@ -2747,12 +2747,14 @@ static Int CheckInit (
     Int         j;              /* loop variable                           */
     Int         success = 1;
 
-    Int         fnums[] = { FN_IS_EMPTY, FN_IS_DENSE,
-                            FN_IS_NDENSE, FN_IS_HOMOG, FN_IS_NHOMOG,
-                            FN_IS_TABLE, FN_IS_SSORT, FN_IS_NSORT };
-    const Char *fnams[] = { "empty", "dense", "ndense",
-                            "homog", "nhomog", "table", "ssort",
-                            "nsort" };
+    Int         fnums[] = { FN_IS_DENSE, FN_IS_NDENSE,
+                            FN_IS_HOMOG, FN_IS_NHOMOG,
+                            FN_IS_TABLE,
+                            FN_IS_SSORT, FN_IS_NSORT };
+    const Char *fnams[] = { "dense", "ndense",
+                            "homog", "nhomog",
+                            "table",
+                            "ssort", "nsort" };
 
 
     /* fix unknown list types                                              */
@@ -2882,7 +2884,7 @@ static Int CheckInit (
             }
         }
 
-        if ( HasFiltListTNums[i][FN_IS_EMPTY] ) {
+        if ( i == T_PLIST_EMPTY || i == T_PLIST_EMPTY+IMMUTABLE ) {
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",

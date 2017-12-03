@@ -1169,7 +1169,6 @@ static Int ClearFiltsTab [] = {
 static Int HasFiltTab [] = {
 
     // nsort range
-    T_RANGE_NSORT,              FN_IS_EMPTY,    0,
     T_RANGE_NSORT,              FN_IS_DENSE,    1,
     T_RANGE_NSORT,              FN_IS_NDENSE,   0,
     T_RANGE_NSORT,              FN_IS_HOMOG,    1,
@@ -1180,7 +1179,6 @@ static Int HasFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    1,
 
     // ssort range
-    T_RANGE_SSORT,              FN_IS_EMPTY,    0,
     T_RANGE_SSORT,              FN_IS_DENSE,    1,
     T_RANGE_SSORT,              FN_IS_NDENSE,   0,
     T_RANGE_SSORT,              FN_IS_HOMOG,    1,
@@ -1201,7 +1199,6 @@ static Int HasFiltTab [] = {
 static Int SetFiltTab [] = {
 
     // nsort range
-    T_RANGE_NSORT,              FN_IS_EMPTY,    -1,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   -1,
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
@@ -1212,7 +1209,6 @@ static Int SetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
     // ssort range
-    T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   -1,
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
@@ -1234,7 +1230,6 @@ static Int SetFiltTab [] = {
 static Int ResetFiltTab [] = {
 
     // nsort range
-    T_RANGE_NSORT,              FN_IS_EMPTY,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_NDENSE,   T_RANGE_NSORT,
     T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
@@ -1245,7 +1240,6 @@ static Int ResetFiltTab [] = {
     T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
 
     // ssort range
-    T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_NDENSE,   T_RANGE_SSORT,
     T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
