@@ -15,27 +15,27 @@
 ##
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 ##
-# can be much further improved, together with Binomial ... (FL)
-# but for the moment this is huge improvement over Product([1..n]) for large n
-# Factorial(1000000) is no problem now
-InstallGlobalFunction(Factorial,function ( n )
-    local pr;
-    if n < 0  then Error("<n> must be nonnegative");  fi;
-    pr := function(l, i, j)
-      local bound, len, res, l2, k;
-      bound := 30;
-      len := j+1-i;
-      if len < bound then
-        res := 1;
-        for k in [i..j] do
-          res := res*l[k];
-        od;
-        return res;
-      fi;   
-      l2 := QuoInt(len,2);
-      return pr(l,i,i+l2)*pr(l,i+l2+1,j);
-    end;
-    return pr( [1..n], 1, n );
+##  We use a fast implementation of `Binomial`.
+##  
+InstallGlobalFunction(Factorial, function ( n )
+  local i, n2, a, res;
+  if n < 0  then Error("<n> must be nonnegative");  fi;
+  # for very small n the direct loop is faster
+  if n < 32 then
+    res := 1;  
+    for i in [2..n] do
+      res := res*i;
+    od;
+    return res;
+  fi;
+  # recursive call of Factorial and call of Binomial
+  n2 := QuoInt(n,2);
+  a := Binomial(n,n2) * Factorial(n2)^2;
+  if 2*n2 < n then
+    return a * (n2+1);
+  else
+    return a;
+  fi;
 end);
 
 
