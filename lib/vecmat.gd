@@ -207,10 +207,6 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 DeclareGlobalFunction( "ConvertToVectorRepNC");
 DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
-# TODO: The following two functions only exist in HPC-GAP, but we always
-# declare them so that other code can access them conditionally, inside
-# an "if IsHPCGAP", without triggering syntax warnings about
-# unbound global variables.
 DeclareGlobalFunction( "CopyToVectorRep");
 DeclareGlobalFunction( "CopyToVectorRepNC");
 
