@@ -1496,7 +1496,7 @@ UInt ExecInfo (
         }
 
         /* and print them                                                  */
-        CALL_1ARGS(InfoDoPrint, args);
+        CALL_3ARGS(InfoDoPrint, selectors, level, args);
     }
     return 0;
 }
