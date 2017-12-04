@@ -38,7 +38,7 @@
 ##  INFODATA_NUM            an integer identifying the class
 ##  INFODATA_CURRENTLEVEL   a positive integer
 ##  INFODATA_CLASSNAME      a string
-##  INFODATA_HANDLER        optional, handler function for InfoDoPrint
+##  INFODATA_HANDLER        optional, handler function taking three arguments
 ##  INFODATA_OUTPUT         optional, output stream
 
 DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep,[]);
@@ -311,26 +311,6 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
     fi;
 
     return ret;
-end );
-
-#############################################################################
-##
-#F  InfoDoPrint( cls, lvl, args ) . . . . . . . . . . . Print an info message
-##
-##  This is called by the kernel to actually produce the message
-##
-
-BIND_GLOBAL( "InfoDoPrint", function(cls, lvl, args)
-    local fun;
-    if IsInfoSelector(cls) then
-      cls := cls[1];
-    fi;
-    if IsBound(cls![INFODATA_HANDLER])  then
-      fun := cls![INFODATA_HANDLER];
-    else
-      fun := DefaultInfoHandler;
-    fi;
-    fun(cls, lvl, args);
 end );
 
 
