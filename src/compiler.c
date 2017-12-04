@@ -5269,7 +5269,7 @@ void CompInfo (
     lev = CompExpr( ARGI_INFO( stat, 2 ) );
     lst = CVAR_TEMP( NewTemp( "lst" ) );
     tmp = CVAR_TEMP( NewTemp( "tmp" ) );
-    Emit( "%c = CALL_2ARGS( InfoDecision, %c, %c );\n", tmp, sel, lev );
+    Emit( "%c = InfoCheckLevel( %c, %c );\n", tmp, sel, lev );
     Emit( "if ( %c == True ) {\n", tmp );
     if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     narg = NARG_SIZE_INFO(SIZE_STAT(stat))-2;
