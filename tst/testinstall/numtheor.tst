@@ -73,6 +73,10 @@ gap> JACOBI_INT_GAP := function ( n, m )
 > end;;
 gap> ForAll([-100 .. 100], a-> ForAll([1 .. 100], b -> JACOBI_INT_GAP(a,b)=JACOBI_INT(a,b)));
 true
+gap> JACOBI_INT(fail, 1);
+Error, Jacobi: <n> must be an integer (not a boolean or fail)
+gap> JACOBI_INT(1, fail);
+Error, Jacobi: <m> must be an integer (not a boolean or fail)
 
 #
 gap> STOP_TEST( "numtheor.tst", 1);

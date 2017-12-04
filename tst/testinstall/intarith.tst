@@ -1255,9 +1255,13 @@ gap> checkPValuationInt:=function(n,p)
 gap> ForAll([-10000 .. 10000], n-> ForAll([2,3,5,7,251], p -> checkPValuationInt(n,p)));
 true
 gap> PVALUATION_INT(10,0);
-Error, PValuationInt: <p> must be nonzero
+Error, PValuation: <p> must be nonzero
 gap> PVALUATION_INT(0,0);
-Error, PValuationInt: <p> must be nonzero
+Error, PValuation: <p> must be nonzero
+gap> PVALUATION_INT(fail,1);
+Error, PValuation: <n> must be an integer (not a boolean or fail)
+gap> PVALUATION_INT(1,fail);
+Error, PValuation: <p> must be an integer (not a boolean or fail)
 
 #
 # test IS_PROBAB_PRIME_INT
@@ -1273,9 +1277,9 @@ Error, IsProbablyPrimeInt: <n> must be an integer (not a boolean or fail)
 gap> IS_PROBAB_PRIME_INT(1, fail);
 Error, IsProbablyPrimeInt: <reps> must be an integer (not a boolean or fail)
 gap> IS_PROBAB_PRIME_INT(1, 2^100);
-Error, IsProbablyPrimeInt: <reps> is too large
+Error, IsProbablyPrimeInt: <reps> must be a small positive integer
 gap> IS_PROBAB_PRIME_INT(1, 0);
-Error, IsProbablyPrimeInt: <reps> must be positive
+Error, IsProbablyPrimeInt: <reps> must be a small positive integer
 
 #
 gap> STOP_TEST( "intarith.tst", 1);
