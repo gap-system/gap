@@ -2233,12 +2233,12 @@ Obj FuncFACTORIAL_INT(Obj self, Obj opN)
 /****************************************************************************
 **
 */
-Obj BinomialInt ( Obj n, Obj k )
+Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
 {
     Int negate_result = 0;
 
-    if (!IS_INT(n) || !IS_INT(k))
-        return Fail;
+    REQUIRE_INT_ARG("Binomial", "n", n);
+    REQUIRE_INT_ARG("Binomial", "k", k);
 
     // deal with k <= 1
     if (k == INTOBJ_INT(0))
@@ -2321,21 +2321,13 @@ Obj BinomialInt ( Obj n, Obj k )
 /****************************************************************************
 **
 */
-Obj FuncBINOMIAL_INT ( Obj self, Obj opN, Obj opK )
-{
-  REQUIRE_INT_ARG( "BinomialInt", "n", opN );
-  REQUIRE_INT_ARG( "BinomialInt", "k", opK );
-  return BinomialInt( opN, opK );
-}
-
-
-/****************************************************************************
-**
-*/
-Obj JacobiInt ( Obj opL, Obj opR )
+Obj FuncJACOBI_INT ( Obj self, Obj opL, Obj opR )
 {
   fake_mpz_t mpzL, mpzR;
   int result;
+
+  REQUIRE_INT_ARG( "Jacobi", "n", opL );
+  REQUIRE_INT_ARG( "Jacobi", "m", opR );
 
   CHECK_INT(opL);
   CHECK_INT(opR);
@@ -2354,28 +2346,20 @@ Obj JacobiInt ( Obj opL, Obj opR )
 /****************************************************************************
 **
 */
-Obj FuncJACOBI_INT ( Obj self, Obj opL, Obj opR )
-{
-  REQUIRE_INT_ARG( "JacobiInt", "left", opL );
-  REQUIRE_INT_ARG( "JacobiInt", "right", opR );
-  return JacobiInt( opL, opR );
-}
-
-
-/****************************************************************************
-**
-*/
-Obj PValuationInt ( Obj n, Obj p )
+Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 {
   fake_mpz_t mpzN, mpzP;
   mpz_t mpzResult;
   int k;
 
+  REQUIRE_INT_ARG("PValuation", "n", n);
+  REQUIRE_INT_ARG("PValuation", "p", p);
+
   CHECK_INT(n);
   CHECK_INT(p);
 
   if ( p == INTOBJ_INT(0) )
-    ErrorMayQuit( "PValuationInt: <p> must be nonzero", 0L, 0L  );
+    ErrorMayQuit( "PValuation: <p> must be nonzero", 0L, 0L  );
 
   /* For certain values of p, mpz_remove replaces its "dest" argument
      and tries to deallocate the original mpz_t in it. This means
@@ -2393,16 +2377,6 @@ Obj PValuationInt ( Obj n, Obj p )
   mpz_clear( mpzResult );
 
   return INTOBJ_INT( k );
-}
-
-/****************************************************************************
-**
-*/
-Obj FuncPVALUATION_INT ( Obj self, Obj opL, Obj opR )
-{
-  REQUIRE_INT_ARG( "PValuationInt", "left", opL );
-  REQUIRE_INT_ARG( "PValuationInt", "right", opR );
-  return PValuationInt( opL, opR );
 }
 
 
@@ -2456,9 +2430,13 @@ Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
 /****************************************************************************
 **
 */
-Obj PowerModInt ( Obj base, Obj exp, Obj mod )
+Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
 {
   fake_mpz_t base_mpz, exp_mpz, mod_mpz, result_mpz;
+
+  REQUIRE_INT_ARG( "PowerModInt", "base", base );
+  REQUIRE_INT_ARG( "PowerModInt", "exp", exp );
+  REQUIRE_INT_ARG( "PowerModInt", "mod", mod );
 
   CHECK_INT(base);
   CHECK_INT(exp);
@@ -2492,51 +2470,29 @@ Obj PowerModInt ( Obj base, Obj exp, Obj mod )
   return GMPorINTOBJ_FAKEMPZ( result_mpz );
 }
 
-/****************************************************************************
-**
-*/
-Obj FuncPOWERMODINT ( Obj self, Obj base, Obj exp, Obj mod )
-{
-  REQUIRE_INT_ARG( "PowerModInt", "base", base );
-  REQUIRE_INT_ARG( "PowerModInt", "exp", exp );
-  REQUIRE_INT_ARG( "PowerModInt", "mod", mod );
-  return PowerModInt( base, exp, mod );
-}
-
 
 /****************************************************************************
 **
 */
-Obj IsProbablyPrimeInt ( Obj n, Int reps )
+Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 {
   fake_mpz_t n_mpz;
   Int res;
 
-  if ( reps < 1 )
-    ErrorMayQuit( "IsProbablyPrimeInt: <reps> must be positive", 0L, 0L );
+  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "n", n );
+  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "reps", reps );
+  if ( ! IS_POS_INTOBJ(reps) )
+    ErrorMayQuit( "IsProbablyPrimeInt: <reps> must be a small positive integer", 0L, 0L );
 
   CHECK_INT(n);
 
   FAKEMPZ_GMPorINTOBJ( n_mpz, n );
 
-  res = mpz_probab_prime_p( MPZ_FAKEMPZ(n_mpz), reps );
+  res = mpz_probab_prime_p( MPZ_FAKEMPZ(n_mpz), INT_INTOBJ(reps) );
 
   if (res == 2) return True; /* definitely prime */
   if (res == 0) return False; /* definitely not prime */
   return Fail; /* probably prime */
-}
-
-/****************************************************************************
-**
-*/
-Obj FuncIS_PROBAB_PRIME_INT ( Obj self, Obj n, Obj reps )
-{
-  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "n", n );
-  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "reps", reps );
-  if ( ! IS_INTOBJ(reps) )
-    ErrorMayQuit( "IsProbablyPrimeInt: <reps> is too large", 0L, 0L );
-
-  return IsProbablyPrimeInt( n, INT_INTOBJ(reps) );
 }
 
 
@@ -2667,7 +2623,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(GCD_INT, 2, "gmp1, gmp2"),
   GVAR_FUNC(PROD_INT_OBJ, 2, "gmp, obj"),
   GVAR_FUNC(POW_OBJ_INT, 2, "obj, gmp"),
-  GVAR_FUNC(JACOBI_INT, 2, "gmp1, gmp2"),
+  GVAR_FUNC(JACOBI_INT, 2, "n, m"),
   GVAR_FUNC(FACTORIAL_INT, 1, "n"),
   GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
   GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
