@@ -2056,7 +2056,7 @@ end );
 ##
 InstallMethod(ONanScottType,"primitive permgroups",true,[IsPermGroup],0,
 function(G)
-local dom,s,cs,t,ts,o;
+local dom,s,cs,t,m,d,wp,ts,twoMNSs;
   dom:=MovedPoints(G);
   if not IsPrimitive(G,dom) then
     Error("<G> must be primitive");
@@ -2069,35 +2069,49 @@ local dom,s,cs,t,ts,o;
   elif Length(dom)=Size(s) then
     return "5";
   else
-    # now get one simple factor of the socle
+    # So the group now is of type 3 or 4. Next we determine a simple socle
+    # factor t and a direct product m of all but one socle factors.
+    # These are a minimal normal and a maximal normal subgroup of the socle
+    # respectively.
     cs:=CompositionSeries(s);
-    # if the group is diagonal, the diagonal together with a maximal socle
-    # normal subgroup generates the whole socle, so this normal subgroup
-    # acts transitively. For product type this is not the case.
     t:=cs[Length(cs)-1];
-    if IsTransitive(t,dom) then
-      # type 3
-      if Length(cs)=3 and IsNormal(G,t) then
-	# intransitive on 2 components:
-	return "3a";
-      else
-	return "3b";
-      fi;
-    else
-      # type 4
+    m:=cs[2];
+    # If the group is diagonal, a point stabilizer together with m generates
+    # the whole socle, so this normal subgroup acts transitively.
+    # For product action type this is not the case. Namely, normal subgroups
+    # of the socle are direct products of some socle factors and these act
+    # transitively on dom = Delta^d iff. they act transitively in each
+    # "component" (respective copy of Delta).
+    # But m will act trivially on one component.
+    #
+    # Product action or diagonal?
+    if not IsTransitive(m,dom) then
+      return "4c";
+    fi;
+    # Now the group is diagonal.
+    # 3 vs 4: Are we a wreath product(4)?
+    # d: number of socle factors
+    d:=Length(cs)-1;
+    # If we are a wreath product the group's action consists of several
+    # diagonal actions. In this case dom can't have |t|^(d-1) many elements.
+    wp:=not Length(dom)=Size(t)^(d-1);
+    # a vs b: Do we have two different minimal normal subgroups(a)?
+    # a can only happen if d = 2 in case 3 or if d is divisible by 2 in case 4
+    twoMNSs:=false;
+    if (not wp and d = 2) or (wp and d mod 2 = 0) then
       ts:=Orbit(G,t);
-      if Length(ts)=2 and NormalClosure(G,t)<>s then
-        return "4a";
+      if not Length(ts) = d then
+        twoMNSs:=true;
       fi;
-      # find the block on the T's first: Those t which keep the orbit are
-      # glued together diagonally
-      o:=Orbit(t,dom[1]);
-      ts:=Filtered(ts,i->i=t or IsSubset(o,Orbit(i,dom[1])));
-      if Length(ts)=1 then
-        return "4c"; 
-      else
-	return "4b";
-      fi;
+    fi;
+    if not wp and twoMNSs then
+      return "3a";
+    elif not wp and not twoMNSs then
+      return "3b";
+    elif wp and twoMNSs then
+      return "4a";
+    else
+      return "4b";
     fi;
   fi;
 end);
