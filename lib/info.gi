@@ -46,13 +46,12 @@ DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep,[]);
 # A list of all created InfoClassListReps
 INFO_CLASSES := [];
 
-# This variable contains the level and (first) selector of the most recent
-# successful Info statement
+# InfoData is unused, but we keep it for now, to avoid warnings in GAPDoc.
+# TODO: remove InfoData
 InfoData := rec();
 
 if IsHPCGAP then
     ShareInternalObj(INFO_CLASSES);
-    MakeThreadLocal("InfoData");
 fi;
 
 InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
@@ -311,56 +310,28 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
         Error(usage);
     fi;
 
-    if ret then
-        # store the class and level
-        if IsInfoClass(selectors) then
-            InfoData.LastClass := selectors;
-        else
-            InfoData.LastClass := selectors[1];
-        fi;
-        InfoData.LastLevel := level;
-    fi;
-
     return ret;
 end );
 
 #############################################################################
 ##
-#F  InfoDoPrint( arglist )  . . . . . . . . . . . . . . Print an info message
+#F  InfoDoPrint( cls, lvl, args ) . . . . . . . . . . . Print an info message
 ##
 ##  This is called by the kernel to actually produce the message
 ##
 
-BIND_GLOBAL( "InfoDoPrint", function(arglist)
+BIND_GLOBAL( "InfoDoPrint", function(cls, lvl, args)
     local fun;
-    if IsBound(InfoData.LastClass![INFODATA_HANDLER])  then
-      fun := InfoData.LastClass![INFODATA_HANDLER];
+    if IsInfoSelector(cls) then
+      cls := cls[1];
+    fi;
+    if IsBound(cls![INFODATA_HANDLER])  then
+      fun := cls![INFODATA_HANDLER];
     else
       fun := DefaultInfoHandler;
     fi;
-    fun(InfoData.LastClass, InfoData.LastLevel, arglist);
+    fun(cls, lvl, args);
 end );
-
-
-##
-## Former GAP Info function, now replaced by the keyword Info.
-##
-###Info := function(arg)
-##    local usage;
-##   
-##    # Check and unpack the arguments
-##   usage := "Usage : Info(<selectors>, <level>, <data>...)";
-##    if Length(arg) < 2 then
-##        Error(usage);
-##    fi;
-##    if InfoDecision(arg[1], arg[2]) then
-##        InfoDoPrint(arg{[3..Length(arg)]});
-##    fi;
-##end;
-
-
-#N  Probably this file should also define InfoClasses for a range of purposes
-#N  which cut across files
 
 
 #############################################################################

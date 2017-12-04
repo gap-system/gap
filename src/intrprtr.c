@@ -4395,8 +4395,7 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
 {
     // Fast-path the most common failing case.
     // The fast-path only deals with the case where all arguments are of the
-    // correct type, and were False is returned. In the True case,
-    // InfoData.LastClass and InfoData.LastLevel need to be set.
+    // correct type, and were False is returned.
     if (CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
 #if defined(HPCGAP)
         Obj index = ElmAList(selectors, INFODATA_CURRENTLEVEL);
@@ -4435,6 +4434,10 @@ void            IntrInfoMiddle( void )
 
     if (selected == False)
       STATE(IntrIgnoring) = 1;
+    else {
+      PushObj(selectors);
+      PushObj(level);
+    }
 }
 
 Obj             InfoDoPrint;
@@ -4452,16 +4455,17 @@ void            IntrInfoEnd( UInt narg )
     /* print if necessary                                                  */
     if ( STATE(IntrIgnoring)  > 0 )
       STATE(IntrIgnoring)--;
-    else
-      {
+    else {
         args = NEW_PLIST( T_PLIST, narg);
         SET_LEN_PLIST(args, narg);
-
         while (narg > 0)
           SET_ELM_PLIST(args, narg--, PopObj());
 
-        CALL_1ARGS(InfoDoPrint, args);
-      }
+        Obj level = PopObj();
+        Obj selectors = PopObj();
+
+        CALL_3ARGS(InfoDoPrint, selectors, level, args);
+    }
 
     /* If we actually executed this statement at all
        (even if we printed nothing) then return a Void */
