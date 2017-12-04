@@ -4368,7 +4368,6 @@ enum {
     INFODATA_OUTPUT,
 };
 
-Obj InfoDecisionFast;
 Obj InfoDecision;
 static Obj IsInfoClassListRep;
 
