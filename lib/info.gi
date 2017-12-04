@@ -35,24 +35,13 @@
 ##  An InfoClass is represented as a positional object with the following
 ##  members:
 ##
-##  1 : Current level (A positive integer)
-##  2 : ClassName     (String)
-##  3 : Handler       (Optional, handler for InfoDoPrint)
-##  4 : Output        (Optional, output stream)
-##  5 : ClassNum      (An integer identifying the class)
-##
-##  In HPC-GAP, positional objects cannot change length, so we put a
-##  a non-optional member last, so the list of arguments always has
-##  fixed length.
+##  INFODATA_NUM            an integer identifying the class
+##  INFODATA_CURRENTLEVEL   a positive integer
+##  INFODATA_CLASSNAME      a string
+##  INFODATA_HANDLER        optional, handler function for InfoDoPrint
+##  INFODATA_OUTPUT         optional, output stream
 
 DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep,[]);
-
-# Define constants for the positions in InfoClassListRep
-BIND_CONSTANT("INFODATA_CURRENTLEVEL", 1);
-BIND_CONSTANT("INFODATA_CLASSNAME", 2);
-BIND_CONSTANT("INFODATA_HANDLER", 3);
-BIND_CONSTANT("INFODATA_OUTPUT", 4);
-BIND_CONSTANT("INFODATA_NUM", 5);
 
 # A list of all created InfoClassListReps
 INFO_CLASSES := [];
@@ -129,8 +118,13 @@ InstallMethod(NewInfoClass, true, [IsString], 0,
         fi;
         
         pos := Length(INFO_CLASSES) + 1;
-        ic := Objectify(NewType(InfoClassFamily,IsInfoClassListRep),
-                  [0, name, , ,pos]);
+        # make sure to always allocate a length big enough, even for the optional
+        # members, because in HPC-GAP, positional objects cannot be resized
+        ic := FixedAtomicList(5);
+        ic[INFODATA_CURRENTLEVEL] := 0;
+        ic[INFODATA_CLASSNAME] := Immutable(name);
+        ic[INFODATA_NUM] := pos;
+        ic := Objectify(NewType(InfoClassFamily,IsInfoClassListRep), ic);
         INFO_CLASSES[pos] := ic;
         return ic;
     od;
