@@ -919,7 +919,6 @@ extern void             IntrEmpty ( void );
 *F  IntrInfoMiddle() . . . . . . .  shift to interpreting printable arguments
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
 *V  InfoCheckLevel(<selectors>,<level>) . . . . . check if Info should output
-*V  InfoDoPrint . . . . . . . . . . . .  fopy of the InfoDoPrint GAP function
 */
 
 extern void             IntrInfoBegin ( void );
@@ -927,7 +926,8 @@ extern void             IntrInfoMiddle( void );
 extern void             IntrInfoEnd   (
            UInt                   narg );
 extern Obj              InfoCheckLevel(Obj, Obj);
-extern Obj              InfoDoPrint;
+
+extern void InfoDoPrint(Obj cls, Obj lvl, Obj args);
 
 
 /****************************************************************************

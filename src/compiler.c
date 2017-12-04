@@ -5281,7 +5281,7 @@ void CompInfo (
         Emit( "CHANGED_BAG(%c);\n", lst );
         if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     }
-    Emit( "CALL_3ARGS( InfoDoPrint, %c, %c, %c );\n", sel, lev, lst );
+    Emit( "InfoDoPrint( %c, %c, %c );\n", sel, lev, lst );
     Emit( "}\n" );
 
     /* free the temporaries                                                */

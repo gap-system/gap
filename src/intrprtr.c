@@ -4336,7 +4336,6 @@ void             IntrEmpty ( void )
 *F  IntrInfoMiddle()  . . . . . .  shift to interpreting printable statements
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
 *V  InfoDecision . . . . . . . . . . .  fopy of the InfoDecision GAP function
-*V  InfoDoPrint  . . . . . . . . . . . . fopy of the InfoDoPrint GAP function
 **
 **  These are the actions which are used to interpret an Info statement:
 **
@@ -4370,6 +4369,23 @@ enum {
 
 Obj InfoDecision;
 static Obj IsInfoClassListRep;
+static Obj DefaultInfoHandler;
+
+void InfoDoPrint(Obj cls, Obj lvl, Obj args)
+{
+    if (IS_PLIST(cls))
+        cls = ELM_PLIST(cls, 1);
+#if defined(HPCGAP)
+    Obj fun = Elm0AList(cls, INFODATA_HANDLER);
+#else
+    Obj fun = ELM_PLIST(cls, INFODATA_HANDLER);
+#endif
+    if (!fun)
+        fun = DefaultInfoHandler;
+
+    CALL_3ARGS(fun, cls, lvl, args);
+}
+
 
 Obj InfoCheckLevel(Obj selectors, Obj level)
 {
@@ -4420,8 +4436,6 @@ void            IntrInfoMiddle( void )
     }
 }
 
-Obj             InfoDoPrint;
-
 void            IntrInfoEnd( UInt narg )
 {
 
@@ -4444,7 +4458,7 @@ void            IntrInfoEnd( UInt narg )
         Obj level = PopObj();
         Obj selectors = PopObj();
 
-        CALL_3ARGS(InfoDoPrint, selectors, level, args);
+        InfoDoPrint(selectors, level, args);
     }
 
     /* If we actually executed this statement at all
@@ -4593,8 +4607,8 @@ static Int InitKernel (
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     /* The work of handling Info messages is delegated to the GAP level */
-    ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
-    ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
+    ImportFuncFromLibrary("InfoDecision", &InfoDecision);
+    ImportFuncFromLibrary("DefaultInfoHandler", &DefaultInfoHandler);
     ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
 
     /* The work of handling Options is also delegated*/
