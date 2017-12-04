@@ -218,27 +218,12 @@ build_one_package() {
   case "$PKG" in
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
-    anupq*)
-      echo_run ./configure CFLAGS=-m32 LDFLAGS=-m32 --with-gaproot=$GAPROOT && \
-      echo_run "$MAKE" CFLAGS=-m32 LOPTS=-m32
-    ;;
-
     atlasrep*)
       chmod 1777 datagens dataword
     ;;
 
     carat*)
       build_carat
-    ;;
-
-    fplsa*)
-      echo_run ./configure "$GAPROOT" && \
-      echo_run "$MAKE" CC="gcc -O2 "
-    ;;
-
-    kbmag*)
-      echo_run ./configure "$GAPROOT" && \
-      echo_run "$MAKE" COPTS="-O2 -g"
     ;;
 
     NormalizInterface*)
