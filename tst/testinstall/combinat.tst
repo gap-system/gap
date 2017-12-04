@@ -14,6 +14,10 @@ gap> Print(List( [0..10], Factorial ),"\n");
 [ 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800 ]
 gap> Factorial( 50 );
 30414093201713378043612608166064768844377641568960512000000000000
+gap> Factorial(-1);
+Error, Factorial: <n> must be nonnegative
+gap> Factorial(fail);
+Error, Factorial: <n> must be an integer (not a boolean or fail)
 
 #F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
 gap> Print(List( [-8..8], k -> Binomial( 0, k ) ),"\n");
@@ -25,6 +29,14 @@ gap> ForAll( [-8..8], n -> ForAll( [-2..8], k ->
 true
 gap> Binomial( 400, 50 );
 17035900270730601418919867558071677342938596450600561760371485120
+gap> Binomial( -2^100, 1 ) = -2^100;
+true
+gap> Binomial( 2^100, 2 ) = 2^100 * (2^100 - 1) / 2;
+true
+gap> Binomial(fail, 0);
+Error, Binomial: <n> must be an integer (not a boolean or fail)
+gap> Binomial(0, fail);
+Error, Binomial: <k> must be an integer (not a boolean or fail)
 
 #F  Bell( <n> ) . . . . . . . . . . . . . . . . .  value of the Bell sequence
 gap> Print(List( [0..10], n -> Bell(n) ),"\n");
