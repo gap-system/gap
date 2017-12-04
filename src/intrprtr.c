@@ -4360,6 +4360,14 @@ void            IntrInfoBegin( void )
 
 }
 
+enum {
+    INFODATA_NUM = 1,
+    INFODATA_CURRENTLEVEL,
+    INFODATA_CLASSNAME,
+    INFODATA_HANDLER,
+    INFODATA_OUTPUT,
+};
+
 Obj InfoDecisionFast;
 Obj InfoDecision;
 static Obj IsInfoClassListRep;
@@ -4372,9 +4380,9 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
     // InfoData.LastClass and InfoData.LastLevel need to be set.
     if (CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
 #if defined(HPCGAP)
-        Obj index = ElmAList(selectors, 1);
+        Obj index = ElmAList(selectors, INFODATA_CURRENTLEVEL);
 #else
-        Obj index = ELM_PLIST(selectors, 1);
+        Obj index = ELM_PLIST(selectors, INFODATA_CURRENTLEVEL);
 #endif
         if (IS_INTOBJ(index) && IS_INTOBJ(level)) {
             // < on INTOBJs compares the represented integers.
@@ -4607,6 +4615,12 @@ static Int InitLibrary (
     /* The Assertion level is also controlled at GAP level                 */
     lev = GVarName("CurrentAssertionLevel");
     AssGVar( lev, INTOBJ_INT(0) );
+
+    ExportAsConstantGVar(INFODATA_CURRENTLEVEL);
+    ExportAsConstantGVar(INFODATA_CLASSNAME);
+    ExportAsConstantGVar(INFODATA_HANDLER);
+    ExportAsConstantGVar(INFODATA_OUTPUT);
+    ExportAsConstantGVar(INFODATA_NUM);
 
     /* return success                                                      */
     return 0;
