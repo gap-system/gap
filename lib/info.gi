@@ -223,21 +223,21 @@ end);
 
 InstallOtherMethod(\+,
     "for info class and info selector",
-    true, [IsInfoClass, IsInfoSelector], 0,
+    true, [IsInfoClass, IsInfoSelector], 20,
         function(ic,is)
     return Union(is,[ic]);
 end);
 
 InstallOtherMethod(\+,
     "for info selector and info class",
-    true, [IsInfoSelector, IsInfoClass], 0,
+    true, [IsInfoSelector, IsInfoClass], 20,
         function(is,ic)
     return Union(is,[ic]);
 end);
 
 InstallOtherMethod(\+,
     "for two info selectors",
-    IsIdenticalObj, [IsInfoSelector, IsInfoSelector], 0,
+    IsIdenticalObj, [IsInfoSelector, IsInfoSelector], 20,
         function(is1,is2)
     return Union(is1,is2);
 end);

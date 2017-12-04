@@ -9,6 +9,22 @@
 gap> START_TEST("info.tst");
 gap> InfoTest1 := NewInfoClass("InfoTest1");;
 gap> InfoTest2 := NewInfoClass("InfoTest2");;
+
+# printing and arithmetic of info classes
+gap> InfoTest1;
+InfoTest1
+gap> InfoTest1 = InfoTest2;
+false
+gap> InfoTest1 < InfoTest2;
+true
+gap> InfoTest1+InfoTest1;
+[ InfoTest1 ]
+gap> InfoTest1+InfoTest2;
+[ InfoTest1, InfoTest2 ]
+gap> InfoTest1+InfoTest2+InfoTest1;
+[ InfoTest1, InfoTest2 ]
+
+#
 gap> InfoLevel(InfoTest1);
 0
 gap> Info(InfoTest1, 1, "No");
