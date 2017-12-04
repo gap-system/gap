@@ -2785,14 +2785,14 @@ static void InitModuleState(ModuleStateOffset offset)
 {
     Obj tmpFunc, tmpBody;
 
-    STATE(CurrLVars) = (Bag)0;
-
     STATE(BottomLVars) = NewBag(T_HVARS, 3 * sizeof(Obj));
     tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
     FUNC_LVARS( STATE(BottomLVars) ) = tmpFunc;
     PARENT_LVARS(STATE(BottomLVars)) = Fail;
     tmpBody = NewBag( T_BODY, sizeof(BodyHeader) );
     SET_BODY_FUNC( tmpFunc, tmpBody );
+
+    STATE(CurrLVars) = STATE(BottomLVars);
 }
 
 
