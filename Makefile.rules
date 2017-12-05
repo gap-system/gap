@@ -1112,9 +1112,11 @@ config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
 
 $(srcdir)/configure: $(configure_deps)
-	cd $(srcdir) && autoconf
-#$(ACLOCAL_M4): $(srcdir)/configure.ac $(wildcard $(srcdir)/cnf/m4/*.m4)
-#	cd $(srcdir) && $(ACLOCAL) -I cnf/m4
+	@if command -v autoconf >/dev/null 2>&1 ; then \
+	   cd $(srcdir) && autoconf ; \
+	 else \
+	   echo "autoconf not available, proceeding with stale configure" ; \
+	 fi
 
 gen/config.h: gen/stamp-h
 	@if test ! -f $@; then rm -f gen/stamp-h; else :; fi
@@ -1126,8 +1128,12 @@ gen/stamp-h: $(srcdir)/src/config.h.in config.status
 	echo > $@
 
 $(srcdir)/src/config.h.in: $(configure_deps) 
-	cd $(srcdir) && autoheader
-	rm -f gen/stamp-h
+	@if command -v autoheader >/dev/null 2>&1 ; then \
+	   cd $(srcdir) && autoheader ; \
+	   rm -f gen/stamp-h ; \
+	 else \
+	   echo "autoheader not available, proceeding with stale config.h" ; \
+	 fi
 	touch $@
 
 GNUmakefile: $(srcdir)/GNUmakefile.in config.status
