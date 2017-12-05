@@ -479,6 +479,38 @@ gap> SIGN_INT(fail);
 Error, SignInt: argument must be an integer (not a boolean or fail)
 
 #
+# QuotientMod
+#
+
+# test "... q is either zero (if r is divisible by m) ... "
+gap> ForAll([1..12], m -> ForAll(m*[-m..m], r -> QuotientMod(0,r,m)=0));
+true
+
+# test that 0 divides nothing other than multiples of m
+gap> ForAll([1..10], m -> ForAll([1..m-1], r -> QuotientMod(r,0,m)=fail));
+true
+
+# brute force test a bunch of inputs
+gap> naivQM:={r,s,m}->First([0..m-1], q -> ((q*s-r) mod m) = 0);;
+gap> f := m -> SetX([-2*m..2*m], [-2*m..2*m], {r,s} -> QuotientMod(r,s,m) = naivQM(r,s,m));;
+gap> Set([1..12], f);
+[ [ true ] ]
+
+# test that m = 0 is forbidden
+gap> QuotientMod(5, 4, 0);
+Error, Integer operations: <divisor> must be nonzero
+
+# some old test cases, to show case that issue #149 is resolved
+gap> QuotientMod(2, 4, 6);
+2
+gap> QuotientMod(4, 2, 6);
+2
+gap> QuotientMod(-2, 2, 6);
+2
+gap> QuotientMod(4, 8, 6);
+2
+
+#
 # HexStringInt and IntHexString
 #
 gap> dataHex := List(data, HexStringInt);

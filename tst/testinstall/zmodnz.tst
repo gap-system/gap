@@ -438,6 +438,35 @@ ZmodnZObj( 4, 10 )
 gap> Random(GlobalRandomSource, R);
 ZmodnZObj( 9, 10 )
 
+# test some additional quotients
+gap> a:=ZmodnZObj(2, 6);; b:=ZmodnZObj(4, 6);;
+gap> b/a;
+ZmodnZObj( 2, 6 )
+gap> a/b;
+ZmodnZObj( 2, 6 )
+
+#
+gap> x := ZmodnZObj(2,10);
+ZmodnZObj( 2, 10 )
+gap> y := ZmodnZObj(0,10);
+ZmodnZObj( 0, 10 )
+gap> x/y;
+fail
+gap> y/x;
+ZmodnZObj( 0, 10 )
+gap> 0/x;
+ZmodnZObj( 0, 10 )
+gap> x/0;
+fail
+gap> x/3;
+ZmodnZObj( 4, 10 )
+gap> 3/x;
+fail
+gap> y/3;
+ZmodnZObj( 0, 10 )
+gap> 3/y;
+fail
+
 #
 gap> STOP_TEST( "zmodnz.tst", 1);
 

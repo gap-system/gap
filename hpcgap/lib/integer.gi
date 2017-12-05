@@ -1668,15 +1668,24 @@ InstallMethod( QuotientMod,
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, s, m )
-    if s > m then 
-        s := s mod m;
-    fi;
+    local g;
     if m = 1 then
         return 0;
-    elif GcdInt( s, m ) <> 1 then
-        return fail;
     else
-        return r/s mod m;
+        r := r mod m;
+        if r = 0 then return 0; fi;  # as required by QuotientMod documentation
+        s := s mod m;
+        if s = 0 then return fail; fi;
+
+        g := GcdInt( r, s );
+        r := r / g;
+        s := s / g;
+        g := GcdInt( g, m );
+        m := m / g;
+        if GcdInt( s, m ) <> 1 then
+            return fail;
+        fi;
+        return r * INVMODINT(s, m) mod m;
     fi;
     end );
 
