@@ -38,7 +38,7 @@ Improved performance for records with large number of components.
 Speedup of hash tables implementation at the &GAP; library level.
 </Item>
 <Item>
-<Ref Oper="MemoryUsage" BookName="ref"/> is now much 
+<Ref Func="MemoryUsage" BookName="ref"/> is now much 
 more efficient, in particular for large objects. 
 </Item>
 <Item>
