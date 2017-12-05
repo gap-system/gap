@@ -1787,136 +1787,134 @@ void CodeStringExpr (
 *F  CodeFloatExpr( <str> ) . . . . . . . .  code literal float expression
 */
 enum {
-    FLOAT_0_INDEX = 1,  // reserved for constant 0.0
-    FLOAT_1_INDEX = 2,  // reserved for constant 1.0
-    MAX_FLOAT_INDEX = ((1L<<NR_SMALL_INT_BITS)-2)
+    FLOAT_0_INDEX = 1,    // reserved for constant 0.0
+    FLOAT_1_INDEX = 2,    // reserved for constant 1.0
+    MAX_FLOAT_INDEX = ((1L << NR_SMALL_INT_BITS) - 2)
 };
 static UInt NextFloatExprNumber = 3;
 
-Obj EAGER_FLOAT_LITERAL_CACHE = 0;
+Obj        EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
-static UInt getNextFloatExprNumber( void ) {
-  UInt next;
-  HashLock(&NextFloatExprNumber);
-  assert(NextFloatExprNumber < MAX_FLOAT_INDEX);
-  next = NextFloatExprNumber++;
-  HashUnlock(&NextFloatExprNumber);
-  return next;
+static UInt getNextFloatExprNumber(void)
+{
+    UInt next;
+    HashLock(&NextFloatExprNumber);
+    assert(NextFloatExprNumber < MAX_FLOAT_INDEX);
+    next = NextFloatExprNumber++;
+    HashUnlock(&NextFloatExprNumber);
+    return next;
 }
 
-static UInt CheckForCommonFloat(Char *str) {
-  /* skip leading zeros */
-  while (*str == '0')
-    str++;
-  if (*str == '.')
-    /* might be zero literal */
-    {
-      /* skip point */
-      str++;
-      /* skip more zeroes */
-      while (*str == '0')
+static UInt CheckForCommonFloat(Char * str)
+{
+    /* skip leading zeros */
+    while (*str == '0')
         str++;
-      /* if we've got to end of string we've got zero. */
-      if (!IsDigit(*str))
-        return FLOAT_0_INDEX;
+    /* might be zero literal */
+    if (*str == '.') {
+        /* skip point */
+        str++;
+        /* skip more zeroes */
+        while (*str == '0')
+            str++;
+        /* if we've got to end of string we've got zero. */
+        if (!IsDigit(*str))
+            return FLOAT_0_INDEX;
     }
-  if (*str++ !='1')
-    return 0;
-  /* might be one literal */
-  if (*str++ != '.')
-    return 0;
-  /* skip zeros */
-  while (*str == '0')
+    if (*str++ != '1')
+        return 0;
+    /* might be one literal */
+    if (*str++ != '.')
+        return 0;
+    /* skip zeros */
+    while (*str == '0')
+        str++;
+    if (*str == '\0')
+        return FLOAT_1_INDEX;
+    if (IsDigit(*str))
+        return 0;
+    /* must now be an exponent character */
+    assert(IsAlpha(*str));
+    /* skip it */
     str++;
-  if (*str == '\0')
-    return FLOAT_1_INDEX;
-  if (IsDigit(*str))
-    return 0;
-  /* must now be an exponent character */
-  assert(IsAlpha(*str));
-  /* skip it */
-  str++;
-  /*skip + and - in exponent */
-  if (*str == '+' || *str == '-')
-    str++;
-  /* skip leading zeros in the exponent */
-  while (*str == '0')
-    str++;
-  /* if there's anything but leading zeros this isn't 
-     a one literal */
-  if (*str == '\0')
-    return FLOAT_1_INDEX;
-  else
-    return 0;
+    /*skip + and - in exponent */
+    if (*str == '+' || *str == '-')
+        str++;
+    /* skip leading zeros in the exponent */
+    while (*str == '0')
+        str++;
+    /* if there's anything but leading zeros this isn't
+       a one literal */
+    if (*str == '\0')
+        return FLOAT_1_INDEX;
+    else
+        return 0;
 }
 
-static void CodeLazyFloatExpr( Char *str, UInt len) {
+static void CodeLazyFloatExpr(Char * str, UInt len)
+{
     UInt ix;
 
     /* Lazy case, store the string for conversion at run time */
-    Expr fl = NewExpr( T_FLOAT_EXPR_LAZY, 2*sizeof(UInt) +len+1  );
+    Expr fl = NewExpr(T_FLOAT_EXPR_LAZY, 2 * sizeof(UInt) + len + 1);
     /* copy the string                                                     */
-    memcpy( (char *)ADDR_EXPR(fl)+2*sizeof(UInt), str, 
-            len+1 );
-      
+    memcpy((char *)ADDR_EXPR(fl) + 2 * sizeof(UInt), str, len + 1);
+
     *(UInt *)ADDR_EXPR(fl) = len;
     ix = CheckForCommonFloat(str);
-    if (!ix) 
-      ix = getNextFloatExprNumber();
+    if (!ix)
+        ix = getNextFloatExprNumber();
     ((UInt *)ADDR_EXPR(fl))[1] = ix;
-    
-    /* push the expression                                                     */
-    PushExpr( fl );
+
+    /* push the expression */
+    PushExpr(fl);
 }
 
-static void CodeEagerFloatExpr( Obj str, Char mark ) {
-  /* Eager case, do the conversion now */
-  UInt l = GET_LEN_STRING(str);
-  Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
-  Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
-  UInt ix;
-  assert(EAGER_FLOAT_LITERAL_CACHE);
-#ifdef HPCGAP
-  assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
-  ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
-#else
-  assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
-#endif
-  ADDR_EXPR(fl)[0] = ix;
-  ADDR_EXPR(fl)[1] = l;
-  ADDR_EXPR(fl)[2] = (UInt)mark;
-  memcpy(ADDR_EXPR(fl)+3, CHARS_STRING(str), l+1);
-  PushExpr(fl);
-}
-
-void CodeFloatExpr (
-    Char *              str )
+static void CodeEagerFloatExpr(Obj str, Char mark)
 {
-  
-  UInt l = strlen(str);
-  UInt l1 = l;
-  Char mark = '\0'; /* initialize to please compilers */
-  if (str[l-1] == '_' )
-    {
-      l1 = l-1;
-      mark = '\0';
+    /* Eager case, do the conversion now */
+    UInt l = GET_LEN_STRING(str);
+    Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3 + l + 1);
+    Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+    UInt ix;
+    assert(EAGER_FLOAT_LITERAL_CACHE);
+#ifdef HPCGAP
+    assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
+    ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
+#else
+    assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
+    ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
+#endif
+    ADDR_EXPR(fl)[0] = ix;
+    ADDR_EXPR(fl)[1] = l;
+    ADDR_EXPR(fl)[2] = (UInt)mark;
+    memcpy(ADDR_EXPR(fl) + 3, CHARS_STRING(str), l + 1);
+    PushExpr(fl);
+}
+
+void CodeFloatExpr(Char * str)
+{
+    UInt l = strlen(str);
+    UInt l1 = l;
+    Char mark = '\0'; /* initialize to please compilers */
+    if (str[l - 1] == '_') {
+        l1 = l - 1;
+        mark = '\0';
     }
-  else if (str[l-2] == '_')
-    {
-      l1 = l-2;
-      mark = str[l-1];
+    else if (str[l - 2] == '_') {
+        l1 = l - 2;
+        mark = str[l - 1];
     }
-  if (l1 < l)
-    {
-      Obj s;
-      C_NEW_STRING(s, l1, str);
-      CodeEagerFloatExpr(s,mark);
-    } else {
-    CodeLazyFloatExpr(str, l);
-  }
+    if (l1 < l) {
+        Obj s;
+        C_NEW_STRING(s, l1, str);
+        CodeEagerFloatExpr(s, mark);
+    }
+    else {
+        CodeLazyFloatExpr(str, l);
+    }
 }
 
 /****************************************************************************
@@ -1924,29 +1922,29 @@ void CodeFloatExpr (
 *F  CodeLongFloatExpr( <str> ) . . . . . . code long literal float expression
 */
 
-void CodeLongFloatExpr (
-    Obj              str )
+void CodeLongFloatExpr(Obj s)
 {
-  Char mark = '\0'; /* initialize to please compilers */
+    Char * str = CSTR_STRING(s);
 
-    /* allocate the float expression                                      */
-    UInt l = GET_LEN_STRING(str);
+    UInt l = GET_LEN_STRING(s);
     UInt l1 = l;
-    if (CHARS_STRING(str)[l-1] == '_') {
-      l1 = l-1;
-      mark = '\0';
-    } else if (CHARS_STRING(str)[l-2] == '_') {
-      l1 = l-2;
-      mark = CHARS_STRING(str)[l-1];
+    Char mark = '\0'; /* initialize to please compilers */
+    if (str[l - 1] == '_') {
+        l1 = l - 1;
+        mark = '\0';
+    }
+    else if (str[l - 2] == '_') {
+        l1 = l - 2;
+        mark = str[l - 1];
     }
     if (l1 < l) {
-      CHARS_STRING(str)[l1] = '\0';
-      SET_LEN_STRING(str,l1);
-      CodeEagerFloatExpr(str, mark);
-    } else {
-      CodeLazyFloatExpr((Char *)CHARS_STRING(str), l);
+        str[l1] = '\0';
+        SET_LEN_STRING(s, l1);
+        CodeEagerFloatExpr(s, mark);
     }
-    
+    else {
+        CodeLazyFloatExpr(str, l);
+    }
 }
 
 
