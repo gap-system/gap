@@ -201,11 +201,9 @@ false
   <Attr Name="Trunc" Arg="x"/>
   <Attr Name="Frac" Arg="x"/>
   <Attr Name="SignFloat" Arg="x"/>
-  <Attr Name="Argument" Arg="x" Label="for complex numbers" />
   <Attr Name="Erf" Arg="x"/>
   <Attr Name="Zeta" Arg="x"/>
   <Attr Name="Gamma" Arg="x"/>
-  <Attr Name="ComplexI" Arg="x"/>
   <Description>
     Usual mathematical functions.
   </Description>
@@ -228,28 +226,6 @@ false
   <Description>
     This function returns the precision, counted in number of binary digits,
     of the floating-point number <A>x</A>.
-  </Description>
-</ManSection>
-
-<ManSection>
-  <Heading>Interval operations</Heading>
-  <Attr Name="Sup" Arg="interval"/>
-  <Attr Name="Inf" Arg="interval"/>
-  <Attr Name="Mid" Arg="interval"/>
-  <Attr Name="AbsoluteDiameter" Arg="interval"/>
-  <Attr Name="RelativeDiameter" Arg="interval"/>
-  <Oper Name="Overlaps" Arg="interval1 interval2"/>
-  <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
-  <Oper Name="IncreaseInterval" Arg="interval delta"/>
-  <Oper Name="BlowupInterval" Arg="interval ratio"/>
-  <Oper Name="BisectInterval" Arg="interval"/>
-  <Description>
-    Most are self-explanatory.
-    <C>BlowupInterval</C> returns an interval with same midpoint but
-    relative diameter increased by <A>ratio</A>; <C>IncreaseInterval</C>
-    returns an interval with same midpoint but absolute diameter increased
-    by <A>delta</A>; <C>BisectInterval</C> returns a list of two intervals
-    whose union equals <A>interval</A>.
   </Description>
 </ManSection>
 
@@ -339,6 +315,23 @@ numbers; they may be input with an extra "i" as in <C>-0.5+0.866i</C>.
 Methods should then be implemented for <C>Norm</C>, <C>RealPart</C>,
 <C>ImaginaryPart</C>, <C>ComplexConjugate</C>, ...
 
+<ManSection>
+  <Attr Name="ComplexI" Arg="x"/>
+  <Description>
+    Returns a floatean with the same precision and representation,
+    whose value equals the imaginary unit <C>i</C>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Attr Name="Argument" Arg="z" Label="for complex numbers" />
+  <Description>
+    Returns the argument of the complex number <A>z</A>.
+    <!-- Define what the argument is? -->
+  </Description>
+</ManSection>
+
+
 </Section>
 
 <Section><Heading>Interval-specific methods</Heading>
@@ -355,6 +348,73 @@ include <C>Sup,Inf,Mid,DiameterOfInterval,Overlaps,IsSubset,IsDisjoint</C>.
 Note the usual convention that intervals are compared as
 in <M>[a,b]\le[c,d]</M> if and only if <M>a\le c</M> and <M>b\le
 d</M>.
+
+<ManSection>
+  <Attr Name="Sup" Arg="interval"/>
+  <Description>
+    Returns the supremum of the interval.
+  </Description>
+</ManSection>
+<ManSection>
+  <Attr Name="Inf" Arg="interval"/>
+  <Description>
+    Returns the infimum of the interval.
+  </Description>
+</ManSection>
+<ManSection>
+  <Attr Name="Mid" Arg="interval"/>
+  <Description>
+    Returns the midpoint of the interval.
+  </Description>
+</ManSection>
+<ManSection>
+  <Attr Name="AbsoluteDiameter" Arg="interval"/>
+  <Description>
+    Returns the absolute diameter of the interval.
+    <!-- FIXME: what does that mean? -->
+  </Description>
+</ManSection>
+<ManSection>
+  <Attr Name="RelativeDiameter" Arg="interval"/>
+  <Description>
+    Returns the relative diameter of the interval.
+    <!-- FIXME: what does that mean? -->
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="Overlaps" Arg="interval1 interval2"/>
+  <Description>
+    Returns <K>true</K> if the two intervals overlap.
+    <!-- FIXME: is that correct? -->
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
+  <Description>
+    Returns <K>true</K> if the two intervals are disjoint.
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="IncreaseInterval" Arg="interval delta"/>
+  <Description>
+    Returns an interval with same midpoint but absolute diameter increased by
+    <A>delta</A>.
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="BlowupInterval" Arg="interval ratio"/>
+  <Description>
+    Returns an interval with same midpoint but relative diameter increased by
+    <A>ratio</A>.
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="BisectInterval" Arg="interval"/>
+  <Description>
+    Returns a list of two intervals whose union equals <A>interval</A>.
+  </Description>
+</ManSection>
+
 </Section>
 
 </Chapter>
