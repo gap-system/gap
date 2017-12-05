@@ -157,6 +157,34 @@ gap> EqFloat(0.0,0.0/0.0);
 false
 
 #
+# float literal expressions in functions
+#
+
+# eager literal
+gap> f := {} -> 0.0_;; f();
+0.
+gap> f := {} -> 1.0_;; f();
+1.
+gap> f := {} -> 42.0_;; f();
+42.
+gap> Display(f);
+function (  )
+    return 42.0_;
+end
+
+# lazy literal
+gap> g := {} -> 0.0;; g();
+0.
+gap> g := {} -> 1.0;; g();
+1.
+gap> g := {} -> 23.0;; g();
+23.
+gap> Display(g);
+function (  )
+    return 23.0;
+end
+
+#
 gap> STOP_TEST( "float.tst", 1);
 
 #############################################################################

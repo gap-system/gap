@@ -79,7 +79,7 @@ InstallGlobalFunction(SetFloats, function(arg)
         EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
     fi;
     
-    UNBIND_GLOBAL("FLOAT_LITERAL_CACHE");
+    FLUSH_FLOAT_LITERAL_CACHE();
 
     if prec<>fail then
         r.constants.MANT_DIG := prec;

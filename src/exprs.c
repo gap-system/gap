@@ -1194,7 +1194,6 @@ Obj             EvalStringExpr (
 */
 static Obj CONVERT_FLOAT_LITERAL;
 static Obj FLOAT_LITERAL_CACHE;
-static UInt GVAR_FLOAT_LITERAL_CACHE;
 static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
 
 Obj             EvalFloatExprLazy (
@@ -1215,14 +1214,7 @@ Obj             EvalFloatExprLazy (
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
       cache = FLOAT_LITERAL_CACHE;
-      if (!cache) {
-#ifdef HPCGAP
-          cache = NewAtomicList(T_ALIST, ix);
-#else
-          cache = NEW_PLIST(T_PLIST,ix);
-#endif
-          AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
-      }
+      assert(cache);
       fl = ELM0_LIST(cache, ix);
       if (fl)
         return fl;
@@ -1247,7 +1239,7 @@ Obj             EvalFloatExprLazy (
 **  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
 **  value.
 */
-static Obj EAGER_FLOAT_LITERAL_CACHE;
+extern Obj EAGER_FLOAT_LITERAL_CACHE;
 
 Obj EvalFloatExprEager(Expr expr)
 {
@@ -1829,10 +1821,32 @@ void            PrintRecExpr (
 }
 
 
+Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
+{
+#ifdef HPCGAP
+    FLOAT_LITERAL_CACHE = NewAtomicList(T_ALIST, 0);
+#else
+    FLOAT_LITERAL_CACHE = NEW_PLIST(T_PLIST, 0);
+#endif
+    return 0;
+}
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
+
+/****************************************************************************
+ **
+ *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+ */
+static StructGVarFunc GVarFuncs [] = {
+
+  GVAR_FUNC(FLUSH_FLOAT_LITERAL_CACHE, 0, ""),
+  { 0, 0, 0, 0, 0 }
+
+};
 
 
 /****************************************************************************
@@ -1845,9 +1859,10 @@ static Int InitKernel (
     UInt                type;           /* loop variable                   */
 
     InitFopyGVar("CONVERT_FLOAT_LITERAL",&CONVERT_FLOAT_LITERAL);
-    InitCopyGVar("FLOAT_LITERAL_CACHE",&FLOAT_LITERAL_CACHE);
-    InitCopyGVar("EAGER_FLOAT_LITERAL_CACHE",&EAGER_FLOAT_LITERAL_CACHE);
     InitCopyGVar("MAX_FLOAT_LITERAL_CACHE_SIZE",&MAX_FLOAT_LITERAL_CACHE_SIZE);
+
+    InitGlobalBag( &FLOAT_LITERAL_CACHE, "FLOAT_LITERAL_CACHE" );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     
     /* clear the evaluation dispatch table                                 */
@@ -1965,7 +1980,11 @@ static Int InitKernel (
 
 static Int InitLibrary(StructInitInfo * module)
 {
-    GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    FuncFLUSH_FLOAT_LITERAL_CACHE(0);
+
     return 0;
 }
 
@@ -1980,7 +1999,6 @@ static StructInitInfo module = {
     .name = "exprs",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = InitLibrary
 };
 
 StructInitInfo * InitInfoExprs ( void )

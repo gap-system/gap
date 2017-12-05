@@ -1786,24 +1786,22 @@ void CodeStringExpr (
 **
 *F  CodeFloatExpr( <str> ) . . . . . . . .  code literal float expression
 */
-#define FLOAT_0_INDEX 1
-#define FLOAT_1_INDEX 2
-#define MAX_FLOAT_INDEX ((1L<<NR_SMALL_INT_BITS)-2)
-
+enum {
+    FLOAT_0_INDEX = 1,  // reserved for constant 0.0
+    FLOAT_1_INDEX = 2,  // reserved for constant 1.0
+    MAX_FLOAT_INDEX = ((1L<<NR_SMALL_INT_BITS)-2)
+};
 static UInt NextFloatExprNumber = 3;
 
-static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
+Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
 static UInt getNextFloatExprNumber( void ) {
   UInt next;
   HashLock(&NextFloatExprNumber);
-  if (NextFloatExprNumber > MAX_FLOAT_INDEX)
-    next = 0;
-  else {
-    next = NextFloatExprNumber++;
-  }
+  assert(NextFloatExprNumber < MAX_FLOAT_INDEX);
+  next = NextFloatExprNumber++;
   HashUnlock(&NextFloatExprNumber);
   return next;
 }
@@ -1923,7 +1921,7 @@ void CodeFloatExpr (
 
 /****************************************************************************
 **
-*F  CodeLongFloatExpr( <str> ) . . . . . . .code long literal float expression
+*F  CodeLongFloatExpr( <str> ) . . . . . . code long literal float expression
 */
 
 void CodeLongFloatExpr (
