@@ -11,23 +11,11 @@
 
 #############################################################################
 ##
-#F  NewObjectMarker( )
-#F  MarkObject( <marks>, <obj> )
-#F  UnmarkObject( <marks>, <obj> )
-#F  ClearObjectMarker( <marks> )
-DeclareGlobalFunction( "NewObjectMarker" );
-DeclareGlobalFunction( "MarkObject" );
-DeclareGlobalFunction( "UnmarkObject" );
-DeclareGlobalFunction( "ClearObjectMarker" );
-
-
-#############################################################################
-##
 #O  MemoryUsage( <obj> )
 ##
 ##  <#GAPDoc Label="MemoryUsage">
 ##  <ManSection>
-##  <Oper Name="MemoryUsage" Arg='obj'/>
+##  <Func Name="MemoryUsage" Arg='obj'/>
 ##
 ##  <Description>
 ##  Returns the amount of memory in bytes used by the object <A>obj</A>
@@ -45,10 +33,9 @@ DeclareGlobalFunction( "ClearObjectMarker" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MemoryUsage", [IsObject] );
+DeclareGlobalFunction( "MemoryUsage" );
 
-DeclareGlobalFunction( "MU_AddToCache" );
-DeclareGlobalFunction( "MU_Finalize" );
+DeclareOperation( "MemoryUsageOp", [IsObject, IsFunction] );
 
 
 BIND_GLOBAL( "MU_MemPointer", GAPInfo.BytesPerVariable );
@@ -57,8 +44,3 @@ if GAPInfo.BytesPerVariable = 4 then
 else
   BIND_GLOBAL( "MU_MemBagHeader", 16 );
 fi;
-
-
-#############################################################################
-##
-#E
