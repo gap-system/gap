@@ -341,8 +341,7 @@ are in fact efficient implementations of sets of real numbers. The
 only non-trivial issue is how they should be compared. The standard
 <C>EQ</C> tests if the intervals are equal; however, it is usually
 more useful to know if intervals overlap, or are disjoint, or are
-contained in each other. The methods provided by the package should
-include <C>Sup,Inf,Mid,Overlaps,IsSubset,IsDisjoint</C>.
+contained in each other.
 <P/>
 
 Note the usual convention that intervals are compared as
@@ -392,6 +391,12 @@ d</M>.
   <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
   <Description>
     Returns <K>true</K> if the two intervals are disjoint.
+  </Description>
+</ManSection>
+<ManSection>
+  <Oper Name="IsSubset" Arg="interval1 interval2" Label="for floatean intervals"/>
+  <Description>
+    Returns <K>true</K> if the first interval contains the second.
   </Description>
 </ManSection>
 <ManSection>
