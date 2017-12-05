@@ -1790,7 +1790,6 @@ void CodeStringExpr (
 #define FLOAT_1_INDEX 2
 #define MAX_FLOAT_INDEX ((1L<<NR_SMALL_INT_BITS)-2)
 
-static UInt GVAR_SAVED_FLOAT_INDEX;
 static UInt NextFloatExprNumber = 3;
 
 static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
@@ -3359,8 +3358,6 @@ static Int InitLibrary (
     FilenameCache = NEW_PLIST(T_PLIST, 0);
 #endif
 
-    GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
-    
 #ifdef HPCGAP
     cache = NewAtomicList(T_ALIST, 1);
 #else
@@ -3383,8 +3380,7 @@ static Int InitLibrary (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-  GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
-  NextFloatExprNumber = INT_INTOBJ(ValGVar(GVAR_SAVED_FLOAT_INDEX));
+  NextFloatExprNumber = INT_INTOBJ(ValGVar(GVarName("SavedFloatIndex")));
   return 0;
 }
 
@@ -3403,7 +3399,7 @@ static Int PreSave (
     return 1;
 
   /* push the FP cache index out into a GAP Variable */
-  AssGVar(GVAR_SAVED_FLOAT_INDEX, INTOBJ_INT(NextFloatExprNumber));
+  AssGVar(GVarName("SavedFloatIndex"), INTOBJ_INT(NextFloatExprNumber));
 
   /* clean any old data out of the statement and expression stacks */
   for (i = 0; i < SIZE_BAG(STATE(StackStat))/sizeof(UInt); i++)
