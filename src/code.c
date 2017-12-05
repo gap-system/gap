@@ -3334,7 +3334,7 @@ static Int InitKernel (
     InitGlobalBag( &STATE(StackExpr), "STATE(StackExpr)" );
 
     /* some functions and globals needed for float conversion */
-    InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
+    InitGlobalBag( &EAGER_FLOAT_LITERAL_CACHE, "EAGER_FLOAT_LITERAL_CACHE" );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -3351,7 +3351,6 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt gv;
     Obj cache;
 
 #ifdef HPCGAP
@@ -3362,14 +3361,13 @@ static Int InitLibrary (
 
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     
-    gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
 #ifdef HPCGAP
     cache = NewAtomicList(T_ALIST, 1);
 #else
     cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
     SET_LEN_PLIST(cache,0);
 #endif
-    AssGVar(gv, cache);
+    EAGER_FLOAT_LITERAL_CACHE = cache;
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
