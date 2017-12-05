@@ -164,7 +164,7 @@ InstallMethod( \[\],
       fi;
     od;
 
-    return row;
+    return MakeImmutable(row);
     end );
 
 #############################################################################
