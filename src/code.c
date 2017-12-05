@@ -1793,10 +1793,6 @@ void CodeStringExpr (
 static UInt GVAR_SAVED_FLOAT_INDEX;
 static UInt NextFloatExprNumber = 3;
 
-#if !defined(HPCGAP)
-static UInt NextEagerFloatLiteralNumber = 1;
-#endif
-
 static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
@@ -1890,8 +1886,7 @@ static void CodeEagerFloatExpr( Obj str, Char mark ) {
   ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
 #else
   assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  AssPlist(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
-  ix = NextEagerFloatLiteralNumber++;
+  ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
 #endif
   ADDR_EXPR(fl)[0] = ix;
   ADDR_EXPR(fl)[1] = l;

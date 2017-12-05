@@ -1215,22 +1215,15 @@ Obj             EvalFloatExprLazy (
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
       cache = FLOAT_LITERAL_CACHE;
+      if (!cache) {
 #ifdef HPCGAP
-      if (!cache) {
           cache = NewAtomicList(T_ALIST, ix);
-          AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
-      }
-      else
-        assert(TNUM_OBJ(cache) == T_ALIST);
-      fl = Elm0AList(cache,ix);
 #else
-      if (!cache) {
           cache = NEW_PLIST(T_PLIST,ix);
+#endif
           AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
       }
-      GROW_PLIST(cache,ix);
-      fl = ELM_PLIST(cache,ix);
-#endif
+      fl = ELM0_LIST(cache, ix);
       if (fl)
         return fl;
     }
@@ -1241,11 +1234,7 @@ Obj             EvalFloatExprLazy (
            len );
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
-#ifdef HPCGAP
-      AssAList(cache, ix, fl);
-#else
-      AssPlist(cache, ix, fl);
-#endif
+      ASS_LIST(cache, ix, fl);
     }
 
     return fl;
@@ -1260,23 +1249,10 @@ Obj             EvalFloatExprLazy (
 */
 static Obj EAGER_FLOAT_LITERAL_CACHE;
 
-Obj             EvalFloatExprEager (
-    Expr                expr )
+Obj EvalFloatExprEager(Expr expr)
 {
-    UInt                 ix;
-    Obj cache= 0;
-    Obj fl;
-    
-    ix = ((UInt *)ADDR_EXPR(expr))[0];
-    cache = EAGER_FLOAT_LITERAL_CACHE;
-#ifdef HPCGAP
-    assert(TNUM_OBJ(cache) == T_ALIST);
-    fl = Elm0AList(cache,ix);
-#else
-    assert(IS_PLIST(cache));
-    fl = ELM_PLIST(cache,ix);
-#endif
-    assert(fl);
+    UInt ix = ((UInt *)ADDR_EXPR(expr))[0];
+    Obj fl = ELM_LIST(EAGER_FLOAT_LITERAL_CACHE, ix);
     return fl;
 }
 
