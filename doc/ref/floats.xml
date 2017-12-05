@@ -342,7 +342,7 @@ only non-trivial issue is how they should be compared. The standard
 <C>EQ</C> tests if the intervals are equal; however, it is usually
 more useful to know if intervals overlap, or are disjoint, or are
 contained in each other. The methods provided by the package should
-include <C>Sup,Inf,Mid,DiameterOfInterval,Overlaps,IsSubset,IsDisjoint</C>.
+include <C>Sup,Inf,Mid,Overlaps,IsSubset,IsDisjoint</C>.
 <P/>
 
 Note the usual convention that intervals are compared as
