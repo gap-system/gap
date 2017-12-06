@@ -1,18 +1,12 @@
 #ifndef GAP_AOBJECTS_H
 #define GAP_AOBJECTS_H
 
-#include <src/system.h>
-
-#if !defined(HPCGAP)
-
-/* 
- * HPC-GAP stubs.
- */
-
-#else
-
 #include <src/objects.h>
 #include <src/hpc/atomic.h>
+
+#ifndef HPCGAP
+#error This header is only meant to be used with HPC-GAP
+#endif
 
 StructInitInfo *InitInfoAObjects(void);
 Obj NewAtomicRecord(UInt capacity);
@@ -145,7 +139,5 @@ static inline Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
   return result;
 #endif
 }
-
-#endif // HPCGAP
 
 #endif // GAP_AOBJECTS_H
