@@ -1,6 +1,8 @@
 #ifndef GAP_REGION_H
 #define GAP_REGION_H
 
+#include <src/system.h>
+
 #if defined(HPCGAP)
 
 #include <src/hpc/atomic.h>

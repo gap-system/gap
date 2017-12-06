@@ -14,30 +14,14 @@
 **  package upon which tons of other packages depend... so for now, we leave this 
 **  code here.                                                                    
 */
-#include <src/system.h>
 
+#include <src/objcftl.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/bool.h>                   /* booleans */
-#include <src/integer.h>                /* integers */
-#include <src/ariths.h>                 /* fast integers */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/dt.h>                     /* deep thought */
-
-#include <src/objcftl.h>                /* from the left collect */
-
-#include <src/hpc/guards.h>
+#include <src/ariths.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/integer.h>
+#include <src/plist.h>
 
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))

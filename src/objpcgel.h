@@ -11,6 +11,8 @@
 #ifndef GAP_OBJPCGEL_H
 #define GAP_OBJPCGEL_H
 
+#include <src/system.h>
+#include <src/objfgelm.h>
 
 /****************************************************************************
 **

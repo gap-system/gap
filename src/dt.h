@@ -15,6 +15,8 @@
 #ifndef GAP_DT_H
 #define GAP_DT_H
 
+#include <src/system.h>
+
 extern void  UnmarkTree(
                   Obj   z );
 

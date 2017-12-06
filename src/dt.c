@@ -51,28 +51,14 @@
 **  entry contains num( <a> ) and the last entry finally gives a boundary
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
-#include <src/system.h>
 
+#include <src/dt.h>
 
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-#include <src/bool.h>                   /* booleans */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/integer.h>                /* integers */
-
-#include <src/dt.h>                     /* deep thought */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/integer.h>
+#include <src/plist.h>
 
 
 /****************************************************************************

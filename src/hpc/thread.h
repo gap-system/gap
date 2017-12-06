@@ -1,6 +1,8 @@
 #ifndef GAP_THREAD_H
 #define GAP_THREAD_H
 
+#include <src/system.h>
+
 #if !defined(HPCGAP)
 
 /*

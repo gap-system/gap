@@ -9,6 +9,7 @@
 #ifndef GAP_VEC8BIT_H
 #define GAP_VEC8BIT_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **

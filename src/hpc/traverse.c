@@ -1,22 +1,17 @@
 /*
  * Functionality to traverse nested object structures.
  */
-#include <src/system.h>
-#include <src/gasman.h>
-#include <src/objects.h>
+#include <src/hpc/traverse.h>
+
 #include <src/bool.h>
-#include <src/gvars.h>
-#include <src/scanner.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
-#include <src/precord.h>
-#include <src/stats.h>
+#include <src/fibhash.h>
 #include <src/gap.h>
+#include <src/objset.h>
+#include <src/plist.h>
+#include <src/precord.h>
+
 #include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
-#include <src/hpc/traverse.h>
-#include <src/fibhash.h>
-#include <src/objset.h>
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

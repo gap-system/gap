@@ -9,44 +9,17 @@
 **
 */
 
-#include <src/system.h>
-#include <src/sysfiles.h>
-
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/scanner.h>
-
-#include <src/gap.h>
-
-#include <src/gvars.h>
-
-#include <src/calls.h>
-
-#include <src/precord.h>
-#include <src/records.h>
-
-#include <src/lists.h>
-#include <src/plist.h>
-
-#include <src/bool.h>
+#include <src/hookintrprtr.h>
 
 #include <src/code.h>
 #include <src/exprs.h>
-#include <src/vars.h>
-
-#include <src/intrprtr.h>
-
-#include <src/ariths.h>
-
+#include <src/gap.h>
+#include <src/gapstate.h>
+#include <src/gaputils.h>
 #include <src/stats.h>
-
-#include <assert.h>
-
-#include <src/hookintrprtr.h>
 
 #include <src/hpc/thread.h>
 
-#include <src/gaputils.h>
 
 /* List of active hooks */
 struct InterpreterHooks * activeHooks[HookCount];

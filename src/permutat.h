@@ -14,6 +14,8 @@
 #ifndef GAP_PERMUTAT_H
 #define GAP_PERMUTAT_H
 
+#include <src/objects.h>
+
 /****************************************************************************
 **
 *F  NEW_PERM2(<deg>)  . . . . . . . . . . . .  make a new (small) permutation

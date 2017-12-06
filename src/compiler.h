@@ -14,6 +14,7 @@
 #ifndef GAP_COMPILER_H
 #define GAP_COMPILER_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **

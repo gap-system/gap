@@ -26,40 +26,22 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/gvars.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/hpc/guards.h>
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
-#include <src/gaputils.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
 
 #ifdef HPCGAP
-#include <src/hpc/systhread.h>          /* system thread primitives */
+#include <src/hpc/aobjects.h>
+#include <src/hpc/guards.h>
+#include <src/hpc/thread.h>
+#include <pthread.h>
 #endif
 
 #include <stdio.h>

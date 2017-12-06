@@ -8,32 +8,17 @@
 **
 **  This file contains the GAP interface for thread primitives.
 */
-#include <assert.h>
-#include <string.h>                     /* memcpy */
-#include <stdlib.h>
-
-#include <src/system.h>                 /* system dependent part */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/bool.h>                   /* booleans */
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/fibhash.h>
 
 #include <src/objset.h>
 
-#include <src/scanner.h>
-
-#include <src/hpc/guards.h>
-
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/fibhash.h>
 #include <src/gaputils.h>
-
-#include <src/calls.h>
+#include <src/gvars.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/plist.h>
 #include <src/saveload.h>
 
 

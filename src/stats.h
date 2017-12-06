@@ -17,7 +17,6 @@
 #define GAP_STATS_H
 
 #include <src/code.h>
-
 #include <src/gapstate.h>
 
 /****************************************************************************

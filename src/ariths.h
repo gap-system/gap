@@ -14,6 +14,8 @@
 #ifndef GAP_ARITHS_H
 #define GAP_ARITHS_H
 
+#include <src/objects.h>
+
 /****************************************************************************
 **
 *T  CompaMethod . . . . . . . . . . type of methods for comparison operations

@@ -110,17 +110,11 @@
 **  Therefore  some bags  may  be  kept by  {\Gasman}, even   though they are
 **  already dead.
 */
-#include <string.h>
-#include <src/system.h>                 /* Ints, UInts */
 
-#include <src/gasman.h>                 /* garbage collector */
-
-#include <src/objects.h>                /* objects */
-#include <src/io.h>                     /* for Pr */
+#include <src/gasman.h>
 
 #include <src/gaputils.h>
-
-#include <stddef.h>
+#include <src/io.h>
 
 
 /****************************************************************************

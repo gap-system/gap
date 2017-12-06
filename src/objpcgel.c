@@ -7,32 +7,15 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
-#include <src/system.h>                 /* Ints, UInts */
 
+#include <src/objpcgel.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/bool.h>                   /* booleans */
-
-#include <src/objfgelm.h>               /* objects of free groups */
-#include <src/objscoll.h>               /* single collector */
-
-#include <src/objpcgel.h>               /* objects of polycyclic groups */
-
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/objscoll.h>
+#include <src/plist.h>
 
 
 /****************************************************************************

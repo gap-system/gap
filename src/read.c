@@ -9,44 +9,28 @@
 **
 **  This module contains the functions to read expressions and statements.
 */
-#include <string.h>                     /* memcpy */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/funcs.h>
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/stringobj.h>              /* strings */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/code.h>                   /* coder */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/read.h>                   /* reader */
-
-#include <src/hpc/thread.h>
-
-#include <src/vars.h>                   /* variables */
+#include <src/read.h>
 
 #include <src/bool.h>
-#include <src/stats.h>                  /* for ClearError */
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/funcs.h>
+#include <src/gap.h>
+#include <src/gapstate.h>
+#include <src/gvars.h>
+#include <src/intrprtr.h>
+#include <src/io.h>
+#include <src/plist.h>
+#include <src/records.h>
+#include <src/scanner.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
-#include <assert.h>
-
+#ifdef HPCGAP
+#include <src/hpc/thread.h>
+#endif
 
 /****************************************************************************
 **

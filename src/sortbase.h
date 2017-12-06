@@ -51,6 +51,8 @@
 
 #include <assert.h>
 
+#include <src/integer.h>
+
 /* This lets us join together two macro names to make
  * one identifier. The two levels (JOIN,JOIN2) is to force
  * the compiler to evaluate macros, so:

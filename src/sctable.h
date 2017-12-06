@@ -14,6 +14,7 @@
 #ifndef GAP_SCTABLE_H
 #define GAP_SCTABLE_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **

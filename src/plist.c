@@ -34,42 +34,25 @@
 **  This package also contains the list  functions for plain lists, i.e., the
 **  functions called from the generic lists package.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
+#include <src/plist.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
+#include <src/ariths.h>
+#include <src/blister.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/finfield.h>
 #include <src/funcs.h>
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/finfield.h>               /* finite fields */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-#include <src/blister.h>                /* boolean lists */
-
-#include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/guards.h>
-
+#include <src/gap.h>
 #include <src/gaputils.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/range.h>
+#include <src/saveload.h>
 
-#include <assert.h>
+#ifdef HPCGAP
+#include <src/hpc/guards.h>
+#endif
 
 
 /****************************************************************************

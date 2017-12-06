@@ -11,11 +11,8 @@
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
-#include <stdint.h>
-
-#include <src/system.h>
-#include <src/gasman.h>
-#include <src/io.h>    // for TypInputFile and friends
+#include <src/debug.h>
+#include <src/io.h>
 
 #if defined(HPCGAP)
 #include <src/hpc/tls.h>

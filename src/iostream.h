@@ -13,6 +13,8 @@
 #ifndef GAP_IOSTREAM_H
 #define GAP_IOSTREAM_H
 
+#include <src/system.h>
+
 // Provide a feature macro to let libraries check if GAP supports
 // CheckChildStatusChanged.
 #define GAP_HasCheckChildStatusChanged

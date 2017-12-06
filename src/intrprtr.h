@@ -19,6 +19,8 @@
 #ifndef GAP_INTRPRTR_H
 #define GAP_INTRPRTR_H
 
+#include <src/system.h>
+#include <src/gap.h>
 
 /****************************************************************************
 **

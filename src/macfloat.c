@@ -20,27 +20,14 @@
 
 #include <math.h>
 
+#include <src/macfloat.h>
 
-
-#include <src/system.h>                 /* system dependent part */
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-
-#include <src/plist.h>                  /* lists */
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/integer.h>                /* basic arithmetic */
-
-#include <src/macfloat.h>               /* macfloateans */
-
+#include <src/ariths.h>
 #include <src/bool.h>
+#include <src/gap.h>
 #include <src/io.h>
+#include <src/plist.h>
 #include <src/stringobj.h>
-#include <assert.h>
 
 
 /* the following two declarations would belong in `saveload.h', but then all

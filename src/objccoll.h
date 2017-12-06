@@ -10,6 +10,8 @@
 #ifndef GAP_OBJCCOLL_H
 #define GAP_OBJCCOLL_H
 
+#include <src/system.h>
+
 /****************************************************************************
 **
 *D  SCP_SOMETHING . . . . . . . . . . . . . . .  for combinatorial collectors

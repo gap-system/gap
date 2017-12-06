@@ -16,45 +16,27 @@
 **  locals), higher variables (i.e., local variables of enclosing functions),
 **  global variables, list elements, and record elements.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
+#include <src/vars.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/ariths.h>                 /* equality */
-#include <src/scanner.h>                /* scanner */
+#include <src/bool.h>
+#include <src/code.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/hookintrprtr.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/records.h>
+#include <src/saveload.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
 
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-
-#include <src/vars.h>                   /* variables */
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/hpc/aobjects.h>           /* atomic objects */
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
 #include <src/hpc/guards.h>
-
-#include <src/hookintrprtr.h>           /* installing methods */
-
-#include <src/gaputils.h>
+#endif
 
 #include <stdio.h>
 

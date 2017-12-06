@@ -12,51 +12,31 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
 
+#include <src/stats.h>
 
-#include <src/sysfiles.h>               /* file input/output */
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/exprs.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/hookintrprtr.h>
+#include <src/intrprtr.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/records.h>
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
+#include <src/vars.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/code.h>                   /* coder */
-#include <src/exprs.h>                  /* expressions */
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/stats.h>                  /* statements */
-
-#include <src/profile.h>                /* installing methods */
+#ifdef HPCGAP
+#include <src/hpc/thread.h>
+#endif
 
 #include <assert.h>
-
-#include <src/hpc/thread.h>
-
-#include <src/vars.h>                   /* variables */
-
-#include <src/hookintrprtr.h>           /* visit statements for profiling */
-
-#include <src/gaputils.h>
 
 
 /****************************************************************************

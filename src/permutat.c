@@ -37,42 +37,22 @@
 **
 *N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
-#include <src/system.h>                 /* system dependent part */
+
+#include <src/permutat.h>
+
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/integer.h>                /* integers */
-
-#include <src/permutat.h>               /* permutations */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-
-
-#include <src/saveload.h>               /* saving and loading */
-#include <src/hpc/guards.h>
-
+#include <src/integer.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/range.h>
+#include <src/records.h>
+#include <src/saveload.h>
 #include <src/trans.h>
-#include <assert.h>
 
 /****************************************************************************
 **

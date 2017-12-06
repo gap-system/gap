@@ -18,8 +18,7 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
-#include <src/io.h>      /* for Pr */
-#include <src/plist.h>
+#include <src/objects.h>
 
 /****************************************************************************
 **

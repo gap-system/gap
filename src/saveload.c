@@ -11,30 +11,24 @@
 **  the workspace. There are support functions in gasman.c and elsewhere
 **  throughout the kernel
 */
-#include <src/system.h>                 /* system dependent part */
 
+#include <src/saveload.h>
 
-#include <unistd.h>                     /* write, read */
-   
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/bool.h>                   /* booleans */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/gvars.h>                  /* global variables */
-#include <src/streams.h>                /* streams */
-#include <src/stringobj.h>              /* strings */
-#include <src/scanner.h>                /* scanner */
-#include <src/sysfiles.h>               /* file input/output */
-#include <src/plist.h>                  /* plain lists */
-#include <src/macfloat.h>               /* floating points */
-#include <src/compstat.h>               /* statically compiled modules */
-#include <src/read.h>                   /* to call function from library */
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/compstat.h>
+#include <src/finfield.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/io.h>
+#include <src/macfloat.h>
+#include <src/read.h>
+#include <src/streams.h>
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
 
-#include <src/saveload.h>               /* saving and loading */
+#include <unistd.h>
 
-
-#include <src/gaputils.h>
 
 /***************************************************************************
 **
@@ -919,8 +913,6 @@ void LoadWorkspace( Char * fname )
   CloseAfterLoad();
 #endif
 }
-
-#include <src/finfield.h>               /* finite fields and ff elements */
 
 static void PrSavedObj( UInt x)
 {

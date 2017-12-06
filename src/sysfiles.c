@@ -15,72 +15,69 @@
 **  various  labels determine which operating  system is  actually used, they
 **  are described in "system.c".
 */
-#include <src/system.h>                 /* system dependent part */
+
+#include <src/sysfiles.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/compstat.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/records.h>                /* generic records */
-#include <src/bool.h>                   /* Global True and False */
-
-#include <src/hpc/thread.h>             /* threads */
-
-#include <src/read.h>                   /* reader */
-
 #include <src/gaputils.h>
-
+#include <src/gvars.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/read.h>
+#include <src/records.h>
 #include <src/stats.h>
+#include <src/stringobj.h>
 
-#include <assert.h>
-#include <fcntl.h>
+#include <src/hpc/thread.h>
 
 #ifdef HAVE_LIBREADLINE
-#include <readline/readline.h>          /* readline for interactive input */
+#include <readline/readline.h>
 #endif
 
+#include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <termios.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 #ifdef HAVE_SELECT
 /* Only for the Hook handler calls: */
 #include <sys/time.h>
 #endif
 
-#include <stdio.h>                      /* standard input/output functions */
-#include <stdlib.h>                     /* ANSI standard functions */
-#include <string.h>                     /* string functions */
-#include <time.h>                       /* time functions */
-
-#include <unistd.h>
-
-
 #ifdef HAVE_SIGNAL_H                       /* signal handling functions       */
 #include <signal.h>
-typedef void       sig_handler_t ( int );
+typedef void sig_handler_t ( int );
 #endif
 
-
-#include <errno.h>
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>                  /* for TIOCGWINSZ */
+#endif
 
 #ifdef SYS_IS_CYGWIN32
 #include <process.h>
+#endif
+
+#ifdef HAVE_RLD_LOAD
+#include <mach-o/rld.h>
+#endif
+
+#ifdef HAVE_DLOPEN
+#include <dlfcn.h>
 #endif
 
 
@@ -117,9 +114,6 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 **  2: if a statically linked module was found
 **  3: a GAP file was found
 */
-#include <src/compstat.h>               /* statically linked modules */
-
-
 Int SyFindOrLinkGapRootFile (
     const Char *        filename,
     TypGRF_Data *       result )
@@ -366,8 +360,6 @@ Obj FuncCrcString( Obj self, Obj str ) {
 */
 #ifdef HAVE_DLOPEN
 
-#include <dlfcn.h>
-
 #ifndef RTLD_LAZY
 #define RTLD_LAZY               1
 #endif
@@ -399,8 +391,6 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 *f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . .  rld_load
 */
 #elif defined(HAVE_RLD_LOAD)
-
-#include <mach-o/rld.h>
 
 InitInfoFunc SyLoadModule( const Char * name, InitInfoFunc * func )
 {
@@ -925,7 +915,6 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
-#include <termios.h>
 struct termios   syOld, syNew;           /* old and new terminal state      */
 
 #ifdef SIGTSTP
@@ -1109,10 +1098,6 @@ UInt SyIsIntr ( void )
  **
  **  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
  */
-
-#ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>                  /* for TIOCGWINSZ */
-#endif
 
 #define CO SyNrCols
 #define LI SyNrRows
@@ -2832,10 +2817,6 @@ void SySetErrorNo ( void )
 */
 #if defined(HAVE_FORK) || defined(HAVE_VFORK)
 
-#include <sys/types.h>
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
 #ifndef WEXITSTATUS
 # define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
 #endif

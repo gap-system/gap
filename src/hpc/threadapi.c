@@ -8,63 +8,36 @@
 **
 **  This file contains the GAP interface for thread primitives.
 */
+
+#include <src/hpc/threadapi.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/funcs.h>
+#include <src/gap.h>
+#include <src/gapstate.h>
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/objects.h>
+#include <src/plist.h>
+#include <src/read.h>
+#include <src/records.h>
+#include <src/set.h>
+#include <src/stringobj.h>
+
+#include <src/hpc/guards.h>
+#include <src/hpc/misc.h>
+#include <src/hpc/region.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/tls.h>
+#include <src/hpc/traverse.h>
+
 #include <stdio.h>
-#include <assert.h>
-#include <setjmp.h>                     /* jmp_buf, setjmp, longjmp */
-#include <string.h>                     /* memcpy */
-#include <stdlib.h>
 #include <signal.h>
 #include <sys/time.h>
 
-#include <src/hpc/systhread.h>          /* system thread primitives */
-
-#include <src/system.h>                 /* system dependent part */
-#include <src/gapstate.h>
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/read.h>                   /* reader */
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/integer.h>                /* integers */
-#include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/set.h>                    /* set */
-#include <src/stringobj.h>              /* strings */
-
-
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-#include <src/funcs.h>                  /* functions */
-
-#include <src/hpc/misc.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/traverse.h>
-#include <src/hpc/guards.h>
-#include <src/hpc/threadapi.h>
-
-#include <src/vars.h>                   /* variables */
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/compiler.h>               /* compiler */
-
-#include <src/gaputils.h>
+#include <pthread.h>
 
 
 struct WaitList {

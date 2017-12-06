@@ -36,28 +36,13 @@
 **  NOTE: most of the code consists of dimension- and type checks,  as a user
 **        can fool around with SCTables as s/he likes. 
 */
-#include <src/system.h>                 /* system dependent part */
 
+#include <src/sctable.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/sctable.h>                /* structure constant table */
-
+#include <src/ariths.h>
+#include <src/gap.h>
+#include <src/lists.h>
+#include <src/plist.h>
 
 
 /****************************************************************************

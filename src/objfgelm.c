@@ -71,32 +71,17 @@
 **  PURETYPE_WORDTYPE( <type> )
 **    returns the result type
 */
-#include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
 
+#include <src/objfgelm.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-#include <src/ariths.h>                 /* arithmetic macros */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/bool.h>                   /* booleans */
-
-
-#include <src/objfgelm.h>               /* objects of free groups */
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
 
 
 /****************************************************************************

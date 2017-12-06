@@ -15,47 +15,27 @@
 **
 **  It uses the function call mechanism defined by the calls package.
 */
-#include <stdio.h>               /* on SunOS, assert.h uses stderr
-                                           but does not include stdio.h    */
-#include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/funcs.h>
+
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-#include <src/bool.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/stringobj.h>              /* strings */
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/code.h>                   /* coder */
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-
-#include <src/funcs.h>                  /* functions */
-
-#include <src/read.h>                   /* read expressions */
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/opers.h>                  /* generic operations */
-#include <src/gvars.h>
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/guards.h>
-
-#include <src/vars.h>                   /* variables */
-
 #include <src/hookintrprtr.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/read.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
+
+#ifdef HPCGAP
+#include <src/hpc/guards.h>
+#include <src/hpc/thread.h>
+#endif
 
 static ModuleStateOffset FuncsStateOffset = -1;
 

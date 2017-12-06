@@ -1,22 +1,18 @@
-#include <src/system.h>
-#include <src/gapstate.h>
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/calls.h>
-#include <src/gvars.h>
+#include <src/hpc/serialize.h>
+
 #include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/gapstate.h>
+#include <src/gvars.h>
+#include <src/objset.h>
 #include <src/plist.h>
 #include <src/precord.h>
 #include <src/records.h>
-#include <src/scanner.h>
 #include <src/stringobj.h>
-#include <src/gap.h>
-#include <src/lists.h>
-#include <src/hpc/aobjects.h>
-#include <src/hpc/serialize.h>
-#include <src/objset.h>
 
-#include <string.h>
+#include <src/hpc/aobjects.h>
+
 #include <stdio.h>
 
 static ModuleStateOffset SerializeStateOffset = -1;

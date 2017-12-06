@@ -21,51 +21,25 @@
 **
 */
 
-#include <src/system.h>                 /* system dependent part */
+#include <src/iostream.h>
 
-#include <src/iostream.h>               /* file input/output */
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/stringobj.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/records.h>                /* generic records */
-#include <src/bool.h>                   /* True and False */
-
-#include <src/hpc/thread.h>             /* threads */
-
-#include <stdio.h>                      /* standard input/output functions */
-#include <stdlib.h>
-#include <string.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <unistd.h>
-
-#include <signal.h>
-#include <fcntl.h>
-
+#include <src/hpc/thread.h>
 
 #include <errno.h>
-
+#include <fcntl.h>
+#include <signal.h>
 #include <termios.h>
+#include <unistd.h>
 
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
-
-#include <assert.h>
 
 #ifdef HAVE_OPENPTY
   #if defined(HAVE_UTIL_H)

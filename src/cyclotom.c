@@ -86,38 +86,19 @@
 **  The terms are sorted with respect to the exponent.  Note that none of the
 **  arithmetic functions need this, but it makes the equality test simpler.
 */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/cyclotom.h>
+
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
+#include <src/integer.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/saveload.h>
 
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/integer.h>                /* integers */
-
-#include <src/cyclotom.h>               /* cyclotomics */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/hpc/guards.h>
 
 /****************************************************************************
 **

@@ -21,35 +21,18 @@
 **  such  a  vector, you *must* clear   it afterwards, because  all functions
 **  assume that the vectors are cleared.
 */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/objscoll.h>
+
+#include <src/bool.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-
-#include <src/objfgelm.h>               /* objects of free groups */
-
-#include <src/objscoll.h>               /* single collector */
-
-#include <src/objccoll.h>               /* combinatorial collector */
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/objccoll.h>
+#include <src/objfgelm.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
 
 /****************************************************************************
 **

@@ -1,4 +1,3 @@
-
 /****************************************************************************
 **
 *W  vecffe.c                    GAP source                      Werner Nickel
@@ -8,41 +7,18 @@
 *Y  Copyright (C) 2002 The GAP Group
 **
 */
-#include <src/system.h>                 /* system dependent part */
 
+#include <src/vecffe.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/integer.h>                /* integers */
-#include <src/finfield.h>               /* finite fields */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/vecffe.h>                 /* functions for fin field vectors */
-
-#include <src/range.h>                  /* ranges */
-
-#include <src/calls.h>                  /* needed for opers.h */
-#include <src/opers.h>                  /* for TRY_NEXT_METHOD */
-
-
-#include <assert.h>
+#include <src/ariths.h>
+#include <src/calls.h>
+#include <src/bool.h>
+#include <src/finfield.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/listoper.h>
+#include <src/opers.h>
+#include <src/plist.h>
 
 
 /****************************************************************************

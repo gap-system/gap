@@ -1,6 +1,8 @@
 #ifndef GAP_TLSCONFIG_H
 #define GAP_TLSCONFIG_H
 
+#include <src/system.h>
+
 #ifdef HPCGAP
 
 #ifndef HAVE_NATIVE_TLS
