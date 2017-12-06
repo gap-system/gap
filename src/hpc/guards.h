@@ -1,27 +1,12 @@
 #ifndef GAP_HPC_GUARD_H
 #define GAP_HPC_GUARD_H
 
-#include <src/system.h>
-
-#if !defined(HPCGAP)
-
-/*
- * HPC-GAP stubs.
- */
-
-#define ReadGuard(bag) ((void) 0)
-#define WriteGuard(bag) ((void) 0)
-
-static inline Bag ImpliedWriteGuard(Bag bag)
-{
-  return bag;
-}
-
-#else
-
 #include <src/hpc/region.h>
 #include <src/hpc/tls.h>
-#include <src/gasman.h>
+
+#ifndef HPCGAP
+#error This header is only meant to be used with HPC-GAP
+#endif
 
 #ifdef VERBOSE_GUARDS
 void WriteGuardError(Bag bag,
@@ -120,7 +105,5 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
     !region->readers[TLS(threadID)] && region->alt_owner != GetTLS())
     || TLS(DisableGuards) >= 2;
 }
-
-#endif // HPCGAP
 
 #endif // GAP_HPC_GUARD_H

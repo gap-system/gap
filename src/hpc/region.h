@@ -3,7 +3,9 @@
 
 #include <src/system.h>
 
-#if defined(HPCGAP)
+#ifndef HPCGAP
+#error This header is only meant to be used with HPC-GAP
+#endif
 
 #include <src/hpc/atomic.h>
 
@@ -40,7 +42,5 @@ Region *NewRegion(void);
 #define REGION(bag) (((Region **)(bag))[1])
 
 Region *RegionBag(Bag bag);
-
-#endif // HPCGAP
 
 #endif // GAP_REGION_H

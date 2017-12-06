@@ -73,14 +73,18 @@ void MakeBagTypePublic(int type)
 
 Bag MakeBagPublic(Bag bag)
 {
+#ifdef HPCGAP
     MEMBAR_WRITE();
+#endif
     REGION(bag) = 0;
     return bag;
 }
 
 Bag MakeBagReadOnly(Bag bag)
 {
+#ifdef HPCGAP
     MEMBAR_WRITE();
+#endif
     REGION(bag) = ReadOnlyRegion;
     return bag;
 }
@@ -88,7 +92,9 @@ Bag MakeBagReadOnly(Bag bag)
 Region * RegionBag(Bag bag)
 {
     Region * result = REGION(bag);
+#ifdef HPCGAP
     MEMBAR_READ();
+#endif
     return result;
 }
 
