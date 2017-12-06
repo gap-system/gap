@@ -230,6 +230,15 @@ typedef Bag Obj;
 
 /****************************************************************************
 **
+*T  ObjFunc . . . . . . . . . . . . . . . . type of function returning object
+**
+**  'ObjFunc' is the type of a function returning an object.
+*/
+typedef Obj (* ObjFunc) (/*arguments*/);
+
+
+/****************************************************************************
+**
 *T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
 **
 **  'Stat' is the type of statements.
