@@ -100,22 +100,6 @@ const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 
 /****************************************************************************
 **
-*V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
-**
-**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
-**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisible by 'SyStackAlign'.  So if it  is 1, identifiers may be
-**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
-**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
-**  from a macro passed from the makefile, because it is machine dependent.
-**
-**  This value is passed to 'InitBags'.
-*/
-UInt SyStackAlign = SYS_STACK_ALIGN;
-
-
-/****************************************************************************
-**
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
 const Char * SyArchitecture = SYS_ARCH;

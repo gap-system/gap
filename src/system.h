@@ -75,9 +75,6 @@
 /* define to debug masterpointers errors                                   */
 /* #undef DEBUG_MASTERPOINTERS */
 
-/* define stack align for gasman (from "config.h")                         */
-#define SYS_STACK_ALIGN         C_STACK_ALIGN
-
 /* check if we are on a 64 bit machine                                     */
 #if SIZEOF_VOID_P == 8
 # define SYS_IS_64_BIT          1
@@ -271,21 +268,6 @@ enum { BIPEB = sizeof(UInt) * 8L, LBIPEB = (BIPEB == 64) ? 6L : 5L };
 **
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
-
-/****************************************************************************
-**
-*V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
-**
-**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
-**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
-**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
-**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
-**  from a macro passed from the makefile, because it is machine dependent.
-**
-**  This value is passed to 'InitBags'.
-*/
-extern UInt SyStackAlign;
 
 
 /****************************************************************************
