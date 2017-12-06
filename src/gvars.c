@@ -313,6 +313,14 @@ Obj             ErrorMustHaveAssObjHandler (
 
 static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
+// We store pointers to C global variables as GAP immediate integers.
+static Obj * ELM_COPS_PLIST(Obj cops, UInt i)
+{
+    UInt val = UInt_ObjInt(ELM_PLIST(cops, i));
+    val <<= 2;
+    return (Obj *)val;
+}
+
 void            AssGVar (
     UInt                gvar,
     Obj                 val )
@@ -361,7 +369,7 @@ void            AssGVar (
     cops = ELM_GVAR_LIST( CopiesGVars, gvar );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
+            copy = ELM_COPS_PLIST(cops, i);
             *copy = val;
         }
     }
@@ -373,7 +381,7 @@ void            AssGVar (
 #endif
     if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
+            copy = ELM_COPS_PLIST(cops, i);
             *copy = val;
         }
     }
@@ -384,7 +392,7 @@ void            AssGVar (
     /* if the values is not a function, assign the error function          */
     else if ( cops != 0 && val != 0 /* && TNUM_OBJ(val) != T_FUNCTION */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
+            copy = ELM_COPS_PLIST(cops, i);
             *copy = ErrorMustEvalToFuncFunc;
         }
     }
@@ -392,7 +400,7 @@ void            AssGVar (
     /* if this was an unbind, assign the other error function              */
     else if ( cops != 0 /* && val == 0 */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            copy  = (Obj*) ELM_PLIST(cops,i);
+            copy = ELM_COPS_PLIST(cops, i);
             *copy = ErrorMustHaveAssObjFunc;
         }
     }
@@ -1364,7 +1372,11 @@ void UpdateCopyFopyInfo ( void )
         }
 
         // append the copy to the copies list
-        PushPlist(cops, (Obj)copy);
+        // As C global variables are 4-byte aligned,
+        // we shift them down to make it more likely they
+        // will fit in an immediate integer.
+        GAP_ASSERT(((UInt)copy & 3) == 0);
+        PushPlist(cops, ObjInt_UInt((UInt)copy >> 2));
 
         /* now copy the value of <gvar> to <cvar>                          */
         Obj val = ValGVar(gvar);
