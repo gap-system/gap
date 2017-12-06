@@ -77,7 +77,7 @@ Int IsSet (
 
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
-            SET_FILT_LIST( list, FN_IS_EMPTY );
+            RetypeBag(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
             isSet = 1;
         }
 
@@ -99,7 +99,7 @@ Int IsSet (
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
-            SET_FILT_LIST( list, FN_IS_EMPTY );
+            RetypeBag(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
             isSet = 1;
         }
 
@@ -597,8 +597,7 @@ Obj FuncREM_SET (
 
         /* fix up the type of the result                                   */
         if ( len-1 == 0 ) {
-            CLEAR_FILTS_LIST(set);
-            SET_FILT_LIST( set, FN_IS_EMPTY );
+            RetypeBag(set, IS_MUTABLE_OBJ(set) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
         }
     }
 
@@ -880,8 +879,7 @@ Obj FuncINTER_SET (
 
     /* fix up the type of the result                                       */
     if ( lenr == 0 ) {
-      CLEAR_FILTS_LIST(set1);
-      SET_FILT_LIST( set1, FN_IS_EMPTY );
+      RetypeBag(set1, IS_MUTABLE_OBJ(set1) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     }
     else if ( lenr == 1) {
       if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
@@ -1041,8 +1039,7 @@ Obj FuncSUBTR_SET (
 
     /* fix up the type of the result                                       */
     if ( lenr == 0 ) {
-        CLEAR_FILTS_LIST(set1);
-        SET_FILT_LIST( set1, FN_IS_EMPTY );
+        RetypeBag(set1, IS_MUTABLE_OBJ(set1) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     }
     else if ( lenr == 1) {
       if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)

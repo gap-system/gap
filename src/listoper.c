@@ -381,7 +381,7 @@ Obj             ZeroListDefault (
     /* Now adjust the result TNUM info */
 
     if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
+      RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -447,7 +447,7 @@ Obj             ZeroListMutDefault (
     /* Now adjust the result TNUM info */
 
     if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
+      RetypeBag(res, T_PLIST_EMPTY);
     else if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -545,9 +545,8 @@ Obj AInvMutListDefault (
     }
 
     /* Now adjust the result TNUM info */
-
     if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
+      RetypeBag(res, T_PLIST_EMPTY);
     else if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -604,9 +603,8 @@ Obj AInvListDefault (
     }
 
     /* Now adjust the result TNUM info */
-
     if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
+      RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -697,9 +695,8 @@ Obj             DiffSclList (
     }
 
     /* Now adjust the result TNUM info */
-
     if (len == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
+      RetypeBag(listD, IS_MUTABLE_OBJ(listD) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( listR ))
       {
          if (HAS_FILT_LIST(listR, FN_IS_DENSE))
@@ -740,9 +737,8 @@ Obj             DiffListScl (
     }
 
     /* Now adjust the result TNUM info */
-
     if (len == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
+      RetypeBag(listD, IS_MUTABLE_OBJ(listD) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( listL ))
       {
          if (HAS_FILT_LIST(listL, FN_IS_DENSE))
@@ -826,7 +822,7 @@ Obj             DiffListList (
        can say here with total reliability */
 
     if (lenD == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
+      RetypeBag(listD, IS_MUTABLE_OBJ(listD) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( listR ) && IS_PLIST(listL) &&
              HAS_FILT_LIST(listR, FN_IS_DENSE) &&
              HAS_FILT_LIST(listL, FN_IS_DENSE))
@@ -917,7 +913,7 @@ Obj             ProdSclList (
           }
     }
     if (len == 0)
-      SET_FILT_LIST( listP, FN_IS_EMPTY );
+      RetypeBag(listP, IS_MUTABLE_OBJ(listP) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( listR ))
       {
          if (HAS_FILT_LIST(listR, FN_IS_DENSE))
@@ -957,7 +953,7 @@ Obj             ProdListScl (
     }
 
     if (len == 0)
-      SET_FILT_LIST( listP, FN_IS_EMPTY );
+      RetypeBag(listP, IS_MUTABLE_OBJ(listP) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
     else if (IS_PLIST( listL ))
       {
          if (HAS_FILT_LIST(listL, FN_IS_DENSE))
