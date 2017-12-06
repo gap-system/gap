@@ -1,23 +1,23 @@
-#include <src/system.h>
-#include <src/gapstate.h>
+#include <src/hpc/thread.h>
 
+#include <src/code.h>
+#include <src/fibhash.h>
+#include <src/gap.h>
+#include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/plist.h>
-#include <src/stringobj.h>
 #include <src/stats.h>
-#include <src/gap.h>
-#include <src/fibhash.h>
+#include <src/stringobj.h>
 
-#include <src/hpc/misc.h>
 #include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
+#include <src/hpc/misc.h>
 #include <src/hpc/threadapi.h>
-#include <src/hpc/systhread.h>          /* system thread primitives */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

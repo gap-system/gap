@@ -9,46 +9,30 @@
 **
 **  This file contains the functions of the objects package.
 */
-#include <stdlib.h>
 
-#include <src/system.h>                 /* Ints, UInts, SyIsIntr */
+#include <src/objects.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
+#include <src/gvars.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/saveload.h>
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
 
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-
-#include <src/objects.h>                /* objects */
-
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/hpc/aobjects.h>           /* atomic objects */
-#include <src/hpc/thread.h>             /* threads */
-#if defined(USE_THREADSAFE_COPYING)
-#include <src/hpc/traverse.h>           /* object traversal */
-#endif
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
 #include <src/hpc/guards.h>
+#include <src/hpc/thread.h>
+#endif
 
-#include <src/gaputils.h>
+#if defined(USE_THREADSAFE_COPYING)
+#include <src/hpc/traverse.h>
+#endif
 
 
 enum {

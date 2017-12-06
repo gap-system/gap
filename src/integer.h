@@ -15,9 +15,7 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#include <src/system.h>
-#include <src/objects.h>    // for ADDR_OBJ, TNUM_OBJ etc.
-#include <src/intobj.h>     // for IS_INTOBJ etc.
+#include <src/objects.h>
 
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C

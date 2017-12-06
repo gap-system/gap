@@ -10,30 +10,15 @@
 **
 **  This file contains the functions for computing with finite presentations.
 */
-#include <src/system.h>                 /* system dependent part */
-#include <src/stats.h>                  /* for TakeInterrupt */
 
+#include <src/tietze.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/tietze.h>                 /* tietze helper functions */
-
-#include <src/hpc/guards.h>
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
 
 
 /****************************************************************************

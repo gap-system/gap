@@ -19,43 +19,29 @@
 **  The following labels determine which operating system is actually used.
 */
 
-#include <src/system.h>                 /* system dependent part */
+#include <src/system.h>
 
-#include <src/gap.h>                    /* get UserHasQUIT */
-
-#include <src/sysfiles.h>               /* file input/output */
-#include <src/gasman.h>
 #include <src/gaputils.h>
-
 #include <src/stats.h>
+#include <src/sysfiles.h>
 
 #ifdef HPCGAP
 #include <src/hpc/misc.h>
 #endif
 
-#include <fcntl.h>
-
-
-#include <stdio.h>                      /* standard input/output functions */
-#include <stdlib.h>                     /* ANSI standard functions */
-#include <string.h>                     /* string functions */
-
 #include <assert.h>
-#include <dirent.h>
-#include <time.h>
-
-#include <unistd.h>                     /* definition of 'R_OK' */
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <sys/stat.h>
 
 
 #ifdef HAVE_LIBREADLINE
-#include <readline/readline.h>          /* readline for interactive input */
+#include <readline/readline.h>
 #endif
 
-#include <sys/types.h>
-
 #include <sys/time.h>                   /* definition of 'struct timeval' */
+#include <sys/types.h>
 
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               /* definition of 'struct rusage' */
@@ -67,6 +53,10 @@
 
 #ifdef SYS_IS_DARWIN
 #include <mach/mach_time.h>
+#endif
+
+#ifdef HAVE_VM_ALLOCATE
+#include <mach/mach.h>
 #endif
 
 /****************************************************************************
@@ -1067,8 +1057,6 @@ UInt * * * SyAllocBags (
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
 #ifdef HAVE_VM_ALLOCATE
-
-#include <mach/mach.h>
 
 #if (defined(SYS_IS_DARWIN) && SYS_IS_DARWIN) || defined(__gnu_hurd__)
 #define task_self mach_task_self

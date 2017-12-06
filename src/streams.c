@@ -12,49 +12,27 @@
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 
-#include <src/system.h>                 /* system dependent part */
+#include <src/streams.h>
+
+#include <src/bool.h>
+#include <src/funcs.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/io.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/read.h>
+#include <src/records.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
+#include <src/vars.h>
 
+#include <dirent.h>
 #include <errno.h>
-#include <stdio.h>
-#include <string.h>                     /* memcpy */
-
-#include <unistd.h>                     /* fstat, write, read */
-#include <sys/types.h>
-#include <dirent.h>                     /* for reading a directory */
-#include <sys/stat.h>
-#include <sys/time.h>
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
-#include <src/funcs.h>                  /* functions */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/streams.h>                /* streams package */
-
-#include <src/stats.h>                  /* for ClearError() */
-
-
-#include <src/vars.h>                   /* STATE(BottomLVars) for execution contexts */
+#include <unistd.h>
 
 
 /****************************************************************************

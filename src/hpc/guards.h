@@ -1,6 +1,8 @@
 #ifndef GAP_HPC_GUARD_H
 #define GAP_HPC_GUARD_H
 
+#include <src/system.h>
+
 #if !defined(HPCGAP)
 
 /*
@@ -19,6 +21,7 @@ static inline Bag ImpliedWriteGuard(Bag bag)
 
 #include <src/hpc/region.h>
 #include <src/hpc/tls.h>
+#include <src/gasman.h>
 
 #ifdef VERBOSE_GUARDS
 void WriteGuardError(Bag bag,

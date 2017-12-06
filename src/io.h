@@ -18,6 +18,7 @@
 #ifndef GAP_IO_H
 #define GAP_IO_H
 
+#include <src/system.h>
 
 extern Int  GetLinePosition(void);
 extern void GET_CHAR();

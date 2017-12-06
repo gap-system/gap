@@ -11,7 +11,12 @@
 #ifndef GAP_OBJFGELM_H
 #define GAP_OBJFGELM_H
 
+#include <src/objects.h>
+#include <src/plist.h>
+
+#ifdef HPCGAP
 #include <src/hpc/guards.h>
+#endif
 
 /****************************************************************************
 **

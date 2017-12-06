@@ -8,48 +8,26 @@
 **  This file contains profile related functionality.
 **
 */
-#include <src/system.h>                 /* system dependent part */
-
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/code.h>                   /* coder */
-#include <src/vars.h>                   /* variables */
-#include <src/exprs.h>                  /* expressions */
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/stats.h>                  /* statements */
-
-#include <assert.h>
 
 #include <src/profile.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/gap.h>
 #include <src/hookintrprtr.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
 #include <src/hpc/thread.h>
 
-#include <src/calls.h>                  /* function filename, line number */
+#include <stdio.h>
+#include <sys/time.h>                   // for gettimeofday
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>               // definition of 'struct rusage'
+#endif
+
 
 /****************************************************************************
 **
@@ -119,12 +97,6 @@
 **
 ** Store the current state of the profiler
 */
-
-#include <sys/time.h>                   /* for gettimeofday */
-
-#ifdef HAVE_SYS_RESOURCE_H
-#include <sys/resource.h>               /* definition of 'struct rusage' */
-#endif
 
 Obj OutputtedFilenameList;
 

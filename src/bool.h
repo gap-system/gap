@@ -13,6 +13,7 @@
 #ifndef GAP_BOOL_H
 #define GAP_BOOL_H
 
+#include <src/objects.h>
 
 /****************************************************************************
 **

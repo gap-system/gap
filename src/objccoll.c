@@ -13,34 +13,13 @@
 **  interface to the corresponding single collector function.
 **
 */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/objccoll.h>
+
+#include <src/intobj.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-
-
-#include <src/objfgelm.h>               /* objects of free groups */
-
-#include <src/objscoll.h>               /* single collector */
-
-#include <src/objccoll.h>               /* combinatorial collector */
+#include <src/objfgelm.h>
+#include <src/objscoll.h>
 
 
 #define AddWordIntoExpVec   C8Bits_AddWordIntoExpVec

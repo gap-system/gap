@@ -11,50 +11,29 @@
 **  This file contains the functions of the  filters, operations, attributes,
 **  and properties package.
 */
-#include <assert.h>
 
-#include <src/system.h>                 /* Ints, UInts */
+#include <src/opers.h>
+
+#include <src/ariths.h>
+#include <src/blister.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/blister.h>                /* boolean lists */
-#include <src/stringobj.h>              /* strings */
-#include <src/range.h>                  /* ranges */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/listfunc.h>   
-#include <src/integer.h>   
+#include <src/gvars.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/range.h>
+#include <src/records.h>
+#include <src/saveload.h>
+#include <src/stringobj.h>
 
 #ifdef HPCGAP
+#include <src/hpc/aobjects.h>
 #include <src/hpc/guards.h>
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
-#include <src/hpc/systhread.h>          /* system thread primitives */
-#include <src/hpc/atomic.h>
+#include <src/hpc/thread.h>
+#include <pthread.h>
 #endif
 
 /****************************************************************************

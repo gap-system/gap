@@ -15,23 +15,18 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 
-#include <src/system.h>                 /* system dependent part */
-#include <src/gaputils.h>
-#include <src/gapstate.h>
+#include <src/io.h>
 
-#include <src/gvars.h>
-#include <src/calls.h>
 #include <src/bool.h>
-#include <src/stringobj.h>
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/gapstate.h>
+#include <src/gaputils.h>
+#include <src/gvars.h>
 #include <src/read.h>
 #include <src/scanner.h>
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-
-#include <src/io.h>                     /* input/output for scanner */
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
 
 
 static Char GetLine(void);

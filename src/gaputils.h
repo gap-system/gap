@@ -7,6 +7,8 @@
 #ifndef GAP_UTILS_H
 #define GAP_UTILS_H
 
+#include <src/system.h>
+
 //
 // Swap the content of two variables <a> and <b> of type <T>.
 //

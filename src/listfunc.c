@@ -9,50 +9,27 @@
 **
 **  This file contains the functions for generic lists.
 */
-#include <src/system.h>                 /* Ints, UInts */
 
+#include <src/listfunc.h>
 
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/permutat.h>               /* permutations */
-#include <src/finfield.h>               /* finite fields */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
-
-#include <src/listfunc.h>               /* functions for generic lists */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/set.h>                    /* plain sets */
-#include <src/integer.h>
-
-#include <src/hpc/guards.h>
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
+#include <src/ariths.h>
 #include <src/blister.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/permutat.h>
+#include <src/plist.h>
+#include <src/pperm.h>
+#include <src/set.h>
+#include <src/stringobj.h>
+#include <src/trans.h>
 
-
-#include <string.h>
-#include <stdlib.h> 
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
+#endif
 
 /****************************************************************************
 **

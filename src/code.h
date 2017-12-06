@@ -17,7 +17,6 @@
 #define GAP_CODE_H
 
 #include <src/debug.h>
-#include <src/gasman.h>
 #include <src/objects.h>
 
 /****************************************************************************

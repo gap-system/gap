@@ -11,46 +11,26 @@
 **
 **  This file contains the GAP to C compiler.
 */
-#include <stdarg.h>                     /* variable argument list macros */
-#include <src/system.h>                 /* Ints, UInts */
-#include <src/gapstate.h>
 
+#include <src/compiler.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/ariths.h>                 /* basic arithmetic */
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/exprs.h>
+#include <src/gap.h>
+#include <src/gvars.h>
 #include <src/integer.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/records.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
-#include <src/bool.h>                   /* booleans */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-/*N 1996/06/16 mschoene func expressions should be different from funcs    */
-
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/stringobj.h>              /* strings */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-
-#include <src/compiler.h>               /* compiler */
-
-#include <src/hpc/guards.h>
-
-#include <src/vars.h>                   /* variables */
+#include <stdarg.h>
 
 
 /****************************************************************************

@@ -15,54 +15,34 @@
 **  immediately, it switches into coding mode, and  delegates the work to the
 **  coder.
 */
-#include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/intrprtr.h>
+
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/funcs.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-#include <src/records.h>                /* generic records */
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-#include <src/integer.h>                /* integers */
-
-#include <src/permutat.h>               /* permutations */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
-
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/code.h>                   /* coder */
-#include <src/funcs.h>                  /* functions */
+#include <src/gvars.h>
+#include <src/integer.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/permutat.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/range.h>
 #include <src/read.h>
+#include <src/records.h>
+#include <src/scanner.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
-#include <src/intrprtr.h>               /* interpreter */
-#include <src/intfuncs.h>
-
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
 #include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
-#include <src/vars.h>                   /* variables */
-
-#include <src/saveload.h>               /* saving and loading */
+#endif
 
 /****************************************************************************
 **

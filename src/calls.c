@@ -33,41 +33,21 @@
 **  ...what the handlers are..
 **  ...what the other components are...
 */
-#include <src/system.h>                 /* system dependent part */
 
+#include <src/calls.h>
 
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/stats.h>                  /* statements */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/vars.h>                   /* variables */
-
-#include <assert.h>
+#include <src/bool.h>
+#include <src/code.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/integer.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/saveload.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
 
 void SET_NAME_FUNC(Obj func, Obj name)

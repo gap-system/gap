@@ -12,8 +12,8 @@
 #ifndef GAP_DEBUG_H
 #define GAP_DEBUG_H
 
-#include <src/system.h> /* system dependent part */
-#include <assert.h>     /* for assert            */
+#include <src/system.h>
+#include <assert.h>
 
 /* GAP_ASSERT is a version of 'assert' which is enabled by the
 ** configure option --enable-debug

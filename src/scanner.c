@@ -14,43 +14,15 @@
 **  that make up integers are hidden from the rest of GAP.
 */
 
-#include <src/system.h>                 /* system dependent part */
+#include <src/scanner.h>
+
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/sysfiles.h>               /* file input/output */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-
-#include <src/io.h>                     /* input/output for scanner */
-#include <src/scanner.h>                /* scanner */
-
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/opers.h>                  /* DoFilter... */
-#include <src/read.h>                   /* Call0ArgsInNewReader */
-
-#include <src/hpc/guards.h>
-
 #include <src/gaputils.h>
-
-#include <assert.h>
-#include <limits.h>
-#include <stdlib.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/stringobj.h>
 
 
 /****************************************************************************

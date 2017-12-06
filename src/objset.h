@@ -1,6 +1,8 @@
 #ifndef GAP_OBJSET_H
 #define GAP_OBJSET_H
 
+#include <src/system.h>
+
 #define OBJSET_HDRSIZE 4
 
 #define OBJSET_SIZE 0

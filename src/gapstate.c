@@ -5,8 +5,9 @@
  **
  */
 
-#include <src/system.h>
 #include <src/gapstate.h>
+
+#include <assert.h>
 
 typedef struct {
     UInt size;

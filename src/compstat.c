@@ -7,8 +7,9 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
 #include <src/system.h>
-#include <src/compstat.h>               /* statically linked modules */
+#include <src/compstat.h>
 
 // #define AVOID_PRECOMPILED
 

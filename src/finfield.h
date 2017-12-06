@@ -53,8 +53,8 @@
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
 
-#include <src/ffdata.h>                 /* precomputed finite field data */
-
+#include <src/ffdata.h>
+#include <src/system.h>
 
 /****************************************************************************
 **

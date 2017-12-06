@@ -12,48 +12,33 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
-#include <stdio.h>               /* on SunOS, assert.h uses stderr
-                                           but does not include stdio.h    */
-#include <assert.h>                     /* assert */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/code.h>
+
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/funcs.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/calls.h>                  /* generic call mechanism */
-/*N 1996/06/16 mschoene func expressions should be different from funcs    */
-
-#include <src/records.h>                /* generic records */
-
-#include <src/integer.h>                /* integers */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/funcs.h>                  /* functions */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/bool.h>                   /* For fail */
-
-#include <src/saveload.h>               /* saving and loading */
-#include <src/read.h>                   /* to access stack of for loop globals */
 #include <src/gvars.h>
-#include <src/hpc/thread.h>             /* threads */
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
-#include <src/vars.h>                   /* variables */
 #include <src/hookintrprtr.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/read.h>
+#include <src/records.h>
+#include <src/saveload.h>
+#include <src/scanner.h>
+#include <src/stringobj.h>
+#include <src/vars.h>
 
+#include <src/hpc/thread.h>
+
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
+#endif
+
+
+/*N 1996/06/16 mschoene func expressions should be different from funcs    */
 
 GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 

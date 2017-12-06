@@ -19,41 +19,28 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
-#include <src/system.h>                 /* Ints, UInts */
+
+#include <src/lists.h>
+
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
 #include <src/gapstate.h>
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/records.h>                /* generic records */
-
-#include <src/lists.h>                  /* generic lists */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/precord.h>                /* plain records */
-
-#include <src/plist.h>                  /* plain lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
-#include <src/integer.h>                /* integers */
-
-#include <src/hpc/aobjects.h>           /* atomic objects */
-
-#include <src/hpc/guards.h>
-
 #include <src/gaputils.h>
+#include <src/integer.h>
+#include <src/io.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/range.h>
+#include <src/records.h>
+#include <src/stringobj.h>
 
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
+#include <src/hpc/guards.h>
+#endif
 
 /****************************************************************************
 **

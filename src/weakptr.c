@@ -15,29 +15,18 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
-#include <src/system.h>                 /* system dependent part */
 
+#include <src/weakptr.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
+#include <src/bool.h>
+#include <src/gap.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/saveload.h>
 
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/weakptr.h>                /* weak pointers */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/saveload.h>               /* saving and loading */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/scanner.h>                /* scanner */
+#ifdef HPCGAP
 #include <src/hpc/guards.h>
+#endif
 
 #ifdef BOEHM_GC
 # ifdef HPCGAP

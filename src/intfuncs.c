@@ -13,40 +13,16 @@
 ** large integer representation in use. See integer.c for other things.
 */
 
+#include <src/intfuncs.h>
 
-#include <src/system.h>                 /* Ints, UInts */
-
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/intfuncs.h>               /* integers */
-
-#include <src/integer.h>
-
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/saveload.h>               /* saving and loading */
-
-
-
-#include <stdio.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/lists.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/records.h>
+#include <src/stringobj.h>
 
 
 /****************************************************************************

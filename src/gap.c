@@ -10,109 +10,39 @@
 **
 **  This file contains the various read-eval-print loops and  related  stuff.
 */
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>                     /* memcpy */
-#include <stdlib.h>
 
-#include <src/system.h>                 /* system dependent part */
+#include <src/gap.h>
+
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/code.h>
+#include <src/compiler.h>
+#include <src/compstat.h>
+#include <src/exprs.h>
+#include <src/funcs.h>
 #include <src/gapstate.h>
-
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <unistd.h>                     /* move this and wrap execvp later */
-
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/read.h>                   /* reader */
-
-#include <src/gvars.h>                  /* global variables */
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/integer.h>                /* integers */
-#include <src/rational.h>               /* rationals */
-#include <src/cyclotom.h>               /* cyclotomics */
-#include <src/finfield.h>               /* finite fields and ff elements */
-
-#include <src/bool.h>                   /* booleans */
-#include <src/macfloat.h>               /* machine doubles */
-#include <src/permutat.h>               /* permutations */
-#include <src/trans.h>                  /* transformations */
-#include <src/pperm.h>                  /* partial perms */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/listoper.h>               /* operations for generic lists */
-#include <src/listfunc.h>               /* functions for generic lists */
-#include <src/plist.h>                  /* plain lists */
-#include <src/set.h>                    /* plain sets */
-#include <src/vector.h>                 /* functions for plain vectors */
-#include <src/vecffe.h>                 /* functions for fin field vectors */
-#include <src/blister.h>                /* boolean lists */
-#include <src/range.h>                  /* ranges */
-#include <src/stringobj.h>              /* strings */
-#include <src/vecgf2.h>                 /* functions for GF2 vectors */
-#include <src/vec8bit.h>             /* functions for other compressed
-                                           GF(q) vectors                   */
-#include <src/objfgelm.h>               /* objects of free groups */
-#include <src/objpcgel.h>               /* objects of polycyclic groups */
-#include <src/objscoll.h>               /* single collector */
-#include <src/objccoll.h>               /* combinatorial collector */
-#include <src/objcftl.h>                /* from the left collect */
-
-#include <src/dt.h>                     /* deep thought */
-#include <src/dteval.h>                 /* deep thought evaluation */
-
-#include <src/sctable.h>                /* structure constant table */
-#include <src/costab.h>                 /* coset table */
-#include <src/tietze.h>                 /* tietze helper functions */
-
-#include <src/code.h>                   /* coder */
-
-#include <src/exprs.h>                  /* expressions */
-#include <src/stats.h>                  /* statements */
-#include <src/funcs.h>                  /* functions */
-
-#include <src/intrprtr.h>               /* interpreter */
-
-#include <src/compiler.h>               /* compiler */
-
-#include <src/compstat.h>               /* statically linked modules */
-
-#include <src/saveload.h>               /* saving and loading */
-
-#include <src/streams.h>                /* streams package */
-#include <src/sysfiles.h>               /* file input/output */
-#include <src/weakptr.h>                /* weak pointers */
-#include <src/profile.h>                /* profiling */
-#include <src/hookintrprtr.h>
-
-#include <src/gapstate.h>
-
-#include <src/objset.h>
+#include <src/gvars.h>
+#include <src/integer.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
+#include <src/precord.h>
+#include <src/records.h>
+#include <src/read.h>
+#include <src/saveload.h>
+#include <src/stats.h>
+#include <src/streams.h>
+#include <src/stringobj.h>
+#include <src/sysfiles.h>
+#include <src/vars.h>
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
-#include <src/hpc/aobjects.h>
+#include <src/intrprtr.h>
 #include <src/hpc/misc.h>
+#include <src/hpc/thread.h>
 #include <src/hpc/threadapi.h>
-#include <src/hpc/serialize.h>          /* object serialization */
 #endif
-
-#include <src/vars.h>                   /* variables */
-
-#include <src/intfuncs.h>
-#include <src/iostream.h>
-
-#include <src/gaputils.h>
 
 /****************************************************************************
 **

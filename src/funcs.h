@@ -17,7 +17,7 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
-#include <src/gapstate.h>
+#include <src/system.h>
 
 /****************************************************************************
 **

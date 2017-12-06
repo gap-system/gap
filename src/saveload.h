@@ -15,6 +15,8 @@
 #ifndef GAP_SAVELOAD_H
 #define GAP_SAVELOAD_H
 
+#include <src/system.h>
+
 /***************************************************************************
 **
 *F  SaveWorkspace( <fname> ) . . . . . .save the workspace to the named file

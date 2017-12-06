@@ -1,6 +1,8 @@
 #ifndef GAP_AOBJECTS_H
 #define GAP_AOBJECTS_H
 
+#include <src/system.h>
+
 #if !defined(HPCGAP)
 
 /* 
@@ -9,6 +11,7 @@
 
 #else
 
+#include <src/objects.h>
 #include <src/hpc/atomic.h>
 
 StructInitInfo *InitInfoAObjects(void);

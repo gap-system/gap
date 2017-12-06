@@ -16,6 +16,7 @@
 #ifndef GAP_EXPRS_H
 #define GAP_EXPRS_H
 
+#include <src/system.h>
 
 /****************************************************************************
 **

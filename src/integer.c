@@ -65,41 +65,21 @@
 **  that they eventually return normalized and reduced values. The function
 **  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
-#include <src/system.h>                 /* Ints, UInts */
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include <src/integer.h>
 
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/gap.h>                    /* error handling, initialisation */
-#include <src/stats.h>                  /* for TakeInterrupt */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/stringobj.h>              /* strings */
-
-#include <src/saveload.h>               /* saving and loading */
-
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
 #include <src/intfuncs.h>
+#include <src/io.h>
+#include <src/opers.h>
+#include <src/saveload.h>
+#include <src/stats.h>
+#include <src/stringobj.h>
 
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-
-#include <assert.h>
-#include <string.h>
-#include <ctype.h>
 
 
 /* TODO: Remove after Ward2 */
@@ -113,8 +93,6 @@
 #ifdef GAP_IN_EXTERN_C
 extern "C" {
 #endif
-
-#include <src/integer.h>                /* GMP integers */
 
 #ifdef SYS_IS_64_BIT
 #define SaveLimb SaveUInt8

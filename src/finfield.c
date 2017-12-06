@@ -49,37 +49,22 @@
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
 */
-#include <src/system.h>                 /* Ints, UInts */
 
+#include <src/finfield.h>
 
-#include <src/gasman.h>                 /* garbage collector */
-#include <src/objects.h>                /* objects */
-#include <src/scanner.h>                /* scanner */
+#include <src/ariths.h>
+#include <src/bool.h>
+#include <src/calls.h>
+#include <src/gap.h>
+#include <src/gvars.h>
+#include <src/io.h>
+#include <src/lists.h>
+#include <src/opers.h>
+#include <src/plist.h>
 
-#include <src/gap.h>                    /* error handling, initialisation */
-
-#include <src/gvars.h>                  /* global variables */
-
-#include <src/calls.h>                  /* generic call mechanism */
-#include <src/opers.h>                  /* generic operations */
-
-#include <src/ariths.h>                 /* basic arithmetic */
-
-#include <src/bool.h>                   /* booleans */
-
-#include <src/integer.h>                /* integers */
-
-#include <src/finfield.h>               /* finite fields and ff elements */
-
-#include <src/records.h>                /* generic records */
-#include <src/precord.h>                /* plain records */
-
-#include <src/lists.h>                  /* generic lists */
-#include <src/plist.h>                  /* plain lists */
-
-
-#include <src/hpc/aobjects.h>           /* atomic access to plists */
-
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
+#endif
 
 /****************************************************************************
 **

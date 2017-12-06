@@ -9,11 +9,11 @@
 **
 **  This file declares the functions for the macfloat package
 */
-#include <string.h>
 
 #ifndef GAP_MACFLOAT_H
 #define GAP_MACFLOAT_H
 
+#include <src/objects.h>
 
 #ifdef VERY_LONG_DOUBLES
 typedef long double /* __float128 */ Double;

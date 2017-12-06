@@ -8,18 +8,25 @@
 **  where the non-boehm versions of these methods live.
 **/
 
-#include <src/system.h> /* Ints, UInts */
+#include <src/system.h>
 #include <src/gapstate.h>
+#include <src/gasman.h>
+#include <src/objects.h>
 
-#include <src/gasman.h> /* garbage collector */
+#include <src/hpc/misc.h>
+#include <src/hpc/thread.h>
+#include <src/hpc/guards.h>
 
-#include <src/objects.h> /* objects */
-
+#ifdef TRACK_CREATOR
+#include <src/calls.h>
+#include <src/vars.h>
+#endif
 
 #ifndef BOEHM_GC
 #error This file can only be used when the Boehm GC collector is enabled
 #endif
 
+#include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,15 +42,6 @@
 #include <gc/gc_mark.h>
 #endif
 
-
-#include <src/hpc/misc.h>
-#include <src/hpc/thread.h> /* threads */
-#include <src/hpc/guards.h>
-#ifdef TRACK_CREATOR
-/* Need CURR_FUNC and NAME_FUNC() */
-#include <src/calls.h> /* calls */
-#include <src/vars.h>  /* variables */
-#endif
 
 
 enum { NTYPES = 256 };

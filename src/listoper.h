@@ -14,6 +14,8 @@
 #ifndef GAP_LISTOPER_H
 #define GAP_LISTOPER_H
 
+#include <src/system.h>
+
 /****************************************************************************
 **
 *F  EqListList(<listL>,<listR>) . . . . . . . . . test if two lists are equal
