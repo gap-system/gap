@@ -64,6 +64,7 @@ SOURCES += src/listfunc.c
 SOURCES += src/listoper.c
 SOURCES += src/lists.c
 SOURCES += src/macfloat.c
+SOURCES += src/modules-builtin.c
 SOURCES += src/objccoll.c
 SOURCES += src/objcftl.c
 SOURCES += src/objects.c
