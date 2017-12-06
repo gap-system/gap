@@ -3236,7 +3236,7 @@ void InitializeGap (
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyAllocBags, SyStorMin,
-              0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
+              0, (Bag*)(((UInt)pargc/C_STACK_ALIGN)*C_STACK_ALIGN), C_STACK_ALIGN,
               SyAbortBags );
 #if !defined(BOEHM_GC)
     InitMsgsFuncBags( SyMsgsBags );
