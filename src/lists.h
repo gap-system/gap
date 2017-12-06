@@ -804,6 +804,43 @@ extern  Obj             TYPES_LIST_FAM (
 
 /****************************************************************************
 **
+*F * * * * * * * * * * * * * important filters  * * * * * * * * * * * * * * *
+*/
+
+enum {
+    /** filter number for `IsEmpty' */
+    FN_IS_EMPTY,
+
+    /** filter number for `IsSSortedList' */
+    FN_IS_SSORT,
+
+    /** filter number for `IsNSortedList' */
+    FN_IS_NSORT,
+
+    /** filter number for `IsDenseList' */
+    FN_IS_DENSE,
+
+    /** filter number for `IsNDenseList' */
+    FN_IS_NDENSE,
+
+    /** filter number for `IsHomogeneousList' */
+    FN_IS_HOMOG,
+
+    /** filter number for `IsNonHomogeneousList' */
+    FN_IS_NHOMOG,
+
+    /** filter number for `IsTable' */
+    FN_IS_TABLE,
+
+    /** filter number for `IsRectangularTable' */
+    FN_IS_RECT,
+
+    LAST_FN = FN_IS_RECT
+};
+
+
+/****************************************************************************
+**
 *V  SetFiltListTNums[ <tnum> ][ <fnum> ]  . . . . . new tnum after filter set
 **
 **  If a list  with type number <tnum>  gains  the filter  with filter number
