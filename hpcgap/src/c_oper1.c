@@ -4625,18 +4625,12 @@ static Int InitLibrary ( StructInitInfo * module )
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ MODULE_STATIC,
- /* name        = */ "GAPROOT/lib/oper1.g",
- /* revision_c  = */ 0,
- /* revision_h  = */ 0,
- /* version     = */ 0,
- /* crc         = */ 81317498,
- /* initKernel  = */ InitKernel,
- /* initLibrary = */ InitLibrary,
- /* checkInit   = */ 0,
- /* preSave     = */ 0,
- /* postSave    = */ 0,
- /* postRestore = */ PostRestore
+ .type        = MODULE_STATIC,
+ .name        = "GAPROOT/lib/oper1.g",
+ .crc         = 81317498,
+ .initKernel  = InitKernel,
+ .initLibrary = InitLibrary,
+ .postRestore = PostRestore,
 };
 
 StructInitInfo * Init__oper1 ( void )
