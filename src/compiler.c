@@ -5713,22 +5713,16 @@ Int CompileFunc (
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
     if ( ! strcmp( "Init_Dynamic", name ) ) {
-        Emit( "/* type        = */ MODULE_DYNAMIC,\n" );
+        Emit( ".type        = MODULE_DYNAMIC,\n" );
     }
     else {
-        Emit( "/* type        = */ MODULE_STATIC,\n" );
+        Emit( ".type        = MODULE_STATIC,\n" );
     }
-    Emit( "/* name        = */ \"%C\",\n", magic2 );
-    Emit( "/* revision_c  = */ %d,\n",     0 );
-    Emit( "/* revision_h  = */ %d,\n",     0 );
-    Emit( "/* version     = */ %d,\n",     0 );
-    Emit( "/* crc         = */ %d,\n",     magic1 );
-    Emit( "/* initKernel  = */ InitKernel,\n" );
-    Emit( "/* initLibrary = */ InitLibrary,\n" );
-    Emit( "/* checkInit   = */ 0,\n" );
-    Emit( "/* preSave     = */ 0,\n" );
-    Emit( "/* postSave    = */ 0,\n" );
-    Emit( "/* postRestore = */ PostRestore\n" );
+    Emit( ".name        = \"%C\",\n", magic2 );
+    Emit( ".crc         = %d,\n",     magic1 );
+    Emit( ".initKernel  = InitKernel,\n" );
+    Emit( ".initLibrary = InitLibrary,\n" );
+    Emit( ".postRestore = PostRestore,\n" );
     Emit( "};\n" );
     Emit( "\n" );
     Emit( "StructInitInfo * %n ( void )\n", name );
