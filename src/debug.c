@@ -122,7 +122,7 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)FEXS_FUNC,
     (VoidFunc)FibHash,
     (VoidFunc)FillInVersion,
-    (VoidFunc)FUNC_HEADER,
+    (VoidFunc)FUNC,
 #ifdef HPCGAP
     (VoidFunc)GetTLS,
 #endif

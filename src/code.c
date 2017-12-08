@@ -753,7 +753,7 @@ void CodeFuncExprBegin (
     PushLoopNesting();
     
     /* create a function expression                                        */
-    fexp = NewBag( T_FUNCTION, sizeof(FunctionHeader) );
+    fexp = NewBag( T_FUNCTION, sizeof(FuncBag) );
     SET_NARG_FUNC( fexp, narg );
     SET_NLOC_FUNC( fexp, nloc );
     SET_NAMS_FUNC( fexp, nams );
