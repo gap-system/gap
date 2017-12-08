@@ -1141,15 +1141,15 @@ Obj SetterAndFilter (
     Obj                 setter;
     Obj                 obj;
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-        setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+        setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
                                 MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
                                 DoSetAndFilter );
         /* assign via 'obj' to avoid GC issues */
         obj =  SetterFilter( FLAG1_FILT(getter) );
-        FLAG1_FILT(setter)  = obj;
+        SET_FLAG1_FILT(setter, obj);
         obj = SetterFilter( FLAG2_FILT(getter) );
-        FLAG2_FILT(setter)  = obj;
-        SETTR_FILT(getter)  = setter;
+        SET_FLAG2_FILT(setter, obj);
+        SET_SETTR_FILT(getter, setter);
         CHANGED_BAG(getter);
     }
 
@@ -1207,7 +1207,7 @@ Obj TesterAndFilter (
     if ( TESTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
         tester = NewAndFilter( TesterFilter( FLAG1_FILT(getter) ),
                                TesterFilter( FLAG2_FILT(getter) ) );
-        TESTR_FILT(getter) = tester;
+        SET_TESTR_FILT(getter, tester);
         CHANGED_BAG(getter);
 
     }
@@ -1264,8 +1264,8 @@ Obj NewSetterFilter (
 
     setter = NewOperation( StringFilterSetter, 2, ArglistObjVal,
                            DoSetFilter );
-    FLAG1_FILT(setter)  = FLAG1_FILT(getter);
-    FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
+    SET_FLAG1_FILT(setter, FLAG1_FILT(getter));
+    SET_FLAG2_FILT(setter, INTOBJ_INT(0));
     CHANGED_BAG(setter);
 
     return setter;
@@ -1315,19 +1315,17 @@ Obj NewFilter (
     flag1 = ++CountFlags;
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
+    SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
+    SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     NEW_FLAGS( flags, flag1 );
     SET_LEN_FLAGS( flags, flag1 );
     SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
+    SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
 
     setter = NewSetterFilter( getter );
-    SETTR_FILT(getter)  = setter;
-    CHANGED_BAG(getter);
-    
-    TESTR_FILT(getter)  = ReturnTrueFilter;
+    SET_SETTR_FILT(getter, setter);
+    SET_TESTR_FILT(getter, ReturnTrueFilter);
     CHANGED_BAG(getter);
 
     return getter;    
@@ -1387,14 +1385,14 @@ Obj NewAndFilter (
     strlcat(s, ")", str_len);
     SET_LEN_STRING(str, str_len - 1);
 
-    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, str, 1,
+    getter = NewFunctionT( T_FUNCTION, sizeof(OperBag), str, 1,
                            ArglistObj, DoAndFilter );
-    FLAG1_FILT(getter)  = oper1;
-    FLAG2_FILT(getter)  = oper2;
+    SET_FLAG1_FILT(getter, oper1);
+    SET_FLAG2_FILT(getter, oper2);
     flags = FuncAND_FLAGS( 0, FLAGS_FILT(oper1), FLAGS_FILT(oper2) );
-    FLAGS_FILT(getter)  = flags;
-    SETTR_FILT(getter)  = INTOBJ_INT(0xBADBABE);
-    TESTR_FILT(getter)  = INTOBJ_INT(0xBADBABE);
+    SET_FLAGS_FILT(getter, flags);
+    SET_SETTR_FILT(getter, INTOBJ_INT(0xBADBABE));
+    SET_TESTR_FILT(getter, INTOBJ_INT(0xBADBABE));
     CHANGED_BAG(getter);
 
     return getter;
@@ -1441,11 +1439,11 @@ Obj SetterReturnTrueFilter (
 {
     Obj                 setter;
 
-    setter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+    setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
         MakeImmString("<<setter-true-filter>>"), 2, ArglistObjVal,
         DoSetReturnTrueFilter );
-    FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
+    SET_FLAG1_FILT(setter, INTOBJ_INT(0));
+    SET_FLAG2_FILT(setter, INTOBJ_INT(0));
     CHANGED_BAG(setter);
 
     return setter;    
@@ -1465,22 +1463,22 @@ Obj NewReturnTrueFilter ( void )
     Obj                 tester;
     Obj                 flags;
 
-    getter = NewFunctionT( T_FUNCTION, SIZE_OPER,
+    getter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
         MakeImmString("ReturnTrueFilter"), 1, ArglistObj,
         DoReturnTrueFilter );
-    FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
+    SET_FLAG1_FILT(getter, INTOBJ_INT(0));
+    SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     NEW_FLAGS( flags, 0 );
     SET_LEN_FLAGS( flags, 0 );
-    FLAGS_FILT(getter)  = flags;
+    SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
 
     setter = SetterReturnTrueFilter( getter );
-    SETTR_FILT(getter)  = setter;
+    SET_SETTR_FILT(getter, setter);
     CHANGED_BAG(getter);
 
     tester = TesterReturnTrueFilter( getter );
-    TESTR_FILT(getter)  = tester;
+    SET_TESTR_FILT(getter, tester);
     CHANGED_BAG(getter);
         
     return getter;
@@ -1546,7 +1544,7 @@ Obj FuncSET_FLAG1_FILTER (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    FLAG1_FILT( oper ) = flag1;
+    SET_FLAG1_FILT(oper, flag1);
     return 0;
 }
 
@@ -1585,7 +1583,7 @@ Obj FuncSET_FLAG2_FILTER (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    FLAG2_FILT( oper ) = flag2;
+    SET_FLAG2_FILT(oper, flag2);
     return 0;
 }
 
@@ -1624,7 +1622,7 @@ Obj FuncSET_FLAGS_FILTER (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    FLAGS_FILT( oper ) = flags;
+    SET_FLAGS_FILT(oper, flags);
     return 0;
 }
 
@@ -1662,7 +1660,7 @@ Obj FuncSET_SETTER_FILTER (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    SETTR_FILT( oper ) = setter;
+    SET_SETTR_FILT(oper, setter);
     return 0;
 }
 
@@ -1700,10 +1698,10 @@ Obj FuncSET_TESTER_FILTER (
         ErrorQuit("<oper> must be an operation",0L,0L);
         return 0;
     }
-    if ( SIZE_OBJ(oper) != SIZE_OPER ) {
-        ResizeBag( oper, SIZE_OPER );
+    if ( SIZE_OBJ(oper) != sizeof(OperBag) ) {
+        ResizeBag( oper, sizeof(OperBag) );
     }
-    TESTR_FILT( oper ) = tester;
+    SET_TESTR_FILT(oper, tester);
     return 0;
 }
 
@@ -1890,7 +1888,7 @@ static inline Obj CacheOper(Obj oper, UInt i)
         if (cache == 0) {
             CacheSize++;
             cacheIndex = CacheSize;
-            CACHE_OPER(oper, i) = INTOBJ_INT(cacheIndex);
+            SET_CACHE_OPER(oper, i, INTOBJ_INT(cacheIndex));
         }
         else
             cacheIndex = INT_INTOBJ(cache);
@@ -1921,7 +1919,7 @@ static inline Obj CacheOper(Obj oper, UInt i)
         SET_ELM_PLIST(STATE(MethodCache), cacheIndex, cache);
         CHANGED_BAG(STATE(MethodCache));
 #else
-        CACHE_OPER(oper, i) = cache;
+        SET_CACHE_OPER(oper, i, cache);
         CHANGED_BAG(oper);
 #endif
     }
@@ -2393,7 +2391,7 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
     Obj oper;
 
     /* create the function                                                 */
-    oper = NewFunctionT(T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr);
+    oper = NewFunctionT(T_FUNCTION, sizeof(OperBag), name, narg, nams, hdlr);
 
     /* enter the handlers                                                  */
     SET_HDLR_FUNC(oper, 0, DoOperation0Args);
@@ -2410,11 +2408,11 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
         SET_HDLR_FUNC(oper, narg, hdlr);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INTOBJ_INT(0);
-    FLAG2_FILT(oper) = INTOBJ_INT(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
+    SET_FLAG1_FILT(oper, INTOBJ_INT(0));
+    SET_FLAG2_FILT(oper, INTOBJ_INT(0));
+    SET_FLAGS_FILT(oper, False);
+    SET_SETTR_FILT(oper, False);
+    SET_TESTR_FILT(oper, False);
 
     /* This isn't an attribute (yet) */
     SET_ENABLED_ATTR(oper, 0);
@@ -2570,7 +2568,7 @@ Obj NewConstructor (
     Obj                 oper;
 
     /* create the function                                                 */
-    oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
+    oper = NewFunctionT( T_FUNCTION, sizeof(OperBag), name, narg, nams, hdlr );
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
@@ -2585,12 +2583,12 @@ Obj NewConstructor (
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
-    FLAG1_FILT(oper) = INTOBJ_INT(0);
-    FLAG2_FILT(oper) = INTOBJ_INT(0);
-    FLAGS_FILT(oper) = False;
-    SETTR_FILT(oper) = False;
-    TESTR_FILT(oper) = False;
-    
+    SET_FLAG1_FILT(oper, INTOBJ_INT(0));
+    SET_FLAG2_FILT(oper, INTOBJ_INT(0));
+    SET_FLAGS_FILT(oper, False);
+    SET_SETTR_FILT(oper, False);
+    SET_TESTR_FILT(oper, False);
+
     /* return constructor                                                  */
     return oper;
 }
@@ -2884,8 +2882,8 @@ static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, O
     Obj setter;
     fname = PREFIX_NAME(name, "Set");
     setter = NewOperation( fname, 2L, 0L, setFunc );
-    FLAG1_FILT(setter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
+    SET_FLAG1_FILT(setter, INTOBJ_INT(flag1));
+    SET_FLAG2_FILT(setter, INTOBJ_INT(flag2));
     CHANGED_BAG(setter);
     return setter;
 }
@@ -2896,16 +2894,16 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     Obj tester;
     Obj flags;
     fname = PREFIX_NAME(name, "Has");
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
+    tester = NewFunctionT( T_FUNCTION, sizeof(OperBag), fname, 1L, 0L,
+                           DoTestAttribute );
+    SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
+    SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
     NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
+    SET_FLAGS_FILT(tester, flags);
+    SET_SETTR_FILT(tester, 0);
+    SET_TESTR_FILT(tester, ReturnTrueFilter);
     CHANGED_BAG(tester);
     return tester;
 }
@@ -2914,14 +2912,14 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
 static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
 {
     // Install additional data
-    FLAG1_FILT(attr)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(attr)  = INTOBJ_INT( flag2 );
+    SET_FLAG1_FILT(attr, INTOBJ_INT(0));
+    SET_FLAG2_FILT(attr, INTOBJ_INT(flag2));
 
     // reuse flags from tester
-    FLAGS_FILT(attr)  = FLAGS_FILT(tester);
+    SET_FLAGS_FILT(attr, FLAGS_FILT(tester));
 
-    SETTR_FILT(attr)  = setter;
-    TESTR_FILT(attr)  = tester;
+    SET_SETTR_FILT(attr, setter);
+    SET_TESTR_FILT(attr, tester);
     SET_ENABLED_ATTR(attr,1);
     CHANGED_BAG(attr);
 }
@@ -3185,24 +3183,24 @@ Obj NewProperty (
     setter = MakeSetter(name, flag1, flag2, DoSetProperty);
     tester = MakeTester(name, flag1, flag2);
 
-    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) ); 
+    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
 
-    FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
+    SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
+    SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
     NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     SET_ELM_FLAGS( flags, flag1, True );
-    FLAGS_FILT(getter)  = flags;
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
+    SET_FLAGS_FILT(getter, flags);
+    SET_SETTR_FILT(getter, setter);
+    SET_TESTR_FILT(getter, tester);
     SET_ENABLED_ATTR(getter,1);
     CHANGED_BAG(getter);
 
     /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
-    FLAGS_FILT(setter)  = flags;
-    SETTR_FILT(setter)  = setter;
-    TESTR_FILT(setter)  = tester;
+    SET_FLAGS_FILT(setter, flags);
+    SET_SETTR_FILT(setter, setter);
+    SET_TESTR_FILT(setter, tester);
 
     /* return the getter                                                   */
     return getter;    
@@ -3340,21 +3338,21 @@ void LoadOperationExtras (
 {
     UInt        i;
 
-    FLAG1_FILT(oper) = LoadSubObj();
-    FLAG2_FILT(oper) = LoadSubObj();
-    FLAGS_FILT(oper) = LoadSubObj();
-    SETTR_FILT(oper) = LoadSubObj();
-    TESTR_FILT(oper) = LoadSubObj();
+    SET_FLAG1_FILT(oper, LoadSubObj());
+    SET_FLAG2_FILT(oper, LoadSubObj());
+    SET_FLAGS_FILT(oper, LoadSubObj());
+    SET_SETTR_FILT(oper, LoadSubObj());
+    SET_TESTR_FILT(oper, LoadSubObj());
     i = LoadUInt();
     SET_ENABLED_ATTR(oper,i);
     for (i = 0; i <= 7; i++)
-        METHS_OPER(oper,i) = LoadSubObj();
+        SET_METHS_OPER(oper, i, LoadSubObj());
 #ifdef HPCGAP
     // FIXME: We probably don't want to save/restore the cache?
     // (and that would include "normal" GAP, too...)
 #else
     for (i = 0; i <= 7; i++)
-        CACHE_OPER(oper,i) = LoadSubObj();
+        SET_CACHE_OPER(oper, i, LoadSubObj());
 #endif
 }
 
@@ -3598,7 +3596,7 @@ Obj MethsOper (
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         MakeBagReadOnly(methods);
-        METHS_OPER( oper, i ) = methods;
+        SET_METHS_OPER(oper, i, methods);
         CHANGED_BAG( oper );
     }
     return methods;
@@ -3691,7 +3689,7 @@ Obj FuncSET_METHODS_OPERATION (
 #ifdef HPCGAP
     MEMBAR_WRITE();
 #endif
-    METHS_OPER( oper, n ) = meths;
+    SET_METHS_OPER(oper, n, meths);
     return 0;
 }
 
@@ -3999,7 +3997,7 @@ Obj FuncTRACE_METHODS (
     Obj                 oper )
 {
     /* check the argument                                                  */
-    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
+    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != sizeof(OperBag) ) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
@@ -4022,7 +4020,7 @@ Obj FuncUNTRACE_METHODS (
 {
 
     /* check the argument                                                  */
-    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != SIZE_OPER ) {
+    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != sizeof(OperBag) ) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
