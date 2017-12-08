@@ -15,6 +15,42 @@
 #define GAP_OPERS_H
 
 #include <src/system.h>
+#include <src/calls.h>
+
+
+/****************************************************************************
+**
+**
+*/
+typedef struct {
+    // an operation is a T_FUNCTION with additional data
+    FuncBag func;
+
+    // flag 1 list of an `and' filter
+    Obj flag1;
+
+    // flag 2 list of an `and' filter
+    Obj flag2;
+
+    // flags of a filter
+    Obj flags;
+
+    // setter of a filter
+    Obj setter;
+
+    // tester of a filter
+    Obj tester;
+
+    // method list of an operation
+    Obj methods[8];
+
+    // cache of an operation
+    Obj cache[8];
+
+    // 1 if the operation is an attribute and storing is enabled (default) else 0
+    Obj enabled;
+} OperBag;
+
 
 /****************************************************************************
 **
@@ -27,78 +63,155 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
-#define IS_OPERATION(func) \
-    (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
+static inline Int IS_OPERATION(Obj func)
+{
+    return TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == sizeof(OperBag);
+}
+
+
+/****************************************************************************
+**
+*F  OPER
+*/
+static inline OperBag * OPER(Obj oper)
+{
+    GAP_ASSERT(IS_OPERATION(oper));
+    return (OperBag *)ADDR_OBJ(oper);
+}
+
+static inline const OperBag * CONST_OPER(Obj oper)
+{
+    GAP_ASSERT(IS_OPERATION(oper));
+    return (const OperBag *)CONST_ADDR_OBJ(oper);
+}
+
 
 /****************************************************************************
 **
 *F  FLAG1_FILT( <oper> )  . . . . . . . . . .  flag 1 list of an `and' filter
 */
-#define FLAG1_FILT(oper)        (*            (ADDR_OBJ(oper) +16     ) )
+static inline Obj FLAG1_FILT(Obj oper)
+{
+    return CONST_OPER(oper)->flag1;
+}
+
+static inline void SET_FLAG1_FILT(Obj oper, Obj x)
+{
+    OPER(oper)->flag1 = x;
+}
 
 
 /****************************************************************************
 **
 *F  FLAG2_FILT( <oper> )  . . . . . . . . . .  flag 2 list of an `and' filter
 */
-#define FLAG2_FILT(oper)        (*            (ADDR_OBJ(oper) +17     ) )
+static inline Obj FLAG2_FILT(Obj oper)
+{
+    return CONST_OPER(oper)->flag2;
+}
+
+static inline void SET_FLAG2_FILT(Obj oper, Obj x)
+{
+    OPER(oper)->flag2 = x;
+}
 
 
 /****************************************************************************
 **
 *F  FLAGS_FILT( <oper> )  . . . . . . . . . . . . . . . . . flags of a filter
 */
-#define FLAGS_FILT(oper)        (*            (ADDR_OBJ(oper) +18     ) )
+static inline Obj FLAGS_FILT(Obj oper)
+{
+    return CONST_OPER(oper)->flags;
+}
+
+static inline void SET_FLAGS_FILT(Obj oper, Obj x)
+{
+    OPER(oper)->flags = x;
+}
 
 
 /****************************************************************************
 **
 *F  SETTER_FILT( <oper> ) . . . . . . . . . . . . . . . .  setter of a filter
 */
-#define SETTR_FILT(oper)        (*            (ADDR_OBJ(oper) +19     ) )
+static inline Obj SETTR_FILT(Obj oper)
+{
+    return CONST_OPER(oper)->setter;
+}
+
+static inline void SET_SETTR_FILT(Obj oper, Obj x)
+{
+    OPER(oper)->setter = x;
+}
 
 
 /****************************************************************************
 **
 *F  TESTR_FILT( <oper> )  . . . . . . . . . . . . . . . .  tester of a filter
 */
-#define TESTR_FILT(oper)        (*            (ADDR_OBJ(oper) +20     ) )
+static inline Obj TESTR_FILT(Obj oper)
+{
+    return CONST_OPER(oper)->tester;
+}
+
+static inline void SET_TESTR_FILT(Obj oper, Obj x)
+{
+    OPER(oper)->tester = x;
+}
 
 
 /****************************************************************************
 **
 *F  METHS_OPER( <oper> )  . . . . . . . . . . . . method list of an operation
 */
-#define METHS_OPER(oper,i)      (*            (ADDR_OBJ(oper) +21+ (i)) )
+static inline Obj METHS_OPER(Obj oper, Int i)
+{
+    return CONST_OPER(oper)->methods[i];
+}
+
+static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
+{
+    OPER(oper)->methods[i] = x;
+}
 
 
 /****************************************************************************
 **
 *F  CACHE_OPER( <oper> )  . . . . . . . . . . . . . . . cache of an operation
 */
-#define CACHE_OPER(oper,i)      (*            (ADDR_OBJ(oper) +29+ (i)) )
+static inline Obj CACHE_OPER(Obj oper, Int i)
+{
+    return CONST_OPER(oper)->cache[i];
+}
+
+static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
+{
+    OPER(oper)->cache[i] = x;
+}
+
 
 /****************************************************************************
 **
 *F  ENABLED_ATTR( <oper> ) . . . . true if the operation is an attribute and
 **                                 storing is enabled (default) else false
 */
+static inline Int ENABLED_ATTR(Obj oper)
+{
+    Obj val = CONST_OPER(oper)->enabled;
+    return val ? INT_INTOBJ(val) : 0;
+}
 
-#define ENABLED_ATTR(oper)                 ((UInt)(CONST_ADDR_OBJ(oper)[37]))
 
 /****************************************************************************
 **
 *F  SET_ENABLED_ATTR( <oper>, <new> )  . set a new value that records whether 
 **                                       storing is enabled for an operation
 */
-
-#define SET_ENABLED_ATTR(oper, new)       ((ADDR_OBJ(oper)[37]) = (Obj)(new)) 
-
-/****************************************************************************
-**
-*V  SIZE_OPER . . . . . . . . . . . . . . . . . . . . .  size of an operation
-*/
-#define SIZE_OPER               (38*sizeof(Bag))
+static inline void SET_ENABLED_ATTR(Obj oper, Int x)
+{
+    OPER(oper)->enabled = INTOBJ_INT(x);
+}
 
 
 /****************************************************************************
