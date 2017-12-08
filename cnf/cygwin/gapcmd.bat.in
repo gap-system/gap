@@ -4,6 +4,6 @@ set LANG=en_US.UTF-8
 set HOME=%HOMEDRIVE%%HOMEPATH%
 set PATH=@wincygbin@;%PATH%
 cd %HOME%
-@wingapdir@\bin\@GAPARCH@\gap.exe -l @gapdir@ %*
+@wingapdir@\gap.exe -l @gapdir@ %*
 if NOT ["%errorlevel%"]==["0"] timeout 15
 exit

@@ -4,6 +4,6 @@ set LANG=en_US.ISO-8859-1
 set HOME=%HOMEDRIVE%%HOMEPATH%
 set PATH=@wincygbin@;%PATH%
 cd %HOME%
-start "GAP" @wincygbin@\rxvt.exe -fn fixedsys -sl 1000 -e @gapdir@/bin/@GAPARCH@/gap.exe -l @gapdir@ %*
+start "GAP" @wincygbin@\rxvt.exe -fn fixedsys -sl 1000 -e @gapdir@/gap.exe -l @gapdir@ %*
 if NOT ["%errorlevel%"]==["0"] timeout 15
 exit
