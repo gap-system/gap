@@ -126,66 +126,73 @@ static inline FuncBag * FUNC(Obj func)
     return (FuncBag *)ADDR_OBJ(func);
 }
 
+static inline const FuncBag * CONST_FUNC(Obj func)
+{
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    return (const FuncBag *)CONST_ADDR_OBJ(func);
+}
+
+
 static inline ObjFunc HDLR_FUNC(Obj func, Int i)
 {
-    return FUNC(func)->handlers[i];
+    GAP_ASSERT(0 <= i && i < 8);
+    return CONST_FUNC(func)->handlers[i];
 }
 
 static inline Obj NAME_FUNC(Obj func)
 {
-    return FUNC(func)->name;
+    return CONST_FUNC(func)->name;
 }
 
 static inline Int NARG_FUNC(Obj func)
 {
-    return FUNC(func)->nargs;
+    return CONST_FUNC(func)->nargs;
 }
 
 static inline Obj NAMS_FUNC(Obj func)
 {
-    return FUNC(func)->namesOfLocals;
+    return CONST_FUNC(func)->namesOfLocals;
 }
 
 extern Char * NAMI_FUNC(Obj func, Int i);
 
 static inline Obj PROF_FUNC(Obj func)
 {
-    return FUNC(func)->prof;
+    return CONST_FUNC(func)->prof;
 }
 
 static inline UInt NLOC_FUNC(Obj func)
 {
-    return FUNC(func)->nloc;
+    return CONST_FUNC(func)->nloc;
 }
 
 static inline Obj BODY_FUNC(Obj func)
 {
-    return FUNC(func)->body;
+    return CONST_FUNC(func)->body;
 }
 
 static inline Obj ENVI_FUNC(Obj func)
 {
-    return FUNC(func)->envi;
+    return CONST_FUNC(func)->envi;
 }
 
 static inline Obj FEXS_FUNC(Obj func)
 {
-    return FUNC(func)->fexs;
+    return CONST_FUNC(func)->fexs;
 }
 
 #ifdef HPCGAP
 static inline Obj LCKS_FUNC(Obj func)
 {
-    return FUNC(func)->locks;
+    return CONST_FUNC(func)->locks;
 }
 
 #endif
 
 static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
 {
-    FuncBag *header = FUNC(func);
-    GAP_ASSERT(0 <= i && i < ARRAY_SIZE(header->handlers));
-    header->handlers[i] = hdlr;
+    GAP_ASSERT(0 <= i && i < 8);
+    FUNC(func)->handlers[i] = hdlr;
 }
 
 extern void SET_NAME_FUNC(Obj func, Obj name);
