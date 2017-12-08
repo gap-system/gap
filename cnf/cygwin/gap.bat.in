@@ -4,6 +4,6 @@ set LANG=en_US.UTF-8
 set HOME=%HOMEDRIVE%%HOMEPATH%
 set PATH=@wincygbin@;%PATH%
 cd %HOME%
-start "GAP" @wincygbin@\mintty.exe -s 120,40 @gapdir@/bin/@GAPARCH@/gap.exe -l @gapdir@ %*
+start "GAP" @wincygbin@\mintty.exe -s 120,40 @gapdir@/gap.exe -l @gapdir@ %*
 if NOT ["%errorlevel%"]==["0"] timeout 15
 exit
