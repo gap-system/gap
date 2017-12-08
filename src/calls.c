@@ -53,7 +53,7 @@
 void SET_NAME_FUNC(Obj func, Obj name)
 {
     GAP_ASSERT(name == 0 || IS_STRING_REP(name));
-    FUNC_HEADER(func)->name = name;
+    FUNC(func)->name = name;
 }
 
 Char * NAMI_FUNC(Obj func, Int i)
@@ -1115,7 +1115,7 @@ Obj NewFunction (
     Obj                 nams,
     ObjFunc             hdlr )
 {
-    return NewFunctionT( T_FUNCTION, sizeof(FunctionHeader), name, narg, nams, hdlr );
+    return NewFunctionT( T_FUNCTION, sizeof(FuncBag), name, narg, nams, hdlr );
 }
     
 
@@ -1132,7 +1132,7 @@ Obj NewFunctionC (
     const Char *        nams,
     ObjFunc             hdlr )
 {
-    return NewFunctionCT( T_FUNCTION, sizeof(FunctionHeader), name, narg, nams, hdlr );
+    return NewFunctionCT( T_FUNCTION, sizeof(FuncBag), name, narg, nams, hdlr );
 }
     
 
@@ -1947,7 +1947,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
 */
 void SaveFunction ( Obj func )
 {
-  FunctionHeader * header = FUNC_HEADER(func);
+  FuncBag * header = FUNC(func);
   for (UInt i = 0; i <= 7; i++)
     SaveHandler(header->handlers[i]);
   SaveSubObj(header->name);
@@ -1958,7 +1958,7 @@ void SaveFunction ( Obj func )
   SaveSubObj(header->body);
   SaveSubObj(header->envi);
   SaveSubObj(header->fexs);
-  if (SIZE_OBJ(func) != sizeof(FunctionHeader))
+  if (SIZE_OBJ(func) != sizeof(FuncBag))
     SaveOperationExtras( func );
 }
 
@@ -1969,7 +1969,7 @@ void SaveFunction ( Obj func )
 */
 void LoadFunction ( Obj func )
 {
-  FunctionHeader * header = FUNC_HEADER(func);
+  FuncBag * header = FUNC(func);
   for (UInt i = 0; i <= 7; i++)
     header->handlers[i] = LoadHandler();
   header->name = LoadSubObj();
@@ -1980,7 +1980,7 @@ void LoadFunction ( Obj func )
   header->body = LoadSubObj();
   header->envi = LoadSubObj();
   header->fexs = LoadSubObj();
-  if (SIZE_OBJ(func) != sizeof(FunctionHeader))
+  if (SIZE_OBJ(func) != sizeof(FuncBag))
     LoadOperationExtras( func );
 }
 

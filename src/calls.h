@@ -118,72 +118,72 @@ typedef struct {
     Obj locks;
 #endif
     // additional data follows for operations
-} FunctionHeader;
+} FuncBag;
 
-static inline FunctionHeader * FUNC_HEADER(Obj func)
+static inline FuncBag * FUNC(Obj func)
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
-    return (FunctionHeader *)ADDR_OBJ(func);
+    return (FuncBag *)ADDR_OBJ(func);
 }
 
 static inline ObjFunc HDLR_FUNC(Obj func, Int i)
 {
-    return FUNC_HEADER(func)->handlers[i];
+    return FUNC(func)->handlers[i];
 }
 
 static inline Obj NAME_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->name;
+    return FUNC(func)->name;
 }
 
 static inline Int NARG_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->nargs;
+    return FUNC(func)->nargs;
 }
 
 static inline Obj NAMS_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->namesOfLocals;
+    return FUNC(func)->namesOfLocals;
 }
 
 extern Char * NAMI_FUNC(Obj func, Int i);
 
 static inline Obj PROF_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->prof;
+    return FUNC(func)->prof;
 }
 
 static inline UInt NLOC_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->nloc;
+    return FUNC(func)->nloc;
 }
 
 static inline Obj BODY_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->body;
+    return FUNC(func)->body;
 }
 
 static inline Obj ENVI_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->envi;
+    return FUNC(func)->envi;
 }
 
 static inline Obj FEXS_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->fexs;
+    return FUNC(func)->fexs;
 }
 
 #ifdef HPCGAP
 static inline Obj LCKS_FUNC(Obj func)
 {
-    return FUNC_HEADER(func)->locks;
+    return FUNC(func)->locks;
 }
 
 #endif
 
 static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
 {
-    FunctionHeader *header = FUNC_HEADER(func);
+    FuncBag *header = FUNC(func);
     GAP_ASSERT(0 <= i && i < ARRAY_SIZE(header->handlers));
     header->handlers[i] = hdlr;
 }
@@ -192,44 +192,44 @@ extern void SET_NAME_FUNC(Obj func, Obj name);
 
 static inline void SET_NARG_FUNC(Obj func, Int nargs)
 {
-    FUNC_HEADER(func)->nargs = nargs;
+    FUNC(func)->nargs = nargs;
 }
 
 static inline void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
 {
-    FUNC_HEADER(func)->namesOfLocals = namesOfLocals;
+    FUNC(func)->namesOfLocals = namesOfLocals;
 }
 
 static inline void SET_PROF_FUNC(Obj func, Obj prof)
 {
-    FUNC_HEADER(func)->prof = prof;
+    FUNC(func)->prof = prof;
 }
 
 static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
 {
-    FUNC_HEADER(func)->nloc = nloc;
+    FUNC(func)->nloc = nloc;
 }
 
 static inline void SET_BODY_FUNC(Obj func, Obj body)
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
-    FUNC_HEADER(func)->body = body;
+    FUNC(func)->body = body;
 }
 
 static inline void SET_ENVI_FUNC(Obj func, Obj envi)
 {
-    FUNC_HEADER(func)->envi = envi;
+    FUNC(func)->envi = envi;
 }
 
 static inline void SET_FEXS_FUNC(Obj func, Obj fexs)
 {
-    FUNC_HEADER(func)->fexs = fexs;
+    FUNC(func)->fexs = fexs;
 }
 
 #ifdef HPCGAP
 static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 {
-    FUNC_HEADER(func)->locks = locks;
+    FUNC(func)->locks = locks;
 }
 #endif
 
