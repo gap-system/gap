@@ -722,7 +722,6 @@ InstallMethod( Order,
     [ IsPerm ],
     ORDER_PERM );
 
-
 #############################################################################
 ##
 #O  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
