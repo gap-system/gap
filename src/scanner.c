@@ -359,11 +359,11 @@ static Char GetCleanedChar( UInt *wasEscaped ) {
     if      ( *STATE(In) == '\n')
       return GetCleanedChar(wasEscaped);
     else if ( *STATE(In) == '\r' )  {
-      GET_CHAR();
-      if  ( *STATE(In) == '\n' )
+      if ( PEEK_CHAR() == '\n' ) {
+        GET_CHAR();
         return GetCleanedChar(wasEscaped);
+      }
       else {
-        UNGET_CHAR(*STATE(In));
         *wasEscaped = 1;
         return '\r';
       }
@@ -430,7 +430,7 @@ void GetNumber ( UInt StartingStatus )
 
     /* Or maybe we saw a . which could indicate one of two things:
        a float literal or .. */
-    if (c == '.'){
+    if (c == '.') {
       /* If the symbol before this integer was S_DOT then 
          we must be in a nested record element expression, so don't 
          look for a float.
@@ -443,21 +443,16 @@ void GetNumber ( UInt StartingStatus )
       }
       
       /* peek ahead to decide which */
-      GET_CHAR();
-      if (*STATE(In) == '.') {
+      if (PEEK_CHAR() == '.') {
         /* It was .. */
-        UNGET_CHAR(*STATE(In));
         STATE(Symbol) = S_INT;
         STATE(Value)[i] = '\0';
         return;
       }
 
-
-      /* Not .. Put back the character we peeked at */
-      UNGET_CHAR(*STATE(In));
       /* Now the . must be part of our number
          store it and move on */
-      STATE(Value)[i++] = c;
+      STATE(Value)[i++] = '.';
       c = GetCleanedChar(&wasEscaped);
     }
 
@@ -750,14 +745,9 @@ void GetStr ( void )
     if ( *STATE(In) == '\\' ) {
       GET_CHAR();
       /* if next is another '\\' followed by '\n' it must be ignored */
-      while ( *STATE(In) == '\\' ) {
-        GET_CHAR();
-        if ( *STATE(In) == '\n' )
+      while ( *STATE(In) == '\\' && PEEK_CHAR() == '\n' ) {
           GET_CHAR();
-        else {
-          UNGET_CHAR( '\\' );
-          break;
-        }
+          GET_CHAR();
       }
       if      ( *STATE(In) == '\n' )  i--;
       else if ( *STATE(In) == '\r' )  {
