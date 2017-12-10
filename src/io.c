@@ -76,13 +76,21 @@ void GET_CHAR(void)
         GetLine();
 }
 
-void UNGET_CHAR(Char c)
+Char PEEK_CHAR(void)
 {
     assert(IS_CHAR_PUSHBACK_EMPTY());
-    STATE(Pushback) = c;
+    // store the current character
+    STATE(Pushback) = *STATE(In);
+
+    // read next character
+    GET_CHAR();
+
+    // fake insert the previous character
     STATE(RealIn) = STATE(In);
     STATE(In) = &STATE(Pushback);
+    return *STATE(RealIn);
 }
+
 
 // Get current line position. In the case where we pushed back the last
 // character on the previous line we return the first character of the

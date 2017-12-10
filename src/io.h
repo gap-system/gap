@@ -21,8 +21,8 @@
 #include <src/system.h>
 
 extern Int  GetLinePosition(void);
-extern void GET_CHAR();
-extern void UNGET_CHAR(Char c);
+extern void GET_CHAR(void);
+extern Char PEEK_CHAR(void);
 
 
 /****************************************************************************
