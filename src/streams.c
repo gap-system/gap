@@ -32,7 +32,14 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <time.h>
 #include <unistd.h>
+
+#ifdef HAVE_SELECT
+// For FuncUNIXSelect
+#include <sys/time.h>
+#endif
+
 
 
 /****************************************************************************
