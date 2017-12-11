@@ -1062,15 +1062,17 @@ These are usually set up during initialization of a kernel module.
 <Subsection Label="Subsect-Kernel-Modules-Structure">
 <Heading>The Kernel Module Structure</Heading>
  
-<P/> *  Apart from a very small amount of glue, all of the kernel
+Apart from a very small amount of glue, all of the kernel
 (including compiled GAP code) is organised  into modules. 
-<P/> *  Basically each module consists of one <C>.c</C> file and one
-<C>.h</C> file.
-<P/> *  <C>gap.c</C> contains the variable
-<C>InitFuncsBuiltinModules</C> which is initialized with a list of
-functions such as <C>InitInfoInt</C>
-<P/> *  Each such function, when called, returns a data structure
-describing a module
+<P/>
+
+Basically each module consists of one <C>.c</C> file and one <C>.h</C> file.
+
+The file <C>gap.c</C> contains the variable <C>InitFuncsBuiltinModules</C>
+which is initialized with a list of functions such as <C>InitInfoInt</C>.
+
+Each such function, when called, returns a data structure describing a module,
+which typically looks as follows:
 <Listing>
 <![CDATA[
 /****************************************************************************
@@ -1078,22 +1080,18 @@ describing a module
 *F  InitInfoInt() . . . . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    MODULE_BUILTIN,                     /* type                           */
-    "integer",                          /* name                           */
-    0,                                  /* revision entry of c file       */
-    0,                                  /* revision entry of h file       */
-    0,                                  /* version                        */
-    0,                                  /* crc                            */
-    InitKernel,                         /* initKernel                     */
-    InitLibrary,                        /* initLibrary                    */
-    0,                                  /* checkInit                      */
-    0,                                  /* preSave                        */
-    0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    .type = MODULE_BUILTIN,
+    .name = "integer",
+    .initKernel = InitKernel,
+    .initLibrary = InitLibrary,
+    .checkInit = 0,
+    .preSave = 0,
+    .postSave = 0,
+    .postRestore = 0
 };
 ]]>
 </Listing>
-<P/> *  The first part is just information, but the functions from
+The first part is just information, but the functions from
 <C>initKernel</C> down are the key to the interface to kernel modules.
  
 </Subsection>
@@ -1101,17 +1099,24 @@ static StructInitInfo module = {
 <Subsection Label="Subsect-Kernel-Modules-Interface">
 <Heading>The Kernel Module Interface</Heading>
  
-<P/> *  The general rule is that if a 0 appears, the function is skipped
-<P/> *  When GAP is starting up, it does the following:
-<P/> *  Calls the InitKernel functions of all those modules that have
-one. If any of them return non-zero then it aborts.
-<P/> *  Then calls the InitLibrary functions likewise 
-<P/> *  Then the CheckInit functions
-<P/> *  The other three functions relate to save/load workspace
-<P/> *  preSave functions are called before saving.
-<P/> *  postSave functions (in the reverse order) after saving
-<P/> *  postRestore functions are called after a workspace has been
-loaded to finish linking up the kernel and workspace.
+The general rule is that if a 0 appears, the function is skipped;
+indeed, you may omit entries which are 0.<P/>
+
+When GAP is starting up, it does the following:
+<List>
+<Item>Calls the <C>initKernel</C> functions of all those modules that have
+one. If any of them return non-zero then it aborts.</Item>
+<Item>Then calls the <C>initLibrary</C> functions likewise</Item>
+<Item>Then the <C>checkInit</C> functions</Item>
+</List>
+
+The other three functions relate to save/load workspace:
+<List>
+<Item><C>preSave</C> functions are called before saving.</Item>
+<Item><C>postSave</C> functions (in the reverse order) after saving</Item>
+<Item><C>postRestore</C> functions are called after a workspace has been
+loaded to finish linking up the kernel and workspace.</Item>
+</List>
  
 </Subsection>
 
@@ -1119,33 +1124,39 @@ loaded to finish linking up the kernel and workspace.
 <Heading>Sequences of Events</Heading>
  
 Normal GAP startup (no -L)
-<P/> *  All <C>initKernel</C> methods called (abort on non-zero return)
-<P/> *  All <C>initLibrary</C> methods called (abort on non-zero return)
-<P/> *  All <C>checkInit</C> methods called (abort on non-zero return)
-<P/> *  <C>init.g</C> read
-<P/> 
+<List>
+<Item>All <C>initKernel</C> methods called (abort on non-zero return)</Item>
+<Item>All <C>initLibrary</C> methods called (abort on non-zero return)</Item>
+<Item>All <C>checkInit</C> methods called (abort on non-zero return)</Item>
+<Item><C>init.g</C> read</Item>
+</List>
+
 Startup loading a workspace
-<P/> *  All <C>initKernel</C> methods called (abort on non-zero return)
-<P/> *  Workspace loaded, global bags and handlers linked up
-<P/> *  All <C>postRestore</C> methods called (abort on non-zero return)
-<P/> *  Enter the main loop
- 
+<List>
+<Item>All <C>initKernel</C> methods called (abort on non-zero return)</Item>
+<Item>Workspace loaded, global bags and handlers linked up</Item>
+<Item>All <C>postRestore</C> methods called (abort on non-zero return)</Item>
+<Item>Enter the main loop</Item>
+</List>
+
 </Subsection>
 
 <Subsection Label="Subsect-Workspace">
 <Heading>Saving a Workspace</Heading>
  
-<P/> *  All <C>preSave</C> methods called (recover on non-zero return)
-<P/> *  Full garbage collection
-<P/> *  After this, workspace must be "clean" -- no non-objects
-stored where objects are expected (eg in plain lists) 
-<P/> *  Saved workspace file written 
-<P/> *  All <C>postSave</C> methods called in reverse order
+<List>
+<Item>All <C>preSave</C> methods called (recover on non-zero return)</Item>
+<Item>Full garbage collection</Item>
+<Item>After this, workspace must be "clean" -- no non-objects
+stored where objects are expected (eg in plain lists)</Item>
+<Item>Saved workspace file written</Item>
+<Item>All <C>postSave</C> methods called in reverse order</Item>
+</List>
 
 </Subsection>
 
-<Subsection Label="Subsect-Exerts">
-<Heading>Exerts from InitKernel from integer.c</Heading>
+<Subsection Label="Subsect-Excerpts">
+<Heading>Excerpts from InitKernel from integer.c</Heading>
 
 <Listing>
 <![CDATA[
