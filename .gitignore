@@ -5,6 +5,7 @@
 /cnf/GAP-CPPFLAGS
 /cnf/GAP-LDFLAGS
 /cnf/GAP-LIBS
+/cnf/GAP-OBJS
 /config.log
 /config.status
 /configure
