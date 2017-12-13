@@ -1642,6 +1642,22 @@ InstallGlobalFunction( PositionMinimum,
 #M  PositionsProperty(<list>,<func>)  . positions of elements with a property
 ##
 InstallMethod( PositionsProperty,
+    "for list and function",
+    [ IsList, IsFunction ],
+    function( list, func )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[ i ] ) and func( list[i] ) then
+        Add( result, i );
+      fi;
+    od;
+
+    return result;
+    end );
+
+InstallMethod( PositionsProperty,
     "for dense list and function",
     [ IsDenseList, IsFunction ],
     function( list, func )
