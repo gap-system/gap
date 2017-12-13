@@ -33,6 +33,7 @@ fi
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
 COLORS=yes
+STRICT=no       # exit with non-zero exit code when encountering any failures
 PACKAGES=()
 
 # If output does not go into a terminal (but rather into a log file),
@@ -44,7 +45,13 @@ while [[ "$#" -ge 1 ]]; do
   case "$option" in
     --with-gaproot)   GAPROOT="$1"; shift ;;
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
+
     --no-color)       COLORS=no ;;
+    --color)          COLORS=yes ;;
+
+    --no-strict)      STRICT=no ;;
+    --strict)         STRICT=yes ;;
+
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES+=("$option") ;;
   esac
@@ -183,6 +190,10 @@ build_fail() {
   echo ""
   warning "Failed to build $PKG"
   echo "$PKG" >> "$LOGDIR/fail.log"
+  if [[ $STRICT = yes ]]
+  then
+    exit 1
+  fi
 }
 
 run_configure_and_make() {
