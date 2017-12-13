@@ -955,7 +955,8 @@ DeclareGlobalFunction( "PositionMinimum" );
 ##  <Oper Name="PositionsProperty" Arg='list, func'/>
 ##
 ##  <Description>
-##  returns the list of all those positions in the dense list <A>list</A>
+##  returns the list of all those positions in the list <A>list</A>
+##  which are bound and
 ##  for which the property tester function <A>func</A> returns <K>true</K>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -972,7 +973,7 @@ DeclareGlobalFunction( "PositionMinimum" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PositionsProperty", [ IsDenseList, IsFunction ] );
+DeclareOperation( "PositionsProperty", [ IsList, IsFunction ] );
 
 
 #############################################################################

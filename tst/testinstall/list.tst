@@ -197,5 +197,17 @@ gap> l := [40, 39 .. 10];;
 gap> RepresentativeSmallest(l);
 10
 
+# PositionsProperty
+gap> ll := [ 1, , "s" ];;
+gap> PositionsProperty( ll, ReturnTrue );
+[ 1, 3 ]
+gap> PositionsProperty( ll, IsInt );
+[ 1 ]
+gap> ll := [ 1, 2, 3 ];;
+gap> PositionsProperty( ll, ReturnTrue );
+[ 1, 2, 3 ]
+gap> PositionsProperty( ll, IsInt );
+[ 1, 2, 3 ]
+
 #
 gap> STOP_TEST("list.tst");
