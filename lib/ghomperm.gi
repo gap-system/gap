@@ -1590,7 +1590,9 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
             T,          # corresponding stabilizer in <I>
             full,       # flag: true if <H> is (identical to) the source
             B,          # current block
-            i,  j;      # loop variables
+            rep,        # new elt
+            img, p,orb,
+            i,  j, k;      # loop variables
     
     D := Enumerator( UnderlyingExternalSet( hom ) );
     S := CopyStabChain( StabChainImmutable( H ) );
@@ -1621,15 +1623,46 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
 
             # Make <S> the stabilizer of the block <B>.
             InsertTrivialStabilizer( S.stabilizer, B[ 1 ] );
-            j := 1;
-            while                                j < Length( B )
-                  and Length( S.stabilizer.orbit ) < Length( B )  do
-                j := j + 1;
-                if IsBound( S.translabels[ B[ j ] ] )  then
-                    AddGeneratorsExtendSchreierTree( S.stabilizer,
-                            [ InverseRepresentative( S, B[ j ] ) ] );
-                fi;
-            od;
+
+            if Length(B)>Length(D)^2 then
+              # if there are few, large blocks the search through all block
+              # points is tedious. Rather use an orbit/stabilizer algorithm.
+              orb:=[i];
+              rep:=[One(H)];
+              j:=1;
+              while j<=Length(orb) do
+                for k in S.generators do
+                  img:=D[orb[j]][1]^k;
+		  p:=hom!.reps[img];
+                  if not p in orb then
+                    Add(orb,p);
+                    Add(rep,rep[j]*k);
+                  else
+                    k:=rep[j]*k/rep[Position(orb,p)]; # will fix block
+                    if not IsOne(SiftedPermutation(S.stabilizer,k)) then
+                      AddGeneratorsExtendSchreierTree( S.stabilizer,
+                              [k] );
+                    fi;
+
+                  fi;
+                od;
+                j:=j+1;
+              od;
+            else
+              j := 1;
+              while                                j < Length( B )
+                    and Length( S.stabilizer.orbit ) < Length( B )  do
+                  j := j + 1;
+                  if IsBound( S.translabels[ B[ j ] ] )  then
+                      rep:=InverseRepresentative( S, B[ j ] );
+                      if not IsOne(SiftedPermutation(S.stabilizer,rep)) then
+                        AddGeneratorsExtendSchreierTree( S.stabilizer,
+                                [rep] );
+                      fi;
+                  fi;
+              od;
+            fi;
+
             S := S.stabilizer;
                     
         fi;
@@ -1683,6 +1716,23 @@ InstallMethod( Range, "surjective blocks homomorphism",true,
 InstallMethod( ImagesSource, "blocks homomorphism",true,
   [ IsBlocksHomomorphism ], 0,
   RanImgSrcSurjBloho);
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . .  for blocks hom
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping,"blocks homomorphism",
+    true,
+    [ IsBlocksHomomorphism ], 0,
+    function( hom )
+    local   img;
+    
+    img := ImageKernelBlocksHomomorphism( hom, Source( hom ),false);
+    if not HasImagesSource( hom )  then
+        SetImagesSource( hom, img );
+    fi;
+    return KernelOfMultiplicativeGeneralMapping( hom );
+end );
 
 #############################################################################
 ##
@@ -1783,23 +1833,6 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
 
     # return the preimage
     return H;
-end );
-
-#############################################################################
-##
-#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . .  for blocks hom
-##
-InstallMethod( KernelOfMultiplicativeGeneralMapping,"blocks homomorphism",
-    true,
-    [ IsBlocksHomomorphism ], 0,
-    function( hom )
-    local   img;
-    
-    img := ImageKernelBlocksHomomorphism( hom, Source( hom ),false);
-    if not HasImagesSource( hom )  then
-        SetImagesSource( hom, img );
-    fi;
-    return KernelOfMultiplicativeGeneralMapping( hom );
 end );
 
 DeclareRepresentation("IsBlocksOfActionHomomorphism",
