@@ -92,7 +92,7 @@ end);
 ##   <Oper Name="Zeta" Arg="f"/>
 ##   <Oper Name="Gamma" Arg="f"/>
 ##   <Description>
-##     These are all standard math functions, directly copied from the standard math library; see <C>man 3 math</C> for their list.
+##     Standard math functions.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
