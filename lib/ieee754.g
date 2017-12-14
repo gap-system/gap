@@ -106,6 +106,8 @@ InstallMethod( Round, "for macfloats", [ IsIEEE754FloatRep ], RINT_MACFLOAT );
 InstallMethod( Floor, "for macfloats", [ IsIEEE754FloatRep ], FLOOR_MACFLOAT );
 InstallMethod( Ceil, "for macfloats", [ IsIEEE754FloatRep ], CEIL_MACFLOAT );
 InstallMethod( AbsoluteValue, "for macfloats", [ IsIEEE754FloatRep ], ABS_MACFLOAT );
+InstallMethod( SignFloat, "for macfloats", [ IsIEEE754FloatRep ], SIGN_MACFLOAT );
+InstallMethod( SignBit, "for macfloats", [ IsIEEE754FloatRep ], SIGNBIT_MACFLOAT );
 InstallMethod( Hypothenuse, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], HYPOT_MACFLOAT );
 InstallMethod( LdExp, "for macfloat,int", [ IsIEEE754FloatRep, IsInt ], LDEXP_MACFLOAT );
 InstallMethod( FrExp, "for macfloat", [ IsIEEE754FloatRep ], FREXP_MACFLOAT );

@@ -83,8 +83,8 @@ end);
 ##   <Oper Name="Atan2" Arg="y x"/>
 ##   <Oper Name="FrExp" Arg="f"/>
 ##   <Oper Name="LdExp" Arg="f exp"/>
-##   <Oper Name="AbsoluteValue" Arg="f"/>
-##   <Oper Name="Norm" Arg="f"/>
+##   <Oper Name="AbsoluteValue" Arg="f" Label="for floats"/>
+##   <Oper Name="Norm" Arg="f" Label="for floats"/>
 ##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Oper Name="Frac" Arg="f"/>
 ##   <Oper Name="SinCos" Arg="f"/>
@@ -133,14 +133,13 @@ DeclareOperation("Atan2", [IsFloat, IsFloat]);
 DeclareAttribute("FrExp", IsFloat);
 DeclareOperation("LdExp", [IsFloat, IsInt]);
 DeclareAttribute("AbsoluteValue", IsFloat);
-#DeclareAttribute("Norm", IsFloat); #already defined
+#DeclareAttribute("Norm", IsFloat); # already defined
 DeclareOperation("Hypothenuse", [IsFloat, IsFloat]);
 DeclareAttribute("Frac", IsFloat);
 DeclareAttribute("SinCos", IsFloat);
 DeclareAttribute("Erf", IsFloat);
 DeclareAttribute("Zeta", IsFloat);
 DeclareAttribute("Gamma", IsFloat);
-#DeclareAttribute("ComplexI", IsFloat); #obsolete
 
 ################################################################
 ## <#GAPDoc Label="Float-Extra">
@@ -165,17 +164,24 @@ DeclareAttribute("Gamma", IsFloat);
 ## </ManSection>
 ## 
 ## <ManSection>
+##   <Attr Name="SignBit" Arg="x"/>
 ##   <Attr Name="SignFloat" Arg="x"/>
-##   <Returns>The sign of <A>x</A>, as an integer</Returns>
+##   <Returns>The sign of <A>x</A>.</Returns>
 ##   <Description>
-##       This function returns the sign of the floating-point number <A >x</A>,
-##       as a &GAP; integer.
+##       The first function <C>SignBit</C> returns the sign bit of the
+##       floating-point number <A>x</A>: <K>true</K> if <A>x</A> is negative
+##       (including <C>-0.</C>) and <K>false</K> otherwise.
+##
+##       <P/> The second function <C>SignFloat</C> returns the integer
+##       <K>-1</K> if <A>x&lt;0</A>, <K>0</K> if <A>x=0</A> and <K>1</K>
+##       if <A>x&gt;0</A>.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareOperation("EqFloat", [IsFloat, IsFloat]);
 DeclareAttribute("PrecisionFloat", IsFloat);
+DeclareAttribute("SignBit", IsFloat);
 DeclareAttribute("SignFloat", IsFloat);
 ################################################################
 
@@ -187,7 +193,7 @@ DeclareAttribute("SignFloat", IsFloat);
 ##   <Prop Name="IsPInfinity" Arg="x"/>
 ##   <Prop Name="IsNInfinity" Arg="x"/>
 ##   <Prop Name="IsXInfinity" Arg="x"/>
-##   <Prop Name="IsFinite" Arg="x" Label="float"/>
+##   <Prop Name="IsFinite" Arg="x" Label="for floats"/>
 ##   <Prop Name="IsNaN" Arg="x"/>
 ##   <Description>
 ##     Returns <K>true</K> if the floating-point number <A>x</A> is
@@ -208,7 +214,7 @@ DeclareProperty("IsNaN", IsFloat);
 ##
 ## <#GAPDoc Label="Float-Complex">
 ## <ManSection>
-##   <Attr Name="Argument" Arg="z" Label="for complex numbers" />
+##   <Attr Name="Argument" Arg="z" Label="for complex floats"/>
 ##   <Description>
 ##     Returns the argument of the complex number <A>z</A>, namely the value
 ##     <C>Atan2(ImaginaryPart(z),RealPart(z))</C>.
@@ -217,6 +223,28 @@ DeclareProperty("IsNaN", IsFloat);
 ## <#/GAPDoc>
 ##
 DeclareAttribute("Argument", IsComplexFloat);
+################################################################
+
+################################################################
+##
+## <#GAPDoc Label="Float-Roots">
+## <ManSection>
+##   <Func Name="RootsFloat" Arg="p" Label="for a polynomial"/>
+##   <Func Name="RootsFloat" Arg="list" Label="for coefficients"/>
+##   <Description>
+##     Returns the roots of the polynomial <A>p</A>, or of the polynomial
+##     given by the list <A>list</A> of its coefficients, with <C>list[i]</C>
+##     the coefficient of degree <C>i-1</C>.
+##
+##    <P/>There is no default implementation of <C>RootsFloat</C> in the
+##    &GAP; kernel; these are supplied by packages such as
+##    <Package>float</Package>.
+##   </Description>
+## </ManSection>
+## <#/GAPDoc>
+##
+DeclareOperation("RootsFloatOp", [IsList,IsFloat]);
+DeclareGlobalFunction("RootsFloat");
 ################################################################
 
 ################################################################
@@ -242,6 +270,7 @@ DeclareAttribute("Argument", IsComplexFloat);
 ## </ManSection>
 ## <ManSection>
 ##   <Attr Name="AbsoluteDiameter" Arg="x"/>
+##   <Attr Name="Diameter" Arg="x"/>
 ##   <Description>
 ##     Returns the absolute diameter of the interval <A>x</A>, namely
 ##     the difference <C>Sup(x)-Inf(x)</C>.
@@ -262,7 +291,7 @@ DeclareAttribute("Argument", IsComplexFloat);
 ##   </Description>
 ## </ManSection>
 ## <ManSection>
-##   <Oper Name="IsSubset" Arg="x1 x2" Label="for floatean intervals"/>
+##   <Oper Name="IsSubset" Arg="x1 x2" Label="for interval floats"/>
 ##   <Description>
 ##     Returns <K>true</K> if the interval <A>x1</A> contains <A>x2</A>.
 ##   </Description>
@@ -294,11 +323,11 @@ DeclareAttribute("Inf", IsFloatInterval);
 DeclareAttribute("Mid", IsFloatInterval);
 DeclareAttribute("AbsoluteDiameter", IsFloatInterval);
 DeclareAttribute("RelativeDiameter", IsFloatInterval);
-#DeclareOperation("Diameter", IsFloat);
+DeclareOperation("Diameter", [IsFloat]);
 DeclareOperation("IsDisjoint", [IsFloatInterval, IsFloatInterval]);
-DeclareOperation("IncreaseInterval", [IsFloatInterval, IsFloatInterval]);
-DeclareOperation("BlowupInterval", [IsFloatInterval, IsFloatInterval]);
-DeclareOperation("BisectInterval", [IsFloatInterval, IsFloatInterval]);
+DeclareOperation("IncreaseInterval", [IsFloatInterval, IsFloat]);
+DeclareOperation("BlowupInterval", [IsFloatInterval, IsFloat]);
+DeclareOperation("BisectInterval", [IsFloatInterval]);
 ################################################################
 
 #############################################################################
