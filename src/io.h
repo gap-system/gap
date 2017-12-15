@@ -184,20 +184,20 @@ extern UInt CloseInputLog ( void );
 
 /****************************************************************************
  **
- *V  Prompt  . . . . . . . . . . . . . . . . . . . . . .  prompt to be printed
+ *V  Prompt  . . . . . . . . . . . . . . . . . . . . . . prompt to be printed
  **
- **  'Prompt' holds the string that is to be printed if a  new  line  is  read
+ **  'Prompt' holds the string that is to be printed if a  new  line  is read
  **  from the interactive files '*stdin*' or '*errin*'.
  **
- **  It is set to 'gap> ' or 'brk> ' in the  read-eval-print loops and changed
+ **  It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and changed
  **  to the partial prompt '> ' in 'Read' after the first symbol is read.
  */
 /* TL: extern  const Char *    Prompt; */
 
-/***************************************************************************** 
+/****************************************************************************
  **
- *V  PrintPromptHook . . . . . . . . . . . . . .  function for printing prompt
- *V  EndLineHook . . . . . . . . . . .  function called at end of command line
+ *V  PrintPromptHook . . . . . . . . . . . . . . function for printing prompt
+ *V  EndLineHook . . . . . . . . . . . function called at end of command line
  **  
  **  These functions can be set on GAP-level. If they are not bound  the 
  **  default is: Instead of `PrintPromptHook' the `Prompt' is printed and
@@ -271,8 +271,9 @@ extern UInt CloseOutputLog ( void );
 **  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
 **  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
 **  they are just a convention between the main and the system package.
-**  The function does nothing and returns success for '*stdout*' and '*errout*'
-**  when IgnoreStdoutErrout is true (useful for testing purposes).
+**
+**  The function does nothing and returns success for '*stdout*' and
+**  '*errout*' when IgnoreStdoutErrout is true (useful for testing purposes).
 **
 **  It is not neccessary to open the initial output file, 'InitScanner' opens
 **  '*stdout*' for that purpose.  This  file  on the other hand   can not  be

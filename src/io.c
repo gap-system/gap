@@ -1054,21 +1054,19 @@ Char GetLine ( void )
 
 
 /****************************************************************************
- **
-
- *F * * * * * * * * * * * * *  output functions  * * * * * * * * * * * * * * *
- */
+**
+*F * * * * * * * * * * * * *  output functions  * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
- **
- *F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
- **
- **  Introduced  <len> argument. Actually in all cases where this is called one
- **  knows the length of <line>, so it is not necessary to compute it again
- **  with the inefficient C- strlen.  (FL)
- */
-
+**
+*F  PutLine2( <output>, <line>, <len> )  . . . . . . . . .print a line, local
+**
+**  Introduced <len> argument. Actually in all cases where this is called one
+**  knows the length of <line>, so it is not necessary to compute it again
+**  with the inefficient C- strlen.  (FL)
+*/
 
 void PutLine2(
         TypOutputFile *         output,
@@ -1103,17 +1101,17 @@ void PutLine2(
 
 
 /****************************************************************************
- **
- *F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
- **
- **  'PutLineTo'  prints the first len characters of the current output
- **  line   'stream->line' to <stream>
- **  It  is  called from 'PutChrTo'.
- **
- **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
- **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
- **
- */
+**
+*F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
+**
+**  'PutLineTo'  prints the first len characters of the current output
+**  line   'stream->line' to <stream>
+**  It  is  called from 'PutChrTo'.
+**
+**  'PutLineTo' also echoes the output line to the logfile 'OutputLog' if
+**  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
+**
+*/
 void PutLineTo(TypOutputFile * stream, UInt len)
 {
   PutLine2( stream, stream->line, len );
@@ -1128,17 +1126,18 @@ void PutLineTo(TypOutputFile * stream, UInt len)
 
 
 /****************************************************************************
- **
- *F  PutChrTo( <stream>, <ch> )  . . . . . . . . . print character <ch>, local
- **
- **  'PutChrTo' prints the single character <ch> to the stream <stream>
- **
- **  'PutChrTo' buffers the  output characters until  either <ch> is  <newline>,
- **  <ch> is '\03' (<flush>) or the buffer fills up.
- **
- **  In the later case 'PutChrTo' has to decide where to  split the output line.
- **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
- */
+**
+*F  PutChrTo( <stream>, <ch> )  . . . . . . . . . print character <ch>, local
+**
+**  'PutChrTo' prints the single character <ch> to the stream <stream>
+**
+**  'PutChrTo' buffers the output characters until either <ch> is <newline>,
+**  <ch> is '\03' (<flush>) or the buffer fills up.
+**
+**  In the later case 'PutChrTo' has to decide where to split the output
+**  line. It takes the point at which $linelength - pos + 8 * indent$ is
+**  minimal.
+*/
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
@@ -1347,9 +1346,9 @@ void PutChrTo(TypOutputFile * stream, Char ch)
 }
 
 /****************************************************************************
- **
- *F  FuncToggleEcho( )
- **
+**
+*F  FuncToggleEcho( )
+**
 */
 
 Obj FuncToggleEcho( Obj self)
@@ -1359,11 +1358,11 @@ Obj FuncToggleEcho( Obj self)
 }
 
 /****************************************************************************
- **
- *F  FuncCPROMPT( )
- **
- **  returns the current `Prompt' as GAP string.
- */
+**
+*F  FuncCPROMPT( )
+**
+**  returns the current `Prompt' as GAP string.
+*/
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
@@ -1372,13 +1371,13 @@ Obj FuncCPROMPT( Obj self)
 }
 
 /****************************************************************************
- **
- *F  FuncPRINT_CPROMPT( <prompt> )
- **
- **  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
- **  uses the content of <prompt> as `Prompt' (at most 80 characters).
- **  (important is the flush character without resetting the cursor column)
- */
+**
+*F  FuncPRINT_CPROMPT( <prompt> )
+**
+**  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
+**  uses the content of <prompt> as `Prompt' (at most 80 characters).
+**  (important is the flush character without resetting the cursor column)
+*/
 
 Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 {
@@ -1393,41 +1392,40 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
 }
 
 /****************************************************************************
- **
- *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
- *F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
- **
- **  'Pr' is the output function. The first argument is a 'printf' like format
- **  string containing   up   to 2  '%'  format   fields,   specifing  how the
- **  corresponding arguments are to be  printed.  The two arguments are passed
- **  as  'Int'   integers.   This  is possible  since every  C object  ('int',
- **  'char', pointers) except 'float' or 'double', which are not used  in GAP,
- **  can be converted to a 'Int' without loss of information.
- **
- **  The function 'Pr' currently support the following '%' format  fields:
- **  '%c'    the corresponding argument represents a character,  usually it is
- **          its ASCII or EBCDIC code, and this character is printed.
- **  '%s'    the corresponding argument is the address of  a  null  terminated
- **          character string which is printed.
- **  '%S'    the corresponding argument is the address of  a  null  terminated
- **          character string which is printed with escapes.
- **  '%C'    the corresponding argument is the address of  a  null  terminated
- **          character string which is printed with C escapes.
- **  '%d'    the corresponding argument is a signed integer, which is printed.
- **          Between the '%' and the 'd' an integer might be used  to  specify
- **          the width of a field in which the integer is right justified.  If
- **          the first character is '0' 'Pr' pads with '0' instead of <space>.
- **  '%i'    is a synonym of %d, in line with recent C library developements
- **  '%I'    print an identifier
- **  '%>'    increment the indentation level.
- **  '%<'    decrement the indentation level.
- **  '%%'    can be used to print a single '%' character. No argument is used.
- **
- **  You must always  cast the arguments to  '(Int)'  to avoid  problems  with
- **  those compilers with a default integer size of 16 instead of 32 bit.  You
- **  must pass 0L if you don't make use of an argument to please lint.
- */
-
+**
+*F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
+*F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
+**
+**  'Pr' is the output function. The first argument is a 'printf' like format
+**  string containing   up   to 2  '%'  format   fields,   specifing  how the
+**  corresponding arguments are to be  printed.  The two arguments are passed
+**  as  'Int'   integers.   This  is possible  since every  C object  ('int',
+**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
+**  can be converted to a 'Int' without loss of information.
+**
+**  The function 'Pr' currently support the following '%' format  fields:
+**  '%c'    the corresponding argument represents a character,  usually it is
+**          its ASCII or EBCDIC code, and this character is printed.
+**  '%s'    the corresponding argument is the address of  a  null  terminated
+**          character string which is printed.
+**  '%S'    the corresponding argument is the address of  a  null  terminated
+**          character string which is printed with escapes.
+**  '%C'    the corresponding argument is the address of  a  null  terminated
+**          character string which is printed with C escapes.
+**  '%d'    the corresponding argument is a signed integer, which is printed.
+**          Between the '%' and the 'd' an integer might be used  to  specify
+**          the width of a field in which the integer is right justified.  If
+**          the first character is '0' 'Pr' pads with '0' instead of <space>.
+**  '%i'    is a synonym of %d, in line with recent C library developements
+**  '%I'    print an identifier
+**  '%>'    increment the indentation level.
+**  '%<'    decrement the indentation level.
+**  '%%'    can be used to print a single '%' character. No argument is used.
+**
+**  You must always  cast the arguments to  '(Int)'  to avoid  problems  with
+**  those compilers with a default integer size of 16 instead of 32 bit.  You
+**  must pass 0L if you don't make use of an argument to please lint.
+*/
 static inline void FormatOutput(
     void (*put_a_char)(void *state, Char c),
     void *state, const Char *format, Int arg1, Int arg2 )
@@ -1475,7 +1473,7 @@ static inline void FormatOutput(
       int is_neg = (arg1 < 0);
       if ( is_neg ) {
         arg1 = -arg1;
-        prec--; /* we loose one digit of output precision for the minus sign */
+        prec--; // we loose one digit of output precision for the minus sign
       }
 
       /* compute how many characters this number requires    */
@@ -1752,9 +1750,9 @@ static StructGVarFunc GVarFuncs [] = {
 };
 
 /****************************************************************************
- **
- *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
- */
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
 static Int InitLibrary (
     StructInitInfo *    module )
 {
@@ -1790,11 +1788,10 @@ static Int InitKernel (
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
 #else
-    /* initialize cookies for streams                                      */
-    /* also initialize the cookies for the GAP strings which hold the
-       latest lines read from the streams  and the name of the current input file*/
-    /* For HPC-GAP we don't need the cookies anymore, since the data got moved to thread-local
-     * storage. */
+    // Initialize cookies for streams. Also initialize the cookies for the
+    // GAP strings which hold the latest lines read from the streams  and the
+    // name of the current input file. For HPC-GAP we don't need the cookies
+    // anymore, since the data got moved to thread-local storage.
     Int i;
     for ( i = 0;  i < ARRAY_SIZE(STATE(InputFiles));  i++ ) {
       Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
@@ -1833,9 +1830,9 @@ static void InitModuleState(ModuleStateOffset offset)
 }
 
 /****************************************************************************
- **
- *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
- */
+**
+*F  InitInfoIO() . . . . . . . . . . . . . . . . table of init functions
+*/
 static StructInitInfo module = {
     // init struct using C99 designated initializers; for a full list of
     // fields, please refer to the definition of StructInitInfo

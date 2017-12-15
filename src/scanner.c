@@ -154,7 +154,7 @@ void            SyntaxWarning (
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
 **  which is passed to 'ReadIf' and contains all symbols allowing  one of the
 **  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has
-**  been called from 'ReadFor'.  <follow> always contain 'S_EOF', which 'Read'
+**  been called from 'ReadFor'. <follow> always contain 'S_EOF', which 'Read'
 **  uses to resynchronise.
 **
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
@@ -167,7 +167,7 @@ void Match (
 {
     Char                errmsg [256];
 
-    /* if 'STATE(Symbol)' is the expected symbol match it away                    */
+    // if 'STATE(Symbol)' is the expected symbol match it away
     if ( symbol == STATE(Symbol) ) {
         GetSymbol();
     }
@@ -189,10 +189,10 @@ void Match (
 *F  GetIdent()  . . . . . . . . . . . . . get an identifier or keyword, local
 **
 **  'GetIdent' reads   an identifier from  the current  input  file  into the
-**  variable 'STATE(Value)' and sets 'Symbol' to 'S_IDENT'.   The first character of
-**  the   identifier  is  the current character  pointed to  by 'In'.  If the
-**  characters make  up   a  keyword 'GetIdent'  will  set   'Symbol'  to the
-**  corresponding value.  The parser will ignore 'STATE(Value)' in this case.
+**  variable 'STATE(Value)' and sets 'Symbol' to 'S_IDENT'. The first
+**  character of the identifier is the current character pointed to by 'In'.
+**  If the characters make up a keyword 'GetIdent' will set 'Symbol' to the
+**  corresponding value. The parser will ignore 'STATE(Value)' in this case.
 **
 **  An  identifier consists of a letter  followed by more letters, digits and
 **  underscores '_'.  An identifier is terminated by the first  character not
@@ -201,22 +201,21 @@ void Match (
 **  '\' can be used  to include special characters like  '('  in identifiers.
 **  For example 'G\(2\,5\)' is an identifier not a call to a function 'G'.
 **
-**  The size  of 'STATE(Value)' limits the  number  of significant characters  in an
-**  identifier.   If  an  identifier   has more characters    'GetIdent' will
+**  The size of 'STATE(Value)' limits the number of significant characters in
+**  an identifier. If an identifier has more characters 'GetIdent' will
 **  silently truncate it.
 **
 **  After reading the identifier 'GetIdent'  looks at the  first and the last
-**  character  of  'STATE(Value)' to see if  it  could possibly  be  a keyword.  For
+**  character of 'STATE(Value)' to see if it could possibly be a keyword. For
 **  example 'test'  could  not be  a  keyword  because there  is  no  keyword
 **  starting and ending with a 't'.  After that  test either 'GetIdent' knows
-**  that 'STATE(Value)' is not a keyword, or there is a unique possible keyword that
-**  could match, because   no two  keywords  have  identical  first and  last
-**  characters.  For example if 'STATE(Value)' starts with 'f' and ends with 'n' the
-**  only possible keyword  is 'function'.   Thus in this case  'GetIdent' can
-**  decide with one string comparison if 'STATE(Value)' holds a keyword or not.
+**  that 'STATE(Value)' is not a keyword, or there is a unique possible
+**  keyword that could match, because no two keywords have identical first
+**  and last characters. For example if 'STATE(Value)' starts with 'f' and
+**  ends with 'n' the only possible keyword is 'function'. Thus in this case
+**  'GetIdent' can decide with one string comparison if 'STATE(Value)' holds
+**  a keyword or not.
 */
-
-
 void GetIdent ( void )
 {
     Int                 i, fetch;
@@ -325,30 +324,33 @@ void GetIdent ( void )
 }
 
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  GetNumber()  . . . . . . . . . . . . . .  get an integer or float literal
 **
-**  'GetNumber' reads  a number from  the  current  input file into the
-**  variable  'STATE(Value)' and sets  'Symbol' to 'S_INT', 'S_PARTIALINT',
-**  'S_FLOAT' or 'S_PARTIALFLOAT'.   The first character of
-**  the number is the current character pointed to by 'In'.
+**  'GetNumber' reads a number from the current input file into the variable
+**  'STATE(Value)' and sets 'Symbol' to 'S_INT', 'S_PARTIALINT', 'S_FLOAT' or
+**  'S_PARTIALFLOAT'. The first character of the number is the current
+**  character pointed to by 'In'.
 **
-**  If the sequence contains characters which do not match the regular expression
-**  [0-9]+.?[0-9]*([edqEDQ][+-]?[0-9]+)? 'GetNumber'  will
+**  If the sequence contains characters which do not match the regular
+**  expression [0-9]+.?[0-9]*([edqEDQ][+-]?[0-9]+)? 'GetNumber'  will
 **  interpret the sequence as an identifier and set 'Symbol' to 'S_IDENT'.
 **
-**  As we read, we keep track of whether we have seen a . or exponent notation
-**  and so whether we will return S_[PARTIAL]INT or S_[PARTIAL]FLOAT.
+**  As we read, we keep track of whether we have seen a . or exponent
+**  notation and so whether we will return S_[PARTIAL]INT or
+**  S_[PARTIAL]FLOAT.
 **
-**  When STATE(Value) is  completely filled we have to check  if the reading of
-**  the number  is complete  or not to  decide whether to return a PARTIAL type.
+**  When STATE(Value) is completely filled we have to check if the reading of
+**  the number is complete or not to decide whether to return a PARTIAL type.
 **
-**  The argument reflects how far we are through reading a possibly very long number
-**  literal. 0 indicates that nothing has been read. 1 that at least one digit has been
-**  read, but no decimal point. 2 that a decimal point has been read with no digits before
-**  or after it. 3 a decimal point and at least one digit, but no exponential indicator
-**  4 an exponential indicator  but no exponent digits and 5 an exponential indicator and
-**  at least one exponent digit.
+**  The argument reflects how far we are through reading a possibly very long
+**  number literal. 0 indicates that nothing has been read. 1 that at least
+**  one digit has been read, but no decimal point. 2 that a decimal point has
+**  been read with no digits before or after it. 3 a decimal point and at
+**  least one digit, but no exponential indicator 4 an exponential indicator
+**  but no exponent digits and 5 an exponential indicator and at least one
+**  exponent digit.
 **
 */
 static Char GetCleanedChar( UInt *wasEscaped ) {
@@ -619,14 +621,14 @@ void GetNumber ( UInt StartingStatus )
 }
 
 
-/*******************************************************************************
- **
- *F  GetEscapedChar()   . . . . . . . . . . . . . . . . get an escaped character
- **
- **  'GetEscapedChar' reads an escape sequence from the current input file into
- **  the variable *dst.
- **
- */
+/****************************************************************************
+**
+*F  GetEscapedChar() . . . . . . . . . . . . . . . . get an escaped character
+**
+**  'GetEscapedChar' reads an escape sequence from the current input file
+**  into the variable *dst.
+**
+*/
 static inline Char GetOctalDigits( void )
 {
     Char c;
@@ -644,10 +646,10 @@ static inline Char GetOctalDigits( void )
 
 
 /****************************************************************************
- **
- *F  CharHexDigit( <ch> ) . . . . . . . . . turn a single hex digit into Char
- **
- */
+**
+*F  CharHexDigit( <ch> ) . . . . . . . . .  turn a single hex digit into Char
+**
+*/
 static inline Char CharHexDigit( const Char ch ) {
     if (ch >= 'a') {
         return (ch - 'a' + 10);
@@ -713,28 +715,29 @@ Char GetEscapedChar( void )
 }
 
 /****************************************************************************
- **
- *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
- **
- **  'GetStr' reads  a  string from the  current input file into  the variable
- **  'STATE(Value)' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
- **  of the string is the current character pointed to by 'In'.
- **
- **  A string is a sequence of characters delimited  by double quotes '"'.  It
- **  must not include  '"' or <newline>  characters, but the  escape sequences
- **  '\"' or '\n' can  be used instead.  The  escape sequence  '\<newline>' is
- **  ignored, making it possible to split long strings over multiple lines.
- **
- **  An error is raised if the string includes a <newline> character or if the
- **  file ends before the closing '"'.
- **
- **  When STATE(Value) is  completely filled we have to check  if the reading of
- **  the string is  complete or not to decide  between Symbol=S_STRING or
- **  S_PARTIALSTRING.
- */
+**
+*F  GetStr()  . . . . . . . . . . . . . . . . . . . . .  get a string, local
+**
+**  'GetStr' reads  a  string from the  current input file into  the variable
+**  'STATE(Value)' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
+**  of the string is the current character pointed to by 'In'.
+**
+**  A string is a sequence of characters delimited  by double quotes '"'.  It
+**  must not include  '"' or <newline>  characters, but the  escape sequences
+**  '\"' or '\n' can  be used instead.  The  escape sequence  '\<newline>' is
+**  ignored, making it possible to split long strings over multiple lines.
+**
+**  An error is raised if the string includes a <newline> character or if the
+**  file ends before the closing '"'.
+**
+**  When STATE(Value) is  completely filled we have to check  if the reading of
+**  the string is  complete or not to decide  between Symbol=S_STRING or
+**  S_PARTIALSTRING.
+*/
 void GetStr ( void )
 {
   Int                 i = 0, fetch;
+
 
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && *STATE(In) != '"'
@@ -791,23 +794,23 @@ void GetStr ( void )
 }
 
 /****************************************************************************
- **
- *F  GetTripStr()  . . . . . . . . . . . . .get a triple quoted string, local
- **
- **  'GetTripStr' reads a triple-quoted string from the  current input file
- **  into  the variable 'Value' and sets 'Symbol'   to  'S_STRING'.
- **  The last member of the opening triple quote '"'
- **  of the string is the current character pointed to by 'In'.
- **
- **  A triple quoted string is any sequence of characters which is terminated
- **  by """. No escaping is performed.
- **
- **  An error is raised if the file ends before the closing """.
- **
- **  When Value is  completely filled we have to check  if the reading of
- **  the string is  complete or not to decide  between Symbol=S_STRING or
- **  S_PARTIALTRIPLESTRING.
- */
+**
+*F  GetTripStr()  . . . . . . . . . . . . .get a triple quoted string, local
+**
+**  'GetTripStr' reads a triple-quoted string from the  current input file
+**  into  the variable 'Value' and sets 'Symbol'   to  'S_STRING'.
+**  The last member of the opening triple quote '"'
+**  of the string is the current character pointed to by 'In'.
+**
+**  A triple quoted string is any sequence of characters which is terminated
+**  by """. No escaping is performed.
+**
+**  An error is raised if the file ends before the closing """.
+**
+**  When Value is  completely filled we have to check  if the reading of
+**  the string is  complete or not to decide  between Symbol=S_STRING or
+**  S_PARTIALTRIPLESTRING.
+*/
 void GetTripStr ( void )
 {
   Int                 i = 0;
@@ -862,13 +865,12 @@ void GetTripStr ( void )
 }
 
 /****************************************************************************
- **
- *F  GetMaybeTripStr()  . . . . . . . . . . . . . . . . . get a string, local
- **
- **  'GetMaybeTripStr' decides if we are reading a single quoted string,
- **  or a triple quoted string.
- */
-
+**
+*F  GetMaybeTripStr()  . . . . . . . . . . . . . . . . . get a string, local
+**
+**  'GetMaybeTripStr' decides if we are reading a single quoted string,
+**  or a triple quoted string.
+*/
 void GetMaybeTripStr ( void )
 {
     /* This is just a normal string! */
@@ -893,17 +895,17 @@ void GetMaybeTripStr ( void )
 
 
 /****************************************************************************
- **
- *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
- **
- **  'GetChar' reads the next  character from the current input file  into the
- **  variable 'STATE(Value)' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
- **  '\'' of the character is the current character pointed to by 'In'.
- **
- **  A  character is  a  single character delimited by single quotes '\''.  It
- **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
- **  can be used instead.
- */
+**
+*F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
+**
+**  'GetChar' reads the next  character from the current input file  into the
+**  variable 'STATE(Value)' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
+**  '\'' of the character is the current character pointed to by 'In'.
+**
+**  A  character is  a  single character delimited by single quotes '\''.  It
+**  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
+**  can be used instead.
+*/
 void GetChar ( void )
 {
   /* skip '\''                                                           */
@@ -955,17 +957,17 @@ void GetHelp( void )
 }
 
 /****************************************************************************
- **
- *F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
- **
- **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
- **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
- **  value of the symbol is stored in the variable 'STATE(Value)'.  'GetSymbol' first
- **  skips all <space>, <tab> and <newline> characters and comments.
- **
- **  After reading  a  symbol the current  character   is the first  character
- **  beyond that symbol.
- */
+**
+*F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
+**
+**  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
+**  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
+**  value of the symbol is stored in the variable 'STATE(Value)'.  'GetSymbol' first
+**  skips all <space>, <tab> and <newline> characters and comments.
+**
+**  After reading  a  symbol the current  character   is the first  character
+**  beyond that symbol.
+*/
 void GetSymbol ( void )
 {
     /* special case if reading of a long token is not finished */
@@ -1123,13 +1125,13 @@ static StructGVarFunc GVarFuncs [] = {
 };
 
 /****************************************************************************
- **
- *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
- */
+**
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
- **
- *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
  */
 static Int InitLibrary (
                         StructInitInfo *    module )
@@ -1139,9 +1141,9 @@ static Int InitLibrary (
 }
 
 /****************************************************************************
- **
- *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
- */
+**
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
 static Int InitKernel (
     StructInitInfo *    module )
 {
@@ -1154,9 +1156,9 @@ static void InitModuleState(ModuleStateOffset offset)
 }
 
 /****************************************************************************
- **
- *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
- */
+**
+*F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
+*/
 static StructInitInfo module = {
     // init struct using C99 designated initializers; for a full list of
     // fields, please refer to the definition of StructInitInfo
