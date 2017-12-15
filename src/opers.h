@@ -184,7 +184,7 @@ extern Obj TRY_NEXT_METHOD;
 
 /****************************************************************************
 **
-*F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags lits
+*F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
 */
 #define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1) >> LBIPEB)
 

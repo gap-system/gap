@@ -39,7 +39,7 @@
 **  invoked which in turn calls 'longjmp' to return to right after the block
 **  following TRY_READ.
 **
-**  Not that while you can in principle nest TRY_READ constructs, to do this
+**  Note that while you can in principle nest TRY_READ constructs, to do this
 **  correctly, you must backup ReadJmpError before TRY_READ, and restore it
 **  in a matching CATCH_READ_ERROR block.
 */

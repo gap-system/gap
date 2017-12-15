@@ -3077,7 +3077,7 @@ void InitializeGap (
 
     sysenviron = environ;
 
-    /* get info structures for the build in modules                        */
+    /* get info structures for the built in modules                        */
     NrModules = 0;
     for ( i = 0;  InitFuncsBuiltinModules[i];  i++ ) {
         if ( NrModules == MAX_MODULES ) {
