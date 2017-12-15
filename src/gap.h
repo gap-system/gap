@@ -228,11 +228,6 @@ enum {
 };
 
 
-// TL: extern UInt UserHasQuit;
-// TL: extern UInt UserHasQUIT;
-extern UInt SystemErrorCode;
-
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -384,9 +379,6 @@ extern void ImportFuncFromLibrary(
             const Char *        name,
             Obj *               address );
 
-
-extern Obj Error;
-extern Obj ErrorInner;
 
 /****************************************************************************
 **
