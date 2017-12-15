@@ -28,6 +28,8 @@
 #endif
 
 
+static Obj HashRNam;
+
 static Obj NamesRNam;
 
 inline const Char *NAME_RNAM(UInt rnam)
@@ -67,11 +69,6 @@ static void HPC_UnlockNames(void)
     pthread_rwlock_unlock(&RNameLock);
 }
 
-#else
-
-static inline void HPC_LockNames(int write) {}
-static inline void HPC_UnlockNames(void) {}
-
 #endif
 
 
@@ -91,8 +88,6 @@ static inline UInt HashString( const Char * name )
 **  'RNamName' returns  the record name with the  name  <name> (which is  a C
 **  string).
 */
-Obj             HashRNam;
-
 UInt            RNamName (
     const Char *        name )
 {
@@ -114,7 +109,9 @@ UInt            RNamName (
     /* start looking in the table at the following hash position           */
     const UInt hash = HashString( name );
 
+#ifdef HPCGAP
     HPC_LockNames(0); /* try a read lock first */
+#endif
 
     /* look through the table until we find a free slot or the global      */
     sizeRNam = LEN_PLIST(HashRNam);
@@ -124,7 +121,9 @@ UInt            RNamName (
         pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
+#ifdef HPCGAP
       HPC_UnlockNames();
+#endif
       return INT_INTOBJ(rnam);
     }
 #ifdef HPCGAP
@@ -177,7 +176,9 @@ UInt            RNamName (
             SET_ELM_PLIST( HashRNam, pos, rnam2 );
         }
     }
+#ifdef HPCGAP
     HPC_UnlockNames();
+#endif
 
     /* return the record name                                              */
     return INT_INTOBJ(rnam);
@@ -277,8 +278,6 @@ Obj             FuncRNamObj (
 **
 **  'NameRName' returns the string corresponding to the record name <rnam>.
 */
-Obj             NameRNamFunc;
-
 Obj             FuncNameRNam (
     Obj                 self,
     Obj                 rnam )
