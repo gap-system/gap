@@ -18,8 +18,8 @@
 **  In the following, let 'N' be the number of bits in an mp_limb_t (so 32 or
 **  64, depending on the system). 'T_INT' is the type of those integers small
 **  enough to fit into N-3 bits. Therefore the value range of this small
-**  integers is $-2^{N-4}...2^{N-4}-1$. Only these small integers can be used as
-**  index expression into sequences.
+**  integers is $-2^{N-4}...2^{N-4}-1$. Only these small integers can be used
+**  as index expression into sequences.
 **
 **  Small integers are represented by an immediate integer handle, containing
 **  the value instead of pointing to it, which has the following form:
@@ -31,22 +31,22 @@
 **
 **  Immediate integers handles carry the tag 'T_INT', i.e. the last bit is 1.
 **  This distinguishes immediate integers from other handles which point to
-**  structures aligned on even boundaries and therefore have last bit zero. (The
-**  second bit is reserved as tag to allow extensions of this scheme.) Using
-**  immediates as pointers and dereferencing them gives address errors.
+**  structures aligned on even boundaries and therefore have last bit zero.
+**  (The second bit is reserved as tag to allow extensions of this scheme.)
+**  Using immediates as pointers and dereferencing them gives address errors.
 **
 **  To aid overflow check the most significant two bits must always be equal,
 **  that is to say that the sign bit of immediate integers has a guard bit.
 **
-**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between a
-**  small integer value and its representation as immediate integer handle.
+**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
+**  a small integer value and its representation as immediate integer handle.
 **
-**  'T_INTPOS' and 'T_INTNEG' are the types of positive (respectively, negative)
+**  'T_INTPOS' and 'T_INTNEG' are the types of positive respectively negative
 **  integer values that can not be represented by immediate integers.
 **
-**  This large integers values are represented as low-level GMP integer objects,
-**  that is, in base 2^N. That means that the bag of a large integer has the
-**  following form:
+**  These large integers values are represented as low-level GMP integer
+**  objects, that is, in base 2^N. That means that the bag of a large integer
+**  has the following form:
 **
 **      +-------+-------+-------+-------+- - - -+-------+-------+-------+
 **      | digit | digit | digit | digit |       | digit | digit | digit |
@@ -54,14 +54,14 @@
 **      +-------+-------+-------+-------+- - - -+-------+-------+-------+
 **
 **  The value of this is: $d0 + d1 2^N + d2 (2^N)^2 + ... + d_n (2^N)^n$,
-**  respectively the negative of this if the type of this object is 'T_INTNEG'.
+**  respectively the negative of this if the object type is 'T_INTNEG'.
 **
 **  Each digit is of course stored as a N bit wide unsigned integer.
 **
 **  Note that we require that all large integers be normalized (that is, they
 **  must not contain leading zero limbs) and reduced (they do not fit into a
-**  small integer). Internally, it is possible that a large integer temporarily
-**  is not normalized or not reduced, but all kernel functions must make sure
+**  small integer). Internally, a large integer may temporarily not be
+**  normalized or not be reduced, but all kernel functions must make sure
 **  that they eventually return normalized and reduced values. The function
 **  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
@@ -264,7 +264,7 @@ typedef struct {
 **
 *F  NEW_FAKEMPZ( <fake>, <size> )
 **
-**  Setup a fake mpz_t object for capturing the output of a GMP mpz_* function,
+**  Setup a fake mpz_t object for capturing the output of a GMP mpz_ function,
 **  with space for up to <size> limbs allocated.
 */
 static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size )
@@ -913,7 +913,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
 **  Implementation of Log2Int for C integers.
 **
 **  When available, we try to use GCC builtins. Otherwise, fall back to code
-**  based on https://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup.
+**  based on
+**   https://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
 **  On a test machine with x86 64bit, the builtins are about 4 times faster
 **  than the generic code.
 **
@@ -1409,9 +1410,11 @@ Obj FuncSIGN_INT(Obj self, Obj op)
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvalProd' for a better efficiency.
+**  This case is usually already handled in 'EvalProd' for a better
+**  efficiency.
 **
-**  Is called from the 'EvalProd' binop so both operands are already evaluated.
+**  Is called from the 'EvalProd' binop so both operands are already
+*   evaluated.
 */
 Obj ProdInt ( Obj gmpL, Obj gmpR )
 {
@@ -1569,9 +1572,9 @@ Obj OneInt ( Obj op )
 **
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvalPow' for a better  efficiency.
+**  This case is usually already handled in 'EvalPow' for a better efficiency.
 **
-**  Is called from the 'EvalPow'  binop so both operands are already evaluated.
+**  Is called from the 'EvalPow' binop so both operands are already evaluated.
 */
 Obj PowInt ( Obj gmpL, Obj gmpR )
 {
@@ -1729,8 +1732,8 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **  This case is usually already handled in 'EvalMod' for a better efficiency.
-p**
-**  Is called from the 'EvalMod'  binop so both operands are already evaluated.
+**
+**  Is called from the 'EvalMod' binop so both operands are already evaluated.
 */
 Obj ModInt ( Obj opL, Obj opR )
 {
@@ -1876,9 +1879,9 @@ Obj ModInt ( Obj opL, Obj opR )
 **  It can also be used in the cases that both operands  are  small  integers
 **  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
-**  Note that this routine is not called from 'EvalQuo', the  division  of  two
-**  integers yields  a  rational  and  is  therefor  performed  in  'QuoRat'.
-**  This operation is however available through the internal function 'Quo'.
+**  Note that this routine is not called from 'EvalQuo', the  division of two
+**  integers yields a rational and is therefor performed in 'QuoRat'. This
+**  operation is however available through the internal function 'Quo'.
 */
 Obj QuoInt ( Obj opL, Obj opR )
 {
@@ -2539,9 +2542,9 @@ Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 **
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
-**  Part of this code for fast generation of 32 bit pseudo random numbers with 
-**  a period of length 2^19937-1 and a 623-dimensional equidistribution is 
-**  taken from:
+**  Part of this code for fast generation of 32 bit pseudo random numbers
+**  with a period of length 2^19937-1 and a 623-dimensional equidistribution
+**  is taken from:
 **          http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 **  (Also look in Wikipedia for "Mersenne twister".)
 */
