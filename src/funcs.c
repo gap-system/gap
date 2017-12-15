@@ -20,6 +20,7 @@
 
 #include <src/calls.h>
 #include <src/code.h>
+#include <src/exprs.h>
 #include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/hookintrprtr.h>

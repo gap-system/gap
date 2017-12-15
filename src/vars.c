@@ -20,8 +20,11 @@
 #include <src/vars.h>
 
 #include <src/bool.h>
+#include <src/calls.h>
 #include <src/code.h>
+#include <src/exprs.h>
 #include <src/gap.h>
+#include <src/gaputils.h>
 #include <src/gvars.h>
 #include <src/hookintrprtr.h>
 #include <src/io.h>
