@@ -44,6 +44,13 @@
 #include <src/hpc/threadapi.h>
 #endif
 
+
+static Obj Error;
+static Obj ErrorInner;
+
+static UInt SystemErrorCode;
+
+
 /****************************************************************************
 **
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
@@ -1104,11 +1111,6 @@ Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
   return 0;
 }
 
-
-/* TL: UInt UserHasQuit; */
-/* TL: UInt UserHasQUIT; */
-UInt SystemErrorCode;
-
 Obj FuncSetUserHasQuit( Obj Self, Obj value)
 {
   STATE(UserHasQuit) = INT_INTOBJ(value);
@@ -1390,10 +1392,6 @@ void ErrorMayQuit (
  
 }
 
-Obj Error;
-Obj ErrorInner;
-
- 
 
 /*************************************************************************
 **
