@@ -654,8 +654,9 @@ library, see <Ref Sect="Namespaces for GAP packages" BookName="ref"/>.
 
 All guidance on how to <E>develop</E> a &GAP; package has been consolidated 
 in the <Package>Example</Package> package which also contains a checklist 
-for upgrading a &GAP; package to &GAP;&nbsp;4.5, see 
-<Ref Appendix="Guidelines for Writing a GAP Package" BookName="Example"/>.
+for upgrading a &GAP; package to &GAP;&nbsp;4.5 (the guidance has been
+transferred to <Ref Chap="Using and Developing GAP Packages" BookName="ref"/>
+in &GAP;&nbsp;4.9).
 <P/> 
 
 </Subsection>
@@ -800,8 +801,9 @@ computation.
  
 <Item>
 <Package>Example</Package> package by W. Nickel, G. Gamble and A. Konovalov
-has a more detailed and up-to-date guidance on developing a &GAP; package,
-see <Ref Appendix="Guidelines for Writing a GAP Package" BookName="Example"/>.
+has a more detailed and up-to-date guidance on developing a &GAP; package
+(transferred to <Ref Chap="Using and Developing GAP Packages" BookName="ref"/>
+in &GAP;&nbsp;4.9).
 </Item>
 
 <Item>
