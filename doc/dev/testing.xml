@@ -229,7 +229,7 @@ It consists of
     the tests of packages loading with
     <Ref BookName="ref" Func="LoadPackage"/> 
     and
-    <Ref BookName="Example" Func="LoadAllPackages"/>
+    <Ref BookName="ref" Func="LoadAllPackages"/>
   </Item>
 </List>
 
@@ -282,7 +282,7 @@ Then proceed as follows in the &GAP; root directory.
   <Item>
     Call <C>make testpackagesloading</C>.
     This loads each accepted or deposited package in a new &GAP; session,
-    then starts a new &GAP; session and calls <Ref BookName="Example" Func="LoadAllPackages"/>
+    then starts a new &GAP; session and calls <Ref BookName="ref" Func="LoadAllPackages"/>
     to check that all packages may be loaded simultaneosuly.
     It require just a few minutes.
   </Item>  

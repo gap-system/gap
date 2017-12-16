@@ -1199,7 +1199,7 @@ DeclareGlobalFunction( "Cite" );
 ##  (For that, &GAP; actually loads the package.)
 ##  <P/>
 ##  If a version number <A>version</A> is given
-##  (see Section&nbsp;<Ref Sect="Version Numbers" BookName="Example"/>)
+##  (see Section&nbsp;<Ref Sect="Version Numbers" BookName="ref"/>)
 ##  then this version of the package is considered.
 ##  <P/>
 ##  An error message is printed if (the given version of) the package

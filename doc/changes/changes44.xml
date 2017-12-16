@@ -18,7 +18,7 @@ subsequent update releases of &GAP; 4.4.
   updates independent of main &GAP; releases. Packages require a
   file <F>PackageInfo.g</F> now. The new <F>PackageInfo.g</F> files are 
   available for all packages with the new version of GAP
-  (see <Ref BookName="Example" Label="PackageInfo.g"/>).
+  (see <Ref BookName="ref" Label="PackageInfo.g"/>).
 </Item>
 <Item>
   <Ref Oper="IsSimpleGroup" BookName="ref"/> returns false now for the trivial group.
@@ -270,7 +270,7 @@ saved workspaces have been introduced. (S. Linton and B. Höfling)
 <Item>
   There is a new mechanism for loading packages available.
               Packages need a file <F>PackageInfo.g</F> now. (T. Breuer and
-              F. Lübeck; see <Ref BookName="Example" Label="PackageInfo.g"/>).
+              F. Lübeck; see <Ref BookName="ref" Label="PackageInfo.g"/>).
 </Item>
 </List>
 <P/>
