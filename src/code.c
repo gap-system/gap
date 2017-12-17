@@ -244,7 +244,7 @@ Stat NewStat (
     UInt                size)
 {
     assert(STATE(Input)->gapnameid != 0);
-    return NewStatWithProf(type, size, STATE(Input)->number);
+    return NewStatWithProf(type, size, GetInputLineNumber());
 }
 
 
@@ -777,8 +777,6 @@ void CodeFuncExprBegin (
     SetupGapname(STATE(Input));
     SET_GAPNAMEID_BODY(body, STATE(Input)->gapnameid);
     SET_STARTLINE_BODY(body, startLine);
-    /*    Pr("Coding begin at %s:%d ",(Int)(STATE(Input)->name),STATE(Input)->number);
-          Pr(" Body id %d\n",(Int)(body),0L); */
     STATE(OffsBody) = sizeof(BodyHeader);
     STATE(LoopNesting) = 0;
 
@@ -849,8 +847,7 @@ void CodeFuncExprEnd(UInt nr)
 
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), STATE(OffsBody) );
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), STATE(Input)->number);
-    /*    Pr("  finished coding %d at line %d\n",(Int)(BODY_FUNC(fexp)), STATE(Input)->number); */
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber());
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );

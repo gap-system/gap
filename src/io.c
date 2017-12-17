@@ -42,6 +42,12 @@ static Obj PrintFormattingStatus;
 /* TODO: Eliminate race condition in HPC-GAP */
 static Char promptBuf[81];
 
+Int GetInputLineNumber(void)
+{
+    GAP_ASSERT(STATE(Input));
+    return STATE(Input)->number;
+}
+
 #ifdef HPCGAP
 #define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
 #else

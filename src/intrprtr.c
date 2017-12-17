@@ -882,7 +882,7 @@ void            IntrAtomicBegin ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(STATE(Input)->number);
+        StartFakeFuncExpr(GetInputLineNumber());
 
     STATE(IntrCoding)++;
 
@@ -962,7 +962,7 @@ void            IntrRepeatBegin ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(STATE(Input)->number);
+        StartFakeFuncExpr(GetInputLineNumber());
 
     STATE(IntrCoding)++;
 

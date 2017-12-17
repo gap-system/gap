@@ -1433,7 +1433,7 @@ void ReadFuncExpr (
     volatile ArgList    args;
 
     /* begin the function               */
-    startLine = STATE(Input)->number;
+    startLine = GetInputLineNumber();
     if (STATE(Symbol) == S_ATOMIC) {
         Match(S_ATOMIC, "atomic", follow);
         is_atomic = 1;
@@ -1498,7 +1498,7 @@ void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
     /* match away the '->'                                                 */
     Match(S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(follow, 1, 0, args, STATE(Input)->number);
+    ReadFuncExprBody(follow, 1, 0, args, GetInputLineNumber());
 }
 
 /****************************************************************************
@@ -1529,7 +1529,7 @@ void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
     /* match away the '->'                                                 */
     Match(S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(follow, 1, 0, args, STATE(Input)->number);
+    ReadFuncExprBody(follow, 1, 0, args, GetInputLineNumber());
 }
 
 /****************************************************************************
@@ -2839,7 +2839,7 @@ UInt ReadEvalFile(Obj *evalResult)
     }
 
     /* fake the 'function ()'                                              */
-    IntrFuncExprBegin( 0L, nloc, nams, STATE(Input)->number );
+    IntrFuncExprBegin(0, nloc, nams, GetInputLineNumber());
 
     /* read the statements                                                 */
     nr = ReadStats( S_SEMICOLON | S_EOF );
