@@ -142,7 +142,7 @@ UInt OpenDefaultInput( void )
   Obj func, stream;
   stream = TLS(DefaultInput);
   if (stream)
-    return OpenInputStream(stream);
+      return OpenInputStream(stream, 0);
   func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
   if (!func)
     return OpenInput("*stdin*");
@@ -152,7 +152,7 @@ UInt OpenDefaultInput( void )
   if (IsStringConv(stream))
     return OpenInput(CSTR_STRING(stream));
   TLS(DefaultInput) = stream;
-  return OpenInputStream(stream);
+  return OpenInputStream(stream, 0);
 }
 
 UInt OpenDefaultOutput( void )
@@ -282,13 +282,11 @@ UInt OpenInput (
 
 /****************************************************************************
 **
-*F  OpenInputStream( <stream> ) . . . . . . .  open a stream as current input
+*F  OpenInputStream( <stream>, <echo> ) . . .  open a stream as current input
 **
 **  The same as 'OpenInput' but for streams.
 */
-
-UInt OpenInputStream (
-    Obj                 stream )
+UInt OpenInputStream(Obj stream, UInt echo)
 {
     /* fail if we can not handle another open input file                   */
     if ( STACK_SIZE(Input) == ARRAY_SIZE(STATE(InputFiles)) )
@@ -323,7 +321,7 @@ UInt OpenInputStream (
         STATE(Input)->sline = 0;
     }
     STATE(Input)->file = -1;
-    STATE(Input)->echo = 0;
+    STATE(Input)->echo = echo;
     strlcpy( STATE(Input)->name, "stream", sizeof(STATE(Input)->name) );
     STATE(Input)->gapnameid = 0;
 
