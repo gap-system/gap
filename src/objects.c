@@ -340,7 +340,7 @@ Obj ShallowCopyObjDefault (
     Obj                 obj )
 {
     Obj                 new;
-    Obj *               o;
+    const Obj *         o;
     Obj *               n;
     UInt                len;
     UInt                i;
@@ -348,7 +348,7 @@ Obj ShallowCopyObjDefault (
     /* make the new object and copy the contents                           */
     len = (SIZE_OBJ( obj ) + sizeof(Obj)-1) / sizeof(Obj);
     new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
-    o = ADDR_OBJ( obj );
+    o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
     for ( i = 0; i < len; i++ ) {
         *n++ = *o++;
@@ -489,7 +489,7 @@ Obj CopyObjPosObj (
 
     /* make a copy                                                         */
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
@@ -497,7 +497,7 @@ Obj CopyObjPosObj (
     /* leave a forwarding pointer                                          */
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(obj)[0] );
+    SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
     SET_ELM_PLIST( tmp, 2, copy );
     ADDR_OBJ(obj)[0] = tmp;
     CHANGED_BAG(obj);
@@ -507,8 +507,8 @@ Obj CopyObjPosObj (
 
     /* copy the subvalues                                                  */
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
-        if ( ADDR_OBJ(obj)[i] != 0 ) {
-            tmp = COPY_OBJ( ADDR_OBJ(obj)[i], mut );
+        if (CONST_ADDR_OBJ(obj)[i] != 0) {
+            tmp = COPY_OBJ(CONST_ADDR_OBJ(obj)[i], mut);
             ADDR_OBJ(copy)[i] = tmp;
             CHANGED_BAG( copy );
         }
@@ -537,7 +537,7 @@ Obj CopyObjPosObjCopy (
     Obj                 obj,
     Int                 mut )
 {
-    return ELM_PLIST( ADDR_OBJ(obj)[0], 2 );
+    return ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 2);
 }
 
 
@@ -551,7 +551,7 @@ void CleanObjPosObjCopy (
     UInt                i;              /* loop variable                   */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = ELM_PLIST( ADDR_OBJ(obj)[0], 1 );
+    ADDR_OBJ(obj)[0] = ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 1);
     CHANGED_BAG(obj);
 
     /* now it is cleaned                                                   */
@@ -559,8 +559,8 @@ void CleanObjPosObjCopy (
 
     /* clean the subvalues                                                 */
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
-        if ( ADDR_OBJ(obj)[i] != 0 )
-            CLEAN_OBJ( ADDR_OBJ(obj)[i] );
+        if (CONST_ADDR_OBJ(obj)[i] != 0)
+            CLEAN_OBJ(CONST_ADDR_OBJ(obj)[i]);
     }
 
 }
@@ -591,7 +591,7 @@ Obj CopyObjComObj (
 
     /* make a copy                                                         */
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     SET_LEN_PREC(copy,LEN_PREC(obj));
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
@@ -600,7 +600,7 @@ Obj CopyObjComObj (
     /* leave a forwarding pointer                                          */
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(obj)[0] );
+    SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
     SET_ELM_PLIST( tmp, 2, copy );
     ADDR_OBJ(obj)[0] = tmp;
     CHANGED_BAG(obj);
@@ -639,7 +639,7 @@ Obj CopyObjComObjCopy (
     Obj                 obj,
     Int                 mut )
 {
-    return ELM_PLIST( ADDR_OBJ(obj)[0], 2 );
+    return ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 2);
 }
 
 
@@ -653,7 +653,7 @@ void CleanObjComObjCopy (
     UInt                i;              /* loop variable                   */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = ELM_PLIST( ADDR_OBJ(obj)[0], 1 );
+    ADDR_OBJ(obj)[0] = ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 1);
     CHANGED_BAG(obj);
 
     /* now it is cleaned                                                   */
@@ -678,7 +678,7 @@ Obj CopyObjDatObj (
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
     UInt                i;              /* loop variable                   */
-    Int               * src;
+    const Int *         src;
     Int               * dst;
 
     /* don't change immutable objects                                      */
@@ -694,7 +694,7 @@ Obj CopyObjDatObj (
 
     /* make a copy                                                         */
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(obj)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
@@ -702,7 +702,7 @@ Obj CopyObjDatObj (
     /* leave a forwarding pointer                                          */
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, ADDR_OBJ(obj)[0] );
+    SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
     SET_ELM_PLIST( tmp, 2, copy );
     ADDR_OBJ(obj)[0] = tmp;
     CHANGED_BAG(obj);
@@ -711,8 +711,8 @@ Obj CopyObjDatObj (
     RetypeBag( obj, TNUM_OBJ(obj) + COPYING );
 
     /* copy the subvalues                                                  */
-    src = (Int*)( ADDR_OBJ(obj) + 1 );
-    dst = (Int*)( ADDR_OBJ(copy) + 1 );
+    src = (const Int *)(CONST_ADDR_OBJ(obj) + 1);
+    dst = (Int *)(ADDR_OBJ(copy) + 1);
     i   = (SIZE_OBJ(obj)-sizeof(Obj)+sizeof(Int)-1) / sizeof(Int);
     for ( ;  0 < i;  i--, src++, dst++ ) {
         *dst = *src;
@@ -742,7 +742,7 @@ Obj CopyObjDatObjCopy (
     Obj                 obj,
     Int                 mut )
 {
-    return ELM_PLIST( ADDR_OBJ(obj)[0], 2 );
+    return ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 2);
 }
 
 
@@ -754,7 +754,7 @@ void CleanObjDatObjCopy (
     Obj                 obj )
 {
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = ELM_PLIST( ADDR_OBJ(obj)[0], 1 );
+    ADDR_OBJ(obj)[0] = ELM_PLIST(CONST_ADDR_OBJ(obj)[0], 1);
     CHANGED_BAG(obj);
 
     /* now it is cleaned                                                   */
@@ -1234,7 +1234,7 @@ void SetTypeComObj( Obj obj, Obj type)
     ReadGuard(obj);
     MEMBAR_WRITE();
 #endif
-    TYPE_COMOBJ(obj) = type;
+    SET_TYPE_COMOBJ(obj, type);
     CHANGED_BAG(obj);
 }
 #endif
@@ -1275,7 +1275,7 @@ Obj FuncSET_TYPE_COMOBJ (
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
         MEMBAR_WRITE();
-        TYPE_COMOBJ( obj ) = type;
+        SET_TYPE_COMOBJ(obj, type);
         RetypeBag( obj, T_COMOBJ );
         CHANGED_BAG( obj );
         break;
@@ -1294,9 +1294,10 @@ Obj FuncSET_TYPE_COMOBJ (
     }
 #else
     if (TNUM_OBJ(obj) == T_PREC+IMMUTABLE)
-      ErrorMayQuit("You can't make a component object from an immutable object",
-                   0L, 0L);
-    TYPE_COMOBJ( obj ) = type;
+        ErrorMayQuit(
+            "You can't make a component object from an immutable object", 0L,
+            0L);
+    SET_TYPE_COMOBJ(obj, type);
     RetypeBag( obj, T_COMOBJ );
     CHANGED_BAG( obj );
 #endif
@@ -1325,7 +1326,7 @@ void SetTypePosObj( Obj obj, Obj type)
     ReadGuard(obj);
     MEMBAR_WRITE();
 #endif
-    TYPE_POSOBJ(obj) = type;
+    SET_TYPE_POSOBJ(obj, type);
     CHANGED_BAG(obj);
 }
 #endif
@@ -1374,14 +1375,14 @@ Obj FuncSET_TYPE_POSOBJ (
         break;
       default:
         MEMBAR_WRITE();
-        TYPE_POSOBJ( obj ) = type;
+        SET_TYPE_POSOBJ(obj, type);
         RetypeBag( obj, T_POSOBJ );
         CHANGED_BAG( obj );
         break;
     }
 #else
-    TYPE_POSOBJ( obj ) = type;
     RetypeBag( obj, T_POSOBJ );
+    SET_TYPE_POSOBJ(obj, type);
     CHANGED_BAG( obj );
 #endif
     return obj;
@@ -1420,7 +1421,7 @@ Obj             TypeDatObj (
 
 void SetTypeDatObj( Obj obj, Obj type)
 {
-    TYPE_DATOBJ(obj) = type;
+    SET_TYPE_DATOBJ(obj, type);
 #ifdef HPCGAP
     if (TNUM_OBJ(obj) == T_DATOBJ &&
         !IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
@@ -1459,7 +1460,7 @@ Obj FuncSET_TYPE_DATOBJ (
 #ifdef HPCGAP
     ReadGuard( obj );
 #endif
-    TYPE_DATOBJ( obj ) = type;
+    SET_TYPE_DATOBJ(obj, type);
 #ifdef HPCGAP
     if (TNUM_OBJ(obj) != T_DATOBJ)
 #endif
@@ -1565,7 +1566,7 @@ void SavePosObj( Obj posobj)
   len = (SIZE_OBJ(posobj)/sizeof(Obj) - 1);
   for (i = 1; i <= len; i++)
     {
-      SaveSubObj(ADDR_OBJ(posobj)[i]);
+      SaveSubObj(CONST_ADDR_OBJ(posobj)[i]);
     }
 }
 
@@ -1580,10 +1581,10 @@ void SavePosObj( Obj posobj)
 void SaveDatObj( Obj datobj)
 {
   UInt len,i;
-  UInt *ptr;
+  const UInt * ptr;
   SaveSubObj(TYPE_DATOBJ( datobj ));
   len = ((SIZE_OBJ(datobj)+sizeof(UInt)-1)/sizeof(UInt) - 1);
-  ptr = (UInt *)ADDR_OBJ(datobj)+1;
+  ptr = (const UInt *)CONST_ADDR_OBJ(datobj) + 1;
   for (i = 1; i <= len; i++)
     {
       SaveUInt(*ptr++);
@@ -1599,7 +1600,7 @@ void SaveDatObj( Obj datobj)
 void LoadComObj( Obj comobj)
 {
   UInt len,i;
-  TYPE_COMOBJ( comobj) = LoadSubObj( );
+  SET_TYPE_COMOBJ(comobj, LoadSubObj());
   len = LoadUInt();
   SET_LEN_PREC(comobj,len);
   for (i = 1; i <= len; i++)
@@ -1618,7 +1619,7 @@ void LoadComObj( Obj comobj)
 void LoadPosObj( Obj posobj)
 {
   UInt len,i;
-  TYPE_POSOBJ( posobj ) = LoadSubObj();
+  SET_TYPE_POSOBJ(posobj, LoadSubObj());
   len = (SIZE_OBJ(posobj)/sizeof(Obj) - 1);
   for (i = 1; i <= len; i++)
     {
@@ -1638,7 +1639,7 @@ void LoadDatObj( Obj datobj)
 {
   UInt len,i;
   UInt *ptr;
-  TYPE_DATOBJ( datobj ) = LoadSubObj();
+  SET_TYPE_DATOBJ(datobj, LoadSubObj());
   len = ((SIZE_OBJ(datobj)+sizeof(UInt)-1)/sizeof(UInt) - 1);
   ptr = (UInt *)ADDR_OBJ(datobj)+1;
   for (i = 1; i <= len; i++)
@@ -1677,7 +1678,7 @@ Obj FuncCLONE_OBJ (
     Obj             dst,
     Obj             src )
 {
-    Obj *           psrc;
+    const Obj *     psrc;
     Obj *           pdst;
     Int             i;
 
@@ -1740,7 +1741,7 @@ Obj FuncCLONE_OBJ (
     RetypeBag( dst, TNUM_OBJ(src) );
     pdst = ADDR_OBJ(dst);
 #endif
-    psrc = ADDR_OBJ(src);
+    psrc = CONST_ADDR_OBJ(src);
     for ( i = (SIZE_OBJ(src)+sizeof(Obj) - 1)/sizeof(Obj);  0 < i;  i-- ) {
         *pdst++ = *psrc++;
     }
