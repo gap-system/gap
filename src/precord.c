@@ -82,8 +82,8 @@ Obj TypePRecImm (
 */
 void SetTypePRecToComObj( Obj rec, Obj kind )
 {
-    TYPE_COMOBJ(rec) = kind;
     RetypeBag(rec, T_COMOBJ);
+    SET_TYPE_COMOBJ(rec, kind);
     CHANGED_BAG(rec);
 }
 

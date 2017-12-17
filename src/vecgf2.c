@@ -509,7 +509,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
   SET_LEN_GF2MAT(prod,len);
   if (IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr))
     {
-      TYPE_POSOBJ(prod) = TYPE_LIST_GF2MAT;
+      SET_TYPE_POSOBJ(prod, TYPE_LIST_GF2MAT);
       if (IS_MUTABLE_OBJ(ELM_GF2MAT(ml,1)) || IS_MUTABLE_OBJ(ELM_GF2MAT(mr,1)))
 	rtype = TYPE_LIST_GF2VEC_LOCKED;
       else
@@ -517,7 +517,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
     }
   else
     {
-      TYPE_POSOBJ(prod) = TYPE_LIST_GF2MAT_IMM;
+      SET_TYPE_POSOBJ(prod, TYPE_LIST_GF2MAT_IMM);
       rtype = TYPE_LIST_GF2VEC_IMM_LOCKED;
     }
   for (i = 1; i <= len; i++)
@@ -661,7 +661,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   SET_LEN_GF2MAT(prod,len);
   if (IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr))
     {
-     TYPE_POSOBJ(prod) = TYPE_LIST_GF2MAT;
+      SET_TYPE_POSOBJ(prod, TYPE_LIST_GF2MAT);
       if (IS_MUTABLE_OBJ(ELM_GF2MAT(ml,1)) || IS_MUTABLE_OBJ(ELM_GF2MAT(mr,1)))
 	rtype = TYPE_LIST_GF2VEC_LOCKED;
       else
@@ -669,7 +669,7 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
     }
   else
     {
-      TYPE_POSOBJ(prod) = TYPE_LIST_GF2MAT_IMM;
+      SET_TYPE_POSOBJ(prod, TYPE_LIST_GF2MAT_IMM);
       rtype = TYPE_LIST_GF2VEC_IMM_LOCKED;
     }
 
@@ -1041,8 +1041,9 @@ Obj InverseGF2Mat (
     }
     SET_LEN_GF2MAT( inv, len );
     RetypeBag( inv, T_POSOBJ );
-    TYPE_POSOBJ( inv ) = (mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)))
-      ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
+    SET_TYPE_POSOBJ(inv, (mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)))
+                             ? TYPE_LIST_GF2MAT
+                             : TYPE_LIST_GF2MAT_IMM);
     return inv;
 }
 
@@ -2373,8 +2374,8 @@ Obj FuncSUM_GF2VEC_GF2VEC (
       }
 
     if (!IS_MUTABLE_OBJ(vl) && !IS_MUTABLE_OBJ(vr))
-      TYPE_POSOBJ(sum) = TYPE_LIST_GF2VEC_IMM;
-    
+        SET_TYPE_POSOBJ(sum, TYPE_LIST_GF2VEC_IMM);
+
     return sum;
 }
 
@@ -2828,7 +2829,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   sum = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT( ls ));
   if (IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr))
     {
-      TYPE_POSOBJ(sum) = TYPE_LIST_GF2MAT;
+      SET_TYPE_POSOBJ(sum, TYPE_LIST_GF2MAT);
       if (IS_MUTABLE_OBJ(ELM_GF2MAT(matl,1)) || IS_MUTABLE_OBJ(ELM_GF2MAT(matr,1)))
 	rtype = TYPE_LIST_GF2VEC_LOCKED;
       else
@@ -2836,7 +2837,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
     }
   else
     {
-      TYPE_POSOBJ(sum) = TYPE_LIST_GF2MAT_IMM;
+      SET_TYPE_POSOBJ(sum, TYPE_LIST_GF2MAT_IMM);
       rtype = TYPE_LIST_GF2VEC_IMM_LOCKED;
     }
   
@@ -2915,8 +2916,8 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
   nrb=NUMBER_BLOCKS_GF2VEC(r1);
 
   tra = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT( w ));
-  TYPE_POSOBJ(tra) = typ;
-  
+  SET_TYPE_POSOBJ(tra, typ);
+
   /* type for rows */
   typ = TYPE_LIST_GF2VEC_LOCKED;
   
@@ -4304,11 +4305,11 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   mat = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(nrowp));
   SET_LEN_GF2MAT(mat,nrowp);
   if (mutable) {
-    TYPE_POSOBJ(mat) = TYPE_LIST_GF2MAT;
-    type = TYPE_LIST_GF2VEC_LOCKED;
+      SET_TYPE_POSOBJ(mat, TYPE_LIST_GF2MAT);
+      type = TYPE_LIST_GF2VEC_LOCKED;
   } else {
-    TYPE_POSOBJ(mat) = TYPE_LIST_GF2MAT_IMM;
-    type = TYPE_LIST_GF2VEC_IMM_LOCKED;
+      SET_TYPE_POSOBJ(mat, TYPE_LIST_GF2MAT_IMM);
+      type = TYPE_LIST_GF2VEC_IMM_LOCKED;
   }
 
   /* allocate 0 matrix */

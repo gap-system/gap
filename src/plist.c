@@ -834,8 +834,8 @@ Obj TypePlistFfe (
 */
 void SetTypePlistToPosObj(Obj list, Obj kind)
 {
-    TYPE_POSOBJ(list) = kind;
     RetypeBag(list, T_POSOBJ);
+    SET_TYPE_POSOBJ(list, kind);
     CHANGED_BAG(list);
 }
 

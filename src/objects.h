@@ -739,56 +739,80 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 *F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
 */
-#define IS_COMOBJ(obj)            (TNUM_OBJ(obj) == T_COMOBJ)
+static inline Int IS_COMOBJ(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_COMOBJ;
+}
 
 
 /****************************************************************************
 **
 *F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  type of a component object
 */
-#define TYPE_COMOBJ(obj)          ADDR_OBJ(obj)[0]
+static inline Obj TYPE_COMOBJ(Obj obj)
+{
+    return CONST_ADDR_OBJ(obj)[0];
+}
 
 
 /****************************************************************************
 **
 *F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the type of a component object
 */
-#define SET_TYPE_COMOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
+static inline void SET_TYPE_COMOBJ(Obj obj, Obj val)
+{
+    ADDR_OBJ(obj)[0] = val;
+}
 
 
 /****************************************************************************
 **
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
-#define IS_POSOBJ(obj)            (TNUM_OBJ(obj) == T_POSOBJ)
+static inline Int IS_POSOBJ(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_POSOBJ;
+}
 
 
 /****************************************************************************
 **
 *F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . type of a positional object
 */
-#define TYPE_POSOBJ(obj)          ADDR_OBJ(obj)[0]
+static inline Obj TYPE_POSOBJ(Obj obj)
+{
+    return CONST_ADDR_OBJ(obj)[0];
+}
 
 
 /****************************************************************************
 **
 *F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
-#define SET_TYPE_POSOBJ(obj,val)  (ADDR_OBJ(obj)[0] = (val))
+static inline void SET_TYPE_POSOBJ(Obj obj, Obj val)
+{
+    ADDR_OBJ(obj)[0] = val;
+}
 
 
 /****************************************************************************
 **
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
-#define IS_DATOBJ(obj)            (TNUM_OBJ(obj) == T_DATOBJ)
+static inline Int IS_DATOBJ(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_DATOBJ;
+}
 
 
 /****************************************************************************
 **
 *F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . type of a data object
 */
-#define TYPE_DATOBJ(obj)          ADDR_OBJ(obj)[0]
+static inline Obj TYPE_DATOBJ(Obj obj)
+{
+    return CONST_ADDR_OBJ(obj)[0];
+}
 
 
 /****************************************************************************
@@ -797,9 +821,12 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-extern void SetTypeDatObj( Obj obj, Obj type );
+static inline void SET_TYPE_DATOBJ(Obj obj, Obj val)
+{
+    ADDR_OBJ(obj)[0] = val;
+}
 
-#define SET_TYPE_DATOBJ(obj, type)  SetTypeDatObj(obj, type)
+extern void SetTypeDatObj(Obj obj, Obj type);
 
 
 /****************************************************************************

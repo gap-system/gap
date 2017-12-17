@@ -3408,7 +3408,7 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
     SET_LEN_MAT8BIT(list, len);
     RetypeBag(list, T_POSOBJ);
     type = TypeMat8Bit(INT_INTOBJ(q), mut);
-    TYPE_POSOBJ(list) = type;
+    SET_TYPE_POSOBJ(list, type);
     return 0;
 }
 
@@ -3621,7 +3621,7 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
     prod = NewBag(T_POSOBJ, sizeof(Obj) * (len + 2));
     SET_LEN_MAT8BIT(prod, len);
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
-    TYPE_POSOBJ(prod) = type;
+    SET_TYPE_POSOBJ(prod, type);
     locked_type  = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl, 1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(matr, 1)));
     for (i = 1; i <= len; i++) {
         row = ProdVec8BitMat8Bit(ELM_MAT8BIT(matl, i), matr);
@@ -3718,7 +3718,7 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
         CHANGED_BAG(inv);
         RetypeBag(inv, T_POSOBJ);
         type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
-        TYPE_POSOBJ(inv) = type;
+        SET_TYPE_POSOBJ(inv, type);
         SET_LEN_MAT8BIT(inv, 1);
         return inv;
     }
@@ -3805,7 +3805,7 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
     }
     RetypeBag(inv, T_POSOBJ);
     type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
-    TYPE_POSOBJ(inv) = type;
+    SET_TYPE_POSOBJ(inv, type);
     CHANGED_BAG(inv);
     return inv;
 }
@@ -3906,7 +3906,8 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
             q = FIELD_VEC8BIT(obj);
             goto cando;
         } else {
-            TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
+            SET_TYPE_POSOBJ(mat, IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT
+                                                     : TYPE_LIST_GF2MAT_IMM);
             SetTypeDatObj(obj, IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
             SET_ELM_GF2MAT(mat, 1, obj);
             return (Obj) 0;
@@ -4028,7 +4029,7 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
     q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
     sum = NewBag(T_POSOBJ, sizeof(Obj) * (ls + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
-    TYPE_POSOBJ(sum) = type;
+    SET_TYPE_POSOBJ(sum, type);
     SET_LEN_MAT8BIT(sum, ls);
 
     type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(ml, 1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(mr, 1)));
@@ -4110,7 +4111,7 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
 
     diff = NewBag(T_POSOBJ, sizeof(Obj) * (ld + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
-    TYPE_POSOBJ(diff) = type;
+    SET_TYPE_POSOBJ(diff, type);
     SET_LEN_MAT8BIT(diff, ld);
     type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(ml, 1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(mr, 1)));
     info = GetFieldInfo8Bit(q);
@@ -5566,7 +5567,7 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
     tra = NewBag(T_POSOBJ, sizeof(Obj) * (w + 2));
     q = FIELD_VEC8BIT(r1);
     type = TypeMat8Bit(q, 1);
-    TYPE_POSOBJ(tra) = type;
+    SET_TYPE_POSOBJ(tra, type);
 
     SET_LEN_MAT8BIT(tra, w);
 
@@ -5664,7 +5665,7 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
     /* create a matrix */
     mat = NewBag(T_POSOBJ, sizeof(Obj) * (nrowl*nrowr + 2));
     SET_LEN_MAT8BIT(mat, nrowl*nrowr);
-    TYPE_POSOBJ(mat) = TypeMat8Bit(q, mutable);
+    SET_TYPE_POSOBJ(mat, TypeMat8Bit(q, mutable));
     type = TypeVec8BitLocked(q, mutable);
 
     /* allocate 0 matrix */

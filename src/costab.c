@@ -2322,9 +2322,8 @@ Obj FuncLOWINDEX_PREPARE_RELS (
       for (k=1;k<=l;k++) 
         rp[k]=INT_INTOBJ((Obj)rp[k]); /* convert relator entries to C-integers */
       /* change type */
-      TYPE_DATOBJ(rel) = TYPE_LOWINDEX_DATA;
       RetypeBag(rel,T_DATOBJ);
-
+      SET_TYPE_DATOBJ(rel, TYPE_LOWINDEX_DATA);
     }
    }
    return (Obj) 0;
