@@ -167,11 +167,13 @@ static inline void SET_TESTR_FILT(Obj oper, Obj x)
 */
 static inline Obj METHS_OPER(Obj oper, Int i)
 {
+    GAP_ASSERT(0 <= i && i < 8);
     return CONST_OPER(oper)->methods[i];
 }
 
 static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
 {
+    GAP_ASSERT(0 <= i && i < 8);
     OPER(oper)->methods[i] = x;
 }
 
@@ -182,11 +184,13 @@ static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
 */
 static inline Obj CACHE_OPER(Obj oper, Int i)
 {
+    GAP_ASSERT(0 <= i && i < 8);
     return CONST_OPER(oper)->cache[i];
 }
 
 static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 {
+    GAP_ASSERT(0 <= i && i < 8);
     OPER(oper)->cache[i] = x;
 }
 
