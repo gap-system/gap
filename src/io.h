@@ -392,6 +392,9 @@ typedef struct {
 /* TL: extern Char *          In; */
 
 
+// get the number of the current line in the current thread's input
+extern Int GetInputLineNumber(void);
+
 /****************************************************************************
 **
 *T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
