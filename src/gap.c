@@ -177,7 +177,6 @@ Obj Shell ( Obj context,
   UInt status;
   Obj evalResult;
   UInt dualSemicolon;
-  UInt oldindent;
   UInt oldPrintDepth;
   Obj res;
   Obj oldShellContext;
@@ -203,8 +202,6 @@ Obj Shell ( Obj context,
   
   oldPrintDepth = STATE(PrintObjDepth);
   STATE(PrintObjDepth) = 0;
-  oldindent = STATE(Output)->indent;
-  STATE(Output)->indent = 0;
 
   while ( 1 ) {
 
@@ -303,7 +300,6 @@ Obj Shell ( Obj context,
   }
   
   STATE(PrintObjDepth) = oldPrintDepth;
-  STATE(Output)->indent = oldindent;
   CloseInput();
   CloseOutput();
   STATE(BaseShellContext) = oldBaseShellContext;
