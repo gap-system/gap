@@ -1644,6 +1644,7 @@ InstallGlobalFunction( PositionMinimum,
 InstallMethod( PositionsProperty,
     "for list and function",
     [ IsList, IsFunction ],
+    500,
     function( list, func )
     local result, i;
 
@@ -1660,6 +1661,7 @@ InstallMethod( PositionsProperty,
 InstallMethod( PositionsProperty,
     "for dense list and function",
     [ IsDenseList, IsFunction ],
+    500,
     function( list, func )
     local result, i;
 
