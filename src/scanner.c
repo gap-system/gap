@@ -37,7 +37,6 @@ void            SyntaxError (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(STATE(Output));
 
     /* one more error                                                      */
     STATE(NrError)++;
@@ -67,9 +66,7 @@ void            SyntaxError (
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(STATE(Output));
     CloseOutput();
-    assert(STATE(Output));
 }
 
 /****************************************************************************
@@ -84,7 +81,6 @@ void            SyntaxWarning (
 
     /* open error output                                                   */
     OpenOutput( "*errout*" );
-    assert(STATE(Output));
 
 
     /* do not print a message if we found one already on the current line  */
@@ -111,9 +107,7 @@ void            SyntaxWarning (
         Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
-    assert(STATE(Output));
     CloseOutput();
-    assert(STATE(Output));
 }
 
 
