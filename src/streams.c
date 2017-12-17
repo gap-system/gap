@@ -96,20 +96,14 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
     Obj evalResult;
 
     /* try to open the stream */
-    if (!OpenInputStream(stream) ) {
-      return Fail;
+    if (!OpenInputStream(stream, echo == True)) {
+        return Fail;
     }
 
     resultCount = 0;
     resultCapacity = 16;
     resultList = NEW_PLIST( T_PLIST, resultCapacity );
     SET_LEN_PLIST(resultList, resultCount);
-
-    if (echo == True) {
-        STATE(Input)->echo = 1;
-    } else {
-        STATE(Input)->echo = 0;
-    }
 
     do {
         ClearError();
@@ -160,14 +154,9 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     SET_ELM_PLIST(result, 1, False);
 
     /* try to open the file                                                */
-    if ( ! OpenInputStream(stream) ) {
+    if (!OpenInputStream(stream, echo == True)) {
         return result;
     }
-
-    if (echo == True)
-      STATE(Input)->echo = 1;
-    else
-      STATE(Input)->echo = 0;
 
     status = READ_COMMAND(&evalResult);
     
@@ -1045,7 +1034,7 @@ Obj FuncREAD_STREAM (
     Obj                 stream )
 {
     /* try to open the file                                                */
-    if ( ! OpenInputStream(stream) ) {
+    if (!OpenInputStream(stream, 0)) {
         return False;
     }
 
@@ -1063,7 +1052,7 @@ Obj FuncREAD_STREAM_LOOP (
     Obj                 catcherrstdout )
 {
     /* try to open the file                                                */
-    if ( ! OpenInputStream(stream) ) {
+    if (!OpenInputStream(stream, 0)) {
         return False;
     }
     if ( catcherrstdout == True )
@@ -1116,7 +1105,7 @@ Obj FuncREAD_AS_FUNC_STREAM (
     Obj                 stream )
 {
     /* try to open the file                                                */
-    if ( ! OpenInputStream(stream) ) {
+    if (!OpenInputStream(stream, 0)) {
         return Fail;
     }
 

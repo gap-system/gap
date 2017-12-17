@@ -70,12 +70,11 @@ extern UInt OpenInput (
 
 /****************************************************************************
 **
-*F  OpenInputStream( <stream> ) . . . . . . .  open a stream as current input
+*F  OpenInputStream( <stream>, <echo> ) . . .  open a stream as current input
 **
 **  The same as 'OpenInput' but for streams.
 */
-extern UInt OpenInputStream (
-    Obj                 stream );
+extern UInt OpenInputStream(Obj stream, UInt echo);
 
 
 /****************************************************************************
@@ -370,7 +369,6 @@ typedef struct {
   Int         spos;
   UInt        echo;
 } TypInputFile;
-
 
 
 /****************************************************************************
