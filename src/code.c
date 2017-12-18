@@ -22,6 +22,7 @@
 #include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/hookintrprtr.h>
+#include <src/io.h>
 #include <src/lists.h>
 #include <src/plist.h>
 #include <src/read.h>

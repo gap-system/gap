@@ -17,6 +17,7 @@
 #include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
+#include <src/io.h>
 #include <src/opers.h>
 #include <src/plist.h>
 #include <src/precord.h>

@@ -27,6 +27,7 @@
 #include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/integer.h>
+#include <src/io.h>
 #include <src/lists.h>
 #include <src/opers.h>
 #include <src/permutat.h>

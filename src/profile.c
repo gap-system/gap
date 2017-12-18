@@ -16,6 +16,7 @@
 #include <src/code.h>
 #include <src/gap.h>
 #include <src/hookintrprtr.h>
+#include <src/io.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
 #include <src/vars.h>
