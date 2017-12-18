@@ -95,24 +95,25 @@ static inline void PopLoopNesting( void ) {
   STATE(LoopNesting) = STATE(LoopStack)[--STATE(LoopStackCount)];
 }
 
-static inline void SetupGapname(TypInputFile* i)
+static inline UInt SetupGapname(void)
 {
-    if (i->gapnameid == 0) {
-        Obj filename = MakeImmString(i->name);
+    if (STATE(Input)->gapnameid == 0) {
+        Obj filename = MakeImmString(STATE(Input)->name);
 #ifdef HPCGAP
         // TODO/FIXME: adjust this code to work more like the corresponding
         // code below for GAP?!?
-        i->gapnameid = AddAList(FilenameCache, filename);
+        STATE(Input)->gapnameid = AddAList(FilenameCache, filename);
 #else
         Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
         if (pos == Fail) {
-            i->gapnameid = PushPlist(FilenameCache, filename);
+            STATE(Input)->gapnameid = PushPlist(FilenameCache, filename);
         }
         else {
-            i->gapnameid = INT_INTOBJ(pos);
+            STATE(Input)->gapnameid = INT_INTOBJ(pos);
         }
 #endif
     }
+    return STATE(Input)->gapnameid;
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
@@ -243,7 +244,6 @@ Stat NewStat (
     UInt                type,
     UInt                size)
 {
-    assert(STATE(Input)->gapnameid != 0);
     return NewStatWithProf(type, size, GetInputLineNumber());
 }
 
@@ -774,8 +774,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    SetupGapname(STATE(Input));
-    SET_GAPNAMEID_BODY(body, STATE(Input)->gapnameid);
+    SET_GAPNAMEID_BODY(body, SetupGapname());
     SET_STARTLINE_BODY(body, startLine);
     STATE(OffsBody) = sizeof(BodyHeader);
     STATE(LoopNesting) = 0;
