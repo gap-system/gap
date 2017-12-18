@@ -34,6 +34,7 @@
 #include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/integer.h>
+#include <src/io.h>
 #include <src/lists.h>
 #include <src/plist.h>
 #include <src/stringobj.h>

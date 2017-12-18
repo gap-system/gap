@@ -18,6 +18,7 @@
 #include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
+#include <src/io.h>
 #include <src/lists.h>
 #include <src/objects.h>
 #include <src/plist.h>
