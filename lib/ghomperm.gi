@@ -702,9 +702,9 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
     BuildOrb:=function(genimg)
     local a,orb,dict,orbf,T,elm,img,i,n;
       if Length(genimg[1])>0 then
-	a:=genimg[1][1];
+        a:=genimg[1][1];
       else
-	a:=One(Source(hom));
+        a:=One(Source(hom));
       fi;
       dict:=NewDictionary(a,false);
       a:=One(Source(hom));
@@ -1633,7 +1633,7 @@ InstallGlobalFunction( ImageKernelBlocksHomomorphism, function( hom, H,par )
               while j<=Length(orb) do
                 for k in S.generators do
                   img:=D[orb[j]][1]^k;
-		  p:=hom!.reps[img];
+                  p:=hom!.reps[img];
                   if not p in orb then
                     Add(orb,p);
                     Add(rep,rep[j]*k);
@@ -2056,23 +2056,23 @@ function( hom )
           fix:=First(oimgs[i],p->ForAll(GeneratorsOfGroup(E),
                       gen -> p ^ gen = p ) );
   
-	  # parallel orbit algorithm
-	  mapi:=MappingGeneratorsImages(hom);
-	  Add(dom,bpt);
-	  Add(idom,fix);
-	  pos:=Length(dom);
-	  doms:=[bpt];
-	  while pos<=Length(dom) do
-	    for gn in [1..Length(mapi[1])] do
-	      bpt:=dom[pos]^mapi[1][gn];
-	      if not bpt in doms then
-	        Add(dom,bpt);
-		AddSet(doms,bpt);
-		Add(idom,idom[pos]^mapi[2][gn]);
-	      fi;
-	    od;
-	    pos:=pos+1;
-	  od;
+          # parallel orbit algorithm
+          mapi:=MappingGeneratorsImages(hom);
+          Add(dom,bpt);
+          Add(idom,fix);
+          pos:=Length(dom);
+          doms:=[bpt];
+          while pos<=Length(dom) do
+            for gn in [1..Length(mapi[1])] do
+              bpt:=dom[pos]^mapi[1][gn];
+              if not bpt in doms then
+                Add(dom,bpt);
+                AddSet(doms,bpt);
+                Add(idom,idom[pos]^mapi[2][gn]);
+              fi;
+            od;
+            pos:=pos+1;
+          od;
 
           # # we could try to use stabilizer chains, but the homomorphism does
           # # not necessarily have one which acts in every orbit. So we use the
@@ -2088,32 +2088,32 @@ function( hom )
       else
         # we got multiple orbits
 
-	# does it matter? (can we do per orbit?)
-	orb:=List(Orbits(s,dom),Set);
-	rep:=[];
-	i:=1;
-	while i<=Length(orb) do
-	  sym:=ActionHomomorphism(s,orb[i],"surjective");
-	  pi:=InducedAutomorphism(sym,hom);
-	  if IsConjugatorIsomorphism(pi) then
-	    rep[i]:=ConjugatorOfConjugatorIsomorphism(pi);
-	  else
-	    rep:=fail;
-	    i:=Length(orb);
-	  fi;
-	  i:=i+1;
-	od;
-	if rep<>fail then
-	  pi:=List([1..Length(orb)],x->MappingPermListList(Permuted(orb[x],rep[x]),orb[x]));
-	  rep:=Product(pi);
+        # does it matter? (can we do per orbit?)
+        orb:=List(Orbits(s,dom),Set);
+        rep:=[];
+        i:=1;
+        while i<=Length(orb) do
+          sym:=ActionHomomorphism(s,orb[i],"surjective");
+          pi:=InducedAutomorphism(sym,hom);
+          if IsConjugatorIsomorphism(pi) then
+            rep[i]:=ConjugatorOfConjugatorIsomorphism(pi);
+          else
+            rep:=fail;
+            i:=Length(orb);
+          fi;
+          i:=i+1;
+        od;
+        if rep<>fail then
+          pi:=List([1..Length(orb)],x->MappingPermListList(Permuted(orb[x],rep[x]),orb[x]));
+          rep:=Product(pi);
           Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
-	  SetConjugatorOfConjugatorIsomorphism( hom, rep );
-	  return true;
-	fi;
+          SetConjugatorOfConjugatorIsomorphism( hom, rep );
+          return true;
+        fi;
 
-	if ValueOption("cheap")=true then
-	  return false;
-	fi;
+        if ValueOption("cheap")=true then
+          return false;
+        fi;
         rep:=RepresentativeAction(OrbitStabilizingParentGroup(s),
               genss,
               List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
