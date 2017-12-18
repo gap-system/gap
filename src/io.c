@@ -1400,6 +1400,12 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
   return (Obj) 0;
 }
 
+void ResetOutputIndent(void)
+{
+    GAP_ASSERT(STATE(Output));
+    STATE(Output)->indent = 0;
+}
+
 /****************************************************************************
 **
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output

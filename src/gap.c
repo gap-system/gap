@@ -215,7 +215,7 @@ Obj Shell ( Obj context,
     STATE(Prompt) = prompt;
     ClearError();
     STATE(PrintObjDepth) = 0;
-    STATE(Output)->indent = 0;
+    ResetOutputIndent();
     SetRecursionDepth(0);
       
     /* here is a hook: */
