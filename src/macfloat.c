@@ -371,6 +371,19 @@ MAKEMATHPRIMITIVE(ABS,fabs)
 MAKEMATHPRIMITIVE2(ATAN2,atan2)
 MAKEMATHPRIMITIVE2(HYPOT,hypot)
 
+Obj FuncSIGN_MACFLOAT( Obj self, Obj f )
+{
+  Double vf = VAL_MACFLOAT(f);
+  
+  return vf == 0. ? INTOBJ_INT(0) : vf > 0. ? INTOBJ_INT(1) : INTOBJ_INT(-1);
+}
+
+Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )
+{
+  return signbit(VAL_MACFLOAT(f)) ? True : False;
+}
+
+
 extern Obj FuncIntHexString(Obj,Obj);
 
 Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
@@ -487,6 +500,8 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(FLOOR_MACFLOAT, 1, "macfloat"),
   GVAR_FUNC(CEIL_MACFLOAT, 1, "macfloat"),
   GVAR_FUNC(ABS_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(SIGN_MACFLOAT, 1, "macfloat"),
+  GVAR_FUNC(SIGNBIT_MACFLOAT, 1, "macfloat"),
   GVAR_FUNC(STRING_MACFLOAT, 1, "macfloat"),
 
   GVAR_FUNC(STRING_DIGITS_MACFLOAT, 2, "digits, macfloat"),

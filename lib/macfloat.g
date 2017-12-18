@@ -13,7 +13,7 @@
 ##
 
 #############################################################################
-DeclareRepresentation("IsIEEE754FloatRep", IsFloat and IsInternalRep 
+DeclareRepresentation("IsIEEE754FloatRep", IsRealFloat and IsInternalRep 
         #and IS_MACFLOAT
         ,[]);
 

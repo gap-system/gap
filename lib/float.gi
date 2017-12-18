@@ -20,8 +20,6 @@ DeclareCategory("IsFloatPseudoField", IsAlgebra);
 DeclareCategory("IsFloatRationalFunction", IsRationalFunction);
 DeclareSynonym("IsFloatPolynomial", IsFloatRationalFunction and IsPolynomial);
 DeclareSynonym("IsFloatUnivariatePolynomial", IsFloatRationalFunction and IsUnivariatePolynomial);
-DeclareOperation("RootsFloatOp", [IsList,IsFloat]);
-DeclareGlobalFunction("RootsFloat");
 DeclareOperation("Value", [IsFloatRationalFunction,IsFloat]);
 DeclareOperation("ValueInterval", [IsFloatRationalFunction,IsFloat]);
 #############################################################################
@@ -252,27 +250,34 @@ end);
 
 #############################################################################
 ## Default methods
+##
+## These methods have priority -1, because they are inefficient.
+## Hopefully every float implementation implements them better.
 #############################################################################
-InstallMethod( AbsoluteValue, "for floats", [ IsFloat ], -1,
+InstallMethod( Diameter, "for a float interval", [ IsFloatInterval ],
+        AbsoluteDiameter );
+
+InstallMethod( AbsoluteValue, "for real floats", [ IsRealFloat ], -1,
         function ( x )
     if x < Zero(x) then return -x; else return x; fi;
 end );
 
-InstallMethod( Norm, "for floats", [ IsFloat ], -1,
+InstallMethod( Norm, "for real floats", [ IsRealFloat ], -1,
         function ( x )
     return x*x;
 end );
 
-InstallMethod( Argument, "for floats", [ IsFloat ], -1,
+InstallMethod( SignFloat, "for real floats", [ IsRealFloat ], -1,
         function ( x )
-    return Zero(x);
+    if IsZero( x ) then
+        return 0;
+    elif x < Zero( x ) then
+        return -1;
+    else
+        return 1;
+    fi;
 end );
-
-InstallMethod( SignFloat, "for floats", [ IsFloat ], -1,
-        function ( x )
-    if x < Zero(x) then return -1; elif IsZero(x) then return 0; else return 1; fi;
-end );
-
+    
 InstallMethod( Exp2, "for floats", [ IsFloat ], -1,
         function ( x )
     return Exp(Log(MakeFloat(x,2))*x);
@@ -287,7 +292,6 @@ InstallMethod( Expm1, "for floats", [ IsFloat ], -1,
         function ( x )
     return Exp(x)-MakeFloat(x,1);
 end );
-
 
 InstallMethod( Log2, "for floats", [ IsFloat ], -1,
         function ( x )
@@ -355,17 +359,18 @@ InstallMethod( Hypothenuse, "for floats", [ IsFloat, IsFloat ], -1,
     return Sqrt(x*x+y*y);
 end );
 
-InstallMethod( Ceil, "for floats", [ IsFloat ], -1,
+InstallMethod( Ceil, "for real floats", [ IsRealFloat ], -1,
         function ( x )
     return -Floor(-x);
 end );
 
-InstallMethod( Round, "for floats", [ IsFloat ], -1,
-        function ( x )
-    return Floor(x+MakeFloat(x,1/2));
-end );
+# this is disabled because it's so bad... it loses an ulp in fringe cases.
+#InstallMethod( Round, "for floats", [ IsFloat ], -1,
+#        function ( x )
+#    return Floor(x+MakeFloat(x,1/2));
+#end );
 
-InstallMethod( Trunc, "for floats", [ IsFloat ], -1,
+InstallMethod( Trunc, "for real floats", [ IsRealFloat ], -1,
         function ( x )
     if x>Zero(x) then
         return Floor(x);
