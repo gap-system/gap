@@ -439,6 +439,10 @@ typedef struct {
 */
 extern TypOutputFile *GetCurrentOutput ( void );
 
+// Reset the indentation level of the current output to zero. The indentation
+// level can be modified via the '%>' and '%<' formats of 'Pr' resp. 'PrTo'.
+extern void ResetOutputIndent(void);
+
 // If 'lock' is non-zero, then "lock" the current output, i.e., prevent calls
 // to 'OpenOutput' or 'CloseOutput' from changing it. If 'lock' is zero, then
 // release this lock again.
