@@ -665,6 +665,15 @@ distribution. Additionally, the <Package>Gpd</Package> package
 
 </Section>
 
+<Section Label="gap489">
+<Heading>&GAP; 4.8.9 (December 2017)</Heading>
+
+This release contains updated versions of 56 packages from &GAP; 4.8.8
+distribution. The core part of the &GAP; system in this release is
+identical to the one from the &GAP; 4.8.8 release.
+
+</Section>
+
 </Chapter>
 
 
