@@ -185,15 +185,6 @@ UInt OpenDefaultOutput( void )
 }
 #endif
 
-TypOutputFile *GetCurrentOutput(void) {
-#ifdef HPCGAP
-  if (!STATE(Output)) {
-    OpenDefaultOutput();
-  }
-#endif
-  return STATE(Output);
-}
-
 
 /****************************************************************************
 **
@@ -1704,7 +1695,12 @@ void Pr (
          Int                 arg1,
          Int                 arg2 )
 {
-  PrTo(GetCurrentOutput(), format, arg1, arg2);
+#ifdef HPCGAP
+    if (!STATE(Output)) {
+        OpenDefaultOutput();
+    }
+#endif
+    PrTo(STATE(Output), format, arg1, arg2);
 }
 
 typedef struct {
