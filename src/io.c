@@ -53,12 +53,6 @@ void LockCurrentOutput(Int lock)
     STATE(IgnoreStdoutErrout) = lock ? STATE(Output) : NULL;
 }
 
-#ifdef HPCGAP
-#define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
-#else
-#define STACK_SIZE(sp)   (STATE(sp) ? (STATE(sp) - STATE(sp ## Files) + 1 ) : 0)
-#endif
-
 
 /****************************************************************************
 **
@@ -126,25 +120,38 @@ Int GetLinePosition(void)
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
+#if !defined(HPCGAP)
+static TypInputFile  InputFiles[MAX_OPEN_FILES];
+static TypOutputFile OutputFiles[MAX_OPEN_FILES];
+#endif
+
+static TypInputFile * PushNewInput(void)
+{
+    GAP_ASSERT(STATE(InputStackPointer) < MAX_OPEN_FILES);
+    const int sp = STATE(InputStackPointer)++;
 #ifdef HPCGAP
-TypOutputFile *NewOutput(void)
-{
-  TypOutputFile *result;
-  result = AllocateMemoryBlock(sizeof(TypOutputFile));
-  if (!result)
-    abort();
-  return result;
+    if (!STATE(InputStack)[sp]) {
+        STATE(InputStack)[sp] = AllocateMemoryBlock(sizeof(TypInputFile));
+    }
+#endif
+    GAP_ASSERT(STATE(InputStack)[sp]);
+    return STATE(InputStack)[sp];
 }
 
-TypInputFile *NewInput(void)
+static TypOutputFile * PushNewOutput(void)
 {
-  TypInputFile *result;
-  result = AllocateMemoryBlock(sizeof(TypInputFile));
-  if (!result)
-    abort();
-  return result;
+    GAP_ASSERT(STATE(OutputStackPointer) < MAX_OPEN_FILES);
+    const int sp = STATE(OutputStackPointer)++;
+#ifdef HPCGAP
+    if (!STATE(OutputStack)[sp]) {
+        STATE(OutputStack)[sp] = AllocateMemoryBlock(sizeof(TypOutputFile));
+    }
+#endif
+    GAP_ASSERT(STATE(OutputStack)[sp]);
+    return STATE(OutputStack)[sp];
 }
 
+#ifdef HPCGAP
 GVarDescriptor DEFAULT_INPUT_STREAM;
 GVarDescriptor DEFAULT_OUTPUT_STREAM;
 
@@ -225,7 +232,7 @@ UInt OpenInput (
     Int                 file;
 
     /* fail if we can not handle another open input file                   */
-    if ( STACK_SIZE(Input) == ARRAY_SIZE(STATE(InputFiles)) )
+    if (STATE(InputStackPointer) == MAX_OPEN_FILES)
         return 0;
 
 #ifdef HPCGAP
@@ -242,25 +249,14 @@ UInt OpenInput (
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( STACK_SIZE(Input) > 0 ) {
+    if (STATE(InputStackPointer) > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         STATE(Input)->ptr    = STATE(In);
         STATE(Input)->symbol = STATE(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-#ifdef HPCGAP
-    const int sp = STATE(InputFilesSP)++;
-    if (!STATE(InputFiles)[sp]) {
-      STATE(InputFiles)[sp] = NewInput();
-    }
-    STATE(Input) = STATE(InputFiles)[sp];
-#else
-    if (STATE(Input) == 0)
-        STATE(Input) = STATE(InputFiles);
-    else
-        STATE(Input)++;
-#endif
+    STATE(Input) = PushNewInput();
     STATE(Input)->isstream = 0;
     STATE(Input)->file = file;
     STATE(Input)->name[0] = '\0';
@@ -294,27 +290,18 @@ UInt OpenInput (
 UInt OpenInputStream(Obj stream, UInt echo)
 {
     /* fail if we can not handle another open input file                   */
-    if ( STACK_SIZE(Input) == ARRAY_SIZE(STATE(InputFiles)) )
+    if (STATE(InputStackPointer) == MAX_OPEN_FILES)
         return 0;
 
     /* remember the current position in the current file                   */
-    if ( STACK_SIZE(Input) > 0 ) {
+    if (STATE(InputStackPointer) > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         STATE(Input)->ptr    = STATE(In);
         STATE(Input)->symbol = STATE(Symbol);
     }
 
     /* enter the file identifier and the file name                         */
-#ifdef HPCGAP
-    const int sp = STATE(InputFilesSP)++;
-    if (!STATE(InputFiles)[sp]) {
-      STATE(InputFiles)[sp] = NewInput();
-    }
-    STATE(Input) = STATE(InputFiles)[sp];
-#else
-    assert(STATE(Input) != 0);
-    STATE(Input)++;
-#endif
+    STATE(Input) = PushNewInput();
     STATE(Input)->isstream = 1;
     STATE(Input)->stream = stream;
     STATE(Input)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -359,7 +346,7 @@ UInt OpenInputStream(Obj stream, UInt echo)
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
-    if ( STACK_SIZE(Input) <= 1 )
+    if (STATE(InputStackPointer) <= 1)
         return 0;
 
     /* close the input file                                                */
@@ -371,12 +358,8 @@ UInt CloseInput ( void )
     memset(STATE(Input), 0, sizeof(TypInputFile));
 
     /* revert to last file                                                 */
-#ifdef HPCGAP
-    const int sp  = --STATE(InputFilesSP);
-    STATE(Input)  = STATE(InputFiles)[sp-1];
-#else
-    STATE(Input)--;
-#endif
+    const int sp = --STATE(InputStackPointer);
+    STATE(Input) = STATE(InputStack)[sp - 1];
     STATE(In)     = STATE(Input)->ptr;
     STATE(Symbol) = STATE(Input)->symbol;
 
@@ -721,7 +704,7 @@ UInt OpenOutput (
     }
 
     /* fail if we can not handle another open output file                  */
-    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
+    if (STATE(OutputStackPointer) == MAX_OPEN_FILES)
         return 0;
 
 #ifdef HPCGAP
@@ -738,18 +721,7 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-#ifdef HPCGAP
-    const int sp = STATE(OutputFilesSP)++;
-    if (!STATE(OutputFiles)[sp]) {
-      STATE(OutputFiles)[sp] = NewOutput();
-    }
-    STATE(Output) = STATE(OutputFiles)[sp];
-#else
-    if (STATE(Output) == 0)
-        STATE(Output) = STATE(OutputFiles);
-    else
-        STATE(Output)++;
-#endif
+    STATE(Output) = PushNewOutput();
     STATE(Output)->file     = file;
     STATE(Output)->line[0]  = '\0';
     STATE(Output)->pos      = 0;
@@ -777,20 +749,11 @@ UInt OpenOutputStream (
     Obj                 stream )
 {
     /* fail if we can not handle another open output file                  */
-    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
+    if (STATE(OutputStackPointer) == MAX_OPEN_FILES)
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-#ifdef HPCGAP
-    const int sp = STATE(OutputFilesSP)++;
-    if (!STATE(OutputFiles)[sp]) {
-      STATE(OutputFiles)[sp] = NewOutput();
-    }
-    STATE(Output) = STATE(OutputFiles)[sp];
-#else
-    assert(STATE(Output) != 0);
-    STATE(Output)++;
-#endif
+    STATE(Output) = PushNewOutput();
     STATE(Output)->stream   = stream;
     STATE(Output)->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     STATE(Output)->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
@@ -834,11 +797,11 @@ UInt CloseOutput ( void )
 
     /* refuse to close the initial output file '*stdout*'                  */
 #ifdef HPCGAP
-    if ( STACK_SIZE(Output) <= 1 && STATE(Output)->isstream
-         && TLS(DefaultOutput) == STATE(Output)->stream)
+    if (STATE(OutputStackPointer) <= 1 && STATE(Output)->isstream &&
+        TLS(DefaultOutput) == STATE(Output)->stream)
         return 0;
 #else
-    if ( STACK_SIZE(Output) <= 1 )
+    if (STATE(OutputStackPointer) <= 1)
         return 0;
 #endif
 
@@ -849,12 +812,9 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-#ifdef HPCGAP
-    const int sp  = --STATE(OutputFilesSP);
-    STATE(Output) = sp ? STATE(OutputFiles)[sp-1] : 0;
-#else
-    STATE(Output)--;
-#endif
+    const int sp = --STATE(OutputStackPointer);
+    STATE(Output) = sp ? STATE(OutputStack)[sp - 1] : 0;
+
     return 1;
 }
 
@@ -876,7 +836,7 @@ UInt OpenAppend (
     Int                 file;
 
     /* fail if we can not handle another open output file                  */
-    if ( STACK_SIZE(Output) == ARRAY_SIZE(STATE(OutputFiles)) )
+    if (STATE(OutputStackPointer) == MAX_OPEN_FILES)
         return 0;
 
 #ifdef HPCGAP
@@ -890,16 +850,7 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-#ifdef HPCGAP
-    const int sp = STATE(OutputFilesSP)++;
-    if (!STATE(OutputFiles)[sp]) {
-      STATE(OutputFiles)[sp] = NewOutput();
-    }
-    STATE(Output) = STATE(OutputFiles)[sp];
-#else
-    assert(STATE(Output) != 0);
-    STATE(Output)++;
-#endif
+    STATE(Output) = PushNewOutput();
     STATE(Output)->file     = file;
     STATE(Output)->line[0]  = '\0';
     STATE(Output)->pos      = 0;
@@ -1742,12 +1693,8 @@ Obj FuncINPUT_LINENUMBER( Obj self) {
 }
 
 Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
-#ifdef HPCGAP
-  STATE(OutputFiles)[1]->format = (val != False);
-#else
-  STATE(OutputFiles)[1].format = (val != False);
-#endif
-  return val;
+    STATE(OutputStack)[1]->format = (val != False);
+    return val;
 }
 
 
@@ -1778,8 +1725,8 @@ static Int InitLibrary (
 }
 
 #if !defined(HPCGAP)
-static Char Cookie[ARRAY_SIZE(STATE(InputFiles))][9];
-static Char MoreCookie[ARRAY_SIZE(STATE(InputFiles))][9];
+static Char Cookie[MAX_OPEN_FILES][9];
+static Char MoreCookie[MAX_OPEN_FILES][9];
 #endif
 
 static Int InitKernel (
@@ -1789,6 +1736,13 @@ static Int InitKernel (
     STATE(Output) = 0;
     STATE(InputLog) = 0;
     STATE(OutputLog) = 0;
+
+#if !defined(HPCGAP)
+    for (Int i = 0; i < MAX_OPEN_FILES; i++) {
+        STATE(InputStack)[i] = &InputFiles[i];
+        STATE(OutputStack)[i] = &OutputFiles[i];
+    }
+#endif
 
     OpenInput("*stdin*");
     OpenOutput("*stdout*");
@@ -1803,19 +1757,28 @@ static Int InitKernel (
     // GAP strings which hold the latest lines read from the streams  and the
     // name of the current input file. For HPC-GAP we don't need the cookies
     // anymore, since the data got moved to thread-local storage.
-    Int i;
-    for ( i = 0;  i < ARRAY_SIZE(STATE(InputFiles));  i++ ) {
-      Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
-      Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
-      Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
-      Cookie[i][8] = '\0';
-      InitGlobalBag(&(STATE(InputFiles)[i].stream), &(Cookie[i][0]));
+    for (Int i = 0; i < MAX_OPEN_FILES; i++) {
+        Cookie[i][0] = 's';
+        Cookie[i][1] = 't';
+        Cookie[i][2] = 'r';
+        Cookie[i][3] = 'e';
+        Cookie[i][4] = 'a';
+        Cookie[i][5] = 'm';
+        Cookie[i][6] = ' ';
+        Cookie[i][7] = '0' + i;
+        Cookie[i][8] = '\0';
+        InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0]));
 
-      MoreCookie[i][0] = 's';  MoreCookie[i][1] = 'l';  MoreCookie[i][2] = 'i';
-      MoreCookie[i][3] = 'n';  MoreCookie[i][4] = 'e';  MoreCookie[i][5] = ' ';
-      MoreCookie[i][6] = ' ';  MoreCookie[i][7] = '0'+i;
-      MoreCookie[i][8] = '\0';
-      InitGlobalBag(&(STATE(InputFiles)[i].sline), &(MoreCookie[i][0]));
+        MoreCookie[i][0] = 's';
+        MoreCookie[i][1] = 'l';
+        MoreCookie[i][2] = 'i';
+        MoreCookie[i][3] = 'n';
+        MoreCookie[i][4] = 'e';
+        MoreCookie[i][5] = ' ';
+        MoreCookie[i][6] = ' ';
+        MoreCookie[i][7] = '0' + i;
+        MoreCookie[i][8] = '\0';
+        InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */
