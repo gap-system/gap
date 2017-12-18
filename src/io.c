@@ -264,10 +264,13 @@ UInt OpenInput (
     STATE(Input)->isstream = 0;
     STATE(Input)->file = file;
     STATE(Input)->name[0] = '\0';
-    if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
-      STATE(Input)->echo = 0;
+
+    // enable echo for stdin and errin
+    if (!strcmp("*errin*", filename) || !strcmp("*stdin*", filename))
+        STATE(Input)->echo = 1;
     else
-      STATE(Input)->echo = 1;
+        STATE(Input)->echo = 0;
+
     strlcpy( STATE(Input)->name, filename, sizeof(STATE(Input)->name) );
     STATE(Input)->gapnameid = 0;
 
@@ -1787,11 +1790,8 @@ static Int InitKernel (
     STATE(InputLog) = 0;
     STATE(OutputLog) = 0;
 
-    (void)OpenInput(  "*stdin*"  );
-    STATE(Input)->echo = 1; /* echo stdin */
-
-    (void)OpenOutput( "*stdout*" );
-
+    OpenInput("*stdin*");
+    OpenOutput("*stdout*");
 
 #ifdef HPCGAP
     /* Initialize default stream functions */
