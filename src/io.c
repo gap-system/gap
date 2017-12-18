@@ -48,6 +48,11 @@ Int GetInputLineNumber(void)
     return STATE(Input)->number;
 }
 
+void LockCurrentOutput(Int lock)
+{
+    STATE(IgnoreStdoutErrout) = lock ? STATE(Output) : NULL;
+}
+
 #ifdef HPCGAP
 #define STACK_SIZE(sp)   (STATE(sp ## FilesSP))
 #else
@@ -714,7 +719,7 @@ UInt OpenOutput (
 {
     Int                 file;
 
-    /* do nothing for stdout and errout if catched */
+    // do nothing for stdout and errout if caught
     if ( STATE(Output) != NULL && STATE(IgnoreStdoutErrout) == STATE(Output) &&
           ( strcmp( filename, "*errout*" ) == 0
            || strcmp( filename, "*stdout*" ) == 0 ) ) {
@@ -827,9 +832,9 @@ UInt OpenOutputStream (
 */
 UInt CloseOutput ( void )
 {
-    /* silently refuse to close the test output file this is probably
-         an attempt to close *errout* which is silently not opened, so
-         lets silently not close it  */
+    // silently refuse to close the test output file; this is probably an
+    // attempt to close *errout* which is silently not opened, so let's
+    // silently not close it
     if ( STATE(IgnoreStdoutErrout) == STATE(Output) )
         return 1;
 

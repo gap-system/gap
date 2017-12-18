@@ -1055,15 +1055,11 @@ Obj FuncREAD_STREAM_LOOP (
     if (!OpenInputStream(stream, 0)) {
         return False;
     }
-    if ( catcherrstdout == True )
-      STATE(IgnoreStdoutErrout) = GetCurrentOutput();
-    else
-      STATE(IgnoreStdoutErrout) = NULL;
-
 
     /* read the test file                                                  */
+    LockCurrentOutput(catcherrstdout == True);
     READ_LOOP();
-    STATE(IgnoreStdoutErrout) = NULL;
+    LockCurrentOutput(0);
     return True;
 }
 
