@@ -433,7 +433,6 @@ Int READ_GAP_ROOT ( const Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result.pathname) ) {
-          SySetBuffering(STATE(Input)->file);
             while ( 1 ) {
                 ClearError();
                 Obj evalResult;
@@ -981,8 +980,6 @@ Obj FuncREAD (
         return False;
     }
 
-    SySetBuffering(STATE(Input)->file);
-   
     /* read the test file                                                  */
     return READ() ? True : False;
 }
@@ -1013,8 +1010,6 @@ Obj FuncREAD_NORECOVERY (
         return False;
     }
 
-    SySetBuffering(STATE(Input)->file);
-   
     /* read the file */
     switch (READ_NORECOVERY()) {
     case 0: return False;
@@ -1085,8 +1080,6 @@ Obj FuncREAD_AS_FUNC (
         return Fail;
     }
 
-    SySetBuffering(STATE(Input)->file);
-    
     /* read the function                                                   */
     return READ_AS_FUNC();
 }
