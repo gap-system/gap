@@ -22,6 +22,8 @@ enum {
     STATE_MAX_HANDLERS = 256,
     STATE_SLOTS_SIZE = 32768,
 
+    MAX_OPEN_FILES = 16,
+
     MAX_VALUE_LEN = 1030,
 };
 
@@ -66,15 +68,12 @@ typedef struct GAPState {
     UInt   NrErrLine;
     UInt   Symbol;
     const Char * Prompt;
-#if defined(HPCGAP)
-    TypInputFile *  InputFiles[16];
-    TypOutputFile * OutputFiles[16];
-    int             InputFilesSP;
-    int             OutputFilesSP;
-#else
-    TypInputFile  InputFiles[16];
-    TypOutputFile OutputFiles[16];
-#endif
+
+    TypInputFile *  InputStack[MAX_OPEN_FILES];
+    TypOutputFile * OutputStack[MAX_OPEN_FILES];
+    int             InputStackPointer;
+    int             OutputStackPointer;
+
     TypInputFile *  Input;
     Char *          In;
     TypOutputFile * Output;
