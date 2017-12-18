@@ -229,6 +229,32 @@ gap> gpcopy:=function(G)local s,r;s:=Size(G); # new conjugate group
 > G:=Group(List(GeneratorsOfGroup(G),x->x^r));SetSize(G,s);return G;end;;
 gap> First(rr,x->ONanScottType(gpcopy(PrimitiveGroup(x[1],x[2])))<>x[3]);
 fail
+
+# test of block homomorphism kernels -- observed by Thomas 12/15/17. The test
+# is to ensure that the `SmallerDegree` runs through in plausible memory and
+# time use. Takes about 4 minutes on my Laptop. AH
+gap> a:=[[0,-1,0,1,0,-1,1,0],[0,0,-1,0,1,-1,0,0],[0,0,0,-1,1,0,0,0],
+> [0,0,0,-1,0,0,0,0],[0,0,1,-1,0,0,0,0],[0,-1,1,0,-1,0,0,0],
+> [1,-1,0,1,0,-1,0,0],[2,1,0,0,0,1,4,1]];;
+gap> b:=[[-1,0,1,0,-1,1,0,0],[0,-1,0,1,-1,0,0,0],[0,0,-1,1,0,0,0,0],
+> [0,0,-1,0,0,0,0,0],[0,1,-1,0,0,0,0,0],[-1,1,0,-1,0,0,0,0],
+> [-1,0,1,0,-1,0,1,0],[2,0,0,0,0,0,0,1]];;
+gap> c:=[[1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],
+> [0,0,0,1,0,0,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,1,0,0],
+> [0,0,0,0,0,0,1,0],[6,0,0,0,0,0,0,1]];;
+gap> elm:=a*b;;
+gap> one:=elm^0;;
+gap> fixed:=NullspaceMat(elm-one);;
+gap> fun:=function(v,g)return List(v*g,x->x mod 18);end;;
+gap> seed:=fun(fixed[2],one);;
+gap> sgens:=[a,b,c];;
+gap> orb:=Orbit(Group(sgens),seed,fun);;
+gap> permgens:=List(sgens,x->Permutation(x,orb,fun));;
+gap> sm:=SmallerDegreePermutationRepresentation(Group(permgens));;
+gap> NrMovedPoints(Source(sm));
+157464
+gap> NrMovedPoints(Range(sm))<200;
+true
 gap> STOP_TEST( "grpperm.tst", 1);
 
 #############################################################################
