@@ -42,12 +42,6 @@ static Obj PrintFormattingStatus;
 /* TODO: Eliminate race condition in HPC-GAP */
 static Char promptBuf[81];
 
-Int GetInputLineNumber(void)
-{
-    GAP_ASSERT(STATE(Input));
-    return STATE(Input)->number;
-}
-
 void LockCurrentOutput(Int lock)
 {
     STATE(IgnoreStdoutErrout) = lock ? STATE(Output) : NULL;
@@ -97,10 +91,28 @@ Char PEEK_CHAR(void)
 }
 
 
+const Char * GetInputFilename(void)
+{
+    GAP_ASSERT(STATE(Input));
+    return STATE(Input)->name;
+}
+
+Int GetInputLineNumber(void)
+{
+    GAP_ASSERT(STATE(Input));
+    return STATE(Input)->number;
+}
+
+const Char * GetInputLineBuffer(void)
+{
+    GAP_ASSERT(STATE(Input));
+    return STATE(Input)->line;
+}
+
 // Get current line position. In the case where we pushed back the last
 // character on the previous line we return the first character of the
 // current line, as we cannot retrieve the previous line.
-Int GetLinePosition(void)
+Int GetInputLinePosition(void)
 {
     if (STATE(In) == &STATE(Pushback)) {
         // Subtract 2 as a value was pushed back

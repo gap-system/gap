@@ -20,7 +20,7 @@
 
 #include <src/system.h>
 
-extern Int  GetLinePosition(void);
+
 extern void GET_CHAR(void);
 extern Char PEEK_CHAR(void);
 
@@ -393,8 +393,18 @@ typedef struct {
 /* TL: extern Char *          In; */
 
 
+// get the filename of the current input
+extern const Char * GetInputFilename(void);
+
 // get the number of the current line in the current thread's input
 extern Int GetInputLineNumber(void);
+
+//
+extern const Char * GetInputLineBuffer(void);
+
+//
+extern Int GetInputLinePosition(void);
+
 
 /****************************************************************************
 **
