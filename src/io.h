@@ -272,7 +272,8 @@ extern UInt CloseOutputLog ( void );
 **  they are just a convention between the main and the system package.
 **
 **  The function does nothing and returns success for '*stdout*' and
-**  '*errout*' when IgnoreStdoutErrout is true (useful for testing purposes).
+**  '*errout*' when 'LockCurrentOutput(1)' is in effect (used for testing
+**  purposes).
 **
 **  It is not neccessary to open the initial output file, 'InitScanner' opens
 **  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
@@ -437,6 +438,14 @@ typedef struct {
 **  The same as 'OpenOutput' but for streams.
 */
 extern TypOutputFile *GetCurrentOutput ( void );
+
+// If 'lock' is non-zero, then "lock" the current output, i.e., prevent calls
+// to 'OpenOutput' or 'CloseOutput' from changing it. If 'lock' is zero, then
+// release this lock again.
+//
+// This is used to allow the 'Test' function of the GAP library to
+// consistently capture all output during testing, see 'FuncREAD_STREAM_LOOP'.
+extern void LockCurrentOutput(Int lock);
 
 /****************************************************************************
 **
