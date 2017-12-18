@@ -655,6 +655,39 @@ InstallMethod(ZOp,
 end);
 
 
+#############################################################################
+##
+#M  StandardAssociate( <r> )
+##
+InstallMethod( StandardAssociate,
+    "for full ring Z/nZ and an element in Z/nZ",
+    IsCollsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
+    function ( R, r )
+      local m, n;
+      m := ModulusOfZmodnZObj( r );
+      n := GcdInt( r![1], m );
+      return ZmodnZObj( FamilyObj( r ), n );
+    end );
+
+#############################################################################
+##
+#M  StandardAssociateUnit( <r> )
+##
+InstallMethod( StandardAssociateUnit,
+    "for full ring Z/nZ and an element in Z/nZ",
+    IsCollsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
+    function ( R, r )
+      local m, n;
+      m := ModulusOfZmodnZObj( r );
+      if r![1] = 0 then
+        n := 1;
+      else
+        n := QuotientMod(GcdInt( r![1], m ), r![1], m);
+      fi;
+      return ZmodnZObj( FamilyObj( r ), n );
+    end );
 
 
 #############################################################################
