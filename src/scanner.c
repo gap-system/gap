@@ -39,17 +39,18 @@ void SyntaxErrorOrWarning(const Char * msg, UInt error)
             Pr("Syntax warning: %s", (Int)msg, 0);
 
         // ... and the filename + line, unless it is '*stdin*'
-        if (strcmp("*stdin*", STATE(Input)->name) != 0)
-            Pr(" in %s:%d", (Int)STATE(Input)->name, GetInputLineNumber());
+        if (strcmp("*stdin*", GetInputFilename()) != 0)
+            Pr(" in %s:%d", (Int)GetInputFilename(), GetInputLineNumber());
         Pr("\n", 0, 0);
 
         // print the current line
-        Pr("%s", (Int)STATE(Input)->line, 0);
+        const char * line = GetInputLineBuffer();
+        Pr("%s", (Int)line, 0);
 
         // print a '^' pointing to the current position
-        Int pos = GetLinePosition();
+        Int pos = GetInputLinePosition();
         for (Int i = 0; i < pos; i++) {
-            if (STATE(Input)->line[i] == '\t')
+            if (line[i] == '\t')
                 Pr("\t", 0, 0);
             else
                 Pr(" ", 0, 0);
