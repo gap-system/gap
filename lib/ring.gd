@@ -546,7 +546,7 @@ DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 ##  <Description>
 ##  A ring <M>R</M> is called a Euclidean ring if it is an integral ring and
 ##  there exists a function <M>\delta</M>, called the Euclidean degree, from
-##  <M>R-\{0_R\}</M> to the nonnegative integers,
+##  <M>R-\{0_R\}</M> into a well-ordered set (such as the the nonnegative integers),
 ##  such that for every pair <M>r \in R</M> and <M>s \in  R-\{0_R\}</M> there
 ##  exists an element <M>q</M> such that either
 ##  <M>r - q s = 0_R</M> or <M>\delta(r - q s) &lt; \delta( s )</M>.
