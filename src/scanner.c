@@ -25,48 +25,57 @@
 #include <src/stringobj.h>
 
 
+void SyntaxErrorOrWarning(const Char * msg, UInt error)
+{
+    // open error output
+    OpenOutput("*errout*");
+
+    // do not print a message if we found one already on the current line
+    if (STATE(NrErrLine) == 0) {
+        // print the message ...
+        if (error)
+            Pr("Syntax error: %s", (Int)msg, 0);
+        else
+            Pr("Syntax warning: %s", (Int)msg, 0);
+
+        // ... and the filename + line, unless it is '*stdin*'
+        if (strcmp("*stdin*", STATE(Input)->name) != 0)
+            Pr(" in %s:%d", (Int)STATE(Input)->name, GetInputLineNumber());
+        Pr("\n", 0, 0);
+
+        // print the current line
+        Pr("%s", (Int)STATE(Input)->line, 0);
+
+        // print a '^' pointing to the current position
+        Int pos = GetLinePosition();
+        for (Int i = 0; i < pos; i++) {
+            if (STATE(Input)->line[i] == '\t')
+                Pr("\t", 0, 0);
+            else
+                Pr(" ", 0, 0);
+        }
+        Pr("^\n", 0, 0);
+    }
+
+    if (error) {
+        // one more error
+        STATE(NrError)++;
+        STATE(NrErrLine)++;
+    }
+
+    // close error output
+    CloseOutput();
+}
+
+
 /****************************************************************************
 **
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
 **
 */
-void            SyntaxError (
-    const Char *        msg )
+void SyntaxError(const Char * msg)
 {
-    Int                 i;
-
-    /* open error output                                                   */
-    OpenOutput( "*errout*" );
-
-    /* one more error                                                      */
-    STATE(NrError)++;
-    STATE(NrErrLine)++;
-
-    /* do not print a message if we found one already on the current line  */
-    if ( STATE(NrErrLine) == 1 )
-
-      {
-        /* print the message and the filename, unless it is '*stdin*'          */
-        Pr( "Syntax error: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", STATE(Input)->name ) != 0 )
-            Pr(" in %s:%d", (Int)STATE(Input)->name, GetInputLineNumber());
-        Pr( "\n", 0L, 0L );
-
-        /* print the current line                                              */
-        Pr( "%s", (Int)STATE(Input)->line, 0L );
-
-        /* print a '^' pointing to the current position                        */
-        Int pos = GetLinePosition();
-        for (i = 0; i < pos; i++) {
-            if (STATE(Input)->line[i] == '\t')
-                Pr("\t", 0L, 0L);
-            else
-                Pr(" ", 0L, 0L);
-        }
-        Pr( "^\n", 0L, 0L );
-      }
-    /* close error output                                                  */
-    CloseOutput();
+    SyntaxErrorOrWarning(msg, 1);
 }
 
 /****************************************************************************
@@ -74,40 +83,9 @@ void            SyntaxError (
 *F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . raise a syntax warning
 **
 */
-void            SyntaxWarning (
-    const Char *        msg )
+void SyntaxWarning(const Char * msg)
 {
-    Int                 i;
-
-    /* open error output                                                   */
-    OpenOutput( "*errout*" );
-
-
-    /* do not print a message if we found one already on the current line  */
-    if ( STATE(NrErrLine) == 0 )
-
-      {
-        /* print the message and the filename, unless it is '*stdin*'          */
-        Pr( "Syntax warning: %s", (Int)msg, 0L );
-        if ( strcmp( "*stdin*", STATE(Input)->name ) != 0 )
-            Pr(" in %s:%d", (Int)STATE(Input)->name, GetInputLineNumber());
-        Pr( "\n", 0L, 0L );
-
-        /* print the current line                                              */
-        Pr( "%s", (Int)STATE(Input)->line, 0L );
-
-        /* print a '^' pointing to the current position                        */
-        Int pos = GetLinePosition();
-        for (i = 0; i < pos; i++) {
-            if (STATE(Input)->line[i] == '\t')
-                Pr("\t", 0L, 0L);
-            else
-                Pr(" ", 0L, 0L);
-        }
-        Pr( "^\n", 0L, 0L );
-      }
-    /* close error output                                                  */
-    CloseOutput();
+    SyntaxErrorOrWarning(msg, 0);
 }
 
 
