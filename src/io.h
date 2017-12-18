@@ -431,14 +431,6 @@ typedef struct {
     Obj         stream;
 } TypOutputFile;
 
-/****************************************************************************
-**
-*F  GetCurrentOutput()  . . . . . . . . . . . get the current thread's output
-**
-**  The same as 'OpenOutput' but for streams.
-*/
-extern TypOutputFile *GetCurrentOutput ( void );
-
 // Reset the indentation level of the current output to zero. The indentation
 // level can be modified via the '%>' and '%<' formats of 'Pr' resp. 'PrTo'.
 extern void ResetOutputIndent(void);
