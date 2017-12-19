@@ -12,6 +12,15 @@
     
 #############################################################################
 ##
+#M  TrivialGroupCons( <IsPcGroup> )
+##
+InstallMethod( TrivialGroupCons,  "fp group",
+    [ IsFpGroup and IsFinite ],
+    filter -> FreeGroup(0));
+
+
+#############################################################################
+##
 #M  AbelianGroupCons( <IsFpGroup and IsFinite>, <ints> )
 ##
 InstallMethod( AbelianGroupCons, "fp group", true,
