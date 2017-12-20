@@ -1241,6 +1241,9 @@ local m;
     if IsTrivial(G) then
       return G;
     fi;
+    if not HasIsSolvableGroup(G) and IsSolvableGroup(G) then
+       return FrattiniSubgroup(G);
+    fi;
     m := List(ConjugacyClassesMaximalSubgroups(G),C->Core(G,Representative(C)));
     m := Intersection(m);
     if HasIsFinite(G) and IsFinite(G) then

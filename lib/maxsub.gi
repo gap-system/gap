@@ -336,13 +336,22 @@ InstallMethod( FrattiniSubgroup, "Using radical",
 [ IsGroup and CanComputeFittingFree ],0,
 function(G)
 local m,f,i;
+  i:=HasIsSolvableGroup(G); # remember if the group knew about its solvability
   if IsTrivial(G) then
     return G;
-  elif Size(RadicalGroup(G))=1 then
+  elif IsTrivial(RadicalGroup(G)) then
     return TrivialSubgroup(G);
   fi;
-  m:=MaximalSubgroupClassesSol(G);
   f:=RadicalGroup(G);
+
+  # computing the radical also determines if the group is solvable; if
+  # it is, and if solvability was not known before, redispatch, to give
+  # methods requiring solvability (e.g. for permutation groups) a chance.
+  if not i and IsSolvableGroup(G) then
+    return FrattiniSubgroup(G);
+  fi;
+
+  m:=MaximalSubgroupClassesSol(G);
   for i in [1..Length(m)] do
     if not IsSubset(m[i],f) then
       f:=Core(G,NormalIntersection(f,m[i]));
