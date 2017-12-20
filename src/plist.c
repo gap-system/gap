@@ -67,6 +67,11 @@ Int             GrowPlist (
     UInt                plen;           /* new physical length             */
     UInt                good;           /* good new physical length        */
 
+    if (!UINT_FITS_IN_INTOBJ(need)) {
+        ErrorMayQuit("GrowPlist: List size too large", 0, 0);
+    }
+
+
     /* find out how large the plain list should become                     */
     good = 5 * (SIZE_OBJ(list)/sizeof(Obj)-1) / 4 + 4;
 
