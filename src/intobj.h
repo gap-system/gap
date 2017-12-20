@@ -111,6 +111,26 @@ static inline Int INT_INTOBJ(Obj o)
 #endif
 }
 
+/****************************************************************************
+**
+*F  INT_FITS_IN_INTOBJ( <i> ) . check if a C integer fits in an immediate
+**  integer.
+*/
+static inline Int INT_FITS_IN_INTOBJ(Int i)
+{
+    return (-(((Int)1) << NR_SMALL_INT_BITS) <= i) &&
+           (i < ((Int)1) << NR_SMALL_INT_BITS);
+}
+
+/****************************************************************************
+**
+*F  UINT_FITS_IN_INTOBJ( <i> ) . check if a C unsigned integer fits in an
+**  immediate integer.
+*/
+static inline Int UINT_FITS_IN_INTOBJ(UInt i)
+{
+    return i < ((UInt)1) << NR_SMALL_INT_BITS;
+}
 
 /****************************************************************************
 **
@@ -121,6 +141,7 @@ static inline Int INT_INTOBJ(Obj o)
 static inline Obj INTOBJ_INT(Int i)
 {
     Obj o;
+    GAP_ASSERT(INT_FITS_IN_INTOBJ(i));
     o = (Obj)(((UInt)i << 2) + 0x01);
     GAP_ASSERT(INT_INTOBJ(o) == i);
     return o;
