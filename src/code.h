@@ -131,18 +131,23 @@ enum STAT_TNUM {
 
         T_PROCCALL_OPTS,
 
-        // The statement types between FIRST_NON_INTERRUPT_STAT
-        // and LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen for two reasons:
-        // the user interrupted, e.g. via ctrl-c; or memory run full).
-        // They are all statement types which either contain sub-statements
-        // (and hence are not easy to interpret in backtraces), or else are
-        // ephemeral (break, continue, return)
-        // TODO: what about T_EMPTY and T_ATOMIC ?
+        // T_EMPTY could also be considered to be "T_SEQ_STAT0", but it
+        // must be an interruptible statement, so that loops with empty
+        // body can be interrupted.
+        T_EMPTY,
+
+        // The statement types between FIRST_NON_INTERRUPT_STAT and
+        // LAST_NON_INTERRUPT_STAT will not be interrupted (which may
+        // happen for two reasons: the user interrupted, e.g. via
+        // ctrl-c; or memory run full). They are all statement types
+        // which either contain sub-statements (and hence are not easy
+        // to interpret in backtraces), or else are ephemeral (break,
+        // continue, return)
+        // TODO: what about T_ATOMIC ?
         START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
 
             START_ENUM_RANGE(FIRST_COMPOUND_STAT),
 
-            T_EMPTY,        // may also be considered to be "T_SEQ_STAT0"
             T_SEQ_STAT,
             T_SEQ_STAT2,
             T_SEQ_STAT3,
