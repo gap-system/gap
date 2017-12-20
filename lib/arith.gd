@@ -380,7 +380,7 @@ DeclareSynonym( "IsMultiplicativeElementWithOneTable",
 ##  <Description>
 ##  This is the category of elements in a family which can be the operands of 
 ##  <C>*</C> (multiplication) and the operation 
-##  <Ref Attr="MultiplicativeZero"/>.
+##  <Ref Attr="MultiplicativeZeroOp"/>.
 ##  <Example><![CDATA[
 ##  gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
 ##  gap> M:=MagmaWithZeroAdjoined(S);
