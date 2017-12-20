@@ -72,5 +72,13 @@ true
 gap> HasIsNilpotentGroup(FrattiniSubgroup(p));
 true
 
+# test with a fp group which is small and solvable, which may be
+# discovered by GAP as it tries to compute the Frattini subgroup.
+# See issue #710.
+gap> F := FreeGroup("x", "y");; x := F.1;; y := F.2;;
+gap> G := F/[x*y*x^(-1)*y^(-1), x^30, (x*y)^70];;
+gap> FrattiniSubgroup(G);
+Group([  ])
+
 #
 gap> STOP_TEST("FrattiniSubgroup.tst", 1);
