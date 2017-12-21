@@ -1027,17 +1027,13 @@ Obj IntStringInternal(Obj string, const Char *str)
     if (string)
         str = CSTR_STRING(string);
 
-    // get the signs, if any
+    // get the sign, if any
     sign = 1;
     i = 0;
-    while (str[i] == '-') {
+    if (str[i] == '-') {
         sign = -sign;
         i++;
     }
-
-    // reject empty string (resp. string consisting only of minus signs)
-    if (str[i] == '\0')
-        return Fail;
 
     // collect the digits in groups of 8, for improved performance
     // note that 2^26 < 10^8 < 2^27, so the intermediate
@@ -1063,6 +1059,10 @@ Obj IntStringInternal(Obj string, const Char *str)
         }
         i++;
     }
+
+    // check if 0 char does not mark the end of the string
+    if (string && i < GET_LEN_STRING(string))
+        return Fail;
 
     // compose the integer value
     if (upp == INTOBJ_INT(0)) {

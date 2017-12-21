@@ -1855,7 +1855,7 @@ DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 ##
 ##  <Description>
 ##  <Ref Attr="Int"/> returns an integer <C>int</C> whose meaning depends
-##  on the type of <A>elm</A>.
+##  on the type of <A>elm</A>. For example:
 ##  <P/>
 ##  If <A>elm</A> is a rational number
 ##  (see Chapter&nbsp;<Ref Chap="Rational Numbers"/>) then <C>int</C> is the
@@ -1868,10 +1868,12 @@ DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 ##  <C><A>elm</A> = int * One( <A>elm</A> )</C>.
 ##  <P/>
 ##  If <A>elm</A> is a string
-##  (see Chapter&nbsp;<Ref Chap="Strings and Characters"/>) consisting of
-##  digits <C>'0'</C>, <C>'1'</C>, <M>\ldots</M>, <C>'9'</C>
-##  and <C>'-'</C> (at the first position) then <C>int</C> is the integer
-##  described by this string.
+##  (see Chapter&nbsp;<Ref Chap="Strings and Characters"/>) consisting entirely
+##  of decimal digits <C>'0'</C>, <C>'1'</C>, <M>\ldots</M>, <C>'9'</C>,
+##  and optionally a sign <C>'-'</C> (at the first position), then <C>int</C> is the integer
+##  described by this string. For all other strings, <C>fail</C> is returned.
+##  See <Ref Func="Int" Label="for strings"/>.
+##  <P/>
 ##  The operation <Ref Func="String"/> can be used to compute a string for
 ##  rational integers, in fact for all cyclotomics.
 ##  <P/>
