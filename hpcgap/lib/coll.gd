@@ -354,18 +354,24 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareSynonym", function( name, value )
-    BIND_GLOBAL( name, value );
+    if ISBOUND_GLOBAL(name) and IS_IDENTICAL_OBJ(VALUE_GLOBAL(name), value) then
+        if not REREADING then
+            INFO_DEBUG( 1, "multiple declarations for synonym `", name, "'\n" );
+        fi;
+    else
+        BIND_GLOBAL( name, value );
+    fi;
 end );
 
 BIND_GLOBAL( "DeclareSynonymAttr", function( name, value )
     local nname;
-    BIND_GLOBAL( name, value );
+    DeclareSynonym( name, value );
     nname:= "Set";
     APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, Setter( value ) );
+    DeclareSynonym( nname, Setter( value ) );
     nname:= "Has";
     APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, Tester( value ) );
+    DeclareSynonym( nname, Tester( value ) );
 end );
 
 
