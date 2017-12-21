@@ -230,48 +230,47 @@ BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
     local    pair, super, flags, name, coll_filter, len;
     
     # check once with read lock -- common case 
-    atomic readonly  CATEGORIES_COLLECTIONS do
-        # Check whether the collections category is already defined.
+    atomic readonly CATEGORIES_COLLECTIONS do
+    # Check whether the collections category is already defined.
+    for pair in CATEGORIES_COLLECTIONS do
+      if IsIdenticalObj( pair[1], elms_filter ) then
+        return pair[2];
+      fi;
+    od;
+    len := LENGTH(CATEGORIES_COLLECTIONS);
+    od; # end atomic
+    
+    # that failed, so get exclusive lock as we may need to modify
+    atomic readwrite CATEGORIES_COLLECTIONS do
+    # Check whether in the meantime another thread defined the collections category
+    if LENGTH(CATEGORIES_COLLECTIONS) > len then
         for pair in CATEGORIES_COLLECTIONS do
             if IsIdenticalObj( pair[1], elms_filter ) then
                 return pair[2];
             fi;
         od;
-        len := LENGTH(CATEGORIES_COLLECTIONS);
-    od;
+    fi;
     
-    # that failed, so get exclusive lock as we may need to modify
-    atomic readwrite CATEGORIES_COLLECTIONS do
-        # Check whether the collections category was defined by another thread.
-        if LENGTH(CATEGORIES_COLLECTIONS) > len then
-            for pair in CATEGORIES_COLLECTIONS do
-                if IsIdenticalObj( pair[1], elms_filter ) then
-                    return pair[2];
-                fi;
-            od;
-        fi;
-        
-        # Find the super category among the known collections categories.
-        super := IsCollection;
-        flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
-        for pair in CATEGORIES_COLLECTIONS do
-            if IS_SUBSET_FLAGS( flags, FLAGS_FILTER( pair[1] ) ) then
-                super := super and pair[2];
-            fi;
-        od;
-        
-        # Construct the name of the category.
-        name := "CategoryCollections(";
-        APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NameFunction(elms_filter) ) );
-        APPEND_LIST_INTR( name, ")" );
-        CONV_STRING( name );
-        
-        # Construct the collections category.
-        coll_filter:= NewCategory( name, super );
-        ADD_LIST( CATEGORIES_COLLECTIONS, 
-                MigrateObj([ elms_filter, coll_filter ], CATEGORIES_COLLECTIONS) );
-        return coll_filter;
+    # Find the super category among the known collections categories.
+    super := IsCollection;
+    flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
+    for pair in CATEGORIES_COLLECTIONS do
+      if IS_SUBSET_FLAGS( flags, FLAGS_FILTER( pair[1] ) ) then
+        super := super and pair[2];
+      fi;
     od;
+
+    # Construct the name of the category.
+    name := "CategoryCollections(";
+    APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NameFunction(elms_filter) ) );
+    APPEND_LIST_INTR( name, ")" );
+    CONV_STRING( name );
+
+    # Construct the collections category.
+    coll_filter:= NewCategory( name, super );
+    ADD_LIST( CATEGORIES_COLLECTIONS, MakeImmutable([ elms_filter, coll_filter ]) );
+    return coll_filter;
+    od; # end atomic
 end );
 
 
@@ -499,12 +498,12 @@ InstallMethod( UseSubsetRelation,
     local entry;
 
     atomic readonly SUBSET_MAINTAINED_INFO do
-      for entry in SUBSET_MAINTAINED_INFO[1] do
-	if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub ) then
-	  entry[5]( sub, entry[3]( super ) );
-	fi;
-      od;
+    for entry in SUBSET_MAINTAINED_INFO[1] do
+      if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub ) then
+        entry[5]( sub, entry[3]( super ) );
+      fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -573,88 +572,85 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # not yet defined.)
     filtssub:= [];
     atomic readonly CATS_AND_REPS, readwrite SUBSET_MAINTAINED_INFO do
-      for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
-	  if not flag in CATS_AND_REPS then
-	      ADD_LIST_DEFAULT( filtssub, flag );
-	  fi;
-      od;
-
-      for triple in SUBSET_MAINTAINED_INFO[2] do
-	req:= SHALLOW_COPY_OBJ( filtssub );
-	INTER_SET( req, triple[1] );
-	if LEN_LIST( req ) <> 0 and triple[3] < upper then
-	  upper:= triple[3];
-	fi;
-      od;
-
-      # Are there methods that require `operation'?
-      lower:= 0;
-      attrprop:= true;
-      filt1:= FLAGS_FILTER( operation );
-      if filt1 = false then
-
-	# `operation' is an attribute.
-	filt1:= FLAGS_FILTER( tester );
-
-      else
-
-	# Special treatment of categories, representations (makes sense?),
-	# and filters created by `NewFilter'.
-	if FLAG2_FILTER( operation ) = 0 then
-	  attrprop:= false;
-	fi;
-
-      fi;
-
-      # (We must not call `SUBTR_SET' here because the lists types may be
-      # not yet defined.)
-      filtsopr:= [];
-      for flag in TRUES_FLAGS( filt1 ) do
-	  if not flag in CATS_AND_REPS then
-	      ADD_LIST_DEFAULT( filtsopr, flag );
-	  fi;
-      od;
-      for triple in SUBSET_MAINTAINED_INFO[2] do
-	req:= SHALLOW_COPY_OBJ( filtsopr );
-	INTER_SET( req, triple[2] );
-	if LEN_LIST( req ) <> 0 and lower < triple[3] then
-	  lower:= triple[3];
-	fi;
-      od;
-
-      # Compute the ``rank'' of the maintenance.
-      # (Do we have a cycle?)
-      if upper <= lower then
-	Print( "#W  warning: cycle in `InstallSubsetMaintenance'\n" );
-	rank:= lower;
-      else
-	rank:= ( upper + lower ) / 2;
-      fi;
-
-      filt1:= IsCollection and Tester( super_req ) and super_req and tester;
-      filt2:= IsCollection and Tester( sub_req   ) and sub_req;
-
-      # Update the info list.
-      i:= LEN_LIST( SUBSET_MAINTAINED_INFO[2] );
-      while 0 < i and SUBSET_MAINTAINED_INFO[2][i][3] < rank do
-	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= SUBSET_MAINTAINED_INFO[1][ i ];
-	SUBSET_MAINTAINED_INFO[2][ i+1 ]:= SUBSET_MAINTAINED_INFO[2][ i ];
-	i:= i-1;
-      od;
-      SUBSET_MAINTAINED_INFO[2][ i+1 ]:=
-        MigrateObj([ filtsopr, filtssub, rank ], SUBSET_MAINTAINED_INFO);
-      if attrprop then
-	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= 
-	 MigrateObj([ filt1, filt2, operation, tester, setter ],
-	   SUBSET_MAINTAINED_INFO);
-      else
-	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= MigrateObj(
-		  [ filt1, filt2, operation, operation,
-		    function( sub, val )
-			SetFeatureObj( sub, operation, val );
-		    end ], SUBSET_MAINTAINED_INFO);
+    for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
+      if not flag in CATS_AND_REPS then
+        ADD_LIST_DEFAULT( filtssub, flag );
       fi;
     od;
+
+    for triple in SUBSET_MAINTAINED_INFO[2] do
+      req:= SHALLOW_COPY_OBJ( filtssub );
+      INTER_SET( req, triple[1] );
+      if LEN_LIST( req ) <> 0 and triple[3] < upper then
+        upper:= triple[3];
+      fi;
+    od;
+
+    # Are there methods that require `operation'?
+    lower:= 0;
+    attrprop:= true;
+    filt1:= FLAGS_FILTER( operation );
+    if filt1 = false then
+
+      # `operation' is an attribute.
+      filt1:= FLAGS_FILTER( tester );
+
+    else
+
+      # Special treatment of categories, representations (makes sense?),
+      # and filters created by `NewFilter'.
+      if FLAG2_FILTER( operation ) = 0 then
+        attrprop:= false;
+      fi;
+
+    fi;
+
+    # (We must not call `SUBTR_SET' here because the lists types may be
+    # not yet defined.)
+    filtsopr:= [];
+    for flag in TRUES_FLAGS( filt1 ) do
+      if not flag in CATS_AND_REPS then
+        ADD_LIST_DEFAULT( filtsopr, flag );
+      fi;
+    od;
+    for triple in SUBSET_MAINTAINED_INFO[2] do
+      req:= SHALLOW_COPY_OBJ( filtsopr );
+      INTER_SET( req, triple[2] );
+      if LEN_LIST( req ) <> 0 and lower < triple[3] then
+        lower:= triple[3];
+      fi;
+    od;
+
+    # Compute the ``rank'' of the maintenance.
+    # (Do we have a cycle?)
+    if upper <= lower then
+      Print( "#W  warning: cycle in `InstallSubsetMaintenance'\n" );
+      rank:= lower;
+    else
+      rank:= ( upper + lower ) / 2;
+    fi;
+
+    filt1:= IsCollection and Tester( super_req ) and super_req and tester;
+    filt2:= IsCollection and Tester( sub_req   ) and sub_req;
+
+    # Update the info list.
+    i:= LEN_LIST( SUBSET_MAINTAINED_INFO[2] );
+    while 0 < i and SUBSET_MAINTAINED_INFO[2][i][3] < rank do
+      SUBSET_MAINTAINED_INFO[1][ i+1 ]:= SUBSET_MAINTAINED_INFO[1][ i ];
+      SUBSET_MAINTAINED_INFO[2][ i+1 ]:= SUBSET_MAINTAINED_INFO[2][ i ];
+      i:= i-1;
+    od;
+    SUBSET_MAINTAINED_INFO[2][ i+1 ]:=
+                MakeImmutable([ filtsopr, filtssub, rank ]);
+    if attrprop then
+      SUBSET_MAINTAINED_INFO[1][ i+1 ]:= 
+                MakeImmutable([ filt1, filt2, operation, tester, setter ]);
+    else
+      SUBSET_MAINTAINED_INFO[1][ i+1 ]:= MakeImmutable(
+                [ filt1, filt2, operation, operation,
+                  {sub, val} -> SetFeatureObj( sub, operation, val ) ]);
+    fi;
+    od; # end atomic
 
 #T missing in new implementation!
 #     # Install the method.
@@ -722,7 +718,7 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", ShareSpecialObj([],
-  "Isomorphism Maintained Info/Functions"));
+  "ISOMORPHISM_MAINTAINED_INFO"));
 
 
 #############################################################################
@@ -773,12 +769,12 @@ InstallMethod( UseIsomorphismRelation,
     local entry;
 
     atomic readonly ISOMORPHISM_MAINTAINED_INFO do
-      for entry in ISOMORPHISM_MAINTAINED_INFO do
-	if entry[1]( old ) and entry[2]( new ) and not entry[4]( new ) then
-	  entry[5]( new, entry[3]( old ) );
-	fi;
-      od;
+    for entry in ISOMORPHISM_MAINTAINED_INFO do
+      if entry[1]( old ) and entry[2]( new ) and not entry[4]( new ) then
+        entry[5]( new, entry[3]( old ) );
+      fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -935,13 +931,13 @@ InstallMethod( UseFactorRelation,
     local entry;
 
     atomic readonly FACTOR_MAINTAINED_INFO do
-      for entry in FACTOR_MAINTAINED_INFO do
-	if entry[1]( num ) and entry[2]( den ) and entry[3]( fac )
-			   and not entry[5]( fac ) then
-	  entry[6]( fac, entry[4]( num ) );
-	fi;
-      od;
+    for entry in FACTOR_MAINTAINED_INFO do
+      if entry[1]( num ) and entry[2]( den ) and entry[3]( fac )
+                         and not entry[5]( fac ) then
+        entry[6]( fac, entry[4]( num ) );
+      fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -999,14 +995,14 @@ BIND_GLOBAL( "InstallFactorMaintenance",
     tester:= Tester( opr );
 
     atomic FACTOR_MAINTAINED_INFO do
-	ADD_LIST( FACTOR_MAINTAINED_INFO, MakeImmutable(
-	    [ IsCollection and Tester( numer_req ) and numer_req and tester,
-	      Tester( denom_req ) and denom_req,
-	      IsCollection and Tester( factor_req ) and factor_req,
-	      opr,
-	      tester,
-	      Setter( opr ) ] ) );
-    od;
+    ADD_LIST( FACTOR_MAINTAINED_INFO, MakeImmutable(
+        [ IsCollection and Tester( numer_req ) and numer_req and tester,
+          Tester( denom_req ) and denom_req,
+          IsCollection and Tester( factor_req ) and factor_req,
+          opr,
+          tester,
+          Setter( opr ) ] ) );
+    od; # end atomic
 
 #T not yet available in the new implementation
 #     if     FLAGS_FILTER( opr ) <> false
@@ -1620,14 +1616,14 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Random([1..6]);
-##  1
+##  6
 ##  gap> Random(1, 2^100);
 ##  866227015645295902682304086250
 ##  gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
 ##  (1,3,2)
-##  (1,2,3)
+##  ()
 ##  gap> Random(Rationals);
-##  -2
+##  -4
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -253,7 +253,7 @@ BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
 
     # Construct the collections category.
     coll_filter:= NewCategory( name, super );
-    ADD_LIST( CATEGORIES_COLLECTIONS, [ elms_filter, coll_filter ] );
+    ADD_LIST( CATEGORIES_COLLECTIONS, MakeImmutable([ elms_filter, coll_filter ]) );
     return coll_filter;
 end );
 
@@ -620,16 +620,17 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
       SUBSET_MAINTAINED_INFO[2][ i+1 ]:= SUBSET_MAINTAINED_INFO[2][ i ];
       i:= i-1;
     od;
-    SUBSET_MAINTAINED_INFO[2][ i+1 ]:= [ filtsopr, filtssub, rank ];
+    SUBSET_MAINTAINED_INFO[2][ i+1 ]:=
+                MakeImmutable([ filtsopr, filtssub, rank ]);
     if attrprop then
       SUBSET_MAINTAINED_INFO[1][ i+1 ]:=
-                [ filt1, filt2, operation, tester, setter ];
+                MakeImmutable([ filt1, filt2, operation, tester, setter ]);
     else
       SUBSET_MAINTAINED_INFO[1][ i+1 ]:=
-                [ filt1, filt2, operation, operation,
+                MakeImmutable([ filt1, filt2, operation, operation,
                   function( sub, val )
                       SetFeatureObj( sub, operation, val );
-                  end ];
+                  end ]);
     fi;
 
 #T missing in new implementation!
@@ -967,13 +968,13 @@ BIND_GLOBAL( "InstallFactorMaintenance",
 
     tester:= Tester( opr );
 
-    ADD_LIST( FACTOR_MAINTAINED_INFO,
+    ADD_LIST( FACTOR_MAINTAINED_INFO, MakeImmutable(
         [ IsCollection and Tester( numer_req ) and numer_req and tester,
           Tester( denom_req ) and denom_req,
           IsCollection and Tester( factor_req ) and factor_req,
           opr,
           tester,
-          Setter( opr ) ] );
+          Setter( opr ) ] ) );
 
 #T not yet available in the new implementation
 #     if     FLAGS_FILTER( opr ) <> false
