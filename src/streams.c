@@ -952,7 +952,23 @@ Obj FuncSET_PREVIOUS_OUTPUT( Obj self ) {
     }
     return 0;
 }
-     
+
+Obj FuncIS_INPUT_TTY(Obj self)
+{
+    GAP_ASSERT(STATE(Input));
+    if (STATE(Input)->isstream)
+        return False;
+    return syBuf[STATE(Input)->file].isTTY ? True : False;
+}
+
+Obj FuncIS_OUTPUT_TTY(Obj self)
+{
+    GAP_ASSERT(STATE(Output));
+    if (STATE(Output)->isstream)
+        return False;
+    return syBuf[STATE(Output)->file].isTTY ? True : False;
+}
+
 /****************************************************************************
 **
 *F  FuncREAD( <self>, <filename> )  . . . . . . . . . . . . . . . read a file
@@ -2177,7 +2193,7 @@ Obj FuncExecuteProcess (
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(READ, 1, "filename"),
     GVAR_FUNC(READ_NORECOVERY, 1, "filename"),
@@ -2204,6 +2220,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(APPEND_TO_STREAM, -1, "args"),
     GVAR_FUNC(SET_OUTPUT, 2, "file, app"),
     GVAR_FUNC(SET_PREVIOUS_OUTPUT, 0, ""),
+
+    GVAR_FUNC(IS_INPUT_TTY, 0, ""),
+    GVAR_FUNC(IS_OUTPUT_TTY, 0, ""),
+
     GVAR_FUNC(TmpName, 0, ""),
     GVAR_FUNC(TmpDirectory, 0, ""),
     GVAR_FUNC(RemoveFile, 1, "filename"),
