@@ -91,6 +91,9 @@ InstallGlobalFunction(RunTests, function(arg)
   # don't enter break loop in case of error during test
   tests := arg[1];
   opts := rec( breakOnError := false, showProgress := "some" );
+  if not IS_OUTPUT_TTY() then
+    opts.showProgress := false;
+  fi;
   if Length(arg) > 1 and IsRecord(arg[2]) then
     for f in RecNames(arg[2]) do
       opts.(f) := arg[2].(f);
@@ -263,7 +266,8 @@ end;
 ##  and the input line before it is processed; if set to <C>"some"</C>,
 ##  then GAP shows the current line number of the test being processed;
 ##  if set to <K>false</K>, no progress updates are displayed
-##  (default is <C>"some"</C>).</Item>
+##  (default is <C>"some"</C> if GAP's output goes to a terminal, otherwise
+##  <K>false</K>). </Item>
 ##  <Mark><C>subsWindowsLineBreaks</C></Mark>
 ##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
 ##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
@@ -371,6 +375,9 @@ InstallGlobalFunction("Test", function(arg)
            end,
            subsWindowsLineBreaks := true,
          );
+  if not IS_OUTPUT_TTY() then
+    opts.showProgress := false;
+  fi;
 
   if IsHPCGAP then
     # HPCGAP's window size varies in different threads
@@ -535,7 +542,8 @@ end);
 ##  <Item>If <K>true</K>, stop as soon as any <Ref Func="Test" /> fails (defaults to <K>false</K>).
 ##  </Item>
 ##  <Mark><C>showProgress</C></Mark>
-##  <Item>Print information about how tests are progressing (defaults to <K>"some"</K>).
+##  <Item>Print information about how tests are progressing (defaults to <C>"some"</C>
+##  if GAP's output goes to a terminal, otherwise <K>false</K>).
 ##  </Item>
 ##  <Mark><C>suppressStatusMessage</C></Mark>
 ##  <Item>suppress displaying status messages <C>#I  Errors detected while testing</C> and
