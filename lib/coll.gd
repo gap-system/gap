@@ -759,45 +759,6 @@ InstallMethod( UseIsomorphismRelation,
 
 #############################################################################
 ##
-#F  InstallIsomorphismMaintenanceFunction( <func> )
-##
-##  <ManSection>
-##  <Func Name="InstallIsomorphismMaintenanceFunction" Arg='func'/>
-##
-##  <Description>
-##  <C>InstallIsomorphismMaintenanceFunction</C> installs <A>func</A>, so that
-##  <C><A>func</A>( <A>filtsold</A>, <A>filtsnew</A>, <A>opr</A>, <A>testopr</A>, <A>settopr</A>, <A>old_req</A>,
-##  <A>new-req</A> )</C> is called for each isomorphism maintenance.
-##  More precisely, <A>func</A> is called for each entry in the global list
-##  <C>ISOMORPHISM_MAINTAINED_INFO</C>, also to those that are entered into this
-##  list after the installation of <A>func</A>.
-##  (The mechanism is the same as for attributes, which is installed in the
-##  file <C>lib/oper.g</C>.)
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ISOM_MAINT_FUNCS", [] );
-
-BIND_GLOBAL( "InstallIsomorphismMaintenanceFunction", function( func )
-    local entry;
-    for entry in ISOMORPHISM_MAINTAINED_INFO do
-      CallFuncList( func, entry );
-    od;
-    ADD_LIST( ISOM_MAINT_FUNCS, func );
-end );
-
-BIND_GLOBAL( "RUN_ISOM_MAINT_FUNCS",
-    function( arglist )
-    local func;
-    for func in ISOM_MAINT_FUNCS do
-      CallFuncList( func, arglist );
-    od;
-    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, arglist );
-end );
-
-
-#############################################################################
-##
 #F  InstallIsomorphismMaintenance( <opr>, <old_req>, <new_req> )
 ##
 ##  <#GAPDoc Label="InstallIsomorphismMaintenance">
@@ -830,14 +791,14 @@ BIND_GLOBAL( "InstallIsomorphismMaintenance",
 
     tester:= Tester( opr );
 
-    RUN_ISOM_MAINT_FUNCS(
+    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, MakeImmutable(
         [ IsCollection and Tester( old_req ) and old_req and tester,
           IsCollection and Tester( new_req ) and new_req,
           opr,
           tester,
           Setter( opr ),
           old_req,
-          new_req ] );
+          new_req ] ) );
 end );
 
 

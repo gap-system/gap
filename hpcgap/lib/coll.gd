@@ -786,53 +786,6 @@ InstallMethod( UseIsomorphismRelation,
 
 #############################################################################
 ##
-#F  InstallIsomorphismMaintenanceFunction( <func> )
-##
-##  <ManSection>
-##  <Func Name="InstallIsomorphismMaintenanceFunction" Arg='func'/>
-##
-##  <Description>
-##  <C>InstallIsomorphismMaintenanceFunction</C> installs <A>func</A>, so that
-##  <C><A>func</A>( <A>filtsold</A>, <A>filtsnew</A>, <A>opr</A>, <A>testopr</A>, <A>settopr</A>, <A>old_req</A>,
-##  <A>new-req</A> )</C> is called for each isomorphism maintenance.
-##  More precisely, <A>func</A> is called for each entry in the global list
-##  <C>ISOMORPHISM_MAINTAINED_INFO</C>, also to those that are entered into this
-##  list after the installation of <A>func</A>.
-##  (The mechanism is the same as for attributes, which is installed in the
-##  file <C>lib/oper.g</C>.)
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "ISOM_MAINT_FUNCS",
-  LockAndMigrateObj([], ISOMORPHISM_MAINTAINED_INFO) );
-
-BIND_GLOBAL( "InstallIsomorphismMaintenanceFunction", function( func )
-    local entry;
-    # TODO: May cause deadlock when functions are called?
-    atomic ISOMORPHISM_MAINTAINED_INFO do
-      for entry in ISOMORPHISM_MAINTAINED_INFO do
-	CallFuncList( func, entry );
-      od;
-      ADD_LIST( ISOM_MAINT_FUNCS, func );
-    od;
-end );
-
-BIND_GLOBAL( "RUN_ISOM_MAINT_FUNCS",
-    function( arglist )
-    local func;
-    # TODO: May cause deadlock when functions are called?
-    atomic ISOMORPHISM_MAINTAINED_INFO do
-      for func in ISOM_MAINT_FUNCS do
-	CallFuncList( func, arglist );
-      od;
-      ADD_LIST( ISOMORPHISM_MAINTAINED_INFO,
-        MigrateObj(CopyRegion(arglist), ISOMORPHISM_MAINTAINED_INFO) );
-    od;
-end );
-
-
-#############################################################################
-##
 #F  InstallIsomorphismMaintenance( <opr>, <old_req>, <new_req> )
 ##
 ##  <#GAPDoc Label="InstallIsomorphismMaintenance">
@@ -865,14 +818,16 @@ BIND_GLOBAL( "InstallIsomorphismMaintenance",
 
     tester:= Tester( opr );
 
-    RUN_ISOM_MAINT_FUNCS(
+    atomic ISOMORPHISM_MAINTAINED_INFO do
+    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, MakeImmutable(
         [ IsCollection and Tester( old_req ) and old_req and tester,
           IsCollection and Tester( new_req ) and new_req,
           opr,
           tester,
           Setter( opr ),
           old_req,
-          new_req ] );
+          new_req ] ) );
+    od; # end atomic
 end );
 
 
