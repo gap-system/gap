@@ -620,17 +620,9 @@ gap> Int("0");
 0
 gap> Int("00");
 0
-gap> Int("--0");
-0
-gap> Int("---0");
-0
 gap> Int("01");
 1
 gap> Int("-01");
--1
-gap> Int("--1");
-1
-gap> Int("---1");
 -1
 gap> Int("100000000");
 100000000
@@ -645,10 +637,12 @@ gap> Int("123456789012345678901234567890");
 gap> Int("-123456789012345678901234567890");
 -123456789012345678901234567890
 gap> Int("");
-fail
+0
 gap> Int("-");
-fail
+0
 gap> Int("--");
+fail
+gap> Int("--0");
 fail
 gap> Int("+");
 fail
@@ -667,7 +661,7 @@ fail
 gap> Int(['-', '1', '2', '3']);
 -123
 gap> Int(['1', '2', '\000', '3']);
-12
+fail
 
 #
 # integer to string conversion
