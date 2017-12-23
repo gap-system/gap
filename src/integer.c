@@ -2214,10 +2214,8 @@ Obj LcmInt(Obj opL, Obj opR)
     CHECK_INT(opL);
     CHECK_INT(opR);
 
-    if (opL == INTOBJ_INT(0))
-        return AbsInt(opR);
-    if (opR == INTOBJ_INT(0))
-        return AbsInt(opL);
+    if (opL == INTOBJ_INT(0) || opR == INTOBJ_INT(0))
+        return INTOBJ_INT(0);
 
     sizeL = SIZE_INT_OR_INTOBJ(opL);
     sizeR = SIZE_INT_OR_INTOBJ(opR);

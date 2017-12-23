@@ -114,7 +114,14 @@ c_link_dyn () {
     output_la=${1%.so}.la
     output_dir=$(dirname $1)
     ${c_dyn_linker} ${GAP_LDFLAGS} -o "$output_la" $2 ${c_addlibs} || exit 1
-    cp -r $output_dir/.libs/*.so $output_dir
+    if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
+        # GAP assumes shared libraries end in .so
+        for dllfile in `cd $output_dir/.libs; ls *.dll`; do
+            cp $output_dir/.libs/$dllfile $output_dir/${dllfile%.dll}.so
+        done
+    else
+        cp $output_dir/.libs/*.so $output_dir
+    fi;
 }
 
 
