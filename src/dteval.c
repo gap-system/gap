@@ -332,8 +332,7 @@ Obj      Power(
     {
         y = NEW_PLIST( T_PLIST, 0);
         SET_LEN_PLIST(y, 0);
-        return  Power( Solution(x, y, dtpols), 
-                       ProdInt(INTOBJ_INT(-1), n),   dtpols  );    
+        return  Power( Solution(x, y, dtpols), AInvInt(n), dtpols );
     }
     res = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(res, 0);
@@ -398,7 +397,7 @@ Obj      Solution( Obj       x,
             }
             else if ( CELM(x, j) < CELM(y, k) )
             {
-                m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(x, j+1) );
+                m = AInvInt( ELM_PLIST(x, j+1) );
                 SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST( res, i+1, m );
                 CHANGED_BAG( res );
@@ -415,7 +414,7 @@ Obj      Solution( Obj       x,
         if ( j < len1 )
             while( j < len1 )
             {
-                m = ProdInt( INTOBJ_INT(-1), ELM_PLIST( x, j+1 ) );
+                m = AInvInt( ELM_PLIST( x, j+1 ) );
                 SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST( res, i+1, m );
                 CHANGED_BAG( res );
@@ -469,7 +468,7 @@ Obj      Solution( Obj       x,
         }
         else if ( !IS_INTOBJ( ELM_PLIST(xk, i) )  ||  CELM( xk, i ) != 0 )
         {
-            m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(xk, i) );
+            m = AInvInt( ELM_PLIST(xk, i) );
             SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
             SET_ELM_PLIST( res, j+1, m );
             CHANGED_BAG(res);

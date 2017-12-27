@@ -148,7 +148,7 @@ Obj CollectPolycyc (
                   if( (y = GET_IPOWER( h )) ) {
                       e = QuoInt( s, e );
                       if( !IS_INT_ZERO( t ) ) e = DiffInt( e, INTOBJ_INT(1) );
-                      e = ProdInt( e, INTOBJ_INT(-1) );
+                      e = AInvInt(e);
                   }
               }
           }
@@ -209,7 +209,7 @@ Obj CollectPolycyc (
                     ge = QuoInt( ge, e );
                     if( !IS_INT_ZERO( mge ) ) 
                         ge = DiffInt( ge, INTOBJ_INT(1) );
-                    ge = ProdInt( ge, INTOBJ_INT(-1) );
+                    ge = AInvInt(ge);
                 }
             }
         }
