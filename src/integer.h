@@ -337,6 +337,14 @@ extern Obj AInvInt( Obj op );
 
 /****************************************************************************
 **
+*F  InverseModInt( <op> ) . . . .  mult. inverse of an integer modulo another
+**
+*/
+extern Obj InverseModInt(Obj base, Obj mod);
+
+
+/****************************************************************************
+**
 ** Compute log2 of the absolute value of an Int, i.e. the index of the highest
 ** set bit. For input 0, return -1.
 */
