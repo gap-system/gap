@@ -71,13 +71,14 @@ Int             GrowPlist (
         ErrorMayQuit("GrowPlist: List size too large", 0, 0);
     }
 
-
     /* find out how large the plain list should become                     */
     good = 5 * (SIZE_OBJ(list)/sizeof(Obj)-1) / 4 + 4;
 
     /* but maybe we need more                                              */
-    if ( need < good ) { plen = good; }
-    else               { plen = need; }
+    if (need < good && UINT_FITS_IN_INTOBJ(good))
+        plen = good;
+    else
+        plen = need;
 
     /* resize the plain list                                               */
     ResizeBag( list, ((plen)+1)*sizeof(Obj) );
