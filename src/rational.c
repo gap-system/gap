@@ -611,10 +611,10 @@ Obj             QuoRat (
 
 /****************************************************************************
 **
-*F  ModRat( <opL>, <opR> )  . . . . . . . . remainder of fraction mod integer
+*F  ModRat( <opL>, <n> )  . . . . . . . . remainder of fraction mod integer
 **
 **  'ModRat' returns the remainder  of the fraction  <opL> modulo the integer
-**  <opR>.  The remainder is always an integer.
+**  <n>.  The remainder is always an integer.
 **
 **  '<r>  / <s> mod  <n>' yields  the remainder of   the fraction '<p> / <q>'
 **  modulo  the  integer '<n>',  where '<p> / <q>' is  the  reduced  form  of
@@ -634,43 +634,20 @@ Obj             QuoRat (
 **  such that $0 \<= t/s \< n$ and $r/s - t/s$ is a multiple of $n$.  This is
 **  rarely needed while computing modular inverses is very useful.
 */
-Obj             ModRat (
-    Obj                 opL,
-    Obj                 opR )
+Obj ModRat(Obj opL, Obj n)
 {
-    Obj                 a, aL, b, bL, c, cL, hdQ;
+    // invert the denominator
+    Obj d = InverseModInt( DEN_RAT(opL), n );
 
-    /* make the integer positive                                           */
-    if ( IS_NEG_INT(opR) ) {
-        opR = AInvInt( opR );
+    // check whether the denominator of <opL> really was invertible mod <n> */
+    if ( d == Fail ) {
+        ErrorMayQuit(
+                  "ModRat: for <r>/<s> mod <n>, <s>/gcd(<r>,<s>) and <n> must be coprime",
+                  0, 0 );
     }
 
-    /* let <p>/<q> represent <r>/<s> in reduced form                       */
-    /* invert the denominator <q> modulo <n> with Euclids algorithm        */
-    a = opR;           aL = INTOBJ_INT( 0L );   /* a = <n>                 */
-    b = DEN_RAT(opL);  bL = INTOBJ_INT( 1L );   /* b = <q>                 */
-    while ( a != INTOBJ_INT( 1L ) ) {
-        while ( b != INTOBJ_INT( 0L ) ) {
-            hdQ  = QuoInt( a, b );
-            c  = b;  cL = bL;
-            b  = DiffInt( a,  ProdInt( hdQ, b  ) );
-            bL = DiffInt( aL, ProdInt( hdQ, bL ) );
-            a  = c;  aL = cL;
-        }
-
-        /* check whether the denominator <q> really was invertible mod <n> */
-        if ( a != INTOBJ_INT( 1L ) ) {
-            opR = ErrorReturnObj(
-                      "ModRat: for <r>/<s> mod <n>, <s>/gcd(<r>,<s>) and <n> must be coprime",
-                      0L, 0L,
-                      "you can replace the integer <n> via 'return <n>;'" );
-            a = opR;           aL = INTOBJ_INT( 0L );   /* a = <n>         */
-            b = DEN_RAT(opL);  bL = INTOBJ_INT( 1L );   /* b = <q>         */
-        }
-    }
-
-    /* return the remainder                                                */
-    return ModInt( ProdInt( NUM_RAT(opL), aL ), opR );
+    // return the remainder
+    return ModInt( ProdInt( NUM_RAT(opL), d ), n );
 }
 
 
