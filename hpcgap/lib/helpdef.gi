@@ -272,7 +272,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
       Add(res.formats, "pdf");
     fi;
   fi;
-  res.directories := Directory(fname{[1..Length(fname)-10]});  
+  res.directories := [ Directory(fname{[1..Length(fname)-10]}) ];
   return res;
 end;
 
@@ -706,6 +706,10 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
   fi;
 
   return fail;
+end;
+
+HELP_BOOK_HANDLER.default.SubsectionNumber := function(info, entrynr)
+  return info.entries[entrynr]{[4,5]};
 end;
 
 od;
