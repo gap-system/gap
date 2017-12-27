@@ -301,7 +301,7 @@ for pair in TRANSATL do
       # same pattern appears more than once.
       hits := Sum(Flat(patterns));
       if hits >= 1 then
-        AddSet( report, `[ hits, book, match ] );
+        AddSet( report, MakeImmutable([ hits, book, match ]) );
       fi;
     od;
   od;
@@ -509,7 +509,7 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
 atomic readwrite HELP_REGION do
   sortfun := function(a, b)
     local main, pa, pb;
-    main := ["tutorial", "reference", "changes"];
+    main := ["tutorial", "reference", "changes", "hpc-gap", "development" ];
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then

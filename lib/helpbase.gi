@@ -293,7 +293,7 @@ for pair in TRANSATL do
       # same pattern appears more than once.
       hits := Sum(Flat(patterns));
       if hits >= 1 then
-        AddSet( report, [ hits, book, match ] );
+        AddSet( report, MakeImmutable([ hits, book, match ]) );
       fi;
     od;
   od;
