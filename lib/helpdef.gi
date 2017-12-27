@@ -110,7 +110,7 @@ end);
 ##
 #F  HELP_CHAPTER_INFO( <book>, <chapter> )  . . . .  get info about a chapter
 ##
-##  this is a helper function for `HELP_PRINT_SECTION_TEXT'
+##  this is a helper function for `HELP_SHOW_SECTIONS'
 InstallValue(HELP_CHAPTER_BEGIN, Immutable("\\Chapter"));
 InstallValue(HELP_SECTION_BEGIN, Immutable("\\Section"));
 InstallValue(HELP_FAKECHAP_BEGIN, Immutable("%\\FakeChapter"));
@@ -234,6 +234,8 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
 end);
 
 # now the handlers
+
+atomic HELP_REGION do # acquire lock for HELP_BOOK_HANDLER
 
 ##  the default ReadSix function for books in gapmacro format
 ##  (need to parse a text file in this case, this function still
@@ -603,3 +605,5 @@ end;
 HELP_BOOK_HANDLER.default.SubsectionNumber := function(info, entrynr)
   return info.entries[entrynr]{[4,5]};
 end;
+
+od; # end of atomic HELP_REGION
