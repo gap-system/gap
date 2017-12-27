@@ -1177,7 +1177,7 @@ Obj             PowPerm2Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        opR = ProdInt( INTOBJ_INT(-1), opR );
+        opR = AInvInt(opR);
         ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
@@ -1439,7 +1439,7 @@ Obj             PowPerm4Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        opR = ProdInt( INTOBJ_INT(-1), opR );
+        opR = AInvInt(opR);
         ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 

@@ -285,7 +285,7 @@ Obj             AInvRat (
     Obj                 tmp;
     CHECK_RAT(op);
     res = NewBag( T_RAT, 2 * sizeof(Obj) );
-    tmp = AINV( NUM_RAT(op) );
+    tmp = AInvInt( NUM_RAT(op) );
     SET_NUM_RAT(res, tmp);
     SET_DEN_RAT(res, DEN_RAT(op));
     CHANGED_BAG(res);
@@ -572,8 +572,8 @@ Obj             QuoRat (
     /* we multiply the left numerator with the right denominator           */
     /* so the right denominator should carry the sign of the right operand */
     if ( IS_NEG_INT(numR) ) {
-        numR = ProdInt( INTOBJ_INT( -1L ), numR );
-        denR = ProdInt( INTOBJ_INT( -1L ), denR );
+        numR = AInvInt( numR );
+        denR = AInvInt( denR );
     }
 
     /* find the gcds                                                       */
@@ -642,7 +642,7 @@ Obj             ModRat (
 
     /* make the integer positive                                           */
     if ( IS_NEG_INT(opR) ) {
-        opR = ProdInt( INTOBJ_INT( -1L ), opR );
+        opR = AInvInt( opR );
     }
 
     /* let <p>/<q> represent <r>/<s> in reduced form                       */
@@ -712,28 +712,28 @@ Obj             PowRat (
 
     /* if <opR> is negative and numerator is 1 just power the denominator  */
     else if ( NUM_RAT(opL) == INTOBJ_INT( 1L ) ) {
-        pow = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT(-1L), opR ) );
+        pow = PowInt( DEN_RAT(opL), AInvInt( opR ) );
     }
 
     /* if <opR> is negative and numerator is -1 return (-1)^r * num(l)     */
     else if ( NUM_RAT(opL) == INTOBJ_INT( -1L ) ) {
-        numP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
-        denP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        numP = PowInt( NUM_RAT(opL), AInvInt( opR ) );
+        denP = PowInt( DEN_RAT(opL), AInvInt( opR ) );
         pow = ProdInt(numP, denP);
     }
 
     /* if <opR> is negative do both powers, take care of the sign          */
     else {
-        numP = PowInt( DEN_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
-        denP = PowInt( NUM_RAT(opL), ProdInt( INTOBJ_INT( -1L ), opR ) );
+        numP = PowInt( DEN_RAT(opL), AInvInt( opR ) );
+        denP = PowInt( NUM_RAT(opL), AInvInt( opR ) );
         pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
         if ( IS_POS_INT(denP) ) {
             SET_NUM_RAT(pow, numP);
             SET_DEN_RAT(pow, denP);
         }
         else {
-            SET_NUM_RAT(pow, ProdInt( INTOBJ_INT( -1L ), numP ));
-            SET_DEN_RAT(pow, ProdInt( INTOBJ_INT( -1L ), denP ));
+            SET_NUM_RAT(pow, AInvInt( numP ));
+            SET_DEN_RAT(pow, AInvInt( denP ));
         }
         /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
     }
