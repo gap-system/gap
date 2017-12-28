@@ -1242,7 +1242,13 @@ gap> for m in [1..100] do
 >   for b in [1..100] do
 >     i := INVMODINT(b,m);
 >     g := GcdInt(b,m);
->     Assert(0, (g<>1 and i = fail) or (g=1 and i in [0..m-1] and (i*b-1) mod m = 0));
+>     if g = 1 then
+>       Assert(0, i in [0..m-1]);
+>       Assert(0, (i*b-1) mod m = 0); # formulated this way to support m=1
+>       Assert(0, i = INVMODINT(b,-m));
+>     else
+>       Assert(0, i = fail);
+>     fi;
 >   od;
 > od;
 
@@ -1251,7 +1257,9 @@ gap> INVMODINT(1,0);
 Error, InverseModInt: <mod> must be nonzero
 gap> INVMODINT(2,10);
 fail
-gap> INVMODINT(2,10);
+gap> INVMODINT(2,-10);
+fail
+gap> INVMODINT(2,2^80);
 fail
 gap> INVMODINT(2,1);
 0

@@ -2438,6 +2438,33 @@ Obj InverseModInt(Obj base, Obj mod)
     if (base == INTOBJ_INT(0))
         return Fail;
 
+    // handle small inputs separately
+    if (IS_INTOBJ(mod)) {
+
+        Int a = INT_INTOBJ(mod);
+        if (a < 0)
+            a = -a;
+
+        Int b = INT_INTOBJ(ModInt(base, mod));
+
+        Int aL = 0;    // cofactor of a
+        Int bL = 1;    // cofactor of b
+
+        // extended Euclidean algorithm
+        while (b != 0) {
+            Int hdQ = a / b;
+            Int c = b;
+            Int cL = bL;
+            b = a - hdQ * b;
+            bL = aL - hdQ * bL;
+            a = c;
+            aL = cL;
+        }
+        if (a != 1)
+            return Fail;
+        return ModInt(INTOBJ_INT(aL), mod);
+    }
+
     NEW_FAKEMPZ(result_mpz, SIZE_INT_OR_INTOBJ(mod) + 1);
     FAKEMPZ_GMPorINTOBJ(base_mpz, base);
     FAKEMPZ_GMPorINTOBJ(mod_mpz, mod);
