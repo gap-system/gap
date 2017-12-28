@@ -2424,37 +2424,36 @@ Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 /****************************************************************************
 **
 */
-Obj InverseModInt ( Obj base, Obj mod )
+Obj InverseModInt(Obj base, Obj mod)
 {
-  fake_mpz_t base_mpz, mod_mpz, result_mpz;
-  int success;
+    fake_mpz_t base_mpz, mod_mpz, result_mpz;
+    int        success;
 
-  CHECK_INT(base);
-  CHECK_INT(mod);
+    CHECK_INT(base);
+    CHECK_INT(mod);
 
-  if ( mod == INTOBJ_INT(0) )
-    ErrorMayQuit( "InverseModInt: <mod> must be nonzero", 0L, 0L  );
-  if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
-    return INTOBJ_INT(0);
-  if ( base == INTOBJ_INT(0) )
-    return Fail;
+    if (mod == INTOBJ_INT(0))
+        ErrorMayQuit("InverseModInt: <mod> must be nonzero", 0L, 0L);
+    if (mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1))
+        return INTOBJ_INT(0);
+    if (base == INTOBJ_INT(0))
+        return Fail;
 
-  NEW_FAKEMPZ( result_mpz, SIZE_INT_OR_INTOBJ(mod) + 1 );
-  FAKEMPZ_GMPorINTOBJ( base_mpz, base );
-  FAKEMPZ_GMPorINTOBJ( mod_mpz, mod );
+    NEW_FAKEMPZ(result_mpz, SIZE_INT_OR_INTOBJ(mod) + 1);
+    FAKEMPZ_GMPorINTOBJ(base_mpz, base);
+    FAKEMPZ_GMPorINTOBJ(mod_mpz, mod);
 
-  success = mpz_invert( MPZ_FAKEMPZ(result_mpz),
-                        MPZ_FAKEMPZ(base_mpz),
-                        MPZ_FAKEMPZ(mod_mpz) );
+    success = mpz_invert(MPZ_FAKEMPZ(result_mpz), MPZ_FAKEMPZ(base_mpz),
+                         MPZ_FAKEMPZ(mod_mpz));
 
-  if (!success)
-    return Fail;
+    if (!success)
+        return Fail;
 
-  CHECK_FAKEMPZ(result_mpz);
-  CHECK_FAKEMPZ(base_mpz);
-  CHECK_FAKEMPZ(mod_mpz);
+    CHECK_FAKEMPZ(result_mpz);
+    CHECK_FAKEMPZ(base_mpz);
+    CHECK_FAKEMPZ(mod_mpz);
 
-  return GMPorINTOBJ_FAKEMPZ( result_mpz );
+    return GMPorINTOBJ_FAKEMPZ(result_mpz);
 }
 
 /****************************************************************************
