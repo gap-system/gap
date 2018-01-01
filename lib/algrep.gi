@@ -3180,12 +3180,26 @@ end );
 #############################################################################
 ##
 ##  Prevent nice basis handling to kick in for vector spaces over sparse
-##  elements, as that ends up trying to enumerate the vector space, which
-##  is not a good idea for non-trivial examples.
+##  elements (including monomial elements), as that ends up trying to
+##  enumerate the vector space, which is not a good idea for non-trivial
+##  examples.
 ##
 InstallHandlingByNiceBasis( "IsSparseVectorSpace", rec(
     detect:= function( R, gens, V, zero )
         if IsSparseRowSpaceElementCollection(V) then
+            return fail;
+        else
+            return false;
+        fi;
+    end,
+    NiceFreeLeftModuleInfo := function( C ) end,
+    NiceVector := function( C, c ) end,
+    UglyVector := function( C, vec ) end,
+) );
+
+InstallHandlingByNiceBasis( "IsMonomialElementVectorSpace", rec(
+    detect:= function( R, gens, V, zero )
+        if IsMonomialElementCollection(V) then
             return fail;
         else
             return false;

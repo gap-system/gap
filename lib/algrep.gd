@@ -790,6 +790,11 @@ DeclareCategory( "IsMonomialElement", IsVector );
 DeclareCategoryCollections( "IsMonomialElement" );
 DeclareCategoryFamily( "IsMonomialElement" );
 
+#
+DeclareHandlingByNiceBasis( "IsMonomialElementVectorSpace",
+    "for free left modules of monomial elements");
+
+
 #############################################################################
 ##
 #O  ConvertToNormalFormMonomialElement( <me> )
