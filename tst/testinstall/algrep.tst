@@ -31,4 +31,20 @@ gap> ForAll([1..10], i -> Random(A) in A);
 true
 
 #
+# creating subalgebra
+#
+gap> L:=FullMatrixLieAlgebra(GF(3), 2);; Dimension(L);;
+gap> V:=AdjointModule(L);
+<left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S:=SymmetricPowerOfAlgebraModule(V, 4);
+<35-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> bas:=Basis(S){[ 1, 2, 4, 5, 6, 9, 13, 14, 15, 16, 19, 25, 32, 33, 34, 35 ]};;
+gap> S1:=SubAlgebraModule(S,bas);
+<left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> Dimension(S1);
+16
+gap> S1:=SubAlgebraModule(S,bas,"basis");
+<16-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+
+#
 gap> STOP_TEST( "algrep.tst", 1);
