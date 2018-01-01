@@ -325,6 +325,34 @@ DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
 ##
 DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 
+#############################################################################
+##
+#F  ProcessEpimorphismToNewFpGroup( <hom> )
+##
+##  <#GAPDoc Label="ProcessHomomorphismToNewFpGroup">
+##  <ManSection>
+##  <Func Name="LargerQuotientBySubgroupAbelianization" Arg='hom'/>
+##
+##  <Description>
+##  Let <A>hom</A> a homomorphism from a group <A>G</A> to a newly created
+##  finitely presented group <A>F</A> (in which no calculation yet has taken
+##  place) such that the inverse of <A>hom</A> can be appied to elements of
+##  $F$. This function endows <A>F</A> (or, more
+##  correctly, its elements family) with information (in the form of an
+##  <C>FPFaithHom</C>) about <A>G</A> that can be
+##  used to obtain a faithful representation for <A>F</A>. This can be in the
+##  form of <A>G</A> itself being a permutation/matrix or fp group. It also can
+##  be if <A>G</A> is finitely presented but (its family) has an
+##  <C>FPFaithHom</A>. (However it will not apply if <A>G</A> is a subgroup
+##  of an fp group.) The result of this is make higher level calculations in
+##  <A>F</A> more efficient.
+##  This is an internal function that does not test its arguments and the
+##  result is undefined if calling the function on any other object.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("ProcessEpimorphismToNewFpGroup");
 
 #############################################################################
 ##

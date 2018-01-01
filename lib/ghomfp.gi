@@ -953,6 +953,7 @@ local H, pres,map,mapi,opt;
   SetIsBijective(map,true);
   SetInverseGeneralMapping(map,mapi);
   SetInverseGeneralMapping(mapi,map);
+  ProcessEpimorphismToNewFpGroup(map);
 
   return map;
 end );
@@ -1226,6 +1227,46 @@ local F,str;
   fi;
   return 
     GroupHomomorphismByImagesNC(F,G,GeneratorsOfGroup(F),GeneratorsOfGroup(G));
+end);
+
+InstallGlobalFunction(ProcessEpimorphismToNewFpGroup,
+function(hom)
+local s,r,fam,fas,fpf,mapi;
+  if not (HasIsSurjective(hom) and IsSurjective(hom)) then
+    Info(InfoWarning,1,"fp eipimorphism is created in strange way, bail out");
+    return; # hom might be ill defined.
+  fi;
+  s:=Source(hom);
+  r:=Range(hom);
+  mapi:=MappingGeneratorsImages(hom);
+  if mapi[2]<>GeneratorsOfGroup(r) then
+    return; # the method does not apply here. One could try to deal with the
+    #extra generators separately, but that is too much work for what is
+    #intended as a minor hint.
+  fi;
+  s:=SubgroupNC(s,mapi[1]);
+  fam:=FamilyObj(One(r));
+  fas:=FamilyObj(One(s));
+  if IsPermCollection(s) or IsMatrixCollection(s) 
+     or IsPcGroup(s) or CanEasilyCompareElements(s) then
+    # in the long run this should be the inverse of the source restricted
+    # mapping (or the corestricted inverse) but that does not work well with
+    # current homomorphism code, thus build new map.
+    #fpf:=InverseGeneralMapping(hom);
+    fpf:=GroupHomomorphismByImagesNC(r,s,mapi[2],mapi[1]);
+  elif IsFpGroup(s) and HasFPFaithHom(fas) then
+    #fpf:=InverseGeneralMapping(hom)*FPFaithHom(fas);
+    fpf:=GroupHomomorphismByImagesNC(r,s,mapi[2],List(mapi[1],x->Image(FPFaithHom(fas),x)));
+  else
+    fpf:=fail;
+  fi;
+  if fpf<>fail then
+    SetEpimorphismFromFreeGroup(ImagesSource(fpf),fpf);
+    SetFPFaithHom(fam,fpf);
+    SetFPFaithHom(r,fpf);
+    if IsPermGroup(s) then SetIsomorphismPermGroup(r,fpf);fi;
+    if IsPcGroup(s) then SetIsomorphismPcGroup(r,fpf);fi;
+  fi;
 end);
 
 #############################################################################

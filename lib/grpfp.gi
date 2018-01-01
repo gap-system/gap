@@ -3722,7 +3722,8 @@ local fgens,grels,max,gens,t,Attempt;
   t:=MostFrequentGeneratorFpGroup(G);
   gens:=Concatenation([t,
     #pseudorandom element - try if it works
-    Product([1..Random([2,3])],i->Random(gens)^Random([1,-1]))],
+    PseudoRandom(G:radius:=Random(2,3))],
+    #Product([1..Random([2,3])],i->Random(gens)^Random([1,-1]))],
     Filtered(gens,j->UnderlyingElement(j)<>UnderlyingElement(t)));
 
   # recursive search (via smaller and smaller partitions) for a finite index
@@ -4937,7 +4938,17 @@ local iso,k,id,f;
   # first try whether the group is ``small''
   iso:=FPFaithHom(fam);
   if iso<>fail and Size(Image(iso))<50000 then
-    k:=Image(iso);
+    k:=ImagesSource(iso);
+  #return function(w)
+  #  if not w in FreeGroupOfFpGroup(Source(iso)) then Error("flasch");fi;
+  #  w:=ElementOfFpGroup(fam,w);
+  #  Print("wa=",w,"\n");
+  #  w:=ImageElm(iso,w);
+  #  Print("wb=",w,"\n");
+  #  w:=Factorization(k,w);
+  #  Print("wc=",w,"\n");
+  #  return UnderlyingElement(w);
+  #end;
     return w->UnderlyingElement(Factorization(k,Image(iso,ElementOfFpGroup(fam,w))));
   fi;
   iso:=IsomorphismFpMonoidGeneratorsFirst(CollectionsFamily(fam)!.wholeGroup);

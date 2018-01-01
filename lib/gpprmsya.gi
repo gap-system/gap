@@ -346,6 +346,7 @@ local   F,      # free group
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
     SetIsBijective( hom, true );
+    ProcessEpimorphismToNewFpGroup(hom);
     return hom;
 end);
 
@@ -1778,6 +1779,7 @@ local   F,      # free group
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
     SetIsBijective( hom, true );
+    ProcessEpimorphismToNewFpGroup(hom);
     return hom;
 end);
 

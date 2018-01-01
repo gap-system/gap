@@ -75,6 +75,7 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
                                         GeneratorsOfGroup( H ) );
 
     SetIsBijective( phi, true );
+    ProcessEpimorphismToNewFpGroup(phi);
     return phi;
     
 end );
