@@ -14,23 +14,22 @@ env:
     - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
     - LDFLAGS="-fprofile-arcs"
 
-# TODO: boehm GC, HPC-GAP compatibility mode
-
 addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
-    - libgmp-dev:i386
-    - libreadline-dev:i386
-    - gcc-multilib
-    - g++-multilib
-    - texinfo
 
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
     - env: TEST_SUITES="docomp testtravis" CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITES="docomp testtravis" ABI=32
+      addons:
+        apt_packages:
+          - gcc-multilib
+          - g++-multilib
+          - libgmp-dev:i386
+          - libreadline-dev:i386
 
     # compiler packages and run package tests
     - env: TEST_SUITES=testpackages CONFIGFLAGS="--enable-debug"
@@ -88,6 +87,13 @@ matrix:
     # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
     - env: TEST_SUITES="docomp testinstall" ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITES="docomp testinstall" ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
+      addons:
+        apt_packages:
+          - gcc-multilib
+          - g++-multilib
+          - libgmp-dev:i386
+          - libreadline-dev:i386
+          - texinfo # for building GMP
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -96,6 +102,12 @@ matrix:
     # tests at least once with the ReproducibleBehaviour option turned off.
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build
+      addons:
+        apt_packages:
+          - gcc-multilib
+          - g++-multilib
+          - libgmp-dev:i386
+          - libreadline-dev:i386
 
     # run bugfix regression tests
     - env: TEST_SUITES=testbugfix CONFIGFLAGS="--enable-debug"
