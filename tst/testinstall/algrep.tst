@@ -38,6 +38,14 @@ gap> V:=AdjointModule(L);
 <left-module over <Lie algebra of dimension 4 over GF(3)>>
 gap> S:=SymmetricPowerOfAlgebraModule(V, 4);
 <35-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+
+# span of zero vectors
+gap> S0:=SubAlgebraModule(S,[]);
+<0-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S0:=SubAlgebraModule(S,[],"basis");
+<0-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+
+# span of some vectors
 gap> bas:=Basis(S){[ 1, 2, 4, 5, 6, 9, 13, 14, 15, 16, 19, 25, 32, 33, 34, 35 ]};;
 gap> S1:=SubAlgebraModule(S,bas);
 <left-module over <Lie algebra of dimension 4 over GF(3)>>
