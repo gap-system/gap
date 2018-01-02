@@ -69,6 +69,9 @@ do
     perl -pi -e 's;FPLLL=yes;FPLLL=no;' float*/configure
     perl -pi -e 's;FPLLL=extern;FPLLL=no;' float*/configure
 
+    # HACK: skip building semigroups-3.x for now -- it requires GCC >= 5, which Travis doesn't have
+    rm -rf semigroups-3.*
+
     if [[ x"$ABI" == "x32" ]]
     then
       # HACK: disable NormalizInterface in 32bit mode for now. Version
