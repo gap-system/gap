@@ -246,6 +246,32 @@ function(n,A)
   return (x = n-1 or (i = 0 and x = 1));
 end);
 
+#
+BindGlobal("TraceModQF", function ( p, k, n )
+  local kb, trc, i;
+  kb := [];
+  while k <> 1 do
+    if k mod 2 = 0 then
+      k := k/2;
+      Add(kb, 0);
+    else
+      k := (k+1)/2;
+      Add(kb, 1);
+    fi;
+  od;
+  trc := [p, 2];
+  i := Length(kb);
+  while i >= 1 do
+    if kb[i] = 0 then
+      trc := [ (trc[1]^2 - 2) mod n, (trc[1]*trc[2] - p) mod n ];
+    else
+      trc := [ (trc[1]*trc[2] - p) mod n, (trc[2]^2 - 2) mod n ];
+    fi;
+    i := i-1;
+  od;
+  return trc;
+end);
+
 ##############################################################################
 ##
 #F  IsBPSWLucasPseudoPrime(N) - Check if N is a Lucas pseudoprime for 

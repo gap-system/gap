@@ -661,9 +661,6 @@ DeclareGlobalFunction( "IsEvenInt" );
 DeclareGlobalFunction( "IsOddInt" );
 
 
-DeclareGlobalFunction( "IsPrimeIntOld" ); # old method still available
-
-
 #############################################################################
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
@@ -1003,8 +1000,6 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
-
-DeclareGlobalFunction( "TraceModQF" ); # forward declaration
 
 
 #############################################################################
