@@ -1194,6 +1194,15 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
     f:= NaturalHomomorphismBySubspace( V, W );
     quot:= ImagesSource( f );
     
+    if IsTrivial(quot) then
+        quot := SubAlgebraModule( V, [], "basis" );
+        nathom := ZeroMapping( V, quot );
+        SetIsSurjective( nathom, true );
+        SetImagesSource(nathom, quot);
+        SetKernelOfAdditiveGeneralMapping( nathom, W );
+        return nathom;
+    fi;
+
     imgs:= List( Basis( V ), x -> Coefficients( Basis( quot ),
                    ImagesRepresentative(f,x)));
 
@@ -1231,7 +1240,9 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
 
     # Enter the preimages info.
     nathom!.basisimage:= Basis( qmod );
-    nathom!.preimagesbasisimage:= f!.preimagesbasisimage;
+    if IsBound(f!.preimagesbasisimage) then
+        nathom!.preimagesbasisimage:= f!.preimagesbasisimage;
+    fi;
     SetKernelOfAdditiveGeneralMapping( nathom, W );
 
     # Run the implications for the factor.

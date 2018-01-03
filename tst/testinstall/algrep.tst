@@ -55,6 +55,21 @@ gap> S1:=SubAlgebraModule(S,bas,"basis");
 <16-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
 
 #
+# factors
+#
+gap> S0/S0;
+<0-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S1/S0;
+<16-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S1/S1;
+<0-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S/S0;
+<35-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S/S1;
+<19-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+gap> S/S;
+<0-dimensional left-module over <Lie algebra of dimension 4 over GF(3)>>
+
 #
 # cocycles etc.
 #
