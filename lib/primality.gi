@@ -473,11 +473,11 @@ end);
 
 #############################################################################
 ##
-##  Note by http://www.chalcedon.demon.co.uk/rgep/spsp-13.gz we have that if
-##  N < 10^13 is a BPSW-pp, then N is in fact prime.
+##  Note by http://www.trnicely.net/misc/bpsw.html we have that if
+##  N < 2^64 is a BPSW-pp, then N is in fact prime.
 ##
 #############################################################################
-BindGlobal("BPSW_ProvedBound", 10^13);
+BindGlobal("BPSW_ProvedBound", 2^64);
 
 #############################################################################
 ##
