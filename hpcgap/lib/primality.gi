@@ -439,18 +439,15 @@ function(n)
 
   # Step 2 handle n with prime factors < 1000
   # Note that if n < 1000 we have already finished.
-  # 2a: Check Gcd(n,Product(Primes{[27..168]}) = 1 if n < 2^100 [worst case 145 divisions]
-  # 2b: otherwise trial divide by the primes between 103 and 997 inclusive [142 divisions]
-  # 2c: If n < 1009^2 is composite, then it has a prime factor < 1009
-  if n < 2^100 and 1<>GcdInt(n,
+  # 2a: Check Gcd(n,Product(Primes{[27..168]}) = 1
+  # 2b: If n < 1009^2 is composite, then it has a prime factor < 1009
+  if 1<>GcdInt(n,
 841284107844892882230924743483896036230303226400884429367479745\
 182396425076313801080105888842525657179186823477095844441732607\
 309415612117497325122570590402649274666448191740488756513678929\
 402959775310209214502833707784648441319210161128261125112776114\
 119620471154579797706399078932717575475133487349361392344929340\
 84356041841547537781640044258066541550710400764797315999285813)
-  then return false;
-  elif n >= 2^100 and ForAny(Primes, p -> 0 = n mod p)
   then return false;
   elif n < 1018081 then return true; 
   fi;
