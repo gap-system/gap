@@ -60,14 +60,12 @@ do
     rm -rf pargap*
     # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
     rm -rf PolymakeInterface*
+
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
-    # HACK to prevent float from complaining about missing C-XSC (not available in Ubuntu)
-    # and fplll (float 0.7.5 is not compatible with fplll 4.0)
-    perl -pi -e 's;CXSC=yes;CXSC=no;' float*/configure
-    perl -pi -e 's;CXSC=extern;CXSC=no;' float*/configure
-    perl -pi -e 's;FPLLL=yes;FPLLL=no;' float*/configure
-    perl -pi -e 's;FPLLL=extern;FPLLL=no;' float*/configure
+
+    # HACK: skip building semigroups-3.x for now -- it requires GCC >= 5, which Travis doesn't have
+    rm -rf semigroups-3.*
 
     if [[ x"$ABI" == "x32" ]]
     then

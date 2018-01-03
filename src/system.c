@@ -1806,6 +1806,7 @@ void InitSystem (
     // set up stdout
     syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
     syBuf[1].bufno = -1;
+    syBuf[1].isTTY = isatty(fileno(stdout));
 
     // set up errin (defaults to stdin, unless stderr is on a terminal)
     syBuf[2].fp = fileno(stdin);
