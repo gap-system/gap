@@ -983,16 +983,16 @@ elif ret = true and N < BPSW_ProvedBound then
   elif ret = true then
     ret := PrimalityProof(N);
     if PrimalityProof_VerifyStructure(N,ret) <> [] then
-        atomic readwrite Primes2, readwrite PrimesProofs do
-        AddSet(Primes2,N);
-        AddSet(PrimesProofs,MigrateObj([N,ret],PrimesProofs));
-    od;
+      atomic readwrite Primes2, readwrite PrimesProofs do
+      AddSet(Primes2,N);
+      AddSet(PrimesProofs,MakeImmutable([N,ret]));
+      od;
     else
-          Info(InfoPrimeInt, 1,
-               "IsPrimeInt: probably prime, but not proven: ", N);
-          atomic readwrite ProbablePrimes2 do
-          AddSet( ProbablePrimes2, N );
-          od;
+      Info(InfoPrimeInt, 1,
+           "IsPrimeInt: probably prime, but not proven: ", N);
+      atomic readwrite ProbablePrimes2 do
+      AddSet( ProbablePrimes2, N );
+      od;
     fi;
     return true;
   fi;
@@ -1011,10 +1011,10 @@ end);
 ##############################################################################
 InstallGlobalFunction(IsProbablyPrimeInt,
 function(N)
-    local ret, RabinMillerTrials;
-    atomic readonly Primes2, readonly ProbablePrimes2 do
-    if(N in Primes2 or N in ProbablePrimes2) then return true; fi;
-   od;
+  local ret, RabinMillerTrials;
+  atomic readonly Primes2, readonly ProbablePrimes2 do
+  if(N in Primes2 or N in ProbablePrimes2) then return true; fi;
+  od;
   ret := IsBPSWPseudoPrime(N);
 
   if ret = false then return false;
@@ -1035,10 +1035,10 @@ function(N)
     fi;
     if ForAll([1..RabinMillerTrials],i->
       IsStrongPseudoPrimeBaseA(N,Random(3,N-1))) 
-       then
-        atomic readwrite ProbablePrimes2 do
-        AddSet(ProbablePrimes2,N);
-    od;
+    then
+      atomic readwrite ProbablePrimes2 do
+      AddSet(ProbablePrimes2,N);
+      od;
       return true;
     # Otherwise an error or composite BPSW number has been found.
     else
