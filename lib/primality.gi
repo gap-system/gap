@@ -980,7 +980,7 @@ function(N)
     ret := PrimalityProof(N);
     if PrimalityProof_VerifyStructure(N,ret) <> [] then
       AddSet(Primes2,N);
-      AddSet(PrimesProofs,[N,ret]);
+      AddSet(PrimesProofs,MakeImmutable([N,ret]));
     else
       Info(InfoPrimeInt, 1,
            "IsPrimeInt: probably prime, but not proven: ", N);
