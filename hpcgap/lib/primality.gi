@@ -417,9 +417,6 @@ end);
 ##  divisors less than 1000, N is a strong pseudoprime base 2, and N is a
 ##  Lucas pseudoprime as above.
 ##
-##  Note by http://www.chalcedon.demon.co.uk/rgep/spsp-13.gz we have that if
-##  N < 10^13 is a BPSW-pp, then N is in fact prime.
-##
 ##############################################################################
 InstallGlobalFunction(IsBPSWPseudoPrime,
 function(n)
@@ -467,15 +464,7 @@ function(n)
   fi;
 
   # Step 4 Check for Lucas pseudo prime
-  # 4a: Check if it is a Lucas pseudo prime
-  # 4c: There are no composite < 10^13 which are Lucas pseudo primes,
-  # are strong pseudo primes base 2
-  # See http://www.chalcedon.demon.co.uk/rgep/psp-12.gz
-  # and http://www.chalcedon.demon.co.uk/rgep/psp13.gz
-  # or  http://www.chalcedon.demon.co.uk/rgep/spsp-13.gz
-  # This concludes the BPSW probablistic primality test.
   if not IsBPSWLucasPseudoPrime(n) then return false;
-  elif n < 10^13 then return true; 
   fi;
 
   # Step 5 Give up and call it a pseudoprime.
@@ -484,25 +473,11 @@ end);
 
 #############################################################################
 ##
-#F  IsBPSWPseudoPrime_VerifyCorrectness() - Verify the BPSW correctly
-##  marks strong Fermat pseudoprimes base 2 as composite for N < 10^13.
-##  This function is not used in the code, but only there for testing
+##  Note by http://www.chalcedon.demon.co.uk/rgep/spsp-13.gz we have that if
+##  N < 10^13 is a BPSW-pp, then N is in fact prime.
 ##
 #############################################################################
-InstallGlobalFunction(IsBPSWPseudoPrime_VerifyCorrectness,
-function()
-  local io,line;
-  io:=InputOutputLocalProcess(DirectoryCurrent(), 
-    Filename(DirectoriesSystemPrograms(), "lynx"),
-    ["-dump","http://www.chalcedon.demon.co.uk/rgep/spsp-13.gz"]);
-  repeat 
-    line := ReadLine(io);
-    if line=fail or line[Size(line)] <> '\n' then Error("Bad line!"); fi;
-    line := Int(Chomp(line));
-    if IsBPSWPseudoPrime(line) <> false then Error("Wrong output!"); fi;
-  until line = 9998974546471;
-  CloseStream(io);
-end);
+BindGlobal("BPSW_ProvedBound", 10^13);
 
 #############################################################################
 ##
@@ -842,10 +817,10 @@ function(N,witnesses)
   Ls:=List(Filtered(witnesses,wit->wit[1]="L"),wit->wit[2]);
 
   # Every number in F1s and F2s is known to be prime
-  F1s:=Filtered(Fs,p->p<10^13 and IsBPSWPseudoPrime(p));
-  R1s:=Filtered(Fs,p->p>10^13 or not IsBPSWPseudoPrime(p));
-  F2s:=Filtered(Ls,p->p<10^13 and IsBPSWPseudoPrime(p));
-  R2s:=Filtered(Ls,p->p>10^13 or not IsBPSWPseudoPrime(p));
+  F1s:=Filtered(Fs,p->p<BPSW_ProvedBound and IsBPSWPseudoPrime(p));
+  R1s:=Filtered(Fs,p->p>BPSW_ProvedBound or not IsBPSWPseudoPrime(p));
+  F2s:=Filtered(Ls,p->p<BPSW_ProvedBound and IsBPSWPseudoPrime(p));
+  R2s:=Filtered(Ls,p->p>BPSW_ProvedBound or not IsBPSWPseudoPrime(p));
 
   F1:=Product(F1s, p->p^Valuation(N-1,p));
   R1:=Product(R1s, p->p^Valuation(N-1,p));
@@ -1003,7 +978,7 @@ function(N)
   od;
   ret:= IsBPSWPseudoPrime(N);
   if ret = false  then return false;
-elif ret = true and N < 10^13 then 
+elif ret = true and N < BPSW_ProvedBound then
     atomic readwrite Primes2 do
     AddSet(Primes2,N);
     od;
@@ -1046,8 +1021,8 @@ function(N)
   ret := IsBPSWPseudoPrime(N);
 
   if ret = false then return false;
-  # Otherwise is BPSW number, and all such < 10^13 are prime
-elif ret = true and N < 10 ^ 13 then 
+  # Otherwise is BPSW number, and all such < BPSW_ProvedBound are prime
+  elif ret = true and N < BPSW_ProvedBound then
     atomic readwrite Primes2 do
     AddSet(Primes2,N);
     od;
