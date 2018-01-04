@@ -722,7 +722,7 @@ Obj             Cyclotomic (
                 for ( i = 0; i < n; i += p ) {
                     cof = res[(i+n/p)%n];
                     if ( ! IS_INTOBJ(cof)
-                      || (cof == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))) ) {
+                      || (cof == INTOBJ_MIN) ) {
                         CHANGED_BAG( ResultCyc );
                         cof = DIFF( INTOBJ_INT(0), cof );
                         res = BASE_PTR_PLIST(ResultCyc);
@@ -813,7 +813,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   /* Compute the result (lcm) in 64 bit */
   n8 = (UInt8)nl * ((UInt8)*ml);  
   /* Check if it is too large for a small int */
-  if (n8 > ((UInt8)(1) << NR_SMALL_INT_BITS))
+  if (n8 > INT_INTOBJ_MAX)
     ErrorMayQuit("This computation would require a cyclotomic field too large to be handled",0L, 0L);
 
   /* Switch to UInt now we know we can*/
@@ -1000,8 +1000,7 @@ Obj             AInvCyc (
     cfp = COEFS_CYC(res);
     exp = EXPOS_CYC(res,len);
     for ( i = 1; i < len; i++ ) {
-        if ( ! IS_INTOBJ( cfs[i] ) || 
-               cfs[i] == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) ) {
+        if ( ! IS_INTOBJ( cfs[i] ) || cfs[i] == INTOBJ_MIN ) {
             CHANGED_BAG( res );
             prd = AINV( cfs[i] );
             cfs = CONST_COEFS_CYC(op);
