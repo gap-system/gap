@@ -41,6 +41,15 @@ a
 #define NR_SMALL_INT_BITS  (32 - 4)
 #endif
 
+// the minimal / maximal possible values of an immediate integer object:
+#define INT_INTOBJ_MIN  (-(1L << NR_SMALL_INT_BITS))
+#define INT_INTOBJ_MAX  ((1L << NR_SMALL_INT_BITS) - 1)
+
+// the minimal / maximal possible immediate integer objects:
+#define INTOBJ_MIN  INTOBJ_INT(INT_INTOBJ_MIN)
+#define INTOBJ_MAX  INTOBJ_INT(INT_INTOBJ_MAX)
+
+
 /****************************************************************************
 **
 *F  IS_INTOBJ( <o> )  . . . . . . . .  test if an object is an integer object
@@ -121,6 +130,7 @@ static inline Int INT_INTOBJ(Obj o)
 static inline Obj INTOBJ_INT(Int i)
 {
     Obj o;
+    GAP_ASSERT(INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX);
     o = (Obj)(((UInt)i << 2) + 0x01);
     GAP_ASSERT(INT_INTOBJ(o) == i);
     return o;

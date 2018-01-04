@@ -1517,7 +1517,7 @@ void CodeAInv ( void )
     Int                 i;
 
     expr = PopExpr();
-    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<NR_SMALL_INT_BITS) ) {
+    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != INT_INTOBJ_MIN ) {
         i = INT_INTEXPR(expr);
         PushExpr( INTEXPR_INT( -i ) );
     }

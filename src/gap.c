@@ -1844,7 +1844,6 @@ Obj FuncGASMAN_STATS(Obj self)
 {
   Obj res;
   Obj row;
-  Obj entry;
   UInt i,j;
   Int x;
   res = NEW_PLIST(T_PLIST_TAB_RECT + IMMUTABLE, 2);
@@ -1858,15 +1857,7 @@ Obj FuncGASMAN_STATS(Obj self)
       for (j = 1; j <= 8; j++)
         {
           x = SyGasmanNumbers[i-1][j];
-
-          /* convert x to GAP integer. x may be too big to be a small int */
-          if (x < (1L << NR_SMALL_INT_BITS))
-            entry = INTOBJ_INT(x);
-          else
-            entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
-                              INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
-                         INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
-          SET_ELM_PLIST(row, j, entry);
+          SET_ELM_PLIST(row, j, ObjInt_Int(x));
         }
       SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));       
     }
