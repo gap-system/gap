@@ -14,7 +14,7 @@ gap> START_TEST("vspcmat.tst");
 ##  1. Construct Gaussian and non-Gaussian matrix spaces
 ##
 gap> z:= LeftModuleByGenerators( GF(3), [], [ [ 0*Z(9) ] ] );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsGaussianMatrixSpace( z );
 true
 gap> IsNonGaussianMatrixSpace( z );

@@ -484,7 +484,7 @@ DeclareAttribute( "DirectSumDecomposition", IsAlgebra );
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> B:= TrivialSubalgebra( A );
-##  <algebra over Rationals>
+##  <algebra of dimension 0 over Rationals>
 ##  gap> Dimension( B );
 ##  0
 ##  ]]></Example>
@@ -509,7 +509,7 @@ DeclareSynonymAttr( "TrivialSubalgebra", TrivialSubFLMLOR );
 ##  <!-- or store this in the family ?-->
 ##  <Example><![CDATA[
 ##  gap> A:= NullAlgebra( Rationals );
-##  <algebra over Rationals>
+##  <algebra of dimension 0 over Rationals>
 ##  gap> Dimension( A );
 ##  0
 ##  ]]></Example>
@@ -2169,7 +2169,7 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  gap> g.hom_components( 3 );
 ##  <vector space over GF(3), with 1 generators>
 ##  gap> g.hom_components( 14 );
-##  <vector space over GF(3), with 0 generators>
+##  <vector space of dimension 0 over GF(3)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
