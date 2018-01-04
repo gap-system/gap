@@ -375,15 +375,9 @@ end);
 ##
 #F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
 #F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
-#F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
-#F  ReadTrans( <name> ) . . . . . . . .  transitive perm groups library files
-#F  ReadPrim( <name> )  . . . . . . . . . primitive perm groups library files
 ##
 BIND_GLOBAL("ReadLib",ReadAndCheckFunc("lib"));
 BIND_GLOBAL("ReadGrp",ReadAndCheckFunc("grp"));
-BIND_GLOBAL("ReadSmall",ReadAndCheckFunc("small"));
-BIND_GLOBAL("ReadTrans",ReadAndCheckFunc("trans"));
-BIND_GLOBAL("ReadPrim",ReadAndCheckFunc("prim"));
 
 
 #############################################################################
@@ -428,15 +422,6 @@ ID_AVAILABLE := x -> fail;
 #V  TRANS_AVAILABLE
 PRIM_AVAILABLE:=false;
 TRANS_AVAILABLE:=false;
-
-#############################################################################
-##
-#F  DeclareComponent(<componentname>,<versionstring>)
-##
-GAPInfo.LoadedComponents:= rec();
-BIND_GLOBAL("DeclareComponent",function(name,version)
-  GAPInfo.LoadedComponents.( name ):= version;
-end);
 
 #############################################################################
 ##
@@ -875,7 +860,7 @@ end );
 
 #############################################################################
 ##
-##  Display version, loaded components and packages
+##  Display loaded packages
 ##
 
 BindGlobal( "ShowPackageInformation", function()
@@ -907,30 +892,6 @@ BindGlobal( "ShowPackageInformation", function()
   end;
 
   indent := "             ";
-
-  # For each loaded component, print name and version number.
-  # We use an abbreviation for the distributed combination of
-  # idX and smallX components.
-  if GAPInfo.LoadedComponents <> rec() then
-    cmpdist := rec(id10:="0.1",id2:="3.0",id3:="2.1",id4:="1.0",id5:="1.0",
-               id6:="1.0",id9:="1.0",small:="2.1",small10:="0.2",
-               small11:="0.1",small2:="2.0",small3:="2.0",small4:="1.0",
-               small5:="1.0",small6:="1.0",small7:="1.0",small8:="1.0",
-               small9:="1.0");
-    ld := ShallowCopy(GAPInfo.LoadedComponents);
-    if ForAll(RecNames(cmpdist), f-> IsBound(ld.(f))
-                                      and ld.(f) = cmpdist.(f)) then
-      for f in RecNames(cmpdist) do
-        Unbind(ld.(f));
-      od;
-      ld.("small*") := "1.0";
-      ld.("id*") := "1.0";
-    fi;
-    print_info( " Components: ",
-                List( RecNames( ld ), name -> Concatenation( name, " ",
-                                  ld.( name ) ) ),
-                "\n");
-  fi;
 
   # For each loaded package, print name and version number.
   packagenames := SortedList( RecNames( GAPInfo.PackagesLoaded ) );

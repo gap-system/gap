@@ -120,27 +120,6 @@ BIND_GLOBAL("RereadLib",RereadAndCheckFunc("lib"));
 #F  RereadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
 ##
 BIND_GLOBAL("RereadGrp",RereadAndCheckFunc("grp"));
-
-
-#############################################################################
-##
-#F  RereadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
-##
-BIND_GLOBAL("RereadSmall",RereadAndCheckFunc("small"));
-
-
-#############################################################################
-##
-#F  RereadPrim( <name> )  . . . . . . . . . primitive perm groups library files
-##
-BIND_GLOBAL("RereadPrim",RereadAndCheckFunc("prim"));
-
-
-#############################################################################
-##
-#F  RereadTrans( <name> ) . . . . . . . .  transitive perm groups library files
-##
-BIND_GLOBAL("RereadTrans",RereadAndCheckFunc("trans"));
     
 
 #############################################################################
