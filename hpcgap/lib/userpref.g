@@ -211,7 +211,7 @@ GAPInfo.DeclarationsOfUserPreferences:= AtomicList([]);
 
 GAPInfo.UserPreferences := AtomicRecord(rec());
 
-DeclareUserPreference:= function( record )
+BindGlobal( "DeclareUserPreference", function( record )
     local name, package, default, i, up;
 
     if not IsRecord( record ) then
@@ -297,7 +297,7 @@ DeclareUserPreference:= function( record )
         fi;
       od;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -371,7 +371,7 @@ BindGlobal( "UserPreference", function( arg )
 ##  `values'
 ##      list of the form `[ <pkgname>, <name>, <value>, <default>, <fun> ]'
 ##
-DataOfUserPreference:= function( pkgname, name )
+BindGlobal( "DataOfUserPreference", function( pkgname, name )
     local pref, decl, result, default, fun, i, nami;
 
     pref:= GAPInfo.UserPreferences;
@@ -429,14 +429,14 @@ DataOfUserPreference:= function( pkgname, name )
     fi;
 
     return result;
-    end;
+    end );
 
 
 #############################################################################
 ##
 #F  StringUserPreference( <data>, <ignorecurrent> )
 ##
-StringUserPreference:= function( data, ignorecurrent )
+BindGlobal( "StringUserPreference", function( data, ignorecurrent )
     local string, width, format, paragraph, line;
 
     if data = fail then
@@ -479,14 +479,14 @@ StringUserPreference:= function( data, ignorecurrent )
     od;
 
     return string;
-    end;
+    end );
 
 
 #############################################################################
 ##
 #F  ShowStringUserPreference( <data> )
 ##
-ShowStringUserPreference:= function( data )
+BindGlobal( "ShowStringUserPreference", function( data )
     local string, width, format, line, paragraph, suff;
 
     if data = fail then
@@ -557,14 +557,14 @@ ShowStringUserPreference:= function( data )
     fi;
 
     return string;
-    end;
+    end );
 
 
 #############################################################################
 ##
 #F  StringUserPreferences( arg )
 ##
-StringUserPreferences:= function( arg )
+BindGlobal( "StringUserPreferences", function( arg )
     local ignorecurrent, pref, str, pkglist, pkgname, done, name, data;
     
     if Length(arg) > 0 and arg[1] = true then
@@ -601,7 +601,7 @@ StringUserPreferences:= function( arg )
     od;
 
     return str;
-    end;
+    end );
 
 
 #############################################################################
@@ -610,7 +610,7 @@ StringUserPreferences:= function( arg )
 ##
 ##  show the list of all declared user preferences
 ##
-ShowUserPreferences:= function(arg)
+BindGlobal( "ShowUserPreferences", function(arg)
     local pkglist, pref, str, pkgname, nam, done, undec, name, data, i, pfun;
 
     pref:= GAPInfo.UserPreferences;
@@ -668,14 +668,14 @@ ShowUserPreferences:= function(arg)
 
     pfun := ValueGlobal("Pager");
     pfun(rec( lines := str, formatted := true));
-    end;
+    end );
 
 
 #############################################################################
 ##
 #F  WriteGapIniFile( [<dir>, ][true] )
 ##
-WriteGapIniFile:= function( arg )
+BindGlobal( "WriteGapIniFile", function( arg )
   local ignorecurrent, f, df, ret, target, str, res;
   # check if current settings should be used
   if true in arg then 
@@ -746,7 +746,7 @@ Please specify directory to write gap.ini file.");
   fi;
   Info(InfoWarning, 1, "File ", target, " successfully written.");
   return true;
-end;
+end );
 
 
 #############################################################################
