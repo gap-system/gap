@@ -1803,9 +1803,6 @@ static Int InitKernel (
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 
-    /* Allocate functions in the public region */
-    MakeBagTypePublic(T_FUNCTION);
-
     /* use short cookies to save space in saved workspace                  */
     InitHandlerFunc( DoExecFunc0args, "i0");
     InitHandlerFunc( DoExecFunc1args, "i1");
