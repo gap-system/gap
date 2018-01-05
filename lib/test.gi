@@ -234,7 +234,8 @@ end;
 ##  <Item>If this is bound to a string it is considered as a file name
 ##  and that file is written with the same input and comment lines as
 ##  <Arg>fname</Arg> but the output substituted by the newly generated
-##  version (default is <K>false</K>).</Item>
+##  version; if it is bound to <K>true</K>, then this is treated as if
+##  it was bound to <Arg>fname</Arg> (default is <K>false</K>).</Item>
 ##  <Mark><C>writeTimings</C></Mark>
 ##  <Item>If this is bound to a string it is considered as a file name,
 ##  that file is written and contains timing information for each input 
@@ -442,6 +443,9 @@ InstallGlobalFunction("Test", function(arg)
   od;
 
   # maybe rewrite the input into a file
+  if opts.rewriteToFile = true then
+    opts.rewriteToFile := fnam;
+  fi;
   if IsString(opts.rewriteToFile) then
     lines := SplitString(full, "\n", "");
     ign := pf[3][Length(pf[3])];
