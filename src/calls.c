@@ -2063,6 +2063,9 @@ static Int InitKernel (
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
+    /* Allocate functions in the public region */
+    MakeBagTypePublic(T_FUNCTION);
+
     /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
