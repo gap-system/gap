@@ -1699,7 +1699,7 @@ Obj FuncCLONE_OBJ (
         case T_ACOMOBJ:
         case T_TLREC:
           ErrorReturnVoid( "cannot clone %ss",
-                           (Int)(InfoBags[TNUM_OBJ(src)].name), 0,
+                           (Int)TNAM_OBJ(src), 0,
                            "you can 'return;' to skip the cloning" );
           return 0;
     }

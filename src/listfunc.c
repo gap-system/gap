@@ -1548,7 +1548,7 @@ static inline Int GetIntObj( Obj list, UInt pos)
   if (!IS_INTOBJ(entry))
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
-                   (Int)pos, (Int)InfoBags[TNUM_OBJ(entry)].name);
+                   (Int)pos, (Int)TNAM_OBJ(entry));
     }
   return INT_INTOBJ(entry);
 }
@@ -1587,7 +1587,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   if (!IS_PLIST(srclist))
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: source must be a plain list not a %s",
-                   (Int)InfoBags[TNUM_OBJ(srclist)].name, 0L);
+                   (Int)TNAM_OBJ(srclist), 0L);
     }
 
   srcstart = GetIntObj(args,2);
@@ -1601,7 +1601,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
-                   (Int)InfoBags[TNUM_OBJ(dstlist)].name, 0L);
+                   (Int)TNAM_OBJ(dstlist), 0L);
     }
   dststart = GetIntObj(args,5);
   dstinc = GetIntObj(args,6);

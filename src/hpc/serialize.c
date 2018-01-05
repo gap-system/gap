@@ -1023,7 +1023,7 @@ Obj DeserializeBackRef(UInt tnum)
 void SerializeError(Obj obj)
 {
     char         buf[16];
-    const Char * type = InfoBags[TNUM_OBJ(obj)].name;
+    const Char * type = TNAM_OBJ(obj);
     if (!type) {
         sprintf(buf, "<%d>", (int)TNUM_OBJ(obj));
         type = buf;
