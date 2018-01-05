@@ -102,8 +102,6 @@ extern UInt ReadEvalFile(Obj *evalResult);
 */
 extern void ReadEvalError ( void ) NORETURN;
 
-/* extern ExecStatus ReadEvalDebug ( void ); */
-
 /****************************************************************************
 **
 *V  StackNams . . . . . . . . . . . .  stack of lists of local variable names
