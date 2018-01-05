@@ -746,7 +746,7 @@ local d,z;
   d:=LeftActingDomain(V);
   z:=Zero( d ) * [ 1 .. DimensionOfVectors( V ) ];
   if IsField(d) and IsFinite(d) and Size(d)<=256 then
-    ConvertToVectorRep(z,d);
+    z := ImmutableVector( d, z );
   fi;
   return z;
 end);
@@ -931,7 +931,7 @@ InstallMethod( NormedRowVectors,
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
           v:= elms2[k] + toadd;
-          ConvertToVectorRep( v, q );
+          v:= ImmutableVector( q, v );
           new[ pos + k ]:= v;
         od;
         pos:= pos + len;
@@ -1722,8 +1722,7 @@ BindGlobal( "ElementNumber_ExtendedVectors", function( enum, n )
       Error( "<enum>[", n, "] must have an assigned value" );
     fi;
     n:= Concatenation( enum!.spaceEnumerator[n], [ enum!.one ] );
-    ConvertToVectorRepNC( n, enum!.q );
-    return Immutable( n );
+    return ImmutableVector( enum!.q, n );
 end );
 
 BindGlobal( "NumberElement_ExtendedVectors", function( enum, elm )
@@ -1737,10 +1736,8 @@ end );
 
 BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elm )
     # test whether the vector is indeed compact over the right finite field
-    if not IsDataObjectRep( elm ) then
-      if ConvertToVectorRepNC( elm, enum!.q ) = fail then
-        return NumberElement_ExtendedVectors( enum, elm );
-      fi;
+    if not IsGF2VectorRep( elm ) and not Is8BitVectorRep( elm ) then
+      return NumberElement_ExtendedVectors( enum, elm );
     fi;
 
     # Problem with GF(4) vectors over GF(2)
@@ -1754,6 +1751,9 @@ BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elm )
                          or elm[ enum!.len ] <> enum!.one then
       return fail;
     fi;
+    # We exploit that NumberFFVector is defined by position in a sorted list
+    # of all vectors. Therefore, for coefficients v1, ..., vn, we have
+    # NumberFFVector([v1,...,vn,1],q) = NumberFFVector([v1,...,vn],q)*q+1 
     return QuoInt( NumberFFVector( elm, enum!.q ), enum!.q ) + 1;
 end );
 
