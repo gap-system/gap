@@ -21,7 +21,6 @@
 #include <src/gap.h>
 #include <src/gvars.h>
 #include <src/io.h>
-#include <src/macfloat.h>
 #include <src/read.h>
 #include <src/streams.h>
 #include <src/stringobj.h>
@@ -395,26 +394,6 @@ ObjFunc LoadHandler( void )
     return HandlerOfCookie(buf);
 }
 
-
-void SaveDouble( Double d)
-{
-  UInt i;
-  UInt1 buf[sizeof(Double)];
-  memcpy(buf, &d, sizeof(Double));
-  for (i = 0; i < sizeof(Double); i++)
-    SAVE_BYTE(buf[i]);
-}
-
-Double LoadDouble( void )
-{
-  UInt i;
-  UInt1 buf[sizeof(Double)];
-  Double d;
-  for (i = 0; i < sizeof(Double); i++)
-    buf[i] = LOAD_BYTE();
-  memcpy(&d, buf, sizeof(Double));
-  return d;
-}
 
 /***************************************************************************
 **

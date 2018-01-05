@@ -27,18 +27,11 @@
 #include <src/gap.h>
 #include <src/io.h>
 #include <src/plist.h>
+#include <src/saveload.h>
 #include <src/stringobj.h>
 
-
-/* the following two declarations would belong in `saveload.h', but then all
- * files get macfloat dependencies */
-extern Double LoadDouble( void);
-extern void SaveDouble( Double d);
-
 #include <stdio.h>
-#include <stdlib.h>
 
-#define SIZE_MACFLOAT   sizeof(Double)
 
 /****************************************************************************
 **
@@ -113,10 +106,11 @@ Int LtMacfloat (
 *F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
-
 void SaveMacfloat( Obj obj )
 {
-  SaveDouble(VAL_MACFLOAT(obj));
+    const UInt1 *data = (const UInt1 *)CONST_ADDR_OBJ(obj);
+    for (UInt i = 0; i < sizeof(Double); i++)
+        SaveUInt1(data[i]);
 }
 
 /****************************************************************************
@@ -124,18 +118,19 @@ void SaveMacfloat( Obj obj )
 *F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
-
 void LoadMacfloat( Obj obj )
 {
-  SET_VAL_MACFLOAT(obj, LoadDouble());
+    UInt1 *data = (UInt1 *)ADDR_OBJ(obj);
+    for (UInt i = 0; i < sizeof(Double); i++)
+        data[i] = LoadUInt1();
 }
+
 
 Obj NEW_MACFLOAT( Double val )
 {
-  Obj f;
-  f = NewBag(T_MACFLOAT,SIZE_MACFLOAT);
-  SET_VAL_MACFLOAT(f,val);
-  return f;
+    Obj f = NewBag(T_MACFLOAT, sizeof(Double));
+    SET_VAL_MACFLOAT(f, val);
+    return f;
 }
 
 /****************************************************************************
@@ -545,11 +540,8 @@ static Int InitKernel (
     LtFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = LtMacfloat;
 
     /* allow method selection to protest against comparisons of float and int */
-    {
-      int t;
-      for (t = T_INT; t <= T_CYC; t++)
-	EqFuncs[T_MACFLOAT][t] = EqFuncs[t][T_MACFLOAT] = EqObject;
-    }
+    for (int t = T_INT; t <= T_CYC; t++)
+        EqFuncs[T_MACFLOAT][t] = EqFuncs[t][T_MACFLOAT] = EqObject;
 
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_MACFLOAT ] = ZeroMacfloat;
