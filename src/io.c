@@ -1709,6 +1709,21 @@ Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
     return val;
 }
 
+Obj FuncIS_INPUT_TTY(Obj self)
+{
+    GAP_ASSERT(STATE(Input));
+    if (STATE(Input)->isstream)
+        return False;
+    return syBuf[STATE(Input)->file].isTTY ? True : False;
+}
+
+Obj FuncIS_OUTPUT_TTY(Obj self)
+{
+    GAP_ASSERT(STATE(Output));
+    if (STATE(Output)->isstream)
+        return False;
+    return syBuf[STATE(Output)->file].isTTY ? True : False;
+}
 
 static StructGVarFunc GVarFuncs [] = {
 
@@ -1718,6 +1733,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(INPUT_FILENAME, 0, ""),
     GVAR_FUNC(INPUT_LINENUMBER, 0, ""),
     GVAR_FUNC(SET_PRINT_FORMATTING_STDOUT, 1, "format"),
+    GVAR_FUNC(IS_INPUT_TTY, 0, ""),
+    GVAR_FUNC(IS_OUTPUT_TTY, 0, ""),
     { 0, 0, 0, 0, 0 }
 
 };
