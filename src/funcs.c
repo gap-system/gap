@@ -386,7 +386,6 @@ UInt            ExecProccallXargs (
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
-
     /* evaluate the arguments                                              */
     args = NEW_PLIST( T_PLIST, NARG_SIZE_CALL(SIZE_STAT(call)) );
     SET_LEN_PLIST( args, NARG_SIZE_CALL(SIZE_STAT(call)) );
@@ -733,10 +732,11 @@ Obj             EvalFunccallXargs (
     /* call the function and return the result                             */
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
+      result = DoOperation2Args(CallFuncListOper, func, args);
     } else {
       result = CALL_XARGS( func, args );
     }
+
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
                                        READ() and the user quit from a break
                                        loop inside it */
