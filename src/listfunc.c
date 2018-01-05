@@ -267,8 +267,6 @@ Obj             FuncAPPEND_LIST_INTR (
 {
     UInt                len1;           /* length of the first list        */
     UInt                len2;           /* length of the second list       */
-    Obj *               ptr1;           /* pointer into the first list     */
-    const Obj *         ptr2;           /* pointer into the second list    */
     Obj                 elm;            /* one element of the second list  */
     Int                 i;              /* loop variable                   */
 
@@ -281,19 +279,17 @@ Obj             FuncAPPEND_LIST_INTR (
     
 
     /* handle the case of strings now */
-    if ( IS_STRING_REP(list1) && IS_STRING_REP(list2))
-      {
+    if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
         len1 = GET_LEN_STRING(list1);
         len2 = GET_LEN_STRING(list2);
         GROW_STRING(list1, len1 + len2);
         SET_LEN_STRING(list1, len1 + len2);
         CLEAR_FILTS_LIST(list1);
-        memmove( CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 + 1);
-        /* ensure trailing zero */
-        *(CHARS_STRING(list1) + len1 + len2) = 0;    
+        // copy data, including terminating zero byte
+        memcpy(CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 + 1);
         return (Obj) 0;
-      }
-    
+    }
+
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
         while ( ! IS_SMALL_LIST( list1 ) ) {
@@ -331,12 +327,10 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* add the elements                                                    */
     if ( IS_PLIST(list2) ) {
-        ptr1 = ADDR_OBJ(list1) + len1;
-        ptr2 = CONST_ADDR_OBJ(list2);
-        for ( i = 1; i <= len2; i++ ) {
-            ptr1[i] = ptr2[i];
-            /* 'CHANGED_BAG(list1);' not needed, ELM_PLIST does not NewBag */
-        }
+        // note that the two memory regions can never overlap, even
+        // if list1 and list2 are identical
+        memcpy(ADDR_OBJ(list1) + 1 + len1, CONST_ADDR_OBJ(list2) + 1,
+               len2 * sizeof(Obj));
         CHANGED_BAG( list1 );
     }
     else {
