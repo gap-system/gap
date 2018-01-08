@@ -190,7 +190,11 @@
 */
 
 #define SIZE_MPTR_BAGS  1
-#define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
+
+static inline UInt WORDS_BAG(UInt size)
+{
+    return (size + sizeof(Bag) - 1) / sizeof(Bag);
+}
 
 /* This could be 65536, but would waste memory in various tables */
 
@@ -294,7 +298,11 @@ void CHANGED_BAG(Bag bag) {
    answer in units of a word (ie sizeof(UInt) bytes), which should
    therefore be small enough not to cause problems. */
 
-#define SpaceBetweenPointers(a,b) (((UInt)((UInt)(a) - (UInt)(b)))/sizeof(Bag))
+static inline UInt SpaceBetweenPointers(Bag * a, Bag * b)
+{
+    UInt res = (((UInt)((UInt)(a) - (UInt)(b))) / sizeof(Bag));
+    return res;
+}
 
 #define SizeMptrsArea SpaceBetweenPointers(OldBags, MptrBags)
 #define SizeOldBagsArea SpaceBetweenPointers(YoungBags, OldBags)
@@ -528,15 +536,66 @@ void InitMarkFuncBags (
     TabMarkFuncBags[type] = mark_func;
 }
 
-#define MARKED_DEAD(x)  (x)
-#define MARKED_ALIVE(x) ((Bag)(((Char *)(x))+1))
-#define MARKED_HALFDEAD(x) ((Bag)(((Char *)(x))+2))
-#define IS_MARKED_ALIVE(bag) ((LINK_BAG(bag)) == MARKED_ALIVE(bag))
-#define IS_MARKED_DEAD(bag) ((LINK_BAG(bag)) == MARKED_DEAD(bag))
-#define IS_MARKED_HALFDEAD(bag) ((LINK_BAG(bag)) == MARKED_HALFDEAD(bag))
-#define UNMARKED_DEAD(x)  (x)
-#define UNMARKED_ALIVE(x) ((Bag)(((Char *)(x))-1))
-#define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
+enum {
+    DEAD = 0,
+    ALIVE = 1,
+    HALFDEAD = 2,
+};
+
+static inline UInt GET_MARK_BITS(Bag x)
+{
+    return (UInt)x & (sizeof(Bag) - 1);
+}
+
+static inline Bag MARKED_DEAD(Bag x)
+{
+    return x;
+}
+
+static inline Bag MARKED_ALIVE(Bag x)
+{
+    return (Bag)(((Char *)x) + 1);
+}
+
+static inline Bag MARKED_HALFDEAD(Bag x)
+{
+    return (Bag)(((Char *)x) + 2);
+}
+
+static inline Int IS_MARKED_DEAD(Bag x)
+{
+    return LINK_BAG(x) == MARKED_DEAD(x);
+}
+
+// static inline Int IS_MARKED_ALIVE(Bag x)
+// {
+//     return LINK_BAG(x) == MARKED_ALIVE(x);
+// }
+
+static inline Int IS_MARKED_HALFDEAD(Bag x)
+{
+    return LINK_BAG(x) == MARKED_HALFDEAD(x);
+}
+
+#ifdef DEBUG_MASTERPOINTERS
+static inline Bag UNMARKED_DEAD(Bag x)
+{
+    GAP_ASSERT(GET_MARK_BITS(x) == DEAD);
+    return x;
+}
+#endif
+
+static inline Bag UNMARKED_ALIVE(Bag x)
+{
+    GAP_ASSERT(GET_MARK_BITS(x) == ALIVE);
+    return (Bag)(((Char *)x) - ALIVE);
+}
+
+static inline Bag UNMARKED_HALFDEAD(Bag x)
+{
+    GAP_ASSERT(GET_MARK_BITS(x) == HALFDEAD);
+    return (Bag)(((Char *)x) - HALFDEAD);
+}
 
 
 void MarkNoSubBags( Bag bag )
@@ -630,8 +689,8 @@ void MarkBagWeakly( Bag bag )
        && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
        && IS_MARKED_DEAD(bag) )             /*  and not marked already */
     {
-      LINK_BAG(bag) = (Bag)MARKED_HALFDEAD(bag);   /* mark it now as we
-                                               don't have to recurse */
+      // mark it now as we don't have to recurse
+      LINK_BAG(bag) = MARKED_HALFDEAD(bag);
     }
 }
 
@@ -1792,8 +1851,7 @@ again:
         }
 
         /* dead bag                                                        */
-
-        else if ( ((UInt)(header->link)) % sizeof(Bag) == 0 ) {
+        else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if ( PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
@@ -1826,7 +1884,7 @@ again:
         }
 
         /* half-dead bag                                                   */
-        else if ( ((UInt)(header->link)) % sizeof(Bag) == 2 ) {
+        else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if  ( PTR_BAG( UNMARKED_HALFDEAD(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
@@ -1856,7 +1914,7 @@ again:
         }
 
         /* live bag                                                        */
-        else if ( ((UInt)(header->link)) % sizeof(Bag) == 1 ) {
+        else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef DEBUG_MASTERPOINTERS
             if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) ) {
                 (*AbortFuncBags)("incorrectly marked bag");
