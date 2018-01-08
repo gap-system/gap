@@ -3088,11 +3088,11 @@ void InitializeGap (
         }
         info = InitFuncsBuiltinModules[i]();
         Modules[NrModules++].info = info;
-#       ifdef DEBUG_LOADING
+        if (SyDebugLoading) {
             FPUTS_TO_STDERR( "#I  InitInfo(builtin " );
             FPUTS_TO_STDERR( info->name );
             FPUTS_TO_STDERR( ")\n" );
-#       endif
+        }
     }
     NrBuiltinModules = NrModules;
 
@@ -3100,11 +3100,11 @@ void InitializeGap (
     for ( i = 0;  i < NrBuiltinModules;  i++ ) {
         info = Modules[i].info;
         if ( info->initKernel ) {
-#           ifdef DEBUG_LOADING
+            if (SyDebugLoading) {
                 FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
                 FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ")\n" );
-#           endif
+            }
             ret =info->initKernel( info );
             if ( ret ) {
                 FPUTS_TO_STDERR( "#I  InitKernel(builtin " );
@@ -3123,7 +3123,7 @@ void InitializeGap (
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
 #ifdef COUNT_BAGS
-#   ifdef DEBUG_LOADING
+    if (SyDebugLoading) {
         if ( SyRestoring ) {
             Pr( "#W  after setup\n", 0L, 0L );
             Pr( "#W  %36s ", (Int)"type",  0L          );
@@ -3143,7 +3143,7 @@ void InitializeGap (
                 }
             }
         }
-#   endif
+    }
 #endif
 
 #ifndef BOEHM_GC
@@ -3160,11 +3160,11 @@ void InitializeGap (
         for ( i = 0;  i < NrModules;  i++ ) {
             info = Modules[i].info;
             if ( info->postRestore ) {
-#               ifdef DEBUG_LOADING
+                if (SyDebugLoading) {
                     FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
                     FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ")\n" );
-#               endif
+                }
                 ret = info->postRestore( info );
                 if ( ret ) {
                     FPUTS_TO_STDERR( "#I  PostRestore(builtin " );
@@ -3197,11 +3197,11 @@ void InitializeGap (
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {
             info = Modules[i].info;
             if ( info->initLibrary ) {
-#               ifdef DEBUG_LOADING
+                if (SyDebugLoading) {
                     FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
                     FPUTS_TO_STDERR( info->name );
                     FPUTS_TO_STDERR( ")\n" );
-#               endif
+                }
                 ret = info->initLibrary( info );
                 if ( ret ) {
                     FPUTS_TO_STDERR( "#I  InitLibrary(builtin " );
@@ -3219,11 +3219,11 @@ void InitializeGap (
     for ( i = 0;  i < NrModules;  i++ ) {
         info = Modules[i].info;
         if ( info->checkInit ) {
-#           ifdef DEBUG_LOADING
+            if (SyDebugLoading) {
                 FPUTS_TO_STDERR( "#I  CheckInit(builtin " );
                 FPUTS_TO_STDERR( info->name );
                 FPUTS_TO_STDERR( ")\n" );
-#           endif
+            }
             ret = info->checkInit( info );
             if ( ret ) {
                 FPUTS_TO_STDERR( "#I  CheckInit(builtin " );

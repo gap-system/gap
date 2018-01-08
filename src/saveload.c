@@ -885,9 +885,8 @@ void LoadWorkspace( Char * fname )
           SyExit(1);
         }
       *glob = LoadSubObj();
-#ifdef DEBUG_LOADING
-      Pr("Restored global %s\n",(Int)buf,0L);
-#endif
+      if (SyDebugLoading)
+          Pr("Restored global %s\n", (Int)buf, 0L);
     }
 
   LoadCStr(buf,256);

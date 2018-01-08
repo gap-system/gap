@@ -54,11 +54,6 @@
 *D  debug flags (user edit-able)
 */
 
-/* * * * * * * * * *  saving/loading the workspace * * * * * * * * * * * * */
-
-/* define to get information while restoring                               */
-/* #undef DEBUG_LOADING */
-
 
 /* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
 
