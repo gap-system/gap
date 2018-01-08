@@ -672,15 +672,13 @@ void MarkBagWeakly(Bag bag)
 **  walking the masterpointer area. Not terribly safe.
 **
 */
-void CallbackForAllBags(
-     void (*func)(Bag) )
+void CallbackForAllBags(void (*func)(Bag))
 {
-  Bag ptr;
-  for (ptr = (Bag)MptrBags; ptr < (Bag)OldBags; ptr ++)
-    if (*ptr != 0 && !IS_WEAK_DEAD_BAG(ptr) && (Bag)(*ptr) >= (Bag)OldBags)
-      {
-        (*func)(ptr);
-      }
+    for (Bag bag = (Bag)MptrBags; bag < (Bag)OldBags; bag++) {
+        if (IS_BAG_BODY(*bag)) {
+            (*func)(bag);
+        }
+    }
 }
 
 
