@@ -626,7 +626,7 @@ Int Int_ObjInt(Obj i)
 UInt UInt_ObjInt(Obj i)
 {
     if (IS_NEG_INT(i))
-        ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
+        ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt)INT_INTOBJ(i);
     if (TNUM_BAG(i) != T_INTPOS)
@@ -645,10 +645,10 @@ Int8 Int8_ObjInt(Obj i)
     // in this case Int8 is Int
     return Int_ObjInt(i);
 #else
-    UInt sign = 0;
     if (IS_INTOBJ(i))
         return (Int8)INT_INTOBJ(i);
-    // must be at most two limbs
+
+    UInt sign = 0;
     if (TNUM_BAG(i) == T_INTPOS)
         sign = 0;
     else if (TNUM_BAG(i) == T_INTNEG)
@@ -657,6 +657,7 @@ Int8 Int8_ObjInt(Obj i)
         ErrorMayQuit("Conversion error, expecting an integer, not a %s",
                      (Int)TNAM_OBJ(i), 0);
 
+    // must be at most two limbs
     if (SIZE_INT(i) > 2)
         ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
     UInt  vall = ADDR_INT(i)[0];
@@ -679,7 +680,7 @@ UInt8 UInt8_ObjInt(Obj i)
     return UInt_ObjInt(i);
 #else
     if (IS_NEG_INT(i))
-        ErrorMayQuit("Conversion: negative integer into unsigned type", 0, 0);
+        ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt8)INT_INTOBJ(i);
     if (TNUM_BAG(i) != T_INTPOS)
@@ -1725,8 +1726,8 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 **
 *F  ModInt( <intL>, <intR> )  . representative of residue class of an integer
 **
-**  'ModInt' returns the smallest positive representant of the residue  class
-**  of the  integer  <intL>  modulo  the  integer  <intR>.  'ModInt'  handles
+**  'ModInt' returns the smallest positive representative of the residue
+**  class of the integer <intL> modulo the integer <intR>. 'ModInt' handles
 **  operands of type 'T_INT', 'T_INTPOS', 'T_INTNEG'.
 **
 **  It can also be used in the cases that both operands  are  small  integers

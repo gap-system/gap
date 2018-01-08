@@ -165,10 +165,10 @@ Obj FuncADD_LIST (
 
 /****************************************************************************
 **
-*F  RemList(<list>) . . . . . . . .  add an object to the end of a list
+*F  RemList(<list>) . . . . . . . .  remove an object from the end of a list
 **
-**  'RemList' removes the last object <obj> from the end  of  the  list  
-** <list>,  and returns it.
+**  'RemList' removes the last object <obj> from the end of the list <list>,
+**  and returns it.
 */
 Obj            RemList (
     Obj                 list)

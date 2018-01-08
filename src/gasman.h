@@ -636,7 +636,7 @@ extern  UInt                    NrHalfDeadBags;
 **  <type> that have been allocated.
 **
 **  This  information is only  kept if {\Gasman} is  compiled with the option
-**  '-DCOUNT_BAGS', e.g., with 'make <target> COPTS=-DCOUNT_BAGS'.
+**  'COUNT_BAGS' defined.
 */
 typedef struct  {
     const Char *            name;
@@ -970,7 +970,7 @@ extern TNumGlobalBags GlobalBags;
 **  There is a limit on the number of calls to 'InitGlobalBag', which is 20000
 **  by default.   If the application has  more global variables that may hold
 **  bag  identifier, you  have to  compile  {\Gasman} with a  higher value of
-**  'NR_GLOBAL_BAGS', i.e., with 'make COPTS=-DNR_GLOBAL_BAGS=<nr>'.
+**  'NR_GLOBAL_BAGS'.
 **
 **  <cookie> is a C string, which should uniquely identify this global
 **  bag from all others.  It is used  in reconstructing  the Workspace
