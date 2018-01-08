@@ -2257,77 +2257,25 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
 
 /****************************************************************************
 **
-*F  BID(<bag>)  . . . . . . . . . . . .  bag identifier (as unsigned integer)
-*F  IS_BAG(<bid>) . . . . . .  test whether a bag identifier identifies a bag
 *F  BAG(<bid>)  . . . . . . . . . . . . . . . . . . bag (from bag identifier)
-*F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
-*F  SIZE_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . size of a bag
-*F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
 *F  ELM_BAG(<bag>,<i>)  . . . . . . . . . . . . . . . <i>-th element of a bag
 *F  SET_ELM_BAG(<bag>,<i>,<elm>)  . . . . . . . . set <i>-th element of a bag
 **
-**  'BID', 'IS_BAG', 'BAG', 'TNUM_BAG', 'TNAM_BAG', 'PTR_BAG', 'ELM_BAG', and
-**  'SET_ELM_BAG' are functions to support  debugging.  They are not intended
-**  to be used  in an application  using {\Gasman}.  Note  that the functions
-**  'TNUM_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
-**  which are usually not available in a debugger.
+**  'BAG', 'ELM_BAG', and 'SET_ELM_BAG' are functions to support  debugging.
+**  They are not intended to be used in an application using {\Gasman}.
 */
-
-#ifdef  DEBUG_FUNCTIONS_BAGS
-
-#undef  TNUM_BAG
-#undef  SIZE_BAG
-#undef  PTR_BAG
-
-UInt BID( Bag bag )
+Bag BAG(UInt bid)
 {
-    return (UInt) bag;
+    return IS_BAG_ID((Bag)bid) ? (Bag)bid : 0;
 }
 
-
-Bag BAG (
-    UInt                bid )
-{
-    if (IS_BAG_ID(bid))
-        return (Bag) bid;
-    else
-        return (Bag) 0;
-}
-
-UInt TNUM_BAG( Bag bag )
-{
-    return BAG_HEADER(bag)->type;
-}
-
-const Char * TNAM_BAG( Bag bag )
-{
-    return InfoBags[ BAG_HEADER(bag)->type ].name;
-}
-
-UInt SIZE_BAG( Bag bag )
-{
-    return BAG_HEADER(bag)->size;
-}
-
-Bag * PTR_BAG( Bag bag )
-{
-    return (*(Bag**)(bag));
-}
-
-UInt ELM_BAG (
-    Bag                 bag,
-    UInt                i )
+UInt ELM_BAG(Bag bag, UInt i)
 {
     return (UInt) ((*(Bag**)(bag))[i]);
 }
 
-UInt SET_ELM_BAG (
-    Bag                 bag,
-    UInt                i,
-    UInt                elm )
+UInt SET_ELM_BAG(Bag bag, UInt i, UInt elm)
 {
-    (*(Bag**)(bag))[i] = (Bag) elm;
+    (*(Bag **)(bag))[i] = (Bag)elm;
     return elm;
 }
-
-#endif
