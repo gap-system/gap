@@ -447,16 +447,11 @@ static void LoadBagData ( void )
   flags = LoadUInt1();
   size = LoadUInt();
 
-#ifdef DEBUG_LOADING
-  {
     if (InfoBags[type].name == NULL)
       {
         Pr("Bad type %d, size %d\n",type,size);
         exit(1);
       }
-  }
-  
-#endif  
 
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( type, flags, size );

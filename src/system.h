@@ -59,12 +59,6 @@
 /* define to get information while restoring                               */
 /* #undef DEBUG_LOADING */
 
-/* define to debug registering of global bags                              */
-/* #undef DEBUG_GLOBAL_BAGS */
-
-/* define to debug registering of function handlers                        */
-/* #undef DEBUG_HANDLER_REGISTRATION */
-
 
 /* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
 

@@ -944,14 +944,11 @@ void InitHandlerFunc (
         Pr( "No room left for function handler\n", 0L, 0L );
         SyExit(1);
     }
-#ifdef DEBUG_HANDLER_REGISTRATION
-    {
-      UInt i;
-      for (i = 0; i < NHandlerFuncs; i++)
+
+    for (UInt i = 0; i < NHandlerFuncs; i++)
         if (!strcmp(HandlerFuncs[i].cookie, cookie))
-          Pr("Duplicate cookie %s\n", (Int)cookie, 0L);
-    }
-#endif
+            Pr("Duplicate cookie %s\n", (Int)cookie, 0L);
+
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
     HandlerFuncs[NHandlerFuncs].cookie = cookie;
     HandlerSortingStatus = 0; /* no longer sorted by handler or cookie */
@@ -964,9 +961,6 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
-
-#ifdef DEBUG_HANDLER_REGISTRATION
-
 static void CheckHandlersBag(
     Bag         bag )
 {
@@ -994,13 +988,10 @@ static void CheckHandlersBag(
     }
 }
 
-void CheckAllHandlers(
-       void )
+void CheckAllHandlers(void)
 {
-  CallbackForAllBags( CheckHandlersBag);
+    CallbackForAllBags(CheckHandlersBag);
 }
-
-#endif
 
 static int IsLessHandlerInfo (
     TypeHandlerInfo *           h1, 
