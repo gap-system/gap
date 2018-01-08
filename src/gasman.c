@@ -440,14 +440,12 @@ TNumInfoBags            InfoBags [ NTYPES ];
 
 /****************************************************************************
 **
-*F  IS_BAG -- check if a value looks like a masterpointer reference.
+*F  IS_BAG_ID -- check if a value looks like a masterpointer id
 */
-static inline UInt IS_BAG (
-    UInt                bid )
+static inline UInt IS_BAG_ID(void * ptr)
 {
-    return (((UInt)MptrBags <= bid)
-         && (bid < (UInt)OldBags)
-         && (bid & (sizeof(Bag)-1)) == 0);
+    return (((void *)MptrBags <= ptr) && (ptr < (void *)OldBags) &&
+            ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
 }
 
 /****************************************************************************
@@ -648,9 +646,7 @@ void MarkAllSubBagsDefault( Bag bag )
 // to start with).
 inline void MarkBag( Bag bag )
 {
-  if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
-       && (Bag)MptrBags <= bag              /* in plausible range */
-       && bag < (Bag)OldBags                /*  "    "       "    */
+  if ( IS_BAG_ID(bag)
        && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
        && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
        && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
@@ -662,9 +658,7 @@ inline void MarkBag( Bag bag )
 
 void MarkBagWeakly( Bag bag )
 {
-  if ( (((UInt)bag) & (sizeof(Bag)-1)) == 0 /* really looks like a pointer */
-       && (Bag)MptrBags <= bag              /* in plausible range */
-       && bag < (Bag)OldBags                /*  "    "       "    */
+  if ( IS_BAG_ID(bag)
        && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
        && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
        && IS_MARKED_DEAD(bag) )             /*  and not marked already */
@@ -2016,8 +2010,7 @@ again:
           Bag *mptr = (Bag *)*p;
           if ( mptr == OldWeakDeadBagMarker)
             NrHalfDeadBags--;
-          if ( mptr == OldWeakDeadBagMarker || IS_BAG((UInt)mptr) || mptr == 0)
-            {
+          if (mptr == OldWeakDeadBagMarker || IS_BAG_ID(mptr) || mptr == 0) {
               *p = FreeMptrBags;
               FreeMptrBags = (Bag)p;
             }
@@ -2250,7 +2243,7 @@ UInt BID( Bag bag )
 Bag BAG (
     UInt                bid )
 {
-    if ( IS_BAG(bid) )
+    if (IS_BAG_ID(bid))
         return (Bag) bid;
     else
         return (Bag) 0;
