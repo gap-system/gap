@@ -3191,9 +3191,7 @@ void InitializeGap (
 #       if !defined(BOEHM_GC)
             WarnInitGlobalBag = 1;
 #       endif
-#       ifdef DEBUG_HANDLER_REGISTRATION
-            CheckAllHandlers();
-#       endif
+        CheckAllHandlers();
 
         SyInitializing = 1;    
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {

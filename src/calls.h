@@ -362,6 +362,9 @@ extern ObjFunc HandlerOfCookie (
 
 extern void SortHandlers( UInt byWhat );
 
+extern void CheckAllHandlers(void);
+
+
 /****************************************************************************
 **
 *F  NewFunction( <name>, <narg>, <nams>, <hdlr> )  . . .  make a new function

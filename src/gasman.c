@@ -478,20 +478,10 @@ void InitSweepFuncBags (
     UInt                type,
     TNumSweepFuncBags    sweep_func )
 {
-#ifdef CHECK_FOR_CLASH_IN_INIT_SWEEP_FUNC
-    char                str[256];
-
     if ( TabSweepFuncBags[type] != 0 ) {
-        str[0] = 0;
-        strncat( str, "warning: sweep function for type ", 33 );
-        str[33] = '0' + ((type/100) % 10);
-        str[34] = '0' + ((type/ 10) % 10);
-        str[35] = '0' + ((type/  1) % 10);
-        str[36] = 0;
-        strncat( str, " already installed\n", 19 );
-        SyFputs( str, 0 );
+        Pr("warning: sweep function for type %d already installed\n", type, 0);
     }
-#endif
+
     TabSweepFuncBags[type] = sweep_func;
 }
 
@@ -519,20 +509,10 @@ void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
 {
-#ifdef CHECK_FOR_CLASH_IN_INIT_MARK_FUNC
-    char                str[256];
-
     if ( TabMarkFuncBags[type] != MarkAllSubBagsDefault ) {
-        str[0] = 0;
-        strncat( str, "warning: mark function for type ", 32 );
-        str[32] = '0' + ((type/100) % 10);
-        str[33] = '0' + ((type/ 10) % 10);
-        str[34] = '0' + ((type/  1) % 10);
-        str[35] = 0;
-        strncat( str, " already installed\n", 19 );
-        SyFputs( str, 0 );
+        Pr("warning: mark function for type %d already installed\n", type, 0);
     }
-#endif
+
     TabMarkFuncBags[type] = mark_func;
 }
 
@@ -757,18 +737,18 @@ void InitGlobalBag (
         (*AbortFuncBags)(
             "Panic: Gasman cannot handle so many global variables" );
     }
-#ifdef DEBUG_GLOBAL_BAGS
-    {
-      UInt i;
-      if (cookie != (Char *)0)
-        for (i = 0; i < GlobalBags.nr; i++)
-          if ( 0 == strcmp(GlobalBags.cookie[i], cookie) )
-            if (GlobalBags.addr[i] == addr)
-              Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
-            else
-              Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+
+    if (cookie != 0) {
+        for (UInt i = 0; i < GlobalBags.nr; i++) {
+            if (0 == strcmp(GlobalBags.cookie[i], cookie)) {
+                if (GlobalBags.addr[i] == addr)
+                    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
+                else
+                    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+            }
+        }
     }
-#endif
+
     if ( WarnInitGlobalBag ) {
         Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0L );
     }
@@ -777,7 +757,6 @@ void InitGlobalBag (
     GlobalBags.nr++;
     GlobalSortingStatus = 0;
 }
-
 
 
 static Int IsLessGlobal (
@@ -919,18 +898,16 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   header->size = size;
   header->link = NextMptrRestoring;
   NextMptrRestoring++;
-#ifdef DEBUG_LOADING
+
   if ((Bag *)NextMptrRestoring >= OldBags)
     (*AbortFuncBags)("Overran Masterpointer area");
-#endif
 
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
 
-#ifdef DEBUG_LOADING
   if (AllocBags > EndBags)
     (*AbortFuncBags)("Overran data area");
-#endif
+
 #ifdef COUNT_BAGS
   InfoBags[type].nrLive   += 1;
   InfoBags[type].nrAll    += 1;
