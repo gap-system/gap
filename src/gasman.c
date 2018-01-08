@@ -450,6 +450,16 @@ static inline UInt IS_BAG_ID(void * ptr)
 
 /****************************************************************************
 **
+*F  IS_BAG_BODY -- check if value like a pointer to a bag body
+*/
+static inline UInt IS_BAG_BODY(void * ptr)
+{
+    return (((void *)OldBags <= ptr) && (ptr < (void *)AllocBags) &&
+            ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
+}
+
+/****************************************************************************
+**
 *F  InitMsgsFuncBags(<msgs-func>) . . . . . . . . .  install message function
 **
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
@@ -1903,6 +1913,9 @@ again:
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
             dstHeader->size = header->size;
+#if SIZEOF_VOID_P == 4
+            dstHeader->reserved = 0;
+#endif
 
             dstHeader->link = (Bag)UNMARKED_ALIVE(header->link);
             dst = DATA(dstHeader);
@@ -2123,19 +2136,51 @@ again:
 *F  CheckMasterPointers() . . . . do consistency checks on the masterpointers
 **
 */
-
 void CheckMasterPointers( void )
 {
-  Bag *ptr;
-  for (ptr = MptrBags; ptr < OldBags; ptr++)
-    {
-      if (*ptr != (Bag)0 &&             /* bottom of free chain */
-          *ptr != (Bag)NewWeakDeadBagMarker &&
-          *ptr != (Bag)OldWeakDeadBagMarker &&
-          (((Bag *)*ptr < MptrBags &&
-            (Bag *)*ptr > AllocBags) ||
-           (UInt)(*ptr) % sizeof(Bag) != 0))
-        (*AbortFuncBags)("Bad master pointer detected in check");
+    Bag bag;
+
+    // iterate over all bag identifiers
+    for (Bag * ptr = MptrBags; ptr < OldBags; ptr++) {
+        bag = (Bag)ptr;
+
+        // weakly dead bag?
+        if (*ptr == (Bag)NewWeakDeadBagMarker ||
+            *ptr == (Bag)OldWeakDeadBagMarker)
+            continue;
+
+        // part of chain of free master pointers?
+        if (*ptr == 0 || IS_BAG_ID(*ptr)) {
+            continue;
+        }
+
+        // none of the above, so it must be an active master pointer
+        // otherwise, error out
+        if (!IS_BAG_BODY(*ptr))
+            (*AbortFuncBags)("Bad master pointer detected");
+
+        // sanity check: the link pointer must either point back; or else
+        // this bag must be part of the chain of changed bags (which thus
+        // must be non-empty)
+        if (ChangedBags == 0 && LINK_BAG(bag) != bag) {
+            (*AbortFuncBags)("Master pointer with bad link word detected");
+        }
+
+#if SIZEOF_VOID_P == 4
+        // sanity check: reserved bits must be unused
+        if (BAG_HEADER(bag)->reserved != 0) {
+            (*AbortFuncBags)("Master pointer with non-zero reserved bits "
+                             "detected");
+        }
+#endif
+    }
+
+    // check the chain of free master pointers
+    bag = FreeMptrBags;
+    while (bag != 0) {
+        if (!IS_BAG_ID(bag))
+            (*AbortFuncBags)("Bad chain of free master pointers detected");
+        bag = (Bag)*bag;
     }
 }
 
