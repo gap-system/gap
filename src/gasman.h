@@ -370,7 +370,7 @@ extern Bag * YoungBags;
 extern Bag   ChangedBags;
 static inline void CHANGED_BAG(Bag bag)
 {
-    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
+    if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
         ChangedBags = bag;
     }
@@ -866,9 +866,7 @@ extern void MarkBagWeakly( Bag bag );
 **  'MarkArrayOfBags' iterates over <count> all bags in the given array,
 **  and marks each bag using MarkBag.
 */
-extern void MarkArrayOfBags( Bag array[], int count );
-
-
+extern void MarkArrayOfBags(const Bag array[], UInt count);
 
 
 /****************************************************************************
