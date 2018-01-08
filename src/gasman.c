@@ -1136,7 +1136,7 @@ Bag NewBag (
     AllocBags = DATA(header) + WORDS_BAG(size);
     ADD_CANARY();
 
-    /* enter size-type words                                               */
+    // enter bag header
     header->type = type;
     header->flags = 0;
     header->size = size;
@@ -1158,7 +1158,7 @@ Bag NewBag (
 **
 **  'RetypeBag' is very simple.
 **
-**  All it has to do is to change the size-type word of the bag.
+**  All it has to do is to change type word of the bag.
 **
 **  If  {\Gasman} was compiled with the  option 'COUNT_BAGS' then 'RetypeBag'
 **  also updates the information in 'InfoBags' (see "InfoBags").
@@ -1201,10 +1201,10 @@ void            RetypeBag (
 **
 **  If the size of the bag changes only a little bit, so that  the  number of
 **  words needed for the data area does not  change, 'ResizeBag' only changes
-**  the size-type word of the bag.
+**  the size word of the bag.
 **
 **  If  the bag  is  to be  shrunk  and at  least   one  word becomes   free,
-**  'ResizeBag'  changes  the  size-type word of  the bag, and stores a magic
+**  'ResizeBag'  changes  the  size word of  the bag, and stores a magic
 **  size-type word in  the first free word.  This  magic size-type  word  has
 **  type 255 and the size  is the number  of  following  free bytes, which is
 **  always divisible by 'sizeof(Bag)'.  The  type 255 allows 'CollectBags' to
@@ -1292,7 +1292,7 @@ UInt ResizeBag (
     }
 
     // if the bag is shrunk we insert a magic marker into the heap
-    // Note: if the bag is the the last bag, we could in theory also shrink it
+    // Note: if the bag is the last bag, we could in theory also shrink it
     // by moving 'AllocBags', however this is not correct as the "freed"
     // memory may not be zero filled, and zeroing it out would cost us
     else if ( diff < 0 ) {
@@ -1654,7 +1654,9 @@ UInt FullBags;
 linked from weak pointer objects but whose bag bodies have been
 collected.  Two values are used so that old masterpointers of this
 kind can be reclaimed after a full garbage collection. The values must
-not look like valid pointers, and should be congruent to 1 mod sizeof(Bag) */
+not look like valid pointers, and should be congruent to 1 mod sizeof(Bag),
+to ensure that IS_WEAK_DEAD_BAG works correctly.
+*/
 
 Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
 Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
@@ -1759,6 +1761,7 @@ again:
         // given TNUM.
         // Young bags normally are never put onto the changed list, because
         // CHANGED_BAGS ignores young bags. However, it can happen if we
+        // resize an old bag and it needs to be moved as a result, or if we
         // swap the masterpointers of an old and a young bag. In that case,
         // we must be careful to not collect the young bag (which was old
         // before the masterpointer swap; see the comment on
@@ -1900,7 +1903,7 @@ again:
 
             BagHeader * dstHeader = (BagHeader *)dst;
 
-            /* update identifier, copy size-type and link field            */
+            // update identifier, copy bag header
             SET_PTR_BAG( UNMARKED_ALIVE(header->link), DATA(dstHeader));
             end = DATA(header) + WORDS_BAG( header->size );
             dstHeader->type = header->type;
@@ -2097,7 +2100,7 @@ again:
         (*MsgsFuncBags)( FullBags, 6,
                          SizeWorkspace/(1024/sizeof(Bag)));
 
-    /* if we are not done, then true again                                 */
+    // if we are not done, then try again
     if ( ! done ) {
         FullBags = 1;
         goto again;
