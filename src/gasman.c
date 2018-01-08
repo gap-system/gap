@@ -277,7 +277,7 @@ void CLEAR_CANARY() {
 
 void CHANGED_BAG(Bag bag) {
     CANARY_DISABLE_VALGRIND();
-    if (PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
+    if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
         ChangedBags = bag;
     }
@@ -586,66 +586,51 @@ static inline Bag UNMARKED_HALFDEAD(Bag x)
 }
 
 
-void MarkNoSubBags( Bag bag )
+void MarkNoSubBags(Bag bag)
 {
 }
 
-void MarkOneSubBags( Bag bag )
+void MarkOneSubBags(Bag bag)
 {
-    Bag                 sub;            /* one subbag identifier           */
-    sub = PTR_BAG(bag)[0];
-    MarkBag( sub );
+    MarkBag(CONST_PTR_BAG(bag)[0]);
 }
 
-void MarkTwoSubBags( Bag bag )
+void MarkTwoSubBags(Bag bag)
 {
-    Bag                 sub;            /* one subbag identifier           */
-    sub = PTR_BAG(bag)[0];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[1];
-    MarkBag( sub );
+    MarkBag(CONST_PTR_BAG(bag)[0]);
+    MarkBag(CONST_PTR_BAG(bag)[1]);
 }
 
-void MarkThreeSubBags( Bag bag )
+void MarkThreeSubBags(Bag bag)
 {
-    Bag                 sub;            /* one subbag identifier           */
-    sub = PTR_BAG(bag)[0];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[1];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[2];
-    MarkBag( sub );
+    MarkBag(CONST_PTR_BAG(bag)[0]);
+    MarkBag(CONST_PTR_BAG(bag)[1]);
+    MarkBag(CONST_PTR_BAG(bag)[2]);
 }
 
-void MarkFourSubBags( Bag bag )
+void MarkFourSubBags(Bag bag)
 {
-    Bag                 sub;            /* one subbag identifier           */
-    sub = PTR_BAG(bag)[0];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[1];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[2];
-    MarkBag( sub );
-    sub = PTR_BAG(bag)[3];
-    MarkBag( sub );
+    MarkBag(CONST_PTR_BAG(bag)[0]);
+    MarkBag(CONST_PTR_BAG(bag)[1]);
+    MarkBag(CONST_PTR_BAG(bag)[2]);
+    MarkBag(CONST_PTR_BAG(bag)[3]);
 }
 
-inline void MarkArrayOfBags( Bag array[], int count )
+inline void MarkArrayOfBags(const Bag array[], UInt count)
 {
-    int i;
-    for (i = 0; i < count; i++) {
-        MarkBag( array[i] );
+    for (UInt i = 0; i < count; i++) {
+        MarkBag(array[i]);
     }
 }
 
-void MarkAllSubBags( Bag bag )
+void MarkAllSubBags(Bag bag)
 {
-    MarkArrayOfBags( PTR_BAG( bag ), SIZE_BAG(bag)/sizeof(Bag) );
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
 }
 
-void MarkAllSubBagsDefault( Bag bag )
+void MarkAllSubBagsDefault(Bag bag)
 {
-    MarkArrayOfBags( PTR_BAG( bag ), SIZE_BAG(bag)/sizeof(Bag) );
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
 }
 
 // We define MarkBag as a inline function here so that
@@ -654,11 +639,11 @@ void MarkAllSubBagsDefault( Bag bag )
 // Other marking functions don't get to inline MarkBag calls anymore,
 // but luckily these are rare (and usually not performance critical
 // to start with).
-inline void MarkBag( Bag bag )
+inline void MarkBag(Bag bag)
 {
   if ( IS_BAG_ID(bag)
-       && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
-       && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
+       && YoungBags < CONST_PTR_BAG(bag)    /*  points to a young bag */
+       && CONST_PTR_BAG(bag) <= AllocBags   /*    "     " "  "     "  */
        && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
     {
         LINK_BAG(bag) = MarkedBags;
@@ -666,11 +651,11 @@ inline void MarkBag( Bag bag )
     }
 }
 
-void MarkBagWeakly( Bag bag )
+void MarkBagWeakly(Bag bag)
 {
   if ( IS_BAG_ID(bag)
-       && YoungBags < PTR_BAG(bag)          /*  points to a young bag */
-       && PTR_BAG(bag) <= AllocBags         /*    "     " "  "     "  */
+       && YoungBags < CONST_PTR_BAG(bag)    /*  points to a young bag */
+       && CONST_PTR_BAG(bag) <= AllocBags   /*    "     " "  "     "  */
        && IS_MARKED_DEAD(bag) )             /*  and not marked already */
     {
       // mark it now as we don't have to recurse
@@ -1319,10 +1304,10 @@ UInt ResizeBag (
     }
 
     // if the last bag is enlarged ...
-    else if ( PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags ) {
+    else if (CONST_PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags) {
         CLEAR_CANARY();
         // check that enough storage for the new bag is available
-        if ( EndBags < PTR_BAG(bag)+WORDS_BAG(new_size)
+        if (EndBags < CONST_PTR_BAG(bag) + WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
             return 0;
         }
@@ -1386,9 +1371,9 @@ UInt ResizeBag (
         }
 
         /* if the bag is old, put it onto the changed bags list            */
-        else if ( PTR_BAG(bag) <= YoungBags ) {
-             newHeader->link = ChangedBags;
-             ChangedBags = bag;
+        else if (CONST_PTR_BAG(bag) <= YoungBags) {
+            newHeader->link = ChangedBags;
+            ChangedBags = bag;
         }
 
         /* if the bag is young, enter the normal link word                 */
@@ -1780,7 +1765,7 @@ again:
         // because that function only puts subbags on the list of marked
         // bag, which does not prevent the young bag itself from being
         // collected (which is what we need).
-        if ( PTR_BAG(first) <= YoungBags )
+        if (CONST_PTR_BAG(first) <= YoungBags)
             (*TabMarkFuncBags[TNUM_BAG(first)])( first );
         else
             MarkBag(first);
@@ -1837,7 +1822,7 @@ again:
         /* dead bag                                                        */
         else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef DEBUG_MASTERPOINTERS
-            if ( PTR_BAG( UNMARKED_DEAD(header->link) ) != DATA(header) ) {
+            if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
@@ -1870,7 +1855,7 @@ again:
         /* half-dead bag                                                   */
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_HALFDEAD(header->link) ) != DATA(header) ) {
+            if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
@@ -1900,7 +1885,7 @@ again:
         /* live bag                                                        */
         else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef DEBUG_MASTERPOINTERS
-            if  ( PTR_BAG( UNMARKED_ALIVE(header->link) ) != DATA(header) ) {
+            if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
                 (*AbortFuncBags)("incorrectly marked bag");
             }
 #endif
