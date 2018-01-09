@@ -2422,6 +2422,18 @@ Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
   if ( p == INTOBJ_INT(0) )
     ErrorMayQuit( "PValuation: <p> must be nonzero", 0L, 0L  );
 
+  if (SIZE_INT_OR_INTOBJ(n) == 1 && SIZE_INT_OR_INTOBJ(p) == 1) {
+    UInt N = AbsOfSmallInt(n);
+    UInt P = AbsOfSmallInt(p);
+    if (N == 0 || P == 1) return INTOBJ_INT(0);
+    k = 0;
+    while (N % P == 0) {
+      N /= P;
+      k++;
+    }
+    return INTOBJ_INT(k);
+  }
+
   /* For certain values of p, mpz_remove replaces its "dest" argument
      and tries to deallocate the original mpz_t in it. This means
      we cannot use a fake_mpz_t for it. However, we are not really
