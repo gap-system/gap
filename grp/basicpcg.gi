@@ -16,7 +16,7 @@
 ##
 InstallMethod( TrivialGroupCons,
     "pc group",
-    [ IsPcGroup and IsFinite ],
+    [ IsPcGroup and IsTrivial ],
     function( filter )
     filter:= CyclicGroup( IsPcGroup, 1 );
     SetIsTrivial( filter, true );
@@ -29,7 +29,7 @@ InstallMethod( TrivialGroupCons,
 #M  AbelianGroupCons( <IsPcGroup and IsFinite>, <ints> )
 ##
 InstallMethod( AbelianGroupCons, "pc group", true,
-    [ IsPcGroup and IsFinite, IsList ], 0,
+    [ IsPcGroup and IsAbelian, IsList ], 0,
 function( filter, ints )
 local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
 
@@ -139,7 +139,7 @@ end );
 InstallMethod( CyclicGroupCons,
     "pc group",
     true,
-    [ IsPcGroup and IsFinite,
+    [ IsPcGroup and IsCyclic,
       IsInt and IsPosRat ],
     0,
 
@@ -265,7 +265,7 @@ end );
 InstallMethod( ElementaryAbelianGroupCons,
     "pc group",
     true,
-    [ IsPcGroup and IsFinite,
+    [ IsPcGroup and IsElementaryAbelian,
       IsInt and IsPosRat ],
     0,
 

@@ -17,7 +17,7 @@
 InstallOtherMethod( CyclicGroupCons,
     "matrix group for given field",
     true,
-    [ IsMatrixGroup and IsFinite,
+    [ IsMatrixGroup and IsFinite and IsCyclic,
       IsField,
       IsInt and IsPosRat ],
     0,
@@ -48,7 +48,7 @@ end );
 InstallMethod( CyclicGroupCons,
     "matrix group for default field",
     true,
-    [ IsMatrixGroup and IsFinite,
+    [ IsMatrixGroup and IsFinite and IsCyclic,
       IsInt and IsPosRat ],
     0,
 
