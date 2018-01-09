@@ -307,7 +307,9 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the dihedral group of size <A>n</A> in the category given by the
 ##  filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>,
+##  unless <A>n</A> equals <Ref Var="infinity"/>, in which case the
+##  default filter is switched to  <Ref Func="IsFpGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -316,6 +318,8 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 ##  <pc group of size 8 with 3 generators>
 ##  gap> DihedralGroup( IsPermGroup, 8 );
 ##  Group([ (1,2,3,4), (2,4) ])
+##  gap> DihedralGroup(infinity);
+##  <fp group of size infinity on the generators [ r, s ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -324,6 +328,9 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 BindGlobal( "DihedralGroup", function ( arg )
 
   if Length(arg) = 1  then
+    if arg[1]=infinity then
+      return DihedralGroupCons( IsFpGroup, arg[1] );
+    fi;
     return DihedralGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
     if Length(arg) = 2  then
