@@ -145,8 +145,27 @@ local f,rels,g;
   f   := FreeGroup( IsSyllableWordsFamily, "r", "s" );
   rels:= [f.1^(n/2),f.2^2,f.1^f.2*f.1];
   g   := f/rels;
-  SetReducedMultiplication(g);
   SetSize(g,n);
+  SetReducedMultiplication(g);
+  return g;
+
+end );
+
+InstallOtherMethod( DihedralGroupCons,
+    "fp group",
+    true,
+    [ IsFpGroup and IsFinite,
+      IsInfinity ],
+    0,
+
+function( filter, inf )
+local f,rels,g;
+
+  f   := FreeGroup( IsSyllableWordsFamily, "r", "s" );
+  rels:= [f.2^2,f.1^f.2*f.1];
+  g   := f/rels;
+  SetSize(g,infinity);
+  SetReducedMultiplication(g);
   return g;
 
 end );
