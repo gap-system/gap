@@ -212,14 +212,16 @@ end)();
 ##  <Ref Var="GlobalMersenneTwister"/> as random source. It can be reset 
 ##  into a known state as in the following example.
 ##  <Example><![CDATA[
-##  gap> seed := State(GlobalMersenneTwister);;
+##  gap> seed := Reset(GlobalMersenneTwister);;
+##  gap> seed = State(GlobalMersenneTwister);
+##  true
 ##  gap> List([1..10],i->Random(Integers));
-##  [ 2, -1, -2, -1, -1, 1, -4, 1, 0, -1 ]
+##  [ -3, 2, -1, -2, -1, -1, 1, -4, 1, 0 ]
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -1, 1, -1, 1, -2, -1, -2, 0, -1 ]
+##  [ -1, -1, -1, 1, -1, 1, -2, -1, -2, 0 ]
 ##  gap> Reset(GlobalMersenneTwister, seed);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ 2, -1, -2, -1, -1, 1, -4, 1, 0, -1 ]
+##  [ -3, 2, -1, -2, -1, -1, 1, -4, 1, 0 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
