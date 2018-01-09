@@ -153,7 +153,7 @@ InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
     rn := rs!.R_N mod 55 + 1;
     rs!.R_N := rn;
     rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
-    return list[ QUO_INT( rx[rn] * LEN_LIST(list), R_228 ) + 1 ];
+    return list[ QUO_INT( rx[rn] * LEN_LIST(list), -R_228 ) + 1 ];
   else
     return list[Random(rs, 1, Length(list))];
   fi;
