@@ -463,7 +463,7 @@ InstallGlobalFunction( Suborbits, function( arg )
       suborbits:=[];
     else
       if not IsBound( H!.suborbits )  then
-	H!.suborbits := [  ];
+        H!.suborbits := [  ];
       fi;
       suborbits := H!.suborbits;
     fi;
@@ -2643,8 +2643,8 @@ local Pr, div, B, rbase, data, N;
     N := ShallowCopy( G );
   fi;
   # remove cached information
-  Unbind(G!.suborbits);
-  Unbind(E!.suborbits);
+  G!.suborbits:=[];
+  E!.suborbits:=[];
 
   # bring the stabilizer chains back into a decent form
   ReduceStabChain(StabChainMutable(G));
@@ -2660,8 +2660,8 @@ Eh, Lh, Nh,G0;
 
   G := arg[ 1 ];
   E := arg[ 2 ];
-  Unbind(G!.suborbits); # in case any remained from interruption
-  Unbind(E!.suborbits);
+  G!.suborbits:=[]; # in case any remained from interruption
+  E!.suborbits:=[];
   if IsTrivial( E ) or IsTrivial( G ) then
       return G;
   elif Size( E ) = 2  then
