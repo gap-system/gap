@@ -1415,6 +1415,25 @@ gap> List([-2^101,-2^100,2^100,2^101], SmallestRootInt);
 [ -2, -16, 2, 2 ]
 
 #
+# test IsPrimePowerInt
+#
+gap> P:=2^255-19;; # big prime
+gap> Filtered([-10..10], IsPrimePowerInt);
+[ -8, -7, -5, -3, -2, 2, 3, 4, 5, 7, 8, 9 ]
+gap> SetX(Primes, [1..30], {p,k}->IsPrimePowerInt(p^k));
+[ true ]
+gap> SetX(Primes, [1..10], {p,k}->IsPrimePowerInt(P*p^k));
+[ false ]
+gap> SetX(Primes, [1..10], {p,k}->IsPrimePowerInt((P*p)^k));
+[ false ]
+gap> ForAll([1..30], k->IsPrimePowerInt(P^k));
+true
+gap> ForAll([1..10], k->not IsPrimePowerInt(1009*P^k));
+true
+gap> ForAll([1..30], k->not IsPrimePowerInt((1009*P)^k));
+true
+
+#
 gap> STOP_TEST( "intarith.tst", 1);
 
 #############################################################################
