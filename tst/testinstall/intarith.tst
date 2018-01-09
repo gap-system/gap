@@ -1395,6 +1395,26 @@ gap> IS_PROBAB_PRIME_INT(1, 0);
 Error, IsProbablyPrimeInt: <reps> must be a small positive integer
 
 #
+# test SmallestRootInt
+#
+gap> SetX(Primes, [1..30], {p,k}->SmallestRootInt(p^k)=p);
+[ true ]
+gap> SetX(Primes, [1..30], {p,k}->SmallestRootInt(p^k*1009)=p^k*1009);
+[ true ]
+gap> SetX(Primes, [1..30], {p,k}->SmallestRootInt((p*1009)^k)=p*1009);
+[ true ]
+gap> p:=2^255-19;; # big prime
+gap> ForAll([1..30], k-> SmallestRootInt(p^k) = p);
+true
+gap> List([-10..10], SmallestRootInt);
+[ -10, -9, -2, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 2, 5, 6, 7, 2, 3, 10 ]
+gap> List(data, SmallestRootInt);
+[ -100000000000000000001, -10000, -10000, -1, 0, 1, 10, 10, 
+  100000000000000000001 ]
+gap> List([-2^101,-2^100,2^100,2^101], SmallestRootInt);
+[ -2, -16, 2, 2 ]
+
+#
 gap> STOP_TEST( "intarith.tst", 1);
 
 #############################################################################

@@ -1118,7 +1118,7 @@ InstallGlobalFunction( SignInt, SIGN_RAT ); # support rationals for backwards co
 #F  SmallestRootInt( <n> )  . . . . . . . . . . . smallest root of an integer
 ##
 InstallGlobalFunction(SmallestRootInt,function ( n )
-    local   k, r, s, p, l, q;
+    local   k, r, s, p, l, q, i;
 
     # check the argument
     if   n > 0  then k := 2;  s :=  1;
@@ -1127,15 +1127,17 @@ InstallGlobalFunction(SmallestRootInt,function ( n )
     fi;
 
     # exclude small divisors, and thereby large exponents
-    if n mod 2 = 0  then
-        p := 2;
-    else
-        p := 3;  while p < 100  and n mod p <> 0  do p := p+2;  od;
-    fi;
+    for p in Primes do
+        if p*p > n then return s * n; fi;
+        if n mod p = 0 then break; fi;
+    od;
     l := LogInt( n, p );
 
     # loop over the possible prime divisors of exponents
-    # use Euler's criterion to cast out impossible ones
+    # use Fermat's little theorem to cast out impossible ones:
+    # for suppose we had r such that n = r^k. Then by Fermat,
+    # n^((q-1)/k) = r^(q-1) is congruent 0 or 1 mod q
+    i := Position(Primes, k);
     while k <= l  do
         q := 2*k+1;  while not IsPrimeInt(q)  do q := q+2*k;  od;
         if PowerModInt( n, (q-1)/k, q ) <= 1  then
@@ -1143,9 +1145,12 @@ InstallGlobalFunction(SmallestRootInt,function ( n )
             if r ^ k = n  then
                 n := r;
                 l := QuoInt( l, k );
-            else
-                k := NextPrimeInt( k );
+                continue;
             fi;
+        fi;
+        if i <> fail and i < Length(Primes) then
+            i := i + 1;
+            k := Primes[i];
         else
             k := NextPrimeInt( k );
         fi;
