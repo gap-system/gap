@@ -1332,13 +1332,41 @@ gap> for m in [1..100] do
 #
 gap> checkPValuationInt:=function(n,p)
 >   local k, m;
->   if n = 0 then return true; fi;
 >   k:=PVALUATION_INT(n,p);
+>   if n = 0 or p = 1 or p = -1 then return k = 0; fi;
 >   m:=n/p^k;
 >   return IsInt(m) and (m mod p) <> 0;
 > end;;
-gap> ForAll([-10000 .. 10000], n-> ForAll([2,3,5,7,251], p -> checkPValuationInt(n,p)));
+gap> ps := [-2^60-1,-2^60,-2^28-1,-2^28];;
+gap> Append(ps, [-6..-1]);
+gap> Append(ps, [1..20]);
+gap> Append(ps, [250..260]);
+gap> Append(ps, [2^28-1,2^28,2^60-1,2^60]);;
+gap> SetX([-1000 .. 1000], ps, checkPValuationInt);
+[ true ]
+gap> SetX([-1000 .. 1000], ps, {n,p}->checkPValuationInt(n+2^100,p));
+[ true ]
+gap> SetX([-1000 .. 1000], ps, {n,p}->checkPValuationInt(n-2^100,p));
+[ true ]
+
+#
+gap> p:=2^255-19;; # big prime
+gap> ForAll([1..30], k-> PVALUATION_INT((p+1)^k,2)=k);
 true
+gap> ForAll([1..30], k-> PVALUATION_INT((p+1)^k,p)=0);
+true
+gap> ForAll([1..30], k-> PVALUATION_INT(p^k+1,2)=1);
+true
+gap> ForAll([1..30], k-> PVALUATION_INT(p^k+1,p)=0);
+true
+
+#
+gap> SetX(data, dataNonZero, checkPValuationInt);
+[ true ]
+gap> List([2..6], p->List(data, n->PVALUATION_INT(n,p)));
+[ [ 0, 20, 4, 0, 0, 0, 4, 20, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 10, 2, 0, 0, 0, 2, 10, 0 ], [ 0, 20, 4, 0, 0, 0, 4, 20, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 gap> PVALUATION_INT(10,0);
 Error, PValuation: <p> must be nonzero
 gap> PVALUATION_INT(0,0);
