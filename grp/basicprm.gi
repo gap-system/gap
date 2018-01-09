@@ -16,7 +16,7 @@
 ##
 InstallMethod( TrivialGroupCons,
     "perm group",
-    [ IsPermGroup and IsFinite ],
+    [ IsPermGroup and IsTrivial ],
     function( filter )
     return GroupByGenerators( [], () );
     end );
@@ -29,7 +29,7 @@ InstallMethod( TrivialGroupCons,
 InstallMethod( AbelianGroupCons,
     "perm group",
     true,
-    [ IsPermGroup and IsFinite,
+    [ IsPermGroup and IsAbelian,
       IsList ],
     0,
 
@@ -58,7 +58,7 @@ end );
 #M  ElementaryAbelianGroupCons( <IsPermGroup>, <size> )
 ##
 InstallMethod( ElementaryAbelianGroupCons, "perm group", true,
-    [ IsPermGroup and IsFinite, IsPosInt ],
+    [ IsPermGroup and IsElementaryAbelian, IsPosInt ],
     0,function(filter,size)
 
     local G;
@@ -189,7 +189,7 @@ end );
 InstallMethod( CyclicGroupCons,
     "regular perm group",
     true,
-    [ IsPermGroup and IsRegular and IsFinite,
+    [ IsPermGroup and IsRegular and IsCyclic,
       IsInt and IsPosRat ],
     0,
 

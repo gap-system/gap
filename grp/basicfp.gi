@@ -15,7 +15,7 @@
 #M  TrivialGroupCons( <IsPcGroup> )
 ##
 InstallMethod( TrivialGroupCons,  "fp group",
-    [ IsFpGroup and IsFinite ],
+    [ IsFpGroup and IsTrivial ],
     filter -> FreeGroup(0));
 
 
@@ -24,7 +24,7 @@ InstallMethod( TrivialGroupCons,  "fp group",
 #M  AbelianGroupCons( <IsFpGroup and IsFinite>, <ints> )
 ##
 InstallMethod( AbelianGroupCons, "fp group", true,
-    [ IsFpGroup and IsFinite, IsList ], 0,
+    [ IsFpGroup and IsAbelian, IsList ], 0,
 function( filter, ints )
 local   f,g,i,j,rels,gfam,fam;
 
@@ -91,7 +91,7 @@ end );
 #M  CyclicGroupCons( <IsFpGroup>, <n> )
 ##
 InstallOtherMethod( CyclicGroupCons, "fp group", true,
-    [ IsFpGroup,IsObject ], 0,
+    [ IsFpGroup and IsCyclic, IsObject ], 0,
 function( filter, n )
 local f,g,fam,gfam;
   if n=infinity then
@@ -183,7 +183,7 @@ end );
 InstallMethod( ElementaryAbelianGroupCons,
     "fp group",
     true,
-    [ IsFpGroup and IsFinite,
+    [ IsFpGroup and IsFinite and IsElementaryAbelian,
       IsInt and IsPosRat ],
     0,
 
@@ -206,7 +206,7 @@ end );
 InstallMethod( FreeAbelianGroupCons,
     "fp group",
     true,
-    [ IsFpGroup,
+    [ IsFpGroup and IsAbelian,
       IsInt and IsPosRat ],
     0,
 
