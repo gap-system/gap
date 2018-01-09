@@ -2456,6 +2456,60 @@ Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 /****************************************************************************
 **
 */
+Obj FuncROOT_INT(Obj self, Obj n, Obj k)
+{
+    fake_mpz_t n_mpz, result_mpz;
+
+    REQUIRE_INT_ARG("Root", "n", n);
+    REQUIRE_INT_ARG("Root", "k", k);
+
+    if (!IS_POS_INT(k))
+        ErrorMayQuit("Root: <k> must be a positive integer", 0, 0);
+    if (IS_NEG_INT(n) && IS_EVEN_INT(k))
+        ErrorMayQuit("Root: <n> is negative but <k> is even", 0, 0);
+
+    if (k == INTOBJ_INT(1) || n == INTOBJ_INT(0))
+        return n;
+
+    if (!IS_INTOBJ(k)) {
+#ifdef SYS_IS_64_BIT
+        // if k is not immediate, i.e., k >= 2^60, then the root is 1 unless
+        // n >= 2^k >= 2^(2^60), which means storage for n must be at least
+        // 2^60 bits, i.e. 2^57 bytes. That's more RAM than anybody has for
+        // the near future.
+        return IS_NEG_INT(n) ? INTOBJ_INT(-1) : INTOBJ_INT(1);
+#else
+        // if k is not immediate, i.e., k >= 2^28, then the root is 1 unless
+        // n >= 2^k >= 2^(2^28), which means storage for n must be at least
+        // 2^28 bits, i.e., 2^25 bytes, or 2^23 words (each 32 bits).
+        if (SIZE_INT_OR_INTOBJ(n) < (1 << 23))
+            return IS_NEG_INT(n) ? INTOBJ_INT(-1) : INTOBJ_INT(1);
+        else
+            return Fail;    // return fail so that high level code can handle
+                            // this
+#endif
+    }
+
+    UInt K = INT_INTOBJ(k);
+    UInt root_size = 1 + (SIZE_INT_OR_INTOBJ(n) - 1) / K;
+    NEW_FAKEMPZ(result_mpz, root_size);
+    FAKEMPZ_GMPorINTOBJ(n_mpz, n);
+
+    if (K == 2)
+        mpz_sqrt(MPZ_FAKEMPZ(result_mpz), MPZ_FAKEMPZ(n_mpz));
+    else
+        mpz_root(MPZ_FAKEMPZ(result_mpz), MPZ_FAKEMPZ(n_mpz), K);
+
+    CHECK_FAKEMPZ(result_mpz);
+    CHECK_FAKEMPZ(n_mpz);
+
+    return GMPorINTOBJ_FAKEMPZ(result_mpz);
+}
+
+
+/****************************************************************************
+**
+*/
 Obj InverseModInt(Obj base, Obj mod)
 {
     fake_mpz_t base_mpz, mod_mpz, result_mpz;
@@ -2727,6 +2781,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(FACTORIAL_INT, 1, "n"),
     GVAR_FUNC(BINOMIAL_INT, 2, "n, k"),
     GVAR_FUNC(PVALUATION_INT, 2, "n, p"),
+    GVAR_FUNC(ROOT_INT, 2, "n, k"),
     GVAR_FUNC(POWERMODINT, 3, "base, exp, mod"),
     GVAR_FUNC(IS_PROBAB_PRIME_INT, 2, "n, reps"),
     GVAR_FUNC(INVMODINT, 2, "base, mod"),
