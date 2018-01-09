@@ -690,6 +690,20 @@ UInt8 UInt8_ObjInt(Obj i)
 #endif
 }
 
+// This function returns an immediate integer, or
+// an integer object with exactly one limb, and returns
+// its absolute value as an unsigned integer.
+static inline UInt AbsOfSmallInt(Obj x)
+{
+    if (!IS_INTOBJ(x)) {
+        GAP_ASSERT(SIZE_INT(x) == 1);
+        return VAL_LIMB0(x);
+    }
+    Int val = INT_INTOBJ(x);
+    return val > 0 ? val : -val;
+}
+
+
 /****************************************************************************
 **
 *F  PrintInt( <gmp> ) . . . . . . . . . . . . . . . . print a GMP constant
@@ -2162,6 +2176,18 @@ Obj GcdInt ( Obj opL, Obj opR )
 
   sizeL = SIZE_INT_OR_INTOBJ(opL);
   sizeR = SIZE_INT_OR_INTOBJ(opR);
+
+  // for small inputs, run Euclid directly
+  if (sizeL == 1 || sizeR == 1) {
+    if (sizeR != 1) {
+      SWAP(Obj, opL, opR);
+    }
+    UInt r = AbsOfSmallInt(opR);
+    FAKEMPZ_GMPorINTOBJ(mpzL, opL);
+    r = mpz_gcd_ui(0, MPZ_FAKEMPZ(mpzL), r);
+    CHECK_FAKEMPZ(mpzL);
+    return ObjInt_UInt(r);
+  }
 
   NEW_FAKEMPZ( mpzResult, sizeL < sizeR ? sizeL : sizeR );
   FAKEMPZ_GMPorINTOBJ( mpzL, opL );
