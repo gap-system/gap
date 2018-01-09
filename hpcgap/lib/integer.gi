@@ -1111,13 +1111,11 @@ InstallGlobalFunction(RootInt,function ( arg )
     else Error("usage: `Root( <n> )' or `Root( <n>, <k> )'");
     fi;
 
-    # check the arguments and handle trivial cases
-    if  k <= 0                  then Error("<k> must be positive");
-    elif k = 1                  then return n;
-    elif n < 0 and k mod 2 = 0  then Error("<n> must be positive");
-    elif n < 0 and k mod 2 = 1  then return -RootInt( -n, k );
-    elif n = 0                  then return 0;
-    elif n <= k                 then return 1;
+    # ask the kernel to compute the root; this can only fail for
+    # huge values of k and enormously huge values of n
+    r := ROOT_INT(n, k);
+    if r <> fail then
+        return r;
     fi;
 
     # r is the first approximation, s the second, we need: root <= s < r

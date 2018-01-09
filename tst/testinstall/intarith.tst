@@ -1377,6 +1377,47 @@ gap> PVALUATION_INT(1,fail);
 Error, PValuation: <p> must be an integer (not a boolean or fail)
 
 #
+# test ROOT_INT
+#
+gap> checkROOT_INT:=function(n,k)
+>   local r;
+>   r:=RootInt(n,k);
+>   return r^k <= n and n < (r+1)^k;
+> end;;
+gap> SetX([0 .. 10000], [1,2,3,5,7,251,256], checkROOT_INT);
+[ true ]
+gap> ForAll([1..70], k -> checkROOT_INT(bigPos,k));
+true
+gap> SetX([1 .. 10000], [3,5,7,251,bigPos+1], {n,k} -> RootInt(n,k) = -RootInt(-n,k));
+[ true ]
+gap> ForAll([1,3..71], k -> RootInt(bigNeg,k) = -RootInt(bigPos,k));
+true
+gap> Set([1 .. 10000], n -> RootInt(n, bigPos));
+[ 1 ]
+gap> Set([1,2^28-1,2^28,2^60-1,2^60,bigPos], k -> RootInt(0, k));
+[ 0 ]
+gap> RootInt(bigPos, bigPos);
+1
+gap> RootInt(bigNeg, bigPos+1);
+-1
+gap> RootInt(bigNeg, bigPos);
+Error, Root: <n> is negative but <k> is even
+gap> RootInt(-2, 2);
+Error, Root: <n> is negative but <k> is even
+gap> RootInt(100, 2^100);
+1
+gap> RootInt(2^100, 2^100);
+1
+gap> RootInt(-2^100, 2^100);
+Error, Root: <n> is negative but <k> is even
+gap> RootInt(0, 0);
+Error, Root: <k> must be a positive integer
+gap> RootInt(fail, 1);
+Error, Root: <n> must be an integer (not a boolean or fail)
+gap> RootInt(1, fail);
+Error, Root: <k> must be an integer (not a boolean or fail)
+
+#
 # test IS_PROBAB_PRIME_INT
 #
 gap> ForAll([-100..10000], n -> IS_PROBAB_PRIME_INT(n, 5) = IsProbablyPrimeInt(n));
