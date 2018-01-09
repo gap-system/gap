@@ -923,8 +923,51 @@ InstallGlobalFunction( IsOddInt, n -> n mod 2 = 1 );
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
 ##
-InstallGlobalFunction( IsPrimePowerInt,
-    n -> IsPrimeInt( SmallestRootInt( n ) ) );
+InstallGlobalFunction( IsPrimePowerInt, function(n)
+    local   k, r, s, p, l, q, i;
+
+    # check the argument
+    if   n >  1 then k := 2;  s :=  1;
+    elif n < -1 then k := 3;  s := -1;  n := -n;
+    else return false;
+    fi;
+
+    # exclude small divisors, and thereby large exponents
+    for p in Primes do
+        if p*p > n then return true; fi; # n is prime
+        r := PVALUATION_INT(n, p);
+        if r > 0 then
+            if s = -1 and IsEvenInt(r) then return false; fi;
+            return n = p^r;
+        fi;
+    od;
+    l := LogInt( n, p );
+
+    # loop over the possible prime divisors of exponents
+    # use Fermat's little theorem to cast out impossible ones:
+    # for suppose we had r such that n = r^k. Then by Fermat,
+    # n^((q-1)/k) = r^(q-1) is congruent 0 or 1 mod q
+    i := Position(Primes, k);
+    while k <= l  do
+        q := 2*k+1;  while not IsPrimeInt(q)  do q := q+2*k;  od;
+        if PowerModInt( n, (q-1)/k, q ) <= 1  then
+            r := RootInt( n, k );
+            if r ^ k = n  then
+                n := r;
+                l := QuoInt( l, k );
+                continue;
+            fi;
+        fi;
+        if i <> fail and i < Length(Primes) then
+            i := i + 1;
+            k := Primes[i];
+        else
+            k := NextPrimeInt( k );
+        fi;
+    od;
+
+    return IsPrimeInt(n);
+end);
 
 
 #############################################################################
