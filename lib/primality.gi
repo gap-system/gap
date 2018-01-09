@@ -578,8 +578,8 @@ function(N)
   # try straightforward method first
   if cheap=true and FactIntPartial=true then
     to_check:=Concatenation(
-      List(Set(PartialFactorization(N-1,7)),p->["F",p]),
-      List(Set(PartialFactorization(N+1,7)),p->["L",p]));
+      List(Set(PartialFactorization(N-1,7 : cheap)),p->["F",p]),
+      List(Set(PartialFactorization(N+1,7 : cheap)),p->["L",p]));
     if [] <> PrimalityProof_VerifyStructure(N,to_check)
     then return to_check;
     else Info(InfoPrimeInt,1,"Straightforward Fermat-Lucas primality proof failed on ",N);
