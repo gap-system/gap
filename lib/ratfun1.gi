@@ -42,9 +42,9 @@ local f,typ,lc;
     typ := rfam!.threeLaurentPolynomialTypes[1];
   fi;
   
-  # slightly better to do this after the Length has been determined 
+  # slightly better to do this after the Length has been determined
   if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
-    ConvertToVectorRep(coeff);
+    coeff := ImmutableVector(DefaultRing(coeff), coeff);
   fi;
 
   
