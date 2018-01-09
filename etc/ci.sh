@@ -116,7 +116,7 @@ GAPInput
     TESTMANUALSPASS=yes
     for ch in $SRCDIR/tst/testmanuals/*.tst
     do
-        $GAP -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
+        $GAP -b -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QUIT_GAP(0);
 GAPInput
