@@ -985,9 +985,19 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
+
+# FIXME: Find out and document how exactly ATTRIBUTES and RUN_ATTR_FUNCS is
+#        used
 BIND_GLOBAL( "ATTRIBUTES", [] );
 
 BIND_GLOBAL( "ATTR_FUNCS", [] );
+
+BIND_GLOBAL( "REGISTER_ATTRIBUTE_WITH_FILTER",
+function(name, filter, getter, setter, tester, mutable)
+    ADD_LIST( ATTRIBUTES,
+              MakeImmutable( [ name, filter, getter, setter, tester, mutable ] ) );
+end);
+
 
 BIND_GLOBAL( "InstallAttributeFunction", function ( func )
     local   attr;
@@ -1004,8 +1014,7 @@ BIND_GLOBAL( "RUN_ATTR_FUNCS",
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
-    ADD_LIST( ATTRIBUTES,
-        MakeImmutable( [ name, filter, getter, setter, tester, mutflag ] ) );
+    REGISTER_ATTRIBUTE_WITH_FILTER(name, filter, getter, setter, tester, mutflag);
 end );
 
 
@@ -1274,6 +1283,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
             # also set the extended range for the setter
             req := GET_OPER_FLAGS( Setter(gvar) );
             STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
+            REGISTER_ATTRIBUTE_WITH_FILTER(name, filter, gvar, Setter(gvar), Tester(gvar), mutflag);
         fi;
     else
         # The attribute is new.
