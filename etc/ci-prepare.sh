@@ -83,28 +83,19 @@ then
   # reports; and also the IO package, as the profiling package depends on it.
   pushd "$SRCDIR/pkg"
 
-  # HACK: io 4.4.6 (shipped with GAP 4.8.6) directly accesses some GAP internals
-  # (for GASMAN), which we will remove in GAP 4.9. To ensure it works,
-  # we simply grab the latest version from git.
-  # TODO: go back to using the io release on 4.5.0 is out
-  rm -rf io*
-  git clone https://github.com/gap-packages/io
-  cd io
-  # invoke autogen if configure does not exist or is not executable
-  [[ -x configure ]] || ./autogen.sh
-  ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
-  make V=1
-  cd ..
+  # On OS X, we only install a minimal set of packages, so clone missing
+  # packages directly from their repositories
+  if [[ ! -d io* ]]
+  then
+    time git clone https://github.com/gap-packages/io
+  fi
+  if [[ ! -d profiling* ]]
+  then
+    time git clone https://github.com/gap-packages/profiling
+  fi
 
-  # HACK: grab the latest profiling version.
-  rm -rf profiling*
-  git clone https://github.com/gap-packages/profiling
-  cd profiling
-  # invoke autogen if configure does not exist or is not executable
-  [[ -x configure ]] || ./autogen.sh
-  ./configure $CONFIGFLAGS --with-gaproot=$BUILDDIR
-  make V=1
-  cd ..
+  # Compile io and profiling packages
+  "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
   popd
 
