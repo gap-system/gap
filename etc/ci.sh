@@ -75,8 +75,7 @@ do
       rm -rf NormalizInterface-0.9.8
     fi
 
-    $SRCDIR/bin/BuildPackages.sh --with-gaproot=$BUILDDIR
-    if [[ "$(wc -l < log/fail.log)" -ge 3 ]]
+    if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR"
     then
         echo "Some packages failed to build:"
         cat "log/fail.log"
