@@ -1148,32 +1148,30 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           return;
       end);
 
+# construct getter, setter and tester
+BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
+    local  flags, mutflag, getter, rank;
 
-BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, rank;
-
-    # construct getter, setter and tester
-    name   := arg[1];
-    filter := arg[2];
+    rank := 1;
+    mutflag := LEN_LIST(args) >= 1 and (args[1] = "mutable" or args[1] = true);
+    if LEN_LIST(args) = 1 and IS_INT(args[1]) then
+        rank := args[1];
+    elif LEN_LIST(args) = 2 and IS_INT(args[2]) then
+        rank := args[2];
+    elif LEN_LIST(args) > 2 then
+        Error("Usage: NewAttribute( <name>, <filter>, [<mutable>, <rank>] )");
+    fi;
 
     if not IS_OPERATION( filter ) then
       Error( "<filter> must be an operation" );
     fi;
     flags:= FLAGS_FILTER( filter );
 
-    # the mutability flags is the third one (which can also be the rank)
-    mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
-
     # construct a new attribute
     if mutflag then
         getter := NEW_MUTABLE_ATTRIBUTE( name );
     else
         getter := NEW_ATTRIBUTE( name );
-    fi;
-    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
-        rank := arg[3];
-    else
-        rank := 1;
     fi;
     STORE_OPER_FLAGS(getter, [ flags ]);
 
@@ -1204,100 +1202,90 @@ end );
 ##  <#/GAPDoc>
 ##
 
-BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local   name,  gvar,  req,  reqs,  filter,  setter,  tester,  
-              attr,  nname, mutflag, flags, rank;
+BIND_GLOBAL( "ConvertToAttribute",
+function(name, op, filter, rank, mutable)
+    local req, reqs, flags, nname;
+    # `op' is not an attribute (tester) and not a property (tester),
+    # or `op' is a filter; in any case, `op' is not an attribute.
 
-    name:= arg[1];
+    # if `op' has no one argument declarations we can turn it into 
+    # an attribute
+    req := GET_OPER_FLAGS(op);
+    for reqs in req do
+        if LENGTH(reqs)  = 1 then
+            Error( "operation `", name, "' has been declared as a one ",
+                   "argument Operation and cannot also be an Attribute");
+        fi;
+    od;
+
+    flags := FLAGS_FILTER(filter);
+    STORE_OPER_FLAGS( op, [ FLAGS_FILTER( filter ) ] );
+
+    # kernel magic for the conversion
+    if mutable then
+        OPER_TO_MUTABLE_ATTRIBUTE(op);
+    else
+        OPER_TO_ATTRIBUTE(op);
+    fi;
+
+    OPER_SetupAttribute(op, flags, mutable, filter, rank, name);
+
+    # and make the remaining assignments
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, SETTER_FILTER(op) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, TESTER_FILTER(op) );
+end);
+
+BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
+    local gvar, req, reqs, setter, tester,
+              attr, nname, mutflag, flags, rank;
+
+    rank := 1;
+    mutflag := LEN_LIST(args) >= 1 and (args[1] = "mutable" or args[1] = true);
+    if LEN_LIST(args) = 1 and IS_INT(args[1]) then
+        rank := args[1];
+    elif LEN_LIST(args) = 2 and IS_INT(args[2]) then
+        rank := args[2];
+    elif LEN_LIST(args) > 2 then
+        Error("Usage: DeclareAttribute( <name>, <filter>, [<mutable>, <rank>] )");
+    fi;
 
     if ISB_GVAR( name ) then
+        if not IS_OPERATION( filter ) then
+            Error( "<filter> must be an operation" );
+        fi;
 
-      # The variable exists already.
-      gvar:= VALUE_GLOBAL( name );
+        # The variable exists already.
+        gvar := VALUE_GLOBAL( name );
 
-      # Check that the variable is in fact bound to an operation.
-      if not IS_OPERATION( gvar ) then
-        Error( "variable `", name, "' is not bound to an operation" );
-      fi;
+        # Check that the variable is in fact bound to an operation.
+        if not IS_OPERATION( gvar ) then
+            Error( "variable `", name, "' is not bound to an operation" );
+        fi;
 
-      # The attribute has already been declared.
-      # If it was not created as an attribute
-      # then we may be able to convert it
-      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+        # The attribute has already been declared.
+        # If it was not created as an attribute
+        # then we may be able to convert it
+        if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+            ConvertToAttribute(name, gvar, filter, rank, mutflag);
+        else
+            STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
 
-          # `gvar' is not an attribute (tester) and not a property (tester),
-          # or `gvar' is a filter;
-          # in any case, `gvar' is not an attribute.
-          
-          # if `gvar' has no one argument declarations we can turn it into 
-          # an attribute
-          req := GET_OPER_FLAGS(gvar);
-          for reqs in req do
-              if LENGTH(reqs)  = 1 then
-                  Error( "operation `", name, "' has been declared as a one ",
-                         "argument Operation and cannot also be an Attribute");
-              fi;
-          od;
-          mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
-          
-          # add the new set of requirements 
-          filter:= arg[2];
-          if not IS_OPERATION( filter ) then
-              Error( "<filter> must be an operation" );
-          fi;
-          
-          flags := FLAGS_FILTER(filter);
-          STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
-          
-          # kernel magic for the conversion
-          if mutflag then
-              OPER_TO_MUTABLE_ATTRIBUTE(gvar);
-          else
-              OPER_TO_ATTRIBUTE(gvar);
-          fi;
-          
-          # now we have to adjust the data structures
-          
-          if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
-              rank := arg[3];
-          else
-              rank := 1;
-          fi;
-          OPER_SetupAttribute(gvar, flags, mutflag, filter, rank, name);         
-          # and make the remaining assignments
-          nname:= "Set"; APPEND_LIST_INTR( nname, name );
-          BIND_GLOBAL( nname, SETTER_FILTER(gvar) );
-          nname:= "Has"; APPEND_LIST_INTR( nname, name );
-          BIND_GLOBAL( nname, TESTER_FILTER(gvar) );
-          
-          return;      
-    
-              
-      fi;
-
-      # Add the new requirements.
-      filter:= arg[2];
-      if not IS_OPERATION( filter ) then
-        Error( "<filter> must be an operation" );
-      fi;
-      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
-
-      # also set the extended range for the setter
-      req := GET_OPER_FLAGS( Setter(gvar) );
-      STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
-
+            # also set the extended range for the setter
+            req := GET_OPER_FLAGS( Setter(gvar) );
+            STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
+        fi;
     else
+        # The attribute is new.
+        attr := NewAttribute(name, filter, mutflag, rank);
+        BIND_GLOBAL( name, attr );
 
-      # The attribute is new.
-      attr:= CALL_FUNC_LIST( NewAttribute, arg );
-      BIND_GLOBAL( name, attr );
-      
-      # and make the remaining assignments
-      nname:= "Set"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, SETTER_FILTER(attr) );
-      nname:= "Has"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
-
+        # and make the remaining assignments
+        nname := "Set"; APPEND_LIST_INTR( nname, name );
+        BIND_GLOBAL( nname, SETTER_FILTER(attr) );
+        nname := "Has"; APPEND_LIST_INTR( nname, name );
+        BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
     fi;
 end );
 
