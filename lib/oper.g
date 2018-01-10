@@ -131,19 +131,43 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 #############################################################################
 ##
 #V  OPERATIONS
+#V  OPER_DATA
 ##
 ##  <ManSection>
 ##  <Var Name="OPERATIONS"/>
+##  <Var Name="OPER_DATA"/>
+##  <Func Name="STORE_OPER_DATA"/>
+##  <Func Name="GET_OPER_FLAGS"/>
+##  <Func Name="GET_DECLARATION_LOCATIONS"/>
+##
 ##
 ##  <Description>
-##  is a list that stores all &GAP; operations at the odd positions,
-##  and the corresponding list of requirements at the even positions.
-##  More precisely, if the operation <C>OPERATIONS[<A>n</A>]</C> has been declared
-##  by several calls of <C>DeclareOperation</C>,
-##  with second arguments <A>req1</A>, <A>req2</A>, \ldots,
-##  each being a list of filters, then <C>OPERATIONS[ <A>n</A>+1 ]</C> is the list
-##  <C>[</C> <A>flags1</A>, <A>flags2</A>, <M>\ldots</M>, <C>]</C>,
-##  where <A>flagsi</A> is the list of flags of the filters in <A>reqi</A>.
+##  <Ref Var="OPERATIONS"/> is a list that stores all &GAP; operations, and
+##  <Ref Var="OPER_DATA"/> is a record that stores additional information
+##  about operations, such lists of required filters and source locations
+##  where <Ref Func="DeclareOperation"> was called.
+##
+##  The functions <Ref Func="GET_OPER_FLAGS"/> and
+##  <Ref Func="GET_DECLARATION_LOCATIONS"/> are provided to obtain stored
+##  information.
+##
+##  <Ref Func="STORE_OPER_DATA"/> is used to store the flags and source
+##  locations of calls to <Ref Func="NewOperation"/> ord
+##  <Ref Func="DeclareOperation"/>
+##
+##  More precisely, if for the operation <C>op</C>, which has been declared by
+##  by several calls of <Ref Func="DeclareOperation"/> , each with second
+##  arguments <A>req1</A>, <A>req2</A>, \ldots, then calling
+##  <Ref Func="GET_OPER_FLAGS"/>  with argument <A>op</A> returns the list
+##  <C>[ flags1, flags2, \ldots ]</C>, where <C>flagsi</C> is the list offset
+##  flags of the filters in <C>reqi</C>.
+##
+##  Calling <Ref Func="GET_DECLARATION_LOCATIONS"/> with argument <A>op</A>
+##  returns a list of source locations where <Ref Func="NewOperation"/> or 
+##  <Ref Func="DeclareOperation"/> was called.
+##
+##  A <E>source location on</E> is a pair <C>[ f, n ]</C> where <C>f</C> is a
+##  filename and <C>l</C> is a line number in the file.
 ##  </Description>
 ##  </ManSection>
 ##
