@@ -5671,7 +5671,7 @@ InstallMethod( JenningsLieAlgebra,
                 co:=[];
                 for k in [1,3..Length(e)-1] do
                     pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
-                    t:= Sum( enum_gens{[1..pos[i]*p-1]}, Length )+pp;
+                    t:= Sum( enum_gens{[1..pos[i]+pos[j]-1]}, Length )+pp;
                     Add( co, One( F )*e[k+1] );
                     Add( co, t );
                 od;
@@ -5869,8 +5869,7 @@ InstallMethod( PCentralLieAlgebra,
                 co:=[];
                 for k in [1,3..Length(e)-1] do
                     pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
-                    f:= GeneratorsOfGroup( pcgps[pos[i]+pos[j]] )[pp];
-                    t:= Position( gens, f );
+                    t:= Sum( enum_gens{[1..pos[i]+pos[j]-1]}, Length )+pp;
                     Add( co, One( F )*e[k+1] );
                     Add( co, t );
                 od;
@@ -5925,8 +5924,7 @@ InstallMethod( PCentralLieAlgebra,
             x:= Zero( L );
             for k in [1,3..Length(e)-1] do
                 pp:= Position( enum_gens[pos[i]+1], e[k] );
-                f:= GeneratorsOfGroup( pcgps[pos[i]+1] )[pp];
-                t:= Position( gens, f );
+		t:= Sum( enum_gens{[1..pos[i]]}, Length )+pp;
                 x:= x+ One( F )*e[k+1]*vv[t];
             od;
             pimgs[i]:= x;
