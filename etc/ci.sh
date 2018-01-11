@@ -75,8 +75,7 @@ do
       rm -rf NormalizInterface-0.9.8
     fi
 
-    $SRCDIR/bin/BuildPackages.sh --with-gaproot=$BUILDDIR
-    if [[ "$(wc -l < log/fail.log)" -ge 3 ]]
+    if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR"
     then
         echo "Some packages failed to build:"
         cat "log/fail.log"
@@ -116,7 +115,7 @@ GAPInput
     TESTMANUALSPASS=yes
     for ch in $SRCDIR/tst/testmanuals/*.tst
     do
-        $GAP -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
+        $GAP -b -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QUIT_GAP(0);
 GAPInput

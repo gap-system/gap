@@ -104,6 +104,139 @@ InstallGlobalFunction(GapLibToc2Gap, function(file)
   return res;
 end);
         
+##  here are more functions which are used by the `default' handler
+##  functions (see their use below).
+#############################################################################
+##
+#F  HELP_CHAPTER_INFO( <book>, <chapter> )  . . . .  get info about a chapter
+##
+##  this is a helper function for `HELP_SHOW_SECTIONS'
+InstallValue(HELP_CHAPTER_BEGIN, Immutable("\\Chapter"));
+InstallValue(HELP_SECTION_BEGIN, Immutable("\\Section"));
+InstallValue(HELP_FAKECHAP_BEGIN, Immutable("%\\FakeChapter"));
+InstallValue(HELP_PRELCHAPTER_BEGIN, Immutable("\\PreliminaryChapter"));
+
+InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
+    local   info,  filename,  stream,  poss,  secnum,  pos,  line;
+
+    # get the book info
+    info := HELP_BOOK_INFO(book);
+
+    # read in a chapter
+    if not IsBound(info.secposs[chapter])  then
+
+        filename := Filename( info.directories, info.filenames[chapter] );
+        if filename = fail  then
+            Error("help file ", info.filenames[chapter], " for help book '", book.bookname, "' not found");
+            return fail;
+        fi;
+        stream := StringStreamInputTextFile(filename);
+        if stream = fail then
+            Error("help file ", filename, " does not exist or is not readable");
+            return fail;
+        fi;
+        poss   := [];
+        secnum := 0;
+        repeat
+            pos  := PositionStream(stream);
+            line := ReadLine(stream);
+            if line <> fail  then
+                if MATCH_BEGIN( line, HELP_SECTION_BEGIN )  then
+                    secnum := secnum + 1;
+                    poss[secnum] := pos;
+                elif MATCH_BEGIN( line, HELP_CHAPTER_BEGIN ) or
+		     MATCH_BEGIN( line, HELP_PRELCHAPTER_BEGIN )  then
+                    info.chappos[chapter] := pos;
+                elif MATCH_BEGIN( line, HELP_FAKECHAP_BEGIN )  then
+                    info.chappos[chapter] := pos;
+                fi;
+            fi;
+        until IsEndOfStream(stream);
+        CloseStream(stream);
+        info.secposs[chapter] := Immutable(poss);
+    fi;
+
+    # return the info
+    return [ info.chappos[chapter], info.secposs[chapter] ];
+
+end);
+
+InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
+    local book, hnb, d, pos, chapter, section, fn, path;
+
+    book := HELP_BOOK_INFO(arg[1]);
+    if book=fail then
+      Error("this book does not exist");
+    fi;
+    hnb := HELP_KNOWN_BOOKS;
+    # the path as string
+    book := hnb[2][Position(hnb[1], SIMPLE_STRING(book.bookname))][3];
+    if IsDirectory(book) then
+      d := book![1];
+    else
+      d := book;
+    fi;
+    if d[Length(d)] = '/' then
+      d := d{[1..Length(d)-1]};
+    fi;
+    
+    # find `doc'
+    pos:=Length(d)-2;
+    while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
+      pos:=pos-1;
+    od;
+    #see if it is only `doc', if yes skip
+    if pos+2=Length(d) then
+      # it ends in doc, replace `doc' by `htm'
+      d:=Concatenation(d{[1..pos-1]},"htm");
+    else
+      # insert htm after doc
+      d:=Concatenation(d{[1..pos+2]},"/htm",d{[pos+3..Length(d)]});
+    fi;
+
+    chapter:=String(arg[2]);
+    while Length(chapter)<3 do
+      chapter:=Concatenation("0",chapter);
+    od;
+    section:=arg[3];
+
+    # first try to find a file-per-chapter .htm file
+    fn := Concatenation("CHAP", chapter, ".htm");
+    if IsDirectory(book) then
+      path := Filename([Directory(d)], fn);
+    else
+      path := Filename(List(GAPInfo.RootPaths, Directory), 
+                     Concatenation(d, "/", fn));
+    fi;
+    if path = fail then
+      # now try to find a file-per-section .htm file
+      section:=String(section);
+      while Length(section)<3 do
+        section:=Concatenation("0",section);
+      od;
+      fn := Concatenation("C", chapter, "S", section, ".htm");
+      if IsDirectory(book) then
+        path := Filename([Directory(d)], fn);
+      else
+        path := Filename(List(GAPInfo.RootPaths, Directory), 
+                       Concatenation(d, "/", fn));
+      fi;
+    fi;
+    if path <> fail and not IsString(section) and section>0 then
+      # we must have found a file-per-chapter .htm file above
+      section:=String(section);
+      while Length(section)<3 do
+	section:=Concatenation("0",section);
+      od;
+      path:=Concatenation(path,"#SECT",section);
+    fi;
+    return path;    
+end);
+
+# now the handlers
+
+atomic HELP_REGION do # acquire lock for HELP_BOOK_HANDLER
+
 ##  the default ReadSix function for books in gapmacro format
 ##  (need to parse a text file in this case, this function still
 ##  looks pretty long winded)
@@ -243,7 +376,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   od;
 
   res := rec(
-          formats       := ["text", "url", "macurl"],   
+          formats       := ["text", "url"],   
           filenames   := Immutable(c1),
 # the following three are not made immutable to allow change of names (if it
 # is found out that several sections have the same name).
@@ -273,235 +406,6 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   res.directories := [ Directory(fname{[1..Length(fname)-10]}) ];
   return res;
 end;
-
-##  here are more functions which are used by the `default' handler
-##  functions (see their use below).
-#############################################################################
-##
-#F  HELP_CHAPTER_INFO( <book>, <chapter> )  . . . .  get info about a chapter
-##
-##  this is a helper function for `HELP_SHOW_SECTIONS'
-InstallValue(HELP_CHAPTER_BEGIN, Immutable("\\Chapter"));
-InstallValue(HELP_SECTION_BEGIN, Immutable("\\Section"));
-InstallValue(HELP_FAKECHAP_BEGIN, Immutable("%\\FakeChapter"));
-InstallValue(HELP_PRELCHAPTER_BEGIN, Immutable("\\PreliminaryChapter"));
-
-InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
-    local   info,  filename,  stream,  poss,  secnum,  pos,  line;
-
-    # get the book info
-    info := HELP_BOOK_INFO(book);
-
-    # read in a chapter
-    if not IsBound(info.secposs[chapter])  then
-
-        filename := Filename( info.directories, info.filenames[chapter] );
-        if filename = fail  then
-            Error("help file ", info.filenames[chapter], " for help book '", book.bookname, "' not found");
-            return fail;
-        fi;
-        stream := StringStreamInputTextFile(filename);
-        if stream = fail then
-            Error("help file ", filename, " does not exist or is not readable");
-            return fail;
-        fi;
-        poss   := [];
-        secnum := 0;
-        repeat
-            pos  := PositionStream(stream);
-            line := ReadLine(stream);
-            if line <> fail  then
-                if MATCH_BEGIN( line, HELP_SECTION_BEGIN )  then
-                    secnum := secnum + 1;
-                    poss[secnum] := pos;
-                elif MATCH_BEGIN( line, HELP_CHAPTER_BEGIN ) or
-		     MATCH_BEGIN( line, HELP_PRELCHAPTER_BEGIN )  then
-                    info.chappos[chapter] := pos;
-                elif MATCH_BEGIN( line, HELP_FAKECHAP_BEGIN )  then
-                    info.chappos[chapter] := pos;
-                fi;
-            fi;
-        until IsEndOfStream(stream);
-        CloseStream(stream);
-        info.secposs[chapter] := Immutable(poss);
-    fi;
-
-    # return the info
-    return [ info.chappos[chapter], info.secposs[chapter] ];
-
-end);
-
-InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
-    local book, hnb, d, pos, chapter, section, fn, path;
-
-    book := HELP_BOOK_INFO(arg[1]);
-    if book=fail then
-      Error("this book does not exist");
-    fi;
-    hnb := HELP_KNOWN_BOOKS;
-    # the path as string
-    book := hnb[2][Position(hnb[1], SIMPLE_STRING(book.bookname))][3];
-    if IsDirectory(book) then
-      d := book![1];
-    else
-      d := book;
-    fi;
-    if d[Length(d)] = '/' then
-      d := d{[1..Length(d)-1]};
-    fi;
-    
-    # find `doc'
-    pos:=Length(d)-2;
-    while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
-      pos:=pos-1;
-    od;
-    #see if it is only `doc', if yes skip
-    if pos+2=Length(d) then
-      # it ends in doc, replace `doc' by `htm'
-      d:=Concatenation(d{[1..pos-1]},"htm");
-    else
-      # insert htm after doc
-      d:=Concatenation(d{[1..pos+2]},"/htm",d{[pos+3..Length(d)]});
-    fi;
-
-    chapter:=String(arg[2]);
-    while Length(chapter)<3 do
-      chapter:=Concatenation("0",chapter);
-    od;
-    section:=arg[3];
-
-    # first try to find a file-per-chapter .htm file
-    fn := Concatenation("CHAP", chapter, ".htm");
-    if IsDirectory(book) then
-      path := Filename([Directory(d)], fn);
-    else
-      path := Filename(List(GAPInfo.RootPaths, Directory), 
-                     Concatenation(d, "/", fn));
-    fi;
-    if path = fail then
-      # now try to find a file-per-section .htm file
-      section:=String(section);
-      while Length(section)<3 do
-        section:=Concatenation("0",section);
-      od;
-      fn := Concatenation("C", chapter, "S", section, ".htm");
-      if IsDirectory(book) then
-        path := Filename([Directory(d)], fn);
-      else
-        path := Filename(List(GAPInfo.RootPaths, Directory), 
-                       Concatenation(d, "/", fn));
-      fi;
-    fi;
-    if path <> fail and not IsString(section) and section>0 then
-      # we must have found a file-per-chapter .htm file above
-      section:=String(section);
-      while Length(section)<3 do
-	section:=Concatenation("0",section);
-      od;
-      path:=Concatenation(path,"#SECT",section);
-    fi;
-    return path;    
-end);
-
-HELP_EXTERNAL_URL := "";
-HELP_MAC_PROTOCOL := "file://";
-
-InstallGlobalFunction(HELP_PRINT_SECTION_MAC_IC_URL, function(arg)
-    local data, book, hnb, d, pos, chapter, section, fn;
-
-	data := rec (protocol := HELP_MAC_PROTOCOL);
-	
-    book := HELP_BOOK_INFO(arg[1]);
-    if book=fail then
-      Error("this book does not exist");
-    fi;
-    hnb := HELP_KNOWN_BOOKS;
-    # the path as string
-    book := hnb[2][Position(hnb[1], SIMPLE_STRING(book.bookname))][3];
-    if IsDirectory(book) then
-      d := book![1];
-    else
-      d := book;
-    fi;
-    if d[Length(d)] = '/' then
-      d := d{[1..Length(d)-1]};
-    fi;
-    
-    # find `doc'
-    pos:=Length(d)-2;
-    while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
-      pos:=pos-1;
-    od;
-    #see if it is only `doc', if yes skip
-    if pos+2=Length(d) then
-      # it ends in doc, replace `doc' by `htm'
-      d:=Concatenation(d{[1..pos-1]},"htm");
-    else
-      # insert htm after doc
-      d:=Concatenation(d{[1..pos+2]},"/htm",d{[pos+3..Length(d)]});
-    fi;
-
-    chapter:=String(arg[2]);
-    while Length(chapter)<3 do
-      chapter:=Concatenation("0",chapter);
-    od;
-    section:=arg[3];
-
-    fn := Concatenation("CHAP", chapter, ".htm");
-    
-    # use external URL if one is specified
-    if Length (HELP_EXTERNAL_URL) > 0 then
-    	 section:=String(section);
-         while Length(section)<3 do
-            section:=Concatenation("0",section);
-         od;
-         data.section := Concatenation ("#SECT",section);
-         data.url := Concatenation (HELP_EXTERNAL_URL, d, "/", fn);
-         return data;
-    fi;
-    
-    # try to find a file-per-chapter .htm file
-    if IsDirectory(book) then
-      data.path := Filename([Directory(d)], fn);
-    else
-      data.path := Filename(List(GAPInfo.RootPaths, Directory), 
-                     Concatenation(d, "/", fn));
-    fi;
-    if data.path <> fail then
-      if section>0 then
-         # we must have found a file-per-chapter .htm file above
-         section:=String(section);
-         while Length(section)<3 do
-            section:=Concatenation("0",section);
-         od;
-         data.section := Concatenation ("#SECT",section);
-      else
-         data.section := "";
-      fi;
-      return data;
-    fi;
-
-    # now try to find a file-per-section .htm file
-    section:=String(section);
-    while Length(section)<3 do
-       section:=Concatenation("0",section);
-    od;
-    fn := Concatenation("C", chapter, "S", section, ".htm");
-    if IsDirectory(book) then
-       data.path := Filename([Directory(d)], fn);
-    else
-       data.path := Filename(List(GAPInfo.RootPaths, Directory), 
-                       Concatenation(d, "/", fn));
-    fi;
-    if data.path <> fail then
-       data.section := "";
-       return data;
-    fi;
-    # we might try to load the html docs from the web
-    return fail;    
-end);
-
-# now the handlers
 
 HELP_BOOK_HANDLER.default.ShowChapters := function( book )
   local   info,  chap,  i;
@@ -679,10 +583,6 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
     return HELP_PRINT_SECTION_URL(info, chnr, secnr);
   fi;
   
-  if type = "macurl" then
-    return HELP_PRINT_SECTION_MAC_IC_URL(info, chnr, secnr);
-  fi;
-  
   if type = "dvi" then
     pos := PositionSorted(info.pagenumbers, [[chnr, secnr],-1]);
     if IsBound(info.pagenumbers[pos]) and info.pagenumbers[pos][1] =
@@ -705,3 +605,5 @@ end;
 HELP_BOOK_HANDLER.default.SubsectionNumber := function(info, entrynr)
   return info.entries[entrynr]{[4,5]};
 end;
+
+od; # end of atomic HELP_REGION

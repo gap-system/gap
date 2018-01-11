@@ -209,5 +209,25 @@ gap> PositionsProperty( ll, ReturnTrue );
 gap> PositionsProperty( ll, IsInt );
 [ 1, 2, 3 ]
 
+# PositionProperty
+gap> ll := [ 1, , "s" ];;
+gap> PositionProperty( ll, ReturnTrue, 0);
+1
+gap> PositionProperty( ll, ReturnTrue, 1);
+3
+gap> PositionProperty( ll, IsInt, 0);
+1
+gap> PositionProperty( ll, IsInt, 1);
+fail
+gap> ll := [ 1, 2, 3 ];;
+gap> PositionProperty( ll, ReturnTrue, 0);
+1
+gap> PositionProperty( ll, ReturnTrue, 1);
+2
+gap> PositionProperty( ll, ReturnTrue, 2);
+3
+gap> PositionProperty( ll, ReturnTrue, 3);
+fail
+
 #
 gap> STOP_TEST("list.tst");

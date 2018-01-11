@@ -1525,8 +1525,8 @@ InstallMethod( PositionProperty,
     function( list, func, from )
     local i;
 
-    if from < 1 then
-      from:= 1;
+    if from < 0 then
+      from:= 0;
     fi;
     for i in [ from+1 .. Length( list ) ] do
       if IsBound( list[i] ) then
@@ -1557,8 +1557,8 @@ InstallMethod( PositionProperty,
     function( list, func, from )
     local i;
 
-    if from < 1 then
-      from:= 1;
+    if from < 0 then
+      from:= 0;
     fi;
     for i in [ from+1 .. Length( list ) ] do
       if func( list[i] ) then

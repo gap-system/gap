@@ -40,6 +40,7 @@
 static inline Obj NEW_PLIST(UInt type, Int plen)
 {
     GAP_ASSERT(plen >= 0);
+    GAP_ASSERT(plen <= INT_INTOBJ_MAX);
     return NewBag(type, (plen + 1) * sizeof(Obj));
 }
 

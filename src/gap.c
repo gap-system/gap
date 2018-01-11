@@ -1844,7 +1844,6 @@ Obj FuncGASMAN_STATS(Obj self)
 {
   Obj res;
   Obj row;
-  Obj entry;
   UInt i,j;
   Int x;
   res = NEW_PLIST(T_PLIST_TAB_RECT + IMMUTABLE, 2);
@@ -1858,15 +1857,7 @@ Obj FuncGASMAN_STATS(Obj self)
       for (j = 1; j <= 8; j++)
         {
           x = SyGasmanNumbers[i-1][j];
-
-          /* convert x to GAP integer. x may be too big to be a small int */
-          if (x < (1L << NR_SMALL_INT_BITS))
-            entry = INTOBJ_INT(x);
-          else
-            entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
-                              INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
-                         INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
-          SET_ELM_PLIST(row, j, entry);
+          SET_ELM_PLIST(row, j, ObjInt_Int(x));
         }
       SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));       
     }
@@ -1891,25 +1882,27 @@ Obj FuncGASMAN_LIMITS( Obj self )
 
 /****************************************************************************
 **
-*F  FuncSHALLOW_SIZE( <self>, <obj> ) . . . .  expert function 'SHALLOW_SIZE'
+*F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
 */
-Obj FuncSHALLOW_SIZE (
-    Obj                 self,
-    Obj                 obj )
+
+Obj FuncTotalMemoryAllocated( Obj self )
 {
-  if (IS_INTOBJ(obj) || IS_FFE(obj))
-    return INTOBJ_INT(0);
-  else
-    return ObjInt_UInt( SIZE_BAG( obj ) );
+    return ObjInt_UInt8(SizeAllBags);
 }
 
 /****************************************************************************
 **
-*F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
+*F  FuncSIZE_OBJ( <self>, <obj> ) . . . .  expert function 'SIZE_OBJ'
+**
+**  'SIZE_OBJ( <obj> )' returns 0 for immediate objects, and otherwise
+**  returns the bag size of the object. This does not include the size of
+**  sub-objects.
 */
-
-Obj FuncTotalMemoryAllocated( Obj self ) {
-    return ObjInt_UInt8(SizeAllBags);
+Obj FuncSIZE_OBJ(Obj self, Obj obj)
+{
+    if (IS_INTOBJ(obj) || IS_FFE(obj))
+        return INTOBJ_INT(0);
+    return ObjInt_UInt(SIZE_OBJ(obj));
 }
 
 /****************************************************************************
@@ -2022,7 +2015,7 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
     if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
     body = BODY_FUNC(f);
     if (body == 0) return INTOBJ_INT(0);
-    else return INTOBJ_INT( SIZE_BAG( body ) );
+    else return ObjInt_UInt( SIZE_BAG( body ) );
 }
 
 /****************************************************************************
@@ -2810,8 +2803,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GASMAN_STATS, 0, ""),
     GVAR_FUNC(GASMAN_MESSAGE_STATUS, 0, ""),
     GVAR_FUNC(GASMAN_LIMITS, 0, ""),
-    GVAR_FUNC(SHALLOW_SIZE, 1, "object"),
     GVAR_FUNC(TotalMemoryAllocated, 0, ""),
+    GVAR_FUNC(SIZE_OBJ, 1, "object"),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
     GVAR_FUNC(TNAM_OBJ, 1, "object"),
     GVAR_FUNC(OBJ_HANDLE, 1, "object"),

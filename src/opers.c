@@ -1798,7 +1798,7 @@ static void FixTypeIDs( Bag b ) {
 
 Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
-  NextTypeID = -(1L << NR_SMALL_INT_BITS);
+  NextTypeID = INT_INTOBJ_MIN;
   CallbackForAllBags( FixTypeIDs );
   CALL_0ARGS(FLUSH_ALL_METHOD_CACHES);
   return INTOBJ_INT(NextTypeID);

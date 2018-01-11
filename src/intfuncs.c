@@ -27,21 +27,6 @@
 
 /****************************************************************************
 **
-*F  FuncSIZE_OBJ(<self>,<obj>)
-**
-**  'SIZE_OBJ( <obj> )' returns the size of a nonimmediate object. It can be
-**  used to debug memory use.
-*/
-Obj             FuncSIZE_OBJ (
-    Obj                 self,
-    Obj                 a)
-{
-  return INTOBJ_INT(SIZE_OBJ(a));
-}
-
-
-/****************************************************************************
-**
 ** * * * * * * * "Mersenne twister" random numbers  * * * * * * * * * * * * *
 **
 **  Part of this code for fast generation of 32 bit pseudo random numbers with
@@ -727,7 +712,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 
     GVAR_FUNC(HASHKEY_BAG, 4, "obj, int,int,int"),
-    GVAR_FUNC(SIZE_OBJ, 1, "obj"),
     GVAR_FUNC(InitRandomMT, 1, "initstr"),
     GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
     GVAR_FUNC(BUILD_BITFIELDS, -2, "widths, vals"),

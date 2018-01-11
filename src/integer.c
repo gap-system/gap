@@ -431,9 +431,8 @@ Obj GMP_REDUCE( Obj gmp )
     return gmp;
   }
   if ( SIZE_INT(gmp) == 1) {
-    if ( ( VAL_LIMB0(gmp) < ((1L<<NR_SMALL_INT_BITS)) ) ||
-         ( IS_INTNEG(gmp) &&
-           ( VAL_LIMB0(gmp) == (1L<<NR_SMALL_INT_BITS) ) ) ) {
+    if ( ( VAL_LIMB0(gmp) <= INT_INTOBJ_MAX ) ||
+         ( IS_INTNEG(gmp) && VAL_LIMB0(gmp) == -INT_INTOBJ_MIN ) ) {
       if ( IS_INTNEG(gmp) ) {
         return INTOBJ_INT( -(Int)VAL_LIMB0(gmp) );
       }
@@ -470,9 +469,8 @@ int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
     Pr("WARNING: non-normalized gmp value (%s:%d)\n",(Int)func,line);
   }
   if ( SIZE_INT(op) == 1) {
-    if ( ( VAL_LIMB0(op) < ((1L<<NR_SMALL_INT_BITS)) ) ||
-         ( IS_INTNEG(op) &&
-           ( VAL_LIMB0(op) == (1L<<NR_SMALL_INT_BITS) ) ) ) {
+    if ( ( VAL_LIMB0(op) <= INT_INTOBJ_MAX ) ||
+         ( IS_INTNEG(op) && VAL_LIMB0(op) == -INT_INTOBJ_MIN ) ) {
       if ( IS_INTNEG(op) ) {
         Pr("WARNING: non-reduced negative gmp value (%s:%d)\n",(Int)func,line);
         return 0;
@@ -499,7 +497,7 @@ Obj ObjInt_Int( Int i )
 {
   Obj gmp;
 
-  if ( (-(1L<<NR_SMALL_INT_BITS) <= i) && (i < 1L<<NR_SMALL_INT_BITS )) {
+  if (INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX) {
     return INTOBJ_INT(i);
   }
   else if (i < 0 ) {
@@ -516,9 +514,7 @@ Obj ObjInt_Int( Int i )
 Obj ObjInt_UInt( UInt i )
 {
   Obj gmp;
-  UInt bound = 1UL << NR_SMALL_INT_BITS;
-
-  if (i < bound) {
+  if (i <= INT_INTOBJ_MAX) {
     return INTOBJ_INT(i);
   }
   else {
@@ -532,9 +528,9 @@ Obj ObjInt_UInt( UInt i )
 Obj ObjInt_UIntInv( UInt i )
 {
   Obj gmp;
-  UInt bound = 1UL << NR_SMALL_INT_BITS;
-
-  if (i <= bound) {
+  // we need INT_INTOBJ_MIN <= -i; to express this with unsigned values, we
+  // must evaluate all negative terms, which leads to this equivalent check:
+  if (i <= -INT_INTOBJ_MIN) {
     return INTOBJ_INT(-i);
   }
   else {
@@ -1028,17 +1024,13 @@ Obj IntStringInternal(Obj string, const Char *str)
     if (string)
         str = CSTR_STRING(string);
 
-    // get the signs, if any
+    // get the sign, if any
     sign = 1;
     i = 0;
-    while (str[i] == '-') {
+    if (str[i] == '-') {
         sign = -sign;
         i++;
     }
-
-    // reject empty string (resp. string consisting only of minus signs)
-    if (str[i] == '\0')
-        return Fail;
 
     // collect the digits in groups of 8, for improved performance
     // note that 2^26 < 10^8 < 2^27, so the intermediate
@@ -1064,6 +1056,10 @@ Obj IntStringInternal(Obj string, const Char *str)
         }
         i++;
     }
+
+    // check if 0 char does not mark the end of the string
+    if (string && i < GET_LEN_STRING(string))
+        return Fail;
 
     // compose the integer value
     if (upp == INTOBJ_INT(0)) {
@@ -1288,9 +1284,9 @@ Obj AInvInt ( Obj gmp )
   if ( IS_INTOBJ( gmp ) ) {
     
     /* special case (ugh)                                              */
-    if ( gmp == INTOBJ_INT( -(1L<<NR_SMALL_INT_BITS) ) ) {
+    if ( gmp == INTOBJ_MIN ) {
       inv = NewBag( T_INTPOS, sizeof(mp_limb_t) );
-      SET_VAL_LIMB0( inv, 1L<<NR_SMALL_INT_BITS );
+      SET_VAL_LIMB0( inv, -INT_INTOBJ_MIN );
     }
     
     /* general case                                                    */
@@ -1303,9 +1299,8 @@ Obj AInvInt ( Obj gmp )
   else {
     if ( IS_INTPOS(gmp) ) {
       /* special case                                                        */
-      if ( ( SIZE_INT(gmp) == 1 ) 
-           && ( VAL_LIMB0(gmp) == (1L<<NR_SMALL_INT_BITS) ) ) {
-        return INTOBJ_INT( -(Int) (1L<<NR_SMALL_INT_BITS) );
+      if ( SIZE_INT(gmp) == 1 && VAL_LIMB0(gmp) == -INT_INTOBJ_MIN ) {
+        return INTOBJ_MIN;
       }
       else {
         inv = NewBag( T_INTNEG, SIZE_OBJ(gmp) );
@@ -1335,9 +1330,9 @@ Obj AbsInt( Obj op )
   if ( IS_INTOBJ(op) ) {
     if ( ((Int)op) > 0 ) /* non-negative? */
       return op;
-    else if ( op == INTOBJ_INT(-(1L << NR_SMALL_INT_BITS)) ) {
+    else if ( op == INTOBJ_MIN ) {
       a = NewBag( T_INTPOS, sizeof(mp_limb_t) );
-      SET_VAL_LIMB0( a, (1L << NR_SMALL_INT_BITS) );
+      SET_VAL_LIMB0( a, -INT_INTOBJ_MIN );
       return a;
     } else
       return (Obj)( 2 - (Int)op );
@@ -1516,15 +1511,15 @@ Obj ProdIntObj ( Obj n, Obj op )
   /* <res> = 0 means that <res> is the neutral element                     */
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   1 ) {
     res = 0;
-    k = 1L << (NR_SMALL_INT_BITS+1);
+    k = 1L << NR_SMALL_INT_BITS;
     l = INT_INTOBJ(n);
-    while ( 1 < k ) {
+    while ( 0 < k ) {
       res = (res == 0 ? res : SUM( res, res ));
-      k = k / 2;
       if ( k <= l ) {
         res = (res == 0 ? op : SUM( res, op ));
         l = l - k;
       }
+      k = k / 2;
     }
   }
   
@@ -1684,15 +1679,15 @@ Obj             PowObjInt ( Obj op, Obj n )
   /* <res> = 0 means that <res> is the neutral element                   */
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   0 ) {
     res = 0;
-    k = 1L << (NR_SMALL_INT_BITS+1);
+    k = 1L << NR_SMALL_INT_BITS;
     l = INT_INTOBJ(n);
-    while ( 1 < k ) {
+    while ( 0 < k ) {
       res = (res == 0 ? res : PROD( res, res ));
-      k = k / 2;
       if ( k <= l ) {
         res = (res == 0 ? op : PROD( res, op ));
         l = l - k;
       }
+      k = k / 2;
     }
   }
   
@@ -1776,10 +1771,10 @@ Obj ModInt ( Obj opL, Obj opR )
   else if ( IS_INTOBJ(opL) ) {
     
     /* the small int -(1<<28) mod the large int (1<<28) is 0               */
-    if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS) )
+    if ( opL == INTOBJ_MIN
          && ( IS_INTPOS(opR) )
          && ( SIZE_INT(opR) == 1 )
-         && ( VAL_LIMB0(opR) == (mp_limb_t)(1L<<NR_SMALL_INT_BITS) ) )
+         && ( VAL_LIMB0(opR) == -INT_INTOBJ_MIN ) )
       mod = INTOBJ_INT(0);
     
     /* in all other cases the remainder is equal the left operand          */
@@ -1798,13 +1793,13 @@ Obj ModInt ( Obj opL, Obj opR )
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
     
     /* check whether right operand is a small power of 2                   */
-    if ( i <= (1L<<NR_SMALL_INT_BITS) && !(i & (i-1)) ) {
+    if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), (mp_limb_t)i );
+      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
     
     /* now c is the result, it has the same sign as the left operand       */
@@ -1907,10 +1902,9 @@ Obj QuoInt ( Obj opL, Obj opR )
   if ( ARE_INTOBJS( opL, opR ) ) {
     
     /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
-    if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS)) 
-         && opR == INTOBJ_INT(-1) ) {
+    if ( opL == INTOBJ_MIN && opR == INTOBJ_INT(-1) ) {
       quo = NewBag( T_INTPOS, sizeof(mp_limb_t) );
-      SET_VAL_LIMB0( quo, 1L<<NR_SMALL_INT_BITS );
+      SET_VAL_LIMB0( quo, -INT_INTOBJ_MIN );
       return quo;
     }
     
@@ -1931,9 +1925,9 @@ Obj QuoInt ( Obj opL, Obj opR )
   else if ( IS_INTOBJ(opL) ) {
     
     /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
-    if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
+    if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
-         && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
+         && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       quo = INTOBJ_INT(-1);
     
     /* in all other cases the quotient is of course zero                   */
@@ -2061,9 +2055,9 @@ Obj RemInt ( Obj opL, Obj opR )
   else if ( IS_INTOBJ(opL) ) {
     
     /* the small int -(1<<28) rem the large int (1<<28) is 0               */
-    if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
+    if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
-         && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
+         && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       rem = INTOBJ_INT(0);
     
     /* in all other cases the remainder is equal the left operand          */
@@ -2078,7 +2072,7 @@ Obj RemInt ( Obj opL, Obj opR )
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
     /* check whether right operand is a small power of 2                   */
-    if ( i <= (1L<<NR_SMALL_INT_BITS) && !(i & (i-1)) ) {
+    if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
     

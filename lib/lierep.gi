@@ -123,6 +123,14 @@ InstallMethod( CochainSpace,
        r:= Dimension( V );
        F:= LeftActingDomain( L );
 
+       if r = 0 then
+         if s = 0 then
+           return VectorSpace( F, [], Cochain( V, 0, Zero(V) ), "basis" );
+         else
+           return VectorSpace( F, [], Cochain( V, s, [] ), "basis" );
+         fi;
+       fi;
+
        if s = 0 then
          bas:= List( BasisVectors( Basis( V ) ), x -> Cochain( V, s, x ) );
          return VectorSpace( F, bas, "basis" );
@@ -623,7 +631,7 @@ InstallMethod( Coboundaries,
 
       if s = 0 then
           return VectorSpace( LeftActingDomain(V),
-                         [ Cochain( V, 0, Zero(V) ) ] );
+                         [ ], Cochain( V, 0, Zero(V) ), "basis" );
       fi;
 
    # The s-coboundaries are the images of the (s-1)-cochains under
@@ -632,7 +640,10 @@ InstallMethod( Coboundaries,
       Csm1:= CochainSpace( V, s-1 );
       gens:= List( GeneratorsOfLeftModule( Csm1 ), x ->
                                        LieCoboundaryOperator(x) );
-
+      if Length(gens) = 0 then
+          return VectorSpace( LeftActingDomain(V),
+                         [ ], Cochain( V, s, [] ), "basis" );
+      fi;
       return VectorSpace( LeftActingDomain(V), gens );
 
 end );
@@ -649,6 +660,7 @@ InstallMethod( Cocycles,
   # when restricted to the space of s-cochains.
 
       Cs:= CochainSpace( V, s );
+      if IsTrivial(Cs) then return Cs; fi;
       gens:= List( GeneratorsOfLeftModule( Cs ), x ->
                                        LieCoboundaryOperator(x) );
 

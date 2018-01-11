@@ -12,10 +12,19 @@
     
 #############################################################################
 ##
+#M  TrivialGroupCons( <IsPcGroup> )
+##
+InstallMethod( TrivialGroupCons,  "fp group",
+    [ IsFpGroup and IsTrivial ],
+    filter -> FreeGroup(0));
+
+
+#############################################################################
+##
 #M  AbelianGroupCons( <IsFpGroup and IsFinite>, <ints> )
 ##
 InstallMethod( AbelianGroupCons, "fp group", true,
-    [ IsFpGroup and IsFinite, IsList ], 0,
+    [ IsFpGroup and IsAbelian, IsList ], 0,
 function( filter, ints )
 local   f,g,i,j,rels,gfam,fam;
 
@@ -82,7 +91,7 @@ end );
 #M  CyclicGroupCons( <IsFpGroup>, <n> )
 ##
 InstallOtherMethod( CyclicGroupCons, "fp group", true,
-    [ IsFpGroup,IsObject ], 0,
+    [ IsFpGroup and IsCyclic, IsObject ], 0,
 function( filter, n )
 local f,g,fam,gfam;
   if n=infinity then
@@ -136,8 +145,27 @@ local f,rels,g;
   f   := FreeGroup( IsSyllableWordsFamily, "r", "s" );
   rels:= [f.1^(n/2),f.2^2,f.1^f.2*f.1];
   g   := f/rels;
-  SetReducedMultiplication(g);
   SetSize(g,n);
+  SetReducedMultiplication(g);
+  return g;
+
+end );
+
+InstallOtherMethod( DihedralGroupCons,
+    "fp group",
+    true,
+    [ IsFpGroup and IsFinite,
+      IsInfinity ],
+    0,
+
+function( filter, inf )
+local f,rels,g;
+
+  f   := FreeGroup( IsSyllableWordsFamily, "r", "s" );
+  rels:= [f.2^2,f.1^f.2*f.1];
+  g   := f/rels;
+  SetSize(g,infinity);
+  SetReducedMultiplication(g);
   return g;
 
 end );
@@ -174,7 +202,7 @@ end );
 InstallMethod( ElementaryAbelianGroupCons,
     "fp group",
     true,
-    [ IsFpGroup and IsFinite,
+    [ IsFpGroup and IsFinite and IsElementaryAbelian,
       IsInt and IsPosRat ],
     0,
 
@@ -197,7 +225,7 @@ end );
 InstallMethod( FreeAbelianGroupCons,
     "fp group",
     true,
-    [ IsFpGroup,
+    [ IsFpGroup and IsAbelian,
       IsInt and IsPosRat ],
     0,
 

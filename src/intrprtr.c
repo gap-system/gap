@@ -2258,7 +2258,7 @@ void            IntrListExprEnd (
         /* else make the range                                             */
         else {
             /* length must be a small integer as well */
-            if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
+            if ((high-low) / inc >= INT_INTOBJ_MAX) {
                 ErrorQuit("Range: the length of a range must be less than 2^%d",
                            NR_SMALL_INT_BITS, 0L);
             }

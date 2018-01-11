@@ -39,7 +39,7 @@ InstallGlobalFunction( MemoryUsage, function( o )
             continue;
         fi;
 
-        mem := mem + SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+        mem := mem + SIZE_OBJ(o) + MU_MemBagHeader + MU_MemPointer;
         if IsRat(o) then
             visit(NumeratorRat(o));
             visit(DenominatorRat(o));

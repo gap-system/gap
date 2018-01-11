@@ -592,5 +592,17 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
 ##
-#E
+#F  SHALLOW_SIZE
+##
+##  'SHALLOW_SIZE' is an alias for the kernel function 'SIZE_OBJ'. Note that
+##  in the past, SIZE_OBJ was buggy for immediate inputs (i.e. small integers
+##  or finite field elements), hence packages using either of these
+##  UNDOCUMENTED kernel functions may wish to keep using SHALLOW_SIZE until
+##  they can adjust their minimal GAP version requirements.
+##
+## still used by cvec, datastructures, orb, recog
+DeclareObsoleteSynonym( "SHALLOW_SIZE", "SIZE_OBJ" );
 
+#############################################################################
+##
+#E

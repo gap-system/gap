@@ -61,7 +61,7 @@ gap> (MemoryUsage([1..100]) - MU_MemBagHeader) / GAPInfo.BytesPerVariable;
 # test component objects
 #
 gap> G := Group(g);;
-gap> MemoryUsage(G) = SHALLOW_SIZE(G) + MU_MemBagHeader + MU_MemPointer
+gap> MemoryUsage(G) = SIZE_OBJ(G) + MU_MemBagHeader + MU_MemPointer
 > + Sum(NamesOfComponents(G), n -> MemoryUsage(G!.(n)));
 true
 
@@ -84,21 +84,21 @@ gap> F := FreeGroup(3);;
 gap> w := One(F);;
 gap> w:=Product(GeneratorsOfGroup(F))^3;
 (f1*f2*f3)^3
-gap> MemoryUsage(w![1]) = SHALLOW_SIZE(w![1]) + MU_MemBagHeader + MU_MemPointer;
+gap> MemoryUsage(w![1]) = SIZE_OBJ(w![1]) + MU_MemBagHeader + MU_MemPointer;
 true
-gap> MemoryUsage(w) = SHALLOW_SIZE(w) + MU_MemBagHeader + MU_MemPointer + MemoryUsage(w![1]);
+gap> MemoryUsage(w) = SIZE_OBJ(w) + MU_MemBagHeader + MU_MemPointer + MemoryUsage(w![1]);
 true
 gap> o := ExtRepOfObj(w);
 [ 1, 1, 2, 1, 3, 1, 1, 1, 2, 1, 3, 1, 1, 1, 2, 1, 3, 1 ]
-gap> MemoryUsage(o) = SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+gap> MemoryUsage(o) = SIZE_OBJ(o) + MU_MemBagHeader + MU_MemPointer;
 true
 
 #
 # test functions
 #
-gap> f:=x->x;; MemoryUsage(f) - SHALLOW_SIZE(f) in [160, 96];
+gap> f:=x->x;; MemoryUsage(f) - SIZE_OBJ(f) in [160, 96];
 true
-gap> f:=x->x+1;; MemoryUsage(f) - SHALLOW_SIZE(f) in [184, 112];
+gap> f:=x->x+1;; MemoryUsage(f) - SIZE_OBJ(f) in [184, 112];
 true
 gap> MemoryUsage(f) = MemoryUsage(f);
 true

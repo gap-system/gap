@@ -13,5 +13,6 @@ comment:
   behavior: default
 
 ignore:
- - "hpcgap/pkg"
+ - "extern"
+ - "hpcgap/extern"
  - "tst"
