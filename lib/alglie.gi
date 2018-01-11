@@ -5740,8 +5740,7 @@ InstallMethod( JenningsLieAlgebra,
              local h, e, x, k, pp, f, t;
 
              if not g in J[i] then
-                Error("<g> is not an element of the i-th term of the series used
- to define <L>");
+                Error("<g> is not an element of the i-th term of the series used to define <L>");
              fi;
 
              h:= Image( hom_pcg[i], Image(Homs[i], g ));
