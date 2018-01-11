@@ -5671,8 +5671,7 @@ InstallMethod( JenningsLieAlgebra,
                 co:=[];
                 for k in [1,3..Length(e)-1] do
                     pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
-                    f:= GeneratorsOfGroup( pcgps[pos[i]+pos[j]] )[pp];
-                    t:= Position( gens, f );
+                    t:= Sum( enum_gens{[1..pos[i]*p-1]}, Length )+pp;
                     Add( co, One( F )*e[k+1] );
                     Add( co, t );
                 od;
@@ -5725,8 +5724,7 @@ InstallMethod( JenningsLieAlgebra,
             x:= Zero( L );
             for k in [1,3..Length(e)-1] do
                 pp:= Position( enum_gens[pos[i]*p], e[k] );
-                f:= GeneratorsOfGroup( pcgps[pos[i]*p] )[pp];
-                t:= Position( gens, f );
+                t:= Sum( enum_gens{[1..pos[i]*p-1]}, Length )+pp;
                 x:= x+ One( F )*e[k+1]*vv[t];
             od;
             pimgs[i]:= x;
@@ -5742,7 +5740,8 @@ InstallMethod( JenningsLieAlgebra,
              local h, e, x, k, pp, f, t;
 
              if not g in J[i] then
-                Error("<g> is not an element of the i-th term of the series used to define <L>");
+                Error("<g> is not an element of the i-th term of the series used
+ to define <L>");
              fi;
 
              h:= Image( hom_pcg[i], Image(Homs[i], g ));
@@ -5764,6 +5763,7 @@ InstallMethod( JenningsLieAlgebra,
             
 end );
 
+    
 
 
 #############################################################################
