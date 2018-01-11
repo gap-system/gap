@@ -1064,7 +1064,7 @@ end );
 
 #############################################################################
 ##
-#F  NewAttribute( <name>, <filter>[, "mutable"][, <rank>] ) . . new attribute
+#F  NewAttribute( <name>, <filter>[, <mutable>][, <rank>] ) . . new attribute
 ##
 ##  <#GAPDoc Label="NewAttribute">
 ##  <ManSection>
@@ -1086,16 +1086,20 @@ end );
 ##  applicable to a character table,
 ##  which is neither a list nor a collection.
 ##  <P/>
-##  If the optional third argument is given then there are two possibilities.
-##  Either it is an integer <A>rank</A>,
-##  then the attribute tester has this incremental rank
-##  (see&nbsp;<Ref Sect="Filters"/>).
-##  Or it is the string <C>"mutable"</C>,
-##  then the values of the attribute shall be mutable;
-##  more precisely, when a value of such a mutable attribute is set
-##  then this value itself is stored, not an immutable copy of it.
-##  (So it is the user's responsibility to set an object that is in fact
-##  mutable.)
+##  For the optional third and fourth arguments, there are the following
+##  possibilities.
+##  <List>
+##  <Item> The integer argument <A>rank</A> causes the attribute tester to have
+##  this incremental rank (see&nbsp;<Ref Sect="Filters"/>),
+##  <Item> If the argument <A>mutable</A> is the string <C>"mutable"</C> or
+##  the boolean <C>true</C>, then the values of the attribute are mutable.
+##  <Item> If the argument <A>mutable</A> is the boolean <C>false</C>, then
+##  the values of the attribute are immutable.
+##  </List>
+##  <P/>
+##  When a value of such mutable attribute is set
+##  then this value itself is stored, not an immutable copy of it, 
+##  and it is the user's responsibility to set an object that is mutable.
 ##  This is useful for an attribute whose value is some partial information
 ##  that may be completed later.
 ##  For example, there is an attribute <C>ComputedSylowSubgroups</C>
@@ -1108,7 +1112,7 @@ end );
 ##  <!-- attributes; is this really intended?-->
 ##  <!-- if yes then it should be documented!-->
 ##  <P/>
-##  If no third argument is given then the rank of the tester is 1.
+##  If no argument for <A>rank</A> is given, then the rank of the tester is 1.
 ##  <P/>
 ##  Each method for the new attribute that does <E>not</E> require
 ##  its argument to lie in <A>filter</A> must be installed using
