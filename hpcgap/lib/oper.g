@@ -157,7 +157,7 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##  information.
 ##
 ##  <Ref Func="STORE_OPER_DATA"/> is used to store the flags and source
-##  locations of calls to <Ref Func="NewOperation"/> ord
+##  locations of calls to <Ref Func="NewOperation"/> or
 ##  <Ref Func="DeclareOperation"/>
 ##
 ##  More precisely, if for the operation <C>op</C>, which has been declared by
@@ -184,36 +184,33 @@ OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");  # FIXME: remove
 BIND_GLOBAL( "OPERATIONS", MakeStrictWriteOnceAtomic([]) );
 BIND_GLOBAL( "OPER_DATA", MakeStrictWriteOnceAtomic(rec()) );
 BIND_GLOBAL( "STORE_OPER_DATA",
-function(oper, flags)
+function(oper, flags, opt...)
   local nr, info;
   nr := MASTER_POINTER_NUMBER(oper);
   if not IsBound(OPER_DATA.(nr)) then
     # we need a back link to oper for the post-restore function
     OPER_FLAGS.(nr) := FixedAtomicList([oper,
-        MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([])]);
+        MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([])]);
     ADD_LIST(OPERATIONS, oper);
   fi;
   info := OPER_DATA.(nr);
   ADD_LIST(info[2], MakeImmutable(flags));
   ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]));
+  ADD_LIST(info[4], MakeImmutable(opt));
 end);
 
-BIND_GLOBAL( "GET_OPER_FLAGS", function(oper)
+BIND_GLOBAL( "GET_OPER_DATA", function(oper)
   local nr;
   nr := MASTER_POINTER_NUMBER(oper);
   if not IsBound(OPER_DATA.(nr)) then
     return fail;
   fi;
-  return OPER_DATA.(nr)[2];
+  return OPER_DATA.(nr);
 end);
-BIND_GLOBAL( "GET_DECLARATION_LOCATIONS", function(oper)
-  local nr;
-  nr := MASTER_POINTER_NUMBER(oper);
-  if not IsBound(OPER_DATA.(nr)) then
-    return fail;
-  fi;
-  return OPER_DATA.(nr)[3];
-end);
+BIND_GLOBAL( "GET_OPER_FLAGS",
+             oper -> GET_OPER_DATA(oper)[2] );
+BIND_GLOBAL( "GET_DECLARATION_LOCATIONS",
+             oper -> GET_OPER_DATA(oper)[3] );
 
 # the object handles change after loading a workspace
 ADD_LIST(GAPInfo.PostRestoreFuncs, function()
