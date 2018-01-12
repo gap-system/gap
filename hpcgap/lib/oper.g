@@ -155,18 +155,18 @@ BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 ##
 OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");  # FIXME: remove
 BIND_GLOBAL( "OPERATIONS", MakeStrictWriteOnceAtomic([]) );
-BIND_GLOBAL( "OPER_FLAGS", MakeStrictWriteOnceAtomic(rec()) );
-BIND_GLOBAL( "STORE_OPER_FLAGS",
+BIND_GLOBAL( "OPER_DATA", MakeStrictWriteOnceAtomic(rec()) );
+BIND_GLOBAL( "STORE_OPER_DATA",
 function(oper, flags)
   local nr, info;
   nr := MASTER_POINTER_NUMBER(oper);
-  if not IsBound(OPER_FLAGS.(nr)) then
+  if not IsBound(OPER_DATA.(nr)) then
     # we need a back link to oper for the post-restore function
     OPER_FLAGS.(nr) := FixedAtomicList([oper,
         MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([])]);
     ADD_LIST(OPERATIONS, oper);
   fi;
-  info := OPER_FLAGS.(nr);
+  info := OPER_DATA.(nr);
   ADD_LIST(info[2], MakeImmutable(flags));
   ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]));
 end);
@@ -174,30 +174,30 @@ end);
 BIND_GLOBAL( "GET_OPER_FLAGS", function(oper)
   local nr;
   nr := MASTER_POINTER_NUMBER(oper);
-  if not IsBound(OPER_FLAGS.(nr)) then
+  if not IsBound(OPER_DATA.(nr)) then
     return fail;
   fi;
-  return OPER_FLAGS.(nr)[2];
+  return OPER_DATA.(nr)[2];
 end);
 BIND_GLOBAL( "GET_DECLARATION_LOCATIONS", function(oper)
   local nr;
   nr := MASTER_POINTER_NUMBER(oper);
-  if not IsBound(OPER_FLAGS.(nr)) then
+  if not IsBound(OPER_DATA.(nr)) then
     return fail;
   fi;
-  return OPER_FLAGS.(nr)[3];
+  return OPER_DATA.(nr)[3];
 end);
 
 # the object handles change after loading a workspace
 ADD_LIST(GAPInfo.PostRestoreFuncs, function()
   local tmp, a;
   tmp := [];
-  for a in REC_NAMES(OPER_FLAGS) do
-    ADD_LIST(tmp, OPER_FLAGS.(a));
-    Unbind(OPER_FLAGS.(a));
+  for a in REC_NAMES(OPER_DATA) do
+    ADD_LIST(tmp, OPER_DATA.(a));
+    Unbind(OPER_DATA.(a));
   od;
   for a in tmp do
-    OPER_FLAGS.(MASTER_POINTER_NUMBER(a[1])) := a;
+    OPER_DATA.(MASTER_POINTER_NUMBER(a[1])) := a;
   od;
 end);
 
@@ -630,7 +630,7 @@ BIND_GLOBAL( "NewOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    STORE_OPER_FLAGS(oper, filt);
+    STORE_OPER_DATA(oper, filt);
     return oper;
 end );
 
@@ -758,7 +758,7 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
     atomic readwrite CONSTRUCTORS do
     ADD_LIST( CONSTRUCTORS, oper );
     od;
-    STORE_OPER_FLAGS(oper, filt);
+    STORE_OPER_DATA(oper, filt);
     return oper;
 end );
 
@@ -847,7 +847,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
               "for operation `", name, "'\n" );
         fi;
       else
-        STORE_OPER_FLAGS( gvar, filt );
+        STORE_OPER_DATA( gvar, filt );
       fi;
 
     else
@@ -892,7 +892,7 @@ BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    STORE_OPER_FLAGS(oper, filt);
+    STORE_OPER_DATA(oper, filt);
 end );
 
 
@@ -947,7 +947,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
 
-      STORE_OPER_FLAGS( gvar, filt );
+      STORE_OPER_DATA( gvar, filt );
 
     else
 
@@ -994,7 +994,7 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     atomic readwrite CONSTRUCTORS do
     ADD_LIST( CONSTRUCTORS, oper );
     od;
-    STORE_OPER_FLAGS(oper, filt);
+    STORE_OPER_DATA(oper, filt);
 end );
 
 
@@ -1061,9 +1061,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    STORE_OPER_FLAGS(getter, [ FLAGS_FILTER(filter) ]);
-    STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_OBJECT) ]);
-    STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_DATA(getter, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_DATA(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_OBJECT) ]);
+    STORE_OPER_DATA(tester, [ FLAGS_FILTER(filter) ]);
 
     # store the information about the filter
     atomic FILTER_REGION do
@@ -1157,8 +1157,8 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           setter := SETTER_FILTER( getter );
           tester := TESTER_FILTER( getter );
 
-          STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
-          STORE_OPER_FLAGS(tester, [ flags ]);
+          STORE_OPER_DATA(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
+          STORE_OPER_DATA(tester, [ flags ]);
 
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
@@ -1206,7 +1206,7 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         rank := 1;
     fi;
-    STORE_OPER_FLAGS(getter, [ flags ]);
+    STORE_OPER_DATA(getter, [ flags ]);
 
     atomic FILTER_REGION do
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
@@ -1281,7 +1281,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
           fi;
           
           flags := FLAGS_FILTER(filter);
-          STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
+          STORE_OPER_DATA( gvar, [ FLAGS_FILTER( filter ) ] );
           
           # kernel magic for the conversion
           if mutflag then
@@ -1314,11 +1314,11 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       if not IS_OPERATION( filter ) then
         Error( "<filter> must be an operation" );
       fi;
-      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
+      STORE_OPER_DATA( gvar, [ FLAGS_FILTER( filter ) ] );
 
       # also set the extended range for the setter
       req := GET_OPER_FLAGS( Setter(gvar) );
-      STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
+      STORE_OPER_DATA( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
 
       od;
     else
@@ -1383,9 +1383,9 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # add getter, setter and tester to the list of operations
-    STORE_OPER_FLAGS(getter, [ FLAGS_FILTER(filter) ]);
-    STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ]);
-    STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_DATA(getter, [ FLAGS_FILTER(filter) ]);
+    STORE_OPER_DATA(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ]);
+    STORE_OPER_DATA(tester, [ FLAGS_FILTER(filter) ]);
 
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
@@ -1455,9 +1455,9 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     tester := TESTER_FILTER( getter );
 
     # add getter, setter and tester to the list of operations
-    STORE_OPER_FLAGS(getter, [ flags ]);
-    STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER(IS_BOOL) ]);
-    STORE_OPER_FLAGS(tester, [ flags ]);
+    STORE_OPER_DATA(getter, [ flags ]);
+    STORE_OPER_DATA(setter, [ flags, FLAGS_FILTER(IS_BOOL) ]);
+    STORE_OPER_DATA(tester, [ flags ]);
 
     # store the property getters
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
@@ -1548,7 +1548,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
         Error( "<filter> must be an operation" );
       fi;
 
-      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
+      STORE_OPER_DATA( gvar, [ FLAGS_FILTER( filter ) ] );
 
     else
 
