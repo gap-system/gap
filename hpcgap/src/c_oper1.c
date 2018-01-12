@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "81317498"
+#define FILE_CRC  "102816013"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -68,6 +68,8 @@ static GVar G_DO__NOTHING__SETTER;
 static Obj  GC_DO__NOTHING__SETTER;
 static GVar G_QUO__INT;
 static Obj  GF_QUO__INT;
+static GVar G_fail;
+static Obj  GC_fail;
 static GVar G_RETURN__TRUE;
 static Obj  GC_RETURN__TRUE;
 static GVar G_RETURN__FALSE;
@@ -1782,8 +1784,9 @@ static Obj  HdlrFunc6 (
   CHECK_FUNC_RESULT( t_1 )
   l_req = t_1;
   
-  /* if req = false then */
-  t_2 = False;
+  /* if req = fail then */
+  t_2 = GC_fail;
+  CHECK_BOUND( t_2, "fail" )
   t_1 = (Obj)(UInt)(EQ( l_req, t_2 ));
   if ( t_1 ) {
    
@@ -4013,7 +4016,7 @@ static Obj  HdlrFunc1 (
               INFO_DEBUG( 1, "a method is installed for the wrapper operation ", NAME_FUNC( opr ), "\n", "#I  probably it should be installed for (one of) its\n", "#I  underlying operation(s)" );
           fi;
           req := GET_OPER_FLAGS( opr );
-          if req = false then
+          if req = fail then
               Error( "unknown operation ", NAME_FUNC( opr ) );
           fi;
           imp := [  ];
@@ -4386,6 +4389,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_SET__METHODS__OPERATION = GVarName( "SET_METHODS_OPERATION" );
  G_DO__NOTHING__SETTER = GVarName( "DO_NOTHING_SETTER" );
  G_QUO__INT = GVarName( "QUO_INT" );
+ G_fail = GVarName( "fail" );
  G_RETURN__TRUE = GVarName( "RETURN_TRUE" );
  G_RETURN__FALSE = GVarName( "RETURN_FALSE" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
@@ -4503,6 +4507,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "SET_METHODS_OPERATION", &GF_SET__METHODS__OPERATION );
  InitCopyGVar( "DO_NOTHING_SETTER", &GC_DO__NOTHING__SETTER );
  InitFopyGVar( "QUO_INT", &GF_QUO__INT );
+ InitCopyGVar( "fail", &GC_fail );
  InitCopyGVar( "RETURN_TRUE", &GC_RETURN__TRUE );
  InitCopyGVar( "RETURN_FALSE", &GC_RETURN__FALSE );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
@@ -4627,7 +4632,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 81317498,
+ .crc         = 102816013,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
