@@ -539,8 +539,11 @@ EXTERN_FILES += $(GMP_FILES)
 # Note: we pass the ABI flag to gmp, and also --enable-shared ; the latter
 # is there for the benefit of cygwin builds, where GMP otherwise defaults
 # to building only a static library.
+# We touch gmp.info so GMP does not think it is out of date and rebuilds it,
+# because that requires makeinfo
 gmp: $(GMP_FILES)
 $(GMP_FILES):
+	touch "$(abs_srcdir)/extern/gmp/doc/gmp.info"
 	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
 
 .PHONY: gmp
