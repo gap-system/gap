@@ -1754,8 +1754,9 @@ static Int InitLibrary (
 }
 
 #if !defined(HPCGAP)
-static Char Cookie[MAX_OPEN_FILES][9];
-static Char MoreCookie[MAX_OPEN_FILES][9];
+static Char OutputFilesStreamCookie[MAX_OPEN_FILES][9];
+static Char InputFilesStreamCookie[MAX_OPEN_FILES][9];
+static Char InputFilesSlineCookie[MAX_OPEN_FILES][9];
 #endif
 
 static Int InitKernel (
@@ -1787,27 +1788,17 @@ static Int InitKernel (
     // name of the current input file. For HPC-GAP we don't need the cookies
     // anymore, since the data got moved to thread-local storage.
     for (Int i = 0; i < MAX_OPEN_FILES; i++) {
-        Cookie[i][0] = 's';
-        Cookie[i][1] = 't';
-        Cookie[i][2] = 'r';
-        Cookie[i][3] = 'e';
-        Cookie[i][4] = 'a';
-        Cookie[i][5] = 'm';
-        Cookie[i][6] = ' ';
-        Cookie[i][7] = '0' + i;
-        Cookie[i][8] = '\0';
-        InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0]));
+        strxcpy(OutputFilesStreamCookie[i], "ostream0", sizeof(OutputFilesStreamCookie[i]));
+        OutputFilesStreamCookie[i][7] = '0' + i;
+        InitGlobalBag(&(OutputFiles[i].stream), &(OutputFilesStreamCookie[i][0]));
 
-        MoreCookie[i][0] = 's';
-        MoreCookie[i][1] = 'l';
-        MoreCookie[i][2] = 'i';
-        MoreCookie[i][3] = 'n';
-        MoreCookie[i][4] = 'e';
-        MoreCookie[i][5] = ' ';
-        MoreCookie[i][6] = ' ';
-        MoreCookie[i][7] = '0' + i;
-        MoreCookie[i][8] = '\0';
-        InitGlobalBag(&(InputFiles[i].sline), &(MoreCookie[i][0]));
+        strxcpy(InputFilesStreamCookie[i], "istream0", sizeof(InputFilesStreamCookie[i]));
+        InputFilesStreamCookie[i][7] = '0' + i;
+        InitGlobalBag(&(InputFiles[i].stream), &(InputFilesStreamCookie[i][0]));
+
+        strxcpy(InputFilesSlineCookie[i], "isline 0", sizeof(InputFilesSlineCookie[i]));
+        InputFilesSlineCookie[i][7] = '0' + i;
+        InitGlobalBag(&(InputFiles[i].sline), &(InputFilesSlineCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */
