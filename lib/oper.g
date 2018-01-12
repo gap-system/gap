@@ -1174,7 +1174,7 @@ BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
         mutflag := args[1] in [ "mutable", true ];
         rank := args[2];
     else
-        Error("Usage: NewAttribute( <name>, <filter>, [<mutable>][, <rank>] )");
+        Error("Usage: NewAttribute( <name>, <filter>[, <mutable>][, <rank>] )");
     fi;
 
     flags:= FLAGS_FILTER( filter );
@@ -1275,7 +1275,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
         mutflag := args[1] in [ "mutable", true ];
         rank := args[2];
     else
-        Error("Usage: DeclareAttribute( <name>, <filter>, [<mutable>][, <rank>] )");
+        Error("Usage: DeclareAttribute( <name>, <filter>[, <mutable>][, <rank>] )");
     fi;
 
     if ISB_GVAR( name ) then
