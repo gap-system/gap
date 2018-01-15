@@ -674,6 +674,20 @@ identical to the one from the &GAP; 4.8.8 release.
 
 </Section>
 
+<Section Label="gap48_10">
+<Heading>&GAP; 4.8.10 (January 2018)</Heading>
+
+This release contains updated versions of 9 packages from &GAP; 4.8.9
+distribution. It also contains an older version 2.8.0 of the
+<Package>Semigroups</Package> package, which is compatible with &GAP; 4.8,
+and an older version 4.7.6 of the <Package>orb</Package> package, which is
+compatible with the specified version of the <Package>Semigroups</Package>.
+Additionally, it provides a working version of the <Package>Digraphs</Package>
+package for Windows. The core part of the &GAP; system in this release is again
+identical to the one from the &GAP; 4.8.8 release.
+
+</Section>
+
 </Chapter>
 
 
