@@ -1095,7 +1095,7 @@ end );
 
 #############################################################################
 ##
-#F  NewAttribute( <name>, <filter>[, "mutable"][, <rank>] ) . . new attribute
+#F  NewAttribute( <name>, <filter>[, <mutable>][, <rank>] ) . . new attribute
 ##
 ##  <#GAPDoc Label="NewAttribute">
 ##  <ManSection>
@@ -1117,16 +1117,20 @@ end );
 ##  applicable to a character table,
 ##  which is neither a list nor a collection.
 ##  <P/>
-##  If the optional third argument is given then there are two possibilities.
-##  Either it is an integer <A>rank</A>,
-##  then the attribute tester has this incremental rank
-##  (see&nbsp;<Ref Sect="Filters"/>).
-##  Or it is the string <C>"mutable"</C>,
-##  then the values of the attribute shall be mutable;
-##  more precisely, when a value of such a mutable attribute is set
-##  then this value itself is stored, not an immutable copy of it.
-##  (So it is the user's responsibility to set an object that is in fact
-##  mutable.)
+##  For the optional third and fourth arguments, there are the following
+##  possibilities.
+##  <List>
+##  <Item> The integer argument <A>rank</A> causes the attribute tester to have
+##  this incremental rank (see&nbsp;<Ref Sect="Filters"/>),
+##  <Item> If the argument <A>mutable</A> is the string <C>"mutable"</C> or
+##  the boolean <C>true</C>, then the values of the attribute are mutable.
+##  <Item> If the argument <A>mutable</A> is the boolean <C>false</C>, then
+##  the values of the attribute are immutable.
+##  </List>
+##  <P/>
+##  When a value of such mutable attribute is set
+##  then this value itself is stored, not an immutable copy of it, 
+##  and it is the user's responsibility to set an object that is mutable.
 ##  This is useful for an attribute whose value is some partial information
 ##  that may be completed later.
 ##  For example, there is an attribute <C>ComputedSylowSubgroups</C>
@@ -1139,7 +1143,7 @@ end );
 ##  <!-- attributes; is this really intended?-->
 ##  <!-- if yes then it should be documented!-->
 ##  <P/>
-##  If no third argument is given then the rank of the tester is 1.
+##  If no argument for <A>rank</A> is given, then the rank of the tester is 1.
 ##  <P/>
 ##  Each method for the new attribute that does <E>not</E> require
 ##  its argument to lie in <A>filter</A> must be installed using
@@ -1179,160 +1183,149 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           return;
       end);
 
+# construct getter, setter and tester
+BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
+    local  flags, mutflag, getter, rank;
 
-BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, rank;
+    rank := 1;
+    mutflag := LEN_LIST(args) >= 1 and (args[1] = "mutable" or args[1] = true);
+    if LEN_LIST(args) = 1 and IS_INT(args[1]) then
+        rank := args[1];
+    elif LEN_LIST(args) = 2 and IS_INT(args[2]) then
+        rank := args[2];
+    elif LEN_LIST(args) > 2 the// n
+//         Error("Usage: NewAttribute( <name>, <filter>, [<mutable>, <rank>] )");
+//     fi;
 
-    # construct getter, setter and tester
-    name   := arg[1];
-    filter := arg[2];
+//     if not IS_OPERATION( filter ) then
+//       Error( "<filter> must be an operation" );
+//     fi;
+//     flags:= FLAGS_FILTER( filter );
 
-    if not IS_OPERATION( filter ) then
-      Error( "<filter> must be an operation" );
+//     # construct a new attribute
+//     if mutflag then
+//         getter := NEW_MUTABLE_ATTRIBUTE( name );
+//     else
+//         getter := NEW_ATTRIBUTE( name );
+//     fi;
+//     STORE_OPER_FLAGS(getter, [ flags ]);
+
+//     atomic FILTER_REGION do
+//         OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
+//     od;
+
+//     # And return the getter
+//     return getter;
+// end );
+
+
+// #############################################################################
+// ##
+// #F  DeclareAttribute( <name>, <filter>[, "mutable"][, <rank>] ) new attribute
+// ##
+// ##  <#GAPDoc Label="DeclareAttribute">
+// ##  <ManSection>
+// ##  <Func Name="DeclareAttribute" Arg='name, filter[, "mutable"][, rank]'/>
+// ##
+// ##  <Description>
+// ##  does the same as <Ref Func="NewAttribute"/>,
+// ##  additionally makes the variable <A>name</A> read-only
+// ##  and also binds read-only global variables with names
+// ##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
+// ##  for the tester and setter of the attribute (see Section
+// ##  <Ref Sect="Setter and Tester for Attributes"/>).
+// ##  </Description>
+// ##  </ManSection>
+// ##  <#/GAPDoc>
+// ##
+
+// BIND_GLOBAL( "ConvertToAttribute",
+// function(name, op, filter, rank, mutable)
+//     local req, reqs, flags, nname;
+//     # `op' is not an attribute (tester) and not a property (tester),
+//     # or `op' is a filter; in any case, `op' is not an attribute.
+
+//     # if `op' has no one argument declarations we can turn it into 
+//     # an attribute
+//     req := GET_OPER_FLAGS(op);
+//     for reqs in req do
+//         if LENGTH(reqs)  = 1 then
+//             Error( "operation `", name, "' has been declared as a one ",
+//                    "argument Operation and cannot also be an Attribute");
+//         fi;
+//     od;
+
+//     flags := FLAGS_FILTER(filter);
+//     STORE_OPER_FLAGS( op, [ FLAGS_FILTER( filter ) ] );
+
+//     # kernel magic for the conversion
+//     if mutable then
+//         OPER_TO_MUTABLE_ATTRIBUTE(op);
+//     else
+//         OPER_TO_ATTRIBUTE(op);
+//     fi;
+
+//     OPER_SetupAttribute(op, flags, mutable, filter, rank, name);
+
+//     # and make the remaining assignments
+//     nname:= "Set"; APPEND_LIST_INTR( nname, name );
+//     BIND_GLOBAL( nname, SETTER_FILTER(op) );
+//     nname:= "Has"; APPEND_LIST_INTR( nname, name );
+//     BIND_GLOBAL( nname, TESTER_FILTER(op) );
+// end);
+
+// BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
+//     local gvar, req, reqs, setter, tester,
+//               attr, nname, mutflag, flags, rank;
+
+//     rank := 1;
+//     mutflag := LEN_LIST(args) >= 1 and (args[1] = "mutable" or args[1] = true);
+//     if LEN_LIST(args) = 1 and IS_INT(args[1]) then
+//         rank := args[1];
+//     elif LEN_LIST(args) = 2 and IS_INT(args[2]) then
+//         rank := args[2];
+//     elif LEN_LIST(args) > 2 the
+    n
+        Error("Usage: DeclareAttribute( <name>, <filter>, [<mutable>, <rank>] )");
     fi;
-    flags:= FLAGS_FILTER( filter );
-
-    # the mutability flags is the third one (which can also be the rank)
-    mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
-
-    # construct a new attribute
-    if mutflag then
-        getter := NEW_MUTABLE_ATTRIBUTE( name );
-    else
-        getter := NEW_ATTRIBUTE( name );
-    fi;
-    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
-        rank := arg[3];
-    else
-        rank := 1;
-    fi;
-    STORE_OPER_FLAGS(getter, [ flags ]);
-
-    atomic FILTER_REGION do
-    OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
-    od;
-
-    # And return the getter
-    return getter;
-end );
-
-
-#############################################################################
-##
-#F  DeclareAttribute( <name>, <filter>[, "mutable"][, <rank>] ) new attribute
-##
-##  <#GAPDoc Label="DeclareAttribute">
-##  <ManSection>
-##  <Func Name="DeclareAttribute" Arg='name, filter[, "mutable"][, rank]'/>
-##
-##  <Description>
-##  does the same as <Ref Func="NewAttribute"/>,
-##  additionally makes the variable <A>name</A> read-only
-##  and also binds read-only global variables with names
-##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
-##  for the tester and setter of the attribute (see Section
-##  <Ref Sect="Setter and Tester for Attributes"/>).
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-
-BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local   name,  gvar,  req,  reqs,  filter,  setter,  tester,  
-              attr,  nname, mutflag, flags, rank;
-
-    name:= arg[1];
 
     if ISB_GVAR( name ) then
+        if not IS_OPERATION( filter ) then
+            Error( "<filter> must be an operation" );
+        fi;
 
-      atomic FILTER_REGION do
-      # The variable exists already.
-      gvar:= VALUE_GLOBAL( name );
+        atomic FILTER_REGION do
+            # The variable exists already.
+            gvar := VALUE_GLOBAL( name );
 
-      # Check that the variable is in fact bound to an operation.
-      if not IS_OPERATION( gvar ) then
-        Error( "variable `", name, "' is not bound to an operation" );
-      fi;
+            # Check that the variable is in fact bound to an operation.
+            if not IS_OPERATION( gvar ) then
+                Error( "variable `", name, "' is not bound to an operation" );
+            fi;
 
-      # The attribute has already been declared.
-      # If it was not created as an attribute
-      # then we may be able to convert it
-      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+            # The attribute has already been declared.
+            # If it was not created as an attribute
+            # then we may be able to convert it
+            if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+                ConvertToAttribute(name, gvar, filter, rank, mutflag);
+            else
+                STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
 
-          # `gvar' is not an attribute (tester) and not a property (tester),
-          # or `gvar' is a filter;
-          # in any case, `gvar' is not an attribute.
-          
-          # if `gvar' has no one argument declarations we can turn it into 
-          # an attribute
-          req := GET_OPER_FLAGS(gvar);
-          for reqs in req do
-              if LENGTH(reqs)  = 1 then
-                  Error( "operation `", name, "' has been declared as a one ",
-                         "argument Operation and cannot also be an Attribute");
-              fi;
-          od;
-          mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
-          
-          # add the new set of requirements 
-          filter:= arg[2];
-          if not IS_OPERATION( filter ) then
-              Error( "<filter> must be an operation" );
-          fi;
-          
-          flags := FLAGS_FILTER(filter);
-          STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
-          
-          # kernel magic for the conversion
-          if mutflag then
-              OPER_TO_MUTABLE_ATTRIBUTE(gvar);
-          else
-              OPER_TO_ATTRIBUTE(gvar);
-          fi;
-          
-          # now we have to adjust the data structures
-          
-          if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
-              rank := arg[3];
-          else
-              rank := 1;
-          fi;
-          OPER_SetupAttribute(gvar, flags, mutflag, filter, rank, name);         
-          # and make the remaining assignments
-          nname:= "Set"; APPEND_LIST_INTR( nname, name );
-          BIND_GLOBAL( nname, SETTER_FILTER(gvar) );
-          nname:= "Has"; APPEND_LIST_INTR( nname, name );
-          BIND_GLOBAL( nname, TESTER_FILTER(gvar) );
-          
-          return;      
-    
-              
-      fi;
-
-      # Add the new requirements.
-      filter:= arg[2];
-      if not IS_OPERATION( filter ) then
-        Error( "<filter> must be an operation" );
-      fi;
-      STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
-
-      # also set the extended range for the setter
-      req := GET_OPER_FLAGS( Setter(gvar) );
-      STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
-
-      od;
+                # also set the extended range for the setter
+                req := GET_OPER_FLAGS( Setter(gvar) );
+                STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
+            fi;
+        od;
     else
+        # The attribute is new.
+        attr := NewAttribute(name, filter, mutflag, rank);
+        BIND_GLOBAL( name, attr );
 
-      # The attribute is new.
-      attr:= CALL_FUNC_LIST( NewAttribute, arg );
-      BIND_GLOBAL( name, attr );
-      
-      # and make the remaining assignments
-      nname:= "Set"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, SETTER_FILTER(attr) );
-      nname:= "Has"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
-
+        # and make the remaining assignments
+        nname := "Set"; APPEND_LIST_INTR( nname, name );
+        BIND_GLOBAL( nname, SETTER_FILTER(attr) );
+        nname := "Has"; APPEND_LIST_INTR( nname, name );
+        BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
     fi;
 end );
 
