@@ -165,7 +165,9 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
         fi;
       fi;
     od;
-    InstallHiddenTrueMethod( tofilt, from );
+    if not GAPInfo.CommandLineOptions.N then
+      InstallHiddenTrueMethod( tofilt, from );
+    fi;
 end );
 
 
@@ -408,7 +410,7 @@ BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 ##  Compute the rank including the hidden implications.
 ##
 BIND_GLOBAL( "RankFilter", function( filter )
-    local   rank,  flags,  i;
+    local   rank,  flags,  all,  i;
 
     rank  := 0;
     if IS_FUNCTION(filter)  then
@@ -416,7 +418,12 @@ BIND_GLOBAL( "RankFilter", function( filter )
     else
         flags := filter;
     fi;
-    for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
+    if not GAPInfo.CommandLineOptions.N then
+      all := WITH_HIDDEN_IMPS_FLAGS(flags);
+    else
+      all := WITH_IMPS_FLAGS(flags);
+    fi;
+    for i  in TRUES_FLAGS(all)  do
         if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
         else

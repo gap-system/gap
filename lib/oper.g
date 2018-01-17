@@ -1099,7 +1099,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     od;
 
     # clear the cache because <filter> is something old
-    InstallHiddenTrueMethod( filter, tester );
+    if not GAPInfo.CommandLineOptions.N then
+      InstallHiddenTrueMethod( filter, tester );
+    fi;
     CLEAR_HIDDEN_IMP_CACHE( tester );
 
     # run the attribute functions
@@ -1199,7 +1201,9 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
 
           # the <tester> is newly made, therefore  the cache cannot contain a  flag
           # list involving <tester>
-          InstallHiddenTrueMethod( filter, tester );
+          if not GAPInfo.CommandLineOptions.N then
+            InstallHiddenTrueMethod( filter, tester );
+          fi;
           # CLEAR_HIDDEN_IMP_CACHE();
 
           # run the attribute functions
@@ -1436,10 +1440,12 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
 
     # clear the cache because <filter> is something old
-    InstallHiddenTrueMethod( tester, getter );
-    CLEAR_HIDDEN_IMP_CACHE( getter );
-    InstallHiddenTrueMethod( filter, tester );
-    CLEAR_HIDDEN_IMP_CACHE( tester );
+    if not GAPInfo.CommandLineOptions.N then
+      InstallHiddenTrueMethod( tester, getter );
+      CLEAR_HIDDEN_IMP_CACHE( getter );
+      InstallHiddenTrueMethod( filter, tester );
+      CLEAR_HIDDEN_IMP_CACHE( tester );
+    fi;
 
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
@@ -1511,8 +1517,10 @@ BIND_GLOBAL( "NewProperty", function ( arg )
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
-    InstallHiddenTrueMethod( tester, getter );
-    InstallHiddenTrueMethod( filter, tester );
+    if not GAPInfo.CommandLineOptions.N then
+      InstallHiddenTrueMethod( tester, getter );
+      InstallHiddenTrueMethod( filter, tester );
+    fi;
     # CLEAR_HIDDEN_IMP_CACHE();
 
     # run the attribute functions

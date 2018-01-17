@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-110560148"
+#define FILE_CRC  "93694864"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -52,6 +52,8 @@ static GVar G_SUB__FLAGS;
 static Obj  GF_SUB__FLAGS;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS;
 static Obj  GF_WITH__HIDDEN__IMPS__FLAGS;
+static GVar G_WITH__IMPS__FLAGS;
+static Obj  GF_WITH__IMPS__FLAGS;
 static GVar G_IS__SUBSET__FLAGS;
 static Obj  GF_IS__SUBSET__FLAGS;
 static GVar G_TRUES__FLAGS;
@@ -179,6 +181,8 @@ static Obj  GF_CallFuncList;
 
 /* record names used in handlers */
 static RNam R_MaxNrArgsMethod;
+static RNam R_CommandLineOptions;
+static RNam R_N;
 
 /* information for the functions */
 static Obj  NameFunc[19];
@@ -1945,12 +1949,37 @@ static Obj  HdlrFunc6 (
    }
    l_i = t_2;
    
-   /* ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) ); */
-   t_5 = GF_ADD__LIST;
-   t_7 = GF_WITH__HIDDEN__IMPS__FLAGS;
-   t_6 = CALL_1ARGS( t_7, l_i );
-   CHECK_FUNC_RESULT( t_6 )
-   CALL_2ARGS( t_5, l_imp, t_6 );
+   /* if not GAPInfo.CommandLineOptions.N then */
+   t_9 = GC_GAPInfo;
+   CHECK_BOUND( t_9, "GAPInfo" )
+   t_8 = ELM_REC( t_9, R_CommandLineOptions );
+   t_7 = ELM_REC( t_8, R_N );
+   CHECK_BOOL( t_7 )
+   t_6 = (Obj)(UInt)(t_7 != False);
+   t_5 = (Obj)(UInt)( ! ((Int)t_6) );
+   if ( t_5 ) {
+    
+    /* ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) ); */
+    t_5 = GF_ADD__LIST;
+    t_7 = GF_WITH__HIDDEN__IMPS__FLAGS;
+    t_6 = CALL_1ARGS( t_7, l_i );
+    CHECK_FUNC_RESULT( t_6 )
+    CALL_2ARGS( t_5, l_imp, t_6 );
+    
+   }
+   
+   /* else */
+   else {
+    
+    /* ADD_LIST( imp, WITH_IMPS_FLAGS( i ) ); */
+    t_5 = GF_ADD__LIST;
+    t_7 = GF_WITH__IMPS__FLAGS;
+    t_6 = CALL_1ARGS( t_7, l_i );
+    CHECK_FUNC_RESULT( t_6 )
+    CALL_2ARGS( t_5, l_imp, t_6 );
+    
+   }
+   /* fi */
    
   }
   /* od */
@@ -2064,36 +2093,163 @@ static Obj  HdlrFunc6 (
    t_1 = (Obj)(UInt)(((Int)l_notmatch) == ((Int)INTOBJ_INT(0)));
    if ( t_1 ) {
     
-    /* Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) ); */
-    t_1 = GF_Error;
-    t_2 = MakeString( "the number of arguments does not match a declaration of " );
-    t_4 = GF_NAME__FUNC;
-    t_3 = CALL_1ARGS( t_4, l_opr );
-    CHECK_FUNC_RESULT( t_3 )
-    CALL_2ARGS( t_1, t_2, t_3 );
+    /* if not GAPInfo.CommandLineOptions.N then */
+    t_5 = GC_GAPInfo;
+    CHECK_BOUND( t_5, "GAPInfo" )
+    t_4 = ELM_REC( t_5, R_CommandLineOptions );
+    t_3 = ELM_REC( t_4, R_N );
+    CHECK_BOOL( t_3 )
+    t_2 = (Obj)(UInt)(t_3 != False);
+    t_1 = (Obj)(UInt)( ! ((Int)t_2) );
+    if ( t_1 ) {
+     
+     /* Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) ); */
+     t_1 = GF_Error;
+     t_2 = MakeString( "the number of arguments does not match a declaration of " );
+     t_4 = GF_NAME__FUNC;
+     t_3 = CALL_1ARGS( t_4, l_opr );
+     CHECK_FUNC_RESULT( t_3 )
+     CALL_2ARGS( t_1, t_2, t_3 );
+     
+    }
+    
+    /* else */
+    else {
+     
+     /* Print( "InstallMethod warning:  nr of args does not ", "match a declaration of ", NAME_FUNC( opr ), "\n" ); */
+     t_1 = GF_Print;
+     t_2 = MakeString( "InstallMethod warning:  nr of args does not " );
+     t_3 = MakeString( "match a declaration of " );
+     t_5 = GF_NAME__FUNC;
+     t_4 = CALL_1ARGS( t_5, l_opr );
+     CHECK_FUNC_RESULT( t_4 )
+     t_5 = MakeString( "\n" );
+     CALL_4ARGS( t_1, t_2, t_3, t_4, t_5 );
+     
+    }
+    /* fi */
     
    }
    
    /* else */
    else {
     
-    /* Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) ); */
-    t_1 = GF_Error;
-    t_2 = MakeString( "required filters " );
-    t_4 = GF_NamesFilter;
-    CHECK_INT_POS( l_notmatch )
-    C_ELM_LIST_FPL( t_5, l_imp, l_notmatch )
-    t_3 = CALL_1ARGS( t_4, t_5 );
-    CHECK_FUNC_RESULT( t_3 )
-    t_4 = MakeString( "\nfor " );
-    t_6 = GF_Ordinal;
-    t_5 = CALL_1ARGS( t_6, l_notmatch );
-    CHECK_FUNC_RESULT( t_5 )
-    t_6 = MakeString( " argument do not match a declaration of " );
-    t_8 = GF_NAME__FUNC;
-    t_7 = CALL_1ARGS( t_8, l_opr );
-    CHECK_FUNC_RESULT( t_7 )
-    CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, t_6, t_7 );
+    /* if not GAPInfo.CommandLineOptions.N then */
+    t_5 = GC_GAPInfo;
+    CHECK_BOUND( t_5, "GAPInfo" )
+    t_4 = ELM_REC( t_5, R_CommandLineOptions );
+    t_3 = ELM_REC( t_4, R_N );
+    CHECK_BOOL( t_3 )
+    t_2 = (Obj)(UInt)(t_3 != False);
+    t_1 = (Obj)(UInt)( ! ((Int)t_2) );
+    if ( t_1 ) {
+     
+     /* Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) ); */
+     t_1 = GF_Error;
+     t_2 = MakeString( "required filters " );
+     t_4 = GF_NamesFilter;
+     CHECK_INT_POS( l_notmatch )
+     C_ELM_LIST_FPL( t_5, l_imp, l_notmatch )
+     t_3 = CALL_1ARGS( t_4, t_5 );
+     CHECK_FUNC_RESULT( t_3 )
+     t_4 = MakeString( "\nfor " );
+     t_6 = GF_Ordinal;
+     t_5 = CALL_1ARGS( t_6, l_notmatch );
+     CHECK_FUNC_RESULT( t_5 )
+     t_6 = MakeString( " argument do not match a declaration of " );
+     t_8 = GF_NAME__FUNC;
+     t_7 = CALL_1ARGS( t_8, l_opr );
+     CHECK_FUNC_RESULT( t_7 )
+     CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, t_6, t_7 );
+     
+    }
+    
+    /* else */
+    else {
+     
+     /* Print( "InstallMethod warning: ", NAME_FUNC( opr ), "(\c", INPUT_FILENAME(  ), "\c +", INPUT_LINENUMBER(  ), ") \c", "required filters \c" ); */
+     t_1 = GF_Print;
+     t_2 = NEW_PLIST( T_PLIST, 8 );
+     SET_LEN_PLIST( t_2, 8 );
+     t_3 = MakeString( "InstallMethod warning: " );
+     SET_ELM_PLIST( t_2, 1, t_3 );
+     CHANGED_BAG( t_2 );
+     t_4 = GF_NAME__FUNC;
+     t_3 = CALL_1ARGS( t_4, l_opr );
+     CHECK_FUNC_RESULT( t_3 )
+     SET_ELM_PLIST( t_2, 2, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( "(\03" );
+     SET_ELM_PLIST( t_2, 3, t_3 );
+     CHANGED_BAG( t_2 );
+     t_4 = GF_INPUT__FILENAME;
+     t_3 = CALL_0ARGS( t_4 );
+     CHECK_FUNC_RESULT( t_3 )
+     SET_ELM_PLIST( t_2, 4, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( "\03 +" );
+     SET_ELM_PLIST( t_2, 5, t_3 );
+     CHANGED_BAG( t_2 );
+     t_4 = GF_INPUT__LINENUMBER;
+     t_3 = CALL_0ARGS( t_4 );
+     CHECK_FUNC_RESULT( t_3 )
+     SET_ELM_PLIST( t_2, 6, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( ") \03" );
+     SET_ELM_PLIST( t_2, 7, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( "required filters \03" );
+     SET_ELM_PLIST( t_2, 8, t_3 );
+     CHANGED_BAG( t_2 );
+     CALL_XARGS( t_1, t_2 );
+     
+     /* for j in NamesFilter( imp[notmatch] ) do */
+     t_5 = GF_NamesFilter;
+     CHECK_INT_POS( l_notmatch )
+     C_ELM_LIST_FPL( t_6, l_imp, l_notmatch )
+     t_4 = CALL_1ARGS( t_5, t_6 );
+     CHECK_FUNC_RESULT( t_4 )
+     if ( IS_SMALL_LIST(t_4) ) {
+      t_3 = (Obj)(UInt)1;
+      t_1 = INTOBJ_INT(1);
+     }
+     else {
+      t_3 = (Obj)(UInt)0;
+      t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+     }
+     while ( 1 ) {
+      if ( t_3 ) {
+       if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+       t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+       t_1 = (Obj)(((UInt)t_1)+4);
+       if ( t_2 == 0 )  continue;
+      }
+      else {
+       if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+       t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+      }
+      l_j = t_2;
+      
+      /* Print( j, "/\c" ); */
+      t_5 = GF_Print;
+      t_6 = MakeString( "/\03" );
+      CALL_2ARGS( t_5, l_j, t_6 );
+      
+     }
+     /* od */
+     
+     /* Print( " for ", Ordinal( notmatch ), " argument do not match \ca ", "declaration\n" ); */
+     t_1 = GF_Print;
+     t_2 = MakeString( " for " );
+     t_4 = GF_Ordinal;
+     t_3 = CALL_1ARGS( t_4, l_notmatch );
+     CHECK_FUNC_RESULT( t_3 )
+     t_4 = MakeString( " argument do not match \03a " );
+     t_5 = MakeString( "declaration\n" );
+     CALL_4ARGS( t_1, t_2, t_3, t_4, t_5 );
+     
+    }
+    /* fi */
     
    }
    /* fi */
@@ -2592,8 +2748,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
-   SET_STARTLINE_BODY(t_7, 632);
-   SET_ENDLINE_BODY(t_7, 650);
+   SET_STARTLINE_BODY(t_7, 651);
+   SET_ENDLINE_BODY(t_7, 669);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    CHANGED_BAG( STATE(CurrLVars) );
@@ -3196,8 +3352,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_STARTLINE_BODY(t_2, 829);
-  SET_ENDLINE_BODY(t_2, 833);
+  SET_STARTLINE_BODY(t_2, 848);
+  SET_ENDLINE_BODY(t_2, 852);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   CHANGED_BAG( STATE(CurrLVars) );
@@ -3276,8 +3432,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 850);
- SET_ENDLINE_BODY(t_7, 850);
+ SET_STARTLINE_BODY(t_7, 869);
+ SET_ENDLINE_BODY(t_7, 869);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3351,8 +3507,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 872);
- SET_ENDLINE_BODY(t_7, 895);
+ SET_STARTLINE_BODY(t_7, 891);
+ SET_ENDLINE_BODY(t_7, 914);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3400,8 +3556,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 905);
- SET_ENDLINE_BODY(t_7, 913);
+ SET_STARTLINE_BODY(t_7, 924);
+ SET_ENDLINE_BODY(t_7, 932);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3462,8 +3618,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 922);
- SET_ENDLINE_BODY(t_7, 935);
+ SET_STARTLINE_BODY(t_7, 941);
+ SET_ENDLINE_BODY(t_7, 954);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3836,8 +3992,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_5, 1001);
- SET_ENDLINE_BODY(t_5, 1017);
+ SET_STARTLINE_BODY(t_5, 1020);
+ SET_ENDLINE_BODY(t_5, 1036);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4180,7 +4336,11 @@ static Obj  HdlrFunc1 (
           fi;
           imp := [  ];
           for i in flags do
-              ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+              if not GAPInfo.CommandLineOptions.N then
+                  ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+              else
+                  ADD_LIST( imp, WITH_IMPS_FLAGS( i ) );
+              fi;
           od;
           j := 0;
           match := false;
@@ -4204,9 +4364,21 @@ static Obj  HdlrFunc1 (
           od;
           if not match then
               if notmatch = 0 then
-                  Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) );
+                  if not GAPInfo.CommandLineOptions.N then
+                      Error( "the number of arguments does not match a declaration of ", NAME_FUNC( opr ) );
+                  else
+                      Print( "InstallMethod warning:  nr of args does not ", "match a declaration of ", NAME_FUNC( opr ), "\n" );
+                  fi;
               else
-                  Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) );
+                  if not GAPInfo.CommandLineOptions.N then
+                      Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) );
+                  else
+                      Print( "InstallMethod warning: ", NAME_FUNC( opr ), "(\c", INPUT_FILENAME(  ), "\c +", INPUT_LINENUMBER(  ), ") \c", "required filters \c" );
+                      for j in NamesFilter( imp[notmatch] ) do
+                          Print( j, "/\c" );
+                      od;
+                      Print( " for ", Ordinal( notmatch ), " argument do not match \ca ", "declaration\n" );
+                  fi;
               fi;
           else
               oreqs := reqs;
@@ -4237,7 +4409,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 360);
- SET_ENDLINE_BODY(t_4, 571);
+ SET_ENDLINE_BODY(t_4, 590);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4295,8 +4467,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 590);
- SET_ENDLINE_BODY(t_3, 654);
+ SET_STARTLINE_BODY(t_3, 609);
+ SET_ENDLINE_BODY(t_3, 673);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4310,8 +4482,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 657);
- SET_ENDLINE_BODY(t_3, 663);
+ SET_STARTLINE_BODY(t_3, 676);
+ SET_ENDLINE_BODY(t_3, 682);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4339,8 +4511,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 676);
- SET_ENDLINE_BODY(t_4, 700);
+ SET_STARTLINE_BODY(t_4, 695);
+ SET_ENDLINE_BODY(t_4, 719);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4424,8 +4596,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 825);
- SET_ENDLINE_BODY(t_4, 936);
+ SET_STARTLINE_BODY(t_4, 844);
+ SET_ENDLINE_BODY(t_4, 955);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4476,8 +4648,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 971);
- SET_ENDLINE_BODY(t_4, 1018);
+ SET_STARTLINE_BODY(t_4, 990);
+ SET_ENDLINE_BODY(t_4, 1037);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4539,6 +4711,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_TRY__NEXT__METHOD = GVarName( "TRY_NEXT_METHOD" );
  G_SUB__FLAGS = GVarName( "SUB_FLAGS" );
  G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
+ G_WITH__IMPS__FLAGS = GVarName( "WITH_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
@@ -4604,6 +4777,8 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* record names used in handlers */
  R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
+ R_CommandLineOptions = RNamName( "CommandLineOptions" );
+ R_N = RNamName( "N" );
  
  /* information for the functions */
  NameFunc[1] = 0;
@@ -4660,6 +4835,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "TRY_NEXT_METHOD", &GC_TRY__NEXT__METHOD );
  InitFopyGVar( "SUB_FLAGS", &GF_SUB__FLAGS );
  InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
+ InitFopyGVar( "WITH_IMPS_FLAGS", &GF_WITH__IMPS__FLAGS );
  InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
  InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
@@ -4796,7 +4972,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -110560148,
+ .crc         = 93694864,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

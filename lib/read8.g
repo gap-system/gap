@@ -17,3 +17,9 @@ ReadLib( "compiler.g"  );
 ReadLib( "teaching.g"  );
 ReadLib( "teachm2.g"  );
 
+#############################################################################
+##
+#X  Debugging method and filter ranks
+##
+ReadLib( "operdebug.g"  );
+
