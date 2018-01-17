@@ -496,7 +496,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
       # do check with implications
       imp := [];
       for i in flags  do
-        ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+        if not GAPInfo.CommandLineOptions.N then
+          ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+        else
+          ADD_LIST( imp, WITH_IMPS_FLAGS( i ) );
+        fi;
       od;
 
       # Check that the requirements of the method match
@@ -527,12 +531,27 @@ BIND_GLOBAL( "INSTALL_METHOD",
         # If the requirements do not match any of the declarations
         # then something is wrong or `InstallOtherMethod' should be used.
         if notmatch=0 then
-          Error("the number of arguments does not match a declaration of ",
-                NAME_FUNC(opr) );
+          if not GAPInfo.CommandLineOptions.N then          
+            Error("the number of arguments does not match a declaration of ",
+                  NAME_FUNC(opr) );
+          else
+            Print("InstallMethod warning:  nr of args does not ",
+                  "match a declaration of ", NAME_FUNC(opr), "\n" );
+          fi;
         else
-          Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
-                Ordinal(notmatch)," argument do not match a declaration of ",
-                NAME_FUNC(opr) );
+          if not GAPInfo.CommandLineOptions.N then
+            Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
+                  Ordinal(notmatch)," argument do not match a declaration of ",
+                  NAME_FUNC(opr) );
+          else
+            Print("InstallMethod warning: ",  NAME_FUNC(opr), "(\c",INPUT_FILENAME(),"\c +",
+                  INPUT_LINENUMBER(),") \c","required filters \c");
+            for j in NamesFilter(imp[notmatch]) do
+              Print(j,"/\c");
+            od;
+            Print(" for ",Ordinal(notmatch)," argument do not match \ca ",
+                  "declaration\n");
+          fi;
         fi;
 
       else
