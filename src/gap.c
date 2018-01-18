@@ -1957,45 +1957,30 @@ Obj FuncOBJ_HANDLE (
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
 **
-**  This is a very quick function which returns a unique integer for each object
-**  non-identical objects will have different handles. The integers may be large.
+**  This is a very quick function which returns a unique integer for each
+**  object non-identical objects will have different handles. The integers
+**  may be large.
 */
-Obj FuncHANDLE_OBJ (
-    Obj                 self,
-    Obj                 obj )
+Obj FuncHANDLE_OBJ(Obj self, Obj obj)
 {
-    Obj                 hnum;
-    Obj                 prod;
-    Obj                 tmp;
-    UInt                hand;
-
-    hand = (UInt) obj;
-    hnum = INTOBJ_INT(0);
-    prod = INTOBJ_INT(1);
-    while ( 0 < hand ) {
-        tmp  = PROD( prod, INTOBJ_INT( hand & 0xffff ) );
-        prod = PROD( prod, INTOBJ_INT( 1 << 16 ) );
-        hnum = SUM(  hnum, tmp );
-        hand = hand >> 16;
-    }
-    return hnum;
+    return ObjInt_UInt((UInt) obj);
 }
 
 /* This function does quite  a similar job to HANDLE_OBJ, but (a) returns 0
 for all immediate objects (small integers or ffes) and (b) returns reasonably
 small results (roughly in the range from 1 to the max number of objects that
-have existed in this session. In HPCGAP it just returns the same value as
-HANDLE_OBJ for non-immediate objects */
+have existed in this session. In HPC-GAP it returns almost the same value as
+HANDLE_OBJ for non-immediate objects, but divided by sizeof(Obj), which gets
+rids of a few zero bits and thus increases the chance of the result value
+to be an immediate integer. */
 
 Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
-#ifdef HPCGAP
     if (IS_INTOBJ(o) || IS_FFE(o)) {
         return INTOBJ_INT(0);
     }
-    else {
-        return QuoInt(FuncHANDLE_OBJ(self, o), INTOBJ_INT(sizeof(Obj)));
-    }
+#ifdef HPCGAP
+    return ObjInt_UInt((UInt)o / sizeof(Obj));
 #else
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
         return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
