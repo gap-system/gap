@@ -1208,11 +1208,6 @@ UInt SyIsIntr ( void )
  **  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
  */
 
-#define CO SyNrCols
-#define LI SyNrRows
-/* SyNrCols can be at most MAXLENOUTPUTLINE */
-#define ML MAXLENOUTPUTLINE
-
 #ifdef TIOCGWINSZ
 /* signal routine: window size changed */
 void syWindowChangeIntr ( int signr )
@@ -1220,11 +1215,11 @@ void syWindowChangeIntr ( int signr )
     struct winsize win;
     if(ioctl(0, TIOCGWINSZ, (char *) &win) >= 0) {
         if(!SyNrRowsLocked && win.ws_row > 0)
-            LI = win.ws_row;
+            SyNrRows = win.ws_row;
         if(!SyNrColsLocked && win.ws_col > 0)
-          CO = win.ws_col - 1;        /* never trust last column */
-        if (CO < 20) CO = 20;
-        if (CO > ML) CO = ML;
+          SyNrCols = win.ws_col - 1;        /* never trust last column */
+        if (SyNrCols < 20) SyNrCols = 20;
+        if (SyNrCols > MAXLENOUTPUTLINE) SyNrCols = MAXLENOUTPUTLINE;
     }
 }
 
@@ -1232,19 +1227,19 @@ void syWindowChangeIntr ( int signr )
 
 void getwindowsize( void )
 {
-/* it might be that LI, CO have been set by the user with -x, -y */
+/* it might be that SyNrRows, SyNrCols have been set by the user with -x, -y */
 /* otherwise they are zero */
 
 /* first strategy: try to ask the operating system */
 #ifdef TIOCGWINSZ
-    if (LI <= 0 || CO <= 0) {
+    if (SyNrRows <= 0 || SyNrCols <= 0) {
         struct winsize win;
 
         if(ioctl(0, TIOCGWINSZ, (char *) &win) >= 0) {
-            if (LI <= 0)
-                LI = win.ws_row;
-            if (CO <= 0)
-                CO = win.ws_col;
+            if (SyNrRows <= 0)
+                SyNrRows = win.ws_row;
+            if (SyNrCols <= 0)
+                SyNrCols = win.ws_col;
         }
         (void) signal(SIGWINCH, syWindowChangeIntr);
     }
@@ -1253,34 +1248,30 @@ void getwindowsize( void )
 #ifdef USE_TERMCAP
 /* note that if we define TERMCAP, this has to be linked with -ltermcap */
 /* maybe that is -ltermlib on some SYSV machines */
-    if (LI <= 0 || CO <= 0) {
+    if (SyNrRows <= 0 || SyNrCols <= 0) {
               /* this failed - next attempt: try to find info in TERMCAP */
         char *sp;
         char bp[1024];
 
         if ((sp = getenv("TERM")) != NULL && tgetent(bp,sp) == 1) {
-            if(LI <= 0)
-                LI = tgetnum("li");
-            if(CO <= 0)
-                CO = tgetnum("co");
+            if(SyNrRows <= 0)
+                SyNrRows = tgetnum("li");
+            if(SyNrCols <= 0)
+                SyNrCols = tgetnum("co");
         }
     }
 #endif
 
     /* if nothing worked, use 80x24 */
-    if (CO <= 0)
-        CO = 80;
-    if (LI <= 0)
-        LI = 24;
+    if (SyNrCols <= 0)
+        SyNrCols = 80;
+    if (SyNrRows <= 0)
+        SyNrRows = 24;
 
-    /* reset CO if value is strange */
-    if (CO < 20) CO = 20;
-    if (CO > ML) CO = ML;
+    /* reset SyNrCols if value is strange */
+    if (SyNrCols < 20) SyNrCols = 20;
+    if (SyNrCols > MAXLENOUTPUTLINE) SyNrCols = MAXLENOUTPUTLINE;
 }
-
-#undef CO
-#undef LI
-#undef ML
 
 
 /****************************************************************************
