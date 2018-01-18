@@ -30,32 +30,6 @@ BindGlobal("STBBCKT_STRING_SUBORBITS2",MakeImmutable("Suborbits2"));
 BindGlobal("STBBCKT_STRING_SUBORBITS3",MakeImmutable("Suborbits3"));
 BindGlobal("STBBCKT_STRING_TWOCLOSURE",MakeImmutable("TwoClosure"));
 
-# #############################################################################
-# ##
-# #F  YndexSymmetricGroup( <S>, <U> ) . . . . . . . . . . . yndex of <U> in <S>
-# ##
-# InstallGlobalFunction( YndexSymmetricGroup, function( S, U )
-#     local   deg,  p,  e,  i,  f,  log;
-#     
-#     deg := NrMovedPoints( S );
-#     if not IsTrivial( U )  then
-#         for p  in Collected( FactorsInt( Size( U ) ) )  do
-#             e := 0;
-#             f := deg;  log := 0;
-#             while f mod p[ 1 ] = 0  do
-#                 f := f / p[ 1 ];  log := log + 1;
-#             od;
-#             for i  in [ 1 .. log ]  do
-#                 e := e + QuoInt( deg, p[ 1 ] ^ i );
-#                 if e > p[ 2 ]  then
-#                     return p[ 1 ];
-#                 fi;
-#             od;
-#         od;
-#     fi;
-#     return 1;
-# end );
-
 #############################################################################
 ##
 #F  IsSlicedPerm( <perm> )  . . . . . . . . . . . . . . . sliced permutations
