@@ -1082,31 +1082,6 @@ extern void CheckMasterPointers( void );
 **  'InitBags'  initializes {\Gasman}.  It  must be called from a application
 **  using {\Gasman} before any bags can be allocated.
 **
-**  <alloc-func> must  be the function that  {\Gasman}  uses to  allocate the
-**  initial workspace and to extend the workspace.  It must accept two 'long'
-**  arguments  <size> and <need>.   <size> is  the amount of  storage that it
-**  must allocate, and <need>  indicates  whether {\Gasman} really needs  the
-**  storage or only wants it to have a reasonable amount of free storage.
-**
-**  *Currently   this function must  return    immediately adjacent areas  on
-**  subsequent  calls*.  So 'sbrk'  will  work on most  systems, but 'malloc'
-**  will not.
-**
-**  If  <need> is 0,  <alloc-func> must  either  return  the  address of  the
-**  extension to indicate success or return  0 if it  cannot or does not want
-**  to extend the workspace.  If <need>  is 1, <alloc-func> must again return
-**  the address of the extension to indicate success and can either  return 0
-**  or abort if it cannot or does not  want  to  extend the workspace.   This
-**  choice determines  whether  'NewBag'  and  'ResizeBag' may  fail.  If  it
-**  returns 0, then  'NewBag' and  'ResizeBag' can fail.  If  it aborts, then
-**  'NewBag' and 'ResizeBag' can never fail (see "NewBag" and "ResizeBag").
-**
-**  <size>  may also be   negative if {\Gasman} has   a large amount  of free
-**  space, and wants to return  some of it  to the operating system.  In this
-**  case <need>   will  always be  0.   <alloc-func>  can either  accept this
-**  reduction of  the  workspace and return  a nonzero  value  and return the
-**  storage to the operating system, or refuse this reduction and return 0.
-**
 **  <initial-size> must be the size of  the initial workspace that 'InitBags'
 **  should allocate.  This   value is automatically rounded   up to the  next
 **  multiple of 1/2 MByte by 'InitBags'.
@@ -1137,27 +1112,14 @@ extern void CheckMasterPointers( void );
 **  be at addresses that are a multiple of 'sizeof(Bag)'.  This value depends
 **  on  the   machine,  the  operating system,   and   the compiler.   If the
 **  application provides another <stack-func>, <stack-align> is ignored.
-**
-**  <abort-func> should be a function that {\Gasman} should call in case that
-**  something goes  wrong, e.g.,     if it  cannot allocation    the  initial
-**  workspace.  <abort-func> should be a function of one string argument, and
-**  it  might want to display this   message before aborting the application.
-**  This function should never return.
 */
-typedef Bag *           (* TNumAllocFuncBags) (
-                                Int             size,
-                                UInt            need );
-
 typedef void (*TNumStackFuncBags)(void);
 typedef void (*TNumExtraMarkFuncBags)(void);
-typedef void (*TNumAbortFuncBags)(const Char * msg);
 
-extern void InitBags(TNumAllocFuncBags alloc_func,
-                     UInt              initial_size,
+extern void InitBags(UInt              initial_size,
                      TNumStackFuncBags stack_func,
                      Bag *             stack_bottom,
-                     UInt              stack_align,
-                     TNumAbortFuncBags abort_func);
+                     UInt              stack_align);
 
 /****************************************************************************
 **

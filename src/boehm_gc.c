@@ -315,12 +315,10 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkTypeBags[type] = mark_type;
 }
 
-void InitBags(TNumAllocFuncBags alloc_func,
-              UInt              initial_size,
+void InitBags(UInt              initial_size,
               TNumStackFuncBags stack_func,
               Bag *             stack_bottom,
-              UInt              stack_align,
-              TNumAbortFuncBags abort_func)
+              UInt              stack_align)
 {
     UInt i; /* loop variable                   */
 

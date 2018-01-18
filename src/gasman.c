@@ -700,7 +700,6 @@ TNumGlobalBags GlobalBags;
 Int WarnInitGlobalBag;
 
 static UInt GlobalSortingStatus;
-extern TNumAbortFuncBags   AbortFuncBags;
 
 void ClearGlobalBags ( void )
 {
@@ -721,7 +720,7 @@ void InitGlobalBag (
 {
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
-        (*AbortFuncBags)(
+        SyAbortBags(
             "Panic: Gasman cannot handle so many global variables" );
     }
 
@@ -753,7 +752,7 @@ static Int IsLessGlobal (
 {
   if (byWhat != 2)
     {
-      (*AbortFuncBags)("can only sort globals by cookie");
+      SyAbortBags("can only sort globals by cookie");
     }
   if (cookie1 == 0L && cookie2 == 0L)
     return 0;
@@ -773,7 +772,7 @@ void SortGlobals( UInt byWhat )
   UInt len, h, i, k;
   if (byWhat != 2)
     {
-      (*AbortFuncBags)("can only sort globals by cookie");
+      SyAbortBags("can only sort globals by cookie");
     }
   if (GlobalSortingStatus == byWhat)
     return;
@@ -843,7 +842,6 @@ Bag * GlobalByCookie(
 
 
 static Bag NextMptrRestoring;
-extern TNumAllocFuncBags       AllocFuncBags;
 
 void StartRestoringBags( UInt nBags, UInt maxSize)
 {
@@ -855,14 +853,14 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
               /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
   if (SizeWorkspace < target)
     {
-      newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- SizeWorkspace)/1024, 0);
+      newmem  = SyAllocBags(sizeof(Bag)*(target- SizeWorkspace)/1024, 0);
       if (newmem == 0)
         {
           target = nBags + maxSize; /* absolute requirement */
           target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
                /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
           if (SizeWorkspace < target)
-            (*AllocFuncBags)(sizeof(Bag)*(target- SizeWorkspace)/1024, 1);
+            SyAllocBags(sizeof(Bag)*(target- SizeWorkspace)/1024, 1);
         }
       EndBags = MptrBags + target;
     }
@@ -887,13 +885,13 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   NextMptrRestoring++;
 
   if ((Bag *)NextMptrRestoring >= OldBags)
-    (*AbortFuncBags)("Overran Masterpointer area");
+    SyAbortBags("Overran Masterpointer area");
 
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
 
   if (AllocBags > EndBags)
-    (*AbortFuncBags)("Overran data area");
+    SyAbortBags("Overran data area");
 
 #ifdef COUNT_BAGS
   InfoBags[type].nrLive   += 1;
@@ -969,19 +967,17 @@ void            InitCollectFuncBags (
 
 void FinishBags( void )
 {
-  (*AllocFuncBags)(-(sizeof(Bag)*SizeWorkspace/1024),2);
+  SyAllocBags(-(sizeof(Bag)*SizeWorkspace/1024),2);
 }
 
 /****************************************************************************
 **
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
-**  'InitBags' remembers <alloc-func>, <stack-func>, <stack-bottom>,
-**  <stack-align> and <abort-func> in global variables. It also allocates the
-**  initial workspace, and sets up the linked list of available masterpointer.
+**  'InitBags' remembers <stack-func>, <stack-bottom>, and <stack-align>
+**  in global variables. It also allocates the initial workspace, and sets up
+**  the linked list of available masterpointer.
 */
-TNumAllocFuncBags       AllocFuncBags;
-
 TNumStackFuncBags       StackFuncBags;
 
 TNumExtraMarkFuncBags   ExtraMarkFuncBags;
@@ -990,15 +986,11 @@ Bag *                   StackBottomBags;
 
 UInt                    StackAlignBags;
 
-TNumAbortFuncBags       AbortFuncBags;
-
 void            InitBags (
-    TNumAllocFuncBags   alloc_func,
     UInt                initial_size,
     TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
-    UInt                stack_align,
-    TNumAbortFuncBags   abort_func )
+    UInt                stack_align )
 {
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
@@ -1007,8 +999,6 @@ void            InitBags (
     WarnInitGlobalBag = 0;
 
     /* install the allocator and the abort function                        */
-    AllocFuncBags   = alloc_func;
-    AbortFuncBags   = abort_func;
     ExtraMarkFuncBags = 0;
 
     /* install the stack marking function and values                       */
@@ -1017,13 +1007,13 @@ void            InitBags (
     StackAlignBags  = stack_align;
 
     if ( sizeof(BagHeader) % sizeof(Bag) != 0 )
-        (*AbortFuncBags)("BagHeader size is not a multiple of word size.");
+        SyAbortBags("BagHeader size is not a multiple of word size.");
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
-    MptrBags = (*AllocFuncBags)( initial_size, 1 );
+    MptrBags = SyAllocBags( initial_size, 1 );
     if ( MptrBags == 0 )
-        (*AbortFuncBags)("cannot get storage for the initial workspace.");
+        SyAbortBags("cannot get storage for the initial workspace.");
     EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
 
     /* 1/8th of the storage goes into the masterpointer area               */
@@ -1821,7 +1811,7 @@ again:
         else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
-                (*AbortFuncBags)("incorrectly marked bag");
+                SyAbortBags("incorrectly marked bag");
             }
 #endif
 
@@ -1854,7 +1844,7 @@ again:
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
-                (*AbortFuncBags)("incorrectly marked bag");
+                SyAbortBags("incorrectly marked bag");
             }
 #endif
 
@@ -1870,7 +1860,7 @@ again:
 
             /* don't free the identifier                                   */
             if (((UInt)UNMARKED_HALFDEAD(header->link)) % 4 != 0)
-              (*AbortFuncBags)("align error in halfdead bag");
+              SyAbortBags("align error in halfdead bag");
 
             *(Bag**)(UNMARKED_HALFDEAD(header->link)) = NewWeakDeadBagMarker;
             nrHalfDeadBags ++;
@@ -1884,7 +1874,7 @@ again:
         else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
-                (*AbortFuncBags)("incorrectly marked bag");
+                SyAbortBags("incorrectly marked bag");
             }
 #endif
 
@@ -1924,7 +1914,7 @@ again:
         /* oops                                                            */
         else {
 
-            (*AbortFuncBags)("Panic: Gasman found a bogus header");
+            SyAbortBags("Panic: Gasman found a bogus header");
 
         }
 
@@ -2015,7 +2005,7 @@ again:
 
         /* get the storage we absolutely need                              */
         while ( EndBags < stopBags
-             && (*AllocFuncBags)(512,1) )
+             && SyAllocBags(512,1) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* if not enough storage is free, fail                             */
@@ -2025,7 +2015,7 @@ again:
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
         while ( ( SpaceBetweenPointers(EndBags, stopBags) <  SpaceBetweenPointers(stopBags, OldBags)/7 ||
                   SpaceBetweenPointers(EndBags, stopBags) < WORDS_BAG(AllocSizeBags) )
-             && (*AllocFuncBags)(512,0) )
+             && SyAllocBags(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* If we are having trouble, then cut our cap to fit our cloth *.
@@ -2041,7 +2031,7 @@ again:
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
         while (SpaceBetweenPointers(stopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
                 && SpaceBetweenPointers(EndBags,stopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
-             && (*AllocFuncBags)(-512,0) )
+             && SyAllocBags(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
@@ -2140,19 +2130,19 @@ void CheckMasterPointers( void )
         // none of the above, so it must be an active master pointer
         // otherwise, error out
         if (!IS_BAG_BODY(*ptr))
-            (*AbortFuncBags)("Bad master pointer detected");
+            SyAbortBags("Bad master pointer detected");
 
         // sanity check: the link pointer must either point back; or else
         // this bag must be part of the chain of changed bags (which thus
         // must be non-empty)
         if (ChangedBags == 0 && LINK_BAG(bag) != bag) {
-            (*AbortFuncBags)("Master pointer with bad link word detected");
+            SyAbortBags("Master pointer with bad link word detected");
         }
 
 #if SIZEOF_VOID_P == 4
         // sanity check: reserved bits must be unused
         if (BAG_HEADER(bag)->reserved != 0) {
-            (*AbortFuncBags)("Master pointer with non-zero reserved bits "
+            SyAbortBags("Master pointer with non-zero reserved bits "
                              "detected");
         }
 #endif
@@ -2162,7 +2152,7 @@ void CheckMasterPointers( void )
     bag = FreeMptrBags;
     while (bag != 0) {
         if (!IS_BAG_ID(bag))
-            (*AbortFuncBags)("Bad chain of free master pointers detected");
+            SyAbortBags("Bad chain of free master pointers detected");
         bag = (Bag)*bag;
     }
 }
