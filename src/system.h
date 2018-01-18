@@ -494,7 +494,7 @@ extern UInt SyOriginalArgc;
 **  This is per default 256 MByte,  which is often a  reasonable value.  It is
 **  usually changed with the '-o' option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -512,7 +512,7 @@ extern Int SyStorOverrun;
 **  This is per default disabled (i.e. = 0).
 **  Can be changed with the '-K' option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags'below.
+**  This is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
