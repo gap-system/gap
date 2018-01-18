@@ -33,7 +33,7 @@ InstallGlobalFunction( PrimeResidues, function ( m )
 
     # remove the multiples of all prime divisors
     residues := [1..m-1];
-    for p  in Set(FactorsInt(m))  do
+    for p in PrimeDivisors(m) do
         for i  in [1..m/p-1]  do
             residues[p*i] := 1;
         od;
@@ -64,7 +64,7 @@ InstallMethod( Phi,
 
     # compute $phi$
     phi := m;
-    for p  in Set(FactorsInt(m))  do
+    for p in PrimeDivisors(m) do
         phi := phi / p * (p-1);
     od;
 
@@ -93,7 +93,7 @@ InstallMethod( Lambda,
 
     # loop over all prime factors $p$ of $m$
     lambda := 1;
-    for p  in Set(FactorsInt(m))  do
+    for p in PrimeDivisors(m) do
 
         # compute $p^e$ and $k = (p-1) p^(e-1)$
         q := p;  k := p-1;
@@ -138,7 +138,7 @@ InstallGlobalFunction( OrderMod, function ( n, m )
     # otherwise try the divisors of $\lambda(m)$ and their divisors, etc.
     else
         o := Lambda( m );
-        for d in Set( FactorsInt( o ) )  do
+        for d in PrimeDivisors( o ) do
             while o mod d = 0  and PowerModInt(n,o/d,m) = 1  do
                 o := o / d;
             od;
@@ -185,7 +185,7 @@ InstallGlobalFunction( IsPrimitiveRootMod, function ( r, m )
     fi;
 
     # compute $pows_i := r^{{p-1}/\prod_{k=2}^{i}{facs_k}}$ ($facs_1 = 2$)
-    facs := Set( FactorsInt( p-1 ) );
+    facs := PrimeDivisors( p-1 );
     pows := [];
     pows[Length(facs)] := PowerModInt( r, 2*(p-1)/Product(facs), p );
     for i  in Reversed( [2..Length(facs)-1] )  do
@@ -357,7 +357,7 @@ InstallGlobalFunction( Legendre, function ( n, m )
     if m < 6              then return -1;  fi;
 
     # check that $n$ is a quadratic residue modulo every prime power $q$
-    for p  in Set( FactorsInt( m ) )  do
+    for p  in PrimeDivisors( m )  do
 
         # find prime power $q$ and reduce $n$
         q := p;  while m mod (q * p) = 0  do q := q * p;  od;
@@ -604,7 +604,7 @@ InstallGlobalFunction( RootMod, function ( arg )
 
     # combine the root modulo every prime power $p^l$
     r := 0;  qq := 1;
-    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) ) do
+    for p  in PrimeDivisors( m : UseProbabilisticPrimalityTest ) do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -849,7 +849,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
 
     # combine the roots modulo every prime power $p^l$
     rr := [0];  qq := 1;
-    for p  in Set( FactorsInt( m : UseProbabilisticPrimalityTest ) )  do
+    for p  in PrimeDivisors( m : UseProbabilisticPrimalityTest )  do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -998,7 +998,7 @@ InstallGlobalFunction( RootsUnityMod, function ( arg )
 
     # combine the roots modulo every prime power $p^l$
     rr := [0];  qq := 1;
-    for p  in Set( FactorsInt( m ) )  do
+    for p in PrimeDivisors( m ) do
 
         # find prime power $q = p^l$
         q := p;  l := 1;
@@ -1245,7 +1245,7 @@ InstallMethod( Sigma,
 
     # loop over all prime $p$ factors of $n$
     sigma := 1;
-    for p  in Set(FactorsInt(n))  do                                         
+    for p in PrimeDivisors(n) do
 
         # compute $p^e$ and $k = 1+p+p^2+..p^e$                              
         q := p;  k := 1 + p;
@@ -1280,7 +1280,7 @@ InstallMethod( Tau,
 
     # loop over all prime factors $p$ of $n$
     tau := 1;
-    for p  in Set(FactorsInt(n))  do                                         
+    for p in PrimeDivisors(n) do
 
         # compute $p^e$ and $k = e+1$                                        
         q := p;  k := 2;
@@ -1327,7 +1327,7 @@ InstallGlobalFunction( TwoSquares, function ( n )
     # write $n = c^2 d$, where $c$ has only  prime factors  $2$  and  $4k+3$,
     # and $d$ has at most one  $2$ and otherwise only  prime factors  $4k+1$.
     c := 1;  d := 1;
-    for p  in Set( FactorsInt( n ) )  do
+    for p in PrimeDivisors( n ) do
         q := p;  l := 1;
         while n mod (q * p) = 0  do q := q * p;  l := l + 1;  od;
         if p = 2  and l mod 2 = 0  then
@@ -1647,7 +1647,7 @@ end);
 #T     G.facts := [];
 #T     G.roots := [];
 #T     G.sizes := [];
-#T     for p  in Set( Factors( G.modulus ) )  do
+#T     for p in PrimeDivisors( G.modulus ) do
 #T         q := p;
 #T         while G.modulus mod (p*q) = 0  do q := p*q;  od;
 #T         if q mod 4 = 0  then
@@ -1809,7 +1809,7 @@ end);
 #T
 #T     # add generators for each prime power factor <q> of <m>
 #T     gens := [];
-#T     for p  in Set( Factors( m ) )  do
+#T     for p in PrimeDivisors( m ) do
 #T         q := p;
 #T         while m mod (q * p) = 0  do q := q * p;  od;
 #T

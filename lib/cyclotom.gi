@@ -231,7 +231,7 @@ InstallGlobalFunction( CoeffsCyc, function( z, N )
         #   and $n / s$, and hence remain in the reduced expression,
         # - all primes but the squarefree part of the rest.
 
-        factors:= Set( FactorsInt( s ) );
+        factors:= PrimeDivisors( s );
         second:= 1;
         for p in factors do
           if s mod p <> 0 or ( n / s ) mod p <> 0 then
@@ -301,7 +301,7 @@ InstallGlobalFunction( CoeffsCyc, function( z, N )
     # `E(n)^k' by $ - \sum_{j=1}^{p-1} `E(n*p)^(p*k+j*n)'$.
     if quo <> 1 then
 
-      for p in Set( FactorsInt( quo ) ) do
+      for p in PrimeDivisors( quo ) do
         if p <> 2 and n mod p <> 0 then
           nn  := n * p;
           quo := quo / p;
@@ -634,7 +634,7 @@ InstallGlobalFunction( NK, function( n, k, deriv )
       od;
     elif k in [ 3, 5, 7 ] then   # for odd primes
       if ( n mod ( k*k ) <> 0 ) and
-         ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 ) then
+         ForAll( PrimeDivisors( n ), p -> (p-1) mod k <> 0 ) then
         return fail;
       fi;
       while true do
@@ -666,7 +666,7 @@ InstallGlobalFunction( NK, function( n, k, deriv )
     elif k = 4 then
       # An automorphism of order 4 exists if 4 divides $p-1$ for an odd
       # prime divisor $p$ of `n', or if 16 divides `n'.
-      if ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 )
+      if ForAll( PrimeDivisors( n ), p -> (p-1) mod k <> 0 )
          and n mod 16 <> 0 then
         return fail;
       fi;
@@ -691,7 +691,7 @@ InstallGlobalFunction( NK, function( n, k, deriv )
       # An automorphism of order 6 exists if automorphisms of the orders
       # 2 and 3 exist; the former is always true.
       if ( n mod 9 <> 0 ) and
-         ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod 3 <> 0 ) then
+         ForAll( PrimeDivisors( n ), p -> (p-1) mod 3 <> 0 ) then
         return fail;
       fi;
       while true do
@@ -721,7 +721,7 @@ InstallGlobalFunction( NK, function( n, k, deriv )
     elif k = 8 then
       # An automorphism of order 8 exists if 8 divides $p-1$ for an odd
       # prime divisor $p$ of `n', or if 32 divides `n'.
-      if ForAll( Set( FactorsInt( n ) ), p -> (p-1) mod k <> 0 )
+      if ForAll( PrimeDivisors( n ), p -> (p-1) mod k <> 0 )
          and n mod 32 <> 0 then
         return fail;
       fi;

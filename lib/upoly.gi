@@ -219,7 +219,7 @@ InstallMethod( IsPrimitivePolynomial,
     # \ldots and are not divisible by $x^m - 1$
     # for proper divisors $m$ of $q^d-1$.
     if size <> 1 then
-      for p in Set( Factors( size ) ) do
+      for p in PrimeDivisors( size ) do
         pmc:= PowerModCoeffs( x, size / p, coeffs );
         ShrinkRowVector( pmc );
         if pmc = [ one ] then

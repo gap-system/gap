@@ -614,7 +614,7 @@ local G,pl;
   if Length(arg)>1 then
     pl:=arg[2];
   else
-    pl:=Set(Factors(Size(G)));
+    pl:=PrimeDivisors(Size(G));
   fi;
   return MulExt(G,pl);
 end;

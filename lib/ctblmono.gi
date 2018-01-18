@@ -1105,7 +1105,7 @@ InstallMethod( TestMonomialQuick,
     # This follows from Theorem~(2D) in~\cite{Fon62}.
     if IsSolvableGroup( G ) then
 
-      pi   := Set( FactorsInt( codegree ) );
+      pi   := PrimeDivisors( codegree );
       hall := Product( Filtered( FactorsInt( factsize ), x -> x in pi ), 1 );
 
       if factsize / hall = chi[1] then
@@ -1245,7 +1245,7 @@ InstallOtherMethod( TestMonomialQuick,
         test:= rec( isMonomial := true,
                     comment    := "abelian by supersolvable group" );
 
-      elif ForAll( Set( FactorsInt( Size( ssr ) ) ),
+      elif ForAll( PrimeDivisors( Size( ssr ) ),
                    x -> IsAbelian( SylowSubgroup( ssr, x ) ) ) then
 
         # Sylow abelian by supersolvable groups are monomial.

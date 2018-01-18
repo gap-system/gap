@@ -335,8 +335,7 @@ operation:
 InstallMethod(PrimesDividingSize,"for finite groups",
   [IsGroup and IsFinite],
 function(G)
-  if Size(G)=1 then return [];
-  else return Set(Factors(Size(G)));fi;
+  return PrimeDivisors(Size(G));
 end);
 ]]></Log>
 <P/>

@@ -353,7 +353,7 @@ InstallGlobalFunction( CompatibleConjugacyClassesDefault,
     fi;
 
     # Use power maps.
-    primes:= Set( Factors( Size( tbl ) ) );
+    primes:= PrimeDivisors( Size( tbl ) );
 
     # store power maps of the group, in order to identify the class
     # of the power only once.
@@ -1130,7 +1130,7 @@ InstallMethod( AbelianInvariants,
 
       # For all prime divisors $p$ of the size,
       # compute the element of maximal $p$ power order.
-      primes:= Set( FactorsInt( Size( tbl ) ) );
+      primes:= PrimeDivisors( Size( tbl ) );
       max:= List( primes, x -> 1 );
       pos:= [];
       orders:= OrdersClassRepresentatives( tbl );
@@ -1618,7 +1618,7 @@ InstallMethod( OrdersClassRepresentatives,
 
     # If these maps do not suffice, compute the missing power maps
     # and then try again.
-    for p in Set( Factors( Size( tbl ) ) ) do
+    for p in PrimeDivisors( Size( tbl ) ) do
       PowerMap( tbl, p );
     od;
     ord:= ElementOrdersPowerMap( ComputedPowerMaps( tbl ) );
@@ -2659,7 +2659,7 @@ InstallMethod( ClassRoots,
     orders := OrdersClassRepresentatives( tbl );
     root   := List([1..nccl], x->[]);
 
-    for p in Set( Factors( Size( tbl ) ) ) do
+    for p in PrimeDivisors( Size( tbl ) ) do
        pmap:= PowerMap( tbl, p );
        for i in [1..nccl] do
           if i <> pmap[i] and orders[i] <> orders[pmap[i]] then
@@ -3495,7 +3495,7 @@ InstallMethod( IsInternallyConsistent,
       # If the power maps of all prime divisors of the order are stored,
       # check if they are consistent with the representative orders.
       if     IsBound( orders )
-         and ForAll( Set( FactorsInt( order ) ), x -> IsBound(powermap[x]) )
+         and ForAll( PrimeDivisors( order ), x -> IsBound(powermap[x]) )
          and orders <> ElementOrdersPowerMap( powermap ) then
         Info( InfoWarning, 1,
               "IsInternallyConsistent(", tbl, "):\n",
@@ -3656,7 +3656,7 @@ InstallMethod( IsInternallyConsistent,
       # If the power maps of all prime divisors of the order are stored,
       # check if they are consistent with the representative orders.
       if     IsBound( orders )
-         and ForAll( Set( FactorsInt( order ) ), x -> IsBound(powermap[x]) )
+         and ForAll( PrimeDivisors( order ), x -> IsBound(powermap[x]) )
          and orders <> ElementOrdersPowerMap( powermap ) then
         flag:= false;
         Info( InfoWarning, 1,
@@ -3775,7 +3775,7 @@ InstallMethod( IsPSolvableCharacterTableOp,
       # \ldots and its size.
       nextsize:= Sum( classes{ nsg[i] }, 0 );
 
-      facts:= Set( FactorsInt( nextsize / size ) );
+      facts:= PrimeDivisors( nextsize / size );
       if 1 < Length( facts ) and ( p = 0 or p in facts ) then
 
         # The chief factor `nsg[i] / n' is not a prime power,
@@ -4820,7 +4820,7 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       tbl_centralizers:= SizesCentralizers( tbl );
     elif centralizers = true then
       tbl_centralizers:= SizesCentralizers( tbl );
-      primes:= Set( FactorsInt( Size( tbl ) ) );
+      primes:= PrimeDivisors( Size( tbl ) );
       cen:= [];
       for prime in primes do
         cen[ prime ]:= [];
@@ -5650,7 +5650,7 @@ InstallMethod( CharacterTableFactorGroup,
     # Transfer necessary power maps of `tbl' to `F'.
     inverse:= ProjectionMap( factorfusion );
     maps:= ComputedPowerMaps( F );
-    for p in Set( Factors( Size( F ) ) ) do
+    for p in PrimeDivisors( Size( F ) ) do
       if not IsBound( maps[p] ) then
         maps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
       fi;
@@ -5923,7 +5923,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
     invfusion:= InverseMap( factorfusion );
 
     # Adjust the power maps.
-    for p in Set( Factors( size ) ) do
+    for p in PrimeDivisors( size ) do
 
       map:= ShallowCopy( PowerMap( tbl, p ) );
 

@@ -77,7 +77,7 @@ InstallGlobalFunction( TestPerm2, function(tbl, char)
    od;
 
    # TEST 5:
-   subfak:= Set(Factors(subord));
+   subfak:= PrimeDivisors(subord);
    for prime in subfak do
       if subord mod prime^2 <> 0 then
 
@@ -205,7 +205,7 @@ InstallGlobalFunction( TestPerm4, function( tbl, chars )
     size:= Size( tbl );
     orders:= OrdersClassRepresentatives( tbl );
 
-    for p in Set( Factors( Size( tbl ) ) ) do
+    for p in PrimeDivisors( Size( tbl ) ) do
 
       # Compute the distribution of characters to blocks.
       bl:= PrimeBlocks( tbl, p );

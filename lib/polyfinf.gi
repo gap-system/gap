@@ -640,7 +640,7 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
       if not IsBound( L[m] )  then
 	  bad:=[];
 	  x := Characteristic(F)^m-1;
-	  primes:=Set(Factors(x)); # use the Cunningham tables, and then store the prime
+	  primes:=PrimeDivisors(x); # use the Cunningham tables, and then store the prime
 	  # factors such that they end up cached below. In fact, since we
 	  # only divide off some known primes, this factorization really
 	  # shouldn't be harder than the one below.

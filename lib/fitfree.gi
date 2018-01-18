@@ -887,7 +887,7 @@ local o,C;
     Append(o,List(Orbits(C,MovedPoints(G)),Length));
   fi;
   o:=Lcm(o);
-  if Set(Factors(Size(G)))=Set(Factors(o)) then
+  if PrimeDivisors(Size(G))=PrimeDivisors(o) then
     # all primes in -- useless
     return G;
   fi;
@@ -898,7 +898,7 @@ end);
 BindGlobal("Halleen",function(arg)
 local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
   G:=arg[1];
-  gp:=Set(Factors(Size(G)));
+  gp:=PrimeDivisors(Size(G));
   if Length(arg)>1 then
     r:=arg[2];
     forbid:=Difference(gp,r);
@@ -1012,7 +1012,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
     return [TrivialSubgroup(G)];
   elif false and Length(pi)=1 then
     return [SylowSubgroup(G,pi[1])];
-  elif pi=Set(Factors(Size(G))) then
+  elif pi=PrimeDivisors(Size(G)) then
     return [G];
   fi;
 

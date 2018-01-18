@@ -596,7 +596,7 @@ InstallMethod( TableAutomorphisms,
     nccl:= NrConjugacyClasses( tbl );
 
     # Check whether all generators commute with all power maps.
-    powermap:= List( Set( Factors( Size( tbl ) ) ),
+    powermap:= List( PrimeDivisors( Size( tbl ) ),
                      p -> PowerMap( tbl, p ) );
     admissible:= Filtered( gens, 
                            perm -> ForAll( powermap, 
@@ -1011,7 +1011,7 @@ InstallMethod( TransformingPermutationsCharacterTables,
     # - If the group orders differ then return `fail'.
     # - If irreducibles are stored in the two tables and coincide,
     #   and if the power maps are known and equal then return the identity.
-    primes:= Set( Factors( Size( tbl1 ) ) );
+    primes:= PrimeDivisors( Size( tbl1 ) );
     if Size( tbl1 ) <> Size( tbl2 ) then
       return fail;
     elif HasIrr( tbl1 ) and HasIrr( tbl2 ) and Irr( tbl1 ) = Irr( tbl2 )

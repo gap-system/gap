@@ -2013,7 +2013,7 @@ local G,	# group
 	        
 
 		# try to catch some solvable cases that look awful
-		if Size(vs)>1000 and Length(Set(Factors(Index(j,N))))<=2
+		if Size(vs)>1000 and Length(PrimeDivisors(Index(j,N)))<=2
 		  then
 		  l:=fail;
 		else

@@ -52,7 +52,7 @@ InstallMethod( IsCyclic,
     # if <G> is finite, test if the <p>-th powers of the generators
     # generate a subgroup of index <p> for all prime divisors <p>
     elif IsFinite( G )  then
-        return ForAll( Set( FactorsInt( Size( G ) ) ),
+        return ForAll( PrimeDivisors( Size( G ) ),
                 p -> Index( G, SubgroupNC( G,
                                  List( GeneratorsOfGroup( G ),g->g^p)) ) = p );
 
@@ -644,7 +644,7 @@ InstallMethod( AbelianInvariants,
     inv := [];
     # the parent of this will be G
     cmm := DerivedSubgroup(G);
-    for p  in Set( FactorsInt( Size( G ) ) )  do
+    for p  in PrimeDivisors( Size( G ) )  do
         ranks := [];
         repeat
             H := cmm;
@@ -1139,7 +1139,7 @@ InstallMethod( Exponent,
 function(G)
   local exp, primes, p;
   exp := 1;
-  primes := Set(FactorsInt(Size(G)));
+  primes := PrimeDivisors(Size(G));
   for p in primes do
     exp := exp * Exponent(SylowSubgroup(G, p));
   od;
@@ -1171,7 +1171,7 @@ InstallMethod( FittingSubgroup,
     [ IsGroup and IsFinite ],
     function (G)
         if not IsTrivial( G ) then
-            G := SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
+            G := SubgroupNC( G, Filtered(Union( List( PrimeDivisors( Size( G ) ),
                          p -> GeneratorsOfGroup( PCore( G, p ) ) ) ),
                          p->p<>One(G)));
             Assert( 2, IsNilpotentGroup( G ) );
@@ -2621,7 +2621,7 @@ InstallMethod( IsPNilpotentOp,
 
     local primes, S;
 
-    primes:= Set( Factors( Size( G ) ) );
+    primes:= PrimeDivisors( Size( G ) );
     RemoveSet( primes, p );
     S:= HallSubgroup( G, primes );
 

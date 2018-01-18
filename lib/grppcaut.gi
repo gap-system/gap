@@ -1879,7 +1879,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
 
     # add derivations
     Info( InfoAutGrp, 2, "add derivations ");
-    pr  := Set( FactorsInt( Size( F ) ) );
+    pr  := PrimeDivisors( Size( F ) );
     for p in pr do
 
         # create subgroup

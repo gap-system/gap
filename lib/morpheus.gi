@@ -1175,7 +1175,7 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
   Info(InfoMorph,1,"FindGenerators");
   # throw out the 1-Class
   cl:=Filtered(cl,i->Length(i)>1 or Size(i[1].representative)>1);
-  alltwo:=Set(Factors(Size(G)))=[2];
+  alltwo:=PrimeDivisors(Size(G))=[2];
 
   #create just a list of ordinary classes.
   lcl:=List(cl,i->Concatenation(List(i,j->j.classes)));
@@ -1419,7 +1419,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 
   au:=[];
   # run by primes
-  p:=Set(Factors(Size(G)));
+  p:=PrimeDivisors(Size(G));
   for i in p do
     l:=Filtered(gens,j->IsInt(Order(j)/i));
     nl:=Filtered(gens,i->not i in l);

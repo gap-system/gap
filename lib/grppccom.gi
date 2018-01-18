@@ -940,7 +940,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
   f:=Size(H)/Size(K);
   
   # find prime that gives normal characteristic subgroup
-  primes:=Set(Factors(f));
+  primes:=PrimeDivisors(f);
   if Length(primes)=1 then
     p:=primes[1];
     A:=H;

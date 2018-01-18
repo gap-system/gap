@@ -725,7 +725,7 @@ InstallGlobalFunction( RationalClassesTry, function(  G, classes, elm  )
         Add( classes, C );
 
         # try the powers of this element that reduce the order
-        for i  in Set(FactorsInt(Order(elm)))  do
+        for i in PrimeDivisors(Order(elm)) do
             RationalClassesTry( G, classes, elm ^ i );
         od;
 

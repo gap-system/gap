@@ -608,10 +608,10 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
         normsU := NormalSubgroupsAbove( U, DerivedSubgroup(U),[]);
         normsV := List( ConjugacyClassesSubgroups( V ), Representative );
     else
-        div  := Set( FactorsInt( Gcd( Size( U ), Size( V ) ) ) );
+        div  := PrimeDivisors( Gcd( Size( U ), Size( V ) ) );
 
         # in U
-        fac  := Set( FactorsInt( Size( U ) ) );
+        fac  := PrimeDivisors( Size( U ) );
         fac  := Filtered( fac, x -> not x in div );
         Syl  := List( fac, x -> GeneratorsOfGroup( SylowSubgroup( U, x ) ) );
         Syl  := Concatenation( Syl );
@@ -619,7 +619,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
         normsU := NormalSubgroupsAbove( U, Syl, [] );
             
         # in V
-        fac  := Set( FactorsInt( Size( V ) ) );
+        fac  := PrimeDivisors( Size( V ) );
         fac  := Filtered( fac, x -> not x in div );
         Syl  := List( fac, x -> GeneratorsOfGroup( SylowSubgroup( V, x ) ) );
         Syl  := Concatenation( Syl );
