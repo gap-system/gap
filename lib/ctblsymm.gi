@@ -1185,7 +1185,7 @@ InstallGlobalFunction( CharacterTableWreathSymmetric, function( sub, n )
     # \ldots, `ComputedPowerMaps', \ldots
     tbl.ComputedPowerMaps:= [];
     powermap:= tbl.ComputedPowerMaps;
-    for prime in Set( Factors( tbl.Size ) ) do
+    for prime in PrimeDivisors( tbl.Size ) do
        spm:= PowerMap( sub, prime );
        powermap[prime]:= List( [ 1 .. nccl ],
            i -> Position(parts, PowerWreath(spm, parts[i], prime)) );
@@ -1250,7 +1250,7 @@ InstallMethod( Irr,
     # Compute and store the power maps.
     pow:= ComputedPowerMaps( cG );
     fun:= gentbl.powermap[1];
-    for p in Set( Factors( Size( G ) ) ) do
+    for p in PrimeDivisors( Size( G ) ) do
       if not IsBound( pow[p] ) then
         pow[p]:= List( cp, x -> Position( cp, fun( deg, x[2], p ) ) );
       fi;

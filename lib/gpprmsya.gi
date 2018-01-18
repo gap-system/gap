@@ -1187,7 +1187,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
   Info(InfoGroup,1,"SymmAlt normalizer: orbits ",List(o,Length));
 
   if Length(o)=1 and IsAbelian(u) then
-    b:=List(Set(Factors(Size(u))),p->Omega(SylowSubgroup(u,p),p,1));
+    b:=List(PrimeDivisors(Size(u)),p->Omega(SylowSubgroup(u,p),p,1));
     if Length(b)=1 and IsTransitive(b[1],dom) then
       # elementary abelian, regular -- construct the correct AGL
       b:=b[1];

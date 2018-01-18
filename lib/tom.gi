@@ -1488,7 +1488,7 @@ InstallMethod( IdempotentsTom,
     marks:= MarksTom( tom );
     classes:= [ 1 .. Length( marks ) ];
 
-    for p in Set( Factors( marks[1][1] ) ) do
+    for p in PrimeDivisors( marks[1][1] ) do
       ext:= CyclicExtensionsTom( tom, p );
       for c in ext do
         for i in c do
@@ -2034,7 +2034,7 @@ InstallMethod( DerivedSubgroupTom,
       subs:=SubsTom(tom);
 
       # find normal subgroups of prime index
-      set:=Set(Factors(orders[sub]));
+      set:=PrimeDivisors(orders[sub]);
       primes:=[];
       normalsubs:=[];
       minindex:=1;
@@ -2487,7 +2487,7 @@ InstallMethod( ContainingTom,
 InstallMethod( CyclicExtensionsTom,
     "for a table of marks (classes for all prime div. of the group order)",
     [ IsTableOfMarks ],
-    tom -> CyclicExtensionsTom( tom, Set( Factors(MarksTom(tom)[1][1]) ) ) );
+    tom -> CyclicExtensionsTom( tom, PrimeDivisors(MarksTom(tom)[1][1]) ) );
 
 InstallMethod( CyclicExtensionsTom,
     "for a table of marks, and a prime",
@@ -2506,7 +2506,7 @@ InstallMethod( CyclicExtensionsTom,
       Error( "the second argument must be a list of primes" );
     fi;
 
-    factors:= Set( Factors( MarksTom( tom )[1][1] ) );
+    factors:= PrimeDivisors( MarksTom( tom )[1][1] );
     primes:= Filtered( list, x -> x in factors);
     if primes = [] then
       return List( [ 1 .. Length( MarksTom( tom ) ) ], x -> [ x ] );

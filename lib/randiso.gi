@@ -18,7 +18,7 @@ FingerprintFF := function( G )
     for orb in OrbitsDomain( G, AsList( G ) ) do
         ord := Order( orb[ 1 ] );
         typ := [ ord, Length( orb ) ];
-        po := Set( FactorsInt( ord ) );
+        po := PrimeDivisors( ord );
         i := 1;
         repeat
             if not Primes[ i ] in po then

@@ -2902,7 +2902,7 @@ local b,w,a,fno,cnt,normalsyl,tf,nt,tno,ntno,i,j,k,com,hom,cs,ker,nf;
   fno:=PreImage(sys.blockhom,fno); # factor normalizer
 
   # are we effectively working modulo a prime?
-  normalsyl:=Filtered(Set(Factors(Size(fno))),p->
+  normalsyl:=Filtered(PrimeDivisors(Size(fno)),p->
     (not IsInt(Index(w,b)/p)) and
     IsNormal(fno,SylowSubgroup(b,p)) );
 
@@ -3559,7 +3559,7 @@ local bls, # block size
     else
       # see, whether it's worth to use subgroups of minops
       p:=List(minops,i->Factors(Size(i)));
-      c:=Set(Factors(Size(i)));
+      c:=PrimeDivisors(Size(i));
       c:=List(p,i->Filtered(i,j->not j in c));
       p:=Minimum(List(c,Product));
       if p>1 and bla>5 and bls*bla>23 then

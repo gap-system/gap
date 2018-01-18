@@ -254,7 +254,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	d:=RefinedSubnormalSeries(d,i);
       od;
     fi;
-    for i in Set(Factors(Size(r))) do
+    for i in PrimeDivisors(Size(r)) do
       u:=PCore(r,i);
       if Size(u)>1 then
 	d:=RefinedSubnormalSeries(d,u);
@@ -288,7 +288,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   ser:=[TrivialSubgroup(G)];
   for i in d{[2..Length(d)]} do
     u:=ser[Length(ser)];
-    for p in Set(Factors(Size(i)/Size(u))) do
+    for p in PrimeDivisors(Size(i)/Size(u)) do
       bd:=PValuation(Size(i)/Size(u),p); # max p-exponent
       u:=ClosureSubgroup(u,SylowSubgroup(i,p));
       v:=ser[Length(ser)];

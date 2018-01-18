@@ -105,7 +105,7 @@ BindGlobal( "IsConsistentPolynomial", function( pol )
   local n, p, ps, x, null, f;
   n := DegreeOfLaurentPolynomial(pol);
   p := Characteristic(pol);
-  ps := Set(FactorsInt(n));
+  ps := PrimeDivisors(n);
   x := IndeterminateOfLaurentPolynomial(pol);
   null := 0*pol;
   f := function(k)
@@ -187,7 +187,7 @@ end);
 ##  all proper subfields.
 BindGlobal("NrCompatiblePolynomials", function(p, n)
   local ps, lcm;
-  ps := Set(Factors(n));
+  ps := PrimeDivisors(n);
   lcm := Lcm(List(ps, r-> p^(n/r)-1));
   return (p^n-1)/lcm;
 end);
@@ -320,7 +320,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
       if n > 1 then
 
         # Compute the list of all `n / l' for `l' a prime divisor of `n'
-        nfacs:= List( Set( Factors( n ) ), d -> n / d );
+        nfacs:= List( PrimeDivisors( n ), d -> n / d );
 
         if nfacs = [ 1 ] then
 
@@ -343,7 +343,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
 
         quots:= List( nfacs, x -> pp / ( p^x -1 ) );
         lencpols:= Length( cpols );
-        ppmin:= List( Set( Factors( pp ) ), d -> pp/d );
+        ppmin:= List( PrimeDivisors( pp ), d -> pp/d );
 
         found:= false;
         onelist:= [ one ];
@@ -557,7 +557,7 @@ InstallGlobalFunction( RandomPrimitivePolynomial, function(F, n, varnum...)
   FF := AlgebraicExtension(F, pol);
   one := One(FF);
   zero := Zero(FF);
-  fac:=List(Set(Factors(Size(FF)-1)), p-> (Size(FF)-1)/p);
+  fac:=List(PrimeDivisors(Size(FF)-1), p-> (Size(FF)-1)/p);
   repeat
     a := Random(FF);
   until a <> zero and ForAll(fac, d-> a^d <> one);

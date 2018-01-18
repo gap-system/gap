@@ -279,7 +279,7 @@ InstallMethod( Factors,
 
     # loop over all factors of the norm of x
     facs := [];
-    for prm in Set( FactorsInt( EuclideanDegree( GaussianIntegers, x ) ) ) do
+    for prm in PrimeDivisors( EuclideanDegree( GaussianIntegers, x ) ) do
 
         # $p = 2$ and primes $p = 1$ mod 4 split according to $p = x^2 + y^2$
         if prm = 2  or prm mod 4 = 1  then

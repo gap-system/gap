@@ -412,7 +412,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       elif Length(param)=1 and param[1]>7 and
-        Set(Factors(param[1]))=[2] and IsOddInt(LogInt(param[1],2)) then
+        PrimeDivisors(param[1])=[2] and IsOddInt(LogInt(param[1],2)) then
 	g:=SuzukiGroup(IsPermGroup,param[1]);
 	SetName(g,Concatenation("Sz(",String(param),")"));
 	SetIsSimpleGroup(g,true);
@@ -422,7 +422,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       fi;
     elif str="R" or str="REE" or str="2G" then
       if Length(param)=1 and param[1]>26 and
-        Set(Factors(param[1]))=[3] and IsOddInt(LogInt(param[1],3)) then
+        PrimeDivisors(param[1])=[3] and IsOddInt(LogInt(param[1],3)) then
 	g:=ReeGroup(IsMatrixGroup,param[1]);
 	SetName(g,Concatenation("Ree(",String(param[1]),")"));
 	SetIsSimpleGroup(g,true);

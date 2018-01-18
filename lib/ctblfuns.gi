@@ -4323,7 +4323,7 @@ InstallGlobalFunction( ReductionToFiniteField, function( value, p )
 
     if k <> 1 then
 
-      primes:= Set( Factors( m ) );
+      primes:= PrimeDivisors( m );
       sol:= fail;
 
       while not IsEmpty( primes ) do

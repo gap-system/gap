@@ -195,7 +195,7 @@ CodeGenerators := function( gens, spcgs )
                sgrps[ tpos ] := GroupByGenerators( Concatenation( [ e ],
                                 pcgs{[ tpos + 1 .. first[ lay + 1 ] - 1 ]},
                                 spcgs{[ first[lay+1] .. Length(spcgs) ]} ) );
-               for p in Set( FactorsInt( Order( e ) ) ) do
+               for p in PrimeDivisors( Order( e ) ) do
                   et := e ^ p;
                   if et <> one and not et in gens then
                      Add( gens, et );
