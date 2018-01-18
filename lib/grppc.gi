@@ -1335,8 +1335,8 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   # Calculate a (central)  elementary abelian series  with all pcgs induced
   # w.r.t. <home>.
 
-  if IsPrimePowerInt( Size( G ) )  then
-    p:=FactorsInt( Size( G ) )[ 1 ];
+  if IsPGroup( G )  then
+    p:=PrimePGroup(G);
     home:=PcgsCentralSeries(G);
     eas:=CentralNormalSeriesByPcgs(home);
     cent:=ReturnTrue;
@@ -1534,8 +1534,8 @@ local G,	   # common parent
     # Calculate a (central) elementary abelian series.
 
     eas:=fail;
-    if IsPrimePowerInt( Size( G ) )  then
-        p := FactorsInt( Size( G ) )[ 1 ];
+    if IsPGroup( G ) then
+        p := PrimePGroup(G);
 	home:=PcgsPCentralSeriesPGroup(G);
 	eas:=PCentralNormalSeriesByPcgsPGroup(home);
 	if NT in eas then

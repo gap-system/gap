@@ -1513,7 +1513,6 @@ function (L)
 	    maxsz,
 	    mkk,
 	    ppow,
-	    primes,
 	    notperm,
 	    dom,
 	    orbs,
@@ -1529,7 +1528,6 @@ function (L)
       return [[]]; # trivial group
     fi;
     # relevant prime powers
-    primes:=Set(Factors(Size(grp)));
     ppow:=Collected(Factors(Size(grp)));
     ppow:=Union(List(ppow,i->List([1..i[2]],j->i[1]^j)));
 

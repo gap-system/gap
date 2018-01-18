@@ -555,7 +555,7 @@ local   p, ocr;
     else
     return [rec( complement:=K, centralizer:=S )];
     fi;
-  elif IsEmpty(Intersection( Factors(Size(M)), Factors(Index(K,M))))  then
+  elif GcdInt(Size(M), Index(K,M)) = 1 then
 
     # If <K> and <M> are coprime, <K> splits.
     Info(InfoComplement,3,"CONextComplements: coprime case, <K> splits" );
@@ -880,7 +880,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
   fi;
 
   # if <G> and <N> are coprime <G> splits over <N>
-  if false and Intersection( Factors(Size(N)), Factors(Index(G,N))) = []  then
+  if false and GcdInt(Size(N), Index(G,N)) = 1  then
       Info(InfoComplement,3,"Complements: coprime case, <G> splits" );
       cor:=rec();
 
@@ -952,7 +952,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
       A:=Core(H,A);
       if Size(A)>Size(K) then
 	# found one. Doesn't need to be elementary abelian
-	if Length(Set(Factors(Size(A)/Size(K))))>1 then
+	if not IsPrimePowerInt(Size(A)/Size(K)) then
 	  Error("multiple primes");
 	else
 	  primes:=[];

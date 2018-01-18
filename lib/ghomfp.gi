@@ -1125,12 +1125,11 @@ local v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
     return fail;
   fi;
   # are there irrelevant primes?
-  primes:=Set(Factors(Product(aiu)*Product(aiv)));
+  primes:=Union(List(Union(aiu, aiv), PrimeDivisors));
   irrel:=Filtered(primes,x->Filtered(aiv,z->IsInt(z/x))=
                             Filtered(aiu,z->IsInt(z/x)));
 
-  Info(InfoFpGroup,1,"Larger by factor ",
-    Product(AbelianInvariants(v))/Product(AbelianInvariants(u)),"\n");
+  Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu),"\n");
   ma:=MaximalAbelianQuotient(v);
   mau:=MaximalAbelianQuotient(u);
   a:=Image(ma);
