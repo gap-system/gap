@@ -1494,7 +1494,7 @@ InstallGlobalFunction( PermCandidates,
 
     Info( InfoCharacterTable, 2,
           "PermCandidates: unique columns erased, there are ",
-          Length( Filtered( nonzerocol, x -> x ) ), " columns left,\n",
+          Number( nonzerocol, x -> x ), " columns left,\n",
           "#I    the number of constituents is ", Length( matrix ), "." );
 
     # step 3: collapse
@@ -2018,8 +2018,8 @@ InstallGlobalFunction( PermCandidatesFaithful,
           "PermCandidatesFaithful: There are ",
           Length( matrix ), " possible constituents,\n",
           "#I    the number of unknown values is ",
-          Length( Filtered( [ 1 .. nccl ],
-                  x -> not IsBound( faithful[x] ) ) ),
+          Number( [ 1 .. nccl ],
+                  x -> not IsBound( faithful[x] ) ),
           ";\n",
           "#I    now trying to collapse the matrix" );
 

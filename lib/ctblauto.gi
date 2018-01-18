@@ -509,7 +509,7 @@ InstallMethod( MatrixAutomorphisms,
     Info( InfoMatrix, 2,
           "MatAutomorphisms: There are ", Length( permutations ),
           " families (",
-          Length( Filtered( permutations, x -> Length(x) =1 ) ),
+          Number( permutations, x -> Length(x) =1 ),
           " trivial)" );
     
     for i in [ 1 .. Length( famreps ) ] do

@@ -4528,7 +4528,7 @@ function( g )
         return [ g ];
     else
         p := f[1];
-        x := Length( Filtered( f, y -> y = p ) );
+        x := Number( f, y -> y = p );
         q := p ^ x;
         r := o / q;
         gcd := Gcdex ( q, r );
@@ -4553,7 +4553,7 @@ function( g, p )
     if o = 1 then return g; fi;
 
     f := FactorsInt( o );
-    x := Length( Filtered( f, x -> x = p ) );
+    x := Number( f, x -> x = p );
     if x = 0 then return g^o; fi;
 
     q := p ^ x;
