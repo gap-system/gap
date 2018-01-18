@@ -191,16 +191,16 @@ true
 gap> IsPowerfulPGroup(H);
 true
 gap> myList:=AllSmallGroups(5^4);;
-gap> Length(Filtered(myList,g->IsPowerfulPGroup(g)));
+gap> Number(myList,g->IsPowerfulPGroup(g));
 9
 gap> newList:=AllSmallGroups(5^4);;
 gap> for g in newList do
 > RankPGroup(g);
 > Agemo(g,5);
 > od;
-gap> Length(Filtered(newList,g->IsPowerfulPGroup(g)));
+gap> Number(newList,g->IsPowerfulPGroup(g));
 9
 gap> myList:=AllSmallGroups(2^4);;
-gap> Length(Filtered(myList,g->IsPowerfulPGroup(g)));
+gap> Number(myList,g->IsPowerfulPGroup(g));
 6
 gap> STOP_TEST("pgroups.tst", 1);

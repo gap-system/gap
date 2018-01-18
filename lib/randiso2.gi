@@ -155,7 +155,7 @@ SplitUpSublistsByFpFunc := function( list )
       fi;
    od;
    Info( InfoRandIso, 2, "   Iso: found ", Length(result)," classes incl. ",
-          Length( Filtered( result, IsRecord ) )," unique groups");
+          Number( result, IsRecord )," unique groups");
    return result;
 end;
 
