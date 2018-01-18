@@ -119,7 +119,13 @@ InstallMethod( Random,
     R:= LeftActingDomain( M );
     v := List( [ 1 .. DimensionOfVectors( M ) ], x -> Random( R ) );
     if IsField(R) then
-      ConvertToVectorRep(v,R);
+      if IsHPCGAP then
+        if Size(R) <= 256 then
+          v := CopyToVectorRep(v,Size(R));
+        fi;
+      else
+        ConvertToVectorRep(v,R);
+      fi;
     fi;
     return v;
     end );
@@ -332,7 +338,8 @@ BindGlobal( "PosVecEnumFF", function( enum, v )
       fi;
     od;
 
-    if ConvertToVectorRep( v, enum!.q ) = fail then
+    v := ImmutableVector( enum!.q, v );
+    if not IsDataObjectRep(v) then
       # cannot convert, wrong type of object
       return NumberElement_FiniteFullRowModule( enum, v );
     fi;
@@ -366,7 +373,7 @@ BindGlobal( "ElementNumber_FiniteFullRowModule", function( enum, n )
       i:= i-1;
     od;
     if IsFFE( enum!.coeffszero ) then
-      ConvertToVectorRep( v, enum!.q );
+      v := ImmutableVector( enum!.q, v );
     fi;
     MakeImmutable( v );
     return v;
