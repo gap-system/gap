@@ -49,7 +49,4 @@ void UnlockMonitors(UInt count, Monitor **monitors);
 
 void InitSignals(void);
 
-void InitThreadAPIState(void);
-void DestroyThreadAPIState(void);
-
 #endif // GAP_THREADAPI_H

@@ -34,10 +34,5 @@
 */
 StructInitInfo * InitInfoWeakPtr ( void );
 
-#ifdef BOEHM_GC
-void RegisterWeakReference(Bag *bag);
-void UnregisterWeakReference(Bag *bag);
-#endif
-
 
 #endif // GAP_WEAKPTR_H
