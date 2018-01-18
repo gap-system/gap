@@ -70,7 +70,7 @@ TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
 void TraversePList(Obj obj)
 {
     UInt  len = LEN_PLIST(obj);
-    Obj * ptr = ADDR_OBJ(obj) + 1;
+    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
     while (len) {
         QueueForTraversal(*ptr++);
         len--;
@@ -84,7 +84,7 @@ void TraverseWPObj(Obj obj)
      * have to replicate the macro here.
      */
     UInt  len = LEN_PLIST(obj);
-    Obj * ptr = ADDR_OBJ(obj) + 1;
+    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
     while (len) {
         volatile Obj tmp = *ptr;
         MEMBAR_READ();
@@ -117,7 +117,7 @@ static inline Obj ReplaceByCopy(Obj obj)
 void CopyPList(Obj copy, Obj original)
 {
     UInt  len = LEN_PLIST(original);
-    Obj * ptr = ADDR_OBJ(original) + 1;
+    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
     Obj * copyptr = ADDR_OBJ(copy) + 1;
     while (len) {
         *copyptr++ = ReplaceByCopy(*ptr++);
@@ -132,7 +132,7 @@ void CopyWPObj(Obj copy, Obj original)
      * have to replicate the macro here.
      */
     UInt  len = LEN_PLIST(original);
-    Obj * ptr = ADDR_OBJ(original) + 1;
+    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
     Obj * copyptr = ADDR_OBJ(copy) + 1;
     while (len) {
         volatile Obj tmp = *ptr;
@@ -161,9 +161,9 @@ void CopyPRecord(Obj copy, Obj original)
 
 void TraverseObjSet(Obj obj)
 {
-    UInt i, len = *(UInt *)(ADDR_OBJ(obj) + OBJSET_SIZE);
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj item = ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
+        Obj item = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
         if (item && item != Undefined)
             QueueForTraversal(item);
     }
@@ -171,19 +171,19 @@ void TraverseObjSet(Obj obj)
 
 void CopyObjSet(Obj copy, Obj original)
 {
-    UInt i, len = *(UInt *)(ADDR_OBJ(original) + OBJSET_SIZE);
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj item = ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
+        Obj item = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
         ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(item);
     }
 }
 
 void TraverseObjMap(Obj obj)
 {
-    UInt i, len = *(UInt *)(ADDR_OBJ(obj) + OBJSET_SIZE);
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj key = ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
+        Obj key = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
+        Obj val = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
         if (key && key != Undefined) {
             QueueForTraversal(key);
             QueueForTraversal(val);
@@ -193,10 +193,10 @@ void TraverseObjMap(Obj obj)
 
 void CopyObjMap(Obj copy, Obj original)
 {
-    UInt i, len = *(UInt *)(ADDR_OBJ(original) + OBJSET_SIZE);
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj key = ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
+        Obj key = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
+        Obj val = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
         ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(key);
         ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(val);
     }
@@ -319,7 +319,7 @@ static void TraversalRehash(TraversalState * traversal)
     traversal->hashSize = 0;
     traversal->hashBits++;
     for (i = 1; i <= oldsize; i++) {
-        Obj obj = ADDR_OBJ(oldlist)[i];
+        Obj obj = CONST_ADDR_OBJ(oldlist)[i];
         if (obj != NULL)
             SeenDuringTraversal(obj);
     }
@@ -343,7 +343,7 @@ void QueueForTraversal(Obj obj)
         Obj oldlist = traversal->list;
         Obj list = NewList(newcapacity);
         for (i = 1; i <= oldcapacity; i++)
-            ADDR_OBJ(list)[i] = ADDR_OBJ(oldlist)[i];
+            ADDR_OBJ(list)[i] = CONST_ADDR_OBJ(oldlist)[i];
         traversal->list = list;
         traversal->listCapacity = newcapacity;
     }
@@ -434,7 +434,7 @@ static Obj CopyBag(Obj copy, Obj original)
     UInt                      type = TNUM_BAG(original);
     const TraversalMethodEnum method = TraversalMethod[type];
     Obj *                     ptr = ADDR_OBJ(copy);
-    memcpy(ptr, ADDR_OBJ(original), size);
+    memcpy(ptr, CONST_ADDR_OBJ(original), size);
 
     switch (method) {
     case TRAVERSE_BY_FUNCTION:
@@ -481,7 +481,7 @@ int PreMakeImmutableCheck(Obj obj)
 
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
 {
-    Obj *          traversed, *copies, copyList;
+    Obj            copyList;
     TraversalState traversal;
     UInt           len, i;
     if (!IS_BAG_REF(obj) || REGION(obj) == NULL) {
@@ -507,10 +507,10 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
     }
     else
         TraverseRegionFrom(&traversal, obj, IsSameRegion);
-    traversed = ADDR_OBJ(traversal.list);
+    const Obj * traversed = CONST_ADDR_OBJ(traversal.list);
     len = LEN_PLIST(traversal.list);
     copyList = NewList(len);
-    copies = ADDR_OBJ(copyList);
+    Obj * copies = ADDR_OBJ(copyList);
     traversal.border = delimited;
     if (len == 0) {
         EndTraversal();
@@ -547,10 +547,9 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
 
 Obj CopyTraversed(Obj traversedList)
 {
-    Obj            copyList, *copies, *traversed;
     TraversalState traversal;
     UInt           len, i;
-    traversed = ADDR_OBJ(traversedList);
+    const Obj *    traversed = CONST_ADDR_OBJ(traversedList);
     BeginTraversal(&traversal);
     len = LEN_PLIST(traversedList);
     if (len == 1) {
@@ -560,8 +559,8 @@ Obj CopyTraversed(Obj traversedList)
     }
     for (i = 1; i <= len; i++)
         SeenDuringTraversal(traversed[i]);
-    copyList = NewList(len);
-    copies = ADDR_OBJ(copyList);
+    Obj   copyList = NewList(len);
+    Obj * copies = ADDR_OBJ(copyList);
     traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
     for (i = 1; i <= len; i++) {
         Obj  original = traversed[i];
