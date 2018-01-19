@@ -574,7 +574,7 @@ InstallAttributeFunction(
                 if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
                     cats := cats and FILTERS[i];
                     rank := rank - RankFilter( FILTERS[i] );
-                elif i in NUMBERS_PROPERTY_GETTERS  then
+                elif INFO_FILTERS[i] in FNUM_PROS  then
                     ADD_LIST( props, FILTERS[i] );
                 fi;
             fi;
