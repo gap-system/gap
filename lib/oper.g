@@ -297,7 +297,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     fi;
     relev := [];
     for i  in flags  do
-        if not i in CATS_AND_REPS  then
+        if not INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
             ADD_LIST( relev, i );
         fi;
     od;

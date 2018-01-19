@@ -61,6 +61,8 @@ BIND_GLOBAL( "FNUM_ATTS", MakeImmutable([ 5,  6 ]) );
 BIND_GLOBAL( "FNUM_PROS", MakeImmutable([ 7,  9 ]) );
 BIND_GLOBAL( "FNUM_TPRS", MakeImmutable([ 8, 10 ]) );
 
+BIND_GLOBAL( "FNUM_CATS_AND_REPS", MakeImmutable([ 1 .. 4 ]) );
+
 
 #############################################################################
 ##
