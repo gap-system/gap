@@ -643,12 +643,14 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     SUBSET_MAINTAINED_INFO[2][ i+1 ]:=
                 MakeImmutable([ filtsopr, filtssub, rank ]);
     if attrprop then
-      SUBSET_MAINTAINED_INFO[1][ i+1 ]:= 
+      SUBSET_MAINTAINED_INFO[1][ i+1 ]:=
                 MakeImmutable([ filt1, filt2, operation, tester, setter ]);
     else
       SUBSET_MAINTAINED_INFO[1][ i+1 ]:= MakeImmutable(
                 [ filt1, filt2, operation, operation,
-                  {sub, val} -> SetFeatureObj( sub, operation, val ) ]);
+                  function( sub, val )
+                      SetFeatureObj( sub, operation, val );
+                  end ]);
     fi;
     od; # end atomic
 
