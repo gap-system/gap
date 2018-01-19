@@ -133,7 +133,7 @@ false
 gap> Dimension( l1 );
 10
 gap> ucs:= LieUpperCentralSeries( l1 );
-[ <Lie algebra over Rationals, with 0 generators> ]
+[ <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l1 );
 [ <Lie algebra of dimension 10 over Rationals> ]
 gap> IsLieSolvable( l1 );
@@ -418,7 +418,7 @@ gap> Dimension( l2 );
 15
 gap> ucs:= LieUpperCentralSeries( l2 );
 [ <two-sided ideal in <Lie algebra of dimension 15 over Rationals>, 
-      (dimension 1)>, <Lie algebra over Rationals, with 0 generators> ]
+      (dimension 1)>, <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l2 );
 [ <Lie algebra of dimension 15 over Rationals>, 
   <Lie algebra of dimension 14 over Rationals> ]
@@ -565,7 +565,7 @@ false
 gap> Dimension( l3 );
 14
 gap> ucs:= LieUpperCentralSeries( l3 );
-[ <Lie algebra over Rationals, with 0 generators> ]
+[ <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l3 );
 [ <Lie algebra of dimension 14 over Rationals>, 
   <Lie algebra of dimension 10 over Rationals> ]
@@ -657,7 +657,7 @@ v.11
 ##  Expl. 5: Trivial s.c. algebra
 ##
 gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
-<algebra over Rationals, with 0 generators>
+<algebra of dimension 0 over Rationals>
 gap> z:= Zero( t );
 <zero of trivial s.c. algebra>
 gap> Random( t );

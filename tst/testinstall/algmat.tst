@@ -31,7 +31,7 @@ true
 
 #############################################################################
 gap> z:= Algebra( GF(3), [], [ [ 0*Z(9), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
-<algebra over GF(3)>
+<algebra of dimension 0 over GF(3)>
 gap> IsGaussianMatrixSpace( z );
 true
 gap> IsTrivial( z );
@@ -253,11 +253,11 @@ false
 
 #############################################################################
 gap> n:= NullAlgebra( GF(3) );
-<algebra over GF(3)>
+<algebra of dimension 0 over GF(3)>
 gap> Dimension( n );
 0
 gap> b:= Basis( n );
-SemiEchelonBasis( <algebra of dimension 0 over GF(3)>, [  ] )
+SemiEchelonBasis( <algebra of dimension 0 over GF(3)>, ... )
 gap> BasisVectors( b );
 [  ]
 gap> zero:= Zero( n );
