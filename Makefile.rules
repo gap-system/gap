@@ -425,11 +425,9 @@ else
 DOCOMP_PREFIX = $(abs_srcdir)
 endif
 docomp: #gap$(EXEEXT)
-	@for file in methsel1 oper1 type1 ; do \
-	  if test -e $(DOCOMP_PREFIX)/lib/$$file.g ; then \
-	    "$(abs_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX) $$file ./gap$(EXEEXT) ; \
-	  fi \
-	done
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(abs_srcdir)/src methsel1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX)/lib $(DOCOMP_PREFIX)/src oper1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX)/lib $(DOCOMP_PREFIX)/src type1 ./gap$(EXEEXT)
 
 .PHONY: docomp
 
