@@ -144,10 +144,10 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
     if not found then
       # Extend the list of implications.
       MIGRATE_RAW(imp, IMPLICATIONS_SIMPLE);
-      if from in FILTERS then
-        IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
-      else
+      if IS_AND_FILTER(from) then
         ADD_LIST( IMPLICATIONS_COMPOSED, imp );
+      else
+        IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
       fi;
     fi;
     od;
