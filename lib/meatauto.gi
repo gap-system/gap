@@ -1681,8 +1681,8 @@ end;
 
 SMTX.BasisModuleEndomorphisms:=SMTX_BasisModuleEndomorphisms;
 
-SMTX.SetBasisEndomorphismsRadical:=SMTX.Setter(MakeImm("basisEndoRad"));
-SMTX.BasisEndomorphismsRadical:=SMTX.Getter(MakeImm("basisEndoRad"));
+SMTX.SetBasisEndomorphismsRadical:=SMTX.Setter("basisEndoRad");
+SMTX.BasisEndomorphismsRadical:=SMTX.Getter("basisEndoRad");
 
-SMTX.SetEndAlgResidue:=SMTX.Setter(MakeImm("endAlgResidue"));
-SMTX.EndAlgResidue:=SMTX.Getter(MakeImm("endAlgResidue"));
+SMTX.SetEndAlgResidue:=SMTX.Setter("endAlgResidue");
+SMTX.EndAlgResidue:=SMTX.Getter("endAlgResidue");

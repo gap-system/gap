@@ -88,6 +88,7 @@ SMTX:=rec(name:="The Smash MeatAxe");
 MTX:=SMTX;
 
 SMTX.Getter := function(string)
+  MakeImmutable(string);
   return function(module)
     if not (IsBound(module.smashMeataxe) and 
             IsBound(module.smashMeataxe.(string))) then
