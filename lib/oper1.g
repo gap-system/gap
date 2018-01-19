@@ -551,7 +551,7 @@ InstallAttributeFunction(
         props := [];
         for i in [ 1 .. LEN_FLAGS( flags ) ] do
             if ELM_FLAGS( flags, i ) then
-                if i in CATS_AND_REPS  then
+                if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
                     cats := cats and FILTERS[i];
                     rank := rank - RankFilter( FILTERS[i] );
                 elif i in NUMBERS_PROPERTY_GETTERS  then

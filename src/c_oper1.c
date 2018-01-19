@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-80821248"
+#define FILE_CRC  "43051083"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -128,8 +128,10 @@ static GVar G_LENGTH__SETTER__METHODS__2;
 static Obj  GC_LENGTH__SETTER__METHODS__2;
 static GVar G_InstallAttributeFunction;
 static Obj  GF_InstallAttributeFunction;
-static GVar G_CATS__AND__REPS;
-static Obj  GC_CATS__AND__REPS;
+static GVar G_INFO__FILTERS;
+static Obj  GC_INFO__FILTERS;
+static GVar G_FNUM__CATS__AND__REPS;
+static Obj  GC_FNUM__CATS__AND__REPS;
 static GVar G_FILTERS;
 static Obj  GC_FILTERS;
 static GVar G_NUMBERS__PROPERTY__GETTERS;
@@ -2278,10 +2280,13 @@ static Obj  HdlrFunc7 (
    t_3 = (Obj)(UInt)(t_4 != False);
    if ( t_3 ) {
     
-    /* if i in CATS_AND_REPS then */
-    t_4 = GC_CATS__AND__REPS;
-    CHECK_BOUND( t_4, "CATS_AND_REPS" )
-    t_3 = (Obj)(UInt)(IN( l_i, t_4 ));
+    /* if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then */
+    t_5 = GC_INFO__FILTERS;
+    CHECK_BOUND( t_5, "INFO_FILTERS" )
+    C_ELM_LIST_FPL( t_4, t_5, l_i )
+    t_5 = GC_FNUM__CATS__AND__REPS;
+    CHECK_BOUND( t_5, "FNUM_CATS_AND_REPS" )
+    t_3 = (Obj)(UInt)(IN( t_4, t_5 ));
     if ( t_3 ) {
      
      /* cats := cats and FILTERS[i]; */
@@ -4001,7 +4006,7 @@ static Obj  HdlrFunc1 (
           props := [  ];
           for i in [ 1 .. LEN_FLAGS( flags ) ] do
               if ELM_FLAGS( flags, i ) then
-                  if i in CATS_AND_REPS then
+                  if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
                       cats := cats and FILTERS[i];
                       rank := rank - RankFilter( FILTERS[i] );
                   elif i in NUMBERS_PROPERTY_GETTERS then
@@ -4317,7 +4322,8 @@ static Int PostRestore ( StructInitInfo * module )
  G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );
  G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
  G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
- G_CATS__AND__REPS = GVarName( "CATS_AND_REPS" );
+ G_INFO__FILTERS = GVarName( "INFO_FILTERS" );
+ G_FNUM__CATS__AND__REPS = GVarName( "FNUM_CATS_AND_REPS" );
  G_FILTERS = GVarName( "FILTERS" );
  G_NUMBERS__PROPERTY__GETTERS = GVarName( "NUMBERS_PROPERTY_GETTERS" );
  G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
@@ -4426,7 +4432,8 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "INSTALL_METHOD_FLAGS", &GF_INSTALL__METHOD__FLAGS );
  InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
  InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
- InitCopyGVar( "CATS_AND_REPS", &GC_CATS__AND__REPS );
+ InitCopyGVar( "INFO_FILTERS", &GC_INFO__FILTERS );
+ InitCopyGVar( "FNUM_CATS_AND_REPS", &GC_FNUM__CATS__AND__REPS );
  InitCopyGVar( "FILTERS", &GC_FILTERS );
  InitCopyGVar( "NUMBERS_PROPERTY_GETTERS", &GC_NUMBERS__PROPERTY__GETTERS );
  InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
@@ -4512,7 +4519,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -80821248,
+ .crc         = 43051083,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

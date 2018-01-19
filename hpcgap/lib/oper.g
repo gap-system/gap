@@ -304,12 +304,10 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
         Error( "no immediate methods for mutable objects!" );
     fi;
     relev := [];
-    atomic readonly CATS_AND_REPS do
     for i  in flags  do
-        if not i in CATS_AND_REPS  then
+        if not INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
             ADD_LIST( relev, i );
         fi;
-    od;
     od;
 
     # All requirements are categories/representations.

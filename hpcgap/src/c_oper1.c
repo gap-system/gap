@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "102816013"
+#define FILE_CRC  "28115965"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -84,8 +84,6 @@ static GVar G_Print;
 static Obj  GF_Print;
 static GVar G_ViewObj;
 static Obj  GC_ViewObj;
-static GVar G_DO__LOCK;
-static Obj  GF_DO__LOCK;
 static GVar G_WRITE__LOCK;
 static Obj  GF_WRITE__LOCK;
 static GVar G_READ__LOCK;
@@ -146,8 +144,10 @@ static GVar G_InstallAttributeFunction;
 static Obj  GF_InstallAttributeFunction;
 static GVar G_FILTER__REGION;
 static Obj  GC_FILTER__REGION;
-static GVar G_CATS__AND__REPS;
-static Obj  GC_CATS__AND__REPS;
+static GVar G_INFO__FILTERS;
+static Obj  GC_INFO__FILTERS;
+static GVar G_FNUM__CATS__AND__REPS;
+static Obj  GC_FNUM__CATS__AND__REPS;
 static GVar G_FILTERS;
 static Obj  GC_FILTERS;
 static GVar G_NUMBERS__PROPERTY__GETTERS;
@@ -2316,14 +2316,11 @@ static Obj  HdlrFunc7 (
   SET_LEN_PLIST( t_1, 0 );
   ASS_LVAR( 2, t_1 );
   
-  /* lk := DO_LOCK( FILTER_REGION, false, CATS_AND_REPS ); */
-  t_2 = GF_DO__LOCK;
+  /* lk := READ_LOCK( FILTER_REGION ); */
+  t_2 = GF_READ__LOCK;
   t_3 = GC_FILTER__REGION;
   CHECK_BOUND( t_3, "FILTER_REGION" )
-  t_4 = False;
-  t_5 = GC_CATS__AND__REPS;
-  CHECK_BOUND( t_5, "CATS_AND_REPS" )
-  t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  t_1 = CALL_1ARGS( t_2, t_3 );
   CHECK_FUNC_RESULT( t_1 )
   l_lk = t_1;
   
@@ -2345,10 +2342,13 @@ static Obj  HdlrFunc7 (
    t_3 = (Obj)(UInt)(t_4 != False);
    if ( t_3 ) {
     
-    /* if i in CATS_AND_REPS then */
-    t_4 = GC_CATS__AND__REPS;
-    CHECK_BOUND( t_4, "CATS_AND_REPS" )
-    t_3 = (Obj)(UInt)(IN( l_i, t_4 ));
+    /* if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then */
+    t_5 = GC_INFO__FILTERS;
+    CHECK_BOUND( t_5, "INFO_FILTERS" )
+    C_ELM_LIST_FPL( t_4, t_5, l_i )
+    t_5 = GC_FNUM__CATS__AND__REPS;
+    CHECK_BOUND( t_5, "FNUM_CATS_AND_REPS" )
+    t_3 = (Obj)(UInt)(IN( t_4, t_5 ));
     if ( t_3 ) {
      
      /* cats := cats and FILTERS[i]; */
@@ -4097,10 +4097,10 @@ static Obj  HdlrFunc1 (
           rank := 0;
           cats := IS_OBJECT;
           props := [  ];
-          lk := DO_LOCK( FILTER_REGION, false, CATS_AND_REPS );
+          lk := READ_LOCK( FILTER_REGION );
           for i in [ 1 .. LEN_FLAGS( flags ) ] do
               if ELM_FLAGS( flags, i ) then
-                  if i in CATS_AND_REPS then
+                  if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
                       cats := cats and FILTERS[i];
                       rank := rank - RankFilter( FILTERS[i] );
                   elif i in NUMBERS_PROPERTY_GETTERS then
@@ -4397,7 +4397,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_CONV__STRING = GVarName( "CONV_STRING" );
  G_Print = GVarName( "Print" );
  G_ViewObj = GVarName( "ViewObj" );
- G_DO__LOCK = GVarName( "DO_LOCK" );
  G_WRITE__LOCK = GVarName( "WRITE_LOCK" );
  G_READ__LOCK = GVarName( "READ_LOCK" );
  G_UNLOCK = GVarName( "UNLOCK" );
@@ -4428,7 +4427,8 @@ static Int PostRestore ( StructInitInfo * module )
  G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
  G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
  G_FILTER__REGION = GVarName( "FILTER_REGION" );
- G_CATS__AND__REPS = GVarName( "CATS_AND_REPS" );
+ G_INFO__FILTERS = GVarName( "INFO_FILTERS" );
+ G_FNUM__CATS__AND__REPS = GVarName( "FNUM_CATS_AND_REPS" );
  G_FILTERS = GVarName( "FILTERS" );
  G_NUMBERS__PROPERTY__GETTERS = GVarName( "NUMBERS_PROPERTY_GETTERS" );
  G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
@@ -4515,7 +4515,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CONV_STRING", &GF_CONV__STRING );
  InitFopyGVar( "Print", &GF_Print );
  InitCopyGVar( "ViewObj", &GC_ViewObj );
- InitFopyGVar( "DO_LOCK", &GF_DO__LOCK );
  InitFopyGVar( "WRITE_LOCK", &GF_WRITE__LOCK );
  InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
  InitFopyGVar( "UNLOCK", &GF_UNLOCK );
@@ -4546,7 +4545,8 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
  InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
  InitCopyGVar( "FILTER_REGION", &GC_FILTER__REGION );
- InitCopyGVar( "CATS_AND_REPS", &GC_CATS__AND__REPS );
+ InitCopyGVar( "INFO_FILTERS", &GC_INFO__FILTERS );
+ InitCopyGVar( "FNUM_CATS_AND_REPS", &GC_FNUM__CATS__AND__REPS );
  InitCopyGVar( "FILTERS", &GC_FILTERS );
  InitCopyGVar( "NUMBERS_PROPERTY_GETTERS", &GC_NUMBERS__PROPERTY__GETTERS );
  InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
@@ -4632,7 +4632,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 102816013,
+ .crc         = 28115965,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

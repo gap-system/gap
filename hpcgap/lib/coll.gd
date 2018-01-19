@@ -571,9 +571,9 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # (We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.)
     filtssub:= [];
-    atomic readonly CATS_AND_REPS, readwrite SUBSET_MAINTAINED_INFO do
+    atomic readwrite SUBSET_MAINTAINED_INFO do
     for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
-      if not flag in CATS_AND_REPS then
+      if not INFO_FILTERS[flag] in FNUM_CATS_AND_REPS then
         ADD_LIST_DEFAULT( filtssub, flag );
       fi;
     od;
@@ -609,7 +609,7 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # not yet defined.)
     filtsopr:= [];
     for flag in TRUES_FLAGS( filt1 ) do
-      if not flag in CATS_AND_REPS then
+      if not INFO_FILTERS[flag] in FNUM_CATS_AND_REPS then
         ADD_LIST_DEFAULT( filtsopr, flag );
       fi;
     od;
