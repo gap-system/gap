@@ -1475,7 +1475,18 @@ void CodeAnd ( void )
 
 void CodeNot ( void )
 {
-    PushUnaryOp( T_NOT );
+    // peek at expression
+    Expr expr = PopExpr();
+    if ( TNUM_EXPR(expr) == T_TRUE_EXPR ) {
+        CodeFalseExpr();
+    }
+    else if ( TNUM_EXPR(expr) == T_FALSE_EXPR ) {
+        CodeTrueExpr();
+    }
+    else {
+        PushExpr( expr );
+        PushUnaryOp( T_NOT );
+    }
 }
 
 void CodeEq ( void )
