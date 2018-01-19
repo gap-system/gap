@@ -122,20 +122,6 @@ BIND_GLOBAL( "IMMEDIATE_METHODS", AtomicList([]) );
 
 #############################################################################
 ##
-#V  NUMBERS_PROPERTY_GETTERS
-##
-##  <ManSection>
-##  <Var Name="NUMBERS_PROPERTY_GETTERS"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
-
-
-#############################################################################
-##
 #V  OPERATIONS
 ##
 ##  <ManSection>
@@ -1393,9 +1379,6 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
 
-    # store the property getters
-    ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
-
     # add getter, setter and tester to the list of operations
     STORE_OPER_FLAGS(getter, [ FLAGS_FILTER(filter) ]);
     STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ]);
@@ -1472,9 +1455,6 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     STORE_OPER_FLAGS(getter, [ flags ]);
     STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER(IS_BOOL) ]);
     STORE_OPER_FLAGS(tester, [ flags ]);
-
-    # store the property getters
-    ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # install the default functions
     atomic FILTER_REGION do

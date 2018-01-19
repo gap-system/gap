@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "28115965"
+#define FILE_CRC  "22423860"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -150,8 +150,8 @@ static GVar G_FNUM__CATS__AND__REPS;
 static Obj  GC_FNUM__CATS__AND__REPS;
 static GVar G_FILTERS;
 static Obj  GC_FILTERS;
-static GVar G_NUMBERS__PROPERTY__GETTERS;
-static Obj  GC_NUMBERS__PROPERTY__GETTERS;
+static GVar G_FNUM__PROS;
+static Obj  GC_FNUM__PROS;
 static GVar G_InstallOtherMethod;
 static Obj  GF_InstallOtherMethod;
 static GVar G_Tester;
@@ -2384,11 +2384,14 @@ static Obj  HdlrFunc7 (
      
     }
     
-    /* elif i in NUMBERS_PROPERTY_GETTERS then */
+    /* elif INFO_FILTERS[i] in FNUM_PROS then */
     else {
-     t_4 = GC_NUMBERS__PROPERTY__GETTERS;
-     CHECK_BOUND( t_4, "NUMBERS_PROPERTY_GETTERS" )
-     t_3 = (Obj)(UInt)(IN( l_i, t_4 ));
+     t_5 = GC_INFO__FILTERS;
+     CHECK_BOUND( t_5, "INFO_FILTERS" )
+     C_ELM_LIST_FPL( t_4, t_5, l_i )
+     t_5 = GC_FNUM__PROS;
+     CHECK_BOUND( t_5, "FNUM_PROS" )
+     t_3 = (Obj)(UInt)(IN( t_4, t_5 ));
      if ( t_3 ) {
       
       /* ADD_LIST( props, FILTERS[i] ); */
@@ -4103,7 +4106,7 @@ static Obj  HdlrFunc1 (
                   if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
                       cats := cats and FILTERS[i];
                       rank := rank - RankFilter( FILTERS[i] );
-                  elif i in NUMBERS_PROPERTY_GETTERS then
+                  elif INFO_FILTERS[i] in FNUM_PROS then
                       ADD_LIST( props, FILTERS[i] );
                   fi;
               fi;
@@ -4430,7 +4433,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_INFO__FILTERS = GVarName( "INFO_FILTERS" );
  G_FNUM__CATS__AND__REPS = GVarName( "FNUM_CATS_AND_REPS" );
  G_FILTERS = GVarName( "FILTERS" );
- G_NUMBERS__PROPERTY__GETTERS = GVarName( "NUMBERS_PROPERTY_GETTERS" );
+ G_FNUM__PROS = GVarName( "FNUM_PROS" );
  G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
  G_Tester = GVarName( "Tester" );
  G_IsPrimeInt = GVarName( "IsPrimeInt" );
@@ -4548,7 +4551,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "INFO_FILTERS", &GC_INFO__FILTERS );
  InitCopyGVar( "FNUM_CATS_AND_REPS", &GC_FNUM__CATS__AND__REPS );
  InitCopyGVar( "FILTERS", &GC_FILTERS );
- InitCopyGVar( "NUMBERS_PROPERTY_GETTERS", &GC_NUMBERS__PROPERTY__GETTERS );
+ InitCopyGVar( "FNUM_PROS", &GC_FNUM__PROS );
  InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
  InitFopyGVar( "Tester", &GF_Tester );
  InitFopyGVar( "IsPrimeInt", &GF_IsPrimeInt );
@@ -4632,7 +4635,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 28115965,
+ .crc         = 22423860,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
