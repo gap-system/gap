@@ -809,23 +809,19 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
           Error( "operation `", name,
                  "' was created as an attribute, use `DeclareAttribute'" );
 
+        elif    INFO_FILTERS[ pos ] in FNUM_TPRS
+             or INFO_FILTERS[ pos ] in FNUM_ATTS then
+
+          # `gvar' is an attribute tester or property tester.
+          Error( "operation `", name,
+                 "' is an attribute tester or property tester" );
+
         else
-          atomic readonly FILTER_REGION do
-            if    INFO_FILTERS[ pos ] in FNUM_TPRS
-                 or INFO_FILTERS[ pos ] in FNUM_ATTS then
 
-              # `gvar' is an attribute tester or property tester.
-              Error( "operation `", name,
-                     "' is an attribute tester or property tester" );
+          # `gvar' is a property.
+          Error( "operation `", name,
+                 "' was created as a property, use `DeclareProperty'" );
 
-            else
-
-              # `gvar' is a property.
-              Error( "operation `", name,
-                     "' was created as a property, use `DeclareProperty'" );
-
-            fi;
-          od;
         fi;
 
       fi;
@@ -840,7 +836,9 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
       od;
       
       req := GET_OPER_FLAGS(gvar);
-      req := FromAtomicList(req);  # so that we can search in it
+      if IsHPCGAP then
+        req := FromAtomicList(req);  # so that we can search in it
+      fi;
       if filt in req then
         if not REREADING then
           INFO_DEBUG( 1, "equal requirements in multiple declarations ",

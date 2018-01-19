@@ -164,7 +164,10 @@ function(oper)
         flags := FLAGS_FILTER(oper);
         if flags <> false then
             flags := TRUES_FLAGS(flags);
-            types := INFO_FILTERS{flags};
+            types := [];
+            for t in flags do
+                AddSet(types, INFO_FILTERS[t]);
+            od;
             catok := true;
             repok := true;
             propok := true;

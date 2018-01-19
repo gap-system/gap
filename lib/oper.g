@@ -816,6 +816,9 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
       od;
       
       req := GET_OPER_FLAGS(gvar);
+      if IsHPCGAP then
+        req := FromAtomicList(req);  # so that we can search in it
+      fi;
       if filt in req then
         if not REREADING then
           INFO_DEBUG( 1, "equal requirements in multiple declarations ",

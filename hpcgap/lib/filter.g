@@ -53,7 +53,7 @@ BIND_GLOBAL( "RANK_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 ##   9 = property
 ##  10 = tester of 9
 ##
-BIND_GLOBAL( "INFO_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
+BIND_GLOBAL( "INFO_FILTERS", MakeStrictWriteOnceAtomic([]) );
 
 BIND_GLOBAL( "FNUM_CATS", MakeImmutable([ 1,  2 ]) );
 BIND_GLOBAL( "FNUM_REPS", MakeImmutable([ 3,  4 ]) );
@@ -403,7 +403,6 @@ BIND_GLOBAL( "RankFilter", function( filter )
     else
         flags := filter;
     fi;
-    atomic readwrite FILTER_REGION do
     for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
         if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
@@ -412,7 +411,6 @@ BIND_GLOBAL( "RankFilter", function( filter )
         fi;
     od;
     return rank;
-    od;
 end );
 
 
