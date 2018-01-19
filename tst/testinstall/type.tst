@@ -4,6 +4,10 @@ gap> test(IsFinite);
 [ true, false, false, false, true, true ]
 
 #
+gap> test(SetIsFinite);
+[ false, false, false, false, false, true ]
+
+#
 gap> test(IsMagma);
 [ true, true, false, false, false, true ]
 
@@ -14,6 +18,10 @@ gap> test(IsCommutative);
 #
 gap> test(Size);
 [ false, false, false, true, false, true ]
+
+#
+gap> test(SetSize);
+[ false, false, false, false, false, true ]
 
 #
 gap> test(Group);
@@ -47,8 +55,21 @@ gap> TypeOfOperation(IsFilter);
 Error, <oper> must be an operation
 
 #
-gap> List([IsAbelian, HasIsAbelian, IsMutable, \+, Size, AbelianGroupCons, Setter(IS_MUTABLE_OBJ)], TypeOfOperation);
-[ "Property", "Filter", "Category", "Operation", "Attribute", "Constructor", 
-  "Setter" ]
+gap> TypeOfOperation(IsAbelian);
+"Property"
+gap> TypeOfOperation(HasIsAbelian);
+"Filter"
+gap> TypeOfOperation(SetIsAbelian);
+"Setter"
+gap> TypeOfOperation(IsMutable);
+"Category"
+gap> TypeOfOperation(\+);
+"Operation"
+gap> TypeOfOperation(Size);
+"Attribute"
+gap> TypeOfOperation(AbelianGroupCons);
+"Constructor"
+gap> TypeOfOperation(Setter(IS_MUTABLE_OBJ));
+"Setter"
 
 #

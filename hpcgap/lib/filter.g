@@ -339,7 +339,7 @@ end);
 
 BIND_GLOBAL( "IsFilter",
     x -> IS_IDENTICAL_OBJ(x, IS_OBJECT)
-         or ( IS_OPERATION( x )
+         or ( IS_OPERATION( x ) and NARG_FUNC( x ) = 1
               and ( (FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
                     or IS_FILTER_ATOMIC(x) ) ) );
 
