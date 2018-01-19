@@ -36,7 +36,10 @@ elif IsOperation( op ) then
     elif IsFilter(op) then
         class := "Filt";
         flags := TRUES_FLAGS(FLAGS_FILTER(op));
-        types := INFO_FILTERS{flags};
+        types := [];
+        for t in flags do
+            AddSet(types, INFO_FILTERS[t]);
+        od;
         catok := true;
         repok := true;
         propok := true;
