@@ -185,7 +185,6 @@ can assign values to components of a mutable record, or unbind them.
 
 <ManSection>
 <Func Name="MakeImmutable" Arg='obj'/>
-<Func Name="MakeImm" Arg='obj'/>
 
 <Description>
 One can turn the (mutable or immutable) object <A>obj</A> into an immutable
@@ -194,7 +193,6 @@ note that this also makes all subobjects of <A>obj</A> immutable,
 so one should call <Ref Func="MakeImmutable"/> only if <A>obj</A> and
 its mutable subobjects are newly created.
 If one is not sure about this, <Ref Func="Immutable"/> should be used.
-<Ref Func="MakeImm"/> provides a shorthand for <Ref Func="MakeImmutable"/>.
 <P/>
 Note that it is <E>not</E> possible to turn an immutable object into a
 mutable one;
