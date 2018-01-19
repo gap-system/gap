@@ -226,7 +226,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
       min:=am; # will increase until no variable in a left
     until false;
   end,
-  MakeImm("lp"));
+  MakeImmutable("lp"));
 
 #############################################################################
 ##
@@ -371,7 +371,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
       min:=am; # will increase until no variable in a left
     until false;
   end,
-  MakeImm("Dp"));
+  MakeImmutable("Dp"));
 
 #############################################################################
 ##
@@ -432,7 +432,7 @@ InstallMonomialOrdering(MonomialGrevlexOrdering,
   function(a,b,idx)
     Error("indexed grevlex not yet implemented");
   end,
-  MakeImm("dp"));
+  MakeImmutable("dp"));
 
 #############################################################################
 ##

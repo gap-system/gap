@@ -639,7 +639,7 @@ InstallMethod( OneOp,
       return fail;
     fi;
     z:= ZeroCoefficient( elm );
-    return Objectify( F!.defaultType, MakeImm([ z, [ F!.oneMagma, One( z ) ] ]) );
+    return Objectify( F!.defaultType, MakeImmutable([ z, [ F!.oneMagma, One( z ) ] ]) );
     end );
 
 

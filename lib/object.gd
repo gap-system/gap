@@ -226,7 +226,6 @@ InstallTrueMethod( IsCopyable, IsMutable);
 ##  <#GAPDoc Label="Immutable">
 ##  <ManSection>
 ##  <Func Name="Immutable" Arg='obj'/>
-##  <Func Name="Imm" Arg='obj'/>
 ##
 ##  <Description>
 ##  returns an immutable structural copy
@@ -238,15 +237,11 @@ InstallTrueMethod( IsCopyable, IsMutable);
 ##  <P/>
 ##  &GAP; will complain with an error if one tries to change an
 ##  immutable object.
-##  <P/>
-##  <Ref Func="Imm"/> povides a shorthand for <Ref Func="Immutable"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
-BIND_GLOBAL( "Imm", IMMUTABLE_COPY_OBJ );
-BIND_GLOBAL( "MakeImm", MakeImmutable );
 
 #############################################################################
 ##

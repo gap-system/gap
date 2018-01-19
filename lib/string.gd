@@ -832,7 +832,7 @@ DeclareGlobalFunction("PrintCSV");
 ##
 DeclareGlobalFunction("LaTeXTable");
 
-BindGlobal("BHINT", MakeImm("\>\<"));
+BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 #############################################################################
 ##

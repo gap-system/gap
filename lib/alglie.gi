@@ -3591,9 +3591,9 @@ InstallHandlingByNiceBasis( "IsSpaceOfUEAElements", rec(
 
       # For the zero row vector, catch the case of empty `monomials' list.
       if IsEmpty( monomials ) then
-        info.zerovector := MakeImm([ zero ]);
+        info.zerovector := MakeImmutable([ zero ]);
       else
-        info.zerovector := MakeImm(ListWithIdenticalEntries( Length( monomials ),
+        info.zerovector := MakeImmutable(ListWithIdenticalEntries( Length( monomials ),
                                                              zero ) );
       fi;
 
