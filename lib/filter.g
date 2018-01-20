@@ -17,7 +17,8 @@
 #V  FILTERS . . . . . . . . . . . . . . . . . . . . . . . list of all filters
 ##
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
-##  filter with number <i> resp.  its rank.
+##  elementary filter with number <i> resp. its rank. Note that and-filters
+##  are not elementary and hence not contained in this list.
 ##
 BIND_GLOBAL( "FILTERS", [] );
 
@@ -314,6 +315,16 @@ BIND_GLOBAL( "NamesFilter", function( flags )
 end );
 
 
+#############################################################################
+##
+#F  IS_ELEMENTARY_FILTER( <x> )
+##
+##  function to test whether <x> is an elementary filter.
+##
+BIND_GLOBAL( "IS_ELEMENTARY_FILTER", function(x)
+    return x in FILTERS;
+end);
+
 
 #############################################################################
 ##
@@ -328,7 +339,7 @@ BIND_GLOBAL( "IsFilter",
     x -> IS_IDENTICAL_OBJ(x, IS_OBJECT)
          or ( IS_OPERATION( x ) and NARG_FUNC( x ) = 1
               and ( (FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
-                    or x in FILTERS ) ) );
+                    or IS_ELEMENTARY_FILTER(x) ) ) );
 
 
 ## Global Rank declarations
