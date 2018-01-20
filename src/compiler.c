@@ -5246,8 +5246,7 @@ void CompUnbComObjExpr (
 void CompEmpty (
     Stat                stat )
 {
-  Emit("\n/* ; */\n");
-  Emit(";");
+    // do nothing
 }
   
 /****************************************************************************
