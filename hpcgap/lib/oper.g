@@ -1257,7 +1257,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       # The attribute has already been declared.
       # If it was not created as an attribute
       # then we may be able to convert it
-      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+      if FLAG2_FILTER( gvar ) = 0 or IS_ELEMENTARY_FILTER(gvar) then
 
           # `gvar' is not an attribute (tester) and not a property (tester),
           # or `gvar' is a filter;
