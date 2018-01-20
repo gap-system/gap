@@ -445,7 +445,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
       # find the operation
       req := GET_OPER_FLAGS(opr);
-      if req = false  then
+      if req = fail  then
         Error( "unknown operation ", NAME_FUNC(opr) );
       fi;
 
