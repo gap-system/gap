@@ -60,7 +60,7 @@ fi;
 ##
 BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
-        atomic readwrite FILTER_REGION, CATS_AND_REPS do
+        atomic readwrite CATS_AND_REPS, FILTER_REGION do
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
         IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
@@ -167,17 +167,6 @@ end );
 ##
 BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     local   rep, filt;
-    if REREADING then
-        atomic readonly CATS_AND_REPS, FILTER_REGION do
-        for filt in CATS_AND_REPS do
-            if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
-                Print("Change of Super-rep not handled\n");
-                return FILTERS[filt];
-            fi;
-        od;
-        od;
-    fi;
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
     if REREADING then
         for filt in CATS_AND_REPS do
@@ -509,17 +498,7 @@ BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
     elms_filter:= FLAGS_FILTER( elms_filter );
 
     # Check whether the desired family category is already defined.
-    atomic readonly CATEGORIES_FAMILY do
-    for pair in CATEGORIES_FAMILY do
-      if pair[1] = elms_filter then
-        return pair[2];
-      fi;
-    od;
-    od;
-    
     atomic readwrite CATEGORIES_FAMILY do
-    # Check again whether category is already defined (necessary
-    # since we released and re-acquired locks)
     for pair in CATEGORIES_FAMILY do
       if pair[1] = elms_filter then
         return pair[2];
