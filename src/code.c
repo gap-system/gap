@@ -1140,6 +1140,7 @@ void CodeAtomicBeginBody ( UInt nrexprs )
 void CodeAtomicEndBody (
     UInt                nrstats )
 {
+#ifdef HPCGAP
     Stat                stat;           /* atomic-statement, result         */
     Stat                stat1;          /* single statement of body        */
     UInt                i;              /* loop variable                   */
@@ -1167,6 +1168,15 @@ void CodeAtomicEndBody (
 
     /* push the atomic-statement                                            */
     PushStat( stat );
+#else
+    Stat stat  = PopSeqStat( nrstats );
+    UInt nrexprs = INT_INTEXPR(PopExpr());
+    while (nrexprs--) {
+        PopExpr();
+        PopExpr();
+    }
+    PushStat( stat );
+#endif
 }
 
 void CodeAtomicEnd ( void )
