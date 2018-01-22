@@ -52,17 +52,6 @@ static Obj NewList(UInt size)
 }
 
 
-void QueueForTraversal(Obj obj);
-
-typedef enum {
-    TRAVERSE_BY_FUNCTION,
-    TRAVERSE_NONE,
-    TRAVERSE_ALL,
-    TRAVERSE_ALL_BUT_FIRST,
-} TraversalMethodEnum;
-
-typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
-
 TraversalFunction     TraversalFunc[LAST_REAL_TNUM + 1];
 TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM + 1];
 TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
@@ -97,7 +86,7 @@ void TraverseWPObj(Obj obj)
 
 static UInt FindTraversedObj(Obj);
 
-static inline Obj ReplaceByCopy(Obj obj)
+inline Obj ReplaceByCopy(Obj obj)
 {
     TraversalState * traversal = currentTraversal();
     UInt             found = FindTraversedObj(obj);
@@ -202,6 +191,17 @@ void CopyObjMap(Obj copy, Obj original)
     }
 }
 
+void SetTraversalMethod(UInt tnum,
+                        TraversalMethodEnum meth,
+                        TraversalFunction tf,
+                        TraversalCopyFunction cf)
+{
+    GAP_ASSERT(tnum < ARRAY_SIZE(TraversalMethod));
+    TraversalMethod[tnum] = meth;
+    TraversalFunc[tnum] = tf;
+    TraversalCopyFunc[tnum] = cf;
+}
+
 void InitTraversalModule(void)
 {
     int i;
@@ -209,41 +209,23 @@ void InitTraversalModule(void)
         assert(TraversalMethod[i] == 0);
         TraversalMethod[i] = TRAVERSE_NONE;
     }
-    TraversalMethod[T_PREC           ] = TRAVERSE_BY_FUNCTION;
-    TraversalMethod[T_PREC +IMMUTABLE] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[T_PREC           ] = TraversePRecord;
-    TraversalFunc[T_PREC +IMMUTABLE] = TraversePRecord;
-    TraversalCopyFunc[T_PREC           ] = CopyPRecord;
-    TraversalCopyFunc[T_PREC +IMMUTABLE] = CopyPRecord;
+    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
     for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
-        TraversalMethod[i] = TRAVERSE_BY_FUNCTION;
-        TraversalFunc[i] = TraversePList;
-        TraversalCopyFunc[i] = CopyPList;
+        SetTraversalMethod(i, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
     }
-    TraversalMethod[T_PLIST_CYC] = TRAVERSE_NONE;
-    TraversalMethod[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
-    TraversalMethod[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
-    TraversalMethod[T_PLIST_FFE] = TRAVERSE_NONE;
+    for (i = T_PLIST_CYC; i <= T_PLIST_FFE+IMMUTABLE; i++) {
+        SetTraversalMethod(i, TRAVERSE_NONE, 0, 0);
+    }
 
-    TraversalMethod[T_POSOBJ] = TRAVERSE_ALL_BUT_FIRST;
+    SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
+    SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
 
-    TraversalMethod[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[T_COMOBJ] = TraversePRecord;
-    TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
+    SetTraversalMethod(T_POSOBJ, TRAVERSE_ALL_BUT_FIRST, 0, 0);
+    SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
 
-    // FIXME: no TraversalMethod for T_WPOBJ ?!
-    TraversalFunc[T_WPOBJ] = TraverseWPObj;
-    TraversalCopyFunc[T_WPOBJ] = CopyWPObj;
-
-    TraversalMethod[T_DATOBJ] = TRAVERSE_NONE;
-
-    TraversalMethod[T_OBJSET] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[T_OBJSET] = TraverseObjSet;
-    TraversalCopyFunc[T_OBJSET] = CopyObjSet;
-
-    TraversalMethod[T_OBJMAP] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[T_OBJMAP] = TraverseObjMap;
-    TraversalCopyFunc[T_OBJMAP] = CopyObjMap;
+    SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
 }
 
 static void BeginTraversal(TraversalState * traversal)
