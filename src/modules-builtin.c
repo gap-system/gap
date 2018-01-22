@@ -14,6 +14,7 @@
 #include <src/hpc/aobjects.h>
 #include <src/hpc/serialize.h>
 #include <src/hpc/threadapi.h>
+#include <src/hpc/traverse.h>
 #endif
 
 extern StructInitInfo * InitInfoGap ( void );
@@ -23,6 +24,12 @@ extern StructInitInfo * InitInfoGap ( void );
 *V  InitFuncsBuiltinModules . . . . .  list of builtin modules init functions
 */
 const InitInfoFunc InitFuncsBuiltinModules[] = {
+
+#ifdef HPCGAP
+    // Traversal functionality may be needed during the initialization
+    // of some modules, so set it up as early as possible
+    InitInfoTraverse,
+#endif
 
     /* global variables                                                    */
     InitInfoGVars,

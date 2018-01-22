@@ -38,4 +38,17 @@ Obj CopyTraversed(Obj traversed);
 int PreMakeImmutableCheck(Obj obj);
 
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*F  InitInfoTraverse() . . . . . . . . . . . . . . .  table of init functions
+*/
+StructInitInfo * InitInfoTraverse( void );
+
+
 #endif // GAP_TRAVERSE_H

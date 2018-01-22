@@ -202,32 +202,6 @@ void SetTraversalMethod(UInt tnum,
     TraversalCopyFunc[tnum] = cf;
 }
 
-void InitTraversalModule(void)
-{
-    int i;
-    for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++) {
-        assert(TraversalMethod[i] == 0);
-        TraversalMethod[i] = TRAVERSE_NONE;
-    }
-    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
-        SetTraversalMethod(i, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
-    }
-    for (i = T_PLIST_CYC; i <= T_PLIST_FFE+IMMUTABLE; i++) {
-        SetTraversalMethod(i, TRAVERSE_NONE, 0, 0);
-    }
-
-    SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
-    SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
-
-    SetTraversalMethod(T_POSOBJ, TRAVERSE_ALL_BUT_FIRST, 0, 0);
-    SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
-
-    SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
-}
-
 static void BeginTraversal(TraversalState * traversal)
 {
     traversal->hashTable = NewList(16);
@@ -556,6 +530,57 @@ Obj CopyTraversed(Obj traversedList)
         CopyBag(copies[i], traversed[i]);
     EndTraversal();
     return copies[1];
+}
+
+
+/****************************************************************************
+**
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel ( StructInitInfo * module )
+{
+    int i;
+    for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++) {
+        assert(TraversalMethod[i] == 0);
+        TraversalMethod[i] = TRAVERSE_NONE;
+    }
+    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
+        SetTraversalMethod(i, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
+    }
+    for (i = T_PLIST_CYC; i <= T_PLIST_FFE+IMMUTABLE; i++) {
+        SetTraversalMethod(i, TRAVERSE_NONE, 0, 0);
+    }
+
+    SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
+    SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
+
+    SetTraversalMethod(T_POSOBJ, TRAVERSE_ALL_BUT_FIRST, 0, 0);
+    SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
+
+    SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoGVars() . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    // init struct using C99 designated initializers; for a full list of
+    // fields, please refer to the definition of StructInitInfo
+    .type = MODULE_BUILTIN,
+    .name = "traverse",
+    .initKernel = InitKernel,
+};
+
+StructInitInfo * InitInfoTraverse ( void )
+{
+    return &module;
 }
 
 #endif

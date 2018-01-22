@@ -231,8 +231,6 @@ void RunThreadedMain(int (*mainFunction)(int, char **, char **),
     RunThreadedMain2(mainFunction, argc, argv, environ);
 }
 
-extern void InitTraversalModule();
-
 static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
                              int     argc,
                              char ** argv,
@@ -266,9 +264,6 @@ static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
     InitSignals();
     if (sySetjmp(TLS(threadExit)))
         exit(0);
-    /* Traversal functionality may be needed during the initialization
-     * of some modules, so we set it up now. */
-    InitTraversalModule();
     exit((*mainFunction)(argc, argv, environ));
 }
 
