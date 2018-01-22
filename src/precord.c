@@ -42,6 +42,7 @@
 
 #ifdef HPCGAP
 #include <src/hpc/aobjects.h>
+#include <src/hpc/traverse.h>
 #endif
 
 /****************************************************************************
@@ -131,7 +132,22 @@ Int             GrowPRec (
 }
 
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+void TraversePRecord(Obj obj)
+{
+    UInt i, len = LEN_PREC(obj);
+    for (i = 1; i <= len; i++)
+        QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
+}
+
+void CopyPRecord(Obj copy, Obj original)
+{
+    UInt i, len = LEN_PREC(original);
+    for (i = 1; i <= len; i++)
+        SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
+}
+
+#else
 
 /****************************************************************************
 **
@@ -904,7 +920,10 @@ static Int InitKernel (
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+#else
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
     CopyObjFuncs [ T_PREC +IMMUTABLE          ] = CopyPRec;
@@ -914,7 +933,7 @@ static Int InitKernel (
     CleanObjFuncs[ T_PREC +IMMUTABLE          ] = CleanPRec;
     CleanObjFuncs[ T_PREC            +COPYING ] = CleanPRecCopy;
     CleanObjFuncs[ T_PREC +IMMUTABLE +COPYING ] = CleanPRecCopy;
-#endif // !defined(USE_THREADSAFE_COPYING)
+#endif
 
     /* install printer                                                     */
     PrintObjFuncs[  T_PREC            ] = PrintPRec;

@@ -29,6 +29,7 @@
 #include <src/hpc/aobjects.h>
 #include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
+#include <src/hpc/traverse.h>
 #endif
 
 #if defined(USE_THREADSAFE_COPYING)
@@ -2077,8 +2078,12 @@ static Int InitKernel (
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjObject;
 
+#ifdef USE_THREADSAFE_COPYING
+    SetTraversalMethod(T_POSOBJ, TRAVERSE_ALL_BUT_FIRST, 0, 0);
+    SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
+#else
     /* make and install the 'COPY_OBJ' function                            */
-#if !defined(USE_THREADSAFE_COPYING)
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(CopyObjFuncs [ t ] == 0);
         CopyObjFuncs [ t ] = CopyObjError;

@@ -6,19 +6,11 @@
 #include <src/bool.h>
 #include <src/fibhash.h>
 #include <src/gap.h>
-#include <src/objset.h>
+#include <src/gaputils.h>
 #include <src/plist.h>
-#include <src/precord.h>
 
 #include <src/hpc/guards.h>
 #include <src/hpc/thread.h>
-
-#ifdef BOEHM_GC
-# ifdef HPCGAP
-#  define GC_THREADS
-# endif
-# include <gc/gc.h>
-#endif
 
 #ifndef WARD_ENABLED
 
@@ -56,34 +48,6 @@ TraversalFunction     TraversalFunc[LAST_REAL_TNUM + 1];
 TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM + 1];
 TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
 
-void TraversePList(Obj obj)
-{
-    UInt  len = LEN_PLIST(obj);
-    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
-    while (len) {
-        QueueForTraversal(*ptr++);
-        len--;
-    }
-}
-
-void TraverseWPObj(Obj obj)
-{
-    /* This is a hack, we rely on weak pointer objects
-     * having the same layout as plain lists, so we don't
-     * have to replicate the macro here.
-     */
-    UInt  len = LEN_PLIST(obj);
-    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
-    while (len) {
-        volatile Obj tmp = *ptr;
-        MEMBAR_READ();
-        if (tmp && *ptr)
-            QueueForTraversal(*ptr);
-        ptr++;
-        len--;
-    }
-}
-
 static UInt FindTraversedObj(Obj);
 
 inline Obj ReplaceByCopy(Obj obj)
@@ -101,94 +65,6 @@ inline Obj ReplaceByCopy(Obj obj)
     }
     else
         return obj;
-}
-
-void CopyPList(Obj copy, Obj original)
-{
-    UInt  len = LEN_PLIST(original);
-    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
-    Obj * copyptr = ADDR_OBJ(copy) + 1;
-    while (len) {
-        *copyptr++ = ReplaceByCopy(*ptr++);
-        len--;
-    }
-}
-
-void CopyWPObj(Obj copy, Obj original)
-{
-    /* This is a hack, we rely on weak pointer objects
-     * having the same layout as plain lists, so we don't
-     * have to replicate the macro here.
-     */
-    UInt  len = LEN_PLIST(original);
-    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
-    Obj * copyptr = ADDR_OBJ(copy) + 1;
-    while (len) {
-        volatile Obj tmp = *ptr;
-        MEMBAR_READ();
-        if (tmp && *ptr)
-            *copyptr = ReplaceByCopy(tmp);
-        REGISTER_WP(copyptr, tmp);
-        ptr++;
-        copyptr++;
-    }
-}
-
-void TraversePRecord(Obj obj)
-{
-    UInt i, len = LEN_PREC(obj);
-    for (i = 1; i <= len; i++)
-        QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
-}
-
-void CopyPRecord(Obj copy, Obj original)
-{
-    UInt i, len = LEN_PREC(original);
-    for (i = 1; i <= len; i++)
-        SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
-}
-
-void TraverseObjSet(Obj obj)
-{
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
-    for (i = 0; i < len; i++) {
-        Obj item = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
-        if (item && item != Undefined)
-            QueueForTraversal(item);
-    }
-}
-
-void CopyObjSet(Obj copy, Obj original)
-{
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
-    for (i = 0; i < len; i++) {
-        Obj item = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(item);
-    }
-}
-
-void TraverseObjMap(Obj obj)
-{
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
-    for (i = 0; i < len; i++) {
-        Obj key = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
-        if (key && key != Undefined) {
-            QueueForTraversal(key);
-            QueueForTraversal(val);
-        }
-    }
-}
-
-void CopyObjMap(Obj copy, Obj original)
-{
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
-    for (i = 0; i < len; i++) {
-        Obj key = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(key);
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(val);
-    }
 }
 
 void SetTraversalMethod(UInt tnum,
@@ -544,23 +420,6 @@ static Int InitKernel ( StructInitInfo * module )
         assert(TraversalMethod[i] == 0);
         TraversalMethod[i] = TRAVERSE_NONE;
     }
-    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
-        SetTraversalMethod(i, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
-    }
-    for (i = T_PLIST_CYC; i <= T_PLIST_FFE+IMMUTABLE; i++) {
-        SetTraversalMethod(i, TRAVERSE_NONE, 0, 0);
-    }
-
-    SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
-    SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
-
-    SetTraversalMethod(T_POSOBJ, TRAVERSE_ALL_BUT_FIRST, 0, 0);
-    SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
-
-    SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
 
     return 0;
 }

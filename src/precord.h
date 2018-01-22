@@ -253,6 +253,12 @@ extern  void            SortPRecRNam (
             int                 inplace );
 
 
+#ifdef USE_THREADSAFE_COPYING
+extern void TraversePRecord(Obj obj);
+extern void CopyPRecord(Obj copy, Obj original);
+#endif
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
