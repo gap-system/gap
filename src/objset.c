@@ -21,6 +21,9 @@
 #include <src/plist.h>
 #include <src/saveload.h>
 
+#ifdef HPCGAP
+#include <src/hpc/traverse.h>
+#endif
 
 Obj TYPE_OBJSET;
 Obj TYPE_OBJMAP;
@@ -380,6 +383,28 @@ void LoadObjSet(Obj set)
     }
 }
 
+#ifdef USE_THREADSAFE_COPYING
+void TraverseObjSet(Obj obj)
+{
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
+    for (i = 0; i < len; i++) {
+        Obj item = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
+        if (item && item != Undefined)
+            QueueForTraversal(item);
+    }
+}
+
+void CopyObjSet(Obj copy, Obj original)
+{
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
+    for (i = 0; i < len; i++) {
+        Obj item = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(item);
+    }
+}
+#endif
+
+
 /**
  *  `NewObjMap()`
  *  -------------
@@ -664,6 +689,32 @@ void LoadObjMap(Obj map)
         AddObjMapNew(map, key, val);
     }
 }
+
+#ifdef USE_THREADSAFE_COPYING
+void TraverseObjMap(Obj obj)
+{
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
+    for (i = 0; i < len; i++) {
+        Obj key = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
+        Obj val = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
+        if (key && key != Undefined) {
+            QueueForTraversal(key);
+            QueueForTraversal(val);
+        }
+    }
+}
+
+void CopyObjMap(Obj copy, Obj original)
+{
+    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
+    for (i = 0; i < len; i++) {
+        Obj key = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
+        Obj val = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(key);
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(val);
+    }
+}
+#endif
 
 /**
  *  `FuncOBJ_SET()`
@@ -990,6 +1041,11 @@ static Int InitKernel (
   IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
   IsMutableObjFuncs [ T_OBJMAP           ] = AlwaysYes;
   IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
+
+#ifdef USE_THREADSAFE_COPYING
+  SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
+  SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
+#endif
 
   // Install saving functions
   SaveObjFuncs[ T_OBJSET            ] = SaveObjSet;

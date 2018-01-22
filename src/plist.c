@@ -52,6 +52,7 @@
 
 #ifdef HPCGAP
 #include <src/hpc/guards.h>
+#include <src/hpc/traverse.h>
 #endif
 
 
@@ -932,7 +933,30 @@ Obj FuncIS_PLIST_REP (
 }
 
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+
+void TraversePList(Obj obj)
+{
+    UInt  len = LEN_PLIST(obj);
+    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
+    while (len) {
+        QueueForTraversal(*ptr++);
+        len--;
+    }
+}
+
+void CopyPList(Obj copy, Obj original)
+{
+    UInt  len = LEN_PLIST(original);
+    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
+    Obj * copyptr = ADDR_OBJ(copy) + 1;
+    while (len) {
+        *copyptr++ = ReplaceByCopy(*ptr++);
+        len--;
+    }
+}
+
+#else
 
 /****************************************************************************
 **
@@ -3822,7 +3846,14 @@ static Int InitKernel (
         ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyPlist;
     }
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+    for (t1 = FIRST_PLIST_TNUM; t1 <= LAST_PLIST_TNUM; t1++) {
+        SetTraversalMethod(t1, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
+    }
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
+        SetTraversalMethod(t1, TRAVERSE_NONE, 0, 0);
+    }
+#else
     /* install the copy list methods                                       */
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyPlist;

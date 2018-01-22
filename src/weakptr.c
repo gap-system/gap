@@ -26,6 +26,7 @@
 
 #ifdef HPCGAP
 #include <src/hpc/guards.h>
+#include <src/hpc/traverse.h>
 #endif
 
 #ifdef BOEHM_GC
@@ -557,7 +558,47 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 #endif
 
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+void TraverseWPObj(Obj obj)
+{
+    /* This is a hack, we rely on weak pointer objects
+     * having the same layout as plain lists, so we don't
+     * have to replicate the macro here.
+     */
+    UInt  len = LEN_PLIST(obj);
+    const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
+    while (len) {
+        volatile Obj tmp = *ptr;
+        MEMBAR_READ();
+        if (tmp && *ptr)
+            QueueForTraversal(*ptr);
+        ptr++;
+        len--;
+    }
+}
+
+void CopyWPObj(Obj copy, Obj original)
+{
+    /* This is a hack, we rely on weak pointer objects
+     * having the same layout as plain lists, so we don't
+     * have to replicate the macro here.
+     */
+    UInt  len = LEN_PLIST(original);
+    const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
+    Obj * copyptr = ADDR_OBJ(copy) + 1;
+    while (len) {
+        volatile Obj tmp = *ptr;
+        MEMBAR_READ();
+        if (tmp && *ptr)
+            *copyptr = ReplaceByCopy(tmp);
+        REGISTER_WP(copyptr, tmp);
+        ptr++;
+        copyptr++;
+    }
+}
+
+
+#else
 
 /****************************************************************************
 **
@@ -859,7 +900,9 @@ static Int InitKernel (
     // List functions
     ElmDefListFuncs[T_WPOBJ] = ElmDefWPList;
 
-#if !defined(USE_THREADSAFE_COPYING)
+#ifdef USE_THREADSAFE_COPYING
+    SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
+#else
     /* copying functions                                                   */
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
     CopyObjFuncs[  T_WPOBJ + COPYING ] = CopyObjWPObjCopy;
