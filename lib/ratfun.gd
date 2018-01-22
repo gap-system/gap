@@ -252,6 +252,7 @@ DeclareAttribute( "DenominatorOfRationalFunction", IsRationalFunction );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPolynomial", IsPolynomialFunction );
+InstallTrueMethod( IsRationalFunction, IsPolynomial );
 
 
 #############################################################################
@@ -295,6 +296,7 @@ DeclareAttribute( "AsPolynomial",
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsUnivariateRationalFunction", IsRationalFunction );
+InstallTrueMethod( IsRationalFunction, IsUnivariateRationalFunction );
 
 #############################################################################
 ##

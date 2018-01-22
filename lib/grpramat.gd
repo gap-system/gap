@@ -41,6 +41,7 @@ DeclareSynonym( "IsCyclotomicMatrixGroup", IsCyclotomicCollCollColl and IsMatrix
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsRationalMatrixGroup", IsCyclotomicMatrixGroup );
+InstallTrueMethod( IsCyclotomicMatrixGroup, IsRationalMatrixGroup );
 
 #############################################################################
 ##
@@ -59,6 +60,7 @@ DeclareProperty( "IsRationalMatrixGroup", IsCyclotomicMatrixGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsIntegerMatrixGroup", IsCyclotomicMatrixGroup );
+InstallTrueMethod( IsCyclotomicMatrixGroup, IsIntegerMatrixGroup );
 
 #############################################################################
 ##

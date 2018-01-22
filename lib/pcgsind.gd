@@ -259,6 +259,7 @@ DeclareAttribute( "CanonicalPcgs", IsInducedPcgs );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsCanonicalPcgs", IsInducedPcgs );
+InstallTrueMethod( IsInducedPcgs, IsCanonicalPcgs );
 
 #############################################################################
 ##
@@ -303,6 +304,7 @@ DeclareProperty( "IsParentPcgsFamilyPcgs", IsInducedPcgs,
   20 # we want this to be larger than filters like `PrimeOrderPcgs'
      # (cf. rank for `IsFamilyPcgs' in pcgsind.gd)
   );
+InstallTrueMethod( IsInducedPcgs, IsParentPcgsFamilyPcgs );
 
 #############################################################################
 ##

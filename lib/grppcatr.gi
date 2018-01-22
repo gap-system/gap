@@ -675,7 +675,7 @@ end);
 #M  GeneratorsSmallest(<pcgrp>)
 ##
 InstallMethod(GeneratorsSmallest,"group of pc words which is full family",
-  true, [HasFamilyPcgs],0,
+  true, [IsGroup and HasFamilyPcgs],0,
 function(G)
 local pcgs,gens,U,e,i,j,pa,ros,smallpcgs,exp;
 

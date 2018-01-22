@@ -982,7 +982,7 @@ InstallMethod( ImagesSet,
 InstallMethod( ImagesSet,
     "for general mapping, and empty list",
     true,
-    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    [ IsGeneralMapping, IsListOrCollection and IsEmpty ], 0,
     function( map, elms )
     return [];
     end );

@@ -120,7 +120,7 @@ DeclareCategoryCollections( "IsCochain" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Cochain", [ IsLeftModule, IsInt, IsObject ] );
+DeclareOperation( "Cochain", [ IsAlgebraModule, IsInt, IsObject ] );
 
 #############################################################################
 ##

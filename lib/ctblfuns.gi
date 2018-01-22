@@ -332,7 +332,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for positive integer, and character",
-    [ IsPosInt, IsCharacter ],
+    [ IsPosInt, IsCharacter and IsClassFunction ],
     function( cyc, chi )
     return Character( UnderlyingCharacterTable( chi ),
                cyc * ValuesOfClassFunction( chi ) );
@@ -356,7 +356,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for character, and positive integer",
-    [ IsCharacter, IsPosInt ],
+    [ IsCharacter and IsClassFunction, IsPosInt ],
     function( chi, cyc )
     return Character( UnderlyingCharacterTable( chi ),
                ValuesOfClassFunction( chi ) * cyc );
@@ -413,7 +413,7 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for two characters",
     IsIdenticalObj,
-    [ IsCharacter, IsCharacter ],
+    [ IsCharacter and IsClassFunction, IsCharacter and IsClassFunction ],
     function( chi, psi )
     local tbl, valschi, valspsi;
     tbl:= UnderlyingCharacterTable( chi );

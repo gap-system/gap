@@ -370,7 +370,7 @@ end );
 ##
 InstallMethod( TestQuasiPrimitive,
     "for a character",
-    [ IsCharacter ],
+    [ IsCharacter and IsClassFunction ],
     function( chi )
 
     local values,   # list of character values
@@ -450,7 +450,7 @@ InstallMethod( TestQuasiPrimitive,
 ##
 InstallMethod( IsQuasiPrimitive,
     "for a character",
-    [ IsCharacter ],
+    [ IsCharacter and IsClassFunction ],
     chi -> TestQuasiPrimitive( chi ).isQuasiPrimitive );
 
 
@@ -666,7 +666,7 @@ end );
 ##
 InstallMethod( IsInducedFromNormalSubgroup,
     "for a character",
-    [ IsCharacter ],
+    [ IsCharacter and IsClassFunction ],
     chi -> TestInducedFromNormalSubgroup( chi ).isInduced );
 
 

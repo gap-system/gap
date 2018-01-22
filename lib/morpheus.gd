@@ -66,6 +66,7 @@ DeclareAttribute("AutomorphismGroup",IsDomain);
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
+InstallTrueMethod( IsGroup, IsGroupOfAutomorphisms );
 
 #############################################################################
 ##

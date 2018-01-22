@@ -30,6 +30,7 @@ DeclareInfoClass( "InfoSpecPcgs" );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSpecialPcgs", IsPcgs );
+InstallTrueMethod( IsPcgs, IsSpecialPcgs );
 
 #InstallTrueMethod(IsPcgsCentralSeries,IsSpecialPcgs);
 InstallTrueMethod(IsPcgsElementaryAbelianSeries,IsSpecialPcgs);
@@ -248,6 +249,7 @@ DeclareAttribute( "CanonicalPcgsWrtSpecialPcgs", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsInducedPcgsWrtSpecialPcgs", IsPcgs );
+InstallTrueMethod( IsPcgs, IsInducedPcgsWrtSpecialPcgs );
 
 
 #############################################################################
@@ -262,6 +264,7 @@ DeclareProperty( "IsInducedPcgsWrtSpecialPcgs", IsPcgs );
 ##  </ManSection>
 ##
 DeclareProperty( "IsCanonicalPcgsWrtSpecialPcgs", IsPcgs );
+InstallTrueMethod( IsPcgs, IsCanonicalPcgsWrtSpecialPcgs );
 
 
 #############################################################################

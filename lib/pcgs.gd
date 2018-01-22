@@ -727,6 +727,7 @@ DeclareAttribute( "NormalSeriesByPcgs", IsPcgs);
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPrimeOrdersPcgs", IsGeneralPcgs );
+InstallTrueMethod( IsGeneralPcgs, IsPrimeOrdersPcgs );
 
 #############################################################################
 ##
@@ -743,6 +744,7 @@ DeclareProperty( "IsPrimeOrdersPcgs", IsGeneralPcgs );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFiniteOrdersPcgs", IsGeneralPcgs );
+InstallTrueMethod( IsGeneralPcgs, IsFiniteOrdersPcgs );
 
 #############################################################################
 ##

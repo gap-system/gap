@@ -227,7 +227,7 @@ InstallTrueMethod( IsTwoSidedIdealInParent,
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TwoSidedIdealByGenerators", [ IsRing, IsCollection ] );
+DeclareOperation( "TwoSidedIdealByGenerators", [ IsRing, IsListOrCollection ] );
 
 DeclareSynonym( "IdealByGenerators", TwoSidedIdealByGenerators );
 
@@ -252,7 +252,7 @@ DeclareSynonym( "IdealByGenerators", TwoSidedIdealByGenerators );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "LeftIdealByGenerators", [ IsRing, IsCollection ] );
+DeclareOperation( "LeftIdealByGenerators", [ IsRing, IsListOrCollection ] );
 
 
 #############################################################################
@@ -275,7 +275,7 @@ DeclareOperation( "LeftIdealByGenerators", [ IsRing, IsCollection ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "RightIdealByGenerators", [ IsRing, IsCollection ] );
+DeclareOperation( "RightIdealByGenerators", [ IsRing, IsListOrCollection ] );
 
 
 #############################################################################
