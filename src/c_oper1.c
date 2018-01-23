@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-7966851"
+#define FILE_CRC  "83247400"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -569,6 +569,7 @@ static Obj  HdlrFunc3 (
  Obj l_replace = 0;
  Obj l_match = 0;
  Obj l_j = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -585,6 +586,7 @@ static Obj  HdlrFunc3 (
  (void)l_replace;
  (void)l_match;
  (void)l_j;
+ (void)l_lk;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1254,6 +1256,7 @@ static Obj  HdlrFunc6 (
  Obj l_k = 0;
  Obj l_imp = 0;
  Obj l_notmatch = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -1285,6 +1288,7 @@ static Obj  HdlrFunc6 (
  (void)l_k;
  (void)l_imp;
  (void)l_notmatch;
+ (void)l_lk;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2254,6 +2258,7 @@ static Obj  HdlrFunc7 (
  Obj l_rank = 0;
  Obj l_cats = 0;
  Obj l_i = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -2265,6 +2270,7 @@ static Obj  HdlrFunc7 (
  (void)l_rank;
  (void)l_cats;
  (void)l_i;
+ (void)l_lk;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2438,8 +2444,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
-   SET_STARTLINE_BODY(t_7, 578);
-   SET_ENDLINE_BODY(t_7, 596);
+   SET_STARTLINE_BODY(t_7, 616);
+   SET_ENDLINE_BODY(t_7, 634);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    CHANGED_BAG( STATE(CurrLVars) );
@@ -3006,6 +3012,7 @@ static Obj  HdlrFunc11 (
  Obj  a_keytest )
 {
  Obj l_str = 0;
+ Obj l_lk = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -3014,6 +3021,7 @@ static Obj  HdlrFunc11 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  (void)l_str;
+ (void)l_lk;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3040,8 +3048,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_STARTLINE_BODY(t_2, 775);
-  SET_ENDLINE_BODY(t_2, 779);
+  SET_STARTLINE_BODY(t_2, 813);
+  SET_ENDLINE_BODY(t_2, 817);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   CHANGED_BAG( STATE(CurrLVars) );
@@ -3120,8 +3128,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 796);
- SET_ENDLINE_BODY(t_7, 796);
+ SET_STARTLINE_BODY(t_7, 834);
+ SET_ENDLINE_BODY(t_7, 834);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3183,8 +3191,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 809);
- SET_ENDLINE_BODY(t_7, 832);
+ SET_STARTLINE_BODY(t_7, 854);
+ SET_ENDLINE_BODY(t_7, 877);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3232,8 +3240,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 842);
- SET_ENDLINE_BODY(t_7, 850);
+ SET_STARTLINE_BODY(t_7, 887);
+ SET_ENDLINE_BODY(t_7, 895);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3294,8 +3302,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 859);
- SET_ENDLINE_BODY(t_7, 872);
+ SET_STARTLINE_BODY(t_7, 904);
+ SET_ENDLINE_BODY(t_7, 917);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3668,8 +3676,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_5, 938);
- SET_ENDLINE_BODY(t_5, 954);
+ SET_STARTLINE_BODY(t_5, 983);
+ SET_ENDLINE_BODY(t_5, 999);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3770,7 +3778,8 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD_FLAGS", function ( opr, info, rel, flags, rank, method )
-      local methods, narg, i, k, tmp, replace, match, j;
+      local methods, narg, i, k, tmp, replace, match, j, lk;
+      ;
       if IS_CONSTRUCTOR( opr ) then
           if 0 < LEN_LIST( flags ) then
               rank := rank - RankFilter( flags[1] );
@@ -3782,6 +3791,7 @@ static Obj  HdlrFunc1 (
       fi;
       narg := LEN_LIST( flags );
       methods := METHODS_OPERATION( opr, narg );
+      ;
       if info = false then
           info := NAME_FUNC( opr );
       else
@@ -3859,8 +3869,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 124);
- SET_ENDLINE_BODY(t_4, 235);
+ SET_STARTLINE_BODY(t_4, 137);
+ SET_ENDLINE_BODY(t_4, 259);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3875,8 +3885,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], -1, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 282);
- SET_ENDLINE_BODY(t_4, 284);
+ SET_STARTLINE_BODY(t_4, 306);
+ SET_ENDLINE_BODY(t_4, 308);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3891,8 +3901,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], -1, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 309);
- SET_ENDLINE_BODY(t_4, 311);
+ SET_STARTLINE_BODY(t_4, 333);
+ SET_ENDLINE_BODY(t_4, 335);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3907,7 +3917,8 @@ static Obj  HdlrFunc1 (
  AssGVar( G_INSTALL__METHOD, 0 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD", function ( arglist, check )
-      local len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch;
+      local len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch, lk;
+      ;
       len := LEN_LIST( arglist );
       if len < 3 then
           Error( "too few arguments given in <arglist>" );
@@ -4036,6 +4047,7 @@ static Obj  HdlrFunc1 (
           fi;
       fi;
       INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+      ;
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -4043,8 +4055,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 322);
- SET_ENDLINE_BODY(t_4, 523);
+ SET_STARTLINE_BODY(t_4, 346);
+ SET_ENDLINE_BODY(t_4, 555);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4057,12 +4069,13 @@ static Obj  HdlrFunc1 (
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
-      local flags, rank, cats, props, i;
+      local flags, rank, cats, props, i, lk;
       if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
           flags := FLAGS_FILTER( filter );
           rank := 0;
           cats := IS_OBJECT;
           props := [  ];
+          ;
           for i in [ 1 .. LEN_FLAGS( flags ) ] do
               if ELM_FLAGS( flags, i ) then
                   if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
@@ -4073,6 +4086,7 @@ static Obj  HdlrFunc1 (
                   fi;
               fi;
           od;
+          ;
           MakeImmutable( props );
           if 0 < LEN_LIST( props ) then
               InstallOtherMethod( getter, "default method requiring categories and checking properties", true, [ cats ], rank, function ( obj )
@@ -4101,8 +4115,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 542);
- SET_ENDLINE_BODY(t_3, 600);
+ SET_STARTLINE_BODY(t_3, 574);
+ SET_ENDLINE_BODY(t_3, 638);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4116,8 +4130,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 603);
- SET_ENDLINE_BODY(t_3, 609);
+ SET_STARTLINE_BODY(t_3, 641);
+ SET_ENDLINE_BODY(t_3, 647);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4145,8 +4159,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 622);
- SET_ENDLINE_BODY(t_4, 646);
+ SET_STARTLINE_BODY(t_4, 660);
+ SET_ENDLINE_BODY(t_4, 684);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4157,7 +4171,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_IsPrimeInt, t_1 );
  
  /* BIND_GLOBAL( "KeyDependentOperation", function ( name, domreq, keyreq, keytest )
-      local str, oper, attr;
+      local str, oper, attr, lk;
       if keytest = "prime" then
           keytest := function ( key )
                 if not IsPrimeInt( key ) then
@@ -4179,7 +4193,9 @@ static Obj  HdlrFunc1 (
             return [  ];
         end );
       DeclareOperation( name, [ domreq, keyreq ] );
+      ;
       ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+      ;
       InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
             local known, i, erg;
             keytest( key );
@@ -4228,8 +4244,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 771);
- SET_ENDLINE_BODY(t_4, 873);
+ SET_STARTLINE_BODY(t_4, 809);
+ SET_ENDLINE_BODY(t_4, 918);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4280,8 +4296,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 908);
- SET_ENDLINE_BODY(t_4, 955);
+ SET_STARTLINE_BODY(t_4, 953);
+ SET_ENDLINE_BODY(t_4, 1000);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4578,7 +4594,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -7966851,
+ .crc         = 83247400,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

@@ -426,7 +426,7 @@ DOCOMP_PREFIX = $(abs_srcdir)
 endif
 docomp: #gap$(EXEEXT)
 	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(abs_srcdir)/src methsel1 ./gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(DOCOMP_PREFIX)/lib $(DOCOMP_PREFIX)/src oper1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src oper1 ./gap$(EXEEXT)
 	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src type1 ./gap$(EXEEXT)
 
 .PHONY: docomp
