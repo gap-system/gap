@@ -65,9 +65,10 @@ matrix:
           - libzmq3-dev:i386        # for ZeroMQInterface
 
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
-    - env: TEST_SUITES="docomp testinstall"
-      os: osx
-      compiler: clang
+    # OS X builds are currently disabled because Travis has performance problems
+    # - env: TEST_SUITES="docomp testinstall"
+    #  os: osx
+    #  compiler: clang
 
     # test creating the manual
     - env: TEST_SUITES=makemanuals CONFIGFLAGS="--enable-debug"
