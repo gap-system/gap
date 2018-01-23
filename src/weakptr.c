@@ -561,11 +561,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 #ifdef USE_THREADSAFE_COPYING
 void TraverseWPObj(Obj obj)
 {
-    /* This is a hack, we rely on weak pointer objects
-     * having the same layout as plain lists, so we don't
-     * have to replicate the macro here.
-     */
-    UInt  len = LEN_PLIST(obj);
+    UInt  len = STORED_LEN_WPOBJ(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
     while (len) {
         volatile Obj tmp = *ptr;
@@ -579,11 +575,7 @@ void TraverseWPObj(Obj obj)
 
 void CopyWPObj(Obj copy, Obj original)
 {
-    /* This is a hack, we rely on weak pointer objects
-     * having the same layout as plain lists, so we don't
-     * have to replicate the macro here.
-     */
-    UInt  len = LEN_PLIST(original);
+    UInt  len = STORED_LEN_WPOBJ(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
     Obj * copyptr = ADDR_OBJ(copy) + 1;
     while (len) {
