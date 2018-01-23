@@ -2622,7 +2622,7 @@ InstallMethod( IsPNilpotentOp,
     local primes, S;
 
     primes:= PrimeDivisors( Size( G ) );
-    RemoveSet( primes, p );
+    primes:= Filtered(primes, q -> q <> p );
     S:= HallSubgroup( G, primes );
 
     return S <> fail and IsNormal( G, S );
