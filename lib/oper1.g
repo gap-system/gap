@@ -118,12 +118,28 @@ end );
 
 #############################################################################
 ##
+#V METHODS_OPERATION_REGION . . . . pseudo lock for updating method lists.
+##
+## We really just need one arbitrary lock here. Any globally shared
+## region will do. This is to prevent concurrent SET_METHODS_OPERATION()
+## calls to overwrite each other. Given that these normally only occur
+## when loading a package, actual concurrent calls should be vanishingly
+## rare.
+if IsHPCGAP then
+    BIND_GLOBAL("METHODS_OPERATION_REGION", NewSpecialRegion("operation methods"));
+fi;
+
+#############################################################################
+##
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j;
+    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk;
 
+    if IsHPCGAP then
+        lk := WRITE_LOCK(METHODS_OPERATION_REGION);
+    fi;
     # add the number of filters required for each argument
     if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
@@ -138,6 +154,9 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     # get the methods list
     narg := LEN_LIST( flags );
     methods := METHODS_OPERATION( opr, narg );
+    if IsHPCGAP then
+        methods := methods{[1..LEN_LIST(methods)]};
+    fi;
 
     # set the name
     if info = false  then
@@ -231,7 +250,12 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
 
     # flush the cache
-    CHANGED_METHODS_OPERATION( opr, narg );
+    if IsHPCGAP then
+        SET_METHODS_OPERATION( opr, narg, MakeReadOnlySingleObj(methods) );
+        UNLOCK(lk);
+    else
+        CHANGED_METHODS_OPERATION( opr, narg );
+    fi;
 end );
 
 
@@ -333,7 +357,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
           rank,
           method,
           oreqs,
-          req, reqs, match, j, k, imp, notmatch;
+          req, reqs, match, j, k, imp, notmatch, lk;
+
+    if IsHPCGAP then
+        lk := READ_LOCK( OPERATIONS_REGION );
+    fi;
 
     # Check the arguments.
     len:= LEN_LIST( arglist );
@@ -520,6 +548,10 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Install the method in the operation.
     INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
+
+    if IsHPCGAP then
+        UNLOCK( lk );
+    fi;
 end );
 
 
@@ -541,7 +573,7 @@ LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6;  # one method
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
 
-    local flags, rank, cats, props, i;
+    local flags, rank, cats, props, i, lk;
 
     if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
 
@@ -549,6 +581,9 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
+        if IsHPCGAP then
+            lk := READ_LOCK(FILTER_REGION);
+        fi;
         for i in [ 1 .. LEN_FLAGS( flags ) ] do
             if ELM_FLAGS( flags, i ) then
                 if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
@@ -559,6 +594,9 @@ InstallAttributeFunction(
                 fi;
             fi;
         od;
+        if IsHPCGAP then
+            UNLOCK(lk);
+        fi;
 
         # Because the getter function may be called from other
         # threads, <props> needs to be immutable or atomic.
@@ -769,7 +807,7 @@ IsPrimeInt := "2b defined";
 
 BIND_GLOBAL( "KeyDependentOperation",
     function( name, domreq, keyreq, keytest )
-    local str, oper, attr;
+    local str, oper, attr, lk;
 
     if keytest = "prime"  then
       keytest := function( key )
@@ -797,7 +835,14 @@ BIND_GLOBAL( "KeyDependentOperation",
 
     # Create the wrapper operation that mainly calls the operation.
     DeclareOperation( name, [ domreq, keyreq ] );
+
+    if IsHPCGAP then
+        lk := WRITE_LOCK( OPERATIONS_REGION );
+    fi;
     ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
+    if IsHPCGAP then
+        UNLOCK( lk );
+    fi;
 
     # Install the default method that uses the attribute.
     # (Use `InstallOtherMethod' in order to avoid the warning
