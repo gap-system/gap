@@ -79,6 +79,13 @@ if Length(l)=0 then Error("list must be nonempty");fi;
   return GF(char^deg);
 end);
 
+BindGlobal("NonemptyGeneratorsOfGroup",function(grp)
+local l;
+   l:=GeneratorsOfGroup(grp);
+   if Length(l)=0 then l:=[One(grp)]; fi;
+   return l;
+end);
+
 #############################################################################
 ##
 #M  IsNaturalGL( <ffe-mat-grp> )
@@ -91,7 +98,7 @@ InstallMethod( IsNaturalGL,
 
 function( grp )
   return MTX.IsAbsolutelyIrreducible(
-    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+    GModuleByMats(NonemptyGeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
    Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
 		  Size( FieldOfMatrixGroup( grp ) ) ) );
 end );
@@ -108,7 +115,7 @@ local gen, d, f;
   d := DimensionOfMatrixGroup( grp );
   gen := GeneratorsOfGroup( grp );
   return MTX.IsAbsolutelyIrreducible(
-    GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
+    GModuleByMats(NonemptyGeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
     ForAll(gen, x-> DeterminantMat(x) = One(f)) 
 	    and Size(grp) = Size(SL(d, Size(f)));
 end );
