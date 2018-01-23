@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-108827285"
+#define FILE_CRC  "16520229"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -3493,10 +3493,10 @@ static Obj  HdlrFunc31 (
  }
  /* od */
  
- /* return; */
+ /* return obj; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
+ return l_obj;
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -4326,7 +4326,7 @@ static Obj  HdlrFunc1 (
           fi;
           Setter( extra[i] )( obj, extra[i + 1] );
       od;
-      return;
+      return obj;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
@@ -4334,7 +4334,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 839);
- SET_ENDLINE_BODY(t_4, 904);
+ SET_ENDLINE_BODY(t_4, 905);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4734,7 +4734,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -108827285,
+ .crc         = 16520229,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
