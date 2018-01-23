@@ -901,6 +901,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
         fi;
         Setter(extra[i])(obj,extra[i+1]);
     od;
+    return obj;
 end );
 
 
