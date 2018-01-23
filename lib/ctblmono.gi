@@ -941,7 +941,7 @@ InstallMethod( IsMonomialNumber,
           pair2,     # loop over `collect'
           ord;       # multiplicative order
 
-    factors := FactorsInt( n );
+    factors := Factors(Integers, n );
     collect := Collected( factors );
 
     # Get $\nu_2(n)$.
@@ -1120,7 +1120,7 @@ InstallMethod( TestMonomialQuick,
     if IsSolvableGroup( G ) then
 
       pi   := PrimeDivisors( codegree );
-      hall := Product( Filtered( FactorsInt( factsize ), x -> x in pi ), 1 );
+      hall := Product( Filtered( Factors(Integers, factsize ), x -> x in pi ), 1 );
 
       if factsize / hall = chi[1] then
 
@@ -1967,7 +1967,7 @@ InstallMethod( IsMinimalNonmonomial,
     factsize:= Index( K, F );
 
     # The Fitting subgroup of a minimal nomonomial group is a $p$-group.
-    facts:= FactorsInt( Size( F ) );
+    facts:= Factors(Integers, Size( F ) );
     p:= Set( facts );
     if 1 < Length( p ) then
       return false;

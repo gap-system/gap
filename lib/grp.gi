@@ -659,7 +659,7 @@ InstallMethod( AbelianInvariants,
             G   := H;
             gns := GeneratorsOfGroup( G );
             if r <> 1  then
-                Add( ranks, Length(FactorsInt(r)) );
+                Add( ranks, Length(Factors(Integers,r)) );
             fi;
         until r = 1;
         Info( InfoGroup, 2,
@@ -1625,7 +1625,7 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
           # `df' is the commutator factor group `oldssr / ssr'.
           df:= Range( dh );
           SetIsAbelian( df, true );
-          fs:= FactorsInt( Size( df ) );
+          fs:= Factors(Integers, Size( df ) );
 
           # `gen' collects the generators for the next candidate
           gen := ShallowCopy( GeneratorsOfGroup( df ) );
@@ -3643,8 +3643,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # from now on we deal with groups of Lie-type
 
     # calculate the dominant prime of size
-    q := Maximum( List( Collected( FactorsInt( size ) ), s -> s[1]^s[2] ) );
-    p := FactorsInt( q )[1];
+    q := Maximum( List( Collected( Factors(Integers, size ) ), s -> s[1]^s[2] ) );
+    p := Factors(Integers, q )[1];
 
     # test if <G> is the Chevalley group A(1,7) ~ A(2,2)
     if size = 168  then
@@ -4570,7 +4570,7 @@ function( g )
     if o = 1 then return []; fi;
 
     # start to split
-    f := FactorsInt( o );
+    f := Factors(Integers, o );
     if Length( Set( f ) ) = 1  then
         return [ g ];
     else
@@ -4599,7 +4599,7 @@ function( g, p )
     o := Order( g );
     if o = 1 then return g; fi;
 
-    f := FactorsInt( o );
+    f := Factors(Integers, o );
     x := Number( f, x -> x = p );
     if x = 0 then return g^o; fi;
 

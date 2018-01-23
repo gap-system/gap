@@ -1888,7 +1888,7 @@ InstallGlobalFunction( PermCandidatesFaithful,
     od;
     # `primes': prime divisors of $|U|$ for which there is only one $G$-family
     # of that element order in $UN$:
-    factors:= FactorsInt( tbl_size / torso[1] );
+    factors:= Factors(Integers, tbl_size / torso[1] );
     primes:= Set( factors );
     orbits:= List( primes, p -> [] );
     for i in [ 1 .. nccl ] do

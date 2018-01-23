@@ -515,7 +515,7 @@ end);
 ##  PSL(n,q), SU(n,q) and PSU(n,q)
 ##
 InstallGlobalFunction(Phi2,
-n -> n^2 * Product(Set(Filtered(FactorsInt(n), m -> m <> 1)),
+n -> n^2 * Product(Set(Filtered(Factors(Integers,n), m -> m <> 1)),
                    p -> (1 - 1/p^2)));
 
 #############################################################################

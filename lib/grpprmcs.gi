@@ -279,7 +279,7 @@ InstallGlobalFunction( NonPerfectCSPG,
             i;         # loop variables
 
     # number of primes in factor <workgroup> / <derived subgroup>
-    listlength := Length(FactorsInt(top));
+    listlength := Length(Factors(Integers,top));
     indexup := index+listlength;
     oldworkup := D;
 
@@ -294,7 +294,7 @@ InstallGlobalFunction( NonPerfectCSPG,
 	                      x->(x^g in oldworkup) )); 
             workup := ClosureGroup(oldworkup, g);
             order := Size(workup)/Size(oldworkup);
-            orderlist := FactorsInt(order);
+            orderlist := Factors(Integers,order);
             for i in [1..Length(orderlist)] do
 
                 # h is the power of g which adds prime length factors
@@ -405,7 +405,7 @@ InstallGlobalFunction( PerfectCSPG,
                              OnTuples);
             if IsTrivial(stab2) then
 
-               prime := FactorsInt(whichcase[2])[1];
+               prime := Factors(Integers,whichcase[2])[1];
                N:=Group(One(K));	       
                repeat
 	         kerelement:=Random(K);
@@ -431,7 +431,7 @@ InstallGlobalFunction( PerfectCSPG,
                   L := Orbit( H, StabChainMutable( H ).orbit[1] );
                   tchom := ActionHomomorphism(H,L,"surjective");
                   op := Image( tchom );
-                  H := PreImage(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
+                  H := PreImage(tchom,PCore(op,Factors(Integers,whichcase[2])[1]));
                   H := Centre(H);
                   SetIsAbelian( H, true );
               fi;
@@ -519,7 +519,7 @@ InstallGlobalFunction( CasesCSPG, function(G)
     fi;
 
     # degree is not prime power
-    primes := FactorsInt(degree);
+    primes := Factors(Integers,degree);
     if primes[1] < primes[Length(primes)] then
         output[1] := 1;
         # only case when index of primitive group in socle is not 2*prime
@@ -659,7 +659,7 @@ InstallGlobalFunction( FindRegularNormalCSPG, function ( G, H, whichcase )
 
     # case of abelian normal subgroup
     if whichcase[1] <> 2 then
-       core := PCore( H, FactorsInt(whichcase[2])[1] );
+       core := PCore( H, Factors(Integers, whichcase[2])[1] );
        chain:=StabChainOp(core,rec(base:=BaseOfGroup(G),reduced:=false));
        cosetrep := chain.transversal[chain.orbit[2]];
        candidates := AsList(Stabilizer(core,BaseOfGroup(G)[1]))*cosetrep;
@@ -1670,7 +1670,7 @@ InstallMethod( RadicalGroup,
     # subgroup; kernel is abelian normal.
     # Take image at this action, and repeat
     while index > 0 do
-        primes := FactorsInt(factorsize[index]);
+        primes := Factors(Integers,factorsize[index]);
 
         # if the factor group is not cyclic, no chance for nontrivial radical
         if Length(primes) > 1  then

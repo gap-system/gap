@@ -20,7 +20,7 @@ InstallGlobalFunction( PcgsByIndependentGeneratorsOfAbelianGroup, function( A )
     pcs := [  ];
     rel := [  ];
     for gen  in IndependentGeneratorsOfAbelianGroup( A )  do
-        for f  in FactorsInt( Order( gen ) )  do
+        for f  in Factors(Integers, Order( gen ) )  do
             Add( pcs, gen );
             Add( rel, f );
             gen := gen ^ f;
@@ -283,7 +283,7 @@ function( G )
     ord := [];
     map := [];
     for i in [1..Length(pcgs)] do
-        facs := FactorsInt( rels[i] );
+        facs := Factors(Integers, rels[i] );
         g    := pcgs[i];
         for f in facs do
             Add( new, g );

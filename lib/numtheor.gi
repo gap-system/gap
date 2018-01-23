@@ -288,7 +288,7 @@ InstallGlobalFunction( GeneratorsPrimeResidues, function( n )
                  );
     fi;
 
-    factors:= Collected( FactorsInt( n ) );
+    factors:= Collected( Factors(Integers, n ) );
 
     primes     := [];
     exponents  := [];
@@ -1200,7 +1200,7 @@ local c, p,f,l;
   a:=a mod n;
   if IsPrime(n) and Gcd(a,n)=1 then
     # use rho method
-    f:=FactorsInt(n-1:quiet); # Quick factorization, don't stop if its too hard
+    f:=Factors(Integers,n-1:quiet); # Quick factorization, don't stop if its too hard
     l:=DoLogModRho(b,a,n-1,f,n);
     if l<>fail then
       return l;
@@ -1305,7 +1305,7 @@ InstallGlobalFunction( MoebiusMu, function ( n )
     if n = 0  then Error("MoebiusMu: <n> must be nonzero");  fi;
     if n = 1  then return 1;  fi;
 
-    factors := FactorsInt( n );
+    factors := Factors(Integers, n );
     if factors <> Set( factors )  then return 0;  fi;
     return (-1) ^ Length(factors);
 end );                                                                        

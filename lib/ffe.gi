@@ -819,7 +819,7 @@ InstallMethod( Order,
     p := Characteristic(z);
     d := DegreeFFE(z);
     ord := p^d-1;
-    facs := Collected(FactorsInt(ord));
+    facs := Collected(Factors(Integers,ord));
     for f in facs do
         for i in [1..f[2]] do
             o := ord/f[1];
