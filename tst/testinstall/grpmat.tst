@@ -50,6 +50,8 @@ gap> iso:= IsomorphismPermGroup( g );;
 gap> img:=Image( iso );;
 gap> Size(img);
 67010895544320000
+gap> IsNaturalGL( TrivialSubgroup( GL(2,2) ) );
+false
 
 # Unbind variables so we can GC memory
 gap> Unbind(img); Unbind(iso); Unbind(g); Unbind(hom); Unbind(u);
