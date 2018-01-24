@@ -223,3 +223,8 @@ BIND_GLOBAL("UNBIND_ATOMIC_RECORD", function(record, field)
   Unbind(record.(field));
 end);
 
+
+BIND_GLOBAL("AddAtomicList", function(list, elm)
+  ADD_LIST(list, elm);
+  return LEN_LIST(list);
+end);
