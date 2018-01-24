@@ -2575,30 +2575,24 @@ Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 
 /****************************************************************************
 **
-*F  NewConstructor( <name>, <narg>, <nams>, <hdlr> )
+*F  NewConstructor( <name>> )
 */
-Obj NewConstructor (
-    Obj                 name,
-    Int                 narg,
-    Obj                 nams,
-    ObjFunc             hdlr )
+Obj NewConstructor(Obj name)
 {
     Obj                 oper;
 
     /* create the function                                                 */
-    oper = NewFunctionT( T_FUNCTION, sizeof(OperBag), name, narg, nams, hdlr );
+    oper = NewFunctionT( T_FUNCTION, sizeof(OperBag), name, -1, 0, 0 );
 
     /* enter the handlers                                                  */
-    if ( narg == -1 ) {
-        SET_HDLR_FUNC(oper, 0, DoConstructor0Args);
-        SET_HDLR_FUNC(oper, 1, DoConstructor1Args);
-        SET_HDLR_FUNC(oper, 2, DoConstructor2Args);
-        SET_HDLR_FUNC(oper, 3, DoConstructor3Args);
-        SET_HDLR_FUNC(oper, 4, DoConstructor4Args);
-        SET_HDLR_FUNC(oper, 5, DoConstructor5Args);
-        SET_HDLR_FUNC(oper, 6, DoConstructor6Args);
-        SET_HDLR_FUNC(oper, 7, DoConstructorXArgs);
-    }
+    SET_HDLR_FUNC(oper, 0, DoConstructor0Args);
+    SET_HDLR_FUNC(oper, 1, DoConstructor1Args);
+    SET_HDLR_FUNC(oper, 2, DoConstructor2Args);
+    SET_HDLR_FUNC(oper, 3, DoConstructor3Args);
+    SET_HDLR_FUNC(oper, 4, DoConstructor4Args);
+    SET_HDLR_FUNC(oper, 5, DoConstructor5Args);
+    SET_HDLR_FUNC(oper, 6, DoConstructor6Args);
+    SET_HDLR_FUNC(oper, 7, DoConstructorXArgs);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
     SET_FLAG1_FILT(oper, INTOBJ_INT(0));
@@ -3416,7 +3410,7 @@ Obj FuncNEW_CONSTRUCTOR (
     }
 
     /* make the new constructor                                            */
-    return NewConstructor( name, -1L, (Obj)0, DoConstructorXArgs );
+    return NewConstructor( name );
 }
 
 
