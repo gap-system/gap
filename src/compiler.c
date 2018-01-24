@@ -5454,6 +5454,12 @@ void CompFunc (
         Emit( "Int l_%d = 0;\n", i );
     }
 
+    for ( i = 1; i <= nloc; i++ ) {
+        if ( ! CompGetUseHVar( i+narg ) ) {
+            Emit( "(void)%c;\n", CVAR_LVAR(i+narg) );
+        }
+    }
+
     /* emit the code for the higher variables                              */
     Emit( "Bag oldFrame;\n" );
     Emit( "OLD_BRK_CURR_STAT\n");

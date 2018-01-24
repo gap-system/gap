@@ -76,6 +76,8 @@ static Obj  HdlrFunc2 (
  Obj t_5 = 0;
  Obj t_6 = 0;
  Obj t_7 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -173,6 +175,8 @@ static Obj  HdlrFunc3 (
  Obj t_9 = 0;
  Obj t_10 = 0;
  Obj t_11 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -287,6 +291,8 @@ static Obj  HdlrFunc4 (
  Obj t_11 = 0;
  Obj t_12 = 0;
  Obj t_13 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -417,6 +423,8 @@ static Obj  HdlrFunc5 (
  Obj t_12 = 0;
  Obj t_13 = 0;
  Obj t_14 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -563,6 +571,8 @@ static Obj  HdlrFunc6 (
  Obj t_13 = 0;
  Obj t_14 = 0;
  Obj t_15 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -726,6 +736,8 @@ static Obj  HdlrFunc7 (
  Obj t_14 = 0;
  Obj t_15 = 0;
  Obj t_16 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -906,6 +918,8 @@ static Obj  HdlrFunc8 (
  Obj t_15 = 0;
  Obj t_16 = 0;
  Obj t_17 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 7, args )
@@ -1125,6 +1139,9 @@ static Obj  HdlrFunc10 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Obj t_8 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1232,6 +1249,9 @@ static Obj  HdlrFunc11 (
  Obj t_9 = 0;
  Obj t_10 = 0;
  Obj t_11 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1358,6 +1378,9 @@ static Obj  HdlrFunc12 (
  Obj t_11 = 0;
  Obj t_12 = 0;
  Obj t_13 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1502,6 +1525,9 @@ static Obj  HdlrFunc13 (
  Obj t_12 = 0;
  Obj t_13 = 0;
  Obj t_14 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1664,6 +1690,9 @@ static Obj  HdlrFunc14 (
  Obj t_13 = 0;
  Obj t_14 = 0;
  Obj t_15 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1846,6 +1875,9 @@ static Obj  HdlrFunc15 (
  Obj t_14 = 0;
  Obj t_15 = 0;
  Obj t_16 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 7, args )
@@ -2054,6 +2086,9 @@ static Obj  HdlrFunc16 (
  Obj t_15 = 0;
  Obj t_16 = 0;
  Obj t_17 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 8, args )
@@ -2300,6 +2335,12 @@ static Obj  HdlrFunc18 (
  Obj t_9 = 0;
  Obj t_10 = 0;
  Obj t_11 = 0;
+ (void)l_type;
+ (void)l_fam;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_flag;
+ (void)l_erg;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2488,6 +2529,8 @@ static Obj  HdlrFunc19 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Obj t_8 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2573,6 +2616,8 @@ static Obj  HdlrFunc20 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Obj t_10 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2676,6 +2721,8 @@ static Obj  HdlrFunc21 (
  Obj t_11 = 0;
  Obj t_12 = 0;
  Obj t_13 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2797,6 +2844,8 @@ static Obj  HdlrFunc22 (
  Obj t_12 = 0;
  Obj t_13 = 0;
  Obj t_14 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2936,6 +2985,8 @@ static Obj  HdlrFunc23 (
  Obj t_13 = 0;
  Obj t_14 = 0;
  Obj t_15 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3094,6 +3145,8 @@ static Obj  HdlrFunc24 (
  Obj t_14 = 0;
  Obj t_15 = 0;
  Obj t_16 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3271,6 +3324,8 @@ static Obj  HdlrFunc25 (
  Obj t_15 = 0;
  Obj t_16 = 0;
  Obj t_17 = 0;
+ (void)l_methods;
+ (void)l_i;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 7, args )
@@ -3489,6 +3544,9 @@ static Obj  HdlrFunc27 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Obj t_8 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3595,6 +3653,9 @@ static Obj  HdlrFunc28 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Obj t_10 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3719,6 +3780,9 @@ static Obj  HdlrFunc29 (
  Obj t_11 = 0;
  Obj t_12 = 0;
  Obj t_13 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -3861,6 +3925,9 @@ static Obj  HdlrFunc30 (
  Obj t_12 = 0;
  Obj t_13 = 0;
  Obj t_14 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -4021,6 +4088,9 @@ static Obj  HdlrFunc31 (
  Obj t_13 = 0;
  Obj t_14 = 0;
  Obj t_15 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -4201,6 +4271,9 @@ static Obj  HdlrFunc32 (
  Obj t_14 = 0;
  Obj t_15 = 0;
  Obj t_16 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 7, args )
@@ -4407,6 +4480,9 @@ static Obj  HdlrFunc33 (
  Obj t_15 = 0;
  Obj t_16 = 0;
  Obj t_17 = 0;
+ (void)l_methods;
+ (void)l_i;
+ (void)l_j;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  CHECK_NR_ARGS( 8, args )
