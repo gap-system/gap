@@ -49,6 +49,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATS_AND_REPS", [] );
+if IsHPCGAP then
+    ShareSpecialObj(CATS_AND_REPS);
+fi;
 
 
 #############################################################################
@@ -80,7 +83,11 @@ BIND_GLOBAL( "CATS_AND_REPS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "IMMEDIATES", [] );
+if IsHPCGAP then
+    BIND_GLOBAL( "IMMEDIATES", AtomicList([]) );
+else
+    BIND_GLOBAL( "IMMEDIATES", [] );
+fi;
 
 
 #############################################################################
@@ -95,7 +102,11 @@ BIND_GLOBAL( "IMMEDIATES", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
+if IsHPCGAP then
+    BIND_GLOBAL( "IMMEDIATE_METHODS", AtomicList([]) );
+else
+    BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
+fi;
 
 
 #############################################################################
@@ -117,15 +128,26 @@ BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "OPERATIONS", [] );
-BIND_GLOBAL( "OPER_FLAGS", rec() );
+if IsHPCGAP then
+    OPERATIONS_REGION := ShareSpecialObj("OPERATIONS_REGION");  # FIXME: remove
+    BIND_GLOBAL( "OPERATIONS", MakeStrictWriteOnceAtomic( [] ) );
+    BIND_GLOBAL( "OPER_FLAGS", MakeStrictWriteOnceAtomic( rec() ) );
+else
+    BIND_GLOBAL( "OPERATIONS", [] );
+    BIND_GLOBAL( "OPER_FLAGS", rec() );
+fi;
 BIND_GLOBAL( "STORE_OPER_FLAGS",
 function(oper, flags)
   local nr, info;
   nr := MASTER_POINTER_NUMBER(oper);
   if not IsBound(OPER_FLAGS.(nr)) then
     # we need a back link to oper for the post-restore function
-    OPER_FLAGS.(nr) := [oper, [], []];
+    if IsHPCGAP then
+        OPER_FLAGS.(nr) := FixedAtomicList([oper,
+            MakeWriteOnceAtomic([]), MakeWriteOnceAtomic([])]);
+    else
+        OPER_FLAGS.(nr) := [oper, [], []];
+    fi;
     ADD_LIST(OPERATIONS, oper);
   fi;
   info := OPER_FLAGS.(nr);
@@ -180,6 +202,9 @@ end);
 ##  </ManSection>
 ##
 BIND_GLOBAL( "WRAPPER_OPERATIONS", [] );
+if IsHPCGAP then
+    LockAndMigrateObj( WRAPPER_OPERATIONS, OPERATIONS_REGION);
+fi;
 
 
 #############################################################################
@@ -279,6 +304,8 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     fi;
     flags:= relev;
 
+    atomic FILTER_REGION do
+
     # Remove requirements that are implied by the remaining ones.
     # (Note that it is possible to have implications from a filter
     # to another one with a bigger number.)
@@ -315,7 +342,13 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     od;
 
     # We install the method for the requirements in `relev'.
-    ADD_LIST( IMMEDIATE_METHODS, method );
+    if IsHPCGAP then
+        # 'pos' is saved for modifying 'imm' below.
+        pos:=AddAtomicList( IMMEDIATE_METHODS, method );
+    else
+        ADD_LIST( IMMEDIATE_METHODS, method );
+        pos := LEN_LIST( IMMEDIATE_METHODS );
+    fi;
 
     for j  in relev  do
 
@@ -329,7 +362,11 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 
       # Find the place to put the new method.
       if not IsBound( IMMEDIATES[j] ) then
-          IMMEDIATES[j]:= [];
+          if IsHPCGAP then
+              IMMEDIATES[j]:= MakeImmutable([]);
+          else
+              IMMEDIATES[j]:= [];
+          fi;
       fi;
       i := 0;
       while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
@@ -355,6 +392,11 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       
       # push the other functions back
       imm:=IMMEDIATES[j];
+      if IsHPCGAP then
+          # ShallowCopy is not bound yet, so we take a sublist
+          imm:=imm{[1..LEN_LIST(IMMEDIATES[j])]};
+      fi;
+
       if not REREADING or not replace then
           imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
       fi;
@@ -365,9 +407,13 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
       imm[i+4] := FLAGS_FILTER( filter );
       imm[i+5] := rank;
-      imm[i+6] := LEN_LIST( IMMEDIATE_METHODS );
+      imm[i+6] := pos;
       imm[i+7] := IMMUTABLE_COPY_OBJ(info);
 
+      if IsHPCGAP then
+          IMMEDIATES[j]:=MakeImmutable(imm);
+      fi;
+    od;
     od;
 
 end );
@@ -956,9 +1002,13 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "ATTRIBUTES", [] );
-
-BIND_GLOBAL( "ATTR_FUNCS", [] );
+if IsHPCGAP then
+    BIND_GLOBAL( "ATTRIBUTES", MakeStrictWriteOnceAtomic( [] ) );
+    BIND_GLOBAL( "ATTR_FUNCS", MakeStrictWriteOnceAtomic( [] ) );
+else
+    BIND_GLOBAL( "ATTRIBUTES", [] );
+    BIND_GLOBAL( "ATTR_FUNCS", [] );
+fi;
 
 BIND_GLOBAL( "InstallAttributeFunction", function ( func )
     local   attr;
@@ -1010,9 +1060,11 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
 
     # store the information about the filter
+    atomic FILTER_REGION do
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    od;
 
     # clear the cache because <filter> is something old
     InstallHiddenTrueMethod( filter, tester );
@@ -1022,7 +1074,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
+    atomic FILTER_REGION do
     RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    od;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1165,7 +1219,9 @@ BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
     fi;
     STORE_OPER_FLAGS(getter, [ flags ]);
 
+    atomic FILTER_REGION do
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
+    od;
 
     # And return the getter
     return getter;
@@ -1257,6 +1313,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
     fi;
 
     if ISB_GVAR( name ) then
+      atomic FILTER_REGION do
         # The variable exists already.
         gvar := VALUE_GLOBAL( name );
 
@@ -1277,6 +1334,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
             req := GET_OPER_FLAGS( Setter(gvar) );
             STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
         fi;
+      od;
     else
         # The attribute is new.
         attr := NewAttribute(name, filter, mutflag, rank);
@@ -1411,11 +1469,13 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     STORE_OPER_FLAGS(tester, [ flags ]);
 
     # install the default functions
+    atomic FILTER_REGION do
     FILTERS[ FLAG1_FILTER( getter ) ] := getter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    od;
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
@@ -1427,12 +1487,14 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the rank
+    atomic FILTER_REGION do
     if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
         RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
     else
         RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
     fi;
     RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
+    od;
 
     # and return the getter
     return getter;
@@ -1766,13 +1828,19 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+if IsHPCGAP then
+    BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareSpecialObj([], "GLOBAL_FUNCTION_NAMES") );
+else
+    BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+fi;
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
+    atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    od;
     BIND_GLOBAL( name, NEW_GLOBAL_FUNCTION( name ) );
 end );
 
@@ -1793,11 +1861,13 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
       fi;
       oper:= VALUE_GLOBAL( oper );
     fi;
+    atomic readonly GLOBAL_FUNCTION_NAMES do
     if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
       Error("you cannot install a global function for another global ",
             "function,\nuse `DeclareSynonym' instead!");
     fi;
     INSTALL_GLOBAL_FUNCTION( oper, func );
+    od;
 end );
 
 
