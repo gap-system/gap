@@ -138,6 +138,8 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     local   methods,  narg,  i,  k,  tmp, replace, match, j, lk;
 
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lk := WRITE_LOCK(METHODS_OPERATION_REGION);
     fi;
     # add the number of filters required for each argument
@@ -360,6 +362,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
           req, reqs, match, j, k, imp, notmatch, lk;
 
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lk := READ_LOCK( OPERATIONS_REGION );
     fi;
 
@@ -582,6 +586,8 @@ InstallAttributeFunction(
         cats  := IS_OBJECT;
         props := [];
         if IsHPCGAP then
+            # TODO: once the GAP compiler supports 'atomic', use that
+            # to replace the explicit locking and unlocking here.
             lk := READ_LOCK(FILTER_REGION);
         fi;
         for i in [ 1 .. LEN_FLAGS( flags ) ] do
@@ -837,6 +843,8 @@ BIND_GLOBAL( "KeyDependentOperation",
     DeclareOperation( name, [ domreq, keyreq ] );
 
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lk := WRITE_LOCK( OPERATIONS_REGION );
     fi;
     ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) );
