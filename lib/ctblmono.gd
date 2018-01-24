@@ -545,7 +545,9 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  whether the irreducible character <A>chi</A> or the group <A>G</A>,
 ##  respectively, is monomial.
 ##  Here <Q>cheap</Q> means in particular that no computations of character
-##  tables are involved.
+##  tables are involved,
+##  and it is <E>not</E> checked whether <A>chi</A> is a character and
+##  irreducible.
 ##  The return value is a record with components
 ##  <List>
 ##  <Mark><C>isMonomial</C></Mark>
@@ -572,7 +574,7 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  it is linear, or if its codegree is a prime power,
 ##  or if its group knows to be monomial,
 ##  or if the factor group modulo the kernel can be proved to be monomial by
-##  <Ref Attr="TestMonomialQuick" Label="for a character"/>.
+##  <Ref Attr="TestMonomialQuick" Label="for a group"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestMonomialQuick( Irr( S4 )[3] );
@@ -699,9 +701,9 @@ TestMonomialUseLattice := 1000;
 ##  <Prop Name="IsSubnormallyMonomial" Arg='chi' Label="for a character"/>
 ##
 ##  <Description>
-##  A character of the group <M>G</M> is called <E>subnormally monomial</E>
-##  (SM for short) if it is induced from a linear character of a subnormal
-##  subgroup of <M>G</M>.
+##  An irreducible character of the group <M>G</M> is called
+##  <E>subnormally monomial</E> (<E>SM</E> for short) if it is induced
+##  from a linear character of a subnormal subgroup of <M>G</M>.
 ##  A group <M>G</M> is called SM if all its irreducible characters are SM.
 ##  <P/>
 ##  <Ref Attr="TestSubnormallyMonomial" Label="for a group"/> returns
