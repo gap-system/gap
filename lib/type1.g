@@ -96,6 +96,8 @@ BIND_GLOBAL( "NEW_FAMILY",
     imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
     type := Subtype( typeOfFamilies, IsAttributeStoringRep );
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lock := READ_LOCK(CATEGORIES_FAMILY);
     fi;
     for pair in CATEGORIES_FAMILY do
@@ -120,6 +122,8 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.nTYPES          := 0;
     family!.HASH_SIZE       := 32;
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lock := WRITE_LOCK(DS_TYPE_CACHE);
         family!.TYPES           := MIGRATE_RAW([], DS_TYPE_CACHE);
         UNLOCK(lock);
@@ -227,6 +231,8 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
 
     # maybe it is in the type cache
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         lock := WRITE_LOCK(DS_TYPE_CACHE);
     fi;
     cache := family!.TYPES;
@@ -422,6 +428,8 @@ Unbind( Subtype );
 BIND_GLOBAL( "Subtype", function ( arg )
     local p, type;
     if IsHPCGAP then
+        # TODO: once the GAP compiler supports 'atomic', use that
+        # to replace the explicit locking and unlocking here.
         p := READ_LOCK(arg);
     fi;
     # check argument
