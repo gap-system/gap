@@ -566,7 +566,7 @@ void TraverseWPObj(Obj obj)
     while (len) {
         volatile Obj tmp = *ptr;
         MEMBAR_READ();
-        if (tmp && *ptr)
+        if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr))
             QueueForTraversal(*ptr);
         ptr++;
         len--;
@@ -578,12 +578,13 @@ void CopyWPObj(Obj copy, Obj original)
     UInt  len = STORED_LEN_WPOBJ(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
     Obj * copyptr = ADDR_OBJ(copy) + 1;
-    while (len) {
+    while (len--) {
         volatile Obj tmp = *ptr;
         MEMBAR_READ();
-        if (tmp && *ptr)
+        if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr)) {
             *copyptr = ReplaceByCopy(tmp);
-        REGISTER_WP(copyptr, tmp);
+            REGISTER_WP(copyptr, tmp);
+        }
         ptr++;
         copyptr++;
     }
