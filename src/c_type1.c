@@ -437,6 +437,9 @@ static Obj  HdlrFunc5 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Obj t_8 = 0;
+ (void)l_type;
+ (void)l_pair;
+ (void)l_family;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -957,6 +960,15 @@ static Obj  HdlrFunc11 (
  Obj t_9 = 0;
  Obj t_10 = 0;
  Obj t_11 = 0;
+ (void)l_hash;
+ (void)l_cache;
+ (void)l_cached;
+ (void)l_type;
+ (void)l_ncache;
+ (void)l_ncl;
+ (void)l_t;
+ (void)l_i;
+ (void)l_match;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -1687,6 +1699,7 @@ static Obj  HdlrFunc14 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Obj t_6 = 0;
+ (void)l_type;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2441,6 +2454,8 @@ static Obj  HdlrFunc28 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Obj t_6 = 0;
+ (void)l_type;
+ (void)l_newtype;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -2961,6 +2976,14 @@ static Obj  HdlrFunc31 (
  Obj t_9 = 0;
  Obj t_10 = 0;
  Obj t_11 = 0;
+ (void)l_obj;
+ (void)l_type;
+ (void)l_flags;
+ (void)l_attr;
+ (void)l_val;
+ (void)l_i;
+ (void)l_extra;
+ (void)l_nflags;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
