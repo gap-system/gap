@@ -54,27 +54,6 @@ ShareSpecialObj(CATS_AND_REPS);
 
 #############################################################################
 ##
-#V  CONSTRUCTORS
-##
-##  <ManSection>
-##  <Var Name="CONSTRUCTORS"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "CONSTRUCTORS", [] );
-ShareSpecialObj(CONSTRUCTORS);
-
-BIND_GLOBAL( "IS_CONSTRUCTOR", function(op) 
-    atomic readonly CONSTRUCTORS do
-        return op in CONSTRUCTORS;
-    od;
-end);
-
-
-#############################################################################
-##
 #V  IMMEDIATES
 ##
 ##  <ManSection>
@@ -739,9 +718,6 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    atomic readwrite CONSTRUCTORS do
-    ADD_LIST( CONSTRUCTORS, oper );
-    od;
     STORE_OPER_FLAGS(oper, filt);
     return oper;
 end );
@@ -973,9 +949,6 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
 
-    atomic readwrite CONSTRUCTORS do
-    ADD_LIST( CONSTRUCTORS, oper );
-    od;
     STORE_OPER_FLAGS(oper, filt);
 end );
 
