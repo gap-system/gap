@@ -534,12 +534,7 @@ BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
 
         # Construct the family category.
         fam_filter:= NewCategory( name, super );
-        if IsHPCGAP then
-            ADD_LIST( CATEGORIES_FAMILY,
-                    MIGRATE_RAW([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
-        else
-            ADD_LIST( CATEGORIES_FAMILY, [ elms_filter, fam_filter ] );
-        fi;
+        ADD_LIST( CATEGORIES_FAMILY, MakeImmutable( [ elms_filter, fam_filter ] ) );
         return fam_filter;
     od;
 end );
