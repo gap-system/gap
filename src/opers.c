@@ -3413,6 +3413,10 @@ Obj FuncNEW_CONSTRUCTOR (
     return NewConstructor( name );
 }
 
+Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
+{
+    return (IS_FUNC(x) && HDLR_FUNC(x, 1) == DoConstructor1Args) ? True : False;
+}
 
 /****************************************************************************
 **
@@ -4137,6 +4141,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SET_ATTRIBUTE_STORING, 2, "attr, val"),
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
+    GVAR_FUNC(IS_CONSTRUCTOR, 1, "x"),
     GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
     GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
     GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
