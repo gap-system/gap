@@ -5,7 +5,6 @@
 ##
 #Y  Copyright (C)  1997, 
 ##
-##  Exclude from testinstall.g: too sensitive to compiler idiosyncracies SL
 ##
 gap> START_TEST("weakptr.tst");
 
