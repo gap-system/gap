@@ -1283,13 +1283,12 @@ InstallMethod( Position,
 ##
 #M  Random( <list> )  . . . . . . . . . .  for an infinite list of generators
 ##
-InstallMethod( Random,
-    "for an infinite list of generators",
-    true,
-    [ IsList and IsInfiniteListOfGeneratorsRep ], 0,
-    function( list )
+InstallMethodWithRandomSource( Random,
+    "for a random source and an infinite list of generators",
+    [ IsRandomSource, IsList and IsInfiniteListOfGeneratorsRep ], 0,
+    function( rs, list )
     local pos;
-    pos:= Random( Integers );
+    pos:= Random( rs, Integers );
     if 0 <= pos then
       return list[ 2 * pos + 1 ];
     else

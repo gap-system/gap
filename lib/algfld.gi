@@ -895,12 +895,13 @@ end);
 ##
 #M  Random
 ##
-InstallMethod(Random,"Alg",true,
-  [IsAlgebraicExtension],0,
-function(e)
+InstallMethodWithRandomSource( Random,
+  "for a random source and an algebraic extension",
+  [IsRandomSource, IsAlgebraicExtension],
+function(rs,e)
 local fam,l;
   fam:=e!.extFam;
-  l:=List([1..fam!.deg],i->Random(fam!.baseField));
+  l:=List([1..fam!.deg],i->Random(rs,fam!.baseField));
   l:=ImmutableVector(fam!.rchar,l,true);
   return AlgExtElm(fam,l);
 end);

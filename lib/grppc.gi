@@ -1283,20 +1283,17 @@ end );
 ##
 #M  Random( <pcgrp> )
 ##
-InstallMethod( Random,
-    "pcgs computable groups",
-    true,
-    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
-    0,
-
-function(grp)
+InstallMethodWithRandomSource( Random,
+    "for a random source and a pcgs computable groups",
+    [ IsRandomSource, IsGroup and CanEasilyComputePcgs and IsFinite ],
+function(rs, grp)
     local   p;
 
     p := Pcgs(grp);
     if Length( p ) = 0 then 
         return One( grp );
     else
-        return Product( p, x -> x^Random(1,RelativeOrderOfPcElement(p,x)) );
+        return Product( p, x -> x^Random(rs, 1, RelativeOrderOfPcElement(p,x)) );
     fi;
 end );
 

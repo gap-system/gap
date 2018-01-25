@@ -297,14 +297,14 @@ InstallMethod( IsWholeFamily,
 ##
 #T isn't this a generic group method? (without guarantee about distribution)
 ##
-InstallMethod( Random,
-    "for a free group",
-    [ IsAssocWordWithInverseCollection and IsGroup ],
-    function( M )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a free group",
+    [ IsRandomSource, IsAssocWordWithInverseCollection and IsGroup ],
+    function( rs, M )
     local len, result, gens, i;
 
     # Get a random length for the word.
-    len:= Random( Integers );
+    len:= Random( rs, Integers );
     if 0 < len then
       len:= 2 * len;
     elif len < 0 then
@@ -315,9 +315,9 @@ InstallMethod( Random,
 
     # Multiply 'len' random generator powers.
     gens:= GeneratorsOfGroup( M );
-    result:= Random( gens ) ^ Random( Integers );
+    result:= Random( rs, gens ) ^ Random( rs, Integers );
     for i in [ 2 .. len ] do
-      result:= result * Random( gens ) ^ Random( Integers );
+      result:= result * Random( rs, gens ) ^ Random( rs, Integers );
     od;
 
     # Return the result.
