@@ -1651,22 +1651,6 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  See <Ref Oper="Reset"/> for a description of how to reset the
 ##  random number generator to a previous state.
 ##  <P/>
-##  
-##  <!-- all outdated? (FL)
-##  Many random methods in the library are eventually based on the function
-##  <Ref Func="RandomList"/>.
-##  As <Ref Func="RandomList"/> is restricted to lists of  <M>2^{28}</M>
-##  elements, this may create problems for very large collections. Also note
-##  that the method used by <Ref Func="RandomList"/> is intended to provide
-##  a fast algorithm rather than to produce high quality randomness for
-##  statistical purposes.
-##  <P/>
-##  If you implement your own
-##  <Ref Func="Random" Label="for a list or collection"/> methods we recommend
-##  that they initialize their seed to a defined value when they are loaded
-##  to permit to reproduce calculations even if they involved random
-##  elements.
-##  -->
 ##  <#/GAPDoc>
 ##
 
