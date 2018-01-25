@@ -1562,9 +1562,10 @@ end);
 #M  Random -- use Rowspace
 ##
 
-InstallMethod(Random, 
-        [IsField and IsFFECollection and IsFinite],
-        function(f)
+InstallMethodWithRandomSource( Random,
+        "for a random source and a large non-prime finite field",
+        [IsRandomSource, IsField and IsFFECollection and IsFinite],
+        function(rs, f)
     local   d,  p,  v,  fam;
     if Size(f) <= MAXSIZE_GF_INTERNAL then
         TryNextMethod();
@@ -1574,7 +1575,7 @@ InstallMethod(Random,
     fi;
     d := DegreeOverPrimeField(f);
     p := Characteristic(f);
-    v := Random(RowSpace(GF(p,1),d));
+    v := Random(rs, RowSpace(GF(p,1),d));
     fam := FFEFamily(Characteristic(f));
     return Objectify(fam!.ConwayFldEltDefaultType, [v,d,fail]);
 end);

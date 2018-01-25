@@ -340,14 +340,14 @@ CategoryCollections( IsZmodnZepsObj ) and IsDomain );
 #
 # Random
 #
-InstallMethod( Random,
-  "zmodnze : for full collection Z/nZ(m)",
-  [ CategoryCollections( IsZmodnZepsObj ) and IsWholeFamily ],
-function(R)
+InstallMethodWithRandomSource( Random,
+  "for a random source and the full collection Z/nZ(m)",
+  [ IsRandomSource, CategoryCollections( IsZmodnZepsObj ) and IsWholeFamily ],
+function(rs, R)
   local m, n, coeffs, elt;
   m:=FamilyObj(One(R))!.degree;
   n:=FamilyObj(One(R))!.modulus;
-  coeffs := List([1..m], x -> Random([0..n-1]));
+  coeffs := List([1..m], x -> Random(rs, 0, n-1));
   elt := coeffs * List( [1..m], j -> E(m)^(j-1) );
   return ZmodnZepsObj( FamilyObj(One(R)) , elt );
 end );

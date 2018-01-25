@@ -233,14 +233,14 @@ InstallMethod( Size,
 ##
 #T use better method for the whole family
 ##
-InstallMethod( Random,
-    "for a free magma",
-    [ IsMagma and IsNonassocWordCollection ],
-    function( M )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a free magma",
+    [ IsRandomSource, IsMagma and IsNonassocWordCollection ],
+    function( rs, M )
     local len, result, gens, i;
 
     # Get a random length for the word.
-    len:= Random( Integers );
+    len:= Random( rs, Integers );
     if 0 <= len then
       len:= 2 * len;
     else
@@ -249,12 +249,12 @@ InstallMethod( Random,
 
     # Multiply $'len' + 1$ random generators.
     gens:= GeneratorsOfMagma( M );
-    result:= Random( gens );
+    result:= Random( rs, gens );
     for i in [ 1 .. len ] do
-      if Random( [ 0, 1 ] ) = 0 then
-        result:= result * Random( gens );
+      if Random( rs, 0, 1 ) = 0 then
+        result:= result * Random( rs, gens );
       else
-        result:= Random( gens ) * result;
+        result:= Random( rs, gens ) * result;
       fi;
     od;
 

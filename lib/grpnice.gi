@@ -782,11 +782,10 @@ SubgroupMethodByNiceMonomorphism( RadicalGroup,
 #M  Random( <G> )
 ##
 InstallMethod( Random,
-    "handled by nice monomorphism",
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-    G -> PreImagesRepresentative( NiceMonomorphism( G ),
-                                  Random( NiceObject( G ) ) ) );
+    "for a random source and a group handled by nice monomorphism",
+    [ IsRandomSource, IsGroup and IsHandledByNiceMonomorphism ], 0,
+    {rs, G} -> PreImagesRepresentative( NiceMonomorphism( G ),
+                                  Random( rs, NiceObject( G ) ) ) );
 
 
 #############################################################################

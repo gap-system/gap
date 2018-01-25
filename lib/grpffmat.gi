@@ -470,19 +470,15 @@ end);
 ##
 #M  Random( <G> ) . . . . . . . . . . . . . . . . . . . . . .  for natural GL
 ##
-InstallMethod( Random,
-    "for natural GL",
-    true,
-    [ IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
-        0,
-        function(G)
+InstallMethodWithRandomSource( Random,
+    "for a random source and natural GL",
+    [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
+function(rs, G)
     local m;
-    m := RandomInvertibleMat( DimensionOfMatrixGroup( G ),
+    m := RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
                  FieldOfMatrixGroup( G ) );
-    MakeImmutable(m);
-    ConvertToMatrixRep(m, FieldOfMatrixGroup(G));
-    return m;
-    end         );
+    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+end);
 
 
 #############################################################################
@@ -493,20 +489,16 @@ InstallMethod( Random,
 ##  entry in the upper left corner to arbitrary nonzero values in the field
 ##  $F$ form a set of coset representatives of $SL(n,F)$ in $GL(n,F)$.
 ##
-InstallMethod( Random,
-    "for natural SL",
-    true,
-    [ IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
-    0,
-        function( G )
+InstallMethodWithRandomSource( Random,
+    "for a random source and natural SL",
+    [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
+function(rs, G)
     local m;
-    m:= RandomInvertibleMat( DimensionOfMatrixGroup( G ),
+    m:= RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
                 FieldOfMatrixGroup( G ) );
     MultRowVector(m[1], DeterminantMat(m)^-1);
-    MakeImmutable(m);
-    ConvertToMatrixRep(m, FieldOfMatrixGroup(G));
-    return m;
-    end );
+    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+end);
 
 #############################################################################
 ##

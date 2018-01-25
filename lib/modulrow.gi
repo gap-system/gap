@@ -111,13 +111,13 @@ InstallMethod( Dimension,
 ##
 #M  Random( <M> )
 ##1
-InstallMethod( Random,
-    "for full row module",
-    [ IsFreeLeftModule and IsFullRowModule ],
-    function( M )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a full row module",
+    [ IsRandomSource, IsFreeLeftModule and IsFullRowModule ],
+    function( rs, M )
     local R,v;
     R:= LeftActingDomain( M );
-    v := List( [ 1 .. DimensionOfVectors( M ) ], x -> Random( R ) );
+    v := List( [ 1 .. DimensionOfVectors( M ) ], x -> Random( rs, R ) );
     if IsField(R) then
       if IsHPCGAP then
         if Size(R) <= 256 then

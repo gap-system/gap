@@ -89,14 +89,18 @@ InstallMethod( Enumerator,
 ##
 #T use better method for the whole family, and for abelian monoids
 ##
-InstallMethod( Random,
-    "for a free monoid",
-    [ IsMonoid and IsAssocWordWithOneCollection ],
-    function( M )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a free monoid",
+    [ IsRandomSource, IsMonoid and IsAssocWordWithOneCollection ],
+    function( rs, M )
     local len, result, gens, i;
 
+    if IsTrivial( M ) then
+      return One( M );
+    fi;
+
     # Get a random length for the word.
-    len:= Random( Integers );
+    len:= Random( rs, Integers );
     if 0 < len then
       len:= 2 * len;
     elif len < 0 then
@@ -107,9 +111,9 @@ InstallMethod( Random,
 
     # Multiply 'len' random generators.
     gens:= GeneratorsOfMagmaWithOne( M );
-    result:= Random( gens );
+    result:= Random( rs, gens );
     for i in [ 2 .. len ] do
-      result:= result * Random( gens );
+      result:= result * Random( rs, gens );
     od;
 
     # Return the result.

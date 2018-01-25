@@ -147,13 +147,13 @@ InstallMethod( Dimension,
 ##
 #M  Random( <M> )
 ##
-InstallMethod( Random,
-    "for full matrix module",
-    [ IsFreeLeftModule and IsFullMatrixModule ],
-    function( M )
+InstallMethodWithRandomSource( Random,
+    "for a random source and a full matrix module",
+    [ IsRandomSource, IsFreeLeftModule and IsFullMatrixModule ],
+    function( rs, M )
     local random;
     random:= DimensionOfVectors( M );
-    random:= RandomMat( random[1], random[2],
+    random:= RandomMat( rs, random[1], random[2],
                         LeftActingDomain( M ) );
     if IsLieObjectCollection( M ) then
       random:= LieObject( random );

@@ -1869,11 +1869,11 @@ InstallMethod( Dimension,
 ##
 #M  Random( <M> ) . . . . . . . . . . . for full hom space of linear mappings
 ##
-InstallMethod( Random,
-    "for full hom space of linear mappings",
-    [ IsFreeLeftModule and IsGeneralMappingCollection
+InstallMethodWithRandomSource( Random,
+    "for a random source and full hom space of linear mappings",
+    [ IsRandomSource, IsFreeLeftModule and IsGeneralMappingCollection
       and IsFullHomModule ],
-    function( M )
+    function( rs, M )
     local BS, BR;
 
     BR:= NiceFreeLeftModuleInfo( M );
@@ -1881,7 +1881,8 @@ InstallMethod( Random,
     BR:= BR.basisrange;
 
     return LeftModuleHomomorphismByMatrix( BS,
-               RandomMat( Dimension( UnderlyingLeftModule( BS ) ),
+               RandomMat( rs,
+                          Dimension( UnderlyingLeftModule( BS ) ),
                           Dimension( UnderlyingLeftModule( BR ) ),
                           LeftActingDomain( M ) ),
                BR );

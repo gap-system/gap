@@ -291,15 +291,17 @@ end );
 ##
 #M  Random <gp> ) 
 ##
-InstallMethod( Random,"fp group", [ IsSubgroupFpGroup and IsFinite],0,
-function( gp )
+InstallMethodWithRandomSource( Random,
+    "for a random source and an fp group",
+    [ IsRandomSource, IsSubgroupFpGroup and IsFinite],
+function( rs, gp )
 local fam,hom;
   fam:=ElementsFamily(FamilyObj(gp));
   hom:=FPFaithHom(fam);
   if hom=fail then
      TryNextMethod(); 
   fi;
-  return PreImagesRepresentative(hom,Random(Image(hom,gp)));
+  return PreImagesRepresentative(hom,Random(rs, Image(hom,gp)));
 end );
 
 #############################################################################
