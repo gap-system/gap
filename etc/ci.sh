@@ -82,6 +82,56 @@ do
         exit 1
     else
         echo "All packages were built succesfully"
+
+        #
+        # Now that we built packages, we try to load them.
+        # For this, we need to skip a few additional packages which cannot
+        # be loaded in the test environment.
+        #
+        # skip xgap as it can only be loaded in a GAP session started via
+        # special helper script, *and* it requires X Window
+        rm -rf xgap*
+        # also skip itc because it requires xgap
+        rm -rf itc*
+
+        if [[ x"$ABI" != "x32" ]]
+        then
+          # HACK: disable some packages in 64bit mode for now. Otherwise they
+          # builds, but loading fails with an "undefined symbol: atexit" error
+          rm -rf digraphs*
+          rm -rf float*
+        fi
+
+        cd ..
+        # Load GAP (without packages) and save workspace to speed up test.
+        # Also, save names of all packages into a file to be able to iterate over them
+        $GAP -b <<GAPInput
+        SaveWorkspace("testpackagesload.wsp");
+        PrintTo("packagenames", JoinStringsWithSeparator( SortedList(RecNames( GAPInfo.PackagesInfo )),"\n") );
+        QUIT_GAP(0);
+GAPInput
+        for pkg in $(cat packagenames)
+        do
+            $GAP -q -L testpackagesload.wsp <<GAPInput
+            Print("-----------------------------------------------------\n");
+            Print("Loading $pkg ... \n");
+            if LoadPackage("$pkg",false) = true then
+              Print("PASS: $pkg\n\n");
+            else
+              Print("FAIL: $pkg\n\n");
+              AppendTo("fail.log", "Loading failed : ", "$pkg", "\n");
+            fi;
+GAPInput
+
+        done
+
+        if [[ -f fail.log ]]
+        then
+            echo "Some packages failed to load:"
+            cat fail.log
+            exit 1
+        fi
+
     fi
 
     # TODO: actually run package tests
