@@ -86,14 +86,16 @@ true
 gap> READ_ALL_COMMANDS(InputTextString(""), false);
 [  ]
 gap> READ_ALL_COMMANDS(InputTextString("a := (3,7,1); y := a^(-1);"), false);
-[ [ true, (1,3,7) ], [ true, (1,7,3) ] ]
+[ [ true, (1,3,7), false ], [ true, (1,7,3), false ] ]
 gap> READ_ALL_COMMANDS(InputTextString("Unbind(x); z := x;"), false);
 Error, Variable: 'x' must have a value
-[ [ true ], [ false ] ]
-gap> p := READ_ALL_COMMANDS(InputTextString("1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;"), false);;
+[ [ true,, false ], [ false ] ]
+gap> p := READ_ALL_COMMANDS(InputTextString("1;;2;3;;4;5;6;7;8;9;10;11;12;13;14;;15;16;17;18;"), false);;
 gap> p;
-[ [ true, 1 ], [ true, 2 ], [ true, 3 ], [ true, 4 ], [ true, 5 ], 
-  [ true, 6 ], [ true, 7 ], [ true, 8 ], [ true, 9 ], [ true, 10 ], 
-  [ true, 11 ], [ true, 12 ], [ true, 13 ], [ true, 14 ], [ true, 15 ], 
-  [ true, 16 ], [ true, 17 ], [ true, 18 ] ]
+[ [ true, 1, true ], [ true, 2, false ], [ true, 3, true ], 
+  [ true, 4, false ], [ true, 5, false ], [ true, 6, false ], 
+  [ true, 7, false ], [ true, 8, false ], [ true, 9, false ], 
+  [ true, 10, false ], [ true, 11, false ], [ true, 12, false ], 
+  [ true, 13, false ], [ true, 14, true ], [ true, 15, false ], 
+  [ true, 16, false ], [ true, 17, false ], [ true, 18, false ] ]
 gap> STOP_TEST( "read.tst", 1);
