@@ -80,11 +80,18 @@ static Int READ_COMMAND(Obj *evalResult)
 
 /*
  * This function reads all code from the stream and returns either `fail` if the stream
- * cannot be opened, or a list of lists of length at most two, where the first entry is
- * either `true` or `false` depending on whether the statement was successfuly executed
- * and the second entry is the result of the statement if there was one.
+ * cannot be opened, or executes all statements in the stream and returns a list of lists,
+ * each entry of which reflects the result of the execution of one statement.
  *
- * This function is curently used in interactive tools such as the GAP Jupyter kernel to
+ * The results are returned as lists with at most three bound positions.
+ *
+ * If the first entry is `true`, then the second entry is bound to the result of
+ * the statement if there was one, and unbound otherwise, and the third entry
+ * reflects whether the statement ended in a dual semicolon,
+ * if the first entry is `false', an error occurred during the execution of a statement,
+ * and no other positions of the list are bound.
+ *
+ * This function is currently used in interactive tools such as the GAP Jupyter kernel to
  * execute cells and is likely to be replaced by a function that can read a single command
  * from a stream without losing the rest of its content.
  */
@@ -92,6 +99,7 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
 {
     ExecStatus status;
     Int resultCount, resultCapacity;
+    UInt dualSemicolon;
     Obj result, resultList;
     Obj evalResult;
 
@@ -113,7 +121,7 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
 
     do {
         ClearError();
-        status = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
+        status = ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
 
         if(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             resultCount++;
@@ -121,16 +129,18 @@ Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
                 resultCapacity += 16;
                 GROW_PLIST(resultList, resultCapacity);
             }
-            result = NEW_PLIST( T_PLIST, 2 );
+            result = NEW_PLIST( T_PLIST, 3 );
             SET_LEN_PLIST(result, 1);
             SET_ELM_PLIST(result, 1, False);
             SET_ELM_PLIST(resultList, resultCount, result );
             SET_LEN_PLIST(resultList, resultCount );
 
             if(!(status & STATUS_ERROR)) {
+                SET_LEN_PLIST(result, 3);
                 SET_ELM_PLIST(result, 1, True);
+                SET_ELM_PLIST(result, 3, dualSemicolon ? True : False);
+
                 if (evalResult) {
-                    SET_LEN_PLIST(result, 2);
                     SET_ELM_PLIST(result, 2, evalResult);
                 }
             }
