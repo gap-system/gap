@@ -1163,18 +1163,22 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  gap> List( tables, Size );
 ##  [ 3, 24, 60 ]
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "C5" ) );
-##  rec( name := "Z(5)", parameter := 5, series := "Z" )
+##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5" 
+##   )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S3" ) );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S6(3)" ) );
-##  rec( name := "C(3,3) = S(6,3)", parameter := [ 3, 3 ], series := "C" )
+##  rec( name := "C(3,3) = S(6,3)", parameter := [ 3, 3 ], series := "C", 
+##    shortname := "S6(3)" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "O7(3)" ) );
-##  rec( name := "B(3,3) = O(7,3)", parameter := [ 3, 3 ], series := "B" )
+##  rec( name := "B(3,3) = O(7,3)", parameter := [ 3, 3 ], series := "B", 
+##    shortname := "O7(3)" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "A8" ) );
 ##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", 
-##    parameter := 8, series := "A" )
+##    parameter := 8, series := "A", shortname := "A8" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "L3(4)" ) );
-##  rec( name := "A(2,4) = L(3,4)", parameter := [ 3, 4 ], series := "L" )
+##  rec( name := "A(2,4) = L(3,4)", parameter := [ 3, 4 ], series := "L", 
+##    shortname := "L3(4)" )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

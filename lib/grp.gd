@@ -3816,11 +3816,18 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  <Description>
 ##  For a finite simple group <A>G</A>,
 ##  <Ref Func="IsomorphismTypeInfoFiniteSimpleGroup" Label="for a group"/>
-##  returns a record with the components <C>series</C>, <C>name</C>
-##  and possibly <C>parameter</C>,
+##  returns a record with the components <C>name</C>, <C>shortname</C>,
+##  <C>series</C>, and possibly <C>parameter</C>,
 ##  describing the isomorphism type of <A>G</A>.
-##  The component <C>name</C> is a string that gives name(s) for <A>G</A>,
-##  and <C>series</C> is a string that describes the following series.
+##  <P/>
+##  The values of the components <C>name</C>, <C>shortname</C>,
+##  and <C>series</C> are strings,
+##  <C>name</C> gives name(s) for <A>G</A>,
+##  <C>shortname</C> gives one name for <A>G</A> that is compatible with the
+##  naming scheme used in the &GAP; packages <Package>CTblLib</Package> and
+##  <Package>AtlasRep</Package>
+##  (and in the &ATLAS; of Finite Groups&nbsp;<Cite Key="CCN85"/>),
+##  and <C>series</C> describes the following series.
 ##  <P/>
 ##  (If different characterizations of <A>G</A> are possible
 ##  only one is given by <C>series</C> and <C>parameter</C>,
@@ -3927,7 +3934,8 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  >                             Group((4,5)(6,7),(1,2,4)(3,5,6)));
 ##  rec( 
 ##    name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
-##  7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
+##  7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L", 
+##    shortname := "L3(2)" )
 ##  ]]></Example>
 ##  <P/>
 ##  For a positive integer <A>n</A>,
@@ -3940,8 +3948,9 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  two possible isomorphism types of simple groups of this order.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 5 );    
-##  rec( name := "Z(5)", parameter := 5, series := "Z" )
+##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 5 );
+##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5" 
+##   )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 6 );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup(Size(SymplecticGroup(6,3))/2);

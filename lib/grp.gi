@@ -3493,7 +3493,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is a cyclic group of prime size
     if IsPrimeInt( size )  then
         return rec(series:="Z",parameter:=size,
-                   name:=Concatenation( "Z(", String(size), ")" ));
+                   name:=Concatenation( "Z(", String(size), ")" ),
+                   shortname:= Concatenation( "C", String( size ) ));
     fi;
 
     # test if <G> is A(5) ~ A(1,4) ~ A(1,5)
@@ -3507,7 +3508,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                             "~ A(1,5) = L(2,5) ",
                             "~ B(1,5) = O(3,5) ",
                             "~ C(1,5) = S(2,5) ",
-                            "~ 2A(1,5) = U(2,5)" ));
+                            "~ 2A(1,5) = U(2,5)" ),
+                   shortname:= "A5");
     fi;
 
     # test if <G> is A(6) ~ A(1,9)
@@ -3517,7 +3519,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                             "~ A(1,9) = L(2,9) ",
                             "~ B(1,9) = O(3,9) ",
                             "~ C(1,9) = S(2,9) ",
-                            "~ 2A(1,9) = U(2,9)" ));
+                            "~ 2A(1,9) = U(2,9)" ),
+                   shortname:= "A6");
     fi;
 
     # test if <G> is either A(8) ~ A(3,2) ~ D(3,2) or A(2,4)
@@ -3546,10 +3549,12 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
             return rec(series:="A",parameter:=8,
                        name:=Concatenation( "A(8) ",
                                 "~ A(3,2) = L(4,2) ",
-                                "~ D(3,2) = O+(6,2)" ));
+                                "~ D(3,2) = O+(6,2)" ),
+                       shortname:= "A8");
         else
             return rec(series:="L",parameter:=[3,4],
-                       name:="A(2,4) = L(3,4)");
+                       name:="A(2,4) = L(3,4)",
+                       shortname:= "L3(4)");
         fi;
 
     fi;
@@ -3563,62 +3568,89 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="A",parameter:=n,
-                   name:=Concatenation( "A(", String(n), ")" ));
+                   name:=Concatenation( "A(", String(n), ")" ),
+                   shortname:= Concatenation( "A", String( n ) ));
     fi;
 
     # test if <G> is one of the sporadic simple groups
     if size = 2^4 * 3^2 * 5 * 11  then
-        return rec(series:="Spor",name:="M(11)");
+        return rec(series:="Spor",name:="M(11)",
+                   shortname:= "M11");
     elif size = 2^6 * 3^3 * 5 * 11  then
-        return rec(series:="Spor",name:="M(12)");
+        return rec(series:="Spor",name:="M(12)",
+                   shortname:= "M12");
     elif size = 2^3 * 3 * 5 * 7 * 11 * 19  then
-        return rec(series:="Spor",name:="J(1)");
+        return rec(series:="Spor",name:="J(1)",
+                   shortname:= "J1");
     elif size = 2^7 * 3^2 * 5 * 7 * 11  then
-        return rec(series:="Spor",name:="M(22)");
+        return rec(series:="Spor",name:="M(22)",
+                   shortname:= "M22");
     elif size = 2^7 * 3^3 * 5^2 * 7  then
-        return rec(series:="Spor",name:="HJ = J(2) = F(5-)");
+        return rec(series:="Spor",name:="HJ = J(2) = F(5-)",
+                   shortname:= "J2");
     elif size = 2^7 * 3^2 * 5 * 7 * 11 * 23  then
-        return rec(series:="Spor",name:="M(23)");
+        return rec(series:="Spor",name:="M(23)",
+                   shortname:= "M23");
     elif size = 2^9 * 3^2 * 5^3 * 7 * 11  then
-        return rec(series:="Spor",name:="HS");
+        return rec(series:="Spor",name:="HS",
+                   shortname:= "HS");
     elif size = 2^7 * 3^5 * 5 * 17 * 19  then
-        return rec(series:="Spor",name:="J(3)");
+        return rec(series:="Spor",name:="J(3)",
+                   shortname:= "J3");
     elif size = 2^10 * 3^3 * 5 * 7 * 11 * 23  then
-        return rec(series:="Spor",name:="M(24)");
+        return rec(series:="Spor",name:="M(24)",
+                   shortname:= "M24");
     elif size = 2^7 * 3^6 * 5^3 * 7 * 11  then
-        return rec(series:="Spor",name:="Mc");
+        return rec(series:="Spor",name:="Mc",
+                   shortname:= "McL");
     elif size = 2^10 * 3^3 * 5^2 * 7^3 * 17  then
-        return rec(series:="Spor",name:="He = F(7)");
+        return rec(series:="Spor",name:="He = F(7)",
+                   shortname:= "He");
     elif size = 2^14 * 3^3 * 5^3 * 7 * 13 * 29  then
-        return rec(series:="Spor",name:="Ru");
+        return rec(series:="Spor",name:="Ru",
+                   shortname:= "Ru");
     elif size = 2^13 * 3^7 * 5^2 * 7 * 11 * 13  then
-        return rec(series:="Spor",name:="Suz");
+        return rec(series:="Spor",name:="Suz",
+                   shortname:= "Suz");
     elif size = 2^9 * 3^4 * 5 * 7^3 * 11 * 19 * 31  then
-        return rec(series:="Spor",name:="ON");
+        return rec(series:="Spor",name:="ON",
+                   shortname:= "ON");
     elif size = 2^10 * 3^7 * 5^3 * 7 * 11 * 23  then
-        return rec(series:="Spor",name:="Co(3)");
+        return rec(series:="Spor",name:="Co(3)",
+                   shortname:= "Co3");
     elif size = 2^18 * 3^6 * 5^3 * 7 * 11 * 23  then
-        return rec(series:="Spor",name:="Co(2)");
+        return rec(series:="Spor",name:="Co(2)",
+                   shortname:= "Co2");
     elif size = 2^17 * 3^9 * 5^2 * 7 * 11 * 13  then
-        return rec(series:="Spor",name:="Fi(22)");
+        return rec(series:="Spor",name:="Fi(22)",
+                   shortname:= "Fi22");
     elif size = 2^14 * 3^6 * 5^6 * 7 * 11 * 19  then
-        return rec(series:="Spor",name:="HN = F(5) = F = F(5+)");
+        return rec(series:="Spor",name:="HN = F(5) = F = F(5+)",
+                   shortname:= "HN");
     elif size = 2^8 * 3^7 * 5^6 * 7 * 11 * 31 * 37 * 67  then
-        return rec(series:="Spor",name:="Ly");
+        return rec(series:="Spor",name:="Ly",
+                   shortname:= "Ly");
     elif size = 2^15 * 3^10 * 5^3 * 7^2 * 13 * 19 * 31  then
-        return rec(series:="Spor",name:="Th = F(3) = E = F(3/3)");
+        return rec(series:="Spor",name:="Th = F(3) = E = F(3/3)",
+                   shortname:= "Th");
     elif size = 2^18 * 3^13 * 5^2 * 7 * 11 * 13 * 17 * 23  then
-        return rec(series:="Spor",name:="Fi(23)");
+        return rec(series:="Spor",name:="Fi(23)",
+                   shortname:= "Fi23");
     elif size = 2^21 * 3^9 * 5^4 * 7^2 * 11 * 13 * 23  then
-        return rec(series:="Spor",name:="Co(1) = F(2-)");
+        return rec(series:="Spor",name:="Co(1) = F(2-)",
+                   shortname:= "Co1");
     elif size = 2^21 * 3^3 * 5 * 7 * 11^3 * 23 * 29 * 31 * 37 * 43  then
-        return rec(series:="Spor",name:="J(4)");
+        return rec(series:="Spor",name:="J(4)",
+                   shortname:= "J4");
     elif size = 2^21 * 3^16 * 5^2 * 7^3 * 11 * 13 * 17 * 23 * 29  then
-        return rec(series:="Spor",name:="Fi(24) = F(3+)");
+        return rec(series:="Spor",name:="Fi(24) = F(3+)",
+                   shortname:= "F3+");
     elif size = 2^41*3^13*5^6*7^2*11*13*17*19*23*31*47  then
-        return rec(series:="Spor",name:="B = F(2+)");
+        return rec(series:="Spor",name:="B = F(2+)",
+                   shortname:= "B");
     elif size = 2^46*3^20*5^9*7^6*11^2*13^3*17*19*23*29*31*41*47*59*71  then
-        return rec(series:="Spor",name:="M = F(1)");
+        return rec(series:="Spor",name:="M = F(1)",
+                   shortname:= "M");
     fi;
 
     # from now on we deal with groups of Lie-type
@@ -3634,7 +3666,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                             "~ B(1,7) = O(3,7) ",
                             "~ C(1,7) = S(2,7) ",
                             "~ 2A(1,7) = U(2,7) ",
-                            "~ A(2,2) = L(3,2)" ));
+                            "~ A(2,2) = L(3,2)" ),
+                   shortname:= "L3(2)");
     fi;
 
     # test if <G> is the Chevalley group A(1,8), where p = 3 <> char.
@@ -3643,7 +3676,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                    name:=Concatenation( "A(1,8) = L(2,8) ",
                             "~ B(1,8) = O(3,8) ",
                             "~ C(1,8) = S(2,8) ",
-                            "~ 2A(1,8) = U(2,8)" ));
+                            "~ 2A(1,8) = U(2,8)" ),
+                   shortname:= "L2(8)");
     fi;
 
     # test if <G> is a Chevalley group A(1,2^<k>-1), where p = 2 <> char.
@@ -3651,14 +3685,15 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
       and size = (q-1) * ((q-1)^2-1) / Gcd(2,(q-1)-1)
     then
         return rec(series:="L",parameter:=[2,q-1],
-                   name:=Concatenation( "A(",  "1", ",", String(q-1), ") ",
-                            "= L(",  "2", ",", String(q-1), ") ",
-                            "~ B(",  "1", ",", String(q-1), ") ",
-                            "= O(",  "3", ",", String(q-1), ") ",
-                            "~ C(",  "1", ",", String(q-1), ") ",
-                            "= S(",  "2", ",", String(q-1), ") ",
-                            "~ 2A(", "1", ",", String(q-1), ") ",
-                            "= U(",  "2", ",", String(q-1), ")" ));
+                   name:=Concatenation( "A(1,", String(q-1), ") ",
+                            "= L(2,",  String(q-1), ") ",
+                            "~ B(1,",  String(q-1), ") ",
+                            "= O(3,",  String(q-1), ") ",
+                            "~ C(1,",  String(q-1), ") ",
+                            "= S(2,",  String(q-1), ") ",
+                            "~ 2A(1,", String(q-1), ") ",
+                            "= U(2,",  String(q-1), ")" ),
+                   shortname:= Concatenation( "L2(", String( q-1 ), ")" ));
     fi;
 
     # test if <G> is a Chevalley group A(1,2^<k>), where p = 2^<k>+1 <> char.
@@ -3666,14 +3701,15 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
       and size = (p-1) * ((p-1)^2-1) / Gcd(2,(p-1)-1)
     then
         return rec(series:="L",parameter:=[2,p-1],
-                   name:=Concatenation( "A(",  "1", ",", String(p-1), ") ",
-                            "= L(",  "2", ",", String(p-1), ") ",
-                            "~ B(",  "1", ",", String(p-1), ") ",
-                            "= O(",  "3", ",", String(p-1), ") ",
-                            "~ C(",  "1", ",", String(p-1), ") ",
-                            "= S(",  "2", ",", String(p-1), ") ",
-                            "~ 2A(", "1", ",", String(p-1), ") ",
-                            "= U(",  "2", ",", String(p-1), ")" ));
+                   name:=Concatenation( "A(1,", String(p-1), ") ",
+                            "= L(2,",  String(p-1), ") ",
+                            "~ B(1,",  String(p-1), ") ",
+                            "= O(3,",  String(p-1), ") ",
+                            "~ C(1,",  String(p-1), ") ",
+                            "= S(2,",  String(p-1), ") ",
+                            "~ 2A(1,", String(p-1), ") ",
+                            "= U(2,",  String(p-1), ")" ),
+                   shortname:= Concatenation( "L2(", String( p-1 ), ")" ));
     fi;
 
     # try to find <n> and <q> for size of A(n,q)
@@ -3693,31 +3729,34 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # exceptions: A(1,4) ~ A(1,5) ~ A(5), A(1,7) ~ A(2,2), A(1,9) ~ A(6)
     if n = 1  and size = size2  then
         return rec(series:="L",parameter:=[2,q],
-                   name:=Concatenation( "A(", "1", ",", String(q), ") ",
-                            "= L(", "2", ",", String(q), ") ",
-                            "~ B(", "1", ",", String(q), ") ",
-                            "= O(", "3", ",", String(q), ") ",
-                            "~ C(", "1", ",", String(q), ") ",
-                            "= S(", "2", ",", String(q), ") ",
-                            "~ 2A(","1", ",", String(q), ") ",
-                            "= U(", "2", ",", String(q), ")" ));
+                   name:=Concatenation( "A(1,", String(q), ") ",
+                            "= L(2,",  String(q), ") ",
+                            "~ B(1,",  String(q), ") ",
+                            "= O(3,",  String(q), ") ",
+                            "~ C(1,",  String(q), ") ",
+                            "= S(2,",  String(q), ") ",
+                            "~ 2A(1,", String(q), ") ",
+                            "= U(2,",  String(q), ")" ),
+                   shortname:= Concatenation( "L2(", String( q ), ")" ));
     fi;
 
     # test if <G> is a Chevalley group A(3,q) ~ D(3,q)
     # exceptions: A(3,2) ~ A(8)
     if n = 3  and size = size2  then
         return rec(series:="L",parameter:=[4,q],
-                   name:=Concatenation( "A(", "3", ",", String(q), ") ",
-                            "= L(", "4", ",", String(q), ") ",
-                            "~ D(", "3", ",", String(q), ") ",
-                            "= O+(","6", ",", String(q), ") " ));
+                   name:=Concatenation( "A(3,", String(q), ") ",
+                            "= L(4,",  String(q), ") ",
+                            "~ D(3,",  String(q), ") ",
+                            "= O+(6,", String(q), ") " ),
+                   shortname:= Concatenation( "L4(", String( q ), ")" ));
     fi;
 
     # test if <G> is a Chevalley group A(n,q)
     if size = size2  then
         return rec(series:="L",parameter:=[n+1,q],
                    name:=Concatenation( "A(", String(n),   ",", String(q), ") ",
-                            "= L(", String(n+1), ",", String(q), ") " ));
+                            "= L(", String(n+1), ",", String(q), ") " ),
+                   shortname:= Concatenation( "L", String( n+1 ), "(", String( q ), ")" ));
     fi;
 
     # try to find <n> and <q> for size of B(n,q) = size of C(n,q)
@@ -3739,7 +3778,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                    name:=Concatenation( "B(2,3) = O(5,3) ",
                             "~ C(2,3) = S(4,3) ",
                             "~ 2A(3,2) = U(4,2) ",
-                            "~ 2D(3,2) = O-(6,2)" ));
+                            "~ 2D(3,2) = O-(6,2)" ),
+                   shortname:= "U4(2)");
     fi;
 
     # Rule out the case B(2,2) ~ S(6) if only the group order is given.
@@ -3758,7 +3798,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                    name:=Concatenation( "B(2,", String(q), ") ",
                             "= O(5,", String(q), ") ",
                             "~ C(2,", String(q), ") ",
-                            "= S(4,", String(q), ")" ));
+                            "= S(4,", String(q), ")" ),
+                   shortname:= Concatenation( "S4(", String( q ), ")" ));
     fi;
 
     # test if <G> is a Chevalley group B(n,2^m) ~ C(n,2^m)
@@ -3768,7 +3809,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
                    name:=Concatenation("B(",String(n),  ",", String(q), ") ",
                             "= O(", String(2*n+1), ",", String(q), ") ",
                             "~ C(", String(n),     ",", String(q), ") ",
-                            "= S(", String(2*n),   ",", String(q), ")" ));
+                            "= S(", String(2*n),   ",", String(q), ")" ),
+                   shortname:= Concatenation( "S", String( 2*n ), "(", String( q ), ")" ));
     fi;
 
     # test if <G> is a Chevalley group B(n,q) or C(n,q), 2 < n and q odd
@@ -3795,11 +3837,13 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
         if Size(C) mod (q^(2*n-2)-1) <> 0 then
             return rec(series:="B",parameter:=[n,q],
                        name:=Concatenation("B(", String(n),",",String(q),") ",
-                                "= O(", String(2*n+1), ",", String(q), ")"));
+                                "= O(", String(2*n+1), ",", String(q), ")"),
+                       shortname:= Concatenation( "O", String( 2*n+1 ), "(", String( q ), ")" ));
         else
             return rec(series:="C",parameter:=[n,q],
                        name:=Concatenation( "C(",String(n),",",String(q),") ",
-                                "= S(", String(2*n), ",", String(q), ")" ));
+                                "= S(", String(2*n), ",", String(q), ")" ),
+                       shortname:= Concatenation( "S", String( 2*n ), "(", String( q ), ")" ));
         fi;
 
     fi;
@@ -3820,7 +3864,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     if size = size2  then
         return rec(series:="D",parameter:=[n,q],
                    name:=Concatenation("D(",String(n),",",String(q), ") ",
-                            "= O+(", String(2*n), ",", String(q), ")" ));
+                            "= O+(", String(2*n), ",", String(q), ")" ),
+                   shortname:= Concatenation( "O", String( 2*n ), "+(", String( q ), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group E(6,q)
@@ -3832,7 +3877,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2 then
         return rec(series:="E",parameter:=[6,q],
-                   name:=Concatenation( "E(", "6", ",", String(q), ")" ));
+                   name:=Concatenation( "E(6,", String(q), ")" ),
+                   shortname:= Concatenation( "E6(", String( q ), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group E(7,q)
@@ -3844,7 +3890,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="E",parameter:=[7,q],
-                   name:=Concatenation( "E(", "7", ",", String(q), ")" ));
+                   name:=Concatenation( "E(7,", String(q), ")" ),
+                   shortname:= Concatenation( "E7(", String( q ), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group E(8,q)
@@ -3856,7 +3903,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="E",parameter:=[8,q],
-                   name:=Concatenation( "E(", "8", ",", String(q), ")" ));
+                   name:=Concatenation( "E(8,", String(q), ")" ),
+                   shortname:= Concatenation( "E8(", String( q ), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group F(4,q)
@@ -3867,7 +3915,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="F",parameter:=q,
-                   name:=Concatenation( "F(4,", String(q), ")" ));
+                   name:=Concatenation( "F(4,", String(q), ")" ),
+                   shortname:= Concatenation( "F4(", String( q ), ")" ));
     fi;
 
     # Rule out the case G(2,2) ~ U(3,3).2 if only the group order is given.
@@ -3888,13 +3937,15 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="G",parameter:=q,
-                   name:=Concatenation( "G(", "2", ",", String(q), ")" ));
+                   name:=Concatenation( "G(2,", String(q), ")" ),
+                   shortname:= Concatenation( "G2(", String( q ), ")" ));
     fi;
 
     # test if <G> is 2A(2,3), where p = 2 <> char.
     if size = 3^3*(3^2-1)*(3^3+1)  then
         return rec(series:="2A",parameter:=[2,3],
-                   name:="2A(2,3) = U(3,3)");
+                   name:="2A(2,3) = U(3,3)",
+                   shortname:= "U3(3)");
     fi;
 
     # try to find <n> and <q> for size of 2A(n,q)
@@ -3914,10 +3965,11 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # order is given, since the dominant prime for group order 72 is 3.)
     if n = 3  and size = size2  then
         return rec(series:="2A",parameter:=[3,q],
-                   name:=Concatenation( "2A(", "3", ",", String(q), ") ",
-                            "= U(",  "4", ",", String(q), ") ",
-                            "~ 2D(", "3", ",", String(q), ") ",
-                            "= O-(", "6", ",", String(q), ")" ));
+                   name:=Concatenation( "2A(3,", String(q), ") ",
+                            "= U(4,",  String(q), ") ",
+                            "~ 2D(3,", String(q), ") ",
+                            "= O-(6,", String(q), ")" ),
+                   shortname:= Concatenation( "U4(", String( q ), ")" ));
     fi;
 
     # test if <G> is a Steinberg group 2A(n,q)
@@ -3925,7 +3977,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     if size = size2  then
         return rec(series:="2A",parameter:=[n,q],
                    name:=Concatenation("2A(",String(n),",", String(q), ") ",
-                            "= U(",  String(n+1), ",", String(q), ")" ));
+                            "= U(",  String(n+1), ",", String(q), ")" ),
+                   shortname:= Concatenation( "U", String( n+1 ), "(", String( q ), ")" ));
     fi;
 
     # test whether <G> is a Suzuki group 2B(2,q) = 2C(2,q) = Sz(q)
@@ -3939,9 +3992,10 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 2  and m mod 2 = 1  and size = size2  then
         return rec(series:="2B",parameter:=q,
-                   name:=Concatenation( "2B(", "2", ",", String(q), ") ",
-                            "= 2C(", "2", ",", String(q), ") ",
-                            "= Sz(",           String(q), ")" ));
+                   name:=Concatenation( "2B(2,", String(q), ") ",
+                            "= 2C(2,", String(q), ") ",
+                            "= Sz(",   String(q), ")" ),
+                   shortname:= Concatenation( "Sz(", String( q ), ")" ));
     fi;
 
     # test whether <G> is a Steinberg group 2D(n,q)
@@ -3959,7 +4013,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     if size = size2  then
         return rec(series:="2D",parameter:=[n,q],
                    name:=Concatenation("2D(",String(n),",", String(q), ") ",
-                            "= O-(", String(2*n), ",", String(q), ")" ));
+                            "= O-(", String(2*n), ",", String(q), ")" ),
+                   shortname:= Concatenation( "O", String( 2*n ), "-(", String( q ), ")" ));
     fi;
 
     # test whether <G> is a Steinberg group 3D4(q)
@@ -3970,7 +4025,8 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="3D",parameter:=q,
-                   name:=Concatenation( "3D(", "4", ",", String(q), ")" ));
+                   name:=Concatenation( "3D(4,", String(q), ")" ),
+                   shortname:= Concatenation( "3D4(", String( q ), ")" ));
     fi;
 
 
@@ -3983,13 +4039,15 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="2E",parameter:=q,
-                   name:=Concatenation( "2E(", "6", ",", String(q), ")" ));
+                   name:=Concatenation( "2E(6,", String(q), ")" ),
+                   shortname:= Concatenation( "2E6(", String( q ), ")" ));
     fi;
 
     # test if <G> is the Ree group 2F(4,q)'
     if size = 2^12 * (2^6+1)*(2^4-1)*(2^3+1)*(2-1) / 2  then
         return rec(series:="2F",parameter:=2,
-                   name:="2F(4,2)' = Ree(2)' = Tits");
+                   name:="2F(4,2)' = Ree(2)' = Tits",
+                   shortname:= "2F4(2)'");
     fi;
 
     # test whether <G> is a Ree group 2F(4,q)
@@ -4000,8 +4058,9 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 2  and 1 < m  and m mod 2 = 1  and size = size2  then
         return rec(series:="2F",parameter:=q,
-                   name:=Concatenation( "2F(", "4", ",", String(q), ") ",
-                           "= Ree(",           String(q), ")" ));
+                   name:=Concatenation( "2F(4,", String(q), ") ",
+                            "= Ree(",            String(q), ")" ),
+                   shortname:= Concatenation( "2F4(", String( q ), ")" ));
     fi;
 
     # test whether <G> is a Ree group 2G(2,q)
@@ -4012,8 +4071,9 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 3  and 1 < m  and m mod 2 = 1  and size = size2  then
         return rec(series:="2G",parameter:=q,
-                   name:=Concatenation( "2G(", "2", ",", String(q), ") ",
-                           "= Ree(",           String(q), ")" ));
+                   name:=Concatenation( "2G(2,", String(q), ") ",
+                            "= Ree(",            String(q), ")" ),
+                   shortname:= Concatenation( "R(", String( q ), ")" ));
     fi;
 
     # or a new simple group is found

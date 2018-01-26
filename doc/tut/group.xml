@@ -202,7 +202,8 @@ gap> IsSimple( f ); IsomorphismTypeInfoFiniteSimpleGroup( f );
 true
 rec( 
   name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
-7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
+7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L", 
+  shortname := "L3(2)" )
 gap> SetName( f, "L_3(2)" );
 ]]></Example>
 <P/>
