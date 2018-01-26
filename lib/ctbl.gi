@@ -1456,23 +1456,29 @@ InstallMethod( IsomorphismTypeInfoFiniteSimpleGroup,
                       parameter:= [ n, q ],
                       name:= Concatenation( "B(", String(n), ",", String(q),
                                             ") ", "= O(", String(2*n+1), ",",
-                                            String(q), ")" ) );
+                                            String(q), ")" ),
+                      shortname:= Concatenation( "O", String( 2*n+1 ), "(",
+                                                 String(q), ")" ) );
         else
           type:= rec( series:= "C",
                       parameter:= [ n, q ],
                       name:= Concatenation( "C(", String(n), ",", String(q),
                                             ") ", "= S(", String(2*n), ",",
-                                            String(q), ")" ) );
+                                            String(q), ")" ),
+                      shortname:= Concatenation( "S", String( 2*n ), "(",
+                                                 String( q ), ")" ) );
         fi;
       elif 15 in SizesCentralizers( tbl ) then
         type:= rec( series:= "A",
                     parameter:= 8,
                     name:= Concatenation( "A(8) ", "~ A(3,2) = L(4,2) ",
-                                          "~ D(3,2) = O+(6,2)" ) );
+                                          "~ D(3,2) = O+(6,2)" ),
+                    shortname:= "A8" );
       else
         type:= rec( series:= "L",
                     parameter:= [ 3, 4 ],
-                    name:= "A(2,4) = L(3,4)" );
+                    name:= "A(2,4) = L(3,4)",
+                    shortname:= "L3(4)" );
       fi;
     fi;
     return type;
