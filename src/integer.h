@@ -9,7 +9,7 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file declares the functions handling gmp integers.
+**  This file declares the functions handling integers.
 */
 
 #ifndef GAP_INTEGER_H
@@ -30,7 +30,7 @@ extern "C" {
 //   GMP_LIMB_BITS etc. directly.
 //
 // To safeguard against bugs like compiling GAP against one version of
-// GMP and a plugin against another, we may want to add some safeguards.
+// GMP and a plugin against another, we may want to add some checks.
 // E.g. add to config.h another #define GAP_GMP_LIMB_BITS and compare
 // that during compile time with GMP_LIMB_BITS.
 
@@ -209,30 +209,30 @@ Obj IntStringInternal(Obj string, const Char *str);
 
 /****************************************************************************
 **
-*F  EqInt( <gmpL>, <gmpR> ) . . . . . test if two integers are equal
+*F  EqInt( <opL>, <opR> ) . . . . . test if two integers are equal
 **
-**  'EqInt' returns 1  if  the two GMP integer arguments <gmpL> and  
-**  <gmpR> are equal and 0 otherwise.
+**  'EqInt' returns 1  if  the two GMP integer arguments <opL> and  
+**  <opR> are equal and 0 otherwise.
 */
 extern Int EqInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  LtInt( <gmpL>, <gmpR> )  test if an integer is less than another
+*F  LtInt( <opL>, <opR> )  test if an integer is less than another
 **
-**  'LtInt' returns 1 if the integer <gmpL> is strictly less than the 
-**  integer <gmpR> and 0 otherwise.
+**  'LtInt' returns 1 if the integer <opL> is strictly less than the 
+**  integer <opR> and 0 otherwise.
 */
 extern Int LtInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  SumInt( <gmpL>, <gmpR> )  . . . . . . . . .  sum of two integers
+*F  SumInt( <opL>, <opR> )  . . . . . . . . .  sum of two integers
 **
-**  'SumInt' returns the sum of the two integer arguments <gmpL> and
-**  <gmpR>.
+**  'SumInt' returns the sum of the two integer arguments <opL> and
+**  <opR>.
 **
 */
 extern Obj SumInt( Obj opL, Obj opR );
@@ -240,10 +240,10 @@ extern Obj SumInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  DiffInt( <gmpL>, <gmpR> ) . . . . difference of two GMP integers
+*F  DiffInt( <opL>, <opR> ) . . . . difference of two integers
 **
-**  'DiffInt' returns the difference of the two integer arguments <gmpL>
-**  and <gmpR>.
+**  'DiffInt' returns the difference of the two integer arguments <opL>
+**  and <opR>.
 **
 */
 extern Obj DiffInt( Obj opL, Obj opR );
@@ -265,10 +265,10 @@ extern Obj SignInt( Obj op );
 
 /****************************************************************************
 **
-*F  ProdInt( <gmpL>, <gmpR> ) . . . . .  product of two GMP integers
+*F  ProdInt( <opL>, <opR> ) . . . . .  product of two integers
 **
-**  'ProdInt' returns the product of the two integer arguments <gmpL>
-**  and <gmpR>.
+**  'ProdInt' returns the product of the two integer arguments <opL>
+**  and <opR>.
 **
 */
 extern Obj ProdInt( Obj opL, Obj opR );
@@ -276,10 +276,10 @@ extern Obj ProdInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  ModInt( <gmpL>, <gmpR> ) representative of res cl of a GMP integer
+*F  ModInt( <opL>, <opR> ) representative of res class of an integer
 **
 **  'ModInt' returns the smallest positive representative of the residue
-**  class of the  integer  <gmpL>  modulo  the  integer  <gmpR>.
+**  class of the  integer  <opL>  modulo  the  integer  <opR>.
 **
 */
 extern Obj ModInt( Obj opL, Obj opR );
@@ -287,10 +287,9 @@ extern Obj ModInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  PowInt( <gmpL>, <gmpR> )  . . . . . . . . power of a GMP integer
+*F  PowInt( <opL>, <opR> )  . . . . . . . . power of an integer
 **
-**  'PowInt' returns the <gmpR>-th(a GMP int) power of the GMP integer
-**  <gmpL>.
+**  'PowInt' returns the <opR>-th power of the integer <opL>.
 **
 */
 extern Obj PowInt( Obj opL, Obj opR );
@@ -298,10 +297,10 @@ extern Obj PowInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  QuoInt( <gmpL>, <gmpR> )  . . . . . quotient of two GMP integers
+*F  QuoInt( <opL>, <opR> )  . . . . . quotient of two integers
 **
-**  'QuoInt' returns the integer part of the two integers <gmpL> and
-**  <gmpR>.
+**  'QuoInt' returns the integer part of the two integers <opL> and
+**  <opR>.
 **
 */
 extern Obj QuoInt( Obj opL, Obj opR );
@@ -309,10 +308,10 @@ extern Obj QuoInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  RemInt( <gmpL>, <gmpR> )  . . . .  remainder of two GMP integers
+*F  RemInt( <opL>, <opR> )  . . . .  remainder of two integers
 **
-**  'RemInt' returns the remainder of the quotient of the GMP ints
-**  <gmpL> and <gmpR>.
+**  'RemInt' returns the remainder of the quotient of the integers
+**  <opL> and <opR>.
 **
 */
 extern Obj RemInt( Obj opL, Obj opR );
@@ -320,9 +319,9 @@ extern Obj RemInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  GcdInt( <gmpL>, <gmpR> )  . . . . . . .  gcd of two GMP integers
+*F  GcdInt( <opL>, <opR> )  . . . . . . .  gcd of two integers
 **
-**  'GcdInt' returns the gcd of the two integers <gmpL> and <gmpR>.
+**  'GcdInt' returns the gcd of the two integers <opL> and <opR>.
 */
 extern Obj GcdInt( Obj opL, Obj opR );
 
