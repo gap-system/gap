@@ -218,49 +218,24 @@ UInt8 LoadUInt8 ( void )
 
 void SaveUInt( UInt data )
 {
-  SAVE_BYTE( (UInt1) (data & 0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 8) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 16) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 24) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 32) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 40) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 48) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 56) &0xFF) );
+    SaveUInt8(data);
 }
 
 UInt8 LoadUInt ( void )
 {
-  UInt res;
-  res = (UInt)LOAD_BYTE();
-  res |= (UInt)LOAD_BYTE() << 8;
-  res |= (UInt)LOAD_BYTE() << 16;
-  res |= (UInt)LOAD_BYTE() << 24;
-  res |= (UInt)LOAD_BYTE() << 32;
-  res |= (UInt)LOAD_BYTE() << 40;
-  res |= (UInt)LOAD_BYTE() << 48;
-  res |= (UInt)LOAD_BYTE() << 56;
-
-  return res;
+    return LoadUInt8();
 }
 
 #else
 
 void SaveUInt( UInt data )
 {
-  SAVE_BYTE( (UInt1) (data & 0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 8) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 16) &0xFF) );
-  SAVE_BYTE( (UInt1) ((data >> 24) &0xFF) );
+    SaveUInt4(data);
 }
 
 UInt LoadUInt ( void )
 {
-  UInt res;
-  res = (UInt)LOAD_BYTE();
-  res |= (UInt)LOAD_BYTE() << 8;
-  res |= (UInt)LOAD_BYTE() << 16;
-  res |= (UInt)LOAD_BYTE() << 24;
-  return res;
+    return LoadUInt4();
 }
 
 #endif
