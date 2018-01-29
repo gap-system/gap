@@ -528,8 +528,9 @@ Obj ObjInt_UInt( UInt i )
 Obj ObjInt_UIntInv( UInt i )
 {
   Obj gmp;
-  // we need INT_INTOBJ_MIN <= -i; to express this with unsigned values, we
-  // must evaluate all negative terms, which leads to this equivalent check:
+  // we need to test INT_INTOBJ_MIN <= -i; to express this with unsigned
+  // values, we must avoid all negative terms, which leads to this equivalent
+  // check:
   if (i <= -INT_INTOBJ_MIN) {
     return INTOBJ_INT(-i);
   }
@@ -1417,14 +1418,6 @@ Obj FuncSIGN_INT(Obj self, Obj op)
 **  'ProdInt' returns the product of the two  integer  arguments  <intL>  and
 **  <intR>.  'ProdInt' handles  operands  of  type  'T_INT',  'T_INTPOS'  and
 **  'T_INTNEG'.
-**
-**  It can also be used in the cases that both operands  are  small  integers
-**  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvalProd' for a better
-**  efficiency.
-**
-**  Is called from the 'EvalProd' binop so both operands are already
-*   evaluated.
 */
 Obj ProdInt ( Obj gmpL, Obj gmpR )
 {
@@ -1439,7 +1432,6 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
   if ( ARE_INTOBJS( gmpL, gmpR ) ) {
     
     /* multiply two small integers with a small product                    */
-    /* multiply and divide back to check that no overflow occured          */
     if ( PROD_INTOBJS( prd, gmpL, gmpR ) ) {
       CHECK_INT(prd);
       return prd;
@@ -1579,12 +1571,6 @@ Obj OneInt ( Obj op )
 **
 **  'PowInt' returns the <intR>-th (an integer) power of the integer  <intL>.
 **  'PowInt' handles operands of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
-**
-**  It can also be used in the cases that both operands  are  small  integers
-**  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvalPow' for a better efficiency.
-**
-**  Is called from the 'EvalPow' binop so both operands are already evaluated.
 */
 Obj PowInt ( Obj gmpL, Obj gmpR )
 {
@@ -1738,12 +1724,6 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 **  'ModInt' returns the smallest positive representative of the residue
 **  class of the integer <intL> modulo the integer <intR>. 'ModInt' handles
 **  operands of type 'T_INT', 'T_INTPOS', 'T_INTNEG'.
-**
-**  It can also be used in the cases that both operands  are  small  integers
-**  and the result is a small integer too,  i.e., that  no  overflow  occurs.
-**  This case is usually already handled in 'EvalMod' for a better efficiency.
-**
-**  Is called from the 'EvalMod' binop so both operands are already evaluated.
 */
 Obj ModInt ( Obj opL, Obj opR )
 {
@@ -1885,9 +1865,6 @@ Obj ModInt ( Obj opL, Obj opR )
 **
 **  'QuoInt' returns the integer part of the two integers <intL> and  <intR>.
 **  'QuoInt' handles operands of type  'T_INT',  'T_INTPOS'  and  'T_INTNEG'.
-**
-**  It can also be used in the cases that both operands  are  small  integers
-**  and the result is a small integer too,  i.e., that  no  overflow  occurs.
 **
 **  Note that this routine is not called from 'EvalQuo', the  division of two
 **  integers yields a rational and is therefor performed in 'QuoRat'. This
