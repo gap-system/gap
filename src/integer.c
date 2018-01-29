@@ -1711,13 +1711,13 @@ Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 
 /****************************************************************************
 **
-*F  ModInt( <intL>, <intR> )  . representative of residue class of an integer
+*F  ModInt( <opL>, <opR> )  . representative of residue class of an integer
 **
 **  'ModInt' returns the smallest positive representative of the residue
-**  class of the integer <intL> modulo the integer <intR>. 'ModInt' handles
+**  class of the integer <opL> modulo the integer <opR>. 'ModInt' handles
 **  operands of type 'T_INT', 'T_INTPOS', 'T_INTNEG'.
 */
-Obj ModInt ( Obj opL, Obj opR )
+Obj ModInt(Obj opL, Obj opR)
 {
   Int                    i;             /* loop count, value for small int */
   Int                    k;             /* loop count, value for small int */
@@ -1745,12 +1745,10 @@ Obj ModInt ( Obj opL, Obj opR )
     k = INT_INTOBJ(opR);
     
     /* compute the remainder, make sure we divide only positive numbers    */
-    if (      0 <= i && 0 <= k )  i =       (  i %  k );
-    else if ( 0 <= i && k <  0 )  i =       (  i % -k );
-    else if ( i < 0  && 0 <= k )  i = ( k - ( -i %  k )) % k;
-    else if ( i < 0  && k <  0 )  i = (-k - ( -i % -k )) % -k;
-    mod = INTOBJ_INT( i );
-    
+    i %= k;
+    if (i < 0)
+        i += k > 0 ? k : -k;
+    mod = INTOBJ_INT(i);
   }
   
   /* compute the remainder of a small integer by a large integer           */
@@ -1788,15 +1786,14 @@ Obj ModInt ( Obj opL, Obj opR )
       c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
     
-    /* now c is the result, it has the same sign as the left operand       */
-    if ( IS_INTPOS(opL) )
+    // now c is the absolute value of the actual result. Thus, if the left
+    // operand is negative, and c is non-zero, we have to adjust it.
+    if (IS_INTPOS(opL) || c == 0)
       mod = INTOBJ_INT( c );
-    else if ( c == 0 )
-      mod = INTOBJ_INT( c );
-    else if ( 0 <= INT_INTOBJ(opR) )
-      mod = SumOrDiffInt( INTOBJ_INT( -(Int)c ), opR,  1 );
     else
-      mod = SumOrDiffInt( INTOBJ_INT( -(Int)c ), opR, -1 );
+      // even if opR is INT_INTOBJ_MIN, and hence i is INT_INTOBJ_MAX+1, we
+      // have 0 <= i-c <= INT_INTOBJ_MAX, so i-c fits into a small integer
+      mod = INTOBJ_INT( i - (Int)c );
     
   }
   
@@ -1853,16 +1850,16 @@ Obj ModInt ( Obj opL, Obj opR )
 
 /****************************************************************************
 **
-*F  QuoInt( <intL>, <intR> )  . . . . . . . . . . . quotient of two integers
+*F  QuoInt( <opL>, <opR> )  . . . . . . . . . . . quotient of two integers
 **
-**  'QuoInt' returns the integer part of the two integers <intL> and  <intR>.
+**  'QuoInt' returns the integer part of the two integers <opL> and  <opR>.
 **  'QuoInt' handles operands of type  'T_INT',  'T_INTPOS'  and  'T_INTNEG'.
 **
 **  Note that this routine is not called from 'EvalQuo', the  division of two
 **  integers yields a rational and is therefor performed in 'QuoRat'. This
 **  operation is however available through the internal function 'Quo'.
 */
-Obj QuoInt ( Obj opL, Obj opR )
+Obj QuoInt(Obj opL, Obj opR)
 {
   Int                 i;              /* loop count, value for small int   */
   Int                 k;              /* loop count, value for small int   */
@@ -1894,14 +1891,10 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
-    
-    /* divide, make sure we divide only positive numbers                   */
-    if (      0 <= i && 0 <= k )  i =    (  i /  k );
-    else if ( 0 <= i && k <  0 )  i =  - (  i / -k );
-    else if ( i < 0  && 0 <= k )  i =  - ( -i /  k );
-    else if ( i < 0  && k <  0 )  i =    ( -i / -k );
-    quo = INTOBJ_INT( i );
-    
+
+    // divide, truncated towards zero; this is also what section 6.5.5 of the
+    // C99 standard guarantees for integer division
+    quo = INTOBJ_INT(i / k);
   }
   
   /* divide a small integer by a large one                                 */
@@ -1993,20 +1986,21 @@ Obj FuncQUO_INT ( Obj self, Obj opL, Obj opR )
 
 /****************************************************************************
 **
-*F  RemInt( <intL>, <intR> )  . . . . . . . . . . . remainder of two integers
+*F  RemInt( <opL>, <opR> )  . . . . . . . . . . . remainder of two integers
 **
-**  'RemInt' returns the remainder of the quotient  of  the  integers  <intL>
-**  and <intR>.  'RemInt' handles operands of type  'T_INT',  'T_INTPOS'  and
+**  'RemInt' returns the remainder of the quotient  of  the  integers  <opL>
+**  and <opR>.  'RemInt' handles operands of type  'T_INT',  'T_INTPOS'  and
 **  'T_INTNEG'.
 **
 **  Note that the remainder is different from the value returned by the 'mod'
-**  operator which is always positive.
+**  operator which is always positive, while the result of 'RemInt' has
+**  the same sign as <opL>.
 */
-Obj RemInt ( Obj opL, Obj opR )
+Obj RemInt(Obj opL, Obj opR)
 {
   Int                 i;              /* loop count, value for small int   */
   Int                 k;              /* loop count, value for small int   */
-  UInt                c;              /* product of two digits             */
+  UInt                c;
   Obj                 rem;            /* handle of the remainder bag       */
   Obj                 quo;            /* handle of the quotient bag        */
 
@@ -2024,14 +2018,12 @@ Obj RemInt ( Obj opL, Obj opR )
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
-    
-    /* compute the remainder, make sure we divide only positive numbers    */
-    if (      0 <= i && 0 <= k )  i =    (  i %  k );
-    else if ( 0 <= i && k <  0 )  i =    (  i % -k );
-    else if ( i < 0  && 0 <= k )  i =  - ( -i %  k );
-    else if ( i < 0  && k <  0 )  i =  - ( -i % -k );
-    rem = INTOBJ_INT( i );
-    
+
+    // compute the remainder with sign matching that of the dividend i;
+    // this matches the sign of i % k as specified in section 6.5.5 of
+    // the C99 standard, which indicates division truncates towards zero,
+    // and the invariant i%k == i - (i/k)*k holds
+    rem = INTOBJ_INT(i % k);
   }
   
   /* compute the remainder of a small integer by a large integer           */
@@ -2063,8 +2055,8 @@ Obj RemInt ( Obj opL, Obj opR )
     else {
       c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
-    
-    /* now c is the result, it has the same sign as the left operand       */
+
+    // adjust c for the sign of the left operand
     if ( IS_INTPOS(opL) )
       rem = INTOBJ_INT( c );
     else
