@@ -209,6 +209,15 @@ InstallMethod( \in,
            and IsSubset( LeftActingDomain( M ), v );
     end );
 
+# TODO: HACK: properly document this
+InstallMethod( \in,
+    "for empty list and vector space with length 0 vector",
+    [ IsEmpty and IsList, IsFreeLeftModule and IsFullRowModule ],
+    SUM_FLAGS, # can't do better
+    function( v, M )
+    return DimensionOfVectors(M) = 0;
+    end );
+
 
 #############################################################################
 ##
@@ -535,7 +544,8 @@ InstallMethod( EnumeratorByBasis,
                  zerovector    := Zero( V ),
                  dimension     := Dimension( V ) ) );
 
-      if IsField( F ) and Size( F ) < 256 and IsInternalRep( One( F ) ) then
+      if IsField( F ) and Size( F ) < 256 and Dimension( V ) > 0 and
+            IsInternalRep( One( F ) ) then
         # Use a more efficient method for `Position'.
         enum!.NumberElement:= PosVecEnumFF;
         SetFilterObj( enum, IsQuickPositionList );
