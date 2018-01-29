@@ -94,14 +94,6 @@
 extern "C" {
 #endif
 
-#ifdef SYS_IS_64_BIT
-#define SaveLimb SaveUInt8
-#define LoadLimb LoadUInt8
-#else
-#define SaveLimb SaveUInt4
-#define LoadLimb LoadUInt4
-#endif
-
 
 static Obj ObjInt_UIntInv( UInt i );
 
@@ -223,7 +215,7 @@ void SaveInt( Obj gmp )
 {
   const mp_limb_t *ptr = CONST_ADDR_INT(gmp);
   for (UInt i = 0; i < SIZE_INT(gmp); i++)
-    SaveLimb(*ptr++);
+      SaveUInt(*ptr++);
   return;
 }
 
@@ -238,7 +230,7 @@ void LoadInt( Obj gmp )
 {
   mp_limb_t *ptr = ADDR_INT(gmp);
   for (UInt i = 0; i < SIZE_INT(gmp); i++)
-    *ptr++ = LoadLimb();
+      *ptr++ = LoadUInt();
   return;
 }
 
