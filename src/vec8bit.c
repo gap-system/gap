@@ -2470,6 +2470,9 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
     res = INTOBJ_INT(0);
     f = INTOBJ_INT(FIELD_VEC8BIT(vec)); /* Field size as GAP integer */
 
+    if (len == 0)
+      return INTOBJ_INT(1);
+
     for (i = 0; i < len; i++) {
         elt = convtab[gettab[ptrS[i / elts] + 256 * (i % elts)]];
         res = ProdInt(res, f); /* ``shift'' */

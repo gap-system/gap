@@ -2988,6 +2988,8 @@ Obj FuncNUMBER_GF2VEC( Obj self, Obj vec )
   UInt *num;
   mp_limb_t *vp;
   len = LEN_GF2VEC(vec);
+  if (len == 0)
+    return INTOBJ_INT(1);
   num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
   off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
   off2 = BIPEB - off;         /* number of insignificant bits in last word */
