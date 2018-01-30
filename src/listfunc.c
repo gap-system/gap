@@ -25,6 +25,7 @@
 #include <src/pperm.h>
 #include <src/set.h>
 #include <src/stringobj.h>
+#include <src/sysfiles.h>
 #include <src/trans.h>
 
 #ifdef HPCGAP
@@ -100,7 +101,7 @@ void            AddPlist3 (
     if (pos <= len) {
       GROW_PLIST(list, len+1);
       SET_LEN_PLIST(list, len+1);
-      memmove(ADDR_OBJ(list) + pos+1,
+      SyMemmove(ADDR_OBJ(list) + pos+1,
               CONST_ADDR_OBJ(list) + pos,
               (size_t)(sizeof(Obj)*(len - pos + 1)));
     }
@@ -288,7 +289,7 @@ Obj             FuncAPPEND_LIST_INTR (
         GROW_STRING(list1, len1 + len2);
         SET_LEN_STRING(list1, len1 + len2);
         CLEAR_FILTS_LIST(list1);
-        memmove( CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 + 1);
+        SyMemmove( CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 + 1);
         /* ensure trailing zero */
         *(CHARS_STRING(list1) + len1 + len2) = 0;    
         return (Obj) 0;
@@ -1623,7 +1624,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   GROW_PLIST(srclist, srcmax);
   if (srcinc == 1 && dstinc == 1)
     {
-      memmove(ADDR_OBJ(dstlist) + dststart,
+      SyMemmove(ADDR_OBJ(dstlist) + dststart,
               CONST_ADDR_OBJ(srclist) + srcstart,
               (size_t) number*sizeof(Obj));
     }

@@ -28,6 +28,7 @@
 #include <src/records.h>
 #include <src/saveload.h>
 #include <src/stringobj.h>
+#include <src/sysfiles.h>
 
 #ifdef HPCGAP
 #include <src/hpc/aobjects.h>
@@ -1991,7 +1992,7 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
                         Obj buf[cacheEntrySize];
                         memcpy(buf, cache + i,
                                sizeof(Obj) * cacheEntrySize);
-                        memmove(cache + target + cacheEntrySize,
+                        SyMemmove(cache + target + cacheEntrySize,
                                 cache + target,
                                 sizeof(Obj) * (i - target));
                         memcpy(cache + target, buf,
@@ -2017,7 +2018,7 @@ CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
     UInt  cacheEntrySize = n + 2;
     Bag   cacheBag = GET_METHOD_CACHE(oper, n);
     Obj * cache = 1 + prec * cacheEntrySize + ADDR_OBJ(cacheBag);
-    memmove(cache + cacheEntrySize, cache,
+    SyMemmove(cache + cacheEntrySize, cache,
             sizeof(Obj) * (CACHE_SIZE - prec - 1) * cacheEntrySize);
     cache[0] = method;
     cache[1] = INTOBJ_INT(prec);
