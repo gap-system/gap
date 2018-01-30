@@ -29,6 +29,7 @@
 #include <src/listfunc.h>
 #include <src/lists.h>
 #include <src/plist.h>
+#include <src/sysfiles.h>
 
 
 /****************************************************************************
@@ -449,7 +450,7 @@ Obj FuncADD_SET (
     {
       Obj *ptr;
       ptr = PTR_BAG(set);
-      memmove(ptr + pos+1, ptr+pos, sizeof(Obj)*(len+1-pos));
+      SyMemmove(ptr + pos+1, ptr+pos, sizeof(Obj)*(len+1-pos));
     }
     SET_ELM_PLIST( set, pos, obj );
     CHANGED_BAG( set );
