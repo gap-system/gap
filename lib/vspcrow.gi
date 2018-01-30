@@ -1729,6 +1729,10 @@ BindGlobal( "NumberElement_ExtendedVectors", function( enum, elm )
                          or elm[ enum!.len ] <> enum!.one then
       return fail;
     fi;
+    # special case for dimension 1: here, the truncated vector would be an
+    # empty list, and there are problems with trivial vector spaces over
+    # length 0 vectors (see e.g. issue #2117, PR #2125)
+    if Length( elm ) = 1 then return 1; fi;
     return Position( enum!.spaceEnumerator,
 		     elm{ [ 1 .. Length( elm ) - 1 ] } );
 end );
